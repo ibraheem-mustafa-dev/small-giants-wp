@@ -1,0 +1,259 @@
+{
+  "tool": "oracle.batch_runner",
+  "diagnostic_only": true,
+  "diagnostic_note": "R-31-4: this is a per-commit DIAGNOSTIC signal, NEVER the LANDED closing gate. The closing gate is computed-style-vs-draft + Bean's eye (R-31-13).",
+  "fixture_count": 36,
+  "per_fixture_status": {
+    "rt-background-url": "LIVE-PROBED",
+    "rt-centred-maxwidth": "LIVE-PROBED",
+    "rt-media-600": "LIVE-PROBED",
+    "rt-pseudo-before": "LIVE-PROBED",
+    "rt-video-media": "LIVE-PROBED",
+    "sgs-media": "SKIPPED-NO-LIVE-URL",
+    "mamas-trust-bar-real": "LIVE-PROBED",
+    "precedence-collision": "LIVE-PROBED",
+    "sgs-accordion-item": "COMPOSITION-INVALID",
+    "sgs-accordion": "LIVE-PROBED",
+    "sgs-card-grid": "LIVE-PROBED",
+    "sgs-content-collection": "LIVE-PROBED",
+    "sgs-cta-section": "LIVE-PROBED",
+    "sgs-feature-grid": "LIVE-PROBED",
+    "sgs-form-field-tiles": "COMPOSITION-INVALID",
+    "sgs-form-step": "COMPOSITION-INVALID",
+    "sgs-form": "LIVE-PROBED",
+    "sgs-gallery": "LIVE-PROBED",
+    "sgs-google-reviews": "LIVE-PROBED",
+    "sgs-hero": "LIVE-PROBED",
+    "sgs-info-box": "LIVE-PROBED",
+    "sgs-modal": "LIVE-PROBED",
+    "sgs-multi-button": "LIVE-PROBED",
+    "sgs-notice-banner": "LIVE-PROBED",
+    "sgs-option-picker": "LIVE-PROBED",
+    "sgs-post-grid": "LIVE-PROBED",
+    "sgs-pricing-table": "LIVE-PROBED",
+    "sgs-product-card": "LIVE-PROBED",
+    "sgs-quote": "LIVE-PROBED",
+    "sgs-tab": "COMPOSITION-INVALID",
+    "sgs-tabs": "LIVE-PROBED",
+    "sgs-team-member": "LIVE-PROBED",
+    "sgs-testimonial-slider": "LIVE-PROBED",
+    "sgs-testimonial": "LIVE-PROBED",
+    "sgs-trust-bar": "LIVE-PROBED",
+    "sgs-trustpilot-reviews": "LIVE-PROBED"
+  },
+  "status_counts": {
+    "LIVE-PROBED": 31,
+    "SKIPPED-NO-LIVE-URL": 1,
+    "COMPOSITION-INVALID": 4
+  },
+  "cell_verdict_counts": {
+    "LANDED": 31,
+    "UNVERIFIED": 33,
+    "WRITTEN-not-LANDED": 0,
+    "GUARD-FAIL": 33,
+    "NOT-RENDERED": 8
+  },
+  "total_unattributed_cells": 393,
+  "warnings": {
+    "rt-centred-maxwidth": [
+      "AMBIGUOUS SELECTOR: '.wp-block-sgs-container' matched 6 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
+    ],
+    "sgs-accordion-item": [
+      "COMPOSITION-INVALID: sgs/accordion-item (requires sgs/accordion). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
+    "sgs-card-grid": [
+      "AMBIGUOUS SELECTOR: '.wp-block-sgs-card-grid' matched 4 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
+    ],
+    "sgs-form-field-tiles": [
+      "COMPOSITION-INVALID: sgs/form-field-tiles (requires sgs/form). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
+    "sgs-form-step": [
+      "COMPOSITION-INVALID: sgs/form-step (requires sgs/form). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
+    "sgs-tab": [
+      "COMPOSITION-INVALID: sgs/tab (requires sgs/tabs). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ]
+  },
+  "per_fixture": {
+    "rt-background-url": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-cta-section@Base' (cta-section): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 7 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True. Section 'section-1-cta-section@Mobile' (cta-section): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "unattributed_cell_count": 13
+    },
+    "rt-centred-maxwidth": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-container@Base' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 8 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True. Section 'section-1-container@Mobile' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "unattributed_cell_count": 16
+    },
+    "rt-media-600": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-feature-grid@Base' (feature-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "unattributed_cell_count": 22
+    },
+    "rt-pseudo-before": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-info-box@Base' (info-box): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 4 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True. Section 'section-1-info-box@Mobile' (info-box): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "unattributed_cell_count": 18
+    },
+    "rt-video-media": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-hero@Base' (hero): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "unattributed_cell_count": 26
+    },
+    "sgs-media": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-media' (media) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 10
+    },
+    "mamas-trust-bar-real": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-trust-bar@Base' (trust-bar): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 30
+    },
+    "precedence-collision": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-info-box@Base' (info-box): 5 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 5
+    },
+    "sgs-accordion-item": {
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-accordion-item' (accordion-item) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-accordion": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-accordion@Base' (accordion): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-card-grid": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-card-grid@Base' (card-grid): 0 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 9
+    },
+    "sgs-content-collection": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-content-collection@Base' (content-collection): 0 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-cta-section": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-cta-section@Base' (cta-section): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 9
+    },
+    "sgs-feature-grid": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-feature-grid@Base' (feature-grid): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 13
+    },
+    "sgs-form-field-tiles": {
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-form-field-tiles' (form-field-tiles) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 12
+    },
+    "sgs-form-step": {
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-form-step' (form-step) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+      "unattributed_cell_count": 5
+    },
+    "sgs-form": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-form@Base' (form): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-gallery": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-gallery@Base' (gallery): 1 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. OK.",
+      "unattributed_cell_count": 9
+    },
+    "sgs-google-reviews": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-google-reviews@Base' (google-reviews): 0 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-hero": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-hero@Base' (hero): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. Section 'section-1-hero@Mobile' (hero): 1 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. OK.",
+      "unattributed_cell_count": 10
+    },
+    "sgs-info-box": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-info-box@Base' (info-box): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-modal": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 6 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 16
+    },
+    "sgs-multi-button": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-multi-button@Base' (multi-button): 3 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 0
+    },
+    "sgs-notice-banner": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 3 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 3
+    },
+    "sgs-option-picker": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-option-picker@Base' (option-picker): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
+      "unattributed_cell_count": 14
+    },
+    "sgs-post-grid": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-post-grid@Base' (post-grid): 1 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. OK.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-pricing-table": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-pricing-table@Base' (pricing-table): 0 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 16
+    },
+    "sgs-product-card": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-product-card@Base' (product-card): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 11
+    },
+    "sgs-quote": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-quote@Base' (quote): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-tab": {
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-tab' (tab) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 4
+    },
+    "sgs-tabs": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-tabs@Base' (tabs): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
+      "unattributed_cell_count": 12
+    },
+    "sgs-team-member": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-team-member@Base' (team-member): 3 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 12
+    },
+    "sgs-testimonial-slider": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-testimonial-slider@Base' (testimonial-slider): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 11
+    },
+    "sgs-testimonial": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-testimonial@Base' (testimonial): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-trust-bar": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-trust-bar@Base' (trust-bar): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 16
+    },
+    "sgs-trustpilot-reviews": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-trustpilot-reviews@Base' (trustpilot-reviews): 0 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "unattributed_cell_count": 7
+    }
+  }
+}

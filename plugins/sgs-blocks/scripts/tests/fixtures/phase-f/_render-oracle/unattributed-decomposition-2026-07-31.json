@@ -1,0 +1,144 @@
+{
+  "tool": "decompose_unattributed",
+  "read_only": true,
+  "total_declared_cells": 499,
+  "total_attributed_cells": 106,
+  "total_unattributed_cells": 393,
+  "attribution_rate_pct": 21.2,
+  "buckets": {
+    "ZERO-SECTION-MATCH": 380,
+    "NON-SIMPLE-SELECTOR": 13
+  },
+  "non_simple_breakdown": {
+    "pseudo-element": 6,
+    "combinator": 5,
+    "attribute-qualified": 2
+  },
+  "zero_match_that_are_bem_descendants": 380,
+  "zero_match_examples": [
+    "rt-background-url: .sgs-cta-section--bg__heading {color}",
+    "rt-background-url: .sgs-cta-section--bg__heading {font-size}",
+    "rt-background-url: .sgs-cta-section--bg__heading {font-weight}",
+    "rt-background-url: .sgs-cta-section--bg__heading {line-height}",
+    "rt-background-url: .sgs-cta-section--bg__heading {font-size}",
+    "rt-background-url: .sgs-cta-section--bg__inner {margin}",
+    "rt-background-url: .sgs-cta-section--bg__inner {max-width}",
+    "rt-background-url: .sgs-cta-section--bg__inner {position}",
+    "rt-background-url: .sgs-cta-section--bg__inner {text-align}",
+    "rt-background-url: .sgs-cta-section--bg__inner {z-index}",
+    "rt-background-url: .sgs-cta-section--bg__text {color}",
+    "rt-background-url: .sgs-cta-section--bg__text {font-size}",
+    "rt-background-url: .sgs-cta-section--bg__text {margin-top}",
+    "rt-centred-maxwidth: .sgs-team-member-grid__item {background}",
+    "rt-centred-maxwidth: .sgs-team-member-grid__item {border-radius}"
+  ],
+  "per_fixture": {
+    "mamas-trust-bar-real": {
+      "ZERO-SECTION-MATCH": 23,
+      "NON-SIMPLE-SELECTOR": 7
+    },
+    "rt-video-media": {
+      "ZERO-SECTION-MATCH": 26
+    },
+    "rt-media-600": {
+      "ZERO-SECTION-MATCH": 22
+    },
+    "rt-pseudo-before": {
+      "NON-SIMPLE-SELECTOR": 6,
+      "ZERO-SECTION-MATCH": 12
+    },
+    "rt-centred-maxwidth": {
+      "ZERO-SECTION-MATCH": 16
+    },
+    "sgs-modal": {
+      "ZERO-SECTION-MATCH": 16
+    },
+    "sgs-pricing-table": {
+      "ZERO-SECTION-MATCH": 16
+    },
+    "sgs-trust-bar": {
+      "ZERO-SECTION-MATCH": 16
+    },
+    "sgs-option-picker": {
+      "ZERO-SECTION-MATCH": 14
+    },
+    "rt-background-url": {
+      "ZERO-SECTION-MATCH": 13
+    },
+    "sgs-feature-grid": {
+      "ZERO-SECTION-MATCH": 13
+    },
+    "sgs-form-field-tiles": {
+      "ZERO-SECTION-MATCH": 12
+    },
+    "sgs-tabs": {
+      "ZERO-SECTION-MATCH": 12
+    },
+    "sgs-team-member": {
+      "ZERO-SECTION-MATCH": 12
+    },
+    "sgs-product-card": {
+      "ZERO-SECTION-MATCH": 11
+    },
+    "sgs-testimonial-slider": {
+      "ZERO-SECTION-MATCH": 11
+    },
+    "sgs-media": {
+      "ZERO-SECTION-MATCH": 10
+    },
+    "sgs-hero": {
+      "ZERO-SECTION-MATCH": 10
+    },
+    "sgs-card-grid": {
+      "ZERO-SECTION-MATCH": 9
+    },
+    "sgs-cta-section": {
+      "ZERO-SECTION-MATCH": 9
+    },
+    "sgs-gallery": {
+      "ZERO-SECTION-MATCH": 9
+    },
+    "sgs-accordion": {
+      "ZERO-SECTION-MATCH": 8
+    },
+    "sgs-form": {
+      "ZERO-SECTION-MATCH": 8
+    },
+    "sgs-info-box": {
+      "ZERO-SECTION-MATCH": 8
+    },
+    "sgs-quote": {
+      "ZERO-SECTION-MATCH": 8
+    },
+    "sgs-testimonial": {
+      "ZERO-SECTION-MATCH": 8
+    },
+    "sgs-trustpilot-reviews": {
+      "ZERO-SECTION-MATCH": 7
+    },
+    "sgs-accordion-item": {
+      "ZERO-SECTION-MATCH": 6
+    },
+    "sgs-content-collection": {
+      "ZERO-SECTION-MATCH": 6
+    },
+    "sgs-google-reviews": {
+      "ZERO-SECTION-MATCH": 6
+    },
+    "sgs-post-grid": {
+      "ZERO-SECTION-MATCH": 6
+    },
+    "precedence-collision": {
+      "ZERO-SECTION-MATCH": 5
+    },
+    "sgs-form-step": {
+      "ZERO-SECTION-MATCH": 5
+    },
+    "sgs-tab": {
+      "ZERO-SECTION-MATCH": 4
+    },
+    "sgs-notice-banner": {
+      "ZERO-SECTION-MATCH": 3
+    }
+  }
+}
