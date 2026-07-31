@@ -1,0 +1,234 @@
+/**
+ * sgs/before-after — frontend + editor styles.
+ *
+ * Zero-JS contract: `--sgs-before-after-position` is set from PHP
+ * (render.php step 5) and this file alone is enough to paint a real,
+ * correctly positioned comparison split with no JS at all. view.js only
+ * ever re-assigns the SAME custom property at runtime — it never adds a
+ * mechanism this stylesheet does not already understand.
+ */
+
+.wp-block-sgs-before-after {
+	position: relative;
+	overflow: hidden;
+	--sgs-before-after-position: 50%;
+}
+
+.wp-block-sgs-before-after__stage {
+	position: relative;
+	width: 100%;
+	height: 400px;
+	overflow: hidden;
+	touch-action: pan-y;
+}
+
+/*
+ * Universal image-controls extension (supports.sgs.imageControls) — object-
+ * fit/position only. This block deliberately does NOT consume
+ * `--sgs-max-width`/`--sgs-height-*` from that panel: the frame already has
+ * its OWN native width/height mechanism (`maxWidth*` + `height*` attrs,
+ * step 3/5 of render.php), and consuming both would create two competing
+ * sources of truth for the same box — the exact anti-pattern sgs/media's
+ * block.json documents avoiding by opting out of this extension entirely.
+ * Object-fit/position have no such duplicate here, so they stay wired.
+ */
+
+.wp-block-sgs-before-after__img {
+	display: block;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: var( --sgs-object-fit, cover );
+	object-position: var( --sgs-object-position, center );
+	-webkit-user-drag: none;
+	user-select: none;
+	pointer-events: none;
+}
+
+.wp-block-sgs-before-after__img--before {
+	z-index: 1;
+}
+
+.wp-block-sgs-before-after__after-wrap {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	/* HORIZONTAL default: reveal the "after" image from the left edge up to
+	 * the divider position; everything to the right stays clipped so the
+	 * "before" image shows through. This ONE declaration is the entire
+	 * zero-JS comparison mechanism. */
+	clip-path: inset( 0 calc( 100% - var( --sgs-before-after-position ) ) 0 0 );
+}
+
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__after-wrap {
+	clip-path: inset( 0 0 calc( 100% - var( --sgs-before-after-position ) ) 0 );
+}
+
+.wp-block-sgs-before-after__after-wrap .wp-block-sgs-before-after__img {
+	position: absolute;
+}
+
+.wp-block-sgs-before-after__labels {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: flex;
+	justify-content: space-between;
+	padding: 12px;
+	pointer-events: none;
+}
+
+.wp-block-sgs-before-after__label {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: var( --wp--custom--border-radius--medium, 4px );
+	/* Fallback is the CSS default look; render.php only sets these custom
+	 * properties' VALUES when labelBackgroundColour/labelColour are actually
+	 * configured (Spec 32 — overrides are custom-property values, never a
+	 * competing selector{property:value} rule). */
+	background-color: var( --sgs-before-after-label-bg-colour, rgba( 0, 0, 0, 0.6 ) );
+	color: var( --sgs-before-after-label-colour, #fff );
+	font-size: 13px;
+	line-height: var( --sgs-before-after-label-line-height, 1.4 );
+	letter-spacing: 0.02em;
+}
+
+.wp-block-sgs-before-after__divider {
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	pointer-events: none;
+	left: var( --sgs-before-after-position );
+	transform: translateX( -50% );
+}
+
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__divider {
+	left: 0;
+	top: var( --sgs-before-after-position );
+	transform: translateY( -50% );
+}
+
+.wp-block-sgs-before-after__divider-line {
+	position: absolute;
+	inset: 0 auto 0 50%;
+	/* Fallbacks are the CSS default look; render.php sets these custom
+	 * properties' VALUES from dividerWidth/dividerColour (always for width —
+	 * it has its own PHP-side default of 3 — conditionally for colour). */
+	width: var( --sgs-before-after-divider-width, 3px );
+	transform: translateX( -50% );
+	background-color: var( --sgs-before-after-divider-colour, #fff );
+	box-shadow: 0 0 0 1px rgba( 0, 0, 0, 0.15 );
+}
+
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__divider-line {
+	inset: 50% 0 auto 0;
+	width: 100%;
+	/* Same var as the horizontal width above — it is the divider's thickness
+	 * regardless of axis, so one custom property drives both orientations. */
+	height: var( --sgs-before-after-divider-width, 3px );
+	transform: translateY( -50% );
+}
+
+.wp-block-sgs-before-after__handle {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate( -50%, -50% );
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	/* Fallback is the CSS default look; render.php only sets this custom
+	 * property's VALUE when handleColour is actually configured. */
+	background-color: var( --sgs-before-after-handle-colour, #fff );
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.25 );
+	transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+}
+
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__handle {
+	transform: translate( -50%, -50% ) rotate( 90deg );
+}
+
+.wp-block-sgs-before-after__handle svg {
+	/* Fallback is the CSS default look; render.php only sets this custom
+	 * property's VALUE when handleIconColour is actually configured. */
+	stroke: var( --sgs-before-after-handle-icon-colour, #1e1e1e );
+}
+
+/* --- The native range input IS the accessible + no-JS-safe divider control.
+ * It always renders and is always keyboard-operable; it is made visually
+ * invisible (opacity 0) but full-size and on top, so pointer drag lands on
+ * it directly — the classic accessible-range-as-hit-area pattern, with a
+ * VISIBLE focus ring on the thumb (WCAG 2.2 focus-visible) rather than the
+ * usual outline:none anti-pattern. */
+.wp-block-sgs-before-after__range {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: ew-resize;
+	appearance: none;
+	-webkit-appearance: none;
+	background: transparent;
+}
+
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__range {
+	cursor: ns-resize;
+	writing-mode: vertical-lr;
+	direction: rtl;
+}
+
+.wp-block-sgs-before-after__range::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 44px;
+	height: 44px;
+}
+
+.wp-block-sgs-before-after__range::-moz-range-thumb {
+	width: 44px;
+	height: 44px;
+	border: 0;
+	background: transparent;
+}
+
+/* Visible focus indicator on the range — WCAG 2.2 AA (3:1 contrast, always
+ * visible, never removed). Painted on the visual handle sibling because the
+ * range itself is transparent. */
+.wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle,
+.wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle {
+	outline: 2px solid var( --wp--preset--color--primary, #2563eb );
+	outline-offset: 2px;
+}
+
+.wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle {
+	transform: translate( -50%, -50% ) scale( 1.08 );
+}
+
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle {
+	transform: translate( -50%, -50% ) rotate( 90deg ) scale( 1.08 );
+}
+
+.sgs-screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect( 0, 0, 0, 0 );
+	white-space: nowrap;
+	border: 0;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-before-after__handle {
+		transition: none !important;
+	}
+}

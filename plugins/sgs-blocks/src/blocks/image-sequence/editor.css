@@ -1,0 +1,33 @@
+/**
+ * Image Sequence — editor-only styles.
+ *
+ * Spec 38 §9: the editor canvas shows the poster frame plus a Notice; it
+ * never runs the scroll-scrub effect (Tier G never loads in wp-admin).
+ */
+
+.sgs-image-sequence-editor__placeholder {
+	padding: 2rem;
+	text-align: center;
+	border: 2px dashed var( --wp--preset--color--contrast-2, #ccc );
+	background: var( --wp--preset--color--base-2, #f9f9f9 );
+}
+
+.sgs-image-sequence-editor__preview-wrapper {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	border: 1px solid var( --wp--preset--color--contrast-2, #ddd );
+}
+
+.sgs-image-sequence-editor__preview {
+	display: block;
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+}
+
+.sgs-image-sequence-editor__frame-count {
+	margin-top: 0.5rem;
+	font-size: 0.8125rem;
+	color: var( --wp--preset--color--contrast-3, #666 );
+}

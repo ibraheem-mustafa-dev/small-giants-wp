@@ -1,0 +1,59 @@
+/**
+ * Image Sequence — frontend and editor styles.
+ *
+ * Layering contract (fail-open, FR-38-2): the poster `<img>` and the canvas
+ * occupy the SAME box, poster underneath. The canvas starts fully
+ * transparent and is revealed only once `fx-image-sequence.js` has decoded
+ * and drawn a real frame (`.is-ready`), gated behind the site-wide `.sgs-js`
+ * progressive-enhancement class (set unconditionally by
+ * `assets/js/animation-observer.js`, already enqueued on every page — see
+ * `feedback_a_read_with_no_writer_fails_silently.md`: this gate is checked
+ * against a WRITER that is verified live, not assumed).
+ *
+ * Every property below is a structural/layout default — none of it is a
+ * per-instance value, so none of it belongs in the scoped `<style>` render.php
+ * emits (that one only carries `aspectRatio`, which genuinely varies per
+ * instance).
+ */
+
+.sgs-image-sequence {
+	position: relative;
+}
+
+.sgs-image-sequence__stage {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	/* aspect-ratio is set per-instance by render.php's scoped <style> rule
+	   on the block root; this is only a safety default for the (extremely
+	   unlikely) case that rule fails to reach the page. */
+	aspect-ratio: 16 / 9;
+}
+
+.sgs-image-sequence__poster,
+.sgs-image-sequence__canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.sgs-image-sequence__canvas {
+	opacity: 0;
+	transition: opacity var( --wp--custom--duration--medium, 300ms ) ease;
+}
+
+/* Reveal the canvas only once JS has confirmed it can paint a real frame —
+   never on the strength of .sgs-js alone (that only proves JS ran, not that
+   a frame decoded). With JS blocked, or under reduced motion (the effect
+   never initialises — see fx-image-sequence.js), the poster is permanent. */
+.sgs-js .sgs-image-sequence.is-ready .sgs-image-sequence__canvas {
+	opacity: 1;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-image-sequence__canvas {
+		transition: none;
+	}
+}

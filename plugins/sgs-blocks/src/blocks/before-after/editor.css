@@ -1,0 +1,34 @@
+/**
+ * sgs/before-after — editor-only styles.
+ *
+ * Spec 38 §9 editor canvas story: "Draggable | Static; Notice 'Drag
+ * interactions are live-site only'". The canvas renders the SAME
+ * server-side markup (ServerSideRender) with the divider frozen at
+ * `startPosition` — no drag JS runs in wp-admin at all (view.js is a
+ * frontend-only viewScriptModule). This file only styles the placeholder +
+ * the info Notice sitting above the preview.
+ */
+
+.wp-block-sgs-before-after-editor__placeholder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 48px 24px;
+	border: 2px dashed #ccc;
+	border-radius: 4px;
+	text-align: center;
+	color: #757575;
+}
+
+.wp-block-sgs-before-after-editor__notice {
+	margin-bottom: 8px;
+}
+
+/* The range input is inert in the editor canvas preview (no view.js there);
+ * cursor communicates that without hiding it from the accessibility tree. */
+.editor-styles-wrapper .wp-block-sgs-before-after__range {
+	cursor: default;
+	pointer-events: none;
+}

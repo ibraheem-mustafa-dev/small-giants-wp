@@ -1,0 +1,129 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/before-after",
+	"version": "0.1.0",
+	"title": "Before / After",
+	"category": "sgs-interactive",
+	"description": "Two-image comparison slider with a draggable divider. Works with zero JavaScript — both images are always present in the markup and a CSS-only split renders the configured default position; JS progressively enhances the divider into a live drag (native range input for keyboard + touch, GSAP Draggable for free-drag directly on the image). Content-KIND, block-private (no SGS_Container_Wrapper) — box + width only, matches the sgs/quote / sgs/button pattern (D294).",
+	"keywords": [ "before after", "comparison", "slider", "image compare", "reveal" ],
+	"textdomain": "sgs-blocks",
+	"icon": "columns",
+	"supports": {
+		"sgs": {
+			"imageControls": true,
+			"fx": {
+				"draggable": true
+			},
+			"boxFamilies": {
+				"borderRadius": [ "borderRadiusTablet", "borderRadiusMobile" ]
+			},
+			"elements": {
+				"frame": {
+					"label": "Frame",
+					"order": 1,
+					"clusters": [ "fill", "border", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:style.color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "boxShadow",
+						"css:max-width": "maxWidth",
+						"css:height": "height"
+					}
+				},
+				"label": {
+					"label": "Labels",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "label"
+				},
+				"divider": {
+					"label": "Divider",
+					"order": 3,
+					"clusters": [ "fill" ]
+				}
+			}
+		},
+		"anchor": true,
+		"className": true,
+		"color": {
+			"background": true,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"html": false,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"style": true,
+			"color": true,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"_comment_ssr_nullable": "Every numeric attribute below whose default is null is declared as [ <numeric>, \"string\" ] — the house convention (sgs/heading, sgs/text). REASON: this block previews through <ServerSideRender>, which serialises an unset attribute as an EMPTY STRING into the block-renderer REST query. A schema of plain \"integer\"/\"number\" rejects \"\", the REST call returns HTTP 400, and the editor shows 'Preview failed to load' for every instance — while the frontend renders perfectly, so no frontend check can catch it. Found live 2026-07-31 by the Wave C editor probe (D388). render.php already coerces with (int) / a null check, so accepting \"\" changes no rendered output.",
+		"beforeImageId": { "type": [ "integer", "string" ], "default": null },
+		"beforeImageUrl": { "type": "string", "default": "", "role": "content" },
+		"beforeImageAlt": { "type": "string", "default": "", "role": "content" },
+		"afterImageId": { "type": [ "integer", "string" ], "default": null },
+		"afterImageUrl": { "type": "string", "default": "", "role": "content" },
+		"afterImageAlt": { "type": "string", "default": "", "role": "content" },
+		"showLabels": { "type": "boolean", "default": true },
+		"beforeLabel": { "type": "string", "default": "Before", "role": "content" },
+		"afterLabel": { "type": "string", "default": "After", "role": "content" },
+		"labelColour": { "type": "string", "default": "" },
+		"labelBackgroundColour": { "type": "string", "default": "" },
+		"labelFontSize": { "type": [ "number", "string" ], "default": null },
+		"labelFontSizeUnit": { "type": "string", "default": "px" },
+		"labelFontSizeTablet": { "type": [ "number", "string" ], "default": null },
+		"labelFontSizeMobile": { "type": [ "number", "string" ], "default": null },
+		"labelFontWeight": { "type": "string", "default": "" },
+		"labelFontStyle": { "type": "string", "default": "" },
+		"labelLineHeight": { "type": [ "number", "string" ], "default": null },
+		"labelLineHeightUnit": { "type": "string", "default": "" },
+		"orientation": {
+			"type": "string",
+			"default": "horizontal",
+			"enum": [ "horizontal", "vertical" ]
+		},
+		"startPosition": { "type": "number", "default": 50 },
+		"fxDraggable": {
+			"type": "boolean",
+			"default": true,
+			"_comment": "Spec 38 FR-38-13 roster opt-in. When true, GSAP Draggable enhances the divider so the visitor can drag anywhere on the image, on top of the always-present native range input (keyboard + native touch drag + no-JS-safe). When false, only the native range input drives the divider — still fully operable, just without the free-drag-on-image layer."
+		},
+		"dividerColour": { "type": "string", "default": "" },
+		"dividerWidth": { "type": "number", "default": 3 },
+		"handleColour": { "type": "string", "default": "" },
+		"handleIconColour": { "type": "string", "default": "" },
+		"height": { "type": "number", "default": 400 },
+		"heightUnit": { "type": "string", "default": "px" },
+		"heightTablet": { "type": [ "number", "string" ], "default": null },
+		"heightMobile": { "type": [ "number", "string" ], "default": null },
+		"maxWidth": { "type": "string", "default": null },
+		"maxWidthUnit": { "type": "string", "default": "px" },
+		"maxWidthTablet": { "type": "string", "default": null },
+		"maxWidthMobile": { "type": "string", "default": null },
+		"boxShadow": { "type": "string", "default": "" },
+		"borderRadiusTablet": { "type": "object", "default": {} },
+		"borderRadiusMobile": { "type": "object", "default": {} }
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"beforeImageUrl": "https://via.placeholder.com/800x600/94a3b8/ffffff?text=Before",
+			"afterImageUrl": "https://via.placeholder.com/800x600/0f172a/ffffff?text=After",
+			"beforeImageAlt": "Before",
+			"afterImageAlt": "After"
+		}
+	}
+}
