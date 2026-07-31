@@ -14,7 +14,7 @@ Invoke /autopilot before doing anything else.
 
 **Docscore:** not run (see Honesty notes).
 
-**Aggregate cost estimate:** ~10–12 h across 22 steps (Step 6b added 2026-07-31 after the eye pass; +45 min) if all are taken; the wave is deliberately splittable at each QA gate.
+**Aggregate cost estimate:** ~11–13 h across 24 steps (Step 6b added after the eye pass; Steps 22 + 23 moved in from parking 2026-07-31 by Bean — parking is strictly BLOCKED/POSTPONED work, and both were planned work with a named next action) if all are taken; the wave is deliberately splittable at each QA gate.
 
 ## Where this came from (read this first — it is not a wish list)
 
@@ -50,7 +50,7 @@ Council grades that motivate the ordering: shippability **B−**, accessibility 
 | skill | /adversarial-council | Step 21 (re-review after the wave) |
 | skill | /sgs-clone | Step 12 (cloning lift) |
 | cli | build-deploy.py | every deploy |
-| cli | probe-wave-c.mjs | Steps 2, 6, 9, 14 |
+| cli | probe-wave-c.mjs | Steps 1, 14, 19 |
 | external | Playwright | all live verification |
 
 ---
@@ -400,11 +400,56 @@ Council grades that motivate the ordering: shippability **B−**, accessibility 
   - Fail: `--self-test` proves each new gate can fail
   - Integration: `/sgs-update` reproduces the seed byte-identically
 
+## Step 22 — Pin/panel keyboard contract: observe it, don't infer it
+  **Model:** sonnet
+  **Action:** Step 13 measured the keyboard story for both pinning effects and closed it — but
+  every canary fixture with an active pin contains NO focusable element inside the pin. So the one
+  case the accessibility audit actually worried about (a Tab press landing on a control while the
+  panel is pinned) has never been exercised. The recorded pass is by MECHANISM (the pin does not
+  trap focus, reasoned from how it is built), not by OBSERVATION. Build a fixture with real
+  interactive content inside a pinned section — links, a button, a form field — and re-run the
+  probe against it.
+  **Files:** a new canary fixture; `scripts/motion-qa/probe-step13-pin-focus.mjs` (extend)
+  **Inputs:** Spec 38 §3.1's keyboard focus contract (added D434); `probe-step13-pin-focus.mjs`
+  **Outcome:** the contract is observed, not inferred — or a real 2.4.11 defect surfaces.
+  **Exec:** SEQUENTIAL · **Deps:** none · **Time:** 40 min
+  **On-Fail:** if focus IS trapped or scrolled out of view, that is a genuine WCAG 2.4.11 failure
+  and outranks the rest of the wave.
+  **Test:**
+  - Happy: Tab onto a button inside an active pin → focus visible, pin does not desync
+  - Edge: Tab THROUGH the pinned content and out the far side
+  - Fail: focused control scrolls out of view → 2.4.11 failure, must be fixed
+  - Integration: reduced-motion arm must preserve the same focus order
+  *(Was briefly filed in parking.md; Bean moved it here 2026-07-31 — parking is strictly BLOCKED or
+  POSTPONED work, and this is planned work with a named next action.)*
+
+## Step 23 — Replace the before/after test imagery
+  **Model:** haiku
+  **Action:** At ≤768px both `sgs/before-after` canary instances show a small black/white
+  checkerboard mark in the top-left corner, overlapping the "After" label. PROVEN (not guessed) to
+  be baked into the source test images: `frame_0001.webp` / `frame_0048.webp` carry the marker even
+  when loaded with zero page styling. It is the frame-index stamp the motion-canary test-image
+  generator puts on every frame. `object-fit: cover` crops it out above ~1024px and back into frame
+  below it — which is why it reads as a responsive bug and is not one. Swap in real photography so
+  the canary stops showing a defect that is not in the code.
+  **Files:** canary media only — no source change
+  **Outcome:** the before/after canary can be judged on its own merits without a false defect on it.
+  **Exec:** PARALLEL with anything · **Deps:** none · **Time:** 15 min
+  **On-Fail:** none — worst case the marker stays and is a known cosmetic artefact of test media.
+  **Test:**
+  - Happy: no marker at 375/768; labels sit over the image they name (do not regress the D431 fix)
+  - Edge: check 1024 and 1440 too — the crop behaviour differs by width
+  - Fail: if a marker persists with real imagery, it is NOT the source images and needs re-diagnosis
+  *(Was briefly filed in parking.md; Bean moved it here 2026-07-31 for the same reason as Step 22.)*
+
 ## Step 21 — Re-run the adversarial council [HANDOFF]
+> **Deliberately LAST, despite the number.** Steps 22 and 23 were added on 2026-07-31 and sit
+> ABOVE this one in the file because this step's `Deps` is *all* — it must run after everything,
+> including them. The numbering is append-order, not execution-order; the file order is correct.
   **Model:** inline
   **Action:** Run `/adversarial-council` again on the post-Wave-D surface to catch what these fixes introduced. The 2026-07-31 run found what a single reviewer never would; a second round after the fixes is the documented two-round pattern.
   **Outcome:** a fresh convergence map, and grades to compare against B−/B−/C+/C+/C−/D+.
-  **Exec:** SEQUENTIAL · **Deps:** all · **Marker:** HANDOFF · **Time:** 30 min
+  **Exec:** SEQUENTIAL · **Deps:** all (explicitly including Steps 22 + 23) · **Marker:** HANDOFF · **Time:** 30 min
   **Test:**
   - Happy: supportability rises above D+
   - Edge: a fix introduced a new convergent finding — that is the point

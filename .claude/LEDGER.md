@@ -9,266 +9,169 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 
 ## Human Summary
 
-### ⭐ FOR BEAN — plain English (read this first)
+### FOR BEAN — plain English (read this first)
 
-**What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
-gets ONE true answer instead of three drifting ones.
+**What this is.** One file that answers "where are we and what's next", so a fresh session (or
+you) gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-31).** Three tracks are live and independent — pick one, they do not
-block each other. **TWO separate sessions ran today on this shared worktree**: the motion Wave C
-build (below, D426–D427) and a **Track-1 verification session (D428)**.
+**Where things stand (2026-07-31, evening).** Today's motion "Wave D" register — the 24-step
+list of everything left before the motion system is client-ready — got its first pass. Six
+steps are genuinely finished, one pair is correctly on hold, and the rest haven't started yet.
+Two things need your decision before work continues, and one honest limitation was found in the
+testing tools themselves (recorded below so nobody re-discovers it the hard way).
 
-> ### ⭐ TRACK 1 (D428) — full record: **`memory/session-2026-07-31-track1.md`**
-> Kept there, not inline, because both sessions edited this file today. **Picking up Track 1? Read
-> that file first — it is the authority and carries the whole next-session orchestration plan.**
->
-> **Headline:** 5 commits. Two gates that could never fail now do (feature-parity; the D101 ratchet
-> — compared a count, now compares identifier sets). 30 lost STOPs recovered, 123→169 additive only.
-> Spec 31 C2 measurable at last: 499 declared / 21.2% attributed, with a pre-image and a **failing
-> ground-truth control** (73 of 96 provably-owned rows unattributed).
->
-> **Three corrections — do NOT re-derive:** the Phase-2c "missing resolver" does not exist (it is
-> `block_attributes.derived_selector` — Bean caught this); `underlineOffset` is `bottom`, never a
-> mis-seed; the BEM-regex diagnosis was wrong (13 cells, not 380).
->
-> #### ⭐ TRACK 1, session 2 (D429 + D432) — record: **`memory/session-2026-07-31-track1-session2.md`**
-> `98ff88df` · `e8c72f7a` · `2f471678` · `fc021a34` · `7940d709` · `edf68f06` · `e774b7d1`. Reports:
-> `reports/2026-07-31-oracle-attribution-and-probe-target.md` ·
-> `reports/visual-diff/nav-menu-2026-07-31.md`.
->
-> **Tasks 6, 1, 2, 3 CLOSED.** Oracle measures each cell on its OWN element (control 73→0; LANDED
-> 31→55). 11 failures triaged: **8 GAPs, 1 real routing defect (`sgs-card-grid` `cardRadius`
-> 12→18px), 1 probe artefact of mine.** ⛔ **Do NOT arm `--with-landed`.** **Quote
-> `measurable_rate_pct` 46.3%, never `attribution_rate_pct` 99.6%.**
->
-> **⚠ D433 — I shipped the DRAWER unverified; Bean found it broken** (sideways submenu, invisible
-> text, no separators, current page == hover). Fixed + QC'd 18/18. **An unverified surface is a
-> BLOCKER, not a footnote.** A rule right for a FLOATING panel can be wrong once it joins normal
-> flow; a colour token is meaningless against an operator-chosen surface — use `currentColor`.
->
-> **Nav dropdowns ship.** **5 defects found LIVE that every offline gate passed** (89px offset,
-> hardcoded white, palette override, black focus ring, children never current-page). Harness 32/32.
->
-> **⭐ BEAN-RULED: WCAG AA does NOT gate the submenu link colour.** Pink-on-cream (2.25:1) is intended;
-> a `text`-token version was REVERTED. Do not "fix" it back.
->
-> **⛔ `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** — a nav in PAGE CONTENT has its dropdown
-> overlapped; HEADER verified correct. **Canary left:** menu 112, page 2091.
->
-> **Open:** Task 4 residuals · Task 5 (Part L) baselined only — 4 figures HELD (4/81, 3/81, 26/81,
-> 20/81; roster was 81, reads 83 now — RE-MEASURE); 43 of 78 exempt → ~35 real.
-> **Owed:** Bean's eye · cross-item single-open · touch · real keyboard.
->
-> **Process:** a `/sgs-update` reseed is CROSS-TRACK on the shared DB — mine broke both builds.
+**Closed today:** the draw/morph/motion-path menu now only offers what a block can actually do
+(no more "draw a path" option on things with no path); the fx picker's dead-control gate no
+longer produces 27 false alarms; motion presets (Subtle/Standard/Dramatic) now sit in five real
+page patterns, and the bug hiding them from view is fixed; the keyboard story for pinned panels
+is measured properly, not guessed; a webpack quirk that was silently turning "only load this
+code when needed" into "load it always" is fixed; the image-sequence block is locked down to
+agency-only with a frame cap and a working self-check button.
 
-**What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
-three things that were quietly broken are fixed.** Every effect was watched moving in a browser,
-twice over: once normally, once with "reduce motion" switched on, so we know it both works AND
-correctly calms down. All of it is committed and pushed.
+**On hold, correctly:** the shopping-cart drag control. The automatic safety check refused to
+let it ship because it couldn't prove it worked yet — that check did its job.
 
-**Verifying found three real faults that the earlier "it built and deployed" check could not
-possibly have seen:**
-1. The image gallery's "carousel" never actually slid sideways — extra images wrapped onto new
-   rows instead. Every arrow, dot and the new drag feature were quietly doing nothing.
-2. The drag feature could never have worked. The animation library's built-in drag mode
-   secretly rewrites the page structure, which collapsed an eight-image row into one column.
-   Rewritten so it only nudges the scroll position and touches nothing else.
-3. The new before/after slider looked perfect on the live site but its preview was BROKEN in
-   your editor. Only opening the real editor could ever have caught that.
+**Two decisions waiting on you:**
+1. A background-that-follows-your-cursor effect — three build routes, no build started. Read
+   `plans/2026-07-31-step7-cursor-follow-background-design-gate.md` and pick one.
+2. A colour-swap (Flip) effect that was ruled dead on 2026-07-27 needs to come back onto the
+   plan — it was dropped by mistake, not by decision. Needs your yes/no on whether to build it.
 
-**Also done:** the "draw my logo" effect is now selectable on icons, dividers and decorative
-images — and deliberately NOT on the logo block, which already has its own control for it.
+**Also waiting on you:** one heading uses pink-on-cream text at roughly the same low contrast
+you already accepted for menu links — but a heading is read differently to a link, so it's
+flagged separately rather than assumed to be fine.
 
-**Three honest limits:**
-1. **One thing is still unproven, not passed** — whether the testimonial slider's "flick"
-   momentum does anything. It behaves identically with the feature on and off, so the test
-   could not tell them apart. Recorded as owed rather than dressed up as a pass.
-2. **You have not looked at any of it yet.** Your eye is co-authoritative here; numbers alone
-   do not close it.
-3. **Shape-morphing and path-travel are designed but not built.** You signed the shape today
-   (pick from thumbnails, with an upload option for advanced use). The build is the next job.
-
-**Still waiting, none built:** header stacking on mobile (D420, still a visible defect on every
-header) · drawer architecture gate (D421) · the two motion design gates above.
+**Three honest limits, worth remembering next session:**
+1. **Nobody has ever been able to judge the motion "moods" (Subtle/Standard/Dramatic) because
+   there has never been a real page showing them.** Not neglect — there was genuinely nothing to
+   look at. A proper example page is being built.
+2. **Two things the automated browser tool cannot test at all:** whether "reduce motion" (an
+   accessibility setting some people turn on) is actually respected, and drag gestures (click,
+   hold, move, release). A different, slower tool (Playwright) is the only one that can check
+   either — and even that tool's browser got "hijacked" mid-check once today by another AI
+   session working in parallel, producing one false reading that was caught and thrown away.
+3. **A shortcut was tried and rejected.** A hardcoded list of "which blocks get this control"
+   was written, then correctly replaced with a proper rule: each block declares for itself
+   whether it qualifies. 19 blocks currently earn a certain motion option through a single
+   shared reason — if that reason were ever removed, those 19 would silently lose the option
+   too. Noted as a known risk, not fixed pre-emptively.
 
 ---
 
-## ⭐ CURRENT FRONTS
+## CURRENT FRONTS
 
-> **Standing caveat (motion Wave A evidence):** probes are committed, their JSON output is not —
-> `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds transcribed readings.
-> Re-runnable, not reproducible.
+### Track 3 — Spec 38 motion: A + B + C CLOSED · Wave D wave 1 executed 2026-07-31 (D434)
 
-### Track 3 — Spec 38 motion: **A + B + C CLOSED** · **WAVE D PLANNED 2026-07-31 (D430)**
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. A: D414–D417. B: D422/D424. C: D426→D427→D430
+(adversarial council). **D434 = Wave D wave 1**, 9 commits, orchestrated as file-disjoint lanes
+after `/qc-council` found the plan's own collision map wrong (claimed 3, real count 7 — Spec 38
+alone is touched by 5 steps).
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. A: D414–D417. B: D422/D424. C: D426 (built) → D427
-(verified live) → **D430 (adversarial council + 7 of its convergent items shipped same session)**.
-Commits `88c2be1a` · `a06bba92` · `8da30b13` · `8172d8f4` · `02e87ee9` · `f7f61ebf` · **`6c8d78ca`**.
+**THE PLAN: `plans/2026-07-31-motion-wave-D-client-readiness.md`** — 24 steps, 4 QA gates.
 
-**⭐ THE PLAN FOR EVERYTHING REMAINING: `plans/2026-07-31-motion-wave-D-client-readiness.md`**
-— 22 steps, 4 QA gates, carrying every unclosed council finding plus Bean's four new asks.
-It replaces the wave-C prompt (archived). **Council findings are NOT in parking.md** — Bean-ruled
-2026-07-31 that parking is strictly BLOCKED/POSTPONED work, never a reminder list.
+**Step-by-step status (verified against D434 + git log, not carried from memory):**
 
-**Council grades (six blind personas):** shippability B− · accessibility B− · competitive
-defensibility C+ · specification rigour C+ · maintainability C− · **supportability D+**.
+| Status | Steps |
+|---|---|
+| **CLOSED** | 4 (svg/svg-subtree split), 9 (presets in real patterns), 11 (clean-clone build), 13 (pin/keyboard — proven by mechanism, see parking), 16 (image-sequence agency-only), 17 (editor console errors) |
+| **HELD** (correctly) | 2/3 — buybox drag toggle. The visual-diff gate refused it: verdict `PARTIAL — CODE-COMPLETE-UNVERIFIED`, gate requires `PASS`. No `--no-verify`, no `--allow-dirty`. Buybox patched-and-reverted, saved for next session. |
+| **NOT STARTED** | 5, 10, 12, 15, 18, 19, 20, 21 |
 
-**Shipped in C, all live-verified with discriminating negative controls:** draggable roster
-(derived, not declared) · NET-NEW `sgs/before-after` · DrawSVG + Vivus retired · ScrambleText ·
-NET-NEW `sgs/image-sequence` + prep tooling · `draw` in the fx picker · Subtle/Standard/Dramatic
-presets · the D427-signed motion-path route picker · motion-path made universal (4 blocks → 28).
+**Two design gates open for Bean — do not build past them:**
+1. **Step 7, cursor-follow background** — `plans/2026-07-31-step7-cursor-follow-background-design-gate.md`, routes A/B/C. The register's own premise was wrong (claimed `data-spotlight` prior art in `nav-menu` — nav-menu has none; the real prior art is a single-consumer `src/shared/effects/spotlight.js`), so nothing was built pending this gate.
+2. **FR-38-12 (Flip)** — D426 ruled this a *live* design gate, not parked. It had dropped out of
+   the Wave D register entirely (found only by checking, not by reading) and is restored here.
 
-**⛔ STILL OWED — the PASS verdicts are narrower than they look:**
-1. **Touch is unmeasured on every drag surface** (the module gates itself off on coarse pointers
-   by design, but that is a code reading, not a measurement).
-2. **`post-grid` + `google-reviews` drag is UNPROVEN** — neither overflows on this site, so the
-   runtime correctly declined; `sgs/buybox`'s toggle was NOT shipped (needs a WooCommerce product
-   in context). All three recorded in their visual-diff reports.
-3. **A clean clone still cannot finish `npm run build`** — the motion generators are fixed, but a
-   dozen other prebuild scripts hard-depend on the same unversioned 13.9MB DB.
-4. **Motion does not clone.** §11.3's lift has ZERO lines of code; two personas independently
-   called it the product's whole point.
-5. Preset/param normalisation lives in the editor's handlers, so a clone or pattern bypasses it ·
-   the `svg` provision conflates "is a shape" with "contains SVG" (latent `morph` over-offer) ·
-   two editor console errors survive the boot guards, cause unresolved · **Bean's eye given on
-   Wave C, but not on anything shipped after it**.
+**Also awaiting Bean's eye:** ScrambleText heading contrast ≈2.25:1 (pink-on-cream) — the same
+pairing accepted for nav *links* on 2026-07-31, but this is a *heading*, a different reading
+context, so it is not auto-extended without asking.
 
-**Bean rulings (do NOT re-litigate):** before/after VIDEO is KEPT · the physics sandbox is a
-DESIGN GATE, not a cut — **GSAP can do it** (InertiaPlugin + Physics2D + Draggable, both bundled);
-the objection is FR-38-14 plus WCAG 2.5.7 having no discrete equivalent for a thrown object ·
-background cursor-follow is a new FR (`data-spotlight` in nav-menu/mega-panel is prior art) ·
-morph should eventually reach any block via its CONTAINED svg.
+**Three things that must not be re-learned the hard way:**
+1. **The motion presets have no canary instance anywhere** — that is the entire reason they have
+   never been judged; a fixture is being built, this was never neglect.
+2. **Chrome DevTools MCP cannot measure two things:** `emulate` has no `prefers-reduced-motion`
+   parameter (schema-checked directly), and there is no trusted mouse down/move/up primitive —
+   synthetic `PointerEvent` throws `InvalidPointerId` at `setPointerCapture`. The committed
+   Playwright harnesses (`scripts/motion-qa/probe-wave-c.mjs` + `-editor.mjs`) are the ONLY
+   instrument for the reduced-motion contract and for gesture-level drag. That Playwright
+   browser session is shared across concurrent agents in this run — one tab was hijacked
+   mid-measurement and produced a false reading (caught, discarded, re-taken).
+3. **A `FORCED_PANEL_HOSTS` hardcoded block-name map was written, rejected by Bean, and replaced**
+   with a block-owned `supports.sgs.fx.motionSurface` declaration (commit `4a5cb764`). The
+   generator reads per-block fx declarations in `generate-fx-qualifying-blocks.py` — declare in
+   `block.json` → generated artefacts → theme/plugin consume, never the reverse. **19 blocks
+   currently rest on a single provision category and would be zeroed the same way the
+   `svg`/`svg-subtree` split nearly zeroed `sgs/decorative-image` if that category were removed**
+   — recorded as a known risk, deliberately not pre-patched.
 
-**FR-38-12 (Flip) premise remains verified FALSE (D426)** — a live design gate, not parked, not
-researched.
+**Post-D434 findings (two live-verification passes, not yet folded into a D-entry):**
+`reports/2026-07-31-motion-wave-d-standards-review.md` (before Wave-D-wave-1 fixes) found the
+before-after 767–900px width collapse (instance 1 only, non-monotonic across tiers — diagnosed
+as symptom, not cause) and a leftover `SGS-CPT-HEADER-PROOF-20260722` debug marker rendering
+live in the site header on every page using it (caveat: concurrent agents were also touching the
+header this session — re-check once they are done before treating as a standing defect).
+`reports/2026-07-31-simulated-human-check.md` (after) found decorative-image still offering
+"Draw" (addressed same session by commit `4a5cb764`) and two editor console warnings about
+extension CSS loading into the iframe incorrectly (addressed by commit `1af35b3a`, the
+iframe-aware hook). Neither report is fully re-verified against the very latest commits — treat
+both as INPUT to next session's QA gates, not as closed.
+
+**Bean rulings still binding (do not re-litigate):** before/after VIDEO is KEPT · physics sandbox
+is a DESIGN GATE not a cut, GSAP can do it (Step 8) · morph should eventually reach any block via
+its CONTAINED svg · **WCAG AA does NOT gate the nav submenu link colour** (pink-on-cream 2.25:1
+intended, do not "fix" back — but see the ScrambleText decision above, which is NOT the same
+ruling extended without asking).
 
 ⚠ Parked, not ours: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
-`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`.
-⚠ Stale DB row (inert): `fx_effects.scroll-smoother` still says tier G / ScrollSmoother; D422 made
-it Tier H / Lenis. Step 20 of the Wave D plan retires it.
+`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE` (both re-checked 2026-07-31, both genuinely OPEN).
+⚠ Two items were briefly filed in parking this session and **Bean moved them out** the same day:
+the pin/panel keyboard fixture gap and the before/after test-image artefact are now **Steps 22 and
+23 of the Wave D plan**, not parking entries. His ruling: parking is strictly BLOCKED or POSTPONED
+work — both of these are planned work with a named next action, so they belong in the register.
 
-**Canaries:** `/motion-canary-wave-c/` (page 2083, effects) · `/motion-roster-canary/` (page 2086,
-roster first-paint). Harnesses: `scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`,
-both self-verdicting (exit 1 fail, 2 inconclusive) and cache-busting.
+**Canaries:** `/motion-canary-wave-c/` (page 2083) · `/motion-roster-canary/` (page 2086).
+Harnesses: `scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`, self-verdicting,
+cache-busting.
 
-### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
+### Tracks 1 / 1b / 1c / 2 / 2+2b — stable, unchanged today
 
-**⭐ THE PLAN: `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`** — 5 waves (fixtures →
-capabilities incl. drawer CPT → polish → 10-clone proof gate → Spec 33 Part 2 walker), peer-reviewed,
-gap-graded B. Criteria: `verify/merged-spec36-37-track.md`. **Wave 1 CLOSED; Wave 2 in progress
-(W2-i + W2-a done).** Effort forecast 18–22 taxed sessions.
+Not touched this session. Full detail lives where it already did — read before acting, do not
+assume it is current from memory alone:
 
-**The SIGNED gate that produced it:**
-`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. Binding locks: merged 36/37
-EXECUTION (§1.2 cross-amend couples the two specs) · drawer → CPT (`variantPreset` dies, 7 looks
-become starter patterns, `drawerRef` becomes a post picker) · nav-menu stays a BLOCK with a
-controllable burger trigger (DP4) · per-property controllability contract (DP5) · DP7 harness
-honesty gates any re-present. **Bean-signed: admin name "Menu drawer" · site-wide Active default +
-per-burger override · studionamma first. DP6 — cloning is the FINAL PROOF GATE (wave 4), NOT the
-opening task.**
-
-**Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) notice live (`6ddb9f48`) ·
-**FR-37-42** column-shape picker APPROVED not built (`7ff5a184` — needs `1fr auto 1fr`; a
-faithful-header-clone prerequisite) · teardowns 9/12
-(`~/.claude/pipeline-state/sgs-discover/20260728-112649-7bc4a8/FINDINGS.md`; Away/ButcherBox/
-rabbit.tech owed = W4-a; Lama Lama sticky by Bean's eye — probe-unmeasured ≠ non-sticky) · **SCOPE
-SOURCE: `reports/2026-07-28-spec36-37-remaining-work-inventory.md`** · floating UI STAYS in the
-Customiser.
-
-Header residue: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
-`P-HEADER-SIMPLICITY-FINDINGS` OPEN (findings 2 + 3).
-
-### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29; W2-a CPT SHIPPED 2026-07-30
-
-**Bean rejected the pairs: "night and day" — R-31-13, the eye is co-authoritative and it overrode a
-21/21 mechanical pass. Do NOT re-present these; every variant needs real work first.** Narrative:
-`memory/session-2026-07-29-task5-drawer-rejection.md` · **D411** ·
-`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (read its CORRECTION box first). **Still
-binding: a CPT changes where a drawer LIVES, not how faithfully it PAINTS** — W2-a (D419) proved the
-mechanism, not the look.
-
-**Two defects PROVEN LIVE, both OPEN, fixes scheduled W2-g/W2-h** (details in their parking
-entries): `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (6 elements at **1:1** contrast on the 2
-dark-`footer-bg` variants — Bean's "arrows with no labels"; **now harness-detectable**, D418) ·
-`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` (no align class, so `centred-statement` renders left).
-
-**Rework scope:** parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`. **The capture script must assert
-the panel is OPEN before it shoots** — enforced since D418 on BOTH sides with a non-zero exit; an
-unassertable reference returns UNVERIFIED.
-
-**Standing warnings (do not lose these):** **every scoped drawer/mega axe result from before
-2026-07-29 proves nothing — re-run it** (no openness guard existed; a CLOSED drawer returned
-`0 violations` identically to an open one). **axe can NEVER measure contrast inside an open
-`<dialog>`** — use `checkRestContrast()` in `sweep-drawer-variants.mjs` (D418). Two further harness
-bugs manufactured false results, both fixed. **F1 `listColumns` `grid-auto-flow:row` is UNDECIDED**
-(Bean's rows-of-2 counter stands; no ground truth — the reference capture failed). **F2** at 375px
-the theme header is `position:absolute`, 251px tall, showing the DESKTOP logo over content.
-**F3** `sgs/social-icons` has no Vimeo/Dribbble slug.
-
-**Re-runnable assets:** `plugins/sgs-blocks/scripts/nav-qa/` — all guarded + self-testing since
-D418; **read its `README.md` §1b/§1c before trusting or extending any of them.** Canary fixtures:
-pages 1892/1897/1903/1907/1914/1922/1926, multi-instance 1930, anchor probes 1932; menus 102-109.
-
-Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
-`P-DRAWER-VARIANT-CONTENT-GENERICISE` · `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` ·
-`P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
-`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
-
-> **⭐ Track-1's open work is NOT in the NEXT SESSION section any more** — that section now holds
-> motion Wave C (2026-07-31). Track 1's remaining items live in the Track 1b / 1c cells directly
-> below, and the four-task plan they came from is recorded in **D425** plus
-> `reports/2026-07-30-track1-verification-audit.md` (which records three findings as WITHDRAWN —
-> do not re-raise them). Read that report before calling any Track-1 item done.
-
-### Track 1b — Spec 35: component layer + Part-K gate complete; **editor verification CLOSED 2026-07-30**
-
-Components + the fail-closed gate are done (D400/D402/D405). **The editor gap is CLOSED (D425)** —
-22 wave blocks opened in the real block editor, inspector rendering 7–23 panels each, zero crashes;
-D372's BoxControl check discharged. Evidence:
-`reports/2026-07-30-spec35-editor-canvas-verification.md`. Still open: Part I's 2 items (Spacing token, Dynamic content),
-Part-L rollout at 4–32%, and T1 parity (**157 gaps / 23 blocks in scope** — the old 140/22 is
-stale). Register: `reports/2026-07-30-track1-verification-audit.md`.
-
-### Track 1c — Spec 31 converter completion
-
-Completion wave + declarative CSS-routing shipped (D372/D373); the three "NEXT" items this cell
-once carried were all already done. **The real open item is PROOF, not build** — `batch-report.json`
-now reads WRITTEN-not-LANDED 0 but **33 UNVERIFIED**, and §5 defines completion as ZERO UNVERIFIED
-(the "logged with a reason" escape covers GAP cells only). Triage = next session Task 1. Plan:
-`plans/2026-07-22-spec31-completion-to-100.md`.
+- **Track 1 (cloning/Spec 31 verification):** `memory/session-2026-07-31-track1.md` +
+  `-track1-session2.md`. Headline still standing: Spec 31 C2 measurable (499 declared / 21.2%
+  attributed), 3 false-derivation corrections recorded there (do not re-derive), nav dropdowns
+  shipped after 5 live-only defects were found and fixed (D432/D433).
+- **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
+  Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
+- **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
+  `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
+- **Tracks 2+2b (nav/header/footer merge):** 5-wave strategic plan landed (D413), Wave 1 CLOSED,
+  Wave 2 in progress. `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`. Task 5 (drawer
+  variants) was REJECTED by Bean 2026-07-29 — do not re-present those pairs without real work
+  first (`memory/session-2026-07-29-task5-drawer-rejection.md`).
 
 ---
 
 ## Standing constraints (carry forward — these are rules, not history)
 
-- **Per-row `position:sticky` is REJECTED** on the short-parent trap (D389). Sticky stays
-  HEADER-level; a hidden row COLLAPSES to height 0 (gap measured 0.00 at all 3 tiers). The D4
-  multi-sticky warning and the sticky↔hide-on-scroll exclusion were deliberately **NOT built** (both
-  specified against the rejected model — do not "finish the job"). **Footer rows get NO sticky** —
-  that is Spec 18 Floating UI (D390).
-- **No absolute size value in a shared state-only stylesheet** (D386's GROW bug), gated by
+- Per-row `position:sticky` REJECTED (short-parent trap, D389). Sticky stays HEADER-level.
+- No absolute size value in a shared state-only stylesheet (D386), gated by
   `check-shared-css-state-rules.js`.
-- **After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor** (D388 —
-  two editor-killing crashes shipped past ALL-GREEN gates).
-- **A scoped axe run on a CLOSED surface passes vacuously** — guard openness or the run proves
-  nothing. Any earlier drawer-axe claim from that harness proves nothing.
-- **A pattern verified by its METADATA is not verified by its CHILDREN** (D377 retro-invalidated).
-  Anything else banked on metadata-only evidence deserves a second look.
-- **`templateLock:'all'`/`'contentOnly'` re-applies the template on EVERY mount, matching children by
-  ARRAY POSITION** (D393) — pass the template only into a genuinely empty container.
-- **The D343 phantom border was never caused by shadows-as-borders.** Cause: WP core's
-  `html :where([style*="border-width"])` substring-matching a custom property *named*
-  `--sgs-tile-border-width`. Fix (shipped) = name width vars `--*-thickness`. Do not re-propagate the
-  wrong diagnosis.
-- **The no-login shareable preview link is DROPPED, not deferred** (Bean 2026-07-27) — a client who
-  should see work-in-progress has an account or is shown a test site. Do not re-open it.
-- **`<footer>` is generic** — the canary page has 5, four of them quote/testimonial attributions.
-  The site footer is the LAST one, `<footer class="wp-block-template-part">`. **Key assertions on the
-  CLASS**, never a naive regex.
-- **Two durability caveats (setup-simplification track):** `~/.agents` is NOT a git repo, so the
-  skillscore script + 5 grafted skills + `nextjs-testing` are LIVE but UNVERSIONED (recovery =
-  per-file `.bak-2026-07-17-*`); the `lifecycle-gate-stop.py` unwire is local but NOT committed to
-  the `~/.claude` repo.
+- After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor (D388).
+- A scoped axe run on a CLOSED surface passes vacuously — guard openness or the run proves
+  nothing; any earlier drawer-axe claim from before D418 proves nothing.
+- `templateLock:'all'`/`'contentOnly'` re-applies the template on EVERY mount, matched by ARRAY
+  POSITION (D393) — pass the template only into a genuinely empty container.
+- The D343 phantom border was WP core's `html :where([style*="border-width"])` substring-matching
+  a custom property *named* `--sgs-tile-border-width` — not shadows-as-borders. Width vars are
+  named `--*-thickness`. Do not re-propagate the wrong diagnosis.
+- No-login shareable preview link is DROPPED, not deferred (Bean, 2026-07-27).
+- `<footer>` is generic — key any assertion on the CLASS `wp-block-template-part`, never a naive
+  regex; the canary page has 5 `<footer>` elements, four are quote attributions.
+- `~/.agents` is NOT a git repo — the skillscore script + 5 grafted skills + `nextjs-testing` are
+  LIVE but UNVERSIONED (recovery = per-file `.bak-2026-07-17-*`).
+- **No block version bumps / deprecations pre-production** (Bean D293, overrides STOP-57).
 
 ---
 
@@ -276,41 +179,34 @@ now reads WRITTEN-not-LANDED 0 but **33 UNVERIFIED**, and §5 defines completion
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`. ⚠ **Shared worktree** — a co-active track commits between handoffs and holds
-  uncommitted WIP. **Commit by EXACT PATH, never `git add -A`; never touch their uncommitted files**
-  (`STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE`).
-- **Verify every session, no cached line is authoritative:**
-  - `git log -1 --stat` + `git status` + `git branch --show-current` (re-check branch in the SAME
-    command as any commit)
-  - D-ceiling: `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`
-  - Framework counts: `/sgs-db` or `/wp-blocks` — the DB is authoritative; counts are never in prose
-- **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each cloning
-  session; its Appendix D is the stage index, Appendix C the run-artefact inventory). Nav =
-  `specs/36-SGS-NAVIGATION-SYSTEM.md`; header/footer = `specs/37-HEADER-FOOTER-BUILDER.md`. Full
-  roster + the DEAD-never-cite list: **`specs/README.md`** (the ONE roster).
-- **Sites:** dev = palestine-lives.org (Indus). staging/canary =
-  sandybrown-nightingale-600381.hostingersite.com. Both **WP 7.0.2** (verified 2026-07-20 by
-  `wp core version` over SSH on both).
-- **Fixtures left on the canary (do not assume they are clean):** mega page 1762, panel 1745, menu
-  100, item 1746; header CPT 1570, footer CPT 1654.
-- **Latent + open (not blockers):** Mama's `#e68a95` text-contrast (`P-MAMAS-PRIMARY-CONTRAST`) · two
-  unnamed `<main>` landmarks · `minmax()` guard absent · both sites GENERIC proof headers
-  (sandybrown #1570/#1571; palestine-lives #360) · FR-37-36.
+- **Branch:** `main`. **Shared worktree** — a co-active track commits between handoffs and holds
+  uncommitted WIP. Commit by EXACT PATH, never `git add -A`; never touch another track's
+  uncommitted files.
+- **Verify every session, no cached line is authoritative:** `git log -1 --stat` + `git status` +
+  `git branch --show-current` · D-ceiling `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`
+  (currently D434 — a co-active track took D432/D433 the same day; re-check live) · framework
+  counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
+- **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
+  cloning session). Motion = `specs/38-SGS-MOTION-SYSTEM.md`. Nav = `specs/36-...`; header/footer
+  = `specs/37-...`. Full roster: `specs/README.md`.
+- **Sites:** dev = palestine-lives.org. staging/canary = sandybrown-nightingale-600381.hostingersite.com.
+  Both WP 7.0.2 (verified 2026-07-20 over SSH on both).
+- **Fixtures on the canary (not assumed clean):** motion 2083/2086; mega page 1762, panel 1745,
+  menu 100, item 1746; header CPT 1570, footer CPT 1654.
+- **Latent + open (not blockers):** Mama's `#e68a95` text-contrast (`P-MAMAS-PRIMARY-CONTRAST`) ·
+  two unnamed `<main>` landmarks · both sites GENERIC proof headers · FR-37-36.
 
 ---
 
 ## Product queue (the website-builder work)
 
-**LIVE backlog, split out 2026-07-30 to keep this file under its cap — not archived:**
-**`plans/strategy/product-queue.md`**. Holds the Indus core→SGS migration (A/B/C), the four
-sequenced header/footer goals, and the Track B reconciliation. Reconcile before acting — some of
-it is already live.
+**LIVE backlog:** `plans/strategy/product-queue.md`. Holds the Indus core→SGS migration (A/B/C),
+sequenced header/footer goals, Track B reconciliation. Reconcile before acting.
 
-**Standing programmes (pointers only):** no-inline — the SUPPORTS migration is complete, but
-**11 inline FR-32 sites across 9 blocks were found 2026-07-30** (10 fixed-not-committed, 1 still
-live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERSEDED by
-`reports/2026-07-30-track1-verification-audit.md` · Spec 30 COMPLETE (D220) · L1–L4 DONE
-(D290). Parked, not ours: `P-CONFORMANCE-GOLDEN-DRIFT`, `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
+**Standing programmes:** no-inline SUPPORTS migration complete, but 11 inline FR-32 sites across
+9 blocks found 2026-07-30 (`reports/2026-07-30-track1-verification-audit.md`, 1 still live:
+`cta-section:333`) · Spec 30 (WooCommerce) COMPLETE (D220) · L1–L4 DONE (D290). Parked, not ours:
+`P-CONFORMANCE-GOLDEN-DRIFT`, `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
 
 ---
 
@@ -318,63 +214,46 @@ live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERS
 
 | For | Read |
 |---|---|
-| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| Spec roster + DEAD-never-cite list | `specs/README.md` (the ONE roster) |
+| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101; 144 STOPs as of 2026-07-31) |
+| Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Decisions (D-numbered, INCIDENT/ROUTINE tagged) | `decisions.md` (+ `memory/decisions-archive.md`) |
 | Parked work (OPEN/PARTIAL/BLOCKED/DEFERRED only) | `parking.md` (+ `memory/parking-archive.md`) |
 | Prior sessions' full narrative | `memory/session-YYYY-MM-DD*.md` + `memory/state-archive.md` |
-| Build / deploy / SSH / credentials / gotchas | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown\|palestine-lives` (the ONE path) |
+| Build / deploy / SSH / credentials / gotchas | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown\|palestine-lives` |
 | Goals + exit criteria | `goals.md` |
-| Hook off-switches | `.claude/secrets/hook-off-switches.md` (gitignored operator cheat-sheet) |
+| Hook off-switches | `.claude/secrets/hook-off-switches.md` (gitignored) |
 
 ## Blockers
 
-**None.** Known-open items are the Product queue + `parking.md`.
+**None hard.** Two design gates await Bean's decision (Step 7 routes, FR-38-12 restore) before
+Wave D can continue past them — see Track 3 above. Everything else in the register is buildable
+without him.
 
 ---
 
-## NEXT SESSION — execute Motion Wave D
+## NEXT SESSION — continue Motion Wave D
 
-**Read FIRST:** **`plans/2026-07-31-motion-wave-D-client-readiness.md`** (the whole thing — it is
-the register), then **D426 → D427 → D430** in that order, then Spec 38 IN FULL.
+**Read FIRST:** `plans/2026-07-31-motion-wave-D-client-readiness.md` in full, then D426→D427→
+D430→D434 in that order, then Spec 38 IN FULL.
 
-**The plan is the plan.** It has 22 steps, four QA gates, per-step models, tests and on-fail
-instructions. Do not re-derive it. Its own Honesty notes list what it lacks (no cold peer review,
-no docscore, no `/qc-council` on its fix-shapes yet).
+**Smallest first action, ≤20 min, zero deps:** Step 5 (morph on any block) or Step 10 (preset/
+param normalisation outside the editor) — both NOT STARTED and file-disjoint from the two design
+gates. Do not start Step 7 or the FR-38-12 build until Bean has answered both gates.
 
-**NEW since the plan was written (2026-07-31 eye pass):** `sgs/before-after`'s labels were sitting
-over the WRONG image — fixed and deployed (`3c89d9bc`), evidence in
-`reports/visual-diff/before-after-labels-2026-07-31.md`. Bean then ruled: keep the current
-after-on-LEFT as DEFAULT, and add the other three reveal directions (horizontal reversed, vertical
-both ways) as options — that is **Step 6b** of the plan. Canaries are now **2083** (effects) and
-**2086** (roster; 2085 was recreated because MY fixture carried four undeclared attrs and was
-blocking every track's deploys — gate now reports 0 NEW HIGH).
+**Before building anything on the fx/motion-surface roster:** read the "19 blocks on a single
+provision" risk above — it is not a blocker, but do not silently widen or narrow the provision
+categories without checking what else rides on them.
 
-**Smallest first action, ≤20 min, zero deps:** Step 1 — measure touch on the drag surfaces. It
-replaces a "by construction" claim in four reports with a real result, and if drag DOES bind on
-touch that is a defect worth finding before anything else is built.
+#### Methodology guardrails (earned 2026-07-31 — do not inherit as solved)
 
-**Sequencing note from the council's delivery lead:** Bean's eye outranks new capability. He has
-seen Wave C but nothing shipped after it — the presets, the route picker, the derived rosters and
-the retimed scroll ranges are all unjudged. Twenty minutes of his attention on
-`/motion-canary-wave-c/` and `/motion-roster-canary/` can invalidate tuning across six effects,
-so it is cheapest first.
+- A probe that never reaches the effect is measuring the probe.
+- A test can pass the very defect it was written to catch — check the KNOWN FAILURE, not just
+  the KNOWN GOOD, through any new gate.
+- Fact-check every register/council claim before acting on it — D434 alone found four false
+  claims that prose review had already waved through.
+- Cache-bust every canary measurement; a LiteSpeed-cached page can read a working fix as broken.
+- A prose claim in a report is not a committed artefact — verify the change actually reached the
+  file/seeder before writing that it landed.
+- `python .claude/hooks/handoff-preflight.py --check` must pass before a handoff completes.
 
-#### Methodology guardrails (earned 2026-07-31, not inherited)
-
-- **A probe that never reaches the effect is measuring the probe.** Four of my own probe results
-  were false before any code was.
-- **A test can pass the very defect it was written to catch.** The image-sequence criterion was
-  `spread >= 5`; the failure had a spread of 63. The replacement I first briefed ("3 of 5
-  distinct") would ALSO have passed it — the failure has exactly 3 distinct values.
-- **Fact-check every council finding before acting.** Three of three held on 2026-07-31, but each
-  was checked; do not inherit that as a prior.
-- **Deploy copies must include `assets/`** — omitting it 404'd a stylesheet and rendered a hidden
-  SVG as a 1200×1200 black shape.
-- **Cache-bust every canary measurement.** A LiteSpeed-cached page made a working fix read as
-  broken twice.
-- **A prose claim in a report is not a committed artefact** — a 2026-07-30 report said two registry
-  rows had been corrected; the change had never reached the seeder.
-- **`python .claude/hooks/handoff-preflight.py --check` must pass before a handoff completes.**
-
-Full structural defences (109 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.
+Full structural defences (144 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.

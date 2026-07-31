@@ -120,8 +120,6 @@ attributes as the declared set (they are invisible to a `block.json`-only audit)
 
 **Trigger:** Next time an fx control is added, or the next conformance-gate pass.
 
-
-
 ### P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY — Slot-level responsive typography still dropped
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** unknown
 
