@@ -422,9 +422,27 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 // (Spec 38 §4.4). The native range input (below) needs neither module and
 // keeps the divider fully keyboard + touch operable even if this enqueue is
 // skipped or the built files are not yet present.
+//
+// `is_admin()` GATE (Spec 38 §9 — never active in wp-admin, proven 2026-07-31):
+// this block's own render.php runs on every render_block() call for it,
+// including the editor's server-side content generation for the iframe
+// canvas — a context every OTHER Tier G enqueue path in this codebase
+// excludes (SGS_Motion_Registry::sniff_block(), maybe_enqueue_smooth_scroll(),
+// maybe_enqueue_page_transitions() all check is_admin()/sgs_is_frontend_render()
+// first). This proxy-enqueue was the one path that did not, and it is what put
+// `@sgs/gsap-draggable` on the wp-admin page's own <script type="module">
+// list without a matching import-map entry — confirmed live via Chrome
+// DevTools on wp-admin/post.php?action=edit: the printed import map held only
+// `@wordpress/route`, `@wordpress/latex-to-mathml`, `@wordpress/interactivity`,
+// `@sgs/gsap`, never the plugin modules, yet gsap-draggable.js was still
+// enqueued from here. A STATIC import inside an already-enqueued module
+// resolving against a map that doesn't carry it is an uncatchable module-load
+// error — no try/catch or promise `.catch()` inside view.js's dynamic
+// `import()` calls can intercept it, because the failure never reaches that
+// code at all.
 // ---------------------------------------------------------------------------
 
-if ( $fx_draggable && function_exists( 'wp_enqueue_script_module' ) ) {
+if ( $fx_draggable && ! is_admin() && function_exists( 'wp_enqueue_script_module' ) ) {
 	wp_enqueue_script_module( '@sgs/motion-provider' );
 	wp_enqueue_script_module( '@sgs/gsap-draggable' );
 }
