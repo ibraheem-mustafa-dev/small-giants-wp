@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D431 — The eye pass found what every number missed: before/after was labelling the wrong image [INCIDENT]
+
+**2026-07-31.** Commits `3c89d9bc` (fix + evidence), plus the fixture repair that unblocked the
+co-active track. Evidence: `reports/visual-diff/before-after-labels-2026-07-31.md`; screenshots at
+`reports/visual-diff/assets/eyecheck-2026-07-31/`.
+
+**Bean was away from his PC and asked for a machine proxy of the R-31-13 eye pass.** Screenshots at
+1440/768/375 for both canaries plus per-effect state captures. It is NOT his sign-off and is
+recorded as a proxy — but it found a real defect in a NET-NEW block on its first look.
+
+**`sgs/before-after` labelled the wrong image.** Proven before any fix: `__after-wrap` contained
+`frame_0048.webp` and computed `clip-path: inset(0px 50% 0px 0px)` — clipped from the right, so
+visible on the **LEFT** — while the **"Before" label measured to the LEFT half**. A visitor saw the
+AFTER image under a "Before" label. **Every numeric probe passed**, because all of them asked
+whether the divider MOVED and none asked what was on each side of it. On abstract colour fixtures
+this reads as odd; on a real physio/renovation comparison the block states the opposite of the
+truth.
+
+The CLIP was not the wrong half — `style.css`'s own comment states the intent ("reveal the 'after'
+image from the left edge…") and the code matches it. `__labels` is `justify-content: space-between`
+and render.php emits BEFORE first, so it landed left. Fixed with CSS `order` (after:0, before:1)
+rather than swapping the markup, so the DOM keeps its logical sequence.
+
+**Bean ruling:** the current after-on-LEFT stays the DEFAULT; the other three reveal directions
+(horizontal reversed, vertical both ways) become options — Step 6b of the Wave D plan.
+`orientation: horizontal|vertical` and the vertical clip already exist; what is missing is a
+reverse option per axis PLUS its label ordering. **Any new direction without its own label rule
+reintroduces this exact bug.**
+
+**I also blocked the co-active track and fixed it.** Their deploy aborted on 8 oldshape findings on
+canary page 2085 — all eight were mine: four attributes my roster fixture invented (`reviews` +
+`dataSource` on google-reviews, which declares `placeId`/`maxReviews`/`reviewRequestUrl`; and
+`dragToScroll`/`dragMomentum` on buybox, which I had REVERTED from the block earlier the same
+session). WP discards undeclared attrs and the next save deletes them, so the gate was right.
+Fixture rebuilt clean, page recreated as **2086**, gate back to `0 NEW HIGH` / `oldshape-audit PASS`.
+**Lesson: a canary fixture is deployed state — an invented attribute in one blocks everybody.**
+
+**Findings 5 + 6 (slider arrows bunched left, dots huge) DO NOT REPRODUCE** at 375, 768, 1024 or
+1440: arrows correctly split either side, dots 10px visual inside 44px targets at every width. Per
+`measurement-vs-eye` the owner's report stands until explained — and there is now a specific
+mechanism: the deploy sequence has a window where the plugin directory does not exist
+(`mv` to `.bak` then `mv` in), so every stylesheet 404s, and "giant dots + arrows bunched left" is
+the documented symptom of that stylesheet being absent (`style.css:186`). Six deploys ran while he
+was looking. **Not closed — re-check on a settled build.**
+
+**Visually judged OK by proxy:** DrawSVG scroll (partial strokes mid-scrub, complete mark settled) ·
+image sequence (crisp, no canvas artefacts) · slider controls at 4 widths · gallery carousel
+(scrolls, grab cursor). **What a proxy cannot judge: whether the momentum FEELS right.**
+
 ## D430 — Adversarial council on the whole motion surface; 7 of its convergent items shipped same-session [INCIDENT]
 
 **2026-07-31, Spec 38 motion.** Commit `6c8d78ca`. Plan carrying everything unclosed:

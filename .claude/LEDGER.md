@@ -331,6 +331,14 @@ the register), then **D426 → D427 → D430** in that order, then Spec 38 IN FU
 instructions. Do not re-derive it. Its own Honesty notes list what it lacks (no cold peer review,
 no docscore, no `/qc-council` on its fix-shapes yet).
 
+**NEW since the plan was written (2026-07-31 eye pass):** `sgs/before-after`'s labels were sitting
+over the WRONG image — fixed and deployed (`3c89d9bc`), evidence in
+`reports/visual-diff/before-after-labels-2026-07-31.md`. Bean then ruled: keep the current
+after-on-LEFT as DEFAULT, and add the other three reveal directions (horizontal reversed, vertical
+both ways) as options — that is **Step 6b** of the plan. Canaries are now **2083** (effects) and
+**2086** (roster; 2085 was recreated because MY fixture carried four undeclared attrs and was
+blocking every track's deploys — gate now reports 0 NEW HIGH).
+
 **Smallest first action, ≤20 min, zero deps:** Step 1 — measure touch on the drag surfaces. It
 replaces a "by construction" claim in four reports with a real result, and if drag DOES bind on
 touch that is a defect worth finding before anything else is built.

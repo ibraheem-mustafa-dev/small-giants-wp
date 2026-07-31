@@ -164,6 +164,35 @@ Council grades that motivate the ordering: shippability **B−**, accessibility 
   - Fail: JS blocked → both media still present, CSS-only split still correct (the existing fail-open contract)
   - Integration: reduced motion — autoplay must not fire; §10 SIMPLIFY for the drag
 
+## Step 6b — before/after: all FOUR reveal directions (Bean ask #5, added 2026-07-31)
+  **Model:** sonnet
+  **Action:** The block currently reveals AFTER on the LEFT (horizontal) — coherent, and Bean has
+  ruled it stays the DEFAULT. Add the other three directions as options: horizontal reversed
+  (after on the right, the more common convention), vertical after-on-top, and vertical
+  after-on-bottom. `orientation: horizontal|vertical` ALREADY EXISTS as an attribute and the
+  vertical `clip-path` already exists in `style.css:64-66`; what is missing is a REVERSE option per
+  axis, and the matching label ordering.
+  **Files:** `src/blocks/before-after/{block.json,edit.js,render.php,style.css}`,
+  `reports/visual-diff/before-after-*.md`
+  **Inputs:** `reports/visual-diff/before-after-labels-2026-07-31.md` — read it first. It records
+  the defect fixed on 2026-07-31 (labels sat over the WRONG image because `__labels` is
+  `justify-content: space-between`, render.php emits BEFORE first, and the clip puts AFTER on the
+  left) and the CSS `order` fix. **Every new direction needs its own label-order rule or it
+  reintroduces exactly that bug** — which no numeric probe caught, because they all asked whether
+  the divider MOVED and none asked what was on each side of it.
+  **Outcome:** four working reveal directions, each with labels sitting over the image they name.
+  **Exec:** PARALLEL with Step 6 · **Deps:** none (but coordinate: same block as Step 6's video
+  work — do them in one agent or sequence them) · **Time:** 45 min
+  **Tooling:** Playwright (screenshot each direction — this is a LOOK-AT-IT defect class)
+  **On-Fail:** the current default is correct and shipped; a failed variant is revertible alone.
+  **Prompt:** *(generate at dispatch — it MUST require a screenshot per direction with the label
+  side measured against the clipped image's src, not just "the divider moved".)*
+  **Test:**
+  - Happy: each of the 4 directions reveals the right image on the right side, labels matching
+  - Edge: dragging to 0% and 100% in each direction — no flipped or stranded label
+  - Fail: reduced motion + keyboard range input still operate every direction
+  - Integration: the drag gesture and the native range input must agree in all four
+
 ## Step 7 — Background cursor-follow effects (Bean ask #4)
   **Model:** inline
   **Action:** Bean wants a background whose pattern/colour/effect follows the pointer and reacts to the area it hovers. Prior art exists in-house: `data-spotlight` in `nav-menu` and `mega-panel` is already vanilla cursor-follow. Generalise it into a container BACKGROUND capability. Write it as a new numbered FR in Spec 38 first — this is Tier V (pointer position → CSS custom properties), Tier G only if trailing physics is wanted.
