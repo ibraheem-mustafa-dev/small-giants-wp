@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D428 — Track 1: two green-forever gates made real, 30 STOPs recovered, C2 made measurable [INCIDENT]
+
+**Gates that could never fail, now fail.** `audit-feature-parity.py` always `sys.exit(0)`, so "every
+SGS block matches the core block it replaces" was unverified behind 157 gaps. FOUR vacuous-pass paths
+closed (unconditional exit; `SOURCE-MISSING` filtered out of the gap list; missing exceptions file
+returning `{}`; exception keys read without validating `reason`/`wave`). Exceptions re-keyed on the
+3-tuple `(block, replaces, capability)` — the 2-tuple silenced `sgs/media`'s `url` across BOTH
+`core/image` and `core/video`. Measured + sourced at SHA `231ecbd4`: **157 gaps / 23 blocks** (78
+over-report, 54 genuine, 20 WP-internal, 3 SOURCE-MISSING, 5 pre-filed nav) →
+`reports/2026-07-31-feature-parity-measurement.md`. NOT wired into prebuild — `package.json` carried
+the co-active track's edit; one line owed.
+
+**D101 was enforced by a cardinality check.** `_count_stops` built an identifier set then compared
+`len()`, so swapping N defences for N different ones read green — which is exactly how 45 numeric
+STOP citations went phantom. Now compares SETS against `prev | stop-floor.json` and names the
+casualty. **30 STOPs recovered** from `memory/` + `plans/archive/` (Bean's hypothesis; the catalogue's
+own git history showed nothing deleted because the loss happened at the 2026-07-17 three-doc collapse
+`a55d0fc1`, which carried only 9 numerics across). 123→169 defences, additive only. 14 remain
+allowlisted + dated, NOT invented. New check 7 resolves bare-text `STOP-N`/`P-` citations, which
+`check_no_dangling_links` never saw (markdown links only). Every `self_test` case is now a
+`(bad, good)` pair — a check hardcoded to always-fail previously passed the whole self-test.
+
+**Spec 31 C2 made judgeable rather than fixed.** `batch-report.json` emitted `393` with no
+denominator, so it could fall for three indistinguishable reasons. Now: 499 declared / 106 attributed
+/ **21.2%**, with a committed pre-image and a 4-bucket cause split (380 BEM-descendant, 13 by-shape,
+0 ambiguous, 0 tier). **Diagnosis corrected:** `_SIMPLE_CLASS_SELECTOR_RE` ACCEPTS `.sgs-hero__title`
+— it accounts for 13, not 380; the real mechanism is `_section_class_sets` reading only the section
+root's own classes. A ground-truth control (`attribution_ground_truth.py`, CSS-resolution + DOM
+ancestry — deliberately a DIFFERENT method from the code it judges) currently FAILS: 73 of 96
+provably-owned rows unattributed. Prediction banked before any code moved: 319 of 380 reachable, 61
+not. **The fix is NOT blocked on missing machinery (Bean's challenge, verified): the converter already
+resolves draft-element → attribute via `block_attributes.derived_selector`.**
+
+**Nav walker written + tested, deliberately UNCOMMITTED** — the visual-diff gate correctly refused a
+signature change on a live-render path without visual proof; that needs a deploy, which belongs with
+the render work. Also settled by research: dropdowns default LEFT-aligned with always-on flip
+collision (`decisions.md:821`, cited by the design doc as Bean's ruling, is dead — it is Spec 38
+content); drawer defaults to accordion on framework fit. `sgs/nav-menu.underlineOffset` is
+`css_property='bottom'`, NOT the mis-seed earlier docs claimed.
+
+Full record + next-session orchestration: `memory/session-2026-07-31-track1.md`.
+
 <!-- ACTIVE — decisions from 2026-05-31 (D114) onward (compressed format). Entries ≤D113 (≤2026-05-30) were archived at doc-op Phase 13; a further 58 routine/superseded entries in the D134–D348 range were swept 2026-07-28 (fat-cut, F8) — see the "Archived 2026-07-28" section of memory/decisions-archive.md. Anything cited from a live spec/LEDGER/STOP-CATALOGUE/CLAUDE.md was kept live; the archive is grep-able for everything else. Deleted entries listed in git log only. -->
 
 Append-only. Most-recent first.
