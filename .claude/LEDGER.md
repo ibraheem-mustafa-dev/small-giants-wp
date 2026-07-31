@@ -45,12 +45,9 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > **Task 2 BUILT, harness-green (25/25), deliberately NOT COMMITTED** — the visual-diff gate wants a
 > deploy first. **Do not revert `nav-menu/{render.php,edit.js,block.json}` or `mega-disclosure.js`.**
 >
-> **✅ RESOLVED SAME SESSION (2026-07-31, D431) — was: Task 3 BLOCKED, not by Track 1.**
-> `P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS` stopped EVERY deploy by EVERY track (canary
-> post 2085, `sgs/buybox` + `sgs/google-reviews`). **The cause was the motion track's own roster
-> fixture** — four attributes it invented, two of them reverted from buybox earlier the same
-> session. Fixture rebuilt, page recreated as **2086**, gate back to `0 NEW HIGH` /
-> `oldshape-audit PASS`. Deploys are open. Track 1 has
+> **✅ RESOLVED 2026-07-31 (D431) — was: Task 3 BLOCKED, not by Track 1.** The all-deploy blocker
+> `P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS` was the MOTION track's own fixture (4 invented
+> attrs). Rebuilt, page now **2086**, gate `0 NEW HIGH`. Archived. Track 1 has
 > zero findings of its own.
 >
 
