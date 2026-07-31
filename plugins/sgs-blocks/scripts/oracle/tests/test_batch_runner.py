@@ -120,7 +120,11 @@ class TestAttribution:
         assert unattributed == 0
         assert len(cells_by_section["sec-b"]) == 1
 
-    def test_combinator_selector_is_unattributed_not_guessed(self, monkeypatch):
+    def test_combinator_selector_matching_nothing_is_unattributed_not_guessed(self, monkeypatch):
+        # This DRAFT_HTML has no ``.sgs-hero__title`` node at all, so the
+        # selector resolves to nothing and the row is a dead rule. It must be
+        # counted unattributed, never assigned to whichever section shares a
+        # class prefix with it.
         sections = self._sections(monkeypatch)
         rows = [_fake_row(".sgs-hero .sgs-hero__title", "font-size", "32px")]
         cells_by_section, unattributed = batch_runner.attribute_cells_to_sections(
@@ -146,6 +150,311 @@ class TestAttribution:
         )
         assert unattributed == 1
         assert cells_by_section["sec-b"] == []
+
+
+# ---------------------------------------------------------------------------
+# discover_sections — REAL, fixture-driven.
+#
+# Every other attribution test above monkeypatches discover_sections away and
+# hand-builds its section list, so until these tests existed a rewrite of
+# discover_sections passed the whole suite untouched. These call the real
+# function against real draft HTML.
+# ---------------------------------------------------------------------------
+
+class TestDiscoverSectionsReal:
+    def test_recognises_a_named_block_root(self):
+        html = """<html><body>
+          <section class="sgs-info-box"><p class="sgs-info-box__text">Body copy</p></section>
+        </body></html>"""
+        sections = batch_runner.discover_sections(html)
+        assert [s["block_slug"] for s in sections] == ["sgs/info-box"]
+        assert sections[0]["draft_selector"] == ".sgs-info-box"
+
+    def test_only_top_level_sections_are_returned(self):
+        # The inner node is itself a recognisable block root. discover_sections
+        # deliberately mirrors the walker's TOP-LEVEL scoping, so the nested one
+        # must NOT become its own section (Task-1 brief: this scoping is
+        # unchanged; only the ATTRIBUTION walk gained descendant support).
+        html = """<html><body>
+          <section class="sgs-container">
+            <div class="sgs-info-box"><p class="sgs-info-box__text">Nested</p></div>
+          </section>
+        </body></html>"""
+        sections = batch_runner.discover_sections(html)
+        assert len(sections) == 1
+        assert sections[0]["block_slug"] == "sgs/container"
+
+    def test_two_sibling_sections_are_both_found_and_distinct(self):
+        html = """<html><body>
+          <section class="sgs-info-box">One</section>
+          <section class="sgs-hero">Two</section>
+        </body></html>"""
+        sections = batch_runner.discover_sections(html)
+        slugs = [s["block_slug"] for s in sections]
+        assert "sgs/info-box" in slugs and "sgs/hero" in slugs
+        assert len({s["section_id"] for s in sections}) == len(sections)
+
+    def test_unrecognised_markup_yields_no_sections(self):
+        html = "<html><body><div class='marketing-wrapper'>text</div></body></html>"
+        assert batch_runner.discover_sections(html) == []
+
+
+# ---------------------------------------------------------------------------
+# Descendant attribution + the PROBE TARGET half.
+#
+# Attribution and probe-target are ONE change: attributing a descendant cell
+# while still measuring the SECTION ROOT scores inherited properties (font-size,
+# color, font-weight, line-height) as LANDED wherever the descendant's value
+# happens to equal its wrapper's — the "coincidental-default match" false win
+# Spec 31 §7b forbids. These tests pin both halves.
+# ---------------------------------------------------------------------------
+
+class TestDescendantAttributionAndProbeTarget:
+    NESTED_HTML = """<html><body>
+      <section class="sgs-info-box" id="sec-a">
+        <div class="sgs-info-box__inner">
+          <h2 class="sgs-info-box__heading">Heading text</h2>
+        </div>
+      </section>
+      <section class="sgs-hero" id="sec-b">Hero content</section>
+    </body></html>"""
+
+    def _sections(self):
+        return [
+            {"section_id": "sec-a", "block_slug": "sgs/info-box",
+             "draft_selector": ".sgs-info-box", "native_selector": ".wp-block-sgs-info-box"},
+            {"section_id": "sec-b", "block_slug": "sgs/hero",
+             "draft_selector": ".sgs-hero", "native_selector": ".wp-block-sgs-hero"},
+        ]
+
+    def test_descendant_attributes_to_its_containing_section(self):
+        rows = [_fake_row(".sgs-info-box__heading", "font-size", "28px")]
+        by_sec, unattributed = batch_runner.attribute_cells_to_sections(
+            self.NESTED_HTML, self._sections(), rows
+        )
+        assert unattributed == 0
+        assert len(by_sec["sec-a"]) == 1
+        assert by_sec["sec-b"] == []
+
+    def test_descendant_cell_carries_its_own_probe_target(self):
+        rows = [_fake_row(".sgs-info-box__heading", "font-size", "28px")]
+        by_sec, _ = batch_runner.attribute_cells_to_sections(
+            self.NESTED_HTML, self._sections(), rows
+        )
+        cell = by_sec["sec-a"][0]
+        assert cell.probe_selector is not None, (
+            "a descendant cell measured on the SECTION ROOT scores inherited "
+            "properties LANDED by coincidence — Spec 31 §7b false win"
+        )
+        assert cell.probe_selector.startswith(".wp-block-sgs-info-box")
+        assert ".sgs-info-box__heading" in cell.probe_selector
+
+    def test_root_targeting_cell_has_no_probe_selector(self):
+        rows = [_fake_row(".sgs-info-box", "padding", "40px")]
+        by_sec, _ = batch_runner.attribute_cells_to_sections(
+            self.NESTED_HTML, self._sections(), rows
+        )
+        cell = by_sec["sec-a"][0]
+        assert cell.probe_selector is None
+        assert cell.written is True
+
+    def test_unregistered_element_token_is_attributed_but_unmeasurable(self):
+        # ``.sgs-team-member-grid__photo`` sits inside a section recognised as
+        # sgs/container, which renders no ``__photo`` element. The cell BELONGS
+        # to the section, but there is no clone element to read it on — so it
+        # must be marked unmeasurable, never measured on the section box.
+        html = """<html><body>
+          <section class="sgs-container sgs-team-member-grid" id="sec-a">
+            <div class="sgs-team-member-grid__photo">img</div>
+          </section>
+        </body></html>"""
+        sections = [{"section_id": "sec-a", "block_slug": "sgs/container",
+                     "draft_selector": ".sgs-container",
+                     "native_selector": ".wp-block-sgs-container"}]
+        rows = [_fake_row(".sgs-team-member-grid__photo", "border-radius", "50%")]
+        by_sec, unattributed = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        assert unattributed == 0, "it is attributable — the section physically contains it"
+        cell = by_sec["sec-a"][0]
+        assert cell.probe_selector is None
+        assert cell.written is False, (
+            "an unmeasurable cell must be unable to reach LANDED"
+        )
+
+    def test_unmeasurable_cell_from_the_REAL_attributor_never_lands(self):
+        # The companion to the verdict-engine test below, and the one that
+        # actually covers the production path. The cell here is produced by
+        # `attribute_cells_to_sections` -> `resolve_probe`, not hand-built, so a
+        # regression that wrongly marks an unregistered descendant resolvable is
+        # caught here. (Council finding: the test below alone did NOT cover
+        # this — it asserts the verdict engine's contract, with written=False
+        # supplied as a given.)
+        html = """<html><body>
+          <section class="sgs-container sgs-team-member-grid" id="sec-a">
+            <div class="sgs-team-member-grid__name">Name</div>
+          </section>
+        </body></html>"""
+        sections = [{"section_id": "sec-a", "block_slug": "sgs/container",
+                     "draft_selector": ".sgs-container",
+                     "native_selector": ".wp-block-sgs-container"}]
+        rows = [_fake_row(".sgs-team-member-grid__name", "font-size", "16px")]
+        by_sec, _ = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        cell = by_sec["sec-a"][0]
+        # Simulate the section root computing the SAME value the descendant
+        # declares — the coincidence that used to manufacture a pass.
+        coincident = CellInput(
+            property=cell.property, tier=cell.tier, draft_value=cell.draft_value,
+            computed_value=cell.draft_value, expected_default=cell.expected_default,
+            written=cell.written, probe_selector=cell.probe_selector,
+            probe_pseudo=cell.probe_pseudo, source_selector=cell.source_selector,
+        )
+        observation = RenderedObservation(
+            section_id="sec-a@Base", block_slug="sgs/container",
+            element_selector=".wp-block-sgs-container",
+            element_present=True, inner_text_len=200,
+            rendered_height_px=300.0, draft_height_px=300.0,
+            cells=[coincident], page_loaded=True,
+        )
+        report = compute_report("synthetic", [observation])
+        verdicts = [c.verdict for sec in report.sections for c in sec.cells]
+        assert Verdict.LANDED not in verdicts, (
+            "a cell the real attributor marked unmeasurable still scored LANDED "
+            "on a coincidental value match — the §7b false win is live"
+        )
+
+    def test_empty_draft_value_can_never_land(self):
+        # getComputedStyle returns '' for an unset custom property, and F2
+        # deliberately captures an empty declared VALUE rather than dropping it.
+        # '' == '' would otherwise score LANDED for a transfer never expressed.
+        html = """<html><body>
+          <section class="sgs-info-box" id="sec-a">Body</section>
+        </body></html>"""
+        sections = [{"section_id": "sec-a", "block_slug": "sgs/info-box",
+                     "draft_selector": ".sgs-info-box",
+                     "native_selector": ".wp-block-sgs-info-box"}]
+        rows = [_fake_row(".sgs-info-box", "--sgs-unset-token", "")]
+        by_sec, _ = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        assert by_sec["sec-a"][0].written is False
+
+    def test_verdict_engine_contract_written_false_never_lands(self):
+        # NOTE: this constructs a CellInput directly and therefore tests ONLY
+        # the verdict engine's contract, not the attribution/probe path. The
+        # production-path coverage is the first test in this pair.
+        cell = CellInput(
+            property="font-size", tier="Base", draft_value="16px",
+            computed_value="16px",          # identical to the wrapper's value
+            expected_default=None, written=False, probe_selector=None,
+        )
+        observation = RenderedObservation(
+            section_id="sec-a@Base", block_slug="sgs/container",
+            element_selector=".wp-block-sgs-container",
+            element_present=True, inner_text_len=200,
+            rendered_height_px=300.0, draft_height_px=300.0,
+            cells=[cell], page_loaded=True,
+        )
+        report = compute_report("synthetic", [observation])
+        verdicts = [c.verdict for sec in report.sections for c in sec.cells]
+        assert Verdict.LANDED not in verdicts, (
+            "a coincidental wrapper-value match scored LANDED — the §7b "
+            "coincidental-default false win has regressed"
+        )
+
+    def test_combinator_that_resolves_attributes_and_keeps_its_tail(self):
+        html = """<html><body>
+          <section class="sgs-trust-bar" id="sec-a">
+            <span class="sgs-trust-bar__icon"><svg></svg></span>
+          </section>
+        </body></html>"""
+        sections = [{"section_id": "sec-a", "block_slug": "sgs/trust-bar",
+                     "draft_selector": ".sgs-trust-bar",
+                     "native_selector": ".wp-block-sgs-trust-bar"}]
+        rows = [_fake_row(".sgs-trust-bar__icon svg", "width", "24px")]
+        by_sec, unattributed = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        assert unattributed == 0
+        cell = by_sec["sec-a"][0]
+        assert cell.probe_selector is not None
+        assert cell.probe_selector.endswith("svg"), (
+            "the descendant tail must survive into the probe selector, or the "
+            "value is read on the wrong element"
+        )
+
+    def test_pseudo_element_rule_is_attributed_and_carries_its_pseudo(self):
+        html = """<html><body>
+          <section class="sgs-info-box" id="sec-a">Body</section>
+        </body></html>"""
+        sections = [{"section_id": "sec-a", "block_slug": "sgs/info-box",
+                     "draft_selector": ".sgs-info-box",
+                     "native_selector": ".wp-block-sgs-info-box"}]
+        rows = [_fake_row(".sgs-info-box::before", "background", "#000")]
+        by_sec, unattributed = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        assert unattributed == 0
+        assert by_sec["sec-a"][0].probe_pseudo == "::before"
+
+    def test_nested_section_owns_its_own_descendants_not_the_outer_one(self):
+        # Nearest-ancestor, never first-found: a descendant of the INNER section
+        # must not be banked to the OUTER one.
+        html = """<html><body>
+          <section class="sgs-container" id="outer">
+            <div class="sgs-info-box" id="inner">
+              <h2 class="sgs-info-box__heading">Title</h2>
+            </div>
+          </section>
+        </body></html>"""
+        sections = [
+            {"section_id": "outer", "block_slug": "sgs/container",
+             "draft_selector": ".sgs-container", "native_selector": ".wp-block-sgs-container"},
+            {"section_id": "inner", "block_slug": "sgs/info-box",
+             "draft_selector": ".sgs-info-box", "native_selector": ".wp-block-sgs-info-box"},
+        ]
+        rows = [_fake_row(".sgs-info-box__heading", "color", "#123456")]
+        by_sec, unattributed = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        assert unattributed == 0
+        assert len(by_sec["inner"]) == 1
+        assert by_sec["outer"] == []
+
+    def test_selector_spanning_two_sections_is_unattributed(self):
+        html = """<html><body>
+          <section class="sgs-info-box" id="sec-a"><p class="shared">A</p></section>
+          <section class="sgs-hero" id="sec-b"><p class="shared">B</p></section>
+        </body></html>"""
+        rows = [_fake_row(".shared", "color", "red")]
+        by_sec, unattributed = batch_runner.attribute_cells_to_sections(
+            html, self._sections(), rows
+        )
+        assert unattributed == 1
+        assert by_sec["sec-a"] == [] and by_sec["sec-b"] == []
+
+    def test_block_level_variant_modifier_resolves_to_the_base_element(self):
+        # A draft variant writes ``.sgs-hero--video__heading``; the DB registers
+        # the base ``.sgs-hero__heading`` and the clone renders that. Without
+        # the modifier strip, EVERY element of every draft variant reads as
+        # unmeasurable — 31 cells on sgs/hero alone in the current corpus.
+        from oracle.element_probe import strip_block_modifier
+        assert strip_block_modifier(".sgs-hero--video__heading") == ".sgs-hero__heading"
+        assert strip_block_modifier(".sgs-cta-section--bg__inner") == ".sgs-cta-section__inner"
+        # An ELEMENT modifier qualifies the element, not the block — leave it be.
+        assert strip_block_modifier(".sgs-hero__title--large") is None
+        assert strip_block_modifier(".sgs-hero__title") is None
+
+    def test_colliding_first_root_class_does_not_give_one_section_both_nodes(self):
+        # Two sections whose draft_selector is the SAME class. Assignment is
+        # document order, first UNCLAIMED node — so section 2 cannot be handed
+        # section 1's node, which would mis-own its whole subtree.
+        html = """<html><body>
+          <section class="sgs-info-box" id="one"><p class="a">A</p></section>
+          <section class="sgs-info-box" id="two"><p class="b">B</p></section>
+        </body></html>"""
+        sections = [
+            {"section_id": "one", "block_slug": "sgs/info-box",
+             "draft_selector": ".sgs-info-box", "native_selector": ".wp-block-sgs-info-box"},
+            {"section_id": "two", "block_slug": "sgs/info-box",
+             "draft_selector": ".sgs-info-box", "native_selector": ".wp-block-sgs-info-box"},
+        ]
+        rows = [_fake_row(".a", "color", "red"), _fake_row(".b", "color", "blue")]
+        by_sec, _unattributed = batch_runner.attribute_cells_to_sections(html, sections, rows)
+        assert len(by_sec["one"]) == 1 and len(by_sec["two"]) == 1, (
+            "both nodes collapsed onto one section — the select_one collision "
+            "hazard has regressed"
+        )
 
 
 # ---------------------------------------------------------------------------

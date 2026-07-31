@@ -166,6 +166,41 @@ class CellInput:
     the computed value coincidentally equals the draft (guards against a
     coincidental initial-value LANDED without needing a CSS-initial-value table)."""
 
+    probe_selector: Optional[str] = None
+    """The element this cell must be MEASURED on, when that is not the section
+    root. ``None`` = measure the section root (``RenderedObservation.
+    element_selector``), which is correct only for a declaration that genuinely
+    targets the root box.
+
+    Why this field exists (Spec 31 §7b, "coincidental-default match"): a draft
+    declaration on a DESCENDANT (``.sgs-info-box__heading { font-size }``)
+    belongs to the section, but its value must be read on the HEADING, not the
+    section box. CSS-inherited properties (font-size, color, font-weight,
+    line-height) frequently make a descendant's value equal its wrapper's, so
+    attributing a descendant cell WITHOUT moving the probe manufactures false
+    LANDED verdicts — precisely the false win §7b forbids. A descendant cell
+    whose probe target cannot be resolved carries ``written=False`` instead, so
+    it resolves UNVERIFIED and can never be LANDED."""
+
+    source_selector: Optional[str] = None
+    """The DRAFT selector this cell was declared on, verbatim — provenance only,
+    never used to measure anything.
+
+    It exists so a cell can be joined back to the exact rule it came from. The
+    ground-truth control previously had to join on
+    ``(property, tier, draft_value)``, which collides whenever two rules in one
+    fixture share a token value (design-token reuse makes that routine): a cell
+    that was never attributed could still read as PASS because a DIFFERENT cell
+    with identical values had been attributed to the expected section. Carrying
+    the selector makes that join exact."""
+
+    probe_pseudo: Optional[str] = None
+    """Pseudo-element to pass as ``getComputedStyle``'s second argument
+    (``'::before'`` / ``'::after'``). ``None`` = the element itself. A pseudo
+    has no DOM node of its own, but its BASE element does and its computed
+    style is readable — so these are measurable rather than permanently
+    unattributable."""
+
     def __post_init__(self) -> None:
         # FIX-I: validate tier against the F2 vocabulary at construction time.
         validate_tier(self.tier)

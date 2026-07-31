@@ -98,6 +98,7 @@ from oracle.golden_expectations import (  # noqa: E402
 )
 
 from converter.recognition import recognise_section, _root_classes  # noqa: E402
+from oracle.element_probe import resolve_probe, split_pseudo  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -280,6 +281,59 @@ def _relevant_declared_rows(raw_html: str) -> list[Any]:
 # Section <-> declared-row attribution (guard (b): never guess, only match)
 # ---------------------------------------------------------------------------
 
+def _resolve_section_nodes(soup, sections: list[dict]) -> tuple[dict[str, Any], list[str]]:
+    """Resolve each discovered section to its OWN, UNIQUE draft DOM node.
+
+    ``draft_selector`` is ``.{root_classes[0]}`` (discover_sections:165), so two
+    sections whose FIRST root class happens to match both resolve to the same
+    node under ``soup.select_one``. That was rare while attribution only ever
+    looked at section ROOT nodes; it is routine now that attribution descends,
+    because a mis-assigned root node mis-owns that node's whole subtree.
+
+    Assignment is document order, first UNCLAIMED match — so section N cannot
+    steal the node already assigned to section N-1. A section left with no
+    unclaimed node is recorded as a COLLISION and simply gets no node: its
+    cells then fail to attribute and are counted unattributed, which is the
+    honest outcome. Never silently resolved to the first hit.
+    """
+    nodes: dict[str, Any] = {}
+    claimed: set[int] = set()
+    collisions: list[str] = []
+    for sec in sections:
+        sel = sec.get("draft_selector") or ""
+        try:
+            matched = soup.select(sel) if sel else []
+        except Exception:
+            matched = []
+        node = next((n for n in matched if id(n) not in claimed), None)
+        if node is None:
+            if matched:
+                collisions.append(
+                    f"{sec['section_id']}: every node matching {sel!r} is already "
+                    "claimed by an earlier section"
+                )
+            continue
+        nodes[sec["section_id"]] = node
+        claimed.add(id(node))
+    return nodes, collisions
+
+
+def _owning_section_id(node, section_nodes: dict[str, Any]) -> Optional[str]:
+    """The NEAREST ancestor-or-self section containing ``node``.
+
+    Walking up and stopping at the FIRST section hit is what makes nesting safe:
+    a node inside section B which is itself inside section A belongs to B, never
+    to A. Returns None for a node outside every discovered section.
+    """
+    by_node = {id(n): sid for sid, n in section_nodes.items()}
+    cur = node
+    while cur is not None:
+        if id(cur) in by_node:
+            return by_node[id(cur)]
+        cur = getattr(cur, "parent", None)
+    return None
+
+
 def _section_class_sets(draft_html: str, sections: list[dict]) -> dict[str, set[str]]:
     """For each discovered section, return the FULL class list on its DOM node.
 
@@ -292,9 +346,10 @@ def _section_class_sets(draft_html: str, sections: list[dict]) -> dict[str, set[
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(draft_html, "html.parser")
+    nodes, _collisions = _resolve_section_nodes(soup, sections)
     out: dict[str, set[str]] = {}
     for sec in sections:
-        node = soup.select_one(sec["draft_selector"])
+        node = nodes.get(sec["section_id"])
         classes = set(node.get("class") or []) if node is not None else set()
         out[sec["section_id"]] = classes
     return out
@@ -342,49 +397,99 @@ def attribute_cells_to_sections(
     sections: list[dict],
     declared_rows: list[Any],
 ) -> tuple[dict[str, list[CellInput]], int]:
-    """Attribute F2 declared rows to discovered sections by class-membership.
+    """Attribute F2 declared rows to the section that physically contains them.
 
     Returns (cells_by_section_id, unattributed_count).
 
-    A row is attributed to section S iff:
-      - its selector is a SIMPLE single-class selector (``.foo``), AND
-      - the class ``foo`` is present on S's DOM node's class list.
+    A row is attributed to section S iff its selector RESOLVES against the draft
+    DOM to node(s) whose NEAREST ancestor-or-self section is S — every matched
+    node agreeing on S. Resolution is real CSS-selector resolution, so a
+    descendant (``.sgs-info-box__heading``) and a combinator
+    (``.sgs-trust-bar__icon svg``) attribute correctly instead of being written
+    off; nearest-ancestor (never first-found) is what keeps a nested section's
+    own cells out of its parent's bucket.
 
-    Anything else (combinators, ids, pseudo-selectors, ``:root``/attribute
-    selectors, or a class that matches zero / more-than-one section) is
-    counted as unattributed and NOT silently assigned — guard (b): an
-    unexercised property must read as unverified, never covered.
+    Unattributed — counted, never guessed at (guard (b): an unexercised property
+    must read as unverified, never covered):
+      - the selector matches nothing in the draft DOM (a dead rule), or
+      - every match lies outside every discovered section, or
+      - matches span MORE THAN ONE section (genuinely ambiguous ownership).
+
+    Attribution alone is not enough, and this is the half that is easy to get
+    silently wrong. Each attributed cell also carries the element it must be
+    MEASURED on (``CellInput.probe_selector``). Where that element cannot be
+    resolved — an authored token this block does not render, e.g.
+    ``.sgs-team-member-grid__photo`` inside an ``sgs/container`` — the cell is
+    attributed but marked ``written=False``, so it resolves UNVERIFIED and can
+    never be LANDED. Attributing a descendant while still measuring the section
+    ROOT would score inherited properties (font-size, color, font-weight,
+    line-height) as LANDED wherever the descendant's value coincides with its
+    wrapper's: the "coincidental-default match" false win Spec 31 §7b forbids.
+    Expect a non-zero unmeasurable count — that is honest, not a shortfall.
     """
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(draft_html, "html.parser")
+    section_nodes, _collisions = _resolve_section_nodes(soup, sections)
     class_sets = _section_class_sets(draft_html, sections)
     cells_by_section: dict[str, list[CellInput]] = {s["section_id"]: [] for s in sections}
     section_slugs: dict[str, str] = {s["section_id"]: s["block_slug"] for s in sections}
+    section_native: dict[str, str] = {s["section_id"]: s["native_selector"] for s in sections}
     hidden_sections = _draft_hidden_sections(sections, declared_rows, class_sets)
     unattributed = 0
 
     for row in declared_rows:
-        m = _SIMPLE_CLASS_SELECTOR_RE.match(row.selector.strip())
-        if not m:
-            unattributed += 1
-            continue
-        cls = row.selector.strip()[1:]
-        matches = [sid for sid, classes in class_sets.items() if cls in classes]
-        if len(matches) != 1:
+        sel = row.selector.strip()
+        # A pseudo-element has no DOM node of its own, but its BASE element
+        # does, and getComputedStyle(el, '::before') reads it — so resolve
+        # ownership through the base rather than discarding the rule.
+        base_sel, _pseudo = split_pseudo(sel)
+        try:
+            matched = soup.select(sel)
+        except Exception:
+            matched = []
+        if not matched and base_sel != sel:
+            try:
+                matched = soup.select(base_sel)
+            except Exception:
+                matched = []
+        if not matched:
             unattributed += 1
             continue
 
-        sid = matches[0]
+        owners = {oid for n in matched
+                  if (oid := _owning_section_id(n, section_nodes)) is not None}
+        if len(owners) != 1:
+            unattributed += 1
+            continue
+
+        sid = next(iter(owners))
+        slug_for_cell = section_slugs.get(sid, "")
+        probe = resolve_probe(
+            selector=sel,
+            block_slug=slug_for_cell,
+            native_selector=section_native.get(sid, ""),
+            root_classes=class_sets.get(sid, set()),
+        )
+
         # A draft element that is display:none is not painted in the draft, so
         # its paint properties cannot be compared against a rendered clone.
         # written=False forces UNVERIFIED (never LANDED, never a scored failure)
         # — honest "not comparable", not a silent drop.
-        comparable = sid not in hidden_sections
+        # An EMPTY draft value cannot be compared to anything. F2 deliberately
+        # captures an empty VALUE rather than dropping it (declare_input.py MF-1),
+        # and getComputedStyle legitimately returns '' for an unset custom
+        # property — so '' == '' would score LANDED (verdict.py:291) for a
+        # transfer that was never even expressed. Marked not-comparable here
+        # rather than patched into the frozen §6 verdict contract.
+        has_value = bool(str(row.value).strip())
+        comparable = (sid not in hidden_sections) and probe.resolvable and has_value
         # Guard 3 (non-default-value) needs the BLOCK's own default for this
         # property: a draft value that merely equals the default proves nothing
         # about routing, because the clone would show it even with transfer
         # completely broken (Spec 31 §7b coincidental-default false-win).
         # Resolved DB-first; None when unknown, which guard 3 treats as
         # "cannot verify, skip" — never as "assume non-default and pass".
-        slug_for_cell = section_slugs.get(sid, "")
         default_for_cell = (
             expected_default_for(slug_for_cell, row.property) if slug_for_cell else None
         )
@@ -396,6 +501,9 @@ def attribute_cells_to_sections(
                 computed_value=None,       # filled in by the live probe (or left None)
                 expected_default=default_for_cell,
                 written=comparable,
+                probe_selector=probe.selector,
+                probe_pseudo=probe.pseudo,
+                source_selector=sel,
             )
         except ValueError:
             # Tier failed F2-vocabulary validation (CellInput.__post_init__) —
@@ -461,6 +569,9 @@ def _skipped_observations(
                 computed_value=None,
                 expected_default=c.expected_default,
                 written=False,   # forces UNVERIFIED regardless of any coincidental match
+                probe_selector=c.probe_selector,
+                probe_pseudo=c.probe_pseudo,
+                source_selector=c.source_selector,
             )
             for c in raw_cells
         ]
@@ -526,23 +637,53 @@ def _measure_section(page, selector: str) -> tuple[bool, int, float | None, int]
     )
 
 
-def _measure_cell_props(page, selector: str, props: list[str]) -> Optional[dict[str, str]]:
+def _measure_cell_props(
+    page,
+    selector: str,
+    props: list[str],
+    pseudo: Optional[str] = None,
+) -> Optional[dict[str, str]]:
     """Return {property: computed_value} for `selector`'s LAST (innermost)
-    match, or None if absent. See AMBIGUOUS-SELECTOR HANDLING note above."""
+    match, or None if absent. See AMBIGUOUS-SELECTOR HANDLING note above.
+
+    ``pseudo`` ('::before' / '::after') is passed to getComputedStyle's second
+    argument, so a pseudo-element rule is measured on the pseudo rather than on
+    its base element — the two carry different values by design, and reading the
+    base would compare the wrong box.
+
+    GENERATED-CONTENT GUARD (council finding, 2026-07-31 — a false-LANDED path).
+    ``getComputedStyle(el, '::before')`` on an element with NO ``::before`` rule
+    at all still returns a full, valid declaration of inherited/initial values —
+    it never returns null and never throws. So a draft rule like
+    ``.x::before { background-color: transparent }`` would compare the draft's
+    value against the browser's initial value for a box that does not exist, and
+    score LANDED for a transfer that never happened. A pseudo-element only
+    generates a box when its computed ``content`` is neither ``none`` nor
+    ``normal``, so that is checked FIRST and the probe reports the element as
+    absent when no box is generated — resolving UNVERIFIED, never LANDED.
+    """
     if not props:
         return {}
     result = page.evaluate(
         """(args) => {
-            const [sel, props] = args;
+            const [sel, props, pseudo] = args;
             const els = document.querySelectorAll(sel);
             if (els.length === 0) return null;
             const el = els[els.length - 1];
-            const cs = getComputedStyle(el);
+            const cs = getComputedStyle(el, pseudo || null);
+            if (pseudo) {
+                const content = (cs.getPropertyValue('content') || '').trim();
+                // No generated box -> nothing to measure. Reported as absent
+                // rather than as a page of initial values that could match.
+                if (content === '' || content === 'none' || content === 'normal') {
+                    return null;
+                }
+            }
             const out = {};
             for (const p of props) { out[p] = cs.getPropertyValue(p); }
             return out;
         }""",
-        [selector, props],
+        [selector, props, pseudo],
     )
     return result
 
@@ -615,25 +756,46 @@ def run_live_fixture(
                         ambiguous_matches[sel] = max(ambiguous_matches.get(sel, 0), live_match_count)
 
                     tier_cells = [c for c in sec_cells if c.tier == tier]
-                    props = sorted({c.property for c in tier_cells})
-                    computed_map: Optional[dict[str, str]] = (
-                        _measure_cell_props(live_page, sec["native_selector"], props)
-                        if (live_loaded and live_present and props) else None
-                    )
 
-                    resolved_cells = [
-                        CellInput(
+                    # Measure each cell on ITS OWN element, not on the section
+                    # root: cells are grouped by (probe target, pseudo) and one
+                    # getComputedStyle read is made per group. A cell with no
+                    # probe_selector targets the section root (the historic
+                    # behaviour, still correct for root-box declarations).
+                    # Grouping keeps the read count at one per distinct element
+                    # rather than one per cell.
+                    groups: dict[tuple[str, Optional[str]], list[CellInput]] = {}
+                    for c in tier_cells:
+                        key = (c.probe_selector or sec["native_selector"], c.probe_pseudo)
+                        groups.setdefault(key, []).append(c)
+
+                    computed_by_key: dict[tuple[str, Optional[str]], Optional[dict[str, str]]] = {}
+                    for (probe_sel, probe_pseudo), group_cells in groups.items():
+                        group_props = sorted({c.property for c in group_cells})
+                        # element_present is asserted for the SECTION; a probe
+                        # target deeper in the tree may legitimately be absent,
+                        # and _measure_cell_props returns None for that — which
+                        # resolves the cell UNVERIFIED, never LANDED.
+                        computed_by_key[(probe_sel, probe_pseudo)] = (
+                            _measure_cell_props(live_page, probe_sel, group_props, probe_pseudo)
+                            if (live_loaded and live_present and group_props) else None
+                        )
+
+                    resolved_cells = []
+                    for c in tier_cells:
+                        key = (c.probe_selector or sec["native_selector"], c.probe_pseudo)
+                        cmap = computed_by_key.get(key)
+                        resolved_cells.append(CellInput(
                             property=c.property,
                             tier=c.tier,
                             draft_value=c.draft_value,
-                            computed_value=(
-                                computed_map.get(c.property) if computed_map is not None else None
-                            ),
+                            computed_value=(cmap.get(c.property) if cmap is not None else None),
                             expected_default=c.expected_default,
                             written=c.written,
-                        )
-                        for c in tier_cells
-                    ]
+                            probe_selector=c.probe_selector,
+                            probe_pseudo=c.probe_pseudo,
+                            source_selector=c.source_selector,
+                        ))
 
                     observations.append(RenderedObservation(
                         section_id=f"{sec['section_id']}@{tier}",

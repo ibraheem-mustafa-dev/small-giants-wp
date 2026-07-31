@@ -1,5 +1,70 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D429 — Oracle measures each cell on ITS OWN element; two false-LANDED paths closed [INCIDENT]
+
+**The fidelity oracle only ever measured the SECTION ROOT.** A draft rule declared on a descendant
+(`.sgs-info-box__heading { font-size }`) could not attribute at all — class-set membership reads only
+the section root node's own class list — so **393 of 499 declared cells were invisible to the
+measurement**. Attribution now resolves selectors against the draft DOM and assigns to the NEAREST
+ancestor section (never first-found; nesting-safe). `discover_sections()` top-level scoping is
+UNCHANGED — it deliberately mirrors the walker; only the attribution walk descends.
+
+**Attribution without moving the probe would have MANUFACTURED false passes, so the two halves ship
+together.** Reading a descendant's value off the section box scores inherited properties (font-size,
+color, font-weight, line-height) as LANDED wherever they coincide with the wrapper — the Spec 31 §7b
+"coincidental-default match" false win. Each cell now carries `probe_selector` + `probe_pseudo`,
+resolved DB-first from `block_attributes.derived_selector` + `css_element` (C1's mechanism — NOT a
+new resolver; the "missing resolver" reported at D428 never existed). A cell whose element the DB
+does not record is attributed but `written=False` → UNVERIFIED, **never** LANDED.
+
+**Outcome — 11 REAL transfer failures newly visible**, invisible to every prior run: `sgs-team-member`
+photo 80px→150px + `object-fit` cover→fill, `sgs-card-grid` padding 24px→0, `sgs-product-card`
+`aspect-ratio` 1/1→auto, and 6 more (`reports/2026-07-31-oracle-attribution-and-probe-target.md`).
+LANDED 31→55 (rollback floor was 31). Ground-truth control 73→0 mismatches against the artefact
+committed at `b1a2f30f` and deliberately NOT regenerated for the fix.
+
+**⛔ Do NOT arm `--with-landed`.** `_LANDED_HARD_FAIL_VERDICTS = {"WRITTEN-not-LANDED"}` read 0 only
+BECAUSE those cells were unattributed; this change manufactured the verdict. Separate decision, after
+triage. Verified still disarmed.
+
+**Honest numbers — do NOT quote "21.2% → 99.6%" as an improvement of that size.** Attribution and
+measurability are different measurements. 499 declared / 497 attributed / **231 MEASURABLE (46.3%)**;
+**266 attributed-but-unmeasurable** target element tokens the DB has no record of the block rendering
+(`__inner`, `__item`, `__icon`, `__text`) — each a §5 GAP candidate, and the real newly-visible
+finding. The banked prediction (`393 → ~74`, `→ ~85%`) matched neither, because it assumed those cells
+would stay UNATTRIBUTED rather than attributed-and-unmeasurable; recorded as a divergence, not
+retro-fitted. GUARD-FAIL 33→160 is a denominator effect — the SAME 11 sections fail, zero newly
+failing, they simply carry more cells each.
+
+**Three tools were lying, all found by checking rather than assuming:**
+1. `decompose_unattributed.py` RE-IMPLEMENTED the attributor's reject branches instead of calling it,
+   so after the fix it still printed "393 unattributed / 21.2%" — the brief's own instruction to
+   "re-run it and compare" would have concluded the fix did nothing. Now calls the real attributor.
+2. The ground-truth control recorded `probe_targets` but `cmd_check` never READ them — the probe half
+   shipped with zero coverage, and "73→0" only ever covered ownership. Now asserts `probe_is_root`
+   (96/96) and FAILS CLOSED when the control lacks the field. Regeneration proven purely additive: 98
+   rows compared field-by-field vs `git show HEAD:…`, 0 pre-existing expectations changed.
+3. `cmd_check` joined on `(property, tier, draft_value)` without the selector — collides under
+   design-token reuse, so an unattributed cell could read PASS on another cell's identical values.
+   `CellInput.source_selector` added (provenance only) to make the join exact.
+
+**Pre-commit council (3 raters, blub.db 255) found 2 LIVE false-LANDED paths I had missed:**
+(a) `getComputedStyle(el, '::before')` on an element with NO `::before` returns a full declaration of
+initial values — never null, never throws — so a draft value coinciding with an initial value scored
+LANDED for a box the clone never rendered. Guarded on computed `content`.
+(b) empty draft value vs `''` from an unset custom property compared equal → LANDED. Now
+`written=False` at attribution, not a patch to the frozen §6 verdict contract.
+Re-ran the live batch after both: totals IDENTICAL, so these closed reachable-but-unexercised paths.
+Also fixed: `derived_selector` comma chains (`.sgs-hero__headline, h1, h2`) were compared as raw
+strings, forcing every hero/cta headline typography rule UNVERIFIED (measurable 220→231); a test
+named as covering the fix that only tested the verdict engine (renamed + real-path companion added).
+
+`discover_sections()` had ZERO test coverage — every existing test monkeypatched it away, so a
+rewrite passed the whole suite. +16 tests, each negative-controlled.
+
+Files: `scripts/oracle/element_probe.py` (new) · `batch_runner.py` · `models.py` ·
+`decompose_unattributed.py` · `attribution_ground_truth.py` · `tests/test_batch_runner.py`.
+
 ## D428 — Track 1: two green-forever gates made real, 30 STOPs recovered, C2 made measurable [INCIDENT]
 
 **Gates that could never fail, now fail.** `audit-feature-parity.py` always `sys.exit(0)`, so "every

@@ -9,14 +9,35 @@ fidelity metric, and the obvious acceptance test ("unattributed went down") is a
 metric the change itself moves — it is satisfied just as well by attributing
 every row to the nearest section, correctly or not.
 
-So the control is derived by a DELIBERATELY DIFFERENT METHOD from the one under
-test, or it could not falsify it:
+So the control is an INDEPENDENT RE-IMPLEMENTATION, and its expectations are a
+FROZEN COMMITTED ARTEFACT regenerated only deliberately:
 
-    under test   class-set membership — is the selector's class in the section
-                 ROOT node's own class list?
-    control      real CSS-selector resolution (``soup.select``) + DOM ancestry —
-                 which node(s) does this selector ACTUALLY match, and which
-                 discovered section physically CONTAINS that node?
+    under test   ``batch_runner.attribute_cells_to_sections``
+    control      ``_section_nodes`` + ``_owning_section`` in this file, written
+                 separately, importing nothing from the attributor
+
+CORRECTION (2026-07-31, council-flagged). This docstring used to claim the two
+used "deliberately different methods" — control by CSS-selector resolution,
+attributor by class-set membership. **That is no longer true**: the attributor
+now also resolves selectors and walks DOM ancestry, because class-set membership
+structurally cannot see a descendant, which was the defect being fixed. Stating
+the independence claim accurately matters more than keeping it flattering, so:
+
+  * WHAT STILL FALSIFIES — the expectations in ``attribution-ground-truth.json``
+    were generated before the attributor changed and are not regenerated as part
+    of a fix. Two separately-written implementations must agree row by row, and
+    they differ concretely in collision policy (this file falls back to
+    ``matched[0]`` and still assigns; the attributor assigns nothing). So
+    implementation bugs — off-by-one, wrong collision fallback, wrong pseudo
+    handling, a cell silently dropped — are still caught.
+  * WHAT NO LONGER FALSIFIES — a flaw in the shared CONCEPT ("nearest ancestor
+    is the right ownership rule") is now invisible to both. That is a real
+    reduction in power and is recorded here rather than papered over.
+
+The control also checks the PROBE TARGET, not just ownership. Attribution alone
+was covered before; the probe half — which element a cell is measured on, the
+part that actually closes the §7b coincidental-default false win — shipped
+unchecked until 2026-07-31.
 
 The control also records the **probe target**: the node a cell's value must be
 measured on. That is the second half of the fix. Attributing a descendant cell to
@@ -186,11 +207,18 @@ def build_control(fixtures_dir: Path, conformance_dir: Path,
                     probe_base = []
 
             owners, targets = [], []
+            # Is the matched node the owning section's OWN root node, or a
+            # descendant of it? This is the probe-target expectation: a root
+            # rule is legitimately measured on the section box, a descendant
+            # rule must NOT be. Derived here from DOM identity — independent of
+            # the attributor's DB-registration logic.
+            is_root_hits: list[bool] = []
             for n in probe_base:
                 owner = _owning_section(n, sec_nodes)
                 if owner:
                     owners.append(owner)
                     targets.append(_node_path(n) + (pseudo or ""))
+                    is_root_hits.append(sec_nodes.get(owner) is n)
             uniq = sorted(set(owners))
 
             if uniq and len(uniq) == 1:
@@ -213,6 +241,7 @@ def build_control(fixtures_dir: Path, conformance_dir: Path,
                 "verdict": verdict,
                 "owning_section": owner,
                 "probe_targets": sorted(set(targets)),
+                "probe_is_root": bool(is_root_hits) and all(is_root_hits),
                 "match_count": len(matched),
             })
 
@@ -260,6 +289,7 @@ def cmd_check(args) -> int:
     from oracle.batch_runner import attribute_cells_to_sections
 
     mismatches, checked = [], 0
+    probe_checked_local = [0]
     for stem, f in ctrl["fixtures"].items():
         path = None
         for s, p in discover_fixtures(args.fixtures_dir, args.conformance_dir):
@@ -273,17 +303,24 @@ def cmd_check(args) -> int:
         rows = _relevant_declared_rows(html)
         by_sec, _unattr = attribute_cells_to_sections(html, sections, rows)
 
-        # Key on the FULL (property, tier, draft_value) triple. Keying on
-        # (property, tier) alone collides — many rows share a property across
-        # sections, and taking the first hit would manufacture both false
-        # matches and false mismatches. Where even the triple is ambiguous
-        # (the same declaration genuinely appears twice), record it as such
-        # rather than guessing.
-        live_owner: dict[tuple[str, str, str], set] = {}
+        # Key on the FULL (selector, property, tier, draft_value) tuple.
+        #
+        # This used to omit the SELECTOR and key on (property, tier, value)
+        # alone. That collides whenever two rules in one fixture share a token
+        # value — routine under design-token reuse — and the collision could
+        # manufacture a PASS: a cell that was never attributed still read as
+        # correct because a DIFFERENT cell with identical values had landed in
+        # the expected section. Including the selector makes the join exact;
+        # a genuinely repeated identical declaration still records as ambiguous
+        # rather than being guessed at. (Council finding, 2026-07-31.)
+        live: dict[tuple[str, str, str, str], set] = {}
+        live_cells: dict[tuple[str, str, str, str], list] = {}
         for sid, cells in by_sec.items():
             for c in cells:
-                k = (c.property, c.tier, str(getattr(c, "draft_value", "")))
-                live_owner.setdefault(k, set()).add(sid)
+                k = (str(getattr(c, "source_selector", "") or ""), c.property,
+                     c.tier, str(getattr(c, "draft_value", "")))
+                live.setdefault(k, set()).add(sid)
+                live_cells.setdefault(k, []).append(c)
 
         row_values = {}
         for row in rows:
@@ -294,7 +331,8 @@ def cmd_check(args) -> int:
                 continue
             checked += 1
             val = row_values.get((r["selector"], r["property"], r["tier"]), "")
-            owners = live_owner.get((r["property"], r["tier"], val))
+            k = (r["selector"], r["property"], r["tier"], val)
+            owners = live.get(k)
             if owners is None:
                 got = None                      # not attributed at all today
             elif len(owners) == 1:
@@ -304,21 +342,53 @@ def cmd_check(args) -> int:
             if got != r["owning_section"]:
                 mismatches.append({
                     "fixture": stem, "selector": r["selector"], "property": r["property"],
-                    "expected": r["owning_section"], "got": got,
+                    "expected": r["owning_section"], "got": got, "kind": "owner",
                 })
+                continue
+
+            # THE PROBE HALF. Ownership alone was all this control checked until
+            # 2026-07-31, which left the more bug-prone half — WHICH ELEMENT the
+            # value is read on — with no ground truth at all. A descendant rule
+            # measured on the section root is exactly the §7b coincidental-default
+            # false win, and it would have passed the ownership check happily.
+            if "probe_is_root" not in r:
+                continue                        # control predates this field
+            probe_checked_local[0] += 1
+            for c in live_cells.get(k, []):
+                on_root = getattr(c, "probe_selector", None) is None
+                measurable = bool(getattr(c, "written", True))
+                if r["probe_is_root"] and not on_root:
+                    mismatches.append({
+                        "fixture": stem, "selector": r["selector"], "property": r["property"],
+                        "expected": "measured on the section root",
+                        "got": f"probe_selector={c.probe_selector!r}", "kind": "probe",
+                    })
+                elif (not r["probe_is_root"]) and on_root and measurable:
+                    mismatches.append({
+                        "fixture": stem, "selector": r["selector"], "property": r["property"],
+                        "expected": "measured on its own element, or marked unmeasurable",
+                        "got": "measured on the SECTION ROOT (a §7b false-win path)",
+                        "kind": "probe",
+                    })
 
     print("=" * 66)
     print("  Attribution vs GROUND TRUTH")
     print("=" * 66)
-    print(f"  OWNED rows in control : {checked}")
-    print(f"  mismatches            : {len(mismatches)}")
+    print(f"  OWNED rows in control   : {checked}")
+    print(f"  of those, probe-checked : {probe_checked_local[0]}")
+    print(f"  mismatches              : {len(mismatches)}")
     if mismatches:
         for m in mismatches[:20]:
-            print(f"    {m['fixture']}: {m['selector']} {{{m['property']}}} "
-                  f"expected={m['expected']} got={m['got']}")
+            print(f"    [{m.get('kind','owner')}] {m['fixture']}: {m['selector']} "
+                  f"{{{m['property']}}} expected={m['expected']} got={m['got']}")
         print("\n  FAIL — the attributor disagrees with independently-derived truth.")
         return 1 if args.check else 0
-    print("\n  PASS — every OWNED row attributes to the section that physically contains it.")
+    if probe_checked_local[0] == 0:
+        print("\n  FAIL — the control carries no probe_is_root expectations, so the "
+              "probe half went unchecked. Re-run --generate.")
+        return 1 if args.check else 0
+    print("\n  PASS — every OWNED row attributes to the section that physically "
+          "contains it, AND is measured on the right element.")
     return 0
 
 

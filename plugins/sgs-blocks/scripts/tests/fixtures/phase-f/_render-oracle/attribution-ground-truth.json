@@ -30,6 +30,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -41,6 +42,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -52,6 +54,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -63,6 +66,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -74,6 +78,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -85,6 +90,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -96,6 +102,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -107,6 +114,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -118,6 +126,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -129,6 +138,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -140,6 +150,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -154,6 +165,7 @@
             "[document]/section[0]/div[2]",
             "[document]/section[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -168,6 +180,7 @@
             "[document]/section[0]/div[2]",
             "[document]/section[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -182,6 +195,7 @@
             "[document]/section[0]/div[2]",
             "[document]/section[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -196,6 +210,7 @@
             "[document]/section[0]/div[2]",
             "[document]/section[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -210,6 +225,7 @@
             "[document]/section[0]/div[2]/p[0]",
             "[document]/section[0]/div[3]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -224,6 +240,7 @@
             "[document]/section[0]/div[2]/p[0]",
             "[document]/section[0]/div[3]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -238,6 +255,7 @@
             "[document]/section[0]/div[2]/p[0]",
             "[document]/section[0]/div[3]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -252,6 +270,7 @@
             "[document]/section[0]/div[2]/img[0]",
             "[document]/section[0]/div[3]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -266,6 +285,7 @@
             "[document]/section[0]/div[2]/img[0]",
             "[document]/section[0]/div[3]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -280,6 +300,7 @@
             "[document]/section[0]/div[2]/img[0]",
             "[document]/section[0]/div[3]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -294,6 +315,7 @@
             "[document]/section[0]/div[2]/img[0]",
             "[document]/section[0]/div[3]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -308,6 +330,7 @@
             "[document]/section[0]/div[2]/img[0]",
             "[document]/section[0]/div[3]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -322,6 +345,7 @@
             "[document]/section[0]/div[2]/img[0]",
             "[document]/section[0]/div[3]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -336,6 +360,7 @@
             "[document]/section[0]/div[2]/p[1]",
             "[document]/section[0]/div[3]/p[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -350,6 +375,7 @@
             "[document]/section[0]/div[2]/p[1]",
             "[document]/section[0]/div[3]/p[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -364,6 +390,7 @@
             "[document]/section[0]/div[2]/p[1]",
             "[document]/section[0]/div[3]/p[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         }
       ]
@@ -385,6 +412,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -396,6 +424,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -407,6 +436,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -418,6 +448,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -429,6 +460,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -440,6 +472,7 @@
           "probe_targets": [
             "[document]/section[0]::before"
           ],
+          "probe_is_root": true,
           "match_count": 0
         },
         {
@@ -451,6 +484,7 @@
           "probe_targets": [
             "[document]/section[0]::before"
           ],
+          "probe_is_root": true,
           "match_count": 0
         },
         {
@@ -462,6 +496,7 @@
           "probe_targets": [
             "[document]/section[0]::before"
           ],
+          "probe_is_root": true,
           "match_count": 0
         },
         {
@@ -473,6 +508,7 @@
           "probe_targets": [
             "[document]/section[0]::before"
           ],
+          "probe_is_root": true,
           "match_count": 0
         },
         {
@@ -484,6 +520,7 @@
           "probe_targets": [
             "[document]/section[0]::before"
           ],
+          "probe_is_root": true,
           "match_count": 0
         },
         {
@@ -495,6 +532,7 @@
           "probe_targets": [
             "[document]/section[0]::before"
           ],
+          "probe_is_root": true,
           "match_count": 0
         },
         {
@@ -506,6 +544,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/h2[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -517,6 +556,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/h2[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -528,6 +568,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/h2[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -539,6 +580,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/h2[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -550,6 +592,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/h2[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -561,6 +604,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -572,6 +616,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -583,6 +628,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -594,6 +640,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -605,6 +652,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -616,6 +664,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -627,6 +676,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         }
       ]
@@ -648,6 +698,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -659,6 +710,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -673,6 +725,7 @@
             "[document]/section[0]/div[0]/div[2]",
             "[document]/section[0]/div[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -687,6 +740,7 @@
             "[document]/section[0]/div[0]/div[2]",
             "[document]/section[0]/div[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -701,6 +755,7 @@
             "[document]/section[0]/div[0]/div[2]",
             "[document]/section[0]/div[0]/div[3]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -710,6 +765,7 @@
           "verdict": "STATE-CONDITIONAL",
           "owning_section": null,
           "probe_targets": [],
+          "probe_is_root": false,
           "match_count": 0
         },
         {
@@ -719,6 +775,7 @@
           "verdict": "STATE-CONDITIONAL",
           "owning_section": null,
           "probe_targets": [],
+          "probe_is_root": false,
           "match_count": 0
         },
         {
@@ -733,6 +790,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -747,6 +805,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -761,6 +820,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -775,6 +835,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -789,6 +850,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -803,6 +865,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -817,6 +880,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -831,6 +895,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -845,6 +910,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -859,6 +925,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -873,6 +940,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -887,6 +955,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -901,6 +970,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -915,6 +985,7 @@
             "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
             "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -926,6 +997,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -937,6 +1009,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -948,6 +1021,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -959,6 +1033,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -970,6 +1045,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -981,6 +1057,7 @@
           "probe_targets": [
             "[document]/section[0]/div[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -995,6 +1072,7 @@
             "[document]/section[0]/div[0]/div[2]/span[1]",
             "[document]/section[0]/div[0]/div[3]/span[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -1009,6 +1087,7 @@
             "[document]/section[0]/div[0]/div[2]/span[1]",
             "[document]/section[0]/div[0]/div[3]/span[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -1023,6 +1102,7 @@
             "[document]/section[0]/div[0]/div[2]/span[1]",
             "[document]/section[0]/div[0]/div[3]/span[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -1037,6 +1117,7 @@
             "[document]/section[0]/div[0]/div[2]/span[1]",
             "[document]/section[0]/div[0]/div[3]/span[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         },
         {
@@ -1051,6 +1132,7 @@
             "[document]/section[0]/div[0]/div[2]/span[1]",
             "[document]/section[0]/div[0]/div[3]/span[1]"
           ],
+          "probe_is_root": false,
           "match_count": 4
         }
       ]
@@ -1072,6 +1154,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -1083,6 +1166,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -1094,6 +1178,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -1105,6 +1190,7 @@
           "probe_targets": [
             "[document]/section[0]"
           ],
+          "probe_is_root": true,
           "match_count": 1
         },
         {
@@ -1116,6 +1202,7 @@
           "probe_targets": [
             "[document]/section[0]/h3[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1127,6 +1214,7 @@
           "probe_targets": [
             "[document]/section[0]/h3[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1138,6 +1226,7 @@
           "probe_targets": [
             "[document]/section[0]/h3[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1149,6 +1238,7 @@
           "probe_targets": [
             "[document]/section[0]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1160,6 +1250,7 @@
           "probe_targets": [
             "[document]/section[0]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1171,6 +1262,7 @@
           "probe_targets": [
             "[document]/section[0]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1182,6 +1274,7 @@
           "probe_targets": [
             "[document]/section[0]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1193,6 +1286,7 @@
           "probe_targets": [
             "[document]/section[0]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1204,6 +1298,7 @@
           "probe_targets": [
             "[document]/section[0]/img[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1215,6 +1310,7 @@
           "probe_targets": [
             "[document]/section[0]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1226,6 +1322,7 @@
           "probe_targets": [
             "[document]/section[0]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         },
         {
@@ -1237,6 +1334,7 @@
           "probe_targets": [
             "[document]/section[0]/p[0]"
           ],
+          "probe_is_root": false,
           "match_count": 1
         }
       ]
