@@ -18,30 +18,28 @@ gets ONE true answer instead of three drifting ones.
 block each other. **TWO separate sessions ran today on this shared worktree**: the motion Wave C
 build (below, D426–D427) and a **Track-1 verification session (D428)**.
 
-> ### ⭐ TRACK 1 — its own session record, written 2026-07-31
-> **`memory/session-2026-07-31-track1.md`** is the full status + next-session orchestration plan for
-> Track 1. It lives there rather than inline because the two sessions overlapped on this file and
-> neither should overwrite the other. **If you are picking up Track 1, read that file first — it is
-> the authority, deliberately long so the next session does not repeat this one's fact-finding.**
+> ### ⭐ TRACK 1 (D428) — full record: **`memory/session-2026-07-31-track1.md`**
+> Kept there, not inline, because both sessions edited this file today. **Picking up Track 1? Read
+> that file first — it is the authority and carries the whole next-session orchestration plan.**
 >
-> **Headline:** 5 commits pushed. Two quality gates that could never fail now genuinely fail
-> (feature-parity audit; the D101 STOP ratchet, which compared a count and now compares identifier
-> sets). 30 lost STOP defences recovered from `memory/` — 123→169, additive only. Spec 31 C2 is
-> measurable at last: 499 declared / 21.2% attributed, with a committed pre-image, a bucket
-> decomposition and a **failing ground-truth control** (73 of 96 provably-owned rows unattributed).
+> **Headline:** 5 commits pushed. Two gates that could never fail now genuinely fail (feature-parity;
+> the D101 ratchet, which compared a count and now compares identifier sets). 30 lost STOPs recovered
+> from `memory/` — 123→169, additive only. Spec 31 C2 measurable at last: 499 declared / 21.2%
+> attributed, with a pre-image, a bucket decomposition, and a **failing ground-truth control**
+> (73 of 96 provably-owned rows unattributed).
 >
-> **Three corrections in that file overturn earlier claims — do not re-derive them:** the Phase-2c
-> "missing resolver" does NOT exist (it is `block_attributes.derived_selector`, Bean caught this);
-> `sgs/nav-menu.underlineOffset` is `css_property='bottom'`, never a mis-seed; and the BEM-regex
-> diagnosis was wrong (13 cells, not 380).
+> **Three corrections there overturn earlier claims — do not re-derive:** the Phase-2c "missing
+> resolver" does NOT exist (it is `block_attributes.derived_selector` — Bean caught this);
+> `underlineOffset` is `css_property='bottom'`, never a mis-seed; the BEM-regex diagnosis was wrong
+> (13 cells, not 380).
 >
-> **⛔ `plugins/sgs-blocks/src/blocks/nav-menu/render.php` has UNCOMMITTED Track-1 work** (the nav
-> submenu walker — written, tested, deliberately not committed because the visual-diff gate
-> correctly demands a deploy first). Do NOT revert, stash or `git checkout` it.
+> **⛔ `src/blocks/nav-menu/render.php` holds UNCOMMITTED Track-1 work** — the submenu walker,
+> written + tested, held back because the visual-diff gate correctly wants a deploy first. Do NOT
+> revert or stash it.
 >
-> **The final Track-1 task, too large for that session: Spec 35 Part L rollout** (`group` 4/81,
-> `StateToggleControl` 3/81, `hideExtensions` 26/81, ToolsPanel 20/81). Bean's ruling: it stays in
-> the living status, NOT in `parking.md`. Full brief = Task 5 in that record.
+> **Final Track-1 task (too large for that session): Spec 35 Part L rollout** — `group` 4/81,
+> `StateToggleControl` 3/81, `hideExtensions` 26/81, ToolsPanel 20/81. Bean's ruling: stays in living
+> status, NOT `parking.md`. Brief = Task 5 in that record.
 
 **What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
 three things that were quietly broken are fixed.** Every effect was watched moving in a browser,
