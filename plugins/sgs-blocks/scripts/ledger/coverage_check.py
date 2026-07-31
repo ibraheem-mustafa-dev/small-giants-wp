@@ -974,6 +974,37 @@ def main(argv: list[str] | None = None) -> int:
         conformance_dir = args.conformance_dir or _CONFORMANCE_DIR
     db_path = args.db or _DB_PATH
 
+    # DB availability. The DB is DELIBERATELY UNVERSIONED (see
+    # .claude/dev-setup.md "sgs-framework.db") — on a clean clone it is
+    # simply absent. run_corpus() routes every fixture's CSS through
+    # orchestrator/css_router.py, which calls into converter/db/db_lookup.py
+    # for block/property lookups on EVERY fixture — none of those call sites
+    # degrade gracefully on a missing DB (each one either can't open the file,
+    # or — if the parent directory happens to exist but the file doesn't —
+    # silently creates an empty DB then fails with "no such table"). Without
+    # this upfront guard, that surfaces as 36 unrelated per-fixture
+    # "INTEGRATION ERROR" entries, none of them baselined, so --check hard-fails
+    # the whole `npm run build` for a reason that has nothing to do with real
+    # coverage drift. Verified empirically 2026-07-31 with a faked empty HOME
+    # (zero `.claude` directory): every DB-touching fixture failed with
+    # "unable to open database file" and the gate exited 1.
+    #
+    # Skip cleanly (exit 0) in EVERY mode when the DB is absent — there is
+    # nothing this gate can check without it. A DB that IS present but
+    # missing a table is a different case (real drift) and is NOT covered by
+    # this guard: run_corpus() still surfaces those per-fixture, naming the
+    # missing table in the "INTEGRATION ERROR" text, and --check still fails
+    # loudly on them below (existing behaviour, unchanged).
+    if not db_path.exists():
+        print(
+            f"[F5] SKIPPED — DB not found: {db_path}\n"
+            "  This is expected on a machine without the local dev DB (it is "
+            "unversioned by design). The build proceeds; run "
+            "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to (re)create "
+            "it if you need this coverage gate to actually run."
+        )
+        return 0
+
     summary = run_corpus(fixtures_dir, conformance_dir, db_path)
 
     # FIX 2: _load_baseline now returns (keys, hash) tuple.

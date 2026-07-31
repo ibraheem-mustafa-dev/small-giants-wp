@@ -298,6 +298,21 @@ def main() -> int:
         # suffix-vocab dict, side-suffix regex). Empty baseline after the D249 purge.
         violations.extend(_check_convsrc_mod.run())
 
+    except sqlite3.OperationalError as exc:
+        # DB is PRESENT (conn was opened above) but DRIFTED — a required
+        # table is missing. Distinct from plain absence (handled above by
+        # `conn=None` degrading each check gracefully). Fail loudly, naming
+        # the table via sqlite3's own error text, rather than an uncaught
+        # traceback.
+        print(
+            f"[cheat-gate] FAIL — DB present at {_DB_PATH} but a check could "
+            f"not run against it: {exc}\n"
+            "  This means the DB schema has drifted from what these checks "
+            "expect (a table is missing). Re-run "
+            "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to bring "
+            "the DB back in sync, then re-run this gate."
+        )
+        return 1
     finally:
         if conn is not None:
             conn.close()

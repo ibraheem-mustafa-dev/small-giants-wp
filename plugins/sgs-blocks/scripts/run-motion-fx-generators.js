@@ -31,16 +31,11 @@
  *        - seed-motion-fx-registry.py always runs (idempotent DB seeding).
  *        - generate-fx-effects-php.py runs with --check (that script owns
  *          its own regenerate-and-diff mode — see its own file).
- *        - generate-fx-qualifying-blocks.py has NO --check mode yet (it is
- *          owned by a concurrent track building src/blocks/extensions/fx.js
- *          and scripts/generate-fx-qualifying-blocks.py — out of scope for
- *          this fix, reported as owed rather than edited). This wrapper
- *          emulates the same "regenerate-and-diff, never leave a drifted
- *          working tree, fail loudly on staleness" contract EXTERNALLY: it
- *          snapshots the two output files before running the generator (which
- *          always writes), diffs after, restores the original bytes if
- *          nothing should have changed, and fails loudly (naming both files)
- *          if the regenerated content differs from what was committed.
+ *        - generate-fx-qualifying-blocks.py ALSO runs with --check (2026-07-31
+ *          — it used to have no --check mode, so this wrapper emulated one
+ *          externally via a snapshot/diff/restore dance; that external
+ *          emulation is gone now that the script owns its own --check,
+ *          matching generate-fx-effects-php.py's contract exactly).
  *
  * A missing DB must never silently produce an empty roster (see the module
  * docstrings of the two generators this wraps) — that guard lives IN each
@@ -62,21 +57,8 @@ const PLUGIN_ROOT = path.resolve(SCRIPTS_DIR, "..");
 // generator's DB_PATH ever changes, update this constant too.
 const DB_PATH = path.join(os.homedir(), ".agents", "skills", "sgs-wp-engine", "sgs-framework.db");
 
-const QUALIFYING_PHP = path.join(PLUGIN_ROOT, "includes", "generated-fx-qualifying-blocks.php");
-const QUALIFYING_JSON = path.join(
-	PLUGIN_ROOT,
-	"src",
-	"blocks",
-	"extensions",
-	"generated-fx-qualifying-blocks.json"
-);
-
 function log(msg) {
 	process.stdout.write(`[run-motion-fx-generators] ${msg}\n`);
-}
-
-function errLog(msg) {
-	process.stderr.write(`[run-motion-fx-generators] ${msg}\n`);
 }
 
 function runPython(scriptRelPath, extraArgs = []) {
@@ -84,10 +66,6 @@ function runPython(scriptRelPath, extraArgs = []) {
 		cwd: PLUGIN_ROOT,
 		stdio: "inherit",
 	});
-}
-
-function readIfExists(filePath) {
-	return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : null;
 }
 
 function main() {
@@ -102,37 +80,12 @@ function main() {
 	// 1. Seed the DB (idempotent — safe to run every build).
 	runPython("seed-motion-fx-registry.py");
 
-	// 2. generate-fx-effects-php.py owns its own --check mode (added alongside
-	//    this wrapper). It never writes when --check is passed.
+	// 2 + 3. Both generators own their own --check mode (identical contract):
+	//    regenerate in memory, diff against the committed artefacts, never
+	//    write, exit 1 naming any stale file. execFileSync throws (non-zero
+	//    exit) on failure, which propagates as this wrapper's own failure.
 	runPython("generate-fx-effects-php.py", ["--check"]);
-
-	// 3. generate-fx-qualifying-blocks.py has no --check mode (owned by another
-	//    track — see module docstring). Snapshot -> run (it writes for real) ->
-	//    diff -> restore-if-unchanged-should-have-been-true -> fail loud if stale.
-	const beforePhp = readIfExists(QUALIFYING_PHP);
-	const beforeJson = readIfExists(QUALIFYING_JSON);
-
-	runPython("generate-fx-qualifying-blocks.py");
-
-	const afterPhp = readIfExists(QUALIFYING_PHP);
-	const afterJson = readIfExists(QUALIFYING_JSON);
-
-	const stale = [];
-	if (beforePhp !== afterPhp) stale.push(QUALIFYING_PHP);
-	if (beforeJson !== afterJson) stale.push(QUALIFYING_JSON);
-
-	if (stale.length > 0) {
-		errLog(
-			"STALE — generate-fx-qualifying-blocks.py just regenerated content that " +
-				`differs from what was committed:\n  ${stale.join("\n  ")}\n` +
-				"The generator has already overwritten these files with the correct " +
-				"regenerated content — review the diff and commit it. (NOTE: this staleness " +
-				"check is performed externally by this wrapper because " +
-				"generate-fx-qualifying-blocks.py itself has no --check mode yet — that is " +
-				"owed to the track that owns that script, not fixed here.)"
-		);
-		return 1;
-	}
+	runPython("generate-fx-qualifying-blocks.py", ["--check"]);
 
 	log("OK — motion-fx generator chain ran clean, no drift.");
 	return 0;

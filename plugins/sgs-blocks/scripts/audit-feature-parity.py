@@ -31,6 +31,11 @@ import sqlite3
 import sys
 from pathlib import Path
 
+if sys.stdout.encoding is None or sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+if sys.stderr.encoding is None or sys.stderr.encoding.lower() != "utf-8":
+    sys.stderr.reconfigure(encoding="utf-8")
+
 HERE = Path(__file__).parent
 DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 ROSTER = HERE / "consistency" / "roster.json"
@@ -208,16 +213,26 @@ def _print_report(findings: list[dict], blocks_in_scope: int, as_json: bool):
 
 
 def _db_missing_message() -> str:
+    # SUPERSEDED 2026-07-31 (Motion Wave D Step 11): this used to make --check
+    # exit 1 on a missing DB, reasoning that a silent sqlite3.connect()-creates-
+    # an-empty-DB false PASS was worse than failing loudly. That's still true —
+    # a SILENT pass would be wrong — but failing the entire `npm run build` on
+    # a machine that has never had this out-of-repo, home-directory DB (a clean
+    # clone, by design — see .claude/dev-setup.md "sgs-framework.db") is a
+    # different and worse problem: it means a clean clone can never build at
+    # all. The fix is a LOUD, NAMED skip (this message, printed either way) with
+    # exit 0 — never silent, so it is not the vacuous pass the old comment
+    # warned against, but also never build-breaking. See db-consistency/run.py,
+    # excluded-gate/run.py and ledger/coverage_check.py for the same pattern
+    # applied consistently across the build chain.
     return (
-        f"\n[feature-parity] GATE FAILED — DB not found at {DB_PATH}.\n"
+        f"\n[feature-parity] SKIPPED — DB not found at {DB_PATH}.\n"
         "This audit is DB-first (R-31-1): the sgs-wp-engine DB is an out-of-repo, "
-        "home-directory dependency. On a machine without it, --check must fail loudly "
-        "rather than pass vacuously (a missing DB would otherwise mean zero blocks get "
-        "checked, and a bare sqlite3.connect() on a missing path silently CREATES an "
-        "empty DB and returns empty results for every query — a silent false PASS).\n"
-        "Fix: run /sgs-update to (re)generate sgs-framework.db, or copy it from a machine "
-        "that has it. Note also: /sgs-update regenerating this DB can change gate results "
-        "with zero repo diff — that is expected once this gate is wired into prebuild."
+        "home-directory dependency, deliberately unversioned. On a machine without "
+        "it, the build proceeds and this audit is skipped rather than failing the "
+        "whole chain.\n"
+        "Fix: run /sgs-update to (re)generate sgs-framework.db, or copy it from a "
+        "machine that has it, if you need this audit to actually run."
     )
 
 
@@ -244,23 +259,34 @@ def main() -> int:
         return 1
 
     if not DB_PATH.exists():
-        msg = _db_missing_message()
-        if check_mode:
-            print(msg, file=sys.stderr)
-            return 1
-        print(msg, file=sys.stderr)
-        print("[feature-parity] Report mode: nothing to audit without the DB. Exiting 0 "
-              "(observational gate — see --check for the gating behaviour).", file=sys.stderr)
+        # Skip cleanly in EVERY mode (see _db_missing_message()'s 2026-07-31
+        # update note for why this changed from a --check hard-fail).
+        print(_db_missing_message(), file=sys.stderr)
         return 0
 
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.row_factory = sqlite3.Row
+    except sqlite3.OperationalError as exc:
+        print(f"\n[feature-parity] SKIPPED — DB present but could not be opened: "
+              f"{DB_PATH} ({exc})", file=sys.stderr)
+        return 0
+
     try:
         findings = evaluate(
             roster, exceptions,
             get_sgs_caps=lambda slug: capabilities_from_db(conn, slug, "sgs"),
             get_core_caps_named=lambda core_slug: core_capabilities_named_from_db(conn, core_slug),
         )
+    except sqlite3.OperationalError as exc:
+        # DB present but DRIFTED (a required table missing) — real integrity
+        # problem, distinct from plain absence. Fail loudly, naming the table
+        # via sqlite3's own error text.
+        print(f"\n[feature-parity] FAIL — DB present at {DB_PATH} but the audit "
+              f"could not run against it: {exc}\n"
+              "  Re-run /sgs-update to bring the DB back in sync, then re-run "
+              "this audit.", file=sys.stderr)
+        return 1
     finally:
         conn.close()
 

@@ -301,23 +301,44 @@ def main() -> int:
     if not args.check and not args.update_baseline:
         args.report = True
 
-    # DB availability.
+    # DB availability. The DB is DELIBERATELY UNVERSIONED (see
+    # .claude/dev-setup.md "sgs-framework.db") — on a clean clone it is
+    # simply absent, which is not a violation. Skip cleanly (exit 0) in
+    # EVERY mode, including --check: this gate has nothing to cross-reference
+    # against without the DB, and failing the whole `npm run build` chain
+    # over an out-of-repo, home-directory dependency defeats a clean clone.
     if not _DB_PATH.exists():
         msg = (
-            f"[F5] DB not found: {_DB_PATH}\n"
-            "  Ensure the SGS framework DB exists before running this gate.\n"
-            "  Run: python plugins/sgs-blocks/scripts/migrations/"
-            "2026-06-18-create-excluded-properties.py"
+            f"[F5] SKIPPED — DB not found: {_DB_PATH}\n"
+            "  This is expected on a machine without the local dev DB (it is "
+            "unversioned by design). The build proceeds; run "
+            "`python plugins/sgs-blocks/scripts/migrations/"
+            "2026-06-18-create-excluded-properties.py` to (re)create it if "
+            "you need this gate to actually run."
         )
         print(msg)
-        return 1 if args.check else 0
+        return 0
 
     # Load DB excluded_properties set.
-    conn = sqlite3.connect(str(_DB_PATH))
     try:
-        excluded_props = _db_check_mod.load_excluded_properties(conn)
-    finally:
-        conn.close()
+        conn = sqlite3.connect(str(_DB_PATH))
+        try:
+            excluded_props = _db_check_mod.load_excluded_properties(conn)
+        finally:
+            conn.close()
+    except sqlite3.OperationalError as exc:
+        # DB present but DRIFTED (e.g. excluded_properties table missing) —
+        # a real integrity problem, distinct from plain absence. Fail loudly,
+        # naming the table via sqlite3's own error text.
+        print(
+            f"[F5] FAIL — DB present at {_DB_PATH} but could not be read: {exc}\n"
+            "  This means the DB schema has drifted from what this gate "
+            "expects (a table is missing). Re-run "
+            "`python plugins/sgs-blocks/scripts/migrations/"
+            "2026-06-18-create-excluded-properties.py` to bring the DB back "
+            "in sync, then re-run this gate."
+        )
+        return 1
 
     # Scan the orchestrator tree.
     signatures = _scanner_mod.scan_orchestrator()

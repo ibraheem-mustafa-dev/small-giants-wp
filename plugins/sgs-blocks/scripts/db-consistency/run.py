@@ -210,17 +210,30 @@ def main() -> int:
     if not args.check and not args.update_baseline:
         args.report = True
 
-    # DB availability.
+    # DB availability. The DB is DELIBERATELY UNVERSIONED (see
+    # .claude/dev-setup.md "sgs-framework.db") — on a clean clone it is
+    # simply absent, which is not a violation of anything. Skip cleanly
+    # (exit 0) in EVERY mode, including --check: this suite has nothing to
+    # check without the DB, and failing the whole `npm run build` chain over
+    # an out-of-repo, home-directory dependency that was never meant to be
+    # portable is exactly the bug Motion Wave D Step 11 exists to fix.
     if not _DB_PATH.exists():
         msg = (
-            f"[F6] DB not found: {_DB_PATH}\n"
-            "  Ensure the SGS framework DB exists before running this suite.\n"
-            "  Run: python plugins/sgs-blocks/scripts/sgs-update-v2.py"
+            f"[F6] SKIPPED — DB not found: {_DB_PATH}\n"
+            "  This is expected on a machine without the local dev DB (it is "
+            "unversioned by design). The build proceeds; run "
+            "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to (re)create "
+            "it if you need this suite to actually run."
         )
         print(msg)
-        return 1 if args.check else 0
+        return 0
 
-    conn = sqlite3.connect(str(_DB_PATH))
+    try:
+        conn = sqlite3.connect(str(_DB_PATH))
+    except sqlite3.OperationalError as exc:
+        print(f"[F6] SKIPPED — DB present but could not be opened: {_DB_PATH} ({exc})")
+        return 0
+
     try:
         violations: list = []
         violations.extend(_check_routing_mod.run(conn))
@@ -233,6 +246,20 @@ def main() -> int:
         violations.extend(_check_css_property_reseed_mod.run(conn))
         violations.extend(_check_motion_fx_reseed_mod.run(conn))
         violations.extend(_check_fx_qualifying_blocks_stale_mod.run(conn))
+    except sqlite3.OperationalError as exc:
+        # DB present but DRIFTED (e.g. a required table missing) — this is a
+        # real integrity problem, distinct from plain absence, and must fail
+        # loudly rather than skip. sqlite3's own error text already names the
+        # missing table (e.g. "no such table: slots"); surface it verbatim.
+        print(
+            f"[F6] FAIL — DB present at {_DB_PATH} but a consistency check "
+            f"could not run against it: {exc}\n"
+            "  This means the DB schema has drifted from what these checks "
+            "expect (a table or column is missing). Re-run "
+            "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to bring "
+            "the DB back in sync, then re-run this suite."
+        )
+        return 1
     finally:
         conn.close()
 

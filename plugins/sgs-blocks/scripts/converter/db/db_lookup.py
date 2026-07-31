@@ -37,6 +37,36 @@ UIMAX_DB = Path.home() / ".agents" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-ma
 if not UIMAX_DB.exists():
     UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
 
+# Checked ONCE at import time. Six migration functions below run automatically
+# on every import of this module (idempotent — see each one's own docstring),
+# and every one of them opens its OWN connection via a bare
+# `sqlite3.connect(SGS_DB)` that sits BEFORE its try/except, not inside it —
+# so the existing "except sqlite3.OperationalError: pass" never runs for a
+# failure IN THE CONNECT CALL ITSELF, only for a failure in the query that
+# follows a successful connect.
+#
+# On a machine with no local `sgs-framework.db` (a clean clone — the DB is
+# DELIBERATELY UNVERSIONED, see .claude/dev-setup.md "sgs-framework.db"),
+# `SGS_DB`'s parent directory does not exist at all, so
+# `sqlite3.connect(SGS_DB)` raises OperationalError("unable to open database
+# file") IMMEDIATELY — and because this happens during MODULE IMPORT, it
+# crashes before any CALLER's own "DB not found, skip cleanly" check ever
+# gets a chance to run. Verified empirically 2026-07-31 with a faked empty
+# HOME: `python scripts/db-consistency/run.py --check` died on this exact
+# line, inside `_migrate_roles_table()`, imported transitively via
+# `db-consistency/resolver_bridge.py` — before db-consistency/run.py's own
+# `_DB_PATH.exists()` guard (which sits later, inside `main()`) ever executed.
+# This was the true root cause of the clean-clone `npm run build` failure
+# Motion Wave D Step 11 was opened to fix, one layer beneath what the step's
+# own framing described.
+#
+# Fix: gate every module-load migration call behind this one flag, so none of
+# them ever calls sqlite3.connect() against a DB that is not there. A
+# migration only makes sense against an EXISTING DB anyway (there is nothing
+# to migrate in a DB that was never created) — /sgs-update owns creating it
+# from scratch, not this module.
+_SGS_DB_PRESENT_AT_IMPORT = SGS_DB.exists()
+
 
 def get_connection() -> sqlite3.Connection:
     """Open a fresh, caller-owned connection to the SGS DB (``check_same_thread=False``).
@@ -150,7 +180,8 @@ def _migrate_roles_table() -> None:
 
 
 # Run migration at module load (idempotent).
-_migrate_roles_table()
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_roles_table()
 
 
 # ----------------------------------------------------------------------------
@@ -246,7 +277,8 @@ def _migrate_html_tag_to_core_block() -> None:
 
 
 # Run migration at module load (idempotent).
-_migrate_html_tag_to_core_block()
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_html_tag_to_core_block()
 
 
 # ----------------------------------------------------------------------------
@@ -323,10 +355,28 @@ def registered_block_slugs() -> frozenset[str]:
     routable. `status='planned'` blocks are spec stubs with no PHP/JS — if
     the converter emits them, WordPress will throw "this block contains
     unexpected or invalid content" in the editor. Planned slugs fall through
-    to sgs/container in the converter, which is correct."""
-    conn = sqlite3.connect(SGS_DB)
+    to sgs/container in the converter, which is correct.
+
+    Degrades to an empty frozenset (never raises) when the DB cannot be
+    opened at all — unlike most other lookups in this module, this one had
+    no guard whatsoever (neither on the connect() call nor the query),
+    unguarded even though the connect() call is exactly where a missing DB
+    fails: SQLite raises on OPEN when the parent directory does not exist,
+    not on the query. Verified empirically 2026-07-31 with a faked empty
+    HOME: `python -m pytest scripts/oracle/tests/ -q` (wired into
+    `prebuild`) crashed here via
+    oracle/batch_runner.py -> converter/recognition.py -> block_exists().
+    An empty result here is HONEST, not a silent false pass — it means
+    "recognises no SGS blocks", the correct behaviour when there is no DB to
+    recognise them against."""
+    try:
+        conn = sqlite3.connect(SGS_DB)
+    except sqlite3.OperationalError:
+        return frozenset()
     try:
         rows = conn.execute("SELECT slug FROM blocks WHERE status = 'built'").fetchall()
+    except sqlite3.OperationalError:
+        return frozenset()
     finally:
         conn.close()
     return frozenset(r[0] for r in rows)
@@ -1297,7 +1347,8 @@ def _migrate_array_item_fields_schema() -> None:
 
 
 # Run migration at module load (idempotent).
-_migrate_array_item_fields_schema()
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_array_item_fields_schema()
 
 
 @functools.lru_cache(maxsize=256)
@@ -1432,7 +1483,8 @@ def _migrate_property_suffixes_kind_override() -> None:
 
 
 # Run migration at module load (idempotent — safe to call repeatedly).
-_migrate_property_suffixes_kind_override()
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_property_suffixes_kind_override()
 
 
 # ----------------------------------------------------------------------------
@@ -1480,7 +1532,8 @@ def _migrate_variant_detection_schema() -> None:
 
 
 # Run migration at module load (idempotent — safe to call repeatedly).
-_migrate_variant_detection_schema()
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_variant_detection_schema()
 
 
 # ----------------------------------------------------------------------------
@@ -1518,7 +1571,8 @@ def _migrate_block_composition_container_kind() -> None:
 
 
 # Run migration at module load (idempotent — safe to call repeatedly).
-_migrate_block_composition_container_kind()
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_block_composition_container_kind()
 
 
 def _kind_for(suffix: str, role: str | None) -> str | None:
