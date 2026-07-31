@@ -25,6 +25,15 @@ final class SGS_Blocks {
 		add_action( 'init', [ $this, 'register_block_styles' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_extensions' ] );
+		// STYLES are a separate hook from the editor SCRIPT above, deliberately.
+		// Since WP 6.3 the editor canvas is an iframe; `enqueue_block_editor_assets`
+		// targets the OUTER admin document, so a style added there is copied into
+		// the iframe by a core compatibility shim that emits "…was added to the
+		// iframe incorrectly. Please use block.json or enqueue_block_assets…".
+		// `enqueue_block_assets` is the iframe-aware hook core names in that very
+		// message. The script stays where it is — editor JS belongs in the outer
+		// document and is not subject to this.
+		add_action( 'enqueue_block_assets', [ $this, 'enqueue_editor_extension_styles' ] );
 
 		// Post Grid REST endpoint for AJAX pagination and category filtering.
 		require_once SGS_BLOCKS_PATH . 'includes/class-post-grid-rest.php';
@@ -225,9 +234,39 @@ final class SGS_Blocks {
 			$asset['version'],
 			true
 		);
+	}
 
-		// Load the extensions CSS in the editor too, so visibility
-		// classes are correctly applied in the editor preview.
+	/**
+	 * Enqueue the extensions CSS into the EDITOR CANVAS IFRAME.
+	 *
+	 * Split out of `enqueue_editor_extensions()` on 2026-07-31. It previously
+	 * rode on `enqueue_block_editor_assets`, which targets the outer admin
+	 * document — since WP 6.3 the canvas is an iframe, so core copied the style
+	 * in via a compatibility shim and warned on every editor load:
+	 *
+	 *   "sgs-extensions-editor-css was added to the iframe incorrectly. Please
+	 *    use block.json or enqueue_block_assets to add styles to the iframe."
+	 *
+	 * `enqueue_block_assets` is the iframe-aware hook that message names. It
+	 * fires on the FRONT END as well, hence the `is_admin()` guard: the front
+	 * end already loads this exact file under the `sgs-extensions` handle via
+	 * `enqueue_frontend_assets()`, and without the guard `extensions.css` would
+	 * be served twice under two handles.
+	 *
+	 * `device-visibility.php` attaches its generated media queries to this same
+	 * handle at priority 20 and is guarded on
+	 * `wp_style_is( 'sgs-extensions-editor', 'enqueued' )` — so it MUST hook the
+	 * same event as this method. If the two are split across hooks that guard
+	 * silently evaluates false and the device-visibility CSS disappears from the
+	 * editor with no error at all.
+	 *
+	 * @return void
+	 */
+	public function enqueue_editor_extension_styles(): void {
+		if ( ! is_admin() ) {
+			return;
+		}
+
 		$css_file = SGS_BLOCKS_PATH . 'assets/css/extensions.css';
 		if ( file_exists( $css_file ) ) {
 			wp_enqueue_style(

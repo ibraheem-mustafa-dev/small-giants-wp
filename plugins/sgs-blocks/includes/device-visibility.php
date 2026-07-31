@@ -66,7 +66,17 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_device_visibility_classes'
 // (priority 20 so the sgs-extensions / sgs-extensions-editor handles are
 // already registered by class-sgs-blocks at priority 10).
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_device_visibility_css', 20 );
-add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_device_visibility_editor_css', 20 );
+// The editor arm hooks `enqueue_block_assets`, NOT `enqueue_block_editor_assets`
+// (changed 2026-07-31). It must fire on the SAME event as the parent style it
+// attaches to — `Sgs_Blocks::enqueue_editor_extension_styles()` moved to the
+// iframe-aware hook to stop WP core warning that the style "was added to the
+// iframe incorrectly". `enqueue_device_visibility_editor_css()` is guarded on
+// `wp_style_is( 'sgs-extensions-editor', 'enqueued' )`, so leaving it on the old
+// hook would make that guard evaluate false and delete these media queries from
+// the editor SILENTLY — no error, no warning, just no device visibility. The
+// guard is also what makes this safe on the front end, where `enqueue_block_assets`
+// fires too but `sgs-extensions-editor` is never enqueued.
+add_action( 'enqueue_block_assets', __NAMESPACE__ . '\\enqueue_device_visibility_editor_css', 20 );
 
 /**
  * Build the device-visibility media queries from the canonical breakpoint source.
