@@ -14,7 +14,7 @@ Invoke /autopilot before doing anything else.
 
 **Docscore:** not run (see Honesty notes).
 
-**Aggregate cost estimate:** ~9–11 h across 21 steps if all are taken; the wave is deliberately splittable at each QA gate.
+**Aggregate cost estimate:** ~10–12 h across 22 steps (Step 6b added 2026-07-31 after the eye pass; +45 min) if all are taken; the wave is deliberately splittable at each QA gate.
 
 ## Where this came from (read this first — it is not a wish list)
 

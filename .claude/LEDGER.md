@@ -95,7 +95,7 @@ header) · drawer architecture gate (D421) · the two motion design gates above.
 Commits `88c2be1a` · `a06bba92` · `8da30b13` · `8172d8f4` · `02e87ee9` · `f7f61ebf` · **`6c8d78ca`**.
 
 **⭐ THE PLAN FOR EVERYTHING REMAINING: `plans/2026-07-31-motion-wave-D-client-readiness.md`**
-— 21 steps, 4 QA gates, carrying every unclosed council finding plus Bean's four new asks.
+— 22 steps, 4 QA gates, carrying every unclosed council finding plus Bean's four new asks.
 It replaces the wave-C prompt (archived). **Council findings are NOT in parking.md** — Bean-ruled
 2026-07-31 that parking is strictly BLOCKED/POSTPONED work, never a reminder list.
 
@@ -327,7 +327,7 @@ live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERS
 **Read FIRST:** **`plans/2026-07-31-motion-wave-D-client-readiness.md`** (the whole thing — it is
 the register), then **D426 → D427 → D430** in that order, then Spec 38 IN FULL.
 
-**The plan is the plan.** It has 21 steps, four QA gates, per-step models, tests and on-fail
+**The plan is the plan.** It has 22 steps, four QA gates, per-step models, tests and on-fail
 instructions. Do not re-derive it. Its own Honesty notes list what it lacks (no cold peer review,
 no docscore, no `/qc-council` on its fix-shapes yet).
 
