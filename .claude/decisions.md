@@ -15,6 +15,85 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D427 — Wave C VERIFIED live: three real defects the deploy-only evidence could not see; morph/motion-path control surface SIGNED [INCIDENT]
+
+**2026-07-31, motion Wave C verification.** Commits `8da30b13` (shipped blocks), `8172d8f4`
+(net-new blocks), `02e87ee9` (draw in the fx picker). Evidence: five per-block reports at
+`reports/visual-diff/*-2026-07-31.md`; harness
+`plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`.
+
+**D426 deployed Wave C and honestly refused to call it verified. Doing so found three real
+defects, each cause PROVEN before any fix.**
+
+1. **`sgs/gallery`'s carousel was never a horizontal scroller.** `grid-auto-flow` defaulted to
+   `row`, so more images than `--sgs-columns` wrapped onto extra ROWS: `scrollWidth 1200 ===
+   clientWidth 1200` at 8 items / 3 columns. Silently inert downstream: `goToItem()`'s
+   `scrollIntoView({inline:'start'})`, the arrows, the dots, and the whole FR-38-13 Draggable
+   upgrade — `fx-draggable.js` asks the STRUCTURAL question "is this a genuine native
+   horizontal scroller?" and was correctly answering no. `grid-auto-flow: column` → 3227 vs 1200.
+
+2. **`fx-draggable.js` could never have worked on an SGS carousel.** GSAP Draggable's
+   `type:'scroll'` mode re-parents a scroller's children into a wrapper div (its own source,
+   `gsap/Draggable.js:536`). An SGS track is simultaneously the scroller AND the grid
+   container, so its 8 slides collapsed into one 389px column. The module's "layered on top,
+   never a replacement" docblock promise was FALSE AS WRITTEN. Rewritten to drive `scrollLeft`
+   from pointer events with InertiaPlugin as release physics. Two further causes proven the
+   same way: `scroll-snap-type: x mandatory` reverts a programmatic write (`scrollLeft = 200`
+   read back **0**; **200** with snapping off), and the browser's NATIVE IMAGE DRAG stole the
+   gesture (`pointerdown → one pointermove → dragstart → dead`). `fx_effects.draggable` drops
+   `Draggable` from its plugin_set — ~13KB gzip off any page using the effect.
+
+3. **`sgs/before-after` returned HTTP 400 from its block-renderer**, so every instance showed
+   "Preview failed to load" in the editor while the frontend rendered perfectly.
+   `<ServerSideRender>` serialises an unset attribute as an EMPTY STRING and eight attrs were
+   plain `integer`/`number` with a `null` default. Fixed to the house `[ <numeric>, "string" ]`
+   (D388's whole point: **no frontend check could ever have caught this**).
+
+**A registry correction that had been REPORTED as done and was not.** D426's report stated
+`fx_effects.draw` and `.scramble` had gained ScrollTrigger "corrected against the built
+output". The correction never reached `seed-motion-fx-registry.py` — both rows still read
+without it. Fixed here. *A prose claim in a report is not a committed artefact.*
+
+**Every effect now measured moving, each with a DISCRIMINATING negative control** (two motion
+arms, and for momentum a within-page control — instance 2 of the same page under the same
+build): gallery drag 0→360 then coasting +1502 with momentum on, 0 with it off and 0 under
+reduce · DrawSVG scrubs through 8 distinct stroke-dash states, 1 under reduce · ScrambleText
+27/28 distinct strings settling back to the original EXACTLY, 1 and no `aria-label` under
+reduce · image-sequence canvas luminance 86.14→128.60→149.39, flat 0 under reduce ·
+before/after divider tracking the pointer through 12 intermediate values · editor: all five
+blocks mount, select, render 13–18 inspector panels, zero crash surfaces.
+
+**`draw` now reaches the fx picker** via the data-driven exclusion `fx.js` had itself
+specified: `sgs/responsive-logo` declares `supports.sgs.fx.providesNatively: ["draw"]` and the
+qualifying-blocks generator subtracts it, so that block keeps its own `animationStyle` enum and
+never gets two controls for one capability. No slug is hardcoded in either file. Verified in
+the rendered UI: `sgs/icon` → [None, Scroll reveal, **Draw SVG lines**];
+`sgs/responsive-logo` → [None, Scroll reveal].
+
+**MORPH + MOTION-PATH CONTROL SURFACE — BEAN-SIGNED, DESIGN ONLY, NOT BUILT.** Presets first
+(curated shape pairs + motion routes, picked as thumbnails), `custom` switching to a
+media-library SVG picker; panel disabled until one is chosen (§7's asset gate). Crucially it
+needs NO runtime change — both modules already accept "an element whose geometry is the
+target", so the render layer expands a preset into a hidden `<svg>` and emits the existing
+`-target` selector. Spec 38 §11.2 amended the same session. `morph`/`motion-path` must NOT
+join `SHIPPED_EFFECTS` until the control exists.
+
+**Owed, stated rather than buried:** momentum on `sgs/testimonial-slider` is UNPROVEN (all four
+arms identical because the slider snaps to slide boundaries either way; the short-flick gesture
+momentum exists for was not isolated) · two editor console errors persist
+(`Failed to resolve module specifier "@sgs/gsap-inertia"` / `"@sgs/gsap-draggable"`) — they
+survive the boot guards so they are not thrown by our boot code, nothing crashes, cause
+unresolved · Bean's eye (R-31-13) not yet given on any effect · `/qc-council` not run.
+
+**Also captured:** a LiteSpeed-cached page made a working fix read as broken twice
+(gallery `scrollWidth === clientWidth`, DrawSVG one dash state) — the probe now cache-busts,
+because a probe that cannot tell "the fix does not work" from "I was served yesterday's HTML"
+is not a measurement. And FOUR of my own probe results were false before the code was: a
+sampler that never scrolled to a scroll-triggered effect, `scrollIntoViewIfNeeded` stopping
+short of a scrubbed range's start, two adjacent scramble headings firing in one window, and a
+drag whose endpoints coincidentally matched its start. **A probe that never reaches the effect
+is measuring the probe.**
+
 ## D426 — Spec 38 Wave C built + deployed; FR-38-12's pairing premise is FALSE; a CRLF md5 nearly caused a bogus "restore" [INCIDENT]
 
 **2026-07-31, motion Wave C.** Commits `88c2be1a` (shared infra), `a06bba92` (deploy evidence).

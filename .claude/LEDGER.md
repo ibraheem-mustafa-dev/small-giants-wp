@@ -17,22 +17,32 @@ gets ONE true answer instead of three drifting ones.
 **Where things stand (2026-07-31, close of the motion Wave C build session).** Three tracks are
 live and independent — pick one, they do not block each other.
 
-**What changed for you today — the motion "toy box" is BUILT and on the test site, but NOT yet
-checked with eyes.** Six premium effects now exist: draggable carousels with momentum, a
-brand-new drag-the-divider before/after image comparison block, SVG logos that draw themselves
-(replacing an old library — one dependency gone), shape-morphing, scrambling text, and a
-scroll-scrubbed image sequence with a tool that turns a video into the frames it needs. **None of
-it needed a new library** — they all came free inside the animation engine we already had, which
-also kills the "needs a paid membership" blocker that parked SVG morphing for months.
+**What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
+three things that were quietly broken are fixed.** Every effect was watched moving in a browser,
+twice over: once normally, once with "reduce motion" switched on, so we know it both works AND
+correctly calms down. All of it is committed and pushed.
 
-**Two honest limits, both deliberate:**
-1. **Built ≠ verified.** Nothing has been watched moving in a browser yet. A safety gate is
-   correctly refusing to let the block changes be committed until real before/after screenshots
-   exist. I did not switch that gate off — doing so would also have switched off five unrelated
-   ones that were passing.
-2. **One planned effect cannot be built as written.** "Grids that re-shuffle smoothly when
-   filtered" assumed a link between the filter box and the card grid that does not exist in the
-   code. You asked for it to stay live as a design question rather than be shelved.
+**Verifying found three real faults that the earlier "it built and deployed" check could not
+possibly have seen:**
+1. The image gallery's "carousel" never actually slid sideways — extra images wrapped onto new
+   rows instead. Every arrow, dot and the new drag feature were quietly doing nothing.
+2. The drag feature could never have worked. The animation library's built-in drag mode
+   secretly rewrites the page structure, which collapsed an eight-image row into one column.
+   Rewritten so it only nudges the scroll position and touches nothing else.
+3. The new before/after slider looked perfect on the live site but its preview was BROKEN in
+   your editor. Only opening the real editor could ever have caught that.
+
+**Also done:** the "draw my logo" effect is now selectable on icons, dividers and decorative
+images — and deliberately NOT on the logo block, which already has its own control for it.
+
+**Three honest limits:**
+1. **One thing is still unproven, not passed** — whether the testimonial slider's "flick"
+   momentum does anything. It behaves identically with the feature on and off, so the test
+   could not tell them apart. Recorded as owed rather than dressed up as a pass.
+2. **You have not looked at any of it yet.** Your eye is co-authoritative here; numbers alone
+   do not close it.
+3. **Shape-morphing and path-travel are designed but not built.** You signed the shape today
+   (pick from thumbnails, with an upload option for advanced use). The build is the next job.
 
 **Still waiting, none built:** header stacking on mobile (D420, still a visible defect on every
 header) · drawer architecture gate (D421) · the two motion design gates above.
@@ -45,27 +55,53 @@ header) · drawer architecture gate (D421) · the two motion design gates above.
 > `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds transcribed readings.
 > Re-runnable, not reproducible.
 
-### Track 3 — Spec 38 motion: **A + B CLOSED** · **WAVE C BUILT + DEPLOYED 2026-07-31, NOT VERIFIED (D426)**
+### Track 3 — Spec 38 motion: **A + B CLOSED** · **WAVE C BUILT, VERIFIED LIVE + COMMITTED 2026-07-31 (D427)**
 
 `specs/38-SGS-MOTION-SYSTEM.md` is `active`. A: D414–D417. B: Lenis + page transitions (D422/D424).
-**C: built, gate-green, deployed to sandybrown — browser verification NOT run.** Evidence:
-`reports/2026-07-31-motion-waveC-deploy-verification.md` (it states its own gaps up front).
-Commits `88c2be1a` (shared infra) + `a06bba92` (evidence). Block commits are **still blocked by the
-visual-diff gate, correctly** — `--no-verify` was NOT used and must not be.
+**C: verified moving on the canary, both surfaces, and pushed.** Commits `88c2be1a` (shared infra)
+· `a06bba92` (deploy evidence) · **`8da30b13`** (shipped blocks) · **`8172d8f4`** (net-new blocks)
+· **`02e87ee9`** (draw in the fx picker). Evidence: five per-block reports at
+`reports/visual-diff/*-2026-07-31.md`; re-runnable harness
+`plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`
+(both self-verdicting, exit 1 on fail, 2 on inconclusive). Canary page **2075**
+`/motion-canary-wave-c/` — two instances of every block on ONE page.
 
-**Shipped in C:** Draggable roster (gallery + testimonial-slider) · NET-NEW `sgs/before-after` ·
-DrawSVG + **Vivus retired** (D408 discharged; `animationStyle` enum byte-identical, no
-`deprecated.js`) · ScrambleText · NET-NEW `sgs/image-sequence` + `scripts/image-sequence-prep.py`.
-**MorphSVG + MotionPath are RUNTIME-ONLY** — no client-reachable control (see gates below).
+**Shipped + PROVEN MOVING, each with a discriminating negative control:** Draggable roster
+(gallery + testimonial-slider) · NET-NEW `sgs/before-after` · DrawSVG + **Vivus retired**
+(D408 discharged) · ScrambleText · NET-NEW `sgs/image-sequence` + `scripts/image-sequence-prep.py`.
+**`draw` now reaches the fx picker** on icon/separator/decorative-image, excluded from
+responsive-logo by its own `supports.sgs.fx.providesNatively` declaration.
 
-**NO NEW LIBRARY — Tier H closed list (§1.2a) untouched.** All six plugins ship inside the
-installed gsap 3.15.0 (Webflow acquisition freed the Club set); verified as real implementations,
-not membership stubs. **Parking P-10's deferral premise is dead.**
+**Three real defects found by verifying (all fixed, causes proven — full text in D427):**
+gallery's "carousel" was never a horizontal scroller · `fx-draggable.js` could never have worked
+(GSAP `type:'scroll'` re-parents children into a wrapper div, `gsap/Draggable.js:536`) ·
+`sgs/before-after` returned HTTP 400 from its block-renderer, so its editor preview was dead
+while the frontend was perfect. Plus a registry correction D426's report claimed as done that
+had never reached the seeder.
 
-**⛔ FR-38-12 (Flip) CANNOT BE BUILT AS SPECIFIED — premise verified FALSE.** `sgs/filter-search`
-is `ancestor`-locked to a WooCommerce filter and narrows CHIP OPTIONS, emits no event;
-`sgs/card-grid` has no `view.js` and filters server-side. No client re-layout exists to animate.
-**Bean ruled: NOT parked — live design gate + research point.**
+**⛔ STILL OWED on this track — do not read the PASS verdicts as wider than they are:**
+1. **Momentum on `sgs/testimonial-slider` is UNPROVEN** — all four arms identical; the slider
+   snaps to slide boundaries either way and the short-flick gesture was not isolated.
+2. **Two editor console errors persist**, cause unresolved: `Failed to resolve module specifier
+   "@sgs/gsap-inertia"` / `"@sgs/gsap-draggable"`. They survive the boot guards, so they are NOT
+   thrown by our boot code. Nothing crashes.
+3. **Bean's eye (R-31-13) not yet given on any effect.** `/qc-council` not run on any commit.
+4. Unmeasured: touch drag anywhere · before-after vertical orientation · responsive-logo's
+   `hover-redraw` arm · image-sequence tablet/mobile tiers (desktop only).
+
+**⛔ FR-38-12 (Flip) CANNOT BE BUILT AS SPECIFIED — premise verified FALSE (D426).** Bean ruled:
+NOT parked — live design gate + research point. **Not researched this session.**
+
+**MORPH + MOTION-PATH — control surface BEAN-SIGNED 2026-07-31, DESIGN ONLY, NOT BUILT (D427).**
+Presets-first (curated shape pairs + routes as thumbnails), `custom` → media-library SVG picker,
+panel disabled until one is chosen. **Needs NO runtime change** — both modules already accept
+"an element whose geometry is the target", so the render layer expands a preset into a hidden
+`<svg>` and emits the existing `-target` selector. Spec 38 §11.2 amended same session.
+**Owed:** preset data file · render-layer expansion · `block_attributes` rows under `fx:*` ·
+thumbnail picker in the fx panel · then `morph`/`motion-path` join `SHIPPED_EFFECTS` — and NOT
+before, since that array exists to keep an unreachable effect out of the picker.
+
+**NO NEW LIBRARY — Tier H closed list (§1.2a) untouched.** Parking P-10's deferral premise is dead.
 
 **Carried from B (do NOT resurrect):** D407/§4.2 SUPERSEDED, build items CANCELLED · Tier H =
 Lenis alone · touch smoothing REJECTED on a real phone · transitions gate the opt-in itself.
@@ -257,79 +293,67 @@ live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERS
 
 ---
 
-## NEXT SESSION — finish verifying motion Wave C, then its two design gates
+## NEXT SESSION — build the signed morph/motion-path control, then Bean's eye
 
-**Read FIRST:** **D426** + `reports/2026-07-31-motion-waveC-deploy-verification.md` (it states
-what it does NOT prove, at the top — trust that list). Spec 38 IN FULL before any motion edit.
+**Read FIRST:** **D427** + the five `reports/visual-diff/*-2026-07-31.md`. Spec 38 IN FULL
+(its §11.2 carries the signed D427 amendment) before any motion edit.
 
-**You are the SGS framework engineer.** Wave C is BUILT, gate-green and DEPLOYED to sandybrown;
-what remains is proving it works and closing two design questions Bean owns. The uncommitted block
-work is on disk and building green — do not rebuild it, verify it.
+**Wave C is verified, committed and pushed.** What remains is one signed-but-unbuilt control
+surface, one unproven claim, and Bean's eye.
 
-#### Task 1 — Browser verification (unblocks every remaining commit)
-**What:** capture real first-paint evidence for `gallery`, `testimonial-slider`,
-`responsive-logo`, `before-after`, `image-sequence`, and watch each effect's named observable
-signal move: drag `transform` follows the pointer then decays (momentum); `stroke-dashoffset`
-animates then rests fully drawn; scramble settles to the ORIGINAL string; canvas frame index
-tracks scroll.
-**Why:** the pre-commit visual-diff gate requires `reports/visual-diff/<block>-<date>.md` with
-`verdict: PASS` + `first_paint_capture_passed: true`. It is the only thing blocking the commits.
-**⛔ NEVER `--no-verify`** — it also discards gitleaks, wp-* pre-merge, cheat-gate, F5 and F6, all
-passing. **NEVER fabricate a PASS** (`visual-diff-gate-editor-only-honest-report`).
-**Estimated:** 45 min. **Orchestration:** INLINE, Opus (judging motion is eye-work).
-**Also cover, same pass:** (a) **two instances of each NEW block on ONE page** — the per-render
-fatal class; `before-after`'s image helper is a closure precisely for this and it is UNPROVEN;
-(b) **open the REAL editor** (D388: two editor-killing crashes have shipped past all-green gates);
-(c) reduced-motion arms — **each needs a negative control**, or "it didn't animate" proves nothing.
-**Acceptance:** every block has an honest report; every effect recorded moving; "cannot tell" =
-FAIL, extend the measurement.
+#### Task 1 — BUILD the morph + motion-path control surface (Bean-signed, D427)
+**What:** presets-first picker + `custom` media-library fallback. **Needs NO runtime change** —
+`fx-morph.js` / `fx-motion-path.js` already accept "an element whose geometry is the target",
+so the render layer expands a preset key into a hidden `<svg>` and emits the EXISTING
+`-target` selector.
+**Owed parts:** preset data file (morph pairs circle↔square / plus↔cross / play↔pause /
+logo↔icon; paths arc / S-curve / orbit / figure-8) · render-layer expansion · `block_attributes`
+rows under `fx:*` · thumbnail picker in the fx ToolsPanel · panel DISABLED until a preset or
+asset is chosen (§7 asset gate) · only THEN add `morph`/`motion-path` to `SHIPPED_EFFECTS`.
+**⛔ Do not add them to `SHIPPED_EFFECTS` first** — that array exists to keep an effect a client
+cannot operate out of the picker. **Estimated:** 60 min. **Orchestration:** INLINE.
 
-#### Task 2 — Commit the remaining Wave C work
-**What:** commit by EXACT PATH in the wave's split (draggable / before-after / SVG+scramble /
-image-sequence / derived generated+baselines). **Depends on:** Task 1.
-**Estimated:** 15 min. **Orchestration:** INLINE.
-**⛔ Shared worktree:** the co-active track holds uncommitted `includes/lucide-icons.php` — never
-`git add -A`; a hook enforces the pathspec. `git branch --show-current` in the same command.
-**/qc gate:** `/qc-council` before any commit touching SGS-block render logic.
+#### Task 2 — Isolate testimonial-slider momentum (the one UNPROVEN claim)
+**What:** a SHORT, FAST flick that does not cross the distance threshold. With momentum it
+should still advance a slide; without it, it should snap back. Today all four arms read
+identically because a long drag advances either way. **Acceptance:** the two arms diverge, or
+the feature is honestly recorded as doing nothing on this block. **Estimated:** 20 min.
 
-#### Task 3 — DESIGN GATE: Flip (FR-38-12), Bean-owned
-**What:** research + present options; do NOT build. Its premise is verified false (D426).
-**Brief:** the only real client-side re-filtering here is WooCommerce's Product Filter → Product
-Collection. Establish whether that re-renders client-side (Interactivity API router region) before
-proposing anything; animating a CORE block's re-render is a different blast radius and needs its
-own gate. **Estimated:** 30 min research. **Orchestration:** delegated · sonnet · single agent for
-the research; decision INLINE with Bean. **Acceptance:** Bean picks from a ranked menu.
+#### Task 3 — Bean's eye (R-31-13), co-authoritative
+**What:** open `/motion-canary-wave-c/` (page 2075) and judge the FEEL — gallery momentum
+curve, draw timing, scramble speed, image-sequence smoothness. Numbers say they move; only
+Bean says they are right. **This is the gate, not a formality.**
 
-#### Task 4 — DESIGN GATE: morph + motion-path control surface, Bean-owned
-**What:** both engines work but no client can reach them — the agents invented
-`data-sgs-fx-morph-target` / `-motion-path-target`, which exist in no §11.2 grammar, no
-`block_attributes` row and no control. **Why it is a gate, not a task:** §7 requires an
-ASSET-GATED picker with authoring guidance; a CSS-selector textbox is unusable by a
-tech-illiterate client. Adding params has precedent (`fxSplit`/`fxMask` in `FX_ATTR_MAP`), so the
-mechanism is cheap — the UX is the decision. **Also decide** whether `draw` joins the fx picker
-via a data-driven exclusion in the qualifying-blocks GENERATOR (it is withheld today because
-`sgs/responsive-logo` would get two controls for one capability). **Estimated:** 30 min.
-**Acceptance:** Bean signs a shape; amend Spec 38 §11.2 SAME session (spec is the system).
+#### Task 4 — DESIGN GATE: Flip (FR-38-12), Bean-owned, NOT researched yet
+**What:** research + present options; do NOT build. Premise verified false (D426). Establish
+whether WooCommerce's Product Filter → Product Collection re-renders client-side before
+proposing anything; animating a CORE block's re-render is a different blast radius needing its
+own gate. **Estimated:** 30 min research, delegated · sonnet.
 
-#### Dependency graph
+#### Also open (small, named so they are not lost)
+- Two editor console errors, cause unresolved: `Failed to resolve module specifier
+  "@sgs/gsap-inertia"` / `"@sgs/gsap-draggable"`. They survive the boot guards, so they are NOT
+  from our boot code. Nothing crashes.
+- `/qc-council` was not run on any Wave C commit.
+- Unmeasured: touch drag · before-after vertical orientation · responsive-logo `hover-redraw` ·
+  image-sequence tablet/mobile tiers.
 
-```
-Task 1 (INLINE, Opus) ──► Task 2 (commit; /qc-council first)
-Task 3 (sonnet research ─► Bean)  ┐ both independent of 1+2,
-Task 4 (INLINE ─► Bean)           ┘ but each ends with BEAN, not with code
-```
+#### Methodology guardrails (earned this session, not inherited)
 
-#### Methodology guardrails (do not skip)
-
-- **Deploy before measure** — the canary is shared and races; confirm build identity by md5 AT
-  THE MOMENT OF CAPTURE.
-- **A checksum across a git boundary on Windows is not a measurement** — CRLF vs LF gave three
-  false "foreign file" hits this session (STOP-A-A-CHECKSUM-ACROSS-A-GIT-BOUNDARY, D426).
+- **A probe that never reaches the effect is measuring the probe.** Four of my own probe
+  results were false before any code was: a sampler that never scrolled to a scroll-triggered
+  effect; `scrollIntoViewIfNeeded` stopping short of a scrubbed range's start; two adjacent
+  headings firing inside one window; a drag whose endpoints coincidentally matched its start.
+  Fact-check your own diagnostic before believing it found a defect.
+- **Cache-bust every canary measurement.** A LiteSpeed-cached page made a working fix read as
+  broken twice.
+- **A prose claim in a report is not a committed artefact** — D426's report said two registry
+  rows had been corrected; the change had never reached the seeder.
+- **Deploy from an isolated worktree.** The co-active track's uncommitted `lucide-icons.php`
+  changed again mid-session; isolation kept it off the live site.
 - **Negative control or the test is vacuous** — especially for every "it correctly did NOT
   animate" claim.
-- **Verify BOTH surfaces** — editor canvas and frontend.
-- **Outcome vs completion** — code shipped is not outcome achieved; map deferrals to a named spec
-  STAGE, never "out of scope" (STOP-29).
+- **Verify BOTH surfaces.** The `before-after` HTTP 400 was invisible to every frontend check.
 - **`python .claude/hooks/handoff-preflight.py --check` must pass before a handoff completes.**
 
 Full structural defences (109 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.

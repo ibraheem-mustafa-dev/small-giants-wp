@@ -741,7 +741,51 @@ data-sgs-fx-hold="<value>"        none | short | standard | long — PINNING eff
 data-sgs-fx-scrub                 true | <smoothing number>
 data-sgs-fx-stagger               ms | s
 data-sgs-fx-duration / -ease      token or literal (easing may name a physics flavour)
+data-sgs-fx-shape="<preset|custom>"     MORPH only — which shape pair to morph between
+data-sgs-fx-path="<preset|custom>"      MOTION-PATH only — which route to travel along
+data-sgs-fx-morph-target="<selector>"       resolved TARGET element (render-layer output)
+data-sgs-fx-motion-path-target="<selector>" resolved TARGET element (render-layer output)
 ```
+
+> **AMENDMENT 2026-07-31 (D427) — the morph / motion-path CONTROL SURFACE, Bean-signed.**
+>
+> **The problem this closes.** Wave C shipped both engines working, but with no way for a
+> client to reach them. `fx-morph.js` and `fx-motion-path.js` each resolve a CSS SELECTOR
+> (`data-sgs-fx-morph-target` / `-motion-path-target`) to an element and read its geometry —
+> attributes that existed in **no §11.2 grammar, no `block_attributes` row and no control**.
+> A CSS-selector textbox is also unusable by a tech-illiterate client, which is why §7 already
+> required an ASSET-GATED picker with authoring guidance rather than a bare toggle.
+>
+> **Signed shape: PRESETS FIRST, CUSTOM ASSET BEHIND "ADVANCED".**
+> - `data-sgs-fx-shape` / `data-sgs-fx-path` name a CURATED PRESET (morph pairs:
+>   circle↔square, plus↔cross, play↔pause, logo↔icon; paths: arc, S-curve, orbit, figure-8).
+>   The client picks a THUMBNAIL. Zero asset preparation, works on day one.
+> - The value `custom` switches the control to a media-library SVG picker (the
+>   `sgs/responsive-logo` `svgAnimationSource` precedent — media library only, never inline
+>   SVG paste, which is an XSS vector).
+> - The panel stays DISABLED with guidance-linked help text until a preset or asset is
+>   chosen — §7's asset gate, satisfied by a state a client can actually reach.
+>
+> **Why this needs NO runtime change.** Both modules already accept "an element in the DOM
+> whose geometry is the target". The preset layer therefore sits ABOVE that contract rather
+> than replacing it: the RENDER LAYER expands a preset key (or an uploaded asset) into a
+> hidden `<svg>` carrying the path, and emits the existing `-target` selector pointing at it.
+> `fx-morph.js` and `fx-motion-path.js` are untouched. The two `-target` attributes are
+> therefore documented above as **render-layer OUTPUT, not an authoring surface** — a draft
+> never hand-writes them, and the cloning contract (§11.3) maps `-shape`/`-path`, never the
+> resolved selector.
+>
+> **Rejected, with reasons, so they are not re-proposed:** a media-library picker ALONE (works
+> only for someone who already has matched-topology SVGs — in practice the framework author
+> and nobody else); presets ALONE (impossible to misuse, but a framework meant to clone
+> arbitrary drafts cannot have a fixed shape ceiling); a CSS-selector textbox (what the Wave C
+> agents implicitly assumed — fails §7 outright).
+>
+> **Status: DESIGN SIGNED, NOT YET BUILT.** Owed: the preset data file, the render-layer
+> expansion, the `block_attributes` rows under `fx:*`, the thumbnail picker in the fx panel,
+> and `morph`/`motion-path` joining `SHIPPED_EFFECTS` in `fx.js` — which must NOT happen until
+> the control exists, since that array's whole purpose is to keep an unreachable effect out of
+> the picker.
 
 One effect per element in v1 (a draft needing two composes wrapper elements). Attr-per-property
 (NOT a JSON blob) because: the Spec 31 suffix grammar clones it (base attr + suffix — the same
