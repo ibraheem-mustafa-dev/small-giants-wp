@@ -183,3 +183,55 @@ read as if the nav commit had one. It did not — that was a 3-rater ad-hoc coun
 **Known, benign drift it caught:** regenerating `roster.json` live now yields 83 blocks, not the 81
 this record cites. The committed roster says 81 and was correct when measured; the DB has grown via
 other tracks since. Re-measure before relying on the Part-L figures.
+
+
+---
+
+# PART 3 — the drawer was broken; Bean found it (D433)
+
+`edf68f06` fix · `e774b7d1` QC. **Read this before touching nav CSS again.**
+
+## What I got wrong
+
+I shipped the drawer path with the accordion recorded as "INDICATIVE, not proven" and never opened a
+drawer. Bean did: submenu opening to the RIGHT of its parent, invisible text, no separators, no hover
+feedback, current page identical to hover. All visible in seconds.
+
+**The rule earned: an unverified surface is a BLOCKER, not a footnote.** Honest labelling protects the
+reader, not the user, who meets the broken surface anyway.
+
+## The technical trap (generalises beyond nav)
+
+**A rule that is correct for a FLOATING panel can be wrong once the panel joins normal flow.**
+`.sgs-nav-menu__submenu-root{display:flex}` was harmless while the panel was `position:absolute` — out
+of flow, so the flex row never applied to it. In the drawer the panel is `position:static`, so it
+became a flex SIBLING and sat beside the trigger. Fixed with `flex-wrap:wrap` + a full-width wrap.
+
+**A colour token is only meaningful against a KNOWN surface.** I forced `background:transparent` in the
+drawer, deleting the surface the pink link token was chosen against → pink on pink. When the surface is
+operator-chosen per variant, derive from `currentColor`. Every drawer value now does, so it works on a
+light, dark or brand drawer.
+
+## Bean's other findings
+
+No separators (never implemented) · no hover feedback on main items — `itemColour`/`itemBg`/
+`itemColourHover`/`itemBgHover` all default to `""`, a genuine gap and NOT a suppressed default (he
+asked directly) · current page identical to hover because `[aria-current="page"]` sat in the SAME
+selector list as `:hover`. Now separated.
+
+## Verified after (18/18, each with a closed-state negative control)
+
+Header: opens below its item at 0px offset · on-screen · 3 children with real hrefs · panel topmost ·
+current page distinct (weight 600 vs 400) · ESC closes + returns focus · flat items untouched.
+Drawer at 390: label + caret on one row, caret right-edge · submenu BELOW at the label's left edge
+(panel top 100 = row bottom 100) · indented 32px · text 8.43:1 on pink · separators on every row ·
+current page distinct by left rule.
+
+One apparent failure was my own assertion: 43.9915px vs a `>=44` check, while `min-height:44px` IS set
+and the browser paints sub-pixel. Same class as the earlier substring double-count — check the raw
+value before believing a boolean.
+
+## Still owed
+
+Cross-item single-open (does opening B close A) · real touch · real keyboard tabbing ·
+`submenuAlign` center/end live · Bean's eye on the final state.

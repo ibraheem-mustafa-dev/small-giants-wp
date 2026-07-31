@@ -1,5 +1,39 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D433 — The drawer submenu shipped broken; "INDICATIVE, not proven" is not a ship criterion [INCIDENT]
+
+**I shipped the drawer path unverified and Bean found it broken.** The visual-diff report recorded the
+in-drawer accordion as "INDICATIVE, not proven" and I shipped anyway. Labelling a gap is not closing
+it. Bean opened the real drawer: submenu opening to the RIGHT of its parent, text invisible, no
+separators, no hover feedback, current page identical to hover. Commit `edf68f06`; QC `e774b7d1`.
+
+**Both regressions were mine, and both are rules that are RIGHT for a floating header panel and WRONG
+once the panel joins normal flow** — the generalisable trap:
+1. `.sgs-nav-menu__submenu-root{display:flex}` makes the root a flex ROW. In the header the wrap is
+   `position:absolute` (out of flow) so the row never applied to it; in the drawer the wrap is
+   `position:static`, so it became a flex SIBLING and sat beside the trigger. Fixed with
+   `flex-wrap:wrap` + a full-width wrap so the row stays a row and the panel wraps beneath. (A first
+   attempt used `display:block` and dropped the caret onto its own line — caught by LOOKING at the
+   screenshot, not by any metric.)
+2. My own rule forced `background:transparent` in the drawer, deleting the surface the pink link token
+   was chosen against, so pink text landed on the pink drawer. **A colour token is only meaningful
+   against a known surface; when the surface is operator-chosen per variant, derive from
+   `currentColor` instead of assuming one.** Every drawer value now does.
+
+**Bean's other findings, all real, all fixed:** no separators anywhere (never implemented) · no hover
+feedback on main items — `itemColour`/`itemBg`/`itemColourHover`/`itemBgHover` all default to `""` so
+nothing is emitted, a genuine gap and NOT a default I suppressed (he asked directly) · current page
+styled identically to hover because `[aria-current="page"]` sat in the SAME selector list as `:hover`.
+Separated: hover keeps the operator's chosen style, current-page gets weight + a solid left rule.
+"Where I am" and "what I'm pointing at" are different questions.
+
+**QC after the fix: 18 scenarios, 18 pass** (header 9, drawer 9), each preceded by a closed-state
+negative control. One apparent failure was my own assertion — 43.9915px against a `>=44` check, while
+`min-height:44px` IS set and the browser paints sub-pixel.
+
+**The rule this earns:** an unverified surface is a BLOCKER, not a footnote. If a report has to write
+"not proven" about a path a client will actually use, that path is not ready to ship.
+
 ## D432 — Nav submenu dropdowns ship; five defects only a live check could find [INCIDENT]
 
 **`sgs/nav-menu` renders dropdowns.** A menu item with nested children rendered as a bare link and

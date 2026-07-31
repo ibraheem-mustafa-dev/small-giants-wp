@@ -32,33 +32,34 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > mis-seed; the BEM-regex diagnosis was wrong (13 cells, not 380).
 >
 > #### ⭐ TRACK 1, session 2 (D429 + D432) — record: **`memory/session-2026-07-31-track1-session2.md`**
-> `98ff88df` parity gate · `e8c72f7a` oracle fix · `2f471678` triage · **`fc021a34`+`7940d709` nav
-> DROPDOWNS**. Reports: `reports/2026-07-31-oracle-attribution-and-probe-target.md` ·
+> `98ff88df` · `e8c72f7a` · `2f471678` · `fc021a34` · `7940d709` · `edf68f06` · `e774b7d1`. Reports:
+> `reports/2026-07-31-oracle-attribution-and-probe-target.md` ·
 > `reports/visual-diff/nav-menu-2026-07-31.md`.
 >
-> **Tasks 6, 1, 2, 3 CLOSED.** Oracle measures each cell on its OWN element (control 73→0 vs a NOT-
-> regenerated artefact; LANDED 31→55). 11 failures triaged: **8 GAPs, 1 real routing defect
-> (`sgs-card-grid` `cardRadius` 12→18px), 1 probe artefact of mine.** ⛔ **Do NOT arm
-> `--with-landed`.** **Quote `measurable_rate_pct` 46.3%, never `attribution_rate_pct` 99.6%.**
+> **Tasks 6, 1, 2, 3 CLOSED.** Oracle measures each cell on its OWN element (control 73→0; LANDED
+> 31→55). 11 failures triaged: **8 GAPs, 1 real routing defect (`sgs-card-grid` `cardRadius`
+> 12→18px), 1 probe artefact of mine.** ⛔ **Do NOT arm `--with-landed`.** **Quote
+> `measurable_rate_pct` 46.3%, never `attribution_rate_pct` 99.6%.**
+>
+> **⚠ D433 — I shipped the DRAWER unverified; Bean found it broken** (sideways submenu, invisible
+> text, no separators, current page == hover). Fixed + QC'd 18/18. **An unverified surface is a
+> BLOCKER, not a footnote.** A rule right for a FLOATING panel can be wrong once it joins normal
+> flow; a colour token is meaningless against an operator-chosen surface — use `currentColor`.
 >
 > **Nav dropdowns ship.** **5 defects found LIVE that every offline gate passed** (89px offset,
 > hardcoded white, palette override, black focus ring, children never current-page). Harness 32/32.
 >
-> **⭐ BEAN-RULED: WCAG AA does NOT gate the submenu link colour.** Pink-on-cream (2.25:1) is legible
-> and intended. A `text`-token version was REVERTED to obey this — do not "fix" it back.
+> **⭐ BEAN-RULED: WCAG AA does NOT gate the submenu link colour.** Pink-on-cream (2.25:1) is intended;
+> a `text`-token version was REVERTED. Do not "fix" it back.
 >
 > **⛔ `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** — a nav in PAGE CONTENT has its dropdown
-> overlapped; HEADER placement verified correct. **Canary left:** menu 112, page 2091.
+> overlapped; HEADER verified correct. **Canary left:** menu 112, page 2091.
 >
-> **Open:** Task 4 residuals · Task 5 (Part L) baselined only — all 4 figures HELD (4/81, 3/81, 26/81,
-> 20/81; roster 81); 43 of 78 blocks are legitimately exempt from `StateToggleControl` → ~35 real.
-> **Owed:** Bean's eye; in-drawer accordion at 375 INDICATIVE; touch + keyboard unmeasured.
+> **Open:** Task 4 residuals · Task 5 (Part L) baselined only — 4 figures HELD (4/81, 3/81, 26/81,
+> 20/81; roster was 81, reads 83 now — RE-MEASURE); 43 of 78 exempt → ~35 real.
+> **Owed:** Bean's eye · cross-item single-open · touch · real keyboard.
 >
-> **Handoff QC: independent subagent returned CLEAN**, re-deriving every figure from source.
->
-> **Process:** a `/sgs-update` reseed is CROSS-TRACK on the shared DB — mine created attr rows the
-> motion track lacked and broke both builds until 7 `fx:*` markers were declared in
-> `attr-classification-overrides.json`.
+> **Process:** a `/sgs-update` reseed is CROSS-TRACK on the shared DB — mine broke both builds.
 
 **What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
 three things that were quietly broken are fixed.** Every effect was watched moving in a browser,
