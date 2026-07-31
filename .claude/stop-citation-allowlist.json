@@ -1,0 +1,79 @@
+{
+  "_note": "Dated, reasoned allowlist of STOP-N citations the check_citations_resolve check (handoff-preflight.py check 7) treats as resolved without a catalogue entry existing. NEVER add an entry here to silently skip a real defect -- every entry needs a reason and a date. Populated 2026-07-31 during the D101 numeric-STOP recovery: ~45 phantom STOP-N citations were found across .claude/, 31 were recovered into .claude/STOP-CATALOGUE.md (verbatim/reconstructed/duplicate-mapped) within a 30-minute hard timebox, and the 14 below were not reached before the timebox closed. Remove an entry here the moment its catalogue definition is recovered -- an allowlisted number with a real entry is a stale skip, not a gap.",
+  "stop": {
+    "STOP-8": {
+      "reason": "Cited (D228/STOP-8 CHEAT, property_suffixes device-tier discipline) but recovery timebox closed before a defining sentence was isolated. Likely near-duplicate of the device-tier-vs-visual-breakpoints doctrine already in CLAUDE.md/STOP-CATALOGUE.",
+      "dated": "2026-07-31"
+    },
+    "STOP-13": {
+      "reason": "Cited alongside STOP-16 (no_slug_literal AST hardening) but not reached; likely near-duplicate of an existing cheat-gate STOP entry.",
+      "dated": "2026-07-31"
+    },
+    "STOP-26": {
+      "reason": "Cited only via 'extends STOP-26 to definition-of-done' (decisions.md:2415, mistakes.md:56, specs/31 §intro) -- the citing sentences describe what STOP-29 EXTENDS, not STOP-26's own text. The underlying STOP-26 definition itself was not located before the timebox closed.",
+      "dated": "2026-07-31"
+    },
+    "STOP-37": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-38": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-45": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-51": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-54": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-58": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-61": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-62": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-63": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-65": {
+      "reason": "Cited but not reached in the 30-minute recovery timebox.",
+      "dated": "2026-07-31"
+    },
+    "STOP-69": {
+      "reason": "A gloss was seen in passing ('the STOP-69 */-in-JS-comment trap') but not independently confirmed/expanded before the timebox closed.",
+      "dated": "2026-07-31"
+    }
+  },
+  "parking": {
+    "P-CLONING-DEPLOY-BLOCKED-SHARED-TREE": {
+      "reason": "Cited by STOP-A-A-CITED-SLUG-MAY-NOT-EXIST (.claude/STOP-CATALOGUE.md:93-96) AS EVIDENCE of the phantom-P-slug incident that entry documents (D423, 2026-07-30) -- deliberately never a real parking.md entry, quoting the exact phantom slug that was found live in LEDGER.md at the time.",
+      "dated": "2026-07-31"
+    },
+    "P-UIMAX-ENFORCE-CREDIT-CLASSIFIER": {
+      "reason": "Same STOP-A-A-CITED-SLUG-MAY-NOT-EXIST evidence citation, same incident.",
+      "dated": "2026-07-31"
+    },
+    "P-F5-REMAINING": {
+      "reason": "Same STOP-A-A-CITED-SLUG-MAY-NOT-EXIST evidence citation, same incident.",
+      "dated": "2026-07-31"
+    },
+    "P-UNIVERSAL-RESPONSIVE-ROUTING": {
+      "reason": "Same STOP-A-A-CITED-SLUG-MAY-NOT-EXIST evidence citation, same incident.",
+      "dated": "2026-07-31"
+    }
+  }
+}

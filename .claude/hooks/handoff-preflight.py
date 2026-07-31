@@ -15,12 +15,24 @@ the agent can skip is not a gate". The evidence they were being skipped:
   * the D101 STOP carry-forward count-check — the defence that stops captured failure
     patterns evaporating — was asserted in four docs and machine-checked in zero.
 
-This script is the missing mechanical layer. Six checks, machine evidence only, no prose.
+This script is the missing mechanical layer. Seven checks, machine evidence only, no prose.
+
+2026-07-31 (a56d… STOP-CATALOGUE recovery): added check 7, `check_citations_resolve` — the
+citation guard that was the actual gap behind the phantom-STOP incident. `check_no_dangling_links`
+only ever matched markdown `[text](path.md)` links; a bare-text citation like `STOP-29` or
+`P-SOME-SLUG` in prose was invisible to every check. That is exactly how ~27+ numeric STOP
+citations went phantom — cited everywhere, defined nowhere, with a passing gate throughout. Also
+fixed `check_stop_carry_forward` (STOP-2 in this file's own terms): it compared SET SIZES, not
+set membership, so deleting N entries and adding N different ones in the same commit read GREEN.
+It now compares identifier sets against a baseline that is the union of the previous commit AND a
+committed floor file (`.claude/stop-floor.json`), so a rename/squash can't reset the floor to zero.
+Unresolved phantom numbers Step 1's 30-minute recovery timebox could not reach are recorded,
+dated, with a reason, in `.claude/stop-citation-allowlist.json` — never silently skipped.
 
 USAGE
   python .claude/hooks/handoff-preflight.py            # report, exit 0 always
   python .claude/hooks/handoff-preflight.py --check    # gate mode: exit 1 on any violation
-  python .claude/hooks/handoff-preflight.py --self-test # prove each check can FAIL
+  python .claude/hooks/handoff-preflight.py --self-test # prove each check can FAIL *and* PASS
 
 DESIGN NOTES
   * REPORT-only by default so it can be run any time without wedging anything; `--check`
@@ -31,10 +43,13 @@ DESIGN NOTES
   * Each failure names the file, the measured value and the fix. A gate that fails
     illegibly gets switched off.
   * `--self-test` exists because a check that cannot fail is worse than no check
-    (STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS). It injects a synthetic violation into
-    an in-memory copy of each check's input and asserts the check rejects it.
+    (STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS). It is a TWO-SIDED control: for every
+    check it injects a synthetic violation and asserts rejection, AND feeds clean input and
+    asserts acceptance — a check hardcoded to always return ok=False would pass a
+    negative-only self-test forever while failing every real clean tree.
 """
 import argparse
+import json
 import re
 import subprocess
 import sys
@@ -88,6 +103,31 @@ LINK_RE = re.compile(r"\]\(([^)\s#]+\.md)(?:#[^)]*)?\)")
 # check then passes everything. The --self-test caught exactly that on first run.
 STOP_RE = re.compile(r"^\s*-\s+\*\*(STOP-[A-Z0-9]+(?:-[A-Z0-9]+)*)", re.M)
 
+# Committed floor of the max-ever STOP-id set (check 2's ratchet) and the dated allowlist of
+# phantom STOP-N numbers Step 1's recovery could not resolve (check 7). Both are read-only
+# inputs the script never writes — see module docstring "NEVER edits a file".
+STOP_FLOOR_PATH = _CLAUDE / "stop-floor.json"
+STOP_ALLOWLIST_PATH = _CLAUDE / "stop-citation-allowlist.json"
+
+# check 7 — bare-text citation extraction. Deliberately separate from STOP_RE: STOP_RE finds
+# *definitions* (must be at the start of a `- **STOP-X**` bullet); this finds *citations*
+# anywhere in running prose, including inline parentheticals like "(STOP-4/21/44)".
+#
+# Scoped to NUMERIC STOP citations only (`STOP-` followed by a digit): the task this guard was
+# built for is the phantom NUMERIC-STOP incident specifically ("STOP-N numerics"). A first
+# version matched ANY `STOP-[A-Z0-9]+` and immediately produced ~459 false/out-of-scope hits on
+# the real tree: it matched the filename reference "STOP-CATALOGUE.md" as a citation of an
+# entry literally named "STOP-CATALOGUE", matched the literal placeholder token "STOP-N" used
+# in this file's own prose to mean "a STOP number" generically, and — correctly, but far outside
+# this session's scope/timebox — surfaced a SEPARATE, much larger backlog of undefined bare-text
+# NAMED-slug citations (e.g. "STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH") that predates this build
+# and was never part of the numeric-STOP recovery task. Requiring the first citation segment to
+# be digits sidesteps all three: catalogue filenames and the "STOP-N" placeholder never match,
+# and named-slug citations (which never start with a digit) are left to a future, separately
+# scoped guard rather than silently swept into this one's blast radius.
+_STOP_CITATION_RE = re.compile(r"STOP-(\d+(?:-[A-Z0-9]+)*)")
+_PARKING_CITATION_RE = re.compile(r"\bP-[A-Z0-9][A-Z0-9-]*\b")
+
 
 class Result:
     """One check's verdict. `ok` False means a real violation, not a warning."""
@@ -105,6 +145,34 @@ def _read(path: Path) -> str:
 
 def _count_stops(text: str) -> int:
     return len({m.group(1) for m in STOP_RE.finditer(text)})
+
+
+def _defined_stop_ids(text: str) -> set[str]:
+    """The set of STOP identifiers actually DEFINED in a catalogue text (not cited)."""
+    return {m.group(1) for m in STOP_RE.finditer(text)}
+
+
+def _load_stop_floor() -> set[str]:
+    if not STOP_FLOOR_PATH.exists():
+        return set()
+    try:
+        data = json.loads(_read(STOP_FLOOR_PATH))
+    except (OSError, ValueError):
+        return set()
+    return set(data.get("ids", []))
+
+
+def _load_full_allowlist() -> dict[str, dict]:
+    """Both allowlist sections: `stop` (phantom numeric STOPs) and `parking` (documented
+    self-referential P-slug examples, e.g. the ones STOP-A-A-CITED-SLUG-MAY-NOT-EXIST cites
+    AS EVIDENCE of the incident it describes — those are deliberately never real entries)."""
+    if not STOP_ALLOWLIST_PATH.exists():
+        return {}
+    try:
+        data = json.loads(_read(STOP_ALLOWLIST_PATH))
+    except (OSError, ValueError):
+        return {}
+    return {"stop": data.get("stop", {}), "parking": data.get("parking", {})}
 
 
 def _strip_fenced_blocks(text: str) -> str:
@@ -163,28 +231,64 @@ def check_ledger_size(ledger_text: str | None = None) -> Result:
     )
 
 
-def check_stop_carry_forward(now_text: str | None = None) -> Result:
-    """2 — D101: the STOP catalogue may only grow. A drop needs a recorded justification."""
+def check_stop_carry_forward(
+    now_text: str | None = None,
+    prev_text: str | None = None,
+    floor_ids: set[str] | None = None,
+) -> Result:
+    """2 — D101: the STOP catalogue may only grow. A drop needs a recorded justification.
+
+    FIXED 2026-07-31: the original built `{m.group(1) for m in STOP_RE.finditer(text)}` and
+    then immediately threw the set away, keeping only `len(...)`. That is a CARDINALITY check
+    wearing a carry-forward check's clothes: delete 27 named entries and add 27 DIFFERENT ones
+    in the same commit and `now >= prev` reads True — count unchanged, every one of the 27
+    original defences gone, gate green throughout. This is the exact mechanism that let the
+    STOP-CATALOGUE 2026-07-17 collapse drop ~27+ numeric STOPs without ever tripping D101.
+
+    Now compares IDENTIFIER SETS: fails when `baseline_ids - now_ids` is non-empty and prints
+    exactly which tokens went missing. The baseline is also no longer just `git show HEAD:` —
+    that alone gives no durable floor across a rename or squash (HEAD could itself already be
+    post-collapse). Baseline = `prev_ids | floor_ids`, where `floor_ids` comes from the
+    committed `.claude/stop-floor.json` (the max-ever-seen identifier set). This script never
+    writes that file (see module docstring); bumping it to the current superset is a manual
+    step at the point a STOP is deliberately and legitimately added.
+    """
     path = _CLAUDE / "STOP-CATALOGUE.md"
-    if not path.exists():
-        return Result("stop-carry-forward", True, "no STOP-CATALOGUE.md")
-    now = _count_stops(now_text if now_text is not None else _read(path))
-    try:
-        prev_text = subprocess.run(
-            ["git", "show", "HEAD:.claude/STOP-CATALOGUE.md"],
-            cwd=_REPO, capture_output=True, text=True, timeout=15,
-        ).stdout
-    except (OSError, subprocess.SubprocessError):
-        return Result("stop-carry-forward", True, f"{now} STOPs (no git baseline available)")
-    if not prev_text.strip():
-        return Result("stop-carry-forward", True, f"{now} STOPs (no committed baseline)")
-    prev = _count_stops(prev_text)
-    if now >= prev:
-        return Result("stop-carry-forward", True, f"{now} STOPs (was {prev}) - no defence dropped")
+    if now_text is None:
+        if not path.exists():
+            return Result("stop-carry-forward", True, "no STOP-CATALOGUE.md")
+        now_text = _read(path)
+    now_ids = _defined_stop_ids(now_text)
+
+    if prev_text is None:
+        try:
+            prev_text = subprocess.run(
+                ["git", "show", "HEAD:.claude/STOP-CATALOGUE.md"],
+                cwd=_REPO, capture_output=True, text=True, timeout=15,
+            ).stdout
+        except (OSError, subprocess.SubprocessError):
+            prev_text = ""
+    prev_ids = _defined_stop_ids(prev_text) if prev_text.strip() else set()
+
+    if floor_ids is None:
+        floor_ids = _load_stop_floor()
+
+    baseline_ids = prev_ids | floor_ids
+    if not baseline_ids:
+        return Result("stop-carry-forward", True,
+                       f"{len(now_ids)} STOPs (no committed baseline — git HEAD empty and no stop-floor.json)")
+
+    missing = baseline_ids - now_ids
+    if not missing:
+        beyond_floor = now_ids - floor_ids
+        note = (f"; {len(beyond_floor)} beyond the committed floor — bump stop-floor.json to lock them in"
+                 if floor_ids and beyond_floor else "")
+        return Result("stop-carry-forward", True,
+                       f"{len(now_ids)} STOPs, baseline of {len(baseline_ids)} fully carried forward{note}")
     return Result(
         "stop-carry-forward",
         False,
-        f"STOP count DROPPED {prev} -> {now}: {prev - now} defence(s) removed",
+        f"{len(missing)} defence(s) DROPPED vs baseline: {', '.join(sorted(missing)[:8])}",
         "D101: carry every STOP forward verbatim. Restore the dropped entries, or record an "
         "inline justification in the catalogue's count-check receipt (section D) and re-run.",
     )
@@ -292,6 +396,162 @@ def check_no_dangling_links(overrides: dict[str, str] | None = None) -> Result:
     )
 
 
+def _extract_stop_citations(text: str) -> list[str]:
+    """Every bare-text STOP-N / STOP-SLUG citation in `text`, including slash-list shorthand.
+
+    Two shapes seen live in this repo: `(STOP-16)` / `(STOP-A-SOME-SLUG)` single citations,
+    and `(STOP-4/21/44)` shorthand lists where only the first token carries the `STOP-` prefix.
+    The second form is expanded to `STOP-4`, `STOP-21`, `STOP-44` — each checked independently.
+    """
+    tokens = []
+    for m in _STOP_CITATION_RE.finditer(text):
+        ident = m.group(1)
+        tokens.append(f"STOP-{ident}")
+        if ident.isdigit():
+            pos = m.end()
+            while True:
+                m2 = re.match(r"/(\d+)\b", text[pos:])
+                if not m2:
+                    break
+                tokens.append(f"STOP-{m2.group(1)}")
+                pos += m2.end()
+    return tokens
+
+
+def _extract_parking_citations(text: str) -> list[str]:
+    return [m.group(0) for m in _PARKING_CITATION_RE.finditer(_strip_fenced_blocks(text))]
+
+
+def _parking_aliases(text: str) -> set[str]:
+    """P-slugs that are legitimate ALTERNATE names for an entry ENTRY_RE only half-captures.
+
+    Two real shapes in parking.md: a compound heading `### SLUG-A / SLUG-B — title` (ENTRY_RE
+    captures only SLUG-A as the entry's primary id) and a body line `**Also known as:** SLUG-C,
+    SLUG-D`. Both name the SAME entry under a second citable slug. Without this, a citation of
+    the file's OWN documented alias reads as dangling — found live: `P-DRAFT-CSSVAR-SEED-READD`,
+    `P-PAGE8-QC-BATCH-9`, `P-CANARY-SHARED-DEPLOY-RACE` and 3 more were all real aliases, not
+    phantoms, on the first `--check` run against the real tree.
+    """
+    aliases: set[str] = set()
+    for line in _strip_fenced_blocks(text).splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith(("#", ">")) or "Also known as" in line:
+            aliases.update(m.group(0) for m in _PARKING_CITATION_RE.finditer(line))
+    return aliases
+
+
+#  citation source scope for check 7. Mirrors LINK_SOURCES (check 6)'s "session-start reads"
+#  scoping deliberately, PLUS the two docs that are this guard's own resolution targets — not a
+#  blanket .claude/**/*.md walk. A first version scanned every living .md/.py under .claude/ and
+#  surfaced ~379 unresolved P-slug citations sitting in `decisions.md` alone: that file is a
+#  D-numbered ARCHITECTURAL LOG (per `.claude/CLAUDE.md`'s own table), an append-only historical
+#  narrative that legitimately references now-archived/renamed parking items in retrospective
+#  prose — the same reason `check_no_dangling_links` never scanned it either. Scanning it as if
+#  it were a live citation index conflates "the log once said X" with "X is a currently open
+#  citation that must resolve", which is a different, much larger, pre-existing backlog outside
+#  this session's scope. `specs/*.md` were excluded for the same reason: they cite retired STOPs
+#  in "why we built this" prose (e.g. Spec 31's own historical STOP-28 note). If a specific spec
+#  or the decisions log needs live citation hygiene later, extend this tuple deliberately with
+#  its own scoping rationale — do not silently widen it back to a blanket walk.
+CITATION_SOURCES = LINK_SOURCES + (
+    ".claude/STOP-CATALOGUE.md",
+    ".claude/parking.md",
+)
+
+
+def _citation_source_files() -> list[tuple[str, Path]]:
+    return [(rel, _CLAUDE.parent / rel) for rel in CITATION_SOURCES]
+
+
+def check_citations_resolve(
+    stop_catalogue_text: str | None = None,
+    parking_text: str | None = None,
+    parking_archive_text: str | None = None,
+    source_overrides: dict[str, str] | None = None,
+    allowlist: dict[str, dict] | None = None,
+) -> Result:
+    """7 — every bare-text STOP-N / STOP-SLUG and P-SLUG citation resolves to a real entry.
+
+    Built 2026-07-31 as the actual gap behind the phantom-STOP incident: check 6
+    (`check_no_dangling_links`) only ever matched markdown `[text](path.md)` link syntax. A
+    bare-text citation like "STOP-29" or "P-SOME-SLUG" sitting in prose — which is how every
+    STOP citation in this codebase is actually written — was invisible to every check. ~27+
+    numeric STOP citations went phantom under exactly that blind spot.
+
+    Resolution rule is EXACT-TOKEN ONLY, never substring/startswith. `STOP-67` and
+    `STOP-67-GATE-ANOMALY` are two DIFFERENT catalogue entries that both legitimately exist; a
+    prefix-matching resolver would silently bind a `STOP-67` citation to the wrong entry (or
+    vice versa) and hide a real citation-site defect. A bare `STOP-N` citation is judged
+    resolved ONLY if `STOP-N` itself is a defined entry — if the author meant the longer
+    suffixed slug, that is a citation-site defect to fix (cite the full slug), not something
+    this gate auto-expands.
+
+    Unresolved STOP-N numbers that survive from the 2026-07-31 recovery timebox are recorded,
+    dated, with a reason, in `.claude/stop-citation-allowlist.json` under `"stop"` — checked
+    exact-token, same as the catalogue. A parallel `"parking"` section covers the small, genuine
+    exception for P-slugs: STOP-A-A-CITED-SLUG-MAY-NOT-EXIST cites 4 P-slugs AS EVIDENCE of the
+    phantom-citation incident it documents — those are deliberately never real parking.md
+    entries. Every OTHER P-slug citation is expected to resolve against parking.md (open) or
+    memory/parking-archive.md (closed/archived), or its documented alias (`### SLUG-A / SLUG-B`
+    compound headings, `**Also known as:**` lines — see `_parking_aliases`), with no exceptions.
+    """
+    cat_path = _CLAUDE / "STOP-CATALOGUE.md"
+    park_path = _CLAUDE / "parking.md"
+    archive_path = _CLAUDE / "memory" / "parking-archive.md"
+
+    cat_text = stop_catalogue_text if stop_catalogue_text is not None else (
+        _read(cat_path) if cat_path.exists() else "")
+    park_text = parking_text if parking_text is not None else (
+        _read(park_path) if park_path.exists() else "")
+    archive_text = parking_archive_text if parking_archive_text is not None else (
+        _read(archive_path) if archive_path.exists() else "")
+
+    defined_stops = _defined_stop_ids(cat_text)
+    defined_parking = (
+        {slug for slug, _, _ in _parking_entries(park_text)}
+        | {slug for slug, _, _ in _parking_entries(archive_text)}
+        | _parking_aliases(park_text)
+        | _parking_aliases(archive_text)
+    )
+    allow_data = allowlist if allowlist is not None else _load_full_allowlist()
+    allow_stop = allow_data.get("stop", {})
+    allow_parking = allow_data.get("parking", {})
+
+    if source_overrides is not None:
+        sources: list[tuple[str, str]] = list(source_overrides.items())
+    else:
+        sources = [(rel, _read(p)) for rel, p in _citation_source_files() if p.exists()]
+
+    dangling = []
+    checked = 0
+    for rel, text in sources:
+        for token in _extract_stop_citations(text):
+            checked += 1
+            if token in defined_stops or token in allow_stop:
+                continue
+            dangling.append(f"{rel}: {token}")
+        for token in _extract_parking_citations(text):
+            checked += 1
+            if token in defined_parking or token in allow_parking:
+                continue
+            dangling.append(f"{rel}: {token}")
+
+    if not dangling:
+        return Result(
+            "citations-resolve", True,
+            f"{checked} STOP-N/P-slug citations checked, all resolve "
+            f"({len(allow_stop)} allowlisted STOP phantom(s), {len(allow_parking)} allowlisted "
+            f"P-slug example(s))",
+        )
+    return Result(
+        "citations-resolve", False,
+        f"{len(dangling)} unresolved citation(s): {'; '.join(dangling[:8])}"
+        + (f" (+{len(dangling) - 8} more)" if len(dangling) > 8 else ""),
+        "Add the missing STOP-CATALOGUE.md/parking.md entry, fix the citation to the exact "
+        "defined token, or add a dated reason to stop-citation-allowlist.json.",
+    )
+
+
 CHECKS = (
     check_ledger_size,
     check_stop_carry_forward,
@@ -299,6 +559,7 @@ CHECKS = (
     check_parking_no_closed,
     check_no_tombstones,
     check_no_dangling_links,
+    check_citations_resolve,
 )
 
 
@@ -306,35 +567,68 @@ CHECKS = (
 
 
 def self_test() -> int:
-    """Negative control: prove each check REJECTS a synthetic violation.
+    """Two-sided control: prove each check REJECTS a violation AND ACCEPTS clean input.
 
     A gate that cannot fail is indistinguishable from no gate at all, and reads as a PASS
-    forever. Each case below feeds a known-bad input and asserts ok is False.
+    forever (STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER). But a negative-control-only
+    self-test has its own vacuity mode: a check hardcoded to `return Result(ok=False, ...)`
+    would pass every one of the original 6 negative-only cases and then fail `--check` on
+    every clean tree forever. Each case below is now a (bad_fn, good_fn) pair; both directions
+    must hold for the check to be considered proven.
     """
     cases = [
-        ("ledger-size", lambda: check_ledger_size("x" * (CAP_BYTES + 1))),
-        ("stop-carry-forward", lambda: check_stop_carry_forward("- **STOP-ONLY-ONE** — x\n")),
-        ("parking-status", lambda: check_parking_status("### P-NO-STATUS — t\nbody\n")),
+        ("ledger-size",
+         lambda: check_ledger_size("x" * (CAP_BYTES + 1)),
+         lambda: check_ledger_size("short file\n")),
+        ("stop-carry-forward",
+         lambda: check_stop_carry_forward(
+             now_text="- **STOP-ONLY-ONE** — x\n",
+             prev_text="- **STOP-A** — x\n- **STOP-B** — y\n",
+             floor_ids=set()),
+         lambda: check_stop_carry_forward(
+             now_text="- **STOP-A** — x\n- **STOP-B** — y\n- **STOP-C** — z\n",
+             prev_text="- **STOP-A** — x\n- **STOP-B** — y\n",
+             floor_ids=set())),
+        ("parking-status",
+         lambda: check_parking_status("### P-NO-STATUS — t\nbody\n"),
+         lambda: check_parking_status("### P-GOOD — t\n**Status:** OPEN\nbody\n")),
         ("parking-no-closed",
-         lambda: check_parking_no_closed("### P-DONE — t\n**Status:** RESOLVED\n")),
-        ("no-tombstones", lambda: check_no_tombstones(extra=["SYNTHETIC-TOMBSTONE.md"])),
+         lambda: check_parking_no_closed("### P-DONE — t\n**Status:** RESOLVED\n"),
+         lambda: check_parking_no_closed("### P-OPEN — t\n**Status:** OPEN\n")),
+        ("no-tombstones",
+         lambda: check_no_tombstones(extra=["SYNTHETIC-TOMBSTONE.md"]),
+         lambda: check_no_tombstones(extra=[])),
         ("no-dangling-links",
          lambda: check_no_dangling_links(
-             overrides={".claude/CLAUDE.md": "[x](does-not-exist-xyz.md)"})),
+             overrides={".claude/CLAUDE.md": "[x](does-not-exist-xyz.md)"}),
+         lambda: check_no_dangling_links(
+             overrides={".claude/CLAUDE.md": "no links here\n"})),
+        ("citations-resolve",
+         lambda: check_citations_resolve(
+             stop_catalogue_text="- **STOP-16** — x\n", parking_text="", parking_archive_text="",
+             source_overrides={"fake.md": "See STOP-99 for details.\n"}, allowlist={}),
+         lambda: check_citations_resolve(
+             stop_catalogue_text="- **STOP-16** — x\n",
+             parking_text="### P-GOOD\n**Status:** OPEN\n", parking_archive_text="",
+             source_overrides={"fake.md": "See STOP-16 and P-GOOD.\n"}, allowlist={})),
     ]
     failures = 0
-    print("Negative control — each check must REJECT a synthetic violation:\n")
-    for name, run in cases:
-        res = run()
-        verdict = "PASS (correctly rejected)" if not res.ok else "BROKEN (accepted bad input)"
-        print(f"  [{verdict:28}] {name}: {res.detail}")
-        if res.ok:
+    print("Two-sided control — each check must REJECT a violation AND ACCEPT clean input:\n")
+    for name, bad_fn, good_fn in cases:
+        bad, good = bad_fn(), good_fn()
+        bad_ok, good_ok = (not bad.ok), good.ok
+        v_bad = "PASS (correctly rejected)" if bad_ok else "BROKEN (accepted bad input) "
+        v_good = "PASS (correctly accepted)" if good_ok else "BROKEN (rejected clean input)"
+        print(f"  [{v_bad:28}] {name} (bad):  {bad.detail}")
+        print(f"  [{v_good:28}] {name} (good): {good.detail}")
+        if not (bad_ok and good_ok):
             failures += 1
     print()
     if failures:
-        print(f"SELF-TEST FAILED - {failures} check(s) cannot detect their own violation.")
+        print(f"SELF-TEST FAILED - {failures} of {len(cases)} check(s) failed a control direction.")
         return 1
-    print("SELF-TEST PASSED - all 6 checks reject their violation. The gate is not vacuous.")
+    print(f"SELF-TEST PASSED - all {len(cases)} checks reject their violation AND accept clean "
+          f"input. The gate is not vacuous in either direction.")
     return 0
 
 
@@ -345,7 +639,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Mechanical doc-hygiene gate for /handoff (LEDGER size, D101 STOP "
                     "carry-forward, parking Status conformance, archive-on-resolve, "
-                    "tombstones at live paths, dangling links).")
+                    "tombstones at live paths, dangling links, STOP-N/P-slug citation "
+                    "resolution).")
     ap.add_argument("--check", action="store_true",
                     help="gate mode: exit 1 if any check fails")
     ap.add_argument("--self-test", action="store_true",
