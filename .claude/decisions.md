@@ -28,7 +28,7 @@ the render layer consumes it. The danger is the doc asserting a check that does 
 can actually fail (**the old one, and the replacement I briefed, BOTH passed the recorded
 defect** — `86.14, 86.14, 86.14, 128.60, 149.39` has exactly 3 distinct values, so "3 of 5
 distinct" was no gate at all) · `track` and `svg` rosters DERIVED from block CSS and
-`bgSvgContent` rather than hand-declared (3→7 and 4→8 blocks) · the inert `draggable`
+`bgSvgContent` rather than hand-declared (3→7 and 4→8 blocks — the BEFORE-3 is the count of HAND-DECLARED blocks and is reproducible at commit `8172d8f4`; the AFTER-7 is the count with the DERIVED `track` provision, so the two numbers measure different things by design. An independent QC pass flagged this delta as the one claim it could not re-derive from a static read — hence the citation) · the inert `draggable`
 declaration removed from `sgs/testimonial-slider`, which had been shipping ~35KB gzip to run a
 function returning `undefined` · `providesNatively` suppressing dud picker entries on five
 blocks whose scroller is a descendant · a Subtle/Standard/Dramatic preset layer · the D427-signed
