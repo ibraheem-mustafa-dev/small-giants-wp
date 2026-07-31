@@ -351,8 +351,35 @@ sliders.forEach( ( slider ) => {
 
 	if ( wantsDragMomentum && ! isEditorSurface() ) {
 		Promise.all( [
-			import( 'gsap/InertiaPlugin' ),
-			import( '@sgs/motion-provider' ),
+			// `webpackIgnore` is load-bearing, not decorative — see the file
+			// docblock note below on why. With `externalsType: 'module'` +
+			// real ESM output, webpack's ExternalModule always builds an
+			// externalised module with `buildMeta.async = false`
+			// (webpack/lib/ExternalModule.js `build()`, case 'module',
+			// `javascriptModule` branch), REGARDLESS of whether the request
+			// came from a static `import` or this dynamic `import()`. That
+			// collapses this call into a static top-level import at compile
+			// time (wrapped in a `Promise.resolve().then()` that fakes async
+			// shape but resolves before any code runs) — the resolution
+			// already happened at module-link time, so this `.catch()` below
+			// can never fire on a missing module. Confirmed against the
+			// installed webpack 5.105.2; there is no `externals` config
+			// (dependencyType, per-item type override, or otherwise) that
+			// changes this, because the decision is keyed on
+			// `buildInfo.javascriptModule`, not on the referencing
+			// dependency's category (both static and dynamic imports report
+			// category 'esm' — indistinguishable to the externals callback).
+			// `webpackIgnore: true` is the one documented escape hatch: it
+			// tells webpack to leave this exact `import()` expression
+			// completely untouched, so the specifier survives verbatim to
+			// the browser, which resolves it natively (and asynchronously,
+			// catchably) via the import map WordPress prints for registered
+			// script modules. The specifier here MUST already be the
+			// external module ID (`@sgs/gsap-inertia`), not the bare `gsap/*`
+			// path — with webpackIgnore, webpack's externals rewrite never
+			// runs, so there is no translation step.
+			import( /* webpackIgnore: true */ '@sgs/gsap-inertia' ),
+			import( /* webpackIgnore: true */ '@sgs/motion-provider' ),
 		] )
 			.then( ( [ { InertiaPlugin }, { tierG } ] ) => {
 				// tierG() is idempotent (provider.js tracks registration in a
