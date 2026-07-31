@@ -17,7 +17,6 @@
 	"sgs/container": [
 		"draw",
 		"horizontal-panel",
-		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scrub"
@@ -31,15 +30,8 @@
 	"sgs/cta-section": [
 		"draw",
 		"horizontal-panel",
-		"morph",
 		"motion-path",
 		"pin-scrub",
-		"scrub"
-	],
-	"sgs/decorative-image": [
-		"draw",
-		"morph",
-		"motion-path",
 		"scrub"
 	],
 	"sgs/gallery": [
@@ -59,7 +51,6 @@
 	"sgs/hero": [
 		"draw",
 		"horizontal-panel",
-		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scrub"
@@ -149,7 +140,6 @@
 	"sgs/trust-bar": [
 		"draw",
 		"horizontal-panel",
-		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scramble",

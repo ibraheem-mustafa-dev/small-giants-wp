@@ -10,7 +10,7 @@
  * values, edit the relevant block.json / stylesheet / seed-motion-fx-
  * registry.py, then re-run this generator.
  *
- * Blocks with at least one qualifying effect: 28
+ * Blocks with at least one qualifying effect: 27
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 + §7.
  *
@@ -41,14 +41,13 @@ function sgs_get_fx_qualifying_blocks() {
 			'sgs/before-after' => array( 'draggable', 'motion-path', 'scrub' ),
 			'sgs/buybox' => array( 'motion-path', 'scrub' ),
 			'sgs/collapsible-text' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
-			'sgs/container' => array( 'draw', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scrub' ),
+			'sgs/container' => array( 'draw', 'horizontal-panel', 'motion-path', 'pin-scrub', 'scrub' ),
 			'sgs/counter' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
-			'sgs/cta-section' => array( 'draw', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scrub' ),
-			'sgs/decorative-image' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
+			'sgs/cta-section' => array( 'draw', 'horizontal-panel', 'motion-path', 'pin-scrub', 'scrub' ),
 			'sgs/gallery' => array( 'motion-path', 'scrub' ),
 			'sgs/google-reviews' => array( 'motion-path', 'scrub' ),
 			'sgs/heading' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
-			'sgs/hero' => array( 'draw', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scrub' ),
+			'sgs/hero' => array( 'draw', 'horizontal-panel', 'motion-path', 'pin-scrub', 'scrub' ),
 			'sgs/icon' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
 			'sgs/info-box' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/label' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
@@ -63,7 +62,7 @@ function sgs_get_fx_qualifying_blocks() {
 			'sgs/testimonial' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/text' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/timeline' => array( 'draggable', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
-			'sgs/trust-bar' => array( 'draw', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scramble', 'scrub', 'split-reveal' ),
+			'sgs/trust-bar' => array( 'draw', 'horizontal-panel', 'motion-path', 'pin-scrub', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/trustpilot-reviews' => array( 'motion-path', 'scrub' ),
 			'sgs/whatsapp-cta' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 		);

@@ -42,27 +42,118 @@ WHAT COUNTS AS "PROVIDING" A REQUIREMENT (ground truth, not invented)
                 string attrs also cover url/label/id-shaped values on ~40
                 unrelated blocks — verified via a throwaway scan before
                 settling on this test).
-- 'svg'      <- the block declares a `bgSvgContent` ATTRIBUTE in its own
-                block.json (it renders operator-supplied inline `<svg>` markup
-                through `SGS_Container_Wrapper`'s `.sgs-container__svg-bg`
-                layer — verified at includes/class-sgs-container-wrapper.php,
-                which emits `<div class="sgs-container__svg-bg" aria-hidden>
-                {svg}</div>`), OR block_slug is one of the 4 blocks §2's
-                DrawSVG row NAMES explicitly: sgs/responsive-logo, sgs/icon,
-                sgs/separator, sgs/decorative-image.
+- 'svg' / 'svg-subtree' — SPLIT 2026-07-31 (Motion Wave D register Step 4).
+                Before the split both DrawSVG and MorphSVG shared a single
+                'svg' requirement, computed as one union below. That
+                conflated two different facts about a block and had a real
+                consequence: `sgs/container`/`sgs/hero`/`sgs/cta-section`/
+                `sgs/trust-bar` (the `bgSvgContent` providers — a `<div>`
+                wrapper with an operator-supplied decorative background SVG
+                blob, no shape geometry at its OWN root) satisfied the
+                single 'svg' token and so were wrongly offered `morph`,
+                which warns and skips at runtime because there is no `d` on
+                the block's own root to rewrite (D430 finding). The two
+                tokens now mean, and are computed, separately:
 
-                The `bgSvgContent` half is DERIVED (2026-07-31) and is the
-                primary route. The 4-name half is a RETAINED, documented
-                exception to "derive, don't hardcode": those blocks render
-                their SVG from their own render.php rather than through the
-                wrapper's bgSvg layer, no structural block.json flag or DB
-                role unifies them (verified — a `<svg` literal-markup scan
-                over-matches wildly, hitting a dozen unrelated blocks that
-                only ship chevron/star glyphs), and the spec itself gives a
-                closed, named list rather than a detectable rule. Citing the
-                spec's own literal roster is not the same failure mode as
-                inventing one. The two halves are a UNION: a block qualifies
-                on either.
+                'svg' <- block_slug is one of the 3 blocks confirmed to
+                genuinely render inline SVG shape geometry at their own root:
+                sgs/responsive-logo, sgs/icon, sgs/separator
+                (SPEC_NAMED_SVG_BLOCKS). Means "this block's OWN rendered
+                output CAN contain shape geometry with a `d`/path to act on"
+                — verified live for all 3, corrected 2026-07-31 after a QC
+                pass caught a grep blind spot (a literal `<svg` text search
+                missed helper-function indirection):
+                  - sgs/icon's render.php emits `sgs_get_lucide_icon()` /
+                    `sgs_get_wp_icon()` output straight into an inline `<span
+                    class="sgs-icon__svg">…svg…</span>` (real path glyphs).
+                  - sgs/responsive-logo's render.php inlines a
+                    wp_kses-sanitised media-library SVG when
+                    `animationStyle !== 'none'`, and its own comment names
+                    `data-sgs-fx="draw"` as already wired to that span
+                    (FR-38-15).
+                  - sgs/separator's render.php calls the SAME two helpers as
+                    sgs/icon — `sgs_get_wp_icon( $icon_wp_name )` (line 310)
+                    and `sgs_get_lucide_icon( $icon_name )` (line 315) —
+                    conditionally, when `contentMode === 'icon'`. A first
+                    pass on this block missed it: grepping the file for the
+                    literal string `<svg` finds nothing, because the SVG
+                    markup is produced by a helper function call, not typed
+                    inline in this file — the same shape geometry sgs/icon
+                    itself renders, one indirection layer deeper.
+                sgs/decorative-image was ALSO in this roster before
+                2026-07-31 (the spec's own §2 DrawSVG row names it) but is
+                REMOVED as of this split: its render.php has been searched
+                for every SVG-related surface — `svg`, `SVG`, `get_wp_icon`,
+                `get_lucide_icon`, `wp_kses` — case-insensitively, and none
+                appear. It renders an absolute-positioned `<img>` (raster) or
+                a video via `sgs_render_media()`; even when an operator picks
+                an `.svg` file as the image source, `<img src="…svg">`
+                references the file as an opaque image resource — the
+                browser has no DOM access to the paths inside it, so there is
+                no `d` attribute reachable for MorphSVG to rewrite and
+                nothing DrawSVG's `collectDrawTargets()` descendant search
+                would ever find. Unlike sgs/responsive-logo (which inlines
+                its SVG via `wp_kses` specifically so the paths become real
+                DOM nodes — see that block's own comment), decorative-image
+                has no inlining path today. The spec's own citation is
+                therefore stale against the live code for this one block;
+                see the amendment text below this docstring's dated note for
+                the exact wording returned to the spec owner (§38, not
+                edited here — that file is owned and serialised elsewhere).
+                This is the correct requirement for `morph` (MorphSVG
+                rewrites the element's OWN `d` attribute).
+
+                'svg-subtree' <- the 'svg' set (above) UNION any block that
+                declares a `bgSvgContent` ATTRIBUTE in its own block.json
+                (it renders operator-supplied inline `<svg>` markup through
+                `SGS_Container_Wrapper`'s `.sgs-container__svg-bg` layer —
+                verified at includes/class-sgs-container-wrapper.php, which
+                emits `<div class="sgs-container__svg-bg" aria-hidden>
+                {svg}</div>` only when `$is_section` is true). Means "this
+                block's rendered SUBTREE contains inline SVG somewhere,
+                whether or not the block's own root is a shape" — a
+                strictly WIDER set than 'svg', since a shape trivially is
+                also a subtree containing itself. This is the correct
+                requirement for `draw` (DrawSVG strokes whatever
+                path/line/polyline/polygon/rect/ellipse/circle it finds
+                inside the fx element's descendants — verified:
+                responsive-logo's render.php comment names
+                `collectDrawTargets()` as a descendant search, not a
+                root-only check — so a block whose only SVG is a nested
+                `bgSvgContent` decoration still has real drawable geometry).
+
+                The `bgSvgContent` half is DERIVED (2026-07-31, unchanged by
+                this split) and is 'svg-subtree''s primary route beyond the
+                'svg' set. The 3-name half of 'svg' (corrected 2026-07-31 —
+                see the 'svg' section above for the separator/decorative-image
+                QC correction) is a RETAINED, documented exception to
+                "derive, don't hardcode": those blocks render their SVG from
+                their own render.php rather than through the wrapper's bgSvg
+                layer, no structural block.json flag or DB role unifies them
+                (verified — a `<svg` literal-markup scan over-matches wildly,
+                hitting a dozen unrelated blocks that only ship chevron/star
+                glyphs, AND under-matches sgs/separator, whose SVG comes from
+                a helper-function call rather than literal markup — grep's
+                blind spot is the shape of the grep, not just its over-reach),
+                and the spec itself gives a closed, named list rather than a
+                detectable rule. Citing the spec's own literal roster is not
+                the same failure mode as inventing one.
+
+                EDGE CASE — a block with BOTH `bgSvgContent` AND its own SVG
+                render path (asked for explicitly by the Step 4 register; no
+                such block exists today — verified, none of the 3
+                SPEC_NAMED_SVG_BLOCKS members declares `bgSvgContent` and
+                none of the 4 bgSvgContent providers is in
+                SPEC_NAMED_SVG_BLOCKS). DECISION: no special-case code is
+                needed. The union computation below naturally grants such a
+                block BOTH provisions — 'svg' (it has its own shape) AND
+                'svg-subtree' (a shape is trivially also a subtree) — so it
+                would correctly qualify for both `draw` (stroke either/both
+                SVGs) and `morph` (rewrite its own shape's `d`). This is the
+                intended behaviour, not an accident of the union: a block
+                that is genuinely both a shape AND a subtree container has
+                no less claim to either effect than a block that is only
+                one of the two.
 - 'track'    <- DERIVED (2026-07-31) from the block's OWN stylesheet
                 (style.css / style.scss): it declares `overflow-x: auto` or
                 `overflow-x: scroll` in a rule that is reachable at desktop
@@ -163,6 +254,7 @@ Run: python plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sqlite3
@@ -178,15 +270,35 @@ JSON_OUTPUT = BLOCKS_DIR / "extensions" / "generated-fx-qualifying-blocks.json"
 PHP_OUTPUT = PLUGIN_ROOT / "includes" / "generated-fx-qualifying-blocks.php"
 
 # The retained, documented exception — see module docstring's 'svg' section.
-# Spec 38 §2 DrawSVG row, Exposure-surface column, cited verbatim. These four
-# render their SVG from their OWN render.php, not through the container
-# wrapper's `bgSvgContent` layer, so the derived test below cannot see them.
-# Every OTHER svg-provider is derived from `bgSvgContent`.
+# Spec 38 §2 DrawSVG row, Exposure-surface column, ORIGINALLY cited this
+# constant's name verbatim with 4 members. CORRECTED 2026-07-31 (QC pass,
+# Motion Wave D register Step 4): `sgs/decorative-image` was REMOVED — its
+# render.php was searched (case-insensitively) for every SVG-related surface
+# — `svg`, `SVG`, `get_wp_icon`, `get_lucide_icon`, `wp_kses` — and none
+# appear; it renders a raster `<img>`/video, never an inline `<svg>`, so it
+# has no `d`/path geometry for either DrawSVG or MorphSVG to act on. An
+# `<img src="*.svg">` does not count: the browser treats a referenced SVG
+# file as an opaque image resource with no DOM access to its internal paths
+# (contrast `sgs/responsive-logo`, which deliberately INLINES its SVG via
+# `wp_kses` specifically so the paths become real, drawable DOM nodes — see
+# that block's own render.php comment). The amendment this implies for Spec
+# 38 §2's DrawSVG row is NOT applied here (that file is owned and serialised
+# by the register coordinator) — see the amendment text handed back
+# alongside this change.
+#
+# The remaining 3 render their SVG from their OWN render.php, not through
+# the container wrapper's `bgSvgContent` layer, so the derived test below
+# cannot see them — all 3 verified live: sgs/icon and sgs/responsive-logo
+# inline real `<svg>` markup directly; sgs/separator calls the SAME
+# `sgs_get_wp_icon()` / `sgs_get_lucide_icon()` helpers sgs/icon uses
+# (render.php lines 310/315), conditionally when `contentMode === 'icon'` —
+# missed on the first pass because a literal `<svg` text grep does not see
+# through a helper-function call. Every OTHER svg-provider is derived from
+# `bgSvgContent`.
 SPEC_NAMED_SVG_BLOCKS = frozenset({
     "sgs/responsive-logo",
     "sgs/icon",
     "sgs/separator",
-    "sgs/decorative-image",
 })
 
 # The block.json attribute that means "this block renders operator-supplied
@@ -422,12 +534,24 @@ def _block_provisions(
     if block_slug in richtext_blocks:
         provisions.add("text")
 
-    # DERIVED (bgSvgContent attribute) UNION the spec's own named roster.
-    if (
-        SVG_CONTENT_ATTRIBUTE in (block_json.get("attributes") or {})
-        or block_slug in SPEC_NAMED_SVG_BLOCKS
-    ):
+    # 'svg' vs 'svg-subtree' — SPLIT 2026-07-31 (Motion Wave D register
+    # Step 4). See the module docstring's "'svg' / 'svg-subtree'" section for
+    # the full rationale + the Edge Case decision (a block satisfying both is
+    # handled by this union alone, no special-case branch needed).
+    #
+    # 'svg' — this block's OWN root is shape geometry (the closed, spec-cited
+    # 4-name roster only; NOT derivable from bgSvgContent, which is a nested
+    # decoration, never the block's own shape).
+    is_svg_shape = block_slug in SPEC_NAMED_SVG_BLOCKS
+    if is_svg_shape:
         provisions.add("svg")
+
+    # 'svg-subtree' — this block's rendered SUBTREE contains inline SVG
+    # somewhere: the 'svg' set above (a shape trivially contains itself) UNION
+    # any block that declares the bgSvgContent attribute (a nested decorative
+    # SVG layer rendered by SGS_Container_Wrapper).
+    if is_svg_shape or SVG_CONTENT_ATTRIBUTE in (block_json.get("attributes") or {}):
+        provisions.add("svg-subtree")
 
     fx_supports = sgs_supports.get("fx") or {}
     # DERIVED (stylesheet declares a desktop-reachable `overflow-x: auto|scroll`)
@@ -585,19 +709,14 @@ def _php_string_literal(value: str) -> str:
     return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
 
 
-def _write_json(fx_map: dict[str, list[str]]) -> None:
-    JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    # Sorted keys + 1-space item separator for deterministic byte-identical
-    # output across runs (matches generate-fx-effects-php.py's determinism
-    # rule — a dirty-always file defeats the deploy dirty-gate, D336's own
-    # class of bug).
-    JSON_OUTPUT.write_text(
-        json.dumps(fx_map, indent="\t", sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+def _render_json(fx_map: dict[str, list[str]]) -> str:
+    """Pure function mirroring `_write_json`'s bytes, without touching disk —
+    lets `--check` diff in memory (same shape as generate-fx-effects-php.py)."""
+    return json.dumps(fx_map, indent="\t", sort_keys=True) + "\n"
 
 
-def _write_php(fx_map: dict[str, list[str]]) -> None:
+def _render_php(fx_map: dict[str, list[str]]) -> str:
+    """Pure function mirroring `_write_php`'s bytes, without touching disk."""
     total_blocks = len(fx_map)
     lines = [
         "<?php",
@@ -652,14 +771,66 @@ def _write_php(fx_map: dict[str, list[str]]) -> None:
         "}",
         "",
     ])
-    PHP_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    PHP_OUTPUT.write_text("\n".join(lines), encoding="utf-8")
+    return "\n".join(lines)
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help=(
+            "Compute the map in memory and diff against the committed "
+            "generated-fx-qualifying-blocks.php / .json instead of writing. "
+            "Exits 0 if they match, 1 (naming both files) if the committed "
+            "artefacts are stale. Never writes to disk."
+        ),
+    )
+    args = parser.parse_args()
+
+    if not DB_PATH.exists():
+        # Deliberately unversioned — see .claude/dev-setup.md "sgs-framework.db".
+        # Both the plain run and --check skip cleanly: with no DB there is
+        # nothing to regenerate FROM, so the committed artefacts (already in
+        # the repo) are simply left as the build input, exactly as intended.
+        # (Mirrors generate-fx-effects-php.py's --check contract — see its
+        # own main() for the same pattern.)
+        print(
+            f"[generate-fx-qualifying-blocks] DB not found: {DB_PATH} — skipping "
+            "(building off committed generated artefacts; see .claude/dev-setup.md)."
+        )
+        return 0
+
     fx_map = compute_map()
-    _write_json(fx_map)
-    _write_php(fx_map)
+    json_source = _render_json(fx_map)
+    php_source = _render_php(fx_map)
+
+    if args.check:
+        stale = []
+        if not JSON_OUTPUT.exists() or JSON_OUTPUT.read_text(encoding="utf-8") != json_source:
+            stale.append(str(JSON_OUTPUT))
+        if not PHP_OUTPUT.exists() or PHP_OUTPUT.read_text(encoding="utf-8") != php_source:
+            stale.append(str(PHP_OUTPUT))
+        if stale:
+            print(
+                "[generate-fx-qualifying-blocks] STALE — the committed generated "
+                f"artefact(s) below no longer match `fx_effects`/block.json/style.css "
+                f"inputs:\n  " + "\n  ".join(stale) +
+                "\nRe-run without --check to regenerate, then commit the result: "
+                "python plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py",
+                file=sys.stderr,
+            )
+            return 1
+        print(
+            f"[generate-fx-qualifying-blocks] OK — committed artefacts match current "
+            f"inputs ({len(fx_map)} qualifying block(s))."
+        )
+        return 0
+
+    JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    JSON_OUTPUT.write_text(json_source, encoding="utf-8")
+    PHP_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    PHP_OUTPUT.write_text(php_source, encoding="utf-8")
     print(
         f"[generate-fx-qualifying-blocks] Generated {JSON_OUTPUT} and {PHP_OUTPUT} "
         f"with {len(fx_map)} qualifying block(s)."

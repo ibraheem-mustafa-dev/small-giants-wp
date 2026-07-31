@@ -140,10 +140,64 @@ DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.
 #                                         CustomWiggle), so it never gets a fx_effects
 #                                         row at all -- flagged, not silently
 #                                         dropped: there is nothing to seed here.
-#   requires                'text'|'svg'|'section'|'item-set'|'track'|'none' —
-#                          what the effect needs OF ITS TARGET, derived from each
-#                          §2 row's own qualifiers (Conditions/Exposure-surface
-#                          text). Closed vocabulary; per-row citation below.
+#   requires                'text'|'svg'|'svg-subtree'|'section'|'item-set'|
+#                          'track'|'none' — what the effect needs OF ITS
+#                          TARGET, derived from each §2 row's own qualifiers
+#                          (Conditions/Exposure-surface text). Closed
+#                          vocabulary; per-row citation below.
+#
+#                          'svg' vs 'svg-subtree' split 2026-07-31 (Motion
+#                          Wave D register Step 4). Before this split both
+#                          values were a single 'svg' token, computed by
+#                          generate-fx-qualifying-blocks.py as "the block
+#                          declares bgSvgContent OR is one of the 4 spec-named
+#                          element blocks" — a UNION that conflated two
+#                          different facts about a block:
+#                            'svg'         — the block's rendered root IS a
+#                                            shape with its own path/'d'
+#                                            geometry (the 4 spec-named
+#                                            element blocks: responsive-logo,
+#                                            icon — empirically confirmed
+#                                            live, see generator comment;
+#                                            separator/decorative-image are
+#                                            the spec's own closed citation,
+#                                            carried forward unchanged — see
+#                                            that generator's own flagged
+#                                            gap note, not re-litigated here).
+#                                            Correct target for MorphSVG,
+#                                            which rewrites the element's OWN
+#                                            `d` attribute — there must be a
+#                                            `d` to rewrite.
+#                            'svg-subtree' — the block CONTAINS inline SVG
+#                                            somewhere in its rendered
+#                                            subtree, which is a strictly
+#                                            WIDER set: every 'svg' block
+#                                            trivially also qualifies (a
+#                                            shape IS a subtree), PLUS any
+#                                            block whose wrapper renders an
+#                                            operator-supplied `bgSvgContent`
+#                                            decorative layer (sgs/container,
+#                                            sgs/hero, sgs/cta-section,
+#                                            sgs/trust-bar — verified via
+#                                            block.json attribute presence).
+#                                            Correct target for DrawSVG,
+#                                            which strokes whatever
+#                                            path/line/polyline/polygon/rect/
+#                                            ellipse/circle it finds inside
+#                                            the fx element (see
+#                                            responsive-logo's render.php
+#                                            comment on `collectDrawTargets()`
+#                                            — it searches descendants, not
+#                                            just the root).
+#                          The bug this fixes: before the split, a block that
+#                          only provided bgSvgContent (a `<div>` wrapper with
+#                          a background SVG blob, no shape geometry of its
+#                          own) satisfied the single 'svg' requirement and so
+#                          was wrongly offered `morph` — which then warned
+#                          and skipped at runtime because there is no `d` on
+#                          the block's own root to rewrite. draw'S own row
+#                          below was correct all along; only morph's implicit
+#                          scope was too wide.
 # ---------------------------------------------------------------------------
 FX_EFFECTS: list[dict] = [
     {
@@ -336,16 +390,27 @@ FX_EFFECTS: list[dict] = [
         "reduced_motion": "simplify",
         "editor_story": "end-state",
         # §2 row Level = "element (SVG-bearing)" -> scope='element'. requires=
-        # 'svg': the row's Exposure-surface column NAMES the exact roster —
-        # "Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator`,
-        # `sgs/decorative-image`" — a closed, spec-cited list, not a detectable
-        # structural pattern (verified: no shared block.json flag or DB role
-        # unifies these 4; `<svg` appears in a dozen unrelated blocks' markup
-        # for chevrons/star icons, so a "contains <svg>" heuristic would badly
-        # over-match). The qualifying-blocks generator therefore keys the 'svg'
-        # requirement off this literal spec citation, not an inferred rule.
+        # 'svg-subtree' (CHANGED from 'svg' 2026-07-31, Motion Wave D register
+        # Step 4 — see the requires-column note above for the full split
+        # rationale): the row's Exposure-surface column NAMES the exact
+        # roster — "Inspector on `sgs/responsive-logo`, `sgs/icon`,
+        # `sgs/separator`, `sgs/decorative-image`" — a closed, spec-cited
+        # list, not a detectable structural pattern (verified: no shared
+        # block.json flag or DB role unifies these 4; `<svg` appears in a
+        # dozen unrelated blocks' markup for chevrons/star icons, so a
+        # "contains <svg>" heuristic would badly over-match). DrawSVG strokes
+        # WHATEVER shape markup it finds inside the fx element's subtree
+        # (verified: responsive-logo's render.php names
+        # `collectDrawTargets()` as searching descendants, not just the
+        # root), so 'svg-subtree' — not 'svg' — is the honest requirement:
+        # it also correctly covers `sgs/container`/`sgs/hero`/
+        # `sgs/cta-section`/`sgs/trust-bar`, whose `bgSvgContent` layer is a
+        # real drawable SVG subtree even though none of those 4 blocks IS a
+        # shape at its own root. The qualifying-blocks generator keys
+        # 'svg-subtree' off the union of this literal spec citation and the
+        # `bgSvgContent` attribute, not an inferred rule.
         "scope": "element",
-        "requires": "svg",
+        "requires": "svg-subtree",
     },
     {
         # FR-38-16, §2 row "MorphSVG", §9 row 6, §10 row 11. Not named in §4.3 at
@@ -360,13 +425,30 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "end-state",
-        # §2 row Level = "element" -> scope='element'. requires='svg': the row's
-        # Recommended->permitted column ("Icons/logos -> decorative SVG anywhere
-        # (asset-gated)") targets the same SVG-bearing surface as DrawSVG, so
-        # this reuses the identical 4-block spec-cited roster. REASONED, NOT
-        # SPEC-STATED: the spec never lists MorphSVG's exact block names the
-        # way it does for DrawSVG's row — flagged as an extrapolation from
-        # "same target family, same requires value", not a literal citation.
+        # §2 row Level = "element" -> scope='element'. requires='svg' (value
+        # UNCHANGED 2026-07-31 — only its MEANING narrowed, see the
+        # requires-column note above): the row's Recommended->permitted
+        # column ("Icons/logos -> decorative SVG anywhere (asset-gated)")
+        # targets a block that IS a shape (MorphSVG rewrites the element's
+        # OWN `d` attribute — there must be one to rewrite), which is the
+        # narrower 'svg' provision, not the wider 'svg-subtree' one. Before
+        # this split, morph shared draw's single 'svg' requirement, whose
+        # provision computation ALSO included bgSvgContent — so
+        # `sgs/container`/`sgs/hero`/`sgs/cta-section`/`sgs/trust-bar` (a
+        # `<div>` wrapper with a decorative background SVG blob, no `d` of
+        # its own to morph) were wrongly offered `morph`, which warns and
+        # skips at runtime for exactly that reason (D430 finding). REASONED,
+        # NOT SPEC-STATED: the spec never lists MorphSVG's exact block names
+        # the way it does for DrawSVG's row — this reuses the SAME roster
+        # the generator implements for 'svg' (SPEC_NAMED_SVG_BLOCKS, 3
+        # members as of the 2026-07-31 QC correction below — NOT the spec's
+        # own DrawSVG citation of 4, which still names `sgs/decorative-image`
+        # that block has zero inline-SVG rendering, verified live via its
+        # render.php, so it is not carried into either 'svg' or
+        # 'svg-subtree'; the amendment text for Spec 38 §2's DrawSVG row was
+        # returned to the spec owner rather than edited here) — as an
+        # extrapolation from "same target family, same requires value", not
+        # a literal citation.
         "scope": "element",
         "requires": "svg",
     },
