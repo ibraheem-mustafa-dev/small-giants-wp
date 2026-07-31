@@ -79,6 +79,33 @@
 	pointer-events: none;
 }
 
+/*
+ * ⚠ LABEL ORDER IS NOT COSMETIC — it must mirror the clip, or the labels lie.
+ *
+ * `__after-wrap` above reveals the AFTER image from the LEFT edge up to the
+ * divider (`clip-path: inset(0 calc(100% - position) 0 0)`), so the left of the
+ * stage shows AFTER and the right shows BEFORE. But `__labels` is
+ * `justify-content: space-between` and render.php emits the BEFORE label first,
+ * which put "Before" over the after image and "After" over the before image.
+ *
+ * Found 2026-07-31 by looking at a screenshot — every numeric probe passed,
+ * because they all asked whether the divider MOVED and none asked what was on
+ * each side of it. Proven, not inferred: the after-wrap contained frame_0048
+ * (orange) clipped `inset(0px 50% 0px 0px)` (visible on the LEFT) while the
+ * "Before" label measured to the LEFT half of the block.
+ *
+ * Ordered here rather than by swapping the markup so the DOM keeps its logical
+ * before-then-after sequence. The vertical orientation reveals AFTER at the top
+ * and is UNMEASURED — if that arm is ever exercised, check its label order too.
+ */
+.wp-block-sgs-before-after__label--after {
+	order: 0;
+}
+
+.wp-block-sgs-before-after__label--before {
+	order: 1;
+}
+
 .wp-block-sgs-before-after__label {
 	display: inline-block;
 	padding: 4px 10px;
