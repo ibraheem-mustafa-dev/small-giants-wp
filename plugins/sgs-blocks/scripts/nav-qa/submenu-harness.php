@@ -177,5 +177,34 @@ check( 'NEG CONTROL: empty roster marks nothing', strpos( $h_none, '--featured' 
 preg_match_all( '/class="sgs-nav-menu__sublink"[^>]*data-sgs-nav-path="/', $h_feat, $m_paths );
 check( 'every CHILD link carries data-sgs-nav-path', count( $m_paths[0] ), 2 );
 
+echo "
+=== DEPTH CAP: sibling grandchildren must not collide (council-caught) ===
+";
+// The old code passed the CALLER's $parent_path when flattening past the depth
+// cap, so `L1 > L2a > About` and `L1 > L2b > About` both became
+// `label:L1>label:About`. That collided featuredItemIds targeting and, at a
+// fourth level, would have produced two panels sharing one DOM id.
+$r_deep  = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid6' );
+$deep_in = array( mksub( 'L1', '/1', array(
+	mksub( 'L2a', '/2a', array( mklink( 'About', '/2a/about' ) ) ),
+	mksub( 'L2b', '/2b', array( mklink( 'About', '/2b/about' ) ) ),
+) ) );
+$deep_out = $r_deep->flatten( $deep_in );
+$all_ids  = array();
+$gather   = function ( $items ) use ( &$gather, &$all_ids ) {
+	foreach ( $items as $it ) { $all_ids[] = $it['identifier']; $gather( $it['children'] ?? array() ); }
+};
+$gather( $deep_out );
+$dupes = array_keys( array_filter( array_count_values( $all_ids ), function ( $n ) { return $n > 1; } ) );
+check( 'no duplicate identifiers past the depth cap', $dupes, array() );
+// Both grandchildren must SURVIVE — a dedupe that dropped one would also show
+// zero duplicates, so count them too or this assertion is satisfiable by loss.
+check( 'both flattened grandchildren survive',
+	count( array_filter( $all_ids, function ( $i ) { return false !== strpos( $i, 'About' ); } ) ), 2 );
+// And the depth-3 tree must RENDER, not merely flatten — render_items() was
+// never exercised on this shape before.
+$deep_html = $r_deep->render_items( $deep_out );
+check( 'depth-3 tree renders child links', substr_count( $deep_html, 'sgs-nav-menu__sublink' ) >= 2, true );
+
 printf( "\n%s — %d failure(s)\n", $fails ? 'FAILED' : 'ALL PASSED', $fails );
 exit( $fails ? 1 : 0 );

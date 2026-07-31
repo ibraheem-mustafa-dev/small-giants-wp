@@ -99,13 +99,14 @@ const LINK_COUNT_THRESHOLD = 50;
  * @param {Array} blocks Parsed top-level nav blocks.
  * @return {Array<{identifier: string, label: string}>} Flattened items.
  */
-function flattenMenuItems( blocks ) {
+function flattenMenuItems( blocks, parentPath = '', depth = 0 ) {
 	const items = [];
 	( blocks || [] ).forEach( ( block ) => {
 		if ( 'core/home-link' === block.name ) {
 			items.push( {
 				identifier: 'special:home',
 				label: __( 'Home', 'sgs-blocks' ),
+				depth,
 			} );
 			return;
 		}
@@ -125,10 +126,27 @@ function flattenMenuItems( blocks ) {
 			return;
 		}
 		const id = block.attributes?.id;
-		items.push( {
-			identifier: id ? `id:${ id }` : `label:${ label }`,
-			label,
-		} );
+		const ownKey = id ? `id:${ id }` : `label:${ label }`;
+		/*
+		 * Path-qualified EXACTLY as render.php does (`$parent_path . '>' .
+		 * $own_key`), or a ticked child would never match the item the server
+		 * renders. Top-level keys stay bare, so existing selections still match.
+		 */
+		const identifier = parentPath ? `${ parentPath }>${ ownKey }` : ownKey;
+		items.push( { identifier, label, depth } );
+		/*
+		 * Recurse into children. Without this the checklist listed TOP-LEVEL
+		 * items only, so render.php's featured-child support (it marks any child
+		 * whose identifier is in featuredItemIds) was unreachable from the
+		 * editor — the block could render a featured child but no client could
+		 * ever ask for one. Council-caught; by this project's own rule a setting
+		 * that needs code is not done.
+		 */
+		if ( 'core/navigation-submenu' === block.name ) {
+			items.push(
+				...flattenMenuItems( block.innerBlocks, identifier, depth + 1 )
+			);
+		}
 	} );
 	return items;
 }
@@ -260,19 +278,55 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 
 	const resolvedItems = useMemo( () => {
-		// Mirrors render.php: top-level items only, identifier 'id:<object_id>'
-		// (the same value core/navigation-link carries), so a ticked featured
-		// entry matches whichever menu format is in use.
+		// Mirrors render.php's identifier scheme: 'id:<object_id>' (the same
+		// value core/navigation-link carries) for a top-level item, and
+		// '<parent>&gt;<own_key>' for a child, so a ticked featured entry matches
+		// whichever menu format is in use.
 		if ( selectedIsClassic ) {
-			return ( classicItems || [] )
-				.filter( ( item ) => ! item.parent )
-				.sort( ( a, b ) => ( a.menu_order || 0 ) - ( b.menu_order || 0 ) )
-				.map( ( item ) => ( {
-					identifier: `id:${ item.object_id ?? item.id }`,
-					label:
-						item.title?.rendered ||
-						__( '(untitled item)', 'sgs-blocks' ),
-				} ) );
+			const all = ( classicItems || [] )
+				.slice()
+				.sort(
+					( a, b ) => ( a.menu_order || 0 ) - ( b.menu_order || 0 )
+				);
+			const keyOf = ( item ) => `id:${ item.object_id ?? item.id }`;
+			/*
+			 * Children are INCLUDED. This used to `.filter( item => ! item.parent )`,
+			 * which meant a client could never tick a nested item as featured even
+			 * though render.php marks one happily — the capability existed with no
+			 * way to reach it. Walked parent-first so each child's identifier is
+			 * path-qualified against a parent that has already been resolved.
+			 */
+			const byParent = new Map();
+			all.forEach( ( item ) => {
+				const parent = String( item.parent || 0 );
+				if ( ! byParent.has( parent ) ) {
+					byParent.set( parent, [] );
+				}
+				byParent.get( parent ).push( item );
+			} );
+			const out = [];
+			const walk = ( parentId, parentPath, depth ) => {
+				( byParent.get( String( parentId ) ) || [] ).forEach( ( item ) => {
+					const identifier = parentPath
+						? `${ parentPath }>${ keyOf( item ) }`
+						: keyOf( item );
+					out.push( {
+						identifier,
+						label:
+							item.title?.rendered ||
+							__( '(untitled item)', 'sgs-blocks' ),
+						depth,
+					} );
+					// Depth 1 matches render.php's MAX_SUBMENU_DEPTH: anything
+					// deeper is flattened INTO level 1 there, so offering it as a
+					// separate tick here would not match what the server renders.
+					if ( depth < 1 ) {
+						walk( item.id, identifier, depth + 1 );
+					}
+				} );
+			};
+			walk( 0, '', 0 );
+			return out;
 		}
 		if ( ! selectedBlockMenu?.content?.raw ) {
 			return [];
@@ -609,17 +663,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</p>
 					) }
 					{ resolvedItems.map( ( item ) => (
-						<CheckboxControl
+						/*
+						 * Nested items are indented so the list reads as the menu's
+						 * own shape. Children appear at all now — the list was
+						 * top-level only, which made render.php's featured-child
+						 * support unreachable from the editor.
+						 */
+						<div
 							key={ item.identifier }
-							label={ item.label }
-							checked={ ( featuredItemIds || [] ).includes(
-								item.identifier
-							) }
-							onChange={ ( checked ) =>
-								toggleFeatured( item.identifier, checked )
-							}
-							__nextHasNoMarginBottom
-						/>
+							style={ {
+								marginLeft: `${ ( item.depth || 0 ) * 20 }px`,
+							} }
+						>
+							<CheckboxControl
+								label={ item.label }
+								checked={ ( featuredItemIds || [] ).includes(
+									item.identifier
+								) }
+								onChange={ ( checked ) =>
+									toggleFeatured( item.identifier, checked )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</div>
 					) ) }
 				</PanelBody>
 
@@ -870,7 +936,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   silently overriding the theme.
 				*/ }
 				<ToolsPanel
-					label={ __( 'Dropdown', 'sgs-blocks' ) }
+					label={ __(
+						'Dropdown (only affects items with sub-items)',
+						'sgs-blocks'
+					) }
 					resetAll={ () =>
 						setAttributes( {
 							submenuBg: '',

@@ -167,7 +167,21 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							// truncation here is the D338 data-loss class. Declared
 							// behaviour, not discovered behaviour.
 							$items[] = $item;
-							$items   = array_merge( $items, $this->flatten( $inner, $depth, $parent_path ) );
+
+							/*
+							 * Path-qualify the flattened descendants under THIS
+							 * item, not under the caller's $parent_path.
+							 *
+							 * Passing $parent_path collided sibling grandchildren:
+							 * `L1 > L2a > About` and `L1 > L2b > About` both
+							 * resolved to `label:L1>label:About`. Reproduced, not
+							 * theorised. Consequences were real — ticking one
+							 * "About" as featured also featured the other, and a
+							 * fourth level would have produced two panels sharing
+							 * one DOM id, the duplicate-id-aria fault the
+							 * identifier scheme exists to prevent.
+							 */
+							$items = array_merge( $items, $this->flatten( $inner, $depth, $item['identifier'] ) );
 						}
 						break;
 					case 'core/home-link':
@@ -1101,7 +1115,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left
  * exactly as it was. A mega panel never hit this because it lives in the sticky
  * header, which already outranks page content.
  */
-$css .= $uid_sel . ' .sgs-nav-menu__item--has-submenu:has([aria-expanded="true"]){z-index:101;}';
+$css .= $uid_sel . ' .sgs-nav-menu__item--has-submenu:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
 
 /*
  * Lift every level we own, not just the item: `.sgs-nav-menu__bar{z-index:1}`
@@ -1121,9 +1135,15 @@ $css .= $uid_sel . ' .sgs-nav-menu__item--has-submenu:has([aria-expanded="true"]
  *   P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT.
  * These lifts are still correct and worth keeping: they order the open panel
  * above rivals WITHIN the same content flow, and they revert the moment it closes.
+ *
+ * Each is keyed on `[data-sgs-mega-trigger][aria-expanded="true"]`, NOT on a bare
+ * `[aria-expanded="true"]`. The burger button binds `aria-expanded` too
+ * (render.php ~607, `data-wp-bind--aria-expanded="state.isOpen"`), so the bare
+ * form also matched whenever the mobile DRAWER opened and lifted the whole nav
+ * for a reason that had nothing to do with a dropdown. Council-caught.
  */
-$css .= $uid_sel . ':has([aria-expanded="true"]){position:relative;z-index:101;}';
-$css .= $uid_sel . ' .sgs-nav-menu__bar:has([aria-expanded="true"]){z-index:101;}';
+$css .= $uid_sel . ':has([data-sgs-mega-trigger][aria-expanded="true"]){position:relative;z-index:101;}';
+$css .= $uid_sel . ' .sgs-nav-menu__bar:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
 $css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-menu__submenu-wrap{display:block;}';
 
 /*
@@ -1149,28 +1169,29 @@ $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
  */
 
 /*
- * Submenu text defaults to the palette's TEXT token (Bean, 2026-07-31 —
- * live-caught, then contrast-measured).
+ * Submenu text defaults to the palette's LINK token (Bean-ruled, 2026-07-31).
  *
- * Three positions were tried against the live canary, and only the third both
- * follows the palette AND stays accessible:
+ * History, because this moved twice and the reasoning matters:
  *   1. `color:...,inherit` (the first cut) — out-specified the theme's global
- *      link rule and forced inherited body text, so the palette never applied.
- *      This is what Bean saw.
- *   2. no declaration at all — the theme's link rule then wins, which IS
- *      palette-driven, but a dropdown row is not an inline body link: measured
- *      on this client, link pink `#e68a95` on surface `#fbf3dc` is **2.25:1**,
- *      failing the WCAG 2.1 AA 4.5:1 floor (`primary-dark` on focus is 3.32:1,
- *      also failing). Known issue `P-MAMAS-PRIMARY-CONTRAST` — pre-existing,
- *      but not something to newly ship into.
- *   3. the TEXT token — palette-driven, follows every style variation and
- *      per-client snapshot, and measures **13.14:1** on the same surface.
- * A dropdown item is navigation text on a panel, which is how every comparable
- * builder treats it; the operator's own colour still overrides, below.
+ *      link rule and forced inherited body text, so the palette never applied
+ *      at all. A straight bug; this is what Bean saw.
+ *   2. the TEXT token — palette-driven and high-contrast, chosen because link
+ *      pink `#e68a95` on surface `#fbf3dc` measures 2.25:1 against WCAG AA's
+ *      4.5:1 floor.
+ *   3. the LINK token — BEAN'S RULING, and what ships. He judged the pink-on-
+ *      cream pairing easily legible and aesthetically intended, and ruled the
+ *      AA floor not applicable to it. That is the owner's call on his own brand
+ *      palette: a contrast ratio measures luminance distance, not whether text
+ *      is discernible, and the framework should honour the palette the client
+ *      chose rather than quietly substituting a different colour.
+ * Practical upshot: submenu rows now inherit whatever the theme sets for links,
+ * so they follow the palette AND every style variation for free. The related
+ * `P-MAMAS-PRIMARY-CONTRAST` entry stands on its own merits and is unaffected.
+ * The operator's own colour still overrides, below.
  */
 $css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 	. 'text-decoration:none;white-space:nowrap;'
-	. 'color:var(--wp--preset--color--text, currentColor);}';
+	. 'color:var(--wp--preset--color--primary, currentColor);}';
 if ( '' !== (string) ( $attributes['submenuColour'] ?? '' ) ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__sublink{color:var(--sgs-nm-submenu-colour);}';
 }
