@@ -143,9 +143,19 @@ def convert_section(html: str, css: str, media_map: dict,
     Returns a dict matching the per_section_results schema: { boundary_id,
     section_id, selector, block_name, status, extracted_attributes,
     block_markup, variation_css, attribute_gap_candidates, token_resolutions,
-    essence_matches }. ``status`` is one of ``empty`` (no root element),
-    ``chrome-skipped`` (header/footer/nav top-level chrome), ``complete``, or
-    ``failed`` (recognition/emit failure — carries ``failure_reason``).
+    essence_matches, content_gaps }. ``status`` is one of ``empty`` (no root
+    element), ``chrome-skipped`` (header/footer/nav top-level chrome),
+    ``complete``, or ``failed`` (recognition/emit failure — carries
+    ``failure_reason``).
+
+    ``content_gaps`` (added for the content-gap observability task, 2026-07-31):
+    a list of dicts, each either ``kind: "dropped"`` (a ContentGap the content
+    pass constructed — content that did not transfer, with ``block_slug``,
+    ``where``, ``detail``) or ``kind: "fuzzy_fallback"``/``"fallback_declined"``
+    (a db_lookup BEM-resolution event that did not match its designated column
+    and took/declined an alias-fallback route — see
+    ``converter/services/content_gap_collector.py``). Purely additive
+    observability; never influences ``block_markup``.
 
     Parameters
     ----------
@@ -174,6 +184,8 @@ def convert_section(html: str, css: str, media_map: dict,
         className guarantee step ensures the root block's ``className``
         attribute carries ``sgs-{section_id}``. Idempotent.
     """
+    from converter.db import db_lookup
+    from converter.services import content_gap_collector as _gap_collector
     from converter.services.section_passes import set_trace_fn
     from converter.services.styling_helpers import configure_colour_resolution_from_run
 
@@ -182,11 +194,29 @@ def convert_section(html: str, css: str, media_map: dict,
     # token (P-DRAFT-CSSVAR). Inert when no client/theme-snapshot is available.
     configure_colour_resolution_from_run(css, client_slug, repo_root)
 
+    # Content-gap observability (task: surface every content gap — dropped
+    # content AND fuzzy/alias-fallback resolutions, never silent). Two channels
+    # bound for the lifetime of this call only:
+    #   1. content_gap_collector accumulates ContentGap objects that
+    #      build_block_markup's content pass constructs (root + every recursive
+    #      per-child call) — see converter/services/content_gap_collector.py.
+    #   2. db_lookup.set_trace() is db_lookup's OWN pre-existing public trace
+    #      hook (used nowhere in the live pipeline until this wiring — every
+    #      db_lookup._trace(...) fallback event, e.g. bem_resolve_slot_fallback
+    #      / bem_resolve_prefix_strip, was previously a guaranteed no-op
+    #      because _TRACE was always None). FallbackTraceSink both records the
+    #      recognised fallback stages into the same collector AND forwards
+    #      every event unchanged to *trace* (if the caller passed one), so the
+    #      existing --debug-trace JSONL evidence chain gains these events too
+    #      without losing anything it already carried.
+    _gap_collector.clear()
     set_trace_fn(_bind_trace(trace, boundary_id))
+    db_lookup.set_trace(_gap_collector.FallbackTraceSink(trace), boundary_id)
     try:
         return _convert_section_body(html, css, media_map, section_id=section_id)
     finally:
         set_trace_fn(None)
+        db_lookup.set_trace(None)
 
 
 def _convert_section_body(html: str, css: str, media_map: dict,
@@ -200,6 +230,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     """
     from bs4 import BeautifulSoup
 
+    from converter.services import content_gap_collector as _gap_collector
     from converter.services.css_parse import parse_css
     from converter.services.section_passes import SKIP_TOP_LEVEL_TAGS, _absorb_transparent_wrappers
 
@@ -218,6 +249,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         "attribute_gap_candidates": [],
         "token_resolutions": [],
         "essence_matches": [],
+        "content_gaps": [],
     }
 
     # Find the section root — first element child of soup
@@ -243,6 +275,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "attribute_gap_candidates": [],
             "token_resolutions": [],
             "essence_matches": [],
+            "content_gaps": [],
         }
 
     # Transparent-wrapper absorb pre-pass (2026-05-24).
@@ -296,6 +329,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "attribute_gap_candidates": [],
             "token_resolutions": [],
             "essence_matches": [],
+            # Whatever the content pass recorded before the failure fired (may be
+            # partial/empty — the section never emitted markup either way).
+            "content_gaps": _gap_collector.flush(),
         }
 
     # Universal section-wrapper className guarantee (2026-05-21).
@@ -366,4 +402,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         "attribute_gap_candidates": [],
         "token_resolutions": [],
         "essence_matches": [],
+        # LIVE channel (this task): every ContentGap the content pass constructed
+        # for this section (root + every recursive child build_block_markup call)
+        # plus every recognised db_lookup fuzzy/alias-fallback resolution event.
+        # See converter/services/content_gap_collector.py.
+        "content_gaps": _gap_collector.flush(),
     }

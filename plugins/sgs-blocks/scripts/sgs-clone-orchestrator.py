@@ -929,6 +929,45 @@ def _harvest_attribute_gap_candidates(extract: dict) -> list[dict]:
     return gaps
 
 
+def _harvest_content_gaps(extract: dict) -> list[dict]:
+    """Walk extract.per_section_results and collect every content_gaps entry
+    (converter.services.content_gap_collector — dropped ContentGaps + fuzzy/
+    alias-fallback BEM resolutions) into the shape
+    ``ledger/content_gap_check.py`` / ``ledger/content_coverage_check.py``
+    already expect: ``{"block", "attr_or_slot", "fixture", "detail"}``. Those
+    two gates existed BEFORE this task (F5 ContentGap visibility gate,
+    plans/2026-06-26-stage3-child-shape-fork-design.md §4/§6) but had zero
+    writer — ``content-gaps.json`` was never produced by anything, so both
+    gates ran permanently in their fail-safe "absent file" green state. This
+    harvest is that missing writer.
+
+    Extra keys (``kind``, ``stage``, ``resolved_to``, ``fallback_route``, …)
+    ride along unused by the two existing gates (dict.get-based readers) but
+    let a human/report reading content-gaps.json directly see the full
+    finding, not just the 4-field summary.
+    """
+    gaps: list[dict] = []
+    for section in (extract or {}).get("per_section_results") or []:
+        fixture = section.get("boundary_id") or section.get("selector") or ""
+        for g in section.get("content_gaps") or []:
+            kind = g.get("kind", "")
+            if kind == "dropped":
+                block = g.get("block_slug") or section.get("block_name") or ""
+                attr_or_slot = g.get("where") or ""
+            else:  # fuzzy_fallback / fallback_declined
+                block = g.get("resolved_to") or ""
+                attr_or_slot = g.get("token_or_selector") or ""
+            gaps.append({
+                "block": block,
+                "attr_or_slot": attr_or_slot,
+                "fixture": fixture,
+                "detail": g.get("detail", ""),
+                "kind": kind,
+                **{k: v for k, v in g.items() if k not in ("kind", "detail", "block_slug", "where")},
+            })
+    return gaps
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
@@ -1514,6 +1553,9 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                         "modifier_signals": {},
                         "class_signature": _class_sig,
                         "converter_v2": True,
+                        # Content-gap observability channel (2026-07-31) — whatever
+                        # the content pass recorded before this failure fired.
+                        "content_gaps": result.get("content_gaps", []),
                     })
                     continue
                 # Normalise to orchestrator per_section_results schema.
@@ -1565,6 +1607,15 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     "modifier_signals": {},
                     "variation_css": result.get("variation_css", ""),
                     "attribute_gap_candidates": result.get("attribute_gap_candidates", []),
+                    # Content-gap observability channel (2026-07-31) — mirrors
+                    # attribute_gap_candidates above but for the CONTENT side:
+                    # dropped ContentGaps + fuzzy/alias-fallback resolutions from
+                    # converter.services.content_gap_collector. See
+                    # _harvest_content_gaps() + the Stage 9 content-gaps.json
+                    # write-out (armed the pre-existing but previously-dormant F5
+                    # ledger.content_gap_check gate — content-gaps.json was never
+                    # written by anything before this).
+                    "content_gaps": result.get("content_gaps", []),
                     "class_signature": _class_sig,
                     "converter_v2": True,
                 })
@@ -2020,6 +2071,33 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         warnings.append(f"attribute_gap_writer soft-failed: {exc}; gap candidates not persisted")
         attribute_gap_writer_result = {"row_count": 0, "inserted": 0, "bumped": 0, "mode": "errored", "error": str(exc)}
 
+    # 9c2-content-gap-writer (2026-07-31 content-gap observability task).
+    # Mirrors 9c-attr-gap-writer immediately above, but for the CONTENT side:
+    # harvest every content_gaps entry (converter.services.content_gap_collector
+    # — dropped ContentGaps + fuzzy/alias-fallback BEM resolutions) from the
+    # per-section extract results and write content-gaps.json into THIS run's
+    # directory, next to leftover-buckets.json / attribute_gap_candidates.
+    # This is the missing writer for the pre-existing F5 ContentGap visibility
+    # gate (ledger/content_gap_check.py + ledger/content_coverage_check.py) —
+    # both gates ran in permanent fail-safe "file absent" green before this,
+    # because nothing produced content-gaps.json. Soft-fails so a write hiccup
+    # never breaks the rest of Stage 9.
+    content_gaps_path = run_dir / "content-gaps.json"
+    content_gap_writer_result: dict = {"gap_count": 0, "mode": "skipped"}
+    try:
+        content_gaps = _harvest_content_gaps(extract)
+        content_gaps_path.write_text(
+            json.dumps(content_gaps, indent=2, ensure_ascii=False), encoding="utf-8",
+        )
+        content_gap_writer_result = {
+            "gap_count": len(content_gaps),
+            "mode": "written",
+            "path": str(content_gaps_path),
+        }
+    except Exception as exc:  # noqa: BLE001 - gap writes are operator-review artefact; soft-fail
+        warnings.append(f"content_gap_writer soft-failed: {exc}; content gaps not persisted")
+        content_gap_writer_result = {"gap_count": 0, "mode": "errored", "error": str(exc)}
+
     # 9d-functionality-gap-detector (Phase 6 v2 Step 4g). Walk the mockup
     # DOM under every matched section selector and emit a gap-candidate row
     # for any element carrying a behaviour-fingerprint attribute (data-action,
@@ -2144,6 +2222,7 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "operator_review_html_path": str(review_html_path),
         "autonomy_chain": autonomy_out,
         "attribute_gap_writer": attribute_gap_writer_result,
+        "content_gap_writer": content_gap_writer_result,
         "functionality_gap_detector": functionality_gap_detector_result,
         "gap_review_report_path": gap_review_report_path,
         "unmatched_sections": unmatched_sections,

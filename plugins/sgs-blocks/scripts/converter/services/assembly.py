@@ -62,9 +62,10 @@ def _fold_trace(stage: str, **kwargs: Any) -> None:
     detail = " ".join(f"{k}={v!r}" for k, v in sorted(kwargs.items()))
     _LOG.warning("[fold-gap] %s %s", stage, detail)
 
-from converter.context import ChildBlock, Recognition, ScalarLift
+from converter.context import ChildBlock, ContentGap, Recognition, ScalarLift
 from converter.recognition import variant_attrs
 from converter.orchestrator import emit_block_markup
+from converter.services import content_gap_collector as _gap_collector
 from converter.services.styling_helpers import collect_css_decls_for_element
 from converter.db import db_lookup
 
@@ -142,6 +143,15 @@ def build_block_markup(
                 attrs.setdefault(r.attr, r.value)  # grid-item default — CSS pass wins
             else:
                 attrs[r.attr] = r.value            # content wins on collision
+        elif isinstance(r, ContentGap):
+            # OBSERVABILITY ONLY (task: surface every content gap) — record, never
+            # act on. `results` already carried these on every call (root AND every
+            # recursive per-child build_block_markup call, since this is the SAME
+            # dispatch line each time); they were simply discarded before this line
+            # was added. Recording does not change `attrs`, `inner`, or which
+            # block/attr anything resolves to. See content_gap_collector module
+            # docstring for the proven-evidence trail.
+            _gap_collector.record_content_gap(r, block_slug=rec.slug or "")
 
     # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
     # defect). Recognition uses the tag to pick the block then DISCARDED it on
