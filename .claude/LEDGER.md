@@ -137,15 +137,26 @@ FR-38-12's pairing premise is verified FALSE (D426) · **D4's pin-composition an
 6 `track`) and would zero the same way `sgs/decorative-image` did. Not a blocker; do not silently
 widen or narrow a provision without checking what rides on it.
 
-### Tracks 1 / 1b / 1c / 2 / 2+2b — stable, unchanged today
+### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
-Not touched this session. Full detail lives where it already did — read before acting, do not
-assume it is current from memory alone:
+Full detail lives where it already did — read before acting, do not assume it is current from
+memory alone:
 
-- **Track 1 (cloning/Spec 31 verification):** `memory/session-2026-07-31-track1.md` +
-  `-track1-session2.md`. Headline still standing: Spec 31 C2 measurable (499 declared / 21.2%
-  attributed), 3 false-derivation corrections recorded there (do not re-derive), nav dropdowns
-  shipped after 5 live-only defects were found and fixed (D432/D433).
+- **⭐ Track 1 (cloning/Spec 31) — ACTIVE, next session's Phase 1 is fully scoped:**
+  **`plans/2026-08-01-wrapper-recognition-cascade-rework.md`** is the register — read it whole.
+  Shipped 2026-08-01: `4f83e8d5` bare tags inside a repeater now lift (a card written as
+  `<h3>`/`<p>` transferred nothing) + `sgs/option-picker` was missing `arrayContentLift` so its
+  options could never transfer — **needs a `/sgs-update` reseed to take effect**; `989b761d`
+  content gaps are surfaced instead of discarded, **and two commit gates
+  (`ledger/content_gap_check.py`, `content_coverage_check.py`) had been passing since June because
+  nothing ever wrote `content-gaps.json`** — the missing writer is now built.
+  **Root cause found (D439):** the map deciding "real block or fake wrapper?" is built by filtering
+  OUT the rows that say "fake wrapper", so 4 of 64 structural slots are alias-hijacked
+  (`__nav`/`__attribution`/`__ribbon`/`__slot`). Bean's L2 model is RELATIONAL (parent↔child), not
+  per-element. ⛔ **`trigger` deliberately NOT aliased** — tabs is the proof case. ⛔ **The
+  `sgs-card-grid` "cardRadius 12→18px defect" is WITHDRAWN as a probe artefact — do not fix it.**
+  Prior sessions: `memory/session-2026-07-31-track1.md` + `-track1-session2.md` (nav dropdowns
+  shipped after 5 live-only defects, D432/D433).
 - **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
   Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —

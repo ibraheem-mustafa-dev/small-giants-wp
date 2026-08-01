@@ -1,5 +1,113 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D439 — Wrapper recognition is broken at the root, and the L2 signal is RELATIONAL not per-element [INCIDENT]
+
+**The root cause, proven.** The table that decides "real block or fake wrapper?" is built by
+filtering out exactly the rows that say "fake wrapper". `db_lookup._slot_alias_to_standalone()`
+selects `WHERE scope='element' AND standalone_block IS NOT NULL`, so a slot declaring
+`standalone_block = NULL` — the DB's way of recording "this element is structural, it has no block
+equivalent" — never enters the map. `_resolve_slug_from_bem_tuple()` Path 2 then returns "the first
+canonical_slot **whose standalone_block is set**", i.e. it is structurally incapable of returning
+"this is a wrapper".
+
+**Consequence: pass-through detection works BY ACCIDENT.** `__inner` resolves to None only because
+no block-bearing slot happens to claim the word "inner". Measured blast radius — **4 of 64**
+element-scope slots declaring no block equivalent are hijacked by a greedy alias:
+`__nav` → `sgs/info-box`, `__attribution` → `sgs/text`, `__ribbon` → `sgs/text`,
+`__slot` → `sgs/info-box`. `__attribution` is the one that matters beyond tabs — it is standard in
+testimonial and quote drafts.
+
+**FOUR competing mechanisms, two of which contradict each other.** `layer_detect()` (CSS signature,
+name-free) · `_sole_passthrough_child()` (recognition-gated, and demands the parent have EXACTLY ONE
+element child) · `_is_absorbable_wrapper()` (treats `padding`/`margin`/`gap` as DISQUALIFYING) ·
+the implicit `resolve_slug_from_bem() is None` test. The contradiction: `_is_absorbable_wrapper`
+says spacing disqualifies a wrapper, while `layer_detect` uses `max-width` **+ `margin`** as the
+identifying signature of the content band. Same property, opposite meanings, two files. Tabs cannot
+fold for TWO independent reasons: false block identity on `__nav`, and the sole-child restriction
+(`.sgs-tabs` has two children).
+
+**⭐ BEAN'S MODEL (his, not derived).** *"The way to tell it's a fake wrapper is the fact that the
+parent (AKA L1) is a real block equivalent, that block is a type of container, but it barely has any
+CSS applied to it… and then a direct child that has literally no content in it but it has all of the
+CSS that the L1 was missing like the display type, gaps etc. That's a very clear L2."* The signal is
+the parent↔child PAIRING, not a per-element property test. Two supporting rulings: **L1 and L2 can
+both carry L3 CSS** (a `gap` + repeated children on a wrapper is arrangement sitting on an L2, not
+evidence against it being a wrapper); and **borders belong to the structural cluster** — they make
+invisible structure visible, they do not make a node content.
+
+**Four claims of mine Bean corrected, recorded so they are not re-derived:** "the pipeline is losing
+content" (withdrawn — it behaves as specified); "the tabs draft is malformed, 2 triggers but 1 panel"
+(wrong — one panel IS correct for tabs, the triggers switch its content); "map `__panel` → `sgs/tab`
+via forced parentage" (wrong, and proposed without reading `sgs/tab`'s attrs — it declares `label`
+emit_shape=`child` and IS the panel); "background/border disqualify a wrapper" (wrong — our own
+`CLAUDE.md:210` composite-mirror rule lists `background` as a wrapper capability). The pattern in all
+four: theorising about code I had not read.
+
+**Also withdrawn: the `sgs-card-grid` "cardRadius 12→18px routing defect"** carried by D429, the
+LEDGER and the session record as the one real transfer failure found. It is a PROBE ARTEFACT — the
+`f3-oracle-sgs-card-grid` page renders no card-grid at all (`render.php:396` returns `''` on empty
+items, unchanged since April; page content unchanged since 24 July; deployed build md5-identical to
+local), so the 18px was measured on some other element. Second probe artefact of that class after the
+`__photo` one. **Do not "fix" it.**
+
+**Plan for the rework: `plans/2026-08-01-wrapper-recognition-cascade-rework.md`** — next session's
+Phase 1, in full. **`trigger` was deliberately NOT added as a slot alias**: Bean is holding tabs as
+the proof case, so the reworked recognition must clone it correctly with no vocabulary change.
+The tabs conformance fixture is ALSO being rebuilt — Bean loaded it in a browser and it renders
+bare-bones and broken; it does not represent tabs in any real draft.
+
+## D438 — Content gaps are surfaced; two commit gates had been green since June on a file nothing wrote [INCIDENT]
+
+`convert_section()` constructed `ContentGap` objects and then discarded them. It returned
+`attribute_gap_candidates` for the CSS side and **no content-side channel at all**, so content the
+converter refused to transfer vanished with nothing recording it while the run reported
+`status:"complete"`. Proven on the tabs fixture: exactly 2 gaps built (`sgs-tabs__nav` /
+`sgs-tabs__panel`, both "G3 validation failed: `sgs/info-box` not in `['sgs/tab']`"), both dropped on
+the floor, three text nodes gone. **The allow-list gate worked perfectly — its refusal simply never
+left the function.**
+
+**Worse, and the reason it went unseen:** `ledger/content_gap_check.py` (committed 2026-06-26) and
+`ledger/content_coverage_check.py` (2026-07-04) are fully-built commit gates that read
+`content-gaps.json` — and `git grep` across all committed code finds **no writer for that file,
+ever**. Their own fail-safe reads `if not gaps_path.exists(): return 0, []`. Every run that "passed
+the F5 ContentGap gate" since June passed on an empty room. Third instance of
+`a-gate-that-cannot-fail-reads-green-forever` in this project after the D101 ratchet and the
+feature-parity gate.
+
+Shipped `989b761d`: `services/content_gap_collector.py` records dropped gaps AND fuzzy-fallback
+events (bound via db_lookup's existing but previously-uncalled `set_trace` API), surfaced as
+`content_gaps` on all four `convert_section` return branches and written to `content-gaps.json` by
+the orchestrator at Stage 9 — the missing writer. Observability only: `block_markup` md5-identical
+before/after across three fixtures. Suite 571 → 586.
+
+## D437 — Bare tags inside a repeater now lift; option-picker could never lift its options at all [ROUTINE]
+
+**Bean:** *"bare tags should work in the pipeline too via the db table for tags to sgs blocks"* — and
+he was right; the DB and the shared helper both existed, the array path just never called them.
+
+Every tier of `array_content.py`'s item-field matcher started from `_bem_token(node)`: L1/L1b match
+the BEM segment directly, L2's role is derived FROM that segment. A bare `<h3>` has no BEM token, so
+no tier could ever match it — a card written as `<h3>`/`<p>` lifted zero items and the whole
+`sgs-card-grid` draft cloned to a self-closing block with both cards' text silently gone. Spec 31
+§2.6 says bare tags resolve via `atomic_tag_map`, and §3.B.0 consequence 1 names `array_content.py`
+BY FILE as an R-31-9 violation if it does not reuse that shared machinery. It did not.
+
+Added L3, a tag-shape identity tier (`<h3>` → `sgs/heading` matched against the field's
+`canonical_slot → standalone_block`), ties resolved by DOCUMENT ORDER against `field_order`
+(Bean-approved). **Strictly additive** — the D308 zero→one shape: L3 runs only where every earlier
+tier returned nothing, proven by the conformance failing SET being byte-identical to baseline
+(27 pre-existing stale goldens), compared as a set and not a count.
+
+The SCALAR path already had this capability (`scalar_content.py:42-97`, reverse `atomic_tag_map`) —
+so this is array/scalar parity, exactly the shared-library refactor §3.B.0 demands.
+
+Also: **`sgs/option-picker` never declared `supports.sgs.arrayContentLift`**, so
+`lift_array_content()` returned empty at the capability gate and its options could never transfer —
+which is why all four option labels collapsed into the single `label` scalar. Bean called this
+correctly (*"no reason it doesn't work imo"*); the standalone-block parking note implying otherwise
+was about `sgs/product-card`'s packSizes, a different thing. Needs a `/sgs-update` reseed to
+take effect. Commit `4f83e8d5`.
+
 ## D436 — The DB becomes the real single source: /sgs-update owns motion seeding AND artefact regeneration [ROUTINE]
 
 **Bean:** *"The motion seeding needs to be worked into the sgs-update pipeline and not be some
