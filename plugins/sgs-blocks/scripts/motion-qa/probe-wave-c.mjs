@@ -104,6 +104,120 @@
  */
 
 import { chromium } from 'playwright';
+import zlib from 'node:zlib';
+
+/**
+ * Per-page Tier G/V motion bundle budget, gzip bytes (Step 19 / D448).
+ *
+ * ⚠ THIS IS A SHARED CONSTANT NAME, NOT A LOCAL CHOICE. Spec 02 sets the
+ * framework's page JS budget at <50KB; `SGS_Motion_Diagnostics::BUDGET_BYTES_GZIP`
+ * (`plugins/sgs-blocks/includes/class-sgs-motion-diagnostics.php`) cites the
+ * same 51200 for the admin-panel report, and any editor-side authoring-time
+ * warning (fx.js, owned by a different track per this session's file split)
+ * should read this SAME number rather than picking its own — three surfaces
+ * measuring against three different thresholds would let a page pass one and
+ * fail another for no real reason. If this number ever changes, change it in
+ * both PHP and this file together.
+ *
+ * WHY THIS IS REPORTED, NEVER PUSHED ONTO `fails` (Bean's ruling, D448):
+ * capping authoring or keeping the exemption silent were both explicitly
+ * rejected. The gate that already exists (`check-motion-bundle-budget.py`)
+ * polices PER-MODULE regression against a baseline; this number is a
+ * PER-PAGE combinatorial cost that no per-module gate can see (a page can
+ * combine five in-budget modules into an over-budget page). Making it
+ * visible turns an engineering property into information the operator acts
+ * on — it must never silently fail a build.
+ */
+const MOTION_BUDGET_BYTES_GZIP = 51200; // 50 KB.
+
+/** URL-path fragments that mark a script as one of THIS plugin's motion
+ * modules — the exact same scope `check-motion-bundle-budget.py`'s
+ * `_WATCHED_SUBDIRS` already uses, so the per-module gate and this per-page
+ * report agree on what counts as "a motion module" rather than each
+ * inventing its own definition. */
+const MOTION_MODULE_URL_FRAGMENTS = [
+	'/build/vendor-modules/',
+	'/build/shared/effects/',
+];
+
+/**
+ * Sum the gzip-recompressed size of every motion-module script response seen
+ * on a page load. Uses the SAME metric convention as
+ * `check-motion-bundle-budget.py::_gzip_size()` (gzip.compress the payload,
+ * not the raw Content-Length) so the two numbers are directly comparable —
+ * Playwright's `response.body()` returns the DECOMPRESSED payload regardless
+ * of what encoding the wire used, so recompressing here (rather than trusting
+ * a `content-length` header, which is absent or reflects something else under
+ * chunked transfer / different compression) is what makes this an
+ * apples-to-apples figure against the committed baseline, not a guess.
+ *
+ * @param {import('playwright').Page} page Page to attach the listener to.
+ * @return {() => Promise<{modules: Object[], totalBytes: number}>} Call after
+ *   the page has settled to detach the listener and total the results.
+ */
+function trackMotionBundleCost( page ) {
+	const seen = [];
+	const listener = ( response ) => {
+		const url = response.url();
+		if ( MOTION_MODULE_URL_FRAGMENTS.some( ( f ) => url.includes( f ) ) ) {
+			seen.push( response );
+		}
+	};
+	page.on( 'response', listener );
+
+	return async () => {
+		page.off( 'response', listener );
+		const modules = [];
+		let totalBytes = 0;
+		for ( const response of seen ) {
+			let bytes = null;
+			try {
+				const body = await response.body();
+				bytes = zlib.gzipSync( body ).length;
+			} catch ( e ) {
+				bytes = null; // Response body unavailable (e.g. redirected/aborted) — reported, not silently dropped.
+			}
+			const marker = MOTION_MODULE_URL_FRAGMENTS.find( ( f ) =>
+				url_includes_any( response.url(), f )
+			);
+			modules.push( { url: relativiseMotionUrl( response.url() ), bytes } );
+			if ( null !== bytes ) {
+				totalBytes += bytes;
+			}
+		}
+		// De-duplicate by URL — a module requested twice (e.g. a second
+		// in-page instance re-triggering an import) must count once, matching
+		// what a browser's module cache actually delivers to the page.
+		const byUrl = new Map();
+		for ( const m of modules ) {
+			if ( ! byUrl.has( m.url ) ) {
+				byUrl.set( m.url, m );
+			}
+		}
+		const deduped = Array.from( byUrl.values() );
+		const dedupedTotal = deduped.reduce(
+			( sum, m ) => sum + ( m.bytes || 0 ),
+			0
+		);
+		return { modules: deduped, totalBytes: dedupedTotal };
+	};
+}
+
+/** True if `url` contains `fragment`. Tiny named helper kept separate from
+ * the inline `.some()` above purely so `trackMotionBundleCost`'s per-response
+ * marker lookup reads as intent, not an unlabelled second predicate. */
+function url_includes_any( url, fragment ) {
+	return url.includes( fragment );
+}
+
+/** Trim a motion-module URL down to its plugin-relative path for readable
+ * reporting (strips scheme/host/query — the query is just cache-busting). */
+function relativiseMotionUrl( url ) {
+	const marker = 'wp-content/plugins/sgs-blocks/';
+	const idx = url.indexOf( marker );
+	const trimmed = idx === -1 ? url : url.slice( idx + marker.length );
+	return trimmed.split( '?' )[ 0 ];
+}
 
 const URL_ARG = process.argv.find( ( a ) => a.startsWith( 'http' ) );
 const BASE_URL =
@@ -886,10 +1000,22 @@ async function runArm( browser, reducedMotion ) {
 		}
 	} );
 
+	// Step 19 / D448 — installed BEFORE goto so it catches every motion
+	// module request from first paint, not just ones issued after this line.
+	const finishMotionCost = trackMotionBundleCost( page );
+
 	await page.goto( URL, { waitUntil: 'load' } );
 	await page.waitForTimeout( 1200 );
 
 	const out = { reducedMotion, errors };
+
+	// All Tier G/V motion modules this house has today are enqueued at
+	// render time (SGS_Motion_Registry::sniff_block / enqueue_effect), not
+	// lazy-loaded on scroll, so the settle window above is sufficient to have
+	// seen every request before totalling. Finalised here (not at the very
+	// end of runArm) so later steps' own network activity (touch swipes,
+	// scroll sweeps) cannot inflate the count with an unrelated request.
+	out.motionPageCost = await finishMotionCost();
 
 	out.mediaQuery = await page.evaluate( () => ( {
 		reduce: matchMedia( '(prefers-reduced-motion: reduce)' ).matches,
@@ -1703,6 +1829,40 @@ console.log(
 
 console.log( '\n=== STEP 14 — PER-EFFECT VERDICTS ===' );
 console.log( JSON.stringify( effectVerdicts, null, 1 ) );
+
+// ── Step 19 (D448) — per-page motion bundle cost, REPORTED not GATED ──────
+// Bean's ruling: do not fail the build on this. Make the cost visible and
+// let the operator decide. See the constant docblock above for why the
+// number 51200 must stay identical across this file, the admin panel
+// (`SGS_Motion_Diagnostics::BUDGET_BYTES_GZIP`), and any future editor-side
+// warning.
+console.log( '\n=== STEP 19 — PER-PAGE MOTION BUNDLE COST (D448, reported not gated) ===' );
+[ 'noPreference', 'reduce' ].forEach( ( armName ) => {
+	const cost = arms[ armName ].motionPageCost;
+	if ( ! cost ) {
+		console.log( `${ armName }: motionPageCost not captured` );
+		return;
+	}
+	const overBudget = cost.totalBytes > MOTION_BUDGET_BYTES_GZIP;
+	const pct =
+		Math.round( ( cost.totalBytes / MOTION_BUDGET_BYTES_GZIP ) * 1000 ) /
+		10;
+	console.log(
+		JSON.stringify(
+			{
+				arm: armName,
+				totalBytesGzip: cost.totalBytes,
+				budgetBytesGzip: MOTION_BUDGET_BYTES_GZIP,
+				percentOfBudget: pct,
+				verdict: overBudget ? 'OVER BUDGET' : 'within budget',
+				moduleCount: cost.modules.length,
+				modules: cost.modules,
+			},
+			null,
+			1
+		)
+	);
+} );
 
 console.log( '\n=== VERDICT ===' );
 if ( inconclusive.length ) {

@@ -1,5 +1,123 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D453 — Pinned sections put keyboard focus on invisible controls (WCAG 2.4.11) [INCIDENT]
+
+**Finding, measured live on canary 2114.** A pinned section containing a real link, text field and
+submit button: all three are focusable, none is visible. Link own-opacity **0**, field **0.4**,
+button reads **1** while its ANCESTOR — the actual stagger participant — is **0**. CSS opacity
+does not inherit as a computed value, which is exactly why a per-element check passed and an
+ancestor check caught it.
+
+**Cause.** `fx-pin-scrub.js:344` builds each child's reveal with `timeline.fromTo(...)`.
+`fromTo` defaults to `immediateRender: true` and `immediateRender` is never set anywhere in that
+file, so every preset's FROM state — `opacity: 0` in all five presets — lands the moment the
+timeline is BUILT, before any scroll. A visitor tabbing faster than the scroll-driven stagger
+lands on controls that are fully focusable and completely invisible.
+
+**Why it was never caught.** The keyboard contract for both pinning effects was measured and
+written into Spec 38 §3.1 — but **every canary fixture with an active pin contained no focusable
+element inside the pin.** The recorded pass was by mechanism, never by observation. Same failure
+shape as D452: artefacts agreed, nobody looked.
+
+**Fix.** Keyboard entry COMPLETES the choreography instead of competing with it: a `focusin`
+listener on the pinned element runs `timeline.progress(1)` when the reveal is unfinished. Content
+is only ever added, never removed, so it cannot worsen the visual state. Mouse users are
+unaffected — `focusin` does not fire on scroll, and a later scroll re-drives the scrub normally.
+
+**Why not CSS `:focus-within`:** GSAP writes opacity as an INLINE style, which no stylesheet rule
+beats without `!important` — and `!important` on `opacity` in a render surface is precisely what
+the cheat-gate rejects.
+
+**Reduced motion is already correct** and was verified on the same fixture: the pin never engages
+and all three controls stay at full opacity.
+
+⚠ **Two verification traps hit while fixing this, both worth carrying forward:**
+1. My first attempt pushed the listener onto a `cleanups` array **that does not exist in that
+   file**. `node --check` reported PASS — it validates syntax, not scope — so the "green" was
+   vacuous and the fix would have thrown `ReferenceError` and killed pin-scrub entirely.
+2. I then reached for ESLint to prove scope. A planted `cleanupsThatDoNotExist` reference proved
+   **`no-undef` is NOT enabled in this project's ESLint config** — so a clean ESLint run says
+   nothing about undefined identifiers here. Scope was finally confirmed by brace-depth analysis
+   (declaration and use both at depth 2; the cleanup closes over it at depth 3).
+
+⚠ **OUTSTANDING: the fix is unverified live.** Re-run the extended `probe-step13-pin-focus.mjs`
+Tab-walk against page 2114 after deploy and confirm each control's own AND ancestor opacity is 1
+at the moment focus lands.
+
+## D452 — Morph has NEVER animated: the fx attributes were on the `<svg>`, not the `<path>` [INCIDENT]
+
+**Finding.** `sgs/*` morph did not work on any block, and never had — not on the 28 blocks the
+2026-08-01 relaxation made eligible, and not on the original 3 SVG-shape blocks either. The
+relaxation widened a capability that was already inert.
+
+**Mechanism (proven).** `fx-shape-routes.php` emitted `data-sgs-fx="morph"` onto the injected
+`<svg class="sgs-fx-shape-visual">` wrapper, while the geometry lives on the inner `<path>`.
+`fx-morph.js`'s own docblock states the contract — *"The element carrying `data-sgs-fx="morph"`
+IS THE FROM SHAPE — a real [path]"* — and MorphSVGPlugin refuses an `<svg>` container outright,
+logging `Cannot morph a <SVG> element` and tweening nothing. Captured live in console. The `d`
+attribute was unchanged across **148 animation-frame samples over 1.6s**, past the 0.8s default
+duration, on an `sgs/heading` instance (canary page 2113).
+
+Only the SOURCE end was wrong: `$target_svg` always pointed at a `<path id="…">`, which is why
+the fail-safe path behaved correctly and hid the defect.
+
+**Fix.** Move `$visual_attrs` onto the inner `<path>`. Safe because every CSS selector keys on
+the CLASS (`.sgs-fx-shape-visual`, `.sgs-fx-shape-visual path`) and the idempotency check greps
+the class string — nothing reads these data attributes' placement.
+
+**Why it survived so long — the process lesson.** Step 5 was closed on ARTEFACT verification:
+`morph` appeared in `SHIPPED_EFFECTS` and the generated qualifying-blocks JSON grew from 3 to 28,
+so every artefact said "shipped". **Nobody had ever watched an element morph.** The gate that
+caught it (QA Gate B) demanded exactly one thing the artefacts could not supply — an observation
+of rendered geometry changing over time. A capability can be present in every manifest,
+registry and generated file and still do nothing.
+
+**Fail-safe behaviour was separately verified and PASSES:** a `data-sgs-fx-morph-target` pointing
+at a nonexistent selector produces exactly one console warning and leaves the element unchanged.
+
+⚠ **OUTSTANDING: the fix is unverified.** The cause is proven and the emit shape is confirmed
+locally, but no live morph has yet been observed. Re-run the geometry sampling on page 2113
+after deploy. Until then morph stays in `SHIPPED_EFFECTS` on the strength of a proven cause, not
+a proven fix — **a fix is a hypothesis too.**
+
+## D451 — Motion-path: the trigger that switched itself off could never switch back on [INCIDENT]
+
+**Symptom.** The motion-path effect animated exactly once per page load. Scroll down, the
+traveller ran its arc and settled; scroll back up and down again and nothing moved until a
+reload. Found by measurement during Wave E, not reported by a user.
+
+**Mechanism.** `onLeave` cleared the transform, added the resting class, then called
+`self.disable( false )`. `onEnterBack` — the ONLY code path that removes the resting class and
+calls `enable()` — belongs to that same trigger. A light switch wired through itself.
+
+**The prior justification was tested and found FALSE, which is why removal is safe.** The
+docblock argued the disable was necessary because "a left-enabled scrubbed trigger keeps
+re-rendering the tween at clamped progress 1 on every further scroll tick". Read against the
+installed `gsap@3.15.0`: `ScrollTrigger.js:1680` gates the whole progress/render/callback block
+behind `if (clipped !== prevProgress && self.enabled)`. Once clipped pins at 1 (or 0) it stops
+changing, so no further rendering happens anyway — and `self.enabled` in that same condition is
+exactly why the disabled trigger also stopped evaluating boundary crossings.
+
+**A more defensive fix was built, measured, and REJECTED as worse.** An `onUpdate` guard
+re-clearing the transform whenever an `isResting` flag was set clobbered the correct re-entry
+frame: GSAP fires the tween's `onUpdate` one tick BEFORE `onEnterBack` clears that flag. The
+shipped fix is the minimal one — delete the `disable`/`enable` pair, add nothing.
+
+**Evidence.** A local harness with the real gsap 3.15.0 UMD build reproduced the stuck-after-
+first-pass symptom, then, post-fix, matched transform matrices exactly at every sampled scroll
+position across a down → up → down cycle including the crossing frame
+(`matrix(1,0,0,1,347.135,756.698)` at scrollY 800 on passes 1, 2 and 3). The D441/D443 resting
+handoff still engages and releases in both directions.
+
+⚠ **OUTSTANDING: not verified on the live canary.** The harness proves the ScrollTrigger
+mechanism in isolation; it does not prove the real-page interaction (actual header height,
+actual `.sgs-fx-path-route` sizing) still finishes in clear space. Needs a live down→up→down
+pass on page 2083 at 375px after deploy.
+
+⚠ The source docblock originally labelled this "D443 FIX" in four places. **D443 is a different
+decision** (motion-path resting position: the header cannot fix it). Corrected to D451 so a
+future reader looking the number up lands on this incident, not on the header ruling.
+
 ## D450 — Motion Wave E: agents own FILES, not steps [ROUTINE]
 
 **Problem.** The wave dispatches parallel agents into a SHARED worktree that already holds a

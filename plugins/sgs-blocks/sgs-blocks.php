@@ -312,6 +312,13 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules-admin.php';
 Sgs_Footer_Rules::register();
 Sgs_Footer_Rules_Admin::register();
 
+// SGS Motion Diagnostics (Step 18/19, Spec 38, D448) — admin-only support
+// surface: which motion effects a page shipped, their byte cost against the
+// Spec 02 per-page budget, and which effects were skipped (and why) —
+// without SSH or WP_DEBUG. Never loaded on the frontend request path.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-diagnostics.php';
+Sgs_Motion_Diagnostics::register();
+
 // SGS style variation picker DELETED 2026-05-22 (Phase 5a Decision 18).
 // class-sgs-variation-picker.php + class-sgs-legacy-theme-mod-migrator.php
 // archived at plugins/sgs-blocks/_retired/. WP style variations are no longer
