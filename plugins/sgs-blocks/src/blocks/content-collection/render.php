@@ -39,133 +39,28 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-cpt-collection-query.php';
 
 /* ── 1. Resolve attributes ─────────────────────────────────────────────────── */
 
-/*
- * B2 (QC): whitelist $content_type before it reaches WP_Query['post_type'].
- * sanitize_key alone is insufficient — an attacker-controlled post_type could
- * expose private CPTs. The filter hook lets themes/plugins extend the list.
- */
-$content_type_raw = sanitize_key( $attributes['contentType'] ?? 'sgs_product' );
-$allowed_types    = apply_filters( 'sgs_content_collection_post_types', array( 'sgs_product', 'product' ) );
-$content_type     = in_array( $content_type_raw, $allowed_types, true ) ? $content_type_raw : 'sgs_product';
-$selection_rule   = sanitize_key( $attributes['selectionRule'] ?? 'newest' );
-$count            = absint( $attributes['count'] ?? 12 );
-$count            = min( max( 1, $count ), 24 ); // Server-side cap: 1–24.
-$columns          = absint( $attributes['columns'] ?? 3 );
-$columns          = min( max( 1, $columns ), 6 ); // 1–6 columns.
-$empty_message    = sanitize_text_field( $attributes['emptyMessage'] ?? __( 'No items to show yet. Check back soon.', 'sgs-blocks' ) );
-$handpicked_ids   = array_map( 'absint', (array) ( $attributes['handpickedIds'] ?? array() ) );
-$category_term    = absint( $attributes['categoryTerm'] ?? 0 );
+$columns       = absint( $attributes['columns'] ?? 3 );
+$columns       = min( max( 1, $columns ), 6 ); // 1–6 columns.
+$empty_message = sanitize_text_field( $attributes['emptyMessage'] ?? __( 'No items to show yet. Check back soon.', 'sgs-blocks' ) );
 
-/* ── 2. Build WP_Query args from selection rule (R-22-1 / FR-24-5) ─────────── */
-
-$query_args = array(
-	'post_type'              => $content_type,
-	'post_status'            => 'publish',
-	'posts_per_page'         => $count,
-	'no_found_rows'          => true,   // Perf: skip FOUND_ROWS() — no pagination.
-	'ignore_sticky_posts'    => true,
-	'update_post_term_cache' => false,
-	'update_post_meta_cache' => true, // Meta needed for featured/price/views.
-);
-
-switch ( $selection_rule ) {
-	case 'featured':
-		// Filter to items where the sgs_featured boolean meta is truthy.
-		// Stored as '1' (true) or '' / '0' (false) by WP's sanitise_callback.
-		$query_args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- intentional; meta-filtered preset is the entire purpose of this preset.
-			array(
-				'key'     => 'sgs_featured',
-				'value'   => '1',
-				'compare' => '=',
-			),
-		);
-		$query_args['orderby']    = 'date';
-		$query_args['order']      = 'DESC';
-		break;
-
-	case 'most-expensive':
-		$query_args['meta_key'] = 'sgs_price'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- intentional; price sort is the entire purpose of this preset.
-		$query_args['orderby']  = 'meta_value_num';
-		$query_args['order']    = 'DESC';
-		break;
-
-	case 'cheapest':
-		$query_args['meta_key'] = 'sgs_price'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- intentional; price sort is the entire purpose of this preset.
-		$query_args['orderby']  = 'meta_value_num';
-		$query_args['order']    = 'ASC';
-		break;
-
-	case 'most-popular':
-		// Sort by view counter; fall back to date if no views meta exists.
-		$query_args['meta_key']   = 'sgs_views'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- intentional; view-count sort is the entire purpose of this preset.
-		$query_args['orderby']    = array(
-			'meta_value_num' => 'DESC',
-			'date'           => 'DESC',
-		);
-		$query_args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- intentional fallback.
-			array(
-				'key'     => 'sgs_views',
-				'compare' => 'EXISTS',
-			),
-		);
-		break;
-
-	case 'handpicked':
-		// Respect the exact order the operator chose (post__in ordering).
-		if ( ! empty( $handpicked_ids ) ) {
-			$query_args['post__in']       = $handpicked_ids;
-			$query_args['orderby']        = 'post__in';
-			$query_args['posts_per_page'] = count( $handpicked_ids );
-		} else {
-			// No IDs chosen yet — show nothing (triggers empty state).
-			$query_args['post__in']       = array( 0 );
-			$query_args['posts_per_page'] = 0;
-		}
-		break;
-
-	case 'category':
-		if ( $category_term > 0 ) {
-			// Taxonomy associated with this content type via convention:
-			// sgs_product → sgs_product_cat. Generalises to future types via
-			// the {post_type}_cat naming pattern (R-22-9).
-			$tax_slug                = $content_type . '_cat';
-			$query_args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- intentional; taxonomy filter is the purpose of this preset.
-				array(
-					'taxonomy' => $tax_slug,
-					'field'    => 'term_id',
-					'terms'    => $category_term,
-				),
-			);
-		}
-		$query_args['orderby'] = 'date';
-		$query_args['order']   = 'DESC';
-		break;
-
-	case 'newest':
-	default:
-		$query_args['orderby'] = 'date';
-		$query_args['order']   = 'DESC';
-		break;
-}
-
-/* ── 3. Run the query ──────────────────────────────────────────────────────── */
-
-$query        = new \WP_Query( $query_args );
-$result_posts = $query->posts;
+/* ── 2–3. Run the collection query ─────────────────────────────────────────── */
 
 /*
- * B1 (QC): prime the meta cache for all result posts in one DB round-trip.
- * Without this, each card's get_product_data() call triggers individual
- * get_post_meta() queries — an N+1 pattern (one extra query per card).
- * update_meta_cache() batch-loads all meta for these post IDs so subsequent
- * get_post_meta() calls are served from the in-memory object cache.
+ * FOLD NOTE (2026-08-01): the seven selection rules, the post-type allowlist
+ * (B2) and the meta-cache priming (B1, the N+1 guard) used to be written out
+ * inline here. They now live in SGS\Blocks\CPT_Collection_Query, because
+ * sgs/card-grid gained the same capability (source = 'cpt-collection') and a
+ * second copy of the rules would have been free to drift from this one.
+ *
+ * Behaviour is unchanged: no `paged` option is passed, so the query keeps the
+ * `no_found_rows` fast path exactly as before.
  */
-if ( ! empty( $result_posts ) ) {
-	update_meta_cache( 'post', wp_list_pluck( $result_posts, 'ID' ) );
-}
+$collection_result = \SGS\Blocks\CPT_Collection_Query::get_results( $attributes );
+$result_posts      = $collection_result['posts'];
 
 /* ── 4. Wrapper: own classes and CSS vars for SGS_Container_Wrapper ─────────── */
 

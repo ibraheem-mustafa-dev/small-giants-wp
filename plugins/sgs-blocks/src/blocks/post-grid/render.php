@@ -22,10 +22,15 @@
 defined( 'ABSPATH' ) || exit;
 
 use SGS\Blocks\Post_Grid_REST;
+use SGS\Blocks\Grid_Pagination;
 
 require_once dirname( __FILE__, 4 ) . '/includes/class-post-grid-rest.php';
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
+// dirname( __DIR__, 3 ) is the same directory as the dirname( __FILE__, 4 )
+// calls above (__DIR__ === dirname( __FILE__ )); it matches the form used by
+// the sibling grid blocks and keeps this new line phpcs-clean.
+require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 
 // CSS length/unit sanitiser — for free-text style-engine values concatenated
 // into raw CSS declarations inside this block's scoped <style> tag. Strips
@@ -337,23 +342,25 @@ if ( 'carousel' === $layout ) {
 }
 
 // --- Pagination.
-if ( 'none' !== $pagination && $total_pages > 1 ) {
-	if ( 'standard' === $pagination ) {
-		echo '<nav class="sgs-post-grid__pagination" aria-label="' . esc_attr__( 'Posts pagination', 'sgs-blocks' ) . '">';
-		for ( $p = 1; $p <= $total_pages; $p++ ) {
-			$current_class = $p === (int) $current_page ? ' sgs-post-grid__page-btn--current' : '';
-			$aria_current  = $p === (int) $current_page ? ' aria-current="page"' : '';
-			echo '<button type="button" class="sgs-post-grid__page-btn' . esc_attr( $current_class ) . '" data-page="' . esc_attr( $p ) . '"' . $aria_current . '>' . esc_html( $p ) . '</button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — $aria_current is a hardcoded safe string.
-		}
-		echo '</nav>';
-	} elseif ( 'load-more' === $pagination ) {
-		echo '<div class="sgs-post-grid__load-more-wrap">';
-		echo '<button type="button" class="sgs-post-grid__load-more" data-current-page="1" data-total-pages="' . esc_attr( $total_pages ) . '">' . esc_html__( 'Load more', 'sgs-blocks' ) . '</button>';
-		echo '</div>';
-	} elseif ( 'infinite' === $pagination ) {
-		echo '<div class="sgs-post-grid__sentinel" aria-hidden="true" data-current-page="1" data-total-pages="' . esc_attr( $total_pages ) . '"></div>';
-	}
-}
+// Delegated to the shared Grid_Pagination helper (2026-08-01). The markup this
+// block emitted inline was the proven implementation, so it BECAME the helper:
+// MODE_AJAX output is byte-identical to what stood here before, which keeps
+// view.js's selectors (.sgs-post-grid__page-btn / __load-more / __sentinel and
+// their data-* attributes) working untouched. sgs/card-grid now renders from
+// the same helper in MODE_LINK, so there is exactly one copy of this markup.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Grid_Pagination::render() escapes every interpolated value internally.
+echo Grid_Pagination::render(
+	array(
+		'base_class'     => 'sgs-post-grid',
+		'type'           => $pagination,
+		'total_pages'    => $total_pages,
+		'current_page'   => (int) $current_page,
+		'mode'           => Grid_Pagination::MODE_AJAX,
+		'nav_label'      => __( 'Posts pagination', 'sgs-blocks' ),
+		'load_more_text' => __( 'Load more', 'sgs-blocks' ),
+	)
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 $inner_html = ob_get_clean();
 

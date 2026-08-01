@@ -20,6 +20,7 @@ import {
 } from './components/product-panels';
 import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import CollectionPanel from './components/collection-panel';
 import { colourVar, spacingVar } from '../../utils';
 
 const VARIANT_OPTIONS = [
@@ -210,11 +211,17 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const isQueryMode = source === 'query';
 	const isWcProductMode = source === 'wc-product';
+	const isCptCollectionMode = source === 'cpt-collection';
 
 	// Flat help-text resolution (no nested ternary — S3358).
 	let sourceHelp = __( 'Add and arrange cards manually below.', 'sgs-blocks' );
 	if ( isWcProductMode ) {
 		sourceHelp = __( 'Products are pulled from your WooCommerce catalogue.', 'sgs-blocks' );
+	} else if ( isCptCollectionMode ) {
+		sourceHelp = __(
+			'Products are pulled from your SGS product library. This works whether or not WooCommerce is installed.',
+			'sgs-blocks'
+		);
 	} else if ( isQueryMode ) {
 		sourceHelp = __( 'Cards are pulled automatically from your posts.', 'sgs-blocks' );
 	}
@@ -284,6 +291,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Manual (custom items)', 'sgs-blocks' ), value: 'manual' },
 							{ label: __( 'Query (from posts)', 'sgs-blocks' ), value: 'query' },
 							{ label: __( 'WooCommerce products', 'sgs-blocks' ), value: 'wc-product' },
+							{ label: __( 'Product collection (no WooCommerce needed)', 'sgs-blocks' ), value: 'cpt-collection' },
 						] }
 						onChange={ ( val ) => setAttributes( { source: val } ) }
 						help={ sourceHelp }
@@ -320,6 +328,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
+
+				{ /* ── Collection panel: visible only in cpt-collection mode ── */ }
+				{ isCptCollectionMode && (
+					<CollectionPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				) }
 
 				{ /* ── Products panel: visible only in wc-product mode ── */ }
 				{ isWcProductMode && (
@@ -431,7 +447,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ ! isQueryMode && ! isWcProductMode && (
+				{ ! isQueryMode && ! isWcProductMode && ! isCptCollectionMode && (
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
 					{ items.map( ( item, index ) => (
 						<ItemEditor
@@ -576,8 +592,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* WC-product mode: live server-side preview (mirrors content-collection pattern) */ }
-			{ isWcProductMode ? (
+			{ /* Card-delegating modes (WooCommerce products / CPT collection): live
+			     server-side preview, so the operator sees the real query result —
+			     the same pattern sgs/content-collection used before the fold. */ }
+			{ isWcProductMode || isCptCollectionMode ? (
 				<div { ...blockProps }>
 					<ServerSideRender
 						block="sgs/card-grid"

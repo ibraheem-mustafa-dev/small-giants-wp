@@ -19,6 +19,12 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-products.php';
+// WooCommerce-INDEPENDENT collection engine + shared pagination markup. Folded
+// in from sgs/content-collection on 2026-08-01: Card_Grid_Products above returns
+// an empty array without WooCommerce, so this second engine is what keeps a
+// product collection working on a bare WordPress install.
+require_once dirname( __DIR__, 3 ) . '/includes/class-cpt-collection-query.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 
 // CSS length/unit sanitiser — for free-text length values (border width,
 // letter-spacing) concatenated into raw CSS declarations inside this block's
@@ -277,13 +283,72 @@ if ( 'query' === $source ) {
 	wp_reset_postdata();
 }
 
-// WC-product mode: render product cards via the dual-mode sgs/product-card.
-// Delegates the query entirely to Card_Grid_Products (HPOS-safe, WC-canonical).
-if ( 'wc-product' === $source ) {
-	$product_ids   = \SGS\Blocks\Card_Grid_Products::get_product_ids( $attributes );
-	$empty_message = sanitize_text_field(
-		$attributes['productEmptyMessage'] ?? __( 'No products to show at the moment. Check back soon.', 'sgs-blocks' )
-	);
+/*
+ * Card-delegating modes: render each result through the dual-mode
+ * sgs/product-card rather than this block's own generic card markup.
+ *
+ *   'wc-product'     — query delegated to Card_Grid_Products (HPOS-safe,
+ *                      WC-canonical). Returns nothing without WooCommerce.
+ *   'cpt-collection' — query delegated to CPT_Collection_Query. Plain WP_Query
+ *                      over a custom post type with the seven meta-driven
+ *                      selection rules. NO WooCommerce dependency — this is the
+ *                      path folded in from sgs/content-collection (2026-08-01)
+ *                      so a non-WooCommerce site can still render a product
+ *                      collection. Removing it would delete a working
+ *                      capability from every install without WooCommerce.
+ *
+ * Both share this branch's wrapper classes, CSS vars and empty state, so the
+ * two data sources cannot drift apart visually.
+ */
+if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
+	$is_cpt_collection = ( 'cpt-collection' === $source );
+
+	// Posts are only populated in cpt-collection mode; wc-product works from IDs.
+	$collection_posts = array();
+	$pagination_html  = '';
+
+	if ( $is_cpt_collection ) {
+		// Pagination is per-instance (sgs-page-{uid}) so several grids can
+		// paginate independently on one page and neither collides with
+		// WordPress's own `paged` var on a static Page.
+		$collection_pagination = sanitize_key( $attributes['pagination'] ?? 'none' );
+		$collection_page_var   = \SGS\Blocks\Grid_Pagination::page_var( $uid );
+		$collection_paged      = 'none' !== $collection_pagination
+			? \SGS\Blocks\Grid_Pagination::current_page_from_request( $collection_page_var )
+			: 0;
+
+		// The query helper primes the meta cache for the whole result set in one
+		// round-trip (the N+1 guard ported from content-collection/render.php:167).
+		$collection_result = \SGS\Blocks\CPT_Collection_Query::get_results(
+			$attributes,
+			array( 'paged' => $collection_paged )
+		);
+
+		$collection_posts = $collection_result['posts'];
+		$product_ids      = array_map( 'absint', wp_list_pluck( $collection_posts, 'ID' ) );
+
+		$pagination_html = \SGS\Blocks\Grid_Pagination::render(
+			array(
+				'base_class'   => 'sgs-card-grid',
+				'type'         => $collection_pagination,
+				'total_pages'  => (int) $collection_result['max_num_pages'],
+				'current_page' => (int) $collection_result['paged'],
+				// No view.js on this block — real links, not inert buttons.
+				'mode'         => \SGS\Blocks\Grid_Pagination::MODE_LINK,
+				'page_var'     => $collection_page_var,
+				'nav_label'    => __( 'Collection pagination', 'sgs-blocks' ),
+			)
+		);
+
+		$empty_message = sanitize_text_field(
+			$attributes['emptyMessage'] ?? __( 'No items to show yet. Check back soon.', 'sgs-blocks' )
+		);
+	} else {
+		$product_ids   = \SGS\Blocks\Card_Grid_Products::get_product_ids( $attributes );
+		$empty_message = sanitize_text_field(
+			$attributes['productEmptyMessage'] ?? __( 'No products to show at the moment. Check back soon.', 'sgs-blocks' )
+		);
+	}
 
 	// ── Build shared wrapper props (same CSS vars the other modes use) ───────
 	$wc_class_names = array_merge(
@@ -353,6 +418,12 @@ if ( 'wc-product' === $source ) {
 			</p>
 		</div>
 		<?php
+		// Keep the pagination visible on an empty page. Without this, a visitor
+		// who lands on an out-of-range page (a stale link, or items deleted since
+		// it was shared) sees only the empty message with no way back to page 1.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Grid_Pagination::render() escapes every interpolated value internally.
+		echo $pagination_html;
+
 		$empty_html = ob_get_clean();
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_native_style_tag built from pre-sanitised values only (wp_strip_all_tags applied above).
@@ -362,24 +433,74 @@ if ( 'wc-product' === $source ) {
 		return;
 	}
 
-	// ── Render each product as sgs/product-card in wc-product mode ──────────
-	// Mirror of content-collection render.php §6 — render_block() returns
-	// fully-rendered, escaped markup (house pattern file:render.php:242).
+	// ── Render each result as an sgs/product-card ───────────────────────────
+	// Mirror of the former content-collection render.php §6 — render_block()
+	// returns fully-rendered, escaped markup (house pattern file:render.php:242).
 	ob_start();
-	foreach ( $product_ids as $wc_product_id ) :
-		$card_attrs = array(
-			'sourceMode' => 'wc-product',
-			'productId'  => absint( $wc_product_id ),
-			'showLadder' => (bool) ( $attributes['productShowLadder'] ?? false ),
-		);
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
-		echo render_block(
-			array(
-				'blockName' => 'sgs/product-card',
-				'attrs'     => $card_attrs,
-			)
-		);
-	endforeach;
+
+	if ( $is_cpt_collection ) {
+		/*
+		 * Source mode is resolved PER ITEM (R-22-9 — universal, no hardcoded
+		 * per-type dict), exactly as content-collection did:
+		 *   - a WooCommerce `product` post, on a site where WC is active → 'wc-product'
+		 *   - everything else (including sgs_product)                    → 'sgs-cpt'
+		 * On a site WITHOUT WooCommerce every item resolves to 'sgs-cpt', which
+		 * is the whole point of this path.
+		 */
+		$collection_has_woocommerce = function_exists( 'WC' );
+
+		foreach ( $collection_posts as $collection_post ) :
+			$collection_post_id   = absint( $collection_post->ID );
+			$collection_post_type = $collection_post->post_type;
+
+			$item_source_mode = ( $collection_has_woocommerce && 'product' === $collection_post_type )
+				? 'wc-product'
+				: 'sgs-cpt';
+
+			// Collection-level card-behaviour attrs forwarded to each card.
+			// Defaults match product-card's own defaults, so omitting them stays
+			// backwards-compatible (R-22-9 — no per-item logic).
+			$card_attrs = array(
+				'sourceMode'   => $item_source_mode,
+				'productId'    => $collection_post_id,
+				// showPickers: false on browsing grids suppresses axis + pill pickers.
+				'showPickers'  => isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true,
+				// ctaBehaviour: learn-more (link to the product page) is the browsing default.
+				'ctaBehaviour' => isset( $attributes['ctaBehaviour'] ) ? sanitize_key( $attributes['ctaBehaviour'] ) : 'learn-more',
+				// showLadder: false on browsing grids — price + per-unit note only.
+				'showLadder'   => isset( $attributes['showLadder'] ) ? (bool) $attributes['showLadder'] : false,
+			);
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+			echo render_block(
+				array(
+					'blockName' => 'sgs/product-card',
+					'attrs'     => $card_attrs,
+				)
+			);
+		endforeach;
+	} else {
+		foreach ( $product_ids as $wc_product_id ) :
+			$card_attrs = array(
+				'sourceMode' => 'wc-product',
+				'productId'  => absint( $wc_product_id ),
+				'showLadder' => (bool) ( $attributes['productShowLadder'] ?? false ),
+			);
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
+			echo render_block(
+				array(
+					'blockName' => 'sgs/product-card',
+					'attrs'     => $card_attrs,
+				)
+			);
+		endforeach;
+	}
+
+	// Pagination sits INSIDE the block wrapper but after the cards. Empty string
+	// in wc-product mode and whenever there is a single page.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Grid_Pagination::render() escapes every interpolated value internally.
+	echo $pagination_html;
+
 	$wc_inner_html = ob_get_clean();
 
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_native_style_tag built from pre-sanitised values only (wp_strip_all_tags applied above).

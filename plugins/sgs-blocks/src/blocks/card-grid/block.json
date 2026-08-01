@@ -326,8 +326,84 @@
 			"enum": [
 				"manual",
 				"query",
-				"wc-product"
-			]
+				"wc-product",
+				"cpt-collection"
+			],
+			"description": "Where cards come from. 'wc-product' requires WooCommerce; 'cpt-collection' is the WooCommerce-INDEPENDENT path folded in from sgs/content-collection (2026-08-01) — it queries a custom post type (sgs_product by default) with the seven meta-driven selection rules and renders each result through sgs/product-card in sgs-cpt mode."
+		},
+		"_comment_cpt_collection": "── Attributes below ported verbatim (same names, same defaults) from sgs/content-collection when that block was folded into this one on 2026-08-01. Names were kept IDENTICAL so migrating an existing sgs/content-collection block is a near-identity attribute map plus source:'cpt-collection'. They are declared here because WordPress silently DISCARDS any attribute a block.json does not declare (D338) — an undeclared port would look correct in render.php and do nothing. Engine: includes/class-cpt-collection-query.php.",
+		"contentType": {
+			"type": "string",
+			"default": "sgs_product",
+			"description": "Post type queried in cpt-collection mode. Whitelisted server-side; extend via the sgs_content_collection_post_types filter."
+		},
+		"selectionRule": {
+			"type": "string",
+			"default": "newest",
+			"enum": [
+				"newest",
+				"featured",
+				"most-expensive",
+				"cheapest",
+				"most-popular",
+				"handpicked",
+				"category"
+			],
+			"description": "cpt-collection mode only. The seven meta-driven selection rules. Mirrors CPT_Collection_Query::SELECTION_RULES."
+		},
+		"count": {
+			"type": "number",
+			"default": 12,
+			"description": "cpt-collection mode only. Items per page (1–24, capped server-side)."
+		},
+		"handpickedIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "number"
+			},
+			"description": "cpt-collection mode, selectionRule 'handpicked'. Explicit post IDs; the operator's order is preserved."
+		},
+		"categoryTerm": {
+			"type": "number",
+			"default": 0,
+			"description": "cpt-collection mode, selectionRule 'category'. Term ID in the {contentType}_cat taxonomy."
+		},
+		"emptyMessage": {
+			"type": "string",
+			"default": "No items to show yet. Check back soon.",
+			"description": "cpt-collection mode empty state (FR-24-6). Never renders blank."
+		},
+		"showPickers": {
+			"type": "boolean",
+			"default": true,
+			"description": "Forwarded to each rendered product-card in cpt-collection mode. When false, suppresses in-card option-picker UI (axis and pill pickers)."
+		},
+		"ctaBehaviour": {
+			"type": "string",
+			"default": "learn-more",
+			"enum": [
+				"learn-more",
+				"add-to-basket",
+				"buy-now"
+			],
+			"description": "Forwarded to each rendered product-card in cpt-collection mode. learn-more = link to the product page; add-to-basket = SGS cart proxy; buy-now = add then redirect to checkout."
+		},
+		"showLadder": {
+			"type": "boolean",
+			"default": false,
+			"description": "Forwarded to each rendered product-card in cpt-collection mode. Browsing grids default false (price + per-unit note only, no multi-row value ladder)."
+		},
+		"pagination": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"standard",
+				"load-more",
+				"infinite"
+			],
+			"description": "cpt-collection mode only. Rendered by the shared includes/class-grid-pagination.php helper in MODE_LINK — real <a href> links, so it works without JavaScript and is crawlable. This block has no view.js, so 'load-more' and 'infinite' degrade to numbered links rather than emitting controls nothing would hydrate."
 		},
 		"productSource": {
 			"type": "string",

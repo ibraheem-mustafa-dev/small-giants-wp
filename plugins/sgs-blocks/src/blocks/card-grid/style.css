@@ -356,3 +356,69 @@ a.sgs-card-grid__item:focus-visible {
 		filter: none;
 	}
 }
+
+/* ==========================================================================
+   Pagination (cpt-collection source)
+   --------------------------------------------------------------------------
+   Markup comes from the shared includes/class-grid-pagination.php helper in
+   MODE_LINK, so these are real <a href> links rather than buttons — they work
+   with JavaScript disabled and are crawlable.
+
+   The block root IS the grid, and the pagination nav is a direct child of it,
+   so it must span every column instead of sitting in one cell.
+
+   Sizing mirrors .sgs-post-grid__page-btn (44px minimum touch target,
+   WCAG 2.2 AA 2.5.8) so the two grids look and feel the same.
+   ========================================================================== */
+
+.sgs-card-grid__pagination {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	justify-content: center;
+	margin-top: 40px;
+}
+
+.sgs-card-grid__page-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 8px 14px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	text-decoration: none;
+	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
+	border-radius: 4px;
+	background: transparent;
+	color: var( --wp--preset--color--primary, #1a3a5c );
+	cursor: pointer;
+	transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sgs-card-grid__page-btn:hover,
+.sgs-card-grid__page-btn:focus-visible {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: var( --wp--preset--color--text-inverse, #fff );
+	text-decoration: none;
+}
+
+.sgs-card-grid__page-btn--current,
+.sgs-card-grid__page-btn[aria-current="page"] {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: var( --wp--preset--color--text-inverse, #fff );
+}
+
+/* The empty state is also a direct grid child — span the full row so the
+   message is centred across the grid rather than squeezed into column one. */
+.sgs-card-grid__empty {
+	grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-card-grid__page-btn {
+		transition: none;
+	}
+}
