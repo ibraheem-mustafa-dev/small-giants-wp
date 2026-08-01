@@ -1038,28 +1038,6 @@ The framework carries no client data any more (the client-named pattern file was
 
 **Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
 
-### P-CODE-CITES-DELETED-SPEC17 — 41 FR-S9-* citations across the plugin point at a DEAD spec
-**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-08-01
-
-`FR-S9-*` IDs belong to Spec 17, DELETED 2026-07-21 and listed under "DEAD — never cite"
-(`specs/README.md:62-68`).
-
-**DONE 2026-08-01:** the 11 citations in `site-header-row` + `site-footer-row` (render.php +
-style.css) were retargeted from the coverage matrix `reports/2026-07-21-spec17-to-spec37-coverage.md`
-— `FR-S9-2` → Spec 37 §3.4 (verified FR-37-9/FR-37-10), `FR-S9-6` → FR-37-16, `FR-S9-7` → §3.6 /
-FR-37-12. The FR-S9-7 sites also had their SUBSTANCE corrected, not just the ID: they described a
-wrap-based never-overflow guarantee that D455 replaced with nowrap + proportional shrink.
-
-**REMAINING: 41 citations across 9 distinct dead IDs** (`FR-S9-2,3,4,6,7,8,9,10,11`) in
-`src/blocks/business-info`, `src/blocks/nav-menu`, `src/blocks/site-header`, `assets/css/extensions.css`,
-`includes/class-sgs-breakpoints.php`, `includes/class-sgs-block-cpts.php` and others. The original
-entry scoped this at 10 and was wrong — the class is ~5x larger. Each needs the same matrix lookup;
-some may map to Spec 36 rather than 37, and any citing a behaviour that has since CHANGED needs its
-substance corrected too, not just the ID swapped.
-
-**Trigger:** a framework-wide doc-hygiene pass, or opportunistically when touching any of the named
-files. Map via the coverage matrix — do not invent the mapping.
-
 ### P-THEME-SCROLL-PADDING-SECOND-INSTANCE — the theme carries its own copy of the scroll-padding defect the plugin already fixed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 

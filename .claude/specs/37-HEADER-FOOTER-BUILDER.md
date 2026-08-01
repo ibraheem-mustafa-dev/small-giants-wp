@@ -466,10 +466,17 @@ Carried from 07-13 §9, unchanged — it is implementation-ready and independent
   as `repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis,16rem), calc((100% − (N−1)·gap)/N))), 1fr))`.
   The `(N−1)·gap` term is not optional — omit it and one extra column squeezes in. The count control
   is labelled **"Maximum columns"** accordingly.
-- `clamp()` for fluid type/space rather than breakpoint steps where possible. **Constraint:**
-  `sgs_container_gap_value()` strips parentheses and commas, so a `clamp()`/`min()`/`max()` value
-  cannot currently be passed through the `gap` attribute — it emits as invalid CSS and the gap dies
-  silently. Any fluid `gap` needs that allowlist widened first (shared-helper change, design gate).
+- `clamp()` for fluid type/space rather than breakpoint steps where possible. **Shipped (Task 2,
+  2026-08-01):** `sgs_container_gap_value()` now delegates to the shared `sgs_css_length_value()`
+  validator (`helpers-css-safety.php`), which parses `var()`/`calc()`/`min()`/`max()`/`minmax()`/
+  `clamp()` with WordPress core's own recursive balanced-paren grammar instead of the old
+  allowlist that stripped parentheses/commas. The header row's `gap` default is now
+  `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)` (`src/blocks/site-header-row/block.json`) — `cqi` is
+  safe there because the row sets `container-type: inline-size` on itself and the wrapper emits
+  `gap` onto `.sgs-container__inner`, whose ancestor container IS the row; do not copy `cqi` to a
+  block without a guaranteed container ancestor (silent fallback to viewport units is the failure
+  mode). Backward compatibility proven byte-identical against the old allowlist via
+  `scripts/diff-gap-sanitiser.php`.
 - Container queries for row-level reflow (a row can collapse while the viewport is wider —
   see STOP-CONTAINER-TIER-IS-NOT-VIEWPORT). **The requirement stands; only the collapse BEHAVIOUR
   changed at D455/D456.** `container-type: inline-size` stays on both rows.
@@ -824,10 +831,11 @@ mechanism covers both). Recorded here so a future session picks them up rather t
   children needed 733px and had 766px. The header now never stacks (D455); the footer's columns
   collapse intrinsically (D456). **Do not reintroduce that rule under this FR's name.**
 
-`clamp()` for fluid type/space (§3.6) — still not shipped in the row CSS, and now with a known
-blocker rather than an open option: `sgs_container_gap_value()` strips parentheses and commas, so a
-`clamp()` gap emits as invalid CSS and dies silently (verified by running the sanitiser's regex over
-the value, D455). Widening that allowlist is a shared-helper change requiring its own design gate.
+`clamp()` for fluid type/space (§3.6) — SHIPPED 2026-08-01 (Task 2). The D455-era blocker
+(`sgs_container_gap_value()` stripping parentheses/commas) is resolved: the function now delegates
+to the shared `sgs_css_length_value()` validator, and the header row's `gap` default carries the
+fluid curve `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`. See §3.6 for the full mechanism + the `cqi`
+container-ancestor caveat.
 
 #### FR-37-11 — Footer columns: an operator-set count that stacks automatically
 

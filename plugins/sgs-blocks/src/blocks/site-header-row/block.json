@@ -75,8 +75,8 @@
 		},
 		"gap": {
 			"type": "object",
-			"default": { "desktop": "16px" },
-			"_comment": "D455 — DELIBERATELY NOT a clamp(), though the fit-cascade design called for one. sgs_container_gap_value() (helpers-container.php:124) sanitises this value through the allowlist /[^0-9a-z.% ]/, which strips parentheses, commas and +. A clamp() default emits as the invalid 'clamp0.5rem 0.25rem 1.5cqi 1rem' — the browser drops the declaration and the gap silently dies. Verified by running the real regex over the real string, not by reading the code. Widening that allowlist is a SHARED-helper change affecting every container block and needs its own design gate; parked, not forgotten. Fixed 16px is safe here because the yielding is carried by child shrink, not by the gap."
+			"default": { "desktop": "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)" },
+			"_comment": "D455 (2026-08-02) — the fluid gap curve. CORRECTION caught in review: this attribute does NOT depend on the sgs_css_length_value() validator shipped the same session. gap is an OBJECT here, so render.php passes responsive_model:object and the value is emitted by sgs_emit_responsive_css() then sgs_responsive_sanitise_css_value() (helpers-responsive.php) — a PRE-EXISTING character allowlist that already permitted parentheses and commas. Verified by running that exact allowlist over this exact string: unchanged. The clamp would have rendered before the validator existed. The validator is load-bearing for the ~19 FLAT-scalar gap callers (card-grid, hero, gallery and friends), not for this one. Curve: 16px ceiling from container width 800px up, 8.5px floor at 267px and below, fluid between — measured 16px at 1400 and 8.56px at 320 against a fixed control that did not move. cqi is safe HERE because grid_on_inner is forced true for layout flex or grid (class-sgs-container-wrapper.php:528), putting gap on .sgs-container__inner whose ancestor container IS the row; a stored layout outside flex/grid would land it on .uid itself, where cqi cannot query its own container. Do NOT copy cqi to a block without a guaranteed container ancestor."
 		},
 		"maxWidth": {
 			"type": "object",

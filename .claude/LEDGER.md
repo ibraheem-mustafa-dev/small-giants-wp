@@ -64,6 +64,29 @@ knowing this existed. `scripts/wp-migrate-oldshape-blocks.js` (dry-run by defaul
 with its output in front of him. **The canary is current; production is one build behind and keeps
 the field-dimming bug until this is done.**
 
+### Track 2c — header/footer rows + fluid gap: ALL SHIPPED + LIVE-VERIFIED (D455, D456)
+
+Full narrative: `memory/session-2026-08-02-track2c.md`. Commits `18e504b9` `de769386` `1a747da4`
+`45f05c2c` `c5327603` + this handoff.
+
+- **D455 header row NEVER stacks** — authored `@container` stack rule deleted, `flexWrap:nowrap`,
+  logo floored at `min(100%,var(--sgs-header-logo-min,7.5rem))`. Sweep 109/109 PASS, Bean's eye GIVEN.
+- **D456 footer columns are a CEILING** (`supports.sgs.intrinsicColumns`) — content-driven drop at
+  860px where nothing moved between 1023/767 before. ⚠ 860/1160 PROVISIONAL (placeholder copy).
+- **Fluid header gap LIVE** — `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`; served CSS carries it intact,
+  computed gap varies **16px→8.8px** over 1400→320px, all on `.sgs-container__inner`.
+- **`sgs_css_length_value()`** (`includes/helpers-css-safety.php`) accepts `clamp/min/max/calc/var`
+  via WP core's grammar; closed a real hole (breakouts hidden INSIDE an allowlisted call).
+  ⚠ It is NOT what enabled the header clamp — that gap uses the OBJECT path
+  (`sgs_responsive_sanitise_css_value`), a pre-existing allowlist that already passed parens.
+- **`c5327603`** cleared every dead Spec-17 citation (9 IDs, 22 files; `FR-S9-4`→Spec **36**) and
+  taught the visual gate comment-only CSS/JS.
+
+⚠ **NEXT:** `sgs_responsive_sanitise_css_value()` permits `/` and `*` so it does not block the `/*`
+comment opener, and STRIPS instead of failing closed. It validates gap/grid/width/padding/margin on
+BOTH row blocks — the more exposed sibling of the path just hardened. Route it through
+`sgs_css_length_value()`.
+
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
 Full detail lives where it already did — read before acting, do not assume it is current from
@@ -267,6 +290,15 @@ SHIPPED bundle after the final deploy.
 **Why:** each is currently proven by mechanism, not by observation — precisely the gap that let
 morph sit broken for months while every artefact said it worked.
 **Time:** 45 min. **Depends on:** a deploy having happened. **/qc gate:** yes.
+
+### Track 2c task — harden the object-model sanitiser [delegated, sonnet]
+**What:** `sgs_responsive_sanitise_css_value()` (`includes/helpers-responsive.php`) permits `/` and
+`*` so it does not block the `/*` comment opener, and STRIPS rather than failing closed. It
+validates gap/gridTemplateColumns/contentWidth/maxWidth/padding/margin on BOTH row blocks — the
+more exposed sibling of the path hardened at D455. Route it through `sgs_css_length_value()`.
+**Acceptance:** the breakout corpus (`calc(}body{color:red)`, `calc(1px/*x*/)`, `clamp(<script>,…)`)
+is REJECTED on the object path too, with every existing value byte-identical. **/qc gate:** yes.
+⚠ Re-read the live D-ceiling before numbering — D457-D460 went to a co-active track.
 
 ### Dependency graph
 ```

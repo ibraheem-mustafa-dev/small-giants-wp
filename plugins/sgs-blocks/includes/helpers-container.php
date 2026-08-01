@@ -92,42 +92,26 @@ if ( ! function_exists( 'sgs_container_gap_value' ) ) {
 	/**
 	 * Resolve a gap attribute value to a safe CSS declaration fragment (the part after "gap:").
 	 *
-	 * Slug vs raw-length detection rule:
-	 *   - A BARE SLUG is a value whose characters are ALL digits (e.g. "40", "80").
-	 *     WP spacing-preset slugs are numeric keys. These are wrapped in
-	 *     var(--wp--preset--spacing--SLUG) for back-compat with existing posts.
-	 *   - A RAW CSS LENGTH contains at least one unit character (a–z) or a percent sign
-	 *     (e.g. "16px", "1.5rem", "2vw", "50%"). These are emitted directly.
-	 *     Sanitised: only [0-9], [.], unit letters [a-z], and [%] are kept; everything
-	 *     else (semicolons, braces, quotes) is stripped — no injection path.
+	 * Delegates to the shared sgs_css_length_value() validator (helpers-css-safety.php)
+	 * — routed here as Task 2 of the gap-sanitiser plan (.superpowers/sdd/task-2-brief.md),
+	 * superseding this function's own narrow allowlist. This is now a thin
+	 * name-preserving wrapper: every caller (class-sgs-container-wrapper.php:554,
+	 * 1280, 1283, 1286; sgs_container_tier_gap() below) is unchanged.
+	 *
+	 * Backward compatibility (bare-slug wrapping, plain lengths, two-value gaps)
+	 * is proven byte-identical against the old allowlist implementation by the
+	 * differential test at scripts/diff-gap-sanitiser.php — it freezes the old
+	 * implementation verbatim and asserts equality on the corpus in task-2-brief.md
+	 * constraint 5. This function additionally now accepts fluid CSS function
+	 * calls (var()/calc()/min()/max()/minmax()/clamp()) that the old allowlist
+	 * stripped to invalid CSS, e.g. the header row's clamp() gap default
+	 * (src/blocks/site-header-row/block.json).
 	 *
 	 * @param string $gap Raw gap attribute value from block attributes.
 	 * @return string CSS value fragment safe to emit after "gap:", or empty string on failure.
 	 */
 	function sgs_container_gap_value( $gap ) {
-		$gap = (string) $gap;
-		if ( '' === $gap ) {
-			return '';
-		}
-
-		// Bare slug: digits only → wrap in WP spacing-preset var().
-		if ( preg_match( '/^\d+$/', $gap ) ) {
-			return 'var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
-		}
-
-		// Raw CSS length: contains at least one letter or percent (i.e. a unit).
-		// Sanitise — keep only characters that can appear in a CSS gap value.
-		// Allowlist: digits, dot, a–z (covers px/rem/em/vw/vh/ch/ex etc.), percent,
-		// AND space — a two-value gap is "row-gap col-gap" (e.g. "16px 12px"); the
-		// space MUST survive or the value collapses to invalid CSS ("16px12px").
-		// Rejects: semicolons, braces, parentheses, quotes, slashes, angle brackets.
-		$sanitised = preg_replace( '/[^0-9a-z.% ]/', '', strtolower( $gap ) );
-		$sanitised = trim( preg_replace( '/\s+/', ' ', $sanitised ) );
-		if ( '' === $sanitised ) {
-			return '';
-		}
-
-		return $sanitised;
+		return sgs_css_length_value( $gap );
 	}
 }
 

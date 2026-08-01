@@ -25,6 +25,11 @@
  *   helpers-value-ladder.php        — sgs_saving_display, sgs_value_ladder
  *                                     (also requires helpers-configurator-pricing.php)
  *
+ *   helpers-css-safety.php          — sgs_css_length_value (shared CSS-length
+ *                                     safety primitive; required by
+ *                                     helpers-container.php's
+ *                                     sgs_container_gap_value())
+ *
  *   helpers-container.php           — sgs_sanitize_grid_template,
  *                                     sgs_container_gap_value
  *
@@ -77,6 +82,7 @@ require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 require_once __DIR__ . '/helpers-value-ladder.php';
+require_once __DIR__ . '/helpers-css-safety.php';
 require_once __DIR__ . '/helpers-container.php';
 require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';
