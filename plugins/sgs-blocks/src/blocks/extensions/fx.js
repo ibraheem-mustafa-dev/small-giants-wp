@@ -49,6 +49,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect } from '@wordpress/data';
 import { useState, useEffect } from '@wordpress/element';
+import { DesignTokenPicker } from '../../components';
 import { isExtensionHidden } from './hide-extensions';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
@@ -293,6 +294,35 @@ const FX_HOLD_OPTIONS = [
 	},
 	{ label: __( 'Brief', 'sgs-blocks' ), value: 'short' },
 	{ label: __( 'Long', 'sgs-blocks' ), value: 'long' },
+];
+
+/*
+ * Cursor-field types (FR-38-25).
+ *
+ * ⚠ THIS IS ONE OF THREE PLACES A FIELD TYPE IS NAMED, and the three must stay
+ * in step:
+ *   1. here — the client-facing picker
+ *   2. `includes/fx-cursor-field.php` SGS_FX_CURSOR_FIELD_TYPES — the closed
+ *      list the render layer will honour (an unknown value is skipped with a
+ *      reason, never coerced)
+ *   3. `assets/css/fx-cursor-field.css` — the rule that actually paints it
+ *
+ * A type present here and missing from (3) would offer a client an option that
+ * silently paints nothing. That divergence is not yet gated — it is recorded as
+ * a known residual rather than assumed away, because two hand-maintained lists
+ * diverging silently is a failure this codebase has already been bitten by (see
+ * the TRANSITION_STYLES note in class-sgs-motion-registry.php).
+ *
+ * The empty value is not a type: it means "whatever the stylesheet defaults to",
+ * which is `glow` — FR-38-25 as originally signed — so an instance saved before
+ * types existed keeps rendering exactly what it always did.
+ */
+const FX_FIELD_TYPE_OPTIONS = [
+	{ label: __( 'Glow — a soft pool of light', 'sgs-blocks' ), value: '' },
+	{
+		label: __( 'Torch — reveals a pattern beneath', 'sgs-blocks' ),
+		value: 'spotlight-mask',
+	},
 ];
 
 const FX_TRIGGER_LABELS = {
@@ -734,6 +764,28 @@ function addFxAttributes( settings, name ) {
 			fxScrub: { type: 'number' },
 			fxStagger: { type: 'number' },
 			fxDuration: { type: 'number' },
+			/*
+			 * Cursor-reactive field (FR-38-25). `fxFieldType` names WHAT is
+			 * painted — the field-type system Bean asked for when he ruled the
+			 * effect "isn't limited to a glow/colour, it could be a pattern,
+			 * move floating objects etc". Empty means the stylesheet's own
+			 * default (`glow`, FR-38-25 as originally signed), so an instance
+			 * saved before types existed renders exactly as it always did.
+			 *
+			 * `fxFieldColour` stores a palette SLUG (DesignTokenPicker's own
+			 * value shape), never a resolved hex — `includes/fx-cursor-field.php`
+			 * maps it to `var(--wp--preset--color--<slug>)` so the field
+			 * re-colours with the site rather than freezing today's palette.
+			 */
+			fxFieldType: { type: 'string', default: '' },
+			fxFieldColour: { type: 'string', default: '' },
+			/*
+			 * Undefined-when-untouched, same reasoning as the numeric params
+			 * above: there is no meaningful "0px radius" a client would choose
+			 * (it paints nothing), so unset must be distinguishable from set
+			 * and the render layer treats 0 as unset.
+			 */
+			fxFieldRadius: { type: 'number' },
 			fxEase: { type: 'string', default: '' },
 			fxSplit: { type: 'string', default: '' },
 			fxMask: { type: 'string', default: '' },
@@ -856,6 +908,14 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-motion-path-rotate': attributes.fxPathRotate,
 		'data-sgs-fx-motion-path-rest': attributes.fxPathRest,
 		'data-sgs-fx-shape': attributes.fxShape,
+		/*
+		 * Cursor field (FR-38-25). The render layer reads these back off the
+		 * rendered root and turns them into `data-sgs-cursor-field` plus a
+		 * uid-scoped <style> — it does NOT paint from these names directly, so
+		 * they stay an authoring surface the cloning grammar can map.
+		 */
+		'data-sgs-fx-field': attributes.fxFieldType,
+		'data-sgs-fx-field-colour': attributes.fxFieldColour,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -871,6 +931,9 @@ function addFxSaveProps( props, blockType, attributes ) {
 		// see the attribute declaration above), so it must survive the same
 		// finite-number test the other numeric params use, not a `> 0` test.
 		'data-sgs-fx-motion-path-rest-vh': attributes.fxPathRestVh,
+		// Cursor-field radius in px. The render layer clamps it to a range that
+		// still renders as a field rather than trusting the stored number.
+		'data-sgs-fx-field-radius': attributes.fxFieldRadius,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -2032,6 +2095,113 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									) }
 								/>
 							</ToolsPanelItem>
+						) }
+
+						{ /*
+						  * Cursor-reactive field (FR-38-25). Three controls,
+						  * all `isShownByDefault` because none of them is an
+						  * advanced tweak — the type IS the effect, and a
+						  * client who turns this on will want to choose how it
+						  * looks immediately.
+						  *
+						  * PARTICIPANTS GET NO CONTROL, deliberately. An opaque
+						  * child paints its own share of the same field so the
+						  * effect reads continuously across it (Bean: it
+						  * "should be able to go over any surface seamlessly"),
+						  * and that is detected at runtime from the child's
+						  * computed background. Exposing a per-child opt-out
+						  * would add a setting to ~51 blocks that almost nobody
+						  * would ever open.
+						  */ }
+						{ 'cursor-field' === fx && (
+							<>
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxFieldType
+									}
+									label={ __( 'Field style', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxFieldType: '' } )
+									}
+									isShownByDefault
+								>
+									<SelectControl
+										__nextHasNoMarginBottom
+										label={ __(
+											'Field style',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxFieldType }
+										options={ FX_FIELD_TYPE_OPTIONS }
+										onChange={ ( value ) =>
+											setParam( { fxFieldType: value } )
+										}
+										help={ __(
+											'What follows the cursor across this section.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										!! attributes.fxFieldColour
+									}
+									label={ __( 'Field colour', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( { fxFieldColour: '' } )
+									}
+									isShownByDefault
+								>
+									<DesignTokenPicker
+										label={ __(
+											'Field colour',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxFieldColour }
+										onChange={ ( value ) =>
+											setParam( {
+												fxFieldColour: value,
+											} )
+										}
+									/>
+								</ToolsPanelItem>
+
+								<ToolsPanelItem
+									hasValue={ () =>
+										undefined !== attributes.fxFieldRadius
+									}
+									label={ __( 'Field size', 'sgs-blocks' ) }
+									onDeselect={ () =>
+										setParam( {
+											fxFieldRadius: undefined,
+										} )
+									}
+									isShownByDefault
+								>
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Field size (pixels)',
+											'sgs-blocks'
+										) }
+										value={ attributes.fxFieldRadius }
+										onChange={ ( value ) =>
+											setParam( {
+												fxFieldRadius: value,
+											} )
+										}
+										min={ 40 }
+										max={ 1200 }
+										step={ 10 }
+										help={ __(
+											'How wide the effect spreads around the cursor.',
+											'sgs-blocks'
+										) }
+									/>
+								</ToolsPanelItem>
+							</>
 						) }
 
 						{ isSplit && (

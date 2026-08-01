@@ -18,6 +18,7 @@
 		"split-reveal"
 	],
 	"sgs/container": [
+		"cursor-field",
 		"draw",
 		"horizontal-panel",
 		"morph",
@@ -33,6 +34,7 @@
 		"split-reveal"
 	],
 	"sgs/cta-section": [
+		"cursor-field",
 		"draw",
 		"horizontal-panel",
 		"morph",
@@ -63,6 +65,7 @@
 		"split-reveal"
 	],
 	"sgs/hero": [
+		"cursor-field",
 		"draw",
 		"horizontal-panel",
 		"morph",
@@ -77,6 +80,7 @@
 		"scrub"
 	],
 	"sgs/info-box": [
+		"cursor-field",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -110,6 +114,7 @@
 		"split-reveal"
 	],
 	"sgs/product-faq": [
+		"cursor-field",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -142,6 +147,7 @@
 		"split-reveal"
 	],
 	"sgs/testimonial": [
+		"cursor-field",
 		"morph",
 		"motion-path",
 		"scramble",
@@ -164,6 +170,7 @@
 		"split-reveal"
 	],
 	"sgs/trust-bar": [
+		"cursor-field",
 		"draw",
 		"horizontal-panel",
 		"morph",

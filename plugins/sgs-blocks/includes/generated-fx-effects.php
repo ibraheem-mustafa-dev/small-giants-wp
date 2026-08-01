@@ -8,7 +8,7 @@
  * scripts/seed-motion-fx-registry.py. To change these values, edit FX_EFFECTS
  * in seed-motion-fx-registry.py, re-run it, then re-run this generator.
  *
- * Effects: 13
+ * Effects: 14
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §4.4 + §6.1/§11.2.
  *
@@ -36,6 +36,12 @@ function sgs_get_motion_fx_effects() {
 	static $effects = null;
 	if ( null === $effects ) {
 		$effects = array(
+			'cursor-field' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'hover' ),
+			),
 			'draggable' => array(
 				'plugin_set'            => array( 'Inertia' ),
 				'owns_scroll_transform' => false,

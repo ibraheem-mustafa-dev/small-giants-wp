@@ -212,6 +212,23 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/smooth-scroll.js',
 			'deps' => array(),
 		),
+
+		/*
+		 * Cursor-reactive field (FR-38-25). NO deps, and that is the point: it
+		 * is Tier V, both shipped field types paint in pure CSS, and the only
+		 * JS is one rAF-throttled custom-property write. A page using this
+		 * effect and no Tier G effect therefore ships zero GSAP bytes — the
+		 * §4.4 promise kept by never creating the dependency.
+		 *
+		 * Registered here rather than in the `gsap/fx-*` block above for that
+		 * reason; the path mirrors smooth-scroll's (no `gsap/` segment), while
+		 * the module ID still follows '@sgs/fx-' . <fx_effects.effect> so the
+		 * generic enqueue_effect() lookup finds it with no special case.
+		 */
+		'@sgs/fx-cursor-field'    => array(
+			'path' => 'build/shared/effects/fx-cursor-field.js',
+			'deps' => array(),
+		),
 	);
 
 	/**
@@ -255,6 +272,17 @@ class SGS_Motion_Registry {
 		 * instead of sitting in-flow at their intrinsic size.
 		 */
 		'morph'            => 'assets/css/fx-shape-routes.css',
+
+		/*
+		 * The cursor field needs one for the strongest reason of the four: for
+		 * this effect the stylesheet IS the effect. Every field type paints in
+		 * CSS, and the JS does nothing but publish two custom-property values.
+		 * Without this enqueue the module would faithfully track a pointer that
+		 * moves nothing at all — the shape of bug where every artefact looks
+		 * correct and the page does nothing, which is how morph sat broken for
+		 * months (D452).
+		 */
+		'cursor-field'     => 'assets/css/fx-cursor-field.css',
 	);
 
 	/**

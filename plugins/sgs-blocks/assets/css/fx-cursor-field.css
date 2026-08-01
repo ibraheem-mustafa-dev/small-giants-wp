@@ -1,0 +1,167 @@
+/**
+ * SGS motion — cursor-reactive field (Spec 38 §3.3, FR-38-25). Tier V.
+ *
+ * The PAINTING half of the effect. `src/shared/effects/cursor-field.js` is the
+ * emitter and writes custom-property VALUES only (Spec 32 no-inline); every
+ * property declaration lives here.
+ *
+ * ── HOW A FIELD TYPE IS ADDED ─────────────────────────────────────────────
+ *
+ * A field type sets ONE custom property on the emitter:
+ *
+ *   --sgs-cursor-field-layer   the image painted at the pointer position
+ *   --sgs-cursor-field-mask    (optional) a mask applied to that image
+ *
+ * Everything downstream — the emitter's own overlay and every participant —
+ * reads those two properties and never names a type. So a new type is a rule
+ * setting those properties plus a descriptor row in `cursor-fields/index.js`;
+ * no new selector, no new JS, nothing to wire.
+ *
+ * ── WHY EMITTER AND PARTICIPANT PAINT DIFFERENTLY ─────────────────────────
+ *
+ * EMITTER uses `::before`. It is a small, known roster (container-kind and
+ * background-image-bearing blocks) where the pseudo-element is checkable, and
+ * an emitter frequently has its own background image that must survive.
+ *
+ * PARTICIPANT uses an added `background-image` layer and NO pseudo-element.
+ * Participants are detected at runtime across ~51 possible blocks; claiming
+ * `::before` on arbitrary descendants would silently break whichever already
+ * used it. `background-image` composites over `background-color` (colour always
+ * paints beneath image), and the JS only ever marks children that have no
+ * background-image of their own — so nothing is clobbered.
+ *
+ * ── WHY THE FIELD LINES UP ACROSS SEPARATE BOXES ──────────────────────────
+ *
+ * `background-attachment: fixed` resolves a background against the VIEWPORT
+ * rather than the element. Combined with viewport-pixel coordinates from the
+ * emitter, every participant paints the same field in the same screen place
+ * with zero per-element geometry maths. This is the whole mechanism.
+ *
+ * ── FAIL-OPEN + REDUCED MOTION ────────────────────────────────────────────
+ *
+ * Every custom property has a static fallback, so with JS blocked the field
+ * renders as one fixed soft highlight — never absent, never a blank box. Under
+ * reduced motion the JS stops tracking but still publishes a resting position,
+ * so the same static field paints (Spec 38 §10: SIMPLIFY, never suppress).
+ * There is deliberately no `prefers-reduced-motion` rule here — the reduced
+ * state is the static field, and hiding it would be a suppress.
+ */
+
+/* ==========================================================================
+ * Shared defaults. Overridable per instance via the inspector controls, which
+ * write these same custom properties.
+ * ========================================================================== */
+
+[data-sgs-cursor-field] {
+	--sgs-cursor-field-colour: var(--wp--preset--color--accent, #f59e0b);
+	--sgs-cursor-field-radius: 260px;
+
+	/* Fallbacks used before the first pointer move and whenever JS is absent:
+	   roughly the centre of the viewport, so the field rests somewhere
+	   sensible rather than at the top-left corner. */
+	--sgs-cursor-x: 50vw;
+	--sgs-cursor-y: 40vh;
+
+	position: relative;
+}
+
+/* ==========================================================================
+ * FIELD TYPE: glow (FR-38-25 as signed — the baseline).
+ * A soft radial pool of light following the pointer.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="glow"] {
+	--sgs-cursor-field-layer: radial-gradient(
+		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		var(--sgs-cursor-field-colour),
+		transparent 70%
+	);
+}
+
+/* ==========================================================================
+ * FIELD TYPE: spotlight-mask.
+ *
+ * Exists to prove the seam is real: it paints by a DIFFERENT CSS property
+ * (`mask-image`) rather than being a recoloured glow. A repeating pattern is
+ * painted across the surface and then masked so only the area around the
+ * pointer is revealed — a torch over a textured wall, rather than a light
+ * added on top of one.
+ * ========================================================================== */
+
+[data-sgs-cursor-field="spotlight-mask"] {
+	--sgs-cursor-field-pattern-size: 22px;
+
+	--sgs-cursor-field-layer: radial-gradient(
+		var(--sgs-cursor-field-colour) 1.5px,
+		transparent 1.5px
+	);
+	--sgs-cursor-field-mask: radial-gradient(
+		var(--sgs-cursor-field-radius) circle at var(--sgs-cursor-x) var(--sgs-cursor-y),
+		#000 0%,
+		transparent 70%
+	);
+}
+
+/* ==========================================================================
+ * The paint. Neither rule names a field type.
+ * ========================================================================== */
+
+[data-sgs-cursor-field]::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	opacity: 0.9;
+	background-image: var(--sgs-cursor-field-layer);
+	background-attachment: fixed;
+	background-size: var(--sgs-cursor-field-pattern-size, auto);
+	mask-image: var(--sgs-cursor-field-mask, none);
+	mask-size: 100% 100%;
+	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
+	-webkit-mask-size: 100% 100%;
+}
+
+/* The emitter's own children must sit above the field, or the field paints
+   over the block's content instead of behind it. `> *` (not a descendant
+   selector) so nested structures are not each pushed onto their own layer. */
+[data-sgs-cursor-field] > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* A participant paints its own share of the identical field, so the effect
+   reads as continuous across an opaque child rather than being occluded by
+   it — Bean's requirement that it "go over any surface seamlessly". */
+[data-sgs-cursor-participant] {
+	background-image: var(--sgs-cursor-field-layer);
+	background-attachment: fixed;
+	background-size: var(--sgs-cursor-field-pattern-size, auto);
+	mask-image: var(--sgs-cursor-field-mask, none);
+	mask-size: 100% 100%;
+	-webkit-mask-image: var(--sgs-cursor-field-mask, none);
+	-webkit-mask-size: 100% 100%;
+}
+
+/* ==========================================================================
+ * Pointer gate.
+ *
+ * A cursor effect has no meaning without a cursor, and `background-attachment:
+ * fixed` is ignored on iOS Safari — which would break the alignment the whole
+ * mechanism depends on. Rather than paint a misaligned field, paint none: on a
+ * coarse pointer the block renders exactly as it would with the effect off.
+ *
+ * The JS applies the same gate, so this is belt-and-braces, not the only one.
+ * ========================================================================== */
+
+@media not all and (hover: hover) and (pointer: fine) {
+	[data-sgs-cursor-field]::before {
+		display: none;
+	}
+
+	[data-sgs-cursor-participant] {
+		background-image: none;
+		mask-image: none;
+		-webkit-mask-image: none;
+	}
+}

@@ -600,6 +600,44 @@ FX_EFFECTS: list[dict] = [
         "scope": "site",
         "requires": "none",
     },
+    {
+        # FR-38-25 (Spec 38 §3.3), Bean-signed D444, WIDENED 2026-08-01 from a
+        # single radial glow to a pluggable field-type system on Bean's ruling
+        # that the effect "isn't limited to a glow/colour, it could be a
+        # pattern, move floating objects etc".
+        "effect": "cursor-field",
+        # pins/triggers. VERIFIED not pinning — it paints a background layer and
+        # never touches scroll position. Pointer-driven, so 'hover' is the only
+        # coherent trigger: there is nothing for 'load' or 'scroll' to mean.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V — the shipped mega-menu implementation already does this in
+        # vanilla with an rAF-throttled custom-property write and a live
+        # reduced-motion gate. GSAP adds nothing §1.3's ratchet would accept,
+        # and both shipped field types paint in pure CSS.
+        "tier": "V",
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # SIMPLIFY, never suppress (§10): the static resting field IS a
+        # legitimate finished state, so the field still paints and only the
+        # tracking stops. Suppressing would blank a surface the client styled.
+        "reduced_motion": "simplify",
+        # The canvas has no pointer to follow, so it shows the resting field —
+        # which is exactly what a reduced-motion visitor sees. Same code path,
+        # no bespoke editor branch.
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — a paintable background this field can be laid onto.
+        # Derived in generate-fx-qualifying-blocks.py from containerKind being
+        # set OR a background-image attribute being declared, per FR-38-25's
+        # own emitter definition. NOT 'section': the emitter roster is broader
+        # than section-KIND (layout and content containers qualify too).
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. See the long note in
+        # _ensure_fx_effects_table() — measured, not assumed: creating panels
+        # here would put one on 11 blocks including the site header and nav menu.
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------
@@ -701,7 +739,7 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
 FX_EFFECTS_COLUMNS = (
     "effect", "tier", "plugin_set", "owns_scroll_transform",
     "reduced_motion", "editor_story", "scope", "requires",
-    "pins", "triggers",
+    "pins", "triggers", "creates_panel",
 )
 
 
@@ -719,6 +757,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
             requires                TEXT NOT NULL DEFAULT 'none',
             pins                    INTEGER NOT NULL DEFAULT 0,
             triggers                TEXT NOT NULL DEFAULT 'scroll',
+            creates_panel           INTEGER NOT NULL DEFAULT 1,
             created_at              TEXT DEFAULT (datetime('now'))
         )
         """
@@ -751,6 +790,32 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     if "triggers" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN triggers TEXT NOT NULL DEFAULT 'scroll'")
         print("  [set]  fx_effects: added column 'triggers' (migration)")
+    # FR-38-25 (2026-08-01): creates_panel. Same gated-on-absence shape again.
+    #
+    # WHY THIS COLUMN EXISTS — it closes a real gap in the two-class model the
+    # qualifying-blocks generator had until now. That model was:
+    #   requires='none'      -> permissive; offered wherever a panel already
+    #                           exists, and deliberately never CREATES one
+    #                           (this is what stops all ~80 sgs/* blocks
+    #                           acquiring a panel from `scrub` alone).
+    #   requires=<specific>  -> creates the panel on any block that provides it.
+    #
+    # `cursor-field` fits NEITHER. It has a genuinely specific requirement (a
+    # paintable background surface — it is inert on a block without one, which
+    # QA Gate A forbids), so it cannot be 'none'. But MEASURED before building:
+    # letting it create panels would put a brand-new fx panel on 11 blocks
+    # including sgs/nav-menu, sgs/site-header, sgs/site-footer and sgs/form —
+    # and because `offered = specific + permissive`, each of those 11 would ALSO
+    # silently gain motion-path and scrub, which they have never had. That is
+    # precisely the "13 panels where none makes sense" containment failure this
+    # project treats as a defect in its own right.
+    #
+    # So the third class: a specific requirement that is OFFERED on match but
+    # never creates the panel. Default 1 preserves every existing effect's
+    # behaviour exactly; only a row that opts out carries 0.
+    if "creates_panel" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN creates_panel INTEGER NOT NULL DEFAULT 1")
+        print("  [set]  fx_effects: added column 'creates_panel' (migration)")
 
 
 def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
@@ -759,7 +824,7 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         effect = row["effect"]
         existing = cur.execute(
             "SELECT tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-            "scope, requires, pins, triggers FROM fx_effects WHERE effect = ?",
+            "scope, requires, pins, triggers, creates_panel FROM fx_effects WHERE effect = ?",
             (effect,),
         ).fetchone()
         plugin_set_json = json.dumps(row["plugin_set"])
@@ -767,13 +832,16 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
             row["tier"], plugin_set_json, row["owns_scroll_transform"],
             row["reduced_motion"], row["editor_story"], row["scope"], row["requires"],
             row["pins"], row["triggers"],
+            # Defaults to 1 so every pre-FR-38-25 row keeps its exact behaviour
+            # without needing the key — only an opt-out row states it.
+            row.get("creates_panel", 1),
         )
         if existing is None:
             cur.execute(
                 "INSERT INTO fx_effects "
                 "(effect, tier, plugin_set, owns_scroll_transform, reduced_motion, "
-                "editor_story, scope, requires, pins, triggers) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "editor_story, scope, requires, pins, triggers, creates_panel) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (effect, *target),
             )
             changed += 1
@@ -784,8 +852,8 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
             continue
         cur.execute(
             "UPDATE fx_effects SET tier=?, plugin_set=?, owns_scroll_transform=?, "
-            "reduced_motion=?, editor_story=?, scope=?, requires=?, pins=?, triggers=? "
-            "WHERE effect=?",
+            "reduced_motion=?, editor_story=?, scope=?, requires=?, pins=?, triggers=?, "
+            "creates_panel=? WHERE effect=?",
             (*target, effect),
         )
         changed += 1

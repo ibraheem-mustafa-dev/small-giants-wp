@@ -652,15 +652,35 @@ def _block_provisions(
     if fx_supports.get("motionSurface") is True:
         provisions.add("panel")
 
+    # 'surface' — a paintable background a cursor-reactive field can be laid
+    # onto (FR-38-25, 2026-08-01). Derived exactly as that FR defines an
+    # EMITTER: a block with `containerKind` set (ANY value — layout and content
+    # containers paint backgrounds just as section ones do), or a block
+    # declaring a background-image attribute.
+    #
+    # Deliberately NOT reusing 'section': that token is `containerKind ==
+    # 'section'` only, which would miss sgs/info-box, sgs/testimonial and
+    # friends — blocks with a perfectly good background to paint on. Two
+    # different questions, so two tokens.
+    #
+    # The PARTICIPANT half of FR-38-25 needs nothing here: participants carry no
+    # control and are detected at RUNTIME by computed background (the fact that
+    # actually decides occlusion), never from a declared capability.
+    if container_kind or any(
+        attr_name.startswith("backgroundImage")
+        for attr_name in (block_json.get("attributes") or {})
+    ):
+        provisions.add("surface")
+
     return provisions
 
 
-def _load_qualifying_effects() -> list[tuple[str, str]]:
-    """(effect, requires) pairs for every fx_effects row with a block-panel
-    scope. Reads the DB — legitimate here because this is a BUILD-time
-    generator (same shape as generate-fx-effects-php.py), and the DB is the
-    only home for scope/requires (no block.json equivalent — those columns
-    describe the EFFECT, not any one block)."""
+def _load_qualifying_effects() -> list[tuple[str, str, int]]:
+    """(effect, requires, creates_panel) triples for every fx_effects row with
+    a block-panel scope. Reads the DB — legitimate here because this is a
+    BUILD-time generator (same shape as generate-fx-effects-php.py), and the DB
+    is the only home for scope/requires/creates_panel (no block.json
+    equivalent — those columns describe the EFFECT, not any one block)."""
     if not DB_PATH.exists():
         print(f"[generate-fx-qualifying-blocks] DB not found: {DB_PATH}", file=sys.stderr)
         raise SystemExit(1)
@@ -675,13 +695,22 @@ def _load_qualifying_effects() -> list[tuple[str, str]]:
                 file=sys.stderr,
             )
             raise SystemExit(1)
+        # `creates_panel` was added by the FR-38-25 change. A DB that has not
+        # yet been reseeded has the table without the column, and SELECTing it
+        # would be a hard error at BUILD time — so read it only when present
+        # and default to 1, which is exactly the pre-FR-38-25 behaviour.
+        has_creates_panel = any(
+            row[1] == "creates_panel"
+            for row in con.execute("PRAGMA table_info(fx_effects)").fetchall()
+        )
+        column = "creates_panel" if has_creates_panel else "1"
         rows = con.execute(
-            "SELECT effect, requires FROM fx_effects WHERE scope IN ('block', 'element') "
-            "ORDER BY effect"
+            f"SELECT effect, requires, {column} FROM fx_effects "
+            "WHERE scope IN ('block', 'element') ORDER BY effect"
         ).fetchall()
     finally:
         con.close()
-    return list(rows)
+    return [(effect, requires, int(creates)) for effect, requires, creates in rows]
 
 
 def compute_map() -> dict[str, list[str]]:
@@ -728,7 +757,7 @@ def compute_map() -> dict[str, list[str]]:
         # PASS 2 candidates — effects that require nothing in particular.
         permissive = []
 
-        for effect, requires in qualifying_effects:
+        for effect, requires, creates_panel in qualifying_effects:
             if effect in EXACT_MATCH_BLOCKS:
                 if block_slug in EXACT_MATCH_BLOCKS[effect]:
                     specific.append(effect)
@@ -736,7 +765,24 @@ def compute_map() -> dict[str, list[str]]:
             if requires == "none":
                 permissive.append(effect)
             elif requires in provisions:
-                specific.append(effect)
+                # THE THIRD CLASS (FR-38-25). An effect with a genuinely
+                # specific requirement that must still never CREATE a panel.
+                #
+                # `cursor-field` is the case: it is inert on a block with no
+                # paintable background (so it cannot be requires='none', which
+                # QA Gate A would fail as an inert control), but letting it
+                # create panels was MEASURED to add a brand-new fx panel to 11
+                # blocks — sgs/nav-menu, sgs/site-header, sgs/site-footer,
+                # sgs/form among them — each of which would then also inherit
+                # motion-path and scrub through `permissive`. That is the "13
+                # panels where none makes sense" failure, arriving by a new route.
+                #
+                # Landing it in `permissive` gets both halves right: it is
+                # offered wherever the panel already exists AND on nothing else.
+                if creates_panel:
+                    specific.append(effect)
+                else:
+                    permissive.append(effect)
 
         # 'panel' — a BLOCK-OWNED opt-in (supports.sgs.fx.motionSurface, read
         # in `_block_provisions()` alongside `draggable`/`pairedFilter`), NOT

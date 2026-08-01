@@ -84,6 +84,13 @@ final class SGS_Blocks {
 		// fx-morph.js already expects, so that runtime needs no change.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-shape-routes.php';
 
+		// Cursor-reactive field (Spec 38 s3.3, FR-38-25). Third sibling in the
+		// same p11 slot. Unlike the two above it expands nothing into the DOM:
+		// it marks the emitter with its field type so the stylesheet can paint,
+		// and emits a uid-scoped <style> for the per-instance colour/radius
+		// (Spec 32 forbids the inline declarations those would otherwise be).
+		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

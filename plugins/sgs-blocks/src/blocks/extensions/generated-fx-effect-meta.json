@@ -1,4 +1,11 @@
 {
+	"cursor-field": {
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"hover"
+		]
+	},
 	"draggable": {
 		"owns_scroll_transform": false,
 		"pins": false,

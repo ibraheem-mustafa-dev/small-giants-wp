@@ -7,6 +7,7 @@
   "recorded_date": "2026-08-01",
   "unit": "gzip-bytes",
   "modules": {
+    "shared/effects/fx-cursor-field.js": 982,
     "shared/effects/gsap/fx-draggable.js": 1017,
     "shared/effects/gsap/fx-draw.js": 673,
     "shared/effects/gsap/fx-horizontal-panel.js": 701,

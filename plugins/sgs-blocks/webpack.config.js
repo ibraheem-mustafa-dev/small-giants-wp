@@ -163,6 +163,26 @@ if ( moduleConfig ) {
 				'effects',
 				'smooth-scroll.js'
 			),
+			/*
+			 * Cursor field (FR-38-25) — Tier V, so it sits HERE beside
+			 * smooth-scroll rather than in the `gsap/fx-*` list below. Both
+			 * shipped field types paint in pure CSS and the only JS is one
+			 * rAF-throttled custom-property write, so this module pulls in no
+			 * GSAP at all: a page using it and no Tier G effect ships zero
+			 * GSAP bytes.
+			 *
+			 * The FILENAME is load-bearing exactly as it is for the gsap
+			 * entries: the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `cursor-field` — so this must stay `fx-cursor-field.js`.
+			 */
+			'shared/effects/fx-cursor-field': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-cursor-field.js'
+			),
 			...Object.fromEntries(
 				[
 					'fx-scrub',

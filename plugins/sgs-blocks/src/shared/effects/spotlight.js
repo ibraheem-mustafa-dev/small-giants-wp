@@ -1,8 +1,18 @@
 /**
  * SGS shared motion — cursor spotlight (Mega-Menu Build Spec §6, row 3).
  *
- * Frozen export contract — a parallel agent imports this into
- * `sgs/mega-panel` (the aside) without seeing this file's implementation:
+ * ⚠ THIS IS NOW A THIN WRAPPER. The implementation moved to
+ * `cursor-field.js` on 2026-08-01 (FR-38-25, the cursor-reactive field
+ * system). This file exists solely to keep the FROZEN export contract below
+ * working for its one consumer, `sgs/mega-panel` (`mega-panel/view.js:50`).
+ *
+ * Do NOT add behaviour here. A new capability belongs in `cursor-field.js`,
+ * which every other consumer imports directly. The reason this wrapper is kept
+ * rather than the call site being updated: the contract is documented as frozen
+ * and was written to be importable "without seeing this file's implementation",
+ * so honouring it costs three lines and breaking it costs a working block.
+ *
+ * Frozen export contract:
  *
  *   import { initSpotlight } from '../../shared/effects/spotlight';
  *   const cleanup = initSpotlight( asideEl );
@@ -36,79 +46,28 @@
  * position the spotlight ACTUALLY occupies, not just at its resting spot —
  * that check belongs to the consuming block, not this shared module.
  *
+ * ONE BEHAVIOURAL DIFFERENCE, stated rather than buried: `cursor-field.js`
+ * additionally gates tracking on a fine, hover-capable pointer. `mousemove`
+ * does not fire from touch input in the first place, so the rendered result is
+ * unchanged — but the gate is now explicit rather than incidental.
+ *
  * @package
  */
 
-import { prefersReducedMotion, rafThrottle } from './motion-utils';
-
-const STATIC_X = '50%';
-const STATIC_Y = '30%';
-
-/**
- * Clamp a value between a minimum and a maximum.
- *
- * @param {number} value The value to clamp.
- * @param {number} min   The minimum.
- * @param {number} max   The maximum.
- * @return {number} The clamped value.
- */
-function clamp( value, min, max ) {
-	return Math.min( max, Math.max( min, value ) );
-}
+import { initCursorField } from './cursor-field';
 
 /**
  * Attach a rAF-throttled cursor-tracking spotlight to `el`.
+ *
+ * Element-relative coordinate space (percentages of `el`) — the original
+ * spotlight behaviour, and the correct space for a single self-contained
+ * element. The multi-element field (an emitter whose opaque children paint
+ * their own share) uses viewport space instead; see `cursor-field.js`.
  *
  * @param {HTMLElement} el The element the spotlight follows the cursor over.
  * @return {Function} Cleanup — removes the listeners. Safe on a
  *                     detached/empty element.
  */
 export function initSpotlight( el ) {
-	if ( ! el || typeof el.addEventListener !== 'function' ) {
-		return () => {};
-	}
-
-	// Static default position — always applied, so the spotlight is never
-	// absent even before the first pointer move.
-	el.style.setProperty( '--mx', STATIC_X );
-	el.style.setProperty( '--my', STATIC_Y );
-
-	// Reduced motion / effectively static: no mousemove tracking at all —
-	// the fixed default position IS the correct end state (rule 3).
-	if ( prefersReducedMotion() ) {
-		return () => {};
-	}
-
-	const handleMove = rafThrottle( ( event ) => {
-		const rect = el.getBoundingClientRect();
-		if ( 0 === rect.width || 0 === rect.height ) {
-			return;
-		}
-		const x = clamp(
-			( ( event.clientX - rect.left ) / rect.width ) * 100,
-			0,
-			100
-		);
-		const y = clamp(
-			( ( event.clientY - rect.top ) / rect.height ) * 100,
-			0,
-			100
-		);
-		el.style.setProperty( '--mx', `${ x.toFixed( 2 ) }%` );
-		el.style.setProperty( '--my', `${ y.toFixed( 2 ) }%` );
-	} );
-
-	const handleLeave = () => {
-		el.style.setProperty( '--mx', STATIC_X );
-		el.style.setProperty( '--my', STATIC_Y );
-	};
-
-	el.addEventListener( 'mousemove', handleMove );
-	el.addEventListener( 'mouseleave', handleLeave );
-
-	return () => {
-		handleMove.cancel();
-		el.removeEventListener( 'mousemove', handleMove );
-		el.removeEventListener( 'mouseleave', handleLeave );
-	};
+	return initCursorField( el, { coordinateSpace: 'element' } );
 }
