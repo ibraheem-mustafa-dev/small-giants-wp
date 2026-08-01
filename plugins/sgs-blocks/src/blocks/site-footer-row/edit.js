@@ -180,12 +180,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			[ COUNT_ATTR.mobile ]: obj.mobile,
 		} );
 
-	// Editor preview mirrors the frontend: grid rows preview as an equal-count
-	// column grid at the desktop tier, flex rows as a wrapping cluster.
+	// Editor preview mirrors the frontend. D456: the grid preview uses the SAME
+	// bounded auto-fit track list the wrapper emits, not `repeat(N,1fr)` — the
+	// count is a CEILING, so a fixed-N preview would show the operator more
+	// columns than the front end renders at the same width. The header row's
+	// editor surface had exactly this divergence before D455; do not
+	// reintroduce it here by "simplifying" this back to repeat().
+	// Kept in step with sgs_intrinsic_columns_track() (helpers-container.php).
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
-				gridTemplateColumns: `repeat(${ columns || 3 }, 1fr)`,
+				gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis, 16rem), calc((100% - (${
+					( columns || 3 ) - 1
+				} * ${ ( gap && gap.desktop ) || '48px' })) / ${
+					columns || 3
+				}))), 1fr))`,
 				gap: ( gap && gap.desktop ) || '48px',
 		  }
 		: {
@@ -238,7 +247,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ LAYOUT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { layout: val } ) }
 						help={ __(
-							'Cluster: elements sit in a row and wrap when cramped. Columns: an equal grid of N columns that stacks to 1 on mobile.',
+							'Cluster: elements sit in a row and wrap when cramped. Columns: a grid of up to N equal columns that drops to fewer — and eventually one — as space runs out.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

@@ -45,7 +45,18 @@ on phones. Making the phone range organic too is an AUTHORING change (raise or u
 
 **6. NOT VERIFIED: WebKit.** Bug #256047 reports `auto-fit` tracks collapsing under `inline-size`
 containment — exactly this combination, since these rows set `container-type: inline-size`. The
-sweep ran in Chromium only. Highest-priority outstanding check.
+sweep ran in Chromium only. Highest-priority outstanding check. Parked
+`P-FOOTER-ROW-WEBKIT-AUTOFIT-UNVERIFIED`.
+
+**6a. NOT VERIFIED, and a council REFUTED my looser framing of it.** I described the deleted
+`flex-basis` rule as "inert because all rows are grid". That is true of the three rows on the
+canary and is scoped correctly in the report — but it is FALSE framework-wide: **six shipped
+patterns author their footer `bottom` row as `layout:"flex"`** (`footer-columns`, `footer-centred`,
+`footer-minimal`, `footer-informational`, `footer-compact`, `framework-footer-default`). On those
+rows both the deleted rule AND its replacement `flex: 1 1 min(100%, var(--sgs-col-basis,16rem))`
+are LIVE, and none was measured. The deletion was therefore load-bearing rather than cosmetic —
+which strengthens the change — but the replacement's behaviour on real Cluster rows is unproven.
+Parked `P-FOOTER-FLEX-ROWS-UNVERIFIED`. Caught by a `/qc-council` cross-reference rater, not by me.
 
 **7. Inspector now says "Maximum columns"**, not "Columns". The count genuinely became a ceiling; a
 control still promising an exact number would be lying to the client.

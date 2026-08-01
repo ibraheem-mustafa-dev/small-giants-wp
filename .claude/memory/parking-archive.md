@@ -2535,3 +2535,17 @@ block earlier the same session. The gate was correct: WP discards an undeclared 
 next editor save deletes it. Fixture rebuilt with only declared attrs, page recreated as
 **2086**, deploy re-run: `0 NEW HIGH`, `oldshape-audit PASS`. **A canary fixture is deployed
 state — an invented attribute in one blocks every track.**
+
+
+## P-SPEC37-S3-CARRIED — RESOLVED 2026-08-01 (D455/D456)
+
+Resolved by the Spec 37 amendment: FR-37-35 now reads BUILT-then-behaviour-replaced, with an
+explicit "do not reintroduce that rule under this FR's name". The self-contradiction this
+entry existed to settle is gone. Verbatim entry as parked:
+
+### P-SPEC37-S3-CARRIED — Spec 37 §3 conformance: one spec self-contradiction to settle, two clauses already done
+**Status:** OPEN (reduced to: settle the FR-37-35 spec contradiction) · **Bucket:** framework · **Parked:** 2026-07-22
+
+Two of the three original clauses (layoutMode as a first-class inspector control; row-inserter promotion of common elements) are already built and live-verified — strike them. The third, FR-37-35 (container-query row reflow), is genuinely unresolved but the SPEC ITSELF disagrees with its own summary table about whether it's built. Settle that contradiction with one live check and fix the losing line before scoping any actual build work.
+
+**Trigger:** the next session touching Spec 37 §3 — check the live behaviour first, then correct whichever spec line is wrong.

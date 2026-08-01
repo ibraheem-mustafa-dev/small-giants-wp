@@ -6,7 +6,7 @@
 	"title": "SGS Header Row",
 	"category": "sgs-layout",
 	"icon": "columns",
-	"description": "One row of a site header — an intrinsic never-overflow cluster of header elements (logo, nav, cart, etc.) that wraps rather than overflowing at any width. Lives inside sgs/site-header.",
+	"description": "One row of a site header — an intrinsic never-overflow cluster of header elements (logo, nav, cart, etc.) that never wraps or stacks: every child shrinks to fit instead, at any width. Lives inside sgs/site-header.",
 	"keywords": [
 		"header row",
 		"site header",

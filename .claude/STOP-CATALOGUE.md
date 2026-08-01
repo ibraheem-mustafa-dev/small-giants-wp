@@ -920,8 +920,15 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
 7. Am I building ahead of reconciling with what already shipped? (rework trap.)
 8. Canary before dev-site? Full cache clear incl. Hostinger CDN before measuring? Desktop
    browser (classic scrollbars) for any animation/geometry check? (STOP-SCROLLBAR-LOCK.)
-9. D-ceiling (`grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1` — bound the
-   digits) + branch (`git branch --show-current`) verified in the SAME command as the commit?
+9. D-ceiling (`grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+   — **anchor on the heading**) + branch (`git branch --show-current`) verified in the SAME
+   command as the commit?
+   ⚠ Bounding the digits does NOT fix this and was already tried: `D[0-9]{1,4}` still returns
+   **D5557**, because the hex colour `#0D5557` on `decisions.md:412` has exactly 4 digits after
+   the `D` and satisfies the bound. True ceiling on 2026-08-01 was D453. Only anchoring on the
+   `^## D` heading excludes prose. Fixed in three places 2026-08-01 (D455) — this ritual,
+   `.claude/CLAUDE.md`, `LEDGER.md`; the first two-place fix MISSED this one, which is the
+   "fixing one instance does not immunise the class" pattern.
 10. Am I touching another track's files/branches without checking their state first?
 
 For a doc-model / enforcement-hook session (like P4), swap 4/5/8 for: does every new gate

@@ -830,10 +830,25 @@ blocker rather than an open option: `sgs_container_gap_value()` strips parenthes
 the value, D455). Widening that allowlist is a shared-helper change requiring its own design gate.
 
 #### FR-37-11 — Footer columns: an operator-set count that stacks automatically
+
+> ⚠ **MECHANISM SUPERSEDED 2026-08-01 by D456 (§3.6).** This FR's control surface survives — a
+> per-device number, no CSS, no ratio string — but its *guarantee* changed. The count is now a
+> **CEILING**, not an exact count: fewer columns render when content stops fitting, at any width.
+> The inspector label is **"Maximum columns"** accordingly.
+>
+> **This is a genuine reversal of this FR's recorded research conclusion, not a plumbing change,
+> and is recorded as such rather than smoothed over.** The status row below states *"every major
+> builder uses a per-device COUNT, **not intrinsic auto-fit**"* — and D456 implements exactly that
+> rejected technique, in bounded form. The reversal was justified by measurement, not preference:
+> the shipped exact-count mechanism collapsed all three live footer rows from 3 tracks to 1 between
+> viewport 768px and 767px while their content needed just 496px of the 767px available, and being
+> `@media`-driven it was structurally incapable of ever responding to content. Bean ruled that
+> footer stacking must be organic. Read D456 before re-litigating.
+
 The `columns` row exposes a **column count** as a number (§3.3). Desktop is the only tier an
-operator must set; the row **stacks to 1 column on mobile automatically**, like all other SGS
-content. A per-device override is available but never required. The count drives the shared
-container grid engine — no new engine (R-31-9 reuse).
+operator must set; the row reduces to fewer columns — down to 1 — automatically as space runs
+out, like all other SGS content. A per-device override is available but never required. The count
+drives the shared container grid engine — no new engine (R-31-9 reuse).
 
 > **🐛 LIVE BUG this FR must fix — found 2026-07-21, verified.** `site-footer/edit.js:28-30`
 > inserts a footer row carrying `columns: 3`, `columnsTablet: 3`, `columnsMobile: 1` — but
@@ -873,15 +888,18 @@ feature):
 > default (§3.3's ratio-is-a-developer-concept rule).
 
 **Done when:** an operator sets a column count with no CSS and no ratio string; the row renders
-that many columns on desktop and stacks to 1 on mobile with no further configuration; and the
-values set by `site-footer/edit.js` are no longer discarded — verified by reading the saved
-post content, not the editor state. *(Live canary render of the count still owed.)*
+**up to** that many columns and reduces automatically as space runs out, down to 1, with no
+further configuration; and the values set by `site-footer/edit.js` are no longer discarded —
+verified by reading the saved post content, not the editor state. *(Live canary render
+VERIFIED 2026-08-01, D456: 3 columns at 1023–900px, a content-driven drop to 2 at 860px, 1 at
+767px, zero horizontal overflow across 109 swept widths —
+`reports/visual-diff/site-footer-row-2026-08-01.md`.)*
 
 #### FR-37-12 — Never-overflow contract
 §3.6 holds on every shipped header and footer.
 **Status:** `PARTIAL` — a `min-width:0` wrapper backstop shipped but was never
 live-emission-proven (LEDGER, Spec 35 track).
-**Done when:** `scrollWidth <= innerWidth` at 375 / 768 / 1440 on both dev sites, measured on
+**Done when:** `scrollWidth <= innerWidth` **swept 1400px → 320px in ≤10px steps** (`plugins/sgs-blocks/scripts/row-fit-sweep.mjs`) on both dev sites, measured on
 the live page, not asserted.
 
 ### Behaviours
@@ -1281,7 +1299,7 @@ are selectable from the FR-37-7 picker (✅ — scoped identically to the live-v
 
 #### FR-37-23 — Acceptance
 This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR-37-9/10) are
-recorded per clause; the never-overflow gate (FR-37-12) passes on both sites at three widths;
+recorded per clause; the never-overflow gate (FR-37-12) passes on both sites **across the full sweep per §3.6** (not three fixed widths — D420 lived between them);
 no inline `style=""` on either container; and **Bean's eye** signs off (R-31-13 — measurement
 and eye are co-authoritative, neither closes alone).
 **AMENDED 2026-07-29 (architecture gate, signed — reaffirming Bean's 2026-07-28 decision in
@@ -1437,7 +1455,10 @@ live. An rAF-coalesced `resize` listener is also required: crossing a breakpoint
 JS-disabled page reserves 80px unconditionally; `body.admin-bar html` (`:29`) can never match
 (`html` is not a descendant of `body`). Both are theme-side and untouched.
 **Done when (remaining):** the collapse-when-pinned criteria in §4 of the mini-design, each
-live-verified at 375/768/1440. The scroll-padding criteria are met — evidence
+live-verified **across the §3.6 sweep (1400 → 320px, ≤10px steps)**, NOT at 375/768/1440.
+Since D455 the row's children shrink continuously rather than snapping at a breakpoint, so a
+text-wrap-induced height change can occur BETWEEN fixed tiers — exactly the D420 failure mode.
+The scroll-padding criteria are met — evidence
 `reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md`.
 
 
@@ -1560,7 +1581,7 @@ by hand-editing the value and confirming NO shape shows as active.
 | Shrink-hides-element + headerEssential guardrail (FR-37-39) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` — chosen child `display:none` while shrunk, sibling row unaffected; guardrail proven SERVER-SIDE (target pointed at the logo → no hide attr, no rule) and declarative via `supports.sgs.headerEssential`, not a hardcoded list |
 | Footer parity for per-row behaviours (FR-37-37/38) | `✅ LIVE-VERIFIED 2026-07-26` — measured on the ACTIVE footer **CPT 1654** (not the obvious 1571; check `sgs_active_footer_cpt_id`): top row 60px→30px, siblings unaffected |
 | Sticky model — HEADER-level, rows collapse (FR-37-40) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` D391 + `494e5d50` D392) — per-row `position:sticky` REJECTED on the short-parent trap (D389); offset chain deliberately not built; footer rows get no sticky (→ Spec 18). Scroll-padding publisher gated on MEASURED pinning, explicit `0px` otherwise, negative-control-verified. Collapse-when-pinned: gap = **0.00** unrounded at desktop/tablet/mobile; non-pinned path byte-identical `translateY(-100%)` with no inline height; header re-publishes its shrunken height (92→68px) for free. Sticky-breaking-ancestor guard warns, advisory only. D4 multi-sticky warning + sticky↔hide-on-scroll exclusion deliberately NOT built (both specified against the rejected per-row model). Not live-verified: `prefers-reduced-motion` |
-| Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
+| Never-overflow (FR-37-12) | `⚠ RE-VERIFY` — the 2026-07-23 evidence below was taken at THREE FIXED WIDTHS and predates the D420/D455 sweep requirement; a three-point pass is exactly what missed D420 (clean at 770px, broken at 766px). The header row WAS re-swept at D455 (`reports/visual-diff/site-header-row-2026-08-01.md`, 109 widths); the FOOTER and the second dev site have NOT been swept. Original evidence: `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` — reshaped tri-state 2026-07-28, see FR-37-14 row below (superseded the earlier flat shape) |
 | hide-on-scroll + transparent + shrink (FR-37-13) | `✅ SHIPPED + LIVE-VERIFIED` (D376, 2026-07-24) — fix B landed: `sgs/site-header` renders a semantic `<header>`; view.js + all 21 `header-behaviours.css` selectors retargeted to `header.sgs-site-header`. Live on the canary (CPT 1655): scroll-down hides (`translateY(-119px)`), scroll-up returns; one banner landmark; F1 publisher revived; axe zero NEW hit. Plus Option B one-header guard + editor `<header>`. See FR-37-13 above |

@@ -2,7 +2,19 @@
 doc_type: design
 project: small-giants-wp
 date: 2026-07-30
-status: APPROVED by Bean 2026-07-30 — not yet built
+status: |
+  PARTIALLY BUILT 2026-08-01 (D455). Stage 1 SHIPPED as designed and verified live — 109-width
+  sweep 1400→320px plus two negative controls, the second proving the two changes are NOT
+  overlapping fixes (commit 18e504b9, reports/visual-diff/site-header-row-2026-08-01.md).
+  Stage 2 (shrinkRole, 5 per-child roles) REPLACED, not built — Bean amended the design on
+  2026-08-01 to uniform CSS shrink; flexbox already does proportional shrink natively.
+  Stage 3 (fluid clamp scaling) BLOCKED, not merely deferred — sgs_container_gap_value()
+  strips parentheses and commas, so a clamp() gap emits as invalid CSS and dies silently;
+  only a static min() logo floor shipped. Parked at P-GAP-CONSOLIDATION-FOLLOWUPS item (5).
+  Stage 4 (nav-menu "More" JS) NOT STARTED — correctly deferred per this design's own
+  sequencing decision #3; parked at P-HEADER-ROW-STAGE4-MORE-MENU.
+  Bean's live-eye sign-off (R-31-13) STILL OUTSTANDING.
+  ⚠ Read the per-stage table above before assuming any stage shipped as written.
 spec_refs: Spec 37 FR-37-35 / §3.6 · FR-S9-7 · D339b
 supersedes_behaviour_of: FR-37-35's collapse-to-stack reflow (its container-query half is KEPT)
 ---

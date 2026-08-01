@@ -161,8 +161,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		} );
 
 	// Editor preview mirrors the frontend: grid rows preview as an equal-count
-	// column grid at the desktop tier, cluster rows as a wrapping flex row. The
-	// never-overflow guarantee (flex-wrap + min-width:0) comes from style.css.
+	// column grid at the desktop tier; cluster rows NEVER wrap (D455) — they
+	// yield by shrinking their children, mirroring style.css's nowrap lock. The
+	// never-overflow guarantee (nowrap + min-width:0 + per-child floors) comes
+	// from style.css.
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
