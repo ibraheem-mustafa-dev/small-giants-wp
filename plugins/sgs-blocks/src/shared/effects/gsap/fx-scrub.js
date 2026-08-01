@@ -114,6 +114,83 @@ export function initScrub( el ) {
 		);
 
 		/*
+		 * D453 EXTENDED TO fx-scrub.js (2026-08-01) — WCAG 2.4.11 / 2.4.7.
+		 * `.claude/decisions.md` D453 fixes the identical defect on
+		 * `fx-pin-scrub.js`; this is the scrub-only adaptation, not a fresh
+		 * design. Read that entry for the full mechanism proof (scrubTween /
+		 * resetTo / ticker-ordering) — it is not re-derived here.
+		 *
+		 * `fromTo` defaults to `immediateRender: true`, so `opacity: 0` lands
+		 * on `el` the instant this tween is built, before any scroll. There is
+		 * no separate children timeline here — `el` ITSELF is the thing being
+		 * scrubbed, so `el` may itself be the focusable control (e.g.
+		 * `data-sgs-fx="scrub"` set directly on a link or button) or may
+		 * CONTAIN focusable descendants (a card, a text block with an inline
+		 * link). `focusin` bubbles, so one listener on `el` catches both
+		 * shapes without needing to know which one applies.
+		 *
+		 * A HELD state, not a one-shot, for the same reason as pin-scrub:
+		 * `resolveScrub()` (provider.js) returns the NUMBER `1` whenever the
+		 * block sets no `data-sgs-fx-scrub` — the framework's default, not an
+		 * edge case — so ScrollTrigger builds an internal catch-up
+		 * `scrubTween` that re-drives `totalProgress` toward the scroll value
+		 * on every `self.update`, and each further scroll event calls
+		 * `resetTo` on it. A one-time `tween.progress(1)` would be
+		 * overwritten on the very next scroll frame with no self-recovery —
+		 * the exact race D453 measured `timeline.progress(1)` losing on
+		 * pin-scrub, and this tween sits behind the identical `scrub:
+		 * resolveScrub(el)` config.
+		 *
+		 * `gsap.ticker.add(holdComplete)` is appended (not `prioritize:true`),
+		 * so per D453's M2 (verified against the installed gsap.js source) it
+		 * always runs AFTER gsap's own root update in the same tick — it is
+		 * the last write of the frame and cannot be undone by the scrub's own
+		 * render in that same tick.
+		 *
+		 * Not done, for the same reasons D453 rejected them: no
+		 * `scrollTrigger.disable()` (D451 — a trigger cannot re-enable itself
+		 * through a callback that only fires while enabled), and the scrub
+		 * tween is never killed (killing it would leave `scrubTween` pointing
+		 * at a dead tween the next `resetTo` cannot revive, breaking the
+		 * scrub permanently for this element).
+		 */
+		let keyboardHeld = false;
+
+		const holdComplete = () => {
+			if ( tween.progress() < 1 ) {
+				tween.progress( 1 );
+			}
+		};
+
+		const revealForKeyboard = () => {
+			// Guard against re-adding on every focus move between multiple
+			// focusable descendants inside the same scrubbed element —
+			// `focusin` bubbles and fires once per descendant.
+			if ( keyboardHeld ) {
+				return;
+			}
+			keyboardHeld = true;
+			gsap.ticker.add( holdComplete );
+			// Apply immediately too, so the reveal starts on the event rather
+			// than up to one frame later.
+			holdComplete();
+		};
+
+		const releaseForKeyboard = ( event ) => {
+			// `focusout` also fires when focus moves to a SIBLING focusable
+			// descendant still inside `el`; only release once it has
+			// genuinely left.
+			if ( event.relatedTarget && el.contains( event.relatedTarget ) ) {
+				return;
+			}
+			keyboardHeld = false;
+			gsap.ticker.remove( holdComplete );
+		};
+
+		el.addEventListener( 'focusin', revealForKeyboard );
+		el.addEventListener( 'focusout', releaseForKeyboard );
+
+		/*
 		 * Returned to the matchMedia context, so a mid-session switch to
 		 * reduced motion reverts the element to its rendered end state rather
 		 * than stranding it at whatever opacity the scroll had reached.
@@ -135,6 +212,16 @@ export function initScrub( el ) {
 		 * tween.kill() call below it, so the tween is killed exactly once.
 		 */
 		return () => {
+			// D453 — paired with the `focusin`/`focusout` listeners added
+			// above. Removed unconditionally: a mid-session reduced-motion
+			// switch reverts the tween while `el` stays in the document, and
+			// if focus happened to be held at that moment `releaseForKeyboard`
+			// would never fire, leaving a ticker callback touching a dead
+			// tween for the rest of the page's life.
+			el.removeEventListener( 'focusin', revealForKeyboard );
+			el.removeEventListener( 'focusout', releaseForKeyboard );
+			keyboardHeld = false;
+			gsap.ticker.remove( holdComplete );
 			tween.scrollTrigger?.kill( true, false );
 			tween.kill();
 		};

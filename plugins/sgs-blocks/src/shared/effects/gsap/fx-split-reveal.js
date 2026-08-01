@@ -108,6 +108,53 @@ export function initSplitReveal( el ) {
 		const splitType = splitTypeParam( el );
 		const trigger = resolveTrigger( el );
 
+		/*
+		 * D453 EXTENDED TO fx-split-reveal.js's SCROLL ARM (2026-08-01) —
+		 * WCAG 2.4.11 / 2.4.7. See `.claude/decisions.md` D453 for the full
+		 * mechanism; this file's investigation and the reasoning for why the
+		 * fix here is SIMPLER than pin-scrub's/fx-scrub.js's are below.
+		 *
+		 * THE DEFECT IS REAL, THOUGH NARROWER THAN THE SIBLING FILES: the
+		 * scroll branch's `gsap.from(targets, {opacity:0, y:'0.6em', ...})`
+		 * (below, inside `onSplit`) has the same `immediateRender: true`
+		 * default as every other `from`/`fromTo` reveal in this codebase, so
+		 * every split fragment starts invisible the moment the split runs —
+		 * before any scroll — with zero focus handling anywhere in this file
+		 * (confirmed: no `focus` reference existed here before this change).
+		 * GSAP's own SplitText marks the GENERATED WRAPPER SPANS
+		 * `aria-hidden="true"` (see this file's top docblock), so the
+		 * fragments themselves are never in the tab order — but this effect
+		 * is offered as a UNIVERSAL `fx` choice on any block SplitText can
+		 * run against (`src/blocks/extensions/fx.js` `SHIPPED_EFFECTS`), and
+		 * SplitText does not remove pre-existing interactive descendants
+		 * (e.g. a `<a>` inline inside the split text, or a block whose
+		 * RichText target sits alongside a real CTA) — it keeps them as
+		 * ancestors of the fragment spans it creates around their text. A
+		 * real link/button in that position is exposed to exactly the same
+		 * "focusable but invisible before the reveal fires" defect the
+		 * sibling files were fixed for.
+		 *
+		 * WHY THE FIX HERE CAN BE A ONE-SHOT, NOT A HELD STATE: unlike
+		 * `fx-scrub.js` and `fx-pin-scrub.js`, this scroll branch carries NO
+		 * `scrub` key at all (confirmed: the `scrollTrigger` object below has
+		 * only `trigger`/`start`). Without `scrub`, ScrollTrigger does not
+		 * build the internal catch-up `scrubTween` that re-drives progress on
+		 * every scroll update (`resolveScrub()`/D453's `resetTo` mechanism is
+		 * specific to a numeric/true `scrub` config) — this is a toggle-style
+		 * trigger that calls the animation's own `play()` once on entry, with
+		 * ScrollTrigger's documented DEFAULT `toggleActions: 'play none none
+		 * none'` (no config here overrides it), so nothing ever plays it
+		 * backward either. A forced `tween.progress(1)` therefore has nothing
+		 * left to fight it back down: a later native `onEnter` still calls
+		 * `play()`, which on an already-finished tween is a no-op forward
+		 * continuation, not a reset. `keyboardHeld` is still tracked (not a
+		 * one-time flag) so a re-split — autoSplit's webfont/resize path,
+		 * this file's own onSplit docblock — re-applies the hold to the NEW
+		 * tween it creates, since a re-split replaces the fragment nodes and
+		 * would otherwise silently drop a held reveal.
+		 */
+		let keyboardHeld = false;
+
 		// `mask` clips each fragment's overflow to its own line box, so a
 		// 'lines' reveal slides up out of a hairline mask instead of a full
 		// element-height clip. Opt-in via `data-sgs-fx-mask="lines"` (or
@@ -203,6 +250,14 @@ export function initSplitReveal( el ) {
 					},
 				} );
 
+				// D453 re-apply on re-split: autoSplit's webfont/resize path
+				// replaces the fragment nodes and creates a fresh tween, which
+				// would otherwise silently drop a hold that was already
+				// engaged when the re-split happened.
+				if ( keyboardHeld ) {
+					tween.progress( 1 );
+				}
+
 				// Returned so SplitText can carry it across a re-split
 				// (SplitText.js:290-291).
 				return tween;
@@ -223,10 +278,44 @@ export function initSplitReveal( el ) {
 				  } )
 				: undefined;
 
+		/*
+		 * D453 — keyboard reveal, SCROLL ARM ONLY. See the docblock above
+		 * `let keyboardHeld = false;` for why a one-shot suffices here (no
+		 * `scrub` config, default `toggleActions: 'play none none none'`).
+		 * Bound on `el`, not on the fragment spans, for the same reason hover
+		 * is bound on `el` above: `focusin` bubbles, and a re-split replaces
+		 * the fragment nodes the listener would otherwise have to be rebound
+		 * to.
+		 */
+		const revealForKeyboard = () => {
+			if ( keyboardHeld ) {
+				return;
+			}
+			keyboardHeld = true;
+			tween?.progress( 1 );
+		};
+
+		const releaseForKeyboard = ( event ) => {
+			if ( event.relatedTarget && el.contains( event.relatedTarget ) ) {
+				return;
+			}
+			keyboardHeld = false;
+		};
+
+		if ( 'scroll' === trigger ) {
+			el.addEventListener( 'focusin', revealForKeyboard );
+			el.addEventListener( 'focusout', releaseForKeyboard );
+		}
+
 		// Order matters: kill the tween BEFORE reverting the split. Reverting
 		// first would let GSAP's tween keep a dangling reference to nodes
 		// SplitText has already removed from the DOM.
 		return () => {
+			if ( 'scroll' === trigger ) {
+				el.removeEventListener( 'focusin', revealForKeyboard );
+				el.removeEventListener( 'focusout', releaseForKeyboard );
+			}
+			keyboardHeld = false;
 			if ( unbindHover ) {
 				unbindHover();
 			}
