@@ -1216,6 +1216,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= $grid_sel . '{' . implode( ';', $base_grid_real_decls ) . '}';
 			}
 
+			// No-inline contract (Spec 32 FR-32-4/FR-32-4a, this pass 2026-08-01) —
+			// $inner_grid_decls carries the L3 gap + --sgs-gi-* custom-property
+			// VALUES that used to be inlined onto the __inner band further below.
+			// It is populated ONLY when $grid_on_inner is true (see the
+			// `if ( $grid_on_inner ) { $inner_grid_decls = ... }` branch above), so
+			// $grid_sel already resolves to the correct
+			// `.$uid>.sgs-container__inner` selector — the SAME selector +
+			// mechanism as $base_grid_real_decls immediately above. Unlike a
+			// per-grid-ITEM repeater (social-icons/card-grid, which need
+			// `:nth-child()` because N items share one parent), there is exactly
+			// ONE `.sgs-container__inner` per container instance, so a single
+			// scoped rule is sufficient — no positional selector required.
+			if ( $inner_grid_decls && $uid ) {
+				$responsive_css .= $grid_sel . '{' . implode( ';', $inner_grid_decls ) . '}';
+			}
+
 			// Spec 35 shrink-to-fit BACKSTOP — grid/flex ITEMS default to
 			// min-width:auto/min-height:auto, so a child refuses to shrink below
 			// its own content's intrinsic size (a long word, a wide image, a
@@ -1834,41 +1850,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an
 				// inline base here would override every @media rule. No-inline
-				// contract (Spec 32, D293): $inner_grid_decls now only ever carries
-				// base gap + --sgs-gi-* custom properties (the real grid/flex decls —
-				// display/template/align/wrap/justify — are scoped separately via
-				// $base_grid_real_decls above), so what remains here is inline-safe.
-				$io_style    = ( $grid_on_inner && $inner_grid_decls )
-					? ' style="' . esc_attr( implode( ';', $inner_grid_decls ) ) . '"'
-					: '';
-				$inner_open  = '<div class="sgs-container__inner"' . $io_style . $fx_track_attr . '>';
+				// contract (Spec 32 FR-32-4/FR-32-4a, this pass 2026-08-01):
+				// $inner_grid_decls (base gap + --sgs-gi-* custom properties; the real
+				// grid/flex decls — display/template/align/wrap/justify — are scoped
+				// separately via $base_grid_real_decls above) is now ALSO emitted as a
+				// scoped `.$uid>.sgs-container__inner{…}` rule (see the block right
+				// after the $base_grid_real_decls rule above) — so no style attribute
+				// is built on this element at all.
+				$inner_open  = '<div class="sgs-container__inner"' . $fx_track_attr . '>';
 				$inner_close = '</div>';
 			} elseif ( $do_wrap ) {
-				// No-inline contract (Spec 32, D293): base band CSS (max-width /
-				// margin-inline / band padding / band background) is NEVER built as an
-				// inline style here any more — whenever $has_band_props is true (the
-				// only way any of those values could be non-empty), $has_base_band is
-				// also true, which already emitted the equivalent scoped
-				// ".uid>.sgs-container__inner{...}" rule above (before $has_responsive_attr).
-				// This branch now only carries the L3 gap + --sgs-gi-* custom-property
-				// decls (inline-safe — the real grid/flex properties are scoped via
-				// $base_grid_real_decls above), matching the bare-<div> convention
-				// already used by the $has_band_responsive branch above it.
-				$inner_style_parts = array();
-
-				// L3 gap + --sgs-gi-* decls live on the __inner band when this is a
-				// grid/flex container (FR-22-21); the real grid/flex properties
-				// (display/template/align/wrap/justify) are scoped separately.
-				if ( $grid_on_inner && $inner_grid_decls ) {
-					$inner_style_parts = array_merge( $inner_style_parts, $inner_grid_decls );
-				}
-
-				// Matches the $io_style conditional pattern used by the $has_band_responsive
-				// branch above: omit the style attribute entirely when there are no grid
-				// decls, rather than emitting a vacuous style="" (band props no longer
-				// land here — they are in the scoped .uid>.sgs-container__inner rule).
-				$io_style    = $inner_style_parts ? ' style="' . esc_attr( implode( ';', $inner_style_parts ) ) . '"' : '';
-				$inner_open  = '<div class="sgs-container__inner"' . $io_style . $fx_track_attr . '>';
+				// No-inline contract (Spec 32 FR-32-4/FR-32-4a, this pass 2026-08-01):
+				// base band CSS (max-width / margin-inline / band padding / band
+				// background) is NEVER built as an inline style here — whenever
+				// $has_band_props is true (the only way any of those values could be
+				// non-empty), $has_base_band is also true, which already emitted the
+				// equivalent scoped ".uid>.sgs-container__inner{...}" rule above
+				// (before $has_responsive_attr). The L3 gap + --sgs-gi-*
+				// custom-property decls that used to be inlined here are, likewise,
+				// now emitted as a scoped rule at $grid_sel alongside
+				// $base_grid_real_decls (see above) — so this branch never needs a
+				// style attribute either, matching the $has_band_responsive branch.
+				$inner_open  = '<div class="sgs-container__inner"' . $fx_track_attr . '>';
 				$inner_close = '</div>';
 			}
 
