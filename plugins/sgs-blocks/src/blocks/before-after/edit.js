@@ -25,6 +25,7 @@ import {
 	PanelBody,
 	Button,
 	TextControl,
+	TextareaControl,
 	ToggleControl,
 	RangeControl,
 	SelectControl,
@@ -128,20 +129,193 @@ function ImagePickerRow( { label, url, alt, onSelect, onAltChange, onClear } ) {
 	);
 }
 
+/**
+ * One before/after MEDIA slot — mirrors sgs/media's mediaType fork
+ * (image/video/svg) applied to a single comparison side. `side` is 'before'
+ * or 'after'; every attribute name below is that prefix + the shared suffix
+ * (beforeMediaType/afterMediaType, beforeVideoUrl/afterVideoUrl, etc.) —
+ * exactly the pattern render.php's media-render.php resolver reads.
+ *
+ * @param {Object}   root0
+ * @param {string}   root0.side          'before' | 'after'.
+ * @param {string}   root0.label         Panel-row label, e.g. "Before".
+ * @param {Object}   root0.attributes    Full block attributes.
+ * @param {Function} root0.setAttributes
+ */
+function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
+	const mediaTypeKey = `${ side }MediaType`;
+	const mediaType = attributes[ mediaTypeKey ] || 'image';
+
+	const imageUrlKey = `${ side }ImageUrl`;
+	const imageAltKey = `${ side }ImageAlt`;
+	const imageIdKey = `${ side }ImageId`;
+
+	const videoUrlKey = `${ side }VideoUrl`;
+	const videoAltKey = `${ side }VideoAlt`;
+	const videoIdKey = `${ side }VideoId`;
+
+	const svgContentKey = `${ side }SvgContent`;
+
+	return (
+		<div style={ { marginBottom: '20px' } }>
+			<SelectControl
+				label={ label }
+				value={ mediaType }
+				options={ [
+					{ value: 'image', label: __( 'Image', 'sgs-blocks' ) },
+					{ value: 'video', label: __( 'Video', 'sgs-blocks' ) },
+					{ value: 'svg', label: __( 'SVG', 'sgs-blocks' ) },
+				] }
+				onChange={ ( val ) =>
+					setAttributes( { [ mediaTypeKey ]: val } )
+				}
+				__nextHasNoMarginBottom
+			/>
+
+			{ 'image' === mediaType && (
+				<ImagePickerRow
+					label={ __( 'Image', 'sgs-blocks' ) }
+					url={ attributes[ imageUrlKey ] }
+					alt={ attributes[ imageAltKey ] }
+					onSelect={ ( media ) =>
+						setAttributes( {
+							[ imageIdKey ]: media.id,
+							[ imageUrlKey ]: media.url,
+							[ imageAltKey ]:
+								attributes[ imageAltKey ] || media.alt || '',
+						} )
+					}
+					onAltChange={ ( val ) =>
+						setAttributes( { [ imageAltKey ]: val } )
+					}
+					onClear={ () =>
+						setAttributes( {
+							[ imageIdKey ]: null,
+							[ imageUrlKey ]: '',
+							[ imageAltKey ]: '',
+						} )
+					}
+				/>
+			) }
+
+			{ 'video' === mediaType && (
+				<div style={ { marginTop: '8px' } }>
+					<Notice status="info" isDismissible={ false }>
+						{ __(
+							'WP media-library upload or a direct MP4/WebM URL only. YouTube/Vimeo embeds are not supported here — they cannot be kept frame-synced with the other side of the comparison.',
+							'sgs-blocks'
+						) }
+					</Notice>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								setAttributes( {
+									[ videoIdKey ]: media.id,
+									[ videoUrlKey ]: media.url,
+								} )
+							}
+							allowedTypes={ [ 'video' ] }
+							value={ attributes[ videoIdKey ] }
+							render={ ( { open } ) => (
+								<Button
+									variant={
+										attributes[ videoUrlKey ]
+											? 'secondary'
+											: 'primary'
+									}
+									onClick={ open }
+									style={ { margin: '8px 0' } }
+								>
+									{ attributes[ videoUrlKey ]
+										? __( 'Replace video', 'sgs-blocks' )
+										: __(
+												'Select video from library',
+												'sgs-blocks'
+										  ) }
+								</Button>
+							) }
+						/>
+					</MediaUploadCheck>
+					<TextControl
+						label={ __(
+							'Or paste a direct video URL',
+							'sgs-blocks'
+						) }
+						value={ attributes[ videoUrlKey ] || '' }
+						onChange={ ( val ) =>
+							setAttributes( {
+								[ videoUrlKey ]: val,
+								[ videoIdKey ]: null,
+							} )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Alt / description', 'sgs-blocks' ) }
+						help={ __(
+							'Read by screen readers in place of visual playback.',
+							'sgs-blocks'
+						) }
+						value={ attributes[ videoAltKey ] || '' }
+						onChange={ ( val ) =>
+							setAttributes( { [ videoAltKey ]: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</div>
+			) }
+
+			{ 'svg' === mediaType && (
+				<TextareaControl
+					label={ __( 'SVG markup', 'sgs-blocks' ) }
+					help={ __(
+						'Pasted markup is sanitised on render — scripts and event handlers are stripped.',
+						'sgs-blocks'
+					) }
+					value={ attributes[ svgContentKey ] || '' }
+					onChange={ ( val ) =>
+						setAttributes( { [ svgContentKey ]: val } )
+					}
+					rows={ 6 }
+					__nextHasNoMarginBottom
+				/>
+			) }
+		</div>
+	);
+}
+
+/**
+ * Whether a comparison slot has enough configured to render — mirrors
+ * media-render.php's `has_content` check per media type, so the editor
+ * placeholder/preview toggle never disagrees with what render.php will
+ * actually output.
+ *
+ * @param {Object} attributes Full block attributes.
+ * @param {string} side       'before' | 'after'.
+ * @return {boolean} True when the slot has content.
+ */
+function slotHasContent( attributes, side ) {
+	const mediaType = attributes[ `${ side }MediaType` ] || 'image';
+	if ( 'video' === mediaType ) {
+		return !! attributes[ `${ side }VideoUrl` ];
+	}
+	if ( 'svg' === mediaType ) {
+		return !! ( attributes[ `${ side }SvgContent` ] || '' ).trim();
+	}
+	return !! attributes[ `${ side }ImageUrl` ];
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 
 	const {
-		beforeImageUrl,
-		beforeImageAlt,
-		afterImageUrl,
-		afterImageAlt,
 		showLabels,
 		beforeLabel,
 		afterLabel,
 		labelColour,
 		labelBackgroundColour,
 		orientation,
+		reverseDirection,
 		startPosition,
 		fxDraggable,
 		dividerColour,
@@ -153,59 +327,44 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		borderRadiusTablet,
 		borderRadiusMobile,
+		videoAutoplay,
 	} = attributes;
 
-	const hasBothImages = !! beforeImageUrl && !! afterImageUrl;
+	const hasBothImages =
+		slotHasContent( attributes, 'before' ) &&
+		slotHasContent( attributes, 'after' );
 
 	return (
 		<>
 			<InspectorControls group="settings">
-				<PanelBody title={ __( 'Images', 'sgs-blocks' ) } initialOpen>
-					<ImagePickerRow
-						label={ __( 'Before image', 'sgs-blocks' ) }
-						url={ beforeImageUrl }
-						alt={ beforeImageAlt }
-						onSelect={ ( media ) =>
-							setAttributes( {
-								beforeImageId: media.id,
-								beforeImageUrl: media.url,
-								beforeImageAlt:
-									beforeImageAlt || media.alt || '',
-							} )
-						}
-						onAltChange={ ( val ) =>
-							setAttributes( { beforeImageAlt: val } )
-						}
-						onClear={ () =>
-							setAttributes( {
-								beforeImageId: null,
-								beforeImageUrl: '',
-								beforeImageAlt: '',
-							} )
-						}
+				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen>
+					<MediaSlotPicker
+						side="before"
+						label={ __( 'Before', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 					/>
-					<ImagePickerRow
-						label={ __( 'After image', 'sgs-blocks' ) }
-						url={ afterImageUrl }
-						alt={ afterImageAlt }
-						onSelect={ ( media ) =>
-							setAttributes( {
-								afterImageId: media.id,
-								afterImageUrl: media.url,
-								afterImageAlt: afterImageAlt || media.alt || '',
-							} )
-						}
-						onAltChange={ ( val ) =>
-							setAttributes( { afterImageAlt: val } )
-						}
-						onClear={ () =>
-							setAttributes( {
-								afterImageId: null,
-								afterImageUrl: '',
-								afterImageAlt: '',
-							} )
-						}
+					<MediaSlotPicker
+						side="after"
+						label={ __( 'After', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 					/>
+					{ ( 'video' === attributes.beforeMediaType ||
+						'video' === attributes.afterMediaType ) && (
+						<ToggleControl
+							label={ __( 'Autoplay videos', 'sgs-blocks' ) }
+							help={ __(
+								'Both videos start playing together on load. Always suppressed when the visitor has reduced motion enabled — the play/pause control stays available either way.',
+								'sgs-blocks'
+							) }
+							checked={ !! videoAutoplay }
+							onChange={ ( val ) =>
+								setAttributes( { videoAutoplay: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody
@@ -233,6 +392,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ ( val ) =>
 							setAttributes( { orientation: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Reverse direction', 'sgs-blocks' ) }
+						help={
+							'vertical' === orientation
+								? __(
+										'Off: after revealed from the top (default). On: after revealed from the bottom.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Off: after revealed from the left (default). On: after revealed from the right — the more common slider convention.',
+										'sgs-blocks'
+								  )
+						}
+						checked={ !! reverseDirection }
+						onChange={ ( val ) =>
+							setAttributes( { reverseDirection: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -519,7 +697,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<div className="wp-block-sgs-before-after-editor__placeholder">
 						<p>
 							{ __(
-								'Select a Before image and an After image to preview the comparison slider.',
+								'Add media for Before and After (image, video, or SVG) to preview the comparison slider.',
 								'sgs-blocks'
 							) }
 						</p>

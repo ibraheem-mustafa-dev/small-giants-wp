@@ -190,9 +190,111 @@ function isEditorSurface() {
 		// the canvas's own markers. Checked 2026-07-31 because the editor loads
 		// block view modules INTO that iframe, which is exactly where an
 		// unguarded motion boot would run.
-		!! document.querySelector( '.block-editor-iframe__body, .editor-styles-wrapper' ) ||
+		!! document.querySelector(
+			'.block-editor-iframe__body, .editor-styles-wrapper'
+		) ||
 		document.body?.classList.contains( 'block-editor-iframe__body' )
 	);
+}
+
+/**
+ * Wire the shared play/pause control that drives BOTH comparison videos at
+ * once, plus drift correction so they never show different moments.
+ *
+ * Only present when `data-has-video="1"` (render.php gates the button's
+ * markup on at least one slot being `video`). A comparison whose two videos
+ * could be started/paused independently would defeat the whole point of a
+ * before/after — this is the ONE control surface for both.
+ *
+ * REDUCED MOTION (Spec 38 §10): autoplay is genuinely autonomous motion, so
+ * it is suppressed under `prefers-reduced-motion: reduce` — both videos
+ * start paused and wait for an explicit click on the toggle. The toggle
+ * itself is never suppressed: a user-initiated play is not the kind of
+ * motion §10 asks blocks to simplify away (the same reasoning the file
+ * docblock already applies to the divider drag).
+ *
+ * @param {HTMLElement} root Block root element.
+ */
+function bootVideoSyncLayer( root ) {
+	if ( '1' !== root.dataset.hasVideo ) {
+		return;
+	}
+
+	const videos = Array.from(
+		root.querySelectorAll( '[data-sgs-before-after-video]' )
+	);
+	const toggle = root.querySelector( '[data-sgs-before-after-video-toggle]' );
+
+	if ( 0 === videos.length || ! toggle ) {
+		return;
+	}
+
+	const [ primary, ...rest ] = videos;
+	const DRIFT_TOLERANCE_SECONDS = 0.15;
+
+	const setPressed = ( isPlaying ) => {
+		toggle.setAttribute( 'aria-pressed', isPlaying ? 'true' : 'false' );
+		toggle.setAttribute(
+			'aria-label',
+			isPlaying
+				? toggle.dataset.pauseLabel || 'Pause comparison videos'
+				: toggle.dataset.playLabel || 'Play comparison videos'
+		);
+	};
+
+	toggle.dataset.playLabel = toggle.getAttribute( 'aria-label' );
+	toggle.dataset.pauseLabel = 'Pause comparison videos';
+
+	toggle.addEventListener( 'click', () => {
+		if ( primary.paused ) {
+			videos.forEach( ( video ) => {
+				video.currentTime = primary.currentTime;
+				// Autoplay-policy note: this call only ever runs from a real
+				// click event, so browsers treat it as user-initiated and it
+				// is never blocked the way an unrequested autoplay() call
+				// can be.
+				video.play().catch( () => {
+					// A blocked/failed play() leaves the video visibly
+					// paused — no broken half-played state to reconcile.
+				} );
+			} );
+			setPressed( true );
+		} else {
+			videos.forEach( ( video ) => video.pause() );
+			setPressed( false );
+		}
+	} );
+
+	// Drift correction: the primary video's `timeupdate` (fires several
+	// times a second) re-syncs every other video whenever it has wandered
+	// more than the tolerance away — covers independent buffering stalls,
+	// not just the loop-boundary wrap where drift is most likely.
+	primary.addEventListener( 'timeupdate', () => {
+		rest.forEach( ( video ) => {
+			if (
+				Math.abs( video.currentTime - primary.currentTime ) >
+				DRIFT_TOLERANCE_SECONDS
+			) {
+				video.currentTime = primary.currentTime;
+			}
+		} );
+	} );
+
+	// Autoplay — gated behind reduced-motion (see docblock above). Only
+	// attempted when the operator opted in via `videoAutoplay`.
+	const prefersReducedMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matched;
+
+	if ( '1' === root.dataset.videoAutoplay && ! prefersReducedMotion ) {
+		videos.forEach( ( video ) => {
+			video.play().catch( () => {
+				// Autoplay blocked by the browser (common when unmuted or
+				// off-screen) — the toggle above remains fully functional.
+			} );
+		} );
+		setPressed( true );
+	}
 }
 
 /**
@@ -206,6 +308,10 @@ function bootBeforeAfter() {
 		// CSS-only static split from render.php is still correct — nothing
 		// below can make it worse.
 		bootRangeLayer( root );
+
+		if ( ! isEditorSurface() ) {
+			bootVideoSyncLayer( root );
+		}
 
 		if ( '0' === root.dataset.fxDraggable || isEditorSurface() ) {
 			return;

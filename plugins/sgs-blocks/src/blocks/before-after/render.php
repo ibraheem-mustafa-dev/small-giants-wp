@@ -37,90 +37,30 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once __DIR__ . '/media-render.php';
 
 // ---------------------------------------------------------------------------
-// 1. Resolve content. Soft-fail: nothing to render without both images.
+// 1. Resolve content per slot (image / video / svg — see media-render.php).
+// Soft-fail: nothing to render without content on BOTH slots.
 // ---------------------------------------------------------------------------
 
-$before_url = isset( $attributes['beforeImageUrl'] ) ? (string) $attributes['beforeImageUrl'] : '';
-$after_url  = isset( $attributes['afterImageUrl'] ) ? (string) $attributes['afterImageUrl'] : '';
+$before_media = sgs_before_after_resolve_media( $attributes, 'before' );
+$after_media  = sgs_before_after_resolve_media( $attributes, 'after' );
 
-if ( '' === trim( $before_url ) || '' === trim( $after_url ) ) {
+if ( ! $before_media['has_content'] || ! $after_media['has_content'] ) {
 	return;
 }
 
-$before_alt = isset( $attributes['beforeImageAlt'] ) ? (string) $attributes['beforeImageAlt'] : '';
-$after_alt  = isset( $attributes['afterImageAlt'] ) ? (string) $attributes['afterImageAlt'] : '';
-
-$before_id = isset( $attributes['beforeImageId'] ) ? (int) $attributes['beforeImageId'] : 0;
-$after_id  = isset( $attributes['afterImageId'] ) ? (int) $attributes['afterImageId'] : 0;
-
-/**
- * Render one comparison image, preferring the media-library ATTACHMENT over
- * the stored URL.
- *
- * WHY THE ID PATH EXISTS AT ALL. The editor stores both an attachment id and a
- * resolved url. Rendering the url alone is what a first pass naturally does and
- * it looks perfectly correct — but it emits a bare `src`, so every visitor
- * downloads the FULL-SIZE original. On a block whose whole job is showing two
- * large photographs at once, that is two full-size downloads on a phone.
- * `wp_get_attachment_image()` emits `srcset`/`sizes` from the registered image
- * sizes, so the browser picks an appropriate one.
- *
- * The url path is a genuine fallback, not dead code: an image may be referenced
- * by url with no attachment behind it (an external/CDN url, or content whose
- * attachment was deleted), and that must still render rather than vanish.
- *
- * ⚠ Deliberately a CLOSURE, not a named function. `render.php` is executed once
- * PER BLOCK INSTANCE, so a top-level `function` declaration here fatals on the
- * second instance of this block on the same page — a documented trap in this
- * plugin's CLAUDE.md, and one that only ever shows up on a page that happens to
- * use the block twice.
- *
- * @param int    $attachment_id Attachment ID, or 0 when only a url is known.
- * @param string $url           Stored image url (fallback source).
- * @param string $alt           Alt text.
- * @param string $modifier      BEM modifier: 'before' or 'after'.
- * @return string Escaped <img> markup.
- */
-$sgs_before_after_img = static function ( $attachment_id, $url, $alt, $modifier ) {
-	$classes = 'wp-block-sgs-before-after__img wp-block-sgs-before-after__img--' . $modifier;
-
-	if ( $attachment_id > 0 ) {
-		$markup = wp_get_attachment_image(
-			$attachment_id,
-			'full',
-			false,
-			array(
-				'class'    => $classes,
-				'alt'      => $alt,
-				'loading'  => 'lazy',
-				'decoding' => 'async',
-			)
-		);
-
-		// An id can outlive its attachment (deleted media). Only accept the
-		// result when WP actually produced markup, otherwise fall through to
-		// the url so the comparison still renders.
-		if ( '' !== $markup ) {
-			return $markup;
-		}
-	}
-
-	return sprintf(
-		'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async" />',
-		esc_attr( $classes ),
-		esc_url( $url ),
-		esc_attr( $alt )
-	);
-};
+$has_video_slot = 'video' === $before_media['media_type'] || 'video' === $after_media['media_type'];
+$video_autoplay = ! empty( $attributes['videoAutoplay'] );
 
 $show_labels  = ! empty( $attributes['showLabels'] ) || ! isset( $attributes['showLabels'] );
 $before_label = isset( $attributes['beforeLabel'] ) ? (string) $attributes['beforeLabel'] : '';
 $after_label  = isset( $attributes['afterLabel'] ) ? (string) $attributes['afterLabel'] : '';
 
-$orientation_raw = $attributes['orientation'] ?? 'horizontal';
-$orientation     = in_array( $orientation_raw, array( 'horizontal', 'vertical' ), true ) ? $orientation_raw : 'horizontal';
+$orientation_raw   = $attributes['orientation'] ?? 'horizontal';
+$orientation       = in_array( $orientation_raw, array( 'horizontal', 'vertical' ), true ) ? $orientation_raw : 'horizontal';
+$reverse_direction = ! empty( $attributes['reverseDirection'] );
 
 $fx_draggable = ! empty( $attributes['fxDraggable'] ) || ! isset( $attributes['fxDraggable'] );
 
@@ -402,9 +342,12 @@ if ( '' !== $preset_bg_slug ) {
 }
 
 $root_attr_args = array(
-	'class'             => implode( ' ', $root_classes ),
-	'data-orientation'  => $orientation,
-	'data-fx-draggable' => $fx_draggable ? '1' : '0',
+	'class'               => implode( ' ', $root_classes ),
+	'data-orientation'    => $orientation,
+	'data-reverse'        => $reverse_direction ? '1' : '0',
+	'data-fx-draggable'   => $fx_draggable ? '1' : '0',
+	'data-has-video'      => $has_video_slot ? '1' : '0',
+	'data-video-autoplay' => $video_autoplay ? '1' : '0',
 );
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
@@ -464,13 +407,14 @@ $range_id = $uid . '-range';
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<div class="wp-block-sgs-before-after__stage" data-sgs-before-after-stage>
 		<?php
-		// Escaped inside the closure (wp_get_attachment_image() returns safe
-		// markup; the url fallback escapes each part).
-		echo $sgs_before_after_img( $before_id, $before_url, $before_alt, 'before' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		// Escaped by the resolver (sgs_before_after_resolve_media() in
+		// media-render.php — every branch either escapes each part itself or
+		// runs the content through wp_kses()/wp_get_attachment_image()).
+		echo $before_media['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
 		<div class="wp-block-sgs-before-after__after-wrap">
 			<?php
-			echo $sgs_before_after_img( $after_id, $after_url, $after_alt, 'after' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $after_media['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
 		</div>
 		<?php if ( $show_labels && ( '' !== trim( $before_label ) || '' !== trim( $after_label ) ) ) : ?>
@@ -482,6 +426,23 @@ $range_id = $uid . '-range';
 					<span class="wp-block-sgs-before-after__label wp-block-sgs-before-after__label--after"><?php echo esc_html( $after_label ); ?></span>
 				<?php endif; ?>
 			</div>
+		<?php endif; ?>
+		<?php if ( $has_video_slot ) : ?>
+			<button
+				type="button"
+				class="wp-block-sgs-before-after__video-toggle"
+				data-sgs-before-after-video-toggle
+				aria-pressed="false"
+				aria-label="<?php esc_attr_e( 'Play comparison videos', 'sgs-blocks' ); ?>"
+			>
+				<svg class="wp-block-sgs-before-after__video-toggle-icon wp-block-sgs-before-after__video-toggle-icon--play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+					<polygon points="6 4 20 12 6 20 6 4"></polygon>
+				</svg>
+				<svg class="wp-block-sgs-before-after__video-toggle-icon wp-block-sgs-before-after__video-toggle-icon--pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+					<rect x="5" y="4" width="4" height="16"></rect>
+					<rect x="15" y="4" width="4" height="16"></rect>
+				</svg>
+			</button>
 		<?php endif; ?>
 		<div class="wp-block-sgs-before-after__divider" aria-hidden="true">
 			<div class="wp-block-sgs-before-after__divider-line"></div>

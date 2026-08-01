@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "Before / After",
 	"category": "sgs-interactive",
-	"description": "Two-image comparison slider with a draggable divider. Works with zero JavaScript — both images are always present in the markup and a CSS-only split renders the configured default position; JS progressively enhances the divider into a live drag (native range input for keyboard + touch, GSAP Draggable for free-drag directly on the image). Content-KIND, block-private (no SGS_Container_Wrapper) — box + width only, matches the sgs/quote / sgs/button pattern (D294).",
+	"description": "Two-media comparison slider with a draggable divider. Each side (before/after) independently chooses image / video / SVG via `beforeMediaType`/`afterMediaType` — mirroring sgs/media's mediaType fork applied per comparison slot. Works with zero JavaScript for the image/SVG case — both slots are always present in the markup and a CSS-only clip-path renders the configured default position; JS progressively enhances the divider into a live drag (native range input for keyboard + touch, GSAP Draggable for free-drag directly on the media) and, when either slot is video, drives synchronised play/pause + drift-corrected currentTime across both `<video>` elements. Video slots support WP-library uploads and direct MP4/WebM URLs ONLY — YouTube/Vimeo embeds are deliberately unsupported here because a cross-origin iframe cannot be kept in sync without loading each platform's external player SDK (Spec 38 three-tier motion doctrine: no CDN-loaded third-party script). `orientation` (horizontal/vertical) crossed with `reverseDirection` gives all four reveal directions — after-on-left (default), after-on-right, after-on-top, after-on-bottom — with the label order and clip-path both keyed off the same two attributes so a label never sits over the wrong media. Content-KIND, block-private (no SGS_Container_Wrapper) — box + width only, matches the sgs/quote / sgs/button pattern (D294).",
 	"keywords": [ "before after", "comparison", "slider", "image compare", "reveal" ],
 	"textdomain": "sgs-blocks",
 	"icon": "columns",
@@ -67,12 +67,36 @@
 	},
 	"attributes": {
 		"_comment_ssr_nullable": "Every numeric attribute below whose default is null is declared as [ <numeric>, \"string\" ] — the house convention (sgs/heading, sgs/text). REASON: this block previews through <ServerSideRender>, which serialises an unset attribute as an EMPTY STRING into the block-renderer REST query. A schema of plain \"integer\"/\"number\" rejects \"\", the REST call returns HTTP 400, and the editor shows 'Preview failed to load' for every instance — while the frontend renders perfectly, so no frontend check can catch it. Found live 2026-07-31 by the Wave C editor probe (D388). render.php already coerces with (int) / a null check, so accepting \"\" changes no rendered output.",
+		"beforeMediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image", "video", "svg" ],
+			"_comment": "Mirrors sgs/media's mediaType fork (Spec 38 Step 6), applied per comparison slot rather than block-wide — the before side and after side may each be a different media type (e.g. an SVG diagram compared against a photo)."
+		},
+		"afterMediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image", "video", "svg" ]
+		},
 		"beforeImageId": { "type": [ "integer", "string" ], "default": null },
 		"beforeImageUrl": { "type": "string", "default": "", "role": "content" },
 		"beforeImageAlt": { "type": "string", "default": "", "role": "content" },
 		"afterImageId": { "type": [ "integer", "string" ], "default": null },
 		"afterImageUrl": { "type": "string", "default": "", "role": "content" },
 		"afterImageAlt": { "type": "string", "default": "", "role": "content" },
+		"beforeVideoId": { "type": [ "integer", "string" ], "default": null },
+		"beforeVideoUrl": { "type": "string", "default": "", "role": "content" },
+		"beforeVideoAlt": { "type": "string", "default": "", "role": "content" },
+		"afterVideoId": { "type": [ "integer", "string" ], "default": null },
+		"afterVideoUrl": { "type": "string", "default": "", "role": "content" },
+		"afterVideoAlt": { "type": "string", "default": "", "role": "content" },
+		"beforeSvgContent": { "type": "string", "default": "", "role": "content" },
+		"afterSvgContent": { "type": "string", "default": "", "role": "content" },
+		"videoAutoplay": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "Gated behind prefers-reduced-motion at render time in view.js — reduced motion always starts both videos paused regardless of this attribute; the shared play/pause toggle remains available either way (explicit user action, never suppressed)."
+		},
 		"showLabels": { "type": "boolean", "default": true },
 		"beforeLabel": { "type": "string", "default": "Before", "role": "content" },
 		"afterLabel": { "type": "string", "default": "After", "role": "content" },
@@ -90,6 +114,11 @@
 			"type": "string",
 			"default": "horizontal",
 			"enum": [ "horizontal", "vertical" ]
+		},
+		"reverseDirection": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "Crossed with orientation to give all 4 reveal directions. false (default, UNCHANGED — Bean-locked): horizontal reveals after on the LEFT, vertical reveals after on the TOP. true: horizontal reveals after on the RIGHT (the more common slider convention), vertical reveals after on the BOTTOM. style.css keys both the clip-path AND the label order off this same attribute so a direction change can never reintroduce the 2026-07-31 label-vs-image mismatch (labels + clip must always move together)."
 		},
 		"startPosition": { "type": "number", "default": 50 },
 		"fxDraggable": {

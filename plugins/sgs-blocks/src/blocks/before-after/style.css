@@ -75,15 +75,38 @@
 	position: absolute;
 	inset: 0;
 	z-index: 2;
-	/* HORIZONTAL default: reveal the "after" image from the left edge up to
-	 * the divider position; everything to the right stays clipped so the
-	 * "before" image shows through. This ONE declaration is the entire
-	 * zero-JS comparison mechanism. */
+	/*
+	 * FOUR REVEAL DIRECTIONS, one `orientation` × `reverseDirection` cross —
+	 * both keyed off the SAME two attributes as the label order below, so a
+	 * direction can never drift out of sync with which label sits over which
+	 * media (the exact bug fixed 2026-07-31, see the label-order comment).
+	 *
+	 * HORIZONTAL, default (reverseDirection=false — Bean-locked, UNCHANGED):
+	 * reveal "after" from the LEFT edge up to the divider; everything to the
+	 * right stays clipped so "before" shows through. This base rule is that
+	 * default and is the entire zero-JS comparison mechanism on its own.
+	 */
 	clip-path: inset( 0 calc( 100% - var( --sgs-before-after-position ) ) 0 0 );
 }
 
+/*
+ * HORIZONTAL, reversed: reveal "after" from the RIGHT edge — the divider
+ * still tracks the same 0-100 physical position from the left, only which
+ * side shows "after" flips. `:not([data-orientation="vertical"])` keeps this
+ * selector horizontal-only so it can never fight the vertical rule below.
+ */
+.wp-block-sgs-before-after[data-reverse="1"]:not( [data-orientation="vertical"] ) .wp-block-sgs-before-after__after-wrap {
+	clip-path: inset( 0 0 0 var( --sgs-before-after-position ) );
+}
+
+/* VERTICAL, default: reveal "after" from the TOP edge down to the divider. */
 .wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__after-wrap {
 	clip-path: inset( 0 0 calc( 100% - var( --sgs-before-after-position ) ) 0 );
+}
+
+/* VERTICAL, reversed: reveal "after" from the BOTTOM edge. */
+.wp-block-sgs-before-after[data-orientation="vertical"][data-reverse="1"] .wp-block-sgs-before-after__after-wrap {
+	clip-path: inset( var( --sgs-before-after-position ) 0 0 0 );
 }
 
 .wp-block-sgs-before-after__after-wrap .wp-block-sgs-before-after__img {
@@ -101,13 +124,30 @@
 }
 
 /*
+ * VERTICAL uses a COLUMN flex direction so "first in flex order" means TOP,
+ * not LEFT — the row-flex `justify-content: space-between` above only makes
+ * sense for the horizontal LEFT/RIGHT split. Without this, a vertical
+ * instance would lay its labels out left/right while the media splits
+ * top/bottom — the same class of mismatch as the 2026-07-31 bug below, just
+ * on the other axis, and it was reproduced here before this rule existed:
+ * the vertical arm was flagged UNMEASURED in that report specifically
+ * because this was never checked.
+ */
+.wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__labels {
+	flex-direction: column;
+}
+
+/*
  * ⚠ LABEL ORDER IS NOT COSMETIC — it must mirror the clip, or the labels lie.
  *
- * `__after-wrap` above reveals the AFTER image from the LEFT edge up to the
- * divider (`clip-path: inset(0 calc(100% - position) 0 0)`), so the left of the
- * stage shows AFTER and the right shows BEFORE. But `__labels` is
- * `justify-content: space-between` and render.php emits the BEFORE label first,
- * which put "Before" over the after image and "After" over the before image.
+ * `__after-wrap` above reveals the AFTER media from the LEFT (horizontal
+ * default) or TOP (vertical default) edge up to the divider, so that edge of
+ * the stage shows AFTER and the opposite edge shows BEFORE. `__labels` is a
+ * flex container with the BEFORE label emitted first in the DOM (render.php);
+ * `order` here — not a markup swap — is what keeps each label pinned to the
+ * correct side regardless of orientation/reverseDirection, so the DOM keeps
+ * its logical before-then-after sequence for screen readers while the VISUAL
+ * order tracks the clip.
  *
  * Found 2026-07-31 by looking at a screenshot — every numeric probe passed,
  * because they all asked whether the divider MOVED and none asked what was on
@@ -115,9 +155,12 @@
  * (orange) clipped `inset(0px 50% 0px 0px)` (visible on the LEFT) while the
  * "Before" label measured to the LEFT half of the block.
  *
- * Ordered here rather than by swapping the markup so the DOM keeps its logical
- * before-then-after sequence. The vertical orientation reveals AFTER at the top
- * and is UNMEASURED — if that arm is ever exercised, check its label order too.
+ * reverseDirection flips which side is "after" (see the clip-path rules
+ * above) — flipping THESE two rules in lockstep, via the SAME
+ * `[data-reverse="1"]` attribute selector, is what makes it structurally
+ * impossible to add a new reveal direction that reintroduces this bug: the
+ * clip and the label order can never go out of sync because they are both
+ * driven from the one attribute.
  */
 .wp-block-sgs-before-after__label--after {
 	order: 0;
@@ -125,6 +168,14 @@
 
 .wp-block-sgs-before-after__label--before {
 	order: 1;
+}
+
+.wp-block-sgs-before-after[data-reverse="1"] .wp-block-sgs-before-after__label--after {
+	order: 1;
+}
+
+.wp-block-sgs-before-after[data-reverse="1"] .wp-block-sgs-before-after__label--before {
+	order: 0;
 }
 
 .wp-block-sgs-before-after__label {
@@ -263,6 +314,93 @@
 	transform: translate( -50%, -50% ) rotate( 90deg ) scale( 1.08 );
 }
 
+/*
+ * Video slot (beforeMediaType/afterMediaType = 'video'). `.__img` already
+ * provides position/inset/width/height/object-fit — this only adds what a
+ * <video> needs beyond what an <img> gets for free. No native `controls`
+ * (render.php never emits that attribute): playback is the shared
+ * `.__video-toggle` button below, driven by view.js's sync layer, so both
+ * videos in a comparison can never drift into showing different moments.
+ */
+.wp-block-sgs-before-after__video {
+	background-color: #000;
+}
+
+/*
+ * SVG slot (beforeMediaType/afterMediaType = 'svg'). The resolver wraps
+ * sanitised SVG markup in a <div class="…__img …__svg">; `.__img` handles
+ * position/inset/sizing, this makes the inline <svg> itself fill that box —
+ * object-fit has no effect on a <div>, so the SVG's own width/height must be
+ * set to 100% directly.
+ */
+.wp-block-sgs-before-after__svg {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var( --wp--preset--color--base, #fff );
+}
+
+.wp-block-sgs-before-after__svg svg {
+	width: 100%;
+	height: 100%;
+	object-fit: var( --sgs-object-fit, contain );
+}
+
+/*
+ * Shared play/pause control for the video sync layer (view.js
+ * `bootVideoSyncLayer`) — ONE button drives BOTH `<video>` elements so they
+ * can never be started independently and drift apart. Only rendered when at
+ * least one slot is a video (render.php `$has_video_slot`).
+ */
+.wp-block-sgs-before-after__video-toggle {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background-color: rgba( 0, 0, 0, 0.6 );
+	color: #fff;
+	cursor: pointer;
+	transition: transform 200ms ease-out, background-color 200ms ease-out;
+}
+
+.wp-block-sgs-before-after__video-toggle:hover {
+	background-color: rgba( 0, 0, 0, 0.8 );
+	transform: scale( 1.08 );
+}
+
+.wp-block-sgs-before-after__video-toggle:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #2563eb );
+	outline-offset: 2px;
+}
+
+.wp-block-sgs-before-after__video-toggle-icon {
+	display: none;
+}
+
+/* Default (paused) state shows the play glyph. */
+.wp-block-sgs-before-after__video-toggle-icon--play {
+	display: block;
+}
+
+/* JS flips aria-pressed to "true" once playback starts (view.js) — CSS
+ * swaps the glyph off that same attribute rather than a separate class, so
+ * the icon can never fall out of sync with the control's own a11y state. */
+.wp-block-sgs-before-after__video-toggle[aria-pressed="true"] .wp-block-sgs-before-after__video-toggle-icon--play {
+	display: none;
+}
+
+.wp-block-sgs-before-after__video-toggle[aria-pressed="true"] .wp-block-sgs-before-after__video-toggle-icon--pause {
+	display: block;
+}
+
 .sgs-screen-reader-text {
 	position: absolute;
 	width: 1px;
@@ -276,7 +414,8 @@
 }
 
 @media ( prefers-reduced-motion: reduce ) {
-	.wp-block-sgs-before-after__handle {
+	.wp-block-sgs-before-after__handle,
+	.wp-block-sgs-before-after__video-toggle {
 		transition: none !important;
 	}
 }
