@@ -501,6 +501,37 @@ def _fold_band_arrangement(
 
     A held declaration that reaches no destination is returned as an EXCLUDED GAP
     with its original GAP-3 reason, so nothing becomes a silent drop.
+
+    RELATIONSHIP TO ``l2_qualify`` (D441) — two halves of one step, not rivals:
+
+        l2_qualify.qualify  = the L2 DECISION  — does this wrapper dissolve?
+        fold_band_css       = the L2 TRANSFER  — given it dissolves, where does
+                              its CSS go?  (``entry.py``'s own removal note calls
+                              this "the L2 fold".)
+
+    The rework plan replaces the DECISION gate (``_sole_passthrough_child``, its
+    mechanism #2) with the relational qualifier. It never proposed replacing the
+    transfer, so this function sits on the far side of that seam and survives the
+    wiring untouched.
+
+    **This fold is a PREREQUISITE for wiring L2, not a competitor to it.**
+    ``l2_qualify._lands_on_parent`` returns True for ``display`` on every
+    container-kind block (measured: container / trust-bar / tabs), i.e. the
+    qualifier already passes a band partly BECAUSE it believes the band's
+    ``display`` has somewhere to land. Until this function existed that belief
+    was false — the transfer dropped it — so wiring L2 would have widened the set
+    of dissolving wrappers while their arrangement kept vanishing. Do not wire the
+    qualifier on the assumption the transfer is lossless without checking this
+    still holds.
+
+    Sibling widening (watch, do not pre-solve): the current gate demands the
+    parent have exactly ONE element child; the qualifier has no sibling-count
+    requirement, so a future parent could present TWO arrangement-bearing bands
+    and the second's ``layout`` would lose the setdefault race silently. Measured
+    2026-08-01 across the homepage draft, the product draft and the realistic tabs
+    fixture: ZERO parents yield more than one qualifying band, and the two gates
+    disagree on ZERO parents — so this is a hazard to re-measure when L2 is wired,
+    not a bug to fix speculatively.
     """
     from converter.context import Ctx, Decl, Destination
     from converter.models import GAP, GapOrigin

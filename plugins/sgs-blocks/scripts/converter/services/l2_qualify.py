@@ -30,6 +30,27 @@ carry NO arrangement CSS at all — they are `max-width` + `margin:auto` + a
 L2 CONTENT band ("NO grid/flex"). Requiring arrangement excluded 75% of the real
 L2s, including the one in the tabs proof case. Do not re-introduce it.
 
+WHAT HAPPENS AFTER A PASS (read before wiring). This module answers the DECISION
+half only. The TRANSFER half — where a dissolving band's CSS actually goes — is
+`fold_helpers.fold_band_css` (which `entry.py`'s absorb-removal note calls "the L2
+fold"). The two are sequential, not alternatives.
+
+  * `_lands_on_parent` below returns True for `display` on every container-kind block
+    (measured: container / trust-bar / tabs), so requirement F passes a band partly
+    BECAUSE its `display` is believed to have a destination. That belief was FALSE
+    until 2026-08-01: the transfer's GAP-3 rule excluded `display` from the fold and
+    the compensating §2.3 pass reads the SECTION ROOT, which carries no arrangement
+    when its sole child is the band. `fold_helpers._fold_band_arrangement` (D446)
+    made it true. **Do not wire this qualifier on the assumption the transfer is
+    lossless — re-measure that it still is.**
+  * Wiring WIDENS what dissolves: the gate this replaces (`_sole_passthrough_child`)
+    demands the parent have exactly ONE element child; this qualifier has no
+    sibling-count requirement. Two arrangement-bearing bands under one parent would
+    race for the owner's `layout` attr (setdefault — first wins, silently). Measured
+    2026-08-01 on the homepage draft, the product draft and the realistic tabs
+    fixture: ZERO parents yield >1 qualifying band and the two gates disagree on ZERO
+    parents. Re-measure at wiring rather than pre-solving it.
+
 This module is PURE. It reads the DOM and the DB, and returns a verdict. It mutates
 nothing, emits no blocks, and is not wired into the pipeline — wiring is a separate,
 separately-gated step. No raw sqlite3 (FR-31-8 / the `test_raw_sqlite_gate` contract):

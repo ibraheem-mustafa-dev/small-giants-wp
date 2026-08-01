@@ -7,6 +7,7 @@ status: SCOPED, NOT STARTED — this is the next session's Phase 1, in full
 spec: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §2.3 / §2.4 / §3.A / §13.2
 owner_decision: Bean, 2026-07-31→08-01 (the relational L2 model is HIS, not derived)
 ---
+Invoke /autopilot before doing anything else.
 
 # Wrapper recognition — cascade rework + universal L-identification
 
@@ -82,6 +83,33 @@ Give the **complete** set of mechanisms with their branching logic for L1→L4 i
 execution order. Last session produced 4 disconnected pieces and Bean's verdict was
 that pieces are useless without the whole picture. This must be the whole cascade,
 start to finish, with every branch.
+
+> **Q2 INPUT — the DECISION/TRANSFER seam (measured 2026-08-01, `d2d0579f`).** The
+> cascade has two halves and only the first is being reworked:
+>
+> | | mechanism | status |
+> |---|---|---|
+> | **DECISION** — does this wrapper dissolve? | `_sole_passthrough_child` (mechanism #2) → to be replaced by `l2_qualify.qualify` | the rework |
+> | **TRANSFER** — where does a dissolved wrapper's CSS go? | `fold_helpers.fold_band_css` (`entry.py`'s own note calls it "the L2 fold") | NOT in scope; leave it |
+>
+> Two findings that bind the wiring:
+>
+> 1. **The transfer had to be fixed FIRST.** `l2_qualify._lands_on_parent` returns True
+>    for `display` on every container-kind block (container / trust-bar / tabs), so
+>    requirement F passes a band partly BECAUSE its `display` is believed to have a
+>    destination. That was false until D446 — the transfer dropped it. Wiring the
+>    qualifier before fixing it would have widened what dissolves while their
+>    arrangement kept vanishing. **Re-measure that the transfer is lossless before
+>    wiring; don't assume it.**
+> 2. **Wiring widens the sibling count — a known hazard, deliberately not pre-solved.**
+>    The old gate demands exactly ONE element child; the qualifier has no such
+>    requirement (that is the point — it is what unblocks tabs). Two
+>    arrangement-bearing bands under one parent would race for the owner's `layout`
+>    attr (setdefault, first wins, silently). **Measured across the homepage draft, the
+>    product draft and `sgs-tabs-realistic`: ZERO parents yield >1 qualifying band, and
+>    the two gates disagree on ZERO parents.** So it is a re-measure-at-wiring item, not
+>    a speculative fix. Only ONE arrangement-bearing L2 band exists on real drafts
+>    today: `sgs/trust-bar__inner`.
 
 ### Q3 — no background/border in the allowlist, then measure
 
@@ -242,7 +270,8 @@ files.
 
 | commit | what |
 |---|---|
-| `4f83e8d5` | **Bare tags inside a repeater now lift.** Every tier of the array item-field matcher started from `_bem_token(node)`, so a card written as `<h3>`/`<p>` matched nothing and the whole repeater lifted zero items. Added L3, a tag-shape identity tier using the shared `atomic_tag_map`, ties resolved by document order against `field_order`. Strictly additive. Also: `sgs/option-picker` never declared `supports.sgs.arrayContentLift`, so its options could never transfer — **needs a `/sgs-update` reseed to take effect.** |
+| `4f83e8d5` | **Bare tags inside a repeater now lift.** Every tier of the array item-field matcher started from `_bem_token(node)`, so a card written as `<h3>`/`<p>` matched nothing and the whole repeater lifted zero items. Added L3, a tag-shape identity tier using the shared `atomic_tag_map`, ties resolved by document order against `field_order`. Strictly additive. Also: `sgs/option-picker` never declared `supports.sgs.arrayContentLift`, so its options could never transfer. ✅ **The "needs a `/sgs-update` reseed" clause is CLOSED (verified 2026-08-01) — it was already done.** `block_capabilities` row 6597 `(sgs/option-picker, array-content-lift)` present; `array_item_schema` holds `optionItems.key`/`.label`; the resolver derives `label → slot 'label' / role 'text-content'` live (`key` correctly has no content role). `arrayContentLift:true` is committed in block.json at `4735b6cf`, so it re-seeds from source. No action owed. |
+| `d2d0579f` | **The L2 TRANSFER now carries `display` (D446).** A dissolving band's `display:grid\|flex` was dropped by GAP-3 while its `gap`/`contentWidth`/`flexWrap`/`justifyContent` folded — so the owner rendered `display:block` and every folded arrangement property was inert. Spec 31 §2.4 already mandates the fold-up ("folded up from a sole arrangement inner — brand, trust-bar"). `fold_helpers._fold_band_arrangement` routes `display`→`layout` via `arrangement.layout_attrs` and `grid-template-*`→the grid resolver in a **GRID-pinned** second pass (pinning is load-bearing — putting the tracks in the main stream flips `layer_detect` and degrades the band's `max-width` from `contentWidth` to an UNIMPLEMENTED_STUB, so simply deleting the exclusion is a regression). **⚠ This is a PREREQUISITE for Q2's wiring, not a competitor to it** — see the note below. |
 | `989b761d` | **Content gaps are surfaced instead of discarded.** Also found that `ledger/content_gap_check.py` (26 June) and `ledger/content_coverage_check.py` (4 July) have been passing since June because **nothing ever wrote `content-gaps.json`** — the missing writer is now built. |
 
 ---
@@ -266,7 +295,8 @@ any vocabulary change. Only after that is proven should the alias question be re
 4. The allowlist then decided FROM that measurement, not asserted.
 5. Tabs clones correctly with no alias added.
 6. `__attribution` / `__ribbon` / `__slot` no longer mis-resolve.
-7. Converter suite green (baseline **586 passed, 1 skipped**); the conformance failing
+7. Converter suite green (baseline **587 passed, 1 skipped** — was 586; `d2d0579f`
+   added one test, see the D446 row above); the conformance failing
    SET byte-identical to baseline (27 pre-existing stale goldens) — compare the SET,
    never the count.
 8. Every new gate ships with a `--self-test` that proves it can fail in BOTH
