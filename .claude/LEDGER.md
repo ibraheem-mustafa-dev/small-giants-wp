@@ -16,8 +16,7 @@ gets ONE true answer instead of three drifting ones.
 
 ---
 
-> **QC note (2026-08-01).** An independent `/qc` subagent was dispatched over this handoff and had
-> not returned when the session closed — its verdict is OWED, not clean. I ran the same verification
+> **QC note (2026-08-01) — the subagent RETURNED and its verdict was INCONSISTENT, now resolved.** I ran the same verification
 > myself as a backstop and it caught two real inconsistencies, both since fixed: the step table said
 > "NOT STARTED (14)" while listing **15** items, and it used original numbering only while the
 > rewritten plan uses **mixed** numbering (letters A–J for steps added today, original numbers kept so
@@ -25,7 +24,13 @@ gets ONE true answer instead of three drifting ones.
 > seeder no longer writing `css_property`, 207 override entries with zero `fx:` rows, the build gate
 > `--check`-only, `FORCED_PANEL_HOSTS` gone, roster 28 with `decorative-image = [motion-path, scrub]`,
 > 19 single-provision blocks (13+6), 144 STOPs, 24 plan steps, D-ceiling D436.
-> **If the subagent's verdict arrives and contradicts any of that, believe the subagent and re-check.**
+> It found the step-table defect I had also found, but diagnosed it BETTER: the stray `3` was a
+> duplicate of the HELD buybox step, so the "(14)" label had been correct and the LIST held one item
+> too many. My own fix then re-introduced the same duplication in a new form (buybox listed under both
+> HELD and OPEN) and mislabelled 24 items as "(16)". Both are now fixed and the table is rewritten
+> plainly. **Everything else the subagent checked came back clean**, including a catch I would have
+> missed: `82a08b8a`'s subject line is about float-clearing, but its diff also carries the
+> `webpackIgnore` pragma, so its listing under Step 17 is correct rather than a misattribution.
 
 ## ⭐ NEXT SESSION IS A REVIEW SESSION — start here
 
@@ -98,14 +103,20 @@ Full register + plain-English explainers: `plans/2026-07-31-motion-wave-D-client
 
 | | Wave D steps (24) |
 |---|---|
-| **CLOSED (8)** | 1, 4, 9, 11, 13, 14, 16, 17 |
-| **HELD** | 2/3 buybox — visual-diff gate correctly refused an unverified drag control |
-| **OPEN (16)** | Original numbering: 5, 6, 6b, 7, 8, 10, 12, 15, 18, 19, 20, 21, 22, 23 · **New this session, lettered:** A (buybox, HELD) · B (slider arrow proportions) · C (slider dot contrast) · D (palette-slot audit) · E (motion-path, two stacked fixes) · F (image-sequence: scrub only while fully visible) · G (image-sequence: pin as a block option) · H (scramble preset timing) · I (FR-38-12 Flip design gate) · J |
+| **CLOSED (8)** | 1, 4, 9, 11, 13, 14, 16, 17 — stripped out of the plan into its completed table, with commits |
+| **STILL IN THE PLAN (24)** | **14 original-numbered:** 5, 6, 6b, 7, 8, 10, 12, 15, 18, 19, 20, 21, 22, 23 · **10 lettered, added 2026-08-01:** A–J |
+| **HELD (inside the 24)** | **Step A** = buybox drag, formerly "Steps 2/3". Written, runtime proven, NOT shipped — the visual-diff gate correctly refused it because the attribute has never come from a real render. |
 
-⚠ **The plan uses MIXED numbering deliberately.** Steps added on 2026-08-01 are LETTERED (A–J) so the
-original numbers keep resolving in older references (D426–D434, prior reports). Read the plan's own
-`### Step X` headings as authoritative — this table is a summary, and a summary of a renumbered list
-is exactly what drifted twice today.
+⚠ **MIXED numbering is deliberate.** Steps added 2026-08-01 are LETTERED (A–J) so the original numbers
+keep resolving in older references (D426–D434, prior reports). **The plan's own `### Step X` headings
+are authoritative; this table is a summary.**
+
+⚠ **A summary of a renumbered list drifted THREE times in two days — do not trust this row over the
+plan.** (1) It listed Steps 1 and 14 as unstarted four minutes after the commit closing them. (2) It
+carried a stray `3` — a duplicate of the HELD buybox step — inflating the list to 15 under a "(14)"
+label. (3) My own fix for (2) then double-counted buybox again by listing it under both HELD and OPEN,
+and mislabelled 24 items as "(16)". Findings 2 and 3 were caught by an independent `/qc` subagent, not
+by me. **If this table and the plan disagree, the plan is right.**
 
 ⚠ **Read this table's silence carefully.** It once omitted Steps 1 and 14 entirely, and that
 silence made two FINISHED steps look unstarted. Check a step against `git log` before trusting
