@@ -1,8 +1,10 @@
 """array_content.py — Array / repeater content lift (Spec 31 §3.B4 / §13.3 FR-31-2.5).
 
 DB-RECOGNITION lift (2026-07-02 rewrite — replaces the hand-declared
-``array_item_fields`` mechanism, which the spec's own §3.B.0.1 named an R-31-9
-violation). NO hand-declared per-block selectors anywhere: item detection is
+``array_item_fields`` mechanism, which the spec's own §3.B.0 (binding
+consequence 1) named an R-31-9 violation — no §3.B.0.1 subsection exists; the
+citation was corrected 2026-08-01). NO hand-declared per-block selectors
+anywhere: item detection is
 structural (sibling-class DOM traversal, §2.4) and each item's fields are matched
 to the block's own item schema by the shared recognition machinery
 (``bem_element_to_canonical_slot`` → ``canonical_slot_for`` → role), with the
