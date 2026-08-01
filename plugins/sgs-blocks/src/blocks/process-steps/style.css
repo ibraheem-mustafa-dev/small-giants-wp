@@ -61,7 +61,7 @@
 }
 
 .sgs-process-steps__number:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-process-steps__number:not([style*="background"]) {
@@ -88,7 +88,7 @@
 	left: calc(50% + var(--sgs-step-number-size) / 2 + 8px);
 	width: calc(100% - var(--sgs-step-number-size) - 16px);
 	height: 2px;
-	background-color: var(--wp--preset--color--border-subtle, #0D5557);
+	background-color: var(--wp--preset--color--border-subtle, #D4DBE5);
 }
 
 /* Arrow connector */
@@ -109,7 +109,7 @@
 	right: calc(-1 * var(--sgs-step-number-size) / 2.4);
 	font-size: 14px;
 	letter-spacing: 4px;
-	color: var(--wp--preset--color--border-subtle, #0D5557);
+	color: var(--wp--preset--color--border-subtle, #D4DBE5);
 }
 
 /* ===== Title ===== */

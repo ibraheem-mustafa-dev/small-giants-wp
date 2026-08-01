@@ -15,7 +15,7 @@
 }
 
 .sgs-countdown--elevated {
-	background: var(--wp--preset--color--surface, #fff);
+	background: var(--wp--preset--color--surface-alt, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: var(--wp--preset--shadow--md);
 }

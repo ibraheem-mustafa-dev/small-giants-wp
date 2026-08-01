@@ -226,7 +226,7 @@
 /* ─── STYLE: CARD ─── */
 
 .sgs-accordion--card .sgs-accordion-item {
-	background: var(--wp--preset--color--surface, #ffffff);
+	background: var(--wp--preset--color--surface-alt, #ffffff);
 	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);

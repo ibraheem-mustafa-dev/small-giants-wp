@@ -276,7 +276,7 @@
 
 .sgs-buybox .value-ladder__row[aria-current="true"] {
 	border-left-color: var( --wp--preset--color--primary, #000 );
-	background: var( --wp--preset--color--surface, #f9f4ef );
+	background: var( --wp--preset--color--surface-alt, #f9f4ef );
 }
 
 .sgs-buybox .value-ladder__pack {

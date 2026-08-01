@@ -39,6 +39,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (textTransform / fontWeight / fontStyle / border-style) —
@@ -366,8 +367,17 @@ foreach ( $inner_blocks as $inner_block ) {
 $arrow_prev_html = '';
 $arrow_next_html = '';
 if ( $show_arrows && $total_testimonials > 0 ) {
-	$arrow_prev_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="' . esc_attr__( 'Previous testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">‹</span></button>';
-	$arrow_next_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="' . esc_attr__( 'Next testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">›</span></button>';
+	// Chevron SVGs from the shared Lucide icon library (same mechanism used by
+	// sgs/accordion-item + sgs/nav-menu) — replaces the old bare ‹ / › text
+	// glyph, which rendered as an 8×24px mark rattling around inside the
+	// 44px circular button. The SVG is trusted static markup from
+	// sgs_get_lucide_icon() (mirrors the escaping pattern used elsewhere in
+	// this codebase for the same helper).
+	$arrow_prev_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-left' ) : '';
+	$arrow_next_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-right' ) : '';
+
+	$arrow_prev_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="' . esc_attr__( 'Previous testimonial', 'sgs-blocks' ) . '" type="button"><span class="sgs-testimonial-slider__arrow-icon" aria-hidden="true">' . $arrow_prev_icon . '</span></button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+	$arrow_next_html = '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="' . esc_attr__( 'Next testimonial', 'sgs-blocks' ) . '" type="button"><span class="sgs-testimonial-slider__arrow-icon" aria-hidden="true">' . $arrow_next_icon . '</span></button>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 }
 
 // ── Dots — always rendered when showDots is enabled, regardless of count.

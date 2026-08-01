@@ -321,7 +321,13 @@ function sgs_expand_fx_path_route( string $block_content ): string {
 	$processor->set_attribute( 'data-sgs-fx-motion-path-target', '#' . $id );
 
 	$svg = \sprintf(
-		'<svg class="sgs-fx-path-route" aria-hidden="true" focusable="false" viewBox="%s" preserveAspectRatio="none"><path id="%s" d="%s"></path></svg>',
+		// preserveAspectRatio="none" REMOVED 2026-08-01 (D442). It stretched the route's
+		// authored viewBox independently on each axis, so the traveller inherited a skewed,
+		// non-uniform scale — measured live as transform matrix coefficients a=0.0937 / d=0.0937
+		// against b=-0.9956 / c=0.9956 on the canary. Omitting the attribute restores the SVG
+		// default (xMidYMid meet): uniform scale, no skew. This fixes the SKEW only; the
+		// separate oversized-route-box defect is tracked as its own open item.
+		'<svg class="sgs-fx-path-route" aria-hidden="true" focusable="false" viewBox="%s"><path id="%s" d="%s"></path></svg>',
 		\esc_attr( $resolved['view_box'] ),
 		\esc_attr( $id ),
 		\esc_attr( $resolved['d'] )

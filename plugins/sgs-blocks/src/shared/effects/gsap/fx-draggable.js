@@ -29,8 +29,11 @@
  * So this module now drives `scrollLeft` DIRECTLY from pointer events and uses
  * InertiaPlugin purely as a physics solver for the release. Nothing is
  * re-parented, no wrapper is created, no element is transformed: the only
- * thing ever written is the `scrollLeft` the element already had, plus a
- * `cursor`. That is what "layered on top" has to mean for it to be true.
+ * thing ever written is the `scrollLeft` the element already had, plus
+ * `cursor` and the transient `scroll-snap-type`/`scroll-behavior`/
+ * `user-select` gesture styles restored the instant the gesture ends (see
+ * `snapControl()`/`selectionControl()`). That is what "layered on top" has to
+ * mean for it to be true.
  *
  * ROSTER MECHANISM (R-31-1 — DB-first, no hardcoded dicts): the roster is
  * DERIVED, not declared. `scripts/generate-fx-qualifying-blocks.py` grants a
@@ -142,7 +145,8 @@ function isNativeHorizontalScroller( el ) {
 }
 
 /**
- * Suspend / restore CSS scroll snapping for the duration of a gesture.
+ * Suspend / restore the CSS properties that fight a direct `scrollLeft` write,
+ * for the duration of a gesture.
  *
  * ⚠ LOAD-BEARING, and non-obvious enough that removing it looks harmless.
  * The Tier V carousel pattern this module enhances sets
@@ -154,26 +158,83 @@ function isNativeHorizontalScroller( el ) {
  * at all while every other signal (grab cursor, listeners firing, a genuinely
  * overflowing track) said it was working.
  *
- * Snapping is restored the moment the gesture — including any momentum coast —
- * finishes, so the carousel still settles onto a slide boundary. That restore
- * is the feature, not a concession: coast-then-snap is the intended feel.
+ * SECOND, INDEPENDENT FIGHT — found live 2026-08-01 on `sgs/post-grid` and
+ * `sgs/trustpilot-reviews`: both of those blocks' carousel CSS additionally
+ * sets `scroll-behavior: smooth` on the same scroller (`sgs/gallery` does not,
+ * which is exactly why gallery's drag never showed this symptom). The CSSOM
+ * `scrollLeft` SETTER honours `scroll-behavior` — it does not jump, it queues
+ * an ANIMATED scroll toward the target. `onPointerMove` fires roughly every
+ * 15-20ms during a real gesture, so every single write starts a fresh smooth
+ * -scroll animation that gets abandoned mid-flight by the next write before it
+ * can catch up. Measured on the live canary with an identical scripted
+ * gesture: `sgs/gallery` (no `scroll-behavior:smooth`) tracked the pointer
+ * exactly 1:1 (40/80/120…/320px for eight 40px steps); `sgs/post-grid` (has
+ * it) reached only 3-14px for the SAME gesture, and the point it settled on
+ * after release varied run to run (14px one run, 320px the next) — which is
+ * what "doesn't follow the mouse", "fights the snap", "first carousel often
+ * won't drag" and "skips one or several cards" all look like from one root
+ * cause: an interrupted CSS transition racing the pointer, with a
+ * non-deterministic outcome each time. `scroll-behavior` is therefore
+ * suspended alongside snapping here, universally, for every block on the
+ * roster — not patched per block-CSS-file, so a future block that ships this
+ * combination inherits the fix for free.
  *
- * This writes an inline style, which Spec 32 restricts. It is in scope: FR-38-2
+ * Both are restored the moment the gesture — including any momentum coast —
+ * finishes, so the carousel still settles onto a slide boundary with its
+ * authored transition behaviour intact for every OTHER interaction (arrow
+ * clicks, dot clicks, keyboard). That restore is the feature, not a
+ * concession: coast-then-snap is the intended feel.
+ *
+ * This writes inline styles, which Spec 32 restricts. It is in scope: FR-38-2
  * bans inline style in SSR MARKUP, and permits JS-applied transient state (the
  * same basis on which this module already writes `cursor`). Nothing here
  * reaches server-rendered output.
  *
  * @param {HTMLElement} el The native-scroll element.
- * @return {{suspend: Function, restore: Function}} Snap control.
+ * @return {{suspend: Function, restore: Function}} Gesture-style control.
  */
 function snapControl( el ) {
-	const original = el.style.scrollSnapType;
+	const originalSnap = el.style.scrollSnapType;
+	const originalBehaviour = el.style.scrollBehavior;
 	return {
 		suspend() {
 			el.style.scrollSnapType = 'none';
+			el.style.scrollBehavior = 'auto';
 		},
 		restore() {
-			el.style.scrollSnapType = original;
+			el.style.scrollSnapType = originalSnap;
+			el.style.scrollBehavior = originalBehaviour;
+		},
+	};
+}
+
+/**
+ * Suspend / restore text selection for the duration of a gesture.
+ *
+ * Belt-and-braces alongside the `dragstart`/`preventDefault` handling in
+ * `bindDrag` below (§0 cause-agnostic mitigation — `preventDefault()` on
+ * `pointermove` only starts firing once a gesture crosses `DRAG_THRESHOLD`,
+ * so the first few sub-threshold pixels of a real, slightly jittery human
+ * drag are not covered by it, and cross-browser selection-cancellation via
+ * `preventDefault` on a move event is not uniformly honoured once a native
+ * selection gesture has already begun). Setting `user-select: none` for the
+ * lifetime of the pointer-down removes the browser's OWN reason to start a
+ * text selection in the first place, regardless of which of those gaps is
+ * responsible on a given browser — it can only help, never regress a click,
+ * a link, or a keyboard interaction, since none of those depend on text
+ * being selectable.
+ *
+ * @param {HTMLElement} el The native-scroll element.
+ * @return {{suspend: Function, restore: Function}} Selection control.
+ */
+function selectionControl( el ) {
+	const original = el.style.userSelect;
+	return {
+		suspend() {
+			el.style.userSelect = 'none';
+		},
+		restore() {
+			el.style.userSelect = original;
 		},
 	};
 }
@@ -189,6 +250,7 @@ function snapControl( el ) {
  */
 function bindDrag( el, hooks ) {
 	const snap = snapControl( el );
+	const selection = selectionControl( el );
 	let dragging = false;
 	let moved = false;
 	let startX = 0;
@@ -211,6 +273,10 @@ function bindDrag( el, hooks ) {
 		startScroll = el.scrollLeft;
 		el.style.cursor = 'grabbing';
 		snap.suspend();
+		// Suspended from pointerdown, not just once the drag threshold is
+		// crossed — see selectionControl()'s docblock for why the threshold
+		// window matters here.
+		selection.suspend();
 		hooks.onStart( el.scrollLeft );
 	};
 
@@ -246,6 +312,10 @@ function bindDrag( el, hooks ) {
 			el.releasePointerCapture( activePointer );
 		}
 		activePointer = null;
+		// Selection has no coast phase (unlike snap/scroll-behaviour, which the
+		// momentum layer must keep suspended through the throw) — always safe
+		// to restore the instant the pointer lifts.
+		selection.restore();
 		if ( moved ) {
 			// The momentum layer owns the restore, because snapping must stay
 			// off for the whole coast — restoring here would snap the carousel
@@ -295,9 +365,11 @@ function bindDrag( el, hooks ) {
 	el.addEventListener( 'click', onClickCapture, true );
 
 	return () => {
-		// Guarantees snapping is never left suspended if the effect is torn
-		// down mid-gesture (bfcache restore, reduced-motion revert).
+		// Guarantees snapping/scroll-behaviour/selection are never left
+		// suspended if the effect is torn down mid-gesture (bfcache restore,
+		// reduced-motion revert).
 		snap.restore();
+		selection.restore();
 		el.removeEventListener( 'dragstart', onDragStart );
 		el.removeEventListener( 'pointerdown', onPointerDown );
 		el.removeEventListener( 'pointermove', onPointerMove );

@@ -43,7 +43,7 @@
 	/* Legible contrast-safe default; the scoped .uid colour rule (always
 	   emitted, since textColour defaults to `primary`) overrides this when
 	   the operator has an explicit choice. */
-	color: var(--wp--preset--color--surface, #ffffff);
+	color: var(--wp--preset--color--text-inverse, #ffffff);
 }
 
 /* ----- Variant: pill-wrap (content-width — collapses to text width) ----- */
@@ -54,7 +54,7 @@
 	background-color: var(--wp--preset--color--primary);
 	padding: 4px 12px 4px 12px;
 	border-radius: 6px;
-	color: var(--wp--preset--color--surface, #ffffff);
+	color: var(--wp--preset--color--text-inverse, #ffffff);
 }
 
 /* ----- Responsive font size overrides (tablet / mobile) ----- */

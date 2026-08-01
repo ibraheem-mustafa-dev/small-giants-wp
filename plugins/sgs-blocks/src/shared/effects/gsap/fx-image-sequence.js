@@ -2,10 +2,23 @@
  * Tier G effect — scroll-scrubbed canvas image sequence. Spec 38 FR-38-9.
  *
  * Draws a numbered frame sequence to a `<canvas>`, picking the visible frame
- * from the element's own scroll progress (the same element-scoped scrub
- * pattern as `fx-scrub.js` — NOT a pin: a client wanting the section to hold
- * still while the sequence plays composes this block inside a `sgs/container`
- * with pin+scrub separately; v1 keeps one effect per element per §11.2).
+ * from the element's own scroll progress. Two modes, both driven from this
+ * one module (D435, 2026-08-01):
+ *
+ *   - Default (`data-sgs-fx-pin` absent): the block scrubs while it scrolls
+ *     normally, ONLY for as long as its own box is FULLY inside the
+ *     viewport — see `computeVisibilityWindow()` inside `initImageSequence`
+ *     for the anchoring method and why the obvious shorter-window fix was
+ *     rejected.
+ *   - Pin ON (`data-sgs-fx-pin="true"`, block attribute `fxPin`, an
+ *     inspector toggle): the block is held in place the moment it becomes
+ *     fully visible and released the moment it would next start leaving, so
+ *     the entire scrub plays with the block stationary. This REPLACES the
+ *     old guidance of composing the block inside a `sgs/container` with
+ *     `pin-scrub` wrapped around it — the owner rejected that composition as
+ *     "janky", "useless without pinning" and "patchwork" (D435). No extra
+ *     wrapper markup is emitted for pin mode: the block's own root
+ *     (`.sgs-image-sequence`) is the pin target.
  *
  * PER FR-38-9's OWN DEFINITION OF DONE — repeated here because it is easy to
  * forget while writing the canvas code: "the block is NOT done when the
@@ -69,7 +82,7 @@ import {
 	tierG,
 	withMotionAllowed,
 	bootEffect,
-	resolveStart,
+	chromeOffsetPx,
 	resolveScrub,
 } from '@sgs/motion-provider';
 
@@ -285,6 +298,8 @@ export function initImageSequence( el ) {
 
 	const wrapper = el.closest( '.sgs-image-sequence' ) || el.parentElement;
 	const count = Math.max( 1, Math.floor( Number( tier.count ) ) );
+	const pinTarget = wrapper || el;
+	const pinEnabled = 'true' === el.getAttribute( 'data-sgs-fx-pin' );
 
 	return withMotionAllowed( () => {
 		/** @type {Array<HTMLImageElement|null|undefined>} */
@@ -369,54 +384,115 @@ export function initImageSequence( el ) {
 		);
 		observer.observe( wrapper || el );
 
+		/*
+		 * D435 Part 1, 2026-08-01 — REPLACES the `top 80%` / `+=150%`
+		 * fixed-pixel-window shipped 2026-07-31. That version scrubbed the
+		 * moment 20% of the block's top had entered, and kept scrubbing for
+		 * a further 150% of the viewport height regardless of where the
+		 * block actually was — so a viewport-tall block was still mid-scrub
+		 * long after it had scrolled mostly past. The owner's ruling: scrub
+		 * ONLY while the block is FULLY on screen, by default.
+		 *
+		 * ⚠ WHY NOT A SHORTER SAME-ANCHOR PAIR (e.g. `top 20%` → `top 80%`,
+		 * both measured from the same edge). That shape was modelled and
+		 * REJECTED for the previous bug (see the numbers immediately below)
+		 * and produces a "mirror" defect: because both ends share one edge,
+		 * the window's width is capped at the percentage spread (60% of the
+		 * viewport there) no matter how tall the block actually is — so a
+		 * block taller than that spread finishes scrubbing before it is
+		 * even fully on screen, and the back half of its visible life shows
+		 * a frozen last frame. That is the SAME defect this rework exists
+		 * to fix, just moved earlier in the scroll instead of solved:
+		 *
+		 *   shipped + chrome bug  0.000 0.000 0.000 0.636 1.000  ← the old defect
+		 *   `top 20%` → `top 80%` 0.000 0.396 1.000 1.000 1.000  ← mirror image
+		 *   `+=150%` (2026-07-31) 0.000 0.158 0.450 0.742 1.000  ← fixed the
+		 *                                                          old defect, but
+		 *                                                          still scrubs
+		 *                                                          while partly
+		 *                                                          off-screen
+		 *
+		 * `computeVisibilityWindow()` below anchors to the OPPOSITE pair of
+		 * edges instead — the block's bottom vs the viewport's bottom, and
+		 * the block's top vs the viewport's (header-cleared) top — which is
+		 * what "fully visible" actually means geometrically, not a
+		 * percentage approximation of it. See its own docblock for the
+		 * derivation and the taller-than-viewport fallback.
+		 *
+		 * D435 Part 2 — pinning is now a first-class inspector toggle
+		 * (`fxPin` / `data-sgs-fx-pin`) instead of a composition workaround.
+		 * Pinning the trigger holds it exactly where it first became fully
+		 * visible (the resolved `start`) for the resolved scroll distance,
+		 * so the block never moves while its scrub plays — genuinely fully
+		 * visible for the whole effect by construction, including under the
+		 * taller-than-viewport fallback.
+		 */
+		const computeVisibilityWindow = () => {
+			const rect = pinTarget.getBoundingClientRect();
+			const scrollY = window.scrollY || window.pageYOffset || 0;
+			const elTop = rect.top + scrollY;
+			const elHeight = rect.height;
+			const vh =
+				window.innerHeight || document.documentElement.clientHeight;
+			// Fixed/sticky chrome genuinely occludes the top of the
+			// viewport, so a block sitting behind it is not "fully
+			// visible" even though it is geometrically within the window
+			// bounds. Shared with the pinning effects — see
+			// chromeOffsetPx()'s own docblock for why it is read from the
+			// published CSS var rather than re-measured here.
+			const headerOffset = chromeOffsetPx();
+			// scrollY at which the block's BOTTOM reaches the viewport's
+			// bottom (nothing below it is cut off any more).
+			const enterFull = elTop + elHeight - vh;
+			// scrollY at which the block's TOP reaches the viewport's
+			// visible top, i.e. just below any header (nothing above it is
+			// cut off yet).
+			const exitFull = elTop - headerOffset;
+			// For a block SHORTER than the visible viewport, `enterFull`
+			// comes first (start) and `exitFull` second (end). For a block
+			// TALLER than the visible viewport it can never be fully on
+			// screen — the two swap order, and `Math.min`/`Math.max` turn
+			// this into its natural dual: the window during which the
+			// VIEWPORT is fully contained inside the block, the closest
+			// real substitute for "fully visible" when true full-visibility
+			// is geometrically impossible. Either way the block still
+			// scrubs across a genuine on-screen window rather than never
+			// scrubbing at all.
+			return {
+				start: Math.min( enterFull, exitFull ),
+				end: Math.max( enterFull, exitFull ),
+			};
+		};
+
+		// An author-set `data-sgs-fx-start`/`-end` is returned untouched —
+		// the per-instance override this block has always offered. Only the
+		// DEFAULT changes.
+		const resolveVisibilityStart = () => {
+			const authored = el.getAttribute( 'data-sgs-fx-start' );
+			if ( authored && authored.trim() ) {
+				return authored.trim();
+			}
+			return computeVisibilityWindow().start;
+		};
+		const resolveVisibilityEnd = () => {
+			const authored = el.getAttribute( 'data-sgs-fx-end' );
+			if ( authored && authored.trim() ) {
+				return authored.trim();
+			}
+			return computeVisibilityWindow().end;
+		};
+
 		const scrollTrigger = {
-			trigger: wrapper || el,
-			/*
-			 * NO `clearChrome` — this effect never pins, so it keeps its own
-			 * default. See resolveStart's docblock: the offset used to be applied
-			 * unconditionally, rewriting `top 80%` to `top top+=93` on any site
-			 * with a sticky header. That is what
-			 * `reports/visual-diff/image-sequence-2026-07-31.md` actually measured
-			 * — luminance FLAT at 86.14 for scroll fractions 0.00, 0.25 and 0.50,
-			 * because the sequence had not begun yet: the whole scrub was crammed
-			 * into the tail of the block's pass, by which point the block was
-			 * largely out of view.
-			 *
-			 * THE END IS NOW A FIXED DISTANCE, NOT AN ELEMENT EDGE. `bottom 20%`
-			 * made the scrub distance the canvas's OWN HEIGHT plus 60% of the
-			 * viewport, so a tall 16:9 hero sequence and a small inline one played
-			 * at wildly different rates from identical frames, and the tall one
-			 * could not reach its final frame until the block was already leaving
-			 * the screen. `+=150%` is 150% of the viewport height from wherever the
-			 * start resolved — the same height-independence fx-scrub.js gets by
-			 * anchoring both ends to `top`, stated directly instead of implied.
-			 *
-			 * ⚠ WHY NOT THE OBVIOUS SAME-ANCHOR `top 20%`. It was tried and
-			 * modelled against the probe's own sampling geometry before being
-			 * rejected. A same-anchor pair spans only (80-20) = 60% of the viewport
-			 * — but this block is 675px tall in a 900px viewport, so the sequence
-			 * would finish before the block was even fully on screen, and the whole
-			 * back half of its visible life would show a frozen last frame.
-			 * Modelled progress at the probe's five scroll samples:
-			 *
-			 *   shipped + chrome bug  0.000 0.000 0.000 0.636 1.000  ← the defect
-			 *   `top 20%`             0.000 0.396 1.000 1.000 1.000  ← mirror image
-			 *   `+=150%`              0.000 0.158 0.450 0.742 1.000  ← chosen
-			 *
-			 * The middle row is the same defect reflected: instead of nothing
-			 * happening until the end, everything happens at the start. Fixing a
-			 * bunched-at-the-end scrub by bunching it at the beginning is not a
-			 * fix. 150% was picked as the smallest multiple that keeps all five
-			 * samples distinct and well spread; 100% still clamps the last two.
-			 *
-			 * A sequence also genuinely wants a LONG window — dozens of frames
-			 * across too little scroll reads as a jerky flick-book. The START keeps
-			 * the module's existing 80% (the block is entering from the bottom
-			 * edge), so only the end changes.
-			 */
-			start: () => resolveStart( el, 'top 80%' ),
-			end: el.getAttribute( 'data-sgs-fx-end' ) || '+=150%',
+			trigger: pinTarget,
+			start: resolveVisibilityStart,
+			end: resolveVisibilityEnd,
 			scrub: resolveScrub( el ),
+			pin: pinEnabled,
+			pinSpacing: pinEnabled,
+			// Only meaningful with a pin: re-measure on refresh so a reflow
+			// (webfont swap, sidebar collapse) does not leave the pin
+			// range drifted from the real layout. Mirrors fx-pin-scrub.js.
+			invalidateOnRefresh: pinEnabled,
 			onUpdate: ( self ) => {
 				const index = Math.round( self.progress * ( count - 1 ) );
 				if ( index !== lastDrawnIndex ) {
@@ -449,7 +525,16 @@ export function initImageSequence( el ) {
 			}
 			observer.disconnect();
 			window.removeEventListener( 'resize', onResize );
-			trigger.kill();
+			// Explicit args, not a bare kill(): when pinEnabled this trigger
+			// created a pin-spacer and repositioned pinTarget. `revert: true`
+			// guarantees the pin-spacer is removed and pinTarget restored to
+			// normal flow — required so toggling pin off (or a mid-session
+			// reduced-motion revert while pinned) never leaves a pinning
+			// artefact behind. `allowAnimation: false` matches
+			// fx-pin-scrub.js's own reasoning: there is no tween here for it
+			// to affect either way, but stating it removes any dependency on
+			// kill()'s undocumented no-arg default.
+			trigger.kill( true, false );
 			// Hide the canvas again so the fallback poster is what remains
 			// visible — matches §10's "poster/final frame only" simplify
 			// contract for a mid-session reduced-motion revert.

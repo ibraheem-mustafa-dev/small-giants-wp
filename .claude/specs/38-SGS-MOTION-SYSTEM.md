@@ -210,6 +210,55 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   CustomWiggle appear ONLY as easing/motion-flavour options inside other G effects' controls
   (e.g. a "spring (physics)" easing choice on a scrub or draggable release). Never standalone
   toggles; each bundles into the chunk of the effect that offers it.
+- **FR-38-25 Cursor-follow background ("cursor glow") — Tier V, EMITTER + PARTICIPANT.**
+  Bean-signed 2026-08-01 (D440). A block's background carries a soft radial field that follows
+  the pointer. **Tier V, not G:** the shipped mega-menu implementation
+  (`src/shared/effects/spotlight.js`, consumed by `sgs/mega-panel`) already does this in vanilla
+  with an rAF-throttled custom-property write and a live reduced-motion gate — GSAP adds nothing
+  the doctrine's §1.3 ratchet would accept.
+
+  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
+  - **EMITTER** — publishes the pointer coordinates and paints the base field. Eligible: any
+    block with `supports.sgs.containerKind` set, or declaring a background-image attribute.
+  - **PARTICIPANT** — paints its own share of the SAME field so the glow reads as continuous
+    across an opaque child. Eligible: any block with a background-colour capability.
+
+  **Why two roles rather than one.** Bean's ruling, verbatim: *"it'd look a bit janky for the
+  effect to either be covered behind a button or just completely turn off when I hover on a
+  button so it should be able to go over any surface seamlessly."* Investigation established
+  that the second half does not occur — `mousemove` bubbles from descendants, and `mouseleave`
+  does not fire on entering a child, so tracking never stops (`spotlight.js:101-107`). **The
+  first half does occur**: the field paints on a `::before` while every direct child is forced
+  to `z-index: 1` (`mega-panel/style.css:193-211`), so an opaque child occludes its slice. A
+  participant role fixes the occlusion without a blend layer over the client's own colours.
+
+  **Mechanism — viewport-space coordinates + `background-attachment: fixed`.** The emitter
+  publishes the pointer position in VIEWPORT pixels; custom properties inherit, so every
+  descendant reads the same pair with no ancestry wiring. Each participant paints the identical
+  gradient with `background-attachment: fixed`, which resolves a background against the viewport
+  rather than the element — so the field aligns across separately-painted boxes with **zero
+  per-element geometry maths**. This is why the emitter must publish viewport-space values and
+  NOT the element-relative percentages the mega-menu uses: `initSpotlight` therefore gains an
+  optional coordinate-space option rather than a second module (its export contract stays
+  backwards-compatible for the existing consumer).
+
+  **Gated to fine pointers** — `@media (hover: hover) and (pointer: fine)`. A cursor effect has
+  no meaning on touch, and this also sidesteps `background-attachment: fixed` being ignored on
+  iOS Safari.
+
+  **⚠ TWO RISKS THAT MUST BE MEASURED BEFORE WIDENING, NOT REASONED ABOUT:**
+  1. **Paint cost.** A `radial-gradient` background repaints every frame the pointer moves, and
+     N participants means N repaints. The house rule ("transition only `transform`/`opacity`")
+     does not name `background-image`, but the cost class is the same. Measure frame cost on a
+     canary with a realistic participant count.
+  2. **Legibility.** A moving field under text changes contrast continuously. Measure at the
+     field's BRIGHTEST position, never at rest — an effect recomputes every contrast above it.
+     Bean's own standing finding applies: a mid-luminance brand accent fails as an indicator
+     against both grounds.
+
+  **Unlike the mega-menu's version this is NOT always-on** — that one has no control at all
+  (`mega-panel/view.js` applies `data-spotlight` unconditionally). This ships with an inspector
+  control, per the framework rule that a capability without an editor control is not done.
 
 ### 3.4 SVG
 
@@ -235,6 +284,33 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   GSAP. **Tier G only when scroll-scrubbed** (path progress mapped to scroll → MotionPathPlugin
   + ScrollTrigger). The inspector exposes one control surface; the tier fork is an
   implementation detail invisible to the client.
+  **Resting position (D441, 2026-08-01, owner-approved design amendment).** Measured live on
+  the canary: the "arc" route's route-box sizing defect (documented in `fx-motion-path.css`)
+  produced a locked end-of-scrub transform that carried the traveller through the sticky
+  header's screen band and off the top of the viewport before the tween settled — the designed
+  payoff position was never visible. `scroll-padding-top`/`scroll-margin-top` cannot fix this
+  (neither ever fires for a GSAP transform, only a real scroll operation); a runtime
+  `getBoundingClientRect()` clamp was considered and rejected as the wrong layer (ad hoc pixel
+  maths against a value the CSS layer can resolve declaratively, per-frame layout reads for a
+  static value, and a second reduced-motion code path). The shipped fix is a client-facing
+  **"Resting position" control** — four named presets (`below-header` / `middle` / `lower-third`
+  / `custom`, DEFAULT `middle` — industry convention for "settle and read": viewport centre,
+  never `top top`, which is for pinning mechanics) plus a 5vh-stepped fine-tune slider for
+  `custom`. Values resolve **declaratively in CSS** via `calc()`/`max()` against the existing
+  published `--sgs-header-height` custom property (`assets/css/fx-motion-path.css`); the
+  `max()` floor (`header-height + 16px`) guarantees the traveller can never rest under the
+  header regardless of preset or unusually tall/wrapped content. The runtime
+  (`fx-motion-path.js`) does not compute or measure this position itself — `ScrollTrigger`'s
+  own `onLeave`/`onEnterBack` callbacks (fire once per boundary crossing, never per-frame) hand
+  off between the GSAP-driven transform (mid-scrub) and a plain CSS `position: sticky` rule
+  (once settled), clearing the transform on handoff so the CSS rule is never fighting a stale
+  `translate`. Reduced motion (§10) reads the identical `--sgs-fx-motion-path-rest-y` custom
+  property unconditionally, so the resting position holds even when no tween is ever created —
+  one CSS source of truth for both branches, not two code paths that could drift apart.
+  Universal per R-31-9: the mechanism works whether the traveller is an `<img>`
+  (`sgs/decorative-image`) or any other element, because it never needs to nest anything inside
+  the traveller (the void-element blocker that ruled out an earlier considered approach — see
+  `fx-motion-path.css`'s docblock).
 
 ### 3.5 Site level
 
@@ -739,7 +815,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Physics easings | Follow their host effect's row |
 | DrawSVG | **Simplify:** rendered fully drawn (no animated stroke) — upgrades Vivus's non-canonical 1ms-draw arm |
 | MorphSVG | **Suppress:** final shape only |
-| MotionPath | **Suppress:** resting position (matches existing decorative-image reduced-motion arm) |
+| MotionPath | **Suppress:** rests at the client-chosen resting position (D441, 2026-08-01 — CSS applies `--sgs-fx-motion-path-rest-y` unconditionally under `prefers-reduced-motion: reduce`, the same custom property the normal-motion handoff uses; superseded the earlier "matches existing decorative-image reduced-motion arm" wording, which predated the resting-position control and meant "wherever the server rendered it") |
 | Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
 
@@ -772,9 +848,40 @@ data-sgs-fx-stagger               ms | s
 data-sgs-fx-duration / -ease      token or literal (easing may name a physics flavour)
 data-sgs-fx-shape="<preset|custom>"     MORPH only — which shape pair to morph between
 data-sgs-fx-path="<preset|custom>"      MOTION-PATH only — which route to travel along
+data-sgs-fx-motion-path-rest="<preset>"     MOTION-PATH only — below-header | middle |
+                                             lower-third | custom (D441; unset = middle)
+data-sgs-fx-motion-path-rest-vh="<0-100>"   MOTION-PATH only — 5vh-stepped fine-tune, CUSTOM
+                                             preset only (D441)
 data-sgs-fx-morph-target="<selector>"       resolved TARGET element (render-layer output)
 data-sgs-fx-motion-path-target="<selector>" resolved TARGET element (render-layer output)
+data-sgs-fx-pin="true"            IMAGE-SEQUENCE only — holds the block in place for the
+                                   whole scrub instead of letting it scroll normally
 ```
+
+> **AMENDMENT 2026-08-01 (D435) — `data-sgs-fx-pin` / `fxPin` added, and `sgs/image-sequence`'s
+> default scrub window redefined as "fully visible only".** Two owner rulings on
+> `sgs/image-sequence`:
+>
+> 1. **Scrub only while the canvas is fully on screen, by default.** The 2026-07-31 `top 80%` /
+>    `+=150%` fixed-pixel window (see the amendment immediately above FR-38-9 in §3.1) still let
+>    the block scrub while only partially visible. `fx-image-sequence.js` now anchors `start`/`end`
+>    to live-measured element-edge-vs-viewport-edge positions (block bottom vs viewport bottom;
+>    block top vs the header-cleared viewport top) rather than any fixed percentage or distance —
+>    see `computeVisibilityWindow()` in that file for the derivation, including the documented
+>    rejection of a same-anchor shorter window (it reproduces the exact "mirror" defect this
+>    replaces) and the taller-than-viewport fallback (the window during which the viewport is
+>    fully contained in the block, since true full-visibility is geometrically impossible there).
+>    `data-sgs-fx-start`/`-end` still override this per instance, unchanged.
+> 2. **Pinning is now a first-class inspector toggle**, not a composition workaround. The owner
+>    rejected the "nest inside `sgs/container` with `pin-scrub` composed around it" guidance as
+>    "janky", "useless without pinning" and "patchwork". `fxPin` (block attribute, boolean,
+>    default `false`) emits `data-sgs-fx-pin="true"` on the canvas; `fx-image-sequence.js` reads
+>    it and pins its own trigger element (no extra wrapper markup) for the resolved scroll
+>    distance, so pin ON behaves like the old ad-hoc composition but needs no client-built
+>    structure. Pin OFF leaves no pin-spacer or repositioning behind (`ScrollTrigger.kill(true,
+>    false)` on cleanup/teardown).
+>
+> `fxPin` is seeded in `block_attributes` under `fx:*` alongside the other `fx*` attrs (§11.3).
 
 > **AMENDMENT 2026-07-31 (D427) — the morph / motion-path CONTROL SURFACE, Bean-signed.**
 >
@@ -824,8 +931,8 @@ cheap prefix scan; pattern authors can hand-write it.
 ### 11.3 Converter mapping (defined now, lifted later)
 
 Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
-`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase` — seeded in `block_attributes` under
-`fx:*`, §6.2).
+`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin` — seeded in `block_attributes`
+under `fx:*`, §6.2). `fxPin` is IMAGE-SEQUENCE-only (D435, 2026-08-01).
 
 > **AMENDMENT 2026-07-30 (D417) — `data-sgs-fx-hold` / `fxHold` added to §11.2 and to the list
 > above.** Owner-reported against FR-38-6: a pinned section released the instant its last child

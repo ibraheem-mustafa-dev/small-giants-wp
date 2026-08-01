@@ -5,6 +5,7 @@ import {
 	TextControl,
 	SelectControl,
 	RangeControl,
+	ToggleControl,
 	Notice,
 	Button,
 	Spinner,
@@ -213,6 +214,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		fxStart,
 		fxEnd,
 		fxScrub,
+		fxPin,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -451,10 +453,29 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Scroll effect', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					<ToggleControl
+						label={ __( 'Pin while scrubbing', 'sgs-blocks' ) }
+						help={
+							fxPin
+								? __(
+										'The sequence holds still on screen the moment it comes fully into view, and scrolling plays through the frames while it stays put — it is released once the frames finish.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Off: the sequence scrolls normally and only plays while it is fully on screen. Turn on to hold it in place while it plays, instead of it also scrolling past.',
+										'sgs-blocks'
+								  )
+						}
+						checked={ Boolean( fxPin ) }
+						onChange={ ( value ) =>
+							setAttributes( { fxPin: value } )
+						}
+						__nextHasNoMarginBottom
+					/>
 					<TextControl
 						label={ __( 'Start position', 'sgs-blocks' ) }
 						help={ __(
-							'Viewport-relative, e.g. "top 80%". Leave blank for the default.',
+							'Advanced — overrides the automatic "fully visible" start. Viewport-relative, e.g. "top 80%". Leave blank for the default.',
 							'sgs-blocks'
 						) }
 						value={ fxStart }
@@ -466,7 +487,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<TextControl
 						label={ __( 'End position', 'sgs-blocks' ) }
 						help={ __(
-							'Viewport-relative, e.g. "bottom 20%". Leave blank for the default.',
+							'Advanced — overrides the automatic "fully visible" end. Viewport-relative, e.g. "bottom 20%", or a distance like "+=150%". Leave blank for the default.',
 							'sgs-blocks'
 						) }
 						value={ fxEnd }

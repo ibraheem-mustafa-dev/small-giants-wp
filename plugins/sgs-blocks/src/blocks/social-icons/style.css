@@ -44,7 +44,7 @@
 /* Filled style */
 .sgs-social-icons--filled .sgs-social-icons__item {
 	background: var(--sgs-social-colour);
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	border-radius: 50%;
 	padding: 8px;
 }
@@ -74,7 +74,7 @@
 
 .sgs-social-icons--pill .sgs-social-icons__item:hover {
 	background: var(--sgs-social-hover);
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 @media (prefers-reduced-motion: reduce) {

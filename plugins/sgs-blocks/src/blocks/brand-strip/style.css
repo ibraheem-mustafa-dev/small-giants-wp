@@ -149,7 +149,7 @@
 	width: var(--sgs-tile-size);
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
-	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff));
+	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface-alt, #fff));
 	/* Clip the white fill to the PADDING box so the border sits AROUND the card,
 	 * not painted over it: the 10px border shows the band behind it (transparent
 	 * at rest) and turns gold on hover, framing the white tile rather than
@@ -398,7 +398,7 @@
  * themselves inherit down from root to item with no extra wiring needed. */
 
 .sgs-brand-strip__item:hover {
-	background-color: var(--sgs-tile-hover-bg, var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff)));
+	background-color: var(--sgs-tile-hover-bg, var(--sgs-tile-bg, var(--wp--preset--color--surface-alt, #fff)));
 }
 
 /* Hover overrides — the `--sgs-tile-hover-*` values are now emitted as a scoped

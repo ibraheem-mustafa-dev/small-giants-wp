@@ -229,7 +229,7 @@
 	gap: 1rem;
 	padding: 24px;
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
-	background-color: var( --wp--preset--color--surface, #fff );
+	background-color: var( --wp--preset--color--surface-alt, #fff );
 	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
 	box-shadow: 0 2px 4px rgba( 0, 0, 0, 0.04 );
 	transition: box-shadow 200ms ease, transform 200ms ease;
@@ -261,7 +261,7 @@
 .sgs-google-reviews--theme-dark .sgs-google-reviews__review {
 	background-color: rgba( 255, 255, 255, 0.05 );
 	border-color: rgba( 255, 255, 255, 0.1 );
-	color: var( --wp--preset--color--surface, #fff );
+	color: var( --wp--preset--color--text-inverse, #fff );
 }
 
 .sgs-google-reviews--theme-transparent .sgs-google-reviews__review {
@@ -378,7 +378,7 @@
 	align-items: center;
 	gap: 0.75rem;
 	padding: 1rem 1.5rem;
-	background-color: var( --wp--preset--color--surface, #fff );
+	background-color: var( --wp--preset--color--surface-alt, #fff );
 	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
 	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );

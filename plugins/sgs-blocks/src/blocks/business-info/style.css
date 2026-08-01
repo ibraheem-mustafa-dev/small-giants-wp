@@ -255,7 +255,7 @@
 	padding: 8px 18px;
 	background: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 6px);
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	font-weight: 600;
 	line-height: 1.2;
 	text-decoration: none;
@@ -264,9 +264,9 @@
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__link:hover,
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible {
 	background: var(--wp--preset--color--primary-dark, var(--wp--preset--color--primary));
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__icon,
 .wp-block-sgs-business-info.is-style-button .sgs-business-info__icon svg {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }

@@ -229,7 +229,7 @@ section.sgs-hero {
 }
 
 .sgs-hero--standard .sgs-hero__headline:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 /* Sub-headline */
@@ -347,7 +347,7 @@ section.sgs-hero {
 /* "default" is an alias for "light" — white badge, dark text. */
 .sgs-hero__badge--default,
 .sgs-hero__badge--light {
-	background-color: var(--wp--preset--color--surface);
+	background-color: var(--wp--preset--color--surface-alt);
 	color: var(--wp--preset--color--text);
 }
 
@@ -358,7 +358,7 @@ section.sgs-hero {
 
 .sgs-hero__badge--success {
 	background-color: var(--wp--preset--color--success);
-	color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text-inverse);
 }
 
 .sgs-hero__badge-number {

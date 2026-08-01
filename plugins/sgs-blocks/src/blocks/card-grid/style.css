@@ -33,7 +33,7 @@
    means the card inherits the theme token exactly as before; the client
    opts in to a custom value via the resting-state inspector controls. */
 .sgs-card-grid--card .sgs-card-grid__item {
-	background: var(--sgs-card-background, var(--wp--preset--color--surface, #fff));
+	background: var(--sgs-card-background, var(--wp--preset--color--surface-alt, #fff));
 	border-style: solid;
 	border-color: var(--sgs-card-border-color, transparent);
 	border-width: var(--sgs-card-border-width, 0);
@@ -85,11 +85,11 @@
 }
 
 .sgs-card-grid--overlay .sgs-card-grid__title:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-card-grid--overlay .sgs-card-grid__subtitle:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 	opacity: 0.85;
 }
 

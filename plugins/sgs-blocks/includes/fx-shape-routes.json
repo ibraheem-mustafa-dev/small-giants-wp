@@ -1,0 +1,40 @@
+{
+	"_readme": "Spec 38 §11.2 (D427 amendment) — the CURATED MorphSVG shape-PAIR presets. ONE file, read by BOTH sides on purpose: includes/fx-shape-routes.php reads it for the render-layer expansion (it needs both `d` strings), and src/blocks/extensions/fx.js imports it for the thumbnail picker (it needs the same `d` strings to draw each thumbnail, plus the labels). A second copy would be a sixth hand-kept motion list that nothing cross-checks — the same drift class fx-path-routes.json exists to close for motion-path. It lives in includes/ rather than src/ because includes/ ships to the server; webpack imports .json natively, so the editor side needs no generator step.",
+	"_geometry": "Every shape is authored in a 0 0 100 100 viewBox, matched as closely as a hand-authored preset reasonably can be for MorphSVGPlugin's point-matching (it re-samples on a mismatch rather than refusing to run — see fx-morph.js's own docblock — so an imperfect match still animates, just with more redistribution). `from` is what the FROM state (the resting shape, shown when the effect never runs at all — no JS, reduced motion, a failed asset gate) looks like; `to` is what it morphs into.",
+	"pairs": {
+		"circle-square": {
+			"label": "Circle to square",
+			"description": "A circle reshapes into a square.",
+			"from": { "d": "M 50 6 A 44 44 0 0 1 50 94 A 44 44 0 0 1 50 6 Z" },
+			"to": { "d": "M 10 10 L 90 10 L 90 90 L 10 90 Z" }
+		},
+		"plus-cross": {
+			"label": "Plus to cross",
+			"description": "An upright plus sign reshapes into a diagonal cross (X).",
+			"from": {
+				"d": "M 38 10 L 62 10 L 62 38 L 90 38 L 90 62 L 62 62 L 62 90 L 38 90 L 38 62 L 10 62 L 10 38 L 38 38 Z"
+			},
+			"to": {
+				"d": "M 30 10 L 50 30 L 70 10 L 90 30 L 70 50 L 90 70 L 70 90 L 50 70 L 30 90 L 10 70 L 30 50 L 10 30 Z"
+			}
+		},
+		"play-pause": {
+			"label": "Play to pause",
+			"description": "A play triangle reshapes into a pause icon (two bars).",
+			"from": { "d": "M 26 14 L 26 86 L 84 50 Z" },
+			"to": {
+				"d": "M 22 14 L 42 14 L 42 86 L 22 86 Z M 58 14 L 78 14 L 78 86 L 58 86 Z"
+			}
+		},
+		"logo-icon": {
+			"label": "Logo mark to icon",
+			"description": "An abstract 4-point spark reshapes into a rounded badge — the generic \"brand mark becomes an icon\" flourish.",
+			"from": {
+				"d": "M 50 6 C 54 34 66 46 94 50 C 66 54 54 66 50 94 C 46 66 34 54 6 50 C 34 46 46 34 50 6 Z"
+			},
+			"to": {
+				"d": "M 50 10 C 74 10 90 26 90 50 C 90 74 74 90 50 90 C 26 90 10 74 10 50 C 10 26 26 10 50 10 Z"
+			}
+		}
+	}
+}

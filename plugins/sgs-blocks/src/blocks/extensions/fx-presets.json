@@ -44,7 +44,7 @@
 		"scramble": {
 			"subtle": { "fxStart": "top 85%", "fxEnd": "top center" },
 			"standard": { "fxStart": "top 70%", "fxEnd": "top center" },
-			"dramatic": { "fxStart": "top bottom", "fxEnd": "top top" }
+			"dramatic": { "fxStart": "top center", "fxEnd": "top top" }
 		},
 		"draw": {
 			"subtle": { "fxStart": "top 85%", "fxEnd": "top center" },

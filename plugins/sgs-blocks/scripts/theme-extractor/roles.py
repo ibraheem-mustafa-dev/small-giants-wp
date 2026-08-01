@@ -61,6 +61,12 @@ def selector_role(selector: str) -> str:
 _RULES = [
     # property-prefix, selector_role(s), role, priority, confidence
     ("background", ("base",),         "surface",       90, 0.95),
+    # NOTE (2026-08-01, Spec 32/33 investigation): a background declared on a "content" selector is a
+    # deliberately WEAK/low-confidence signal (any section/card counts) — kept at 0.70, below
+    # build_palette()'s 0.85 identity-claim floor, so it never overrides a client's own named draft
+    # token (D318 regression guard). This role still feeds the within-role NAME-tiebreak in PASS 2; the
+    # guarantee that `surface-alt` is genuinely distinct from `surface` in every emitted snapshot is
+    # handled by palette.py's `_synthesise_surface_alt` fallback, not by raising this confidence.
     ("background", ("content",),      "surface-alt",   55, 0.70),
     ("color",      ("base",),         "text",          88, 0.95),
     ("background", ("interactive",),  "primary",       85, 0.90),

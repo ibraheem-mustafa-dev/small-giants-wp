@@ -1,14 +1,17 @@
 {
 	"sgs/before-after": [
 		"draggable",
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/buybox": [
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/collapsible-text": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
@@ -17,11 +20,13 @@
 	"sgs/container": [
 		"draw",
 		"horizontal-panel",
+		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scrub"
 	],
 	"sgs/counter": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
@@ -30,23 +35,28 @@
 	"sgs/cta-section": [
 		"draw",
 		"horizontal-panel",
+		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scrub"
 	],
 	"sgs/decorative-image": [
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/gallery": [
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/google-reviews": [
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/heading": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
@@ -55,6 +65,7 @@
 	"sgs/hero": [
 		"draw",
 		"horizontal-panel",
+		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scrub"
@@ -66,40 +77,47 @@
 		"scrub"
 	],
 	"sgs/info-box": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/label": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/post-grid": [
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/pricing-table": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/product-card": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/product-faq": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/quote": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
@@ -117,18 +135,21 @@
 		"scrub"
 	],
 	"sgs/team-member": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/testimonial": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
 		"split-reveal"
 	],
 	"sgs/text": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
@@ -136,6 +157,7 @@
 	],
 	"sgs/timeline": [
 		"draggable",
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",
@@ -144,6 +166,7 @@
 	"sgs/trust-bar": [
 		"draw",
 		"horizontal-panel",
+		"morph",
 		"motion-path",
 		"pin-scrub",
 		"scramble",
@@ -151,10 +174,12 @@
 		"split-reveal"
 	],
 	"sgs/trustpilot-reviews": [
+		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/whatsapp-cta": [
+		"morph",
 		"motion-path",
 		"scramble",
 		"scrub",

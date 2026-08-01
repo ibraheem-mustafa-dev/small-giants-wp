@@ -60,14 +60,43 @@
  * built the page without being visible to a visitor; a simply-absent
  * attribute is the ordinary "not configured yet" state and warns nothing.
  *
- * Reduced motion (§10): **SUPPRESS** — resting position, matching the
- * existing `sgs/decorative-image` reduced-motion arm. No special-case branch
- * needed: "resting position" IS the traveller's own server-rendered spot,
- * identical to the missing-asset case above, so routing through the same
- * `withMotionAllowed` gate every other effect uses is sufficient — when
- * `(prefers-reduced-motion: no-preference)` fails to match, the tween (and
- * therefore the `align`-driven reposition onto the path) is simply never
- * created.
+ * Reduced motion (§10): **SUPPRESS** — no tween is created, exactly as
+ * before (`withMotionAllowed` gates the whole setup below on
+ * `(prefers-reduced-motion: no-preference)`; when that fails to match, this
+ * module runs no code at all). What changed 2026-08-01 (D441): "resting
+ * position" no longer means "wherever the server happened to render it" —
+ * it means the CLIENT-CHOSEN resting position (§11.2's `fxPathRest` control),
+ * because `assets/css/fx-motion-path.css` applies that unconditionally under
+ * `@media (prefers-reduced-motion: reduce)`, keyed off the exact same
+ * `data-sgs-fx-motion-path-rest*` attributes this module's normal-motion
+ * branch consumes below. One CSS rule serves both branches — this file does
+ * NOT need a second reduced-motion code path that could fall out of sync
+ * with it, and must not grow one.
+ *
+ * ── RESTING POSITION HANDOFF (Spec 38 §11.2, D441) ──────────────────────────
+ * The `align: path` tween below is UNCHANGED and still rides whatever curve
+ * the route resolves to — including whatever the route-box sizing defect
+ * documented in `fx-motion-path.css` does to it mid-scrub. What is new is
+ * that this module no longer trusts that computation for where the
+ * traveller ENDS UP: `scrollTrigger.onLeave` (fires once, when the scrub
+ * crosses its end boundary going forward — never per-frame) hands off from
+ * the GSAP transform to a plain CSS `position: sticky` rule by (a) clearing
+ * the transform GSAP applied and (b) adding a class that activates the
+ * `--sgs-fx-motion-path-rest-y` custom property `fx-motion-path.css`
+ * resolves declaratively from the client's preset. `scrollTrigger.disable()`
+ * stops the tween from re-asserting its own transform on the next scroll
+ * tick (it would otherwise fight the CSS handoff, since a scrubbed
+ * ScrollTrigger keeps re-rendering at clamped progress 1 on every further
+ * scroll event). `onEnterBack` (scrolling back up past the same boundary)
+ * reverses the handoff so the return journey rides the curve again.
+ *
+ * REJECTED: computing a corrective offset in JS (whether via
+ * MotionPathPlugin's own `offsetX`/`offsetY`, or via a live
+ * `getBoundingClientRect()` clamp) — both re-derive, in JS, a position this
+ * module can instead simply DEFER to CSS for. Full reasoning in
+ * `fx-motion-path.css`'s docblock, which is the canonical source for this
+ * mechanism; this note exists so a reader of THIS file does not have to
+ * cross-reference to understand what the `scrollTrigger` callbacks below do.
  *
  * @package
  */
@@ -115,6 +144,15 @@ const PATH_SHAPE_TAGS = [
  * @return {Element|null} The resolved path element, or `null` when the gate
  *                         fails.
  */
+/**
+ * The class `fx-motion-path.css`'s handoff rule keys off — see that file's
+ * "RESTING POSITION" docblock section and this file's own note above
+ * `initMotionPath`.
+ *
+ * @type {string}
+ */
+const RESTING_CLASS = 'sgs-fx-motion-path--resting';
+
 function resolvePathTarget( el ) {
 	const selector = el.getAttribute( 'data-sgs-fx-motion-path-target' );
 	if ( ! selector || ! selector.trim() ) {
@@ -255,6 +293,45 @@ export function initMotionPath( el ) {
 				// `resolveScrub`'s own docblock in provider.js for why 0
 				// must map to `true`, not to a falsy scrub).
 				scrub: resolveScrub( el ),
+				/*
+				 * The resting-position handoff (Spec 38 §11.2, D441) — see
+				 * this file's docblock and `fx-motion-path.css`'s "RESTING
+				 * POSITION" section for the full reasoning. Both callbacks
+				 * fire ONCE per boundary crossing, never per scroll frame.
+				 *
+				 * `onLeave`: the scrub has completed and scroll has carried
+				 * PAST the end boundary. Clear GSAP's transform (so the CSS
+				 * rule's `top` is not fighting a stale `translate`), add the
+				 * resting class (which activates that CSS rule), and disable
+				 * the ScrollTrigger — without this, a scrubbed trigger keeps
+				 * re-rendering the tween at clamped progress 1 on every
+				 * further scroll tick, which would silently re-apply the
+				 * transform we just cleared on the very next tick.
+				 * `disable( false )` — `reset: false` — deliberately does
+				 * NOT call `self.revert()` or reset progress to 0; it only
+				 * stops the trigger responding to scroll, so the tween's
+				 * progress stays exactly where it was for a clean resume.
+				 */
+				onLeave: ( self ) => {
+					gsap.set( el, { clearProps: 'transform' } );
+					el.classList.add( RESTING_CLASS );
+					self.disable( false );
+				},
+				/*
+				 * `onEnterBack`: scrolling back UP past the same boundary.
+				 * Hand control back to the tween for the reverse pass —
+				 * remove the resting class first so the CSS rule stops
+				 * competing for the `transform`/positioning the instant
+				 * before the trigger starts rendering again.
+				 * `enable( false )` mirrors `disable`'s `reset: false`: keep
+				 * the current (~1) progress rather than snapping to 0, so
+				 * the re-engaged scrub continues smoothly from where the
+				 * visitor re-entered rather than jumping.
+				 */
+				onEnterBack: ( self ) => {
+					el.classList.remove( RESTING_CLASS );
+					self.enable( false );
+				},
 			},
 		} );
 
@@ -273,6 +350,11 @@ export function initMotionPath( el ) {
 		 * `kill()`'s undocumented no-arg default.
 		 */
 		return () => {
+			// Drop the resting handoff too — a mid-session reduced-motion
+			// switch reverts this tween via `withMotionAllowed`'s context,
+			// but that revert only knows about GSAP-owned state; the class
+			// this module added itself is this module's own to remove.
+			el.classList.remove( RESTING_CLASS );
 			tween.scrollTrigger?.kill( true, false );
 			tween.kill();
 		};

@@ -434,32 +434,44 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "end-state",
-        # §2 row Level = "element" -> scope='element'. requires='svg' (value
-        # UNCHANGED 2026-07-31 — only its MEANING narrowed, see the
-        # requires-column note above): the row's Recommended->permitted
-        # column ("Icons/logos -> decorative SVG anywhere (asset-gated)")
-        # targets a block that IS a shape (MorphSVG rewrites the element's
-        # OWN `d` attribute — there must be one to rewrite), which is the
-        # narrower 'svg' provision, not the wider 'svg-subtree' one. Before
-        # this split, morph shared draw's single 'svg' requirement, whose
-        # provision computation ALSO included bgSvgContent — so
-        # `sgs/container`/`sgs/hero`/`sgs/cta-section`/`sgs/trust-bar` (a
-        # `<div>` wrapper with a decorative background SVG blob, no `d` of
-        # its own to morph) were wrongly offered `morph`, which warns and
-        # skips at runtime for exactly that reason (D430 finding). REASONED,
-        # NOT SPEC-STATED: the spec never lists MorphSVG's exact block names
-        # the way it does for DrawSVG's row — this reuses the SAME roster
-        # the generator implements for 'svg' (SPEC_NAMED_SVG_BLOCKS, 3
-        # members as of the 2026-07-31 QC correction below — NOT the spec's
-        # own DrawSVG citation of 4, which still names `sgs/decorative-image`
-        # that block has zero inline-SVG rendering, verified live via its
-        # render.php, so it is not carried into either 'svg' or
-        # 'svg-subtree'; the amendment text for Spec 38 §2's DrawSVG row was
-        # returned to the spec owner rather than edited here) — as an
-        # extrapolation from "same target family, same requires value", not
-        # a literal citation.
+        # requires CORRECTED 'svg' -> 'none', 2026-08-01 (D427 shape-pair
+        # control build). SAME correction shape as motion-path's 'svg' ->
+        # 'none' fix below, and it obsoletes this row's own PREVIOUS
+        # reasoning (kept below, struck through in spirit, for the record):
+        # that reasoning was written when `fx-morph.js`'s `el` (the element
+        # carrying `data-sgs-fx="morph"`) had to be the block's OWN rendered
+        # shape, because nothing else supplied one. `includes/fx-shape-
+        # routes.php` (built this session) changes that: `el` is now ALWAYS
+        # a render-layer-EMITTED `<svg class="sgs-fx-shape-visual">` carrying
+        # a curated or uploaded shape pair, appended as a sibling after
+        # WHATEVER block the client applied the effect to — never the
+        # block's own root. The element "genuinely must be a shape" premise
+        # below is therefore no longer true of the BLOCK; it is still true
+        # of the thing MorphSVG tweens, but the render layer supplies that
+        # unconditionally now, the exact same shape as the motion-path
+        # correction's reasoning ("the traveller has no SVG requirement to
+        # gate on, and 'svg' was restricting the control ... for a
+        # constraint that belongs to the route, not to the thing travelling
+        # along it" — read literally the same way here: the constraint
+        # belongs to the SHAPE PAIR, not to the block wearing the effect).
+        # scope stays 'element' — an inspector surface on a block, not a
+        # site setting.
+        #
+        # PREVIOUS reasoning (2026-07-31, now superseded by the above):
+        # requires='svg' targeted a block that IS a shape (MorphSVG rewrote
+        # the element's OWN `d` attribute directly — there had to be one to
+        # rewrite), reusing the SAME roster the generator implements for
+        # 'svg' (SPEC_NAMED_SVG_BLOCKS: sgs/icon, sgs/responsive-logo,
+        # sgs/separator) as an extrapolation from "same target family as
+        # draw", not a literal spec citation.
+        #
+        # NOT YET LIVE: this is a SOURCE change only. The shared
+        # sgs-framework.db still holds the old 'svg' value until the next
+        # centrally-run reseed — see this script's own module docstring /
+        # the D427 build report for the reseed request. Do not read the live
+        # DB as agreeing with this comment until that reseed has run.
         "scope": "element",
-        "requires": "svg",
+        "requires": "none",
     },
     {
         # FR-38-17, §2 row "MotionPath" ("G variant needs ScrollTrigger +
@@ -635,12 +647,36 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     "fxPathAsset": "fx:path-asset",
     "fxPathRotate": "fx:path-rotate",
     #
+    # `fxPathRest` / `fxPathRestVh` -> fx:path-rest / fx:path-rest-vh (D441,
+    # 2026-08-01). The resting-position control: where the traveller settles
+    # once its scrub completes (below-header / middle / lower-third / custom
+    # preset, plus a 5vh-stepped fine-tune for custom). Both map to plain
+    # `data-sgs-fx-motion-path-rest*` attributes that `assets/css/
+    # fx-motion-path.css` resolves declaratively via `calc()`/`max()` against
+    # `--sgs-header-height` — mirrors `fxPathRotate`'s naming shape (the
+    # runtime's own attribute name, not an invented one) rather than the
+    # `fx:path-*` shape used for the route-picking pair above, because these
+    # two are consumed by the SAME runtime attribute family, not new ones.
+    "fxPathRest": "fx:path-rest",
+    "fxPathRestVh": "fx:path-rest-vh",
+    #
     # `fxShape` -> fx:shape. Seeded AHEAD of the morph control (s11.2 lists it
     # beside fx:path). Reports [skip] until a block declares it, which is the
     # documented no-op this step already has for every unshipped attr - the row
     # exists so the grammar's own claim is true of the registry rather than
     # true only of the effects that happen to have shipped.
     "fxShape": "fx:shape",
+    #
+    # `fxShapeAssetFrom` / `fxShapeAssetTo` -> fx:shape-asset-from /
+    # fx:shape-asset-to. The MorphSVG `custom` mode's two media-library
+    # attachment IDs (2026-08-01, D427 build). TWO rows, not one, because a
+    # morph pair is never a single asset the way a motion-path route is - it
+    # needs a matched FROM and TO shape, and `includes/fx-shape-routes.php`
+    # resolves them independently (either missing fails the whole pair, see
+    # that file's `sgs_fx_resolve_shape_pair()`). Naming mirrors `fxPathAsset`
+    # exactly, split by direction rather than invented from scratch.
+    "fxShapeAssetFrom": "fx:shape-asset-from",
+    "fxShapeAssetTo": "fx:shape-asset-to",
     #
     # `fxPreset` -> fx:preset. The client-facing intensity layer (s7). It is
     # deliberately NOT part of the data-attribute grammar: a preset writes its

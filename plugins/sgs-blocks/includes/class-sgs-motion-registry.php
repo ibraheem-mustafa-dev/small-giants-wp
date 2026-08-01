@@ -246,6 +246,15 @@ class SGS_Motion_Registry {
 	private const EFFECT_STYLES = array(
 		'horizontal-panel' => 'assets/css/fx-horizontal-panel.css',
 		'motion-path'      => 'assets/css/fx-motion-path.css',
+
+		/*
+		 * Morph needs one for the same reason motion-path does: the render
+		 * layer (`includes/fx-shape-routes.php`, Spec 38 §11.2 D427) appends a
+		 * visible FROM `<svg>` and a hidden TO `<svg>` after the qualifying
+		 * block, and both need positioning so they cover the block's box
+		 * instead of sitting in-flow at their intrinsic size.
+		 */
+		'morph'            => 'assets/css/fx-shape-routes.css',
 	);
 
 	/**

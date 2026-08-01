@@ -16,90 +16,63 @@ gets ONE true answer instead of three drifting ones.
 
 ---
 
-> **QC note (2026-08-01) — the subagent RETURNED and its verdict was INCONSISTENT, now resolved.** I ran the same verification
-> myself as a backstop and it caught two real inconsistencies, both since fixed: the step table said
-> "NOT STARTED (14)" while listing **15** items, and it used original numbering only while the
-> rewritten plan uses **mixed** numbering (letters A–J for steps added today, original numbers kept so
-> older references still resolve). Everything else verified against source: 12 pipeline stages, the
-> seeder no longer writing `css_property`, 207 override entries with zero `fx:` rows, the build gate
-> `--check`-only, `FORCED_PANEL_HOSTS` gone, roster 28 with `decorative-image = [motion-path, scrub]`,
-> 19 single-provision blocks (13+6), 144 STOPs, 24 plan steps, D-ceiling D436.
-> It found the step-table defect I had also found, but diagnosed it BETTER: the stray `3` was a
-> duplicate of the HELD buybox step, so the "(14)" label had been correct and the LIST held one item
-> too many. My own fix then re-introduced the same duplication in a new form (buybox listed under both
-> HELD and OPEN) and mislabelled 24 items as "(16)". Both are now fixed and the table is rewritten
-> plainly. **Everything else the subagent checked came back clean**, including a catch I would have
-> missed: `82a08b8a`'s subject line is about float-clearing, but its diff also carries the
-> `webpackIgnore` pragma, so its listing under Step 17 is correct rather than a misattribution.
-
-## ⭐ NEXT SESSION IS A REVIEW SESSION — start here
-
-You have been away from your PC across several motion sessions and asked for a plain-English
-timeline before we build anything else. This is it.
-
-### The last three motion sessions, in order
-
-**1. Wave C — BUILD (D426).** The motion engine itself. Scroll-scrubbed effects, draggable
-carousels, text-scramble, a new before/after comparison slider, a new scroll-scrubbed image
-sequence. Shipped and deployed. Nobody had looked at it yet.
-
-**2. Wave C — VERIFY (D427, D430, D431).** Everything got watched moving in a real browser, twice
-over — once normally, once with "reduce motion" switched on. That found three faults no build gate
-could have seen: the gallery carousel never actually slid sideways, the drag feature could never
-have worked, and the before/after slider's editor preview was broken. Then a six-persona review
-graded the whole surface and scored **supportability D+** — meaning a client could not operate it.
-
-**3. Wave D — CLIENT-READINESS (D434, D435, D436 — today).** Turning an engine into something a
-client can use and a five-site schedule can carry. **20 commits. Eight of the 24 steps closed.**
-
-### What actually got fixed today
-
-- **A clean copy of the code can build again.** Six scripts crashed on a machine without the local
-  database — the real cause was one file running database work at import time, before any of the
-  "database missing, skip" checks could run.
-- **Effects are only offered where they can work.** `morph` was being offered on four blocks that
-  are `<div>`s, where it warns and does nothing.
-- **The editor console is clean.** Two module errors and two CSS warnings, all traced to real
-  causes and fixed.
-- **A before/after slider was collapsing to a third of its width** — caused by two floated logos
-  earlier on the page, not by a breakpoint as first thought.
-- **Motion now exists in five real stock patterns**, so inserting one gives a client tasteful
-  motion with zero configuration. Previously motion existed only on test pages.
-- **The image-sequence block is honestly scoped agency-only**, with a frame cap and a "verify
-  frames" button, because setting one up needs a terminal.
-- **The database is now genuinely the single source (D436).** Motion data seeding AND the
-  regeneration of the files the live websites load are both stages of `/sgs-update`. Previously a
-  separate script wrote some of it at build time, and an unrelated track running the pipeline could
-  — and did — wipe motion data out.
-
-### What YOU need to decide (nothing is blocked on me)
-
-1. **Step 7 — a background that follows your mouse.** Three routes, explained in plain English in
-   the Wave D plan §6a. Recommend Route A.
-2. **FR-38-12 "Flip"** — explained in plain English in the Wave D plan §6b. Its premise turned out
-   false; the question is whether a redesign is worth it.
-3. **The palette audit** — `border-subtle` is set to a *saturated brand accent* in 7 of 8 client
-   snapshots. You ruled this needs a proper audit of every preset slot.
-4. **The presets** at `/fx-preset-comparison/` — you said they look great but scramble fires at the
-   wrong times. That is now its own step.
-
-### Honest limits
-
-- **Buybox drag is written but NOT shipped.** A gate correctly refused it because it has never been
-  seen working on a real render. Its runtime is proven; the emit is not.
-- **The scramble preset timing defect you found is real and undiagnosed.** The parameters genuinely
-  differ — measured — so it is a trigger/timing bug, not a preset-values bug.
-- **Two effects still cannot be measured by our newer browser tooling** — see Measurement limits
-  below. The committed Playwright harnesses are the only instrument.
-
----
-
 ## CURRENT FRONTS
 
-### Track 3 — Spec 38 motion: A+B+C CLOSED · Wave D wave 1 executed (D434/D435/D436)
+### Track 3 — Spec 38 motion: WAVE D **WAVE 2** EXECUTED 2026-08-01 (D442–D445)
 
-**The narrative is in the ⭐ REVIEW block at the top of this file — not repeated here.**
-Full register + plain-English explainers: `plans/2026-07-31-motion-wave-D-client-readiness.md`.
+**Wave 2 shipped + deployed to the canary. Verification state is stated PER ITEM below — read it, do
+not assume a uniform "done".** Full register + all 11 residual steps (K–V): `plans/2026-07-31-motion-wave-D-client-readiness.md`.
+
+| Verified LIVE with numbers | Built + deployed, NOT verified |
+|---|---|
+| **Colour-token contract** — cards now render distinct from the page background | **Morph on 28/28 blocks** (was 3) — artefact-verified; no live morph render measured |
+| **Slider chrome** — 44×44 button, 22×22 icon constant at 375/768/1440; idle dot 5.79:1 (was ~1.2:1) | |
+| **Image-sequence scrub** — gradual frame progression, documented mirror defect did NOT reproduce | |
+| **Motion-path SKEW** — `preserveAspectRatio="none"` removed, proven via transform matrix | |
+| **Scramble presets** — Bean-APPROVED. 3-column page **2105**, triggers 480/600/800 vs 4,331px page | |
+| **Drag roster** — now tracks the pointer 1:1 (was 3,3,6,9,9,12,12,**14px** for the same gesture) | |
+| **Resting position** — 5 presets × 3 viewports, all `sticky`/`transform:none`/on-screen/below header; **default applies to attribute-less blocks** (page **2109**) | |
+| **post-grid dots** — forced scroll dot 0→2; real drag `scrollLeft` 820→1745, dot 2→4 (page **2110**) | |
+| **Buybox on the PDP** — renders (gallery 659px + configurator 573px), strip overflows 712>659, pickers present | |
+
+**Two root causes worth carrying forward:**
+- **`scroll-behavior: smooth` was racing the drag's `scrollLeft` writes.** Proven by A/B on the same
+  shared module: `sgs/gallery` (no smooth) tracked 1:1; `sgs/post-grid` (smooth) reached 14px. This
+  project already had a captured lesson that this property breaks scripted MEASUREMENT — nobody noticed
+  it also broke the FEATURE. Silently affected `sgs/trustpilot-reviews` too. Fixed in the one shared module.
+- **`surface` was doing two contradictory jobs** — page background AND card fill, across 33 blocks,
+  never defined anywhere. The load-bearing fix was the EXTRACTOR (it detected `surface-alt` and never
+  wrote the slug), without which the 76-site sweep would have been undone by the next snapshot regen.
+
+⚠ **STILL OPEN — do not read the green column as "motion is done":**
+- **Motion-path ~2,705px jump** (Step E-residual). Causally proven to be the SAME defect as
+  "ends under the header". **THREE approaches already ruled out by measurement** — read
+  `assets/css/fx-motion-path.css`'s docblock before proposing anything.
+- **Drag text-selection symptom Bean SAW is UNREPRODUCED** across 3 browsers (Step O). A cause-agnostic
+  mitigation shipped. **Per measurement-vs-eye, Bean's report STANDS over the null measurement.**
+- **Buybox strip has no drag handler** (Step V) — pre-existing, documented in its own block.json; its
+  named prerequisite (a product-page fixture) is now satisfied.
+- `sgs-healthcare` dot contrast 2.97:1 (Step M) · image-sequence pin-ON path unobserved (Step N) ·
+  cursor-glow FR-38-25 **spec'd, NOT built** (Step R) · looping carousels (Step Q).
+
+⚠ **`sgs/buybox` is a PDP-ONLY block** (its block.json + Spec 30). Renders empty on any non-product page
+BY DESIGN. **Do NOT give it a product-picker attribute** — that widens it beyond spec. The two dead
+instances on page 2086 can never render; remove them (Step S).
+
+⚠ **D163 does NOT pre-answer the content-collection fold** — it ruled on different pairs, and its cited
+`has_inner_blocks` mechanism was DROPPED from the DB 2026-07-05 for mis-routing. Council verdict 3–1 to
+retire it into card-grid; Bean approved **including porting the non-Woo CPT path** (Step P).
+
+### Track 3 — prior context (Wave D wave 1, D434/D435/D436)
+
+**Narrative swept 2026-08-01 to `memory/session-2026-08-01-waveD-review-narrative.md`** (the LEDGER hit
+its byte cap). Full register + plain-English explainers: `plans/2026-07-31-motion-wave-D-client-readiness.md`.
+
+⚠ **The wave-1 table below is SUPERSEDED by the wave-2 section above and by the plan's own step
+headings.** It is kept only so older references (D426–D436, prior reports) still resolve. Every "Open
+for Bean" item it lists was RULED ON 2026-08-01: Step 7 cursor-glow → emitter+participant, spec'd as
+FR-38-25 (D444); FR-38-12 Flip → superseded by the consolidation council (D445); palette audit → done
+(D442); scramble timing → fixed and Bean-approved. **If this table and the plan disagree, the plan wins.**
 
 | | Wave D steps (24) |
 |---|---|

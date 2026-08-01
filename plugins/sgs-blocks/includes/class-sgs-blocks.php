@@ -75,6 +75,15 @@ final class SGS_Blocks {
 		// so the runtime needs no change at all.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-path-routes.php';
 
+		// Shape-pair expansion for MorphSVG (Spec 38 s11.2, D427). Same
+		// slot as fx-path-routes.php above (a sibling expansion, never
+		// the same block instance) - after the p10 injection has put
+		// data-sgs-fx-shape on dynamic blocks, before the registry's p99
+		// sniff. Turns the client's chosen shape-pair preset into the
+		// visible FROM svg + hidden TO svg + morph-target selector
+		// fx-morph.js already expects, so that runtime needs no change.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-shape-routes.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

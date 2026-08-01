@@ -51,6 +51,7 @@ import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
 import fxPresets from './fx-presets.json';
 import fxPathRoutes from '../../../includes/fx-path-routes.json';
+import fxShapeRoutes from '../../../includes/fx-shape-routes.json';
 
 /**
  * Every runtime effect module that actually exists under
@@ -105,16 +106,18 @@ const SHIPPED_EFFECTS = [
 	// yields a real, configurable control that produces real motion — which is
 	// the only condition on which anything may join this array.
 	'motion-path',
-	// Deliberately STILL NOT added — an effect listed here that a client cannot
-	// actually operate is worse than an unshipped one, which is the whole point
-	// of this gate:
-	//   · `morph` — the module landed, but its asset half is deliberately
-	//                deferred (D427): a morph needs a matched-topology PAIR of
-	//                shapes, and the curated pair library + the authoring
-	//                guidance Spec 38 §7 requires for it are not built. The
-	//                motion-path work above does NOT unblock it — a route is
-	//                one path with no topology constraint, which is precisely
-	//                why it was the tractable half.
+	// `morph` ADDED — same shape of unblock as `motion-path` above, for the
+	// other half of the same D427 amendment. `includes/fx-shape-routes.php`
+	// expands a client-picked shape-PAIR thumbnail (`fxShape`, or two
+	// media-library SVGs for `custom`) into a real shape element carrying
+	// `data-sgs-fx="morph"` plus the existing `-morph-target` selector
+	// `fx-morph.js` already expected — moving the effect onto a render-layer
+	// -emitted shape is what lets a block whose own root is not a shape (a
+	// container, a button…) qualify at all, not only the three blocks that
+	// happen to render inline SVG geometry at their own root. `fx-morph.js`
+	// is untouched. Selecting this effect from the picker therefore yields a
+	// real, configurable control that produces real motion.
+	'morph',
 ];
 
 const FX_OPTION_LABELS = {
@@ -125,6 +128,7 @@ const FX_OPTION_LABELS = {
 	scramble: __( 'Text scramble', 'sgs-blocks' ),
 	draw: __( 'Draw SVG lines', 'sgs-blocks' ),
 	'motion-path': __( 'Travel along a route', 'sgs-blocks' ),
+	morph: __( 'Morph between shapes', 'sgs-blocks' ),
 };
 
 /**
@@ -460,6 +464,11 @@ const FX_PARAM_RESET = {
 	fxPath: '',
 	fxPathAsset: undefined,
 	fxPathRotate: '',
+	fxPathRest: '',
+	fxPathRestVh: undefined,
+	fxShape: '',
+	fxShapeAssetFrom: undefined,
+	fxShapeAssetTo: undefined,
 };
 
 /**
@@ -488,6 +497,81 @@ const FX_PATH_OPTIONS = [
 		d: null,
 	},
 ];
+
+/**
+ * The curated MorphSVG shape pairs, as picker options (Spec 38 §11.2, D427).
+ *
+ * `custom` is appended rather than living in the JSON, same reasoning as
+ * `FX_PATH_OPTIONS`: it is the escape hatch into the media library, not a
+ * pair, and the render layer needs to tell the two apart without guessing.
+ *
+ * @type {Array<{value: string, label: string, d: string|null}>}
+ */
+const FX_SHAPE_OPTIONS = [
+	...Object.entries( fxShapeRoutes.pairs ).map( ( [ value, pair ] ) => ( {
+		value,
+		label: pair.label,
+		description: pair.description,
+		d: pair.from.d,
+	} ) ),
+	{
+		value: 'custom',
+		label: __( 'My own shapes', 'sgs-blocks' ),
+		description: __(
+			'Use two matched shapes from your own SVG files, uploaded to the media library.',
+			'sgs-blocks'
+		),
+		d: null,
+	},
+];
+
+/**
+ * A shape-pair thumbnail — the FROM shape, filled small.
+ *
+ * Filled rather than stroked (unlike `routeThumbnail`, which draws a line):
+ * a morph target is a SHAPE, not a path to travel along, so the thumbnail
+ * reads the same way the render layer will actually paint it
+ * (`fill: currentColor` in `assets/css/fx-shape-routes.css`).
+ *
+ * @param {string|null} d Path data, or null for the custom-upload option.
+ * @return {Object} An SVG element.
+ */
+function shapeThumbnail( d ) {
+	if ( null === d ) {
+		// Custom upload: the same outline-with-arrow glyph FX_PATH_OPTIONS
+		// uses, so both "upload your own" options read identically.
+		return (
+			<svg
+				viewBox="0 0 100 100"
+				width="24"
+				height="24"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<path
+					d="M 26 16 H 62 L 80 34 V 88 H 26 Z M 53 46 V 76 M 40 59 L 53 46 L 66 59"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="7"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+			</svg>
+		);
+	}
+
+	return (
+		<svg
+			viewBox="0 0 100 100"
+			width="24"
+			height="24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d={ d } fill="currentColor" stroke="none" />
+		</svg>
+	);
+}
 
 /**
  * The option component the route picker renders each thumbnail with.
@@ -662,6 +746,35 @@ function addFxAttributes( settings, name ) {
 			 * are `''` (absent → the module's own default, on) and `'false'`.
 			 */
 			fxPathRotate: { type: 'string', default: '' },
+			/*
+			 * Resting position (Spec 38 §11.2, D441). Where the traveller
+			 * settles once its scrub completes. `fxPathRest` is a curated
+			 * preset key or `custom`; unset (`''`) resolves to `middle` via
+			 * `fx-motion-path.css`'s default rule — the DEFAULT this control
+			 * ships with, matching industry convention for "settle and read"
+			 * (viewport centre). `fxPathRestVh` is the 5vh-stepped fine-tune
+			 * slider value, meaningful only when `fxPathRest === 'custom'`;
+			 * `undefined` when untouched, same "unset vs a deliberate value"
+			 * distinction `fxScrub` etc. use above, because 0 (rest flush
+			 * with the header-clearance floor) is a legitimate choice.
+			 */
+			fxPathRest: { type: 'string', default: '' },
+			fxPathRestVh: { type: 'number' },
+			/*
+			 * MorphSVG shape pair (Spec 38 §11.2, D427). `fxShape` is a
+			 * curated preset key or the literal `custom`; `fxShapeAssetFrom` /
+			 * `fxShapeAssetTo` are MEDIA LIBRARY attachment IDs, never markup
+			 * — the same `svgAnimationSource` precedent `fxPathAsset` follows.
+			 *
+			 * `includes/fx-shape-routes.php` expands whichever is set into a
+			 * visible FROM `<svg>` + hidden TO `<svg>` + the existing
+			 * `data-sgs-fx-morph-target` selector. That selector is
+			 * render-layer OUTPUT and has no attribute here by design — a
+			 * draft never authors it, and the cloning contract maps `fxShape`.
+			 */
+			fxShape: { type: 'string', default: '' },
+			fxShapeAssetFrom: { type: 'number' },
+			fxShapeAssetTo: { type: 'number' },
 		},
 	};
 }
@@ -710,6 +823,8 @@ function addFxSaveProps( props, blockType, attributes ) {
 		 * it rather than the reverse.
 		 */
 		'data-sgs-fx-motion-path-rotate': attributes.fxPathRotate,
+		'data-sgs-fx-motion-path-rest': attributes.fxPathRest,
+		'data-sgs-fx-shape': attributes.fxShape,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -721,6 +836,10 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-scrub': attributes.fxScrub,
 		'data-sgs-fx-stagger': attributes.fxStagger,
 		'data-sgs-fx-duration': attributes.fxDuration,
+		// 0 is legitimate here (rest flush with the header-clearance floor —
+		// see the attribute declaration above), so it must survive the same
+		// finite-number test the other numeric params use, not a `> 0` test.
+		'data-sgs-fx-motion-path-rest-vh': attributes.fxPathRestVh,
 	};
 	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
 	// discarded a deliberate 0 — see the attribute declarations above.
@@ -741,6 +860,23 @@ function addFxSaveProps( props, blockType, attributes ) {
 		attributes.fxPathAsset > 0
 	) {
 		data[ 'data-sgs-fx-path-asset' ] = String( attributes.fxPathAsset );
+	}
+
+	if (
+		'number' === typeof attributes.fxShapeAssetFrom &&
+		attributes.fxShapeAssetFrom > 0
+	) {
+		data[ 'data-sgs-fx-shape-asset-from' ] = String(
+			attributes.fxShapeAssetFrom
+		);
+	}
+	if (
+		'number' === typeof attributes.fxShapeAssetTo &&
+		attributes.fxShapeAssetTo > 0
+	) {
+		data[ 'data-sgs-fx-shape-asset-to' ] = String(
+			attributes.fxShapeAssetTo
+		);
 	}
 
 	return { ...props, ...data };
@@ -769,6 +905,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const { fx } = attributes;
 		const isSplit = 'split-reveal' === fx;
 		const isPath = 'motion-path' === fx;
+		const isMorph = 'morph' === fx;
 		const ownsScroll = fxOwnsScrollTransform( fx );
 		const fxOptions = fxOptionsForBlock( name );
 
@@ -856,6 +993,19 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 			!! attributes.fxPath &&
 			( 'custom' !== attributes.fxPath ||
 				( attributes.fxPathAsset || 0 ) > 0 );
+
+		/*
+		 * The same §7 asset gate, for MorphSVG. A shape PAIR is what gives
+		 * morph its geometry on both ends — without one the runtime fails
+		 * safe and never tweens. `custom` needs BOTH assets, not one: a
+		 * matched-topology pair with only half uploaded is not a pair.
+		 */
+		const shapePairChosen =
+			isMorph &&
+			!! attributes.fxShape &&
+			( 'custom' !== attributes.fxShape ||
+				( ( attributes.fxShapeAssetFrom || 0 ) > 0 &&
+					( attributes.fxShapeAssetTo || 0 ) > 0 ) );
 
 		return (
 			<>
@@ -1118,6 +1268,351 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											  )
 									}
 								/>
+							</ToolsPanelItem>
+						) }
+
+						{ /*
+						 * Resting position — Spec 38 §11.2 (D441). Where the
+						 * traveller settles once its scroll-scrubbed journey
+						 * finishes. Gated on `pathRouteChosen` exactly like
+						 * the rotate toggle above: without a route there is
+						 * nothing to settle FROM, so a resting position has
+						 * nothing to do yet.
+						 */ }
+						{ isPath && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxPathRest }
+								label={ __(
+									'Resting position',
+									'sgs-blocks'
+								) }
+								onDeselect={ () =>
+									setAttributes( {
+										fxPathRest: '',
+										fxPathRestVh: undefined,
+									} )
+								}
+								isShownByDefault
+							>
+								<ToggleGroupControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									isBlock
+									label={ __(
+										'Resting position',
+										'sgs-blocks'
+									) }
+									// An unset value reads as "Middle of the
+									// screen" — fx-motion-path.css's default
+									// rule already resolves unset the same
+									// way, so this just makes that visible.
+									value={ attributes.fxPathRest || 'middle' }
+									disabled={ ! pathRouteChosen }
+									onChange={ ( value ) =>
+										setAttributes( {
+											fxPathRest:
+												'middle' === value
+													? ''
+													: value || '',
+											// Dropping out of "Custom"
+											// releases the fine-tune value —
+											// leaving it stored would be
+											// state with no control showing
+											// it once the preset changes.
+											fxPathRestVh:
+												'custom' === value
+													? attributes.fxPathRestVh ??
+													  50
+													: undefined,
+										} )
+									}
+									help={
+										pathRouteChosen
+											? __(
+													'Where the block should stop and stay readable once it finishes travelling. Middle of the screen is the safest default — text that animates into place is meant to be read.',
+													'sgs-blocks'
+											  )
+											: __(
+													'Choose a route first.',
+													'sgs-blocks'
+											  )
+									}
+								>
+									<ToggleGroupControlOption
+										value="below-header"
+										label={ __(
+											'Just below header',
+											'sgs-blocks'
+										) }
+									/>
+									<ToggleGroupControlOption
+										value="middle"
+										label={ __(
+											'Middle of screen',
+											'sgs-blocks'
+										) }
+									/>
+									<ToggleGroupControlOption
+										value="lower-third"
+										label={ __(
+											'Lower third',
+											'sgs-blocks'
+										) }
+									/>
+									<ToggleGroupControlOption
+										value="custom"
+										label={ __( 'Custom', 'sgs-blocks' ) }
+									/>
+								</ToggleGroupControl>
+
+								{ /*
+								 * Fine-tune only appears for Custom — showing
+								 * it for every preset would clutter the panel
+								 * for a client who just wants one of the
+								 * three named positions (the brief's own
+								 * "must not clutter" condition).
+								 */ }
+								{ 'custom' === attributes.fxPathRest && (
+									<RangeControl
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+										label={ __(
+											'Fine-tune (% down the screen)',
+											'sgs-blocks'
+										) }
+										value={
+											attributes.fxPathRestVh ?? 50
+										}
+										min={ 0 }
+										max={ 100 }
+										step={ 5 }
+										disabled={ ! pathRouteChosen }
+										onChange={ ( value ) =>
+											setAttributes( {
+												fxPathRestVh:
+													undefined === value
+														? 50
+														: value,
+											} )
+										}
+										help={ __(
+											'0% rests right below the header; 100% rests at the very bottom of the screen. It can never end up UNDER the header, whatever you choose.',
+											'sgs-blocks'
+										) }
+									/>
+								) }
+							</ToolsPanelItem>
+						) }
+
+						{ /*
+						 * Shape-pair picker — Spec 38 §11.2 / §3.4 (D427).
+						 * Shown by default for the same reason the route
+						 * picker is: without a pair this effect has no
+						 * geometry and the block never morphs at all.
+						 */ }
+						{ isMorph && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxShape }
+								label={ __( 'Shapes', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( {
+										fxShape: '',
+										fxShapeAssetFrom: undefined,
+										fxShapeAssetTo: undefined,
+									} )
+								}
+								isShownByDefault
+							>
+								<ToggleGroupControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									isBlock
+									label={ __( 'Shapes', 'sgs-blocks' ) }
+									value={ attributes.fxShape }
+									onChange={ ( value ) =>
+										setAttributes( {
+											fxShape: value || '',
+											// Dropping out of "My own shapes"
+											// releases both files — leaving an
+											// attachment ID attached to a
+											// curated pair would be stored
+											// state with no control showing it.
+											fxShapeAssetFrom:
+												'custom' === value
+													? attributes.fxShapeAssetFrom
+													: undefined,
+											fxShapeAssetTo:
+												'custom' === value
+													? attributes.fxShapeAssetTo
+													: undefined,
+										} )
+									}
+									help={ __(
+										'The starting shape reshapes into the second shape once the effect plays.',
+										'sgs-blocks'
+									) }
+								>
+									{ FX_SHAPE_OPTIONS.map( ( option ) => (
+										<RouteOption
+											key={ option.value }
+											value={ option.value }
+											label={ option.label }
+											icon={ shapeThumbnail( option.d ) }
+										/>
+									) ) }
+								</ToggleGroupControl>
+
+								{ ! attributes.fxShape && (
+									<Notice
+										status="warning"
+										isDismissible={ false }
+									>
+										{ __(
+											'Pick a shape pair above. Until you do, this block will not morph on the live site.',
+											'sgs-blocks'
+										) }
+									</Notice>
+								) }
+
+								{ 'custom' === attributes.fxShape && (
+									<MediaUploadCheck>
+										<Notice
+											status="info"
+											isDismissible={ false }
+										>
+											{ __(
+												'Upload two .svg files, each containing ONE shape line, with roughly the same number of points — that is what makes the morph look clean rather than tangled. Upload via the media library; SVG code cannot be pasted in, because that would be a security risk.',
+												'sgs-blocks'
+											) }
+										</Notice>
+
+										<p>
+											{ __(
+												'Starting shape',
+												'sgs-blocks'
+											) }
+										</p>
+										{ ( attributes.fxShapeAssetFrom || 0 ) >
+										0 ? (
+											<Button
+												variant="secondary"
+												isDestructive
+												size="small"
+												onClick={ () =>
+													setAttributes( {
+														fxShapeAssetFrom:
+															undefined,
+													} )
+												}
+											>
+												{ sprintf(
+													/* translators: %d: media library attachment ID. */
+													__(
+														'Remove SVG (attachment %d)',
+														'sgs-blocks'
+													),
+													attributes.fxShapeAssetFrom
+												) }
+											</Button>
+										) : (
+											<MediaUpload
+												allowedTypes={ [
+													'image/svg+xml',
+												] }
+												value={
+													attributes.fxShapeAssetFrom
+												}
+												onSelect={ ( media ) =>
+													setAttributes( {
+														fxShapeAssetFrom:
+															media?.id,
+													} )
+												}
+												render={ ( { open } ) => (
+													<Button
+														variant="secondary"
+														onClick={ open }
+													>
+														{ __(
+															'Choose SVG file',
+															'sgs-blocks'
+														) }
+													</Button>
+												) }
+											/>
+										) }
+
+										<p>
+											{ __(
+												'Ending shape',
+												'sgs-blocks'
+											) }
+										</p>
+										{ ( attributes.fxShapeAssetTo || 0 ) >
+										0 ? (
+											<Button
+												variant="secondary"
+												isDestructive
+												size="small"
+												onClick={ () =>
+													setAttributes( {
+														fxShapeAssetTo:
+															undefined,
+													} )
+												}
+											>
+												{ sprintf(
+													/* translators: %d: media library attachment ID. */
+													__(
+														'Remove SVG (attachment %d)',
+														'sgs-blocks'
+													),
+													attributes.fxShapeAssetTo
+												) }
+											</Button>
+										) : (
+											<MediaUpload
+												allowedTypes={ [
+													'image/svg+xml',
+												] }
+												value={
+													attributes.fxShapeAssetTo
+												}
+												onSelect={ ( media ) =>
+													setAttributes( {
+														fxShapeAssetTo:
+															media?.id,
+													} )
+												}
+												render={ ( { open } ) => (
+													<Button
+														variant="secondary"
+														onClick={ open }
+													>
+														{ __(
+															'Choose SVG file',
+															'sgs-blocks'
+														) }
+													</Button>
+												) }
+											/>
+										) }
+									</MediaUploadCheck>
+								) }
+
+								{ isMorph &&
+									!! attributes.fxShape &&
+									! shapePairChosen && (
+										<Notice
+											status="warning"
+											isDismissible={ false }
+										>
+											{ __(
+												'Upload both shapes above to finish setting this up.',
+												'sgs-blocks'
+											) }
+										</Notice>
+									) }
 							</ToolsPanelItem>
 						) }
 

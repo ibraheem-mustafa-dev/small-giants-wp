@@ -1,0 +1,73 @@
+/**
+ * MorphSVG shape-pair overlay — Spec 38 FR-38-16 / §11.2 (D427).
+ *
+ * `includes/fx-shape-routes.php` appends two new `<svg>` elements after a
+ * qualifying block's root: `.sgs-fx-shape-visual` (the FROM shape —
+ * `fx-morph.js` binds `data-sgs-fx="morph"` to THIS element, not the block
+ * itself, which is what lets morph reach a block whose own root is not a
+ * shape) and `.sgs-fx-shape-target` (the hidden TO shape MorphSVGPlugin reads
+ * geometry from and never paints).
+ *
+ * WHY THE VISUAL SHAPE IS `position: absolute; inset: 0` — same reasoning as
+ * `fx-motion-path.css`'s route box: the shape is authored in a normalised
+ * 0..100 SQUARE box and needs to fill whatever the block's own rendered box
+ * is, without taking part in that block's flex/grid layout (appending as a
+ * sibling, never wrapping — see the PHP docblock).
+ *
+ * WHY `preserveAspectRatio="xMidYMid meet"` (the SVG default, so this file
+ * does not need to set it) rather than `none` — a repeat of the fx-path-routes
+ * D435 cause-1 finding: `none` stretches X and Y independently, skewing a
+ * circle into an ellipse whenever the block's box is not square. The default
+ * scales uniformly and centres, so a circle stays a circle regardless of the
+ * box it fills.
+ *
+ * WHY `:has(> .sgs-fx-shape-visual)` gets `position: relative` — the D435
+ * cause-2 fix, restated for this file: the shape is appended as a plain
+ * sibling with no positioning of its own, so `position: absolute` resolves
+ * against the nearest ANCESTOR that already has one. For an `sgs/container`
+ * (or any SGS wrapper) that ancestor is already positioned and correct; for a
+ * block dropped straight into `.entry-content` with none, the browser would
+ * otherwise climb to a page-length ancestor and produce a huge false shape
+ * box. This rule gives the shape's own DOM parent a LOCAL positioned context
+ * — a no-op for anything already positioned, load-bearing for anything not.
+ *
+ * WHY THE VISIBLE SHAPE PAINTS ON TOP OF THE BLOCK'S OWN CONTENT — the
+ * multiple-SVG rule (PHP docblock): this file never hides or searches the
+ * block's pre-existing markup, it only adds two new elements after it. Later
+ * in DOM order paints on top with no `z-index` needed, which is the intended
+ * "the shape becomes the block's visible content" effect for a decorative
+ * flourish (matches the `logo-icon` preset's own framing).
+ */
+
+.sgs-fx-shape-visual {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.sgs-fx-shape-visual path {
+	fill: currentColor;
+	stroke: none;
+}
+
+:has(> .sgs-fx-shape-visual) {
+	position: relative;
+}
+
+.sgs-fx-shape-target {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.sgs-fx-shape-target path {
+	fill: none;
+	stroke: none;
+}

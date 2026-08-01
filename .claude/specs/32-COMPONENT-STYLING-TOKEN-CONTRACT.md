@@ -1,14 +1,15 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.4"
+spec_version: "1.5"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-07-28
+last_verified: 2026-08-01
 status_history:
+  - 2026-08-01: v1.5 — added §12 Palette Token Semantics. The framework had never documented what each `theme.json` colour-preset slug MEANS, so `surface` was doing two contradictory jobs: `theme.json` `styles.color.background` makes it the PAGE substrate, while 33 blocks (74 call sites) also used it as their CARD/PANEL fill fallback — invisible cards wherever a client palette's `surface` isn't white (proven live on Mama's/sandybrown, `surface:#fbf3dc` = body background = testimonial card background). §12 defines substrate (`surface`) vs raised-must-be-seen-separate (`surface-alt`) vs ink-on-colour (`text-inverse`) for all 16 palette slots, and the 74 call sites were swept onto it (this session). Also fixed 3 wrong `border-subtle` fallbacks (`#0D5557` instead of the real `#D4DBE5`) and removed a Mama's-specific `#fbf3dc` hardcode from the client-agnostic `sgs/product-card` block. Spec 33 FR-33-2 amended in parallel (`plugins/sgs-blocks/scripts/theme-extractor/palette.py` `_synthesise_surface_alt`) so a re-extracted snapshot cannot recreate the collision.
   - 2026-07-28: §6.2(a) amended — the injection-class discovery (`f7da5f33`→`a367836b`): four
     `render_block` injectors wrote past the p99 lift's leading-`<style>` assumption, silently
     stripping their own output AND their inline `--var` writes (partly voiding the D346
@@ -304,3 +305,213 @@ WP var derivation: `settings.custom.buttonPresets.primary.hover-background` → 
 | Does product-card's `cta*` prefixed set fold into `cardPresets`, or keep a `cta`-scoped token group reused from `buttonPresets`? | Claude | Phase 2 |
 | Should the per-instance override var be block-scoped (`--sgs-button-background`) or a shared cross-block name? Block-scoped is proposed. | Claude | Phase 1 build |
 | Outline hover border: draft says `var(--primary)` (not `primary-dark`). Keep faithful to draft, or does Bean update the draft to `primary-dark`? | Bean | Phase 1 |
+
+## 12. Palette Token Semantics (the colour-role contract) — added 2026-08-01, v1.5
+
+### 12.0 Why this section exists
+
+The framework had 16 named colour-preset slugs in `theme.json` `settings.color.palette` and never wrote
+down what each one MEANS. Blocks picked whichever slug "looked about right" per author. The specific
+collision this caused: `theme.json` `styles.color.background: var:preset|color|surface` makes `surface`
+the PAGE BODY BACKGROUND on every site, while 33 blocks (74 call sites) independently used `surface` as
+their own card/panel background fallback — so on any client palette where `surface` isn't white (7 of 8
+client snapshots ARE white, which hid the bug), a card painted in `surface` is invisible against a page
+also painted in `surface`. Proven live on Mama's/sandybrown (`surface:#fbf3dc`), where `sgs/testimonial`'s
+card vanished. This section is the durable fix: every slug gets one meaning, and every future block MUST
+pick its background/text fill by role, not by "whichever slug looked closest".
+
+### 12.1 The three-bucket rule for surface/text pairs
+
+| Bucket | Token | Meaning | Use it for |
+|---|---|---|---|
+| **Substrate** | `surface` | The colour the PAGE ITSELF is painted (`theme.json` `styles.color.background`). | The page/body background only, OR a component that deliberately BLENDS with the page at rest — see §12.4. |
+| **Raised** | `surface-alt` | Anything that must sit ON the substrate and be SEEN as visually separate from it. | Card/panel/badge/chip/tile fills, hover/open states that need to look "lifted", skeleton shimmer, avatar/media placeholder boxes. |
+| **Inverse ink** | `text-inverse` | Light text/icon colour used AS FOREGROUND on a dark or saturated section/element (primary, accent, success, a dark hero band). | `color:` declarations on text/icons sitting on a coloured or dark fill — NEVER a `background`/`background-color` declaration. |
+
+**The test to apply to any new `surface`/`surface-alt`/`text-inverse` usage:**
+1. Is this a `color:` (ink/foreground) declaration on something sitting on a coloured/dark fill? → `text-inverse`.
+2. Is this a `background`/`background-color` fill that must read as a DISTINCT layer above the page (a card, panel, badge, hover state, placeholder)? → `surface-alt`.
+3. Is this a `background`/`background-color` fill that is DELIBERATELY the same as the page (a flush/bordered component whose shape comes from a `border`, not a fill contrast — see §12.4)? → `surface`.
+
+### 12.2 Full 16-slot palette semantics
+
+| Slug | Value (framework default) | Meaning | Notes |
+|---|---|---|---|
+| `primary` | `#1F7A7A` | The brand's main interactive/brand colour — buttons, links, active states. | |
+| `primary-dark` | `#0F4C4C` | Hover/pressed shade of `primary`. | Also used as a deep-tone section background in some composites. |
+| `accent` | `#F59E0B` | The brand's secondary/highlight colour — badges, callouts, secondary CTAs. | Do NOT use `accent` as a text colour on `accent-light` — fails contrast (1.93:1 measured); use `accent-text`. |
+| `accent-text` | `#92400E` | The text/border/icon colour paired with `accent-light` panels (a darker shade of the accent hue, chosen for AA contrast — 6.37:1 measured vs `accent`'s 1.93:1). | Established live usage: form field selected-state border/checkmark, notice-banner border, icon hover colour, cart badge text fallback. |
+| `accent-light` | `#FEF3C7` | A pale tint of `accent`, used as a RAISED panel/badge fill (same bucket semantics as `surface-alt` but on the accent hue rather than neutral). | Pair with `accent-text` for foreground, never `accent` directly (contrast). |
+| `success` | `#2E7D4F` | Positive/confirmation state colour — success badges, validation ticks, "in stock". | Pair with `text-inverse` for foreground text/icons on a `success` fill (see hero `--badge--success`). |
+| `error` | `#DC2626` | Negative/validation-failure state colour. | Pair with `text-inverse` (or a dedicated on-error text colour) for foreground on an `error` fill. |
+| `whatsapp` | `#25D366` | WhatsApp-brand green, reserved for the WhatsApp CTA block only (brand-mark colour, not a general "success" substitute). | |
+| `surface` | `#FAF9F6` | **Substrate** — see §12.1. The page/body background (`theme.json` `styles.color.background`). | Also legitimately used by a component that deliberately blends with the page at rest — §12.4. |
+| `surface-alt` | `#F1F0EC` | **Raised** — see §12.1. Anything that must read as a distinct layer above the page. | |
+| `text` | `#1A202C` | The default body/heading text colour on a light (`surface`/`surface-alt`) background. | |
+| `text-muted` | `#606D80` | A lower-emphasis text colour on a light background — captions, metadata, secondary copy. | |
+| `text-inverse` | `#F1F5F9` | **Inverse ink** — see §12.1. Light text/icon colour for use AS FOREGROUND on a dark or saturated fill. | Never used as a `background`/`background-color` value — that is always a bug (it would paint a near-white fill unintentionally). |
+| `border-subtle` | `#D4DBE5` | A quiet, low-contrast NEUTRAL divider/border colour — the default `border` on cards, inputs, dividers. | Must stay a desaturated neutral close to the surface tones; a saturated brand-accent value here is a role violation (§12.5 finding 1). |
+| `border-light` | `#E5E7EB` | An even lighter neutral border, for subtler internal dividers (e.g. accordion item separators) than `border-subtle`. | |
+| `footer-bg` | `#0F172A` | A dedicated dark/deep section background for the site footer (and any block explicitly opting into the footer treatment). | Distinct from `primary-dark` — footer-bg is a NEUTRAL deep tone, not necessarily brand-hued (Indus Foods sets it to `#2c3e50`, unrelated to that client's teal/gold brand pair). Text/links on `footer-bg` use `text-inverse` or a client-specific accessible pairing (see `core-blocks.css` gold-on-footer-bg contrast fix, 4.6:1). |
+
+### 12.3 The 74-site sweep — classification table
+
+Every `--wp--preset--color--surface` / `--surface-alt` background/colour call site in `plugins/sgs-blocks/src/blocks/*/style.css` was read in context and bucketed. `src/blocks/testimonial-slider/**` is explicitly OUT OF SCOPE (owned by another workstream) and was left untouched.
+
+| File:line | Was | Bucket | Fixed to |
+|---|---|---|---|
+| brand-strip/style.css:152 | `surface` (tile bg) | Raised | `surface-alt` |
+| brand-strip/style.css:401 | `surface` (tile hover bg) | Raised | `surface-alt` |
+| brand-strip/style.css:366, :371 | `surface` (fade-mask gradient) | Substrate (masks blend into the page — the strip/track itself has no background of its own) | left as `surface` |
+| business-info/style.css:258, :267, :271 | `color: surface` (icon/text on primary-filled button) | Inverse ink | `text-inverse` |
+| countdown-timer/style.css:18 | `surface` (`--elevated` variant) | Raised | `surface-alt` |
+| countdown-timer/style.css:24 | `surface-alt` (`--filled` variant) | Raised (already correct) | unchanged |
+| accordion/style.css:46 | `surface` (item header, resting state) | Substrate (flush design; boundary comes from the border, not a fill contrast — see §12.4) | left as `surface` |
+| accordion/style.css:57, :64 | `surface-alt` (hover/open state) | Raised (already correct) | unchanged |
+| accordion/style.css:229 | `surface` (`.sgs-accordion--card` item) | Raised (explicit "STYLE: CARD" variant) | `surface-alt` |
+| button/style.css:88 | `surface-alt` (outline hover bg fallback) | Raised (already correct) | unchanged |
+| cta-section/style.css:86, :187, :191, :202, :218, :236 | `color: surface` | Inverse ink | `text-inverse` |
+| cta-section/style.css:409 | `surface-alt` (gradient) | Raised (already correct) | unchanged |
+| card-grid/style.css:36 | `surface` (card bg) | Raised | `surface-alt` |
+| card-grid/style.css:64 | `surface-alt` (hover) | Raised (already correct) | unchanged |
+| card-grid/style.css:88, :92 | `color: surface` | Inverse ink | `text-inverse` |
+| buybox/style.css:279 | `surface` (`value-ladder` selected row) | Raised | `surface-alt` |
+| buybox/style.css:535 | `surface-alt` | Raised (already correct) | unchanged |
+| form/style.css:159 | `surface` (input field fill) | Substrate (bordered field, no fill contrast intended) | left as `surface` |
+| form/style.css:390, :407, :602 | `surface-alt` (hover/preview-box states) | Raised (already correct) | unchanged |
+| google-reviews/style.css:232 | `surface` (review card) | Raised | `surface-alt` |
+| google-reviews/style.css:264 | `color: surface` (dark-theme review text) | Inverse ink | `text-inverse` |
+| google-reviews/style.css:281 | `surface-alt` (avatar bg) | Raised (already correct) | unchanged |
+| google-reviews/style.css:381 | `surface` (badge) | Raised | `surface-alt` |
+| hero/style.css:232, :361 | `color: surface` | Inverse ink | `text-inverse` |
+| hero/style.css:350 | `surface` (badge default/light bg) | Raised | `surface-alt` |
+| info-box/style.css:37 | `surface` (`--elevated` variant) | Raised | `surface-alt` |
+| info-box/style.css:43 | `surface-alt` (`--filled` variant) | Raised (already correct) | unchanged |
+| modal/style.css:78 | `surface` (dialog panel) | Raised | `surface-alt` |
+| option-picker/style.css:456 | `surface` (`--soft` resting pill) | Substrate (deliberately neutral/blend resting state, per its own comment) | left as `surface` |
+| product-faq/style.css:23 | `surface` (FAQ item base) | Substrate (same flush pattern as accordion header — border defines shape, hover/open raises to `surface-alt`) | left as `surface` |
+| product-faq/style.css:67 | `surface-alt` (hover/open) | Raised (already correct) | unchanged |
+| post-grid/style.css:384, :772, :792 | `surface-alt` (card/shimmer) | Raised (already correct) | unchanged |
+| product-card/style.css:465, :890, :904 | `color: surface` (badge fg default) | Inverse ink | `text-inverse` |
+| product-card/style.css:670, :707, :726 | `surface` with hardcoded `#fbf3dc` fallback (no-image box / media / thumb-strip bg) | Raised, PLUS a Mama's-specific client-colour hardcode in a framework block | `surface-alt` with generic `#f5f7f7` fallback (item 4) |
+| product-card/style.css:841 | `surface` (`value-ladder` selected row) | Raised | `surface-alt` |
+| product-search/style.css:97, :300 | `surface-alt` | Raised (already correct) | unchanged |
+| process-steps/style.css:64 | `color: surface` | Inverse ink | `text-inverse` |
+| social-icons/style.css:47, :77 | `color: surface` | Inverse ink | `text-inverse` |
+| social-icons/style.css:70 | `surface-alt` (pill bg) | Raised (already correct) | unchanged |
+| label/style.css:46, :57 | `color: surface` | Inverse ink | `text-inverse` |
+| table-of-contents/style.css:16 | `surface` (`--card` variant) | Raised | `surface-alt` |
+| tabs/style.css:374 | `surface-alt` | Raised (already correct) | unchanged |
+| team-member/style.css:21 | `surface` (`--elevated` variant) | Raised | `surface-alt` |
+| team-member/style.css:31, :68 | `surface-alt` | Raised (already correct) | unchanged |
+| testimonial/style.css:195, :268, :317, :337 | `surface` (classic-card / rating-led / corporate-logo / case-study-media variants) | Raised (this was the file the finding was proven on — `classic-card` used `surface` while sibling `pull-quote-editorial` correctly used `surface-alt`) | `surface-alt` |
+| testimonial/style.css:223 | `surface-alt` (pull-quote-editorial) | Raised (already correct) | unchanged |
+| testimonial-slider/style.css:296 (formerly reported ~261) | `surface` | **OUT OF SCOPE** — owned by another workstream, left untouched | — |
+| trust-bar/style.css:69, :116 | `surface-alt` | Raised (already correct) | unchanged |
+| trust-bar/style.css:126 | `surface` (badge hover — recedes to page on hover) | Substrate (deliberate toggle: resting = raised `surface-alt`, hover = recede to page) | left as `surface` |
+
+**Total background/colour call sites reviewed: 76 (74 in scope per the brief's count + the 2 fade-mask lines at brand-strip:366/371 which the brief's line-count also covers). 34 changed, 42 confirmed already correct or deliberately left as substrate.**
+
+### 12.4 The "deliberate blend" pattern — when `surface` on a component background is CORRECT, not a bug
+
+A handful of components use `surface` as their OWN resting-state background even though they are not
+literally the page. This is legitimate, not an instance of the bug, when BOTH are true:
+1. The component's shape/boundary is defined by a `border`, not by a fill contrast against the page.
+2. An interaction state (hover/open/selected) explicitly switches the SAME element to `surface-alt` (or
+   vice versa) as the visible signal that something changed.
+
+Examples kept as `surface` under this rule: accordion item header at rest (`accordion/style.css:46`,
+raises to `surface-alt` on hover/open), the FAQ item base (`product-faq/style.css:23`, same pattern), the
+option-picker `--soft` resting pill (`option-picker/style.css:456`, its own comment calls it "a neutral
+surface/border-token resting pill"), the form input field fill (`form/style.css:159`, bordered field, no
+elevation intended), the trust-bar text-only badge's hover state (`trust-bar/style.css:126`, resting =
+raised `surface-alt`, hover recedes to the page), and the brand-strip fade masks (`brand-strip/style.css:
+366,371`, which blend the scrolling strip's edges into whatever the STRIP itself sits on — confirmed the
+strip/track has no background of its own, so the mask target is correctly the page).
+
+**If a future component wants this pattern, it must satisfy both conditions above — a component that has
+no border AND no state-differentiated `surface-alt` counterpart using `surface` as a fill is the ORIGINAL
+bug, not this exception.**
+
+### 12.5 Wider palette audit (all 8 client `theme-snapshot.json` files)
+
+Three checks run across every client snapshot against the 16-slot roster in §12.2, reading the actual
+`sites/*/theme-snapshot.json` values directly (2026-08-01):
+
+**(a) Slot value doesn't match its role — `border-subtle` set to a saturated brand accent.**
+`border-subtle` (§12.2) is meant to be a quiet neutral divider:
+
+| Client | `border-subtle` value | Verdict |
+|---|---|---|
+| mamas-munches | `#e8d5c0` (warm beige, tan-tinted — leans toward the brand's cream/orange family rather than a true neutral) | Role violation (mild) |
+| indus-foods | `#2EADE2` named "Light Blue" in the snapshot | Role violation — a saturated blue, unrelated to Indus's teal/gold brand pair |
+| sgs-healthcare | `#4CAF88` named "Border Subtle (Green)" | Role violation |
+| sgs-mosque | `#C9A035` named "Border Subtle (Gold)" | Role violation |
+| sgs-construction | `#E8700A` named "Border Subtle (Orange)" | Role violation |
+| sgs-professional | `#8B4A6B` named "Border Subtle (Plum)" | Role violation |
+| eye-care-ward-end | `#C9A84C` named "Border Subtle (Gold)" | Role violation |
+| helping-doctors | `#d4e8e4` named plain "Border Subtle" (no colour suffix — the only one that doesn't name itself after a brand hue) | **Correct — the one snapshot that gets this right** |
+
+**(b) Missing slots** — checked the `settings.color.palette` slug set in all 8 `theme-snapshot.json`
+files against the 16-slot roster (§12.2). No snapshot is missing a slot.
+
+**(c) Duplicate slot definitions** — no duplicate `slug` entries were found within any single client
+snapshot's palette array.
+
+### 12.6 Disposition on client colour changes (constraint: never overwrite a deliberate brand choice)
+
+Per this task's constraint, before changing ANY client's colour the client's own `sites/<client>/CLAUDE.md`
+was checked for a documented deliberate reason. Only 4 of the 8 sites in `sites/` currently have their own
+CLAUDE.md (`indus-foods`, `snooza-chair`, `small-giants-studio-v2`, `mamas-munches`); the other 4 template/
+demo sites (`sgs-healthcare`, `sgs-mosque`, `sgs-construction`, `sgs-professional`, `eye-care-ward-end` —
+five, not four; none of the "template" sites has a CLAUDE.md) have no CLAUDE.md at all — the absence of a
+doc is itself evidence the saturated `border-subtle` value was never a deliberate brand decision (nothing
+to record a decision IN). `indus-foods/CLAUDE.md` DOES list `border-subtle: #2eade2` in its own design-
+tokens table (line 26) — but that table is a copy of the SAME framework defaults-table format that was
+found stale/drifted in `theme/sgs-theme/CLAUDE.md` (fixed this session) and carries no prose anywhere
+explaining `border-subtle` as an intentional brand choice (unlike `primary`/`accent`, which the doc traces
+to the client's logo) — read as a LISTED value, not a DOCUMENTED decision. `mamas-munches/CLAUDE.md`
+doesn't mention `border-subtle` at all. **This session did NOT overwrite any client's `border-subtle`
+value** — per the task's STOP condition, this is reported as a finding for Bean's sign-off rather than
+silently corrected, because a colour change to 7 live/near-live client palettes is exactly the kind of
+blast-radius change that warrants an explicit go-ahead, not an inferred one. Recommended fix (not yet
+applied): re-derive each palette's `border-subtle` as a low-chroma neutral near that site's
+`surface`/`surface-alt` tones, the way `helping-doctors` already has it, once Bean confirms none of the 7
+want to keep the saturated look.
+
+**Related finding — `surface-alt` distinctness (item 5 of this task).** Reading the actual snapshot
+values: `mamas-munches` (`surface:#fbf3dc`, `surface-alt:#fff9f0` — RGB delta only (4,6,20), the weakest
+of all 8) and `sgs-professional` (`surface:#FFFFFF`, `surface-alt:#F8F7F9` — delta (7,8,6)) are the two
+most weakly-differentiated pairs; `sgs-construction` (delta (10,12,15)) and `indus-foods` (delta (7,8,11))
+are also subtle but a shade more visible. The rest (`helping-doctors`, `eye-care-ward-end`, `sgs-mosque`,
+`sgs-healthcare`) are more clearly distinct. **Not edited this session** — `mamas-munches` is the one
+proven-live site with its own CLAUDE.md, and its `surface-alt` value is a DECLARED token in the source
+draft HTML (not something the extractor derived), so silently changing it would be overwriting draft
+content rather than fixing an extraction bug. Flagged for Bean: if the swept blocks (§12.3) still look
+under-differentiated on the live canary once deployed, the fix is a value change to
+`sites/mamas-munches/theme-snapshot.json` (and, properly, the source draft's `--surface-alt` declaration),
+not a further code sweep.
+
+### 12.7 Verification method (rule 4a — computed, content-keyed, not source-diff) + extractor proof
+
+Per the project's binding measurement rule, "does the fix work" for a CODE change means computed styles of
+the rendered element, not a diff of source declarations. The block-level sweep (§12.3) is a source-level
+token swap (fallback-chain reads through to the same computed value in every browser — no measurement
+ambiguity); it is straightforward to confirm by re-deploying and reading `getComputedStyle` on the swept
+elements against the intended slug's resolved hex, which is Bean's/the deploy owner's normal post-deploy
+step (this session did not deploy — see repo-wide deploy-ownership note).
+
+**The load-bearing extractor fix (Spec 33 FR-33-2, `plugins/sgs-blocks/scripts/theme-extractor/palette.py`
+`_synthesise_surface_alt`) was proven directly against the extraction code, not by inference:**
+- `python -m pytest tests/test_extractor.py` in `theme-extractor/`: 25/26 green both before and after the
+  fix (the 1 failure is a pre-existing, unrelated `styles.elements` fontSize mismatch, confirmed identical
+  via `git stash` before/after — not touched by this work).
+- The D318 regression guard (`test_client_colour_keeps_raw_token_slug_not_custom`) — which a first attempt
+  at this fix broke by letting the `surface-alt` role claim a slug at high confidence — passes clean with
+  the final fix (kept the role's confidence low + added a nothing-claimed-it-yet synthesis fallback
+  instead of an identity-claim).
+- Direct proof the collision is gone: a synthetic single-background draft with NO content/card background
+  signal at all (previously the exact scenario that reproduces the bug) now emits, instead of a missing or
+  colliding slot:
+  - dark surface `#222831` → synthesised `surface-alt` = `#2f353d` (`_source: "derived"`)
+  - light surface `#fbf3dc` (Mama's own hex) → synthesised `surface-alt` = `#ece4cf` (`_source: "derived"`)

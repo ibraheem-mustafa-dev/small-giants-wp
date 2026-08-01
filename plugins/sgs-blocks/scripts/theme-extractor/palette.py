@@ -36,6 +36,16 @@ BASELINE_SLUGS = ["primary", "primary-dark", "accent", "accent-text", "accent-li
 _IDENTITY_ROLE_SLUG = {
     "surface": "surface", "text": "text", "primary": "primary",
     "success": "success", "error": "error",
+    # NOTE (2026-08-01, Spec 32/33 investigation): "surface-alt" is deliberately NOT added here. An
+    # identity-role claim overrides a client's own named draft token (see PASS 1 vs PASS 2 order) —
+    # that is correct for high-certainty roles like primary/success/error, but "background on a
+    # content-selector" is a much weaker, easily-false-positived signal (any section/card counts), and
+    # doing so broke the D318 regression guard (`test_client_colour_keeps_raw_token_slug_not_custom`):
+    # a client's own named large-surface colour (`--surface-pink`) got silently renamed to the generic
+    # `surface-alt` slug, exactly the kind of silent rename D318 exists to prevent. Distinct-surface-alt
+    # guarantee is instead handled by the `_synthesise_surface_alt` fallback below, which only fires
+    # when NOTHING (identity or name-tiebreak) already claimed the slug — it never overwrites a real
+    # client token.
 }
 # A token NAME → baseline slug it may claim as a LOGGED tiebreak (Spec 33: name is a within-role
 # tiebreak, never the primary signal). ``--border`` → ``border-subtle`` (the theme's border slug).
@@ -184,8 +194,57 @@ def build_palette(root_tokens: dict, base_rules: list, facts: dict, trace: list)
                       "aliases": ", ".join(f"{n}={c.hex}" for n, c in cl["aliases"]),
                       "delta_e_snap": round(snap, 3)})
 
+    _synthesise_surface_alt(palette, trace)
+
     palette.sort(key=lambda e: e["slug"])
     return palette
+
+
+def _mix_hex(hex6: str, towards: str, amount: float) -> str:
+    """Blend ``hex6`` toward ``towards`` (also a hex string) by ``amount`` (0..1)."""
+    a = hex6.lstrip("#")
+    b = towards.lstrip("#")
+    ar, ag, ab = int(a[0:2], 16), int(a[2:4], 16), int(a[4:6], 16)
+    br, bg, bb = int(b[0:2], 16), int(b[2:4], 16), int(b[4:6], 16)
+    r = round(ar + (br - ar) * amount)
+    g = round(ag + (bg - ag) * amount)
+    bl = round(ab + (bb - ab) * amount)
+    return "#{:02x}{:02x}{:02x}".format(r, g, bl)
+
+
+def _relative_luminance(hex6: str) -> float:
+    hexs = hex6.lstrip("#")
+    r, g, b = int(hexs[0:2], 16) / 255.0, int(hexs[2:4], 16) / 255.0, int(hexs[4:6], 16) / 255.0
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _synthesise_surface_alt(palette: list, trace: list) -> None:
+    """FR-33-6 fallback (Spec 32/33 fix, 2026-08-01): guarantee a `surface-alt` that is genuinely
+    distinct from `surface`, even when the draft carries no separate content-background signal (e.g. a
+    single-background minimal draft with no card/panel element for roles.py to key on).
+
+    Runs AFTER the identity/name-tiebreak passes so any genuinely-extracted `surface-alt` (real draft
+    evidence) always wins — this only fires when nothing claimed the slug. Direction of the tint
+    follows the resolved `surface` colour's own luminance (light surface → tint darker/greyer; dark
+    surface → tint lighter), so the synthesised value is a plausible "raised" panel colour in either a
+    light-mode or dark-mode draft, never a re-emission of `surface` itself.
+    """
+    slugs = {e["slug"] for e in palette}
+    if "surface-alt" in slugs:
+        return
+    surface_entry = next((e for e in palette if e["slug"] == "surface"), None)
+    if surface_entry is None:
+        return
+    surface_hex = surface_entry["color"]
+    towards = "#000000" if _relative_luminance(surface_hex) > 0.5 else "#ffffff"
+    synthesised = _mix_hex(surface_hex, towards, 0.06)
+    palette.append({"slug": "surface-alt", "color": synthesised, "name": _title("surface-alt"),
+                    "_source": "derived"})
+    trace.append({"kind": "token", "slug": "surface-alt", "_source": "derived", "role": "surface-alt",
+                 "confidence": 0.5, "value": synthesised,
+                 "reason": "synthesised — no distinct content-background signal in draft; tinted from "
+                           f"surface {surface_hex} (FR-33-6 fallback)", "usage": "synthesised",
+                 "aliases": "", "delta_e_snap": 0.0})
 
 
 def _title(slug: str) -> str:

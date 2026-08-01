@@ -441,21 +441,16 @@ function initCarousel( gridEl, queryData ) {
 	const totalCards  = cards.length;
 
 	/**
-	 * Scroll the carousel to a specific card index.
+	 * Sync `currentIndex` plus the dots/arrows UI to a card index, WITHOUT
+	 * moving the scroller. Shared by `scrollToCard()` (button/dot/keyboard/
+	 * autoplay navigation, which also scrolls) and the scroll-position sync
+	 * below (drag/native-scroll navigation, which must NOT re-scroll — the
+	 * scroller has already moved by the time this runs).
 	 *
 	 * @param {number} index Target card index (clamped to valid range).
 	 */
-	const scrollToCard = ( index ) => {
+	const updateCarouselUI = ( index ) => {
 		currentIndex = Math.max( 0, Math.min( index, totalCards - 1 ) );
-		const target = cards[ currentIndex ];
-
-		if ( target ) {
-			target.scrollIntoView( {
-				behaviour: REDUCED_MOTION ? 'auto' : 'smooth',
-				block:     'nearest',
-				inline:    'start',
-			} );
-		}
 
 		if ( dotsEl ) {
 			dotsEl.querySelectorAll( '.sgs-post-grid__dot' ).forEach( ( dot, i ) => {
@@ -471,6 +466,49 @@ function initCarousel( gridEl, queryData ) {
 		if ( nextBtn ) {
 			nextBtn.disabled = currentIndex >= totalCards - 1;
 		}
+	};
+
+	/**
+	 * Scroll the carousel to a specific card index.
+	 *
+	 * @param {number} index Target card index (clamped to valid range).
+	 */
+	const scrollToCard = ( index ) => {
+		updateCarouselUI( index );
+		const target = cards[ currentIndex ];
+
+		if ( target ) {
+			target.scrollIntoView( {
+				behaviour: REDUCED_MOTION ? 'auto' : 'smooth',
+				block:     'nearest',
+				inline:    'start',
+			} );
+		}
+	};
+
+	/**
+	 * The card index nearest the carousel's CURRENT scroll position.
+	 *
+	 * Used to sync the dots/arrows after navigation the script did not itself
+	 * drive — a drag (Spec 38 FR-38-13's shared draggable module writes
+	 * `scrollLeft` directly and knows nothing about this block's dots) or a
+	 * native touch/wheel/trackpad scroll. Matches the CSS
+	 * `scroll-snap-align: start` the cards already use, so "nearest by
+	 * offsetLeft" agrees with where the browser will actually snap to.
+	 *
+	 * @return {number} Nearest card index.
+	 */
+	const nearestCardIndex = () => {
+		let nearest  = 0;
+		let minDist  = Infinity;
+		cards.forEach( ( card, i ) => {
+			const dist = Math.abs( card.offsetLeft - innerEl.scrollLeft );
+			if ( dist < minDist ) {
+				minDist = dist;
+				nearest = i;
+			}
+		} );
+		return nearest;
 	};
 
 	// Build dot buttons.
@@ -547,6 +585,34 @@ function initCarousel( gridEl, queryData ) {
 	gridEl.addEventListener( 'mouseleave', startAutoplay );
 	gridEl.addEventListener( 'focusin', stopAutoplay );
 	gridEl.addEventListener( 'focusout', startAutoplay );
+
+	/*
+	 * Sync dots/arrows to the ACTUAL scroll position, however it got there.
+	 *
+	 * Proven live 2026-08-01 (post-grid canary, `.sgs-post-grid__inner`
+	 * `scrollLeft` forced to 820 via direct assignment): the dots stayed on
+	 * index 0 — nothing in this file previously listened for scroll at all,
+	 * so `currentIndex` only ever changed via `scrollToCard()`'s own callers
+	 * (arrows, dots, keyboard, autoplay). A drag (the shared Tier G draggable
+	 * module, which drives `scrollLeft` directly and has no idea this block
+	 * has dots) or plain native touch/wheel scrolling left the indicator
+	 * silently stale, which read as the drag "not registering" at all.
+	 *
+	 * `requestAnimationFrame`-throttled rather than per-scroll-event: a drag
+	 * or momentum coast can fire dozens of scroll events a second, and this
+	 * only needs to settle on the nearest card, not re-run every tick.
+	 * `{ passive: true }` because this listener never calls `preventDefault`.
+	 */
+	let scrollSyncFrame = null;
+	innerEl.addEventListener( 'scroll', () => {
+		if ( null !== scrollSyncFrame ) {
+			return;
+		}
+		scrollSyncFrame = requestAnimationFrame( () => {
+			scrollSyncFrame = null;
+			updateCarouselUI( nearestCardIndex() );
+		} );
+	}, { passive: true } );
 
 	startAutoplay();
 	scrollToCard( 0 );

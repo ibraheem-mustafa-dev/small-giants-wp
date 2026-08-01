@@ -192,7 +192,7 @@
    it. box-shadow stays a normal rule (native `shadow` support lands as inline too, so
    it still overrides). */
 :where(.sgs-testimonial--classic-card) {
-	background: var(--wp--preset--color--surface, #fff);
+	background: var(--wp--preset--color--surface-alt, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }
@@ -265,7 +265,7 @@
 /* ===== Variant: rating-led (score row leads; e-commerce) ===== */
 /* ============================================================ */
 :where(.sgs-testimonial--rating-led) {
-	background: var(--wp--preset--color--surface, #fff);
+	background: var(--wp--preset--color--surface-alt, #fff);
 	border: 1px solid var(--wp--preset--color--border, #E2E8E8);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
@@ -314,7 +314,7 @@
 }
 
 :where(.sgs-testimonial--corporate-logo) {
-	background: var(--wp--preset--color--surface, #fff);
+	background: var(--wp--preset--color--surface-alt, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }
@@ -334,7 +334,7 @@
 }
 
 :where(.sgs-testimonial--case-study-media) {
-	background: var(--wp--preset--color--surface, #fff);
+	background: var(--wp--preset--color--surface-alt, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 }

@@ -56,13 +56,15 @@ sgs-theme/
 ## Design Tokens (Defaults — SGS Branding)
 
 ```
---primary: #0F7E80 (teal)          --accent: #F87A1F (orange)
---primary-dark: #0A5B5D            --accent-light: #FEE8D4
+--primary: #1F7A7A (teal)          --accent: #F59E0B (amber)
+--primary-dark: #0F4C4C            --accent-light: #FEF3C7
 --success: #2E7D4F (green)         --whatsapp: #25D366
---surface: #FFFFFF                 --surface-alt: #F5F7F7
---text: #1E1E1E                    --text-muted: #555555
---text-inverse: #C0D5D6            --border-subtle: #0D5557
+--surface: #FAF9F6                 --surface-alt: #F1F0EC
+--text: #1A202C                    --text-muted: #606D80
+--text-inverse: #F1F5F9            --border-subtle: #D4DBE5
 ```
+
+Verified against `theme/sgs-theme/theme.json` `settings.color.palette` (2026-08-01) — this table had drifted (was the source of a wrong `border-subtle` fallback copied into 3 block `style.css` files; see `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`).
 
 Clients override via style variations in `styles/`. Indus Foods uses teal (#0a7ea8) + gold (#d8ca50).
 

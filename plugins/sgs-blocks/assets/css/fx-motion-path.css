@@ -13,17 +13,261 @@
  * Do not "tidy" this to `display: none`.
  *
  * WHY `position: absolute; inset: 0`. The route is authored in a normalised
- * 0..100 box and stretched (`preserveAspectRatio="none"`) across whatever this
- * element covers — its nearest positioned ancestor. For an SGS section that is
- * the container (`.sgs-container` is `position: relative`), so "arc" means an
- * arc across the section the traveller sits in, at that section's real width
- * and height. Being out of flow, it also costs the parent's layout nothing,
- * which is what allows the render layer to append it as a sibling rather than
- * wrapping the block.
+ * 0..100 box and sized across whatever this element covers — its nearest
+ * positioned ancestor. For an SGS section that is the container
+ * (`.sgs-container` is `position: relative`), so "arc" means an arc across the
+ * section the traveller sits in. Being out of flow, it also costs the parent's
+ * layout nothing, which is what allows the render layer to append it as a
+ * sibling rather than wrapping the block.
+ *
+ * ⚠ AMENDED 2026-08-01 (D442) — THIS DOCBLOCK PREVIOUSLY DESCRIBED REMOVED
+ * BEHAVIOUR. It stated the route is "stretched (`preserveAspectRatio="none"`)"
+ * to fill the ancestor on BOTH axes. That attribute was removed from
+ * `includes/fx-path-routes.php` because a non-uniform stretch is what skewed
+ * the traveller — measured live on the canary as a transform matrix whose
+ * scale coefficients (a=0.0937, d=0.0937) sat against cross-terms
+ * (b=-0.9956, c=0.9956). The SVG now uses the default `xMidYMid meet`:
+ * uniform scale, no skew.
+ *
+ * ⚠ KNOWN-OPEN, DO NOT ASSUME FIXED: the ancestor-sizing model above is only
+ * correct when the nearest positioned ancestor IS the intended section. On the
+ * Wave C canary the traveller is NOT inside an `.sgs-container`, so the route
+ * resolved against `.entry-content` and measured 1200 x 7471.66px — a route box
+ * the height of the whole page, which is the separate ~2,705px initial-jump
+ * defect. Removing the stretch did NOT fix that, and was never expected to.
+ * The two defects share a file, not a cause.
+ *
+ * ⚠ AMENDED 2026-08-01 (post-D442) — MEASURED: this IS the same root cause as
+ * the owner's separately-reported "the travelling text ends up hidden below
+ * the header when it reaches the place it's supposed to" defect on the
+ * canary's "arc" example. Proof (standalone Playwright probe against the live
+ * canary, `[data-sgs-fx="motion-path"]`, header `getBoundingClientRect()` vs
+ * traveller `getBoundingClientRect()` swept across the whole page height,
+ * scroll-settle polled not fixed-delay):
+ *   · `align: path` (the runtime's `fx-motion-path.js`) repositions the
+ *     traveller via a DELTA between its own natural rendered position and the
+ *     path's resolved point in the ROUTE SVG'S coordinate space — so the size
+ *     of that delta is directly driven by how big the route box is. Measured
+ *     live: with the box at its current ~1200×7934px (`.entry-content`), the
+ *     locked end-of-scrub transform is `translate(528px, 578.8px)` — a delta
+ *     an order of magnitude bigger than the traveller's own text box. That
+ *     delta is what carries the traveller's paint position across the sticky
+ *     header's screen band (0–93px) for a sustained stretch of the scroll
+ *     range (measured: scrollY 3800–4880 on this canary) before the tween
+ *     even finishes, and by the time it DOES finish (~scrollY 5300, transform
+ *     locked at the values above) the traveller has already scrolled fully
+ *     off the top of the viewport — the designed payoff position is never
+ *     seen in clear space at all, only glimpsed behind the header in transit.
+ *   · Causally confirmed, not merely correlated: intercepting the live
+ *     network response and forcing `.sgs-fx-path-route`'s rendered height down
+ *     to 600px (simulating a correctly section-scoped ancestor) measurably
+ *     changed both the resolved delta AND where in the page it lands — proving
+ *     the excursion's size and position are a direct function of the route
+ *     box's dimensions, not an independent mechanism.
+ *   · TWO CSS-only mitigations were tried and MEASURED to NOT close it, so
+ *     they are recorded here rather than silently reattempted: (a) capping
+ *     this rule's `height` to `min(100%, 100vh − var(--sgs-header-height))`
+ *     shrinks the box but just relocates the same defect earlier in the
+ *     scroll (still 9/9 overlapping samples on the same sweep); (b) forcing
+ *     the SVG's parent to `position: relative` via `:has(> svg.sgs-fx-path-
+ *     route)` is a no-op here because the SVG's parent (per the docblock
+ *     above — appended as a SIBLING of the traveller's root) already IS
+ *     `.entry-content`, i.e. there is no closer positioned ancestor available
+ *     without DOM restructuring this file does not control.
+ *   · Nesting the SVG INSIDE the traveller instead of appending it as a
+ *     sibling (which would give it a genuinely local containing block) was
+ *     considered and REJECTED: the traveller can be an `<img>` (the spec's
+ *     named `sgs/decorative-image` consumer), a void element that cannot take
+ *     children — a fix that works for a `<p>` but breaks the primary
+ *     documented consumer is not universal (R-31-9).
+ * **CONCLUSION (superseded in part below): this is a PHP/CSS-file-boundary
+ * problem, not a PHP/CSS-fixable one** for the ROUTE GEOMETRY specifically —
+ * the oversized route box (`.entry-content`, ~1200×7934px) is still exactly
+ * as broken as measured above, and fixing THAT remains outside this file's
+ * ownership (`includes/fx-path-routes.php`, not touched here). What changed
+ * 2026-08-01 (D442 follow-up, owner-approved design) is that the VISIBLE
+ * SYMPTOM — the traveller finishing hidden behind the header — no longer
+ * depends on that geometry being fixed. See the "Resting position" section
+ * below for the mechanism.
+ *
+ * ⚠ DESIGN TENSION TO SETTLE BEFORE THE NEXT CHANGE HERE: "spans the section
+ * at the section's real width and height" and "the traveller is never skewed"
+ * cannot both hold for an auto-rotating traveller on a non-uniformly scaled
+ * path. The skew fix chose un-skewed over full-bleed. If full-bleed spanning is
+ * wanted back, it needs a mechanism that scales the PATH without handing a
+ * non-uniform CTM to the traveller — not a re-added `preserveAspectRatio`.
  *
  * Enqueued conditionally by SGS_Motion_Registry on the same terms as the
  * motion-path script module — a page with no travelling block gets neither.
+ *
+ * ── RESTING POSITION (Spec 38 §11.2, D442, 2026-08-01) ──────────────────────
+ *
+ * THE FEATURE: a client-facing "Resting position" control (four presets —
+ * below-header / middle / lower-third / custom — plus a 5vh-stepped fine-tune
+ * slider for custom) answering "where should this finish?" for ANY
+ * `data-sgs-fx="motion-path"` traveller, `<img>` included (R-31-9 — the
+ * traveller can be a void element, so the fix cannot depend on nesting
+ * anything inside it; see the rejected-approach note above).
+ *
+ * WHY THIS FIXES THE SYMPTOM WITHOUT FIXING THE ROUTE-BOX GEOMETRY: the
+ * measured defect is that the tween's OWN computed end position (driven by
+ * the broken route box) is untrustworthy. Rather than trying to correct that
+ * computation — which would mean either a live per-frame clamp (considered
+ * and REJECTED, see below) or reimplementing MotionPathPlugin's own align
+ * matrix by hand (fragile "ad hoc pixel maths" against a moving target) —
+ * `fx-motion-path.js` HANDS OFF from the path-driven transform to a plain
+ * CSS `position: sticky` once the scrub completes (`ScrollTrigger`'s own
+ * `onLeave` callback, which fires once per boundary crossing, never
+ * per-frame), clearing GSAP's transform so this rule's `top` wins outright.
+ * The path/align computation is therefore free to be however wrong the route
+ * box makes it for the DURATION of the scrub — it never has to be trusted for
+ * where the traveller ends up, because it is no longer in control there.
+ * `onEnterBack` (scrolling back up past the same boundary) hands control back
+ * to the tween for the reverse pass. Full mechanism in the runtime file.
+ *
+ * REJECTED: a runtime clamp (`getBoundingClientRect()` every frame, comparing
+ * against a computed "safe zone" and yanking the element back). Rejected
+ * because it reinvents positioning as ad-hoc pixel maths when GSAP already
+ * ships a declarative CSS-position handoff (`clearProps` + a stylesheet
+ * rule); it would do PER-FRAME layout reads for a value this file already
+ * publishes statically via `calc()`; it would silently drag back a path
+ * deliberately authored to travel off-screen mid-scrub — which the resting
+ * mechanism below does NOT do, since it only engages once the scrub is over;
+ * and it would need a second code path for reduced motion, where this design
+ * needs none (see below). `scroll-padding-top`/`scroll-margin-top` were ALSO
+ * ruled out earlier in this file — neither ever runs for a GSAP transform,
+ * only for a real scroll operation.
+ *
+ * WHY `@property`, NOT A PLAIN CUSTOM PROPERTY: an unregistered custom
+ * property's computed value is the token stream with only `var()` references
+ * substituted — a browser does NOT arithmetically reduce a nested `calc()`
+ * inside it, so `getComputedStyle` would return the literal string
+ * `"calc(93px + 24px)"` rather than `"117px"`. Registering the property with
+ * `syntax: '<length>'` makes the browser resolve it to a real length at
+ * computed-value time, same as any typed CSS property. This file's mechanism
+ * never actually reads the value in JS (the runtime only toggles a class —
+ * see `fx-motion-path.js`), but the registration is what makes `var()`
+ * substitution predictable across the two consumer rules below regardless.
+ *
+ * WHY THE `max()` FLOOR: a percentage-based preset (`50vh`, `75vh`) does not
+ * know how tall the traveller's own content is. On an unusually short
+ * viewport, or unusually tall/wrapped text, a bare percentage could still
+ * resolve to a point the sticky header covers. `max(header + 16px, preset)`
+ * is the cheap declarative floor — the traveller can never rest closer to the
+ * viewport top than 16px clear of the published header height, whichever
+ * preset is chosen.
  */
+
+/*
+ * Registered so `calc()` nested inside it resolves to a real length rather
+ * than staying a literal token string — see the docblock above.
+ */
+@property --sgs-fx-motion-path-rest-y {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 0px;
+}
+
+/*
+ * Default AND explicit "middle" both resolve to viewport centre — industry
+ * convention for "settle and read" (GSAP's own `center center` vocabulary);
+ * `top top` is for pinning mechanics, never for readable content. Kept as
+ * two selectors rather than one so an explicit `rest="middle"` and an unset
+ * attribute are both self-documenting at the call site.
+ */
+[data-sgs-fx="motion-path"],
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="middle"] {
+	--sgs-fx-motion-path-rest-y: max(
+		calc( var( --sgs-header-height, 80px ) + 16px ),
+		50vh
+	);
+}
+
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="below-header"] {
+	--sgs-fx-motion-path-rest-y: max(
+		calc( var( --sgs-header-height, 80px ) + 16px ),
+		calc( var( --sgs-header-height, 80px ) + 24px )
+	);
+}
+
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="lower-third"] {
+	--sgs-fx-motion-path-rest-y: max(
+		calc( var( --sgs-header-height, 80px ) + 16px ),
+		75vh
+	);
+}
+
+/*
+ * Custom fine-tune (Spec 38 §11.2). `data-sgs-fx-motion-path-rest-vh` is a
+ * plain data attribute, not an inline style — it is emitted by BOTH the
+ * static-block save path (`fx.js`) and the dynamic-block render path
+ * (`fx-attributes.php`) exactly like every other `data-sgs-fx-*` grammar
+ * value, so this works identically for a static OR dynamic traveller with no
+ * extra plumbing. It is a DISCRETE 5vh-stepped table rather than a single
+ * `calc()` referencing the attribute's raw value, because CSS's typed
+ * `attr()` (which would let a stylesheet read an arbitrary attribute value
+ * into a `<length>`) does not have reliable cross-browser support today —
+ * see the RangeControl `step={5}` in `fx.js`, which is what keeps this table
+ * exhaustive rather than a guess at which values a client could pick.
+ */
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"] {
+	--sgs-fx-motion-path-rest-y: max(
+		calc( var( --sgs-header-height, 80px ) + 16px ),
+		50vh
+	);
+}
+
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="0"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 0vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="5"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 5vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="10"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 10vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="15"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 15vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="20"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 20vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="25"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 25vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="30"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 30vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="35"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 35vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="40"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 40vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="45"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 45vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="50"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 50vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="55"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 55vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="60"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 60vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="65"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 65vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="70"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 70vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="75"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 75vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="80"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 80vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="85"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 85vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="90"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 90vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="95"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 95vh ); }
+[data-sgs-fx="motion-path"][data-sgs-fx-motion-path-rest="custom"][data-sgs-fx-motion-path-rest-vh="100"] { --sgs-fx-motion-path-rest-y: max( calc( var( --sgs-header-height, 80px ) + 16px ), 100vh ); }
+
+/*
+ * The handoff state. `fx-motion-path.js` adds this class via ScrollTrigger's
+ * `onLeave` once the scrub completes, and clears the GSAP-applied `transform`
+ * in the same call so this rule's `top` is never fighting a stale translate.
+ * `position: sticky` (not `fixed`) deliberately keeps the traveller in normal
+ * document flow — it settles at the target viewport offset and then scrolls
+ * away normally once its own containing block scrolls past, rather than
+ * staying glued to the screen forever.
+ */
+[data-sgs-fx="motion-path"].sgs-fx-motion-path--resting {
+	position: sticky;
+	top: var( --sgs-fx-motion-path-rest-y );
+}
+
+/*
+ * Reduced motion (§10): SUPPRESS means no tween is ever created (see the
+ * runtime file), so there is no scrub to hand off FROM. The resting position
+ * still applies — unconditionally, the moment the page renders — because
+ * this rule reads the exact same `--sgs-fx-motion-path-rest-y` custom
+ * property every preset above already resolves. One CSS source of truth
+ * serves both branches; the runtime does not need a second code path that
+ * could fall out of sync with this one.
+ */
+@media ( prefers-reduced-motion: reduce ) {
+	[data-sgs-fx="motion-path"] {
+		position: sticky;
+		top: var( --sgs-fx-motion-path-rest-y );
+	}
+}
 
 .sgs-fx-path-route {
 	position: absolute;

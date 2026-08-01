@@ -121,6 +121,7 @@ $has_any_tier = array_filter( $frames_config );
 $fx_start = trim( (string) ( $attributes['fxStart'] ?? '' ) );
 $fx_end   = trim( (string) ( $attributes['fxEnd'] ?? '' ) );
 $fx_scrub = $attributes['fxScrub'] ?? 1;
+$fx_pin   = ! empty( $attributes['fxPin'] );
 
 $uid      = 'sgs-is-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid;
@@ -153,6 +154,12 @@ if ( ! empty( $has_any_tier ) ) {
 	}
 	if ( is_numeric( $fx_scrub ) ) {
 		$canvas_attrs['data-sgs-fx-scrub'] = (string) round( (float) $fx_scrub, 2 );
+	}
+	// D435 Part 2 — pin is a first-class inspector toggle, not a composition
+	// workaround. Only emitted when true; the runtime treats its absence as
+	// "not pinned" (see fx-image-sequence.js).
+	if ( $fx_pin ) {
+		$canvas_attrs['data-sgs-fx-pin'] = 'true';
 	}
 }
 

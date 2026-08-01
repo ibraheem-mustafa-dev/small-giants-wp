@@ -63,6 +63,32 @@ const FX_ATTR_MAP = array(
 	'fxPath'       => 'data-sgs-fx-path',
 	'fxPathAsset'  => 'data-sgs-fx-path-asset',
 	'fxPathRotate' => 'data-sgs-fx-motion-path-rotate',
+
+	/*
+	 * Resting position (Spec 38 §11.2, D441, 2026-08-01). Where the traveller
+	 * settles once its scrub completes — a client-facing preset picker plus a
+	 * 5vh-stepped fine-tune slider for `custom`. Both map to plain data
+	 * attributes (not inline custom-property values) so `assets/css/
+	 * fx-motion-path.css`'s declarative `calc()`/`max()` rules — not this
+	 * file, not the runtime — resolve the actual target position. See that
+	 * file's docblock for the full mechanism and why a runtime clamp was
+	 * rejected in favour of it.
+	 */
+	'fxPathRest'   => 'data-sgs-fx-motion-path-rest',
+	'fxPathRestVh' => 'data-sgs-fx-motion-path-rest-vh',
+
+	/*
+	 * MorphSVG shape pair (Spec 38 §11.2, D427). These are the AUTHORING
+	 * surface; `includes/fx-shape-routes.php` reads them back off the
+	 * rendered markup at p11 and expands them into the visible FROM `<svg>` +
+	 * hidden TO `<svg>` + `data-sgs-fx-morph-target` selector the runtime
+	 * resolves. That target attribute is render-layer OUTPUT and
+	 * deliberately has no row here, same as the motion-path target above —
+	 * nothing authors it.
+	 */
+	'fxShape'          => 'data-sgs-fx-shape',
+	'fxShapeAssetFrom' => 'data-sgs-fx-shape-asset-from',
+	'fxShapeAssetTo'   => 'data-sgs-fx-shape-asset-to',
 );
 
 /**

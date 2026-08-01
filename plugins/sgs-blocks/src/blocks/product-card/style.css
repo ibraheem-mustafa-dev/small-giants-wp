@@ -462,7 +462,7 @@
 	 * as the --sgs-pc-badge-fg custom-property VALUE inline (allowed); the DEFAULT
 	 * (no auto-contrast resolved) is the original surface/#fff.
 	 */
-	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--surface, #fff));
+	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--text-inverse, #fff));
 	font-size: 12px;
 	font-weight: 600;
 	letter-spacing: 0.08em;
@@ -667,7 +667,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: var( --wp--preset--color--surface, #fbf3dc );
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 	color: var( --wp--preset--color--text-muted, #6b5c50 );
 	border-bottom: 1px solid var( --wp--preset--color--border, #e8d5c0 );
 }
@@ -704,7 +704,7 @@
 	   (theme/global styles) via --sgs-product-card-image-height. */
 	height: var( --sgs-product-card-image-height, 220px );
 	overflow: hidden;
-	background: var( --wp--preset--color--surface, #fbf3dc );
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 }
 
 /* Main image fills the fixed-height box, centred, scaled to cover. */
@@ -723,7 +723,7 @@
 	gap: 8px;
 	flex-wrap: wrap;
 	padding: 8px 12px;
-	background: var( --wp--preset--color--surface, #fbf3dc );
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
 	border-top: 1px solid var( --wp--preset--color--border, #e8d5c0 );
 }
 
@@ -838,7 +838,7 @@
 /* Current / selected row — subtle surface + left accent. */
 .value-ladder__row[aria-current="true"] {
 	border-left-color: var( --wp--preset--color--primary, #000 );
-	background: var( --wp--preset--color--surface, #f9f4ef );
+	background: var( --wp--preset--color--surface-alt, #f9f4ef );
 }
 
 /* Pack label — left-anchored, medium weight. */
@@ -887,7 +887,7 @@
 	 * --sgs-pc-badge-fg custom-property VALUE inline (allowed); DEFAULT matches
 	 * the .product-card__discount-label sibling (surface/#fff on the primary pill).
 	 */
-	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--surface, #fff));
+	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--text-inverse, #fff));
 }
 
 /*
@@ -901,7 +901,7 @@
  */
 .product-card--live .product-card__discount-label.is-style-pill-wrap,
 .product-card .product-card__best-value-badge.is-style-pill-wrap {
-	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--surface, #fff));
+	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--text-inverse, #fff));
 }
 
 /* Reduced motion — honour user preference (no transitions beyond opacity). */
