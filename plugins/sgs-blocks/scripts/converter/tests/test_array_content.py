@@ -187,3 +187,65 @@ def test_trust_bar_url_field_now_lifts():
     attrs, _ = lift_array_content(_root(html), "sgs/trust-bar")
     items = attrs.get("items", [])
     assert items[0].get("url") == "/ship"     # url-href declared role, previously dropped
+
+
+# ---------------------------------------------------------------------------
+# L3 — bare-tag item fields (Spec 31 §2.6 + §3.B.0 consequence 2), 2026-07-31.
+# A CONFORMING draft may write an item's fields as bare content tags rather than
+# BEM-classed elements; §2.6 resolves those via the shared html_tag_to_core_block
+# map. Before L3 every tier needed a BEM token, so such a repeater lifted ZERO
+# items (the sgs-card-grid conformance fixture, live-reproduced).
+# ---------------------------------------------------------------------------
+
+_CARD_GRID_BARE_TAGS = """
+<section class="sgs-card-grid"><div class="sgs-card-grid__inner">
+  <div class="sgs-card-grid__item"><h3>Card One</h3><p>First card body text.</p></div>
+  <div class="sgs-card-grid__item"><h3>Card Two</h3><p>Second card body text.</p></div>
+</div></section>
+"""
+
+
+def test_l3_bare_tag_item_fields_lift():
+    """<h3>/<p> inside an item resolve via the shared tag map to the fields whose
+    identity they match: h3 -> sgs/heading -> `title`; p -> sgs/text -> `subtitle`.
+    This is the exact case that lifted nothing before L3."""
+    attrs, _gaps = lift_array_content(
+        _root(_CARD_GRID_BARE_TAGS), "sgs/card-grid", media_map={}
+    )
+    items = attrs.get("items") or []
+    assert len(items) == 2, f"expected 2 items, got {len(items)}: {items}"
+    assert items[0].get("title") == "Card One"
+    assert items[0].get("subtitle") == "First card body text."
+    assert items[1].get("title") == "Card Two"
+    assert items[1].get("subtitle") == "Second card body text."
+
+
+def test_l3_does_not_cross_assign_identities():
+    """The heading text must never land in the text-identity field (or vice
+    versa) — L3 matches on IDENTITY, not on 'first unused child'."""
+    attrs, _gaps = lift_array_content(
+        _root(_CARD_GRID_BARE_TAGS), "sgs/card-grid", media_map={}
+    )
+    for item in attrs["items"]:
+        assert "body text" not in (item.get("title") or "")
+        assert not (item.get("subtitle") or "").startswith("Card ")
+
+
+def test_l3_is_additive_bem_classed_items_unchanged():
+    """NEGATIVE CONTROL for the additive claim: a BEM-classed draft still resolves
+    through L1/L1b/L2 exactly as before — L3 only runs where every earlier tier
+    returned nothing, so no already-resolving block can change."""
+    attrs, _gaps = lift_array_content(_root(_TRUST_BAR), "sgs/trust-bar", media_map={})
+    assert len(attrs["items"]) == 3
+    assert attrs["items"][0].get("label") == "Registered Food Business"
+
+
+def test_l3_ignores_a_field_whose_slot_routes_to_no_block():
+    """card-grid's `badge` field resolves to NO standalone block (the known
+    P-BADGE-SLOT-ROUTE-TO-LABEL gap), so it must not compete for the <p> that
+    belongs to `subtitle`."""
+    attrs, _gaps = lift_array_content(
+        _root(_CARD_GRID_BARE_TAGS), "sgs/card-grid", media_map={}
+    )
+    for item in attrs["items"]:
+        assert "badge" not in item, f"badge should not have matched: {item}"

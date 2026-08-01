@@ -18,10 +18,16 @@ Each field's (slot, extraction-role) is DERIVED from the DB:
 ``canonical_slot_for(field_name)`` → ``standalone_block_for(slot)`` →
 ``block_attributes.role``. A draft child's slot + role are derived the same way.
 
-Two matching layers per draft child (Bean's design, verified on real data):
+Matching layers per draft child (Bean's design, verified on real data):
   L1 — name/slot match: child's canonical slot == a field's canonical slot.
   L2 — role fallback:   else child's content role == an unmatched field's role,
        when that role is unique among the item's remaining fields.
+  L3 — tag-shape match: else the child's ATOMIC TAG identity (§2.6's shared
+       ``html_tag_to_core_block`` map, ``<h3>``->``sgs/heading``) == the field's
+       identity (``canonical_slot``->``standalone_block``). Covers a conforming
+       draft that writes item fields as BARE TAGS rather than BEM-classed
+       elements — L1/L1b/L2 all require a BEM token, so those items lifted
+       nothing. Ties resolve by document order against ``field_order``.
 
 Output shape = Tier B (scalar array-of-dicts): ``attrs[arrayAttr] = [item_dict…]``,
 one dict per item keyed by the block's field names — what the block's render.php
@@ -37,6 +43,7 @@ all resolution via ``db_lookup`` / ``recognise_helpers`` DB accessors.
 """
 from __future__ import annotations
 
+import functools
 import re
 from typing import Any
 
@@ -160,6 +167,34 @@ _FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "url-href", "link-href",
                               "image-object", "rating"})
 
 
+@functools.lru_cache(maxsize=1)
+def _tag_map() -> dict[str, str]:
+    """The shared DB tag->block map (Spec 31 §2.6 / §3.B.0 consequence 2).
+
+    Cached because L3 consults it per (field x item) and the accessor opens a
+    sqlite connection per call. Same DB data every other extraction path uses —
+    NOT an array-private copy (that duplication is the R-31-9 violation §3.B.0
+    names by this file's name)."""
+    return db_lookup.atomic_tag_map()
+
+
+def _tag_identity(node: Tag) -> str | None:
+    """A bare content tag's atomic block identity: <h3> -> sgs/heading."""
+    return _tag_map().get((node.name or "").lower())
+
+
+@functools.lru_cache(maxsize=512)
+def _field_identity(fslot: str | None) -> str | None:
+    """A field's block identity: canonical_slot -> slots.standalone_block.
+
+    Returns None for a slot that routes to no block (e.g. the bare ``badge``
+    slot, parking ``P-BADGE-SLOT-ROUTE-TO-LABEL``) — such a field simply never
+    matches at L3 rather than competing for an unrelated child."""
+    if not fslot:
+        return None
+    return db_lookup.standalone_block_for(fslot)
+
+
 def _match_child(
     field_key: str,
     fslot: str | None,
@@ -171,7 +206,8 @@ def _match_child(
 ) -> Tag | None:
     """Match one field to one item child: L1 exact canonical-slot name ->
     L1b BEM-element-segment (longest token wins) -> L2 unique-role fallback ->
-    L1c flat-item self-extraction. ``used`` holds ``(id(child), role)`` so one
+    L1c flat-item self-extraction -> L1d leaf-item text -> L3 tag-shape identity
+    (bare-tag item fields, §2.6). ``used`` holds ``(id(child), role)`` so one
     element may serve TWO fields by DIFFERENT roles (an ``<a class="__cta">`` ->
     ``ctaText`` via text-content AND ``ctaUrl`` via url-href) but never twice."""
     # L1 — exact canonical-slot name match
@@ -214,6 +250,29 @@ def _match_child(
         and (id(item_node), frole) not in used
     ):
         return item_node
+    # L3 — TAG-SHAPE identity match (Spec 31 §2.6 + §3.B.0 consequence 2).
+    # A CONFORMING draft may write an item's fields as bare content tags
+    # (``<div class="…__item"><h3>Card One</h3><p>body</p></div>``) instead of
+    # BEM-classed elements — §2.6 states those resolve to their atomic block via
+    # the shared tag map. Every tier above needs a BEM token (L1/L1b directly; L2
+    # derives the child's role FROM that token), so a bare tag matched nothing and
+    # the whole repeater lifted zero items. Match the child's TAG identity against
+    # the field's own identity (canonical_slot -> standalone_block) instead.
+    #
+    # Ambiguity (two unmatched fields sharing one identity) resolves by DOCUMENT
+    # ORDER, Bean-approved 2026-07-31: the schema is iterated in ``field_order``
+    # and this tier returns the first still-unused child in document order, so the
+    # Nth child of an identity lands on the lowest-``field_order`` unmatched field
+    # of that identity.
+    #
+    # STRICTLY ADDITIVE (the D308 zero->one shape, MF-4-safe): it runs only after
+    # every earlier tier returned nothing, so it cannot change any field that
+    # already resolved — no existing block's lift can regress.
+    fident = _field_identity(fslot)
+    if fident:
+        for ch, _cs, _cr, _ct in children:
+            if (id(ch), frole) not in used and _tag_identity(ch) == fident:
+                return ch
     return None
 
 
