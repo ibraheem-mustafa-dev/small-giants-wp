@@ -1,5 +1,83 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D450 — Motion Wave E: agents own FILES, not steps [ROUTINE]
+
+**Problem.** The wave dispatches parallel agents into a SHARED worktree that already holds a
+co-active track's 10 modified files. Five register steps write the same four motion-attribute
+files (`includes/fx-attributes.php`, `src/blocks/extensions/fx.js`,
+`class-sgs-motion-registry.php`, `seed-motion-fx-registry.py`). Step-scoped briefs would have put
+two agents in one file.
+
+**Decision.** Every agent gets an EXCLUSIVE file list. Where one register step spans two owners,
+the step is split along file lines and both halves are named in both briefs (Step 19 is split:
+the editor warning lives in `fx.js` and goes to the fx-surface owner; the budget script + admin
+panel go elsewhere). Steps 10/15/19-editor run SEQUENTIALLY INSIDE ONE AGENT rather than as
+separate agents serialised across rounds. No agent deploys, commits, or runs a state-changing git
+command; the main thread commits by exact path and deploys once per round.
+
+**Why this shape and not "just be careful".** A prior session's agent ran a post-build
+`git checkout` that reverted three concurrent agents' finished work, and their reports stayed
+truthful throughout — only content greps caught it. Trust-by-discipline fails here;
+file-exclusivity is checkable.
+
+**Evidence it earned its keep:** a pre-dispatch QC pass found four ownership defects that a
+step-scoped plan would have hidden until agents were mid-flight — `SHIPPED_EFFECTS` is at
+`src/blocks/extensions/fx.js:68`, not the motion registry (two agents would have written it);
+`includes/class-card-grid-products.php` holds card-grid's WooCommerce gate, not `render.php`;
+`includes/generated-fx-qualifying-blocks.php` was ungranted to the step that must delete its dead
+function; `includes/admin/` does not exist and is not this plugin's convention.
+
+Plan: `~/.claude/plans/go-motion-track-hazy-papert.md`.
+
+## D449 — Step O (drag text-selection): Bean re-checks by hand; no further agent [ROUTINE]
+
+The symptom Bean saw could not be reproduced across Chromium, WebKit or Firefox with scripted
+drags, and a cause-agnostic `user-select: none` mitigation shipped blind. **Per measurement-vs-eye,
+Bean's report STANDS over the null measurement** — a script is not a hand. Ruling: Bean re-attempts
+on a real machine after this wave deploys. **Do NOT dispatch an agent at it** — an agent will re-run
+scripted drags and produce a fourth false pass. If it persists, the finding is that the measurement
+set is incomplete, not that the bug is absent.
+
+## D448 — Tier G stays exempt from the Spec 02 budget, but the per-page cost becomes VISIBLE [ROUTINE]
+
+**Problem.** Spec 38 §4.4 declares Tier G (GSAP) outside Spec 02's <50KB-per-page budget. A page
+combining pin-scrub + split-reveal + draw + scramble + an image sequence is constructible in the
+editor today and lands ~55KB gz. The exemption was written by the team that owns the budget; a
+buyer holding a Lighthouse report reads it as a broken promise.
+
+**Decision (Bean, 2026-08-01).** Neither keep it silent nor cap authoring. Build a **per-page motion
+cost readout** — in the editor and in an admin diagnostics panel — and let the operator decide.
+Rejected: [A] keep the exemption undocumented (the gap stays invisible); [B] bring Tier G inside
+the budget (caps how much motion a page can carry, some combinations become unauthorable).
+
+**Why.** A visible cost turns an engineering property into a sales asset, and it is the only option
+that neither hides the number nor removes the operator's choice. `check-motion-bundle-budget.py`
+today measures MODULES, not pages — the per-page assertion is the build.
+
+## D447 — Physics: decorative-only, via a dedicated container-equivalent block [ROUTINE]
+
+**Problem.** Bean asked for a physics sandbox (throwable objects with weight, momentum, bounce).
+Two objections stood, and **capability was NOT one of them** — GSAP's InertiaPlugin and
+Physics2DPlugin are already bundled and free. The real objections: (a) FR-38-14 says physics are
+easing FLAVOURS, *never standalone toggles*, so a sandbox is out of spec as written; (b) every
+current drag effect clears WCAG 2.5.7 because it maps onto a discrete single-pointer alternative
+(a range input, arrow buttons, dots) and **a thrown object has none** — and an object still moving
+after release is AUTONOMOUS motion, so the "drag survives reduced motion" reasoning does not carry.
+
+**Decision (Bean, 2026-08-01).** Physics are permitted **only on non-interactive decorative
+layers**. Nothing a user must reach is throwable, which dissolves the 2.5.7 problem rather than
+answering it, and reduced motion disables the surface outright.
+
+**Shape (Bean's call, asked and answered in-session):** a **dedicated container-equivalent "physics
+sandbox" block** whose children become throwable bodies — NOT a physics toggle bolted onto existing
+blocks with preset shapes. Rationale: a preset-shape toggle locks operators into whatever shapes we
+imagined; a container-kind block gives them anything they can put in a container, and it inherits
+the composite-mirror rule so it cannot diverge from `sgs/container`.
+
+**Sequencing.** A new block is high blast radius (project rule 7). **This wave writes the FR only**;
+the block is its own design-gated build session. Nearest existing spec anchor: FR-38-13's unbuilt
+*"hero decorative layers (draggable ornaments)"*.
+
 ## D446 — The band ARRANGEMENT fold: a folded band's `display` now reaches the owner's `layout` attr [ROUTINE]
 
 **Problem.** A section whose sole inner child is a pass-through band folded that band's box CSS onto
