@@ -1,5 +1,69 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D436 — The DB becomes the real single source: /sgs-update owns motion seeding AND artefact regeneration [ROUTINE]
+
+**Bean:** *"The motion seeding needs to be worked into the sgs-update pipeline and not be some
+independent competing script that gets forgotten about or we end up losing all our motion/FX data"*
+— then, on the half that was deferred: *"the sgs-update motion layer should also update the data into
+the artefacts for use in the actual websites. The DB is the centre of it, creating 1 source for all
+data but the main point of adding this data to the db was to make sure these artefacts are always up
+to date."*
+
+**The evidence he was right is D432.** Seeding `box_family` for `sgs/nav-menu` on the nav track meant
+running `/sgs-update`, which regenerates `block_attributes` framework-wide and swept up 7
+`css_property='fx:*'` rows the motion seeder owns. It broke the build for BOTH tracks at once and was
+initially misdiagnosed as rogue seeds.
+
+**And the hand-patched list was ALREADY incomplete.** Eight blocks carry real block.json-declared fx
+attrs — gallery, google-reviews, post-grid, trustpilot-reviews, buybox, image-sequence ×3 — but only
+4 of D432's 7 patched blocks had override entries. **`sgs/buybox` was undeclared and would have hit
+the identical failure the next time its rows were recreated.** The incident was not a patched one-off;
+it had a live second instance sitting in it. That is the argument for a mechanism over a list, made
+concrete.
+
+**Part 1 (`075baa9b`) — the DB layer.** `block_attributes.css_property` had TWO writers for the fx
+namespace: `/sgs-update`'s `_apply_attr_classification_overrides` rebuilt it every run, while
+`seed-motion-fx-registry.py` wrote the same column via a bare `UPDATE` at build time, through a
+channel the reseed gate could not see. The fx namespace is now a native layer inside
+`_apply_attr_classification_overrides`, importing `FX_ATTR_CSS_PROPERTY` from the seeder so there is
+ONE definition rather than a copy. The seeder is verify-only. Stage 1 runs it as a tail step. The 7
+override rows are gone (207 remain). `check_css_property_reseed.py` gained Check A2 — **and it exists
+because the agent's own negative control caught that removing those rows would otherwise have
+SILENTLY DROPPED value-mismatch detection.** A fix that quietly removes a check is the failure mode
+this project keeps finding.
+
+**Part 2 (`c112ba7d`) — Stage 12, the artefacts.** `/sgs-update` is now **12 stages**; Stage 12
+regenerates all four motion artefacts, delegating via subprocess to both generators in write mode —
+the same delegate-don't-duplicate pattern Stage 7 uses for `generate-block-reference.py` and Stage 8
+for `sgs-update-uimax-sync.py`. It runs LAST for two ordering-real reasons: `fx_effects` is only fully
+current after Stage 1's tail seed in the same invocation, and running after Stage 10's prune means a
+retired block cannot leave a stale roster entry.
+
+**THE TRAP, avoided by checking rather than assuming.** "Regenerate from the DB" misdescribes these
+artefacts. `generated-fx-effects.php` + `generated-fx-effect-meta.json` come from `fx_effects` alone —
+but `generated-fx-qualifying-blocks.{php,json}` are a **JOIN**: `fx_effects.scope`/`requires` from the
+DB, UNION block-provision facts read from `block.json` (`containerKind`, `bgSvgContent`,
+`fx.draggable`, `fx.pairedFilter`, `fx.motionSurface`, `fx.providesNatively`), `edit.js` (RichText
+usage) and `style.css` (`overflow-x`). That half is genuinely file-derived and never touches the DB.
+**A naive DB-only regeneration would have dropped it and produced confidently WRONG artefacts —
+worse than stale ones, because they would look freshly generated.**
+
+**ONE WRITER PER ARTEFACT, which is the whole point.** Stage 12 writes all four.
+`run-motion-fx-generators.js` was ALREADY `--check`-only (verified by reading it, not assumed), so the
+build now plays verifier to Stage 12's writer. Had it been a writer too, we would have recreated the
+exact two-writer bug one commit after fixing it.
+
+Idempotency: twice-run, md5 identical on all four, `git status` clean both times. Negative control:
+mutated `generated-fx-effects.php`, **confirmed via `git diff --stat` that the mutation landed** before
+trusting the result; both the generator's `--check` and the real build gate exited 1; restored, exit 0.
+
+**Also corrected:** root `CLAUDE.md` claimed `/sgs-update` is "10-stage v3". It was already 11 before
+this session and is now 12 — a cached count wrong for some time. Replaced with a pointer to the stage
+map plus a warning not to cache it, the same failure mode as the LEDGER's step table earlier today.
+
+**Still deferred, named:** nothing. Both halves are done.
+
+
 ## D435 — Closing three loops D434 left open, and Bean's rulings on the Wave D council [ROUTINE]
 
 **D434 is stale on its own headline and this entry supersedes that paragraph.** D434 recorded
