@@ -2,13 +2,13 @@
   "generated_by": {
     "module": "ledger.declare_input.declare_content",
     "module_version": "0.1.0",
-    "generated_at": "2026-07-28T13:11:26.284800+00:00"
+    "generated_at": "2026-08-01T16:58:39.005856+00:00"
   },
-  "fixture_count": 36,
-  "grand_total_rows": 109,
+  "fixture_count": 37,
+  "grand_total_rows": 122,
   "by_kind_totals": {
-    "content-text": 98,
-    "content-media": 11
+    "content-text": 110,
+    "content-media": 12
   },
   "fixtures": {
     "mamas-trust-bar-real": {
@@ -198,6 +198,13 @@
       "row_count": 3,
       "by_kind": {
         "content-text": 3
+      }
+    },
+    "sgs-tabs-realistic": {
+      "row_count": 13,
+      "by_kind": {
+        "content-text": 12,
+        "content-media": 1
       }
     },
     "sgs-team-member": {
