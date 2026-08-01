@@ -160,13 +160,22 @@ memory alone:
   **Measured, not assumed:** G3-dissolve recovers ZERO content — dropped. `sgs/tab.label` is ONE
   bad row (mis-seeded `emit_shape='child'` + phantom `derived_selector`) — 9 siblings correctly
   `nested`. 8 structural BEM tokens mis-resolve (NOT `item`, load-bearing for feature-grid).
-  Baselines unchanged: suite 586/1 skip; conformance 23/27 fail (pre-existing); feature-grid 6/6.
+  Baselines: suite **587/1 skip** (was 586 — +1 test, 2026-08-01 band-arrangement fold);
+  conformance 23/27 fail (pre-existing); feature-grid 6/6.
+  **2026-08-01 — band ARRANGEMENT fold shipped (D446, `_fold_band_arrangement`): full reasoning in
+  `decisions.md`.** Headline: a sole inner band's `display:grid|flex` was dropped, so the owner
+  rendered `display:block` and every folded `gap`/`flexWrap`/`justifyContent` was inert. ⚠ `gap`
+  was NEVER broken — only `display`/`grid-template-*`.
   **Next session (PLANNED, not parked):** (1) `__trigger` vs `__tab` vocabulary — Bean's call;
   (2) the recognition/`equivalent_block_for` fix for the 4 hijacked slots; (3) wire L2 into the
   three fate-deciding loops.
   ⛔ **The `sgs-card-grid` "cardRadius 12→18px defect" is WITHDRAWN as a probe artefact — do not fix
-  it.** ⛔ **OWED (`4f83e8d5`): `sgs/option-picker`'s `arrayContentLift` needs a `/sgs-update` reseed
-  before its options can transfer.** ⛔ **Do NOT alias `trigger`→`tab` unilaterally** — Bean's call
+  it.** ✅ **RESOLVED 2026-08-01 — the `sgs/option-picker` OWED reseed line was STALE; it was already
+  done.** `block_capabilities` row 6597 `(sgs/option-picker, array-content-lift)` present;
+  `array_item_schema` holds `optionItems.key`/`.label`; resolver derives `label → slot 'label' /
+  role 'text-content'` live (`key` correctly has no content role). `arrayContentLift:true` is
+  committed in block.json (`4735b6cf`) so it re-seeds from source. No action needed.
+  ⛔ **Do NOT alias `trigger`→`tab` unilaterally** — Bean's call
   (item 1); `sgs/tabs` renders `__tab`, both fixtures author `__trigger`, neither is canonical yet.
   Prior sessions: `memory/session-2026-07-31-track1.md` + `-track1-session2.md` (nav dropdowns
   shipped after 5 live-only defects, D432/D433).

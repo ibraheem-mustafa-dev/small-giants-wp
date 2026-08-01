@@ -89,7 +89,14 @@ def test_band_padding_background_textalign_transfer(owner):
     assert _accounted("background-color"), (attrs, gaps)
 
 
-def test_gap3_props_are_recorded_excluded_never_silent(owner):
+def test_gap3_props_fold_through_the_arrangement_channel(owner):
+    """Spec 31 §2.4: arrangement CSS lands on the direct parent of the items,
+    "folded up from a sole arrangement inner". GAP-3 keeps display/grid-template-*
+    out of the RAW cross-node lift; it does not licence dropping them. Before
+    2026-08-01 nothing re-homed them, so a band declaring `display:grid` folded
+    its gap/contentWidth onto an owner that still rendered `display:block` —
+    every folded arrangement property inert.
+    """
     band = _band('<div class="sgs-thing__inner"><p>x</p></div>')
     css = {".sgs-thing__inner": {
         "display": "grid",
@@ -98,12 +105,34 @@ def test_gap3_props_are_recorded_excluded_never_silent(owner):
     }}
     attrs: dict = {}
     gaps = fold_band_css(band, owner, attrs, css)
+    # display -> the layout TRIGGER attr (the §2.3 channel, validated enum).
+    assert attrs.get("layout") == "grid", attrs
+    # grid tracks -> the grid resolver's attrs, incl. the repeat(N) column count.
+    assert attrs.get("gridTemplateColumns") == "repeat(4, 1fr)", attrs
+    assert attrs.get("columns") == 4, attrs
+    # Neither is now an unexplained EXCLUDED drop...
     excluded = {g.property for g in gaps if g.origin is GapOrigin.EXCLUDED}
-    assert {"display", "grid-template-columns"} <= excluded, gaps
-    # The grid props must NOT have been lifted cross-node (GAP-3).
-    assert "gridTemplateColumns" not in attrs, attrs
-    # The width still folds alongside (the full stream ran).
+    assert not ({"display", "grid-template-columns"} & excluded), gaps
+    # ...and the width still folds alongside — pinning the arrangement pass to
+    # the GRID layer is what stops it stealing the band's CONTENT destinations.
     assert attrs.get("contentWidth") == "1100px", attrs
+
+
+def test_gap3_props_stay_excluded_when_the_owner_has_no_destination(owner):
+    """The EXCLUDED channel must still fire — and must still be reachable — when
+    the owning block declares no arrangement attrs at all. A gate that can no
+    longer fail reads green forever, so this is the negative leg of the pair
+    above: a non-container owner writes NOTHING (no dead attrs) and reports the
+    held declarations honestly.
+    """
+    band = _band('<div class="sgs-thing__inner"><p>x</p></div>')
+    css = {".sgs-thing__inner": {"display": "flex", "gap": "16px"}}
+    attrs: dict = {}
+    # A content-KIND leaf that declares neither `layout` nor `gridTemplateColumns`.
+    gaps = fold_band_css(band, "sgs/quote", attrs, css)
+    assert "layout" not in attrs, attrs
+    excluded = {g.property for g in gaps if g.origin is GapOrigin.EXCLUDED}
+    assert "display" in excluded, gaps
 
 
 def test_bemless_band_folds_identically(owner):

@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D446 — The band ARRANGEMENT fold: a folded band's `display` now reaches the owner's `layout` attr [ROUTINE]
+
+**Problem.** A section whose sole inner child is a pass-through band folded that band's box CSS onto
+the owning container — `gap`, `contentWidth`, `flexWrap`, `justifyContent`, `verticalAlign` all
+transferred — but DROPPED the one declaration that makes any of them do anything: `display`.
+`_CROSS_NODE_EXCLUDED_PROPS` (GAP-3) held `display` + `grid-template-*` out of the raw cross-node
+lift and recorded them EXCLUDED. GAP-3's stated compensating mechanism was "the §2.3 arrangement
+pass owns those" — but that pass (`assembly` step 3b) reads the SECTION ROOT, and a root whose sole
+child is the band carries no arrangement of its own **by construction**: that is precisely what makes
+the child a band. So nothing re-homed it. Net effect on the clone: `layout` unset → the wrapper
+renders `display:block` → every folded arrangement property is inert.
+
+**This was already spec'd.** Spec 31 §2.4: arrangement CSS lands "always on the **direct parent of
+the items**, which is either **this** container (arrangement on the root, **or folded up from a sole
+arrangement inner — brand, trust-bar**)". The fold-up was mandated and unbuilt, and `trust-bar` — the
+block the spec names — is the live case on the real Mama's homepage draft.
+
+**Fix** (`converter/services/fold_helpers.py::_fold_band_arrangement`), universal and DB-gated:
+- `display` → the `layout` trigger attr via `arrangement.layout_attrs` — the §2.3 channel, which
+  yields only the validated `grid`/`flex` enum (+ `flexDirection`). `display` is deliberately NOT
+  sent through the raw cascade: it resolves to an UNIMPLEMENTED_STUB there (measured), and a raw
+  cross-node `display` lift is exactly what GAP-3 exists to prevent.
+- `grid-template-*` → the grid resolver in a **second pass with `base_layer` pinned to GRID**.
+
+**The pinning is load-bearing, not stylistic.** Measured: putting `grid-template-columns` into the
+MAIN declaration stream flips `layer_detect` to GRID for the whole node, and the band's `max-width`
+degrades from `contentWidth` to an UNIMPLEMENTED_STUB. So "just delete the exclusion" is a
+regression — the exclusion stays and the arrangement is re-routed around it.
+
+**GAP-3's raw-lift ban is UNCHANGED.** Rule 6 holds: every value lands on a block attribute, never
+inline CSS. A held declaration that reaches no destination attr still returns an EXCLUDED gap
+(`sgs/quote` writes nothing — no dead attrs on a non-container owner).
+
+**Evidence.** Real draft (`sites/mamas-munches/mockups/homepage/index.html`): `sgs/trust-bar__inner`
+now yields `layout=grid` + `gridTemplateColumns=repeat(4, 1fr)` + `columns=4` alongside the
+`gap=16px 12px` / `contentWidth=1100px` it already had. Suite 586→587 pass, 1 skip. Negative control
+run (fold disabled, substitution asserted → 3 tests fail), so the new locks are not vacuous.
+
+**⚠ Do not re-propagate the `gap` half of the reported symptom — `gap` was never broken.** It folded
+correctly throughout (`_BOX_CSS_FAMILIES` includes it, and it is not in `_CROSS_NODE_EXCLUDED_PROPS`).
+Only `display` and `grid-template-*` were affected. The handoff's pairing of the two was wrong.
+
 ## D445 — Consolidation council: retire `sgs/content-collection` into `sgs/card-grid`, PORTING the non-Woo path [ROUTINE]
 
 Bean asked for a council that votes individually with written justification. Four independent seats

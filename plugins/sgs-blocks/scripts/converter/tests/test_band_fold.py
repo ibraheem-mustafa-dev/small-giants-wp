@@ -67,9 +67,15 @@ def test_composite_sole_passthrough_folds_content_width_and_resolves_var():
     assert rec.slug == "sgs/trust-bar"
     # contentWidth folds AND resolves var() -> literal (not 'var(--content-width)').
     assert attrs.get("contentWidth") == "1100px"
-    # gap (L3 arrangement) folds too; grid-template is EXCLUDED (GAP-3) — not on root.
+    # gap (L3 arrangement) folds too — and so does the arrangement that makes it
+    # mean anything. Spec 31 §2.4 names this exact case: arrangement CSS lands on
+    # the direct parent of the items, "folded up from a sole arrangement inner —
+    # brand, trust-bar". Until 2026-08-01 `display` was dropped as a GAP-3
+    # exclusion with nothing re-homing it, so the trust-bar cloned with gap +
+    # contentWidth onto a wrapper still rendering display:block.
     assert attrs.get("gap") == "16px 12px"
-    assert "gridTemplateColumns" not in attrs
+    assert attrs.get("layout") == "grid"
+    assert attrs.get("gridTemplateColumns") == "1fr 1fr"
 
 
 # --- default-container full-band fold + inheritable text-align ----------------

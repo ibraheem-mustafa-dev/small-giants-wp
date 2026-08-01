@@ -464,6 +464,112 @@ def route_area_css_to_block_attrs(
 # (R-31-9/Rule-4 violations, deleted this step).
 # ---------------------------------------------------------------------------
 
+def _fold_band_arrangement(
+    band_node: Tag,
+    owning_slug: str,
+    band_attrs: dict,
+    css_rules: dict,
+    held: list,
+    *,
+    trace: Callable[..., None] = _noop_trace,
+    record_gap: Callable[..., None] = _noop_record_gap,
+) -> list:
+    """Fold a band's ARRANGEMENT onto the owning container (Spec 31 §2.4).
+
+    Spec 31 §2.4 states where arrangement CSS lands: "always on the **direct
+    parent of the items**, which is either **this** container (arrangement on
+    the root, **or folded up from a sole arrangement inner — brand, trust-bar**)".
+    This is that fold-up. Before it existed the band's `display` was recorded as
+    a GAP-3 exclusion and nothing re-homed it, so the owner never learned it was
+    a flex/grid container.
+
+    Two destinations, both DB-gated so a block that declares neither gets nothing
+    (R-31-9 universal, no per-block branch):
+
+      * ``display`` → the ``layout`` trigger attr, via ``arrangement.layout_attrs``
+        — the §2.3 channel, which yields ONLY the validated ``grid``/``flex``
+        enum values (+ ``flexDirection``). ``display`` is deliberately NOT sent
+        through the raw cascade: it resolves to an UNIMPLEMENTED_STUB there
+        (measured), and lifting a raw ``display`` value cross-node is what GAP-3
+        exists to prevent.
+      * ``grid-template-*`` → the grid resolver, run as a SEPARATE pass with
+        ``base_layer`` pinned to GRID. Pinning is what keeps the main cascade's
+        layer detection — and therefore the band's ``contentWidth`` — intact,
+        while still giving the tracks (and the ``columns`` count the resolver
+        derives from ``repeat(N, …)``) their proper per-tier attrs. Rule 6 holds:
+        every value lands on a block attribute, never inline CSS.
+
+    A held declaration that reaches no destination is returned as an EXCLUDED GAP
+    with its original GAP-3 reason, so nothing becomes a silent drop.
+    """
+    from converter.context import Ctx, Decl, Destination
+    from converter.models import GAP, GapOrigin
+    from converter.services import arrangement
+
+    gaps: list = []
+    if not held:
+        return gaps
+
+    routed: set[tuple[str, str]] = set()
+
+    # ---- display → the layout trigger (+ flexDirection) ----------------------
+    owner_attrs = db_lookup.block_attrs(owning_slug) or {}
+    for _lk, _lv in arrangement.layout_attrs(band_node, css_rules).items():
+        if _lk not in owner_attrs:
+            continue
+        band_attrs.setdefault(_lk, _lv)
+        routed.update(("display", d.tier) for d in held if d.property == "display")
+        trace("band_fold_arrangement_lifted", owning_block=owning_slug,
+              css_property="display", layer="ARRANGEMENT",
+              dest_attr=_lk, value=_lv)
+
+    # ---- grid-template-* → the grid resolver, GRID-pinned --------------------
+    track_decls = [d for d in held if d.property != "display"]
+    if track_decls:
+        from converter.orchestrator import process_element
+        from converter.services.recognise_helpers import get_container_kind
+        from converter.services.has_inner import derive_delegates_content
+
+        conn = db_lookup.get_connection()
+        try:
+            ctx = Ctx(
+                block_slug=owning_slug,
+                container_kind=get_container_kind(owning_slug) or "",
+                delegates_content=derive_delegates_content(owning_slug) or 0,
+                variant_value=None, variant_attr=None,
+                node=band_node, is_root=False, base_layer="GRID", conn=conn,
+                destination=Destination(block_slug=owning_slug, attrs=band_attrs),
+            )
+            result = process_element(ctx, track_decls)
+        finally:
+            conn.close()
+        _failed = {(g.property, g.tier) for g in result.gaps}
+        routed.update(
+            (d.property, d.tier) for d in track_decls
+            if (d.property, d.tier) not in _failed
+        )
+        for _w in result.gaps:
+            trace("band_fold_arrangement_gap", owning_block=owning_slug,
+                  css_property=_w.property, tier=_w.tier)
+
+    # ---- whatever reached no destination stays an honest EXCLUDED gap --------
+    for d in held:
+        if (d.property, d.tier) in routed:
+            continue
+        reason = (
+            "GAP-3: display/grid-template-* never lift cross-node as raw CSS "
+            "(an inline lift beats @media and collapses grids), and the §2.4 "
+            "arrangement fold-up found no destination attr on the owner"
+        )
+        gaps.append(GAP(origin=GapOrigin.EXCLUDED, property=d.property,
+                        tier=d.tier, detail=reason))
+        record_gap(block_slug=owning_slug, css_property=d.property,
+                   raw_value=d.value, source_class="(band-fold)")
+        trace("cross_node_gap3_excluded", owning_block=owning_slug,
+              css_property=d.property, tier=d.tier)
+    return gaps
+
+
 def fold_band_css(
     band_node: Tag,
     owning_slug: str,
@@ -491,10 +597,22 @@ def fold_band_css(
     case dissolves into the same path).
 
     GAP-3 (``_CROSS_NODE_EXCLUDED_PROPS``: display/grid-template-*) stays
-    excluded from the cross-node fold — the §2.3 arrangement pass owns those —
-    but each exclusion is now RECORDED (returned as an EXCLUDED GAP +
-    record_gap + trace), never the silent early-return the old ladder had
-    (its :522-524 skip died with it). Full ledger integration = Step 11 (A2).
+    excluded from the MAIN cross-node cascade — but "excluded from the main
+    cascade" is NOT "dropped". They are re-routed by the ARRANGEMENT FOLD below
+    (2026-08-01), because the compensating mechanism GAP-3 named never fired for
+    a band: the §2.3 arrangement pass (``assembly`` step 3b) reads the SECTION
+    ROOT, and a root whose sole child is the band carries no arrangement of its
+    own by construction — that is precisely what makes the child a band. So a
+    band declaring ``display:flex;gap:24px`` folded its ``gap``/``flexWrap``/
+    ``justifyContent``/``verticalAlign`` onto the owner and dropped the ONE
+    declaration that makes any of them do something. Measured on the default
+    container: ``layout`` unset → the wrapper renders ``display:block`` → every
+    folded flex/grid property is inert.
+
+    Anything the arrangement fold cannot re-route is still RECORDED (returned as
+    an EXCLUDED GAP + record_gap + trace), never the silent early-return the old
+    ladder had (its :522-524 skip died with it). Full ledger integration = Step
+    11 (A2).
 
     FR-31-5.1a: an inheritable base-tier ``text-align`` on the band folds to
     the owner's WP-native ``textAlign`` support (re-homed verbatim from the
@@ -530,22 +648,22 @@ def fold_band_css(
             )
             base_decls = {k: v for k, v in base_decls.items() if k != "text-align"}
 
-    # ---- GAP-3 partition — EXCLUDED-with-reason, never a silent skip ----
+    # ---- GAP-3 partition — held back for the arrangement fold, never dropped ----
+    # `held` collects the display/grid-template-* declarations the MAIN cascade
+    # must not see (they flip layer_detect to GRID for the whole node, which
+    # costs the band its CONTENT-layer destinations — measured: including
+    # `grid-template-columns` in the main stream turns `max-width` from
+    # `contentWidth` into an UNIMPLEMENTED_STUB). They are re-routed below
+    # through the §2.3 arrangement channel instead.
+    held: list = []
+
     def _partition(decl_map: dict, tier: str) -> list:
         kept: list = []
         for prop, value in decl_map.items():
             if prop in _CROSS_NODE_EXCLUDED_PROPS:
-                reason = (
-                    "GAP-3: display/grid-template-* never lift cross-node "
-                    "(the §2.3 arrangement pass owns the band's grid; an "
-                    "inline lift beats @media and collapses grids)"
-                )
-                gaps.append(GAP(origin=GapOrigin.EXCLUDED, property=prop,
-                                tier=tier, detail=reason))
-                record_gap(block_slug=owning_slug, css_property=prop,
-                           raw_value=value, source_class="(band-fold)")
-                trace("cross_node_gap3_excluded", owning_block=owning_slug,
-                      css_property=prop, tier=tier)
+                held.append(Decl(property=prop,
+                                 value=strip_important(value).strip(),
+                                 tier=tier))
                 continue
             # Resolve a co-declared var() against the band's own base decls
             # (max-width:var(--content-width) with the custom prop co-declared).
@@ -558,6 +676,11 @@ def fold_band_css(
     decls: list = _partition(base_decls, "Base")
     for bp_key, bp_map in (bp_decls or {}).items():
         decls.extend(_partition(bp_map or {}, bp_key))
+
+    gaps.extend(_fold_band_arrangement(
+        band_node, owning_slug, band_attrs, css_rules, held,
+        trace=trace, record_gap=record_gap,
+    ))
     if not decls:
         return gaps
 
