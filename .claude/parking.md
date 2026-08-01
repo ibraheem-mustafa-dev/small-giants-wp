@@ -31,6 +31,44 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 ## Cloning pipeline + converter
 
+### P-DB-DERIVATION-RESIDUALS
+**Status:** OPEN
+Residual findings from the 2026-08-01 DB-derivation audit that are NOT in the Phase 0/1 plans
+(`plans/2026-08-01-db-derivation-and-converter-cleanup.md`). Each is evidenced but unscheduled:
+- **`block_selectors` is orphaned** — 92 rows / 44 blocks, ZERO `SELECT` in the converter. The
+  converter's own comments (`db_lookup.py:3582,3760,3764`) name it as the fix for
+  `AmbiguousLayerAttrError`, a hard-raise that stops clone runs. 7 of its rows are for retired blocks
+  (`announcement-bar`, `trust-badges`, `mega-menu`, …) — prune before wiring.
+- **`blocks.parent_block` drift** — block.json declares `parent` on 23 blocks; the DB mirrors 18.
+  Missing: `mega-aside`, `mega-group`, `product-faq-item`, `site-footer-row`, `site-header-row`.
+  Measured consequence: `child_block_for_parent_token('sgs/site-header','row')` returns `None`.
+- **`css_layer` drift** — 5 blocks declare a `layer` in block.json and have no DB rows
+  (`form-field-tiles`, `form-step`, `mega-aside`, `mega-group`, `mega-panel`).
+- **`providesContext`/`usesContext` unused** — 6 provide / 22 use, live in render.php at runtime,
+  read ZERO times by the converter, stored in NO DB column. Drift-proof (authored in block.json), so
+  it could cross-check the two drifts above. `sgs/container` PROVIDES the `gridItem*` family.
+- **`role='rating'` is declared, code-consumed, and dark** — 0 attrs carry it;
+  `sgs/star-rating.rating` carries `role='number-css-px'` (a star count as a CSS pixel value).
+  Cheapest concrete win once the universal `role` derivation lands.
+- **`design_tokens` "220 of 224 unread" is UNPROVEN** — the scan covered `converter/` only. Tokens
+  may be legitimately consumed by the theme layer. Verify the denominator before treating as a gap.
+
+### P-SPEC31-CORRECTIONS-OWED
+**Status:** OPEN
+Spec 31 statements measured FALSE this session (the spec is the system — amend, don't patch around):
+§592 says `splitImage` is "NOT content-walked" via `role='scalar-media'` (0 rows; it IS walked daily);
+§601 claims scalar-media art-direction was "re-homed, none dropped" (it wasn't); §4 lists
+`block_selectors` as the live step-3 disambiguator while §3.A's own MF-4 supersedes it in the same
+document; `array_content.py` cites "§3.B.0.1", which does not exist.
+
+### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
+**Status:** OPEN
+`sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
+sections fail recognition as `unrecognised` and never reach the converter. Needs a decision: is this
+draft meant to convert yet, or is it pre-SGS-BEM by design? Unlike the homepage folder it has no
+TRUTH-SPEC.md. Relevant to the Phase-5 section-annihilation bug, which fires on non-BEM markup.
+
+
 *52 open entries (re-derived 2026-07-31 from a `**Bucket:** pipeline` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 3,604 lines against a 600 cap
@@ -346,7 +384,14 @@ declare `gapTablet`/`gapMobile` (corrected from the original claim) — the real
 `render.php` doesn't consume them responsively yet. (3) container `blockGap` value migration for
 pre-existing pages is still open (low-risk). (4) MOOT — `BlockDeprecationsTest.php` doesn't exist
 and won't return under the no-deprecations policy. (5) a `calc()`/`clamp()` gap-value whitelist is
-still unbuilt (the limitation is now at least documented).
+still unbuilt, and **as of D455 (2026-08-01) it is a proven BLOCKER, not a nicety** — it stopped
+Stage 3 of the header fit-cascade design shipping. `sgs_container_gap_value()`
+(`includes/helpers-container.php:124`) sanitises through the allowlist `/[^0-9a-z.% ]/`, which
+strips parentheses, commas and `+`; a `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)` gap default emits as
+the invalid `clamp0.5rem 0.25rem 1.5cqi 1rem`, the browser drops the declaration and the gap
+SILENTLY DIES (verified by running the real regex over the real string, not by reading the code).
+Affects the footer row too, not just the header: `sgs_container_tier_gap()` calls the same
+sanitiser. Widening the allowlist touches every container block -> needs its own design gate.
 
 **Trigger:** Framework/shop-layer session touching container-wrapper controls.
 
@@ -1016,12 +1061,73 @@ The framework carries no client data any more (the client-named pattern file was
 
 **Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
 
-### P-SPEC37-S3-CARRIED — Spec 37 §3 conformance: one spec self-contradiction to settle, two clauses already done
-**Status:** OPEN (reduced to: settle the FR-37-35 spec contradiction) · **Bucket:** framework · **Parked:** 2026-07-22
+### P-ZOOM-200-NO-INSTRUMENT — no honest 200% browser-zoom instrument exists on this project
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-01
 
-Two of the three original clauses (layoutMode as a first-class inspector control; row-inserter promotion of common elements) are already built and live-verified — strike them. The third, FR-37-35 (container-query row reflow), is genuinely unresolved but the SPEC ITSELF disagrees with its own summary table about whether it's built. Settle that contradiction with one live check and fix the losing line before scoping any actual build work.
+D455 and D456 both needed a WCAG 1.4.4 (200% text zoom) check and neither could run one.
+`deviceScaleFactor` was empirically confirmed to be a rendering-resolution knob with ZERO layout
+effect (measured content-width ratio 1.000 against a target of 2.000); root-`font-size` scaling
+does not reach SGS typography because `theme.json` declares its font sizes in fixed `px`. Both
+changes shipped on reasoning ("no viewport/container units introduced, so no added risk") rather
+than measurement, and both visual-diff reports label it as unmeasured rather than claiming a pass.
+`scripts/row-fit-sweep.mjs --zoom` deliberately exits 2 with the reason rather than faking it.
 
-**Trigger:** the next session touching Spec 37 §3 — check the live behaviour first, then correct whichever spec line is wrong.
+**Trigger:** the next session that needs a real 1.4.4 verification — find or build a genuine
+browser-zoom instrument before any gate claims 1.4.4 is closed.
+
+### P-FOOTER-ROW-WEBKIT-AUTOFIT-UNVERIFIED — D456 intrinsic columns never checked on WebKit
+**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-08-01
+
+D456's `supports.sgs.intrinsicColumns` emits `repeat(auto-fit, minmax(...))` on rows that also set
+`container-type: inline-size`. WebKit bug #256047 reports `auto-fit` tracks collapsing specifically
+under inline-size containment — the same combination. The 109-width sweep ran in Chromium only.
+Flagged in `reports/visual-diff/site-footer-row-2026-08-01.md` as its own highest-priority
+outstanding check.
+
+**Trigger:** a Safari/WebKit pass on the canary before this reaches a real client footer.
+
+### P-FOOTER-FLEX-ROWS-UNVERIFIED — D456 changed footer Cluster rows that were never measured
+**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-08-01
+
+D456 replaced the deleted `@container … flex-basis:100%` rule with
+`flex: 1 1 min(100%, var(--sgs-col-basis, 16rem))` on footer row children. On the canary this is
+inert — all three live rows render `display:grid`, and flex properties do not apply to grid items.
+**But six shipped framework patterns author their footer `bottom` row as `layout:"flex"`** —
+`footer-columns.php`, `footer-centred.php`, `footer-minimal.php`, `footer-informational.php`,
+`footer-compact.php`, `framework-footer-default.php`. On those rows the new rule is LIVE and
+changes wrapping behaviour, and none was measured. Caught by a `/qc-council` cross-reference rater,
+which correctly refuted the looser framing that the rule is "inert because all rows are grid" —
+that held only for the three rows on the canary at measurement time, not framework-wide.
+Known accepted trade-off if it does apply: with `flex-grow` a lone item on a wrapped last row
+stretches to fill it, and there is no CSS-native fix.
+
+**Trigger:** insert one of the six flex-bottom-row patterns on the canary and sweep it, before any
+client footer uses a Cluster row.
+
+### P-HEADER-ROW-STAGE4-MORE-MENU — nav-menu overflow-to-"More" mechanism not started
+**Status:** DEFERRED · **Bucket:** blocks · **Parked:** 2026-08-01
+
+Stage 4 of the D420 fit-cascade design — items that no longer fit sliding into a "More" menu
+inside `sgs/nav-menu` via hidden-clone + IntersectionObserver — was deliberately sequenced AFTER
+Bean's live-eye review of Stages 1-3 (the design's own signed decision #3). Stage 1 shipped at
+D455; Stage 2 was replaced by uniform shrink and Stage 3 is blocked (see
+`P-GAP-CONSOLIDATION-FOLLOWUPS` item 5), so that review point has not been reached.
+
+**Trigger:** after Bean's eye sign-off on D455 — then decide whether Stage 4 is still needed at
+all. The row no longer overflows, so the case for it is weaker than when it was designed.
+
+### P-ROW-BLOCKS-CITE-DELETED-SPEC17 — 10 FR-S9-* citations point at a DEAD spec
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-01
+
+`site-header-row` and `site-footer-row` (render.php + style.css) carry 10 references to
+`FR-S9-2` / `FR-S9-6` / `FR-S9-7`. Those IDs belong to Spec 17, DELETED 2026-07-21 and listed under
+"DEAD — never cite" in `specs/README.md:62-68`. Pre-existing debt, surfaced by a `/qc-council`
+rater while reviewing D455/D456. Retargeting needs the coverage matrix
+`reports/2026-07-21-spec17-to-spec37-coverage.md` to map each ID to its Spec 37 equivalent —
+deliberately NOT guessed at during D455.
+
+**Trigger:** next session touching either row block; map via the coverage matrix, do not invent
+the mapping.
 
 ### P-THEME-SCROLL-PADDING-SECOND-INSTANCE — the theme carries its own copy of the scroll-padding defect the plugin already fixed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26

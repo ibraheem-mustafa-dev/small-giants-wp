@@ -119,23 +119,22 @@ memory alone:
   Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
   decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
   gates, ~105 min). Prior L2 register: `plans/2026-08-01-wrapper-recognition-cascade-rework.md`.
-  **THE ROOT CAUSE (2026-08-01):** the knowledge-base DB **cannot be rebuilt from scratch** — it is a
-  gitignored artefact whose foundational tables exist only because ~15 one-off `migrations/` were
-  each hand-run once, no runner, no replay. `blocks`/`block_attributes`/`block_composition` have
+  **ROOT CAUSE (2026-08-01):** the DB **cannot be rebuilt from scratch** — gitignored, its foundational
+  tables exist only because ~15 one-off `migrations/` were each hand-run once, no runner, no replay. `blocks`/`block_attributes`/`block_composition` have
   **no `CREATE TABLE` anywhere**; `property_suffixes` (154 rows) has DDL only in test fixtures. Every
   "worked last month" bug traces here: `role='scalar-media'` 2→0 (hero art direction lost — worked in
   the real 2026-07-02 run, artefact in `scripts/pipeline-state/sgs-clone/`); `container_kind` never
   written on reseed.
-  **SHIPPED:** D446 band-arrangement fold (`d2d0579f`) + the L2 decision/transfer seam doc (`7a21d07d`).
-  Suite **587/1 skip**; conformance 23/27 fail (pre-existing); feature-grid 6/6.
-  **DECISIONS SETTLED (Bean):** (1) fix `role` UNIVERSALLY, not scalar-media as a spot fix — 72
-  routing call sites across 8 files, 1594 sgs attrs NULL; (2) `container_kind` auto-applies on
+  **SHIPPED:** D446 band-arrangement fold (`d2d0579f`) + L2 seam doc (`7a21d07d`).
+  Suite **587/1 skip** (verified). Conformance **30 fail/20 pass** — re-measured 2026-08-01; the
+  long-quoted "23/27" was stale and had never been re-run. Drift PRE-DATES this session.
+  **DECISIONS SETTLED (Bean):** (1) fix `role` UNIVERSALLY, not scalar-media as a spot fix — 78
+  routing call sites/8 files, 1594 of 2440 sgs attrs NULL; (2) `container_kind` auto-applies on
   reseed, drift → `parking.md`; (3) `delegates_content` DEMOTED not dropped (parent+`allowedBlocks`
   cover 12 of 17; the other 5 are open containers); (4) the section-annihilation bug stays in Phase 5
   — zero live blast radius today.
-  **NEXT SESSION: execute Phase 0.** It starts with a backup; the DB is gitignored and has no other
-  copy. Council found 3 BLOCKERs, two of which would have damaged the live DB — read the plan's
-  COUNCIL FINDINGS before step 1.
+  **NEXT SESSION: execute Phase 0.** Starts with a backup — the DB is gitignored, no other copy.
+  Council found 3 BLOCKERs, two of which would have damaged the live DB; read COUNCIL FINDINGS first.
   ⛔ **Do NOT delete `scalar-media` or Loop 2** — both are live/recoverable, evidence in the parent
   plan. ⛔ **Do NOT delete any migration before its replacement seeder is PROVEN** — two `CREATE
   TABLE`s live only inside migrations queued for deletion. ⛔ **Scope every DB stat to `sgs/%`** —
