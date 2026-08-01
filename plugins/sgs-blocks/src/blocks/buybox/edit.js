@@ -20,6 +20,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		notifyMeLabel,
 		addToCartLabel,
 		perUnitDenomination,
+		dragToScroll,
+		dragMomentum,
 		style,
 		marginTablet,
 		marginMobile,
@@ -127,6 +129,45 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						} }
 					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Gallery interaction', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /*
+					 * Draggable + Inertia roster opt-in (Spec 38 FR-38-13,
+					 * register Step 3). Targets the thumbnail strip, not the
+					 * block root — mirrors sgs/gallery's toggle exactly.
+					 */ }
+					<ToggleControl
+						label={ __(
+							'Drag to scroll thumbnails (desktop)',
+							'sgs-blocks'
+						) }
+						checked={ dragToScroll }
+						onChange={ ( val ) =>
+							setAttributes( { dragToScroll: val } )
+						}
+						help={ __(
+							'Lets shoppers click and drag with a mouse to scroll the thumbnail strip, on top of the usual swipe and scrollbar.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					{ dragToScroll && (
+						<ToggleControl
+							label={ __( 'Momentum', 'sgs-blocks' ) }
+							checked={ dragMomentum }
+							onChange={ ( val ) =>
+								setAttributes( { dragMomentum: val } )
+							}
+							help={ __(
+								'Strip keeps coasting briefly after the shopper releases the drag, like a real scroll flick.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

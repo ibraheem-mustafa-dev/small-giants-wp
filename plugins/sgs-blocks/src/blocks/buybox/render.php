@@ -267,6 +267,32 @@ $buybox_img_alt       = ! empty( $buybox_def_gallery[0]['alt'] )
 	: ( $product instanceof \WC_Product ? $product->get_name() : '' );
 $buybox_thumbs_hidden = count( $buybox_def_gallery ) < 2;
 
+/*
+ * Draggable + Inertia roster opt-in (Spec 38 FR-38-13, register Step 3),
+ * mirroring sgs/gallery / sgs/post-grid / sgs/google-reviews.
+ *
+ * Emitted on `.product-card__thumbs` — the DESCENDANT that actually scrolls
+ * (buybox/style.css: `.sgs-buybox .product-card__thumbs` is the
+ * `overflow-x: auto` + `scroll-snap-type: x mandatory` flex row), NOT the
+ * block root, which never scrolls (block.json's `providesNatively` entry
+ * already suppresses the generic "Scroll & effects" picker for exactly this
+ * reason). Gated on the same `!$buybox_thumbs_hidden` condition the strip's
+ * own visibility uses — fewer than 2 images means nothing to drag, so the
+ * attribute is never emitted onto a strip that's `hidden` anyway. The shared
+ * runtime (shared/effects/gsap/fx-draggable.js) structurally re-verifies the
+ * element is a genuine native horizontal scroller before touching it.
+ */
+$buybox_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
+$buybox_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
+
+$buybox_thumbs_fx_attr = '';
+if ( ! $buybox_thumbs_hidden && $buybox_drag_to_scroll ) {
+	$buybox_thumbs_fx_attr = ' data-sgs-fx="draggable"';
+	if ( ! $buybox_drag_momentum ) {
+		$buybox_thumbs_fx_attr .= ' data-sgs-fx-momentum="false"';
+	}
+}
+
 // Context array — key shape is IDENTICAL to product-card (L445-504).
 // Gallery keys now seeded with real values from the default combo (FR-30-10 Step-10a).
 // ctaBehaviour fixed to 'add-to-cart' (buybox always adds, no learn-more mode).

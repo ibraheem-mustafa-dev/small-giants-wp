@@ -40,6 +40,9 @@ if ( ! isset( $buybox_img_alt ) ) {
 if ( ! isset( $buybox_thumbs_hidden ) ) {
 	$buybox_thumbs_hidden = true;
 }
+if ( ! isset( $buybox_thumbs_fx_attr ) ) {
+	$buybox_thumbs_fx_attr = '';
+}
 
 // Resolve width/height from the first gallery item for LCP <img> hint.
 $buybox_def_img_w = ( ! empty( $buybox_def_gallery[0]['w'] ) ) ? (int) $buybox_def_gallery[0]['w'] : 0;
@@ -76,6 +79,7 @@ $buybox_def_img_h = ( ! empty( $buybox_def_gallery[0]['h'] ) ) ? (int) $buybox_d
 	aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
 	data-wp-bind--hidden="context.thumbsHidden"
 	<?php echo $buybox_thumbs_hidden ? 'hidden' : ''; ?>
+	<?php echo $buybox_thumbs_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings in render.php, no dynamic value. ?>
 >
 	<?php foreach ( $buybox_def_gallery as $buybox_thumb_idx => $buybox_thumb ) : ?>
 		<?php
