@@ -641,6 +641,430 @@ async function runSplitRevealCheck( browser, mode ) {
 	return { mode, beforeFocus, afterFocusPreScroll, trig, afterCrossingTrigger, afterScrollingBackUp };
 }
 
+/**
+ * POST-DEPLOY CLOSURE (2026-08-01, a11y-postdeploy verification session).
+ *
+ * Everything above this point tests a HAND-COPIED candidate against the real
+ * gsap singleton — proven mechanism, not proven shipped file (this file's own
+ * header says so). The fix has since been deployed. This section closes that
+ * gap for real: it imports the ACTUAL deployed `fx-scrub.js` / `fx-split-
+ * reveal.js` build files BY ABSOLUTE URL (cache-busted so the import re-
+ * executes `bootEffect()` against a fixture built just before the import),
+ * not a copy of their logic. `bootEffect()` (`provider.js`) scans
+ * `document.querySelectorAll('[data-sgs-fx="…"]')` at IMPORT TIME, so a
+ * fixture element present in the DOM before the import is wired up by the
+ * real, shipped `initScrub`/`initSplitReveal` exactly as a real block would
+ * be.
+ *
+ * HOST PAGE CHOICE MATTERS. A dynamic `import(absoluteUrl)` still resolves
+ * that module's own bare-specifier imports (`@sgs/gsap-scrolltrigger`, `@sgs/
+ * gsap-splittext`) against the CURRENT DOCUMENT's `<script type="importmap">`
+ * — importing by URL does not bypass that resolution for imports nested
+ * inside the imported module. `fx-scrub.js` only needs `@sgs/gsap-
+ * scrolltrigger` + `@sgs/motion-provider`, both present on every page that
+ * loads any GSAP effect (`REAL_FOCUS_URL`, which already carries pin-scrub).
+ * `fx-split-reveal.js` additionally needs `@sgs/gsap-splittext`, which is
+ * NOT in that page's importmap (it never enqueues the split-reveal effect) —
+ * confirmed live before writing this, `import()` for split-reveal on that
+ * host throws `TypeError: Failed to resolve module specifier`. `SPLIT_HOST_URL`
+ * below (an existing published canary, `fx-preset-comparison`, found via
+ * `wp db query` against post_content for `split-reveal`) already uses the
+ * split-reveal effect elsewhere on the page, so its importmap carries the
+ * entry — confirmed live the same way before relying on it.
+ */
+const SCRUB_HOST_URL = HOST_URL;
+const SPLIT_HOST_URL =
+	'https://sandybrown-nightingale-600381.hostingersite.com/fx-preset-comparison/';
+const FX_SCRUB_MODULE_URL =
+	'https://sandybrown-nightingale-600381.hostingersite.com/wp-content/plugins/sgs-blocks/build/shared/effects/gsap/fx-scrub.js';
+const FX_SPLIT_MODULE_URL =
+	'https://sandybrown-nightingale-600381.hostingersite.com/wp-content/plugins/sgs-blocks/build/shared/effects/gsap/fx-split-reveal.js';
+
+/**
+ * Build a scrub fixture (spacer/el-with-link/spacer, `data-sgs-fx="scrub"`,
+ * no `data-sgs-fx-scrub` set — the framework's numeric-scrub DEFAULT), import
+ * the REAL deployed `fx-scrub.js` by URL, and run the identical race this
+ * file already runs against the copied candidate: settle to mid-scrub, nudge
+ * + focus with no settle, trace, re-nudge while held, release.
+ *
+ * @param {import('playwright').Browser} browser       Browser.
+ * @param {'no-preference'|'reduce'}     reducedMotion  Media emulation.
+ */
+async function runRealScrubModule( browser, reducedMotion ) {
+	const context = await browser.newContext( { viewport: { width: 1440, height: 900 }, reducedMotion } );
+	const page = await context.newPage();
+	await page.goto( bust( SCRUB_HOST_URL ), { waitUntil: 'load' } );
+	await page.waitForTimeout( 800 );
+	const hrefStart = page.url();
+
+	const built = await page.evaluate( ( fixModUrl ) => {
+		document.getElementById( 'real-scrub-root' )?.remove();
+		const root = document.createElement( 'div' );
+		root.id = 'real-scrub-root';
+		const before = document.createElement( 'div' );
+		before.style.height = '1400px';
+		before.id = 'real-scrub-before';
+		before.tabIndex = -1;
+		const el = document.createElement( 'div' );
+		el.id = 'real-scrub-el';
+		el.setAttribute( 'data-sgs-fx', 'scrub' );
+		el.style.padding = '40px';
+		el.style.background = '#eee';
+		const link = document.createElement( 'a' );
+		link.id = 'real-scrub-link';
+		link.href = '#x';
+		link.textContent = 'Real module test link';
+		el.appendChild( link );
+		const after = document.createElement( 'div' );
+		after.style.height = '2000px';
+		root.appendChild( before );
+		root.appendChild( el );
+		root.appendChild( after );
+		document.body.appendChild( root );
+		return import( fixModUrl + '?realmod=' + Date.now() )
+			.then( ( mod ) => ( { ok: true, exports: Object.keys( mod ) } ) )
+			.catch( ( e ) => ( { ok: false, error: String( e ) } ) );
+	}, FX_SCRUB_MODULE_URL );
+
+	if ( ! built.ok ) {
+		await context.close();
+		return { reducedMotion, hrefStart, error: built.error };
+	}
+
+	// SIMPLIFY contract (§10) under reduced motion: no ScrollTrigger at all,
+	// element rendered at its authored end state (opacity 1, no y-offset).
+	if ( 'reduce' === reducedMotion ) {
+		await page.waitForTimeout( 300 );
+		const state = await page.evaluate( async () => {
+			const el = document.getElementById( 'real-scrub-el' );
+			const stUrl = performance
+				.getEntriesByType( 'resource' )
+				.map( ( e ) => e.name )
+				.find( ( n ) => n.includes( 'gsap-scrolltrigger' ) );
+			const stMod = await import( stUrl );
+			const ST = stMod.ScrollTrigger || stMod.default;
+			const st = ST.getAll().find( ( s ) => s.trigger === el );
+			return {
+				opacity: getComputedStyle( el ).opacity,
+				transform: getComputedStyle( el ).transform,
+				triggerCreated: !! st,
+			};
+		} );
+		const hrefEnd = page.url();
+		await context.close();
+		return { reducedMotion, hrefStart, hrefEnd, simplify: state };
+	}
+
+	const activation = await page.evaluate( async () => {
+		const el = document.getElementById( 'real-scrub-el' );
+		const stUrl = performance
+			.getEntriesByType( 'resource' )
+			.map( ( e ) => e.name )
+			.find( ( n ) => n.includes( 'gsap-scrolltrigger' ) );
+		const stMod = await import( stUrl );
+		const ST = stMod.ScrollTrigger || stMod.default;
+		const st = ST.getAll().find( ( s ) => s.trigger === el );
+		if ( ! st ) {
+			return { error: 'NO_TRIGGER' };
+		}
+		const lo = st.start - 50;
+		const hi = st.end + 50;
+		const sweep = [];
+		for ( let f = 0; f <= 1; f += 0.1 ) {
+			window.scrollTo( 0, lo + ( hi - lo ) * f );
+			// eslint-disable-next-line no-await-in-loop
+			await new Promise( ( r ) => requestAnimationFrame( r ) );
+			// eslint-disable-next-line no-await-in-loop
+			await new Promise( ( r ) => setTimeout( r, 150 ) );
+			sweep.push( { f, o: getComputedStyle( el ).opacity } );
+		}
+		const mid = sweep.find( ( s ) => parseFloat( s.o ) > 0.05 && parseFloat( s.o ) < 0.5 );
+		const midIndex = mid ? sweep.indexOf( mid ) : -1;
+		return {
+			start: st.start,
+			end: st.end,
+			opacityChanged: new Set( sweep.map( ( s ) => s.o ) ).size > 1,
+			midY: midIndex >= 0 ? lo + ( hi - lo ) * ( midIndex / 10 ) : null,
+			sweep,
+		};
+	} );
+
+	if ( activation.error || ! Number.isFinite( activation.midY ) ) {
+		await context.close();
+		return { reducedMotion, hrefStart, activation, error: activation.error || 'NO_MID_Y' };
+	}
+
+	// MOUSE CONTROL for this exact fixture — opacityChanged already proves it
+	// (nothing was focused during the sweep above), captured here explicitly.
+	const mouseOpacityChanged = activation.opacityChanged;
+
+	await settledScrollTo( page, activation.midY );
+	await page.evaluate( () => {
+		document.getElementById( 'real-scrub-before' ).focus( { preventScroll: true } );
+	} );
+	await page.waitForTimeout( 150 );
+	const preFocus = await page.evaluate(
+		() => getComputedStyle( document.getElementById( 'real-scrub-link' ) ).opacity
+	);
+
+	// FORCE THE RACE: nudge scroll, focus immediately, no settle.
+	await page.evaluate( () => window.scrollBy( 0, 40 ) );
+	await page.evaluate( () =>
+		document.getElementById( 'real-scrub-link' ).focus( { preventScroll: true } )
+	);
+	const raceTrace = await page.evaluate(
+		( ms ) =>
+			new Promise( ( resolve ) => {
+				const el = document.getElementById( 'real-scrub-el' );
+				const t0 = performance.now();
+				const samples = [];
+				const tick = () => {
+					samples.push( { dt: Math.round( performance.now() - t0 ), o: getComputedStyle( el ).opacity } );
+					if ( performance.now() - t0 < ms ) {
+						setTimeout( tick, 50 );
+					} else {
+						resolve( samples );
+					}
+				};
+				tick();
+			} ),
+		2600
+	);
+
+	// RE-NUDGE while focus is still held.
+	await page.evaluate( () => window.scrollBy( 0, 60 ) );
+	const renudgeTrace = await page.evaluate(
+		( ms ) =>
+			new Promise( ( resolve ) => {
+				const el = document.getElementById( 'real-scrub-el' );
+				const t0 = performance.now();
+				const samples = [];
+				const tick = () => {
+					samples.push( { dt: Math.round( performance.now() - t0 ), o: getComputedStyle( el ).opacity } );
+					if ( performance.now() - t0 < ms ) {
+						setTimeout( tick, 50 );
+					} else {
+						resolve( samples );
+					}
+				};
+				tick();
+			} ),
+		2000
+	);
+
+	// RELEASE + confirm the hold actually let go: move focus away, scroll back
+	// to a low-opacity position, confirm the participant tracks scroll again.
+	await page.evaluate( () => {
+		document.getElementById( 'real-scrub-before' ).focus( { preventScroll: true } );
+	} );
+	await page.waitForTimeout( 300 );
+	await settledScrollTo( page, activation.sweep[ 0 ].o !== undefined ? activation.midY - ( activation.end - activation.start ) : activation.start - 50 );
+	const afterReleaseLowOpacity = await page.evaluate(
+		() => getComputedStyle( document.getElementById( 'real-scrub-el' ) ).opacity
+	);
+
+	const hrefEnd = page.url();
+	await context.close();
+	return {
+		reducedMotion,
+		hrefStart,
+		hrefEnd,
+		activation: { start: activation.start, end: activation.end, opacityChanged: activation.opacityChanged, midY: activation.midY },
+		mouseOpacityChanged,
+		preFocus,
+		raceTrace,
+		renudgeTrace,
+		afterReleaseLowOpacity,
+	};
+}
+
+/**
+ * Same closure, for `fx-split-reveal.js`, against `SPLIT_HOST_URL` (whose
+ * importmap already carries `@sgs/gsap-splittext` because the page's own
+ * content uses the effect elsewhere).
+ *
+ * @param {import('playwright').Browser} browser      Browser.
+ * @param {'no-preference'|'reduce'}     reducedMotion Media emulation.
+ */
+async function runRealSplitRevealModule( browser, reducedMotion ) {
+	const context = await browser.newContext( { viewport: { width: 1440, height: 900 }, reducedMotion } );
+	const page = await context.newPage();
+	await page.goto( bust( SPLIT_HOST_URL ), { waitUntil: 'load' } );
+	await page.waitForTimeout( 800 );
+	const hrefStart = page.url();
+
+	const built = await page.evaluate( ( fixModUrl ) => {
+		document.getElementById( 'real-split-root' )?.remove();
+		const root = document.createElement( 'div' );
+		root.id = 'real-split-root';
+		const before = document.createElement( 'div' );
+		before.style.height = '1400px';
+		before.id = 'real-split-before';
+		before.tabIndex = -1;
+		const el = document.createElement( 'p' );
+		el.id = 'real-split-el';
+		el.setAttribute( 'data-sgs-fx', 'split-reveal' );
+		el.innerHTML =
+			'Some leading words <a id="real-split-link" href="#x">a real focusable link inside real split text</a> and trailing words.';
+		const after = document.createElement( 'div' );
+		after.style.height = '2000px';
+		root.appendChild( before );
+		root.appendChild( el );
+		root.appendChild( after );
+		document.body.appendChild( root );
+		return import( fixModUrl + '?realmod=' + Date.now() )
+			.then( ( mod ) => ( { ok: true, exports: Object.keys( mod ) } ) )
+			.catch( ( e ) => ( { ok: false, error: String( e ) } ) );
+	}, FX_SPLIT_MODULE_URL );
+
+	if ( ! built.ok ) {
+		await context.close();
+		return { reducedMotion, hrefStart, error: built.error };
+	}
+
+	if ( 'reduce' === reducedMotion ) {
+		// SIMPLIFY contract: no split at all, plain readable text at full
+		// opacity — check the element's OWN opacity (unsplit means no per-
+		// fragment spans exist to query).
+		await page.waitForTimeout( 400 );
+		const state = await page.evaluate( () => {
+			const el = document.getElementById( 'real-split-el' );
+			/*
+			 * `el.querySelectorAll('*').length` is NOT a valid split-happened
+			 * signal — this fixture's own un-split markup already contains a
+			 * literal `<a>` child (the focusable link the test needs), so a
+			 * bare child count is non-zero even when SplitText never ran,
+			 * false-failing this exact check on first use. SplitText's own
+			 * `aria:'auto'` (fx-split-reveal.js's explicit config) marks EVERY
+			 * generated fragment `aria-hidden="true"` and nothing else on this
+			 * fixture ever gets that attribute — confirmed live against the
+			 * already-split no-preference fixture (15 `aria-hidden="true"`
+			 * DIVs, the literal `<a>` NOT among them) before relying on it.
+			 */
+			const splitFragments = el.querySelectorAll( '[aria-hidden="true"]' ).length;
+			return {
+				opacity: getComputedStyle( el ).opacity,
+				splitFragments,
+				childCount: el.querySelectorAll( '*' ).length,
+				text: el.textContent.trim(),
+			};
+		} );
+		const hrefEnd = page.url();
+		await context.close();
+		return { reducedMotion, hrefStart, hrefEnd, simplify: state };
+	}
+
+	const effOfLink = () =>
+		page.evaluate( () => {
+			const link = document.getElementById( 'real-split-link' );
+			const fragments = Array.from( link.querySelectorAll( '*' ) );
+			if ( 0 === fragments.length ) {
+				return Number( parseFloat( getComputedStyle( link ).opacity ).toFixed( 4 ) );
+			}
+			return Number( Math.min( ...fragments.map( ( f ) => parseFloat( getComputedStyle( f ).opacity ) ) ).toFixed( 4 ) );
+		} );
+
+	const beforeFocus = await effOfLink();
+	await page.evaluate( () => document.getElementById( 'real-split-link' ).focus() );
+	await page.waitForTimeout( 200 );
+	const afterFocusPreScroll = await effOfLink();
+
+	const trig = await page.evaluate( async () => {
+		const el = document.getElementById( 'real-split-el' );
+		const stUrl = performance
+			.getEntriesByType( 'resource' )
+			.map( ( e ) => e.name )
+			.find( ( n ) => n.includes( 'gsap-scrolltrigger' ) );
+		const stMod = await import( stUrl );
+		const ST = stMod.ScrollTrigger || stMod.default;
+		const st = ST.getAll().find( ( s ) => s.trigger === el );
+		return st ? st.start : null;
+	} );
+	if ( Number.isFinite( trig ) ) {
+		await settledScrollTo( page, trig + 30 );
+	}
+	await page.waitForTimeout( 300 );
+	const afterCrossingTrigger = await effOfLink();
+
+	await settledScrollTo( page, 0 );
+	await page.waitForTimeout( 300 );
+	const afterScrollingBackUp = await effOfLink();
+
+	// MOUSE CONTROL, same host+module, a SEPARATE fresh element, nothing ever
+	// focused — the native onEnter reveal must still fire unattended.
+	const mouse = await page.evaluate( ( fixModUrl ) => {
+		document.getElementById( 'real-split-root2' )?.remove();
+		const root = document.createElement( 'div' );
+		root.id = 'real-split-root2';
+		const before = document.createElement( 'div' );
+		before.style.height = '1400px';
+		const el = document.createElement( 'p' );
+		el.id = 'real-split-el2';
+		el.setAttribute( 'data-sgs-fx', 'split-reveal' );
+		el.innerHTML = 'Mouse-only control paragraph with no interaction at all, just scroll.';
+		const after = document.createElement( 'div' );
+		after.style.height = '2000px';
+		root.appendChild( before );
+		root.appendChild( el );
+		root.appendChild( after );
+		document.body.appendChild( root );
+		return import( fixModUrl + '?realmod=' + Date.now() ).then( () => ( { ok: true } ) );
+	}, FX_SPLIT_MODULE_URL );
+	await page.waitForTimeout( 200 );
+	const mouseBefore = await page.evaluate( () => {
+		const el = document.getElementById( 'real-split-el2' );
+		const frags = Array.from( el.querySelectorAll( '*' ) );
+		return frags.length ? Math.min( ...frags.map( ( f ) => parseFloat( getComputedStyle( f ).opacity ) ) ) : parseFloat( getComputedStyle( el ).opacity );
+	} );
+	const mouseTrig = await page.evaluate( async () => {
+		const el = document.getElementById( 'real-split-el2' );
+		const stUrl = performance
+			.getEntriesByType( 'resource' )
+			.map( ( e ) => e.name )
+			.find( ( n ) => n.includes( 'gsap-scrolltrigger' ) );
+		const stMod = await import( stUrl );
+		const ST = stMod.ScrollTrigger || stMod.default;
+		const st = ST.getAll().find( ( s ) => s.trigger === el );
+		return st ? st.start : null;
+	} );
+	if ( Number.isFinite( mouseTrig ) ) {
+		await settledScrollTo( page, mouseTrig + 30 );
+	}
+	// Generous, explicit settle (not a fixed too-short wait) — the stagger
+	// animation itself takes real time (duration 0.6s + per-word stagger), and
+	// an earlier ad hoc check of this exact shape read a false "0" at 500ms
+	// because the reveal was still mid-stagger, not because it never fired.
+	let mouseAfter = mouseBefore;
+	for ( let i = 0; i < 15; i++ ) {
+		// eslint-disable-next-line no-await-in-loop
+		await page.waitForTimeout( 150 );
+		// eslint-disable-next-line no-await-in-loop
+		const cur = await page.evaluate( () => {
+			const el = document.getElementById( 'real-split-el2' );
+			const frags = Array.from( el.querySelectorAll( '*' ) );
+			return frags.length ? Math.min( ...frags.map( ( f ) => parseFloat( getComputedStyle( f ).opacity ) ) ) : parseFloat( getComputedStyle( el ).opacity );
+		} );
+		mouseAfter = cur;
+		if ( cur >= 0.999 ) {
+			break;
+		}
+	}
+
+	const hrefEnd = page.url();
+	await context.close();
+	return {
+		reducedMotion,
+		hrefStart,
+		hrefEnd,
+		beforeFocus,
+		afterFocusPreScroll,
+		trig,
+		afterCrossingTrigger,
+		afterScrollingBackUp,
+		mouseControl: { mouseBefore, mouseAfter },
+	};
+}
+
 const browser = await chromium.launch();
 
 const out = {};
@@ -649,6 +1073,11 @@ out.fixed = await runFocusRace( browser, 'fixed' );
 out.mouseControl = await runMouseControl( browser );
 out.splitUnfixed = await runSplitRevealCheck( browser, 'unfixed' );
 out.splitFixed = await runSplitRevealCheck( browser, 'fixed' );
+
+out.realScrubModule_noPreference = await runRealScrubModule( browser, 'no-preference' );
+out.realScrubModule_reduce = await runRealScrubModule( browser, 'reduce' );
+out.realSplitModule_noPreference = await runRealSplitRevealModule( browser, 'no-preference' );
+out.realSplitModule_reduce = await runRealSplitRevealModule( browser, 'reduce' );
 
 await browser.close();
 
@@ -755,9 +1184,87 @@ if ( ! out.splitFixed || out.splitFixed.error ) {
 	}
 }
 
+// ── POST-DEPLOY REAL-MODULE VERDICT ─────────────────────────────────────────
+// These runs import the ACTUAL shipped fx-scrub.js / fx-split-reveal.js by
+// URL — this closes the gap the synthetic-harness runs above cannot.
+function assertOTrace( label, trace ) {
+	if ( ! trace || ! trace.length ) {
+		inconclusive.push( `${ label }: no trace captured` );
+		return;
+	}
+	const after = trace.filter( ( s ) => s.dt >= RAMP_ALLOWANCE_MS );
+	const tail = trace.filter( ( s ) => s.dt >= trace[ trace.length - 1 ].dt - 500 );
+	const min = Math.min( ...after.map( ( s ) => parseFloat( s.o ) ) );
+	const tailMin = Math.min( ...tail.map( ( s ) => parseFloat( s.o ) ) );
+	if ( min < 0.99 ) {
+		fails.push( `${ label } [REAL MODULE]: expected HELD at ~1 after ${ RAMP_ALLOWANCE_MS }ms, min=${ min }` );
+	}
+	if ( tailMin < 0.99 ) {
+		fails.push( `${ label } [REAL MODULE]: reveal overwritten — tail min=${ tailMin } (one-shot failure shape)` );
+	}
+}
+
+const rsm = out.realScrubModule_noPreference;
+if ( ! rsm || rsm.error ) {
+	inconclusive.push( `realScrubModule_noPreference [REAL MODULE]: ${ rsm ? rsm.error : 'missing' }` );
+} else {
+	if ( ! rsm.mouseOpacityChanged ) {
+		fails.push( 'realScrubModule_noPreference [REAL MODULE]: opacity never changed across the sweep — could not confirm the real module\'s scrub is live' );
+	}
+	assertOTrace( 'realScrubModule_noPreference/race', rsm.raceTrace );
+	assertOTrace( 'realScrubModule_noPreference/re-nudge-while-focused', rsm.renudgeTrace );
+	if ( parseFloat( rsm.afterReleaseLowOpacity ) >= 0.5 ) {
+		fails.push(
+			`realScrubModule_noPreference [REAL MODULE]: effective opacity is ${ rsm.afterReleaseLowOpacity } after focus moved away and scroll returned to a low-opacity position — the real shipped module's hold did not release`
+		);
+	}
+}
+
+const rsmR = out.realScrubModule_reduce;
+if ( ! rsmR || rsmR.error ) {
+	inconclusive.push( `realScrubModule_reduce [REAL MODULE]: ${ rsmR ? rsmR.error : 'missing' }` );
+} else if ( rsmR.simplify ) {
+	if ( rsmR.simplify.triggerCreated ) {
+		fails.push( 'realScrubModule_reduce [REAL MODULE]: a ScrollTrigger was created under prefers-reduced-motion:reduce — violates the §10 SIMPLIFY contract' );
+	}
+	if ( parseFloat( rsmR.simplify.opacity ) < 0.99 ) {
+		fails.push( `realScrubModule_reduce [REAL MODULE]: element opacity is ${ rsmR.simplify.opacity } under reduced motion — expected full opacity, no animation` );
+	}
+}
+
+const rspm = out.realSplitModule_noPreference;
+if ( ! rspm || rspm.error ) {
+	inconclusive.push( `realSplitModule_noPreference [REAL MODULE]: ${ rspm ? rspm.error : 'missing' }` );
+} else {
+	if ( rspm.afterFocusPreScroll < 0.99 ) {
+		fails.push( `realSplitModule_noPreference [REAL MODULE]: effective opacity ${ rspm.afterFocusPreScroll } after focus, before the trigger fired` );
+	}
+	if ( rspm.afterCrossingTrigger < 0.99 ) {
+		fails.push( `realSplitModule_noPreference [REAL MODULE]: effective opacity dropped to ${ rspm.afterCrossingTrigger } after the real onEnter fired` );
+	}
+	if ( rspm.afterScrollingBackUp < 0.99 ) {
+		fails.push( `realSplitModule_noPreference [REAL MODULE]: effective opacity dropped to ${ rspm.afterScrollingBackUp } after scrolling back past 'start'` );
+	}
+	if ( rspm.mouseControl && rspm.mouseControl.mouseAfter < 0.99 ) {
+		fails.push( `realSplitModule_noPreference [REAL MODULE]: MOUSE CONTROL — unattended reveal never reached full opacity (stopped at ${ rspm.mouseControl.mouseAfter })` );
+	}
+}
+
+const rspmR = out.realSplitModule_reduce;
+if ( ! rspmR || rspmR.error ) {
+	inconclusive.push( `realSplitModule_reduce [REAL MODULE]: ${ rspmR ? rspmR.error : 'missing' }` );
+} else if ( rspmR.simplify ) {
+	if ( rspmR.simplify.splitFragments > 0 ) {
+		fails.push( `realSplitModule_reduce [REAL MODULE]: SplitText created ${ rspmR.simplify.splitFragments } aria-hidden fragments under prefers-reduced-motion:reduce — violates the §10 SIMPLIFY contract (no split expected)` );
+	}
+	if ( parseFloat( rspmR.simplify.opacity ) < 0.99 ) {
+		fails.push( `realSplitModule_reduce [REAL MODULE]: element opacity is ${ rspmR.simplify.opacity } under reduced motion` );
+	}
+}
+
 console.log( '\n=== VERDICT ===' );
 console.log(
-	'⚠ IN-SITU SYNTHETIC HARNESS — this exercises the real live gsap/ScrollTrigger singleton with the candidate code injected verbatim, NOT the deployed fx-scrub.js bundle (unchanged on the canary as of this run). A post-deploy re-run against the actual shipped module is still owed — see the file header.'
+	'⚠ Two evidence tiers in this run. (1) IN-SITU SYNTHETIC HARNESS (out.unfixed/fixed/splitUnfixed/splitFixed) — candidate code copied verbatim onto the real gsap/ScrollTrigger/SplitText singleton; proves the mechanism, not the shipped file. (2) REAL-MODULE CLOSURE (out.realScrubModule_*/realSplitModule_*) — imports the ACTUAL deployed fx-scrub.js/fx-split-reveal.js by URL and lets bootEffect() wire a fresh fixture with the literal shipped code; this is the shipped-file proof the header above flags as owed, closed 2026-08-01.'
 );
 if ( inconclusive.length ) {
 	console.log( 'INCONCLUSIVE:\n - ' + inconclusive.join( '\n - ' ) );

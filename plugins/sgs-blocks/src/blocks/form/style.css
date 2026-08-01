@@ -162,11 +162,34 @@
 	min-height: 44px;
 }
 
+/*
+ * D454 — the ring's opacity modulates the RING, never the input.
+ *
+ * This rule used to carry `opacity: var(--sgs-focus-ring-opacity, 1)`, which
+ * applies to the WHOLE ELEMENT. The operator control that feeds it
+ * (`render.php`'s focus-ring opacity, 0-100%) is named for the ring, so an
+ * operator setting 40% was dimming the entire field — including the text the
+ * visitor is actively typing — the instant it received focus.
+ *
+ * Measured on the canary: a pixel sample of the focused field read ~1.79:1
+ * against its background, while the computed placeholder colour alone said
+ * 5.79:1. Static contrast maths could not see this because the dimming applies
+ * to the composited element, not to any colour token.
+ *
+ * `color-mix` puts the alpha on the outline colour instead, so the control does
+ * what its name promises and the field's own contrast is never touched. The
+ * `1` fallback means an unset variable renders a fully opaque ring, unchanged.
+ */
 .sgs-form-field__input:focus-visible {
-	outline: var(--sgs-focus-ring-width, 2px) solid var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	outline: var(--sgs-focus-ring-width, 2px) solid
+		color-mix(
+			in srgb,
+			var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80))
+				calc(var(--sgs-focus-ring-opacity, 1) * 100%),
+			transparent
+		);
 	outline-offset: var(--sgs-focus-ring-offset, 2px);
 	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
-	opacity: var(--sgs-focus-ring-opacity, 1);
 }
 
 /* Fallback for browsers that don't support :focus-visible — still shows ring on :focus */

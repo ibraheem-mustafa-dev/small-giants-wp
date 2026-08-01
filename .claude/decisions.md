@@ -1,5 +1,40 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D454 — Focusing a form field dimmed the whole field, including the text being typed [INCIDENT]
+
+**The bug.** `.sgs-form-field__input:focus-visible` carried
+`opacity: var(--sgs-focus-ring-opacity, 1)`. `opacity` applies to the WHOLE ELEMENT. The operator
+control feeding that variable (`form/render.php:248`, a 0-100% focus-ring opacity) is named for the
+RING — so an operator setting 40% dimmed the entire input, and everything the visitor typed into
+it, the instant it received focus. Fixed by moving the alpha onto the outline colour via
+`color-mix`, so the control does what its name promises and the field's contrast is untouched.
+
+**Measured.** A pixel sample of the focused field read **~1.79:1** against its background while the
+computed placeholder colour alone said **5.79:1**. Static contrast maths could not see it: the
+dimming applies to the composited element, not to any colour token. This is the
+measurement-vs-eye rule paying out — the agent pixel-sampled instead of trusting computed style,
+which is the only reason it surfaced.
+
+**Where it hid, and my part in that.** The 0.4 was reported earlier the same day as
+"authored CSS on `.sgs-form-field__input`". I looked for it, grepped for the literal
+`opacity: 0.4` across `src/`, `assets/`, `theme/` and the fixture markup, found nothing, and
+told Bean the claim was false. **The rule uses a CSS VARIABLE, so a literal grep could never
+match it** — and line 169 was printed in my own grep output at the time, unchased. A search's
+negative result describes the SEARCH, not the codebase. I had cited that exact lesson earlier in
+the same session.
+
+The original report was RIGHT that something dimmed the input and WRONG about the mechanism
+(a static authored value vs an operator-driven focus rule). Dismissing the whole claim because
+its stated mechanism was wrong is the error — **a wrong explanation does not make the observation
+wrong.**
+
+**Scope.** Only the `:focus-visible` rule was affected. The `:focus:not(:focus-visible)` fallback
+never carried the opacity — it renders a fully opaque ring and ignores the variable entirely,
+a pre-existing inconsistency left as-is rather than silently changed.
+
+⚠ **Unverified live:** the `color-mix` ring needs a post-deploy pixel sample at a non-default
+opacity to confirm the ring dims and the field does not.
+
 ## D453 — Pinned sections put keyboard focus on invisible controls (WCAG 2.4.11) [INCIDENT]
 
 **Finding, measured live on canary 2114.** A pinned section containing a real link, text field and
