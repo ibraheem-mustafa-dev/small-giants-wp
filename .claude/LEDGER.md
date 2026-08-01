@@ -195,6 +195,32 @@ migration must run with Bean present. The canary is unblocked and current.
 D-ceiling immediately before writing any D reference** — a collision happened this session: the
 other track took D455/D456 mid-flight and a CSS docblock briefly cited someone else's decision.
 
+### TRACK 1 (cloning) — a SEPARATE track from the motion/migration tasks below; pick one
+
+**T1.1 — Close the 5 measured DB/routing residuals** [delegated, ~40 min]
+Each is evidenced, none is in a plan, and (a)-(d) are one drift class: a DB mirror that fell behind
+its block.json source. (a) **`block_selectors` orphaned** — 92 rows/44 blocks, ZERO converter
+`SELECT`; the code's own comments (`db_lookup.py:3582,3760,3764`) name it as the fix for
+`AmbiguousLayerAttrError`, a hard-raise that STOPS clone runs; 7 rows are retired blocks — prune,
+then wire. (b) **`blocks.parent_block` 23 declared / 18 mirrored** — missing `mega-aside`,
+`mega-group`, `product-faq-item`, `site-footer-row`, `site-header-row`; measured consequence
+`child_block_for_parent_token('sgs/site-header','row')` → `None`. (c) **`css_layer`** — 5 blocks
+declare a layer in block.json with no DB row (`form-field-tiles`, `form-step`, `mega-aside`,
+`mega-group`, `mega-panel`). (d) **`role='rating'` is dark** — 0 attrs carry it;
+`sgs/star-rating.rating` carries `role='number-css-px'`, a star COUNT as a CSS pixel value.
+(e) **`design_tokens` "220 of 224 unread" is UNPROVEN** — that scan covered `converter/` only and
+tokens may be legitimately theme-layer. ⛔ Verify the denominator before treating (e) as a gap.
+
+**T1.2 — Execute Phase 0: make the DB rebuildable** [inline Opus, ~105 min]
+**Read `plans/phase-0-db-rebuildable.md` IN FULL — especially COUNCIL FINDINGS (3 BLOCKERs).**
+⛔ Step 0.0 backs up FIRST; the DB is gitignored with no other copy. ⛔ Migrations hardcode
+`Path.home()` — a rebuild MUST use the sandbox harness or it writes to the LIVE DB.
+
+**T1.3 — Phase 1 regenerative seeders, ONLY after T1.2 passes** [inline Opus]
+Convert the ~24 remaining migrations to git-tracked JSON + idempotent seeders, per the working
+pattern (`db_lookup._migrate_html_tag_to_core_block` + `scripts/data/*.json`). ⛔ Build the JSON from
+LIVE state, never by replaying migration history; ⛔ never delete a migration before its seeder is proven.
+
 ### Task 1 — The production migration for palestine-lives [inline, Opus] — HIGHEST VALUE
 **What:** run `plugins/sgs-blocks/scripts/wp-migrate-oldshape-blocks.js` in DRY-RUN, show Bean the
 output, get explicit approval, migrate, then deploy.

@@ -31,36 +31,6 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 ## Cloning pipeline + converter
 
-### P-DB-DERIVATION-RESIDUALS
-**Status:** OPEN
-Residual findings from the 2026-08-01 DB-derivation audit that are NOT in the Phase 0/1 plans
-(`plans/2026-08-01-db-derivation-and-converter-cleanup.md`). Each is evidenced but unscheduled:
-- **`block_selectors` is orphaned** — 92 rows / 44 blocks, ZERO `SELECT` in the converter. The
-  converter's own comments (`db_lookup.py:3582,3760,3764`) name it as the fix for
-  `AmbiguousLayerAttrError`, a hard-raise that stops clone runs. 7 of its rows are for retired blocks
-  (`announcement-bar`, `trust-badges`, `mega-menu`, …) — prune before wiring.
-- **`blocks.parent_block` drift** — block.json declares `parent` on 23 blocks; the DB mirrors 18.
-  Missing: `mega-aside`, `mega-group`, `product-faq-item`, `site-footer-row`, `site-header-row`.
-  Measured consequence: `child_block_for_parent_token('sgs/site-header','row')` returns `None`.
-- **`css_layer` drift** — 5 blocks declare a `layer` in block.json and have no DB rows
-  (`form-field-tiles`, `form-step`, `mega-aside`, `mega-group`, `mega-panel`).
-- **`providesContext`/`usesContext` unused** — 6 provide / 22 use, live in render.php at runtime,
-  read ZERO times by the converter, stored in NO DB column. Drift-proof (authored in block.json), so
-  it could cross-check the two drifts above. `sgs/container` PROVIDES the `gridItem*` family.
-- **`role='rating'` is declared, code-consumed, and dark** — 0 attrs carry it;
-  `sgs/star-rating.rating` carries `role='number-css-px'` (a star count as a CSS pixel value).
-  Cheapest concrete win once the universal `role` derivation lands.
-- **`design_tokens` "220 of 224 unread" is UNPROVEN** — the scan covered `converter/` only. Tokens
-  may be legitimately consumed by the theme layer. Verify the denominator before treating as a gap.
-
-### P-SPEC31-CORRECTIONS-OWED
-**Status:** OPEN
-Spec 31 statements measured FALSE this session (the spec is the system — amend, don't patch around):
-§592 says `splitImage` is "NOT content-walked" via `role='scalar-media'` (0 rows; it IS walked daily);
-§601 claims scalar-media art-direction was "re-homed, none dropped" (it wasn't); §4 lists
-`block_selectors` as the live step-3 disambiguator while §3.A's own MF-4 supersedes it in the same
-document; `array_content.py` cites "§3.B.0.1", which does not exist.
-
 ### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
 **Status:** OPEN
 `sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
