@@ -115,43 +115,32 @@ widen or narrow a provision without checking what rides on it.
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 (cloning/Spec 31) — ACTIVE. L2 relational qualifier built + measured this session,
-  still UNWIRED:** **`plans/2026-08-01-wrapper-recognition-cascade-rework.md`** is the register —
-  read it whole.
-  **2026-08-01 (this session):** built `converter/services/l2_qualify.py`, the L2 (CONTENT-layer)
-  relational qualifier Bean specified at D439 (D441) — pure, UNWIRED, `--self-test` (1 positive +
-  6 planted violations). Trigger = the direct PARENT is a recognised container-kind block; the
-  child's identity is an OUTPUT, never an input. Reproduces §2.7's acceptance table 5/5 on the real
-  homepage draft, zero false positives (`reports/2026-08-01-l2-qualifier-measurement.json`, 377
-  pairs). **Also deleted `_absorb_transparent_wrappers`** (D440; + `_is_absorbable_wrapper` etc.) —
-  fired 0 times across 46 real invocations, rejected the 4 real content bands solely for `margin`
-  (the very pattern it existed to fold). Wrapper-deciding mechanisms: 9 → 8. New fixture
-  `sgs-tabs-realistic.draft.html`/`.expected.md` replaces the 29-line stub that rendered broken.
-  **Councils:** `/qc-council` falsified 4 recognition proposals; a 6-persona `/adversarial-council`
-  rejected tabs-synthesis (tombstone at `plans/2026-08-01-tabs-synthesis-design.md`) — its signal
-  fires correctly on 1 block, falsely on 4 incl. `sgs/feature-grid`, which converts fine today.
-  **Measured, not assumed:** G3-dissolve recovers ZERO content — dropped. `sgs/tab.label` is ONE
-  bad row (mis-seeded `emit_shape='child'` + phantom `derived_selector`) — 9 siblings correctly
-  `nested`. 8 structural BEM tokens mis-resolve (NOT `item`, load-bearing for feature-grid).
-  Baselines: suite **587/1 skip** (was 586 — +1 test, 2026-08-01 band-arrangement fold);
-  conformance 23/27 fail (pre-existing); feature-grid 6/6.
-  **2026-08-01 — band ARRANGEMENT fold shipped (D446, `_fold_band_arrangement`): full reasoning in
-  `decisions.md`.** Headline: a sole inner band's `display:grid|flex` was dropped, so the owner
-  rendered `display:block` and every folded `gap`/`flexWrap`/`justifyContent` was inert. ⚠ `gap`
-  was NEVER broken — only `display`/`grid-template-*`.
-  **Next session (PLANNED, not parked):** (1) `__trigger` vs `__tab` vocabulary — Bean's call;
-  (2) the recognition/`equivalent_block_for` fix for the 4 hijacked slots; (3) wire L2 into the
-  three fate-deciding loops.
-  ⛔ **The `sgs-card-grid` "cardRadius 12→18px defect" is WITHDRAWN as a probe artefact — do not fix
-  it.** ✅ **RESOLVED 2026-08-01 — the `sgs/option-picker` OWED reseed line was STALE; it was already
-  done.** `block_capabilities` row 6597 `(sgs/option-picker, array-content-lift)` present;
-  `array_item_schema` holds `optionItems.key`/`.label`; resolver derives `label → slot 'label' /
-  role 'text-content'` live (`key` correctly has no content role). `arrayContentLift:true` is
-  committed in block.json (`4735b6cf`) so it re-seeds from source. No action needed.
-  ⛔ **Do NOT alias `trigger`→`tab` unilaterally** — Bean's call
-  (item 1); `sgs/tabs` renders `__tab`, both fixtures author `__trigger`, neither is canonical yet.
-  Prior sessions: `memory/session-2026-07-31-track1.md` + `-track1-session2.md` (nav dropdowns
-  shipped after 5 live-only defects, D432/D433).
+- **⭐ Track 1 (cloning/Spec 31) — ACTIVE. Root cause found; Phase 0 plan ready, NOT executed.**
+  Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
+  decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
+  gates, ~105 min). Prior L2 register: `plans/2026-08-01-wrapper-recognition-cascade-rework.md`.
+  **THE ROOT CAUSE (2026-08-01):** the knowledge-base DB **cannot be rebuilt from scratch** — it is a
+  gitignored artefact whose foundational tables exist only because ~15 one-off `migrations/` were
+  each hand-run once, no runner, no replay. `blocks`/`block_attributes`/`block_composition` have
+  **no `CREATE TABLE` anywhere**; `property_suffixes` (154 rows) has DDL only in test fixtures. Every
+  "worked last month" bug traces here: `role='scalar-media'` 2→0 (hero art direction lost — worked in
+  the real 2026-07-02 run, artefact in `scripts/pipeline-state/sgs-clone/`); `container_kind` never
+  written on reseed.
+  **SHIPPED:** D446 band-arrangement fold (`d2d0579f`) + the L2 decision/transfer seam doc (`7a21d07d`).
+  Suite **587/1 skip**; conformance 23/27 fail (pre-existing); feature-grid 6/6.
+  **DECISIONS SETTLED (Bean):** (1) fix `role` UNIVERSALLY, not scalar-media as a spot fix — 72
+  routing call sites across 8 files, 1594 sgs attrs NULL; (2) `container_kind` auto-applies on
+  reseed, drift → `parking.md`; (3) `delegates_content` DEMOTED not dropped (parent+`allowedBlocks`
+  cover 12 of 17; the other 5 are open containers); (4) the section-annihilation bug stays in Phase 5
+  — zero live blast radius today.
+  **NEXT SESSION: execute Phase 0.** It starts with a backup; the DB is gitignored and has no other
+  copy. Council found 3 BLOCKERs, two of which would have damaged the live DB — read the plan's
+  COUNCIL FINDINGS before step 1.
+  ⛔ **Do NOT delete `scalar-media` or Loop 2** — both are live/recoverable, evidence in the parent
+  plan. ⛔ **Do NOT delete any migration before its replacement seeder is PROVEN** — two `CREATE
+  TABLE`s live only inside migrations queued for deletion. ⛔ **Scope every DB stat to `sgs/%`** —
+  core blocks inflated a percentage three times this session. ⛔ **`sgs-card-grid` "cardRadius
+  12→18px" is WITHDRAWN as a probe artefact.** ⛔ **Do NOT alias `trigger`→`tab`** — Bean's call.
 - **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
   Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
@@ -193,13 +182,15 @@ memory alone:
   uncommitted WIP. Commit by EXACT PATH, never `git add -A`; never touch another track's
   uncommitted files.
 - **Verify every session, no cached line is authoritative:** `git log -1 --stat` + `git status` +
-  `git branch --show-current` · D-ceiling `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`
+  `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+  (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
+  the hex colour `#0D5557`; true ceiling was D453)
   (currently D434 — a co-active track took D432/D433 the same day; re-check live) · framework
   counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
   cloning session). Motion = `specs/38-SGS-MOTION-SYSTEM.md`. Nav = `specs/36-...`; header/footer
   = `specs/37-...`. Full roster: `specs/README.md`.
-- **Sites:** dev = palestine-lives.org. staging/canary = sandybrown-nightingale-600381.hostingersite.com.
+- **Sites:** staging/dev = palestine-lives.org. staging/canary = sandybrown-nightingale-600381.hostingersite.com.
   Both WP 7.0.2 (verified 2026-07-20 over SSH on both).
 - **Fixtures on the canary (not assumed clean):** motion 2083/2086; mega page 1762, panel 1745,
   menu 100, item 1746; header CPT 1570, footer CPT 1654.
@@ -242,6 +233,24 @@ without him.
 ---
 
 ## NEXT SESSION — REVIEW FIRST, then Motion Wave D
+
+### TRACK 1 (cloning) — separate track from the motion review below; pick one
+
+**Task 1 — Execute Phase 0: make the DB rebuildable** [inline Opus, ~105 min]
+**Read `plans/phase-0-db-rebuildable.md` IN FULL first — especially COUNCIL FINDINGS (3 BLOCKERs).**
+Every step carries a pre-written prompt and its own model. **Acceptance:** `--rebuild` on an empty
+file reproduces the table set; both negative controls (`property_suffixes` AND `block_attributes`)
+return; `schema-baseline.json` committed.
+⛔ Step 0.0 backs up FIRST — the DB is gitignored, no other copy exists.
+⛔ Migrations hardcode `Path.home()`; a rebuild MUST use the sandbox harness or it writes to the
+LIVE DB — QA Gate B would otherwise drop a real table.
+
+**Task 2 — Phase 1 regenerative seeders, ONLY after Phase 0 passes** [inline Opus]
+Convert the ~24 remaining migrations to git-tracked JSON + idempotent seeders, following the working
+pattern (`db_lookup._migrate_html_tag_to_core_block` + `scripts/data/*.json`). ⛔ Build the JSON from
+LIVE state, never by replaying migration history; ⛔ never delete a migration before its seeder is proven.
+
+---
 
 **This is a REVIEW session by Bean's instruction.** Do NOT open with a build task. Open with the
 timeline at the top of this file, then walk him through the four decisions he owns.

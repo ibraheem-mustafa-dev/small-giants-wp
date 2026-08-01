@@ -1,5 +1,106 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D456 — The footer's column collapse was a viewport cliff that could never be content-aware [ROUTINE]
+
+**2026-08-01.** Commit `de769386`. Evidence: `reports/visual-diff/site-footer-row-2026-08-01.md`.
+
+**1. CAUSE, MEASURED BEFORE ANY CHANGE — and it was NOT the header's defect.** Bean reported footer
+columns being forced to one at widths where that is wrong ("tablet is still too wide for a single
+column stack to be forced"). The first hypothesis — that the footer shared the header's
+`@container … flex-basis:100%` rule (it carries a byte-identical copy) — is **FALSE for the columns
+row and was corrected before building.** All three footer rows render `display:grid`, and a grid
+item ignores `flex-basis`; the rule MATCHES (computed `flex-basis:100%` below 767px) but is
+visually INERT. The real mechanism is the per-tier column COUNT, emitted only as
+`@media (max-width:1023px)` and `(max-width:767px)`. Measured to the single pixel: every row changed
+at exactly 1024→1023 and 768→767 — the fingerprint of a fixed rule. **At the mobile cliff the
+content needed 496px of the 767px available (31% spare)**, measured as intrinsic `max-content` width
+per child (a grid-stretched child's `scrollWidth` reports the TRACK width and proves nothing).
+**A `@media` rule cannot read content size, so that collapse was structurally incapable of ever
+being organic** — this is a design flaw, not an implementation bug.
+
+**2. FIX — the count becomes a CEILING, via `supports.sgs.intrinsicColumns`.** The wrapper emits
+`repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis,16rem), calc((100% − (N−1)·gap)/N))), 1fr))`
+per tier. Wide: the calc exceeds the basis and bounds the count to N. Narrow: the basis takes over
+and the count degrades continuously. Narrower: `min(100%)` gives one column without overflow
+(WCAG 1.4.10 by construction). **Opt-in per block type, read from the block registry** — R-31-1
+forbids a hardcoded block-name list, and universal adoption would change the rendered column count
+of card grids, feature grids and every cloned layout on every site, none of which has been measured.
+
+**3. THE GAP TERM WAS THE TRAP.** Under the object responsive model the wrapper deliberately blanks
+its flat `$gap` local (~line 160) because `sgs_emit_responsive_css()` owns that property. A calc
+built from that local would have silently used `0`, and an under-counted gap lets exactly one extra
+column squeeze in — the documented failure mode of this pattern. Hence `sgs_container_tier_gap()`,
+resolving the tier gap under either model. **Verified in the SERVED CSS, not the source: the emitted
+calc carries the real `3 * 48px`.**
+
+**4. RESULT.** 1023–900px 3 columns · **860px 3→2, a genuine content-driven transition** · 768px
+2 · 767px 1. Previously NOTHING changed anywhere between 1023 and 767. Zero horizontal overflow
+across 109 swept widths; first-paint clean at 390/768/1440 with no track-count shift.
+
+**5. STILL A HARD SWITCH at 767px, deliberately.** `columnsMobile` is authored as `1`, and a ceiling
+of 1 can only be 1 (the helper short-circuits `count===1`, because dividing the row by 1 pins the
+track to full width and defeats the `min(100%)` guard). Matches the stated intent that footers stack
+on phones. Making the phone range organic too is an AUTHORING change (raise or unset
+`columnsMobile`), not a code change — **flagged for Bean, not decided.**
+
+**6. NOT VERIFIED: WebKit.** Bug #256047 reports `auto-fit` tracks collapsing under `inline-size`
+containment — exactly this combination, since these rows set `container-type: inline-size`. The
+sweep ran in Chromium only. Highest-priority outstanding check.
+
+**7. Inspector now says "Maximum columns"**, not "Columns". The count genuinely became a ceiling; a
+control still promising an exact number would be lying to the client.
+
+## D455 — The header row's stack was authored; the row is now locked to one line [ROUTINE]
+
+**2026-08-01.** Commit `18e504b9`. Executes the D420 fit-cascade design (signed 2026-07-30, never
+built). Evidence: `reports/visual-diff/site-header-row-2026-08-01.md`.
+
+**1. Deleted the `@container (max-width:767px){flex-basis:100%}` block and locked `flexWrap` to
+`nowrap`.** D420 had already proven the stack was authored, not a space failure (770px → one line
+68px tall; 766px → three layers 229px tall, with children needing 733px of 766px available).
+
+**2. Bean's amendment to the signed design, adopted:** the five per-child `shrinkRole` values are
+replaced by UNIFORM yielding — padding/gap first, then every child shrinks together. **Built in CSS,
+not JS.** Flexbox already performs exactly that proportional shrink, before first paint; a
+measure-and-resize loop would duplicate the browser's own algorithm, run after paint, and have to
+re-run on resize/zoom/font-swap. Bean recalled a prior session proposing the JS route; it could not
+be found in `decisions.md`, `plans/`, `memory/` or the reports — what exists is the design's
+*stage 4*, a "More" overflow menu inside `sgs/nav-menu`, still deferred.
+
+**3. The logo's blanket `flex-shrink:0` HAD to go with it.** Unshrinkable at 240px it would have
+overflowed a 320px viewport once wrapping was removed — the WCAG 1.4.10 outcome the design
+explicitly rejected when it declined the "just delete the rule" option. Replaced with
+`min-width: min(100%, var(--sgs-header-logo-min, 7.5rem))`.
+
+**4. THE TWO CHANGES ARE NOT OVERLAPPING FIXES — proven, not assumed.** A second negative control
+re-injected `flex-basis:100%` while KEEPING the nowrap lock: the row did not stack, it **overflowed
+horizontally** (`scrollWidth 772 > clientWidth 740`). So `wrap`+`basis` → stacks; `nowrap`+`basis` →
+overflows; `nowrap`+deleted → neither. Neither change is redundant and neither can be quietly
+removed later. This is the `prove-the-cause-before-fix` "two overlapping fixes are unfalsifiable"
+test, run and passed rather than argued.
+
+**5. The clamp() gap curve the design called for was deliberately NOT shipped.**
+`sgs_container_gap_value()` sanitises through `/[^0-9a-z.% ]/`, stripping parentheses and commas, so
+a clamp default emits as the invalid `clamp0.5rem 0.25rem 1.5cqi 1rem` and the gap silently dies.
+**Verified by running the real regex over the real string**, not by reading the code. Widening that
+allowlist touches every container block and needs its own design gate — parked, not forgotten.
+
+**6. Editor is a separate bundle the frontend fix cannot reach.** `editor.css` and the `edit.js`
+preview both said `wrap`, and both used a gap of `clamp(0.5rem, 2vw, 1.5rem)` while block.json said
+`16px` — the two surfaces had silently disagreed by up to 8px. Both corrected.
+
+**7. Regression guard shipped: `scripts/row-fit-sweep.mjs`.** Its `--self-test` carries a
+known-BROKEN fixture and asserts the harness FAILS on it at 767px — the gate is proven able to fail,
+not assumed to be. `--zoom` is honestly reported UNAVAILABLE rather than faked: `deviceScaleFactor`
+was measured to be a rendering-resolution knob with no layout effect, and root-font-size scaling
+does not reach SGS typography because theme.json declares those sizes in `px`. **WCAG 1.4.4 at 200%
+zoom therefore remains UNMEASURED on both this and D456.**
+
+**8. Process note.** The documented D-ceiling command `grep -oE 'D[0-9]+' .claude/decisions.md`
+returned **D5557** — it matched the hex colour `#0D5557` on line 412. True ceiling was D453. Fixed
+in `.claude/CLAUDE.md` and `LEDGER.md` to anchor on the `^## D` heading. A verification command that
+confidently returns a wrong number is worse than none.
+
 ## D454 — Focusing a form field dimmed the whole field, including the text being typed [INCIDENT]
 
 **The bug.** `.sgs-form-field__input:focus-visible` carried

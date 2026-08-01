@@ -66,7 +66,7 @@
  * FR-S9-6 already does for this element); this rule itself fires purely
  * off the row's own measured inline size, never the viewport.
  *
- * ⛔ The collapse-to-stack half of this rule WAS DELETED (D455). Do not
+ * ⛔ The collapse-to-stack half of this rule WAS DELETED (D456). Do not
  * reintroduce it. What was here:
  *
  *     @container (max-width: 767px) {

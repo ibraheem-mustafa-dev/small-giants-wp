@@ -9,7 +9,7 @@
  * that make the cluster actually never overflow, plus the touch-target floor.
  *
  * `min-width:0` lets flex children shrink instead of forcing horizontal
- * overflow. Since D454 the row is locked to a single line
+ * overflow. Since D455 the row is locked to a single line
  * (`flexWrap:'nowrap'`, block.json) and NEVER wraps or stacks; the sub-400px
  * WCAG 1.4.10 guarantee now comes from everything yielding instead — the gap
  * clamp shrinks first, then every child shrinks together (flexbox's own
@@ -28,7 +28,7 @@
  *
  * This was `flex-shrink:0` — the logo refused to shrink at any width. That was
  * safe only while the row was allowed to wrap: once the row is locked to a
- * single line (D454), an unshrinkable 240px logo (`--logo-width`, see
+ * single line (D455), an unshrinkable 240px logo (`--logo-width`, see
  * responsive-logo/style.scss) plus a 44px burger plus a 44px cart cannot fit a
  * 320px viewport, and the row would overflow horizontally — a WCAG 1.4.10
  * failure, and the exact outcome the fit-cascade design rejected when it
@@ -85,7 +85,7 @@
  * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
  * viewport @media breakpoint for its own sake.
  *
- * ⛔ The collapse-to-stack HALF OF THIS RULE WAS DELETED (D454). Do not
+ * ⛔ The collapse-to-stack HALF OF THIS RULE WAS DELETED (D455). Do not
  * reintroduce it. What was here:
  *
  *     @container (max-width: 767px) {

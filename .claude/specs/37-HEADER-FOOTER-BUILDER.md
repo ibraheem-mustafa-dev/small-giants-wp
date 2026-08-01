@@ -455,11 +455,28 @@ step of FR-37-6 is therefore DONE.
 
 Carried from 07-13 §9, unchanged — it is implementation-ready and independent of editing home:
 
-- Cluster rows: `flex-wrap` + `min-width: 0` on flexible children + `flex-shrink: 0` on the logo.
-- `clamp()` for fluid type/space rather than breakpoint steps where possible.
+- **Header cluster rows NEVER wrap or stack (D455, 2026-08-01).** `flex-wrap: nowrap` +
+  `min-width: 0` on children. The row yields by SHRINKING — gap first, then every child
+  proportionally (flexbox's own algorithm; no JS), each stopping at its own floor: interactive
+  controls at 44px, the logo at `min(100%, var(--sgs-header-logo-min, 7.5rem))`.
+  `flex-shrink: 0` on the logo is REMOVED and must not return — unshrinkable at 240px it overflows
+  a 320px viewport once wrapping is gone (WCAG 1.4.10).
+- **Footer column rows collapse INTRINSICALLY, not at a breakpoint (D456, 2026-08-01).** The
+  operator's per-device count is a CEILING, declared via `supports.sgs.intrinsicColumns` and emitted
+  as `repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis,16rem), calc((100% − (N−1)·gap)/N))), 1fr))`.
+  The `(N−1)·gap` term is not optional — omit it and one extra column squeezes in. The count control
+  is labelled **"Maximum columns"** accordingly.
+- `clamp()` for fluid type/space rather than breakpoint steps where possible. **Constraint:**
+  `sgs_container_gap_value()` strips parentheses and commas, so a `clamp()`/`min()`/`max()` value
+  cannot currently be passed through the `gap` attribute — it emits as invalid CSS and the gap dies
+  silently. Any fluid `gap` needs that allowlist widened first (shared-helper change, design gate).
 - Container queries for row-level reflow (a row can collapse while the viewport is wider —
-  see STOP-CONTAINER-TIER-IS-NOT-VIEWPORT).
-- **Gate:** `scrollWidth <= innerWidth` at 375 / 768 / 1440 on every shipped header and footer.
+  see STOP-CONTAINER-TIER-IS-NOT-VIEWPORT). **The requirement stands; only the collapse BEHAVIOUR
+  changed at D455/D456.** `container-type: inline-size` stays on both rows.
+- **Gate:** `scrollWidth <= innerWidth` **swept 1400 → 320px in ≤10px steps**, not sampled at
+  375/768/1440. The D420 defect lived BETWEEN those tiers — it was clean at 770px and broken at
+  766px, so a three-tier check passed a broken row. Harness: `scripts/row-fit-sweep.mjs`
+  (its `--self-test` proves it fails on the known-broken fixture).
 
 ### 3.7 Global defaults + Site Info inheritance
 
@@ -798,12 +815,19 @@ mechanism covers both). Recorded here so a future session picks them up rather t
   palette; the middle row (logo + nav + cart) correctly showed NO palette. All 7 promoted slugs
   verified to exist so `createBlock` cannot throw. Footer row shares the same mechanism with
   footer-appropriate elements.
-- **FR-37-35 — container-query row reflow is absent (§3.6).** Only viewport-level `flex-wrap`
-  exists; no `@container` rule in either row's CSS. A row cannot yet collapse while the viewport is
-  wider (the STOP-CONTAINER-TIER-IS-NOT-VIEWPORT case). `NOT-BUILT`.
+- **FR-37-35 — container-query row reflow.** `BUILT`, then its BEHAVIOUR replaced at D455/D456
+  (2026-08-01). `container-type: inline-size` is live on both rows and the requirement — a row
+  reflows on its OWN width, never the viewport's (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) — is
+  unchanged and still honoured. What was replaced is the chosen reflow behaviour: an
+  `@container (max-width:767px){flex-basis:100%}` rule that collapsed every child to a full-width
+  line. It was an AUTHORED stack, not a response to running out of room — measured at 766px, the
+  children needed 733px and had 766px. The header now never stacks (D455); the footer's columns
+  collapse intrinsically (D456). **Do not reintroduce that rule under this FR's name.**
 
-`clamp()` for fluid type/space (§3.6, "where possible") is not shipped in the row CSS — noted as
-optional, not a fail.
+`clamp()` for fluid type/space (§3.6) — still not shipped in the row CSS, and now with a known
+blocker rather than an open option: `sgs_container_gap_value()` strips parentheses and commas, so a
+`clamp()` gap emits as invalid CSS and dies silently (verified by running the sanitiser's regex over
+the value, D455). Widening that allowlist is a shared-helper change requiring its own design gate.
 
 #### FR-37-11 — Footer columns: an operator-set count that stacks automatically
 The `columns` row exposes a **column count** as a number (§3.3). Desktop is the only tier an

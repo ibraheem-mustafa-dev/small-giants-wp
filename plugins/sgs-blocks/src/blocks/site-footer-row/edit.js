@@ -91,7 +91,7 @@ const ROW_LABELS = {
 // integer attrs (class-sgs-container-wrapper.php:149-154), rendered as scoped
 // per-tier rules at the grid selector.
 //
-// D455: for THIS block the count is a CEILING, not a fixed number. block.json
+// D456: for THIS block the count is a CEILING, not a fixed number. block.json
 // declares `supports.sgs.intrinsicColumns`, so the wrapper emits a bounded
 // auto-fit track list per tier instead of `repeat(N,1fr)` — fewer columns are
 // used automatically once content stops fitting, continuously, rather than at a

@@ -137,7 +137,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// so flipping the flag never breaks an un-migrated instance's columns.
 			$object_grid = $object_model && is_array( $attributes['gridTemplateColumns'] ?? null );
 
-			// D455 — content-aware column collapse, declared per block type via
+			// D456 — content-aware column collapse, declared per block type via
 			// supports.sgs.intrinsicColumns. Resolved ONCE here, unconditionally,
 			// because it is read from two places that sit in different conditional
 			// branches (the base track list and the per-tier count fallback); a
@@ -602,7 +602,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gd[] = 'display:grid';
 					// Base column template — deferred to the uid stylesheet when
 					// responsive template tiers exist (inline beats @media otherwise).
-					// D455 — a block may opt in (supports.sgs.intrinsicColumns) to
+					// D456 — a block may opt in (supports.sgs.intrinsicColumns) to
 					// having its column count act as a CEILING that degrades with
 					// available width, instead of a fixed count that only changes at
 					// a viewport breakpoint. Opt-in, never universal: flipping every
@@ -1446,7 +1446,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// tablet (max-width:1023px) is emitted BEFORE mobile (max-width:767px),
 					// so at =<767px both match and the later mobile rule wins on source order.
 					if ( 'grid' === $layout && ! $object_grid && '' === trim( (string) $grid_template ) ) {
-						// D455 — under intrinsicColumns each tier's count becomes that
+						// D456 — under intrinsicColumns each tier's count becomes that
 						// tier's CEILING rather than a fixed number, so the collapse
 						// between tiers is continuous and content-aware instead of a
 						// single-pixel cliff. Measured on the live canary before this

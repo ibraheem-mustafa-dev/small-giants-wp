@@ -171,7 +171,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		  }
 		: {
 				display: 'flex',
-				// D454 — mirrors the frontend lock. The row never wraps or
+				// D455 — mirrors the frontend lock. The row never wraps or
 				// stacks; it yields by shrinking its children instead.
 				flexWrap: 'nowrap',
 				alignItems: 'center',

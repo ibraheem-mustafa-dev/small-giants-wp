@@ -4,11 +4,11 @@ block: sgs/site-header-row
 date: 2026-08-01
 verdict: PASS
 first_paint_capture_passed: true
-decision: D454
+decision: D455
 site: sandybrown-nightingale-600381.hostingersite.com
 ---
 
-# sgs/site-header-row — visual diff, D454 (delete the authored stack, lock the row to one line)
+# sgs/site-header-row — visual diff, D455 (delete the authored stack, lock the row to one line)
 
 ## What changed
 

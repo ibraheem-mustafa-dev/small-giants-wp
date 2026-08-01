@@ -4,11 +4,11 @@ block: sgs/site-footer-row
 date: 2026-08-01
 verdict: PASS
 first_paint_capture_passed: true
-decision: D455
+decision: D456
 site: sandybrown-nightingale-600381.hostingersite.com
 ---
 
-# sgs/site-footer-row — visual diff, D455 (column count becomes a content-aware ceiling)
+# sgs/site-footer-row — visual diff, D456 (column count becomes a content-aware ceiling)
 
 ## The cause, measured before changing anything
 

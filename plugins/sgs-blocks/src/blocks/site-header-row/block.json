@@ -63,7 +63,7 @@
 		"flexWrap": {
 			"type": "string",
 			"default": "nowrap",
-			"_comment": "D454 — the header row is locked to ONE line and yields instead of wrapping. 'wrap' was the default until the authored @container stack rule was deleted from style.css; with that gone, wrap would trade a stack for an ambiguous 2-per-line arrangement. Read by SGS_Container_Wrapper (class-sgs-container-wrapper.php:622). No header pattern sets flexWrap explicitly, so this default governs every instance."
+			"_comment": "D455 — the header row is locked to ONE line and yields instead of wrapping. 'wrap' was the default until the authored @container stack rule was deleted from style.css; with that gone, wrap would trade a stack for an ambiguous 2-per-line arrangement. Read by SGS_Container_Wrapper (class-sgs-container-wrapper.php:622). No header pattern sets flexWrap explicitly, so this default governs every instance."
 		},
 		"justifyContent": {
 			"type": "string",
@@ -76,7 +76,7 @@
 		"gap": {
 			"type": "object",
 			"default": { "desktop": "16px" },
-			"_comment": "D454 — DELIBERATELY NOT a clamp(), though the fit-cascade design called for one. sgs_container_gap_value() (helpers-container.php:124) sanitises this value through the allowlist /[^0-9a-z.% ]/, which strips parentheses, commas and +. A clamp() default emits as the invalid 'clamp0.5rem 0.25rem 1.5cqi 1rem' — the browser drops the declaration and the gap silently dies. Verified by running the real regex over the real string, not by reading the code. Widening that allowlist is a SHARED-helper change affecting every container block and needs its own design gate; parked, not forgotten. Fixed 16px is safe here because the yielding is carried by child shrink, not by the gap."
+			"_comment": "D455 — DELIBERATELY NOT a clamp(), though the fit-cascade design called for one. sgs_container_gap_value() (helpers-container.php:124) sanitises this value through the allowlist /[^0-9a-z.% ]/, which strips parentheses, commas and +. A clamp() default emits as the invalid 'clamp0.5rem 0.25rem 1.5cqi 1rem' — the browser drops the declaration and the gap silently dies. Verified by running the real regex over the real string, not by reading the code. Widening that allowlist is a SHARED-helper change affecting every container block and needs its own design gate; parked, not forgotten. Fixed 16px is safe here because the yielding is carried by child shrink, not by the gap."
 		},
 		"maxWidth": {
 			"type": "object",
