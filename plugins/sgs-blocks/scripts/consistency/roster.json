@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 81,
+    "count": 83,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -42,6 +42,21 @@
       "category": "sgs-content",
       "tier": "block",
       "replaces": "core/audio",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "title": "Before / After",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
       "has_render_php": true,
       "surfaces": {
         "styling": true,
@@ -633,6 +648,21 @@
         "colour": true,
         "link": false,
         "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "title": "SGS Image Sequence",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": true,
+        "media": true,
         "animation": false
       }
     },

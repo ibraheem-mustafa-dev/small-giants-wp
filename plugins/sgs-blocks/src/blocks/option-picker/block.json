@@ -46,6 +46,7 @@
 		"sgs": {
 			"scalarStylingLift": true,
 			"arrayContentLift": true,
+			"scalarContentLift": true,
 			"elements": {
 				"root": {
 					"label": "Picker (fieldset)",
