@@ -46,6 +46,9 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
+import apiFetch from '@wordpress/api-fetch';
+import { useSelect } from '@wordpress/data';
+import { useState, useEffect } from '@wordpress/element';
 import { isExtensionHidden } from './hide-extensions';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
@@ -471,6 +474,16 @@ const FX_PARAM_RESET = {
 	fxShapeAssetTo: undefined,
 };
 
+/*
+ * Per-breakpoint disable (D446 Task 15) is DELIBERATELY excluded from
+ * FX_PARAM_RESET above, not merely forgotten. `FX_PARAM_RESET` is spread by
+ * BOTH `changeEffect()` (every effect switch) and `resetAll()` ("Reset all"
+ * in the panel) — the two need different behaviour here. "Never show any
+ * effect on this tier" is independent of WHICH effect is chosen, so it must
+ * survive an effect switch; "Reset all" should still zero it, which
+ * `resetAll()` below does explicitly rather than through this shared object.
+ */
+
 /**
  * The curated motion-path routes, as picker options (Spec 38 §11.2, D427).
  *
@@ -775,6 +788,24 @@ function addFxAttributes( settings, name ) {
 			fxShape: { type: 'string', default: '' },
 			fxShapeAssetFrom: { type: 'number' },
 			fxShapeAssetTo: { type: 'number' },
+			/*
+			 * Per-breakpoint disable (Spec 38 §7 build task, D446 Task 15) —
+			 * the single most common post-launch agency request, per the
+			 * competitor review this task cited: "turn the animation off on
+			 * mobile". A BOOLEAN per tier, not per-tier values — the client
+			 * is choosing whether the effect exists there at all, not tuning
+			 * it. Named with the EXISTING breakpoint-suffix vocabulary
+			 * (`Tablet`/`Mobile`) the rest of the framework already uses for
+			 * responsive attrs (`gapTablet`, `fontSizeMobile`, …), not an
+			 * invented shape.
+			 *
+			 * No Desktop member: desktop is always the "on" tier an author
+			 * is designing the effect FOR, so there is nothing to disable
+			 * there without also removing the effect outright (which is what
+			 * clearing `fx` already does).
+			 */
+			fxDisableTablet: { type: 'boolean', default: false },
+			fxDisableMobile: { type: 'boolean', default: false },
 		},
 	};
 }
@@ -879,6 +910,19 @@ function addFxSaveProps( props, blockType, attributes ) {
 		);
 	}
 
+	/*
+	 * Per-breakpoint disable (D446 Task 15). Booleans, so they follow the
+	 * same "only emit when meaningfully set" rule the rest of this function
+	 * uses for strings/numbers — `false` emits nothing rather than an
+	 * `="false"` string a CSS/JS selector would need to know to check for.
+	 */
+	if ( attributes.fxDisableTablet ) {
+		data[ 'data-sgs-fx-disable-tablet' ] = '1';
+	}
+	if ( attributes.fxDisableMobile ) {
+		data[ 'data-sgs-fx-disable-mobile' ] = '1';
+	}
+
 	return { ...props, ...data };
 }
 
@@ -889,13 +933,95 @@ addFilter(
 );
 
 /**
+ * The per-page Tier G motion cost, surfaced from a MEASURING SCRIPT owned by
+ * a different track (Spec 38 §7 build task 19 / D446 / Bean's D448 ruling —
+ * GSAP keeps its budget exemption, but per-page cost becomes VISIBLE).
+ *
+ * ⚠ THE INTERFACE THIS HOOK ASSUMES — written here because the measuring
+ * script + admin panel had not landed at the time this was built, and this
+ * file owns ONLY the editor-side surfacing (per the D446 task split):
+ *
+ *   GET /wp-json/sgs/v1/motion-budget?post_id=<id>
+ *   → 200 { totalKb: number, budgetKb: number, overBudget: boolean,
+ *           effects: [ { effect: string, kb: number } ] }
+ *   → 404 (or any error) — read as "no data yet", never surfaced as an
+ *     error to the client; the panel simply shows nothing extra.
+ *
+ * This hook deliberately COMPUTES NOTHING ITSELF. Spec 38 §4.4's own budget
+ * table is explicit that its per-effect KB figures are "ESTIMATES … verified
+ * + recorded at Wave A build" — reproducing a second estimate here would
+ * give the operator two numbers that can silently disagree, which is worse
+ * than showing nothing. If the endpoint is missing, this returns `null` and
+ * the caller renders no cost information at all rather than a guess.
+ *
+ * `useSelect`/`useState`/`useEffect` are called UNCONDITIONALLY every time
+ * this hook runs (Rules of Hooks) — `enabled` only gates whether the EFFECT
+ * BODY performs a fetch, not whether the hook itself is called. This is what
+ * lets a caller invoke it from every block instance without one duplicate
+ * network request per non-selected/non-qualifying block on the page.
+ *
+ * @param {boolean} enabled Whether to actually fetch (caller's block both
+ *                          qualifies for fx AND is currently selected).
+ * @return {Object|null} `{ totalKb, budgetKb, overBudget, effects }`, or
+ *                        `null` while loading / when unavailable.
+ */
+function useMotionBudget( enabled ) {
+	const postId = useSelect(
+		( select ) => select( 'core/editor' )?.getCurrentPostId?.(),
+		[]
+	);
+	const [ budget, setBudget ] = useState( null );
+
+	useEffect( () => {
+		if ( ! enabled || ! postId ) {
+			return;
+		}
+		let cancelled = false;
+		apiFetch( { path: `/sgs/v1/motion-budget?post_id=${ postId }` } )
+			.then( ( data ) => {
+				if ( ! cancelled ) {
+					setBudget(
+						data && 'number' === typeof data.totalKb ? data : null
+					);
+				}
+			} )
+			.catch( () => {
+				// Endpoint not built yet, or genuinely nothing to measure —
+				// both read the same way: no cost information to show.
+				if ( ! cancelled ) {
+					setBudget( null );
+				}
+			} );
+		return () => {
+			cancelled = true;
+		};
+	}, [ enabled, postId ] );
+
+	return budget;
+}
+
+/**
  * The "Scroll & effects" inspector panel (Spec 38 §7).
  */
 const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
 		const { name, attributes, setAttributes, isSelected } = props;
+		const qualifies =
+			shouldHaveFx( name ) && ! isExtensionHidden( name, 'fx' );
 
-		if ( ! shouldHaveFx( name ) || isExtensionHidden( name, 'fx' ) ) {
+		/*
+		 * Called UNCONDITIONALLY, above both early returns below — `isSelected`
+		 * changes on every selection/deselection of the SAME component
+		 * instance, so calling a hook only after that check would violate the
+		 * Rules of Hooks (a different hook count on the next render). The
+		 * network fetch itself is still gated internally on `qualifies &&
+		 * isSelected`, so an unselected or non-qualifying block costs nothing
+		 * beyond this one no-op hook call — not a duplicate request per block
+		 * on the page.
+		 */
+		const motionBudget = useMotionBudget( qualifies && isSelected );
+
+		if ( ! qualifies ) {
 			return <BlockEdit { ...props } />;
 		}
 		if ( ! isSelected ) {
@@ -979,7 +1105,16 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const changeEffect = ( value ) =>
 			setAttributes( { ...FX_PARAM_RESET, fx: value } );
 
-		const resetAll = () => setAttributes( { ...FX_PARAM_RESET, fx: '' } );
+		const resetAll = () =>
+			setAttributes( {
+				...FX_PARAM_RESET,
+				fx: '',
+				// Not part of FX_PARAM_RESET (see the note above that
+				// constant) because `changeEffect()` must NOT clear these —
+				// only the panel's own "Reset all" should.
+				fxDisableTablet: false,
+				fxDisableMobile: false,
+			} );
 
 		/*
 		 * The §7 asset gate. A route is what gives motion-path its geometry —
@@ -1015,6 +1150,45 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						label={ __( 'Scroll & effects', 'sgs-blocks' ) }
 						resetAll={ resetAll }
 					>
+						{ /*
+						 * Per-page motion cost (D446 Task 19 / Bean's D448
+						 * ruling — GSAP keeps its budget exemption, but the
+						 * cost becomes visible). A plain child, not a
+						 * ToolsPanelItem: it is informational, not a
+						 * setting, and has nothing for "Reset all" to clear.
+						 * Only shown once an effect exists on THIS block,
+						 * because a block with no effect has nothing to
+						 * attribute cost to.
+						 */ }
+						{ !! fx && motionBudget && (
+							<Notice
+								status={
+									motionBudget.overBudget ? 'warning' : 'info'
+								}
+								isDismissible={ false }
+							>
+								{ motionBudget.overBudget
+									? sprintf(
+											/* translators: 1: current KB, 2: budget KB. */
+											__(
+												'This page loads about %1$s KB of scroll-effect code — over the %2$s KB budget.',
+												'sgs-blocks'
+											),
+											motionBudget.totalKb,
+											motionBudget.budgetKb
+									  )
+									: sprintf(
+											/* translators: 1: current KB, 2: budget KB. */
+											__(
+												'This page loads about %1$s KB of scroll-effect code (budget: %2$s KB).',
+												'sgs-blocks'
+											),
+											motionBudget.totalKb,
+											motionBudget.budgetKb
+									  ) }
+							</Notice>
+						) }
+
 						<ToolsPanelItem
 							hasValue={ () => !! fx }
 							label={ __( 'Effect', 'sgs-blocks' ) }
@@ -1033,6 +1207,82 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 								) }
 							/>
 						</ToolsPanelItem>
+
+						{ /*
+						 * Per-breakpoint disable (D446 Task 15) — sits right
+						 * under the effect picker, above intensity/timing,
+						 * because "does it exist here at all" is a bigger
+						 * decision than any of the fine-tuning below it.
+						 * Shown whenever an effect is chosen, independent of
+						 * which one — every effect can be turned off per
+						 * tier the same way.
+						 */ }
+						{ !! fx && (
+							<ToolsPanelItem
+								hasValue={ () =>
+									attributes.fxDisableTablet ||
+									attributes.fxDisableMobile
+								}
+								label={ __(
+									'Disable on smaller screens',
+									'sgs-blocks'
+								) }
+								onDeselect={ () =>
+									setAttributes( {
+										fxDisableTablet: false,
+										fxDisableMobile: false,
+									} )
+								}
+							>
+								<ToggleControl
+									__nextHasNoMarginBottom
+									label={ __(
+										'Turn off on tablet and below',
+										'sgs-blocks'
+									) }
+									checked={ !! attributes.fxDisableTablet }
+									onChange={ ( checked ) =>
+										setAttributes( {
+											fxDisableTablet: checked,
+											// Disabling tablet also disables
+											// mobile — mobile is narrower than
+											// tablet, so "on for mobile but
+											// off for tablet" is not a
+											// reachable state a client could
+											// have meant.
+											fxDisableMobile: checked
+												? true
+												: attributes.fxDisableMobile,
+										} )
+									}
+									help={ __(
+										'Also turns it off on mobile.',
+										'sgs-blocks'
+									) }
+								/>
+								<ToggleControl
+									__nextHasNoMarginBottom
+									label={ __(
+										'Turn off on mobile only',
+										'sgs-blocks'
+									) }
+									checked={
+										!! attributes.fxDisableMobile &&
+										! attributes.fxDisableTablet
+									}
+									disabled={ !! attributes.fxDisableTablet }
+									onChange={ ( checked ) =>
+										setAttributes( {
+											fxDisableMobile: checked,
+										} )
+									}
+									help={ __(
+										'Keeps it running on tablet; only switches it off on phones.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
+						) }
 
 						{ /*
 						 * The intensity preset (Spec 38 §7). Sits directly
@@ -1282,10 +1532,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 						{ isPath && (
 							<ToolsPanelItem
 								hasValue={ () => !! attributes.fxPathRest }
-								label={ __(
-									'Resting position',
-									'sgs-blocks'
-								) }
+								label={ __( 'Resting position', 'sgs-blocks' ) }
 								onDeselect={ () =>
 									setAttributes( {
 										fxPathRest: '',
@@ -1380,9 +1627,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											'Fine-tune (% down the screen)',
 											'sgs-blocks'
 										) }
-										value={
-											attributes.fxPathRestVh ?? 50
-										}
+										value={ attributes.fxPathRestVh ?? 50 }
 										min={ 0 }
 										max={ 100 }
 										step={ 5 }

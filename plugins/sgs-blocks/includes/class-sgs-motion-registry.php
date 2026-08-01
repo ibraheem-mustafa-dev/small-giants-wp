@@ -819,6 +819,28 @@ class SGS_Motion_Registry {
 		return $block_content;
 	}
 
+	/*
+	 * ⚠ `data-sgs-fx-disable-tablet` / `-mobile` (Spec 38 §7 build task,
+	 * D446 Task 15) are DELIBERATELY NOT read anywhere in this class.
+	 *
+	 * These per-breakpoint disable flags are emitted onto the block's own
+	 * root element by `includes/fx-attributes.php` and `src/blocks/
+	 * extensions/fx.js` (the editor control + both save/render paths), and
+	 * are meant to be read by the EFFECT MODULE at `init()` time — matched
+	 * against a live `matchMedia` check — so the effect never fires below
+	 * the chosen breakpoint. That consumption lives in `src/shared/effects/
+	 * gsap/provider.js` and the individual `fx-*.js` modules, none of which
+	 * this file touches.
+	 *
+	 * Do NOT make this registry skip an enqueue because a disable flag is
+	 * present: the flags only ever disable a TABLET or MOBILE tier, never
+	 * desktop, so the effect can always still fire at ≥1024px regardless of
+	 * how the flags are set. Enqueue must stay keyed purely on whether
+	 * `data-sgs-fx` is present at all — exactly what `extract_effects()`
+	 * below already does — or a desktop visitor would silently get no
+	 * script for an effect the block genuinely still needs there.
+	 */
+
 	/**
 	 * Effect names present in a chunk of rendered markup.
 	 *

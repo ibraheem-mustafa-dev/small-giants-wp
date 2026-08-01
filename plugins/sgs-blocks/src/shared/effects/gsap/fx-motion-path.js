@@ -73,7 +73,8 @@
  * NOT need a second reduced-motion code path that could fall out of sync
  * with it, and must not grow one.
  *
- * ── RESTING POSITION HANDOFF (Spec 38 §11.2, D441) ──────────────────────────
+ * ── RESTING POSITION HANDOFF (Spec 38 §11.2, D441; one-shot bug fixed D451,
+ * 2026-08-01) ─────────────────────────────────────────────────────────────
  * The `align: path` tween below is UNCHANGED and still rides whatever curve
  * the route resolves to — including whatever the route-box sizing defect
  * documented in `fx-motion-path.css` does to it mid-scrub. What is new is
@@ -83,12 +84,49 @@
  * the GSAP transform to a plain CSS `position: sticky` rule by (a) clearing
  * the transform GSAP applied and (b) adding a class that activates the
  * `--sgs-fx-motion-path-rest-y` custom property `fx-motion-path.css`
- * resolves declaratively from the client's preset. `scrollTrigger.disable()`
- * stops the tween from re-asserting its own transform on the next scroll
- * tick (it would otherwise fight the CSS handoff, since a scrubbed
- * ScrollTrigger keeps re-rendering at clamped progress 1 on every further
- * scroll event). `onEnterBack` (scrolling back up past the same boundary)
- * reverses the handoff so the return journey rides the curve again.
+ * resolves declaratively from the client's preset. `onEnterBack` (scrolling
+ * back up past the same boundary) reverses the handoff so the return
+ * journey rides the curve again.
+ *
+ * ⚠ D451 FIX — DO NOT REINTRODUCE `scrollTrigger.disable()`/`enable()` HERE.
+ * The original version of this handoff called `self.disable( false )` from
+ * `onLeave`, reasoning (in the comment that used to sit above it) that a
+ * left-enabled scrubbed trigger "keeps re-rendering the tween at clamped
+ * progress 1 on every further scroll tick", which would fight the CSS
+ * handoff. That specific claim is FALSE for this ScrollTrigger, verified
+ * against the installed gsap 3.15.0 (`ScrollTrigger.js` — the whole
+ * progress/render/callback block, including the `animation.totalProgress()`
+ * call that drives the tween, is gated on `clipped !== prevProgress`; once
+ * scroll pins `clipped` at 1 — or 0 — further scroll deltas that don't
+ * change the clamped value produce NO further render and NO re-fight). What
+ * `disable()` actually did was worse than the problem it was solving: a
+ * disabled ScrollTrigger stops evaluating scroll updates AT ALL, including
+ * the boundary-crossing check that fires `onEnterBack` — and `onEnterBack`
+ * is the ONLY code path that ever calls `enable()` again. A trigger can't
+ * re-enable itself through a callback that only fires while it's enabled;
+ * once `onLeave` disabled it, the effect was permanently stuck resting for
+ * the rest of the page load — reproduced live: scrolling back up and down
+ * past the boundary produced zero further motion, and a Playwright sweep at
+ * matched scroll positions showed the transform pinned at `none` on every
+ * subsequent pass. THE FIX is simply to never call `disable()`/`enable()`
+ * here — the trigger stays enabled for the tween's entire lifetime, exactly
+ * like every other scrub trigger in this codebase (`fx-scrub.js` et al.),
+ * and `onEnterBack` fires normally because nothing ever stopped it
+ * listening. Also REJECTED, empirically, not just by reasoning: an added
+ * `onUpdate` callback that re-cleared the transform whenever a `isResting`
+ * flag was set — proposed as a defensive "scrub-safe re-render guard" in
+ * case the disable-removal analysis above was wrong somewhere. Measured on
+ * a local harness (real gsap 3.15.0 UMD build, real ScrollTrigger, matched
+ * scroll-position sweep across three passes) that guard fired one tick
+ * BEFORE `onEnterBack` clears the same flag (ScrollTrigger renders the
+ * tween, THEN evaluates `onEnter`/`onLeave`/`onEnterBack`/`onLeaveBack` for
+ * the same scroll delta — confirmed by reading `ScrollTrigger.js` itself),
+ * so it clobbered the very first correct re-entry frame with a spurious
+ * `none`, self-correcting only on the NEXT scroll tick. Removing the guard
+ * entirely (rather than reordering it) produced an exact matrix match at
+ * every sampled position across a down → up → down cycle, including the
+ * crossing frame itself — proof that no re-render guard is needed at all,
+ * and confirmation that adding one is a regression, not a safety net.
  *
  * REJECTED: computing a corrective offset in JS (whether via
  * MotionPathPlugin's own `offsetX`/`offsetY`, or via a live
@@ -294,43 +332,37 @@ export function initMotionPath( el ) {
 				// must map to `true`, not to a falsy scrub).
 				scrub: resolveScrub( el ),
 				/*
-				 * The resting-position handoff (Spec 38 §11.2, D441) — see
-				 * this file's docblock and `fx-motion-path.css`'s "RESTING
-				 * POSITION" section for the full reasoning. Both callbacks
-				 * fire ONCE per boundary crossing, never per scroll frame.
+				 * The resting-position handoff (Spec 38 §11.2, D441; D451
+				 * fix, 2026-08-01) — see this file's docblock and
+				 * `fx-motion-path.css`'s "RESTING POSITION" section for the
+				 * full reasoning. Both callbacks fire ONCE per boundary
+				 * crossing, never per scroll frame, and the trigger is NEVER
+				 * disabled — see the docblock's "D451 FIX" note for why a
+				 * disable/enable pair here made `onEnterBack` unreachable (a
+				 * switch wired through itself, since `onEnterBack` was the
+				 * only thing that ever called `enable()` again) and why a
+				 * scrub-safe re-render guard was tried and measured to be
+				 * both unnecessary and actively harmful.
 				 *
 				 * `onLeave`: the scrub has completed and scroll has carried
 				 * PAST the end boundary. Clear GSAP's transform (so the CSS
-				 * rule's `top` is not fighting a stale `translate`), add the
-				 * resting class (which activates that CSS rule), and disable
-				 * the ScrollTrigger — without this, a scrubbed trigger keeps
-				 * re-rendering the tween at clamped progress 1 on every
-				 * further scroll tick, which would silently re-apply the
-				 * transform we just cleared on the very next tick.
-				 * `disable( false )` — `reset: false` — deliberately does
-				 * NOT call `self.revert()` or reset progress to 0; it only
-				 * stops the trigger responding to scroll, so the tween's
-				 * progress stays exactly where it was for a clean resume.
+				 * rule's `top` is not fighting a stale `translate`) and add
+				 * the resting class, which activates that CSS rule.
 				 */
-				onLeave: ( self ) => {
+				onLeave: () => {
 					gsap.set( el, { clearProps: 'transform' } );
 					el.classList.add( RESTING_CLASS );
-					self.disable( false );
 				},
 				/*
 				 * `onEnterBack`: scrolling back UP past the same boundary.
-				 * Hand control back to the tween for the reverse pass —
-				 * remove the resting class first so the CSS rule stops
-				 * competing for the `transform`/positioning the instant
-				 * before the trigger starts rendering again.
-				 * `enable( false )` mirrors `disable`'s `reset: false`: keep
-				 * the current (~1) progress rather than snapping to 0, so
-				 * the re-engaged scrub continues smoothly from where the
-				 * visitor re-entered rather than jumping.
+				 * Hand control back to the tween for the reverse pass by
+				 * removing the resting class — the trigger was never
+				 * disabled, so it has been rendering the tween at the
+				 * correct progress the whole time; this only stops the CSS
+				 * rule competing for the traveller's positioning.
 				 */
-				onEnterBack: ( self ) => {
+				onEnterBack: () => {
 					el.classList.remove( RESTING_CLASS );
-					self.enable( false );
 				},
 			},
 		} );

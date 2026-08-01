@@ -416,9 +416,53 @@ export function withMotionAllowed( setup ) {
  * @param {Function} init   Per-element initialiser; may return a cleanup.
  * @return {Function} Cleanup for every element booted.
  */
+/**
+ * Is this element disabled at the CURRENT device tier?
+ *
+ * Reads `data-sgs-fx-disable-tablet` / `-mobile` (Step 15). The tiers are the
+ * project's device-tier standard — mobile <=767, tablet 768-1023, desktop
+ * >=1024 — NOT arbitrary visual breakpoints, which are design-driven and must
+ * never be swept into this vocabulary.
+ *
+ * Gating here rather than inside each effect module is deliberate: `bootEffect`
+ * is the one choke point every effect boots through, so a single check covers
+ * every effect present and future, with no per-effect carve-out (R-31-9).
+ *
+ * Skipping boot is SAFE by construction: per FR-38-2 each effect applies its own
+ * initial hidden/offset state and the server never renders one, so an element
+ * that is never booted simply stays fully visible. Fail-open, same as JS-blocked.
+ *
+ * @param {HTMLElement} el Element carrying the fx attributes.
+ * @return {boolean} True when the effect must not run at this viewport.
+ */
+function isDisabledAtThisTier( el ) {
+	if ( typeof window.matchMedia !== 'function' ) {
+		return false;
+	}
+	if (
+		el.hasAttribute( 'data-sgs-fx-disable-mobile' ) &&
+		window.matchMedia( '(max-width: 767px)' ).matches
+	) {
+		return true;
+	}
+	return (
+		el.hasAttribute( 'data-sgs-fx-disable-tablet' ) &&
+		window.matchMedia( '(min-width: 768px) and (max-width: 1023px)' ).matches
+	);
+}
+
 export function bootEffect( effect, init ) {
 	const selector = `[data-sgs-fx="${ effect }"]`;
-	const elements = Array.from( document.querySelectorAll( selector ) );
+	/*
+	 * Evaluated once, at boot. A visitor who RESIZES across a tier boundary
+	 * mid-session keeps whatever was decided on load — re-booting effects on
+	 * resize would mean tearing down and rebuilding live ScrollTriggers, which
+	 * is a materially riskier change than this one and is not what Step 15
+	 * asked for. Stated here rather than left for someone to discover.
+	 */
+	const elements = Array.from( document.querySelectorAll( selector ) ).filter(
+		( el ) => ! isDisabledAtThisTier( el )
+	);
 
 	const cleanups = elements.map( ( el ) => init( el ) );
 

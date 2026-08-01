@@ -354,10 +354,29 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 		$visual_attrs .= ' data-sgs-fx-ease="' . \esc_attr( $ease ) . '"';
 	}
 
+	/*
+	 * D452 — the fx attributes go on the inner <path>, NOT the <svg> wrapper.
+	 *
+	 * `fx-morph.js`'s contract (see its docblock, "The element carrying
+	 * `data-sgs-fx="morph"` IS THE FROM SHAPE") requires a real shape node.
+	 * MorphSVGPlugin refuses an <svg> container outright — it logs
+	 * `Cannot morph a <SVG> element` and tweens nothing. Emitting these
+	 * attributes on the wrapper meant morph had NEVER animated on any block,
+	 * including the original three SVG-shape blocks; the 2026-08-01 relaxation
+	 * from 3 to 28 eligible blocks simply widened a capability that did not
+	 * work. Measured live: the `d` attribute was unchanged across 148
+	 * animation-frame samples over 1.6s, past the 0.8s default duration.
+	 *
+	 * Safe to move: the CSS keys on the CLASS (`.sgs-fx-shape-visual`,
+	 * `.sgs-fx-shape-visual path`), never on these data attributes, and the
+	 * idempotency check at the top of this function greps for the class too.
+	 * The morph TARGET was always correct — `$target_svg` below points at a
+	 * `<path id="…">`, which is why only the source end was broken.
+	 */
 	$visual_svg = \sprintf(
-		'<svg class="sgs-fx-shape-visual"%s viewBox="%s" aria-hidden="true" focusable="false"><path d="%s"></path></svg>',
-		$visual_attrs,
+		'<svg class="sgs-fx-shape-visual" viewBox="%s" aria-hidden="true" focusable="false"><path%s d="%s"></path></svg>',
 		\esc_attr( FX_SHAPE_VIEWBOX ),
+		$visual_attrs,
 		\esc_attr( $resolved['from']['d'] )
 	);
 

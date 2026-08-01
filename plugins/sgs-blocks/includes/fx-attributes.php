@@ -92,6 +92,320 @@ const FX_ATTR_MAP = array(
 );
 
 /**
+ * PHP mirror of `fx-presets.json`'s governed effect→level→param table
+ * (Spec 38 §7, D446 Task 10).
+ *
+ * WHY A HAND-KEPT MIRROR, NOT A SHARED FILE: `fx-presets.json` is imported
+ * directly into the editor's webpack bundle
+ * (`import fxPresets from './fx-presets.json'` in `fx.js`), which INLINES the
+ * JSON into the compiled JS — it is never copied to `build/` as a standalone
+ * file, and `src/` is excluded from every production deploy (see this
+ * plugin's CLAUDE.md deploy sequence, `--exclude='src'`). A
+ * `file_get_contents()` against the src path would work in local dev and
+ * 404 in production. This follows the exact dual-registration shape
+ * `FX_ATTR_MAP` above already documents and accepts for the JS attribute
+ * list — keep the two files in step by hand; a divergence here means the
+ * preset writes different values at render time than the editor showed when
+ * the client picked it, which is precisely the normalisation defect this
+ * function exists to prevent.
+ *
+ * Only the fields the render-time fill-in actually needs are mirrored:
+ * which params a level governs, and what value it sets. `null` means "clear
+ * to the effect module's own default" — the same semantic `fx.js`'s
+ * `fxPresetAttributes()` uses; a null preset value is treated as "nothing to
+ * fill in" below, never coerced to a literal `null`/empty string.
+ *
+ * @return array<string, array<string, array<string, mixed>>>
+ */
+function sgs_fx_presets(): array {
+	return array(
+		'scrub'            => array(
+			'subtle'   => array(
+				'fxStart' => 'top 85%',
+				'fxEnd'   => 'top center',
+				'fxScrub' => 0.3,
+				'fxEase'  => 'power1.out',
+			),
+			'standard' => array(
+				'fxStart' => 'top 70%',
+				'fxEnd'   => 'top center',
+				'fxScrub' => 0.8,
+				'fxEase'  => null,
+			),
+			'dramatic' => array(
+				'fxStart' => 'top bottom',
+				'fxEnd'   => 'top top',
+				'fxScrub' => 1.5,
+				'fxEase'  => 'power3.out',
+			),
+		),
+		'pin-scrub'        => array(
+			'subtle'   => array(
+				'fxStart' => null,
+				'fxEnd'   => '+=50%',
+				'fxHold'  => 'short',
+				'fxScrub' => 0.3,
+			),
+			'standard' => array(
+				'fxStart' => null,
+				'fxEnd'   => '+=100%',
+				'fxHold'  => null,
+				'fxScrub' => 0.8,
+			),
+			'dramatic' => array(
+				'fxStart' => null,
+				'fxEnd'   => '+=200%',
+				'fxHold'  => 'long',
+				'fxScrub' => 1.5,
+			),
+		),
+		'horizontal-panel' => array(
+			'subtle'   => array(
+				'fxStart' => null,
+				'fxEnd'   => '+=50%',
+				'fxHold'  => 'short',
+				'fxScrub' => 0.3,
+			),
+			'standard' => array(
+				'fxStart' => null,
+				'fxEnd'   => '+=100%',
+				'fxHold'  => null,
+				'fxScrub' => 0.8,
+			),
+			'dramatic' => array(
+				'fxStart' => null,
+				'fxEnd'   => '+=200%',
+				'fxHold'  => 'long',
+				'fxScrub' => 1.5,
+			),
+		),
+		'split-reveal'     => array(
+			'subtle'   => array(
+				'fxStart'    => 'top 85%',
+				'fxEnd'      => null,
+				'fxDuration' => 0.5,
+				'fxStagger'  => 0.02,
+				'fxEase'     => 'power1.out',
+				'fxSplit'    => 'words',
+				'fxMask'     => null,
+			),
+			'standard' => array(
+				'fxStart'    => 'top 70%',
+				'fxEnd'      => null,
+				'fxDuration' => 0.8,
+				'fxStagger'  => 0.05,
+				'fxEase'     => null,
+				'fxSplit'    => 'words',
+				'fxMask'     => null,
+			),
+			'dramatic' => array(
+				'fxStart'    => 'top 85%',
+				'fxEnd'      => null,
+				'fxDuration' => 1.2,
+				'fxStagger'  => 0.03,
+				'fxEase'     => 'back.out',
+				'fxSplit'    => 'chars',
+				'fxMask'     => 'chars',
+			),
+		),
+		'scramble'         => array(
+			'subtle'   => array(
+				'fxStart' => 'top 85%',
+				'fxEnd'   => 'top center',
+			),
+			'standard' => array(
+				'fxStart' => 'top 70%',
+				'fxEnd'   => 'top center',
+			),
+			'dramatic' => array(
+				'fxStart' => 'top center',
+				'fxEnd'   => 'top top',
+			),
+		),
+		'draw'             => array(
+			'subtle'   => array(
+				'fxStart' => 'top 85%',
+				'fxEnd'   => 'top center',
+			),
+			'standard' => array(
+				'fxStart' => 'top 70%',
+				'fxEnd'   => 'top center',
+			),
+			'dramatic' => array(
+				'fxStart' => 'top bottom',
+				'fxEnd'   => 'top top',
+			),
+		),
+		'motion-path'      => array(
+			'subtle'   => array(
+				'fxStart' => 'top 85%',
+				'fxEnd'   => 'top center',
+				'fxScrub' => 0.3,
+			),
+			'standard' => array(
+				'fxStart' => 'top bottom',
+				'fxEnd'   => 'bottom top',
+				'fxScrub' => 0.8,
+			),
+			'dramatic' => array(
+				'fxStart' => 'top bottom',
+				'fxEnd'   => 'bottom top',
+				'fxScrub' => 1.5,
+			),
+		),
+	);
+}
+
+/**
+ * Fill in a preset's governed params that were never actually written.
+ *
+ * Spec 38 §7 build task (D446 Task 10). The editor's own `applyPreset()`
+ * handler in `fx.js` stamps a level's WHOLE governed set into real
+ * attributes the instant a client picks it, so ordinarily `fxPreset` is
+ * only ever a truthful label for values already present in the stored
+ * attributes. This function exists for every path that bypasses that
+ * handler: `fxPreset` arriving via a direct `wp.data` dispatch, a pattern,
+ * or a converter clone carries no governed params at all, because nothing
+ * ever ran the code that writes them — measured live: setting `fxPreset`
+ * via the data store wrote the label with zero motion parameters, so the
+ * effect ran with none of the chosen intensity's settings.
+ *
+ * Only fills a key that is genuinely UNSET (`null` or `''`) — it never
+ * overwrites a value already present, which is the same "hand-editing wins"
+ * precedence the editor's own preset writer protects, applied in the
+ * direction that matters here: there is no "Custom" label to fall back to
+ * at render time, so filling gaps is always the safe direction, overwriting
+ * a deliberate value never is.
+ *
+ * @param array  $attrs  Parsed block attributes.
+ * @param string $effect Current `fx` value.
+ * @return array Attributes with any missing preset-governed values filled in.
+ */
+function sgs_fx_apply_preset( array $attrs, string $effect ): array {
+	$preset = $attrs['fxPreset'] ?? '';
+	if ( ! \is_string( $preset ) || '' === $preset ) {
+		return $attrs;
+	}
+
+	$values = sgs_fx_presets()[ $effect ][ $preset ] ?? null;
+	if ( null === $values ) {
+		// Not a governed effect/level pair — a stale fxPreset left over from a
+		// different effect (sgs_fx_clear_stale_params handles that case for
+		// fxPreset itself; nothing to fill in here).
+		return $attrs;
+	}
+
+	foreach ( $values as $key => $value ) {
+		$current = $attrs[ $key ] ?? null;
+		$unset   = null === $current || '' === $current;
+		if ( ! $unset ) {
+			continue; // A real value is already present — never overwrite it.
+		}
+		if ( null === $value ) {
+			continue; // The preset itself says "clear to module default".
+		}
+		$attrs[ $key ] = $value;
+	}
+
+	return $attrs;
+}
+
+/**
+ * Attribute keys FX_ATTR_MAP carries that are meaningful only for SPECIFIC
+ * effects, mirroring the same gates `fx.js`'s inspector panel already
+ * applies (`isSplit` / `isPath` / `isMorph` / `fxPins()` /
+ * `ownsScroll && !isSplit` in `withFxControls`). A key not listed against
+ * any effect here is universal (`fx`, `fxPreset`, `fxTrigger`, `fxStart`,
+ * `fxEnd`) and always survives an effect change.
+ *
+ * Duplicated here rather than shared because `fx.js`'s own gates are
+ * hand-written effect-name checks, not DB-derived — the same shape of
+ * duplication `FX_ATTR_MAP` above already documents as deliberate. Keep
+ * both files in step when either changes.
+ *
+ * @return array<string, string[]> effect => extra attr keys it may carry.
+ */
+function sgs_fx_effect_param_scope(): array {
+	return array(
+		'scrub'            => array( 'fxScrub', 'fxEase' ),
+		'pin-scrub'        => array( 'fxHold', 'fxScrub' ),
+		'horizontal-panel' => array( 'fxHold', 'fxScrub' ),
+		'split-reveal'     => array( 'fxDuration', 'fxStagger', 'fxEase', 'fxSplit', 'fxMask' ),
+		'motion-path'      => array( 'fxPath', 'fxPathAsset', 'fxPathRotate', 'fxPathRest', 'fxPathRestVh', 'fxScrub' ),
+		'morph'            => array( 'fxShape', 'fxShapeAssetFrom', 'fxShapeAssetTo' ),
+	);
+}
+
+/**
+ * Drop fx param values left behind from a PREVIOUS effect.
+ *
+ * Spec 38 §7 build task (D446 Task 10). `fx.js`'s own `changeEffect()`
+ * clears these in the editor the moment a client switches effects; this is
+ * the render-time equivalent for attributes that reached the page any other
+ * way. Measured live: `fxSplit: "chars"` (a split-reveal-only param)
+ * survived a switch to `scrub` because nothing outside the editor's own
+ * click handler ever cleared it, and the stale value sat in stored
+ * attributes with no control showing it and no way to tell it apart from a
+ * genuine (if meaningless) setting.
+ *
+ * @param array  $attrs  Parsed block attributes.
+ * @param string $effect Current `fx` value.
+ * @return array Attributes with off-effect params blanked (set to null).
+ */
+function sgs_fx_clear_stale_params( array $attrs, string $effect ): array {
+	$scope   = sgs_fx_effect_param_scope();
+	$allowed = $scope[ $effect ] ?? array();
+
+	// The union of every effect's scoped params — a key that belongs to no
+	// effect at all is cleared unconditionally, same as one that belongs to
+	// a DIFFERENT effect than the current one.
+	$all_scoped = array();
+	foreach ( $scope as $keys ) {
+		$all_scoped = \array_merge( $all_scoped, $keys );
+	}
+	$all_scoped = \array_unique( $all_scoped );
+
+	foreach ( $all_scoped as $key ) {
+		if ( \in_array( $key, $allowed, true ) ) {
+			continue;
+		}
+		if ( isset( $attrs[ $key ] ) && '' !== $attrs[ $key ] && null !== $attrs[ $key ] ) {
+			$attrs[ $key ] = null; // Absent, per the same rule the injector already uses.
+		}
+	}
+
+	return $attrs;
+}
+
+/**
+ * Normalise fx attributes at the point of use — Spec 38 §7 build task
+ * (D446 Task 10, the dependency for Tasks 15/19).
+ *
+ * Runs BOTH normalisations ($this file's `sgs_fx_apply_preset()` then
+ * `sgs_fx_clear_stale_params()`) against whatever `$block['attrs']` the
+ * parser handed this render, regardless of how that content reached the
+ * page — a normal editor save, a pattern insertion, a converter clone, or a
+ * direct `wp.data` write all arrive here as the same parsed attributes, so
+ * normalising HERE (render time) rather than in an editor click handler
+ * covers every origin, not just the one the editor's own UI produces.
+ *
+ * Deliberately does NOT write anything back to the database or to
+ * `post_content` — it only affects what gets emitted into THIS request's
+ * rendered markup. That is what keeps it out of `/sgs-update`'s way: the
+ * attribute extraction pipeline reads block.json + stored post content, and
+ * this function touches neither.
+ *
+ * @param array  $attrs  Parsed block attributes.
+ * @param string $effect Current `fx` value.
+ * @return array Normalised attributes.
+ */
+function sgs_fx_normalise( array $attrs, string $effect ): array {
+	$attrs = sgs_fx_apply_preset( $attrs, $effect );
+	$attrs = sgs_fx_clear_stale_params( $attrs, $effect );
+	return $attrs;
+}
+
+/**
  * Advance past any leading `<style>`/`<script>` so a tag processor lands on the
  * block's REAL root element.
  *
@@ -148,6 +462,12 @@ function sgs_fx_data_attr_string( array $attrs ): string {
 		return '';
 	}
 
+	// D446 Task 10 — normalise BEFORE building the string, so a descendant
+	// emission (this function's caller) gets the same preset-fill-in and
+	// stale-param clearing the root injector applies below. One normalisation
+	// point serves both consumers of FX_ATTR_MAP.
+	$attrs = sgs_fx_normalise( $attrs, $fx );
+
 	$out = '';
 	foreach ( FX_ATTR_MAP as $attr => $data_attr ) {
 		if ( ! isset( $attrs[ $attr ] ) ) {
@@ -165,15 +485,47 @@ function sgs_fx_data_attr_string( array $attrs ): string {
 		$out .= ' ' . $data_attr . '="' . \esc_attr( (string) $value ) . '"';
 	}
 
+	// D446 Task 15 — per-breakpoint disable (§ own docblock on FX_ATTR_MAP's
+	// sibling function below has the full rationale). Booleans, not part of
+	// FX_ATTR_MAP's generic value-or-absent loop above because `false` is not
+	// `''`/`null` and would otherwise emit an empty-but-present attribute.
+	if ( true === ( $attrs['fxDisableTablet'] ?? false ) ) {
+		$out .= ' data-sgs-fx-disable-tablet="1"';
+	}
+	if ( true === ( $attrs['fxDisableMobile'] ?? false ) ) {
+		$out .= ' data-sgs-fx-disable-mobile="1"';
+	}
+
 	return $out;
 }
 
 /**
- * Inject `data-sgs-fx*` onto a dynamic block's rendered root element.
+ * Inject `data-sgs-fx*` onto a block's rendered root element — and, since
+ * D446 Task 10, CORRECT it there too, regardless of how the block reached
+ * this render.
+ *
+ * ⚠ BEHAVIOUR CHANGED 2026-08-01 (Spec 38 §7 build task, D446 Task 10). This
+ * function used to bail out entirely the moment it saw `data-sgs-fx=`
+ * ANYWHERE in `$block_content`, on the theory that a STATIC block's own
+ * save-time path (`fx.js`'s `addFxSaveProps`) had already emitted a correct
+ * set and writing again would double it up. That theory only held while the
+ * save-time path was the ONLY way fx attributes could reach stored content.
+ * It stopped holding the moment content could arrive any other way — a
+ * pattern insertion, a converter clone, a direct `wp.data` write — because
+ * none of those run the editor's save-time filter, so a static block's
+ * ROOT could carry attributes that are ABSENT, STALE (left over from a
+ * previous effect), or missing a preset's params entirely, and the old bail
+ * left every one of those uncorrected forever.
+ *
+ * The render layer is now authoritative for the ROOT case: it distinguishes
+ * "fx markup already on THIS block's own root" (correct it) from "fx markup
+ * emitted on a DESCENDANT by e.g. `SGS_Container_Wrapper`" (still suppress
+ * the root injection — that mechanism is unchanged and documented in the
+ * "NO TRACK MARKING HERE" comment further down).
  *
  * @param string $block_content The rendered block HTML.
  * @param array  $block         Parsed block data including attrs.
- * @return string Block HTML, with fx data attributes when an effect is set.
+ * @return string Block HTML, with fx data attributes normalised and applied.
  */
 function sgs_inject_fx_attributes( string $block_content, array $block ): string {
 	if ( '' === $block_content ) {
@@ -187,11 +539,6 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 		return $block_content;
 	}
 
-	// Already emitted by the static-save path — never write them twice.
-	if ( false !== \strpos( $block_content, 'data-sgs-fx=' ) ) {
-		return $block_content;
-	}
-
 	$offset = sgs_fx_root_offset( $block_content );
 	$head   = \substr( $block_content, 0, $offset );
 	$rest   = \substr( $block_content, $offset );
@@ -201,8 +548,23 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 		return $block_content;
 	}
 
+	// Distinguish "already on THIS root" (correct it below) from "emitted on
+	// a DESCENDANT by SGS_Container_Wrapper via sgs_fx_data_attr_string()"
+	// (still bail — one effect, one target element, unchanged from before).
+	$root_already_has_fx = null !== $processor->get_attribute( 'data-sgs-fx' );
+	if ( ! $root_already_has_fx && false !== \strpos( $rest, 'data-sgs-fx=' ) ) {
+		return $block_content;
+	}
+
+	// D446 Task 10 — normalise against the SOURCE attributes (the parsed
+	// block comment), never against whatever the root tag currently carries:
+	// a stale/partial static-save emission must not be treated as the truth
+	// it is being corrected against.
+	$attrs = sgs_fx_normalise( $attrs, $fx );
+
 	foreach ( FX_ATTR_MAP as $attr => $data_attr ) {
 		if ( ! isset( $attrs[ $attr ] ) ) {
+			$processor->remove_attribute( $data_attr );
 			continue;
 		}
 		$value = $attrs[ $attr ];
@@ -219,10 +581,26 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 		 * depending on whether it was server-rendered or saved as static markup.
 		 */
 		if ( '' === $value || null === $value ) {
+			$processor->remove_attribute( $data_attr );
 			continue;
 		}
 
 		$processor->set_attribute( $data_attr, \esc_attr( (string) $value ) );
+	}
+
+	// D446 Task 15 — per-breakpoint disable. Explicit set-or-remove (not the
+	// generic loop above) because these are booleans: `false` is not `''`/
+	// `null`, so the generic "skip only genuinely absent" rule would leave a
+	// stray `="""` attribute behind instead of removing it.
+	if ( true === ( $attrs['fxDisableTablet'] ?? false ) ) {
+		$processor->set_attribute( 'data-sgs-fx-disable-tablet', '1' );
+	} else {
+		$processor->remove_attribute( 'data-sgs-fx-disable-tablet' );
+	}
+	if ( true === ( $attrs['fxDisableMobile'] ?? false ) ) {
+		$processor->set_attribute( 'data-sgs-fx-disable-mobile', '1' );
+	} else {
+		$processor->remove_attribute( 'data-sgs-fx-disable-mobile' );
 	}
 
 	/*

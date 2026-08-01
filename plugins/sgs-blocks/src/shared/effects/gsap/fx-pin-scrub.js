@@ -345,6 +345,41 @@ export function initPinScrub( el ) {
 		} );
 
 		/*
+		 * D453 — KEYBOARD REVEAL. WCAG 2.4.11 / 2.4.7.
+		 *
+		 * `fromTo` defaults to `immediateRender: true`, so every preset's FROM
+		 * state (`opacity: 0` in all five presets) lands the moment this
+		 * timeline is BUILT — before any scroll. A visitor tabbing faster than
+		 * the scroll-driven stagger therefore lands focus on controls that are
+		 * fully focusable and completely invisible.
+		 *
+		 * Measured live on canary page 2114 (a pinned section containing a real
+		 * link, text field and submit button): the link's own opacity was 0, the
+		 * field's 0.4, and the button read 1 while its ANCESTOR — the actual
+		 * stagger participant — was 0. CSS opacity does not inherit as a
+		 * computed value, which is precisely why a per-element check missed it
+		 * and an ancestor check caught it.
+		 *
+		 * Fix: keyboard entry COMPLETES the choreography rather than competing
+		 * with it. Content is only ever added, never removed (a hidden control
+		 * becoming visible), so this cannot make the visual state worse.
+		 *
+		 * Why not CSS `:focus-within`: GSAP writes opacity as an INLINE style,
+		 * which no stylesheet rule can beat without `!important` — and
+		 * `!important` on `opacity` in a render surface is what the cheat-gate
+		 * exists to reject.
+		 *
+		 * Mouse users are unaffected: `focusin` does not fire on scroll, and a
+		 * subsequent scroll re-drives the scrubbed timeline normally.
+		 */
+		const revealForKeyboard = () => {
+			if ( timeline.progress() < 1 ) {
+				timeline.progress( 1 );
+			}
+		};
+		el.addEventListener( 'focusin', revealForKeyboard );
+
+		/*
 		 * Trailing dead time — the hold. Appended AFTER the children so
 		 * `timeline.duration()` reads their real extent, and guarded on
 		 * `hold < 1` so a bad value can never divide by zero or demand an
@@ -382,6 +417,12 @@ export function initPinScrub( el ) {
 		 * once.
 		 */
 		return () => {
+			// D453 — paired with the `focusin` listener added above the hold
+			// block. Removed here rather than relying on the element being
+			// discarded: a mid-session switch to reduced motion reverts the
+			// timeline while the element STAYS in the document, so a listener
+			// left bound would keep calling `progress()` on a killed timeline.
+			el.removeEventListener( 'focusin', revealForKeyboard );
 			timeline.scrollTrigger?.kill( true, false );
 			timeline.kill();
 		};

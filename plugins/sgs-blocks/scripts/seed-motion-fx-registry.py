@@ -684,6 +684,18 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     # attribute in the markup that no runtime reads. It IS a stored block
     # attribute, so it gets a registry row.
     "fxPreset": "fx:preset",
+    #
+    # `fxDisableTablet` / `fxDisableMobile` -> fx:disable-tablet /
+    # fx:disable-mobile (Spec 38 s7 build task, D446 Task 15, 2026-08-01).
+    # Per-breakpoint disable, named with the EXISTING device-tier suffix
+    # vocabulary (Tablet/Mobile) the rest of the framework already uses for
+    # responsive attrs, not a new one. Booleans, unlike every other row here
+    # - `includes/fx-attributes.php` and `fx.js` both special-case them
+    # outside the generic value-or-absent FX_ATTR_MAP loop for exactly that
+    # reason (a `false` is not `''`/`null`, so the generic rule would leave
+    # an empty-but-present attribute rather than omitting it).
+    "fxDisableTablet": "fx:disable-tablet",
+    "fxDisableMobile": "fx:disable-mobile",
 }
 
 FX_EFFECTS_COLUMNS = (

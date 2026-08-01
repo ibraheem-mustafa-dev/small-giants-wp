@@ -9,6 +9,8 @@
 
 return array(
 	'fx' => array( 'type' => 'string' ),
+	'fxDisableMobile' => array( 'type' => 'boolean' ),
+	'fxDisableTablet' => array( 'type' => 'boolean' ),
 	'fxDuration' => array( 'type' => 'number' ),
 	'fxEase' => array( 'type' => 'string' ),
 	'fxEnd' => array( 'type' => 'string' ),
