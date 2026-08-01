@@ -2549,3 +2549,97 @@ entry existed to settle is gone. Verbatim entry as parked:
 Two of the three original clauses (layoutMode as a first-class inspector control; row-inserter promotion of common elements) are already built and live-verified — strike them. The third, FR-37-35 (container-query row reflow), is genuinely unresolved but the SPEC ITSELF disagrees with its own summary table about whether it's built. Settle that contradiction with one live check and fix the losing line before scoping any actual build work.
 
 **Trigger:** the next session touching Spec 37 §3 — check the live behaviour first, then correct whichever spec line is wrong.
+
+
+## P-ZOOM-200-NO-INSTRUMENT — CLEARED 2026-08-01 by Bean directly: he zoomed to 200% on desktop AND on his phone and text increased on both
+
+CLEARED 2026-08-01 by Bean directly: he zoomed to 200% on desktop AND on his phone and text increased on both. Full-page browser zoom scales `px` too, which is why it works and why `deviceScaleFactor` never reproduced it — my earlier worry that px-declared theme.json sizes would not scale was wrong for the case WCAG 1.4.4 actually tests. Per measurement-vs-eye, his observation is ground truth for visible output; no instrument needed to close it.
+
+Verbatim entry as parked:
+
+### P-ZOOM-200-NO-INSTRUMENT — no honest 200% browser-zoom instrument exists on this project
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-01
+
+D455 and D456 both needed a WCAG 1.4.4 (200% text zoom) check and neither could run one.
+`deviceScaleFactor` was empirically confirmed to be a rendering-resolution knob with ZERO layout
+effect (measured content-width ratio 1.000 against a target of 2.000); root-`font-size` scaling
+does not reach SGS typography because `theme.json` declares its font sizes in fixed `px`. Both
+changes shipped on reasoning ("no viewport/container units introduced, so no added risk") rather
+than measurement, and both visual-diff reports label it as unmeasured rather than claiming a pass.
+`scripts/row-fit-sweep.mjs --zoom` deliberately exits 2 with the reason rather than faking it.
+
+**Trigger:** the next session that needs a real 1.4.4 verification — find or build a genuine
+browser-zoom instrument before any gate claims 1.4.4 is closed.
+## P-FOOTER-ROW-WEBKIT-AUTOFIT-UNVERIFIED — CLEARED 2026-08-01 by measurement
+
+CLEARED 2026-08-01 by measurement. Swept the live canary footer in real WebKit (Playwright 1.58.2, revision 2248): track transitions 1160/1020/860/760px are BYTE-IDENTICAL to Chromium, and horizontal overflow was 0 of 55 widths. Bug #256047 NOT reproduced. Note for the record: the probe first reported a "bug signature" — that was the probe being wrong. It counted zero-width tracks, which is precisely what `auto-fit` is DEFINED to do to empty tracks; Chromium and the negative control reported the same count, which is what exposed it.
+
+Verbatim entry as parked:
+
+### P-FOOTER-ROW-WEBKIT-AUTOFIT-UNVERIFIED — D456 intrinsic columns never checked on WebKit
+**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-08-01
+
+D456's `supports.sgs.intrinsicColumns` emits `repeat(auto-fit, minmax(...))` on rows that also set
+`container-type: inline-size`. WebKit bug #256047 reports `auto-fit` tracks collapsing specifically
+under inline-size containment — the same combination. The 109-width sweep ran in Chromium only.
+Flagged in `reports/visual-diff/site-footer-row-2026-08-01.md` as its own highest-priority
+outstanding check.
+
+**Trigger:** a Safari/WebKit pass on the canary before this reaches a real client footer.
+## P-FOOTER-FLEX-ROWS-UNVERIFIED — CLEARED 2026-08-01 by measurement, with one stated caveat
+
+CLEARED 2026-08-01 by measurement, with one stated caveat. Forced the last live canary footer row to `display:flex` AT RUNTIME (real page, real deployed CSS, real content, real widths, no content mutation) and swept 1400->320px in WebKit and Chromium: zero horizontal overflow in both, row stayed one line. Negative control landed — shipped `flex-basis: min(100%, 256px)` vs control `auto` — so the measurement is load-bearing. CAVEAT: at narrow widths the forced row had a single child, so this is strong evidence on overflow and THIN evidence on wrap behaviour with several children.
+
+Verbatim entry as parked:
+
+### P-FOOTER-FLEX-ROWS-UNVERIFIED — D456 changed footer Cluster rows that were never measured
+**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-08-01
+
+D456 replaced the deleted `@container … flex-basis:100%` rule with
+`flex: 1 1 min(100%, var(--sgs-col-basis, 16rem))` on footer row children. On the canary this is
+inert — all three live rows render `display:grid`, and flex properties do not apply to grid items.
+**But six shipped framework patterns author their footer `bottom` row as `layout:"flex"`** —
+`footer-columns.php`, `footer-centred.php`, `footer-minimal.php`, `footer-informational.php`,
+`footer-compact.php`, `framework-footer-default.php`. On those rows the new rule is LIVE and
+changes wrapping behaviour, and none was measured. Caught by a `/qc-council` cross-reference rater,
+which correctly refuted the looser framing that the rule is "inert because all rows are grid" —
+that held only for the three rows on the canary at measurement time, not framework-wide.
+Known accepted trade-off if it does apply: with `flex-grow` a lone item on a wrapped last row
+stretches to fill it, and there is no CSS-native fix.
+
+**Trigger:** insert one of the six flex-bottom-row patterns on the canary and sweep it, before any
+client footer uses a Cluster row.
+## P-HEADER-ROW-STAGE4-MORE-MENU — CLOSED 2026-08-01 — Bean reviewed the shipped header live and reported "reads fine", which was the design's own gating prerequisite (signed decision #3: ship CSS stages, Bean's eye, THEN decide)
+
+CLOSED 2026-08-01 — Bean reviewed the shipped header live and reported "reads fine", which was the design's own gating prerequisite (signed decision #3: ship CSS stages, Bean's eye, THEN decide). Decision: Stage 4 is NOT needed. The row no longer overflows or stacks at any width, so the problem the "More" menu existed to solve does not occur. Reversible — if a future header genuinely outgrows one line, reopen from the design doc lines 135-144.
+
+Verbatim entry as parked:
+
+### P-HEADER-ROW-STAGE4-MORE-MENU — nav-menu overflow-to-"More" mechanism not started
+**Status:** DEFERRED · **Bucket:** blocks · **Parked:** 2026-08-01
+
+Stage 4 of the D420 fit-cascade design — items that no longer fit sliding into a "More" menu
+inside `sgs/nav-menu` via hidden-clone + IntersectionObserver — was deliberately sequenced AFTER
+Bean's live-eye review of Stages 1-3 (the design's own signed decision #3). Stage 1 shipped at
+D455; Stage 2 was replaced by uniform shrink and Stage 3 is blocked (see
+`P-GAP-CONSOLIDATION-FOLLOWUPS` item 5), so that review point has not been reached.
+
+**Trigger:** after Bean's eye sign-off on D455 — then decide whether Stage 4 is still needed at
+all. The row no longer overflows, so the case for it is weaker than when it was designed.
+
+## P-ROW-BLOCKS-CITE-DELETED-SPEC17 — SUPERSEDED 2026-08-01
+
+Replaced by P-CODE-CITES-DELETED-SPEC17 (rescoped: the class is 41 remaining citations across 9 dead IDs, not 10). Verbatim:
+
+### P-ROW-BLOCKS-CITE-DELETED-SPEC17 — 10 FR-S9-* citations point at a DEAD spec
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-01
+
+`site-header-row` and `site-footer-row` (render.php + style.css) carry 10 references to
+`FR-S9-2` / `FR-S9-6` / `FR-S9-7`. Those IDs belong to Spec 17, DELETED 2026-07-21 and listed under
+"DEAD — never cite" in `specs/README.md:62-68`. Pre-existing debt, surfaced by a `/qc-council`
+rater while reviewing D455/D456. Retargeting needs the coverage matrix
+`reports/2026-07-21-spec17-to-spec37-coverage.md` to map each ID to its Spec 37 equivalent —
+deliberately NOT guessed at during D455.
+
+**Trigger:** next session touching either row block; map via the coverage matrix, do not invent
+the mapping.

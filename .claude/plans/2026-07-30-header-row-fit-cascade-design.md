@@ -13,7 +13,8 @@ status: |
   only a static min() logo floor shipped. Parked at P-GAP-CONSOLIDATION-FOLLOWUPS item (5).
   Stage 4 (nav-menu "More" JS) NOT STARTED — correctly deferred per this design's own
   sequencing decision #3; parked at P-HEADER-ROW-STAGE4-MORE-MENU.
-  Bean's live-eye sign-off (R-31-13) STILL OUTSTANDING.
+  Bean's live-eye sign-off (R-31-13) GIVEN 2026-08-01 — "reads fine" on the live header.
+  Stage 4 consequently CLOSED as not-needed (the row no longer overflows), not parked.
   ⚠ Read the per-stage table above before assuming any stage shipped as written.
 spec_refs: Spec 37 FR-37-35 / §3.6 · FR-S9-7 · D339b
 supersedes_behaviour_of: FR-37-35's collapse-to-stack reflow (its container-query half is KEPT)

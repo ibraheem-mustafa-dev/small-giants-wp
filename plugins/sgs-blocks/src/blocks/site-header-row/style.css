@@ -1,7 +1,7 @@
 /**
  * SGS Header Row — frontend styles.
  *
- * The intrinsic never-overflow "cluster" (FR-S9-7). The flex container itself
+ * The intrinsic never-overflow "cluster" (Spec 37 §3.6 / FR-37-12, D455). The flex container itself
  * (display:flex, flex-wrap, gap, align-items, justify-content) is owned by the
  * shared SGS_Container_Wrapper via block attributes (layout='flex', flexWrap,
  * gap, verticalAlign, justifyContent) — NOT hardcoded here (Gate B / no-inline,
@@ -81,7 +81,7 @@
  *
  * 767px is SGS_Breakpoints::MOBILE_MAX (includes/class-sgs-breakpoints.php).
  * It is reused here because it is the SAME numeric bound the wrapper's own
- * FR-S9-6 mechanism already uses for the @container queries scoped to THIS
+ * FR-37-16 mechanism already uses for the @container queries scoped to THIS
  * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
  * viewport @media breakpoint for its own sake.
  *

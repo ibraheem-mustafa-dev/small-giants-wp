@@ -15,7 +15,7 @@
  * scoped colour/border re-emit below (no-inline contract, Spec 32).
  *
  * An empty row (no inner blocks) emits ZERO output — no wrapper, no padding
- * (FR-S9-2 empty-row-zero-output).
+ * (Spec 37 §3.4 empty-row-zero-output, verified FR-37-10).
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes (validated against block.json).
@@ -27,7 +27,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// Empty-row zero-output guard (FR-S9-2). No inner content → render nothing.
+// Empty-row zero-output guard (Spec 37 §3.4, verified FR-37-10). No inner content → render nothing.
 if ( '' === trim( (string) $content ) ) {
 	return '';
 }
@@ -212,7 +212,7 @@ echo SGS_Container_Wrapper::render(
 		'tag'              => 'div',
 		'extra_classes'    => $classes,
 		'extra_attrs'      => $sfr_extra_attrs,
-		// FR-S9-6: gap + gridTemplateColumns are the {desktop,tablet,mobile} object
+		// Spec 37 FR-37-16: gap + gridTemplateColumns are the {desktop,tablet,mobile} object
 		// model; the shared wrapper emits their responsive CSS via sgs_emit_responsive_css().
 		'responsive_model' => 'object',
 	)

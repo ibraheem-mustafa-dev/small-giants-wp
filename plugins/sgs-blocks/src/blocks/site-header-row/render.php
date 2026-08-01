@@ -3,9 +3,13 @@
  * SGS Header Row — server-side render.
  *
  * A single row of a site header, rendered as an intrinsic never-overflow
- * "cluster": display:flex + flex-wrap:wrap (defaults) + min-width:0 on children
- * + flex-shrink:0 on the logo (style.css), so the row wraps rather than pushing
- * elements past the viewport edge at any width down to 320px (FR-S9-7).
+ * "cluster": display:flex + flex-wrap:nowrap + min-width:0 on children
+ * (style.css), so the row never wraps or stacks — it yields by SHRINKING
+ * (gap first, then every child proportionally), each stopping at its own
+ * floor: interactive controls at 44px, the logo at
+ * min(100%, var(--sgs-header-logo-min, 7.5rem)) (Spec 37 §3.6 / FR-37-12,
+ * D455 2026-08-01 — supersedes the wrap-based never-overflow behaviour
+ * formerly cited as FR-S9-7 of the deleted Spec 17).
  *
  * Outer rendering is delegated ENTIRELY to the shared SGS_Container_Wrapper
  * (composite-mirror, R-31-9 / D294) — no divergent per-block styling path. The
@@ -13,7 +17,7 @@
  * colour/border re-emit below (no-inline contract, Spec 32).
  *
  * An empty row (no inner blocks) emits ZERO output — no wrapper, no padding
- * (FR-S9-2 empty-row-zero-output).
+ * (Spec 37 §3.4 empty-row-zero-output, verified FR-37-9).
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes (validated against block.json).
@@ -25,7 +29,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// Empty-row zero-output guard (FR-S9-2). No inner content → render nothing.
+// Empty-row zero-output guard (Spec 37 §3.4, verified FR-37-9). No inner content → render nothing.
 if ( '' === trim( (string) $content ) ) {
 	return '';
 }
@@ -213,7 +217,7 @@ echo SGS_Container_Wrapper::render(
 		'tag'              => 'div',
 		'extra_classes'    => $classes,
 		'extra_attrs'      => $shr_extra_attrs,
-		// FR-S9-6: gap is stored as the {desktop,tablet,mobile} object model; the
+		// Spec 37 FR-37-16: gap is stored as the {desktop,tablet,mobile} object model; the
 		// shared wrapper emits its responsive CSS via sgs_emit_responsive_css().
 		'responsive_model' => 'object',
 	)

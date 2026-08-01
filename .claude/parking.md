@@ -1038,73 +1038,27 @@ The framework carries no client data any more (the client-named pattern file was
 
 **Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
 
-### P-ZOOM-200-NO-INSTRUMENT — no honest 200% browser-zoom instrument exists on this project
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-01
+### P-CODE-CITES-DELETED-SPEC17 — 41 FR-S9-* citations across the plugin point at a DEAD spec
+**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-08-01
 
-D455 and D456 both needed a WCAG 1.4.4 (200% text zoom) check and neither could run one.
-`deviceScaleFactor` was empirically confirmed to be a rendering-resolution knob with ZERO layout
-effect (measured content-width ratio 1.000 against a target of 2.000); root-`font-size` scaling
-does not reach SGS typography because `theme.json` declares its font sizes in fixed `px`. Both
-changes shipped on reasoning ("no viewport/container units introduced, so no added risk") rather
-than measurement, and both visual-diff reports label it as unmeasured rather than claiming a pass.
-`scripts/row-fit-sweep.mjs --zoom` deliberately exits 2 with the reason rather than faking it.
+`FR-S9-*` IDs belong to Spec 17, DELETED 2026-07-21 and listed under "DEAD — never cite"
+(`specs/README.md:62-68`).
 
-**Trigger:** the next session that needs a real 1.4.4 verification — find or build a genuine
-browser-zoom instrument before any gate claims 1.4.4 is closed.
+**DONE 2026-08-01:** the 11 citations in `site-header-row` + `site-footer-row` (render.php +
+style.css) were retargeted from the coverage matrix `reports/2026-07-21-spec17-to-spec37-coverage.md`
+— `FR-S9-2` → Spec 37 §3.4 (verified FR-37-9/FR-37-10), `FR-S9-6` → FR-37-16, `FR-S9-7` → §3.6 /
+FR-37-12. The FR-S9-7 sites also had their SUBSTANCE corrected, not just the ID: they described a
+wrap-based never-overflow guarantee that D455 replaced with nowrap + proportional shrink.
 
-### P-FOOTER-ROW-WEBKIT-AUTOFIT-UNVERIFIED — D456 intrinsic columns never checked on WebKit
-**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-08-01
+**REMAINING: 41 citations across 9 distinct dead IDs** (`FR-S9-2,3,4,6,7,8,9,10,11`) in
+`src/blocks/business-info`, `src/blocks/nav-menu`, `src/blocks/site-header`, `assets/css/extensions.css`,
+`includes/class-sgs-breakpoints.php`, `includes/class-sgs-block-cpts.php` and others. The original
+entry scoped this at 10 and was wrong — the class is ~5x larger. Each needs the same matrix lookup;
+some may map to Spec 36 rather than 37, and any citing a behaviour that has since CHANGED needs its
+substance corrected too, not just the ID swapped.
 
-D456's `supports.sgs.intrinsicColumns` emits `repeat(auto-fit, minmax(...))` on rows that also set
-`container-type: inline-size`. WebKit bug #256047 reports `auto-fit` tracks collapsing specifically
-under inline-size containment — the same combination. The 109-width sweep ran in Chromium only.
-Flagged in `reports/visual-diff/site-footer-row-2026-08-01.md` as its own highest-priority
-outstanding check.
-
-**Trigger:** a Safari/WebKit pass on the canary before this reaches a real client footer.
-
-### P-FOOTER-FLEX-ROWS-UNVERIFIED — D456 changed footer Cluster rows that were never measured
-**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-08-01
-
-D456 replaced the deleted `@container … flex-basis:100%` rule with
-`flex: 1 1 min(100%, var(--sgs-col-basis, 16rem))` on footer row children. On the canary this is
-inert — all three live rows render `display:grid`, and flex properties do not apply to grid items.
-**But six shipped framework patterns author their footer `bottom` row as `layout:"flex"`** —
-`footer-columns.php`, `footer-centred.php`, `footer-minimal.php`, `footer-informational.php`,
-`footer-compact.php`, `framework-footer-default.php`. On those rows the new rule is LIVE and
-changes wrapping behaviour, and none was measured. Caught by a `/qc-council` cross-reference rater,
-which correctly refuted the looser framing that the rule is "inert because all rows are grid" —
-that held only for the three rows on the canary at measurement time, not framework-wide.
-Known accepted trade-off if it does apply: with `flex-grow` a lone item on a wrapped last row
-stretches to fill it, and there is no CSS-native fix.
-
-**Trigger:** insert one of the six flex-bottom-row patterns on the canary and sweep it, before any
-client footer uses a Cluster row.
-
-### P-HEADER-ROW-STAGE4-MORE-MENU — nav-menu overflow-to-"More" mechanism not started
-**Status:** DEFERRED · **Bucket:** blocks · **Parked:** 2026-08-01
-
-Stage 4 of the D420 fit-cascade design — items that no longer fit sliding into a "More" menu
-inside `sgs/nav-menu` via hidden-clone + IntersectionObserver — was deliberately sequenced AFTER
-Bean's live-eye review of Stages 1-3 (the design's own signed decision #3). Stage 1 shipped at
-D455; Stage 2 was replaced by uniform shrink and Stage 3 is blocked (see
-`P-GAP-CONSOLIDATION-FOLLOWUPS` item 5), so that review point has not been reached.
-
-**Trigger:** after Bean's eye sign-off on D455 — then decide whether Stage 4 is still needed at
-all. The row no longer overflows, so the case for it is weaker than when it was designed.
-
-### P-ROW-BLOCKS-CITE-DELETED-SPEC17 — 10 FR-S9-* citations point at a DEAD spec
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-01
-
-`site-header-row` and `site-footer-row` (render.php + style.css) carry 10 references to
-`FR-S9-2` / `FR-S9-6` / `FR-S9-7`. Those IDs belong to Spec 17, DELETED 2026-07-21 and listed under
-"DEAD — never cite" in `specs/README.md:62-68`. Pre-existing debt, surfaced by a `/qc-council`
-rater while reviewing D455/D456. Retargeting needs the coverage matrix
-`reports/2026-07-21-spec17-to-spec37-coverage.md` to map each ID to its Spec 37 equivalent —
-deliberately NOT guessed at during D455.
-
-**Trigger:** next session touching either row block; map via the coverage matrix, do not invent
-the mapping.
+**Trigger:** a framework-wide doc-hygiene pass, or opportunistically when touching any of the named
+files. Map via the coverage matrix — do not invent the mapping.
 
 ### P-THEME-SCROLL-PADDING-SECOND-INSTANCE — the theme carries its own copy of the scroll-padding defect the plugin already fixed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26

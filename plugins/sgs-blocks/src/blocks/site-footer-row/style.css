@@ -58,12 +58,12 @@
  *
  * 767px is SGS_Breakpoints::MOBILE_MAX (includes/class-sgs-breakpoints.php).
  * It is reused here because it is the SAME numeric bound the wrapper's own
- * FR-S9-6 mechanism already uses for the @container queries scoped to THIS
+ * FR-37-16 mechanism already uses for the @container queries scoped to THIS
  * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
  * viewport @media breakpoint for its own sake. The number matches the
  * viewport mobile tier by design (one SGS "mobile" definition, applied on
  * two independent axes — container width and viewport width — exactly as
- * FR-S9-6 already does for this element); this rule itself fires purely
+ * FR-37-16 already does for this element); this rule itself fires purely
  * off the row's own measured inline size, never the viewport.
  *
  * ⛔ The collapse-to-stack half of this rule WAS DELETED (D456). Do not

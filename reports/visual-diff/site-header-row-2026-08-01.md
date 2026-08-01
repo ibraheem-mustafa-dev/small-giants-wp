@@ -121,15 +121,20 @@ flex-wrap:wrap    <- .editor-styles-wrapper .sgs-row-quick-insert__buttons
 
 ## Not verified
 
-- **Browser text zoom at 200% (WCAG 1.4.4).** Not measured. `deviceScaleFactor`
+- ~~**Browser text zoom at 200% (WCAG 1.4.4).**~~ **CLEARED 2026-08-01 — Bean checked it
+  directly on desktop and on his phone; text increased on both.** Full-page browser zoom scales
+  `px` as well, which is both why it works and why `deviceScaleFactor` never reproduced it. My
+  earlier concern that px-declared theme.json sizes would not scale was wrong for the case 1.4.4
+  actually tests. Original note retained below for the record.
+- **(superseded) Browser text zoom at 200%.** Not measured. `deviceScaleFactor`
   was empirically confirmed to be a rendering-resolution knob with zero layout
   effect, and root-`font-size` scaling does not reach SGS typography because
   theme.json declares those sizes in fixed `px`. No honest instrument was
   available, so no claim is made. The change introduces no viewport- or
   container-unit sizing, so it does not add 1.4.4 risk — but that is reasoning,
   not measurement.
-- **Bean's eye (R-31-13).** Numbers do not close this; a real header at 390 and
-  1440 still needs his sign-off.
+- ~~**Bean's eye (R-31-13).**~~ **GIVEN 2026-08-01 — Bean reviewed the live header and
+  reported "reads fine".** R-31-13 satisfied: script measurement + owner's eye both consulted.
 - The `SGS-CPT-HEADER-PROOF-20260722` banner visible in the screenshots is the
   known generic proof header already tracked in the LEDGER, not part of this
   change.

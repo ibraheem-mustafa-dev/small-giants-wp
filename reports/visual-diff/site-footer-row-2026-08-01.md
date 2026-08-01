@@ -139,7 +139,10 @@ would now be lying to the client.
 
 ## Not verified
 
-- **Browser text zoom at 200% (WCAG 1.4.4).** Not measured; no honest instrument
+- ~~**Browser text zoom at 200% (WCAG 1.4.4).**~~ **CLEARED 2026-08-01 — Bean checked 200% zoom
+  on desktop and on his phone; text increased on both.** Full-page browser zoom scales `px` too,
+  which is why it works and why `deviceScaleFactor` did not reproduce it. Original note retained:
+- **(superseded)** Not measured; no honest instrument
   available (`deviceScaleFactor` was empirically confirmed to be a
   rendering-resolution knob with no layout effect, and root-font-size scaling
   does not reach SGS typography because theme.json declares those sizes in `px`).
@@ -150,9 +153,18 @@ would now be lying to the client.
   width). The mechanism finding is unaffected — a `@media` cliff is
   content-independent by construction — but the exact transition widths (860px,
   1160px) will move with real copy. Re-measure once real footer content lands.
-- **Safari/WebKit.** WebKit bug #256047 reports `auto-fit` tracks collapsing
-  under `inline-size` containment, which is exactly this combination
-  (`container-type: inline-size` is set on these rows). **Not yet tested in
-  WebKit** — the sweep above ran in Chromium. This is the highest-priority
-  outstanding check on this change.
+- ~~**Safari/WebKit.**~~ **CLEARED 2026-08-01 — swept in real WebKit** (Playwright 1.58.2,
+  revision 2248). Track transitions 1160/1020/860/760px are **byte-identical to Chromium**, and
+  horizontal overflow was **0 of 55 widths**. Bug #256047 **not reproduced**.
+  ⚠ Recorded because it nearly produced a false alarm: the probe first reported a "#256047
+  signature" by counting zero-width tracks — which is exactly what `auto-fit` is DEFINED to do to
+  empty tracks. Chromium and the negative control returned the same count, which is what exposed
+  the probe rather than the browser as wrong.
+- **Cluster (flex) footer rows — CLEARED 2026-08-01 with a caveat.** Six shipped patterns author
+  their bottom row as `layout:"flex"`, where the replacement rule is live. Forced the last live
+  canary row to `display:flex` at runtime (real page, real deployed CSS, real content, no content
+  mutation) and swept 1400→320px in both engines: zero overflow, row stayed one line, and the
+  negative control landed (shipped `flex-basis: min(100%, 256px)` vs control `auto`). **Caveat:**
+  that row had a single child at narrow widths, so this is strong evidence on overflow and thin
+  evidence on wrap behaviour with several children.
 - **Bean's eye (R-31-13).**
