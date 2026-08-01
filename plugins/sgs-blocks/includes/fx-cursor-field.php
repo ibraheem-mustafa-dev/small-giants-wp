@@ -118,7 +118,28 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 		return $block_content;
 	}
 
-	$processor = new \WP_HTML_Tag_Processor( $block_content );
+	/*
+	 * Skip a leading `<style>` before looking for the block root — the same
+	 * guard `fx-path-routes.php:289` and `fx-shape-routes.php:291` use, via the
+	 * shared helper in `fx-attributes.php`.
+	 *
+	 * NOT optional and NOT defensive padding: `sgs/container` (a qualifying
+	 * block) prepends its own scoped `<style>` whenever the instance has any
+	 * native WP supports styling set. Without the offset, `next_tag()` lands on
+	 * that `<style>` element, `get_attribute('data-sgs-fx')` returns null, and
+	 * this filter returns the content untouched — so the field never paints,
+	 * while the p99 registry sniff (a raw regex over the whole string) still
+	 * finds the attribute and ships the JS and CSS for nothing.
+	 *
+	 * This exact bug has shipped on this project before, which is why the
+	 * helper exists at all. Caught here by a qc-council code-path trace before
+	 * deploy, not after.
+	 */
+	$offset = sgs_fx_root_offset( $block_content );
+	$head   = \substr( $block_content, 0, $offset );
+	$rest   = \substr( $block_content, $offset );
+
+	$processor = new \WP_HTML_Tag_Processor( $rest );
 	if ( ! $processor->next_tag() ) {
 		return $block_content;
 	}
@@ -170,8 +191,12 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 		);
 	}
 
+	// `$head` is re-prepended on EVERY return path that rebuilds the markup —
+	// the processor only ever saw `$rest`, so returning its output alone would
+	// silently drop the block's own leading <style> and with it every native
+	// supports declaration the style engine emitted.
 	if ( empty( $declarations ) ) {
-		return $processor->get_updated_html();
+		return $head . $processor->get_updated_html();
 	}
 
 	// A per-instance id scopes the rule to THIS block. Derived from the
@@ -183,7 +208,8 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	$processor->set_attribute( 'class', \trim( $existing . ' ' . $uid ) );
 
 	return \sprintf(
-		'<style>.%1$s{%2$s}</style>%3$s',
+		'%1$s<style>.%2$s{%3$s}</style>%4$s',
+		$head,
 		$uid,
 		\esc_html( \implode( ';', $declarations ) ),
 		$processor->get_updated_html()

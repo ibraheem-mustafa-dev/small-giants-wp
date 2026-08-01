@@ -175,7 +175,7 @@ function markParticipants( el ) {
 		if ( child.hasAttribute( EMITTER_ATTR ) ) {
 			return;
 		}
-		if ( ! paintsOwnBackground( child ) ) {
+		if ( ! isParticipant( child ) ) {
 			return;
 		}
 		child.setAttribute( PARTICIPANT_ATTR, '' );

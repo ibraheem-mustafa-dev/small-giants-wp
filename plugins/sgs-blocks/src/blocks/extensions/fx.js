@@ -122,6 +122,22 @@ const SHIPPED_EFFECTS = [
 	// is untouched. Selecting this effect from the picker therefore yields a
 	// real, configurable control that produces real motion.
 	'morph',
+	// `cursor-field` ADDED 2026-08-01 (FR-38-25). It meets this array's single
+	// condition — selecting it yields a real, configurable control that
+	// produces real motion — on all four legs, verified end to end rather than
+	// assumed: the runtime module exists (`shared/effects/fx-cursor-field.js`),
+	// the registry enqueues it and its stylesheet on the same conditional terms
+	// (`class-sgs-motion-registry.php` MODULES + EFFECT_STYLES), the render
+	// layer marks the emitter and emits per-instance overrides
+	// (`includes/fx-cursor-field.php`), and the panel below carries three real
+	// controls (field style / colour / size).
+	//
+	// ⚠ It was OMITTED here on first build, which made the whole feature
+	// unreachable from the editor while every other layer was correctly wired —
+	// caught by a qc-council code-path trace before deploy. This array is the
+	// on-switch: an effect fully built everywhere else is still dead code until
+	// its name appears in it.
+	'cursor-field',
 ];
 
 const FX_OPTION_LABELS = {
@@ -133,6 +149,7 @@ const FX_OPTION_LABELS = {
 	draw: __( 'Draw SVG lines', 'sgs-blocks' ),
 	'motion-path': __( 'Travel along a route', 'sgs-blocks' ),
 	morph: __( 'Morph between shapes', 'sgs-blocks' ),
+	'cursor-field': __( 'Cursor-follow background', 'sgs-blocks' ),
 };
 
 /**
