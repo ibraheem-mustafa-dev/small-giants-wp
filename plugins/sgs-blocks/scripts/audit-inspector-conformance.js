@@ -29,7 +29,15 @@
  *
  *   5. animation-no-reduced-motion — item 17 — for a roster block whose
  *      `surfaces.animation === true`, neither its `style.css` nor `view.js`
- *      contains the string `prefers-reduced-motion`.
+ *      contains the string `prefers-reduced-motion`, AND no framework-wide
+ *      reduced-motion gate was found covering it. The framework-wide gate
+ *      (theme/sgs-theme/assets/css/core-blocks-critical.css, targeting
+ *      `*, *::before, *::after`, enqueued unconditionally from functions.php)
+ *      is detected LIVE each run by reading those theme files — never
+ *      hardcoded as "it exists" — so if the gate is ever removed or its
+ *      enqueue becomes conditional, this rule goes back to flagging every
+ *      genuinely-ungated animating block. See Spec 35 Part I "Reduced-motion
+ *      gate" row.
  *
  *   6. dense-panel-candidate      — item 3  — SEVERITY: informational, coarse.
  *      An InspectorControls `PanelBody` with >6 descendant control-like JSX
@@ -63,6 +71,11 @@ const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
 const ROSTER_PATH = path.join( __dirname, 'consistency', 'roster.json' );
 const BASELINE_PATH = path.join( __dirname, 'inspector-conformance-baseline.json' );
 
+// ROOT = plugins/sgs-blocks; repo root is two levels up (plugins/sgs-blocks -> plugins -> repo root).
+const REPO_ROOT = path.join( ROOT, '..', '..' );
+const THEME_DIR = path.join( REPO_ROOT, 'theme', 'sgs-theme' );
+const THEME_FUNCTIONS_PATH = path.join( THEME_DIR, 'functions.php' );
+
 // ---------------------------------------------------------------------------
 // CONSTANTS
 // ---------------------------------------------------------------------------
@@ -92,6 +105,114 @@ function loadJson( p, fallback ) {
 	} catch ( e ) {
 		return fallback;
 	}
+}
+
+// ---------------------------------------------------------------------------
+// FRAMEWORK-WIDE REDUCED-MOTION GATE DETECTION (Rule 5 support)
+// ---------------------------------------------------------------------------
+//
+// A framework-wide `prefers-reduced-motion` rule already exists at
+// theme/sgs-theme/assets/css/core-blocks-critical.css, targeting
+// `*, *::before, *::after` with `!important`, enqueued unconditionally from
+// theme/sgs-theme/functions.php on `wp_enqueue_scripts`. Its own comment says
+// it "replaces piecemeal per-block reduced-motion rules" (Spec 35 Part I
+// "Reduced-motion gate" row). Rule 5 must not flag a block that genuinely
+// relies on that gate — but it must ALSO go back to flagging if the gate is
+// ever removed or its enqueue becomes conditional. So this is detected LIVE
+// by reading the actual theme files each run — never assumed true from a
+// cached/hardcoded flag.
+
+// Extracts the text of a brace-delimited block starting at the index of its
+// opening `{`, using brace-depth balancing (so it doesn't stop at the first
+// nested `}`). Returns null if the braces never balance (malformed source —
+// treat as "gate not found" rather than guess).
+function extractBalancedBraceBlock( text, openBraceIndex ) {
+	let depth = 0;
+	for ( let i = openBraceIndex; i < text.length; i++ ) {
+		if ( text[ i ] === '{' ) depth++;
+		else if ( text[ i ] === '}' ) {
+			depth--;
+			if ( depth === 0 ) return text.slice( openBraceIndex, i + 1 );
+		}
+	}
+	return null;
+}
+
+// Returns the CSS asset paths (relative to THEME_DIR, e.g.
+// "assets/css/core-blocks-critical.css") that theme/sgs-theme/functions.php
+// enqueues UNCONDITIONALLY — as a direct top-level statement inside a
+// function hooked to `wp_enqueue_scripts` via `add_action`, not nested inside
+// an `if`/`foreach`/etc. A call at nested brace-depth is treated as
+// conditional and excluded.
+function findUnconditionallyEnqueuedThemeCssPaths() {
+	const php = readIfExists( THEME_FUNCTIONS_PATH );
+	if ( ! php ) return [];
+
+	const hookRe = /add_action\(\s*'wp_enqueue_scripts'\s*,\s*__NAMESPACE__\s*\.\s*'\\?([A-Za-z0-9_]+)'/g;
+	const cssPaths = [];
+	let hookMatch;
+	while ( ( hookMatch = hookRe.exec( php ) ) !== null ) {
+		const funcName = hookMatch[ 1 ];
+		const fnDefRe = new RegExp( `function\\s+${ funcName }\\s*\\([^)]*\\)[^{]*\\{` );
+		const fnMatch = fnDefRe.exec( php );
+		if ( ! fnMatch ) continue;
+
+		const openBraceIndex = fnMatch.index + fnMatch[ 0 ].length - 1;
+		const rawBody = extractBalancedBraceBlock( php, openBraceIndex );
+		if ( ! rawBody ) continue;
+		// Strip the function's own wrapping braces so depth 0 means "a direct
+		// top-level statement in the function body" (extractBalancedBraceBlock
+		// includes the outer `{`/`}` in its return value, which would otherwise
+		// make every top-level call read as depth 1, not 0).
+		const body = rawBody.slice( 1, -1 );
+
+		const callRe = /wp_enqueue_style\s*\(/g;
+		let callMatch;
+		while ( ( callMatch = callRe.exec( body ) ) !== null ) {
+			const prefix = body.slice( 0, callMatch.index );
+			const depth = ( prefix.match( /\{/g ) || [] ).length - ( prefix.match( /\}/g ) || [] ).length;
+			if ( depth !== 0 ) continue; // nested inside if/foreach/etc — conditional, not unconditional.
+
+			const argsStart = callMatch.index + callMatch[ 0 ].length;
+			const argsEnd = body.indexOf( ');', argsStart );
+			const args = argsEnd === -1 ? body.slice( argsStart ) : body.slice( argsStart, argsEnd );
+			const pathMatch = /get_theme_file_uri\(\s*'([^']+\.css)'\s*\)/.exec( args );
+			if ( pathMatch ) cssPaths.push( pathMatch[ 1 ] );
+		}
+	}
+	return cssPaths;
+}
+
+// True if the given CSS source contains a `@media (prefers-reduced-motion:
+// reduce)` block that targets `*, *::before, *::after` and forces
+// `animation-duration`/`transition-duration` via `!important` — the
+// universal-gate shape, not a scoped per-block rule.
+function cssHasUniversalReducedMotionGate( cssText ) {
+	const mediaOpen = /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/.exec( cssText );
+	if ( ! mediaOpen ) return false;
+
+	const openBraceIndex = mediaOpen.index + mediaOpen[ 0 ].length - 1;
+	const block = extractBalancedBraceBlock( cssText, openBraceIndex );
+	if ( ! block ) return false;
+
+	const targetsUniversalSelectors = /\*\s*,\s*\*::before\s*,\s*\*::after/.test( block );
+	const forcesImportant = /(animation-duration|transition-duration)\s*:\s*[^;]+!important/.test( block );
+	return targetsUniversalSelectors && forcesImportant;
+}
+
+// Lazily computed + cached for the lifetime of one audit run (reading two
+// theme files once per invocation is enough; a fresh run re-reads them, so a
+// theme change is always picked up on the next run — nothing is assumed
+// across invocations).
+let _frameworkWideReducedMotionGateCache = null;
+function hasFrameworkWideReducedMotionGate() {
+	if ( _frameworkWideReducedMotionGateCache !== null ) return _frameworkWideReducedMotionGateCache;
+	const cssPaths = findUnconditionallyEnqueuedThemeCssPaths();
+	_frameworkWideReducedMotionGateCache = cssPaths.some( ( relPath ) => {
+		const cssText = readIfExists( path.join( THEME_DIR, relPath ) );
+		return !! cssText && cssHasUniversalReducedMotionGate( cssText );
+	} );
+	return _frameworkWideReducedMotionGateCache;
 }
 
 /** JSXOpeningElement -> its tag name string, or null for member expressions we don't care about. */
@@ -345,13 +466,13 @@ function analyseBlock( block, baseline, findings, unparseable ) {
 	if ( block.surfaces && block.surfaces.animation ) {
 		const styleCss = readIfExists( path.join( blockDir, 'style.css' ) );
 		const viewJs = readIfExists( path.join( blockDir, 'view.js' ) );
-		const hasGate = styleCss.includes( 'prefers-reduced-motion' ) || viewJs.includes( 'prefers-reduced-motion' );
-		if ( ! hasGate ) {
+		const hasOwnGate = styleCss.includes( 'prefers-reduced-motion' ) || viewJs.includes( 'prefers-reduced-motion' );
+		if ( ! hasOwnGate && ! hasFrameworkWideReducedMotionGate() ) {
 			pushFinding( findings, baseline, {
 				block: block.slug,
 				rule: 'animation-no-reduced-motion',
 				severity: 'warn',
-				detail: `${ dirName }/style.css and ${ dirName }/view.js — neither contains \`prefers-reduced-motion\` (WCAG 2.3.3 gate missing)`,
+				detail: `${ dirName }/style.css and ${ dirName }/view.js — neither contains \`prefers-reduced-motion\`, and no framework-wide reduced-motion gate was found unconditionally enqueued from theme/sgs-theme/functions.php (WCAG 2.3.3 gate missing)`,
 			} );
 		}
 	}
@@ -379,6 +500,7 @@ function buildMeta( results, findings, unparseable ) {
 		total_flagged: flagged.length,
 		total_exceptions: findings.length - flagged.length,
 		per_rule_totals: perRule,
+		framework_wide_reduced_motion_gate_detected: hasFrameworkWideReducedMotionGate(),
 	};
 }
 
@@ -386,6 +508,7 @@ function printHuman( meta, findings, unparseable ) {
 	process.stdout.write( '[audit-inspector-conformance] Spec 35 UNIT A — static inspector-conformance audit (WARN-ONLY)\n\n' );
 	process.stdout.write( `Roster: ${ meta.roster_count } blocks | scanned (has edit.js): ${ meta.blocks_scanned } | skipped (no edit.js): ${ meta.blocks_skipped_no_edit_js }\n` );
 	process.stdout.write( `Unparseable edit.js files: ${ meta.unparseable_count }\n` );
+	process.stdout.write( `Framework-wide reduced-motion gate detected (theme/sgs-theme functions.php + CSS): ${ meta.framework_wide_reduced_motion_gate_detected ? 'YES — rule 5 skips blocks that rely on it' : 'NO — rule 5 flags every animating block with no own gate' }\n` );
 	process.stdout.write( `Total FLAGGED findings: ${ meta.total_flagged } | total EXCEPTIONS suppressed: ${ meta.total_exceptions }\n\n` );
 
 	process.stdout.write( 'Per-rule totals (FLAGGED only):\n' );

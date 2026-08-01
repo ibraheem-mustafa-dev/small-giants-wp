@@ -64,19 +64,50 @@ D-range; do not delete.
 An `sgs/nav-menu` placed inside PAGE CONTENT has its open dropdown painted over by the sticky header
 and by the footer. Measured on canary 2091, five sample points, every one returning a rival element.
 
-Cause proven, not inferred: the theme's `.entry-content{position:relative;z-index:1}` creates a
-stacking context the block cannot escape. The header template part is `z-index:100` and the footer's
-positioned rows are `z-index:1` but LATER in document order, so both outrank anything nested inside
-`.entry-content`. Lifting every level the block owns (item / bar / block root — all three confirmed
-applying at `z-index:101`) does not help, because the cap sits above all of them.
+**⚠ CAUSE CORRECTED 2026-08-01 — the entry previously blamed "the theme's
+`.entry-content{position:relative;z-index:1}`". THAT SELECTOR DOES NOT EXIST** anywhere in
+`theme/sgs-theme/` (grepped the whole tree, zero hits). The same wrong cause is repeated in
+`decisions.md` and in a `nav-menu/render.php` comment — do not act on it.
+
+**The real mechanism is in the PLUGIN, not the theme.** `plugins/sgs-blocks/src/blocks/container/
+style.css:47-50` applies, unconditionally, to every `sgs/container`:
+`.sgs-container > *:not(.sgs-container__overlay){position:relative;z-index:1}`. It has been there
+since the block's first commit (`9d38e5b8`) and is LOAD-BEARING — it guarantees content paints above
+the container's own background layers (`__overlay`, `__video-bg`, `__svg-bg`), any of which an
+operator can switch on at any time.
+
+It reaches `.entry-content` because `theme/sgs-theme/templates/page.html` wraps the page body in
+`sgs/container[tagName=main]` with WP's `post-content` (which renders `<div class="entry-content">`)
+as a DIRECT child — and no band props are set on that container, so `$has_band_props` is false,
+`.sgs-container__inner` never renders, and `.entry-content` matches the `>` selector directly.
+The header is unaffected because `site-header/style.css:28-29` gives it `z-index:100` deliberately.
+
+Lifting every level the block owns (item / bar / block root at `z-index:101`) does not help, because
+the cap sits above all of them.
 
 **The normal HEADER placement is UNAFFECTED and verified correct** — all five points return the panel
 as topmost there, because the header itself outranks page content. This bites only the unusual
 placement.
 
 Not fixable from the block: raising `.entry-content` would put ALL page content above the sticky
-header. A real fix is theme-level (e.g. rendering the panel in the top layer), so it is parked rather
-than bodged. Evidence: `reports/visual-diff/nav-menu-2026-07-31.md`.
+header. Evidence: `reports/visual-diff/nav-menu-2026-07-31.md`.
+
+**Three options, assessed 2026-08-01 — NONE is a 1-2 line fix, so this stays parked:**
+1. Bump the in-block `:has()` z-index above 100 — REJECTED: bodges from the block, and promotes the
+   whole page-content region above the sticky header while a dropdown is open.
+2. **Portal the panel out via `position:fixed` / the CSS Popover API / top layer**, positioned from
+   `getBoundingClientRect()` — the architecturally correct fix (the Radix / Floating UI technique);
+   removes the panel from the stacking context so no z-index war is needed. **Recommended, but it
+   needs a design gate + re-verification against the 18-scenario header suite.**
+3. Accept as a documented limitation — header placement (the supported usage) is verified correct.
+
+**Do NOT "fix" `container/style.css:47-50`** — removing or narrowing it is a shared-mechanism change
+with site-wide blast radius (Rule 7 design gate), and it would break background-layer stacking on
+every container on both live sites.
+
+**Trigger:** a session that can take the option-2 design gate. Investigation was static-source only —
+the live re-check on canary 2091 was not possible (browser instance held by another agent), so the
+CURRENT paint has not been re-observed since 2026-07-31.
 
 ### P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR — canary fixture pages carry unopenable blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
