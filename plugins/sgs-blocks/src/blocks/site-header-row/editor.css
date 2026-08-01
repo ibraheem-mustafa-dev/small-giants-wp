@@ -6,11 +6,16 @@
  * on the frontend, but must be editable in the Site Editor).
  */
 
+/* D454 — mirrors the frontend lock: one line at every width, never a stack.
+   `style.css` and `editor.css` compile to independent bundles, so the frontend
+   fix does NOT reach the editor canvas; it has to be repeated here.
+   Gap matches block.json's default (was `clamp(0.5rem, 2vw, 1.5rem)` while
+   block.json said `16px` — the two surfaces disagreed). */
 .editor-styles-wrapper .sgs-site-header-row {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
-	gap: clamp( 0.5rem, 2vw, 1.5rem );
+	gap: 16px;
 }
 
 .editor-styles-wrapper .sgs-site-header-row > * {

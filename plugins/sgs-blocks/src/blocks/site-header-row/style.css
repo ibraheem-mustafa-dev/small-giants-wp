@@ -9,9 +9,12 @@
  * that make the cluster actually never overflow, plus the touch-target floor.
  *
  * `min-width:0` lets flex children shrink instead of forcing horizontal
- * overflow; `flex-shrink:0` keeps the logo legible. Together with the wrapper's
- * flex-wrap:wrap default, this fixes the sub-400px WCAG 1.4.10 header overflow
- * by construction, with no per-element hacks.
+ * overflow. Since D454 the row is locked to a single line
+ * (`flexWrap:'nowrap'`, block.json) and NEVER wraps or stacks; the sub-400px
+ * WCAG 1.4.10 guarantee now comes from everything yielding instead — the gap
+ * clamp shrinks first, then every child shrinks together (flexbox's own
+ * proportional shrink), each stopping at its own floor. No per-element hacks,
+ * and no breakpoint anywhere in that chain.
  */
 
 /* Let every flex child shrink to fit instead of forcing the row wider than the
@@ -21,12 +24,30 @@
 	min-width: 0;
 }
 
-/* The logo stays legible — never crushed below its natural size. */
+/* The logo yields WITH everything else, then stops at a floor.
+ *
+ * This was `flex-shrink:0` — the logo refused to shrink at any width. That was
+ * safe only while the row was allowed to wrap: once the row is locked to a
+ * single line (D454), an unshrinkable 240px logo (`--logo-width`, see
+ * responsive-logo/style.scss) plus a 44px burger plus a 44px cart cannot fit a
+ * 320px viewport, and the row would overflow horizontally — a WCAG 1.4.10
+ * failure, and the exact outcome the fit-cascade design rejected when it
+ * declined the "just delete the rule" fix.
+ *
+ * The block already scales correctly once permitted to: `.sgs-responsive-logo`
+ * carries `max-width:100%` and its `<img>` carries `width:100%;height:auto`, so
+ * removing the freeze is sufficient — no per-element sizing hack here.
+ *
+ * The floor is a component constant, not a theme override (the DEFAULT-vs-
+ * HARDCODE test): it overrides nothing in theme.json and is overridable per
+ * instance via the custom property. `min()` guarantees the floor can never
+ * exceed the row itself, so a very narrow row stacks-free rather than
+ * overflowing on the floor's account. `rem` (not px/cqi) so it tracks browser
+ * text zoom — WCAG 1.4.4.
+ */
 .sgs-site-header-row .wp-block-sgs-responsive-logo,
-.sgs-site-header-row .wp-block-site-logo,
-.sgs-site-header-row .wp-block-sgs-responsive-logo img,
-.sgs-site-header-row .wp-block-site-logo img {
-	flex-shrink: 0;
+.sgs-site-header-row .wp-block-site-logo {
+	min-width: min(100%, var(--sgs-header-logo-min, 7.5rem));
 }
 
 /* Interactive controls keep a 44px minimum touch target (WCAG 2.5.8).
@@ -62,19 +83,45 @@
  * It is reused here because it is the SAME numeric bound the wrapper's own
  * FR-S9-6 mechanism already uses for the @container queries scoped to THIS
  * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
- * viewport @media breakpoint for its own sake. The number matches the
- * viewport mobile tier by design (one SGS "mobile" definition, applied on
- * two independent axes — container width and viewport width — exactly as
- * FR-S9-6 already does for this element); this rule itself fires purely
- * off the row's own measured inline size, never the viewport.
+ * viewport @media breakpoint for its own sake.
+ *
+ * ⛔ The collapse-to-stack HALF OF THIS RULE WAS DELETED (D454). Do not
+ * reintroduce it. What was here:
+ *
+ *     @container (max-width: 767px) {
+ *       .sgs-site-header-row > *,
+ *       .sgs-site-header-row > .sgs-container__inner > * { flex-basis: 100%; }
+ *     }
+ *
+ * It gave every child the full row width, and the wrapper's flex-wrap:wrap
+ * then put each on its own line. It was an AUTHORED stack, never a response
+ * to running out of room: measured live on the canary (D420), a forced row
+ * width of 770px rendered one line 68px tall, and 766px rendered three layers
+ * 229px tall — while at 766px the children needed 733px and had 766px
+ * available. They fitted with 33px to spare. Because the query measures the
+ * ROW's own inline size and never the viewport, it also stacked any narrow
+ * header row on a desktop monitor.
+ *
+ * Replaced by the fit cascade: the row is locked to one line
+ * (`flexWrap:'nowrap'`, block.json) and yields instead — the gap clamp shrinks
+ * first, then every child shrinks together via flexbox's own proportional
+ * shrink (enabled by the `min-width:0` above), stopping at the logo floor
+ * above and at each interactive child's own 44px floor. FR-37-35's
+ * container-query REQUIREMENT is unchanged and still honoured — a row still
+ * reflows on its own width, not the viewport's
+ * (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT); only its chosen reflow BEHAVIOUR
+ * changed. `container-type` below therefore STAYS: the wrapper's own per-tier
+ * rules and the gap clamp's `cqi` term both depend on it.
  */
 .sgs-site-header-row {
 	container-type: inline-size;
 }
 
-@container (max-width: 767px) {
-	.sgs-site-header-row > *,
-	.sgs-site-header-row > .sgs-container__inner > * {
-		flex-basis: 100%;
-	}
+/* A long word or unbroken URL sets an implicit `min-width:auto` floor that
+   shrinking cannot pass, which is the commonest cause of a nowrap row
+   overflowing anyway. The `min-width:0` above removes the floor; this lets the
+   offending string itself break rather than push the row wider. */
+.sgs-site-header-row > *,
+.sgs-site-header-row > .sgs-container__inner > * {
+	overflow-wrap: break-word;
 }

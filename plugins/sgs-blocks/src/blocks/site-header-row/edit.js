@@ -65,7 +65,7 @@ const HEADER_PROMOTED_SLUGS = [
 // N per device that stacks to 1 on mobile (same engine as the footer columns
 // row). Every row chooses independently — its own block instance, own attrs.
 const LAYOUT_OPTIONS = [
-	{ label: __( 'Cluster (wraps)', 'sgs-blocks' ), value: 'flex' },
+	{ label: __( 'Cluster (one line)', 'sgs-blocks' ), value: 'flex' },
 	{ label: __( 'Columns (grid)', 'sgs-blocks' ), value: 'grid' },
 ];
 
@@ -171,9 +171,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		  }
 		: {
 				display: 'flex',
-				flexWrap: 'wrap',
+				// D454 — mirrors the frontend lock. The row never wraps or
+				// stacks; it yields by shrinking its children instead.
+				flexWrap: 'nowrap',
 				alignItems: 'center',
-				gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
+				// Matches block.json's gap default. This previously fell back to
+				// `clamp(0.5rem, 2vw, 1.5rem)` while block.json said `16px`, so
+				// the editor preview and the front end disagreed by up to 8px.
+				gap: ( gap && gap.desktop ) || '16px',
 				justifyContent: justifyContent || 'flex-start',
 		  };
 
@@ -218,7 +223,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ LAYOUT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { layout: val } ) }
 						help={ __(
-							'Cluster: elements sit in a row and wrap when cramped. Columns: an equal grid of N columns that stacks to 1 on mobile.',
+							'Cluster: elements stay on one line at every screen size, shrinking to fit rather than stacking. Columns: an equal grid of N columns that stacks to 1 on mobile.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
@@ -269,7 +274,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								setAttributes( { justifyContent: val } )
 							}
 							help={ __(
-								'How elements spread across the row. Elements always wrap to a new line rather than overflowing.',
+								'How elements spread across the row. They stay on one line at every screen size and shrink to fit, so nothing ever wraps or runs off the edge.',
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
