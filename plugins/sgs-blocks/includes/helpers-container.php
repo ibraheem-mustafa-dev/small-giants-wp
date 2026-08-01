@@ -130,3 +130,139 @@ if ( ! function_exists( 'sgs_container_gap_value' ) ) {
 		return $sanitised;
 	}
 }
+
+if ( ! function_exists( 'sgs_container_tier_gap' ) ) {
+	/**
+	 * Resolve the effective gap for one device tier, under EITHER responsive model.
+	 *
+	 * Needed because the intrinsic-columns track list (below) must subtract the
+	 * real gap from the available width. Reading `$attributes['gap']` directly is
+	 * not enough: under the object model the wrapper deliberately blanks the flat
+	 * `$gap` local (class-sgs-container-wrapper.php ~line 160) because
+	 * sgs_emit_responsive_css() owns that property — so a calc built from the
+	 * local would silently use 0 and let one extra column squeeze in, which is the
+	 * documented failure mode of this pattern.
+	 *
+	 * Tiers inherit upward (mobile → tablet → desktop), matching how the rest of
+	 * the responsive system resolves an unset tier.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $tier       'desktop' | 'tablet' | 'mobile'.
+	 * @return string A sanitised CSS length, or '0px' when nothing is set.
+	 */
+	function sgs_container_tier_gap( array $attributes, string $tier ): string {
+		$chain = array(
+			'desktop' => array( 'desktop' ),
+			'tablet'  => array( 'tablet', 'desktop' ),
+			'mobile'  => array( 'mobile', 'tablet', 'desktop' ),
+		);
+		if ( ! isset( $chain[ $tier ] ) ) {
+			return '0px';
+		}
+
+		$raw = $attributes['gap'] ?? '';
+		if ( is_array( $raw ) ) {
+			$by_tier = $raw;
+		} else {
+			$by_tier = array(
+				'desktop' => $raw,
+				'tablet'  => $attributes['gapTablet'] ?? '',
+				'mobile'  => $attributes['gapMobile'] ?? '',
+			);
+		}
+
+		foreach ( $chain[ $tier ] as $key ) {
+			if ( isset( $by_tier[ $key ] ) && '' !== trim( (string) $by_tier[ $key ] ) ) {
+				$value = sgs_container_gap_value( $by_tier[ $key ] );
+				if ( '' !== $value ) {
+					return $value;
+				}
+			}
+		}
+		return '0px';
+	}
+}
+
+if ( ! function_exists( 'sgs_intrinsic_columns_track' ) ) {
+	/**
+	 * Build a track list where the operator's column count is a CEILING, not a
+	 * fixed number — so columns fall away when content genuinely stops fitting
+	 * rather than at a hard viewport breakpoint.
+	 *
+	 * Emits:
+	 *   repeat(auto-fit, minmax(min(100%, max(BASIS, MAXTRACK)), 1fr))
+	 *
+	 * Read outward-in:
+	 *  - MAXTRACK = what one column WOULD be at exactly N columns, gaps
+	 *    subtracted. Wide viewports: this exceeds BASIS, becomes the track floor,
+	 *    and auto-fit can therefore never produce MORE than N tracks. The
+	 *    `(N-1) * gap` term is not optional — omit it and the bound is
+	 *    systematically too generous and one extra column squeezes in.
+	 *  - BASIS = the narrowest a column may be before one has to go. Narrow
+	 *    viewports: MAXTRACK falls below BASIS, BASIS takes over, and the count
+	 *    degrades CONTINUOUSLY with available width. No breakpoint involved.
+	 *  - min(100%, …) = the overflow guard. Without it a track cannot shrink
+	 *    below BASIS and the row overflows horizontally at ~320px — a WCAG 1.4.10
+	 *    failure. With it the row reaches one column naturally instead.
+	 *
+	 * BASIS is a `rem` custom property, never `cqi`/`vw`: container and viewport
+	 * units do not respond to browser text zoom, so a unit-only basis can fail
+	 * WCAG 1.4.4. Override per instance or per theme via `--sgs-col-basis`.
+	 *
+	 * `auto-fit` (not `auto-fill`) is deliberate. With the MAXTRACK bound above,
+	 * more tracks than N is impossible, so the two keywords behave identically
+	 * whenever the child count equals N. They differ only when an operator sets
+	 * N=4 but adds 3 children: auto-fill reserves a 4th empty track and leaves a
+	 * quarter of the row blank; auto-fit collapses it and the three balance.
+	 *
+	 * @param int    $count     Operator's column count for this tier (the ceiling).
+	 * @param string $gap_value Sanitised CSS gap length for this tier.
+	 * @return string A `grid-template-columns` value, or '' when count is invalid.
+	 */
+	function sgs_intrinsic_columns_track( int $count, string $gap_value ): string {
+		$count = absint( $count );
+		if ( $count < 1 ) {
+			return '';
+		}
+		// One column is one column — there is nothing to degrade toward, and the
+		// calc would divide the row by 1 and pin the track to the full width,
+		// defeating the min(100%) guard.
+		if ( 1 === $count ) {
+			return 'repeat(1,1fr)';
+		}
+
+		$gap   = '' !== trim( $gap_value ) ? $gap_value : '0px';
+		$basis = 'var(--sgs-col-basis,16rem)';
+		$max   = 'calc((100% - (' . ( $count - 1 ) . ' * ' . $gap . ')) / ' . $count . ')';
+
+		return 'repeat(auto-fit,minmax(min(100%,max(' . $basis . ',' . $max . ')),1fr))';
+	}
+}
+
+if ( ! function_exists( 'sgs_block_wants_intrinsic_columns' ) ) {
+	/**
+	 * Does this block type opt in to content-aware column collapse?
+	 *
+	 * Declarative, read from `supports.sgs.intrinsicColumns` in the block-type
+	 * registry — the same mechanism as `supports.sgs.headerEssential`. R-31-1
+	 * forbids a hardcoded block-name list here, and this is deliberately opt-in
+	 * rather than universal: flipping every grid container to intrinsic sizing at
+	 * once would change the rendered column count of card grids, feature grids
+	 * and every cloned layout on every site, none of which has been measured.
+	 * A block opts in once its own behaviour has been verified.
+	 *
+	 * @param mixed $block WP_Block (or anything with a ->name).
+	 * @return bool
+	 */
+	function sgs_block_wants_intrinsic_columns( $block ): bool {
+		$name = ( is_object( $block ) && isset( $block->name ) ) ? (string) $block->name : '';
+		if ( '' === $name || ! class_exists( 'WP_Block_Type_Registry' ) ) {
+			return false;
+		}
+		$type = WP_Block_Type_Registry::get_instance()->get_registered( $name );
+		if ( ! $type || ! isset( $type->supports['sgs']['intrinsicColumns'] ) ) {
+			return false;
+		}
+		return (bool) $type->supports['sgs']['intrinsicColumns'];
+	}
+}

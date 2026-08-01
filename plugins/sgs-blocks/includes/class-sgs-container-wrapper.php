@@ -137,6 +137,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// so flipping the flag never breaks an un-migrated instance's columns.
 			$object_grid = $object_model && is_array( $attributes['gridTemplateColumns'] ?? null );
 
+			// D455 — content-aware column collapse, declared per block type via
+			// supports.sgs.intrinsicColumns. Resolved ONCE here, unconditionally,
+			// because it is read from two places that sit in different conditional
+			// branches (the base track list and the per-tier count fallback); a
+			// definition inside either branch would be undefined in the other.
+			$intrinsic_columns = sgs_block_wants_intrinsic_columns( $block );
+
 			// ----------------------------------------------------------------
 			// Extract attributes (mirrors container/render.php exactly).
 			// ----------------------------------------------------------------
@@ -595,9 +602,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gd[] = 'display:grid';
 					// Base column template — deferred to the uid stylesheet when
 					// responsive template tiers exist (inline beats @media otherwise).
+					// D455 — a block may opt in (supports.sgs.intrinsicColumns) to
+					// having its column count act as a CEILING that degrades with
+					// available width, instead of a fixed count that only changes at
+					// a viewport breakpoint. Opt-in, never universal: flipping every
+					// grid container at once would change the rendered column count
+					// of card grids, feature grids and every cloned layout on every
+					// site. An explicit gridTemplateColumns always wins — an operator
+					// who authored a literal track list meant it.
+					// $intrinsic_columns is resolved once near the top of render().
 					$gtc_base = '' !== trim( (string) $grid_template )
 						? sgs_sanitize_grid_template( $grid_template )
-						: 'repeat(' . absint( $columns ) . ',1fr)';
+						: ( $intrinsic_columns
+							? sgs_intrinsic_columns_track( absint( $columns ), sgs_container_tier_gap( $attributes, 'desktop' ) )
+							: 'repeat(' . absint( $columns ) . ',1fr)' );
 					// Object model owns grid-template-columns via sgs_emit_responsive_css();
 					// suppress the legacy columns/base fallback under $object_model so the
 					// two don't both emit (the columns default would win as repeat(2,1fr)).
@@ -1428,11 +1446,26 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// tablet (max-width:1023px) is emitted BEFORE mobile (max-width:767px),
 					// so at =<767px both match and the later mobile rule wins on source order.
 					if ( 'grid' === $layout && ! $object_grid && '' === trim( (string) $grid_template ) ) {
+						// D455 — under intrinsicColumns each tier's count becomes that
+						// tier's CEILING rather than a fixed number, so the collapse
+						// between tiers is continuous and content-aware instead of a
+						// single-pixel cliff. Measured on the live canary before this
+						// change: all three footer rows dropped 3 tracks -> 1 between
+						// viewport 768 and 767 while their content needed only 496px
+						// of the 767px available (31% spare). A @media rule cannot read
+						// content size, so that collapse was structurally incapable of
+						// ever being organic.
 						if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
-							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:repeat(' . absint( $columns_tablet ) . ',1fr)}}';
+							$tablet_track     = $intrinsic_columns
+								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ) )
+								: 'repeat(' . absint( $columns_tablet ) . ',1fr)';
+							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . $tablet_track . '}}';
 						}
 						if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
-							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:repeat(' . absint( $columns_mobile ) . ',1fr)}}';
+							$mobile_track     = $intrinsic_columns
+								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ) )
+								: 'repeat(' . absint( $columns_mobile ) . ',1fr)';
+							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . $mobile_track . '}}';
 						}
 					}
 

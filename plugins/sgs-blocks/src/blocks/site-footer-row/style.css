@@ -65,14 +65,43 @@
  * two independent axes — container width and viewport width — exactly as
  * FR-S9-6 already does for this element); this rule itself fires purely
  * off the row's own measured inline size, never the viewport.
+ *
+ * ⛔ The collapse-to-stack half of this rule WAS DELETED (D455). Do not
+ * reintroduce it. What was here:
+ *
+ *     @container (max-width: 767px) {
+ *       .sgs-site-footer-row > *,
+ *       .sgs-site-footer-row > .sgs-container__inner > * { flex-basis: 100%; }
+ *     }
+ *
+ * It forced every flex child to a full-width line at a fixed 767px, whether or
+ * not the content had run out of room. Measured live on the canary 2026-08-01:
+ * the rule MATCHED on all three rows (computed `flex-basis: 100%` on their
+ * children below 767px) but was visually INERT, because all three rows render
+ * `display:grid` and a grid item ignores flex-basis. Its column collapse came
+ * from the per-tier count instead — a hard @media cliff, now content-aware via
+ * `supports.sgs.intrinsicColumns` (block.json). Deleting this rule closes the
+ * LATENT half: the moment an operator switched a row to Cluster it would have
+ * hard-stacked at 767px with room to spare, exactly as the header did.
+ *
+ * Replaced with an intrinsic basis. Flex properties do not apply to grid items,
+ * so this is inert-by-construction on the grid rows — the same property the
+ * deleted rule relied on, used the other way round.
  */
 .sgs-site-footer-row {
 	container-type: inline-size;
 }
 
-@container (max-width: 767px) {
-	.sgs-site-footer-row > *,
-	.sgs-site-footer-row > .sgs-container__inner > * {
-		flex-basis: 100%;
-	}
+/* Cluster (flex) rows: children hold a comfortable basis and wrap only when
+   that basis genuinely stops fitting — a continuous response to available
+   width, not a pixel cliff. `min(100%, …)` is the overflow guard: without it a
+   child cannot shrink below the basis and the row overflows at ~320px (WCAG
+   1.4.10). `rem`, never cqi/vw, so the basis tracks browser text zoom (1.4.4).
+   Shares --sgs-col-basis with the grid path so one override moves both.
+   Known trade-off, accepted: with flex-grow a lone item on a wrapped last row
+   stretches to fill it. Grid's auto-fit has no equivalent problem, which is why
+   the columns row stays on grid. */
+.sgs-site-footer-row > *,
+.sgs-site-footer-row > .sgs-container__inner > * {
+	flex: 1 1 min(100%, var(--sgs-col-basis, 16rem));
 }

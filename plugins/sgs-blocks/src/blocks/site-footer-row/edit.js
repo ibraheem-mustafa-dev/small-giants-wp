@@ -88,9 +88,18 @@ const ROW_LABELS = {
 
 // Columns are an operator-set COUNT per device (Spec 37 §3.3, Bean-locked), NOT
 // a CSS grid-template ratio string. These map 1:1 onto the shared wrapper's flat
-// integer attrs (class-sgs-container-wrapper.php:149-154), which render
-// repeat(N,1fr) as scoped per-tier rules at the grid selector and stack to 1 on
-// mobile. (Until 2026-07-23 the tiers rode on `sgs-cols-*` classes instead —
+// integer attrs (class-sgs-container-wrapper.php:149-154), rendered as scoped
+// per-tier rules at the grid selector.
+//
+// D455: for THIS block the count is a CEILING, not a fixed number. block.json
+// declares `supports.sgs.intrinsicColumns`, so the wrapper emits a bounded
+// auto-fit track list per tier instead of `repeat(N,1fr)` — fewer columns are
+// used automatically once content stops fitting, continuously, rather than at a
+// pixel cliff. Measured live before the change: all three rows dropped 3 tracks
+// to 1 between viewport 768px and 767px while content needed only 496px of the
+// 767px available. Hence the inspector says "Maximum columns", not "Columns" —
+// a control that promised an exact count would now be lying.
+// (Until 2026-07-23 the tiers rode on `sgs-cols-*` classes instead —
 // removed because they addressed the wrapper while the grid had moved to
 // `.sgs-container__inner`, so mobile never stacked. FR-37-11.)
 // The ResponsiveOverride device switcher wants a {desktop,tablet,mobile} object,
@@ -237,7 +246,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					{ isGrid && (
 						<ResponsiveOverride
-							label={ __( 'Columns', 'sgs-blocks' ) }
+							label={ __( 'Maximum columns', 'sgs-blocks' ) }
 							value={ countValue }
 							onChange={ onCountChange }
 						>
@@ -263,7 +272,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										min={ 1 }
 										max={ 6 }
 										help={ __(
-											'How many columns at this device. They stack to 1 on mobile automatically — leave a device blank to inherit the one above.',
+											'The MOST columns to show at this device — fewer are used automatically when there is not enough room, right down to a single column on a narrow phone. Leave a device blank to inherit the one above.',
 											'sgs-blocks'
 										) }
 										__nextHasNoMarginBottom

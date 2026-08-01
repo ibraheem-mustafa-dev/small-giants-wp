@@ -36,7 +36,9 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"containerKind": "layout"
+			"containerKind": "layout",
+			"intrinsicColumns": true,
+			"_intrinsicColumnsComment": "D455 — the column count becomes a CEILING that degrades with available width, instead of a fixed count that only changes at a viewport breakpoint. Measured live before this change: all three footer rows dropped 3 tracks to 1 between viewport 768px and 767px, while their content needed just 496px of the 767px available. A @media rule cannot read content size, so that collapse could never be organic. Opt-in per block type, read by sgs_block_wants_intrinsic_columns()."
 		}
 	},
 	"attributes": {
