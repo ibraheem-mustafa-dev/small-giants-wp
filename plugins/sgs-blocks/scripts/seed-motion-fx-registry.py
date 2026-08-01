@@ -24,20 +24,29 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
    css_layer='OUTER'|NULL and css_element='wrapper'|'behaviour'|'animation'). The fx:*
    attrs (fx, fxTrigger, fxStart, fxEnd, fxScrub, fxStagger, fxDuration, fxEase — the
    §11.3 block-attr mirror of the §11.2 grammar) are mapped to fx:effect/trigger/start/
-   end/scrub/stagger/duration/ease respectively.
+   end/scrub/stagger/duration/ease respectively — via FX_ATTR_CSS_PROPERTY below.
 
-   HONEST GAP (flagged, not guessed around): at the time of this build NO block.json
-   declares any of these 8 attr names — Wave A's block-level fx panel has not landed
-   yet (it is a separate, not-yet-built work item; this seeder only owns the DB). A
-   `block_attributes` row only exists once /sgs-update has extracted it from a real
-   block.json, so there is currently nothing to attach css_property to. This step is
-   therefore a documented NO-OP today (reports [skip] for all 8 attr names, proven
-   idempotent below) that self-activates the moment a block declares them — EXCEPT for
-   one caveat also flagged in the final report: a bare UPDATE on block_attributes.
-   css_property is NOT reseed-durable (STOP-24 / check_css_property_reseed.py Check A) —
-   the durable channel is ATTR_CLASSIFICATION_OVERRIDES inside sgs-update-v2.py, which
-   this task does not own (out of scope — sgs-update-v2.py is core shared infrastructure,
-   not one of this task's four owned files). Recorded as residual follow-up work.
+   OWNERSHIP MOVED 2026-08-01 (D432 integration): this seeder no longer WRITES
+   block_attributes.css_property for fx:* attrs. It used to (a bare SQLite UPDATE run
+   only at `npm run build` time), and that write was NOT reseed-durable (STOP-24 /
+   check_css_property_reseed.py Check B) — the next `/sgs-update` had no idea the
+   fx:* markers existed, so any /sgs-update run that happened to touch the same rows
+   (e.g. creating them fresh because a block newly declared an fx:* attr) wiped them,
+   which is exactly what happened in D432 (2026-07-31): seeding an unrelated
+   nav-menu box_family fix required a full /sgs-update, which correctly INSERTed new
+   block_attributes rows for sgs/image-sequence's fxStart/fxEnd/fxScrub + 4 blocks'
+   dragMomentum (all real block.json-declared attrs) — then the NEXT build's seeder
+   run set css_property on those new rows via a channel the reseed gate couldn't see,
+   breaking the build for two co-active tracks at once.
+   FX_ATTR_CSS_PROPERTY (the map itself) stays HERE — this is its one canonical
+   source (R-22-1: sgs-update-v2.py imports it via importlib, never a hand-copied
+   duplicate) — but the actual DB write now happens inside sgs-update-v2.py's
+   `_apply_attr_classification_overrides` (layer 2.5), one step earlier in the SAME
+   `/sgs-update` run that creates the fx:* block_attributes rows in the first place,
+   so the marker can never trail behind by even one run. `_seed_fx_attr_namespace`
+   below is now VERIFY-ONLY: it reports [ok]/[MISMATCH]/[skip] against the DB but
+   never issues an UPDATE — a genuine single-writer guarantee, not just a documented
+   intention.
 
 3. `block_capabilities` fx-scrub/fx-draggable/fx-flip/fx-svg — EXPLICITLY NOT this
    seeder's job. §6 item 3 states these are "seeded from supports.sgs.fx.* declarations
@@ -737,12 +746,22 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
 
 
 def _seed_fx_attr_namespace(cur: sqlite3.Cursor) -> int:
-    """§6.2 / §11.3 — mirror the anim:* namespace onto any block_attributes row
-    already declaring an fx:* attr name. Reports [skip] (not a failure) for every
-    attr name with zero matching rows — see the module docstring's "HONEST GAP"
-    section: no block.json declares these attrs yet, so this is a documented,
-    proven-idempotent no-op until Wave A's block-level fx panel lands them."""
-    changed = 0
+    """§6.2 / §11.3 — VERIFY (never write) that every block_attributes row
+    declaring an fx:* attr name carries the correct css_property marker.
+
+    OWNERSHIP MOVED 2026-08-01 (D432): the actual write now happens inside
+    sgs-update-v2.py's `_apply_attr_classification_overrides` (layer 2.5),
+    which runs earlier in the SAME `/sgs-update` pipeline invocation that
+    also seeds this table — see this module's own docstring item 2 for the
+    full incident history. This function is a read-only cross-check: if
+    `/sgs-update` has run since the attr was declared, every row already
+    matches and this reports [ok]; a [MISMATCH] means `/sgs-update` has not
+    been run since the block.json change (a real, actionable staleness
+    signal — this is now the ONLY legitimate way for these rows to disagree,
+    since there is exactly one writer). Reports [skip] for any fx:* name with
+    zero matching block_attributes rows — no block declares it yet.
+    """
+    mismatches = 0
     for attr_name, css_property in FX_ATTR_CSS_PROPERTY.items():
         rows = cur.execute(
             "SELECT block_slug, css_property FROM block_attributes WHERE attr_name = ?",
@@ -755,16 +774,13 @@ def _seed_fx_attr_namespace(cur: sqlite3.Cursor) -> int:
             if current_css_property == css_property:
                 print(f"  [ok]   fx:* {block_slug}.{attr_name}: already {css_property}")
                 continue
-            cur.execute(
-                "UPDATE block_attributes SET css_property = ? WHERE block_slug = ? AND attr_name = ?",
-                (css_property, block_slug, attr_name),
-            )
-            changed += 1
+            mismatches += 1
             print(
-                f"  [set]  fx:* {block_slug}.{attr_name}: {current_css_property!r} -> {css_property!r} "
-                "(NOTE: this write is NOT reseed-durable — see module docstring item 2 gap)"
+                f"  [MISMATCH] fx:* {block_slug}.{attr_name}: DB has {current_css_property!r}, "
+                f"expected {css_property!r} — run sgs-update-v2.py (Stage 1) to correct it "
+                "(this function no longer writes; see module docstring item 2)."
             )
-    return changed
+    return mismatches
 
 
 def _reconcile_animation_tokens(cur: sqlite3.Cursor) -> int:
@@ -843,8 +859,13 @@ def main() -> int:
     _ensure_fx_effects_table(cur)
     changed += _seed_fx_effects(cur)
 
-    print("== 2. block_attributes fx:* namespace (§6.2 / §11.3) ==")
-    changed += _seed_fx_attr_namespace(cur)
+    print("== 2. block_attributes fx:* namespace (§6.2 / §11.3) — VERIFY ONLY, see D432 ==")
+    # Never writes (ownership moved to sgs-update-v2.py layer 2.5, D432). A
+    # non-zero mismatch count here means /sgs-update needs a run, NOT that
+    # this seeder needs to fix it — deliberately excluded from `changed` so
+    # this script's own "done: N row(s) changed" line stays true to what IT
+    # wrote, not what it merely observed.
+    fx_mismatches = _seed_fx_attr_namespace(cur)
 
     print("== 5. animation_tokens reconciliation (§6 item 5) ==")
     changed += _reconcile_animation_tokens(cur)
@@ -852,6 +873,13 @@ def main() -> int:
     con.commit()
     con.close()
     print(f"[seed-motion-fx-registry] done: {changed} row(s) changed.")
+    if fx_mismatches:
+        print(
+            f"[seed-motion-fx-registry] NOTE: {fx_mismatches} fx:* block_attributes "
+            "row(s) do not yet match FX_ATTR_CSS_PROPERTY — run "
+            "sgs-update-v2.py (Stage 1) to correct them; this script no longer "
+            "writes that column itself."
+        )
     return 0
 
 

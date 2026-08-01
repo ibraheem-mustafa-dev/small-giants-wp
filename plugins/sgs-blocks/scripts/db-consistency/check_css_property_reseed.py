@@ -93,16 +93,50 @@ if not hasattr(_seeder_mod, "_load_css_property_classifications"):
     )
 _load_css_property_classifications = _seeder_mod._load_css_property_classifications
 
+# Third reseed-durable channel — the fx:* namespace (D432 integration,
+# 2026-08-01). `_collect_fx_attr_namespace_overrides` is layer 2.5 of
+# `_apply_attr_classification_overrides` in sgs-update-v2.py: it derives
+# {(slug, attr): {"css_property": "fx:..."}} for every EXISTING
+# block_attributes row whose attr_name is in FX_ATTR_CSS_PROPERTY
+# (seed-motion-fx-registry.py). Imported the same R-22-1 way as the other two
+# channels — never a hand-copied duplicate that could drift from the real
+# function. Without this, Check B below would flag every fx:* row as "rogue"
+# the moment the 7 hand-authored ATTR_CLASSIFICATION_OVERRIDES entries for
+# them were removed (they are redundant now that this is a native channel).
+if not hasattr(_seeder_mod, "_collect_fx_attr_namespace_overrides"):
+    raise ImportError(
+        "[check_css_property_reseed] sgs-update-v2.py has no "
+        "_collect_fx_attr_namespace_overrides symbol — cannot verify the fx:* "
+        "namespace channel (R-22-1)."
+    )
+_collect_fx_attr_namespace_overrides = _seeder_mod._collect_fx_attr_namespace_overrides
 
-def _legitimate_sources() -> dict[tuple[str, str], dict[str, object]]:
-    """Return {(block_slug, attr): fields} for EVERY (slug, attr) declared in either
-    reseed-durable channel — the derived layer (base) merged with the override layer
-    (wins on conflict), exactly mirroring `_apply_attr_classification_overrides`'s own
-    merge order in sgs-update-v2.py. Used by Check B: a DB row is "rogue" only if it
-    is NOT explainable by this combined source, i.e. by neither channel."""
+# The raw attr_name -> css_property map itself (seed-motion-fx-registry.py), for
+# Check A2's VALUE-correctness pass — Check B below only proves a (slug, attr)
+# pair is EXPLAINABLE by a legitimate channel, not that its stored value is the
+# one that channel actually declares. Loaded via the same importlib mechanism
+# `_load_fx_attr_css_property_map` already uses in sgs-update-v2.py.
+_load_fx_attr_css_property_map = _seeder_mod._load_fx_attr_css_property_map
+
+
+def _legitimate_sources(conn: sqlite3.Connection) -> dict[tuple[str, str], dict[str, object]]:
+    """Return {(block_slug, attr): fields} for EVERY (slug, attr) declared in any of
+    the THREE reseed-durable channels — the derived layer (base), the fx:* namespace
+    (DB-driven), and the override layer (wins on conflict) — exactly mirroring
+    `_apply_attr_classification_overrides`'s own merge order in sgs-update-v2.py.
+    Used by Check B: a DB row is "rogue" only if it is NOT explainable by any of the
+    three channels.
+
+    Takes the live connection (added 2026-08-01, D432) because the fx:* channel is
+    DB-driven — it can only be computed by querying which block_attributes rows
+    already declare an fx:* attr_name, unlike the other two channels which are pure
+    file reads.
+    """
     combined: dict[tuple[str, str], dict[str, object]] = {
         k: dict(v) for k, v in _load_css_property_classifications().items()
     }
+    for key, fields in _collect_fx_attr_namespace_overrides(conn.cursor()).items():
+        combined.setdefault(key, {}).update(fields)
     for key, fields in ATTR_CLASSIFICATION_OVERRIDES.items():
         combined.setdefault(key, {}).update(fields)
     return combined
@@ -178,9 +212,39 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                 key=css_property_reseed_key(slug, attr, "mismatch"),
             ))
 
-    # B. no rogue non-NULL css_property outside EITHER reseed-durable channel (derived
-    # layer OR override layer — 2026-07-21 two-layer architecture).
-    legitimate = _legitimate_sources()
+    # A2. fx:* namespace VALUE-correctness (D432 integration, 2026-08-01). Check A
+    # above only verifies entries hand-declared in ATTR_CLASSIFICATION_OVERRIDES; the
+    # fx:* namespace is DB-driven (computed from which block_attributes rows already
+    # declare an fx:* attr_name), so it needs its own pass — otherwise a bare-UPDATE
+    # value corruption on an fx:* row (STOP-24's exact failure mode) would be
+    # "explained" by Check B's presence-only rogue test and pass silently forever.
+    fx_map = _load_fx_attr_css_property_map()
+    if fx_map:
+        placeholders = ",".join("?" for _ in fx_map)
+        fx_rows = conn.execute(
+            "SELECT block_slug, attr_name, css_property FROM block_attributes "
+            f"WHERE attr_name IN ({placeholders})",
+            tuple(fx_map),
+        ).fetchall()
+        for slug, attr, db_prop in fx_rows:
+            exp_prop = fx_map[attr]
+            if db_prop != exp_prop:
+                violations.append(Violation(
+                    check="css_property_reseed",
+                    block=slug,
+                    detail=(
+                        f"{slug}.{attr}: fx:* css_property did NOT survive reseed — "
+                        f"DB has {db_prop!r}, FX_ATTR_CSS_PROPERTY declares {exp_prop!r}. "
+                        f"A bare SQLite UPDATE is wiped every reseed (STOP-24)."
+                    ),
+                    fix="Run sgs-update-v2.py --stage 1 (never a bare UPDATE) — the fx:* "
+                        "namespace channel (layer 2.5) will re-apply the correct marker.",
+                    key=css_property_reseed_key(slug, attr, "fx-mismatch"),
+                ))
+
+    # B. no rogue non-NULL css_property outside ANY reseed-durable channel (derived
+    # layer, fx:* namespace, or override layer — 2026-08-01 three-layer architecture).
+    legitimate = _legitimate_sources(conn)
     db_declared = conn.execute(
         "SELECT block_slug, attr_name, css_property, css_layer FROM block_attributes "
         "WHERE css_property IS NOT NULL"

@@ -1529,62 +1529,6 @@
       "fields": {
         "derived_selector": ".sgs-quote__attribution"
       }
-    },
-    {
-      "slug": "sgs/gallery",
-      "attr": "dragMomentum",
-      "fields": {
-        "css_property": "fx:momentum"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
-    },
-    {
-      "slug": "sgs/google-reviews",
-      "attr": "dragMomentum",
-      "fields": {
-        "css_property": "fx:momentum"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "dragMomentum",
-      "fields": {
-        "css_property": "fx:momentum"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
-    },
-    {
-      "slug": "sgs/trustpilot-reviews",
-      "attr": "dragMomentum",
-      "fields": {
-        "css_property": "fx:momentum"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
-    },
-    {
-      "slug": "sgs/image-sequence",
-      "attr": "fxStart",
-      "fields": {
-        "css_property": "fx:start"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
-    },
-    {
-      "slug": "sgs/image-sequence",
-      "attr": "fxEnd",
-      "fields": {
-        "css_property": "fx:end"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
-    },
-    {
-      "slug": "sgs/image-sequence",
-      "attr": "fxScrub",
-      "fields": {
-        "css_property": "fx:scrub"
-      },
-      "why": "Motion fx marker, not a real CSS property. seed-motion-fx-registry.py writes it (scripts/seed-motion-fx-registry.py:511-537); nothing derives it, so without this override it reads as a rogue seed and vanishes on reseed. Declared 2026-07-31 after a /sgs-update created the missing attr rows and surfaced the gap."
     }
   ]
 }

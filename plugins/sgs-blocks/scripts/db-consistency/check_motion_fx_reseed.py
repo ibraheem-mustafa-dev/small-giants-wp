@@ -6,12 +6,15 @@ Motion Wave A build. Matches the existing db-consistency check interface
 
 WHY THIS GUARD EXISTS
 ----------------------------------------------------------------------------------------
-`fx_effects` is a brand-new table that /sgs-update never creates, drops, or writes to
-(verified: grepped sgs-update-v2.py for "fx_effects" and "DROP TABLE" — the framework
-never drops any table wholesale, only CREATE TABLE IF NOT EXISTS + per-block row
-regeneration inside block_attributes). That means fx_effects is NOT at risk from a
-`/sgs-update` rebuild in the way block_attributes.css_property is (STOP-24) — but it IS
-at risk from:
+UPDATED 2026-08-01 (D432 integration): `/sgs-update` now DOES touch `fx_effects` —
+`sgs-update-v2.py`'s Stage 1 runs seed-motion-fx-registry.py as a tail step
+(`_run_motion_fx_registry_seed`), so a full `/sgs-update` reseeds this table too. That
+write is idempotent and always matches FX_EFFECTS (the seeder is the sole writer either
+way), so it does NOT put fx_effects at the STOP-24 "wiped by /sgs-update" risk
+block_attributes.css_property had — the two things are orthogonal: /sgs-update running
+the seeder is not the same as /sgs-update independently regenerating this table's rows
+from block.json (it doesn't; only the seeder's own FX_EFFECTS constant does). fx_effects
+remains at risk from:
   (a) someone hand-editing a row directly in the DB (bypassing seed-motion-fx-registry.py)
   (b) a future migration that touches fx_effects without going through the seeder
   (c) the seeder itself drifting from the spec (a code change to FX_EFFECTS without

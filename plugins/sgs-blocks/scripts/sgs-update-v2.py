@@ -859,6 +859,57 @@ def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (inspector-control-type seed): WARN {exc}")
 
 
+def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
+    """Run seed-motion-fx-registry.py as a Stage 1 tail step (D432, 2026-08-01).
+
+    Bean's instruction: "the motion seeding needs to be worked into the
+    sgs-update pipeline and not be some independent competing script that
+    gets forgotten about or we end up losing our motion/FX data." Before this
+    change the ONLY place seed-motion-fx-registry.py ran was npm's
+    prebuild/prestart (`run-motion-fx-generators.js`) — a build-time hook, not
+    part of `/sgs-update` at all. That gap is exactly how D432 happened: a
+    /sgs-update run (for an unrelated nav-menu box_family fix) created new
+    block_attributes rows for existing fx:* attrs, and nothing about
+    /sgs-update itself knew those rows needed fx:* markers — the marker only
+    ever arrived later, at the next `npm run build`, via a channel the reseed
+    gate couldn't see.
+
+    This tail step seeds `fx_effects` (the Spec 38 §11.2 effect grammar) and
+    reconciles `animation_tokens` — the two tables seed-motion-fx-registry.py
+    owns that /sgs-update does not otherwise touch. It deliberately does NOT
+    re-seed block_attributes.css_property for fx:* attrs — that write moved
+    INTO this same pipeline run, one step earlier, as layer 2.5 of
+    `_apply_attr_classification_overrides` (see that function's docstring).
+    Running the seeder script itself (rather than importing its module-level
+    side effects) keeps this a pure subprocess call, matching
+    `_run_composition_role_seed` / `_run_inspector_control_type_seed` exactly
+    — same swallow-as-warning failure handling, same "never block the rest of
+    /sgs-update on this step" contract. Idempotent: a clean run reports zero
+    row changes on every subsequent call.
+    """
+    try:
+        seeder_script = REPO_ROOT / "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py"
+        if not seeder_script.exists():
+            print("Stage 1 tail (motion-fx registry seed): WARN script missing — not applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seeder_script)],
+            capture_output=True, text=True, timeout=60,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "done:" in ln.lower()]
+            print(f"Stage 1 tail (motion-fx registry seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (motion-fx registry seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (motion-fx registry seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -1106,6 +1157,94 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_
 # (see the commit that introduced this loader) — the LIVE data is the JSON
 # file, never this module.
 # ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# fx:* pseudo-namespace channel (D432 integration, 2026-08-01)
+#
+# WHY THIS EXISTS: seed-motion-fx-registry.py's FX_ATTR_CSS_PROPERTY dict (§6.2
+# / §11.3 of Spec 38) maps the fx:* attribute names — fx, fxTrigger, fxStart,
+# fxEnd, fxHold, fxScrub, fxStagger, fxDuration, fxEase, dragMomentum, fxPath,
+# fxPathAsset, fxPathRotate, fxShape, fxPreset — onto their pseudo-CSS-property
+# marker (fx:effect, fx:trigger, ... fx:momentum, ...). Before this change that
+# script wrote block_attributes.css_property directly via a bare UPDATE run at
+# BUILD time (npm prebuild -> run-motion-fx-generators.js), a channel
+# check_css_property_reseed.py's own docstring calls out as the ONLY thing that
+# gets wiped on the next /sgs-update reseed (STOP-24). D432 (2026-07-31) is the
+# incident this caused: seeding box_family for sgs/nav-menu required a full
+# /sgs-update, which (correctly) INSERTed the block_attributes rows for
+# sgs/image-sequence's fxStart/fxEnd/fxScrub + the 4 blocks' dragMomentum (they
+# are real block.json-declared attrs), and the NEXT build's motion seeder then
+# wrote css_property='fx:*' onto those brand-new rows via a channel /sgs-update
+# knows nothing about — surfacing as "rogue seed" failures for BOTH tracks at
+# once. The fix declared 7 entries in ATTR_CLASSIFICATION_OVERRIDES by hand.
+#
+# THE INTEGRATION: fx:* becomes a THIRD reseed-durable channel, read the SAME
+# way ATTR_CLASSIFICATION_OVERRIDES is (R-22-1 — import the real dict, never
+# hand-copy it), and merged into `_apply_attr_classification_overrides`'s
+# `combined` dict alongside the derived-classifier layer and box_family. Once
+# /sgs-update itself is the css_property writer for every fx:* attr that
+# exists on a real block_attributes row, the hand-authored override entries
+# for those 7 rows are redundant — removed from attr-classification-
+# overrides.json in the same change (see that file's D432 history). Any FUTURE
+# fx:* attr a block declares is covered automatically — no more per-attr
+# override entries needed for this namespace, ever (R-31-9 universal
+# mechanism: the fx:* namespace map, not a growing per-block override list).
+#
+# seed-motion-fx-registry.py itself is UNCHANGED in scope for fx_effects +
+# animation_tokens (tables /sgs-update does not otherwise touch) but no longer
+# writes block_attributes.css_property — see its own module docstring update.
+# It is also now RUN as a Stage 1 tail step (`_run_motion_fx_registry_seed`
+# below), so /sgs-update alone reproduces the full motion-fx DB state; a
+# forgotten standalone run can no longer silently leave fx_effects stale.
+# ---------------------------------------------------------------------------
+
+_MOTION_FX_SEEDER_PATH = Path(__file__).resolve().parent / "seed-motion-fx-registry.py"
+
+
+def _load_fx_attr_css_property_map(path: Path = _MOTION_FX_SEEDER_PATH) -> dict[str, str]:
+    """Import FX_ATTR_CSS_PROPERTY from seed-motion-fx-registry.py (R-22-1: the
+    real dict, never a hand-copied duplicate that could silently drift from it).
+
+    Soft-optional, matching `_load_css_property_classifications`'s contract —
+    the motion-fx seeder script is expected to exist (it is committed), but a
+    worktree missing it should not hard-fail every /sgs-update run over an
+    unrelated feature; it degrades to "no fx:* channel this run" instead.
+    """
+    if not path.exists():
+        return {}
+    try:
+        import importlib.util as _ilu
+
+        spec = _ilu.spec_from_file_location("sgs_seed_motion_fx_registry", str(path))
+        mod = _ilu.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        fx_map = getattr(mod, "FX_ATTR_CSS_PROPERTY", None)
+        return dict(fx_map) if isinstance(fx_map, dict) else {}
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 (fx-namespace): WARN failed to import FX_ATTR_CSS_PROPERTY: {exc}")
+        return {}
+
+
+def _collect_fx_attr_namespace_overrides(c: sqlite3.Cursor) -> dict[tuple[str, str], dict[str, object]]:
+    """Return {(block_slug, attr_name): {"css_property": "fx:..."}} for every
+    EXISTING block_attributes row whose attr_name is a declared fx:* name
+    (from FX_ATTR_CSS_PROPERTY). Mirrors seed-motion-fx-registry.py's own
+    `_seed_fx_attr_namespace` selection logic exactly (same query per attr
+    name, same "only rows that already exist" gate) — that function itself no
+    longer writes css_property; this is now the sole writer, one layer earlier
+    in the SAME pipeline run.
+    """
+    fx_map = _load_fx_attr_css_property_map()
+    out: dict[tuple[str, str], dict[str, object]] = {}
+    for attr_name, css_property in fx_map.items():
+        rows = c.execute(
+            "SELECT block_slug FROM block_attributes WHERE attr_name = ?",
+            (attr_name,),
+        ).fetchall()
+        for (block_slug,) in rows:
+            out[(block_slug, attr_name)] = {"css_property": css_property}
+    return out
 
 
 # _derive_has_inner_blocks / _populate_has_inner_blocks RETIRED (EXECUTION
@@ -1575,17 +1714,27 @@ def _apply_attr_classification_overrides(
     dict holds only role/derived_selector/emit-shape/css_property corrections.
     Idempotent; re-applies on every /sgs-update.
 
-    Layering (2026-07-21, Bean-approved — do not reorder):
+    Layering (2026-07-21, Bean-approved; layer 2.5 added D432 2026-08-01 — do
+    not reorder):
       1. DERIVED layer — css-property-classifications.json (classifier output:
          css_property/css_layer/css_element/css_state/css_tier). Applied FIRST.
       2. box_family — declarative block.json source. Merged in (own fields, no
-         overlap with layer 1's fields).
+         overlap with layer 1/3/4's fields).
+      2.5. fx:* namespace — FX_ATTR_CSS_PROPERTY (seed-motion-fx-registry.py,
+         Spec 38 §6.2/§11.3), DB-driven (any existing block_attributes row
+         whose attr_name is a declared fx:* name). This is /sgs-update's OWN
+         write of the motion-fx pseudo-property marker — the seeder script no
+         longer writes block_attributes.css_property itself (D432 fix: two
+         writers to the same column was the exact class of bug that broke the
+         build for two co-active tracks at once). Merged in like box_family
+         (own namespace, only ever collides with itself).
       3. OVERRIDE layer — ATTR_CLASSIFICATION_OVERRIDES (hand-authored JSON truth
-         file). Applied LAST, wins on any field conflict with layers 1/2. Overrides
-         exist to record cases where what the code DOES and what it MEANS differ
-         (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but IS a colour
-         value — see attr-classification-overrides.json), not to correct classifier
-         accuracy bugs (fix those in the classifier itself).
+         file). Applied LAST, wins on any field conflict with layers 1/2/2.5.
+         Overrides exist to record cases where what the code DOES and what it
+         MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow
+         but IS a colour value — see attr-classification-overrides.json), not
+         to correct classifier accuracy bugs (fix those in the classifier
+         itself) or to declare fx:* markers (that's layer 2.5's job now).
 
     Returns counts dict: {"override_applied": int, "override_missing_row": int}.
     """
@@ -1596,8 +1745,11 @@ def _apply_attr_classification_overrides(
     combined: dict[tuple[str, str], dict[str, object]] = {
         k: dict(v) for k, v in _load_css_property_classifications().items()
     }
-    # Layer 2: declarative box_family (own fields; never overlaps layer 1/3 fields).
+    # Layer 2: declarative box_family (own fields; never overlaps layer 1/3/4's fields).
     for key, fields in _collect_boxfamily_overrides(blocks_dir).items():
+        combined.setdefault(key, {}).update(fields)
+    # Layer 2.5: fx:* namespace (D432 integration — see docstring above).
+    for key, fields in _collect_fx_attr_namespace_overrides(c).items():
         combined.setdefault(key, {}).update(fields)
     # Layer 3: hand-authored overrides — applied LAST so they win on any field
     # conflict with the derived layer (per-field merge, not whole-row replace).
@@ -1957,6 +2109,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     — the SOLE writer now (enrich-db.py's stale writer removed); overwrite-
         #     on-disagreement policy, so this must run every reseed to stay durable. ---
         _run_inspector_control_type_seed(conn)
+
+        # --- Stage 1 tail: seed fx_effects + animation_tokens from the motion-fx
+        #     registry (D432, 2026-08-01) — runs AFTER the css_property layers
+        #     above so the fx:* namespace is already correct before this step's
+        #     own tables (fx_effects/animation_tokens) are reconciled. ---
+        _run_motion_fx_registry_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
