@@ -195,6 +195,49 @@ async function findActivePinScrollY( page, hostSelector ) {
 }
 
 /**
+ * Scroll to `y` and poll until `window.scrollY` genuinely settles, rather
+ * than trusting a fixed wait.
+ *
+ * ADDED 2026-08-01 (D451/D453 verification session) — the two call sites
+ * that jump-scroll to `activation.scrollY` before starting a Tab walk both
+ * used `window.scrollTo(0, y)` followed by a FIXED `waitForTimeout(300)`.
+ * This file's own header docblock already documents that this site's
+ * `scroll-behavior: smooth` on `<html>` makes native/programmatic scrolls
+ * take "several hundred ms" — the exact trap `tabWalk()` below already
+ * guards against per-Tab-press, but the ONE-TIME jump-scroll before the walk
+ * even starts was not. Measured live: with the fixed 300ms wait, `window.
+ * scrollY` was still mid-transit when the walk's first Tab press fired,
+ * which caused a genuinely-working `focusin`→`progress(1)` fix to be
+ * OVERRIDDEN moments later by ScrollTrigger's own scrub-smoothing render
+ * (still reacting to the tail of the smooth-scroll as a real user scroll)
+ * — a false FAIL on the D453 fix caused by this probe's own timing, not the
+ * fix. Re-run with this settle in place showed the SAME fix holding at
+ * opacity 1 indefinitely. This is a probe-reliability fix, not a change to
+ * what is asserted.
+ *
+ * @param {import('playwright').Page} page Page.
+ * @param {number}                    y    Target scrollY.
+ * @return {Promise<number>} The settled scrollY (may differ slightly from
+ *                            `y` if the page cannot scroll that far).
+ */
+async function settledScrollTo( page, y ) {
+	await page.evaluate( ( yy ) => window.scrollTo( 0, yy ), y );
+	let last = await page.evaluate( () => window.scrollY );
+	for ( let i = 0; i < 20; i++ ) {
+		// eslint-disable-next-line no-await-in-loop
+		await page.waitForTimeout( 120 );
+		// eslint-disable-next-line no-await-in-loop
+		const cur = await page.evaluate( () => window.scrollY );
+		if ( Math.abs( cur - last ) < 0.5 ) {
+			last = cur;
+			break;
+		}
+		last = cur;
+	}
+	return last;
+}
+
+/**
  * Real Tab presses (page.keyboard.press), sampling activeElement + viewport
  * containment + pin-engagement + scrub-desync after each press.
  */
@@ -231,6 +274,68 @@ async function tabWalk( page, hostSelector, steps, opts = {} ) {
 				break;
 			}
 			lastY = y;
+		}
+		/*
+		 * SETTLE THE FOCUS-TRIGGERED OPACITY RAMP TOO (D453 verification
+		 * session, 2026-08-01) — same "don't sample mid-flight" principle as
+		 * the scrollY loop above, extended to a SECOND transient this file
+		 * did not previously know about. `fx-pin-scrub.js`'s `focusin`
+		 * handler calls `timeline.progress(1)`, but on THIS canary the block
+		 * carries `data-sgs-fx-scrub="0.5"` (a NUMBER, not boolean `true`) —
+		 * a scrub value maps to a real GSAP `scrubTween` with that duration,
+		 * and measured live (4-way controlled comparison: with/without the
+		 * `tabWalk` blur, at a 150ms vs a 300ms wait) the focused element's
+		 * own opacity is STILL "0" at 150ms after Tab and has only reached
+		 * ~0.7-0.8 by 300ms, converging to a stable 1 by roughly 350-400ms
+		 * and holding there indefinitely (traced for 2.5s) — the visible
+		 * result of the `focusin` fix genuinely LANDS, it just isn't
+		 * instantaneous on a numeric-scrub block. A fixed 150ms wait alone
+		 * (this loop's previous shape) caught it mid-ramp at exactly 0 and
+		 * would have reported a false 2.4.11 FAIL on a fix that, given
+		 * another ~200ms, actually works. Poll the active element's own
+		 * opacity until it stops changing (bounded — a genuinely-still-zero
+		 * opacity, i.e. the real pre-D453 defect, still ends the loop and
+		 * gets measured as the failure it is).
+		 */
+		/*
+		 * ⚠ A NAIVE "break on first unchanged reading" loop is fooled by a
+		 * DEAD-ZONE plateau, not just a monotonic ramp. Measured live: this
+		 * transition sits at flat "0" for the first ~100-150ms (two
+		 * consecutive 100ms samples can both read "0" purely because the
+		 * ramp has not started yet), then rises to ~1 over the following
+		 * ~250-300ms. A loop that exits on the FIRST repeated value would
+		 * exit during that dead-zone and report the pre-ramp "0" as
+		 * converged — reproduced against this exact fixture before adding
+		 * the fix below. Requiring 3 CONSECUTIVE matching reads (300ms of
+		 * genuine stability) rather than 1 closes that gap without
+		 * reintroducing a fixed-delay sample (a still-genuinely-zero
+		 * opacity — the real pre-D453 defect — still satisfies 3 consecutive
+		 * matches and ends the loop as a real failure, not a false one).
+		 */
+		// eslint-disable-next-line no-await-in-loop
+		let lastOpacity = await page.evaluate( () => {
+			const el = document.activeElement;
+			return el ? getComputedStyle( el ).opacity : null;
+		} );
+		let stableStreak = 1;
+		// eslint-disable-next-line no-await-in-loop
+		for ( let tick = 0; tick < 20; tick++ ) {
+			// eslint-disable-next-line no-await-in-loop
+			await page.waitForTimeout( 100 );
+			// eslint-disable-next-line no-await-in-loop
+			const o = await page.evaluate( () => {
+				const el = document.activeElement;
+				return el ? getComputedStyle( el ).opacity : null;
+			} );
+			if ( o === lastOpacity ) {
+				stableStreak++;
+				if ( stableStreak >= 3 ) {
+					break;
+				}
+			} else {
+				stableStreak = 1;
+			}
+			lastOpacity = o;
 		}
 		// eslint-disable-next-line no-await-in-loop
 		const focus = await page.evaluate( inViewportFn );
@@ -322,8 +427,7 @@ async function runPinScrub( browser, reducedMotion ) {
 	let negControl = null;
 
 	if ( null !== activation.scrollY ) {
-		await page.evaluate( ( y ) => window.scrollTo( 0, y ), activation.scrollY );
-		await page.waitForTimeout( 300 );
+		await settledScrollTo( page, activation.scrollY );
 
 		// Focus a known origin just before the pinned section, then walk
 		// forward through real Tab presses.
@@ -434,8 +538,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 	 * keeps the deliberate scroll position intact.
 	 */
 	if ( hasScrollTarget ) {
-		await page.evaluate( ( y ) => window.scrollTo( 0, y ), activation.scrollY );
-		await page.waitForTimeout( 300 );
+		await settledScrollTo( page, activation.scrollY );
 		await page.evaluate( () => {
 			const before = document.querySelector( '#step22-before' );
 			if ( before ) {
@@ -553,8 +656,7 @@ async function runHorizontalPanel( browser, reducedMotion ) {
 	let tabThroughAndOut = null;
 
 	if ( activation.scrollY ) {
-		await page.evaluate( ( y ) => window.scrollTo( 0, y ), activation.scrollY );
-		await page.waitForTimeout( 300 );
+		await settledScrollTo( page, activation.scrollY );
 		await page.evaluate( () => {
 			const before = document.querySelector( '#sgs-text-5545e1df' );
 			if ( before ) {

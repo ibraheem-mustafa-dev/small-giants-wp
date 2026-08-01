@@ -40,9 +40,42 @@ and all three controls stay at full opacity.
    nothing about undefined identifiers here. Scope was finally confirmed by brace-depth analysis
    (declaration and use both at depth 2; the cleanup closes over it at depth 3).
 
-⚠ **OUTSTANDING: the fix is unverified live.** Re-run the extended `probe-step13-pin-focus.mjs`
-Tab-walk against page 2114 after deploy and confirm each control's own AND ancestor opacity is 1
-at the moment focus lands.
+⚠ **VERIFIED LIVE 2026-08-01 — the fix is PARTIAL. It holds in the common case and LOSES a race
+in the fast case. This is the top open item of the wave.**
+
+Measured on page 2114 after deploy, by high-frequency tracing:
+
+- **Holds** when focus lands ≥ ~2s after the last scroll change (confirmed over a 2.5s trace).
+- **Fails** when focus lands within roughly the scrub duration of the last scroll change. `scrub`
+  is not a one-shot: GSAP creates an internal `scrubTween` that calls
+  `resetTo("totalProgress", …)` every frame (`ScrollTrigger.js:1149`) to chase the scroll-derived
+  progress. A one-time `timeline.progress(1)` is simply overwritten on the next frame, and there
+  is **no self-recovery** — the control stays focused and invisible.
+- This bites at the framework's own default: `resolveScrub()` returns `1` when a block sets no
+  `data-sgs-fx-scrub`, so a full second of vulnerability is the DEFAULT, not an edge config.
+
+**Why the obvious fix is not available:** `scrubTween` is a closure-local variable inside
+ScrollTrigger's initialiser, not a property on the instance — it cannot be killed or paused from
+outside. And CSS `:focus-within` cannot win either, because GSAP writes opacity INLINE and beating
+that needs `!important`, which the cheat-gate rejects on a render surface.
+
+**Deliberately NOT patched again this session.** The first attempt at D453 already referenced a
+non-existent variable and would have thrown at runtime; stacking a second unverified guess onto
+the accessibility path at the end of a long session is how the half-finished fix gets shipped.
+The partial fix is left in place because it strictly improves matters and cannot make anything
+worse — content is only ever added.
+
+**Next session, first task.** Candidate directions, none yet measured: re-assert progress from the
+timeline's own `onUpdate` while a focus flag is set; or hold the reveal in a separate GSAP tween
+with `overwrite` that outlives a single frame; or make the FROM state conditional on the
+participant containing no focusable descendant. Whichever is chosen must be proven with the same
+high-frequency trace, focusing WITHIN the scrub window — the failing case, not the passing one.
+
+⚠ **Two probe bugs were found and fixed to get this answer**, and the shipped probe had reported a
+plain FAIL because of them: a fixed 300ms jump-scroll wait, and a settle loop fooled by a dead
+zone where two consecutive samples both read 0 before the ramp starts. Both are now corrected in
+`probe-step13-pin-focus.mjs`. **The first FAIL this probe produced was a measurement defect; the
+second was real.** Do not treat either the old PASS or the first FAIL as evidence.
 
 ## D452 — Morph has NEVER animated: the fx attributes were on the `<svg>`, not the `<path>` [INCIDENT]
 
