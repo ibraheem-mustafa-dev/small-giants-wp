@@ -33,7 +33,7 @@ blind spots (see Section 4 below) — worth knowing before you trust any future 
 This is the session that produced most of the plan below: making effects reachable from the
 block editor, making sure a clean checkout of the code actually builds, checking accessibility
 (can someone using only a keyboard operate a pinned scroll section?), and checking the drag
-effects work on a touchscreen, not just a mouse. **8 of the 24 steps closed in this one session**
+effects work on a touchscreen, not just a mouse. **9 of the 24 steps closed in this one session** (8 original-numbered, plus Step J)
 (see the CLOSED table). Two more (the "buybox" drag control) got proven to work by hand but were
 correctly refused a full sign-off by the safety gate until a couple of loose ends are tied up.
 
@@ -45,7 +45,7 @@ worth fixing that no automated check caught — those are folded into this rewri
 
 ## 2. Where we are right now — the honest state
 
-**CLOSED this wave (8 of 24 steps).** Full detail moved to `memory/`; here is the one-line
+**CLOSED this wave (9 of 24 steps — the 8 below, plus Step J, which is kept in place at its own heading because the reasoning behind it is load-bearing).** Full detail moved to `memory/`; here is the one-line
 version of each:
 
 | Was step | What it closed | Commit(s) |
@@ -196,7 +196,7 @@ last regardless of what number it carries.
 - [ ] Motion survives a draft→WordPress clone, or the success definition is amended to say it does not
 - [ ] Every drag effect has a measured touch result, not a code-reading claim — **CLOSED this wave**
 - [ ] Bean has signed the physics-sandbox shape or ruled it out
-- [ ] `sgs/image-sequence` is operable by someone who has never opened a terminal, or it is explicitly agency-only — **CLOSED this wave (tool hardened); the pin/scrub composition question is now its own steps 3–4 below, per Bean's D435 ruling**
+- [ ] `sgs/image-sequence` is operable by someone who has never opened a terminal, or it is explicitly agency-only — **CLOSED this wave (tool hardened); the pin/scrub composition question is now its own **Steps F and G** below, per Bean's D435 ruling**
 
 **Entry context (read before starting):**
 - `.claude/LEDGER.md` — live status; the Track 3 cell
@@ -229,7 +229,7 @@ last regardless of what number it carries.
   by the proving script's own injection, then check the block-editor inspector panel exposes the
   same toggle.
   **Files:** `src/blocks/buybox/{block.json,edit.js,gallery-col.php}`, `reports/visual-diff/buybox-*.md`
-  **Inputs:** product 1125 on the canary; the live-injection proof already captured
+  **Inputs:** **product 540, default variation 541** on the canary ("Mama's Test Box — 48 SKU fixture"; its gallery was deliberately expanded 3→10 images so the strip overflows). The live-injection proof is in `reports/visual-diff/buybox-2026-07-31.md`. ⚠ An earlier draft of this line said "product 1125", which exists nowhere — do not go looking for it.
   **Outcome:** buybox's thumbnail strip drags with a clean sign-off, not a held one.
   **Exec:** SEQUENTIAL · **Deps:** none · **Time:** 30 min
   **Tooling:** wp-cli, WooCommerce, Playwright, build-deploy.py
@@ -634,21 +634,45 @@ last regardless of what number it carries.
   - Fail: `--self-test` proves each new gate can fail
   - Integration: `/sgs-update` reproduces the seed byte-identically
 
-### Step J — Motion seeding becomes a stage of `/sgs-update` [IN PROGRESS — being built by another agent]
-  **Model:** n/a — status only, do not duplicate this work
-  **Action:** Bean's ruling: motion seeding must stop being an independent script that competes
-  with the main framework-database updater and instead become one stage inside `/sgs-update`
-  itself. **Why this matters, in plain terms:** right now there are two separate scripts that both
-  write to the same database, and they don't know about each other. D432 is the proof this is a
-  real problem, not a theoretical one — an unrelated piece of work simply running the normal
-  database updater swept up 7 motion-related rows the motion seeder owns and broke both pieces of
-  work at once, purely by coincidence of timing.
-  **Files:** `scripts/seed-motion-fx-registry.py`, `/sgs-update`'s stage pipeline
-  **Inputs:** D432 (the incident that proves the need); D435 point 7 (Bean's ruling)
-  **Outcome:** one updater, one source of truth, no more cross-track collisions.
-  **Exec:** N/A — tracked elsewhere · **Deps:** n/a · **Marker:** IN PROGRESS
-  **On-Fail:** n/a — check `.claude/LEDGER.md` for current status before assuming this is still open.
-  **Test:** n/a — verify against the other agent's own completion report when it lands.
+### Step J — Motion seeding + artefact regeneration into `/sgs-update` [✅ DONE 2026-08-01, D436]
+
+  **Status: COMPLETE, both halves.** Commits `075baa9b` (the database layer) and `c112ba7d`
+  (Stage 12, the artefact regeneration). Kept here rather than moved to the completed table because
+  the *reason* it was done is load-bearing for anyone who later touches motion data.
+
+  **What Bean asked for, in two parts.** First: *"motion seeding needs to be worked into the
+  sgs-update pipeline and not be some independent competing script that gets forgotten about or we
+  end up losing all our motion/FX data."* Then, on the half that was initially deferred: *"the
+  sgs-update motion layer should also update the data into the artefacts for use in the actual
+  websites. The DB is the centre of it... the main point of adding this data to the db was to make
+  sure these artefacts are always up to date."*
+
+  **Why it mattered (D432 is the proof, not a theory).** Two scripts wrote the same database column
+  without knowing about each other. An unrelated track simply running the normal updater swept up 7
+  motion rows and broke both tracks at once. **And the hand-written patch for that incident was
+  ALREADY incomplete** — 8 blocks carry real fx attributes but only 4 of the 7 patched blocks had
+  entries; `sgs/buybox` was undeclared and would have hit the identical failure next time its rows
+  were recreated. A list of exceptions cannot keep up. A mechanism can.
+
+  **What shipped.** The fx namespace is a native layer inside `/sgs-update`, importing the seeder's
+  own dictionary so there is ONE definition rather than a copy that drifts. The seeder is
+  verify-only. Stage 1 runs it. **Stage 12 (new — the pipeline is now 12 stages) regenerates all
+  four artefacts the live websites load.** The 7 hand-written override rows are gone.
+
+  **The trap that was avoided, and it is worth knowing.** "Regenerate from the DB" misdescribes
+  these artefacts. Two come from the database alone — but `generated-fx-qualifying-blocks.{php,json}`
+  are a **JOIN**: effect facts from the database, UNION block facts read from `block.json`,
+  `edit.js` and `style.css`. A naive database-only regeneration would have dropped that half and
+  produced **confidently wrong** artefacts — worse than stale ones, because they would look freshly
+  generated.
+
+  **One writer per artefact, which was the whole point.** Stage 12 writes; the build only verifies
+  (`--check`). `run-motion-fx-generators.js` was already check-only — verified by reading it, not
+  assumed. Had it been a writer too, the two-writer bug would have been recreated one commit after
+  being fixed.
+
+  **⚠ Carry this forward:** if you ever add another generator, check whether the build also writes
+  it. Two writers to one artefact are unfalsifiable — you cannot tell which one won.
 
 ---
 

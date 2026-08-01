@@ -103,8 +103,8 @@ Full register + plain-English explainers: `plans/2026-07-31-motion-wave-D-client
 
 | | Wave D steps (24) |
 |---|---|
-| **CLOSED (8)** | 1, 4, 9, 11, 13, 14, 16, 17 — stripped out of the plan into its completed table, with commits |
-| **STILL IN THE PLAN (24)** | **14 original-numbered:** 5, 6, 6b, 7, 8, 10, 12, 15, 18, 19, 20, 21, 22, 23 · **10 lettered, added 2026-08-01:** A–J |
+| **CLOSED (9)** | 1, 4, 9, 11, 13, 14, 16, 17 (stripped into the plan's completed table, with commits) **+ Step J** — motion seeding AND artefact regeneration into `/sgs-update`, D436, kept at its own heading because the reasoning is load-bearing |
+| **STILL OPEN (23 of the plan's 24 headings)** | **14 original-numbered:** 5, 6, 6b, 7, 8, 10, 12, 15, 18, 19, 20, 21, 22, 23 · **9 lettered:** A–I (J is DONE, see above) |
 | **HELD (inside the 24)** | **Step A** = buybox drag, formerly "Steps 2/3". Written, runtime proven, NOT shipped — the visual-diff gate correctly refused it because the attribute has never come from a real render. |
 
 ⚠ **MIXED numbering is deliberate.** Steps added 2026-08-01 are LETTERED (A–J) so the original numbers
