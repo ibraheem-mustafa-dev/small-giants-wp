@@ -1,0 +1,197 @@
+<!-- fixture: sgs/tabs — a REALISTIC product-page tabbed detail panel, replacing the
+     29-line conformance stub (which rendered bare-bones/broken in a browser and was
+     actively misleading the wrapper-recognition analysis).
+
+     Authoring contract: Spec 00 §3.1 (SGS-BEM), §3.3 (--content-width band signal),
+     §3.4 (--active state modifier + ARIA), §3.5 (hover companions).
+
+     ONE panel is the CORRECT static representation of tabs: the triggers switch what
+     is shown inside the single panel, and a static draft can only author the ACTIVE
+     tab's content. Do not "fix" this to three panels.
+-->
+<style>
+:root {
+  --primary:       #E68A95;
+  --primary-dark:  #C56A7A;
+  --surface-cream: #FBF3DC;
+  --surface-alt:   #FFF9F0;
+  --accent:        #F5D050;
+  --text:          #3A2E26;
+  --text-muted:    #6B5C50;
+  --success:       #2E7D4F;
+  --border:        #E8D5C0;
+}
+
+/* Page frame — standalone-preview only; matches no sgs- element, inert to the converter. */
+body {
+  margin: 0;
+  background: var(--surface-alt);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* L1 OUTER — the section box. */
+.sgs-tabs {
+  padding: 72px 24px;
+  background: var(--surface-cream);
+}
+
+/* L2 CONTENT band — the centred inner wrapper (§3.3 deterministic signal). */
+.sgs-tabs__inner {
+  max-width: var(--content-width);
+  --content-width: 960px;
+  margin: 0 auto;
+}
+
+/* The tablist. Arrangement (L3) sitting on a structural wrapper. */
+.sgs-tabs__nav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+
+.sgs-tabs__trigger {
+  padding: 14px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.sgs-tabs__trigger:hover {
+  color: var(--text);
+}
+
+.sgs-tabs__trigger--active {
+  color: var(--primary-dark);
+  border-bottom-color: var(--primary);
+}
+
+/* The panel. Two-column on desktop, stacked on mobile. */
+.sgs-tabs__panel {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.sgs-tabs__panel-media {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.sgs-tabs__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.sgs-tabs__panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sgs-tabs__panel-heading {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  margin: 0;
+}
+
+.sgs-tabs__panel-text {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.sgs-tabs__list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 24px;
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.sgs-tabs__list-item {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.sgs-tabs__note {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--success);
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .sgs-tabs {
+    padding: 48px 16px;
+  }
+  .sgs-tabs__nav {
+    gap: 0;
+    margin-bottom: 28px;
+    overflow-x: auto;
+  }
+  .sgs-tabs__trigger {
+    padding: 12px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .sgs-tabs__panel {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .sgs-tabs__panel-heading {
+    font-size: 22px;
+  }
+  .sgs-tabs__list {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<section class="sgs-tabs">
+  <div class="sgs-tabs__inner">
+
+    <div class="sgs-tabs__nav" role="tablist" aria-label="Product details">
+      <button class="sgs-tabs__trigger sgs-tabs__trigger--active" type="button" role="tab" aria-selected="true">Ingredients</button>
+      <button class="sgs-tabs__trigger" type="button" role="tab" aria-selected="false">Nutrition</button>
+      <button class="sgs-tabs__trigger" type="button" role="tab" aria-selected="false">Storage &amp; shelf life</button>
+    </div>
+
+    <div class="sgs-tabs__panel" role="tabpanel">
+      <div class="sgs-tabs__panel-media">
+        <img class="sgs-tabs__image" src="/media/oat-bites-ingredients.jpg" alt="Rolled oats, honey and flaxseed laid out on a cream cloth" />
+      </div>
+      <div class="sgs-tabs__panel-body">
+        <h3 class="sgs-tabs__panel-heading">Six ingredients, nothing hidden</h3>
+        <p class="sgs-tabs__panel-text">Every batch is rolled by hand in small trays, so the mix stays coarse and the honey never cooks out. We buy the oats and flaxseed from two family mills in Yorkshire and press the coconut oil ourselves.</p>
+        <ul class="sgs-tabs__list">
+          <li class="sgs-tabs__list-item">Jumbo rolled oats</li>
+          <li class="sgs-tabs__list-item">Raw wildflower honey</li>
+          <li class="sgs-tabs__list-item">Golden flaxseed</li>
+          <li class="sgs-tabs__list-item">Cold-pressed coconut oil</li>
+          <li class="sgs-tabs__list-item">Madagascan vanilla</li>
+          <li class="sgs-tabs__list-item">Sea salt</li>
+        </ul>
+        <p class="sgs-tabs__note">Free from refined sugar, palm oil and preservatives. Made in a kitchen that also handles tree nuts.</p>
+      </div>
+    </div>
+
+  </div>
+</section>

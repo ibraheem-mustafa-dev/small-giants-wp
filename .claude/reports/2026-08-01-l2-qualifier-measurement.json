@@ -1,0 +1,4293 @@
+[
+  {
+    "draft": "sites\\mamas-munches\\mockups\\homepage\\index.html",
+    "pairs": [
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "sgs-header",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-cream)",
+                "cluster": "background"
+              },
+              "border-bottom": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "main",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "══════════════════════════════════════════\n     HERO\n═══════════════════════════"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "sgs-footer",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--text)",
+                "cluster": "background"
+              },
+              "color": {
+                "value": "var(--text-inverse)",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-header",
+        "parent_slug": null,
+        "child_class": "sgs-header__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "sgs-header__inner",
+        "parent_slug": null,
+        "child_class": "sgs-header__logo",
+        "child_slug": "sgs/responsive-logo",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/responsive-logo'"
+          },
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<a> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "inherit",
+                "cluster": "typography"
+              },
+              "text-decoration": {
+                "value": "none",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-header__inner",
+        "parent_slug": null,
+        "child_class": "sgs-header__nav",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-header__inner",
+        "parent_slug": null,
+        "child_class": "sgs-header__right",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-header__right",
+        "parent_slug": null,
+        "child_class": "sgs-header__cart",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<a> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "none",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "none",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              },
+              "text-decoration": {
+                "value": "none",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-header__right",
+        "parent_slug": null,
+        "child_class": "sgs-header__hamburger",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "none",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "none",
+                "cluster": "border"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-hero",
+        "child_slug": "sgs/hero",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/hero'"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-pink)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar",
+        "child_slug": "sgs/trust-bar",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/trust-bar'"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-pink)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-featured-product",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-cream)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-brand",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-alt)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-ingredients-section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-cream)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-gift-section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-pink)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "sgs-social-proof",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-alt)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-hero",
+        "parent_slug": "sgs/hero",
+        "child_class": "sgs-hero__content",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "grid-template-areas": "\"content media\"",
+              "grid-template-columns": "1fr 1fr"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-pink)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-hero",
+        "parent_slug": "sgs/hero",
+        "child_class": "sgs-hero__media",
+        "child_slug": "sgs/media",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/media'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "grid-template-areas": "\"content media\"",
+              "grid-template-columns": "1fr 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-hero__content",
+        "parent_slug": null,
+        "child_class": "h1",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<h1> maps to atomic block 'sgs/heading'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Made for the mum who needs it most"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-family": {
+                "value": "'Fraunces', serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "52px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "700",
+                "cluster": "typography"
+              },
+              "letter-spacing": {
+                "value": "-1px",
+                "cluster": "typography"
+              },
+              "line-height": {
+                "value": "1.15",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-hero__content",
+        "parent_slug": null,
+        "child_class": "sgs-hero__ctas",
+        "child_slug": "sgs/multi-button",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/multi-button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar",
+        "parent_slug": "sgs/trust-bar",
+        "child_class": "sgs-trust-bar__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "sgs-trust-bar__inner",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__badge",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px 12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__inner",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__badge",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px 12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__inner",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__badge",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px 12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__inner",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__badge",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px 12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__badge",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__icon",
+        "child_slug": "sgs/icon",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/icon'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "10px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border-radius": {
+                "value": "50%",
+                "cluster": "border"
+              },
+              "box-shadow": {
+                "value": "0 1px 2px rgba(58,46,38,0.06)",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__badge",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__icon",
+        "child_slug": "sgs/icon",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/icon'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "10px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border-radius": {
+                "value": "50%",
+                "cluster": "border"
+              },
+              "box-shadow": {
+                "value": "0 1px 2px rgba(58,46,38,0.06)",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__badge",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__icon",
+        "child_slug": "sgs/icon",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/icon'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "10px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border-radius": {
+                "value": "50%",
+                "cluster": "border"
+              },
+              "box-shadow": {
+                "value": "0 1px 2px rgba(58,46,38,0.06)",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-trust-bar__badge",
+        "parent_slug": null,
+        "child_class": "sgs-trust-bar__icon",
+        "child_slug": "sgs/icon",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/icon'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "10px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border-radius": {
+                "value": "50%",
+                "cluster": "border"
+              },
+              "box-shadow": {
+                "value": "0 1px 2px rgba(58,46,38,0.06)",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-featured-product",
+        "parent_slug": null,
+        "child_class": "sgs-featured-product__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-featured-product__inner",
+        "parent_slug": null,
+        "child_class": "sgs-products",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Main product Trial pack"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-products",
+        "parent_slug": null,
+        "child_class": "sgs-product-card",
+        "child_slug": "sgs/product-card",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/product-card'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px",
+              "grid-template-columns": "5fr 3fr"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "16px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-products",
+        "parent_slug": null,
+        "child_class": "sgs-product-card",
+        "child_slug": "sgs/product-card",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/product-card'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px",
+              "grid-template-columns": "5fr 3fr"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "linear-gradient(135deg, rgba(245,208,80,0.08) 0%, rgba(230,138,149,0.06) 100%)",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px dashed var(--accent)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "16px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-product-card",
+        "parent_slug": "sgs/product-card",
+        "child_class": "sgs-product-card__body",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-product-card__body",
+        "parent_slug": null,
+        "child_class": "sgs-product-card__pill-group",
+        "child_slug": "sgs/option-picker",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/option-picker'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-product-card__body",
+        "parent_slug": null,
+        "child_class": "sgs-product-card__price-row",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-product-card",
+        "parent_slug": "sgs/product-card",
+        "child_class": "sgs-product-card__body",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-product-card__body",
+        "parent_slug": null,
+        "child_class": "sgs-product-card__price-row",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-brand",
+        "parent_slug": null,
+        "child_class": "sgs-brand__content",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "60px",
+              "grid-template-columns": "1fr 1fr"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-brand__content",
+        "parent_slug": null,
+        "child_class": "sgs-brand__quote",
+        "child_slug": "sgs/quote",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/quote'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-ingredients-section",
+        "parent_slug": null,
+        "child_class": "sgs-ingredients-section__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "text-align": {
+                "value": "center",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-ingredients-section__inner",
+        "parent_slug": null,
+        "child_class": "sgs-feature-grid",
+        "child_slug": "sgs/feature-grid",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/feature-grid'"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-feature-grid",
+        "parent_slug": "sgs/feature-grid",
+        "child_class": "sgs-info-box",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "14px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-feature-grid",
+        "parent_slug": "sgs/feature-grid",
+        "child_class": "sgs-info-box",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "14px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-feature-grid",
+        "parent_slug": "sgs/feature-grid",
+        "child_class": "sgs-info-box",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "14px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-feature-grid",
+        "parent_slug": "sgs/feature-grid",
+        "child_class": "sgs-info-box",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "14px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-gift-section",
+        "parent_slug": null,
+        "child_class": "sgs-gift-section__card-inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-gift-section__card-inner",
+        "parent_slug": null,
+        "child_class": "sgs-gift-section__cards",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "sgs-gift-section__card-inner",
+        "parent_slug": null,
+        "child_class": "sgs-announcement-bar--send-to-ward",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--primary)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "10px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-gift-section__cards",
+        "parent_slug": null,
+        "child_class": "sgs-gift-section__card",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px",
+              "grid-template-columns": "1fr 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "16px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-gift-section__cards",
+        "parent_slug": null,
+        "child_class": "sgs-gift-section__card",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "16px",
+              "grid-template-columns": "1fr 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "16px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-social-proof",
+        "parent_slug": null,
+        "child_class": "sgs-social-proof__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-social-proof__inner",
+        "parent_slug": null,
+        "child_class": "sgs-social-proof__trustpilot-bar",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "10px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-social-proof__inner",
+        "parent_slug": null,
+        "child_class": "sgs-testimonial-slider",
+        "child_slug": "sgs/testimonial-slider",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/testimonial-slider'"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-testimonial-slider",
+        "parent_slug": "sgs/testimonial-slider",
+        "child_class": "sgs-testimonial",
+        "child_slug": "sgs/testimonial",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/testimonial'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(3, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-testimonial-slider",
+        "parent_slug": "sgs/testimonial-slider",
+        "child_class": "sgs-testimonial",
+        "child_slug": "sgs/testimonial",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/testimonial'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(3, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-testimonial-slider",
+        "parent_slug": "sgs/testimonial-slider",
+        "child_class": "sgs-testimonial",
+        "child_slug": "sgs/testimonial",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/testimonial'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(3, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer",
+        "parent_slug": null,
+        "child_class": "sgs-footer__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__inner",
+        "parent_slug": null,
+        "child_class": "sgs-footer__grid",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "sgs-footer__inner",
+        "parent_slug": null,
+        "child_class": "sgs-footer__bottom",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "border-top": {
+                "value": "1px solid rgba(255,250,245,0.1)",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "rgba(255,250,245,0.4)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__grid",
+        "parent_slug": null,
+        "child_class": "sgs-footer__brand",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "36px",
+              "grid-template-columns": "2fr 1fr 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__grid",
+        "parent_slug": null,
+        "child_class": "sgs-footer__col",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "36px",
+              "grid-template-columns": "2fr 1fr 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__grid",
+        "parent_slug": null,
+        "child_class": "sgs-footer__col",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "36px",
+              "grid-template-columns": "2fr 1fr 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__brand",
+        "parent_slug": null,
+        "child_class": "sgs-footer__tagline",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Real food for real mums. Handmade in Birmingham with care."
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "rgba(255,250,245,0.65)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "line-height": {
+                "value": "1.5",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__brand",
+        "parent_slug": null,
+        "child_class": "sgs-footer__meta",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "rgba(255,250,245,0.5)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__brand",
+        "parent_slug": null,
+        "child_class": "sgs-footer__social",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__social",
+        "parent_slug": "sgs/info-box",
+        "child_class": "a",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<a> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "8px"
+            }
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Instagram"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "rgba(255,250,245,0.08)",
+                "cluster": "background"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text-inverse)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "500",
+                "cluster": "typography"
+              },
+              "text-decoration": {
+                "value": "none",
+                "cluster": "typography"
+              },
+              "transition": {
+                "value": "background 0.18s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__social",
+        "parent_slug": "sgs/info-box",
+        "child_class": "a",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<a> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "8px"
+            }
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "WhatsApp"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "rgba(255,250,245,0.08)",
+                "cluster": "background"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text-inverse)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "500",
+                "cluster": "typography"
+              },
+              "text-decoration": {
+                "value": "none",
+                "cluster": "typography"
+              },
+              "transition": {
+                "value": "background 0.18s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__col",
+        "parent_slug": null,
+        "child_class": "ul",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<ul> maps to atomic block 'sgs/icon-list'"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "list-style": {
+                "value": "none",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-footer__col",
+        "parent_slug": null,
+        "child_class": "ul",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<ul> maps to atomic block 'sgs/icon-list'"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "list-style": {
+                "value": "none",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ul",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "9px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "draft": "sites\\mamas-munches\\mockups\\product\\index.html",
+    "pairs": [
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "header",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-cream)",
+                "cluster": "background"
+              },
+              "border-bottom": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "nav",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "main",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "INGREDIENT EDUCATION ALLERGEN BLOCK REVIEWS"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "body",
+        "parent_slug": null,
+        "child_class": "footer",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--text)",
+                "cluster": "background"
+              },
+              "color": {
+                "value": "var(--text-inverse)",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "header",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "a",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<a> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "inherit",
+                "cluster": "typography"
+              },
+              "text-decoration": {
+                "value": "none",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "nav",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "a",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<a> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "none",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "none",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              },
+              "text-decoration": {
+                "value": "none",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "none",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "none",
+                "cluster": "border"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "nav",
+        "parent_slug": null,
+        "child_class": "ol",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<ol> maps to atomic block 'sgs/icon-list'"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "list-style": {
+                "value": "none",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "ol",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "6px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "ol",
+        "parent_slug": null,
+        "child_class": "li",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "6px"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Gallery Product info"
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "main",
+        "parent_slug": null,
+        "child_class": "section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-alt)",
+                "cluster": "background"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "56px",
+              "grid-template-columns": "3fr 2fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "section",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "56px",
+              "grid-template-columns": "3fr 2fr"
+            }
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Pack size Flavour Topping Dietary Price"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "16px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "8px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid transparent",
+                "cluster": "border"
+              },
+              "border-color": {
+                "value": "var(--primary)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "transition": {
+                "value": "border-color 0.15s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "8px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid transparent",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "transition": {
+                "value": "border-color 0.15s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "8px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid transparent",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "transition": {
+                "value": "border-color 0.15s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "8px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid transparent",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "transition": {
+                "value": "border-color 0.15s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "var(--surface-cream)",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "New? first — postage included."
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "text-align": {
+                "value": "center",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "border-bottom": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-top": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Pack size:"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "4-pack: brief §7.2 shows it; CLAUDE.md doesn't list — confirm with Zainab before"
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "8px"
+            }
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "20"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              },
+              "line-height": {
+                "value": "1",
+                "cluster": "typography"
+              },
+              "transition": {
+                "value": "all 0.15s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "button",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<button> maps to atomic block 'sgs/button'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "8px"
+            }
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "40"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "8px",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "cursor": {
+                "value": "pointer",
+                "cluster": "other"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              },
+              "line-height": {
+                "value": "1",
+                "cluster": "typography"
+              },
+              "transition": {
+                "value": "all 0.15s",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Flavour:"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Coming-soon placeholder for the fruit-flavour roadmap (CLAUDE.md notes strawberr"
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Topping:"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Dietary:"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-family": {
+                "value": "'Inter', sans-serif",
+                "cluster": "other"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Free UK delivery on orders over £35"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--success)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "12px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "500",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "12px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "500",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "12px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "500",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "12px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text-muted)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "12px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "500",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              },
+              "text-align": {
+                "value": "center",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              },
+              "text-align": {
+                "value": "center",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              },
+              "text-align": {
+                "value": "center",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(4, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              },
+              "text-align": {
+                "value": "center",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "#FFF5F6",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "2px solid var(--primary)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Please read carefully"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--primary-dark)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "700",
+                "cluster": "typography"
+              },
+              "letter-spacing": {
+                "value": "0.5px",
+                "cluster": "typography"
+              },
+              "text-transform": {
+                "value": "uppercase",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Contains: , , , (legume — may cross-react with peanut and soy allergies in sensi"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              },
+              "line-height": {
+                "value": "1.7",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "no eggs, no dairy. Contains oats, fenugreek, and flaxseed. Same tree nut kitchen"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "border-top": {
+                "value": "1px solid var(--primary)",
+                "cluster": "border"
+              },
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "14px",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "section",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "article",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(3, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "article",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(3, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "article",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "12px",
+              "grid-template-columns": "repeat(3, 1fr)"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "background": {
+                "value": "white",
+                "cluster": "background"
+              },
+              "border": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              },
+              "border-radius": {
+                "value": "12px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "article",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Reham"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "article",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Sarah M."
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "article",
+        "parent_slug": null,
+        "child_class": "p",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<p> maps to atomic block 'sgs/text'"
+          },
+          {
+            "req": "R3-child-has-no-own-content",
+            "value": "Halimah"
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "color": {
+                "value": "var(--text)",
+                "cluster": "typography"
+              },
+              "font-size": {
+                "value": "13px",
+                "cluster": "typography"
+              },
+              "font-weight": {
+                "value": "600",
+                "cluster": "typography"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "footer",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": true,
+        "failures": []
+      },
+      {
+        "parent_class": "div",
+        "parent_slug": null,
+        "child_class": "div",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "draft": "plugins\\sgs-blocks\\scripts\\tests\\fixtures\\phase-f\\sgs-tabs-realistic.draft.html",
+    "pairs": [
+      {
+        "parent_class": "sgs-tabs",
+        "parent_slug": "sgs/tabs",
+        "child_class": "sgs-tabs__inner",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-tabs__inner",
+        "parent_slug": null,
+        "child_class": "sgs-tabs__nav",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "border-bottom": {
+                "value": "1px solid var(--border)",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-tabs__inner",
+        "parent_slug": null,
+        "child_class": "sgs-tabs__panel",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-tabs__panel",
+        "parent_slug": "sgs/info-box",
+        "child_class": "sgs-tabs__panel-media",
+        "child_slug": "sgs/media",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/media'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "48px",
+              "grid-template-columns": "340px 1fr"
+            }
+          },
+          {
+            "req": "R4-child-carries-layout-css",
+            "value": "child declares no layout property at any tier"
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "border-radius": {
+                "value": "16px",
+                "cluster": "border"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-tabs__panel",
+        "parent_slug": "sgs/info-box",
+        "child_class": "sgs-tabs__panel-body",
+        "child_slug": null,
+        "child_recognition_blocks_fold": false,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "grid",
+              "gap": "48px",
+              "grid-template-columns": "340px 1fr"
+            }
+          }
+        ]
+      },
+      {
+        "parent_class": "sgs-tabs__panel-body",
+        "parent_slug": null,
+        "child_class": "sgs-tabs__list",
+        "child_slug": "sgs/info-box",
+        "child_recognition_blocks_fold": true,
+        "qualifies": false,
+        "failures": [
+          {
+            "req": "R0a-child-has-no-block-identity",
+            "value": "child resolves to 'sgs/info-box'"
+          },
+          {
+            "req": "R0b-child-tag-is-not-content-shaped",
+            "value": "<ul> maps to atomic block 'sgs/icon-list'"
+          },
+          {
+            "req": "R2-parent-carries-no-arrangement",
+            "value": {
+              "display": "flex",
+              "gap": "20px"
+            }
+          },
+          {
+            "req": "R5-child-only-structural-css",
+            "value": {
+              "list-style": {
+                "value": "disc",
+                "cluster": "other"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

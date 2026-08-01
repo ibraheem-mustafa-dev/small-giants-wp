@@ -1,5 +1,145 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D445 — Consolidation council: retire `sgs/content-collection` into `sgs/card-grid`, PORTING the non-Woo path [ROUTINE]
+
+Bean asked for a council that votes individually with written justification. Four independent seats
+(capability / client-UX / cloning-routing / architecture) — deliberately separate agents, because one
+agent role-playing four seats converges on itself. **Verdict 3–1 to retire.** Nobody ranked "merge all
+three" first, which answers Bean's own devil's-advocate.
+
+**The dissent is a CONDITION, not a veto, and binds the build:** the capability seat proved
+`content-collection` works WITHOUT WooCommerce (falls back to the `sgs_product` CPT) while
+`card-grid`'s product mode hard-gates on `wc_get_products` and returns empty without it. It said it
+would move to A if the port were real rather than promised. So the fold MUST carry: the 7 meta-driven
+selection rules, rendering through `sgs/product-card` in `sgs-cpt` mode (card-grid's `query` mode emits
+its own generic markup today), and the N+1 `update_meta_cache()` guard.
+
+**`sgs/post-grid` STAYS** — editorial block, only `view.js` of the three, and live at
+`theme/sgs-theme/parts/sidebar.html:4` (an earlier "zero usage" claim of mine was wrong).
+
+**⚠ D163 does NOT pre-answer this.** It ruled on `content-collection`↔`post-grid` and
+`feature-grid`↔`card-grid` — never this pair — and its cited mechanism (`has_inner_blocks`) was DROPPED
+from the DB on 2026-07-05 for silently mis-routing. Citing D163 against this fold applies it one link
+wider than it decided. Build step: Wave D Step P.
+
+## D444 — FR-38-25 cursor-follow glow: SPEC'D, NOT BUILT — emitter + participant, capability-derived [ROUTINE]
+
+Bean rejected a three-route menu (container-only / shared-wrapper / global) and replaced it with a
+capability RULE: any block that is container-kind or has a background colour/image control. That
+computes to 56 blocks. When told a glow would be occluded behind an opaque button he pushed further —
+*"it should be able to go over any surface seamlessly"* — which produced the two-role model now in
+Spec 38 §3.3: **EMITTER** blocks publish the pointer coordinates, **PARTICIPANT** blocks read the
+inherited values and paint their own share of the same field.
+
+Investigation corrected one premise and confirmed the other: the glow does NOT stop tracking over a
+child (`mousemove` bubbles; `mouseleave` doesn't fire entering a child), but it IS occluded (painted on
+a `::before` while children are forced to `z-index:1`). Tier V — the existing `spotlight.js` already
+does this in vanilla with a live reduced-motion gate; GSAP adds nothing §1.3 would accept.
+
+**Two risks are STATED, NOT MEASURED** — paint cost (a radial-gradient repaints every pointer frame; N
+participants = N repaints) and legibility under a moving field. Measure both FIRST. Build step: Wave D Step R.
+
+## D443 — Motion-path resting position: the header CANNOT fix this, and a runtime clamp is the wrong layer [ROUTINE]
+
+Bean's report: the travelling text finishes hidden behind the sticky header. His follow-up reframed the
+whole fix — *"text is meant to be read… it shouldn't end at the top, it should be like in the middle…
+and then be customised in the controls by my clients"*. He also asked the right question: shouldn't the
+header handle this?
+
+`/research-check` settled it. **`scroll-padding-top`/`scroll-margin-top` govern the scrollport's optimal
+viewing region for scroll-snap and native anchor/`scrollIntoView` jumps ONLY** (MDN + W3C CSSWG #7931 +
+multiple GSAP forum threads where practitioners hand-roll header offsets). A GSAP transform never
+triggers a scroll operation, so the algorithm never runs against it. **The header genuinely cannot fix
+it; each effect must know where it may finish.** Confidence: high.
+
+The proposed runtime clamp was REJECTED as the wrong layer: it reinvents positioning as ad-hoc pixel
+maths when GSAP already has a two-value vocabulary, does per-frame layout reads for a value already
+published as a CSS custom property, silently drags back a path authored to exit the viewport, and needs
+a second code path for reduced motion.
+
+**SHIPPED (rule-7 design gate, Bean-signed):** a client-facing **"Resting position"** control — presets
+`Just below header` / `Middle of screen` (DEFAULT) / `Lower third` / `Custom` + a vh slider — resolved
+declaratively in CSS via `calc()`/`max()` against `--sgs-header-height`, with a `max()` floor so text can
+never clip under the header. Industry convention confirms the default: `center center` is what mature
+systems settle readable content at; `top top` is for pinning mechanics, never for reading.
+**⚠ NOT YET VERIFIED LIVE** — first verification attempt produced a FALSE PASS (probe measured the
+traveller 3,000px below the viewport and called it "clear of the header"). Spec 38 FR-38-17 amended.
+
+## D442 — Colour-token contract: `surface` was doing two contradictory jobs, and the EXTRACTOR was the real fix [INCIDENT]
+
+Bean reported the testimonial slider's dots/arrows looking wrong on one page and fine on another. They
+measured IDENTICALLY (44×44 button, 10×10 dot, 8×24 glyph, both pages, both breakpoints) — but chasing
+*why they looked different* uncovered a framework-wide defect: **the framework has never defined what
+its colour slots mean.** `theme.json` wires `surface` to be the page background; 33 blocks across 76
+call sites simultaneously use it as their CARD fill. Both load-bearing, never reconciled. On any palette
+where `surface` isn't white the card vanishes into the page — proven on Mama's (`#fbf3dc` for both).
+Seven of eight client palettes are white-on-white, which hid it completely.
+
+Shipped: the contract in Spec 32 §12 (substrate / raised / inverse-ink, all 16 slots); 76 call sites
+classified and 34 rerouted — note a THIRD usage exists (`surface` as light ink on dark sections) that
+must go to `text-inverse`, so a blind find-and-replace would have broken dark sections; 3 wrong
+`#0D5557` fallbacks fixed; Mama's `#fbf3dc` removed from `product-card` (a client colour in a
+client-agnostic block).
+
+**THE LOAD-BEARING PART:** the Spec 33 extractor DETECTED `surface-alt` but never wrote the slug, so the
+next client-snapshot regeneration would have silently recreated the collision and made the entire sweep
+cosmetic. Synthesis fallback added + Spec 33 amended. Also: motion-path skew fixed by removing
+`preserveAspectRatio="none"` (proven live via the transform matrix) — the ~2,705px jump is a SEPARATE,
+still-open defect sharing that file.
+
+## D441 — L2 relational qualifier ships, unwired: the trigger is the parent, not the child [ROUTINE]
+
+New module `plugins/sgs-blocks/scripts/converter/services/l2_qualify.py` — the L2 (CONTENT-layer)
+relational qualifier Bean specified at D439: *"the way to tell it's a fake wrapper is the fact that
+the parent (AKA L1) is a real block equivalent, that block is a type of container, but it barely has
+any CSS applied to it… and then a direct child that has literally no content in it but it has all of
+the CSS that the L1 was missing."* Built exactly as stated: whether the **direct PARENT** is a
+recognised container-kind block decides whether its child is even examined as a candidate L2 fold;
+the child's own identity is an OUTPUT of that question, never an input.
+
+Pure, UNWIRED — no caller changed, no walker touched. Ships with `--self-test` (1 positive case + 6
+planted violations). Reproduces Spec 31 §2.7's 7-section acceptance table 5/5 on the real homepage
+draft, zero false positives. Measurement artefact:
+`.claude/reports/2026-08-01-l2-qualifier-measurement.json` (377 parent-child pairs).
+
+A `/qc-council` pass falsified four separate recognition-fix proposals before this shape was
+accepted; a separate 6-persona `/adversarial-council` rejected the tabs-synthesis design
+(`plans/2026-08-01-tabs-synthesis-design.md`, now a tombstone) — its synthesis signal fires
+correctly on 1 block, falsely on 4 including `sgs/feature-grid`, which converts perfectly today.
+
+Also measured this session: the G3-dissolve fix recovers ZERO content (all 4 real G3 failures have
+descendants that fail the same allow-list) — dropped as a proposal. `sgs/tab.label` is ONE
+mis-seeded row (`emit_shape='child'` + a phantom `derived_selector='.sgs-tab__label'`), not a rule
+problem — 9 sibling blocks correctly resolve `nested`. 8 structural BEM tokens mis-resolve
+(`nav`/`list`/`items`/`slot`/`panel`/`ribbon`/`attribution`) — NOT `item`, which stays load-bearing
+for feature-grid. A new fixture, `sgs-tabs-realistic.draft.html`/`.expected.md`, replaces the
+29-line conformance stub, which rendered broken — browser-verified at 1280 and 375. Baselines held:
+converter suite 586 passed/1 skipped; conformance 23 passed/27 failed (pre-existing); feature-grid
+10 blocks, 6/6 text (no regression).
+
+**Next session:** wire the L2 reorder into the three fate-deciding loops; the `__trigger` vs `__tab`
+draft-vocabulary decision is Bean's, not made here.
+
+## D440 — `_absorb_transparent_wrappers` deleted: fired 0 times, rejected the exact pattern it existed to fold [ROUTINE]
+
+Deleted from `plugins/sgs-blocks/scripts/converter/services/section_passes.py` (with
+`_is_absorbable_wrapper`, `_ABSORB_GAP_PROPS`, `_ABSORB_POSITIONING_PROPS`) and its call site in
+`converter/entry.py`.
+
+**Evidence, not inference:** fired 0 times across 46 real invocations. It rejected the 4 real
+homepage content bands SOLELY for declaring `margin` — but `max-width` + `margin:0 auto` IS the
+Spec 31 §2.3 L2 CONTENT band the mechanism existed to fold, so its own disqualifying rule excluded
+its only intended target. It could never have influenced recognition regardless:
+`_root_classes()` filters out `__`-suffixed classes before the absorb check runs, and absorb only
+ever merged `__` classes. An A/B comparison with and without the mechanism emitted byte-identical
+markup on every fixture. Wrapper-deciding mechanisms: 9 → 8 — one of the four competing/
+contradicting mechanisms D439 identified is now gone rather than reconciled-in-place.
+
+This directly follows D439's finding that the recognition layer carries four mechanisms, two of
+which contradict each other on the same property (`margin`/`gap`/`padding` disqualifies a wrapper
+in one, is the identifying signature of a wrapper in another). Removing the inert one is a
+cause-agnostic reduction; the surviving three still need reconciling per the rework plan.
+
 ## D439 — Wrapper recognition is broken at the root, and the L2 signal is RELATIONAL not per-element [INCIDENT]
 
 **The root cause, proven.** The table that decides "real block or fake wrapper?" is built by

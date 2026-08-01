@@ -142,19 +142,32 @@ widen or narrow a provision without checking what rides on it.
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 (cloning/Spec 31) — ACTIVE, next session's Phase 1 is fully scoped:**
-  **`plans/2026-08-01-wrapper-recognition-cascade-rework.md`** is the register — read it whole.
-  Shipped 2026-08-01: `4f83e8d5` bare tags inside a repeater now lift (a card written as
-  `<h3>`/`<p>` transferred nothing) + `sgs/option-picker` was missing `arrayContentLift` so its
-  options could never transfer — **needs a `/sgs-update` reseed to take effect**; `989b761d`
-  content gaps are surfaced instead of discarded, **and two commit gates
-  (`ledger/content_gap_check.py`, `content_coverage_check.py`) had been passing since June because
-  nothing ever wrote `content-gaps.json`** — the missing writer is now built.
-  **Root cause found (D439):** the map deciding "real block or fake wrapper?" is built by filtering
-  OUT the rows that say "fake wrapper", so 4 of 64 structural slots are alias-hijacked
-  (`__nav`/`__attribution`/`__ribbon`/`__slot`). Bean's L2 model is RELATIONAL (parent↔child), not
-  per-element. ⛔ **`trigger` deliberately NOT aliased** — tabs is the proof case. ⛔ **The
-  `sgs-card-grid` "cardRadius 12→18px defect" is WITHDRAWN as a probe artefact — do not fix it.**
+- **⭐ Track 1 (cloning/Spec 31) — ACTIVE. L2 relational qualifier built + measured this session,
+  still UNWIRED:** **`plans/2026-08-01-wrapper-recognition-cascade-rework.md`** is the register —
+  read it whole.
+  **2026-08-01 (this session):** built `converter/services/l2_qualify.py`, the L2 (CONTENT-layer)
+  relational qualifier Bean specified at D439 (D441) — pure, UNWIRED, `--self-test` (1 positive +
+  6 planted violations). Trigger = the direct PARENT is a recognised container-kind block; the
+  child's identity is an OUTPUT, never an input. Reproduces §2.7's acceptance table 5/5 on the real
+  homepage draft, zero false positives (`reports/2026-08-01-l2-qualifier-measurement.json`, 377
+  pairs). **Also deleted `_absorb_transparent_wrappers`** (D440; + `_is_absorbable_wrapper` etc.) —
+  fired 0 times across 46 real invocations, rejected the 4 real content bands solely for `margin`
+  (the very pattern it existed to fold). Wrapper-deciding mechanisms: 9 → 8. New fixture
+  `sgs-tabs-realistic.draft.html`/`.expected.md` replaces the 29-line stub that rendered broken.
+  **Councils:** `/qc-council` falsified 4 recognition proposals; a 6-persona `/adversarial-council`
+  rejected tabs-synthesis (tombstone at `plans/2026-08-01-tabs-synthesis-design.md`) — its signal
+  fires correctly on 1 block, falsely on 4 incl. `sgs/feature-grid`, which converts fine today.
+  **Measured, not assumed:** G3-dissolve recovers ZERO content — dropped. `sgs/tab.label` is ONE
+  bad row (mis-seeded `emit_shape='child'` + phantom `derived_selector`) — 9 siblings correctly
+  `nested`. 8 structural BEM tokens mis-resolve (NOT `item`, load-bearing for feature-grid).
+  Baselines unchanged: suite 586/1 skip; conformance 23/27 fail (pre-existing); feature-grid 6/6.
+  **Next session (PLANNED, not parked):** (1) `__trigger` vs `__tab` vocabulary — Bean's call;
+  (2) the recognition/`equivalent_block_for` fix for the 4 hijacked slots; (3) wire L2 into the
+  three fate-deciding loops.
+  ⛔ **The `sgs-card-grid` "cardRadius 12→18px defect" is WITHDRAWN as a probe artefact — do not fix
+  it.** ⛔ **OWED (`4f83e8d5`): `sgs/option-picker`'s `arrayContentLift` needs a `/sgs-update` reseed
+  before its options can transfer.** ⛔ **Do NOT alias `trigger`→`tab` unilaterally** — Bean's call
+  (item 1); `sgs/tabs` renders `__tab`, both fixtures author `__trigger`, neither is canonical yet.
   Prior sessions: `memory/session-2026-07-31-track1.md` + `-track1-session2.md` (nav dropdowns
   shipped after 5 live-only defects, D432/D433).
 - **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),

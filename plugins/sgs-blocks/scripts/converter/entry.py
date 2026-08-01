@@ -232,7 +232,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
 
     from converter.services import content_gap_collector as _gap_collector
     from converter.services.css_parse import parse_css
-    from converter.services.section_passes import SKIP_TOP_LEVEL_TAGS, _absorb_transparent_wrappers
+    from converter.services.section_passes import SKIP_TOP_LEVEL_TAGS
 
     soup = BeautifulSoup(html, "html.parser")
     css_rules = parse_css(css) if css else {}
@@ -278,13 +278,24 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "content_gaps": [],
         }
 
-    # Transparent-wrapper absorb pre-pass (2026-05-24).
-    # When a section has exactly one direct element child that's a transparent
-    # wrapper (BEM-named, no internal block-spacing or positioning, not a
-    # registered composite block), absorb its className into the section root
-    # so the walker emits ONE sgs/container instead of two nested ones.
-    _absorb_transparent_wrappers(root, css_rules)
-
+    # The transparent-wrapper absorb PRE-PASS was DELETED here 2026-08-01 (Bean-directed).
+    # It ran BEFORE recognition and mutated the DOM (merged a wrapper child's classes
+    # onto the section root, then unwrap()'d it). Measured before removal, over 46 real
+    # invocations (31 conformance + 7 phase-f + 10 real homepage/product sections):
+    #   * it fired ZERO times;
+    #   * the four real homepage bands it exists to fold (featured-product /
+    #     ingredients-section / gift-section / social-proof `__inner`) were each rejected
+    #     SOLELY for declaring `margin` — i.e. it rejects the `max-width` + `margin:0 auto`
+    #     centring pattern that IS the Spec 31 §2.3 L2 content band, the exact shape it was
+    #     written to catch. Its `_ABSORB_GAP_PROPS` was a DISQUALIFIER list, not an
+    #     absorb list, and disagreed with the L2 rule on precisely padding/margin/gap;
+    #   * it could never influence recognition anyway — `recognition._root_classes()`
+    #     filters out `__`-containing classes and absorb only ever merged `__` classes;
+    #   * an A/B on the canonical band shape emitted BYTE-IDENTICAL markup with and
+    #     without it (`contentWidth` lands via the L2 fold either way).
+    # The L2 question is now owned by `converter/services/l2_qualify.py`, whose trigger is
+    # the direct PARENT being a recognised container-kind block — which is why it cannot
+    # live at this call site: nothing is recognised yet here.
     html_id = root.get("id", "")
     resolved_section_id = section_id or html_id
     selector_classes: list[str] = root.get("class", []) or []

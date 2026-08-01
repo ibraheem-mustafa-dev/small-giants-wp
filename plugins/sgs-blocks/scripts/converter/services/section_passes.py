@@ -1,8 +1,7 @@
 """section_passes.py — the two universal section passes, ported from the frozen
 engine (EXECUTION Step 14, Phase 5, 2026-07-04).
 
-FAITHFUL byte-copies of ``convert.py::_absorb_transparent_wrappers`` (:2944, the
-transparent-wrapper absorb PRE-pass) + ``convert.py::ensure_root_section_class``
+FAITHFUL byte-copy of ``convert.py::ensure_root_section_class``
 (:5181, the universal className guarantee POST-pass) and their private helpers —
 assembled programmatically from the frozen source so the port cannot drift
 (only the import bindings below differ):
@@ -43,89 +42,16 @@ def set_trace_fn(fn) -> None:
     _trace = fn if callable(fn) else _noop_trace
 
 
-_ABSORB_GAP_PROPS = frozenset({
-    "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
-    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
-    "gap", "row-gap", "column-gap",
-})
-_ABSORB_POSITIONING_PROPS = frozenset({
-    "position", "top", "right", "bottom", "left",
-    "z-index", "transform", "overflow",
-})
-
-
-def _is_absorbable_wrapper(child: "Tag", css_rules: dict) -> tuple[bool, str]:
-    """Decide whether a direct child is an absorbable transparent wrapper."""
-    if not isinstance(child, Tag):
-        return False, "not a Tag"
-    if child.name in SKIP_TOP_LEVEL_TAGS:
-        return False, f"<{child.name}> in SKIP_TOP_LEVEL_TAGS"
-    if not any(isinstance(c, Tag) for c in child.children):
-        return False, "leaf (no Tag children)"
-    classes = child.get("class", []) or []
-    bem_classes = [c for c in classes if c.startswith("sgs-") and "__" in c]
-    if not bem_classes:
-        return False, "no sgs-X__Y BEM class"
-    root_classes = [c for c in classes if c.startswith("sgs-") and "__" not in c and "--" not in c]
-    for c in root_classes:
-        slug = f"sgs/{c[4:]}"
-        if db.block_exists(slug):
-            return False, f".{c} is a registered block ({slug})"
-    for bc in bem_classes:
-        target_sel = f".{bc}"
-        for css_sel, decls in css_rules.items():
-            if target_sel not in css_sel:
-                continue
-            for prop in decls:
-                p = prop.lower()
-                if p in _ABSORB_GAP_PROPS:
-                    return False, f"child has spacing rule ({css_sel} {{ {prop}: ... }})"
-                if p in _ABSORB_POSITIONING_PROPS:
-                    return False, f"child has positioning rule ({css_sel} {{ {prop}: ... }})"
-    return True, ""
-
-
-def _absorb_transparent_wrappers(section_root: "Tag", css_rules: dict) -> list[str]:
-    """Pre-pass: absorb one transparent wrapper child into the section root.
-
-    Mutates section_root in place. Returns list of class names absorbed.
-    """
-    if not isinstance(section_root, Tag):
-        return []
-    section_classes = list(section_root.get("class", []) or [])
-    root_block_classes = [c for c in section_classes
-                          if c.startswith("sgs-") and "__" not in c and "--" not in c]
-    for c in root_block_classes:
-        slug = f"sgs/{c[4:]}"
-        if db.block_exists(slug):
-            _trace("absorb_skipped_section", node_tag=section_root.name,
-                   node_classes=section_classes,
-                   reason=f"section root .{c} is registered block ({slug}) — FR1 path")
-            return []
-    direct_children = [c for c in list(section_root.children) if isinstance(c, Tag)]
-    if len(direct_children) != 1:
-        _trace("absorb_skipped_section", node_tag=section_root.name,
-               node_classes=section_classes,
-               reason=f"{len(direct_children)} direct element children (need exactly 1)")
-        return []
-    child = direct_children[0]
-    ok, reason = _is_absorbable_wrapper(child, css_rules)
-    if not ok:
-        _trace("absorb_skipped_child", node_tag=child.name,
-               node_classes=child.get("class", []) or [],
-               reason=reason)
-        return []
-    child_classes = list(child.get("class", []) or [])
-    added: list[str] = []
-    for cc in child_classes:
-        if cc not in section_classes:
-            section_classes.append(cc)
-            added.append(cc)
-    section_root["class"] = section_classes
-    _trace("absorb_applied", node_tag=child.name, node_classes=child_classes,
-           classes_added=added, section_classes_after=section_classes)
-    child.unwrap()
-    return added
+# _ABSORB_GAP_PROPS / _ABSORB_POSITIONING_PROPS / _is_absorbable_wrapper /
+# _absorb_transparent_wrappers were DELETED 2026-08-01 (Bean-directed). Measured
+# over 46 real invocations: fired ZERO times, and rejected the four real homepage
+# content bands solely for declaring `margin` — the `max-width` + `margin:0 auto`
+# pattern that IS the Spec 31 §2.3 L2 band it existed to fold. `_ABSORB_GAP_PROPS`
+# was a DISQUALIFIER list despite its name, and contradicted the L2 rule on exactly
+# padding/margin/gap. The L2 question now lives in `converter/services/l2_qualify.py`,
+# triggered by the direct PARENT being a recognised container-kind block.
+# This module retains `ensure_root_section_class` (the universal className POST-pass)
+# and SKIP_TOP_LEVEL_TAGS.
 
 
 def _extract_first_block_comment(line: str) -> tuple[str, str | None, str] | None:
