@@ -111,7 +111,38 @@ strictly for BLOCKED or POSTPONED work and these are planned work with a named n
 were REMOVED from parking and are now Steps K and L of this wave. **Do not re-park them, and do not
 park anything else from this plan — this plan is the register.**
 
-### Step K — canary fixture pages carry blocks the editor cannot open (was P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR)
+### Step K — CLOSED 2026-08-01: no rebuild was needed, and the method is recorded
+
+> ✅ **CLOSED.** The rescoped question was "rebuild whichever of the six deleted pages were
+> load-bearing baselines". **Measured answer: none of them were.** A repo-wide search (not just
+> `scripts/motion-qa/`) found the six IDs — 2022, 2023, 2024, 2025, 2026, 2029 — referenced by
+> **zero** probes, scripts or reports. The only occurrence anywhere is the task description in
+> `LEDGER.md` itself. The live motion fixtures every probe actually uses are 2083, 2086, 2101,
+> 2103, 2105, 2107, 2109, 2114 — all built by the clean method and all still present.
+>
+> This was verified WIDER than the agent that first reported it: its search was scoped to
+> `scripts/motion-qa/`, and a file-scoped search cannot support an absence claim (the standing
+> rule — a subagent absence claim is a hypothesis). The repo-wide re-check confirmed it.
+>
+> **THE METHOD, recorded so the contamination cannot recur.** The six were written
+> programmatically and stored a wrapper `<div class="wp-block-sgs-container"></div>` that
+> `container/save.js` never emits — it returns `<InnerBlocks.Content />` with no wrapper — so every
+> container reported `isValid: false` and no inspector would open. The frontend was unaffected
+> (render.php drives output), which is exactly why it went unnoticed.
+>
+> To build a fixture page safely:
+> 1. **`wp post create`, never `wp post update`** — a project hook blocks the latter. Recreate
+>    rather than edit.
+> 2. **Never hand-author or string-manipulate `post_content`.** Serialise from real block markup:
+>    take a known-clean page's stored content (2105 / 2107 / 2109 are proven clean — 12–18
+>    containers, zero bad wrappers) as the reference shape, or author in the editor and export.
+> 3. **A container block contributes NO wrapper div of its own to stored content.** If the markup
+>    you are about to store contains `<div class="wp-block-sgs-container"></div>`, it is already
+>    contaminated — that string is the fingerprint.
+> 4. **Verify per BLOCK, not per page.** Open the real editor and assert `isValid` on each block.
+>    "The page loads" only ever tested the frontend, which was never the broken surface.
+
+### Step K (historical detail) — canary fixture pages carry blocks the editor cannot open (was P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR)
 
 > ⚠ **RESCOPED 2026-08-01 (Wave E).** This is no longer a generator hunt. Measured across all
 > 16 canary pages: contamination is confined to SIX old pages (2022, 2023, 2024, 2025, 2026,
@@ -157,14 +188,49 @@ park anything else from this plan — this plan is the register.**
   are not human drags. Re-check with Bean on a real machine; if it persists, the measurement set is
   incomplete, not the bug absent.
 
-### Step Q — looping carousels (Bean request, 2026-08-01)
+### Step Q — looping as an INDEPENDENT control (Bean request, 2026-08-01; RESHAPED same day)
+
+> ⚠ **RESHAPED 2026-08-01 (D460) — the original fix-shape was FALSIFIED by the file it proposed
+> to edit.** This step used to read "universal across the drag roster", meaning a change to
+> `fx-draggable.js`. That file's own docblock (lines 54-74) is a documented prior decision
+> rejecting exactly that: *"re-deriving such a block's own wrap-around maths inside a
+> block-agnostic module is exactly the per-block hyperfocus R-31-9 forbids"* — and its contract
+> states it never creates a wrapper, never transforms, never reorders DOM, all three of which
+> looping a native scroller requires. A second error in the same sentence: **`sgs/testimonial-slider`
+> is NOT on the drag roster** (removed 2026-07-31, momentum now block-private), so "the drag roster"
+> was never the set of carousels Bean meant. Measured roster: before-after, buybox,
+> decorative-image, gallery, google-reviews, post-grid, trustpilot-reviews.
   **Model:** sonnet · **Time:** 1.5 h
   **Action:** Bean: *"for the dragging physics feel the option to make the carousels looping is important
-  so it doesn't get abruptly stopped by the end of the list and just loops round."* Deliberately sequenced
-  AFTER the drag fixes — looping on top of a broken drag would have layered a new behaviour onto a faulty
-  one. That precondition is now met. Universal across the drag roster, not per-block.
+  so it doesn't get abruptly stopped by the end of the list and just loops round."*
+  **Bean's ruling dissolves the conflict rather than resolving it:** *"looping should not be tied to the
+  drag effect — they should be independent controls"* and *"we're not setting the default behaviour in
+  all carousels, just making the functionality available to those who want it."* So: a NEW
+  `src/shared/effects/fx-carousel-loop.js` owns wrap-around as its explicit, spec'd job;
+  **`fx-draggable.js` is not modified at all**, so yesterday's decision is not overturned — it is simply
+  not touched. Default OFF, opt-in per instance.
+  ⚠ **Measure, do not assume:** cloning changes `scrollWidth`, which the drag module derives its bounds
+  from. Prove bounds re-derive in all three states — loop-only, drag-only, both-on.
+  **A11y is a deliverable here, not a deferral:** a loop has no last item, so "next" never disables and
+  dots have no fixed count. Arrows must wrap; the dot count keys to the REAL item count with the active
+  dot tracking modulo position — the assertion Bean's eye made last wave ("did the dots follow the
+  cards?", not "did it move?").
 
-### Step R — BUILD the cursor-follow glow (FR-38-25 is SPEC'D, NOT BUILT)
+### Step R — BUILT 2026-08-01 (`7d535b40`), NOT YET LIVE-VERIFIED
+
+> ✅ **BUILT + committed + pushed.** Widened by Bean from a glow to a pluggable **field-type
+> system** (D459, Spec 38 §3.3 amended same session). Emitter/painter split: `cursor-field.js`
+> publishes viewport-pixel pointer coordinates; `fx-cursor-field.css` paints. Ships `glow` +
+> `spotlight-mask`; `floating-objects` is recorded in-spec as a named future type.
+> `spotlight.js` is now a thin wrapper preserving its frozen contract for `sgs/mega-panel`.
+> **Tier V, 982 bytes gzip, zero GSAP.** `fx_effects.creates_panel` added — measured roster diff
+> 28 panels before / 28 after, offered on exactly the 7 blocks with a paintable background.
+>
+> ⛔ **STILL OWED: a live observation.** It builds green and every gate passes, but no instance has
+> been seen painting or following a cursor. Artefact presence is not behaviour — morph sat in every
+> manifest for months having never once animated (D452). Do not mark this closed on the build alone.
+
+### Step R (original brief) — BUILD the cursor-follow glow
   **Model:** sonnet · **Time:** 2 h
   **Action:** Spec 38 §3.3 FR-38-25 was written and Bean-signed on 2026-08-01 (emitter + participant,
   Tier V, capability-derived eligibility). **No code exists.** The module already exists and is generic

@@ -1,5 +1,78 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D460 — Looping is an INDEPENDENT control, not a drag setting [ROUTINE]
+
+**The question.** Bean asked for looping carousels: *"for the dragging physics feel the option to
+make the carousels looping is important so it doesn't get abruptly stopped by the end of the list
+and just loops round."* The Wave D plan's answer was "add looping to `fx-draggable.js`, universal
+across the drag roster".
+
+**That fix-shape was FALSIFIED by the file it proposed to edit.** `fx-draggable.js`'s own docblock
+(lines 54-74) is a documented prior decision rejecting exactly this, verbatim: *"re-deriving such a
+block's own wrap-around maths inside a block-agnostic module is exactly the per-block hyperfocus
+R-31-9 forbids"*. Its contract further states it never creates a wrapper, never transforms an
+element and never reorders DOM — all three of which looping a native scroller requires (clone
+items, reset `scrollLeft` at the boundary).
+
+A second error surfaced in the same check: **`sgs/testimonial-slider` is not on the drag roster.**
+It was removed 2026-07-31 and its momentum is now block-private, so "the drag roster" was never the
+set of carousels Bean meant. The measured roster is before-after, buybox, decorative-image, gallery,
+google-reviews, post-grid, trustpilot-reviews.
+
+**Bean's ruling dissolved the conflict rather than resolving it:** *"looping should not be tied to
+the drag effect — they should be independent controls"*, and *"we're not setting the default
+behaviour in all carousels, just making the functionality available to those who want it."* A
+SEPARATE module owns wrap-around as its explicit, spec'd job; `fx-draggable.js` is not modified at
+all, so yesterday's decision is not overturned — it is simply not touched. Default OFF, opt-in.
+
+**Carried consequence:** cloning changes `scrollWidth`, which is what the drag module derives its
+bounds from. That integration is to be MEASURED in all three states (loop-only, drag-only, both-on),
+never assumed.
+
+**Lesson, generalised:** a module's own docblock can be a documented prior decision that refutes the
+change you are about to write into it. Grepping for "does this feature exist" returns nothing and
+you build it; reading *why the file is shaped as it is* finds the refutation.
+
+## D459 — FR-38-25 widened to a field-type system; `creates_panel` added to `fx_effects` [ROUTINE]
+
+**The widening.** FR-38-25 was signed (D444) as one radial gradient following the pointer. Bean
+widened it during planning: *"we're building this to be able to compete with and replicate those
+comp websites and clone incredible designs from Claude Design where usually the effect isn't limited
+to a glow/colour, it could be a pattern, move floating objects etc."*
+
+**The signed MECHANISM survives intact and is the load-bearing part** — the emitter publishes the
+pointer position in VIEWPORT pixels; custom properties inherit; each participant paints the same
+field with `background-attachment: fixed`, which resolves against the viewport, so the field aligns
+across separately-painted boxes with zero per-element geometry maths. What changed is that the
+PAINTER is swappable: a field type sets one custom property (`--sgs-cursor-field-layer`, optionally
+`--sgs-cursor-field-mask`) and everything downstream reads it without naming a type. Ships `glow`
+(the FR as signed) plus `spotlight-mask`, which paints via `mask-image` — a genuinely different CSS
+property, so the seam is demonstrated rather than claimed. `floating-objects` is recorded in-spec as
+a named future type, not silently dropped (STOP-29).
+
+`spotlight.js` becomes a thin wrapper preserving its frozen export contract for its one consumer,
+`sgs/mega-panel`. **Tier V: 982 bytes gzip, no GSAP dependency** — a page using this and no Tier G
+effect ships zero GSAP bytes.
+
+**`creates_panel` — a third class of effect, added because the two-class model could not express
+this one.** The qualifying-blocks generator had: `requires='none'` (permissive — offered where a
+panel exists, never creates one, which is what stops all ~80 blocks acquiring a panel from `scrub`)
+and `requires=<specific>` (creates a panel on any block providing it). `cursor-field` fits neither:
+it is genuinely inert on a block with no paintable background, so it cannot be `none`.
+
+**MEASURED BEFORE BUILDING, and this is why the column exists:** letting it create panels would have
+put a brand-new fx panel on **11 blocks** — `nav-menu`, `site-header`, `site-header-row`,
+`site-footer`, `site-footer-row`, `form`, `modal`, `nav-drawer`, `mega-panel`, `feature-grid`,
+`testimonial-slider` — and because `offered = specific + permissive`, each would ALSO have silently
+inherited `motion-path` and `scrub`. That is the "13 panels where none makes sense" containment
+failure arriving by a new route. With `creates_panel=0` the measured roster diff is **28 panels
+before, 28 after**, `cursor-field` offered on exactly the 7 blocks with a paintable background.
+Default is 1, so all 13 pre-existing effects keep their behaviour unchanged.
+
+**Known residual, recorded not assumed away:** field types are named in three places (the fx.js
+picker, the PHP closed list, the CSS rules) and no gate cross-checks them. A type present in the
+picker but missing from the CSS would offer a client an option that silently paints nothing.
+
 ## D458 — The horizontal panel's keyboard rescue is an ACCIDENT, and must stay one [ROUTINE]
 
 **The question.** Three sibling effects were fixed this session for leaving focusable controls

@@ -219,12 +219,33 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   CustomWiggle appear ONLY as easing/motion-flavour options inside other G effects' controls
   (e.g. a "spring (physics)" easing choice on a scrub or draggable release). Never standalone
   toggles; each bundles into the chunk of the effect that offers it.
-- **FR-38-25 Cursor-follow background ("cursor glow") — Tier V, EMITTER + PARTICIPANT.**
-  Bean-signed 2026-08-01 (D440). A block's background carries a soft radial field that follows
-  the pointer. **Tier V, not G:** the shipped mega-menu implementation
-  (`src/shared/effects/spotlight.js`, consumed by `sgs/mega-panel`) already does this in vanilla
-  with an rAF-throttled custom-property write and a live reduced-motion gate — GSAP adds nothing
-  the doctrine's §1.3 ratchet would accept.
+- **FR-38-25 Cursor-reactive FIELD — Tier V, EMITTER + PARTICIPANT, PLUGGABLE FIELD TYPES.**
+  Bean-signed 2026-08-01 (D440) as a single radial glow; **WIDENED the same day (D459)** to a
+  field-type system on Bean's ruling: *"we're building this to be able to compete with and replicate
+  those comp websites and clone incredible designs from Claude Design where usually the effect isn't
+  limited to a glow/colour, it could be a pattern, move floating objects etc."*
+
+  A block's background carries a field that follows the pointer. **Tier V, not G:** the shipped
+  mega-menu implementation (`src/shared/effects/spotlight.js`, consumed by `sgs/mega-panel`) already
+  does this in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate —
+  GSAP adds nothing the doctrine's §1.3 ratchet would accept. **Measured at build: 982 bytes gzip,
+  no GSAP dependency**, so a page using this effect and no Tier G effect ships zero GSAP bytes.
+
+  **THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT.** Everything below about coordinates and
+  `background-attachment` is load-bearing and unchanged by the widening. What changed is that the
+  thing painted at the published position is selected rather than hard-coded. A field type sets ONE
+  custom property on the emitter — `--sgs-cursor-field-layer` (the image), optionally
+  `--sgs-cursor-field-mask` — and every downstream rule (the emitter's `::before`, every
+  participant) reads those two and **never names a type**. A new type is therefore a CSS rule plus a
+  descriptor: no new selector, no new JS, no new wiring.
+
+  | Type | Paints via | Status |
+  |---|---|---|
+  | `glow` | `radial-gradient` — a soft pool of light at the pointer | SHIPPED (FR-38-25 as originally signed; the default, so instances saved before types existed are unchanged) |
+  | `spotlight-mask` | the same gradient as a `mask-image`, revealing a pattern beneath rather than adding light | SHIPPED — deliberately paints by a DIFFERENT CSS property, so the extensibility seam is demonstrated rather than asserted |
+  | `floating-objects` | per-object motion following the pointer | **NAMED FUTURE TYPE, NOT BUILT.** Bean's third example. Open questions before it can ship: it is the first type needing per-object JS (so a Tier assignment under §1.3 is required, not assumed), and it needs its own §10 reduced-motion answer — autonomous object motion is not obviously the same SIMPLIFY case as a static field. Recorded here rather than dropped (STOP-29). |
+
+  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1\R-31-9). Two roles:
 
   **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
   - **EMITTER** — publishes the pointer coordinates and paints the base field. Eligible: any
@@ -268,6 +289,42 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   **Unlike the mega-menu's version this is NOT always-on** — that one has no control at all
   (`mega-panel/view.js` applies `data-spotlight` unconditionally). This ships with an inspector
   control, per the framework rule that a capability without an editor control is not done.
+  Three controls on the EMITTER: field style, field colour (`DesignTokenPicker`, storing a palette
+  SLUG so re-theming re-colours the field), field size. **Participants carry NO control** — an
+  opaque child paints its own share automatically, and a per-child opt-out would add a setting to
+  ~51 blocks that almost nobody would open.
+
+  **`fx_effects.creates_panel` — a THIRD class of effect, added by this FR (D459).** The
+  qualifying-blocks generator previously had two: `requires='none'` (permissive — offered wherever
+  a panel already exists, never creates one, which is what stops all ~80 blocks acquiring a panel
+  from `scrub` alone) and `requires=<specific>` (creates the panel on any block providing that
+  token). `cursor-field` fits neither: it is genuinely inert on a block with no paintable
+  background, so it cannot be `none`.
+
+  **This was MEASURED before the code was written, and the measurement is why the column exists.**
+  Letting `cursor-field` create panels puts a brand-new fx panel on **11 blocks** — `nav-menu`,
+  `site-header`, `site-header-row`, `site-footer`, `site-footer-row`, `form`, `modal`, `nav-drawer`,
+  `mega-panel`, `feature-grid`, `testimonial-slider` — and because `offered = specific + permissive`,
+  every one of those would ALSO silently inherit `motion-path` and `scrub`. That is the "13 panels
+  where none makes sense" containment failure arriving by a new route. With `creates_panel=0` the
+  measured roster diff is **28 panels before, 28 after**, and `cursor-field` is offered on exactly
+  the 7 blocks with a paintable background. The column defaults to 1, so all 13 pre-existing effects
+  are behaviourally unchanged.
+
+  The emitter's `requires` token is **`surface`**, derived in
+  `scripts/generate-fx-qualifying-blocks.py` as `containerKind` being set (ANY value — layout and
+  content containers paint backgrounds too) OR a `backgroundImage*` attribute being declared.
+  Deliberately NOT the existing `section` token, which is `containerKind == 'section'` only and
+  would miss `sgs/info-box`, `sgs/testimonial` and friends. The PARTICIPANT half needs no token:
+  participants are detected at RUNTIME from computed background — the fact that actually decides
+  occlusion — never from a declared capability.
+
+  **KNOWN RESIDUAL (recorded, not assumed away).** A field type is named in THREE places: the
+  `fx.js` picker, the `includes/fx-cursor-field.php` closed list, and the
+  `assets/css/fx-cursor-field.css` rules that paint it. No gate cross-checks them, so a type present
+  in the picker but missing from the CSS would offer a client an option that silently paints
+  nothing. Two hand-maintained lists diverging silently is a failure this codebase has met before
+  (see the `TRANSITION_STYLES` note in `class-sgs-motion-registry.php`).
 
 ### 3.4 SVG
 
