@@ -111,9 +111,18 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         return violations
 
     expected_by_effect = {row["effect"]: row for row in FX_EFFECTS}
+    # `creates_panel` was added by FR-38-25 (2026-08-01). Read it only when the
+    # column exists, so this guard still runs against a DB that predates it
+    # rather than hard-erroring — and default to 1, which is the pre-FR-38-25
+    # behaviour every existing effect has.
+    has_creates_panel = any(
+        r[1] == "creates_panel"
+        for r in conn.execute("PRAGMA table_info(fx_effects)").fetchall()
+    )
+    creates_panel_column = "creates_panel" if has_creates_panel else "1"
     db_rows = conn.execute(
         "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-        "scope, requires, pins, triggers FROM fx_effects"
+        f"scope, requires, pins, triggers, {creates_panel_column} FROM fx_effects"
     ).fetchall()
     db_by_effect = {r[0]: r for r in db_rows}
 
@@ -132,7 +141,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
 
         (
             _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor,
-            db_scope, db_requires, db_pins, db_triggers,
+            db_scope, db_requires, db_pins, db_triggers, db_creates_panel,
         ) = db_row
         try:
             db_plugin_set = json.loads(db_plugin_set_json)
@@ -164,6 +173,19 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             mismatches.append(f"pins: db={db_pins!r} expected={expected['pins']!r}")
         if db_triggers != expected["triggers"]:
             mismatches.append(f"triggers: db={db_triggers!r} expected={expected['triggers']!r}")
+        # FR-38-25 — creates_panel decides whether an effect may CREATE an fx
+        # panel or is only OFFERED where one already exists. Drift here is
+        # SILENT and expensive in one direction: flipping cursor-field's 0 back
+        # to 1 puts a brand-new fx panel on 11 blocks (nav-menu, site-header,
+        # site-footer, form among them), each then also inheriting motion-path
+        # and scrub through the permissive pass — the "13 panels where none
+        # makes sense" failure. Nothing errors; the editor just grows controls
+        # nobody asked for. `.get(..., 1)` mirrors the seeder's own default so
+        # every pre-FR-38-25 row compares as 1 without needing the key.
+        if int(db_creates_panel) != int(expected.get("creates_panel", 1)):
+            mismatches.append(
+                f"creates_panel: db={db_creates_panel!r} expected={expected.get('creates_panel', 1)!r}"
+            )
 
         if mismatches:
             violations.append(Violation(
