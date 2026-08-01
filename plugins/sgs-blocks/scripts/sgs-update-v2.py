@@ -1,5 +1,5 @@
 """
-sgs-update-v2.py — 11-stage holistic refresh of the SGS framework knowledge base.
+sgs-update-v2.py — 12-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
 (update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
@@ -30,11 +30,20 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                (report-only; NO --apply — operator-gated). Surfaces which
                                KIND-scoped sgs/container attrs each composite is missing
                                so a version-bump is visible before any operator-gated --apply.
+ 12. motion_fx_artefact_regen — regenerate the Spec 38 motion-fx shipped artefacts
+                               (generated-fx-effects.php + generated-fx-effect-meta.json +
+                               generated-fx-qualifying-blocks.php + .json) from fx_effects
+                               (DB, finalised by Stage 1's tail step) + block.json/edit.js/
+                               style.css (files). Runs last so it always reads the DB
+                               state this SAME invocation produced. See D432 follow-up,
+                               2026-08-01 — the DB was made the single source for the
+                               fx:* namespace, but nothing regenerated the artefacts THE
+                               DB IS FOR; this stage is that missing writer.
 
 Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE]
 
-    --stage N               Run only stage N (1-11; stage 3 is retired). Omit to run all.
+    --stage N               Run only stage N (1-12; stage 3 is retired). Omit to run all.
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
     --prune-mode MODE       Stage 10 only: 'aggressive' (default) DELETEs stale support rows.
@@ -4752,6 +4761,110 @@ def stage_11_container_mirror_report(dry_run: bool = False) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Stage 12 — Motion-fx artefact regeneration (D432 follow-up, 2026-08-01)
+# PORTED FROM: plugins/sgs-blocks/scripts/generate-fx-effects-php.py +
+#              plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py
+# Strategy: delegates to both existing scripts via subprocess.run() — same
+# "delegate rather than duplicate" shape as Stage 7 (generate-block-reference.py)
+# and Stage 8 (sgs-update-uimax-sync.py). Both generators already own their own
+# DB-path resolution, a pure render function, and a --check diff mode; importing
+# their logic here would duplicate it for zero benefit.
+# ---------------------------------------------------------------------------
+
+def stage_12_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
+    """Regenerate the Spec 38 motion-fx shipped artefacts from fx_effects (DB)
+    plus block.json/edit.js/style.css (files).
+
+    Bean's instruction (2026-08-01, the follow-up to D432): "the sgs-update
+    motion layer should also update the data into the artefacts for use in the
+    actual websites... centralising data in the DB is pointless if the files
+    the live websites actually load can silently fall behind it." D432 itself
+    (commit 075baa9b) made the DB the single writer for the fx:* namespace's
+    `block_attributes.css_property` column, but explicitly deferred this half:
+    the DB-authoring-source -> shipped-PHP/JSON regeneration step
+    (`generated-fx-effects.php`, `generated-fx-effect-meta.json`,
+    `generated-fx-qualifying-blocks.php`, `generated-fx-qualifying-blocks.json`)
+    had NO automated writer at all. `npm run build`'s
+    `run-motion-fx-generators.js` only ever invoked both generators with
+    `--check` (verify, never write) — so a DB change or a block.json/edit.js/
+    style.css change could silently drift the four committed artefacts until a
+    developer remembered to run the generators by hand.
+
+    This stage is that missing writer. It runs the two generator scripts with
+    NO `--check` flag (their write mode), exactly mirroring Stage 7/8's
+    subprocess-delegate pattern. `npm run build` keeps `--check`-only via
+    `run-motion-fx-generators.js` — unchanged by this task — so there remains
+    exactly ONE writer per artefact (this stage) and exactly one verifier
+    (the build gate), never two writers racing the same file (the same class
+    of bug D432 fixed for the DB column, now closed for the files it feeds).
+
+    ORDERING (why Stage 12, last): `generate-fx-qualifying-blocks.py` reads
+    block.json/edit.js/style.css directly, never the DB, for block-provision
+    facts (verified in its own module docstring: "This script reads block.json
+    + edit.js FILES directly... for block-provision facts... It reads the DB
+    ONLY for fx_effects.scope/requires"). BOTH generators read `fx_effects` for
+    the effect-side facts, and that table is only fully current after Stage 1's
+    tail step (`_run_motion_fx_registry_seed`) has already run earlier in THIS
+    SAME invocation. Running after Stage 10 (prune) also means a block retired
+    this run can never leave a stale entry in the qualifying-blocks map.
+
+    Idempotent by construction: both generators are pure functions of
+    (fx_effects rows, block.json/edit.js/style.css file contents) with no
+    timestamp in their output (see each generator's own "NO TIMESTAMP" comment
+    — deliberate, so build-deploy's dirty-tree gate stays meaningful). Two
+    consecutive runs with no input change produce byte-identical files.
+    """
+    effects_script = REPO_ROOT / "plugins" / "sgs-blocks" / "scripts" / "generate-fx-effects-php.py"
+    blocks_script = REPO_ROOT / "plugins" / "sgs-blocks" / "scripts" / "generate-fx-qualifying-blocks.py"
+    missing = [str(s) for s in (effects_script, blocks_script) if not s.exists()]
+    if missing:
+        return {"error": f"generator script(s) not found: {', '.join(missing)}"}
+
+    if dry_run:
+        if SGS_DB.exists():
+            try:
+                _conn = sqlite3.connect(str(SGS_DB))
+                fx_count = _conn.execute(
+                    "SELECT COUNT(*) FROM fx_effects"
+                ).fetchone()[0]
+                _conn.close()
+                print(
+                    f"Stage 12 [dry-run]: would regenerate motion-fx artefacts from "
+                    f"{fx_count} fx_effects rows + block.json/edit.js/style.css"
+                )
+                return {"dry_run": True, "fx_effects_rows": fx_count}
+            except Exception as exc:
+                print(f"Stage 12 [dry-run]: DB read error — {exc}")
+                return {"dry_run": True, "error": str(exc)}
+        print("Stage 12 [dry-run]: would regenerate motion-fx artefacts (DB not found for count)")
+        return {"dry_run": True}
+
+    results: dict[str, str] = {}
+    for label, script in (
+        ("fx-effects", effects_script),
+        ("fx-qualifying-blocks", blocks_script),
+    ):
+        result = subprocess.run(
+            [sys.executable, str(script)],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if result.returncode != 0:
+            error_msg = (result.stderr or result.stdout or "").strip()[:400]
+            print(f"Stage 12 ERROR ({label}): {script.name} failed — {error_msg}")
+            return {"error": error_msg, "exit_code": result.returncode, "failed_generator": label}
+
+        output_lines = [ln for ln in (result.stdout or "").strip().splitlines() if ln]
+        output_line = output_lines[-1] if output_lines else ""
+        print(f"Stage 12 ({label}): {output_line}")
+        results[label] = output_line
+
+    return {"status": "ok", "dry_run": False, **results}
+
+
+# ---------------------------------------------------------------------------
 # Main dispatcher
 # ---------------------------------------------------------------------------
 
@@ -4762,6 +4875,7 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
     {"status": "retired", "dry_run": args.dry_run}.
     Stage 10 is the prune-orphans stage (controlled by --prune-mode).
     Stage 11 is the container-wrapper attribute mirror diff (WS-4, D160).
+    Stage 12 is the motion-fx artefact regeneration (D432 follow-up, 2026-08-01).
     """
     prune_mode = getattr(args, "prune_mode", _PRUNE_MODE_AGGRESSIVE)
     return {
@@ -4784,20 +4898,21 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         9: lambda: stage_9_drift_gate(conn, dry_run=args.dry_run),
         10: lambda: stage_10_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
         11: lambda: stage_11_container_mirror_report(dry_run=args.dry_run),
+        12: lambda: stage_12_motion_fx_artefact_regen(dry_run=args.dry_run),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="SGS framework knowledge base — 11-stage holistic refresh",
+        description="SGS framework knowledge base — 12-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 12),
+        choices=range(1, 13),
         metavar="N",
-        help="Run a single stage only (1-11). Omit to run all stages.",
+        help="Run a single stage only (1-12). Omit to run all stages.",
     )
     parser.add_argument(
         "--dry-run",
@@ -4834,14 +4949,14 @@ def main() -> None:
     conn = open_db()
     ensure_schema_metadata(conn)
 
-    stages_to_run = [args.stage] if args.stage else list(range(1, 12))
+    stages_to_run = [args.stage] if args.stage else list(range(1, 13))
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:
-            print(f"Unknown stage: {stage_num}. Valid: 1-10.")
+            print(f"Unknown stage: {stage_num}. Valid: 1-12.")
             continue
         results[stage_num] = dispatch[stage_num]()
 
