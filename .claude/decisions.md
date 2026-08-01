@@ -1,5 +1,72 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D458 — The horizontal panel's keyboard rescue is an ACCIDENT, and must stay one [ROUTINE]
+
+**The question.** Three sibling effects were fixed this session for leaving focusable controls
+invisible (D453). Does `fx-horizontal-panel` have the same class of defect — focus landing outside
+the visible clip rather than at zero opacity?
+
+**Measured on Chromium, Firefox AND WebKit: it does not. But not for the documented reason.**
+
+`assets/css/fx-horizontal-panel.css` sets `overflow-y: hidden` in its base rule and `overflow-x:
+clip` in the ≥768px upgrade. Per the CSS Overflow spec's mixed-value normalisation — verified
+empirically on all three engines, not assumed — **`clip` paired with a non-clip `overflow-y`
+computes to `hidden`.** `hidden` IS a scroll container; `clip` is not. That difference is currently
+the only thing making this effect keyboard-accessible: it lets each browser's native
+scroll-into-view fire on `host.scrollLeft`. Measured: `scrollLeft` moves 0 → ~1670 the instant an
+off-screen panel-3 control is focused, both pre-scroll and mid-pin, and decays back to 0 as the
+scrub continues — end-of-pin state byte-identical to a run where nothing was ever focused.
+
+**The module's own docblock asserted the opposite** — *"the CSS sets `overflow-x: clip`, which is
+not programmatically scrollable"* — and that false claim is why nobody had spotted the mitigation.
+Corrected, comment-only.
+
+**NO JS fix was added, deliberately.** A `focusin`/`ScrollTrigger.scroll()` correction would be a
+second mechanism competing with a browser behaviour already working on the same surface — two
+overlapping fixes are unfalsifiable, which this project's own rule forbids. Cargo-culting either
+D453 shape would have treated a symptom that does not manifest.
+
+**What DID need doing:** the mitigation was an accident of an untouched `overflow-y`, with nothing
+protecting it. A future "make it really clip" tidy-up would have silently deleted the only WCAG
+2.4.11 cover this effect has. The CSS now carries a do-not-fix comment; regression cover is
+`scripts/motion-qa/probe-horizontal-panel-focus.mjs`, proven non-vacuous (forcing genuine clip on
+both axes makes it report FAIL).
+
+⚠ Originally written as D456, which the co-active track claimed first. Second D-collision of the
+same session — see D457.
+
+
+## D457 — The focus ring defaults to `primary-dark`, and validation green must not outrank it [ROUTINE]
+
+**Two changes to the same indicator, both WCAG 2.4.11.**
+
+**1. Colour.** The ring inherited `--wp--preset--color--primary` and measured **2.25:1** on the
+canary — Mama's `#e68a95`, already parked as `P-MAMAS-PRIMARY-CONTRAST`, surfacing where a keyboard
+user has nothing else telling them where they are. Bean's call, and the better one: default to
+`primary-dark` rather than darkening the brand primary everywhere. That token exists in all 8
+client palettes and clears 3:1 in every one (Mama's 2.25 → **3.32**; the rest 3.32–19.80). Only
+Mama's needed it; applying it universally means a future palette clears the bar by construction
+rather than by luck. Applied to all FOUR ring-colour sites — a guard asserting 3 caught that the
+`:focus:not(:focus-visible)` fallback has its own pair, and that path needs a visible ring too.
+
+**2. Cascade.** `:user-valid:not(:placeholder-shown)` is `(0,3,0)` against `:focus-visible`'s
+`(0,2,0)`, so once a field had been blurred once the green valid border **permanently** beat the
+focus ring — undoing both D454 and this decision for exactly the fields a visitor tabs back
+through mid-form. Fixed by appending `:not(:focus)` to the valid selector so it cannot match while
+focused, at any specificity. No `!important` (the cheat-gate rejects it on a render surface) and
+no change to the focus rules. Measured with real keyboard interaction: re-focused went
+`#2e7d4f` green → `#0a5a5c` at **7.99:1**; the unfocused valid state is unchanged.
+
+⚠ **This was originally written as D455 and had to be renumbered.** A co-active track took D455
+and D456 for header/footer work while this session was mid-flight, so the CSS docblock briefly
+cited a number that pointed at someone else's decision. **On a shared worktree, re-check the
+D-ceiling immediately before writing a D reference, not at the start of the work.**
+
+⚠ **Unverified:** a real `sgs/form` instance on a live page (the cascade fix was proven on a
+bare-input fixture), the field's true surrounding colour per client, and the
+no-`:focus-visible` fallback under a genuine mouse focus.
+
+
 ## D456 — The footer's column collapse was a viewport cliff that could never be content-aware [ROUTINE]
 
 **2026-08-01.** Commit `de769386`. Evidence: `reports/visual-diff/site-footer-row-2026-08-01.md`.

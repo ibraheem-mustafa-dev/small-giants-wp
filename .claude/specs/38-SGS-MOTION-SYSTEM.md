@@ -162,9 +162,18 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 > `overflow-x: auto; scroll-snap-type: x mandatory`, and the panel `<section>` elements are
 > themselves valid Tab stops for keyboard-driven scrolling.
 >
-> **Content restriction: none required.** A block author placing links, buttons or form fields
-> inside a `pin-scrub` section or a horizontal panel needs no additional wiring — reachability is
-> inherited from the browser's native focus-scroll.
+> ⚠ **SUPERSEDED 2026-08-01 (D453) — this was proven FALSE the moment a fixture with real
+> interactive content existed** (the very re-verification this block records as owed). A control
+> inside a `pin-scrub`/`scrub`/`split-reveal` section is focusable while at `opacity: 0`, because
+> `fromTo` immediate-renders the hidden FROM state before any scroll. That is a WCAG 2.4.11
+> failure and it DOES need additional wiring: `fx-pin-scrub.js` and `fx-scrub.js` now hold the
+> reveal on `gsap.ticker` while focus is inside; `fx-split-reveal.js` uses a one-shot (no scrub,
+> so no per-frame race). The horizontal panel is the ONLY one where native reachability suffices,
+> and even there by accident — see D458.
+>
+> **Content restriction: none required.** *(Original text, retained for the record.)* A block
+> author placing links, buttons or form fields inside a `pin-scrub` section or a horizontal panel
+> needs no additional wiring — reachability is inherited from the browser's native focus-scroll.
 >
 > **Owed:** the canary fixtures contain no focusable element INSIDE a pin, so the case the
 > accessibility audit actually worried about — Tab landing on a control within an active pin — is
@@ -884,6 +893,12 @@ data-sgs-fx-pin="true"            IMAGE-SEQUENCE only — holds the block in pla
 > `fxPin` is seeded in `block_attributes` under `fx:*` alongside the other `fx*` attrs (§11.3).
 
 > **AMENDMENT 2026-07-31 (D427) — the morph / motion-path CONTROL SURFACE, Bean-signed.**
+>
+> ⚠ **CORRECTED 2026-08-01 (D452) — the claim below was FALSE WHEN WRITTEN.** Morph had NEVER
+> animated on any block: `fx-shape-routes.php` emitted `data-sgs-fx="morph"` on the injected
+> `<svg>` wrapper, and MorphSVGPlugin refuses an `<svg>` container outright. Measured: the `d`
+> attribute unchanged across 148 animation frames. Read "both engines working" below as "both
+> engines SHIPPED" — motion-path worked, morph did not.
 >
 > **The problem this closes.** Wave C shipped both engines working, but with no way for a
 > client to reach them. `fx-morph.js` and `fx-motion-path.js` each resolve a CSS SELECTOR

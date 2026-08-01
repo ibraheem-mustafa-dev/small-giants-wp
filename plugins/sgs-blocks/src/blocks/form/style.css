@@ -165,7 +165,7 @@
 /*
  * D454 — the ring's opacity modulates the RING, never the input.
  *
- * D455 — and the ring's COLOUR defaults to `primary-dark`, not `primary`.
+ * D457 — and the ring's COLOUR defaults to `primary-dark`, not `primary`.
  * A focus indicator needs 3:1 against its surroundings (WCAG 2.4.11). Measured
  * on the canary, the ring inherited the brand primary and landed at 2.25:1 —
  * Mama's `#e68a95`, the colour already parked as P-MAMAS-PRIMARY-CONTRAST,
@@ -743,7 +743,7 @@ select.sgs-form-field__input {
 
 /*
  * :not(:focus) — a focus indicator must never be outranked by a validation
- * state (2026-08-01, found during the D454/D455 focus-ring verification).
+ * state (2026-08-01, found during the D454/D457 focus-ring verification).
  *
  * Without this exclusion, :user-valid:not(:placeholder-shown) carries
  * specificity (0,3,0) — higher than :focus-visible's (0,2,0) — so once a

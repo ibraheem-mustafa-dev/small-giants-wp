@@ -23,6 +23,98 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE** — NEW 2026-08-01. `node --check` parses a
+  file and confirms it is well-formed JavaScript; it does **not** resolve identifiers. A fix
+  on the accessibility path referenced a variable that was never declared in that scope,
+  passed `node --check` cleanly, and threw at runtime the first time the path executed.
+  **Rule: syntax-check tools prove the file PARSES, never that it RUNS** — for identifier
+  correctness, either execute the path for real or inspect the binding by hand (grep the
+  declaration, confirm it is in scope at the point of use). Sibling of
+  STOP-VERIFY-THE-VARIABLE-EXISTS-BEFORE-BUILDING-ON-IT, one layer down: that STOP is about
+  never having grepped for the symbol at all; this one is about a tool that LOOKED and still
+  said nothing was wrong, because it was never designed to look for this class of defect.
+
+- **STOP-A-FORCED-LINT-RULE-CAN-BE-OVERRIDDEN-BY-PROJECT-CONFIG** — NEW 2026-08-01. Running
+  `eslint --rule '{"no-undef":"error"}'` on this project proves NOTHING about undefined
+  identifiers, because the project's own ESLint config overrides a rule passed on the command
+  line — confirmed by deliberately planting an undefined identifier and watching the forced
+  run report clean. A green result from a CLI-forced rule is not evidence the rule actually
+  ran with the severity you asked for. **Before trusting any command-line rule override on an
+  unfamiliar project, plant a known violation and confirm it is caught** — same negative-control
+  discipline as STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER, applied to a linter rather
+  than a bespoke gate. Verify identifier scope by direct binding inspection when a project's
+  config is opaque, not by a forced flag you have not proven wins.
+
+- **STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE** — NEW 2026-08-01. Searching
+  for the literal `opacity: 0.4` returned zero hits while the actual defect was
+  `opacity: var(--x)` — a variable reference the literal search structurally cannot match. The
+  offending line had already appeared in the SAME searcher's own earlier, wider output; the
+  narrower follow-up search then reported it absent. **A search's negative result describes the
+  SEARCH, not the codebase** (extends STOP-A-GREPS-BLIND-SPOT-IS-THE-SHAPE-OF-THE-GREP to
+  custom-property indirection specifically): before trusting "no matches" for any styling value,
+  search for the PROPERTY name alone and inspect every value it resolves to, including `var(...)`
+  chains — and re-read your own prior tool output before re-running a narrower version of the
+  same search.
+
+- **STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER** — NEW 2026-08-01.
+  `ls sites/*/... | head -4` on an 8-client sweep showed exactly the four clients that were fine
+  and silently hid the four that were not — `head` truncates by POSITION, not by relevance, and
+  a verification pass has no reason to expect the interesting rows sort to the top. Same failure
+  shape as STOP-VERIFY-EVERY-CLIENT (a fix verified on one client is not verified) one layer
+  earlier: here the listing command itself discarded the evidence before a human ever chose which
+  client to check. **Rule: never pipe a verification listing through `head`/`tail` unless you have
+  already confirmed the full count fits, or you are deliberately sampling and say so** — print the
+  full list, or grep for the specific condition across all rows.
+
+- **STOP-A-WRONG-EXPLANATION-DOES-NOT-MAKE-THE-OBSERVATION-WRONG** — NEW 2026-08-01. A report
+  correctly OBSERVED a dimmed input field but misattributed the MECHANISM (named the wrong CSS
+  property as the cause); the whole claim was then dismissed as false because the explanation
+  didn't hold up, and the real bug survived several more hours before being found again. An
+  observation and its explanation are two separate claims — falsifying the second does not
+  falsify the first. **Rule: when a stated mechanism turns out wrong, re-test the RAW OBSERVATION
+  independently before discarding the report** — the visible symptom may still be real even when
+  the diagnosis attached to it is not. Sibling of STOP-A-DOCUMENTED-RISK-CAN-BE-WRONG-ABOUT-ITS-OWN-DOM
+  (a wrong premise can attach to an otherwise-real finding) and STOP-FACT-CHECK-COUNCIL/REGISTER-FINDINGS.
+
+- **STOP-A-CAPABILITY-PRESENT-IN-EVERY-ARTEFACT-CAN-STILL-DO-NOTHING** — NEW 2026-08-01. Morph
+  appeared in the shipped-effects list, and the generated roster grew from 3 entries to 28 — every
+  artefact a build-completeness check would look at said the capability existed — while the effect
+  had never once actually animated anything. Artefact PRESENCE (a registry row, a roster count, a
+  file that compiles) is a fundamentally different claim from artefact BEHAVIOUR (it fires and
+  produces the effect on a live page). Extends STOP-A-GREEN-BUILD-IS-NOT-EVIDENCE-AN-EFFECT-FIRES
+  from "the code exists" to "the code exists in every tracking system that was meant to catch this
+  exact gap" — a roster growing is not evidence of anything except that the roster grew.
+
+- **STOP-STATIC-CONTRAST-MATHS-CANNOT-SEE-COMPOSITED-DIMMING** — NEW 2026-08-01. A computed-colour
+  contrast calculation reported 5.79:1 — comfortably AA — while the rendered pixel measured 1.79:1,
+  because `opacity` had been applied to the element and static colour arithmetic has no way to
+  account for compositing against whatever sits behind it. **Rule: whenever a rendered appearance
+  is disputed or an element (or an ancestor) carries `opacity`/`filter`/blend modes, pixel-sample
+  the actual rendered output rather than trusting a computed-style contrast calculation** — the two
+  can disagree by more than 3x. Sibling of STOP-MEASUREMENT-VS-EYE and
+  axe-cannot-measure-contrast-inside-a-dialog (both: a formula computed from source values misses
+  a real compositing effect the eye or a pixel sampler catches immediately).
+
+- **STOP-A-REBASELINE-MUST-BE-FOLLOWED-BY-A-SELF-TEST** — NEW 2026-08-01. Re-recording a
+  performance/budget baseline is a mutation of the gate itself, not a neutral bookkeeping step —
+  it can silently remove the gate's ability to ever fail again (e.g. baselining against a run that
+  already contains the regression). **Rule: any rebaseline of a budget/threshold gate must be
+  followed immediately by a self-test that plants a known violation and confirms the gate still
+  rejects it** — the same discipline as STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER, applied
+  specifically to the moment a baseline is refreshed, which is exactly when the teeth are easiest
+  to lose without noticing.
+
+- **STOP-D-NUMBERS-COLLIDE-ON-A-SHARED-WORKTREE** — NEW 2026-08-01. A co-active track claimed
+  D455 while this session was mid-flight, so a docblock written slightly later that cited "D455"
+  for ITS OWN decision was actually pointing at someone else's unrelated entry. D-numbers are not
+  reserved in advance on a shared worktree — the ceiling moves under you between your read and your
+  write. **Rule: re-run the anchored D-ceiling check
+  (`grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`)
+  IMMEDIATELY before writing any D-reference, not once at session start** — treat a cached
+  D-ceiling exactly like a cached branch name (STOP-RECHECK-BRANCH-BEFORE-COMMIT): re-check in the
+  same breath as the write, because the other track moves it between your reads. Sibling of
+  STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE and STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT.
+
 - **STOP-A-A-TEST-CAN-PASS-THE-VERY-DEFECT-IT-WAS-WRITTEN-TO-CATCH** — NEW 2026-07-31 (D430).
   The image-sequence probe's pass criterion was "luminance spread >= 5". The recorded defect had a
   spread of **63** and sailed through, because 60% of the scroll produced no change at all and the
@@ -930,6 +1022,14 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
    `.claude/CLAUDE.md`, `LEDGER.md`; the first two-place fix MISSED this one, which is the
    "fixing one instance does not immunise the class" pattern.
 10. Am I touching another track's files/branches without checking their state first?
+11. Is my VERIFICATION METHOD itself capable of seeing the thing I'm checking — literal grep
+    vs var()-driven values, static contrast maths vs composited opacity/filter, `head`-truncated
+    listings, a syntax-checker mistaken for a scope-checker, a forced lint rule the project's own
+    config can override? (STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE,
+    STOP-STATIC-CONTRAST-MATHS-CANNOT-SEE-COMPOSITED-DIMMING,
+    STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER,
+    STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE,
+    STOP-A-FORCED-LINT-RULE-CAN-BE-OVERRIDDEN-BY-PROJECT-CONFIG.)
 
 For a doc-model / enforcement-hook session (like P4), swap 4/5/8 for: does every new gate
 pass the **Enforcement Contract** (auto-fires on an event, fails safe, acts on NEW state,
@@ -1141,3 +1241,29 @@ for real before claiming done?
   AND closing block delimiters, against a header locked at 3 (Bean caught it); and a library option
   that does not exist in the installed version being discarded in silence while reading as an
   enforced safety guarantee.
+- **2026-08-01 (Gate 6.5 handoff carry-forward audit) re-run:** previous DEFINED entries = **144**
+  (measured with this file's own canonical command immediately before writing — never carried
+  forward). This session ADDED **9** (`STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE`,
+  `STOP-A-FORCED-LINT-RULE-CAN-BE-OVERRIDDEN-BY-PROJECT-CONFIG`,
+  `STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE`,
+  `STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER`,
+  `STOP-A-WRONG-EXPLANATION-DOES-NOT-MAKE-THE-OBSERVATION-WRONG`,
+  `STOP-A-CAPABILITY-PRESENT-IN-EVERY-ARTEFACT-CAN-STILL-DO-NOTHING`,
+  `STOP-STATIC-CONTRAST-MATHS-CANNOT-SEE-COMPOSITED-DIMMING`,
+  `STOP-A-REBASELINE-MUST-BE-FOLLOWED-BY-A-SELF-TEST`,
+  `STOP-D-NUMBERS-COLLIDE-ON-A-SHARED-WORKTREE`) and SUBTRACTED **none** → **153**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **153**. 153 >= 144. PASS. Also added pre-flight ritual question 11 (§C), covering the
+  measurement-defect class specifically — 5 of this session's 9 new entries were defects in the
+  MEASURING, not the code, matching the session brief's own tally. Ritual questions: 10 → 11.
+  All nine are earned by something that actually happened this session: `node --check` passing a
+  fix that referenced an out-of-scope variable and threw at runtime; a CLI-forced `no-undef` rule
+  silently overridden by this project's own ESLint config, proven by planting a violation; a
+  literal grep missing a `var(--x)`-driven opacity value already visible in the searcher's own
+  earlier output; a `head -4` verification listing that showed the four healthy clients and hid
+  the four broken ones; a report whose mechanism was wrong but whose raw observation (a dimmed
+  input) was real, dismissed wholesale on the wrong basis and costing several hours to re-find; a
+  capability (morph) present in every shipped-effects artefact and a roster that grew 3→28 while it
+  had never once animated; a static contrast calculation reading 5.79:1 against a rendered 1.79:1
+  because of applied `opacity`; a rebaselined budget gate whose teeth were not re-proven with a
+  self-test; and a D-number cited by this session that collided with a co-active track's D455.

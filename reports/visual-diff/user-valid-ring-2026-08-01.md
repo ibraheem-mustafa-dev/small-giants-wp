@@ -5,7 +5,7 @@
 
 ## 1. The problem
 
-A field that has been blurred once (so `:user-valid` fires) permanently lost its focus-ring border colour: re-focusing that field showed the valid-green border instead of the D454/D455 focus indicator. This undoes both fixes shipped earlier today for every field a visitor has already visited.
+A field that has been blurred once (so `:user-valid` fires) permanently lost its focus-ring border colour: re-focusing that field showed the valid-green border instead of the D454/D457 focus indicator. This undoes both fixes shipped earlier today for every field a visitor has already visited.
 
 ## 2. Reproduction
 
@@ -39,7 +39,7 @@ Confirmed by reading the matched CSSOM rules directly in the browser (`document.
 
 ## 4. Fix
 
-Changed only the `:user-valid` rule (did not touch the D454/D455 focus block, per the brief):
+Changed only the `:user-valid` rule (did not touch the D454/D457 focus block, per the brief):
 
 ```css
 /* style.css, "15. :user-invalid / :user-valid" section */
@@ -59,7 +59,7 @@ Adding `:not(:focus)` excludes the validation-state rule from matching whenever 
 | Re-focused | true | **false** (excluded by `:not(:focus)`) | `rgb(10,90,92)` (`#0a5a5c`, focus colour) | **Fixed** |
 | Blurred again | — | true | `rgb(46,125,79)` (`#2e7d4f`, green) | Correct — reverts cleanly |
 
-Outline ring on refocus: `2px solid`, colour `color(srgb 0.0392 0.3529 0.3608)` = `#0a5a5c` — unchanged from before the fix, confirming the D454/D455 ring mechanism itself was never touched.
+Outline ring on refocus: `2px solid`, colour `color(srgb 0.0392 0.3529 0.3608)` = `#0a5a5c` — unchanged from before the fix, confirming the D454/D457 ring mechanism itself was never touched.
 
 **Contrast check (WCAG 2.4.11, ≥3:1):** `#0a5a5c` against the fixture's white field background (`--wp--preset--color--surface: #fff`) computes to **7.99:1** — well clear of the 3:1 minimum. This is a fresh calculation on this fixture's tokens, consistent with the D455 docblock's own figures (3.32–19.8:1 across the 8 client palettes) — not a re-litigation of that decision.
 

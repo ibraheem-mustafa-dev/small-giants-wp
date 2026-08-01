@@ -881,6 +881,13 @@ The Mama's Munches theme primary token (`#e68a95`, a mid-luminance pink) measure
 
 **Trigger:** only a deliberate Mama's palette/theme-snapshot revisit, or a client for whom the accepted-risk call does not hold (e.g. a public-sector build under a contractual WCAG obligation).
 
+⚠ **CARVE-OUT 2026-08-01 (D457) — the acceptance does NOT extend to focus indicators.**
+This entry accepts the token's contrast for TEXT. The same token was ALSO the default focus-ring
+colour, measuring 2.25:1 against a 3:1 non-text minimum (WCAG 2.4.11) — a different criterion,
+and one where a keyboard user has nothing else telling them where they are. That use was FIXED,
+not accepted: the ring now defaults to `primary-dark`. **Do not revert it on the strength of
+this entry.**
+
 ### P-MEGA-CONTRAST-DEFERRED — mega-menu drafts fail contrast against some client palettes, by design decision not defect
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-21
 

@@ -110,6 +110,9 @@ park anything else from this plan — this plan is the register.**
   page 2105 was built, and record the method.
 
 ### Step L — the fx inspector panel is linted by nothing (was P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `ae98e5ff`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet
   **Action:** `check-dead-controls.js:514`, `check-control-ux.js:455` and
   `audit-inspector-conformance.js:270` all either exclude `src/blocks/extensions/` or enumerate
@@ -127,6 +130,9 @@ park anything else from this plan — this plan is the register.**
   **On-Fail:** a gate that cannot fail reads green forever — do not ship it without the self-test.
 
 ### Step E-residual — motion-path: the ~2,705px jump (skew half is CLOSED)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `a9c9675f`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet · **Time:** 1.5 h
   **Action:** The route SVG resolves against `.entry-content` and measures **1200 × 7471.66px** — a
   route box the height of the page — so the traveller's displacement is an order of magnitude bigger
@@ -147,6 +153,9 @@ park anything else from this plan — this plan is the register.**
   **On-Fail:** do not ship a CSS-only fix; the three above were measured failing.
 
 ### Step M — `sgs-healthcare` idle-dot contrast fails at 2.97:1
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `2f0efb38`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** haiku · **Time:** 20 min
   **Action:** That client's own `text-muted` (`#7A9BA6`) is too light against its white surface, so the
   slider's idle dots miss the 3:1 WCAG UI-component floor even after the token fix. `sgs-mosque` passes
@@ -154,6 +163,9 @@ park anything else from this plan — this plan is the register.**
   value is a deliberate brand choice, record it as accepted rather than overwriting an owner's decision.
 
 ### Step N — image-sequence pin: verify the pin-ON path live
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `b6a5676c`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** haiku · **Time:** 30 min
   **Action:** `data-sgs-fx-pin` exists in source and the scrub half is verified, but **no live instance
   had pin enabled**, so the ON path has never been observed. Build a fixture with pin ON and measure:
@@ -171,6 +183,9 @@ park anything else from this plan — this plan is the register.**
   incomplete, not the bug absent.
 
 ### Step P — fold `sgs/content-collection` into `sgs/card-grid` (council-decided, Bean-approved)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `f5ba3839`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet · **Time:** 4 h
   **Action:** Four independent council seats voted 3–1 to retire it (capability dissented). Bean approved
   the fold. **The dissent is a CONDITION, not a veto, and must be honoured:** `content-collection` works
@@ -205,6 +220,9 @@ park anything else from this plan — this plan is the register.**
   (2) legibility — measure contrast at the field's BRIGHTEST position, never at rest.
 
 ### Step S — remove the dead buybox fixtures from the roster canary (page 2086)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `(pages deleted by Bean)`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** haiku · **Time:** 30 min
   **Action:** Two `sgs/buybox` instances sit on page 2086, a plain page where they can NEVER render:
   `wc_get_product(2086)` returns false and the core-WC fallback blocks need ambient product context.
@@ -215,6 +233,9 @@ park anything else from this plan — this plan is the register.**
   session — remove them. `wp post update` is hook-blocked, so this needs a page rebuild.
 
 ### Step V — buybox thumbnail strip has no drag handler (prerequisite now satisfied)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `c6a25eca`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet · **Time:** 1 h
   **Action:** VERIFIED LIVE 2026-08-01 on `/product/mamas-test-box-48-sku-fixture/`: the buybox renders
   correctly (gallery col 658.97px + configurator col 573.03px), the thumb strip genuinely overflows
@@ -232,6 +253,9 @@ park anything else from this plan — this plan is the register.**
   in the shared tree (it blocked another track's deploy once already).
 
 ### Step T — the deploy ⇄ commit gate deadlock (STRUCTURAL, found 2026-08-01)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `ae98e5ff`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet · **Time:** 1 h
   **Action:** `build-deploy.py` refuses a dirty tree and says *"commit them"*; the pre-commit visual-diff
   gate refuses without a passing per-block report, which requires a live deploy. **Neither can go first.**
@@ -351,6 +375,9 @@ last regardless of what number it carries.
   **Marker:** QA
 
 ### Step 6 — before/after video and SVG sources (Bean ask #2)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `0147402e`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet
   **Action:** `sgs/before-after` renders via `wp_get_attachment_image()` with a URL fallback — not
   the shared media helper — so no video, and SVG only as a flat image. Bean ruled this KEPT (the
@@ -371,6 +398,9 @@ last regardless of what number it carries.
   - Integration: reduced motion — autoplay must not fire; §10 SIMPLIFY for the drag
 
 ### Step 6b — before/after: all FOUR reveal directions (Bean ask #5)
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `0147402e`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet
   **Action:** The block currently reveals AFTER on the LEFT (horizontal) — coherent, and Bean has
   ruled it stays the DEFAULT. Add the other three directions as options: horizontal reversed
@@ -400,6 +430,9 @@ last regardless of what number it carries.
   - Integration: the drag gesture and the native range input must agree in all four
 
 ### Step 23 — Replace the before/after test imagery
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `0147402e`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** haiku
   **Action:** At ≤768px both `sgs/before-after` canary instances show a small black/white
   checkerboard mark in the top-left corner, overlapping the "After" label. PROVEN (not guessed) to
@@ -471,6 +504,9 @@ last regardless of what number it carries.
   - Integration: Stage 11.6 computed-parity must not regress
 
 ### Step 15 — Per-breakpoint motion disable
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `901f91e0`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet
   **Action:** §6 item 4 says per-tier fx values are a v2 candidate. But "turn animation off on mobile" is, per the competitor persona, the single most common post-launch agency request — and it needs only a BOOLEAN per tier, not per-tier values. Add `fxDisableTablet`/`fxDisableMobile` using the EXISTING breakpoint suffix vocabulary, gating both the registry's enqueue and the module's matchMedia.
   **Files:** `includes/fx-attributes.php`, `class-sgs-motion-registry.php`, `src/blocks/extensions/fx.js`, seeder
@@ -483,6 +519,9 @@ last regardless of what number it carries.
   - Integration: FR-38-3's zero-bytes promise must still hold
 
 ### Step 18 — Support surface for Bean
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `5ec8a442`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet
   **Action:** Skip-with-reason writes to `error_log` behind `WP_DEBUG` — on Hostinger, Bean will never see it. When a client says "the animation is broken" there is nothing to look at. Build an admin panel listing effects in use on a page, bytes shipped, and effects skipped with reason.
   **Files:** a new admin page under the SGS settings surface
@@ -495,6 +534,9 @@ last regardless of what number it carries.
   - Integration: must not run on the frontend
 
 ### Step 19 — Per-PAGE motion budget
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `5ec8a442`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** haiku
   **Action:** `check-motion-bundle-budget.py` measures modules, not pages. Pin-scrub + split-reveal + draw + scramble + an image sequence is constructible in the editor and lands ~55 KB gz against Spec 02's <50 KB. Assert per-page in the canary probe and warn in the editor.
   **Files:** `scripts/check-motion-bundle-budget.py`, `probe-wave-c.mjs`
@@ -519,6 +561,9 @@ last regardless of what number it carries.
   - Integration: `/sgs-update` reproduces the seed byte-identically
 
 ### Step 22 — Pin/panel keyboard contract: observe it, don't infer it
+
+✅ **CLOSED 2026-08-01 (Wave E) — commit `b6a5676c`.** Do NOT re-plan this step; read
+`decisions.md` D447–D458 and `LEDGER.md`'s Wave E table for what shipped and what is still unverified.
   **Model:** sonnet
   **Action:** The keyboard story for both pinning effects was measured and closed (Spec 38 §3.1) —
   but every canary fixture with an active pin contains NO focusable element inside the pin. So the
