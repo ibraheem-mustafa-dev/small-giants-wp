@@ -178,7 +178,6 @@
 
 .sgs-form-field__input::placeholder {
 	color: var(--wp--preset--color--text-muted, #555);
-	opacity: 0.7;
 }
 
 textarea.sgs-form-field__input {
