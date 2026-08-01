@@ -309,7 +309,14 @@ Deploy + verify + commit
 
 **Held, not forgotten:** buybox drag is written and uncommitted — the visual-diff gate correctly
 refuses it until the attribute is proven to come from a real render. Patch at
-`scratchpad/buybox-drag-toggle.patch` if the tree has moved.
+**`reports/visual-diff/buybox-drag-toggle-2026-08-01.patch`** (in-repo, committed — an earlier pointer
+named a session temp directory that dies with the session). Re-apply with
+`git apply reports/visual-diff/buybox-drag-toggle-2026-08-01.patch`.
+
+⚠ **Do NOT leave buybox dirty in the working tree.** It is a SHARED worktree, and on 2026-08-01 these
+four uncommitted files blocked the co-active track's deploy outright (`[ABORTED] reason:
+deployed-files-dirty`). Holding unverified work is right; holding it *in the shared tree* pushes your
+problem onto someone else. Keep it as a patch until it can be committed honestly.
 
 #### Methodology guardrails (earned 2026-07-31/08-01 — do not inherit as solved)
 

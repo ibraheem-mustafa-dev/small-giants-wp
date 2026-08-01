@@ -1,0 +1,148 @@
+diff --git a/plugins/sgs-blocks/src/blocks/buybox/block.json b/plugins/sgs-blocks/src/blocks/buybox/block.json
+index b8fe1a76..aca2b6c7 100644
+--- a/plugins/sgs-blocks/src/blocks/buybox/block.json
++++ b/plugins/sgs-blocks/src/blocks/buybox/block.json
+@@ -55,7 +55,7 @@
+ 				"providesNatively": [
+ 					"draggable"
+ 				],
+-				"_comment_providesNatively": "Spec 38 FR-38-13. This block's horizontal scroller is `.product-card__thumbs`, a DESCENDANT, while the generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT — so a picker entry here would be a control that silently does nothing. The CSS-derived `track` provision (2026-07-31) correctly sees the scroller and would otherwise offer it. Declared here to suppress that entry. NOTE this block does NOT yet have its own drag toggle either: buybox requires a WooCommerce variable product IN CONTEXT (render.php header), so it renders nothing on an ordinary page and its first-paint capture could not be taken this session. Giving it the capability is owed work with a named prerequisite — a product-page fixture — not an oversight."
++				"_comment_providesNatively": "Spec 38 FR-38-13. This block's horizontal scroller is `.product-card__thumbs`, a DESCENDANT, while the generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT — so a picker entry here would be a control that silently does nothing. The CSS-derived `track` provision (2026-07-31) correctly sees the scroller and would otherwise offer it. Declared here to suppress that entry. Own drag toggle SHIPPED 2026-07-31 (register Step 3): `dragToScroll`/`dragMomentum` attrs below, mirroring sgs/gallery + sgs/post-grid + sgs/google-reviews. Proven on a product-page fixture (product 541/540 variation gallery expanded to 10 images so the 64px-thumb strip genuinely overflows its ~644px column at 1440px) BEFORE this attr existed: scrollWidth 712 > clientWidth 644, confirming the scroller is real. The toggle itself ships unverified live in THIS session — it needs a build + deploy this session did not run (constrained to no-deploy) — so re-run the same fixture after deploy and confirm cursor:grab + data-sgs-fx=\"draggable\" appear before treating the capability as proven end-to-end."
+ 			}
+ 		}
+ 	},
+@@ -120,6 +120,16 @@
+ 			"type": "boolean",
+ 			"default": false,
+ 			"description": "When true, the 'Best value' badge targets the 2nd-largest pack (decoy effect) instead of the largest."
++		},
++		"dragToScroll": {
++			"type": "boolean",
++			"default": false,
++			"description": "Lets desktop shoppers click and drag the thumbnail strip, on top of its native scroll/swipe. Spec 38 FR-38-13."
++		},
++		"dragMomentum": {
++			"type": "boolean",
++			"default": true,
++			"description": "When drag-to-scroll is on, keep coasting briefly after release like a real scroll flick."
+ 		}
+ 	},
+ 	"editorScript": "file:./index.js",
+diff --git a/plugins/sgs-blocks/src/blocks/buybox/edit.js b/plugins/sgs-blocks/src/blocks/buybox/edit.js
+index 5ede85e8..3044ea06 100644
+--- a/plugins/sgs-blocks/src/blocks/buybox/edit.js
++++ b/plugins/sgs-blocks/src/blocks/buybox/edit.js
+@@ -20,6 +20,8 @@ export default function Edit( { attributes, setAttributes } ) {
+ 		notifyMeLabel,
+ 		addToCartLabel,
+ 		perUnitDenomination,
++		dragToScroll,
++		dragMomentum,
+ 		style,
+ 		marginTablet,
+ 		marginMobile,
+@@ -128,6 +130,45 @@ export default function Edit( { attributes, setAttributes } ) {
+ 						} }
+ 					/>
+ 				</PanelBody>
++				<PanelBody
++					title={ __( 'Gallery interaction', 'sgs-blocks' ) }
++					initialOpen={ false }
++				>
++					{ /*
++					 * Draggable + Inertia roster opt-in (Spec 38 FR-38-13,
++					 * register Step 3). Targets the thumbnail strip, not the
++					 * block root — mirrors sgs/gallery's toggle exactly.
++					 */ }
++					<ToggleControl
++						label={ __(
++							'Drag to scroll thumbnails (desktop)',
++							'sgs-blocks'
++						) }
++						checked={ dragToScroll }
++						onChange={ ( val ) =>
++							setAttributes( { dragToScroll: val } )
++						}
++						help={ __(
++							'Lets shoppers click and drag with a mouse to scroll the thumbnail strip, on top of the usual swipe and scrollbar.',
++							'sgs-blocks'
++						) }
++						__nextHasNoMarginBottom
++					/>
++					{ dragToScroll && (
++						<ToggleControl
++							label={ __( 'Momentum', 'sgs-blocks' ) }
++							checked={ dragMomentum }
++							onChange={ ( val ) =>
++								setAttributes( { dragMomentum: val } )
++							}
++							help={ __(
++								'Strip keeps coasting briefly after the shopper releases the drag, like a real scroll flick.',
++								'sgs-blocks'
++							) }
++							__nextHasNoMarginBottom
++						/>
++					) }
++				</PanelBody>
+ 			</InspectorControls>
+ 
+ 			<div { ...blockProps }>
+diff --git a/plugins/sgs-blocks/src/blocks/buybox/gallery-col.php b/plugins/sgs-blocks/src/blocks/buybox/gallery-col.php
+index eb879329..ce0e63f4 100644
+--- a/plugins/sgs-blocks/src/blocks/buybox/gallery-col.php
++++ b/plugins/sgs-blocks/src/blocks/buybox/gallery-col.php
+@@ -40,6 +40,9 @@ if ( ! isset( $buybox_img_alt ) ) {
+ if ( ! isset( $buybox_thumbs_hidden ) ) {
+ 	$buybox_thumbs_hidden = true;
+ }
++if ( ! isset( $buybox_thumbs_fx_attr ) ) {
++	$buybox_thumbs_fx_attr = '';
++}
+ 
+ // Resolve width/height from the first gallery item for LCP <img> hint.
+ $buybox_def_img_w = ( ! empty( $buybox_def_gallery[0]['w'] ) ) ? (int) $buybox_def_gallery[0]['w'] : 0;
+@@ -76,6 +79,7 @@ $buybox_def_img_h = ( ! empty( $buybox_def_gallery[0]['h'] ) ) ? (int) $buybox_d
+ 	aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
+ 	data-wp-bind--hidden="context.thumbsHidden"
+ 	<?php echo $buybox_thumbs_hidden ? 'hidden' : ''; ?>
++	<?php echo $buybox_thumbs_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings in render.php, no dynamic value. ?>
+ >
+ 	<?php foreach ( $buybox_def_gallery as $buybox_thumb_idx => $buybox_thumb ) : ?>
+ 		<?php
+diff --git a/plugins/sgs-blocks/src/blocks/buybox/render.php b/plugins/sgs-blocks/src/blocks/buybox/render.php
+index 9f098e22..aae14837 100644
+--- a/plugins/sgs-blocks/src/blocks/buybox/render.php
++++ b/plugins/sgs-blocks/src/blocks/buybox/render.php
+@@ -267,6 +267,32 @@ $buybox_img_alt       = ! empty( $buybox_def_gallery[0]['alt'] )
+ 	: ( $product instanceof \WC_Product ? $product->get_name() : '' );
+ $buybox_thumbs_hidden = count( $buybox_def_gallery ) < 2;
+ 
++/*
++ * Draggable + Inertia roster opt-in (Spec 38 FR-38-13, register Step 3),
++ * mirroring sgs/gallery / sgs/post-grid / sgs/google-reviews.
++ *
++ * Emitted on `.product-card__thumbs` — the DESCENDANT that actually scrolls
++ * (buybox/style.css: `.sgs-buybox .product-card__thumbs` is the
++ * `overflow-x: auto` + `scroll-snap-type: x mandatory` flex row), NOT the
++ * block root, which never scrolls (block.json's `providesNatively` entry
++ * already suppresses the generic "Scroll & effects" picker for exactly this
++ * reason). Gated on the same `!$buybox_thumbs_hidden` condition the strip's
++ * own visibility uses — fewer than 2 images means nothing to drag, so the
++ * attribute is never emitted onto a strip that's `hidden` anyway. The shared
++ * runtime (shared/effects/gsap/fx-draggable.js) structurally re-verifies the
++ * element is a genuine native horizontal scroller before touching it.
++ */
++$buybox_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
++$buybox_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
++
++$buybox_thumbs_fx_attr = '';
++if ( ! $buybox_thumbs_hidden && $buybox_drag_to_scroll ) {
++	$buybox_thumbs_fx_attr = ' data-sgs-fx="draggable"';
++	if ( ! $buybox_drag_momentum ) {
++		$buybox_thumbs_fx_attr .= ' data-sgs-fx-momentum="false"';
++	}
++}
++
+ // Context array — key shape is IDENTICAL to product-card (L445-504).
+ // Gallery keys now seeded with real values from the default combo (FR-30-10 Step-10a).
+ // ctaBehaviour fixed to 'add-to-cart' (buybox always adds, no learn-more mode).

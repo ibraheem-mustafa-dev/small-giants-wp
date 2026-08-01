@@ -221,6 +221,11 @@ last regardless of what number it carries.
 ---
 
 ### Step A — buybox drag: finish what was proven [HELD, was Steps 2/3]
+> ⚠ **The code is NOT in the working tree — it is a patch.** Apply it first:
+> `git apply reports/visual-diff/buybox-drag-toggle-2026-08-01.patch`
+> It was deliberately reverted on 2026-08-01 because leaving it dirty in this SHARED worktree blocked
+> the co-active track's deploy. Re-apply it when you start this step, and either commit it honestly
+> (once the attribute is proven to come from a real render) or revert it again before you stop.
   **Model:** sonnet
   **Action:** The drag control was proven working by direct browser interaction (cursor became a
   "grab" hand, a real drag moved the strip 0→53px of scroll, the variant picker kept working
