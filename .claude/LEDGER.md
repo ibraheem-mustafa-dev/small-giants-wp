@@ -54,7 +54,9 @@ offending line was in my own earlier output) · two lint runs that could not fai
 false report only because something checked a second way. **New STOP entries: `STOP-CATALOGUE.md`.**
 
 ⛔ **PRODUCTION IS BLOCKED, DELIBERATELY.** `--target palestine-lives` aborts on `oldshape-audit`:
-**29 NEW HIGH findings across 28 posts** — live `sgs/hero` blocks carry `ctaPrimaryText`/`ctaPrimaryUrl`
+**29 NEW HIGH findings across 28 posts** (real audit output captured at
+`reports/2026-08-01-palestine-lives-oldshape-blocker.md` — the handoff QC gate correctly flagged that
+this figure was prose-only behind a hard blocker; a number nobody can re-check is not evidence) — live `sgs/hero` blocks carry `ctaPrimaryText`/`ctaPrimaryUrl`
 /`ctaSecondaryText`/`ctaSecondaryUrl` that the current block.json does not declare, so **the next
 editor save DELETES them** (the D338 class), plus old self-closing blocks whose renderer now expects
 InnerBlocks (stranded `headline`, `subHeadline`). Bean approved the production deploy WITHOUT

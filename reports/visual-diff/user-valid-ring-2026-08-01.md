@@ -61,7 +61,7 @@ Adding `:not(:focus)` excludes the validation-state rule from matching whenever 
 
 Outline ring on refocus: `2px solid`, colour `color(srgb 0.0392 0.3529 0.3608)` = `#0a5a5c` — unchanged from before the fix, confirming the D454/D457 ring mechanism itself was never touched.
 
-**Contrast check (WCAG 2.4.11, ≥3:1):** `#0a5a5c` against the fixture's white field background (`--wp--preset--color--surface: #fff`) computes to **7.99:1** — well clear of the 3:1 minimum. This is a fresh calculation on this fixture's tokens, consistent with the D455 docblock's own figures (3.32–19.8:1 across the 8 client palettes) — not a re-litigation of that decision.
+**Contrast check (WCAG 2.4.11, ≥3:1):** `#0a5a5c` against the fixture's white field background (`--wp--preset--color--surface: #fff`) computes to **7.99:1** — well clear of the 3:1 minimum. This is a fresh calculation on this fixture's tokens, consistent with the D457 docblock's own figures (3.32–19.8:1 across the 8 client palettes) — not a re-litigation of that decision.
 
 **Valid-green-when-unfocused requirement:** confirmed still renders (table above, rows 1 and 3) — the fix only excludes the focused instant, nothing else.
 
@@ -70,7 +70,7 @@ Outline ring on refocus: `2px solid`, colour `color(srgb 0.0392 0.3529 0.3608)` 
 I cannot deploy from this dispatch. The following need confirming once this ships to the sandybrown canary:
 
 1. **Real form on a real page** — this was a synthetic fixture (bare `<input required>`), not a live `sgs/form` instance with the block's full markup (`.sgs-form-field__error`, `aria-describedby`, `view.js` validation JS). Confirm the same sequence (type → blur → Tab back) on an actual canary form page.
-2. **Contrast against the REAL surrounding colour** — the fixture used `#fff`/`#f0f0f0` stand-ins. The ring's actual surrounding colour on a live page depends on the section background behind the field (could be `surface-alt`, a coloured section, etc.) — the D455 docblock's 3.32–19.8:1 range already covers this across all 8 client palettes, but re-confirm on whichever client's form is checked first.
+2. **Contrast against the REAL surrounding colour** — the fixture used `#fff`/`#f0f0f0` stand-ins. The ring's actual surrounding colour on a live page depends on the section background behind the field (could be `surface-alt`, a coloured section, etc.) — the D457 docblock's 3.32–19.8:1 range already covers this across all 8 client palettes, but re-confirm on whichever client's form is checked first.
 3. **`:focus:not(:focus-visible)` fallback branch** — confirmed via CSSOM matching logic (the `:not(:focus)` exclusion applies identically to both focus rules), but not independently exercised with a real non-`:focus-visible` focus event (e.g. a mouse-only browser context) in this session. Low risk since the fix is selector-level and both branches share the same `:focus` gate, but flagging for completeness.
 4. **Radio/checkbox `:user-invalid` outline rule** (`style.css:753-757`) was not touched and was not in scope of this defect (it targets `outline`, not `border-color`, on a different element type) — not re-verified, no reason to expect it's affected.
 
