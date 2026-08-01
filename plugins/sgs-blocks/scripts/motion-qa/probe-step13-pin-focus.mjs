@@ -238,6 +238,173 @@ async function settledScrollTo( page, y ) {
 }
 
 /**
+ * Read the LIVE pin-scrub timeline's progress off the deployed page.
+ *
+ * WHY THIS EXISTS (added 2026-08-01, D453 follow-up). Without it the probe
+ * cannot tell two very different things apart when it finds a focused control
+ * that is dim:
+ *
+ *   (a) the pin's own timeline has not revealed it — a real fx-pin-scrub.js
+ *       defect, the thing Step 13 exists to catch; versus
+ *   (b) the timeline is COMPLETE and the control is dim for its own authored
+ *       reasons — e.g. this fixture's text input computes `opacity: 0.4` from
+ *       its own stylesheet, with every ancestor at 1 and the timeline at
+ *       progress 1. That is a genuine a11y finding, but it is NOT caused by
+ *       the pin and must not be reported as one (nor allowed to hold the pin's
+ *       verdict permanently red).
+ *
+ * Reaching the instance is legitimate, not a hack: the frontend loads
+ * `build/vendor-modules/gsap-scrolltrigger.js` as a real ES module, and the
+ * module registry is keyed by URL — so re-importing that exact URL yields the
+ * SAME ScrollTrigger singleton the effect module is using, not a second copy.
+ * Verified live: `ScrollTrigger.getAll()` returns the pin-scrub trigger with
+ * `animation` present and `getTween()` non-null.
+ *
+ * @param {import('playwright').Page} page Page.
+ * @return {Promise<Object>} `{progress, hasScrub, scrubProgress}` or `{error}`.
+ */
+async function reachPinTimeline( page ) {
+	return page.evaluate( async () => {
+		const url = performance
+			.getEntriesByType( 'resource' )
+			.map( ( e ) => e.name )
+			.find( ( n ) => n.includes( 'gsap-scrolltrigger' ) );
+		if ( ! url ) {
+			return { error: 'NO_SCROLLTRIGGER_MODULE' };
+		}
+		let mod;
+		try {
+			mod = await import( url );
+		} catch ( e ) {
+			return { error: 'IMPORT_FAILED', message: String( e ) };
+		}
+		const ST = mod.ScrollTrigger || mod.default;
+		if ( ! ST || ! ST.getAll ) {
+			return { error: 'NO_GETALL' };
+		}
+		const st = ST.getAll().find(
+			( s ) => s.trigger && 'pin-scrub' === s.trigger.getAttribute( 'data-sgs-fx' )
+		);
+		if ( ! st ) {
+			return { error: 'NO_PIN_SCRUB_TRIGGER' };
+		}
+		const scrub = st.getTween ? st.getTween() : null;
+		return {
+			progress: st.animation ? st.animation.progress() : null,
+			hasScrub: !! scrub,
+			scrubProgress: scrub ? scrub.progress() : null,
+			position: getComputedStyle( st.trigger ).position,
+		};
+	} );
+}
+
+/**
+ * The focused element's EFFECTIVE opacity: its own computed value multiplied
+ * up the ancestor chain as far as the pinned root (inclusive).
+ *
+ * ⚠ This is the only honest measure, and the reason the original D453 defect
+ * hid for so long. CSS `opacity` is a rendering effect applied to an
+ * ancestor's whole box — it is NOT an inherited computed value — so a control
+ * sitting inside an `opacity: 0` participant reports its OWN opacity as "1"
+ * while being completely invisible on screen. Proven on this fixture: the
+ * submit button read `1` while `.wp-block-sgs-form` above it read `0`.
+ *
+ * @param {import('playwright').Page} page Page.
+ * @return {Promise<Object>} `{effective, own, chain, tag, text}`.
+ */
+async function effectiveOpacityOfFocus( page ) {
+	return page.evaluate( () => {
+		const el = document.activeElement;
+		if ( ! el || el === document.body ) {
+			return { effective: null, own: null, chain: [], tag: null, text: null };
+		}
+		const root = el.closest( '[data-sgs-fx="pin-scrub"]' );
+		const chain = [];
+		let node = el;
+		while ( node && node !== document.body ) {
+			const cs = getComputedStyle( node );
+			chain.push( {
+				t:
+					node.tagName +
+					( node.className ? '.' + String( node.className ).split( ' ' )[ 0 ] : '' ),
+				o: cs.opacity,
+			} );
+			if ( node === root ) {
+				break;
+			}
+			node = node.parentElement;
+		}
+		return {
+			tag: el.tagName,
+			type: el.type || null,
+			text: ( el.textContent || el.value || '' ).trim().slice( 0, 40 ),
+			insidePin: !! root,
+			own: chain.length ? chain[ 0 ].o : null,
+			effective: Number(
+				chain.reduce( ( acc, s ) => acc * parseFloat( s.o ), 1 ).toFixed( 4 )
+			),
+			chain,
+		};
+	} );
+}
+
+/**
+ * Sample the focused element's EFFECTIVE opacity at high frequency for a
+ * window, entirely in-page (one `evaluate` round-trip, so the sample interval
+ * is not distorted by Playwright IPC latency the way a per-sample
+ * `page.evaluate` loop would be).
+ *
+ * High-frequency tracing rather than a single settled read is load-bearing
+ * here: the failure this probe now tests for is a control that briefly rises
+ * and is then dragged BACK to 0 by ScrollTrigger's scrub catch-up tween.
+ * Measured on the pre-fix build, a one-shot reveal produced
+ * `0 → 0.28 → 0.32 → 0.28 → … → 0`. Any single sample, at any delay, either
+ * misses that or misreads it.
+ *
+ * @param {import('playwright').Page} page    Page.
+ * @param {number}                    ms      Window length.
+ * @param {number}                    everyMs Sample interval.
+ * @return {Promise<Array>} Samples `{dt, eff, tag}`.
+ */
+async function traceEffectiveOpacity( page, ms, everyMs ) {
+	return page.evaluate(
+		( [ windowMs, interval ] ) =>
+			new Promise( ( resolve ) => {
+				const t0 = performance.now();
+				const samples = [];
+				const read = () => {
+					const el = document.activeElement;
+					if ( ! el || el === document.body ) {
+						return { eff: null, tag: null };
+					}
+					const root = el.closest( '[data-sgs-fx="pin-scrub"]' );
+					let node = el;
+					let eff = 1;
+					while ( node && node !== document.body ) {
+						eff *= parseFloat( getComputedStyle( node ).opacity );
+						if ( node === root ) {
+							break;
+						}
+						node = node.parentElement;
+					}
+					return { eff: Number( eff.toFixed( 4 ) ), tag: el.tagName };
+				};
+				const tick = () => {
+					const r = read();
+					samples.push( { dt: Math.round( performance.now() - t0 ), ...r } );
+					if ( performance.now() - t0 < windowMs ) {
+						setTimeout( tick, interval );
+					} else {
+						resolve( samples );
+					}
+				};
+				tick();
+			} ),
+		[ ms, everyMs ]
+	);
+}
+
+/**
  * Real Tab presses (page.keyboard.press), sampling activeElement + viewport
  * containment + pin-engagement + scrub-desync after each press.
  */
@@ -351,7 +518,17 @@ async function tabWalk( page, hostSelector, steps, opts = {} ) {
 				scrollY: window.scrollY,
 			};
 		}, hostSelector );
-		results.push( { step: i + 1, focus, pinState } );
+		/*
+		 * The LIVE timeline progress at this Tab step, when the caller asks
+		 * for it. This is what lets the verdict tell "the pin has not revealed
+		 * this control" (a real fx-pin-scrub.js defect) apart from "the pin is
+		 * finished and this control is dim for its own authored reasons" — see
+		 * `reachPinTimeline()`'s docblock. Opt-in because only the pin-scrub
+		 * fixtures have a pin-scrub timeline to read.
+		 */
+		// eslint-disable-next-line no-await-in-loop
+		const timeline = opts.timeline ? await reachPinTimeline( page ) : null;
+		results.push( { step: i + 1, focus, pinState, timeline } );
 	}
 	return results;
 }
@@ -550,7 +727,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 		// 5 presses: link, hidden honeypot is skipped (tabindex=-1, verified
 		// live 2026-08-01), form field, submit button, one more to confirm
 		// focus exits the pin cleanly onto `#step22-after`.
-		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 5 );
+		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 5, { timeline: true } );
 	} else {
 		// No spacer at all (the reduced-motion arm's expected shape) — still
 		// walk Tab from a known origin with NO forced scroll, so the SIMPLIFY
@@ -563,7 +740,7 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 				before.focus( { preventScroll: true } );
 			}
 		} );
-		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 5 );
+		tabResults = await tabWalk( page, '[data-sgs-fx="pin-scrub"]', 5, { timeline: true } );
 	}
 
 	await page.screenshot( {
@@ -577,6 +754,182 @@ async function runPinScrubRealFocus( browser, reducedMotion ) {
 
 	await context.close();
 	return { reducedMotion, mediaQuery, focusablesPresent, activation, tabResults, finalHref };
+}
+
+/**
+ * STEP 22b — THE FAILING CASE: focus landing INSIDE the scrub window.
+ *
+ * WHY A SEPARATE RUN FROM `runPinScrubRealFocus()`. That function settles the
+ * scroll before walking Tab, which is the case the D453 one-shot fix already
+ * survived. The case it LOSES is the opposite one, and it is the framework's
+ * default configuration rather than an exotic edge: `resolveScrub()` returns
+ * the NUMBER 1 whenever a block sets no `data-sgs-fx-scrub`, and a numeric
+ * scrub makes ScrollTrigger build an internal catch-up tween that re-drives
+ * the timeline's progress toward the raw scroll value and is restarted by
+ * every subsequent scroll update. So focus landing within roughly a scrub
+ * duration of the last scroll change gets its reveal overwritten — with no
+ * self-recovery, because the tween's target IS the low scroll-derived value.
+ * A full second of vulnerability is therefore the DEFAULT.
+ *
+ * This run forces exactly that: settle, then NUDGE the scroll (which restarts
+ * the catch-up tween), then press Tab immediately with no settle at all. Three
+ * assertions follow, in order of what they can each disprove:
+ *
+ *   A. RACE      — effective opacity must converge to ~1 and STAY there for
+ *                  the rest of a 2.6s trace.
+ *   B. RE-NUDGE  — scrolling AGAIN while focus is still held must not re-hide
+ *                  it. This is the assertion a one-shot reveal cannot pass,
+ *                  and the reason the shipped fix is a HELD state.
+ *   C. WALK      — Tab on through the remaining controls, tracing each, so
+ *                  every control is measured and not just the first.
+ *
+ * ⚠ Do NOT "fix" this run by settling the scroll before the Tab press. The
+ * unsettled scroll is the entire point; settling it turns this back into the
+ * already-passing case and the run becomes vacuous.
+ *
+ * @param {import('playwright').Browser} browser Browser.
+ * @return {Promise<Object>} Run record.
+ */
+async function runScrubWindowRace( browser ) {
+	const context = await browser.newContext( {
+		viewport: { width: 1440, height: 900 },
+		reducedMotion: 'no-preference',
+	} );
+	const page = await context.newPage();
+	await page.goto( bust( REAL_FOCUS_URL ), { waitUntil: 'load' } );
+	await page.waitForTimeout( 1200 );
+	const hrefStart = page.url();
+
+	const activation = await findActivePinScrollY( page, '[data-sgs-fx="pin-scrub"]' );
+	if ( ! Number.isFinite( activation.scrollY ) ) {
+		await context.close();
+		return { hrefStart, activation, error: 'NO_ACTIVATION' };
+	}
+	await settledScrollTo( page, activation.scrollY );
+
+	// Known origin, immediately before the pinned section. `preventScroll` is
+	// load-bearing — see the focus-jump trap documented in
+	// `runPinScrubRealFocus()`; without it this anchor scrolls the page back to
+	// the top and every later "pinned" measurement is taken on an un-pinned
+	// page, a false PASS by construction.
+	await page.evaluate( () => {
+		const before = document.querySelector( '#step22-before' );
+		if ( before ) {
+			before.setAttribute( 'tabindex', '-1' );
+			before.focus( { preventScroll: true } );
+		}
+	} );
+	await page.waitForTimeout( 200 );
+
+	// A — force the race.
+	await page.evaluate( () => window.scrollBy( 0, 45 ) );
+	await page.keyboard.press( 'Tab' );
+	const raceTrace = await traceEffectiveOpacity( page, 2600, 50 );
+	const raceFocus = await effectiveOpacityOfFocus( page );
+	const raceTimeline = await reachPinTimeline( page );
+
+	// B — scroll again while focus is still held.
+	await page.evaluate( () => window.scrollBy( 0, 60 ) );
+	const renudgeTrace = await traceEffectiveOpacity( page, 2000, 50 );
+	const renudgeTimeline = await reachPinTimeline( page );
+
+	// C — walk on through the remaining controls, nudging before each press so
+	// every one of them is also measured inside the scrub window.
+	const walk = [];
+	for ( let i = 0; i < 3; i++ ) {
+		// eslint-disable-next-line no-await-in-loop
+		await page.evaluate( () => window.scrollBy( 0, 25 ) );
+		// eslint-disable-next-line no-await-in-loop
+		await page.keyboard.press( 'Tab' );
+		// eslint-disable-next-line no-await-in-loop
+		const trace = await traceEffectiveOpacity( page, 1400, 60 );
+		// eslint-disable-next-line no-await-in-loop
+		const focus = await effectiveOpacityOfFocus( page );
+		// eslint-disable-next-line no-await-in-loop
+		const timeline = await reachPinTimeline( page );
+		walk.push( { step: i + 1, focus, timeline, trace } );
+	}
+
+	await page.screenshot( {
+		path: shotPath( 'step22b-scrub-window-race.png' ),
+		fullPage: false,
+	} );
+
+	const hrefEnd = page.url();
+	await context.close();
+	return {
+		hrefStart,
+		hrefEnd,
+		activation,
+		raceTrace,
+		raceFocus,
+		raceTimeline,
+		renudgeTrace,
+		renudgeTimeline,
+		walk,
+	};
+}
+
+/**
+ * MOUSE CONTROL — the choreography must be UNCHANGED for a user who never
+ * focuses anything.
+ *
+ * This is the negative control for the whole keyboard-hold mechanism, and it
+ * is not optional: a "fix" that simply revealed the content permanently would
+ * pass every assertion in `runScrubWindowRace()` while destroying the effect.
+ * With no focus anywhere in the section, the participants' opacity must still
+ * track scroll across the pin — several distinct values, starting near 0 and
+ * ending at 1 — not sit pinned at 1.
+ *
+ * @param {import('playwright').Browser} browser Browser.
+ * @return {Promise<Object>} Run record.
+ */
+async function runMouseChoreographyControl( browser ) {
+	const context = await browser.newContext( {
+		viewport: { width: 1440, height: 900 },
+		reducedMotion: 'no-preference',
+	} );
+	const page = await context.newPage();
+	await page.goto( bust( REAL_FOCUS_URL ), { waitUntil: 'load' } );
+	await page.waitForTimeout( 1200 );
+	const hrefStart = page.url();
+
+	const sweep = await page.evaluate( async () => {
+		const host = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+		if ( ! host ) {
+			return { error: 'NO_HOST' };
+		}
+		const spacer = host.closest( '.pin-spacer' );
+		if ( ! spacer ) {
+			return { error: 'NO_SPACER' };
+		}
+		const top = spacer.getBoundingClientRect().top + window.scrollY;
+		const h = spacer.offsetHeight;
+		const participant = host.querySelector( 'a.sgs-button, a, h2, p' );
+		const out = [];
+		for ( let f = 0; f <= 1.001; f += 0.1 ) {
+			window.scrollTo( 0, top + h * f );
+			// eslint-disable-next-line no-await-in-loop
+			await new Promise( ( r ) => setTimeout( r, 600 ) );
+			out.push( {
+				f: Number( f.toFixed( 2 ) ),
+				o: participant ? getComputedStyle( participant ).opacity : null,
+				// Proves nothing inside the pin was focused during the sweep —
+				// if something were, the keyboard hold would legitimately be
+				// engaged and this control would be measuring the wrong thing.
+				activeInsidePin: !! (
+					document.activeElement &&
+					document.activeElement.closest &&
+					document.activeElement.closest( '[data-sgs-fx="pin-scrub"]' )
+				),
+			} );
+		}
+		return { samples: out };
+	} );
+
+	const hrefEnd = page.url();
+	await context.close();
+	return { hrefStart, hrefEnd, sweep };
 }
 
 async function runHorizontalPanel( browser, reducedMotion ) {
@@ -720,6 +1073,8 @@ out.horizontalPanel_noPreference = await runHorizontalPanel( browser, 'no-prefer
 out.horizontalPanel_reduce = await runHorizontalPanel( browser, 'reduce' );
 out.pinScrubRealFocus_noPreference = await runPinScrubRealFocus( browser, 'no-preference' );
 out.pinScrubRealFocus_reduce = await runPinScrubRealFocus( browser, 'reduce' );
+out.scrubWindowRace = await runScrubWindowRace( browser );
+out.mouseChoreography = await runMouseChoreographyControl( browser );
 
 await browser.close();
 
@@ -748,6 +1103,7 @@ if ( nc && false === nc.wouldFailGate ) {
 // off-canvas/hidden-nav defect unrelated to this effect is reported
 // separately, never folded into the effect's own verdict.
 const preExisting = [];
+const notPinCaused = [];
 [ 'pinScrub_noPreference', 'pinScrub_reduce', 'horizontalPanel_noPreference', 'horizontalPanel_reduce' ].forEach( ( key ) => {
 	const arm = out[ key ];
 	if ( ! arm.tabResults ) {
@@ -815,7 +1171,37 @@ const realFocusIssues = [];
 		}
 		const opacityNum = parseFloat( r.focus.ownOpacity );
 		if ( Number.isFinite( opacityNum ) && opacityNum < 0.5 ) {
-			realFocusIssues.push( `${ key } step ${ r.step }: <${ r.focus.tag }> "${ r.focus.text }" focused while pin fixed, but ITS OWN opacity is ${ r.focus.ownOpacity } — focusable but not visibly indicated (WCAG 2.4.11 "focus not obscured" / 2.4.7 "focus visible")` );
+			/*
+			 * ATTRIBUTE IT BEFORE FAILING THE PIN FOR IT. A dim focused
+			 * control has two possible causes and they need opposite
+			 * responses. If the pin's timeline has NOT finished, the pin is
+			 * the cause and this is the D453 defect. If the timeline reads
+			 * progress 1 AND no ancestor is hiding anything, nothing the pin
+			 * drives is holding this element down — it is dim from its own
+			 * authored CSS, which is a real a11y finding but not
+			 * fx-pin-scrub.js's, and failing the pin's verdict on it would
+			 * leave this probe permanently red for a defect it cannot fix.
+			 *
+			 * Measured example on fixture 2114: the text input computes
+			 * `opacity: 0.4` with every ancestor at 1 and the timeline at
+			 * progress 1 — identical under `prefers-reduced-motion: reduce`,
+			 * where no pin or scrub exists at all, which is the independent
+			 * confirmation that it is static.
+			 *
+			 * This narrows the check, it does not disable it: with no
+			 * `timeline` reading available, or with progress < 1, or with an
+			 * ancestor clue present, it still fails exactly as before.
+			 */
+			const timelineComplete =
+				r.timeline &&
+				! r.timeline.error &&
+				Number.isFinite( r.timeline.progress ) &&
+				r.timeline.progress >= 0.999;
+			if ( timelineComplete && ! r.focus.hiddenAncestorClue ) {
+				notPinCaused.push( `${ key } step ${ r.step }: <${ r.focus.tag }> "${ r.focus.text }" own opacity ${ r.focus.ownOpacity } while the pin timeline is COMPLETE (progress ${ r.timeline.progress }) and no ancestor is hiding it — an authored/static opacity, NOT caused by fx-pin-scrub.js. Still an a11y finding, owned elsewhere.` );
+			} else {
+				realFocusIssues.push( `${ key } step ${ r.step }: <${ r.focus.tag }> "${ r.focus.text }" focused while pin fixed, but ITS OWN opacity is ${ r.focus.ownOpacity } (timeline progress ${ r.timeline ? r.timeline.progress : 'unread' }) — focusable but not visibly indicated (WCAG 2.4.11 "focus not obscured" / 2.4.7 "focus visible")` );
+			}
 		}
 		if ( 'hidden' === r.focus.ownVisibility || 'none' === r.focus.ownDisplay ) {
 			realFocusIssues.push( `${ key } step ${ r.step }: <${ r.focus.tag }> "${ r.focus.text }" focused while pin fixed, but visibility=${ r.focus.ownVisibility } display=${ r.focus.ownDisplay }` );
@@ -845,7 +1231,138 @@ if ( realFocusIssues.length ) {
 	fails.push( ...realFocusIssues.map( ( m ) => `JOB1 REAL-FOCUS: ${ m }` ) );
 }
 
+/*
+ * ── STEP 22b — THE FAILING CASE ──────────────────────────────────────────
+ * Focus landing INSIDE the scrub window. See `runScrubWindowRace()` for why
+ * this is the framework's DEFAULT configuration rather than an edge case.
+ *
+ * The threshold set below is deliberately shaped around what was actually
+ * measured pre-fix, so it cannot pass vacuously:
+ *
+ *   - one-shot `timeline.progress(1)` .................. flat 0 for 2.6s
+ *   - one-shot `getTween().progress(1)` + `progress(1)`  peaked 0.32, fell
+ *                                                        back to 0 and stayed
+ *
+ * `minAfterRamp` (everything from 600ms on) fails both of those. A trailing
+ * check on the last 500ms catches the "rises then gets dragged back" shape
+ * specifically, which a whole-window minimum would forgive.
+ */
+const RAMP_ALLOWANCE_MS = 600;
+const race = out.scrubWindowRace;
+if ( ! race || race.error ) {
+	inconclusive.push(
+		`scrubWindowRace: could not engage the pin (${ race ? race.error : 'run missing' }) — the FAILING case was never exercised, so a PASS here would be meaningless`
+	);
+} else {
+	const assertTrace = ( label, trace ) => {
+		const after = trace.filter( ( s ) => s.dt >= RAMP_ALLOWANCE_MS && null !== s.eff );
+		const tail = trace.filter( ( s ) => s.dt >= trace[ trace.length - 1 ].dt - 500 && null !== s.eff );
+		if ( 0 === after.length ) {
+			inconclusive.push( `scrubWindowRace ${ label }: no samples had an active element — nothing was measured` );
+			return;
+		}
+		const min = Math.min( ...after.map( ( s ) => s.eff ) );
+		const tailMin = Math.min( ...tail.map( ( s ) => s.eff ) );
+		if ( min < 0.99 ) {
+			fails.push(
+				`STEP22b ${ label }: effective opacity (own × ancestors up to the pinned root) dropped to ${ min } after the ${ RAMP_ALLOWANCE_MS }ms ramp allowance — a control is focused and not fully visible inside the scrub window (WCAG 2.4.11 / 2.4.7)`
+			);
+		}
+		if ( tailMin < 0.99 ) {
+			fails.push(
+				`STEP22b ${ label }: effective opacity fell back to ${ tailMin } in the final 500ms — the reveal was overwritten rather than held (this is the one-shot failure shape)`
+			);
+		}
+	};
+	assertTrace( 'A/race', race.raceTrace );
+	assertTrace( 'B/re-nudge-while-focused', race.renudgeTrace );
+	race.walk.forEach( ( w ) => {
+		if ( ! w.focus || ! w.focus.insidePin ) {
+			// Focus has left the pinned section — nothing further to assert
+			// about this effect for that step.
+			return;
+		}
+		const timelineComplete =
+			w.timeline && ! w.timeline.error && Number.isFinite( w.timeline.progress ) && w.timeline.progress >= 0.999;
+		const ancestorMin = Math.min(
+			...w.focus.chain.slice( 1 ).map( ( c ) => parseFloat( c.o ) ),
+			1
+		);
+		if ( ancestorMin < 0.99 ) {
+			fails.push(
+				`STEP22b C/walk step ${ w.step }: <${ w.focus.tag }> "${ w.focus.text }" — an ANCESTOR is at opacity ${ ancestorMin } while focused inside the pin (chain ${ JSON.stringify( w.focus.chain ) })`
+			);
+		} else if ( parseFloat( w.focus.own ) < 0.99 ) {
+			// Own-only dimness with a complete timeline and clean ancestors is
+			// authored, not pin-caused — same attribution rule as the JOB1
+			// check above, and for the same reason.
+			if ( timelineComplete ) {
+				notPinCaused.push(
+					`STEP22b C/walk step ${ w.step }: <${ w.focus.tag }> "${ w.focus.text }" own opacity ${ w.focus.own } with the timeline COMPLETE and all ancestors at 1 — authored/static, not fx-pin-scrub.js`
+				);
+			} else {
+				fails.push(
+					`STEP22b C/walk step ${ w.step }: <${ w.focus.tag }> "${ w.focus.text }" own opacity ${ w.focus.own } with timeline progress ${ w.timeline ? w.timeline.progress : 'unread' } — the pin has not revealed it`
+				);
+			}
+		}
+	} );
+}
+
+/*
+ * ── MOUSE CONTROL ────────────────────────────────────────────────────────
+ * The negative control for the whole keyboard-hold mechanism. A "fix" that
+ * simply revealed the pinned content permanently would satisfy every
+ * assertion above while destroying the effect, so this run must show the
+ * choreography still tracking scroll with nothing focused. If this check ever
+ * stops being able to fail, the STEP22b block above becomes meaningless.
+ */
+const mouse = out.mouseChoreography;
+if ( ! mouse || ! mouse.sweep || mouse.sweep.error ) {
+	inconclusive.push(
+		`mouseChoreography: sweep unavailable (${ mouse && mouse.sweep ? mouse.sweep.error : 'run missing' }) — cannot confirm the keyboard hold left mouse choreography untouched`
+	);
+} else {
+	const samples = mouse.sweep.samples;
+	const focusedDuringSweep = samples.some( ( s ) => s.activeInsidePin );
+	const distinct = new Set( samples.map( ( s ) => s.o ) ).size;
+	const min = Math.min( ...samples.map( ( s ) => parseFloat( s.o ) ) );
+	const max = Math.max( ...samples.map( ( s ) => parseFloat( s.o ) ) );
+	if ( focusedDuringSweep ) {
+		inconclusive.push(
+			'mouseChoreography: something inside the pin held focus during the sweep, so the keyboard hold was legitimately engaged — this control measured the wrong thing'
+		);
+	} else if ( distinct < 3 || min > 0.9 || max < 0.99 ) {
+		/*
+		 * ⚠ THRESHOLD PROVENANCE — this check FALSE-FAILED once and was
+		 * corrected, so do not tighten it back without re-measuring.
+		 *
+		 * The first cut required `min <= 0.2`, and it reported "MOUSE
+		 * CHOREOGRAPHY CHANGED" against the DEPLOYED build — which contains no
+		 * keyboard hold at all and therefore cannot possibly have changed the
+		 * choreography. That was a measurement defect in this check, not a
+		 * product defect: the sweep's first sample is taken wherever the
+		 * previous scroll left the section, and with a numeric scrub the
+		 * catch-up tween is still resolving, so the observed floor moves run to
+		 * run (0 on one run, 0.448 on the next).
+		 *
+		 * What this control actually needs to discriminate is narrow and
+		 * robust: "does the participant's opacity still TRACK SCROLL, or has a
+		 * bad fix pinned it at 1 forever?" A permanently-revealed regression
+		 * gives exactly one distinct value with min = max = 1, which
+		 * `distinct < 3` and `min > 0.9` both catch decisively. The exact depth
+		 * of the floor is not the signal and must not be asserted on.
+		 */
+		fails.push(
+			`MOUSE CHOREOGRAPHY CHANGED: with nothing focused, a pinned participant's opacity across the pin showed ${ distinct } distinct values spanning ${ min }–${ max } (expected it to still vary with scroll and reach 1, not sit pinned at 1). The keyboard hold must cost a mouse user nothing.`
+		);
+	}
+}
+
 console.log( '\n=== VERDICT ===' );
+if ( notPinCaused.length ) {
+	console.log( 'NOT CAUSED BY THIS EFFECT (real findings, owned elsewhere):\n - ' + notPinCaused.join( '\n - ' ) );
+}
 if ( preExisting.length ) {
 	console.log( 'PRE-EXISTING (out of Step 13 scope, reported for visibility):\n - ' + preExisting.join( '\n - ' ) );
 }

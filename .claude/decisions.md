@@ -54,22 +54,82 @@ Measured on page 2114 after deploy, by high-frequency tracing:
 - This bites at the framework's own default: `resolveScrub()` returns `1` when a block sets no
   `data-sgs-fx-scrub`, so a full second of vulnerability is the DEFAULT, not an edge config.
 
-**Why the obvious fix is not available:** `scrubTween` is a closure-local variable inside
-ScrollTrigger's initialiser, not a property on the instance — it cannot be killed or paused from
-outside. And CSS `:focus-within` cannot win either, because GSAP writes opacity INLINE and beating
-that needs `!important`, which the cheat-gate rejects on a render surface.
+⚠ **CORRECTION (2026-08-01, same day) — the sentence that stood here was FACTUALLY WRONG and it
+was mine.** It claimed `scrubTween` "is a closure-local variable inside ScrollTrigger's
+initialiser, not a property on the instance — it cannot be killed or paused from outside."
+**It is public, documented API:** `ScrollTrigger.js:1819` exposes
+`self.getTween = function(snap){ return snap && tweenTo ? tweenTo.tween : scrubTween; }`, and
+`types/scroll-trigger.d.ts:526-537` carries the signature, a docs link, and the exact idiom
+`scrub.progress(1); // immediately finish the scrub`.
 
-**Deliberately NOT patched again this session.** The first attempt at D453 already referenced a
-non-existent variable and would have thrown at runtime; stacking a second unverified guess onto
-the accessibility path at the end of a long session is how the half-finished fix gets shipped.
-The partial fix is left in place because it strictly improves matters and cannot make anything
-worse — content is only ever added.
+I inferred "unreachable" from grepping for `scrubTween` and finding only closure-local
+assignments — a search's negative result describing the SEARCH, not the library. I then wrote
+that inference into a decision log as a stated constraint, where it would have steered the next
+session away from the documented route. **Ruling a route out is a claim that needs proof, exactly
+like ruling one in.**
 
-**Next session, first task.** Candidate directions, none yet measured: re-assert progress from the
-timeline's own `onUpdate` while a focus flag is set; or hold the reveal in a separate GSAP tween
-with `overwrite` that outlives a single frame; or make the FROM state conditional on the
-participant containing no focusable descendant. Whichever is chosen must be proven with the same
-high-frequency trace, focusing WITHIN the scrub window — the failing case, not the passing one.
+**The conclusion happened to survive, for a different reason.** The documented idiom was then
+MEASURED on the live page and still loses: effective opacity rose to 0.32 and was dragged back to
+0. `scroll-behavior: smooth` turns one nudge into a STREAM of scroll updates, each calling
+`resetTo` and restarting the scrub — so no one-shot can win, whether or not it can reach the
+tween. Right answer, wrong reason, and the wrong reason was the load-bearing part.
+
+CSS `:focus-within` genuinely cannot win: GSAP writes opacity INLINE, and beating that needs
+`!important`, which the cheat-gate rejects on a render surface.
+
+**RESOLVED 2026-08-01 — the reveal is now a HELD state, not a one-shot.** `focusin` adds a
+`gsap.ticker` callback that re-asserts `timeline.progress(1)` every frame while focus is inside
+the pinned section; `focusout` removes it, guarded on `relatedTarget` so moving between sibling
+controls does not release the hold. No `disable()` (D451), and the scrub tween is NOT killed —
+killing it leaves `scrubTween` pointing at a dead tween that the next `resetTo` cannot revive.
+
+**Three shapes were A/B'd in situ against the REAL deployed ScrollTrigger instance**, without
+deploying: the frontend loads `build/vendor-modules/gsap-scrolltrigger.js` as an ES module and the
+module registry is keyed by URL, so re-importing that URL from the page yields the same singleton
+the effect is using. Forcing the failing case (settle, nudge, Tab immediately) and tracing
+effective opacity every 50ms for 2.6s:
+
+| Shape | Result |
+|---|---|
+| `timeline.progress(1)` — as deployed | flat **0** throughout |
+| `getTween().progress(1)` then `timeline.progress(1)` — GSAP's documented idiom | rose to 0.32, **dragged back to 0** |
+| **`gsap.ticker` hold while focus is inside** | converges to **1 by ~320ms and HOLDS**; min after 400ms = 1 |
+
+**The decisive test a one-shot cannot pass:** scrolling AGAIN while focus is still held — the hold
+kept effective opacity at 1 across a further 2s. **Mouse cost is zero:** with nothing focused the
+ticker callback ran **0 frames**, and opacity still tracked scroll across 6 distinct values.
+
+**Council verdict: GO-WITH-FIXES** (`reports/2026-08-01-pinfocus-council-review.md`), and the two
+findings went opposite ways — both were fact-checked before acting, per the standing rule.
+
+⚠ **CONFIRMED + ACTIONABLE — `fx-scrub.js` carries the IDENTICAL defect.**
+`src/shared/effects/gsap/fx-scrub.js:98-114` runs `gsap.fromTo(el, {opacity: 0, y: 40}, …)` behind
+`scrub: resolveScrub(el)` with **zero** `focusin`/`focusout` handling (grep: 0 matches). Same
+mechanism, same default-scrub vulnerability, same WCAG 2.4.11 exposure. This is the project's own
+named pattern `fixing-one-instance-does-not-immunise-the-class` recurring inside the very session
+that fixed the first instance. **Extending the held-reveal to `fx-scrub.js` is the tracked
+commitment this GO is conditional on**, plus an investigation of `fx-split-reveal.js`.
+`fx-horizontal-panel.js` raises a distinct horizontal-clip reachability question — follow-up, not
+a blocker.
+
+❌ **REJECTED — the council's second finding was FALSE.** It reported D453's `ScrollTrigger.js:1149`
+citation as wrong, placing the real `resetTo` at `:2258-2323`. Checked against the installed
+gsap 3.15.0: `resetTo` appears at **1149, 1707/1708 and 2504 only** — there is nothing in
+2258-2323. **The original citation was correct.** Acting on this "correction" would have replaced
+a right line number with a wrong one. Council findings are hypotheses, including the ones that
+correct you.
+
+⚠ **Still owed: a post-deploy re-run** of `probe-step13-pin-focus.mjs` against the built and
+shipped asset. The injected candidate is behaviourally equivalent to the source, but equivalence
+is an argument, not a measurement of the shipped file — a fix is a hypothesis too.
+
+⚠ **SEPARATE a11y bug, NOT this effect, NOT fixed:** the text input inside the fixture computes
+`opacity: 0.4` with every ancestor at 1 and the timeline complete — identical under
+`prefers-reduced-motion`, where no pin exists at all. It is **authored CSS on
+`.sgs-form-field__input`**, which the earlier report had INFERRED was a stagger artefact. A form
+input at 0.4 opacity is a real accessibility problem owned by whoever owns `sgs/form`. The probe
+now reports it in a `NOT CAUSED BY THIS EFFECT` bucket, gated on timeline-complete AND clean
+ancestors, so it still fails red if the pin is genuinely at fault.
 
 ⚠ **Two probe bugs were found and fixed to get this answer**, and the shipped probe had reported a
 plain FAIL because of them: a fixed 300ms jump-scroll wait, and a settle loop fooled by a dead
