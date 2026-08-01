@@ -203,7 +203,7 @@ def scp_base_cmd(use_alias: bool, local: str, remote_path: str) -> list[str]:
             local, f"{SSH_USER_HOST}:{remote_path}"]
 
 
-def deployed_dirty_files() -> list[str]:
+def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
     """Tracked, uncommitted files that BOTH ship in the tarball AND run at runtime.
 
     Deliberately narrower than a repo-wide ``git status``. A repo-wide check is
@@ -213,10 +213,13 @@ def deployed_dirty_files() -> list[str]:
     two live client sites on 2026-07-14. Scoped this way the guard stays quiet
     during normal work, so when it fires it means a file that is about to execute
     on a live site differs from HEAD.
+
+    ``repo_root`` is overridable (default: the real repo) so this can be exercised
+    against an isolated temp repo in ``self_test()`` without touching real git state.
     """
     result = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=no"],
-        cwd=REPO_ROOT, check=False, capture_output=True, text=True,
+        cwd=repo_root, check=False, capture_output=True, text=True,
     )
     hits: list[str] = []
     for line in result.stdout.splitlines():
@@ -234,6 +237,153 @@ def deployed_dirty_files() -> list[str]:
             continue
         hits.append(path)
     return hits
+
+
+def split_dirty_by_payload(dirty: list[str], payload_prefixes: list[str]) -> tuple[list[str], list[str]]:
+    """Split deploy-relevant dirty files into (covered, uncovered) by declared payload.
+
+    Breaks the deploy<->commit deadlock (Step T): ``build-deploy.py`` refused to run
+    dirty; the pre-commit visual-diff gate refused to let you commit without a report
+    that requires a live deploy to produce. Neither could go first.
+
+    Fix shape chosen: (b) — let the deploy gate distinguish "dirty with the payload
+    being deployed" from "dirty with unrelated unfinished work", rather than (a)
+    changing the visual-diff gate's ordering. Reasoning: this repo's tree is
+    genuinely SHARED across concurrent tracks (see the six-agent worktree rules this
+    session runs under) — at any moment there is very likely dirty work that has
+    NOTHING to do with the wave being deployed. A caller who names their own payload
+    (``--payload plugins/sgs-blocks/src/blocks/quote/``) is asserting "this, and only
+    this, is what I intend to ship uncommitted"; anything else dirty in deploy scope
+    is presumptively someone else's unfinished work and must still block, exactly as
+    D336 requires. Changing the visual-diff gate instead would have meant relaxing
+    ITS ordering requirement (produce-report-before-commit), which is the gate that
+    actually enforces "no unverified visual change ships" — weakening it to permit a
+    later report would be a bigger blast radius for a smaller fix.
+
+    A file is "covered" only when it falls under one of the declared prefixes. An
+    EMPTY prefix list covers nothing, so calling this with ``payload_prefixes=[]``
+    reproduces the pre-existing all-or-nothing behaviour exactly (backward compatible
+    — a caller who never learns about ``--payload`` gets the old D336 protection
+    unchanged).
+    """
+    norm_prefixes = [p.replace("\\", "/").rstrip("/") + "/" for p in payload_prefixes if p]
+    covered: list[str] = []
+    uncovered: list[str] = []
+    for f in dirty:
+        f_norm = f.replace("\\", "/")
+        if any(f_norm == p.rstrip("/") or f_norm.startswith(p) for p in norm_prefixes):
+            covered.append(f)
+        else:
+            uncovered.append(f)
+    return covered, uncovered
+
+
+def self_test() -> int:
+    """Prove the payload-scoped dirty gate REJECTS the unsafe case, not just the happy path.
+
+    A gate that cannot fail reads green forever (the exact failure mode this repo's
+    own rules name). This builds an ISOLATED temp git repo — never the real
+    working tree — with two dirty files under a deploy root: one declared as the
+    wave's own ``--payload``, one left undeclared (standing in for "another
+    track's unrelated modified files").
+
+    Asserts, in order:
+      0. The negative control actually LANDED (``git diff --stat`` shows both
+         files changed) before trusting any gate output — a write that silently
+         no-ops must not read as a pass.
+      1. ``deployed_dirty_files()`` detects both dirty files.
+      2. POSITIVE CONTROL — declaring the payload file via ``--payload`` removes
+         it from ``uncovered`` (this is the deadlock-breaker actually working).
+      3. NEGATIVE CONTROL / KNOWN FAILURE — the undeclared file STAYS in
+         ``uncovered`` even though a payload was declared (D336's protection is
+         not weakened by this change).
+      4. BACKWARD COMPATIBILITY — with NO ``--payload`` at all, both files are
+         uncovered, i.e. identical to the gate's behaviour before this change.
+    """
+    failures: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="sgs-deploy-selftest-") as td:
+        repo = Path(td)
+
+        def git(*a: str) -> None:
+            subprocess.run(["git", *a], cwd=repo, check=True, capture_output=True, text=True)
+
+        git("init", "-q")
+        git("config", "user.email", "selftest@example.invalid")
+        git("config", "user.name", "sgs-deploy-selftest")
+
+        payload_dir = repo / "plugins" / "sgs-blocks" / "includes"
+        payload_dir.mkdir(parents=True)
+        payload_file = payload_dir / "payload-target.php"
+        unrelated_file = payload_dir / "unrelated-inflight.php"
+        payload_file.write_text("<?php // v1\n", encoding="utf-8")
+        unrelated_file.write_text("<?php // v1\n", encoding="utf-8")
+        git("add", "-A")
+        git("commit", "-q", "-m", "initial")
+
+        # Modify BOTH — this wave's own payload AND another track's unfinished edit.
+        payload_file.write_text("<?php // v2 -- this wave's declared payload\n", encoding="utf-8")
+        unrelated_file.write_text("<?php // v2 -- someone else's unfinished edit\n", encoding="utf-8")
+
+        # 0. Confirm the plant actually landed. `sed`/write-with-no-effect exits 0
+        # on a no-op; check the diff itself, not the write command's return code.
+        diffstat = subprocess.run(
+            ["git", "diff", "--stat"], cwd=repo, check=False, capture_output=True, text=True,
+        ).stdout
+        if "payload-target.php" not in diffstat or "unrelated-inflight.php" not in diffstat:
+            print("[SELF-TEST FAIL] negative control did not land — git diff --stat:")
+            print(diffstat)
+            return 1
+
+        dirty = deployed_dirty_files(repo_root=repo)
+        rel_payload = "plugins/sgs-blocks/includes/payload-target.php"
+        rel_unrelated = "plugins/sgs-blocks/includes/unrelated-inflight.php"
+
+        # 1. Both dirty files detected.
+        if rel_payload not in dirty or rel_unrelated not in dirty:
+            failures.append(f"deployed_dirty_files() did not detect both dirty files: {dirty}")
+
+        # 2. POSITIVE CONTROL: declared payload is covered -> not blocking.
+        covered, uncovered = split_dirty_by_payload(
+            dirty, ["plugins/sgs-blocks/includes/payload-target.php"]
+        )
+        if rel_payload not in covered:
+            failures.append(
+                f"POSITIVE CONTROL FAILED: declared --payload file was not covered "
+                f"(deadlock-breaker inert): covered={covered}"
+            )
+
+        # 3. NEGATIVE CONTROL / KNOWN FAILURE PROBE: undeclared file must still block.
+        if rel_unrelated not in uncovered:
+            failures.append(
+                f"NEGATIVE CONTROL FAILED: an undeclared dirty file was NOT blocked "
+                f"-- this would weaken D336's protection: uncovered={uncovered}"
+            )
+
+        # 4. BACKWARD COMPATIBILITY: no --payload at all -> old all-blocking behaviour.
+        covered_none, uncovered_none = split_dirty_by_payload(dirty, [])
+        if covered_none:
+            failures.append(
+                f"BACKWARD-COMPAT FAILED: with no --payload, files were covered anyway: {covered_none}"
+            )
+        if set(uncovered_none) != set(dirty):
+            failures.append(
+                f"BACKWARD-COMPAT FAILED: with no --payload, not everything blocked: "
+                f"uncovered={uncovered_none} dirty={dirty}"
+            )
+
+    if failures:
+        print("[SELF-TEST FAIL]")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+
+    print("[SELF-TEST PASS]")
+    print("  0. negative control confirmed landed via git diff --stat before trusting the gate")
+    print("  1. deployed_dirty_files() detects dirty files in an isolated repo")
+    print("  2. POSITIVE CONTROL: declared --payload file is covered (deadlock-breaker works)")
+    print("  3. NEGATIVE CONTROL (known failure probe): undeclared dirty file stays blocked (D336 intact)")
+    print("  4. BACKWARD COMPAT: no --payload => identical to pre-existing all-blocking behaviour")
+    return 0
 
 
 # ---------------------------------------------------------------------------
@@ -566,11 +716,27 @@ def parse_args() -> argparse.Namespace:
                    help="Skip the pre-deploy stored-content compatibility gate "
                         "(NOT recommended — it is the only check that catches a "
                         "deploy whose schemas strand or delete stored content).")
+    p.add_argument("--payload", action="append", default=[],
+                   help="Repo-relative path prefix (e.g. "
+                        "plugins/sgs-blocks/src/blocks/quote/) that is THIS wave's "
+                        "deliberate uncommitted payload. Repeatable. Deploys proceed "
+                        "without --allow-dirty when every deploy-relevant dirty file "
+                        "falls under a declared --payload prefix; any OTHER dirty "
+                        "deploy-relevant file (another track's unfinished work) still "
+                        "blocks exactly as before (D336). Breaks the deploy<->commit "
+                        "deadlock: canary-deploy the payload uncommitted, capture the "
+                        "visual-diff report the pre-commit gate demands, THEN commit.")
+    p.add_argument("--self-test", action="store_true",
+                   help="Run the payload-scoped dirty gate's self-test against an "
+                        "isolated temp repo (proves it still rejects the unsafe case) "
+                        "and exit. Touches no real git state.")
     return p.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.self_test:
+        return self_test()
     t0 = time.time()
 
     target_key = args.target
@@ -586,12 +752,22 @@ def main() -> int:
     if not args.allow_dirty and not args.dry_run:
         dirty = deployed_dirty_files()
         if dirty:
-            err("uncommitted changes in files this deploy would push live:")
-            for path in dirty:
-                err(f"    {path}")
-            err("commit them, or re-run with --allow-dirty if this is deliberate")
-            print("[ABORTED] reason: deployed-files-dirty", flush=True)
-            return 1
+            covered, uncovered = split_dirty_by_payload(dirty, args.payload)
+            if covered:
+                log("[payload] declared --payload covers these dirty files — "
+                    "deploying them uncommitted:")
+                for path in covered:
+                    log(f"    {path}")
+            if uncovered:
+                err("uncommitted changes in files this deploy would push live, "
+                    "NOT covered by --payload:")
+                for path in uncovered:
+                    err(f"    {path}")
+                err("commit them, add them to --payload if they are THIS wave's "
+                    "intended payload, or re-run with --allow-dirty if this is "
+                    "deliberate")
+                print("[ABORTED] reason: deployed-files-dirty", flush=True)
+                return 1
 
     # Resolve scope
     deploy_theme = not args.blocks_only

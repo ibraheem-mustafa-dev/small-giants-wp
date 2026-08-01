@@ -58,6 +58,13 @@ const SHARED_CONTROLS_JS = path.join(
 	'components',
 	'ContainerWrapperControls.js'
 );
+// CHECK 3 target (Step L, 2026-08-01): src/blocks/extensions/*.js registers
+// attributes on other blocks via `blocks.registerBlockType` JS filters, not a
+// block.json — so CHECK 1 (which iterates block DIRECTORIES and explicitly
+// skips `extensions`) never reaches this surface at all, and neither has any
+// other guard in this project. That is the exact gap Spec 38's inspector
+// panels (fx.js's "Scroll & effects" panel foremost) shipped through.
+const EXTENSIONS_DIR = path.join( BLOCKS_DIR, 'extensions' );
 const BASELINE_FILE = path.join( __dirname, 'dead-controls-baseline.json' );
 
 // ---------------------------------------------------------------------------
@@ -77,6 +84,25 @@ const SYSTEM_ATTR_PREFIXES = [ 'sgs' ];
 // consumption. Keep this list tiny and justified (Spec 22 BY-DESIGN).
 const EDITOR_ONLY_ATTRS = new Set( [
 	'templateMode', // container: drives allowedBlocks in the editor (Spec 22 BY-DESIGN).
+] );
+
+// Extension attributes that are BY-DESIGN editor-only — never emitted as a
+// data-attribute / consumed server-side, with the design decision documented
+// at the point that would otherwise consume them. Keep tiny and justified,
+// same discipline as EDITOR_ONLY_ATTRS above (this is CHECK 3's own version
+// of that allowlist, kept separate because the two checks scan different
+// corpora and a block-attr name could coincidentally collide).
+const EXTENSION_EDITOR_ONLY_ATTRS = new Set( [
+	// fx/Scroll & effects panel (Spec 38 §7): a preset is a WRITER, not a
+	// stored effect parameter — choosing "Dramatic" stamps its whole governed
+	// set into the real fx* attributes (fx.js `applyPreset`), and `fxPreset`
+	// survives only as a label so the panel can show which preset is still
+	// truthfully applied. `includes/fx-attributes.php`'s own FX_ATTR_MAP
+	// docblock states this explicitly: "fxPreset is ABSENT on purpose... a
+	// preset writes its values into the params above, so emitting the label
+	// too would ship a data attribute no runtime reads." Confirmed absent
+	// from FX_ATTR_MAP (2026-08-01).
+	'fxPreset',
 ] );
 
 // Object-literal keys that show up inside setAttributes()-adjacent callbacks
@@ -511,6 +537,169 @@ function checkSharedControls( wrapperControlled, sharedCorpus, declaredAnywhere 
 }
 
 // ---------------------------------------------------------------------------
+// CHECK 3 — extension-registered controls (src/blocks/extensions/*.js)
+// ---------------------------------------------------------------------------
+//
+// Every other check in this file (and check-control-ux.js / audit-inspector-
+// conformance.js) is keyed to a block.json + a block DIRECTORY. An extension
+// file registers its attributes on OTHER blocks via a `blocks.registerBlockType`
+// JS filter and renders its own inspector panel via `editor.BlockEdit` — there
+// is no block.json to enumerate and no per-block directory to walk, so CHECK 1
+// structurally cannot reach it (it explicitly filters `d.name !== 'extensions'`)
+// and no other guard in this project has ever scanned this surface either.
+// Confirmed live 2026-08-01: `fxPreset` is the one attribute in this file that
+// intentionally has no consumer (see EXTENSION_EDITOR_ONLY_ATTRS above); every
+// other fx* / sgs* attribute IS consumed, either by this file's own
+// `getSaveContent.extraProps` function (static blocks) or by the matching
+// `includes/*.php` file via the `render_block` filter (dynamic blocks) — both
+// already fall inside `sharedCorpus`, since that is every .php file under
+// `includes/`.
+
+/**
+ * Extract a `{ ... }` block starting at `openBraceIndex`, using brace-depth
+ * balancing so a nested `}` does not end the match early. Returns null on
+ * unbalanced input (malformed source — treat as "not found", never guess).
+ *
+ * @param {string} text           Full source text.
+ * @param {number} openBraceIndex Index of the opening `{`.
+ * @return {string|null} The balanced block, or null.
+ */
+function extractBalancedBraceBlock( text, openBraceIndex ) {
+	let depth = 0;
+	for ( let i = openBraceIndex; i < text.length; i++ ) {
+		if ( text[ i ] === '{' ) {
+			depth++;
+		} else if ( text[ i ] === '}' ) {
+			depth--;
+			if ( depth === 0 ) {
+				return text.slice( openBraceIndex, i + 1 );
+			}
+		}
+	}
+	return null;
+}
+
+/**
+ * Find the body of the function registered as the callback for a given
+ * `addFilter( 'hookName', 'namespace/id', fnName )` call, where `fnName` is a
+ * classic `function fnName( ... ) { ... }` declaration in the same file.
+ *
+ * This is deliberately the ONLY shape resolved. Every extension's own
+ * getSaveContent.extraProps consumer in this codebase today uses a named
+ * function declaration (fx.js `addFxSaveProps`, animation.js
+ * `addAnimationSaveProps`, custom-css.js `saveCustomCssAttribute`,
+ * custom-spacing.js `applySpacingClasses`, responsive-visibility.js
+ * `addVisibilityClasses`) — confirmed by reading each file, not assumed. A
+ * file whose consumer is an inline arrow or `const` HOC (none currently is)
+ * resolves to '' here rather than guessing a boundary; that file's attrs then
+ * fall back to `sharedCorpus` alone, which is correct for the pattern
+ * hover-effects.js documents explicitly: no JS-side extraProps at all,
+ * consumption is 100% server-side via the `render_block` PHP filter.
+ *
+ * @param {string} src      Full extension-file source.
+ * @param {string} hookName The addFilter hook name, e.g. 'blocks.getSaveContent.extraProps'.
+ * @return {string} The callback's function body (braces included), or ''.
+ */
+function extractFilterCallbackBody( src, hookName ) {
+	const hookRe = new RegExp(
+		"addFilter\\(\\s*['\"]" +
+			hookName.replace( /\./g, '\\.' ) +
+			"['\"]\\s*,\\s*['\"][^'\"]*['\"]\\s*,\\s*(\\w+)"
+	);
+	const hookMatch = hookRe.exec( src );
+	if ( ! hookMatch ) {
+		return '';
+	}
+	const fnName = hookMatch[ 1 ];
+	const fnRe = new RegExp( 'function\\s+' + fnName + '\\s*\\([^)]*\\)\\s*\\{' );
+	const fnMatch = fnRe.exec( src );
+	if ( ! fnMatch ) {
+		return '';
+	}
+	const openBraceIndex = fnMatch.index + fnMatch[ 0 ].length - 1;
+	return extractBalancedBraceBlock( src, openBraceIndex ) || '';
+}
+
+/**
+ * Collect controlled attrs for an extension file, recognising the same
+ * `setAttributes( { ... } )` shapes `collectControlledAttrs` already knows,
+ * PLUS the `setParam( { ... } )` convenience wrapper fx.js defines and
+ * documents as "a WRITER, not a filter" that always resolves to a real
+ * `setAttributes` call (see fx.js `withFxControls`). A textual alias
+ * substitution reuses the one tested regex implementation rather than
+ * maintaining a second parallel attribute-key parser that could silently
+ * drift from it.
+ *
+ * @param {string} src Extension-file source.
+ * @return {Set<string>} Controlled attribute names.
+ */
+function collectExtensionControlledAttrs( src ) {
+	return collectControlledAttrs( src.replace( /\bsetParam\(/g, 'setAttributes(' ) );
+}
+
+/**
+ * Pure check function — takes source text directly rather than a file path,
+ * so the self-test can exercise the exact same logic against a synthetic
+ * fixture without touching the real extensions directory.
+ *
+ * @param {string}      name          Reporting name, e.g. 'fx.js'.
+ * @param {string}      src           Extension-file source (raw, not comment-stripped).
+ * @param {string}      sharedCorpus  Comment-stripped concatenation of every includes/*.php file.
+ * @param {Set<string>} declaredAttrs The real extension-attribute registry (EXTENSION_ATTRS in
+ *                                    production; an injected fixture set in the self-test).
+ * @return {Array<Object>} Findings, same shape as CHECK 1/2.
+ */
+function checkExtensionFileSrc( name, src, sharedCorpus, declaredAttrs ) {
+	const findings = [];
+	const controlled = collectExtensionControlledAttrs( src );
+	const ownSaveCorpus = stripComments(
+		extractFilterCallbackBody( src, 'blocks.getSaveContent.extraProps' )
+	);
+	const corpus = ownSaveCorpus + '\n' + sharedCorpus;
+
+	for ( const attr of controlled ) {
+		// Only real, registered extension attributes count — a stray key
+		// (e.g. a destructured prop name that happens to look like an
+		// object-literal key inside a setAttributes call) is not this
+		// check's concern.
+		if ( ! declaredAttrs.has( attr ) ) {
+			continue;
+		}
+		if ( EXTENSION_EDITOR_ONLY_ATTRS.has( attr ) ) {
+			continue;
+		}
+		if ( isConsumed( attr, corpus ) ) {
+			continue;
+		}
+		findings.push( {
+			check: 'extension',
+			block: `extensions/${ name }`,
+			attr,
+			reason:
+				"has a control in this extension's inspector panel but its name appears in neither " +
+				"the extension's own getSaveContent.extraProps consumer nor any shared includes/*.php " +
+				'— nothing renders it',
+		} );
+	}
+	return findings;
+}
+
+/**
+ * File-path wrapper around checkExtensionFileSrc for production runs.
+ *
+ * @param {string} filePath    Absolute path to the extension .js file.
+ * @param {string} sharedCorpus Comment-stripped concatenation of every includes/*.php file.
+ * @return {Array<Object>} Findings.
+ */
+function checkExtensionFile( filePath, sharedCorpus ) {
+	const src = readIfExists( filePath );
+	if ( ! src ) {
+		return [];
+	}
+	return checkExtensionFileSrc( path.basename( filePath ), src, sharedCorpus, EXTENSION_ATTRS );
+}
+
+// ---------------------------------------------------------------------------
 // Baseline
 // ---------------------------------------------------------------------------
 
@@ -599,6 +788,17 @@ function main() {
 		checkSharedControls( wrapperControlled, sharedCorpus, declaredAnywhere )
 	);
 
+	// CHECK 3 — extension-registered controls (src/blocks/extensions/*.js).
+	// Structurally unreachable from CHECK 1/2 above (see the CHECK 3 docblock).
+	const extensionFiles = fs.existsSync( EXTENSIONS_DIR )
+		? fs.readdirSync( EXTENSIONS_DIR ).filter( ( f ) => f.endsWith( '.js' ) )
+		: [];
+	for ( const file of extensionFiles ) {
+		findings = findings.concat(
+			checkExtensionFile( path.join( EXTENSIONS_DIR, file ), sharedCorpus )
+		);
+	}
+
 	// Subtract the baseline (accepted, with reasons).
 	const baseline = new Set( loadBaseline().map( findingKey ) );
 	const netNew = findings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
@@ -629,7 +829,8 @@ function main() {
 			);
 		} else {
 			process.stdout.write(
-				`[check-dead-controls] OK — 0 net-new dead controls across ${ blockDirs.length } blocks.\n`
+				`[check-dead-controls] OK — 0 net-new dead controls across ${ blockDirs.length } blocks ` +
+					`+ ${ extensionFiles.length } extension file(s).\n`
 			);
 		}
 	}
@@ -639,4 +840,154 @@ function main() {
 	}
 }
 
-main();
+// ---------------------------------------------------------------------------
+// Self-test (HARD REQUIREMENT, Step L 2026-08-01) — proves CHECK 3 can FAIL.
+// ---------------------------------------------------------------------------
+//
+// A gate that has never been observed to fail reads green forever whether or
+// not it is actually checking anything (mistakes.md: "a gate that cannot fail
+// reads green forever"). This plants a KNOWN dead control into a synthetic
+// fixture, confirms the plant landed on disk, then asserts CHECK 3 catches it
+// — alongside a negative control (a genuinely-wired attr that must NOT be
+// flagged) and the documented editor-only exemption (fxPreset-shaped, must
+// also NOT be flagged). It then runs the same function against the REAL
+// extensions directory and reports what it finds, so the "zero false
+// positives on the current panel" acceptance condition has real evidence
+// rather than an assumption.
+function runSelfTest() {
+	const os = require( 'os' );
+	let pass = true;
+	const log = ( msg ) => process.stdout.write( msg + '\n' );
+
+	log( '[check-dead-controls --self-test] CHECK 3 (extension-file dead controls)\n' );
+
+	// Synthetic extension file, same shape as the real fx.js:
+	//   liveAttr — declared, controlled, genuinely consumed by its own
+	//              getSaveContent.extraProps function. Must NOT be flagged.
+	//   deadAttr — declared, controlled, consumed NOWHERE. The PLANTED
+	//              DEFECT — the known failure this self-test exists to catch.
+	//   fxPreset — declared, controlled, consumed nowhere, but on the
+	//              documented EXTENSION_EDITOR_ONLY_ATTRS allowlist. Proves
+	//              the allowlist path works rather than just "nothing fires".
+	const fixtureSrc = [
+		"import { addFilter } from '@wordpress/hooks';",
+		'',
+		'function addFixtureAttributes( settings ) {',
+		'	return {',
+		'		...settings,',
+		'		attributes: {',
+		'			...settings.attributes,',
+		"			liveAttr: { type: 'string', default: '' },",
+		"			deadAttr: { type: 'string', default: '' },",
+		"			fxPreset: { type: 'string', default: '' },",
+		'		},',
+		'	};',
+		'}',
+		"addFilter( 'blocks.registerBlockType', 'sgs/fixture-attributes', addFixtureAttributes );",
+		'',
+		'const withFixtureControls = ( BlockEdit ) => ( props ) => {',
+		'	const { setAttributes } = props;',
+		"	setAttributes( { liveAttr: 'x' } );",
+		"	setAttributes( { deadAttr: 'x' } ); // PLANTED DEFECT — never consumed below.",
+		"	setAttributes( { fxPreset: 'dramatic' } );",
+		'	return null;',
+		'};',
+		"addFilter( 'editor.BlockEdit', 'sgs/fixture-controls', withFixtureControls );",
+		'',
+		'function addFixtureSaveProps( props, blockType, attributes ) {',
+		'	const data = {};',
+		'	if ( attributes.liveAttr ) {',
+		"		data[ 'data-sgs-fixture-live' ] = attributes.liveAttr;",
+		'	}',
+		'	return { ...props, ...data };',
+		'}',
+		"addFilter( 'blocks.getSaveContent.extraProps', 'sgs/fixture-save', addFixtureSaveProps );",
+		'',
+	].join( '\n' );
+
+	const tmpDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-ext-guard-self-test-' ) );
+	const fixturePath = path.join( tmpDir, 'fixture-extension.js' );
+	fs.writeFileSync( fixturePath, fixtureSrc, 'utf8' );
+
+	// Confirm the plant actually landed on disk before trusting anything
+	// derived from it (a write can silently no-op or a copy-paste edit can
+	// silently drop the one line that matters).
+	const readBack = fs.readFileSync( fixturePath, 'utf8' );
+	const planted =
+		readBack.includes( "deadAttr: { type: 'string', default: '' }," ) &&
+		/setAttributes\(\s*\{\s*deadAttr:\s*'x'\s*\}\s*\)/.test( readBack );
+	if ( ! planted ) {
+		log( 'FAIL — the planted defect ("deadAttr") did not land in the fixture file on disk.' );
+		fs.rmSync( tmpDir, { recursive: true, force: true } );
+		process.exit( 1 );
+	}
+	log( 'CONFIRMED — planted defect ("deadAttr") is present in the on-disk fixture.\n' );
+
+	const declaredAttrs = new Set( [ 'liveAttr', 'deadAttr', 'fxPreset' ] );
+	// Empty sharedCorpus is deliberate: this isolates the JS-side own-corpus
+	// path so the test cannot pass-by-accident off unrelated real includes/
+	// PHP text containing the word "liveAttr" or "deadAttr".
+	const findings = checkExtensionFileSrc( 'fixture-extension.js', readBack, '', declaredAttrs );
+	const findingAttrs = new Set( findings.map( ( f ) => f.attr ) );
+
+	if ( findingAttrs.has( 'deadAttr' ) ) {
+		log( 'PASS — Test A: the KNOWN FAILURE ("deadAttr") was flagged.' );
+	} else {
+		log( 'FAIL — Test A: the KNOWN FAILURE ("deadAttr") was NOT flagged. The guard cannot fail.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'liveAttr' ) ) {
+		log( 'PASS — Test B (negative control): genuinely-consumed "liveAttr" was NOT flagged.' );
+	} else {
+		log( 'FAIL — Test B: genuinely-consumed "liveAttr" was flagged — false positive.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'fxPreset' ) ) {
+		log( 'PASS — Test C: documented editor-only attr ("fxPreset") was NOT flagged.' );
+	} else {
+		log( 'FAIL — Test C: documented editor-only attr ("fxPreset") was flagged — allowlist broken.' );
+		pass = false;
+	}
+
+	fs.rmSync( tmpDir, { recursive: true, force: true } );
+
+	// Live scan — same function, the real files. Informational: a real
+	// finding here is a real finding to report, not a self-test failure.
+	log( '\n[check-dead-controls --self-test] Live scan of src/blocks/extensions/*.js:' );
+	EXTENSION_ATTRS = loadExtensionAttrs();
+	const sharedCorpusLive = stripComments( loadSharedCorpus() );
+	const liveFiles = fs.existsSync( EXTENSIONS_DIR )
+		? fs.readdirSync( EXTENSIONS_DIR ).filter( ( f ) => f.endsWith( '.js' ) )
+		: [];
+	let liveFindings = [];
+	for ( const file of liveFiles ) {
+		liveFindings = liveFindings.concat(
+			checkExtensionFile( path.join( EXTENSIONS_DIR, file ), sharedCorpusLive )
+		);
+	}
+	if ( liveFindings.length === 0 ) {
+		log( `OK — 0 findings across ${ liveFiles.length } extension file(s): ${ liveFiles.join( ', ' ) }` );
+	} else {
+		log( `${ liveFindings.length } finding(s):` );
+		for ( const f of liveFindings ) {
+			log( `  - ${ f.block } :: ${ f.attr } — ${ f.reason }` );
+		}
+	}
+
+	log(
+		pass
+			? '\n[check-dead-controls --self-test] ALL SYNTHETIC TESTS PASS.'
+			: '\n[check-dead-controls --self-test] FAIL.'
+	);
+	if ( ! pass ) {
+		process.exit( 1 );
+	}
+}
+
+if ( process.argv.includes( '--self-test' ) ) {
+	runSelfTest();
+} else {
+	main();
+}
