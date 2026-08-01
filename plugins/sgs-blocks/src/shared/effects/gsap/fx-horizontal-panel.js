@@ -177,10 +177,40 @@ export function initHorizontalPanel( el ) {
 			 * value — and would have silently undone the fix. The over-travel IS
 			 * the fix. What genuinely needs guarding is the opposite end: if a
 			 * client sets `--sgs-fx-panel-width` WIDER than the host, the ideal
-			 * travel would leave part of the last panel off-screen to the right,
-			 * and at >=768px the CSS sets `overflow-x: clip`, which is not
-			 * programmatically scrollable — that content would be unreachable,
-			 * which this feature treats as a defect rather than a degradation.
+			 * travel would leave part of the last panel off-screen to the right.
+			 *
+			 * ⚠ CORRECTION (2026-08-01, keyboard-focus follow-up measured
+			 * against Chromium/Firefox/WebKit): the comment that stood here
+			 * claimed the >=768px CSS sets `overflow-x: clip`, "not
+			 * programmatically scrollable". That is FALSE. `fx-horizontal-
+			 * panel.css`'s upgrade rule sets `overflow-x: clip` but never
+			 * touches `overflow-y`, which the file's own always-on base rule
+			 * already set to `hidden`. Per the CSS Overflow spec's mixed-value
+			 * normalisation (verified empirically, not assumed — Chromium
+			 * 145/Firefox/WebKit all agree), `overflow-x: clip` paired with a
+			 * NON-clip, NON-visible `overflow-y` computes to `overflow-x:
+			 * hidden`, not `clip`. The host is therefore a genuine scroll
+			 * container, which is DELIBERATE-LOOKING BUT ACCIDENTAL: it is
+			 * exactly what lets every tested browser's native focus-time
+			 * "scroll the ancestor into view" fire on `host.scrollLeft` when
+			 * Tab lands on a not-yet-travelled panel — confirmed live: a
+			 * focused control outside the visible box is pulled fully into
+			 * view by the browser alone (`host.scrollLeft` 0 -> ~1660 on a
+			 * 1100px-panel/1200px-host fixture), with NO code in this file
+			 * doing it, and the compensation decays cleanly back to 0 as the
+			 * scrub continues (verified: the end-of-pin state after this
+			 * rescue fired is BYTE-IDENTICAL to a clean run where nothing was
+			 * ever focused). Do NOT "fix" the CSS to make BOTH axes genuinely
+			 * `clip` to match the sentence this replaces — that would silently
+			 * delete this project's only current WCAG 2.4.11 mitigation for
+			 * this effect, with nothing to catch the regression. See
+			 * `scripts/motion-qa/probe-horizontal-panel-focus.mjs` for the
+			 * measurement and `.claude/decisions.md` (D453 follow-up register)
+			 * for the fuller writeup. This CSS behaviour lives in
+			 * `assets/css/fx-horizontal-panel.css`, outside this file's
+			 * ownership — flagged as an open follow-up to document/harden
+			 * there (make the `hidden` behaviour deliberate + commented,
+			 * rather than an accident of an unrelated axis), not fixed here.
 			 * Taking the MAX of the ideal and the flush-right distance means the
 			 * row always travels at least far enough to bring the last panel's
 			 * right edge to the host's right edge, so every panel is fully
@@ -282,6 +312,22 @@ export function initHorizontalPanel( el ) {
 			// "scroll-jacks" focus; the visual position and the DOM
 			// position are allowed to disagree during the pin, same as any
 			// pinned section.
+			//
+			// This is DELIBERATELY unlike fx-pin-scrub.js/fx-split-reveal.js
+			// (D453): those effects needed a focusin handler because their
+			// hidden content is opacity-based and CSS gives no other recovery
+			// path. This effect's risk shape is geometric, not opacity-based,
+			// and measurement (2026-08-01, see the getTravelDistance docblock
+			// correction above + probe-horizontal-panel-focus.mjs) found the
+			// browser ALREADY recovers it natively via `host.scrollLeft`,
+			// because of how `fx-horizontal-panel.css`'s overflow-x/-y rules
+			// actually compute. No focusin handler is added here: one would
+			// be a SECOND mechanism competing with the browser's own — either
+			// inert (masking that the CSS accident is the only thing keeping
+			// this reachable) or actively conflicting with it, and neither is
+			// provable from this file alone. The real fix, if the CSS
+			// accident is ever tightened up to genuine `clip` on both axes, is
+			// in `assets/css/fx-horizontal-panel.css`, not here.
 			return () => {
 				tween.scrollTrigger?.kill();
 				tween.kill();

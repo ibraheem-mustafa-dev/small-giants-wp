@@ -92,6 +92,36 @@
  */
 @media ( min-width: 768px ) and ( prefers-reduced-motion: no-preference ) {
 	.sgs-js [data-sgs-fx="horizontal-panel"] {
+		/*
+		 * ⛔ D456 — THIS COMPUTES TO `hidden`, NOT `clip`, AND THAT IS LOAD-BEARING.
+		 * DO NOT "fix" it to clip on both axes.
+		 *
+		 * The base rule above sets `overflow-y: hidden`. Per the CSS Overflow
+		 * spec's mixed-value normalisation — verified empirically on Chromium,
+		 * Firefox AND WebKit, not assumed — `overflow-x: clip` paired with a
+		 * non-clip `overflow-y` computes to `overflow-x: hidden`.
+		 *
+		 * `hidden` is a real scroll container; `clip` is not. That difference is
+		 * currently the ONLY thing making this effect keyboard-accessible: it
+		 * lets each browser's native "scroll the focused element into view"
+		 * fire on `host.scrollLeft`, pulling an off-screen panel into view when
+		 * a visitor tabs to a control inside it. Measured live: `scrollLeft`
+		 * moves 0 → ~1670 the instant an off-screen panel-3 control is focused,
+		 * both before any scroll and mid-pin, and decays cleanly back to 0 as
+		 * the scrub continues — the end-of-pin state is byte-identical to a run
+		 * where nothing was ever focused, so there is no lasting desync.
+		 *
+		 * Making this genuinely clip on both axes would silently delete that
+		 * mitigation and reintroduce a WCAG 2.4.11 failure (focus landing
+		 * outside the visible region) with nothing to catch it. The sibling
+		 * effects needed explicit JS reveals for their version of this problem
+		 * (D453); this one gets it from the browser, by accident, and the
+		 * accident is now deliberate.
+		 *
+		 * Regression cover: `scripts/motion-qa/probe-horizontal-panel-focus.mjs`,
+		 * proven non-vacuous — forcing genuine clip on both axes makes it report
+		 * `FAIL — UNRECOVERED DEFECT`.
+		 */
 		overflow-x: clip;
 		scroll-snap-type: none;
 	}
