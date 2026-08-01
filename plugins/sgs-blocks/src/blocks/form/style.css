@@ -165,6 +165,16 @@
 /*
  * D454 — the ring's opacity modulates the RING, never the input.
  *
+ * D455 — and the ring's COLOUR defaults to `primary-dark`, not `primary`.
+ * A focus indicator needs 3:1 against its surroundings (WCAG 2.4.11). Measured
+ * on the canary, the ring inherited the brand primary and landed at 2.25:1 —
+ * Mama's `#e68a95`, the colour already parked as P-MAMAS-PRIMARY-CONTRAST,
+ * surfacing in a place where a keyboard user has nothing else to go on.
+ * `primary-dark` exists in all 8 client palettes and clears 3:1 in every one
+ * (Mama's 2.25 → 3.32; the rest 3.3–19.8). Bean's call, and the better one:
+ * it fixes the ring without touching the brand primary everywhere else, and a
+ * future palette clears the bar by construction rather than by luck.
+ *
  * This rule used to carry `opacity: var(--sgs-focus-ring-opacity, 1)`, which
  * applies to the WHOLE ELEMENT. The operator control that feeds it
  * (`render.php`'s focus-ring opacity, 0-100%) is named for the ring, so an
@@ -184,19 +194,19 @@
 	outline: var(--sgs-focus-ring-width, 2px) solid
 		color-mix(
 			in srgb,
-			var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80))
+			var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c))
 				calc(var(--sgs-focus-ring-opacity, 1) * 100%),
 			transparent
 		);
 	outline-offset: var(--sgs-focus-ring-offset, 2px);
-	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
 }
 
 /* Fallback for browsers that don't support :focus-visible — still shows ring on :focus */
 .sgs-form-field__input:focus:not(:focus-visible) {
-	outline: var(--sgs-focus-ring-width, 2px) solid var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	outline: var(--sgs-focus-ring-width, 2px) solid var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
 	outline-offset: var(--sgs-focus-ring-offset, 2px);
-	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
 }
 
 .sgs-form-field__input::placeholder {
