@@ -11,7 +11,9 @@
  * its OWN single top-level link.
  *
  * Menu source: the shared SGS_Nav_Menu_Source resolver (one-source rule,
- * FR-S9-4) — the SAME resolver sgs/adaptive-nav and the drawer content use.
+ * Spec 36 FR-36-1) — the SAME resolver the drawer content uses. (sgs/adaptive-nav,
+ * the block this comment used to name as the other consumer, was retired/deleted
+ * at FR-37-21/D362, 2026-07-22 — this block is its replacement.)
  *
  * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline CSS property
  * declarations. Colour / hover / typography / featured styling are emitted

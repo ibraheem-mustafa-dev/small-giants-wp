@@ -1,5 +1,5 @@
 /**
- * Header Behaviours — frontend view script (F1 + F2, FR-S9-9; per-row Phase 1).
+ * Header Behaviours — frontend view script (F1 + F2, Spec 37 FR-37-13; per-row Phase 1).
  *
  * Responsibilities:
  *   1. Publishes `--sgs-header-height` CSS custom property on :root and body

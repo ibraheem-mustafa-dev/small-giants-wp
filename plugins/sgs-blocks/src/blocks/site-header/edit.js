@@ -266,7 +266,7 @@ function meetsWCAG_AA( ratio, isLargeText = false ) {
 // The mobile burger + drawer are owned entirely by sgs/nav-menu + sgs/nav-drawer
 // (Spec 36 rebuild, FR-37-21 — sgs/adaptive-nav retired) — no separate toggle
 // block. Top and bottom rows start empty and emit zero output until an
-// operator adds elements (FR-S9-2 empty-row-zero-output).
+// operator adds elements (Spec 37 §3.4 empty-row-zero-output, verified FR-37-9).
 const TEMPLATE = [
 	[ 'sgs/site-header-row', { rowSlot: 'top' } ],
 	[

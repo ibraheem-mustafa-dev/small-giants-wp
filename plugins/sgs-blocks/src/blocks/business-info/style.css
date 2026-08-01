@@ -238,7 +238,7 @@
 	font-size: 0.875em;
 }
 
-/* ── "Button" block style (FR-S9-8) ───────────────────────────────────────────
+/* ── "Button" block style (Spec 37 §3.8 — labelCollapse) ──────────────────────
    A first-class, client-selectable display style: renders the contact item
    (phone/email/address/…) as a prominent button. Block-private, theme-token
    only — replaces the old theme-side .sgs-header-call hack. Composes with

@@ -1,12 +1,12 @@
 /**
- * ResponsiveOverride — SGS-owned per-device override control (FR-S9-6).
+ * ResponsiveOverride — SGS-owned per-device override control (Spec 37 FR-37-16).
  *
  * A device switcher (desktop / tablet / mobile) that stores each property as the
  * `{desktop,tablet,mobile}` object model where a blank tier INHERITS the tier
  * above (desktop is always concrete). Render-prop: it manages the active tier +
  * the inherited-value UX; the caller renders the actual input for the active tier.
  *
- * Accessibility (FR-S9-6, WCAG 2.2):
+ * Accessibility (Spec 37 FR-37-16, WCAG 2.2):
  *  - `role="tablist"` with arrow-key navigation + roving tabindex (real tabs, not
  *    just buttons); 44px minimum targets.
  *  - An inherited (non-overridden) tier is signalled by an ICON + `aria-label`

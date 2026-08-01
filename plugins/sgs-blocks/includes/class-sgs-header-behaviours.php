@@ -36,7 +36,10 @@
  * `sgs-header-behaviour-*` prefix is reserved for THIS plugin layer — it does
  * NOT reuse the theme-side `sgs-header-sticky` vocabulary
  * (theme/sgs-theme/inc/class-header-behaviour.php is a separate, currently
- * dormant-by-default system; see the FR-S9-9 design doc gate finding).
+ * dormant-by-default system; see the Spec 37 FR-37-13 design doc gate finding).
+ * NOTE: this class now injects the body class for `contrastSafe` ONLY — sticky
+ * / transparent / shrink / hide-on-scroll moved to scoped per-tier CSS
+ * (Spec 37 FR-37-15).
  *
  * @package SGS\Blocks
  * @since   1.0.0

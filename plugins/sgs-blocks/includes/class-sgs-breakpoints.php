@@ -1,9 +1,9 @@
 <?php
 /**
- * SGS shared responsive breakpoint source (FR-S9-6, R-31-1).
+ * SGS shared responsive breakpoint source (Spec 37 FR-37-16, R-31-1).
  *
  * THE single source of truth for the device-tier breakpoint values used by the
- * §S9 header/footer/nav responsive-override engine. Never hardcode a second
+ * header/footer/nav responsive-override engine. Never hardcode a second
  * 768/1024 or 1023/767 pair in a block — read these constants / this helper.
  *
  * Standard (matches ~/.claude/rules/visual-standards.md + the existing SGS
@@ -56,7 +56,7 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 * Build the opening of a scoped tier at-rule for a given max-width.
 		 *
 		 * Emits BOTH a media query and (when $with_container) a container query
-		 * with identical bounds — the FR-S9-6 "container queries + media queries
+		 * with identical bounds — the Spec 37 FR-37-16 "container queries + media queries
 		 * together" contract. The container query lets the block adapt to its own
 		 * wrapper width when reused in a narrower context (e.g. a sidebar); the
 		 * media query is the always-present fallback for contexts where the

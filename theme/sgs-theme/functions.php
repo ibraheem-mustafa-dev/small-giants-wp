@@ -22,8 +22,9 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 require_once __DIR__ . '/inc/colour-helpers.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
-// Header behaviour is owned by the sgs-blocks plugin (FR-S9-9, D330): the
-// sgs/site-header block inspector drives the plugin body-class layer. The old
+// Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):
+// the sgs/site-header block inspector drives scoped per-tier CSS (FR-37-15;
+// only contrastSafe still uses a body class). The old
 // theme-side header-mode system (inc/class-header-behaviour.php + header-modes.css
 // + header-behaviour.js + header-editor-panel.js) was RETIRED 2026-07-14 to remove
 // the duplicate --sgs-header-height publisher + competing position rules.
@@ -309,9 +310,10 @@ function enqueue_styles(): void {
 	// CSS and JS load automatically via block.json — no theme-level enqueue.
 
 	// Header behaviour (sticky / transparent-on-scroll / shrink) is owned by the
-	// sgs-blocks plugin's body-class layer, driven by the sgs/site-header block
-	// inspector (FR-S9-9, D330). The theme-side header-modes.css + header-behaviour.js
-	// were retired 2026-07-14; no theme enqueue here.
+	// sgs-blocks plugin's scoped per-tier CSS layer, driven by the sgs/site-header
+	// block inspector (Spec 37 FR-37-13/FR-37-15, D330). The theme-side
+	// header-modes.css + header-behaviour.js were retired 2026-07-14; no theme
+	// enqueue here.
 
 	// Smooth scroll now handled by CSS: html { scroll-behavior: smooth; }
 	// in core-blocks-critical.css. The JS file (2.7KB) is no longer needed.

@@ -273,10 +273,12 @@ h1, h2, h3, h4, h5, h6,
 
 /*
  * Base header layering. Sticky / transparent / shrink BEHAVIOURS are owned by
- * the sgs-blocks plugin (FR-S9-9, D330) — driven by the sgs/site-header block
- * inspector via body.sgs-header-behaviour-* classes + assets/css/header-behaviours.css.
- * The theme-side header-mode CSS was retired 2026-07-14. This rule keeps the base
- * z-index (dropdown/mega-menu layering) + a transition the plugin behaviours reuse.
+ * the sgs-blocks plugin (Spec 37 FR-37-13, D330) — driven by the sgs/site-header
+ * block inspector. Since FR-37-15 these emit scoped per-tier `<style>` rules,
+ * not body classes (only `contrastSafe` still uses a body.sgs-header-behaviour-*
+ * class). The theme-side header-mode CSS was retired 2026-07-14. This rule keeps
+ * the base z-index (dropdown/mega-menu layering) + a transition the plugin
+ * behaviours reuse.
  */
 header.wp-block-template-part {
 	z-index: 100;

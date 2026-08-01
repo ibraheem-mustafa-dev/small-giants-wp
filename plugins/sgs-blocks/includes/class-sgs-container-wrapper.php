@@ -121,7 +121,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$is_layout  = 'layout' === $kind;
 			// content kind = only maxWidth/align/contentWidth/padding; used by content-level composites.
 
-			// FR-S9-6 opt-in: the §S9 header/footer/nav blocks store responsive
+			// Spec 37 FR-37-16 opt-in: the header/footer/nav blocks store responsive
 			// properties as the {desktop,tablet,mobile} object model and pass this
 			// flag so sgs_emit_responsive_css() (called below) owns their responsive
 			// CSS. When set, the legacy flat-scalar responsive paths are neutralised
@@ -520,7 +520,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			);
 
 			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
-			// Object model (FR-S9-6): force the two-layer structure so the flex/grid
+			// Object model (Spec 37 FR-37-16): force the two-layer structure so the flex/grid
 			// container (where gap applies) is the __inner — a DESCENDANT of the
 			// container-type outer — so @container queries can respond to the block's
 			// own width (an element cannot size-query itself). Paired with the $do_wrap
@@ -1730,7 +1730,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$svg_fg_html = ( $has_bg_svg && 'foreground' === $bg_svg_position ) ? $svg_html : '';
 
 			// ----------------------------------------------------------------
-			// FR-S9-6 object-model responsive CSS (opt-in, wrapper-owned).
+			// Spec 37 FR-37-16 object-model responsive CSS (opt-in, wrapper-owned).
 			// Emitted via the shared sgs_emit_responsive_css() so the composite-mirror
 			// + auto-propagation hold (R-31-9). Inner props (gap / grid-template-columns)
 			// route to $grid_sel — the __inner, a DESCENDANT of the container-type outer
@@ -1743,7 +1743,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$obj_outer_sel = '.' . $uid;
 
 				// container-type on the OUTER element establishes the query container the
-				// __inner reads (FR-S9-6 "adapts to its own width when reused narrow").
+				// __inner reads (Spec 37 FR-37-16 "adapts to its own width when reused narrow").
 				$responsive_css .= $obj_outer_sel . '{container-type:inline-size}';
 
 				$obj_inner_props = array();
@@ -1834,7 +1834,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// full-bleed grids unchanged). The wrap_inner caller override is byte-
 			// identical (hero-split / product-card still depend on it).
 			$do_wrap = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : $has_band_props;
-			// Object model (FR-S9-6): the __inner must render so the forced
+			// Object model (Spec 37 FR-37-16): the __inner must render so the forced
 			// $grid_on_inner target (.uid>.sgs-container__inner) exists for the
 			// flex/grid + gap rules and the @container queries.
 			if ( $object_model && ( 'grid' === $layout || 'flex' === $layout ) ) {

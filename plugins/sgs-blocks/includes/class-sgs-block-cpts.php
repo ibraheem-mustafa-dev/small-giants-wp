@@ -145,7 +145,8 @@ final class Sgs_Block_CPTs {
 					// starter modal fire (it only appears on an empty post). The modal offers the
 					// sgs_header starter patterns (Block Types: core/post-content, Post Types:
 					// sgs_header), and "Start from scratch" is a MINIMAL starter card (the bare
-					// sgs/site-header 3-row shell) rather than this pre-seed. Was FR-S9-11/D323:
+					// sgs/site-header 3-row shell) rather than this pre-seed. Was Spec 37
+					// FR-37-1/D323 (formerly cited as FR-S9-11 of the deleted Spec 17):
 					// `'template' => array( array( 'sgs/site-header' ) )`.
 				)
 			)
@@ -174,7 +175,8 @@ final class Sgs_Block_CPTs {
 					// the sgs_header change) so a new Advanced Footer opens EMPTY and WordPress's
 					// native "Choose a pattern" starter modal fires with the sgs_footer starters.
 					// "Start from scratch" = the minimal footer-scratch card (the bare sgs/site-footer
-					// shell). Was FR-S9-3/D325: `'template' => array( array( 'sgs/site-footer' ) )`.
+					// shell). Was Spec 37 FR-37-10/D325 (formerly cited as FR-S9-3 of the deleted
+					// Spec 17): `'template' => array( array( 'sgs/site-footer' ) )`.
 				)
 			)
 		);

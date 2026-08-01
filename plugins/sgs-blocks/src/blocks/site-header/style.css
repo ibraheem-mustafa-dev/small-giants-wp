@@ -36,10 +36,14 @@
 
 /*
  * Collapse-to-drawer behaviour (nav bar hidden below the tier, burger shown) is
- * now owned entirely by sgs/adaptive-nav (FR-S9-4), which emits the scoped
- * breakpoint rules for BOTH its own bar and its own burger toggle at the
- * operator-configured tier (Task 1 / D336 — the standalone sgs/mobile-nav-toggle
- * block was retired; the header no longer has a separate toggle to style).
+ * now owned entirely by sgs/nav-menu (Spec 36 FR-36-8, one of its three
+ * operator-chosen collapse modes — burger→drawer / "More" overflow /
+ * bottom-tab-bar), which emits the scoped breakpoint rules for BOTH its own
+ * bar and its own burger toggle at the operator-configured tier (Task 1 /
+ * D336 — the standalone sgs/mobile-nav-toggle block was retired; the header
+ * no longer has a separate toggle to style). sgs/adaptive-nav, the block this
+ * comment previously named, is superseded/retired per Spec 36 §1 — sgs/nav-menu
+ * is the current from-scratch rebuild under that role.
  */
 
 /* Icons cluster (cart + burger) stays a tight, non-wrapping group on the right. */

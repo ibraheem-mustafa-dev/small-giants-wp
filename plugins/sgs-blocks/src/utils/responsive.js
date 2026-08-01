@@ -3,7 +3,7 @@
  */
 
 /**
- * FR-S9-6 shared breakpoint source (mirror of PHP SGS_Breakpoints, R-31-1).
+ * Spec 37 FR-37-16 shared breakpoint source (mirror of PHP SGS_Breakpoints, R-31-1).
  * The single source of truth for device-tier widths on the editor side. Never
  * hardcode a second 768/1024 or 1023/767 pair in a block.
  */
@@ -23,7 +23,7 @@ export const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
  *
  * Key order is written here (not re-sorted in PHP) so re-saving identical
  * content produces byte-identical JSON and therefore the same wrapper uid
- * (FR-S9-6 canonicalisation contract, STOP-NO-KSORT). Always route object-model
+ * (Spec 37 FR-37-16 canonicalisation contract, STOP-NO-KSORT). Always route object-model
  * writes through this helper so the order can never drift.
  *
  * @param {Object} obj Partial or full tier object (any key order / missing tiers).

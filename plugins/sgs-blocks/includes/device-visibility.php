@@ -10,8 +10,8 @@
  * The display:none media queries are GENERATED from the canonical
  * SGS_Breakpoints source (mobile <= 767px, tablet 768–1023px, desktop
  * >= 1024px) and injected as inline CSS on the extensions stylesheet — so
- * there is ONE breakpoint source shared with the FR-S9-6 responsive engine
- * (R-31-1), never a second hardcoded 600/1024 pair. Content remains in the
+ * there is ONE breakpoint source shared with the Spec 37 FR-37-16 responsive
+ * engine (R-31-1), never a second hardcoded 600/1024 pair. Content remains in the
  * DOM for SEO (display:none only hides visually).
  *
  * -------------------------------------------------------------------------
@@ -82,7 +82,7 @@ add_action( 'enqueue_block_assets', __NAMESPACE__ . '\\enqueue_device_visibility
  * Build the device-visibility media queries from the canonical breakpoint source.
  *
  * Emits exactly three rules whose bounds are DERIVED from SGS_Breakpoints
- * (the FR-S9-6 / R-31-1 single source), never a hardcoded pair:
+ * (the Spec 37 FR-37-16 / R-31-1 single source), never a hardcoded pair:
  *   - .sgs-hide-mobile  : max-width MOBILE_MAX (<= 767)
  *   - .sgs-hide-tablet  : MOBILE_MAX+1 .. TABLET_MAX (768–1023)
  *   - .sgs-hide-desktop : min-width TABLET_MAX+1 (>= 1024)

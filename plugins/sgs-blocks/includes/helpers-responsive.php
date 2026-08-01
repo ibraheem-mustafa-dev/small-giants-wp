@@ -23,7 +23,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// The FR-S9-6 object-model emitter (sgs_emit_responsive_css) reads the shared
+// The Spec 37 FR-37-16 object-model emitter (sgs_emit_responsive_css) reads the shared
 // breakpoint source. Require it here so any caller of this file resolves it.
 require_once __DIR__ . '/class-sgs-breakpoints.php';
 
@@ -197,18 +197,18 @@ if ( ! function_exists( 'sgs_responsive_box_shorthand_rule' ) ) {
 
 /*
  * ─────────────────────────────────────────────────────────────────────────────
- *  FR-S9-6 — object-model responsive-override engine
+ *  Spec 37 FR-37-16 — object-model responsive-override engine
  * ─────────────────────────────────────────────────────────────────────────────
  *
  * The functions above operate on the FLAT-tier attribute convention (separate
- * `gap` / `gapTablet` / `gapMobile` keys). The §S9 header/footer/nav blocks use
+ * `gap` / `gapTablet` / `gapMobile` keys). The header/footer/nav blocks use
  * the OBJECT model instead: one attribute per property, shaped
  *   scalar:  { desktop:<val>, tablet:<val|null>, mobile:<val|null> }
  *   box:     { desktop:{top,right,bottom,left}, tablet:{…nullable sides}, mobile:{…} }
  * where `null` (or an absent key) means "inherit the tier above" and `desktop`
  * is always concrete.
  *
- * Design (FR-S9-6):
+ * Design (Spec 37 FR-37-16):
  *   - Cascade is mobile-first-up, fixed direction. Effective value at a tier =
  *     `tier ?? tier_above ?? … ?? desktop`, computed independently PER SIDE for
  *     box properties (`mobile.top ?? tablet.top ?? desktop.top`).
@@ -224,7 +224,7 @@ if ( ! function_exists( 'sgs_responsive_box_shorthand_rule' ) ) {
  *     NOT reused — these are new blocks with no dependency on it).
  *   - Breakpoints come from SGS_Breakpoints (R-31-1). When $opts['container'] is
  *     true each tier is ALSO emitted as an @container query alongside the @media
- *     fallback (FR-S9-6 container-queries-and-media-queries-together).
+ *     fallback (Spec 37 FR-37-16 container-queries-and-media-queries-together).
  *
  * uid stability (STOP-NO-KSORT): this engine NEVER reorders attribute keys and
  * is NEVER part of the wrapper's md5(uid) input. Key-order stability is a

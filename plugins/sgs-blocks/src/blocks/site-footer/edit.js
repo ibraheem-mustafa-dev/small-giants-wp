@@ -98,7 +98,7 @@ function meetsWCAG_AA( ratio, isLargeText = false ) {
 // groups, collapsing to 1 column below 768), and a centred bottom bar. Every
 // business-data field (tagline/socials/copyright) uses the sgs/business-info
 // block, which reads live from Business Details (no hardcoded client data, no
-// per-field bindings — FR-S9-10 / FR-S4-5). Generic link labels are not personal data.
+// per-field bindings — Spec 37 FR-37-17 / §3.7, FR-S4-5). Generic link labels are not personal data.
 const TEMPLATE = [
 	[ 'sgs/site-footer-row', { rowSlot: 'top', layout: 'flex' } ],
 	[

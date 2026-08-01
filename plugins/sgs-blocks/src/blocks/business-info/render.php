@@ -33,7 +33,9 @@ use SGS\Blocks\Sgs_Site_Info;
 
 $display_type = $attributes['displayType'] ?? 'phone';
 $show_icon    = ! empty( $attributes['showIcon'] );
-// Responsive label collapse (FR-S9-8): one setting that hides the text label —
+// Responsive label collapse (Spec 37 §3.8 — labelCollapse RETAINED, an
+// operator-toggled setting; the sibling move-to-drawer mechanism was RETIRED):
+// one setting that hides the text label —
 // and collapses the item to just its icon — from a chosen breakpoint down.
 // none = always show; mobile = icon-only <=767; tablet = icon-only <=1023;
 // all = always icon-only. The label markup is identical; only the scoped CSS
@@ -86,7 +88,7 @@ $icon_html = function ( string $icon_name ) use ( $show_icon ): string {
 };
 
 /**
- * Helper: the text label span (FR-S9-8).
+ * Helper: the text label span (Spec 37 §3.8 — labelCollapse).
  *
  * The label is always emitted in `.sgs-business-info__label`; per-tier
  * visibility is driven by scoped CSS below (a clip at any tier where showLabel
@@ -428,7 +430,7 @@ if ( $sgs_bi_colour_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $sgs_bi_colour_decls ) . ';}';
 }
 
-// --- Per-tier label collapse (FR-S9-8 responsive icon-only). Clip the label at
+// --- Per-tier label collapse (Spec 37 §3.8 responsive icon-only). Clip the label at
 // any tier whose showLabel* is off; the icon remains, and the clipped label
 // stays in the a11y tree so the link keeps its accessible name. Bounds mirror
 // the device-visibility feature (mobile <=767, tablet 768–1023, desktop >=1024

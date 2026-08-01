@@ -10,7 +10,8 @@
  * Inserter: true
  * Description: Default SGS footer — the sgs/site-footer block with a columns row (brand + links + contact) and a bottom bar. All business-data slots use the sgs/business-info block (per-type variants) reading live from Business Details. No hardcoded client data.
  *
- * Built on the specialised sgs/site-footer container block (FR-S9-3): a
+ * Built on the specialised sgs/site-footer container block (Spec 37 FR-37-10 +
+ * FR-37-11 / §3.2): a
  * full-bleed section band whose content centres at the theme content width, a
  * columns row that collapses from 3 columns to 1 below the mobile tier, and a
  * centred bottom bar. The <footer role="contentinfo"> landmark is supplied by

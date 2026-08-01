@@ -1,12 +1,14 @@
 /**
- * ResponsiveBoxControls — FR-S9-6 per-device spacing + width panel.
+ * ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel.
  *
- * The shared inspector panel for the §S9 header/footer/nav row blocks
- * (site-header-row / site-footer-row / adaptive-nav). Edits padding, margin,
- * max-width and content-width on the ONE `{desktop,tablet,mobile}` object model
- * (Spec 17 FR-S9-6) via the SGS-owned `ResponsiveOverride` device switcher —
- * padding/margin through WP's native `BoxControl` (4 sides), max-width through
- * `UnitControl`, content-width through a token `SelectControl`.
+ * The shared inspector panel for the header/footer/nav row blocks
+ * (site-header-row / site-footer-row / nav-menu — sgs/adaptive-nav, the third
+ * block this comment used to name, was retired/deleted at FR-37-21/D362,
+ * 2026-07-22). Edits padding, margin, max-width and content-width on the ONE
+ * `{desktop,tablet,mobile}` object model (Spec 37 FR-37-16) via the SGS-owned
+ * `ResponsiveOverride` device switcher — padding/margin through WP's native
+ * `BoxControl` (4 sides), max-width through `UnitControl`, content-width
+ * through a token `SelectControl`.
  *
  * Replaces the legacy `ResponsiveSpacingPanel` (flat `paddingTopTablet…` attrs +
  * WP-native `style.spacing` base). ONE system: these blocks declare NO
@@ -17,7 +19,7 @@
  * Per-side inheritance is handled by the PHP emitter (`sgs_responsive_normalise_object`
  * + per-side null-coalesce): a blank side on tablet/mobile inherits the tier above.
  * The editor writes only the tier the operator touched; `ResponsiveOverride`
- * supplies the inherited-value indicator + keyboard reset (WCAG 2.2, FR-S9-6).
+ * supplies the inherited-value indicator + keyboard reset (WCAG 2.2, Spec 37 FR-37-16).
  */
 import { __ } from '@wordpress/i18n';
 import {
