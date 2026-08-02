@@ -39,6 +39,15 @@ composes TWO `--sgs-*` vars into one box-shadow via `color-mix`, so no single at
 gate's own suggested fix would have asserted something untrue. ⛔ A Task A classifier fix was
 attempted instead and MEASURED: violations 1→3, `css_layer` 354→349. Reverted. Do not retry it.
 
+⚠ **`8cdc1460`'s commit message is SUPERSEDED on one point — read this, not it.** Its `[gates-ok:…]`
+block says the `sgs/form` violation was "handed to the sgs/form owner", which was true when written
+and became false ~10 minutes later when Bean reassigned the block and it was fixed at source (above).
+The message could not be amended: the shared git index held 20 of a co-active track's staged files, so
+`--amend` would have swept their work into the commit. Anyone reading `git log`/`git blame` on
+`8cdc1460` alone will be told the violation is still open — it is not. The fix itself is real but sits
+UNCOMMITTED in `src/blocks/form/block.json` (that file also carries the other track's colour-default
+change), so it must be carried by their commit.
+
 **Method notes worth keeping.** Both negative controls were judged non-vacuous by an independent
 adjudicator. A 3-rater adjudication ran on an UNLABELLED evidence pack (no verdict, no pre-attributed
 rows) — one rater's "13 unexplained rows" finding was refuted, and the cause was a wrong artefact date

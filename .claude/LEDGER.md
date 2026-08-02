@@ -91,18 +91,16 @@ Full detail lives where it already did — read before acting, do not assume it 
 memory alone:
 
 - **⭐ Track 1 — T1.1 CLOSED 2026-08-02 (D461, `8cdc1460`). Phase 0 still NOT executed.**
-  All four fixed at their DERIVATION, never as rows: `parent_block` 18→23 (hardcoded dict deleted,
-  R-31-1), `css_layer` 322→352, mis-typed roles 6→0, `block_selectors` 92→86 (retired rows 10→0).
+  All four fixed at their DERIVATION, not as rows: `parent_block` 18→23 (hardcoded dict deleted,
+  R-31-1), `css_layer` 322→352, mis-typed roles 6→0, `block_selectors` 92→86 (retired 10→0).
   Controls judged non-vacuous by an independent adjudicator. Evidence + LIMITATIONS:
-  `reports/2026-08-02-t1.1-evidence-pack.md`. Corrections: D461.
-  ⛔ (e) `design_tokens` CLOSED as NOT-A-GAP. Real finding: `token_snap.py` is an inert stub vs
-  Spec 31 §4 — needs a design gate.
-  ⛔ Do NOT retry the Task A composite-var classifier fix — MEASURED 1→3 violations, reverted.
-  ⛔ `sgs/star-rating` lacks `scalar-content-lift`, so the star lift no-ops despite the correct role.
-  Granting it is a deliberate opt-in — Bean's call, not a bug.
+  `reports/2026-08-02-t1.1-evidence-pack.md`. Full corrections + 3 struck diagnoses: **D461**.
+  ⛔ (e) `design_tokens` CLOSED, not a gap; real finding = `token_snap.py` is an inert stub vs
+  Spec 31 §4 (needs a design gate). ⛔ Do NOT retry the Task A composite-var classifier fix —
+  measured 1→3 violations, reverted. ⛔ `sgs/star-rating` lacks `scalar-content-lift` so the star
+  lift no-ops despite the correct role; granting it is Bean's opt-in, not a bug.
   ⚠ **UNCOMMITTED — the motion track must carry it:** `src/blocks/form/block.json` holds the
   focus-ring `attrMap` fix (makes F6 green) PLUS that track's own colour-default change.
-  ⚠ **The shared index held 20 of their files mid-session** — always `git commit -- <exact paths>`.
 - **Track 1 (cloning/Spec 31) — Phase 0 remains the front. Root cause found; plan ready, NOT executed.**
   Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
   decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
@@ -313,6 +311,8 @@ Commit by exact path -> push
 
 ### Methodology guardrails (earned this session — do not inherit as solved)
 
+- **Four new STOPs from T1.1 (D461) live in `STOP-CATALOGUE.md`** — shared git INDEX, `grep -c`
+  exit-1 killing an `&&` chain, a correct fix that never runs, and fact-checking your own brief.
 - **`node --check` passes an undefined identifier** — it validates syntax, not scope. A fix on the
   accessibility path would have thrown at runtime after passing it.
 - **`eslint --rule '{"no-undef":"error"}'` is VACUOUS in this project** — the config overrides it.
