@@ -8,10 +8,10 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN. There are no closed steps in this file.** Eight remain (verify, don't trust this number:
+> it is OPEN. There are no closed steps in this file.** 9 remain (verify, don't trust this number:
 `grep -c '^### Step' <this file>`).
 
-> **Closed since the prune:** Step 8 (physics-sandbox FR — written as FR-38-27, 2026-08-02) and
+> **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
 > M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
 
 ## Where this stands
@@ -56,35 +56,52 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
 
 ## The open steps, in run order
 
-### Step Z-residual — one block-scoped focus sweep [OPEN — the top item]
-  **Model:** sonnet · **Time:** 45 min
-  **Action:** Every block-scoped `:focus-visible` still using `currentColor` or a hardcoded
-  `primary-dark` joins the shared `--sgs-focus-*` family (now accent, per D467):
-  `nav-menu/style.css:123`, `responsive-logo` (lifted CSS), `brand-strip/style.css:459`,
-  `card-grid/style.css:264`, `cta-section/style.css:287`.
-  ⛔ **`sgs/button` is NOT in the sweep until its writer is FOUND.** 7 elements compute `#3a2e26`
-  while both matching rules resolve to accent — something the rule-scan missed is winning. Prove the
-  cause first.
-  ⛔ **`sgs/nav-menu` was built, deployed and measured working, then REVERTED** — the visual-diff
-  gate's `first_paint_capture_passed` cannot be honestly claimed for a block that renders a hidden
-  second copy inside the drawer (the capture reads `2/4 visible`, a probe artefact). Either fix that
-  probe for multi-instance blocks or get a genuine capture. **Do not fake the field.**
-  **Done when:** re-running the baseline method in `reports/2026-08-02-focus-cascade-baseline.md`
-  shows the accent count rising from 15/25 with nothing regressed off-palette.
+### Step Z-residual — focus sweep: 9 of 12 blocks DONE (`7ac165f7`); 3 named blocks remain [OPEN]
+  **Model:** sonnet · **Time:** 30 min for what is left
+  ✅ **Done 2026-08-02:** 10 rules across 9 blocks repointed onto `var(--sgs-focus-color, <original>)`
+  — audio · brand-strip · buybox · card-grid · cta-section · info-box · notice-banner ·
+  responsive-logo (`.scss`, not lifted CSS as this register claimed) · trust-bar · whatsapp-cta.
+  Verified on the live canary: deployed `style-index.css` carries the token, and a Playwright
+  `getComputedStyle` on `responsive-logo` resolved it to the client's real accent `#f5d050`.
+  ⛔ **`card-grid:402` was a FALSE target in this register.** `.sgs-card-grid__page-btn` is a hover
+  FILL already keyed to `var(--wp--preset--color--primary)` — on-palette, different mechanism, never
+  part of the defect. Left unchanged deliberately; do not "fix" it.
+  **THE RESIDUAL — three blocks, each blocked on its own question, none on effort:**
+  1. ⛔ **`sgs/button` — writer UNPROVEN.** 7 elements compute `#3a2e26` while both matching rules
+     resolve to accent. Something the rule-scan missed is winning. **Prove the cause first.**
+  2. ⛔ **`sgs/nav-menu`** — needs the first-paint probe fixed for multi-instance blocks, or a genuine
+     capture. It renders a hidden second copy in the drawer, so the capture reads `2/4 visible`.
+     ⚠ **The gate reason is now GONE** (`08c8dfef` exempts interaction-only CSS), so if the change is
+     a pure `:focus-visible` value swap this is unblocked — re-check before assuming it still applies.
+  3. **`sgs/nav-drawer`** — same `currentColor` close-button pattern; its `block.json` documents the
+     outline as deliberately uncontrolled. Skipped as too close to the nav-menu trap. Needs a ruling,
+     not a fix.
+  **Done when:** those three are resolved or explicitly ruled out, with the cause proven for `button`.
 
-### Step Y — the loop's UNTESTED arms: reduced motion + keyboard wrap [OPEN]
-  **Model:** sonnet · **Time:** 45 min
-  **Action:** Two arms of the looping contract are built but never exercised — and now across FIVE
-  blocks, not one.
-  1. **Reduced motion.** `fx-draggable.js`'s contract is SIMPLIFY (drag is user-driven input) and is
-     unchanged. **The LOOP module has no measured reduced-motion behaviour at all.** A clone-and-reseat
-     is not autonomous motion, so SIMPLIFY is the likely answer — but it is currently unstated.
-  2. **Keyboard arrow-wrap at the boundary.** Arrows are present and correctly never disable, but the
-     wrap was driven by pointer and `scrollLeft`, never by repeated arrow activation. WCAG 2.5.7
-     rests on that alternative working around the loop point.
-  ⚠ **Playwright ONLY** — Chrome DevTools MCP has no `prefers-reduced-motion` and no trusted pointer.
-  **Also:** Spec 38 §10 carries NO reduced-motion row for `cursor-field` or `carousel-loop`.
-  **Done when:** both arms have a live measurement in `probe-carousel-loop.mjs`, and §10 has its rows.
+### Step Y-1 — ⛔ `sgs/google-reviews` keyboard nav FAILS WCAG 2.5.7 [OPEN — NEW, found by Step Y]
+  **Model:** sonnet · **Time:** 30 min
+  `nextSlide()`/`prevSlide()` in `src/blocks/google-reviews/view.js` compute an ABSOLUTE scroll
+  target by scanning only REAL (non-clone) items for one ahead of the current position. Once
+  `scrollLeft` enters clone territory there is no further real item to target, so it dead-ends at the
+  last real card. **The arrow never disables — technically satisfying "must never disable" while
+  functionally failing the requirement that rule exists to serve.** Keyboard users cannot pass the
+  last real card.
+  **Fix shape (not yet chosen):** clone-position targeting, or relative `scrollBy()` stepping as
+  `trustpilot-reviews` already does. **Diagnosed, deliberately NOT shipped** — Step Y's scope was
+  measurement.
+  ⚠ A dot/arrow that moves is not a dot/arrow that WORKS: this block passed the looping rollout's
+  "dots == real cards" check (3 == 3) while its keyboard path was already broken.
+
+### Step Y-2 — hardcoded `behavior: 'smooth'` ignores reduced motion in 2 blocks [OPEN — NEW]
+  **Model:** haiku · **Time:** 20 min
+  `trustpilot-reviews` and `google-reviews` hardcode `behavior: 'smooth'` in their own arrow-click
+  code with no reduced-motion branch. This is in the BLOCKS, not the loop module — Arm 1's clean
+  result does not cover it.
+  ✅ Already fixed in `post-grid`, which passed `behaviour` (British spelling) to `scrollIntoView` —
+  **an unrecognised DOM key the browser silently discards, so it never respected reduced motion in
+  either direction.** ⚠ **Committed but NOT deployed** — the canary still runs the pre-fix code.
+  ⚠ **Watch the spelling.** UK English is the house rule for everything EXCEPT DOM/CSS API keys,
+  where `behavior` is the API's own name. A silent no-op is the failure mode.
 
 ### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN]
   **Model:** inline · **Time:** 3 h
