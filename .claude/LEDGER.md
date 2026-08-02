@@ -18,53 +18,58 @@ gets ONE true answer instead of three drifting ones.
 
 ## CURRENT FRONTS
 
-### Track 3 — Spec 38 motion: the drift GATE + the looping ROLLOUT, both live (D465, D466)
+### Track 3 — motion drift GATED, looping ROLLED OUT, focus ring on the client palette (D465-D467)
 
-**Commit `4f07a72a`, pushed. Every claim is a measurement, not an artefact check.**
+**Commits `4f07a72a`, `b490bc40` (+ docs `d050fe62`/`8455c8f1`/`6ad91d19`), pushed. Every claim is a
+measurement.**
 
-| What shipped | Proven how |
+| Shipped | Proven how |
 |---|---|
-| **The three-list fx drift is GATED** (D465) — `scripts/check-fx-list-drift.py`, 6 invariants, in `prebuild` | `--self-test` breaks each invariant in turn + a vacuity case; **deleting `'cursor-field'` from each of the three lists in turn was verified to fail the build**, each break confirmed in `git diff` first. Reads NO database, so a clean checkout still builds. `fx_effects` gained `in_picker`. |
-| **Looping rolled out** (D466) — `post-grid`, `trustpilot-reviews`, `google-reviews`, `buybox` | `probe-carousel-loop.mjs` per block: **dots == real cards on 4 of 5** (post-grid 9 real / 27 cloned / **9 dots**); buybox 8/8 + 1 honestly `[N/A]` (no dots by design). Plus a new no-JS **first-paint** capture, 3/3 each. |
-| **`sgs/google-reviews` slider navigation BUILT** | It had none: `showDots`/`showArrows` declared, exposed as toggles, read into variables, rendering nothing in any layer. Dots now proven live at 3 == 3 real reviews. |
+| **Three-list fx drift GATED** (D465) — `scripts/check-fx-list-drift.py`, 6 invariants, in `prebuild` | `--self-test` breaks each invariant + a vacuity case; **deleting `'cursor-field'` from each list in turn was verified to fail the build**, each break confirmed in `git diff` first. Reads NO database. `fx_effects` gained `in_picker`. |
+| **Looping rolled out** (D466) to `post-grid` / `trustpilot-reviews` / `google-reviews` / `buybox` | **dots == real cards on 4 of 5** (post-grid 9 real / 27 cloned / **9 dots**); buybox 8/8 + 1 honest `[N/A]`. Plus a no-JS **first-paint** capture, 3/3 each. |
+| **`sgs/google-reviews` slider nav BUILT** | It had NONE: `showDots`/`showArrows` declared, exposed as toggles, read into variables, rendering nothing. Dots now live at 3 == 3 real reviews. |
+| **Focus ring = ACCENT glow on the client's own palette** (D467) | **0 → 15 of 25 focusables on accent; the hardcoded teal is gone from every element.** |
 
-⛔ **THE SPEC'S OWN ROSTER PREDICATE WAS WRONG.** Spec 38 + this LEDGER both said "derive the roster
-from `supports.sgs.fx.draggable`" — with a ⚠ telling you to trust it. Followed literally it returns
-2 blocks, one with **no scroller at all**. Correct predicate: **"owns a native horizontal scroller"**.
-Corrected in Spec 38 §3.3. `before-after` (no `overflow-x`) and `testimonial-slider` (transform-driven
-track; Bean ruled it out 2026-08-02) are excluded with reasons.
+⛔ **THE SPEC'S OWN ROSTER PREDICATE WAS WRONG.** Spec 38 + this LEDGER said "derive the roster from
+`supports.sgs.fx.draggable`" — with a ⚠ to trust it. It returns 2 blocks, one with **no scroller at
+all**. Correct: **"owns a native horizontal scroller"**. Fixed in Spec 38 §3.3; `before-after` and
+`testimonial-slider` excluded with reasons.
 
-⚠ **THREE PROBE DEFECTS FOUND — all measuring the instrument, not the code.** A hardcoded item
-selector made the headline "dots == real cards" assertion `0 === 0` on any non-gallery block; a
-`|| 0 === dots` escape-hatch let a DOTLESS block bank a silent PASS on that same assertion; and dots
-were counted document-wide while items were counted track-scoped, which FAILED a block that was
-behaving correctly. All fixed, each with a negative control.
+⛔ **D322 WAS THREE-QUARTERS UNDONE FOR FOUR MONTHS.** The focus fix looked like a one-line
+`theme.json` edit and was a **no-op**: the real overrides were **`wp_global_styles` post 7** (the DB
+beats theme.json) **and the client snapshots**. D322 added the framework copy but never removed the
+client copies, and the client copy wins. Ruled out first, in order: not a bad edit (deployed file
+had the new value), not a cache (42 transients deleted + object cache + LiteSpeed purged).
 
-⛔ **STEP Z (focus) RE-BASED — both earlier framings were wrong; do not act on either.**
-Not "a fourth system one generation behind" (there are **five**, across **two** token families), and
-NOT the specificity fight I hypothesised (**refuted**: the focused element computes
-`outline-color: #c56a7a` = `--sgs-focus-color`, so D463's rule IS winning). **Proven cause:** the
-deployed `core-blocks-critical.css` has no `--sgs-focus-glow` and no `box-shadow` line at all, while
-local source has both. **The THEME half of D463 was never deployed** — every deploy has been
-`--blocks-only`. Sequence: theme deploy (Bean's call, it touches every client render) → re-measure →
-then council. Full detail in the Wave D register's Step Z.
+⚠ **A `wp post list` FALSE NEGATIVE ALMOST CLOSED THAT INVESTIGATION.** It returned NOTHING for
+`--post_type=wp_global_styles` — reading exactly like "no override". It defaults to a publish-ish
+status filter; `--post_status=any` found post 7 instantly. **An absence from `wp post list` is not
+evidence of absence unless the status filter was explicit.**
 
-**OPEN on this track:** Step Y (loop reduced-motion + keyboard arrow-wrap — now across FIVE blocks,
-not one) · Step Z (above) · Steps 8, 12, 20, O, U, 21 unchanged. `check-dead-controls.js` counts
-assignment as consumption — recorded gate blind spot, not fixed.
+⚠ **FOUR probe defects, all measuring the INSTRUMENT not the code:** a hardcoded item selector made
+"dots == real cards" read `0 === 0` on any non-gallery block; a `|| 0 === dots` escape-hatch let a
+DOTLESS block bank a silent PASS; dots were counted document-wide against track-scoped items,
+FAILING a correct block; `networkidle` never settles on a WooCommerce page. All fixed with negative
+controls.
 
-### Track 3 (previous) — Wave E, 2026-08-01 (D447–D454, D457)
+⛔ **`sgs/nav-menu`'s focus fix was built, deployed, measured working — then REVERTED + redeployed.**
+`first_paint_capture_passed` cannot be honestly claimed for a block rendering a hidden second copy in
+the drawer (capture reads `2/4 visible` — a probe artefact). **Faking a gate field to land a
+long-tail fix was the wrong trade.** Do not re-land without a genuine capture.
 
-**Swept 2026-08-02 — full narrative + per-item verification state:**
-`memory/session-2026-08-01-wave-e.md`. Superseded as the live front by Wave D above.
+**Bean's rulings (each now made TWICE — do not re-litigate):** the focus ring is gated on **palette
+accuracy, not contrast** (`visual-standards.md`'s 3:1 is overruled for his sites), and the **outline
+is ACCENT** — a glow effect, not a dark high-contrast object.
 
-Two Wave-E results that are STANDING CONSTRAINTS, not history, so they stay here:
-- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug is accidentally providing the rescue.**
-  `overflow-x: clip` paired with a non-clip `overflow-y` computes to `hidden`, which IS a scroll
-  container, so native scroll-into-view rescues focus. **Do NOT "fix" it to clip on both axes** —
-  that silently deletes the only WCAG 2.4.11 cover this effect has.
-- **The WooCommerce gallery bug did not exist.** A `core/query include:[540]` silently rendered
-  product 1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
+### Track 3 (previous) — Wave E (D447–D454, D457) → `memory/session-2026-08-01-wave-e.md`
+
+Two Wave-E results are STANDING CONSTRAINTS, not history:
+- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug provides the rescue.** `overflow-x: clip` with
+  a non-clip `overflow-y` computes to `hidden`, which IS a scroll container, so native
+  scroll-into-view rescues focus. **Do NOT "fix" it to clip on both axes** — that deletes the only
+  WCAG 2.4.11 cover this effect has.
+- **The WooCommerce gallery bug did not exist.** `core/query include:[540]` silently rendered product
+  1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
@@ -171,7 +176,7 @@ memory alone:
   `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
   the hex colour `#0D5557`; true ceiling was D453)
-  (currently D461 — D457-D460 went to a co-active track mid-session; re-check live BEFORE writing any D reference) · framework
+  (currently D467 — D464 went to a co-active track mid-session; re-check live BEFORE writing any D reference) · framework
   counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
   cloning session). Motion = `specs/38-SGS-MOTION-SYSTEM.md`. Nav = `specs/36-...`; header/footer
@@ -226,40 +231,60 @@ migration must run with Bean present. The canary is unblocked and current.
 (the residual register — its table names every open motion step in run order) → Spec 38 §3.3
 FR-38-25 + FR-38-26.
 
-### TRACK 3 (motion) — Wave D's four tasks are CLOSED; the residue is five steps
+### TRACK 3 (motion) — the residue, ranked. Register = `plans/2026-07-31-motion-wave-D-client-readiness.md`
 
-**Everything open lives in the Wave D register, never in `parking.md`** (Bean-ruled 2026-07-31:
-parking is for BLOCKED or POSTPONED work only). Ranked:
+**Everything open lives in that register, never `parking.md`** (Bean-ruled 2026-07-31).
 
-**M1 — Step X: gate the three-list drift** [sonnet, ~1 h] — **the highest-value item on this track.**
-An fx effect must join THREE hand-maintained lists to work (`SHIPPED_EFFECTS` in `fx.js`;
-`FX_ATTR_MAP` and `sgs_fx_effect_param_scope()` in `fx-attributes.php`) and **no gate cross-checks
-them**. Two of three were missed on one effect this session; neither failed a build, and one only
-surfaced by live verification after the other fixes shipped. A fourth list of the same shape governs
-field types. Ship the gate with a `--self-test` that proves it fails when an entry is removed.
+**M1 — Step Z residual: ONE block-scoped focus sweep** [sonnet, ~45 min]
+Every block-scoped `:focus-visible` still using `currentColor` or a hardcoded `primary-dark` joins
+the shared `--sgs-focus-*` family: `nav-menu/style.css:123`, `responsive-logo` (lifted CSS),
+`brand-strip/style.css:459`, `card-grid/style.css:264`, `cta-section/style.css:287`.
+- **Orchestration:** delegated, sonnet, single agent. Brief: one sweep, one evidence pass — not five
+  ad-hoc fixes. **/qc gate after: yes** (`/qc-inline`).
+- ⛔ **`sgs/button` is NOT in the sweep until its writer is FOUND.** 7 elements compute `#3a2e26`
+  while both matching rules resolve to accent — something the rule-scan missed is winning. Prove the
+  cause first.
+- ⛔ **`sgs/nav-menu` needs the first-paint probe fixed for multi-instance blocks first**, or a
+  genuine capture. It was reverted once precisely to avoid faking that field.
+- **Acceptance:** re-run the baseline method in `reports/2026-08-02-focus-cascade-baseline.md`;
+  accent count rises from 15/25 and no element regresses off-palette.
 
-**M2 — Step W: roll the loop to the other 5 drag-roster blocks** [sonnet, ~1.5 h] — `sgs/gallery` is
-the only exemplar. ⚠ **Re-derive the roster from `supports.sgs.fx.draggable`, do not trust a
-remembered list** — `sgs/testimonial-slider` was wrongly assumed on it once already this wave.
-`sgs/buybox` is the non-mechanical one (thumbnail strip + product-card Interactivity store).
-Done = each block passes `probe-carousel-loop.mjs` with the **dots == real cards** assertion holding.
-
-**M3 — Step Y: the loop's untested arms** [sonnet, ~45 min] — reduced motion for the LOOP is
+**M2 — Step Y: the loop's untested arms** [sonnet, ~45 min] — reduced motion for the LOOP is
 unstated (the drag module's SIMPLIFY contract does NOT transfer), and keyboard arrow-wrap at the
-boundary was never exercised though WCAG 2.5.7 rests on it. **Playwright only** — DevTools MCP has
-neither a `prefers-reduced-motion` parameter nor a trusted pointer primitive.
+boundary was never exercised though WCAG 2.5.7 rests on it. **Now across FIVE blocks, not one.**
+**Playwright only** — DevTools MCP has neither `prefers-reduced-motion` nor a trusted pointer.
+Spec 38 §10 also has NO row for `cursor-field` or `carousel-loop`. **/qc gate after: yes.**
 
-**M4 — Step Z: the fourth focus system** [haiku, ~30 min] — `extensions.css` `.sgs-has-focus-ring`
-is one generation behind D463 (still hardcoded `primary`, no glow, no underlay). Deferred ONLY
-because a co-active track held that file; **check it is clean before starting.**
+**M3 — push the `indus-foods` snapshot** [inline, ~10 min] — fixed in git; its LIVE site still
+carries the teal until `push-theme-snapshot.py` runs against it.
 
-**M5 — Step R-residual** [sonnet, ~1 h, low priority] — `floating-objects` spec'd not built; the
-participant seam for children with their own background-image; the init-only participant walk.
+**M4 / M5 — low priority** [sonnet] — Step R-residual (`floating-objects`, participant seam,
+init-only walk) and Wave E's unverified residue (`:user-valid` on a real `sgs/form`; `fx-scrub` /
+`fx-split-reveal` vs the SHIPPED bundle). Detail in the register.
 
-**M6 — Wave E's unverified residue** [sonnet, ~45 min] — carried from the previous handoff, still
-open: (a) the `:user-valid` cascade fix on a REAL `sgs/form` instance rather than a bare-input
-fixture, (c) the `fx-scrub` and `fx-split-reveal` probes against the SHIPPED bundle. (b) the
-focus-ring item is SUPERSEDED by D463, which re-measured that surface live.
+### Dependency graph
+
+```
+M1 (sonnet, delegated) ──┐
+M2 (sonnet, delegated) ──┼── parallel, disjoint files
+M3 (inline, 10 min)    ──┘
+        ↓ /qc-inline per branch
+M4 / M5 (sonnet) — only if time remains
+```
+
+### Methodology guardrails (do not skip)
+
+- **Deploy before measure.** A theme change needs a `style.css` Version bump + deploy + LiteSpeed
+  purge before any probe. This session's whole Step Z detour existed because a THEME half was never
+  deployed while `--blocks-only` deploys looked complete.
+- **`build-deploy.py --dry-run` does NOT run the dirty gate** — a green dry run proves nothing.
+- **A page-HTML grep cannot see scoped block CSS** — SGS lifts it to `uploads/sgs-css/`.
+- **A probe that never reaches the effect measures the probe.** Four such defects this session.
+- **Never claim a gate field you did not measure.** `first_paint_capture_passed` was the live case.
+- **`wp post list` absence is not evidence of absence** unless `--post_status` was explicit.
+- **Two tracks share this worktree.** Commit BY EXACT PATH, never `git add -A`; the pre-commit hook
+  now enforces a pathspec. **Re-check the D-ceiling immediately before writing any D reference** —
+  the other track took D464 mid-session and committed 3 times during this one.
 
 ### TRACK 3 — carried forward, unchanged
 Steps **8** (physics sandbox — DECIDED at D447, only the FR write-up is owed), **12** (the cloning

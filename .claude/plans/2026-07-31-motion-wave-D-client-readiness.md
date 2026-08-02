@@ -1,611 +1,198 @@
 Invoke /autopilot before doing anything else.
 
 > ⚠ THIS FILE IS A POINTER, NOT THE TRUTH. Live status = `.claude/LEDGER.md` — if it contradicts this plan, the LEDGER wins.
-> ⚠ **GATE 1:** Spec 38 must read `status: active`. **GATE 2:** Waves A, B and C are CLOSED (D414–D417, D422, D424, D426, D427, D430). This wave consumes all three. If a gate fails, STOP.
-> ⛔ **DEPLOY HAZARD, PROVEN TWICE.** The shared tree's compiled `build/` contains co-active tracks' uncommitted `render.php` edits, and `assets/` is a separate directory a partial worktree copy silently misses (that error shipped a 404 stylesheet on 2026-07-31 and rendered a hidden SVG as a 1200×1200 black shape). Use the isolated-worktree recipe in Tool bindings and copy **src + includes + scripts + assets + build**.
-> ⛔ **NEVER add anything from this plan to `parking.md`.** Bean-ruled 2026-07-31: parking is strictly for BLOCKED or POSTPONED work, never a reminder list. This plan IS the register.
-> **This session runs in PLAN MODE first** — investigate, present, get approval, then build.
+> ⛔ **NEVER add anything from this plan to `parking.md`.** Bean-ruled 2026-07-31: parking is strictly for BLOCKED or POSTPONED work, never a reminder list. **This plan IS the register.**
+> ⛔ **DEPLOY HAZARD, PROVEN THREE TIMES.** The shared tree's compiled `build/` contains co-active tracks' uncommitted edits, and `assets/` is a separate directory a partial copy silently misses. Use `build-deploy.py` with `--payload <your paths>` — never `--allow-dirty`, never a hand-rolled tar.
 
-# Phase — Motion Wave D: client-readiness
+# Spec 38 motion — the OPEN register
 
-> **THIS IS A BUILD REGISTER, NOT A REVIEW DOC.** Rewritten 2026-08-01 after wave 2: every COMPLETED
-> step body was DELETED (its one-line outcome lives in the §2 tables with its verification state), and
-> every remaining open item is a `### Step` heading below. **If a step has a heading, it is open. If it
-> does not, it is closed — check §2, then `git log`.**
+> **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
+> `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
+> it is OPEN. There are no closed steps in this file.** Nine remain.
 
-## 1. Where this stands (2026-08-02, after Wave D execution)
+## Where this stands
 
-**Wave D's four tasks are CLOSED and LIVE-VERIFIED** (D459 / D460 / D463 — cursor field 10/10,
-looping 8/8, focus indicator measured on the real surface, canary fixtures closed by measurement).
-**This file is the RESIDUAL REGISTER for Spec 38 — every open motion item lives here, nowhere else.**
-Bean-ruled 2026-07-31: parking is for BLOCKED or POSTPONED work only, never a reminder list.
+Waves A–E are closed. This session closed **Step X** (the three-list drift gate, D465), **Step W**
+(the looping rollout, D466) and **Step Z** (the focus cascade, D467). What is left is below, ranked.
 
-**Open steps, in the order they should run.** ⚠ The count has drifted before — trust the
-`### Step` HEADINGS, not any sentence:
+**Four things a fresh session most needs to know:**
 
-| Step | What | Why it is next |
-|---|---|---|
-| ~~**W**~~ | ~~Roll the loop to the other drag-roster blocks~~ | ✅ **CLOSED 2026-08-02 (D466)** — 4 blocks rolled out, all proven live. The spec's stated roster predicate was WRONG and is corrected in Spec 38 §3.3 |
-| ~~**X**~~ | ~~Gate the three-list drift~~ | ✅ **CLOSED 2026-08-02 (D465)** — `check-fx-list-drift.py`, 6 invariants, in `prebuild`, `--self-test` + 3 real deletion proofs |
-| **Y** | Loop reduced-motion + keyboard arrow-wrap | two arms of the looping contract built but never exercised — now across FIVE blocks, not one |
-| **Z** | The focus cascade | ⚠ **RE-BASED 2026-08-02 — the premise changed.** See its step below: the theme half of D463 was never deployed |
-| **R-residual** | `floating-objects`, the participant seam, the init-only walk | stated limits, not defects |
-| **8** | Physics sandbox — DECIDED (D447), write-up owed | decision made; only the FR text is outstanding |
-| **12** | The cloning lift (FR-38-22) | measured NO — motion does not survive a clone today |
-| **20** | Spec ↔ code reconciliation | dead `scroll-smoother` row, stale comments, unwired helper |
-| **O** | Drag text-selection symptom | Bean re-checks by hand; do NOT dispatch an agent |
-| **U** | File-length debt on the grid blocks | logged by Bean's ruling, tackle in a clean session |
-| **21** | Re-run the adversarial council | deliberately LAST, after everything above |
-
-**The four things a fresh session most needs to know:**
-
-1. **Verification state is PER ITEM, never uniform.** Read the per-step evidence line. Do not read
-   "deployed" as "proven" — and do not read "proven" as "rolled out" (Step Q is proven on ONE block).
+1. **Verification state is PER ITEM, never uniform.** Read each step's evidence line. Do not read
+   "deployed" as "proven", or "proven" as "rolled out".
 2. **Bean's eye set the assertion standard.** Automated checks passed while the drag did not follow
-   the mouse and the dots did not track, because they asked "did it move?" rather than "did it FOLLOW
-   the mouse, and did the dots follow the cards?". Both live probes now encode the stronger form —
-   the looping probe asserts `dots == real cards`, not `dots == elements`.
-3. **A green build proves nothing here. Six defects in ONE feature passed one** (2026-08-02):
-   an undefined identifier (`node --check` validates syntax not scope; this project's eslint config
-   overrides `no-undef`), a missing render-layer offset guard, and absence from THREE separate
-   hand-maintained lists — one of which only surfaced by live verification after the other fixes
-   shipped. **Step X exists to gate that class.**
-4. **Your instrument lies too.** This session: `build-deploy.py --dry-run` does NOT run the dirty
-   gate (a green dry run against a filthy tree proves nothing); a page-HTML grep cannot see scoped
-   block CSS because SGS lifts it to `uploads/sgs-css/`; and a probe's hardcoded viewport points
-   landed on the page header, reporting a tracking failure that did not exist.
+   the mouse and the dots did not track, because they asked "did it move?" rather than "did the dots
+   follow the cards?". The looping probe now asserts `dots == real cards`.
+3. **A green build proves nothing. Six defects in ONE feature passed one** (2026-08-02): an undefined
+   identifier (`node --check` validates syntax not scope; this project's eslint overrides
+   `no-undef`), a missing render-layer guard, and absence from three hand-maintained lists — one of
+   which only surfaced by live verification after the other fixes shipped. **Step X now gates that
+   class.**
+4. **Your instrument lies too.** Proven this session: `--dry-run` does not run the dirty gate; a
+   page-HTML grep cannot see block CSS (SGS lifts it to `uploads/sgs-css/`); a probe's hardcoded
+   selector made its headline assertion `0 === 0`; `networkidle` never settles on a WooCommerce page;
+   and `wp post list` returns a false negative unless `--post_status` is explicit.
+
+## Pre-conditions (check these BEFORE starting any step)
+
+1. **Branch + D-ceiling, in the same breath as any commit.**
+   `git branch --show-current` (expect `main`) and
+   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+   (**heading-anchored** — the unanchored form reads the hex colour `#0D5557` as D5557).
+   ⚠ **A co-active track shares this worktree and committed four times during the last session,
+   taking D464 mid-flight.** Re-check immediately before writing any D reference, not at session start.
+2. **Commit BY EXACT PATH.** Never `git add -A`. The pre-commit hook now rejects a bare `git commit`
+   without a pathspec, and it is right to.
+3. **Deploy with `--payload <your paths>`**, so the gate stays armed against another track's dirty
+   files. Never `--allow-dirty`.
+4. **Any theme CSS change needs a `theme/sgs-theme/style.css` Version bump** or the CDN serves the
+   stale file and every probe reads the old rule. Then purge: `wp cache flush` + `wp litespeed-purge all`.
+5. **Read Spec 38 §3.3 (FR-38-25 + FR-38-26) and `.claude/LEDGER.md`** before touching motion.
 
 ---
 
-## 2. Where we are right now — the honest state
+## The open steps, in run order
 
-**CLOSED this wave (9 of 24 steps — the 8 below, plus Step J, which is kept in place at its own heading because the reasoning behind it is load-bearing).** Full detail moved to `memory/`; here is the one-line
-version of each:
-
-| Was step | What it closed | Commit(s) |
-|---|---|---|
-| 1 | Touch-drag measured for real (not just reasoned about) on the two motion canaries | `0628800a` |
-| 4 | Split the "this block has SVG" signal into two separate signals, so the wrong shape-morph control stops appearing on plain container/hero blocks | `80868f80`, `fb6adccd`, `4a5cb764` |
-| 9 | Motion presets added into 3–5 real starter patterns, so inserting a pattern gives a client tasteful movement with zero setup | `c75add9c` |
-| 11 | A clean checkout of the code can now run the full build without a private database file | `c674edea` |
-| 13 | Keyboard-focus contract for pinned scroll sections written and tested (contract now lives in Spec 38 §3.1) | `b74d2b07` |
-| 14 | Every effect's "reduced motion" behaviour is now measured, not just reasoned about | `0628800a` |
-| 16 | The image-sequence tool's frame-count is capped and it verifies its own frame files, so it can't silently half-fail | `3a0bf4e5` |
-| 17 | Two console errors that appeared in the editor (on every page, motion or not) are gone | `67c91a47`, `d1e164c9`, `82a08b8a`, `350bc9a7` |
-
-**CLOSED 2026-08-01 (wave 2) — all deployed to the canary; verification state stated honestly per row.**
-
-**CLOSED 2026-08-01 (WAVE E) — 16 steps. Bodies DELETED per this plan's own rule; one-line
-outcome + commit below. Verification state per item is in `LEDGER.md`'s Wave E table — several of
-these are built-and-deployed but NOT yet observed live, and the LEDGER says which.**
-
-| Was step | What closed it |
-|---|---|
-| 6 | before/after video + SVG sources (adopted sgs/media mediaType fork) — `0147402e` |
-| 6b | before/after all FOUR reveal directions, label order keyed off the same selectors — `0147402e` |
-| 23 | before/after test imagery replaced; the checkerboard was a baked-in frame stamp, not a responsive bug — `0147402e` |
-| L | fx inspector panel now linted; the guard covers 12 previously-unguarded panels — `ae98e5ff` |
-| M | sgs-healthcare idle-dot contrast — superseded and widened by the 8-client audit — `2f0efb38` / `2a62a026` |
-| N | image-sequence pin-ON path observed live for the first time — `5ec8a442` |
-| P | content-collection folded into card-grid via ONE shared engine, non-Woo CPT path ported — `f5ba3839` |
-| S | dead buybox fixtures — pages deleted by Bean directly |
-| T | deploy/commit deadlock broken via `--payload`; proven on two real deploys — `ae98e5ff` |
-| V | buybox thumbnail drag wired; 1:1 pointer tracking measured live — `c6a25eca` |
-| E-residual | motion-path geometry — measured: no user-visible defect remains; route box documented as latent — `a9c9675f` |
-| 10 | preset + param normalisation moved outside the editor — `901f91e0` |
-| 15 | per-breakpoint motion disable, runtime gate at bootEffect — `901f91e0` |
-| 18 | motion diagnostics admin panel (effects in use, bytes, skip reasons) — `5ec8a442` |
-| 19 | per-page motion budget readout, visible not blocking (D448) — `5ec8a442` |
-| 22 | pin keyboard contract OBSERVED not inferred — found the D453 WCAG failure — `b6a5676c` |
-
-
-| Was step | What it closed | Verified live? |
-|---|---|---|
-| 5 | **Morph reachable from ANY block** (Bean ask #1) — built to the signed D427 design: curated preset pairs, thumbnail picker, render-layer hidden-SVG expansion, so the host block no longer has to BE a shape. `fx_effects.morph.requires` `svg`→`none`; **28 of 28 fx-capable blocks now offer morph, was 3** | Artefact-verified; live morph render NOT yet measured |
-| B | Testimonial-slider arrows: bare 8×24px `‹` glyph in a 44px button → the existing SVG chevrons | ✅ 44×44 button, 22×22 icon constant across 375/768/1440 |
-| C | Slider idle dots off `border-subtle` (~1.2:1) onto `text-muted` | ✅ 5.79:1 on the live palette. ⚠ `sgs-healthcare` still fails at 2.97:1 on its OWN token — open, see Step M |
-| D | **Palette/token integrity — far bigger than expected.** `surface` was doing two contradictory jobs: `theme.json` wires it to the page background while 33 blocks used it as their card fill, so cards vanish on any palette where it isn't white. Contract written into Spec 32 §12 (substrate / raised / inverse-ink, all 16 slots); 76 call sites classified, 34 rerouted; 3 wrong `#0D5557` fallbacks fixed; Mama's `#fbf3dc` removed from `product-card`. **LOAD-BEARING: the extractor detected `surface-alt` but never wrote the slug, so a re-extraction would have silently recreated the collision — synthesis fallback added + Spec 33 amended** | ✅ cards now render distinct from the page background |
-| F + G | Image-sequence: scrub anchored to FULL visibility via opposite-edge geometry (NOT the shorter same-anchor window its own docblock records as tried and rejected); pin promoted to an inspector toggle per Bean's D435 "janky patchwork" ruling | ✅ gradual frame progression, mirror defect did NOT reproduce. Pin-ON path exists in source but no live instance had it enabled — see Step N |
-| H | **Scramble preset timing** (Bean's live finding). Root cause: `dramatic` used `top bottom`, which is the EARLIEST possible ScrollTrigger threshold, and scramble reads only `fxStart` — so "dramatic" fired soonest. Ladder restored to 85% / 70% / center | ✅ **Bean-approved 2026-08-01.** New 3-column side-by-side canary page **2105** (`/fx-preset-comparison-columns/`), triggers at scrollY 480/600/800 against a 4,331px page, editor-clean (23 blocks, zero recovery warnings) |
-| E (part) | Motion-path SKEW: `preserveAspectRatio="none"` removed from `fx-path-routes.php` — proven live via the transform matrix | ✅ skew gone. **The ~2,705px jump is NOT fixed — see Step E-residual** |
-
-**Also closed 2026-08-01:** the grid-block consolidation council (4 independent seats, 3–1 to retire
-`sgs/content-collection` into `sgs/card-grid`) — Bean approved the fold **including porting the
-non-WooCommerce `sgs_product` CPT path**, which is the dissenting seat's stated condition. Now Step P.
-
-**Buybox drag — SUPERSEDED by Step V (2026-08-01).** The old "HELD" note here described a control proven by hand but refused a clean sign-off. The picture is now clearer and measured: buybox RENDERS correctly on the real product page (gallery 659px + configurator 573px, strip overflowing 712>659), but **the strip has no drag handler bound at all** — a real drag leaves `scrollLeft` at 0 while forcing it via JS works. That gap is documented in buybox's own `block.json`, and its named prerequisite (a product-page fixture) is now satisfied. See **Step V**.
-
-**Also folded in — items 22 and 23,** moved into this plan from the parking list on 2026-07-31
-because parking is for blocked/postponed work only, and these are planned work with a clear next
-action (a keyboard-focus re-check that observes real content instead of inferring from how the
-code is built, and a swap of some placeholder test images that were making a working feature look
-broken).
-
-**Everything else below is what remains** — reordered into the order it will actually run, with
-Bean's rulings from the review folded in as their own steps.
-
----
-
-## 3. Residual list — NOW OWNED BY THIS PLAN (moved out of parking 2026-08-01)
-
-Both items below were previously filed in `parking.md`. Bean ruled on 2026-08-01 that parking is
-strictly for BLOCKED or POSTPONED work and these are planned work with a named next action, so they
-were REMOVED from parking and are now Steps K and L of this wave. **Do not re-park them, and do not
-park anything else from this plan — this plan is the register.**
-
-### Step K — CLOSED 2026-08-01: no rebuild was needed, and the method is recorded
-
-> ✅ **CLOSED.** The rescoped question was "rebuild whichever of the six deleted pages were
-> load-bearing baselines". **Measured answer: none of them were.** A repo-wide search (not just
-> `scripts/motion-qa/`) found the six IDs — 2022, 2023, 2024, 2025, 2026, 2029 — referenced by
-> **zero** probes, scripts or reports. The only occurrence anywhere is the task description in
-> `LEDGER.md` itself. The live motion fixtures every probe actually uses are 2083, 2086, 2101,
-> 2103, 2105, 2107, 2109, 2114 — all built by the clean method and all still present.
->
-> This was verified WIDER than the agent that first reported it: its search was scoped to
-> `scripts/motion-qa/`, and a file-scoped search cannot support an absence claim (the standing
-> rule — a subagent absence claim is a hypothesis). The repo-wide re-check confirmed it.
->
-> **THE METHOD, recorded so the contamination cannot recur.** The six were written
-> programmatically and stored a wrapper `<div class="wp-block-sgs-container"></div>` that
-> `container/save.js` never emits — it returns `<InnerBlocks.Content />` with no wrapper — so every
-> container reported `isValid: false` and no inspector would open. The frontend was unaffected
-> (render.php drives output), which is exactly why it went unnoticed.
->
-> To build a fixture page safely:
-> 1. **`wp post create`, never `wp post update`** — a project hook blocks the latter. Recreate
->    rather than edit.
-> 2. **Never hand-author or string-manipulate `post_content`.** Serialise from real block markup:
->    take a known-clean page's stored content (2105 / 2107 / 2109 are proven clean — 12–18
->    containers, zero bad wrappers) as the reference shape, or author in the editor and export.
-> 3. **A container block contributes NO wrapper div of its own to stored content.** If the markup
->    you are about to store contains `<div class="wp-block-sgs-container"></div>`, it is already
->    contaminated — that string is the fingerprint.
-> 4. **Verify per BLOCK, not per page.** Open the real editor and assert `isValid` on each block.
->    "The page loads" only ever tested the frontend, which was never the broken surface.
-
-### Step K (historical detail) — canary fixture pages carry blocks the editor cannot open (was P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR)
-
-> ⚠ **RESCOPED 2026-08-01 (Wave E).** This is no longer a generator hunt. Measured across all
-> 16 canary pages: contamination is confined to SIX old pages (2022, 2023, 2024, 2025, 2026,
-> 2029), and pages 2105/2107/2109 carry 12–18 containers with ZERO bad wrappers — the newer
-> build method is already clean. **Bean has DELETED those six pages.** What remains is: rebuild
-> whichever were load-bearing baselines, using the 2105 method, and RECORD the method so it
-> cannot recur.
-  **Model:** sonnet
-  **Action:** Every `sgs/container` on the `/motion-canary-*` fixture pages reports `isValid: false`
-  in the block editor — 7 of 21 blocks on page 2024. WP reports *"Content generated by `save`
-  function: (empty)"* against *"Content retrieved from post body:
-  `<div class="wp-block-sgs-container"></div>`"*. `container/save.js` returns `<InnerBlocks.Content />`
-  with no wrapper div, so the stored markup was written by something that emitted a wrapper the block
-  never produces — the fixtures were generated programmatically rather than through the editor.
-  **The frontend is unaffected** (render.php drives output; probes pass against these pages). It is
-  the EDITOR that is broken: an invalid block renders no inspector, so a client cannot open those
-  sections and any control added to `sgs/container` is unreachable on them.
-  Pre-existing, not caused by D416 — `container/save.js` last changed at `e1459e6d` and no commit in
-  that session touched a container file. Verified before recording.
-  **Why it matters beyond the fixtures:** if the generator that wrote these pages is reused for any
-  other programmatic page build, every page it writes carries the same defect. Find what wrote them
-  before assuming it is contained.
-  **Note (2026-08-01):** pages 2105 (`/fx-preset-comparison-columns/`) and the new
-  resting-position/buybox fixtures were built to avoid this and verified editor-clean — use their
-  serialisation approach as the reference for any future fixture.
-  **Exec:** SEQUENTIAL · **Deps:** none · **Time:** 1 h
-  **On-Fail:** if the generator cannot be identified, rebuild the affected fixture pages the way
-  page 2105 was built, and record the method.
-
-### Step O — the drag text-selection symptom Bean saw is UNREPRODUCED
-
-> ⚠ **RULED 2026-08-01 (D449) — do NOT dispatch an agent at this.** The cause-agnostic
-> `user-select` mitigation shipped and is live. Scripted drags across Chromium, WebKit and
-> Firefox could not reproduce the symptom, and per measurement-vs-eye Bean's report STANDS over
-> the null measurement. **Bean re-checks by hand on a real machine after a deploy.** An agent
-> would re-run scripted drags and produce a fourth false pass.
+### Step Z-residual — one block-scoped focus sweep [OPEN — the top item]
   **Model:** sonnet · **Time:** 45 min
-  **Action:** Bean reported drag selecting page text ("it doesn't even look like it's registering as
-  this drag interaction"). The scroll-behavior race and the missing dot listener are FIXED and verified,
-  but the selection symptom **could not be reproduced** across Chromium, WebKit or Firefox with scripted
-  drags. A cause-agnostic mitigation shipped (`user-select: none` held from pointerdown through release).
-  **Per the measurement-vs-eye rule, Bean's report STANDS over the null measurement** — scripted drags
-  are not human drags. Re-check with Bean on a real machine; if it persists, the measurement set is
-  incomplete, not the bug absent.
-
-### Step Q — CLOSED 2026-08-02 (`6c19a219`, D460) — but `sgs/gallery` ONLY
-
-> ✅ **BUILT + PROVEN LIVE 8/8** (`scripts/motion-qa/probe-carousel-loop.mjs`, canary
-> `/loop-carousel-canary/`, with drag AND loop both on): 12 clones all inert + aria-hidden;
-> **dots = 6 = the REAL card count, not 18 (the cloned length)**; past-the-end re-seats
-> (max 6080 → 3648) instead of dead-stopping; drag bounds derive from the post-clone
-> `scrollWidth`; a real pointer gesture moves the track (scrollLeft 5118).
-> `fx-draggable.js` was NOT modified — not one line. Report:
-> `reports/visual-diff/gallery-2026-08-02.md`. Spec: **FR-38-26**.
->
-> ⛔ **This closed the MECHANISM, not the ROLLOUT.** See Step W.
-
-> ✅ **Steps W and X CLOSED 2026-08-02** — bodies deleted per this file's own rule. One-line
-> outcomes: **W** = `loopCarousel` rolled to `post-grid` / `trustpilot-reviews` / `google-reviews` /
-> `buybox`, all proven live 9/9 (buybox 8/8 + 1 honestly not-exercised), evidence in
-> `reports/visual-diff/*-2026-08-02.md`, D466 — **and the roster predicate this step stated was
-> itself wrong**, corrected in Spec 38 §3.3. **X** = `scripts/check-fx-list-drift.py`, 6 invariants,
-> wired into `prebuild`, `--self-test` plus three real deletion proofs, D465.
+  **Action:** Every block-scoped `:focus-visible` still using `currentColor` or a hardcoded
+  `primary-dark` joins the shared `--sgs-focus-*` family (now accent, per D467):
+  `nav-menu/style.css:123`, `responsive-logo` (lifted CSS), `brand-strip/style.css:459`,
+  `card-grid/style.css:264`, `cta-section/style.css:287`.
+  ⛔ **`sgs/button` is NOT in the sweep until its writer is FOUND.** 7 elements compute `#3a2e26`
+  while both matching rules resolve to accent — something the rule-scan missed is winning. Prove the
+  cause first.
+  ⛔ **`sgs/nav-menu` was built, deployed and measured working, then REVERTED** — the visual-diff
+  gate's `first_paint_capture_passed` cannot be honestly claimed for a block that renders a hidden
+  second copy inside the drawer (the capture reads `2/4 visible`, a probe artefact). Either fix that
+  probe for multi-instance blocks or get a genuine capture. **Do not fake the field.**
+  **Done when:** re-running the baseline method in `reports/2026-08-02-focus-cascade-baseline.md`
+  shows the accent count rising from 15/25 with nothing regressed off-palette.
 
 ### Step Y — the loop's UNTESTED arms: reduced motion + keyboard wrap [OPEN]
-  **Model:** sonnet · **Time:** 45 min · **Deps:** Step Q (closed)
-  **Action:** Two arms of the looping contract were built but never exercised:
-  1. **Reduced motion.** `fx-draggable.js`'s own contract is SIMPLIFY (drag is user-driven input;
-     only momentum is suppressed) and is unchanged. **The LOOP module has no measured
-     reduced-motion behaviour at all.** Decide and prove it on its own terms — a clone-and-reseat is
-     not autonomous motion, so SIMPLIFY is the likely answer, but it is currently unstated.
-  2. **Keyboard arrow-wrap at the boundary.** Arrows are present and correctly never disable, but
-     the wrap was driven by pointer and `scrollLeft`, never by repeated arrow activation. WCAG 2.5.7
-     rests on that alternative actually working around the loop point.
-  ⚠ **Playwright ONLY** — Chrome DevTools MCP has no `prefers-reduced-motion` parameter and no
-  trusted pointer primitive.
-  **Done when:** both arms have a live measurement in `probe-carousel-loop.mjs`, and §10 of Spec 38
-  carries the loop's reduced-motion row.
+  **Model:** sonnet · **Time:** 45 min
+  **Action:** Two arms of the looping contract are built but never exercised — and now across FIVE
+  blocks, not one.
+  1. **Reduced motion.** `fx-draggable.js`'s contract is SIMPLIFY (drag is user-driven input) and is
+     unchanged. **The LOOP module has no measured reduced-motion behaviour at all.** A clone-and-reseat
+     is not autonomous motion, so SIMPLIFY is the likely answer — but it is currently unstated.
+  2. **Keyboard arrow-wrap at the boundary.** Arrows are present and correctly never disable, but the
+     wrap was driven by pointer and `scrollLeft`, never by repeated arrow activation. WCAG 2.5.7
+     rests on that alternative working around the loop point.
+  ⚠ **Playwright ONLY** — Chrome DevTools MCP has no `prefers-reduced-motion` and no trusted pointer.
+  **Also:** Spec 38 §10 carries NO reduced-motion row for `cursor-field` or `carousel-loop`.
+  **Done when:** both arms have a live measurement in `probe-carousel-loop.mjs`, and §10 has its rows.
 
-### Step Z — the focus cascade [OPEN — RE-BASED 2026-08-02, the premise changed]
+### Step 8 — physics sandbox: the FR write-up is owed [OPEN]
+  **Model:** inline · **Time:** 30 min
+  **DECISION ALREADY MADE (D447) — do not re-present the menu.** Bean ruled physics are permitted on
+  **non-interactive decorative layers only**, which dissolves the WCAG 2.5.7 problem (nothing a user
+  must reach is throwable) and lets reduced motion disable the surface outright. Shape: a **dedicated
+  container-equivalent "physics sandbox" block** whose children become throwable bodies — NOT a
+  physics toggle bolted onto existing blocks with preset shapes.
+  **Remaining work: write the FR into Spec 38 §2/§3.3.** The BLOCK itself is a separate design-gated
+  build (new block = high blast radius, project rule 7) — do not start it from this step.
 
-> ⚠ **MEASURED 2026-08-02, and BOTH earlier framings were wrong. Read this before acting.**
->
-> **Framing 1 (this step, as written below): "a fourth system, one generation behind."** Understated.
-> There are **FIVE** `:focus-visible` systems across **TWO** token families —
-> `--wp--custom--focus-ring--*` (theme.json, static rgba) vs `--sgs-focus-color`/`--sgs-focus-glow`
-> (live preset). The unlogged fifth is `*:focus-visible` at `theme/sgs-theme/assets/css/utilities.css:249`.
->
-> **Framing 2 (my own hypothesis while planning): "utilities.css wins on specificity, so D463's
-> catch-all never paints."** **REFUTED by measurement.** On the live canary a focused non-form
-> element computes `outline-color: rgb(197,106,122)` = `#c56a7a` = `--sgs-focus-color` — D463's
-> token, so its rule IS winning. Recorded because it was nearly written up as a finding.
->
-> **The PROVEN cause is neither.** `box-shadow` computes to `none`, and `--sgs-focus-glow` resolves
-> to EMPTY while `--wp--preset--color--accent` resolves fine at `#f5d050`. File-level evidence
-> settles it: the **deployed** `core-blocks-critical.css` (`?ver=1.5.52`) declares
-> `--sgs-focus-color` but **has no `--sgs-focus-glow` and no `box-shadow` line at all**, while the
-> local source has both. **The theme half of D463 was never deployed.** Every deploy this wave and
-> last was `--blocks-only`; D463's form-input fix is in the plugin (shipped), its button + catch-all
-> half is in the theme (not shipped). D463's own live measurement was taken on a form input — which
-> has a more specific rule — so it could not have exposed this.
->
-> **Therefore:** running `/qc-council` on the cascade before deploying the theme would be reasoning
-> about a tree that isn't there. Sequence is: deploy the theme (or establish the true baseline
-> another way) → re-measure → then council the residual disagreement between the five rules and two
-> token families. A theme deploy touches every client render, so it is Bean's call, not a
-> side-effect of this step.
+### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN]
+  **Model:** inline · **Time:** 3 h
+  ⚠ **MEASURED 2026-08-01 — the premise was tested and the answer is NO.** A probe against the REAL
+  `convert_section()` with authored drafts (`reports/2026-08-01-motion-clone-probe.md`): **every fx
+  attribute vanished — and not even into the skip-with-reason channel Rule 4 requires.** D436 seeded
+  the runtime PLAYBACK registry, a different layer entirely. **So this stays a full build.**
+  **Start here:** `lift_behavioural_attrs` (`db/db_lookup.py:4454`) is purpose-shaped for exactly
+  this, has ZERO callers, and carries a latent bug — it strips `data-sgs-` and keeps the hyphenated
+  remainder, so `data-sgs-fx-trigger` could never match `fxTrigger` even if wired.
+  ⚠ Collides with Track 1's live converter work — check `LEDGER.md` before dispatching.
+  **On-fail:** if it cannot land, AMEND Spec 38's success definition to say motion is applied by hand
+  after a clone. Do not leave the claim standing unbuilt.
 
-  **Model:** haiku · **Time:** 30 min (ORIGINAL estimate — no longer credible, see above)
-  **Action:** D463 reconciled THREE focus systems onto accent-glow-over-neutral-underlay: form
-  inputs (`form/style.css`), SGS buttons and the sitewide `:focus-visible` catch-all
-  (`core-blocks*.css`). A fourth exists — `plugins/sgs-blocks/assets/css/extensions.css:440-444`,
-  `.sgs-has-focus-ring`, emitted by `includes/hover-effects.php:291` — and was **deliberately left
-  untouched** because a co-active track held uncommitted work in that exact file.
-  It still hardcodes `primary` via `--wp--custom--focus-ring--color-primary`, with no glow and no
-  underlay concept, so any block carrying `sgsFocusRing` now shows a visibly different focus
-  treatment from every other focusable thing on the page.
-  ⚠ **Check that file is clean before starting** — this is the collision that deferred it.
-  **Done when:** the fourth system matches the other three, verified live on a block using
-  `sgsFocusRing`, and the D463 report's "does NOT claim" note is updated.
-
-### Step Q (original brief) — looping as an INDEPENDENT control (Bean request, 2026-08-01; RESHAPED same day)
-
-> ⚠ **RESHAPED 2026-08-01 (D460) — the original fix-shape was FALSIFIED by the file it proposed
-> to edit.** This step used to read "universal across the drag roster", meaning a change to
-> `fx-draggable.js`. That file's own docblock (lines 54-74) is a documented prior decision
-> rejecting exactly that: *"re-deriving such a block's own wrap-around maths inside a
-> block-agnostic module is exactly the per-block hyperfocus R-31-9 forbids"* — and its contract
-> states it never creates a wrapper, never transforms, never reorders DOM, all three of which
-> looping a native scroller requires. A second error in the same sentence: **`sgs/testimonial-slider`
-> is NOT on the drag roster** (removed 2026-07-31, momentum now block-private), so "the drag roster"
-> was never the set of carousels Bean meant. Measured roster: before-after, buybox,
-> decorative-image, gallery, google-reviews, post-grid, trustpilot-reviews.
-  **Model:** sonnet · **Time:** 1.5 h
-  **Action:** Bean: *"for the dragging physics feel the option to make the carousels looping is important
-  so it doesn't get abruptly stopped by the end of the list and just loops round."*
-  **Bean's ruling dissolves the conflict rather than resolving it:** *"looping should not be tied to the
-  drag effect — they should be independent controls"* and *"we're not setting the default behaviour in
-  all carousels, just making the functionality available to those who want it."* So: a NEW
-  `src/shared/effects/fx-carousel-loop.js` owns wrap-around as its explicit, spec'd job;
-  **`fx-draggable.js` is not modified at all**, so yesterday's decision is not overturned — it is simply
-  not touched. Default OFF, opt-in per instance.
-  ⚠ **Measure, do not assume:** cloning changes `scrollWidth`, which the drag module derives its bounds
-  from. Prove bounds re-derive in all three states — loop-only, drag-only, both-on.
-  **A11y is a deliverable here, not a deferral:** a loop has no last item, so "next" never disables and
-  dots have no fixed count. Arrows must wrap; the dot count keys to the REAL item count with the active
-  dot tracking modulo position — the assertion Bean's eye made last wave ("did the dots follow the
-  cards?", not "did it move?").
-
-### Step R — CLOSED 2026-08-02 — PROVEN LIVE 10/10
-
-> ✅ **BUILT, verified, committed.** Widened by Bean from a glow to a pluggable **field-type
-> system** (D459, Spec 38 §3.3 / FR-38-25 amended same session). Emitter/painter split:
-> `cursor-field.js` publishes viewport-pixel pointer coordinates; `fx-cursor-field.css` paints.
-> Ships `glow` + `spotlight-mask`. `spotlight.js` is now a thin wrapper preserving its frozen
-> contract for `sgs/mega-panel`. **Tier V, 982 bytes gzip, zero GSAP.**
-> `fx_effects.creates_panel` added — measured roster diff 28 panels before / 28 after, offered on
-> exactly the 7 blocks with a paintable background.
->
-> **LIVE (`probe-cursor-field.mjs`, canary `/cursor-field-canary-2/`): 10/10.** Follows the pointer
-> 1:1 (420→420px, 720→720px, 1020→1020px); the opaque child paints its own share at the SAME
-> coordinates, so seamless by construction; reduced motion paints but stops tracking.
->
-> **SIX defects were found in this one feature, every one through a green build** — four by
-> `/qc-council` code-path trace (undefined identifier · missing `sgs_fx_root_offset()` guard ·
-> absent from `SHIPPED_EFFECTS` · absent from `FX_ATTR_MAP`), a fifth only by live verification
-> AFTER those shipped (absent from `sgs_fx_effect_param_scope()`), a sixth in the probe itself.
-> Residual gates for that class → **Step X**.
+### Step 20 — spec ↔ code reconciliation [OPEN]
+  **Model:** sonnet · **Time:** 1 h
+  **Action:** add `data-sgs-fx-momentum` to §11.2's grammar; mark `fxShape`/`fxPath` seed status
+  honestly in §11.3; retire the dead `scroll-smoother` `fx_effects` row (D422 moved smoothing to
+  Lenis/Tier H); correct `generate-fx-qualifying-blocks.py`'s stale comment claiming
+  `sgs/image-sequence` does not exist; wire or delete `sgs_get_fx_qualifying_blocks()` (zero callers
+  while its docstring claims the render layer uses it).
+  **Done when:** every grammar attr has a control, a DB row and a consumer — in both directions.
 
 ### Step R-residual — the cursor field's stated limits [OPEN, low priority]
   **Model:** sonnet · **Time:** 1 h
-  **Action:** Three things FR-38-25 states plainly rather than hides. None is a defect; each is a
-  decision that may want revisiting:
-  1. **`floating-objects` is spec'd, not built.** Bean's third example ("move floating objects").
-     Recorded in Spec 38 as a named future field type with its open questions — it is the first
-     type needing per-object JS, so it needs a Tier assignment under §1.3 (not assumed V) and its
-     own §10 reduced-motion answer, since autonomous object motion is not the same SIMPLIFY case
-     as a static field.
-  2. **A participant with its OWN `background-image` is deliberately not marked**, because our
-     layer would replace it. That child keeps a visible seam in the field. The alternative —
-     clobbering a client's chosen image — is plainly worse, but a `::before` fallback for that
-     narrow case is possible if the seam is ever reported.
-  3. **The participant walk runs at init only.** A child whose background is set later, or which is
-     inserted later, will not participate until re-init. Acceptable while block content is
-     server-rendered and static; the fix if a dynamic case appears is a `MutationObserver` in
+  Three things FR-38-25 states plainly rather than hides. None is a defect; each may want revisiting:
+  1. **`floating-objects` is spec'd, not built** — Bean's third example. It is the first field type
+     needing per-object JS, so it needs a Tier assignment under §1.3 (not assumed V) and its own §10
+     reduced-motion answer, since autonomous object motion is not the static-field SIMPLIFY case.
+  2. **A participant with its OWN `background-image` is deliberately not marked**, because our layer
+     would replace it; that child keeps a visible seam. Clobbering a client's image is worse. A
+     `::before` fallback is possible if the seam is ever reported.
+  3. **The participant walk runs at init only.** A child whose background is set or inserted later
+     will not participate until re-init. Fix if a dynamic case appears: a `MutationObserver` in
      `cursor-field.js`, never per-block code.
-  **Done when:** each is either closed or re-affirmed in-spec with a date.
 
-### Step R (original brief) — BUILD the cursor-follow glow
-  **Model:** sonnet · **Time:** 2 h
-  **Action:** Spec 38 §3.3 FR-38-25 was written and Bean-signed on 2026-08-01 (emitter + participant,
-  Tier V, capability-derived eligibility). **No code exists.** The module already exists and is generic
-  (`src/shared/effects/spotlight.js`, consumed only by `sgs/mega-panel`); what is missing is the generic
-  CSS contract and the two-role provision derivation.
-  ⚠ **Two risks are STATED, NOT MEASURED — measure them FIRST, not last:** (1) paint cost, since a
-  `radial-gradient` repaints every frame the pointer moves and N participants means N repaints;
-  (2) legibility — measure contrast at the field's BRIGHTEST position, never at rest.
+### Step O — the drag text-selection symptom [OPEN — ⛔ Bean re-checks BY HAND]
+  ⛔ **RULED 2026-08-01 (D449) — do NOT dispatch an agent at this.** The cause-agnostic `user-select`
+  mitigation shipped and is live. Scripted drags across Chromium, WebKit and Firefox could not
+  reproduce the symptom, and per measurement-vs-eye **Bean's report STANDS over the null
+  measurement**. An agent would re-run scripted drags and produce a fourth false pass.
 
-### Step U — file-length debt on the grid blocks (council finding, Bean: log it)
+### Step U — file-length debt on the grid blocks [OPEN]
   **Model:** haiku · **Time:** 2 h
-  **Action:** Against the project's own limits (PHP 300, JS 250): `card-grid/render.php` 617,
-  `card-grid/edit.js` 671, `post-grid/render.php` 523, `post-grid/edit.js` **1,045**,
-  `content-collection/render.php` 362. Bean ruled 2026-08-01: log it, tackle separately — splitting three
-  large files while agents were mid-edit in a shared worktree invited clobbering. Do this in a clean session.
+  Against the project's own limits (PHP 300, JS 250): `card-grid/render.php` 617,
+  `card-grid/edit.js` 671, `post-grid/render.php` 523, `post-grid/edit.js` **1,045**.
+  Bean ruled 2026-08-01: log it, tackle separately — splitting large files while agents are mid-edit
+  in a shared worktree invites clobbering. **Do this in a clean session.**
+
+### Step 21 — re-run the adversarial council [OPEN — DELIBERATELY LAST]
+  **Model:** inline · **Time:** 30 min · **Deps:** every other step above, no exceptions
+  Run `/adversarial-council` on the post-wave surface to catch what these fixes introduced. The
+  2026-07-31 run found what a single reviewer never would; a second round after the fixes is the
+  documented two-round pattern. Compare grades against B−/B−/C+/C+/C−/D+.
+  ⚠ Council findings are HYPOTHESES — fact-check before acting. **Proven again 2026-08-02:** a rater
+  claimed a token was "chosen because D463 measured it"; the token was hardcoded 2026-04-29 and D463
+  is 2026-08-02, measuring a different token entirely.
 
 ---
 
-## 4. Measurement limits — what future sessions can and cannot check
+## Measurement limits — what a session can and cannot check
 
-Discovered during Wave C verification, and they still apply:
+- **Chrome DevTools MCP cannot simulate reduced motion and cannot do a real drag gesture.** The only
+  instrument that does either is the committed Playwright harness (`scripts/motion-qa/*.mjs`).
+- **The browser session is shared** with whatever else is running — confirm which page you are on
+  before trusting a reading.
+- **`networkidle` never settles on a WooCommerce page.** `probe-carousel-loop.mjs` falls back to
+  `load` + settle and announces it.
 
-- **Chrome DevTools' built-in device-emulation tool cannot simulate "reduced motion" mode at
-  all** — there is no setting for it. It also cannot simulate a real mouse-down-drag-up gesture;
-  it throws an error if you try. **The only tool that can check either of these is the committed
-  Playwright test harness** (`scripts/motion-qa/probe-wave-c.mjs` and friends) — if a future
-  session wants to re-verify reduced-motion behaviour or drag behaviour, that is the one instrument
-  that actually works.
-- **The browser session used for live checks is shared across whatever else is running
-  concurrently** — a tab was taken over mid-check by another task once already, producing a false
-  reading. Always confirm which tab/page you're actually looking at before trusting a result.
+## The live test pages (canaries)
 
----
+- `/motion-canary-wave-c/` (2083) general effects · `/motion-roster-canary/` (2086) every
+  motion-capable block · `/fx-preset-comparison-columns/` (2105) scramble presets
+- Loop fixtures (2026-08-02): `/loop-carousel-canary/` gallery · `/loop-fixture-post-grid/` ·
+  `/loop-fixture-trustpilot-v3/` · `/loop-fixture-google-reviews/` · `/loop-fixture-buybox/`
+- Cursor field: `/cursor-field-canary-2/` (2120)
 
-## 5. The live test pages (canaries)
+⚠ **Building a fixture:** `wp post create`, never `wp post update` (a project hook blocks it). Never
+hand-author `post_content` — serialise from a known-clean page. The fingerprint of the contamination
+that killed six old fixtures is a stored `<div class="wp-block-sgs-container"></div>`, which
+`container/save.js` never emits. **Verify per BLOCK in the real editor (`isValid`), not per page** —
+the frontend was never the broken surface.
 
-- `/motion-canary-wave-c/` (page 2083) — general effects
-- `/motion-roster-canary/` (page 2086) — every motion-capable block, one after another
-- `/fx-preset-comparison/` (page 2103, **NEW**) — the three scramble-text presets (Subtle/
-  Standard/Dramatic) side by side — this is where Bean found the presets timing bug (Section 6)
-- Single-effect pages: `/motion-canary-scrub/`, `/motion-canary-pin-scrub/`,
-  `/motion-canary-split-reveal/`, `/motion-canary-horizontal-panel/`
+## Tooling
 
----
-
-## 6. Both design gates from wave 1 are now DECIDED — do not re-present them
-
-This section used to hold two plain-English explainers awaiting Bean's decision. **Both were ruled on
-2026-08-01.** Kept as a short record so neither is re-opened from a stale reading.
-
-### 6a. Cursor-follow background — DECIDED (D444)
-Bean **rejected the three-route menu** (container-only / shared-wrapper / everywhere) and replaced it
-with a capability RULE: any block that is container-kind or has a background colour/image control. Told
-the glow would sit behind an opaque button, he pushed further — *"it should be able to go over any
-surface seamlessly"* — producing the **emitter + participant** model now specified as **FR-38-25** in
-Spec 38 §3.3. **SPEC'D, NOT BUILT — the build is Step R**, and its two risks (paint cost, legibility
-under a moving field) are stated as UNMEASURED. Measure them first, not last.
-
-### 6b. FR-38-12 "Flip" on filtered grids — SUPERSEDED (D445)
-Its premise was verified false in D426 (the two named blocks never talk to each other). Bean asked
-whether `sgs/card-grid` was the right host; investigation proved it is purely server-rendered with no
-`view.js` at all. `sgs/post-grid` DOES re-filter client-side — but its cards carry no stable identifier,
-and it is not the pair FR-38-12 names. Bean then ruled: **decide nothing on Flip until the grid-block
-consolidation lands.** That consolidation is now **Step P**. Revisit Flip only after it.
-
-## 7. The steps, in execution order
-
-**Reading old step numbers:** several steps below carry a `(was Step N)` note so any earlier
-notes or commits that referenced the old number still resolve. The file's reading order is now
-the intended execution order — the very last step (the adversarial council re-run) is deliberately
-last regardless of what number it carries.
-
-**Phase success criteria (done when):**
-- [ ] Nothing in the fx picker is inert on the block it is offered on, and nothing needs a developer to tune it to look right
-- [ ] A clean clone of the repo can run `npm run build` to completion — **CLOSED this wave**
-- [ ] Motion survives a draft→WordPress clone, or the success definition is amended to say it does not
-- [ ] Every drag effect has a measured touch result, not a code-reading claim — **CLOSED this wave**
-- [ ] Bean has signed the physics-sandbox shape or ruled it out
-- [ ] `sgs/image-sequence` is operable by someone who has never opened a terminal, or it is explicitly agency-only — **CLOSED this wave (tool hardened); the pin/scrub composition question is now its own **Steps F and G** below, per Bean's D435 ruling**
-
-**Entry context (read before starting):**
-- `.claude/LEDGER.md` — live status; the Track 3 cell
-- `.claude/decisions.md` — **D426, D427, D430, D434, D435** (Wave C build → verify → council → Bean's rulings)
-- `.claude/specs/38-SGS-MOTION-SYSTEM.md` — IN FULL, including §11.2's D427 amendment and §3.1's keyboard contract (added D434)
-- `reports/visual-diff/*-2026-07-31.md` — per-block reports; each states what it does NOT claim
-- `plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs` — the re-runnable harnesses, both self-verdicting
-
-**Tooling Index:**
-| Type | Name | Used in |
-|------|------|---------|
-| skill | /delegate | every dispatched step |
-| skill | /qc-council | fix-shape validation steps |
-| skill | /adversarial-council | the last step (re-review after the wave) |
-| skill | /sgs-clone | cloning-lift step |
-| skill | /a11y-audit | accessibility steps |
-| skill | /brainstorming | palette-audit + pair-library steps |
-| cli | build-deploy.py | every deploy |
-| cli | probe-wave-c.mjs | touch/reduced-motion steps |
+| Type | Name | Used for |
+|---|---|---|
+| skill | `/delegate` | every dispatched step |
+| skill | `/qc-council` | validating fix-shapes against a measured baseline before building |
+| skill | `/adversarial-council` | Step 21 only |
+| cli | `build-deploy.py --target sandybrown --payload <paths>` | every deploy |
+| cli | `probe-carousel-loop.mjs <url> <item-selector>` | loop verification |
+| cli | `probe-first-paint.mjs <url> <item-selector>` | no-JS first-paint capture |
+| cli | `check-fx-list-drift.py --self-test` | the drift gate |
 | external | Playwright | all live verification |
 
----
+## Parking lot
 
-## QA Gate A — no inert controls remain
-  **Model:** inline · **Exec:** SEQUENTIAL · **Deps:** Step A
-  **Check:** For every block in `generated-fx-qualifying-blocks.json` with `draggable`, AND every block with its own `dragToScroll` attr, a `reports/visual-diff/<block>-<date>.md` exists showing `cursor: grab` and `scrollWidth > clientWidth`, with a clean (not held) verdict.
-  **Pass:** every drag-capable block has that evidence, or has no control.
-  **Fail:** remove the control; do not baseline the gap.
-  **Marker:** QA
+**Deliberately EMPTY, and it must stay empty.** Bean-ruled 2026-07-31: `parking.md` is strictly for
+BLOCKED or POSTPONED work, never a reminder list — and **every open Spec 38 item lives in this file
+instead**. Nothing here is parked: the nine steps above are all actionable now, in the order given.
 
----
-
-## QA Gate B — morph is reachable and safe
-  **Model:** inline · **Exec:** SEQUENTIAL · **Deps:** Step 5
-  **Check:** `morph` appears in `SHIPPED_EFFECTS` AND a live canary instance morphs AND a deliberately mismatched pair produces a console warning with the element unchanged.
-  **Pass:** all three.
-  **Fail:** remove `morph` from `SHIPPED_EFFECTS` and re-run.
-  **Marker:** QA
-
-### Step 8 — DESIGN GATE: physics sandbox (Bean ask #3) [HANDOFF]
-
-> ⚠ **DESIGN GATE CLOSED 2026-08-01 (D447) — the decision is made; only the WRITE-UP is owed.**
-> Bean ruled: physics are permitted on **non-interactive decorative layers only**, which
-> dissolves the WCAG 2.5.7 problem rather than answering it (nothing a user must reach is
-> throwable) and lets reduced motion disable the surface outright. Shape, his call: a
-> **dedicated container-equivalent "physics sandbox" block** whose children become throwable
-> bodies — NOT a physics toggle bolted onto existing blocks with preset shapes, which would
-> lock operators into shapes we imagined. **Remaining work: write the FR into Spec 38 §2/§3.3.**
-> The BLOCK ITSELF is a separate design-gated build (new block = high blast radius, project
-> rule 7) — do not start it from this step.
-  **Model:** inline
-  **Action:** Present Bean a ranked menu; do NOT build. **Correct the record first:** GSAP absolutely CAN do this — InertiaPlugin + Physics2DPlugin + Draggable give throwable objects with velocity, gravity and bounce, and both plugins are already bundled and free. The objection is NOT capability. It is (a) FR-38-14 says physics are easing FLAVOURS, "never standalone toggles", so a sandbox is out of spec as written; and (b) the accessibility auditor's specific point: every current drag effect clears WCAG 2.5.7 because it maps onto a discrete single-pointer alternative (a range input, arrow buttons, dots) and a thrown object has none, while objects still moving after release are AUTONOMOUS motion, so the "drag survives reduced motion" reasoning does not transfer.
-  **Files:** Spec 38 (amend §2/§3.3 if Bean signs), `.claude/decisions.md`
-  **Inputs:** D430; FR-38-13's unbuilt "hero decorative layers (draggable ornaments)" — the nearest thing already in spec
-  **Outcome:** Bean signs a shape with an accessibility answer, or rules it out.
-  **Exec:** SEQUENTIAL · **Deps:** none · **Marker:** HANDOFF · **Time:** 30 min
-  **On-Fail:** n/a — a decision, not a build.
-  **Test:**
-  - Happy: Bean picks from a ranked menu
-  - Edge: he wants it anyway without an a11y answer → record the accepted risk explicitly
-  - Fail: no decision → it stays a live gate, NOT a parking entry
-  - Integration: whatever is signed must amend Spec 38 the SAME session
-
-## QA Gate C — client-operability
-  **Model:** inline · **Exec:** SEQUENTIAL · **Deps:** Step 10
-  **Check:** Insert a stock pattern on a clean page, publish, and load it. Motion is present, correctly ranged, and required zero inspector interaction.
-  **Pass:** effects fire; `probe-wave-c.mjs`-style assertions hold on a pattern-authored page.
-  **Fail:** the pattern-presets work already closed this wave — if this fails, that is a regression, not a fresh gap.
-  **Marker:** QA
-
-### Step 12 — The cloning lift: motion that survives a draft (§11.3, FR-38-22)
-
-> ⚠ **MEASURED 2026-08-01 — the premise was tested and the answer is NO.** Bean challenged the
-> earlier "zero code exists" claim, correctly: it rested on a grep for a hardcoded handler, which
-> proves nothing in a DB-driven converter (R-31-1), and D436 had seeded motion into the DB.
-> Probe run against the REAL `convert_section()` with authored drafts
-> (`reports/2026-08-01-motion-clone-probe.md`): **every fx attribute vanished — and not even into
-> the skip-with-reason channel Rule 4 requires.** D436 seeded the runtime PLAYBACK registry, a
-> different layer entirely. **So this stays a full build.** Found in passing:
-> `lift_behavioural_attrs` (`db/db_lookup.py:4454`) is purpose-shaped for exactly this, has ZERO
-> callers, and carries a latent bug — it strips `data-sgs-` and keeps the hyphenated remainder,
-> so `data-sgs-fx-trigger` could never match `fxTrigger` even if wired. Start there.
-> ⚠ Still collides with Track 1's live converter work — check `LEDGER.md` before dispatching.
-  **Model:** inline
-  **Action:** Grep confirms **zero** `data-sgs-fx` handling anywhere in `scripts/converter/`. §11.3 defines the mapping and defers the build. The competitor persona named this the one thing they could not buy their way out of; the cynic named it "the framework's stated purpose", absent. Build the lift as a Spec 31 §3.A routing-unit class, with the Rule 4 skip-with-reason report already specified.
-  **Files:** `scripts/converter/**`, Spec 31 §3.A, Spec 38 §11.3
-  **Inputs:** §11.2's grammar including `-shape`/`-path`/`-momentum`
-  **Outcome:** a draft carrying `data-sgs-fx="pin-scrub"` clones into a WordPress page with the effect intact.
-  **Exec:** SEQUENTIAL · **Deps:** Step 10 (prerequisite `svg`/`svg-subtree` split already closed) · **Time:** 3 h
-  **Tooling:** /sgs-clone, /qc-council before build
-  **On-Fail:** if it cannot land this wave, AMEND the success definition to say motion is applied by hand after a clone — do not leave the claim standing unbuilt.
-  **Test:**
-  - Happy: draft HTML in → live WP page out → effect fires
-  - Edge: an unrecognised `data-sgs-fx` value → skip-with-reason, per class, never silent
-  - Fail: fx on a block whose resolved slug declares no fx attrs → reported, not coerced
-  - Integration: Stage 11.6 computed-parity must not regress
-
-### Step 20 — Spec ↔ code reconciliation
-  **Model:** sonnet
-  **Action:** Close the spec-lawyer's divergence table: add `data-sgs-fx-momentum` to §11.2's grammar; mark `fxShape`/`fxPath` seed status honestly in §11.3; retire the dead `scroll-smoother` `fx_effects` row (D422 moved smoothing to Lenis/Tier H); correct `generate-fx-qualifying-blocks.py`'s stale comment claiming `sgs/image-sequence` does not exist; wire or delete `sgs_get_fx_qualifying_blocks()` (zero callers today while its docstring claims the render layer uses it). (The nine "UNSHIPPED — placeholder" seeder annotations this step originally targeted were resolved by the `svg`/`svg-subtree` split closed this wave — re-check before re-doing that part.)
-  **Files:** Spec 38, `seed-motion-fx-registry.py`, `generate-fx-qualifying-blocks.py`, `class-sgs-motion-registry.php`
-  **Outcome:** two competent implementers reading the spec build the same thing.
-  **Exec:** SEQUENTIAL · **Deps:** Step 15 · **Time:** 1 h
-  **Test:**
-  - Happy: every grammar attr has a control, a DB row and a consumer — both directions
-  - Edge: a generated file with no reader is deleted, not documented
-  - Fail: `--self-test` proves each new gate can fail
-  - Integration: `/sgs-update` reproduces the seed byte-identically
-
-### Step 21 — Re-run the adversarial council [HANDOFF — DELIBERATELY LAST]
-  **Model:** inline
-  **Action:** Run `/adversarial-council` again on the post-Wave-D surface to catch what these fixes introduced. The 2026-07-31 run found what a single reviewer never would; a second round after the fixes is the documented two-round pattern.
-  **Outcome:** a fresh convergence map, and grades to compare against B−/B−/C+/C+/C−/D+.
-  **Exec:** SEQUENTIAL · **Deps:** every other step in this file, with no exceptions · **Marker:** HANDOFF · **Time:** 30 min
-  **Test:**
-  - Happy: supportability rises above D+
-  - Edge: a fix introduced a new convergent finding — that is the point
-  - Fail: council findings are HYPOTHESES — fact-check before acting (D435's `/qc-council` re-check found no code regression, but that was verified, not assumed)
-  - Integration: feeds the next wave
-
----
-
-## Key Judgement Calls
-
-### Primary decisions
-
-- **Decision:** Does the cloning lift (Step 12) land this wave, or does the success definition change?
-  - **Options:** [A] build it now · [B] defer and amend Spec 38's success definition to say motion is hand-applied post-clone · [C] leave it unbuilt and unamended
-  - **Recommendation:** [A], and if it slips, [B] — never [C]
-  - **Why:** two independent personas called it the product's whole point and the one thing a competitor cannot buy. [C] leaves a standing claim that is false.
-  - **Cost of wrong choice:** the framework's headline differentiator stays at zero lines of code while the spec says otherwise.
-  - **Who decides:** Bean
-
-- **Decision:** image-sequence — the pin/scrub composition is now DECIDED (Bean rejected the
-  ad-hoc `sgs/container` answer, D435) — Steps F/G above are the build. The remaining open decision
-  is only sequencing: does Step G's internal pin wrapper ship this wave, or is a documented interim
-  ("compose inside a container, still works, just not as polished") acceptable for one more wave?
-  - **Options:** [A] both F and G this wave (~3.5 h total) · [B] F only this wave, G next wave with an honest interim note
-  - **Recommendation:** [A] — Bean explicitly called the interim state "janky" and "patchwork"; shipping it again after saying that is a regression against his own ruling.
-  - **Who decides:** Bean
-
-- **Decision:** Does Tier G stay exempt from Spec 02's <50 KB JS budget?
-  - **Options:** [A] keep the §4.4 exemption · [B] bring Tier G inside the budget · [C] publish a per-page motion cost readout and let the operator decide
-  - **Recommendation:** [C]
-  - **Why:** the exemption was written by the team that owns the budget; a buyer with a Lighthouse report reads it as a broken promise. A visible cost turns an engineering property into a sales asset.
-  - **Who decides:** Bean
-
-- **Decision:** FR-38-12 (Flip) — see Step I / Section 6b. Park-for-later vs commission the
-  WooCommerce-blocks redesign now vs drop entirely.
-  - **Who decides:** Bean
-
-### Pre-emptive decisions
-
-> **Honesty note:** the mandatory two-cold-reviewer Hidden Decisions pass was NOT dispatched — this section was reasoned inline at the end of a very long session. Treat it as lower-confidence than a plan whose peer review actually ran, and consider running it before executing Step 5 or 12.
-
-- **Decision:** when a step says "remove the control if unverified", does that mean removing the attribute too?
-  - **Recommendation:** remove the CONTROL and the emit; keep the attribute only if stored content already carries it (removing a declared attribute makes WP discard stored values — the D338 class, and exactly what blocked a deploy on 2026-07-31).
-- **Decision:** which canary page do new fixtures go on?
-  - **Recommendation:** `/motion-canary-wave-c/` for effects, `/motion-roster-canary/` for roster/first-paint, `/fx-preset-comparison/` for scramble-preset comparisons. Recreate rather than edit — `wp post update` is blocked by a hook; `wp post create` is not.
-- **Decision:** how much of Spec 38 must be read before a step?
-  - **Recommendation:** in full for Steps 5, 7, 12, 20 and any spec-changing decision (§I, §8); §-scoped for the rest.
-- **Decision:** what if a council finding turns out to be wrong?
-  - **Recommendation:** record the refutation in the plan and D-log. D435's `/qc-council` re-check found the code sound and only documentary defects — but each was checked first — do not inherit that as a prior.
-- **Decision:** a client palette deliberately wants a saturated `border-subtle` (Step D) — how is "deliberate" distinguished from "bug"?
-  - **Recommendation:** check that client's own `sites/<client>/CLAUDE.md` design notes before changing anything; absence of a note there is itself evidence it was never a deliberate choice.
-
----
-
-## Honesty notes (what this plan does NOT have)
-
-1. **The Hidden Decisions peer-review pass was not dispatched** (see above).
-2. **Docscore was not run** on this document.
-3. **The six raw Wave D council persona reports were not persisted to disk** — only their synthesis in D430 and this plan. If the detail matters later, the council must be re-run.
-4. **Time estimates are per the low-by-default rule** and are not calibrated against `plan_actuals` (that table is still empty).
-5. **No new step here (B, C, D, E, F, G, H, I, J) has been validated by `/qc-council`** — they are fix-shapes derived directly from Bean's own live review, which is a stronger basis than a council hypothesis, but they are still unbuilt and unmeasured until executed.
-6. **This rewrite reorganised the file for readability (execution order, new letter-labelled steps for Bean's rulings) but did not re-verify any already-closed step's evidence** — the CLOSED table in Section 2 is a compressed summary of D434/D435; read those decisions directly for the full detail if a closed step is disputed.
+If a step later becomes genuinely blocked on something outside this track, move it to `parking.md`
+with a `**Status:** BLOCKED` field and the blocker named — and **ask Bean first** (never add a
+parking entry unilaterally).

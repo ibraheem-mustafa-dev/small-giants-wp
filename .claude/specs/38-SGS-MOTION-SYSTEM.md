@@ -396,7 +396,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   participants are detected at RUNTIME from computed background — the fact that actually decides
   occlusion — never from a declared capability.
 
-  **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Steps X and R-residual of
+  **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Step R-residual of
   `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
 
   1. **THE MULTI-LIST DRIFT — the single most expensive defect class this spec has produced.**
