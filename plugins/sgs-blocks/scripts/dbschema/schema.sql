@@ -1,11 +1,14 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master on 2026-08-02.
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-02
+-- (second capture: picked up fx_effects.in_picker from D465 `4f07a72a` and the
+--  schema_migrations tracking table from D464 — both flagged by check_schema_drift.py,
+--  which found real drift within minutes of being built).
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
--- Regenerate rather than patch.
+-- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
--- EXCLUDED: SQLite-internal objects (sqlite_*). SQLite creates these itself and
+-- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex__meta_schema_version_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_block_styles_1, sqlite_autoindex_variations_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_fields_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_legacy_role_lookup_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex__meta_schema_version_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_block_styles_1, sqlite_autoindex_variations_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_fields_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_legacy_role_lookup_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
 
 -- table: _meta_schema_version
 CREATE TABLE _meta_schema_version (
@@ -207,7 +210,7 @@ CREATE TABLE fx_effects (
             reduced_motion          TEXT NOT NULL,
             editor_story            TEXT NOT NULL,
             created_at              TEXT DEFAULT (datetime('now'))
-        , scope TEXT NOT NULL DEFAULT 'block', requires TEXT NOT NULL DEFAULT 'none', pins INTEGER NOT NULL DEFAULT 0, triggers TEXT NOT NULL DEFAULT 'scroll', creates_panel INTEGER NOT NULL DEFAULT 1);
+        , scope TEXT NOT NULL DEFAULT 'block', requires TEXT NOT NULL DEFAULT 'none', pins INTEGER NOT NULL DEFAULT 0, triggers TEXT NOT NULL DEFAULT 'scroll', creates_panel INTEGER NOT NULL DEFAULT 1, in_picker INTEGER NOT NULL DEFAULT 0);
 
 -- table: gotchas
 CREATE TABLE gotchas (
@@ -356,6 +359,9 @@ CREATE TABLE schema_metadata (
             key   TEXT PRIMARY KEY,
             value TEXT
         );
+
+-- table: schema_migrations
+CREATE TABLE schema_migrations (filename TEXT PRIMARY KEY, applied_at TEXT NOT NULL);
 
 -- table: slots
 CREATE TABLE slots (

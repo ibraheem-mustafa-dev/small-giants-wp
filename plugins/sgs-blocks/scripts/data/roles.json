@@ -1,0 +1,126 @@
+{
+  "__doc": "Canonical role vocabulary for the SGS cloning pipeline. THE source of truth for the `roles` table — db_lookup._migrate_roles_table() seeds from this file on module load (INSERT OR REPLACE + DELETE-NOT-IN two-way sync).",
+  "__why": "Was a hardcoded Python dict of 21 entries while the live DB held 29. The 8 extra were each added by a one-off migration that wrote the DB row and never back-wrote the seed, so a rebuild silently lost them. That is the decay class Phase 0/1 exists to end, and a hardcoded routing dict also breaches R-31-1. Captured from live 2026-08-02.",
+  "__format": "role_name: [classification, description]",
+  "__classifications": [
+    "content-bearing",
+    "styling-behaviour",
+    "unclassified"
+  ],
+  "behaviour": [
+    "styling-behaviour",
+    ""
+  ],
+  "boolean-visibility": [
+    "styling-behaviour",
+    ""
+  ],
+  "color": [
+    "styling-behaviour",
+    ""
+  ],
+  "colour-gradient": [
+    "styling-behaviour",
+    ""
+  ],
+  "colour-text": [
+    "styling-behaviour",
+    ""
+  ],
+  "content": [
+    "content-bearing",
+    ""
+  ],
+  "enum-class-probe": [
+    "styling-behaviour",
+    ""
+  ],
+  "icon-dashicon": [
+    "content-bearing",
+    "Icon-source value: a Dashicons name (e.g. sgs/icon.dashiconName)."
+  ],
+  "icon-emoji": [
+    "content-bearing",
+    "Icon-source value: a bare emoji glyph (e.g. sgs/icon.emojiChar)."
+  ],
+  "icon-lucide": [
+    "content-bearing",
+    "Icon-source value: a Lucide slug (e.g. sgs/icon.iconName). Content-bearing display value the cloning icon arm lifts by role, not a styling property."
+  ],
+  "icon-wp-icon": [
+    "content-bearing",
+    "Icon-source value: a @wordpress/icons name (e.g. sgs/icon.wpIconName)."
+  ],
+  "identity": [
+    "content-bearing",
+    ""
+  ],
+  "image-alt": [
+    "content-bearing",
+    "Alt text for a sibling image-object attr (e.g. sgs/product-card.imageAlt, sgs/media.imageAlt). Content-bearing display value the cloning image arm lifts alongside the image URL, not a styling property. The specific image attr it belongs to is named by block_attributes.alt_companion_attr (db_lookup.image_alt_companion_for), never guessed by name-parsing."
+  ],
+  "image-object": [
+    "content-bearing",
+    ""
+  ],
+  "layout": [
+    "styling-behaviour",
+    ""
+  ],
+  "link-href": [
+    "content-bearing",
+    ""
+  ],
+  "motion": [
+    "styling-behaviour",
+    ""
+  ],
+  "number-css-percent": [
+    "styling-behaviour",
+    ""
+  ],
+  "number-css-px": [
+    "styling-behaviour",
+    ""
+  ],
+  "position": [
+    "styling-behaviour",
+    "Stacking-context / positioning value (e.g. sgs/decorative-image.zIndex) - a layout-positioning property, not content. Added 2026-07-15 (F6: enrichment derived the role before its roles row existed; the D128 scalar-media class of gap)."
+  ],
+  "query-descriptor": [
+    "styling-behaviour",
+    ""
+  ],
+  "rating": [
+    "content-bearing",
+    "Star/numeric rating value (e.g. sgs/testimonial.ratingStars) — a content-bearing display value, not a styling property."
+  ],
+  "scalar-media": [
+    "styling-behaviour",
+    ""
+  ],
+  "select-from-enum": [
+    "styling-behaviour",
+    ""
+  ],
+  "spacing-token": [
+    "styling-behaviour",
+    ""
+  ],
+  "tag-identity": [
+    "styling-behaviour",
+    "The attr stores the source element's HTML tag (sgs/heading.level, sgs/media.mediaType). R-31-2 shape fact written by assembly step 3a2, gated on enum membership. Structural identity, never content-walked."
+  ],
+  "text-content": [
+    "content-bearing",
+    ""
+  ],
+  "typography": [
+    "styling-behaviour",
+    ""
+  ],
+  "visual": [
+    "styling-behaviour",
+    ""
+  ]
+}

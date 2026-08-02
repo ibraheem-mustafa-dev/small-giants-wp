@@ -108,52 +108,59 @@ def get_connection() -> sqlite3.Connection:
 # Runtime callers query this table via _content_bearing_roles() and
 # _styling_behaviour_roles() below. _ROLE_CLASSIFICATION_MAP is the seed
 # source only — never a runtime lookup dict (R-31-1).
-_ROLE_CLASSIFICATION_MAP: dict[str, str] = {
-    # Content-bearing roles (5 total — includes link-href, previously missing)
-    "text-content":         "content-bearing",
-    "image-object":         "content-bearing",
-    "content":              "content-bearing",
-    "link-href":            "content-bearing",
-    "identity":             "content-bearing",
-    # Styling / behaviour roles (15 total)
-    "typography":           "styling-behaviour",
-    "color":                "styling-behaviour",
-    "colour-gradient":      "styling-behaviour",
-    "colour-text":          "styling-behaviour",
-    "spacing-token":        "styling-behaviour",
-    "number-css-px":        "styling-behaviour",
-    "number-css-percent":   "styling-behaviour",
-    "layout":               "styling-behaviour",
-    "motion":               "styling-behaviour",
-    "visual":               "styling-behaviour",
-    "behaviour":            "styling-behaviour",
-    "boolean-visibility":   "styling-behaviour",
-    "select-from-enum":     "styling-behaviour",
-    "enum-class-probe":     "styling-behaviour",
-    "query-descriptor":     "styling-behaviour",
-    # FR-31-19 composite scalar-media (2026-06-01): foreground images that a
-    # composite block renders through its own scalar pipeline (art-direction,
-    # srcset, object-fit, bleed, responsive show/hide authored in render.php).
-    # Classification 'styling-behaviour' → equivalent_block_for() returns None →
-    # the walker does NOT emit a sgs/media child; instead _route_composite_interior
-    # lifts the img into the block's scalar attr (e.g. splitImage/splitImageMobile).
-    # Roster (DB-audit-verified 2026-06-01): sgs/hero.splitImage,
-    # sgs/hero.splitImageMobile, sgs/testimonial-slider.sideImage.
-    "scalar-media":         "styling-behaviour",
-}
+# MOVED TO A DATA FILE 2026-08-02 (Phase 1). This was a hardcoded dict of 21
+# entries while the live DB held 29 rows. The 8 extra — icon-dashicon,
+# icon-emoji, icon-lucide, icon-wp-icon, image-alt, position, rating,
+# tag-identity — were each added by a ONE-OFF MIGRATION that wrote the DB row
+# and never back-wrote the seed. So a rebuild-from-empty silently produced
+# 21/29 roles, and `rating` (added 2026-08-01) shows the drift was still
+# actively happening. That is precisely the decay class Phase 0/1 exists to end
+# — and a hardcoded routing dict also breaches R-31-1.
+#
+# The seed now lives at scripts/data/roles.json, mirroring the proven
+# atomic-tag-map.json pattern. Runtime callers still query the TABLE via
+# _content_bearing_roles() / _styling_behaviour_roles() — never this file.
+_ROLES_SEED_FILE = Path(__file__).resolve().parents[2] / "data" / "roles.json"
+
+
+def _load_roles_seed() -> dict[str, tuple[str, str]]:
+    """Load ``{role_name: (classification, description)}`` from roles.json.
+
+    Data-file source (R-31-1 — no hardcoded routing dict in code). Keys starting
+    with ``__`` are metadata. Soft-fails to ``{}`` if the file is missing or
+    unreadable, in which case the migration leaves existing DB rows untouched
+    rather than wiping a good table because a file went walkabout.
+    """
+    try:
+        raw = json.loads(_ROLES_SEED_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, tuple[str, str]] = {}
+    for name, val in raw.items():
+        if name.startswith("__") or not isinstance(val, list) or not val:
+            continue
+        out[name] = (val[0], val[1] if len(val) > 1 else "")
+    return out
 
 
 def _migrate_roles_table() -> None:
-    """Idempotent migration: create `roles` table if absent and seed from
-    _ROLE_CLASSIFICATION_MAP using INSERT OR REPLACE.
+    """Idempotent migration: create `roles` and seed it from roles.json.
 
-    INSERT OR REPLACE (not OR IGNORE) means updates to the seed dict above
-    propagate to the DB on every module load. This is intentional — the dict
-    is the canonical source for the 20 entries defined at spec time; the DB
-    is the authoritative runtime query target. Honours R-31-1.
+    INSERT OR REPLACE (not OR IGNORE) so edits to the data file propagate on
+    every module load. The FILE is the canonical source for the role vocabulary;
+    the DB table is the authoritative runtime query target. Honours R-31-1.
+
+    Two-way sync: a role REMOVED from roles.json is deleted from the table, so
+    the file genuinely is the source of truth for the key set (the D271
+    precedent set by html_tag_to_core_block, where INSERT OR REPLACE alone left
+    a retired `hr` row lingering forever). Unlike that table, a role here may be
+    referenced by ``block_attributes.role``, so a deletion is announced with its
+    referencing-attr count rather than performed silently — a silently dropped
+    role would break routing for every attr carrying it, with nothing to notice.
 
     Safe to call repeatedly. Runs at module load.
     """
+    seed = _load_roles_seed()
     conn = sqlite3.connect(SGS_DB)
     try:
         conn.execute("""
@@ -165,10 +172,42 @@ def _migrate_roles_table() -> None:
               created_at     TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
-        for role_name, classification in _ROLE_CLASSIFICATION_MAP.items():
+        if not seed:
+            # Missing/unreadable data file: leave a good table alone rather than
+            # wiping it. Better a stale table than an empty one.
+            conn.commit()
+            return
+
+        for role_name, (classification, description) in seed.items():
             conn.execute(
-                "INSERT OR REPLACE INTO roles (role_name, classification) VALUES (?, ?)",
-                (role_name, classification),
+                "INSERT OR REPLACE INTO roles (role_name, classification, description) "
+                "VALUES (?, ?, ?)",
+                (role_name, classification, description),
+            )
+
+        placeholders = ",".join("?" for _ in seed)
+        orphans = [
+            r[0] for r in conn.execute(
+                f"SELECT role_name FROM roles WHERE role_name NOT IN ({placeholders})",  # noqa: S608 — placeholders only
+                list(seed),
+            )
+        ]
+        for role_name in orphans:
+            try:
+                refs = conn.execute(
+                    "SELECT COUNT(*) FROM block_attributes WHERE role = ?", (role_name,)
+                ).fetchone()[0]
+            except sqlite3.OperationalError:
+                refs = -1
+            sys.stderr.write(
+                f"[db_lookup] roles.json no longer lists '{role_name}' — deleting it "
+                f"({refs if refs >= 0 else 'unknown'} block_attributes row(s) reference it). "
+                f"If that was not intended, restore it in scripts/data/roles.json.\n"
+            )
+        if orphans:
+            conn.execute(
+                f"DELETE FROM roles WHERE role_name NOT IN ({placeholders})",  # noqa: S608 — placeholders only
+                list(seed),
             )
         conn.commit()
     except sqlite3.OperationalError:

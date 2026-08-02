@@ -58,7 +58,26 @@ The cheapest Phase-1 win: the code already exists, it just never runs on a resee
 | `style_variations` | 8 | `uimax-tools/enrich-db.py` |
 | `legacy_role_lookup` | 15 | `uimax-tools/seed-legacy-role-lookup.py` |
 
-⚠ Verify each writer is idempotent **before** wiring it into a reseed. Not yet checked.
+**Idempotency AUDITED 2026-08-02 (source inspection, nothing executed):**
+
+| table | idempotent? | mechanism | wire in? |
+|---|---|---|---|
+| `legacy_role_lookup` | **YES** | `INSERT OR IGNORE` on a `kebab_role` PRIMARY KEY; seed is a 15-entry list inside the script. Writes BOTH DB paths itself — the only one that does. | ✅ no caveats |
+| `style_variations` | **YES** | true UPSERT `ON CONFLICT(slug) DO UPDATE`; reads `theme/sgs-theme/styles/*.json` | ✅ |
+| `pattern_coverage` | **YES** | `INSERT OR IGNORE` (both branches) | ✅ but **must run AFTER `patterns`** — it reads `SELECT slug… FROM patterns` |
+| `markup_examples` | **YES** | pre-fetch `existing` set then skip; reads each block's `block.json` | ✅ ⚠ writes only the **`.agents`** DB path, and `--reset-sgs` does a `DELETE` — never pass it in automation |
+| `patterns` | ⛔ **SPLIT** | Writer B (`orchestrator/register_patterns.py:284`) is idempotent (SELECT-then-INSERT). **Writer A (`pattern-register.py:374`) is a bare `INSERT` with no dedup guard — looping it would duplicate rows.** | ⛔ **NEEDS-WORK** — Writer B is not standalone (needs a live clone-run artefact), so it cannot reseed 57 rows from nothing |
+
+### The three "partial reproducers" — RE-CLASSIFIED, my earlier note was wrong
+
+⛔ **I wrote that `hooks`/`docs`/`indexed_files` were "probably environment — they index WP core".
+That was WRONG, and Bean corrected it before the audit confirmed it.**
+
+| table | live→rebuilt | truth |
+|---|---|---|
+| `hooks` | 5433→161 | **Scans the REPO** (`rglob("*.php")` for `sgs_*`), no WP-core dependency at all. But there are **THREE competing writers with two different conflict keys** — `populate-db.py:484` (`INSERT OR IGNORE`, omits `plugin_slug`), `update-db.py:413/419` (UPDATE-or-INSERT), `enrich-db.py:718` (true UPSERT on `(name, hook_type)` — the most correct). **Consolidate to one before wiring.** ⚠ The 161-vs-5433 gap is still UNEXPLAINED — a repo scan should not lose 97%. Do not treat this as understood. |
+| `docs` | 1257→46 | ⛔ **NO live writer found anywhere** across the repo, `~/.claude/skills`, `~/.claude/hooks`, `~/.agents/skills`. 1,257 rows exist with no known regenerator — possibly a since-deleted one-off. **A real gap, not an unrun script.** |
+| `indexed_files` | 110→83 | Writer exists ONLY in `_retired/phase1-seed-indexed-files.py` (idempotent by design: hash-compare then insert/update/skip). **"Retired" is a deliberate signal — establish WHY before resurrecting.** |
 
 ### Group 3 — ACCUMULATED OUTPUT, must NOT regenerate (2 tables)
 These are ledgers written by pipeline runs over months. A rebuild SHOULD leave them empty; seeding
@@ -72,16 +91,31 @@ them would be fabricating history.
 **These two alone are 5,798 of the 19,138 live rows (30%).** Any "rebuild completeness" percentage
 that counts them is wrong by construction.
 
-### Group 4 — NO WRITER ANYWHERE (10 tables)
-Zero `INSERT`/`UPDATE` anywhere in the repo. Each was hand-seeded once, or is orphaned. **Each needs
-an individual decision — do not batch them.**
+### Group 4 — investigated in depth 2026-08-02 ⚠ THE ORIGINAL PREMISE WAS WRONG
 
-`_meta_schema_version` (1) · `block_styles` (63) · `components` (13) · `deploy_steps` (9) ·
-`gotchas` (12) · `modifier_suffixes` (19) · `pipeline_corrections` (4) · `plugins` (3) ·
-`theme_parts` (28) · `variations` (205)
+⛔ **CORRECTION — "no writer anywhere" was false, and the error was mine.** That search covered
+`plugins/` and `scripts/` **inside this repo only**. Five of the ten are written by
+`~/.claude/skills/sgs-wp-engine/scripts/populate-db.py`, which lives **outside the repo** and is
+fully wired into its own `main()`. This is the exact failure mode already captured as
+*"a file-scoped search hides the writer you concluded was absent"* — committed again here. **A
+negative search result describes the SEARCH, not the codebase.**
 
-⛔ `_meta_schema_version` holds one row from 2026-05-12 and is **superseded by `schema_migrations`**
-(D464). Candidate for retirement, not a seeder.
+| table | live | verdict | evidence |
+|---|---|---|---|
+| `modifier_suffixes` | 19 | ⛔ **BELONGS IN GROUP 5 — converter-load-bearing, NO writer** | read at `db_lookup.py:585` (`SELECT suffix, kind`), `:2146` (`kind='breakpoint'`), `:2262`. Empty ⇒ breakpoint/side resolution breaks. **Highest priority of the ten.** |
+| `variations` | 205 | ⛔ **Converter-load-bearing, NO writer** | read at `db_lookup.py:3280` (`SELECT attributes_json`). Mixed provenance: `native_wp` rows derivable from WP core; `sgs` rows ambiguous, several with NULL JSON. **Sample all 205 grouped by `source` before deciding — 5 rows cannot characterise 205.** |
+| `theme_parts` | 28 | SEEDER EXISTS — just run it | `populate-db.py:449` `INSERT OR REPLACE`, wired at `:763`. Pure `.glob('*.html')` mirror; description/variants always NULL ⇒ nothing curated. |
+| `components` | 13 | SEEDER EXISTS — just run it | `populate-db.py:504/520/537` `INSERT OR REPLACE`, wired at `:769`. Scans `src/{components,utils,extensions}/*.js`; auto-generated descriptions. |
+| `plugins` | 3 | SEEDER EXISTS, but **no live reader found** | `populate-db.py:565`, wired at `:772`. Worth asking whether anything surfaces it. |
+| `deploy_steps` | 9 | ⛔ **SEEDER EXISTS BUT ITS CONTENT IS DANGEROUS** | `populate-db.py:622`, wired at `:775`. Its hardcoded rows encode the **hand-rolled tar/scp/ssh deploy recipe that caused D336 — two client sites down ~2.5h** — which `CLAUDE.md` now explicitly forbids in favour of `build-deploy.py`. **Do NOT re-run until its content is corrected.** |
+| `gotchas` | 12 | HUMAN-AUTHORED, seeder exists | `populate-db.py:665`, wired at `:778`. Hand-distilled lessons transcribed as Python literals — unregenerable by any scan. The literal list IS the git-tracked source. |
+| `pipeline_corrections` | 4 | **ACCUMULATED HISTORY — belongs in Group 3** | 4 timestamped April incident records. Records events, not derivable facts. Only reader is a retired script. Do not seed. |
+| `_meta_schema_version` | 1 | **RETIRE** | one row from 2026-05-12; only reader is `_retired/migrate-spec-15-p1.py:143` reading its own marker. Superseded by `schema_migrations` (D464, 29 rows). |
+| `block_styles` | 63 | RETIRE (leaning) — **not confirmed** | no live reader, no writer, not converter-read. Caveat: labels like "SGS Primary (Teal)" look hand-curated. **Check the editor JS for `registerBlockStyle` sync before dropping** — a JS-side search that was not performed. |
+
+**Net effect on scope:** Group 4 collapses from "10 unknowns" to **2 real converter-critical gaps**
+(`modifier_suffixes`, `variations`), 4 already-solved-operationally, 1 dangerous-to-run,
+1 human-authored, 1 history, 1 retire.
 
 ### Group 5 — the genuine remaining gaps (3 tables)
 `property_suffixes` (154) · `slots` (104) · `excluded_properties` (10). No writer, no module-load
