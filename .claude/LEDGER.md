@@ -64,35 +64,46 @@ knowing this existed. `scripts/wp-migrate-oldshape-blocks.js` (dry-run by defaul
 with its output in front of him. **The canary is current; production is one build behind and keeps
 the field-dimming bug until this is done.**
 
-### Track 2c — header/footer rows + fluid gap: ALL SHIPPED + LIVE-VERIFIED (D455, D456)
+### Track 2c — header/footer rows + fluid gap: DONE, all live-verified (D455, D456)
 
-Full narrative: `memory/session-2026-08-02-track2c.md`. Commits `18e504b9` `de769386` `1a747da4`
-`45f05c2c` `c5327603` + this handoff.
+Full narrative + lessons: **`memory/session-2026-08-02-track2c.md`**. Commits `18e504b9` `de769386`
+`1a747da4` `45f05c2c` `c5327603` `5db76872` `01ee633a`.
 
-- **D455 header row NEVER stacks** — authored `@container` stack rule deleted, `flexWrap:nowrap`,
-  logo floored at `min(100%,var(--sgs-header-logo-min,7.5rem))`. Sweep 109/109 PASS, Bean's eye GIVEN.
-- **D456 footer columns are a CEILING** (`supports.sgs.intrinsicColumns`) — content-driven drop at
-  860px where nothing moved between 1023/767 before. ⚠ 860/1160 PROVISIONAL (placeholder copy).
-- **Fluid header gap LIVE** — `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`; served CSS carries it intact,
-  computed gap varies **16px→8.8px** over 1400→320px, all on `.sgs-container__inner`.
-- **`sgs_css_length_value()`** (`includes/helpers-css-safety.php`) accepts `clamp/min/max/calc/var`
-  via WP core's grammar; closed a real hole (breakouts hidden INSIDE an allowlisted call).
-  ⚠ It is NOT what enabled the header clamp — that gap uses the OBJECT path
-  (`sgs_responsive_sanitise_css_value`), a pre-existing allowlist that already passed parens.
-- **`c5327603`** cleared every dead Spec-17 citation (9 IDs, 22 files; `FR-S9-4`→Spec **36**) and
-  taught the visual gate comment-only CSS/JS.
+Header row never stacks (sweep 109/109, Bean's eye GIVEN). Footer columns are a CEILING, not a
+count. Fluid header gap live: served CSS carries the clamp intact, computed gap varies 16px→8.8px,
+all on `.sgs-container__inner`. Shared `sgs_css_length_value()` accepts `clamp/min/max/calc/var`
+(53/53) and closed a real hole — breakouts hidden INSIDE an allowlisted call. `layout` gained
+`enum:[flex,grid]` on both rows so WP coerces a bad value rather than letting `cqi` resolve against
+the wrong container. Every dead Spec-17 citation retargeted.
 
-⚠ **NEXT:** `sgs_responsive_sanitise_css_value()` permits `/` and `*` so it does not block the `/*`
-comment opener, and STRIPS instead of failing closed. It validates gap/grid/width/padding/margin on
-BOTH row blocks — the more exposed sibling of the path just hardened. Route it through
-`sgs_css_length_value()`.
+⚠ **Two things NOT to inherit as solved:**
+1. **`sgs_responsive_sanitise_css_value()` (`helpers-responsive.php`) is the more exposed sibling**
+   — it permits `/` and `*` so does NOT block the `/*` comment opener, and STRIPS instead of failing
+   closed. It validates gap/grid/width/padding/margin on BOTH row blocks. Route it through
+   `sgs_css_length_value()`. **This is the one real piece of code work left.**
+2. **The `layout` enum is committed but NOT deployed** — the canary deploy was aborted by
+   `oldshape-audit` on another track's post-2119 findings (`sgs/container`, `sgs/text`,
+   `sgs/info-box`). Zero findings for either row block, so it is safe to ship with the next deploy.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 (cloning/Spec 31) — ACTIVE. Root cause found; Phase 0 plan ready, NOT executed.**
+- **⭐ Track 1 — T1.1 CLOSED 2026-08-02 (D461, `8cdc1460`). Phase 0 still NOT executed.**
+  All four fixed at their DERIVATION, never as rows: `parent_block` 18→23 (hardcoded dict deleted,
+  R-31-1), `css_layer` 322→352, mis-typed roles 6→0, `block_selectors` 92→86 (retired rows 10→0).
+  Controls judged non-vacuous by an independent adjudicator. Evidence + LIMITATIONS:
+  `reports/2026-08-02-t1.1-evidence-pack.md`. Corrections: D461.
+  ⛔ (e) `design_tokens` CLOSED as NOT-A-GAP. Real finding: `token_snap.py` is an inert stub vs
+  Spec 31 §4 — needs a design gate.
+  ⛔ Do NOT retry the Task A composite-var classifier fix — MEASURED 1→3 violations, reverted.
+  ⛔ `sgs/star-rating` lacks `scalar-content-lift`, so the star lift no-ops despite the correct role.
+  Granting it is a deliberate opt-in — Bean's call, not a bug.
+  ⚠ **UNCOMMITTED — the motion track must carry it:** `src/blocks/form/block.json` holds the
+  focus-ring `attrMap` fix (makes F6 green) PLUS that track's own colour-default change.
+  ⚠ **The shared index held 20 of their files mid-session** — always `git commit -- <exact paths>`.
+- **Track 1 (cloning/Spec 31) — Phase 0 remains the front. Root cause found; plan ready, NOT executed.**
   Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
   decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
   gates, ~105 min). Prior L2 register: `plans/2026-08-01-wrapper-recognition-cascade-rework.md`.
@@ -161,7 +172,7 @@ memory alone:
   `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
   the hex colour `#0D5557`; true ceiling was D453)
-  (currently D457 — the co-active track took D455/D456 the same day, which forced a renumber mid-session; re-check live BEFORE writing any D reference) · framework
+  (currently D461 — D457-D460 went to a co-active track mid-session; re-check live BEFORE writing any D reference) · framework
   counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
   cloning session). Motion = `specs/38-SGS-MOTION-SYSTEM.md`. Nav = `specs/36-...`; header/footer
@@ -220,19 +231,10 @@ other track took D455/D456 mid-flight and a CSS docblock briefly cited someone e
 
 ### TRACK 1 (cloning) — a SEPARATE track from the motion/migration tasks below; pick one
 
-**T1.1 — Close the 5 measured DB/routing residuals** [delegated, ~40 min]
-Each is evidenced, none is in a plan, and (a)-(d) are one drift class: a DB mirror that fell behind
-its block.json source. (a) **`block_selectors` orphaned** — 92 rows/44 blocks, ZERO converter
-`SELECT`; the code's own comments (`db_lookup.py:3582,3760,3764`) name it as the fix for
-`AmbiguousLayerAttrError`, a hard-raise that STOPS clone runs; 7 rows are retired blocks — prune,
-then wire. (b) **`blocks.parent_block` 23 declared / 18 mirrored** — missing `mega-aside`,
-`mega-group`, `product-faq-item`, `site-footer-row`, `site-header-row`; measured consequence
-`child_block_for_parent_token('sgs/site-header','row')` → `None`. (c) **`css_layer`** — 5 blocks
-declare a layer in block.json with no DB row (`form-field-tiles`, `form-step`, `mega-aside`,
-`mega-group`, `mega-panel`). (d) **`role='rating'` is dark** — 0 attrs carry it;
-`sgs/star-rating.rating` carries `role='number-css-px'`, a star COUNT as a CSS pixel value.
-(e) **`design_tokens` "220 of 224 unread" is UNPROVEN** — that scan covered `converter/` only and
-tokens may be legitimately theme-layer. ⛔ Verify the denominator before treating (e) as a gap.
+**T1.1 — CLOSED 2026-08-02 (D461, `8cdc1460`).** Do not re-open; see the Track 1 bullet above and
+`reports/2026-08-02-t1.1-evidence-pack.md`. ⛔ Three of its inherited diagnoses were measured FALSE
+(the `block_selectors` "wiring" was already rejected 2026-06-20; the product-faq mis-conversion is
+caught by gate G3 and is latent, not live; residual (e) was never a gap). Do not re-derive them.
 
 **T1.2 — Execute Phase 0: make the DB rebuildable** [inline Opus, ~105 min]
 **Read `plans/phase-0-db-rebuildable.md` IN FULL — especially COUNCIL FINDINGS (3 BLOCKERs).**
@@ -292,13 +294,10 @@ morph sit broken for months while every artefact said it worked.
 **Time:** 45 min. **Depends on:** a deploy having happened. **/qc gate:** yes.
 
 ### Track 2c task — harden the object-model sanitiser [delegated, sonnet]
-**What:** `sgs_responsive_sanitise_css_value()` (`includes/helpers-responsive.php`) permits `/` and
-`*` so it does not block the `/*` comment opener, and STRIPS rather than failing closed. It
-validates gap/gridTemplateColumns/contentWidth/maxWidth/padding/margin on BOTH row blocks — the
-more exposed sibling of the path hardened at D455. Route it through `sgs_css_length_value()`.
-**Acceptance:** the breakout corpus (`calc(}body{color:red)`, `calc(1px/*x*/)`, `clamp(<script>,…)`)
-is REJECTED on the object path too, with every existing value byte-identical. **/qc gate:** yes.
-⚠ Re-read the live D-ceiling before numbering — D457-D460 went to a co-active track.
+See Track 2c item 1 above for the defect. **Acceptance:** the breakout corpus
+(`calc(}body{color:red)`, `calc(1px/*x*/)`, `clamp(<script>,…)`) is REJECTED on the object path
+too, every existing value byte-identical. **/qc gate:** yes. ⚠ Re-read the live D-ceiling before
+numbering — a co-active track is allocating concurrently.
 
 ### Dependency graph
 ```
