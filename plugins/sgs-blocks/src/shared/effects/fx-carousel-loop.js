@@ -127,8 +127,33 @@ function shiftScrollInstantly( el, deltaX ) {
 }
 
 /**
- * Make every focusable descendant of a clone subtree unreachable by
- * keyboard, and strip any `id` so it cannot collide with the original's.
+ * Attributes that make a clone LIVE rather than inert, stripped everywhere.
+ *
+ * `data-index` and `aria-current` are position claims: a clone repeating them
+ * hands a framework — or an assistive technology — two elements asserting the
+ * same index, or several claiming to be the current item at once.
+ */
+const INDEX_LIKE_ATTRIBUTES = [ 'data-index', 'aria-current' ];
+
+/**
+ * Strip everything that would let one cloned node behave as if it were real.
+ *
+ * Three jobs, all on the same principle: `id`s cannot collide with the
+ * original's; focusable descendants get an explicit `tabindex="-1"`; and any
+ * live framework wiring is removed.
+ *
+ * WHY THE FRAMEWORK STRIP IS HERE, AND UNIVERSAL. A clone is inert BY
+ * CONTRACT — the caller already sets `inert` and `aria-hidden="true"` on its
+ * root. A clone that still carries WordPress Interactivity API directives
+ * (`data-wp-on--*`, `data-wp-bind--*`, `data-wp-context`, …) is hydrated by
+ * whichever store owns them and acts as a second live copy of the original,
+ * with duplicate indices — visually inert, functionally alive. That is the
+ * same bug for ANY clone of ANY block, so it is fixed once here rather than
+ * special-cased for the block that surfaced it (`sgs/buybox`'s thumbnail
+ * strip, whose `<button>` thumbs carry directives plus `data-index` /
+ * `aria-current` and are hydrated by the `sgs/product-card` store). Naming a
+ * block in this module would be exactly the per-block hyperfocus R-31-9
+ * forbids.
  *
  * Belt-and-braces alongside `inert`/`aria-hidden` on the clone's own root —
  * `inert` alone is sufficient in every browser this project supports, but
@@ -139,6 +164,27 @@ function shiftScrollInstantly( el, deltaX ) {
  */
 function neutraliseClone( clone ) {
 	clone.removeAttribute( 'id' );
+
+	/**
+	 * De-animate one node: no live directives, no position claim.
+	 *
+	 * @param {HTMLElement} node The clone root or one of its descendants.
+	 */
+	const deactivate = ( node ) => {
+		// Snapshot the names first — removing while iterating a live
+		// NamedNodeMap skips entries.
+		const wpDirectives = Array.from( node.attributes )
+			.map( ( attribute ) => attribute.name )
+			.filter( ( name ) => name.startsWith( 'data-wp-' ) );
+		wpDirectives.forEach( ( name ) => node.removeAttribute( name ) );
+		INDEX_LIKE_ATTRIBUTES.forEach( ( name ) =>
+			node.removeAttribute( name )
+		);
+	};
+
+	deactivate( clone );
+	clone.querySelectorAll( '*' ).forEach( deactivate );
+
 	clone
 		.querySelectorAll( '[id], a, button, input, select, textarea, [tabindex]' )
 		.forEach( ( node ) => {

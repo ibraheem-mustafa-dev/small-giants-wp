@@ -295,12 +295,24 @@ endif;
 $sgs_pg_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
 $sgs_pg_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 
+// Infinite loop (Spec 38 §11 loop FR), mirroring sgs/gallery. A SEPARATE
+// marker from `data-sgs-fx="draggable"` above — Bean's ruling that looping
+// is an independent control, not a value of the shared `fx` grammar, and
+// both can be present on the SAME element at once (a single `data-sgs-fx`
+// attribute could never express that). `shared/effects/fx-carousel-loop.js`
+// self-boots on `[data-sgs-loop]` and reads this; it never touches
+// `gsap/fx-draggable.js`.
+$sgs_pg_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
+
 $sgs_pg_inner_fx_attr = '';
 if ( 'carousel' === $layout && $sgs_pg_drag_to_scroll ) {
 	$sgs_pg_inner_fx_attr = ' data-sgs-fx="draggable"';
 	if ( ! $sgs_pg_drag_momentum ) {
 		$sgs_pg_inner_fx_attr .= ' data-sgs-fx-momentum="false"';
 	}
+}
+if ( 'carousel' === $layout && $sgs_pg_loop_carousel ) {
+	$sgs_pg_inner_fx_attr .= ' data-sgs-loop="1"';
 }
 
 // --- Post cards grid.

@@ -17,7 +17,22 @@ const initCarousel = ( root ) => {
 	}
 
 	const track = root.querySelector( '.sgs-trustpilot-reviews__track' );
-	const cards = track ? track.querySelectorAll( '.sgs-trustpilot-reviews__card' ) : [];
+
+	/*
+	 * `:not([data-sgs-loop-clone])` — the a11y contract `fx-carousel-loop.js`
+	 * (Spec 38 §11 loop FR) documents in its own docblock: when looping is on
+	 * that module clones every card to both ends of the track so scrolling
+	 * past the last one continues into the first, and marks each clone with
+	 * `data-sgs-loop-clone="true"`. Without this filter `cards` below would
+	 * count the clones too, desynchronising the dots (a STATIC SSR'd list,
+	 * one per real review) from the card actually in view. The filter is a
+	 * no-op when looping is off — there are no clones to exclude.
+	 */
+	const cards = track
+		? track.querySelectorAll(
+				'.sgs-trustpilot-reviews__card:not([data-sgs-loop-clone])'
+		  )
+		: [];
 	if ( ! track || cards.length < 2 ) {
 		return;
 	}
@@ -25,6 +40,12 @@ const initCarousel = ( root ) => {
 	const prevBtn = root.querySelector( '.sgs-trustpilot-reviews__arrow--prev' );
 	const nextBtn = root.querySelector( '.sgs-trustpilot-reviews__arrow--next' );
 	const dots = root.querySelectorAll( '.sgs-trustpilot-reviews__dot' );
+
+	// Whether `fx-carousel-loop.js` is attached to THIS track — read off the
+	// same marker the render layer emits (`data-sgs-loop="1"` on the track),
+	// mirroring sgs/gallery. Independent of drag (Bean's ruling): this reads
+	// true whether or not drag is also on.
+	const loopEnabled = track.dataset.sgsLoop === '1';
 
 	const getStep = () => {
 		const cardWidth = cards[ 0 ].getBoundingClientRect().width;
@@ -43,16 +64,23 @@ const initCarousel = ( root ) => {
 
 	const scrollByCard = ( dir ) => {
 		const step = getStep();
-		if ( dir > 0 && atEnd() ) {
-			// Wrap from end -> start.
-			scrollTo( 0 );
+
+		if ( ! loopEnabled ) {
+			// Non-looping default (opt-in, matching sgs/gallery): clamp at
+			// either end, same as a plain scroller -- no dead-end snap.
+			if ( ( dir > 0 && atEnd() ) || ( dir < 0 && atStart() ) ) {
+				return;
+			}
+			track.scrollBy( { left: step * dir, behavior: 'smooth' } );
 			return;
 		}
-		if ( dir < 0 && atStart() ) {
-			// Wrap from start -> end.
-			scrollTo( maxScrollLeft() );
-			return;
-		}
+
+		// Looping: `fx-carousel-loop.js` (Spec 38 §11) has already cloned
+		// cards to both ends of the track, so continuing to scroll past the
+		// last real card lands on a clone and stays visually seamless -- no
+		// manual snap-to-start/end needed here, and none of this block's own
+		// arrow/keyboard/dot logic ever disables (WCAG 2.5.7: a loop has no
+		// last item).
 		track.scrollBy( { left: step * dir, behavior: 'smooth' } );
 	};
 

@@ -1,5 +1,6 @@
 {
 	"carousel-loop": {
+		"in_picker": false,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -7,6 +8,7 @@
 		]
 	},
 	"cursor-field": {
+		"in_picker": true,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -14,6 +16,7 @@
 		]
 	},
 	"draggable": {
+		"in_picker": false,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -21,6 +24,7 @@
 		]
 	},
 	"draw": {
+		"in_picker": true,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -30,6 +34,7 @@
 		]
 	},
 	"flip": {
+		"in_picker": false,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -37,6 +42,7 @@
 		]
 	},
 	"horizontal-panel": {
+		"in_picker": true,
 		"owns_scroll_transform": true,
 		"pins": true,
 		"triggers": [
@@ -44,6 +50,7 @@
 		]
 	},
 	"image-sequence": {
+		"in_picker": false,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -51,6 +58,7 @@
 		]
 	},
 	"morph": {
+		"in_picker": true,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -60,6 +68,7 @@
 		]
 	},
 	"motion-path": {
+		"in_picker": true,
 		"owns_scroll_transform": true,
 		"pins": false,
 		"triggers": [
@@ -67,6 +76,7 @@
 		]
 	},
 	"page-transitions": {
+		"in_picker": false,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -74,6 +84,7 @@
 		]
 	},
 	"pin-scrub": {
+		"in_picker": true,
 		"owns_scroll_transform": true,
 		"pins": true,
 		"triggers": [
@@ -81,6 +92,7 @@
 		]
 	},
 	"scramble": {
+		"in_picker": true,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -90,6 +102,7 @@
 		]
 	},
 	"scroll-smoother": {
+		"in_picker": false,
 		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
@@ -97,6 +110,7 @@
 		]
 	},
 	"scrub": {
+		"in_picker": true,
 		"owns_scroll_transform": true,
 		"pins": false,
 		"triggers": [
@@ -106,6 +120,7 @@
 		]
 	},
 	"split-reveal": {
+		"in_picker": true,
 		"owns_scroll_transform": true,
 		"pins": false,
 		"triggers": [

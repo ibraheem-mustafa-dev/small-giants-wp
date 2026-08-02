@@ -253,18 +253,38 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   blocks only) and `fx-attributes.php`'s injector only ever stamp the block ROOT.
   `fx_effects.creates_panel = 0` records that decision rather than driving it.
 
-  **STATUS — MECHANISM PROVEN, ROLLOUT NOT.** `sgs/gallery` is the exemplar and the ONLY block
-  carrying `loopCarousel`, proven live 8/8 (`scripts/motion-qa/probe-carousel-loop.mjs`,
-  `reports/visual-diff/gallery-2026-08-02.md`). Three things are explicitly OWED, tracked as Steps
-  W and Y of `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md` (the Spec 38 residual
-  register — motion residuals live there, never in `parking.md`, per Bean 2026-07-31):
+  **STATUS — ROLLOUT COMPLETE, 2026-08-02.** Five blocks now carry `loopCarousel`, each proven live
+  by `scripts/motion-qa/probe-carousel-loop.mjs` against its own fixture with drag AND loop both on:
+  `sgs/gallery` (exemplar, 9/9), `sgs/post-grid` (9/9), `sgs/trustpilot-reviews` (9/9),
+  `sgs/google-reviews` (9/9), `sgs/buybox` (8/8 + 1 not-exercised). Per-block evidence in
+  `reports/visual-diff/<block>-2026-08-02.md`. The load-bearing dots assertion was genuinely
+  exercised on four of the five — 9 real cards / 27 with clones / **9 dots** on post-grid, and the
+  same shape on the rest.
 
-  1. **The other five drag-roster blocks** — `sgs/buybox`, `sgs/google-reviews`, `sgs/post-grid`,
-     `sgs/testimonial-slider`, `sgs/trustpilot-reviews`. ⚠ Re-derive that roster from
-     `supports.sgs.fx.draggable` rather than trusting this list: `sgs/testimonial-slider` was
-     wrongly assumed to be on it once already (removed 2026-07-31, momentum now block-private).
-     `sgs/buybox` is the one that is not mechanical — its scroller is the thumbnail strip and it
-     mounts the product-card Interactivity store.
+  **⚠ THE ROSTER PREDICATE IN THIS SPEC WAS WRONG, and is corrected here.** This section previously
+  said to re-derive the roster from `supports.sgs.fx.draggable`. That predicate returns
+  `{ before-after, gallery }` — two blocks, one of which has no scroller at all. **The correct
+  predicate is "owns a native horizontal scroller"**, which is precisely what
+  `isNativeHorizontalScroller()` gates on at runtime. Measured, that is `buybox`, `gallery`,
+  `google-reviews`, `post-grid`, `trustpilot-reviews`.
+
+  Two blocks are deliberately EXCLUDED, with reasons, so neither is re-proposed cold:
+  - **`sgs/before-after`** declares `fx.draggable` but has no `overflow-x` anywhere — its drag is a
+    divider handle, not a scroller. Looping would no-op.
+  - **`sgs/testimonial-slider`** has a `dragToScroll` attr but its track is `overflow:hidden` +
+    transform-driven, so `isNativeHorizontalScroller()` rejects it (as `fx-draggable.js` already
+    did — `render.php` records that removal as inert). Giving it looping means converting the track
+    to a native scroller and moving its arrows/dots/autoplay onto `scrollLeft`: a behavioural change
+    to that block, not a rollout step. **Bean ruled it out of scope 2026-08-02.**
+  - `sgs/timeline` is a genuine horizontal scroller with no fx declaration at all — an unclaimed
+    candidate needing a new control surface, not a rollout.
+
+  **`sgs/buybox` was the non-mechanical one** (thumbnail strip + the product-card Interactivity
+  store) and drove a UNIVERSAL hardening of `neutraliseClone()` in `fx-carousel-loop.js`: clones now
+  have `data-wp-*` directives plus `data-index`/`aria-current` stripped, on the clone root and every
+  descendant. `inert` + `aria-hidden` stop a human reaching a clone; they do NOT stop a framework
+  hydrating it. Proven live: **0 live attributes across 20 clone subtrees**, with a negative control
+  confirming the assertion fails when one is re-planted.
   2. **Reduced motion for the LOOP is unstated and unmeasured.** The drag module's own SIMPLIFY
      contract is unchanged and does not transfer: a clone-and-reseat is not autonomous motion, so
      SIMPLIFY is the likely answer, but §10 carries no row for it yet.
@@ -380,6 +400,16 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
 
   1. **THE MULTI-LIST DRIFT — the single most expensive defect class this spec has produced.**
+     ✅ **GATED 2026-08-02** by `plugins/sgs-blocks/scripts/check-fx-list-drift.py`, wired into
+     `prebuild` immediately after the motion-fx generator chain. Six invariants, each traced to a
+     real defect it would have caught; `--self-test` breaks all six in turn plus a vacuity case and
+     proves each is caught. Deleting `'cursor-field'` from any one of the three lists now fails the
+     build — verified by doing it, three times, and restoring. The gate reads NO database (committed
+     source + generated artefacts only), so a clean checkout still builds. `fx_effects` gained an
+     **`in_picker`** column (same shape as `creates_panel`, D459) because nothing else distinguished
+     a picker effect from a block-private one — `creates_panel` does not (`cursor-field` is 0 and IS
+     in the picker). The paragraph below describes the situation that existed BEFORE that gate.
+
      An fx effect must join THREE hand-maintained lists to work at all, and **no gate cross-checks
      any of them**: `SHIPPED_EFFECTS` (`fx.js`, gates the editor picker), `FX_ATTR_MAP`
      (`fx-attributes.php`, attr → data-attribute for DYNAMIC blocks), and
@@ -393,6 +423,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      A FOURTH list of the same shape governs field types: `FX_FIELD_TYPE_OPTIONS` (`fx.js`) ×
      `SGS_FX_CURSOR_FIELD_TYPES` (`fx-cursor-field.php`) × the painting rules in
      `fx-cursor-field.css`. A type in the picker with no CSS rule silently paints nothing.
+     ✅ That triad is invariant **I6** of the same gate, checked all three ways.
      Two hand-maintained lists diverging silently is a failure this codebase has met before (see
      the `TRANSITION_STYLES` note in `class-sgs-motion-registry.php`) — this is now four.
   2. **`floating-objects` is spec'd, not built** (see the field-type table above).

@@ -292,6 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		carouselShowArrows,
 		dragToScroll,
 		dragMomentum,
+		loopCarousel,
 	} = attributes;
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
@@ -1003,6 +1004,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 							/>
 						) }
+						{ /*
+						 * Infinite loop (Spec 38 §11 loop FR). Deliberately its
+						 * OWN toggle, not gated behind "Drag to scroll" —
+						 * Bean's ruling: looping is an independent control,
+						 * combinable with drag or used entirely on its own
+						 * (native swipe/scrollbar/keyboard still loop with
+						 * drag off). Default off, same as drag.
+						 */ }
+						<ToggleControl
+							label={ __( 'Loop', 'sgs-blocks' ) }
+							checked={ loopCarousel }
+							onChange={ set( 'loopCarousel' ) }
+							help={ __(
+								'Scrolling or dragging past the last post continues into the first, and back again — never a dead end.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 

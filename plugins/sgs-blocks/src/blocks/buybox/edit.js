@@ -22,6 +22,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		perUnitDenomination,
 		dragToScroll,
 		dragMomentum,
+		loopCarousel,
 		style,
 		marginTablet,
 		marginMobile,
@@ -168,6 +169,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+					{ /*
+					 * Infinite loop (Spec 38 §11 loop FR). Deliberately its OWN
+					 * toggle, not gated behind "Drag to scroll thumbnails" —
+					 * Bean's ruling: looping is an independent control,
+					 * combinable with drag or used entirely on its own (native
+					 * swipe/scrollbar/keyboard still loop with drag off).
+					 * Mirrors sgs/gallery's toggle exactly. Default off.
+					 */ }
+					<ToggleControl
+						label={ __( 'Loop', 'sgs-blocks' ) }
+						checked={ loopCarousel }
+						onChange={ ( val ) =>
+							setAttributes( { loopCarousel: val } )
+						}
+						help={ __(
+							'Scrolling or dragging past the last thumbnail continues into the first, and back again — never a dead end.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 			</InspectorControls>
 

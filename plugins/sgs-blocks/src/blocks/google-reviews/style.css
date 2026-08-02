@@ -467,6 +467,131 @@
 	scroll-snap-align: start;
 }
 
+/* ─── Slider Navigation — arrows + dots ──────────────────────────────────── */
+/*
+ * Single-pointer alternative to the drag/swipe slider (WCAG 2.5.7 — the
+ * slider previously had no discrete-step control at all). `.sgs-google-
+ * reviews__slider` only wraps the list when nav is actually rendered
+ * (render.php: $gr_nav_enabled), so it never appears for other variants.
+ */
+
+.sgs-google-reviews__slider {
+	position: relative;
+}
+
+.sgs-google-reviews__arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY( -50% );
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
+	border-radius: 50%;
+	background-color: var( --wp--preset--color--surface-alt, #fff );
+	color: var( --wp--preset--color--text, #1e1e1e );
+	cursor: pointer;
+}
+
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-google-reviews__arrow {
+		transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+	}
+}
+
+.sgs-google-reviews__arrow:hover,
+.sgs-google-reviews__arrow:focus-visible {
+	background-color: var( --wp--preset--color--primary, #0f7e80 );
+	border-color: var( --wp--preset--color--primary, #0f7e80 );
+	color: var( --wp--preset--color--text-inverse, #fff );
+}
+
+.sgs-google-reviews__arrow--prev {
+	left: 0.5rem;
+}
+
+.sgs-google-reviews__arrow--next {
+	right: 0.5rem;
+}
+
+/* Mobile: hide arrows — touch users swipe the slider natively; the arrow
+   would otherwise overlap card text on narrow viewports. Dots remain, so a
+   single-pointer alternative to dragging is always available. */
+@media ( max-width: 767px ) {
+	.sgs-google-reviews__arrow {
+		display: none;
+	}
+}
+
+.sgs-google-reviews__dots {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.25rem;
+	margin-top: 1rem;
+}
+
+/* 44px min touch target (project standard, beats WCAG 2.2's 24px) via
+   padding around a small visible dot — the VISUAL dot stays compact while
+   the tappable/clickable area meets the target size. */
+.sgs-google-reviews__dot {
+	position: relative;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: pointer;
+}
+
+.sgs-google-reviews__dot::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	transform: translate( -50%, -50% );
+	/* Idle dot uses text-muted, not border-subtle — border-subtle measured
+	   ~1.2:1 against surface in a prior audit and failed the 3:1 UI-component
+	   contrast requirement; text-muted clears it. */
+	background-color: var( --wp--preset--color--text-muted, #767676 );
+}
+
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-google-reviews__dot::before {
+		transition: background-color 150ms ease, transform 150ms ease;
+	}
+}
+
+.sgs-google-reviews__dot:hover::before {
+	background-color: var( --wp--preset--color--text, #1e1e1e );
+}
+
+/* Active state is conveyed by BOTH colour and size — never colour alone —
+   and by aria-current on the element itself (set in render.php + view.js). */
+.sgs-google-reviews__dot.is-active::before {
+	background-color: var( --sgs-gr-star-colour, var( --wp--preset--color--accent, #f5a623 ) );
+	transform: translate( -50%, -50% ) scale( 1.35 );
+}
+
+.sgs-google-reviews__dot:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #0f7e80 );
+	outline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-google-reviews__arrow,
+	.sgs-google-reviews__dot::before {
+		transition: none !important;
+	}
+}
+
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 
 @media ( max-width: 767px ) {

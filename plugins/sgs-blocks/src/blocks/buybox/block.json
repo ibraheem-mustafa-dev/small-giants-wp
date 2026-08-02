@@ -130,6 +130,11 @@
 			"type": "boolean",
 			"default": true,
 			"description": "When drag-to-scroll is on, keep coasting briefly after release like a real scroll flick."
+		},
+		"loopCarousel": {
+			"type": "boolean",
+			"default": false,
+			"description": "Scrolling or dragging the thumbnail strip past the last image continues into the first, and back again — never a dead end. Independent of drag-to-scroll; combinable or standalone. Spec 38 §11 loop FR."
 		}
 	},
 	"editorScript": "file:./index.js",

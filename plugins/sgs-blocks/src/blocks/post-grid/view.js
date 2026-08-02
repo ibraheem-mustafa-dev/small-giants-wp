@@ -431,10 +431,29 @@ function initCarousel( gridEl, queryData ) {
 		return;
 	}
 
-	const cards = Array.from( innerEl.querySelectorAll( '.sgs-post-grid__card' ) );
+	/*
+	 * `:not([data-sgs-loop-clone])` — the a11y contract `fx-carousel-loop.js`
+	 * (Spec 38 §11 loop FR) documents in its own docblock: when looping is on
+	 * that module clones every item to both ends of the track so scrolling
+	 * past the last one continues into the first, and marks each clone with
+	 * `data-sgs-loop-clone="true"`. Without this filter `cards`/`totalCards`
+	 * below would count the clones too, giving the wrong dot count and wrong
+	 * "am I at the end" arrow state. The filter is a no-op when looping is
+	 * off — there are no clones to exclude. Mirrors sgs/gallery's view.js.
+	 */
+	const cards = Array.from(
+		innerEl.querySelectorAll( '.sgs-post-grid__card:not([data-sgs-loop-clone])' )
+	);
 	if ( ! cards.length ) {
 		return;
 	}
+
+	// Whether `fx-carousel-loop.js` is attached to THIS track — read off the
+	// same marker the render layer emits (`data-sgs-loop="1"` on the inner
+	// scroller), so arrows/keyboard wrap instead of clamping at the ends.
+	// Independent of drag (Bean's ruling): this reads true whether or not
+	// drag is also on.
+	const loopEnabled = innerEl.dataset.sgsLoop === '1';
 
 	let currentIndex  = 0;
 	let autoplayTimer = null;
@@ -450,7 +469,12 @@ function initCarousel( gridEl, queryData ) {
 	 * @param {number} index Target card index (clamped to valid range).
 	 */
 	const updateCarouselUI = ( index ) => {
-		currentIndex = Math.max( 0, Math.min( index, totalCards - 1 ) );
+		// Looping has no last card to clamp against — wrap instead. Clamping
+		// is kept for the non-looping default so an arrow click/scroll at
+		// either end still just stops there, unchanged.
+		currentIndex = loopEnabled
+			? ( ( index % totalCards ) + totalCards ) % totalCards
+			: Math.max( 0, Math.min( index, totalCards - 1 ) );
 
 		if ( dotsEl ) {
 			dotsEl.querySelectorAll( '.sgs-post-grid__dot' ).forEach( ( dot, i ) => {
@@ -460,11 +484,15 @@ function initCarousel( gridEl, queryData ) {
 			} );
 		}
 
+		// A loop has no last item (WCAG 2.5.7 concern the loop module's own
+		// docblock names): neither arrow may disable, so a visitor is never
+		// stuck staring at a dead button. Disabled state is meaningful only
+		// for the non-looping default.
 		if ( prevBtn ) {
-			prevBtn.disabled = currentIndex === 0;
+			prevBtn.disabled = ! loopEnabled && currentIndex === 0;
 		}
 		if ( nextBtn ) {
-			nextBtn.disabled = currentIndex >= totalCards - 1;
+			nextBtn.disabled = ! loopEnabled && currentIndex >= totalCards - 1;
 		}
 	};
 

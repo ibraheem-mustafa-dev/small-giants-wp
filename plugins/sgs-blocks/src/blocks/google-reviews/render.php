@@ -53,6 +53,18 @@ if ( 'slider' === $variant && $sgs_gr_drag_to_scroll ) {
 		$sgs_gr_list_fx_attr .= ' data-sgs-fx-momentum="false"';
 	}
 }
+
+/*
+ * Infinite loop (Spec 38 §11 loop FR), mirroring sgs/gallery. A SEPARATE
+ * marker from `data-sgs-fx="draggable"` above — Bean's ruling that looping
+ * is an independent control, not a value of the shared `fx` grammar, and
+ * both can be present on the SAME element at once. `shared/effects/
+ * fx-carousel-loop.js` reads this; it never touches `gsap/fx-draggable.js`.
+ */
+$sgs_gr_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
+if ( 'slider' === $variant && $sgs_gr_loop_carousel ) {
+	$sgs_gr_list_fx_attr .= ' data-sgs-loop="1"';
+}
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
 $columns            = $attributes['columns'] ?? 3;
 $columns_tablet     = $attributes['columnsTablet'] ?? 2;
@@ -512,8 +524,37 @@ if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	</div>
 	<?php
 else :
+	/*
+	 * Slider navigation (dots + arrows) is only meaningful for the slider
+	 * variant with more than one review — anything else has nothing to
+	 * navigate between. $gr_nav_enabled is the single gate the arrow
+	 * wrapper, the scroll-sync attr, and the dots block below all key off,
+	 * so toggling showDots/showArrows off REMOVES the markup rather than
+	 * hiding it (no dead controls). Before this, the slider had no
+	 * single-pointer alternative to dragging (WCAG 2.5.7).
+	 */
+	$gr_nav_enabled = ( 'slider' === $variant && count( $reviews ) > 1 );
 	?>
-	<div class="sgs-google-reviews__list"<?php echo $sgs_gr_list_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings, no dynamic value. ?>>
+	<?php if ( $gr_nav_enabled ) : ?>
+	<div class="sgs-google-reviews__slider">
+	<?php endif; ?>
+
+	<?php if ( $gr_nav_enabled && $show_arrows ) : ?>
+	<button
+		class="sgs-google-reviews__arrow sgs-google-reviews__arrow--prev"
+		type="button"
+		data-wp-on--click="actions.prevSlide"
+		aria-label="<?php esc_attr_e( 'Previous review', 'sgs-blocks' ); ?>"
+	>
+		<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
+	</button>
+	<?php endif; ?>
+
+	<div
+		class="sgs-google-reviews__list"
+		<?php echo $sgs_gr_list_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings, no dynamic value. ?>
+		<?php echo $gr_nav_enabled ? 'data-wp-on--scroll="actions.syncActiveDot"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string, no dynamic value. ?>
+	>
 		<?php foreach ( $reviews as $review ) : ?>
 			<?php
 			$author        = $review['authorAttribution']['displayName'] ?? __( 'Anonymous', 'sgs-blocks' );
@@ -560,6 +601,43 @@ else :
 			</article>
 		<?php endforeach; ?>
 	</div>
+
+	<?php if ( $gr_nav_enabled && $show_arrows ) : ?>
+	<button
+		class="sgs-google-reviews__arrow sgs-google-reviews__arrow--next"
+		type="button"
+		data-wp-on--click="actions.nextSlide"
+		aria-label="<?php esc_attr_e( 'Next review', 'sgs-blocks' ); ?>"
+	>
+		<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4 4.6-4.6z"/></svg>
+	</button>
+	<?php endif; ?>
+
+	<?php if ( $gr_nav_enabled ) : ?>
+	</div>
+	<?php endif; ?>
+
+	<?php if ( $gr_nav_enabled && $show_dots ) : ?>
+	<div class="sgs-google-reviews__dots" role="tablist" aria-label="<?php esc_attr_e( 'Review pagination', 'sgs-blocks' ); ?>">
+		<?php foreach ( $reviews as $gr_dot_idx => $gr_dot_review ) : ?>
+			<button
+				class="sgs-google-reviews__dot<?php echo 0 === $gr_dot_idx ? ' is-active' : ''; ?>"
+				type="button"
+				role="tab"
+				<?php echo 0 === $gr_dot_idx ? 'aria-current="true"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal string, no dynamic value. ?>
+				aria-selected="<?php echo 0 === $gr_dot_idx ? 'true' : 'false'; ?>"
+				data-sgs-index="<?php echo esc_attr( $gr_dot_idx ); ?>"
+				data-wp-on--click="actions.goToSlide"
+				aria-label="
+				<?php
+				/* translators: %d: review number (1-indexed). */
+				echo esc_attr( sprintf( __( 'Go to review %d', 'sgs-blocks' ), $gr_dot_idx + 1 ) );
+				?>
+				"
+			></button>
+		<?php endforeach; ?>
+	</div>
+	<?php endif; ?>
 
 	<?php if ( ! empty( $review_request_url ) ) : ?>
 		<div class="sgs-google-reviews__cta">

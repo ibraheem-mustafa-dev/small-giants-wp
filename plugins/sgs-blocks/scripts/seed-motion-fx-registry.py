@@ -212,6 +212,10 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-6, §2 row "Pin + scrub section timeline", §9 row 1, §10 row 1.
         "effect": "pin-scrub",
+        # in_picker=1 — offered in fx.js's SHIPPED_EFFECTS picker. This key is
+        # the DB's single statement of that fact; check-fx-list-drift.py (I1)
+        # compares it against SHIPPED_EFFECTS in BOTH directions.
+        "in_picker": 1,
         # pins/triggers (D416). VERIFIED: fx-pin-scrub.js sets pin:true. Pin spans a scroll RANGE, so scroll is the only coherent trigger.
         "pins": 1,
         "triggers": "scroll",
@@ -230,6 +234,7 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-7, §2 row "Scroll-scrubbed element timeline", §9 row 1, §10 row 2.
         "effect": "scrub",
+        "in_picker": 1,
         # pins/triggers (D416). VERIFIED not pinning. An entrance-style reveal: playing it on load or on hover are both coherent alternatives to scrubbing.
         "pins": 0,
         "triggers": "scroll,load,hover",
@@ -248,6 +253,7 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-8, §2 row "Horizontal scroll panel", §9 row 1, §10 row 3.
         "effect": "horizontal-panel",
+        "in_picker": 1,
         # pins/triggers (D416). VERIFIED: fx-horizontal-panel.js sets pin:true. Scroll maps to horizontal travel, so scroll is intrinsic.
         "pins": 1,
         "triggers": "scroll",
@@ -267,6 +273,7 @@ FX_EFFECTS: list[dict] = [
         # FR-38-10, §2 row "SplitText reveal" (explicitly "§4.3 exclusivity vs
         # entrance" in its Conditions column), §9 row 3, §10 row 5.
         "effect": "split-reveal",
+        "in_picker": 1,
         # pins/triggers (D416). VERIFIED not pinning. Text reveal works equally as an on-load or on-hover play.
         "pins": 0,
         "triggers": "scroll,load,hover",
@@ -296,6 +303,7 @@ FX_EFFECTS: list[dict] = [
         # FR-38-11, §2 row "ScrambleText" (no §4.3 mention; §4.3's own text names
         # ScrambleText as a non-excluding effect), §9 row 3, §10 row 6.
         "effect": "scramble",
+        "in_picker": 1,
         # pins/triggers (D416). UNSHIPPED (Wave B/C) - placeholder. Text scramble is a natural hover/load effect.
         "pins": 0,
         "triggers": "scroll,load,hover",
@@ -386,6 +394,7 @@ FX_EFFECTS: list[dict] = [
         # FR-38-15, §2 row "DrawSVG" (§4.3 text explicitly names "DrawSVG on load"
         # as non-excluding), §9 row 6, §10 row 10.
         "effect": "draw",
+        "in_picker": 1,
         # pins/triggers (D416). UNSHIPPED - placeholder. SVG line-draw is a common hover/load effect as well as scroll.
         "pins": 0,
         "triggers": "scroll,load,hover",
@@ -426,6 +435,7 @@ FX_EFFECTS: list[dict] = [
         # all (asset-gated instant/duration morph of the path 'd', not a
         # transform/opacity scroll-scrub) -> owns_scroll_transform=0.
         "effect": "morph",
+        "in_picker": 1,
         # pins/triggers (D416). UNSHIPPED - placeholder. Same target family as draw.
         "pins": 0,
         "triggers": "scroll,load,hover",
@@ -483,6 +493,7 @@ FX_EFFECTS: list[dict] = [
         # discussion the way it names pin-scrub/scrub/SplitText/DrawSVG/
         # ScrambleText. Flagged in the final report; not guessed silently.
         "effect": "motion-path",
+        "in_picker": 1,
         # pins/triggers (D416). UNSHIPPED - placeholder. Scroll-scrubbed path progress per its owns_scroll_transform=1 reasoning.
         "pins": 0,
         "triggers": "scroll",
@@ -606,6 +617,11 @@ FX_EFFECTS: list[dict] = [
         # that the effect "isn't limited to a glow/colour, it could be a
         # pattern, move floating objects etc".
         "effect": "cursor-field",
+        # in_picker=1 DESPITE creates_panel=0 below — the two are independent,
+        # and this row is exactly why `creates_panel` could not stand in for the
+        # picker roster: cursor-field is offered wherever a panel already
+        # exists, so it IS a picker entry while never creating a panel.
+        "in_picker": 1,
         # pins/triggers. VERIFIED not pinning — it paints a background layer and
         # never touches scroll position. Pointer-driven, so 'hover' is the only
         # coherent trigger: there is nothing for 'load' or 'scroll' to mean.
@@ -808,7 +824,7 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
 FX_EFFECTS_COLUMNS = (
     "effect", "tier", "plugin_set", "owns_scroll_transform",
     "reduced_motion", "editor_story", "scope", "requires",
-    "pins", "triggers", "creates_panel",
+    "pins", "triggers", "creates_panel", "in_picker",
 )
 
 
@@ -827,6 +843,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
             pins                    INTEGER NOT NULL DEFAULT 0,
             triggers                TEXT NOT NULL DEFAULT 'scroll',
             creates_panel           INTEGER NOT NULL DEFAULT 1,
+            in_picker               INTEGER NOT NULL DEFAULT 0,
             created_at              TEXT DEFAULT (datetime('now'))
         )
         """
@@ -885,6 +902,36 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     if "creates_panel" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN creates_panel INTEGER NOT NULL DEFAULT 1")
         print("  [set]  fx_effects: added column 'creates_panel' (migration)")
+    # 2026-08-02: in_picker. Same gated-on-absence shape as every column above.
+    #
+    # WHY THIS COLUMN EXISTS — it is the DB half of the three-list drift gate
+    # (scripts/check-fx-list-drift.py, invariant I1). `fx.js`'s SHIPPED_EFFECTS
+    # array is the editor's on-switch: an effect built correctly in every other
+    # layer is still dead code until its name appears there. `cursor-field` was
+    # omitted from it on first build (FR-38-25) and NOTHING caught it — the
+    # feature was unreachable from the editor while the runtime module, the
+    # registry enqueue, the render layer and the panel were all correctly wired.
+    #
+    # To gate that, the check needs an independent statement of "which effects
+    # SHOULD be in the picker". No existing column supplies one:
+    #   · `creates_panel` does NOT discriminate — `cursor-field` is 0 and IS in
+    #     the picker (it is offered where a panel already exists).
+    #   · `scope`/`requires` describe the TARGET, not the control surface.
+    #   · `carousel-loop` and `draggable` are deliberately absent from the picker
+    #     (both use their own per-block grammar on a DESCENDANT scroller, never
+    #     the generic root-stamping `data-sgs-fx` value) yet are otherwise
+    #     ordinary block-scoped rows.
+    # So: `in_picker` states that fact once, in the DB, per R-31-1 — rather than
+    # adding a fourth hand-maintained list for the gate to compare against.
+    #
+    # DEFAULT 0, not 1 (the opposite of `creates_panel`): an effect must be
+    # deliberately declared shippable-from-the-picker. A new row that forgets
+    # this key is treated as block-private, which fails CLOSED — the gate then
+    # objects the moment someone adds it to SHIPPED_EFFECTS without seeding it,
+    # instead of silently asserting a picker entry that does not exist.
+    if "in_picker" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN in_picker INTEGER NOT NULL DEFAULT 0")
+        print("  [set]  fx_effects: added column 'in_picker' (migration)")
 
 
 def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
@@ -893,7 +940,7 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         effect = row["effect"]
         existing = cur.execute(
             "SELECT tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-            "scope, requires, pins, triggers, creates_panel FROM fx_effects WHERE effect = ?",
+            "scope, requires, pins, triggers, creates_panel, in_picker FROM fx_effects WHERE effect = ?",
             (effect,),
         ).fetchone()
         plugin_set_json = json.dumps(row["plugin_set"])
@@ -904,13 +951,17 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
             # Defaults to 1 so every pre-FR-38-25 row keeps its exact behaviour
             # without needing the key — only an opt-out row states it.
             row.get("creates_panel", 1),
+            # Defaults to 0 — an effect is block-private until a row explicitly
+            # declares it offerable from the generic "Scroll & effects" picker.
+            # See the column's migration note for why this direction fails safe.
+            row.get("in_picker", 0),
         )
         if existing is None:
             cur.execute(
                 "INSERT INTO fx_effects "
                 "(effect, tier, plugin_set, owns_scroll_transform, reduced_motion, "
-                "editor_story, scope, requires, pins, triggers, creates_panel) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "editor_story, scope, requires, pins, triggers, creates_panel, in_picker) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (effect, *target),
             )
             changed += 1
@@ -922,7 +973,7 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         cur.execute(
             "UPDATE fx_effects SET tier=?, plugin_set=?, owns_scroll_transform=?, "
             "reduced_motion=?, editor_story=?, scope=?, requires=?, pins=?, triggers=?, "
-            "creates_panel=? WHERE effect=?",
+            "creates_panel=?, in_picker=? WHERE effect=?",
             (*target, effect),
         )
         changed += 1

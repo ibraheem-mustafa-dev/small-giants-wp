@@ -340,12 +340,22 @@ $is_carousel = ( 'carousel' === $variant || 'mini-carousel' === $variant );
 $sgs_tp_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
 $sgs_tp_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 
+// Infinite loop (Spec 38 §11 loop FR), mirroring sgs/gallery. A SEPARATE
+// marker from `data-sgs-fx="draggable"` above — Bean's ruling that looping
+// is an independent control, not a value of the shared `fx` grammar, and
+// both can be present on the SAME element at once. `shared/effects/
+// fx-carousel-loop.js` reads this; it never touches `gsap/fx-draggable.js`.
+$sgs_tp_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
+
 $sgs_tp_track_fx_attr = '';
 if ( $is_carousel && $sgs_tp_drag_to_scroll ) {
 	$sgs_tp_track_fx_attr = ' data-sgs-fx="draggable"';
 	if ( ! $sgs_tp_drag_momentum ) {
 		$sgs_tp_track_fx_attr .= ' data-sgs-fx-momentum="false"';
 	}
+}
+if ( $is_carousel && $sgs_tp_loop_carousel ) {
+	$sgs_tp_track_fx_attr .= ' data-sgs-loop="1"';
 }
 
 // ───────────────────────────────────────────────────────────────────────────

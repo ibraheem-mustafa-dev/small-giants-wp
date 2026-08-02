@@ -1,5 +1,86 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D466 — FR-38-26 rollout complete; the spec's own roster predicate was wrong [ROUTINE]
+
+**Shipped.** `loopCarousel` now exists on five blocks, each proven live by
+`probe-carousel-loop.mjs` against its own fixture with drag AND loop both on: `sgs/gallery`
+(exemplar, 9/9), `sgs/post-grid` (9/9), `sgs/trustpilot-reviews` (9/9), `sgs/google-reviews` (9/9),
+`sgs/buybox` (8/8 + 1 not-exercised). Evidence: `reports/visual-diff/<block>-2026-08-02.md`.
+
+**THE SPEC TOLD YOU TO DERIVE THE ROSTER THE WRONG WAY.** Spec 38 and `LEDGER.md` both said
+"re-derive the roster from `supports.sgs.fx.draggable`" — and that instruction carried a ⚠ warning
+telling you to trust it over any remembered list. Followed literally it returns
+`{ before-after, gallery }`: two blocks, one of which has no scroller at all. The predicate that
+actually identifies a loop-eligible block is **"owns a native horizontal scroller"**, which is what
+`isNativeHorizontalScroller()` gates on at runtime. Spec 38 §3.3 is corrected in place.
+
+**Two exclusions recorded so neither is re-proposed cold.** `sgs/before-after` declares
+`fx.draggable` but has no `overflow-x` — its drag is a divider handle. `sgs/testimonial-slider` has
+a `dragToScroll` attr but an `overflow:hidden` transform-driven track, so the loop module rejects it
+structurally, exactly as `fx-draggable.js` already did. Bean ruled it out of scope: converting its
+track and moving its navigation onto `scrollLeft` is a block change, not a rollout step.
+
+**`neutraliseClone()` hardened UNIVERSALLY, not per block.** `sgs/buybox`'s thumbs are
+store-driven buttons carrying `data-wp-*` plus `data-index`/`aria-current`. `inert` + `aria-hidden`
+stop a HUMAN reaching a clone; they do not stop a FRAMEWORK hydrating it. Clones now have those
+attributes stripped on the root and every descendant — fixed once in `fx-carousel-loop.js`, because
+naming a block there is the per-block hyperfocus R-31-9 forbids. Proven live: 0 live attributes
+across 20 clone subtrees, with a negative control confirming the assertion fails when one is
+re-planted.
+
+**Three probe defects were found and fixed, all of the same class — the instrument, not the code.**
+(a) The item selector was hardcoded to `.sgs-gallery__item`, so on any other block the load-bearing
+"dots == real cards" assertion degenerated to `0 === 0` and passed without testing anything.
+(b) The dots escape-hatch `|| 0 === dots` meant a DOTLESS block banked a silent PASS on that same
+assertion — `sgs/buybox` has no dots, so the rollout's headline claim would have been vacuous
+there; it now reports `[N/A]` and the verdict line says "NOT EXERCISED". (c) Dots were counted
+document-wide while items were counted track-scoped, so a page with two instances of one block
+reported 6 dots against 3 cards and FAILED a block that was behaving correctly. A page-wide count
+compared against an element-scoped count is not a comparison.
+
+**Found in passing, fixed:** `sgs/google-reviews` had NO slider navigation at all — `showDots` and
+`showArrows` were declared, exposed as two live inspector toggles, read into variables in
+`render.php`, and rendered nothing in any layer. Two controls that lied, and drag with no
+single-pointer alternative (WCAG 2.5.7). Built, following `sgs/trustpilot-reviews`. **Why the
+existing guard missed it:** `check-dead-controls.js` tests `showDots` against the whole file,
+so the assignment line counts as consumption. **Assignment is not consumption** — recorded as a gate
+blind spot, not fixed this session.
+
+## D465 — The three-list fx drift is now gated, and `fx_effects` gained `in_picker` [ROUTINE]
+
+**The defect class.** An fx effect must join THREE separate hand-maintained lists to work —
+`SHIPPED_EFFECTS` (`fx.js`, gates the editor picker), `FX_ATTR_MAP` and
+`sgs_fx_effect_param_scope()` (both `fx-attributes.php`) — and nothing cross-checked them. Two of
+the three were missed on `cursor-field` in one session (D459). Missing the first made the feature
+unreachable from the editor while every other layer was correctly wired; missing the third rendered
+a page that looked entirely healthy while the client's chosen colour and radius were silently
+dropped, and only surfaced by live verification AFTER the other fixes had shipped. Neither failed a
+build.
+
+**`plugins/sgs-blocks/scripts/check-fx-list-drift.py`**, wired into `prebuild` immediately after
+the motion-fx generator chain. Six invariants (plus a duplicate-entry check), each traced to a real
+defect it would have caught. Proven by doing, not reasoning: `--self-test` breaks each of the six in
+turn plus a vacuity case and asserts each is caught; and deleting `'cursor-field'` from each of the
+three lists in turn was verified to fail the build, each break confirmed present in `git diff`
+before the result was trusted.
+
+**It reads NO database.** Inputs are committed source plus already-generated artefacts, so a clean
+checkout still runs `npm run build` — the property closed this wave at `c674edea`, which joining
+`scripts/db-consistency/` would have broken.
+
+**`fx_effects.in_picker` added** (idempotent `ALTER TABLE`, same shape as `creates_panel` at D459)
+because nothing existing distinguished a picker effect from a block-private one: `carousel-loop`
+and `draggable` are offered by the qualifying roster but deliberately absent from `SHIPPED_EFFECTS`,
+and `creates_panel` does not discriminate — `cursor-field` is 0 and IS in the picker. Defaults to
+**0**, the opposite of `creates_panel`, so a row that forgets the key is treated as block-private
+and the gate objects the moment someone adds it to the picker without seeding it.
+
+**The gate's own self-test caught a defect in the gate.** On the first run I6 was NOT caught: a
+floor of 2 on the field-type list turned the I6 break (a deletion) into a vacuity error, so I6 was
+never actually exercised — a check that could not fail, inside the tool built to stop checks that
+cannot fail. Floors are now anti-vacuity only (~half the live count), and the I6 break is an
+addition rather than a deletion.
+
 ## D464 — The knowledge-base DB gets a memory: committed schema + tracked migrations [ROUTINE]
 
 **Track 1 / T1.2 Phase 0, part 1 (Steps 0.0–0.3 + QA Gate A). Commit `78347070`. Phase 0 is NOT

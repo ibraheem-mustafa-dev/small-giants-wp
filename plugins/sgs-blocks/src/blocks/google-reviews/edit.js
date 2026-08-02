@@ -47,6 +47,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showArrows,
 		dragToScroll,
 		dragMomentum,
+		loopCarousel,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -296,6 +297,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 							/>
 						) }
+
+						{ /*
+						 * Infinite loop (Spec 38 §11 loop FR), mirroring
+						 * sgs/gallery. Deliberately its OWN toggle, not gated
+						 * behind "Drag to scroll" — Bean's ruling: looping is
+						 * an independent control, combinable with drag or
+						 * used entirely on its own (native swipe/scrollbar/
+						 * keyboard/arrows/dots still loop with drag off).
+						 * Default off, same as drag.
+						 */ }
+						<ToggleControl
+							label={ __( 'Loop', 'sgs-blocks' ) }
+							checked={ loopCarousel }
+							onChange={ ( value ) =>
+								setAttributes( { loopCarousel: value } )
+							}
+							help={ __(
+								'Scrolling, dragging or using the arrows past the last review continues into the first, and back again — never a dead end.',
+								'sgs-blocks'
+							) }
+						/>
 					</PanelBody>
 				) }
 			</InspectorControls>

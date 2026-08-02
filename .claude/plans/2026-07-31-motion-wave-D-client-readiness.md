@@ -25,10 +25,10 @@ Bean-ruled 2026-07-31: parking is for BLOCKED or POSTPONED work only, never a re
 
 | Step | What | Why it is next |
 |---|---|---|
-| **W** | Roll the loop to the other 5 drag-roster blocks | gallery is the ONLY exemplar; the mechanism is proven, the rollout is not |
-| **X** | Gate the three-list drift | the session's highest-value structural fix — 2 of 3 lists were missed on one effect, no gate exists |
-| **Y** | Loop reduced-motion + keyboard arrow-wrap | two arms of the looping contract built but never exercised |
-| **Z** | `extensions.css` 4th focus system | one generation behind after D463; deferred only by a file collision |
+| ~~**W**~~ | ~~Roll the loop to the other drag-roster blocks~~ | ✅ **CLOSED 2026-08-02 (D466)** — 4 blocks rolled out, all proven live. The spec's stated roster predicate was WRONG and is corrected in Spec 38 §3.3 |
+| ~~**X**~~ | ~~Gate the three-list drift~~ | ✅ **CLOSED 2026-08-02 (D465)** — `check-fx-list-drift.py`, 6 invariants, in `prebuild`, `--self-test` + 3 real deletion proofs |
+| **Y** | Loop reduced-motion + keyboard arrow-wrap | two arms of the looping contract built but never exercised — now across FIVE blocks, not one |
+| **Z** | The focus cascade | ⚠ **RE-BASED 2026-08-02 — the premise changed.** See its step below: the theme half of D463 was never deployed |
 | **R-residual** | `floating-objects`, the participant seam, the init-only walk | stated limits, not defects |
 | **8** | Physics sandbox — DECIDED (D447), write-up owed | decision made; only the FR text is outstanding |
 | **12** | The cloning lift (FR-38-22) | measured NO — motion does not survive a clone today |
@@ -222,40 +222,12 @@ park anything else from this plan — this plan is the register.**
 >
 > ⛔ **This closed the MECHANISM, not the ROLLOUT.** See Step W.
 
-### Step W — roll the loop pattern to the other FIVE drag-roster blocks [OPEN]
-  **Model:** sonnet · **Time:** 1.5 h · **Deps:** Step Q (closed)
-  **Action:** `sgs/gallery` is the exemplar and the ONLY block with `loopCarousel`. The remaining
-  drag-roster blocks need the identical mechanical pattern: **`sgs/buybox`, `sgs/google-reviews`,
-  `sgs/post-grid`, `sgs/testimonial-slider`, `sgs/trustpilot-reviews`.**
-  ⚠ **That roster is MEASURED, not remembered** — it is the set of blocks declaring
-  `supports.sgs.fx.draggable`. Re-derive it before starting; `sgs/testimonial-slider` was wrongly
-  assumed to be on it once already this wave (it was removed 2026-07-31, momentum now block-private).
-  **The pattern, per block:** `loopCarousel` attr (default `false`) → inspector toggle sitting
-  beside but INDEPENDENT of "Drag to scroll" → `data-sgs-loop="1"` on the scroller in render.php →
-  `view.js` item selection excludes `[data-sgs-loop-clone]` so dots/arrows count REAL cards.
-  ⚠ **`sgs/buybox` is the one that is not mechanical** — its scroller is the thumbnail strip and it
-  mounts the product-card Interactivity store; check the clone insertion does not confuse that store.
-  **Done when:** each block passes `probe-carousel-loop.mjs` pointed at its own fixture, with the
-  dots assertion holding. A block whose dots read the cloned length is NOT done.
-
-### Step X — GATE the three-list drift (the session's highest-value structural fix) [OPEN]
-  **Model:** sonnet · **Time:** 1 h
-  **Action:** An fx effect must join **THREE separate hand-maintained lists** to work, and **no gate
-  cross-checks them**:
-  1. `SHIPPED_EFFECTS` — `src/blocks/extensions/fx.js` (gates the editor picker)
-  2. `FX_ATTR_MAP` — `includes/fx-attributes.php` (attr → data-attribute for DYNAMIC blocks)
-  3. `sgs_fx_effect_param_scope()` — `includes/fx-attributes.php` (per-effect param allowlist)
-  **Two of the three were missed on `cursor-field` in one session.** Missing (1) made the whole
-  feature unreachable from the editor while every other layer was correctly wired. Missing (3) let
-  the page render entirely healthy — emitter marked, assets enqueued — while the client's chosen
-  colour and radius were silently dropped. Neither failed a build.
-  **A FOURTH drift of the same shape exists** for field types: `FX_FIELD_TYPE_OPTIONS` (fx.js) ×
-  `SGS_FX_CURSOR_FIELD_TYPES` (`includes/fx-cursor-field.php`) × the rules in
-  `assets/css/fx-cursor-field.css`. A type in the picker with no CSS rule silently paints nothing.
-  **Shape:** a prebuild gate that reads `fx_effects` and asserts every shipped effect appears in
-  each list it needs, and that no list names an effect the DB does not carry. Ship it with a
-  `--self-test` proving it fails when an entry is removed — a gate that cannot fail reads green forever.
-  **Done when:** deleting `'cursor-field'` from any one of the three lists fails the build.
+> ✅ **Steps W and X CLOSED 2026-08-02** — bodies deleted per this file's own rule. One-line
+> outcomes: **W** = `loopCarousel` rolled to `post-grid` / `trustpilot-reviews` / `google-reviews` /
+> `buybox`, all proven live 9/9 (buybox 8/8 + 1 honestly not-exercised), evidence in
+> `reports/visual-diff/*-2026-08-02.md`, D466 — **and the roster predicate this step stated was
+> itself wrong**, corrected in Spec 38 §3.3. **X** = `scripts/check-fx-list-drift.py`, 6 invariants,
+> wired into `prebuild`, `--self-test` plus three real deletion proofs, D465.
 
 ### Step Y — the loop's UNTESTED arms: reduced motion + keyboard wrap [OPEN]
   **Model:** sonnet · **Time:** 45 min · **Deps:** Step Q (closed)
@@ -272,8 +244,36 @@ park anything else from this plan — this plan is the register.**
   **Done when:** both arms have a live measurement in `probe-carousel-loop.mjs`, and §10 of Spec 38
   carries the loop's reduced-motion row.
 
-### Step Z — `extensions.css` `.sgs-has-focus-ring` is a FOURTH focus system, now one generation behind [OPEN]
-  **Model:** haiku · **Time:** 30 min
+### Step Z — the focus cascade [OPEN — RE-BASED 2026-08-02, the premise changed]
+
+> ⚠ **MEASURED 2026-08-02, and BOTH earlier framings were wrong. Read this before acting.**
+>
+> **Framing 1 (this step, as written below): "a fourth system, one generation behind."** Understated.
+> There are **FIVE** `:focus-visible` systems across **TWO** token families —
+> `--wp--custom--focus-ring--*` (theme.json, static rgba) vs `--sgs-focus-color`/`--sgs-focus-glow`
+> (live preset). The unlogged fifth is `*:focus-visible` at `theme/sgs-theme/assets/css/utilities.css:249`.
+>
+> **Framing 2 (my own hypothesis while planning): "utilities.css wins on specificity, so D463's
+> catch-all never paints."** **REFUTED by measurement.** On the live canary a focused non-form
+> element computes `outline-color: rgb(197,106,122)` = `#c56a7a` = `--sgs-focus-color` — D463's
+> token, so its rule IS winning. Recorded because it was nearly written up as a finding.
+>
+> **The PROVEN cause is neither.** `box-shadow` computes to `none`, and `--sgs-focus-glow` resolves
+> to EMPTY while `--wp--preset--color--accent` resolves fine at `#f5d050`. File-level evidence
+> settles it: the **deployed** `core-blocks-critical.css` (`?ver=1.5.52`) declares
+> `--sgs-focus-color` but **has no `--sgs-focus-glow` and no `box-shadow` line at all**, while the
+> local source has both. **The theme half of D463 was never deployed.** Every deploy this wave and
+> last was `--blocks-only`; D463's form-input fix is in the plugin (shipped), its button + catch-all
+> half is in the theme (not shipped). D463's own live measurement was taken on a form input — which
+> has a more specific rule — so it could not have exposed this.
+>
+> **Therefore:** running `/qc-council` on the cascade before deploying the theme would be reasoning
+> about a tree that isn't there. Sequence is: deploy the theme (or establish the true baseline
+> another way) → re-measure → then council the residual disagreement between the five rules and two
+> token families. A theme deploy touches every client render, so it is Bean's call, not a
+> side-effect of this step.
+
+  **Model:** haiku · **Time:** 30 min (ORIGINAL estimate — no longer credible, see above)
   **Action:** D463 reconciled THREE focus systems onto accent-glow-over-neutral-underlay: form
   inputs (`form/style.css`), SGS buttons and the sitewide `:focus-visible` catch-all
   (`core-blocks*.css`). A fourth exists — `plugins/sgs-blocks/assets/css/extensions.css:440-444`,

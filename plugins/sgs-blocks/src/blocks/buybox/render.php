@@ -285,12 +285,26 @@ $buybox_thumbs_hidden = count( $buybox_def_gallery ) < 2;
 $buybox_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
 $buybox_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 
+/*
+ * Infinite loop (Spec 38 §11 loop FR). A SEPARATE marker from
+ * `data-sgs-fx="draggable"` above — Bean's ruling that looping is an
+ * independent control, not a value of the shared `fx` grammar, and both can
+ * be present on the SAME element at once. `shared/effects/fx-carousel-loop.js`
+ * reads this; it never touches `gsap/fx-draggable.js`. Reuses the SAME
+ * `!$buybox_thumbs_hidden` gate as drag — fewer than 2 images means nothing
+ * to loop, which is exactly when the strip is `hidden` anyway.
+ */
+$buybox_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
+
 $buybox_thumbs_fx_attr = '';
 if ( ! $buybox_thumbs_hidden && $buybox_drag_to_scroll ) {
 	$buybox_thumbs_fx_attr = ' data-sgs-fx="draggable"';
 	if ( ! $buybox_drag_momentum ) {
 		$buybox_thumbs_fx_attr .= ' data-sgs-fx-momentum="false"';
 	}
+}
+if ( ! $buybox_thumbs_hidden && $buybox_loop_carousel ) {
+	$buybox_thumbs_fx_attr .= ' data-sgs-loop="1"';
 }
 
 // Context array — key shape is IDENTICAL to product-card (L445-504).

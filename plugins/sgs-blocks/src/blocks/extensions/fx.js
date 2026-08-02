@@ -325,9 +325,11 @@ const FX_HOLD_OPTIONS = [
  *   3. `assets/css/fx-cursor-field.css` — the rule that actually paints it
  *
  * A type present here and missing from (3) would offer a client an option that
- * silently paints nothing. That divergence is not yet gated — it is recorded as
- * a known residual rather than assumed away, because two hand-maintained lists
- * diverging silently is a failure this codebase has already been bitten by (see
+ * silently paints nothing. **That divergence IS NOW GATED** — invariant I6 of
+ * `scripts/check-fx-list-drift.py` (prebuild) asserts all three lists agree in
+ * every direction, and its `--self-test` proves the check fails when they do
+ * not. Until 2026-08-02 this was only a recorded residual, which is how two
+ * hand-maintained lists diverging silently has bitten this codebase before (see
  * the TRANSITION_STYLES note in class-sgs-motion-registry.php).
  *
  * The empty value is not a type: it means "whatever the stylesheet defaults to",

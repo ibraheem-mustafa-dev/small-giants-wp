@@ -218,6 +218,10 @@
 			"type": "boolean",
 			"default": true
 		},
+		"loopCarousel": {
+			"type": "boolean",
+			"default": false
+		},
 		"sgsAnimation": {
 			"type": "string",
 			"default": "fade-up"

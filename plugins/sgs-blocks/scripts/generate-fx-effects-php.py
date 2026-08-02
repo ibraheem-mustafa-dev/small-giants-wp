@@ -84,7 +84,7 @@ def _load_rows() -> list[tuple]:
         raise SystemExit(1)
 
     rows = cur.execute(
-        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers "
+        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers, in_picker "
         "FROM fx_effects ORDER BY effect"
     ).fetchall()
     con.close()
@@ -161,7 +161,7 @@ def _render(rows: list[tuple]) -> tuple[str, str]:
         "\t\t$effects = array(",
     ]
 
-    for effect, plugin_set_json, owns_scroll_transform, pins, triggers in rows:
+    for effect, plugin_set_json, owns_scroll_transform, pins, triggers, _in_picker in rows:
         plugin_set = json.loads(plugin_set_json)
         owns_bool = "true" if int(owns_scroll_transform) else "false"
         pins_bool = "true" if int(pins) else "false"
@@ -215,13 +215,26 @@ def _render(rows: list[tuple]) -> tuple[str, str]:
     # Deterministic, no timestamp — see the note above for why that is
     # load-bearing for build-deploy's dirty gate.
     # ------------------------------------------------------------------
+    #   · in_picker — whether this effect is offered from the generic "Scroll &
+    #                effects" SelectControl at all. ADDED 2026-08-02 as the DB
+    #                half of the three-list drift gate: `fx.js`'s
+    #                SHIPPED_EFFECTS array is the editor's on-switch, and an
+    #                effect built correctly everywhere else stays dead code
+    #                until its name appears there (`cursor-field` shipped that
+    #                way on first build, unreachable from the editor, and no
+    #                gate caught it). `check-fx-list-drift.py` invariant I1
+    #                compares SHIPPED_EFFECTS against this flag in BOTH
+    #                directions. Mirrored here rather than read from the DB so
+    #                the gate needs no database — a clean checkout must still
+    #                be able to run `npm run build`.
     meta = {
         effect: {
             "pins": bool(int(pins)),
             "triggers": [t for t in str(triggers).split(",") if t],
             "owns_scroll_transform": bool(int(owns)),
+            "in_picker": bool(int(in_picker)),
         }
-        for effect, _plugin_set_json, owns, pins, triggers in rows
+        for effect, _plugin_set_json, owns, pins, triggers, in_picker in rows
     }
     json_source = json.dumps(meta, indent="\t", sort_keys=True) + "\n"
 
