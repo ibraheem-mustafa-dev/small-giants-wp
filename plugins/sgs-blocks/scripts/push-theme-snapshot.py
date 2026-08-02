@@ -117,6 +117,16 @@ def resolve_app_credentials(
             "WP_USER_SANDYBROWN",
             "WP_APP_PWD_SANDYBROWN",
         ),
+        # palestine-lives.org is Indus Foods Ltd's staging site (see the header of
+        # palestine-lives.env). Without this entry the wp_global_styles read 401s and
+        # the drift check silently degrades to "proceeding blind" — which is exactly
+        # the state a push must never be run in, since that layer overrides theme.json
+        # and is the only thing a rollback could restore from.
+        "palestine-lives": (
+            secrets_dir / "palestine-lives.env",
+            "WP_USER_PALESTINE-LIVES",
+            "WP_APP_PWD_PALESTINE-LIVES",
+        ),
     }
 
     for domain_key, (env_path, user_var, pwd_var) in domain_env_map.items():
