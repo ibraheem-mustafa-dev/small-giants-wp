@@ -109,10 +109,9 @@ DOCS: dict[str, dict[str, str]] = {
                  "`slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live "
                  "2026-08-02 (Phase 1).",
         "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 "
-                        "one-off with no callers that appended productName / trialTag / "
-                        "featuredTag / splitimage. Those aliases are BAKED INTO this capture, "
-                        "so the script is now redundant. Do not re-run it against a rebuilt "
-                        "DB expecting to add anything; extend THIS file instead.",
+                        "one-off whose four alias additions are BAKED INTO this capture. It became "
+                        "redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; "
+                        "there is no script to re-run.",
         "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
     },
     "excluded_properties": {
