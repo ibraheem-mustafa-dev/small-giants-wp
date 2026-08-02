@@ -23,10 +23,26 @@
  * parameter, and a run that matches nothing exits non-zero — a probe that
  * finds no real items is broken, never a pass.
  *
- * Usage: node scripts/motion-qa/probe-carousel-loop.mjs [url] [item-selector]
- *   url            defaults to the gallery loop canary (below)
- *   item-selector  defaults to `.sgs-gallery__item` — pass the rolled-out
- *                  block's own card selector, e.g. `.sgs-post-grid__item`
+ * Usage: node scripts/motion-qa/probe-carousel-loop.mjs [url] [item-selector] [next-arrow-selector]
+ *   url                 defaults to the gallery loop canary (below)
+ *   item-selector       defaults to `.sgs-gallery__item` — pass the rolled-out
+ *                       block's own card selector, e.g. `.sgs-post-grid__item`
+ *   next-arrow-selector defaults to `.sgs-gallery__carousel-next` — pass the
+ *                       block's own "next" arrow selector, e.g.
+ *                       `.sgs-trustpilot-reviews__arrow--next`. A block with
+ *                       NO arrow (sgs/buybox) reports its arm N/A, never a
+ *                       false pass — see the register-item-M2 section below.
+ *
+ * REGISTER ITEM M2 ("Step Y", 2026-08-02). Two arms of the loop's contract
+ * were BUILT but never MEASURED: (1) reduced-motion behaviour for the loop
+ * module itself (unstated, not just untested — `fx-carousel-loop.js`'s own
+ * docblock only argues by analogy that it should be a no-op), and
+ * (2) keyboard arrow-wrap at the loop boundary (WCAG 2.5.7 — arrows were
+ * proven to never DISABLE, but wrap was only ever driven by pointer/
+ * `scrollLeft`, never by repeated keyboard ARROW-KEY activation). Both are
+ * measured below, appended to the SAME results/verdict tally as the
+ * pre-existing checks — a run that regresses either arm fails the whole
+ * probe, not a silent side-channel.
  */
 
 import { chromium } from 'playwright';
@@ -37,6 +53,9 @@ const URL =
 
 /** Per-block card selector. Default keeps every existing gallery invocation unchanged. */
 const ITEM_SELECTOR = process.argv[ 3 ] || '.sgs-gallery__item';
+
+/** Per-block "next" arrow selector, for the M2 keyboard-wrap arm. */
+const NEXT_ARROW_SELECTOR = process.argv[ 4 ] || '.sgs-gallery__carousel-next';
 
 const results = [];
 
@@ -290,6 +309,422 @@ check(
 	afterDrag > 0,
 	`scrollLeft after a 320px drag = ${ afterDrag }`
 );
+
+/* =========================================================================
+ * REGISTER ITEM M2 — ARM 1: reduced motion for the LOOP module itself.
+ *
+ * The hypothesis (stated in the brief, and echoed in `fx-carousel-loop.js`'s
+ * own docblock) is SIMPLIFY-by-construction: the module performs no tween,
+ * only instantaneous `scrollLeft` writes, so it should behave IDENTICALLY
+ * whether or not the visitor has requested reduced motion. That is a
+ * hypothesis, not a measured fact — the module contains zero
+ * `matchMedia`/`prefers-reduced-motion` branches, so "identical" is the
+ * ABSENCE of a gate, not a gate that was proven to do the right thing.
+ * Measured here: boot a FRESH context with `reducedMotion: 'reduce'` (must
+ * be set at context-creation time — `matchMedia` is read once at module
+ * load, so emulating it post-navigation would not reproduce a real visit),
+ * navigate cold, and re-run the same clone/neutralise/wrap assertions the
+ * main probe already trusts under normal motion. Equal outcomes under both
+ * conditions IS the evidence for "runs identically regardless of
+ * preference" — not an assumption.
+ *
+ * NEGATIVE CONTROL for this arm: the gallery's OWN arrow-click code
+ * (`view.js` `goToItem`) DOES branch on reduced motion —
+ * `behavior: REDUCED_MOTION ? 'auto' : 'smooth'` passed to
+ * `Element.prototype.scrollIntoView`. That is a real, independently-known
+ * difference the reduced-motion context MUST produce. `scrollIntoView` is
+ * monkey-patched before the click so the literal `behavior` argument is
+ * captured, then compared against a normal-motion capture on the ORIGINAL
+ * page. If the two ever come back equal, the reduced-motion emulation
+ * itself did not take effect and every assertion in this arm is void —
+ * this check exists specifically so that failure mode cannot pass silently.
+ * ---------------------------------------------------------------------- */
+// eslint-disable-next-line no-console
+console.log( '\n--- ARM 1: reduced motion (loop module + arrow-click sanity check) ---' );
+
+const rmContext = await browser.newContext( {
+	viewport: { width: 1280, height: 900 },
+	reducedMotion: 'reduce',
+} );
+const rmPage = await rmContext.newPage();
+try {
+	await rmPage.goto( `${ URL }?cb=${ Date.now() }-rm`, { waitUntil: 'networkidle' } );
+} catch ( err ) {
+	// eslint-disable-next-line no-console
+	console.log(
+		`  [note] networkidle not reached on reduced-motion context (${ err.name }) — falling back to load + 2s settle.`
+	);
+	await rmPage.goto( `${ URL }?cb=${ Date.now() }-rm`, { waitUntil: 'load' } );
+	await rmPage.waitForTimeout( 2000 );
+}
+
+const rmMediaMatches = await rmPage.evaluate(
+	() => window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+);
+check(
+	'reduced-motion context actually applied prefers-reduced-motion: reduce',
+	true === rmMediaMatches,
+	`matchMedia(reduce).matches=${ rmMediaMatches }`
+);
+
+if ( true !== rmMediaMatches ) {
+	// eslint-disable-next-line no-console
+	console.log(
+		'  [FAIL] the emulated context did not report reduced motion — every remaining Arm 1 assertion below would be measuring the NORMAL-motion page under a false label. Skipping the rest of this arm rather than reporting a meaningless result.'
+	);
+	skipped.push( 'Arm 1 loop/clone assertions under reduced motion (context emulation did not take effect)' );
+} else if ( 0 === ( await rmPage.locator( '[data-sgs-loop]' ).count() ) ) {
+	check(
+		'[data-sgs-loop] present under reduced motion',
+		false,
+		'no [data-sgs-loop] element found on the reduced-motion navigation — fixture or marker missing'
+	);
+} else {
+	const rmTrack = rmPage.locator( '[data-sgs-loop]' ).first();
+	await rmTrack.scrollIntoViewIfNeeded();
+
+	const rmLoop = await rmPage.evaluate( ( itemSelector ) => {
+		const el = document.querySelector( '[data-sgs-loop]' );
+		const clones = el.querySelectorAll( '[data-sgs-loop-clone]' );
+		const notNeutralised = [ ...clones ].filter(
+			( c ) => 'true' !== c.getAttribute( 'aria-hidden' ) || ! c.hasAttribute( 'inert' )
+		).length;
+		const real = el.querySelectorAll(
+			`${ itemSelector }:not([data-sgs-loop-clone])`
+		).length;
+		return {
+			scrollWidth: el.scrollWidth,
+			clientWidth: el.clientWidth,
+			cloneCount: clones.length,
+			notNeutralised,
+			real,
+		};
+	}, ITEM_SELECTOR );
+
+	if ( rmLoop.scrollWidth <= rmLoop.clientWidth || 0 === rmLoop.real ) {
+		// eslint-disable-next-line no-console
+		console.log(
+			`  [INCONCLUSIVE] reduced-motion track does not overflow or item selector matched nothing (scrollWidth=${ rmLoop.scrollWidth }, clientWidth=${ rmLoop.clientWidth }, real=${ rmLoop.real }) — cannot exercise the loop under reduced motion on this fixture.`
+		);
+		skipped.push( 'Arm 1 loop assertions under reduced motion (fixture does not overflow)' );
+	} else {
+		check(
+			'clones inserted under reduced motion (loop mechanism is NOT suppressed)',
+			rmLoop.cloneCount > 0,
+			`${ rmLoop.cloneCount } clone(s), real cards=${ rmLoop.real }`
+		);
+		check(
+			'clones neutralised (inert + aria-hidden) under reduced motion',
+			0 === rmLoop.notNeutralised,
+			`${ rmLoop.notNeutralised } clone(s) NOT neutralised`
+		);
+
+		const rmWrap = await rmPage.evaluate( async () => {
+			const el = document.querySelector( '[data-sgs-loop]' );
+			const max = el.scrollWidth - el.clientWidth;
+			el.scrollLeft = max;
+			await new Promise( ( r ) => setTimeout( r, 250 ) );
+			el.scrollLeft = max + 200;
+			await new Promise( ( r ) => setTimeout( r, 400 ) );
+			return { max, afterPastEnd: el.scrollLeft };
+		} );
+		check(
+			'boundary correction (scrollLeft re-seat) still fires under reduced motion — instant position writes are not gated, matching the module\'s no-tween contract',
+			rmWrap.afterPastEnd < rmWrap.max,
+			`max=${ rmWrap.max }, after pushing past=${ rmWrap.afterPastEnd }`
+		);
+	}
+}
+
+/*
+ * The independently-known real difference the negative control needs is
+ * SOME per-block mechanism that branches on reduced motion. Which DOM method
+ * a block uses for its arrow-click varies (`sgs/gallery` and `sgs/post-grid`
+ * use `Element.scrollIntoView`; `sgs/trustpilot-reviews` uses
+ * `Element.scrollTo`/`scrollBy` with a HARDCODED `behavior: 'smooth'` and no
+ * reduced-motion branch at all — found live this session, a genuine defect
+ * in that block's own arrow-click, separate from the loop module under
+ * test). All three are monkey-patched so the control works regardless of
+ * which mechanism the block uses, and a block that never branches on
+ * reduced motion is reported as its own finding rather than silently
+ * folded into a pass OR mis-attributed to the loop module.
+ */
+async function captureScrollBehaviour( targetPage ) {
+	const arrowExists = await targetPage.evaluate(
+		( sel ) => !! document.querySelector( sel ),
+		NEXT_ARROW_SELECTOR
+	);
+	if ( ! arrowExists ) {
+		return null;
+	}
+	return targetPage.evaluate( ( sel ) => {
+		return new Promise( ( resolve ) => {
+			let captured = 'NONE_CALLED';
+			const capture = ( opts ) => {
+				if ( 'NONE_CALLED' === captured ) {
+					captured =
+						opts && opts.behavior ? opts.behavior : 'NO_BEHAVIOUR_ARG';
+				}
+			};
+			const originals = {
+				scrollIntoView: Element.prototype.scrollIntoView,
+				scrollBy: Element.prototype.scrollBy,
+				scrollTo: Element.prototype.scrollTo,
+			};
+			Element.prototype.scrollIntoView = function ( opts ) {
+				capture( opts );
+				return originals.scrollIntoView.call( this, opts );
+			};
+			Element.prototype.scrollBy = function ( opts ) {
+				capture( opts );
+				return originals.scrollBy.call( this, opts );
+			};
+			Element.prototype.scrollTo = function ( opts ) {
+				capture( opts );
+				return originals.scrollTo.call( this, opts );
+			};
+			document.querySelector( sel ).click();
+			setTimeout( () => {
+				Object.assign( Element.prototype, originals );
+				resolve( captured );
+			}, 50 );
+		} );
+	}, NEXT_ARROW_SELECTOR );
+}
+
+const normalBehaviour = await captureScrollBehaviour( page );
+const rmBehaviour = true === rmMediaMatches ? await captureScrollBehaviour( rmPage ) : null;
+
+if ( null === normalBehaviour || null === rmBehaviour ) {
+	skipped.push(
+		'reduced-motion negative control (scroll-behaviour capture) — this block has no next-arrow at NEXT_ARROW_SELECTOR'
+	);
+	// eslint-disable-next-line no-console
+	console.log(
+		`  [N/A ] negative control not exercised — no element at "${ NEXT_ARROW_SELECTOR }" on this block. Pass the block's own next-arrow selector as the 4th CLI arg.`
+	);
+} else if ( 'auto' === rmBehaviour && 'smooth' === normalBehaviour ) {
+	check(
+		'NEGATIVE CONTROL: reduced-motion context measurably changes THIS block\'s own arrow-click scroll behaviour (auto vs smooth) — proves the emulation is real, not self-reported',
+		true,
+		`normal="${ normalBehaviour }", reduced="${ rmBehaviour }"`
+	);
+} else if ( normalBehaviour === rmBehaviour && 'NONE_CALLED' !== normalBehaviour ) {
+	// The mechanism fired, and identically both times — this block's OWN
+	// arrow-click does not branch on reduced motion at all. Real finding,
+	// but it is a defect in the BLOCK's per-instance arrow code, not in the
+	// loop module under test (Arm 1's actual subject, already measured
+	// above via clone/neutralise/boundary-correction). Reported separately
+	// so it is neither a silent pass nor mis-attributed to the loop module.
+	skipped.push(
+		`reduced-motion negative control via this block's arrow-click — INCONCLUSIVE, but a finding: captured "${ normalBehaviour }" under BOTH normal and reduced motion (this block's own arrow-click ignores prefers-reduced-motion; separate from the loop module's contract)`
+	);
+	// eslint-disable-next-line no-console
+	console.log(
+		`  [FINDING] this block's own arrow-click never branches on reduced motion — captured "${ normalBehaviour }" identically under both conditions. That is a real defect in the BLOCK's per-instance code, not the loop module under test here; recorded as a finding, not folded into this arm's pass/fail.`
+	);
+} else {
+	check(
+		'NEGATIVE CONTROL: reduced-motion context measurably changes THIS block\'s own arrow-click scroll behaviour',
+		false,
+		`normal="${ normalBehaviour }", reduced="${ rmBehaviour }" — captured a real mechanism call but the values do not fit the expected auto/smooth split`
+	);
+}
+
+await rmContext.close();
+
+/* =========================================================================
+ * REGISTER ITEM M2 — ARM 2: keyboard arrow-wrap at the loop boundary
+ * (WCAG 2.5.7 — the dragging-movements keyboard alternative).
+ *
+ * Arrows were already proven never to DISABLE (main probe's context, and
+ * Spec 38 §11's own a11y contract). What was never exercised is repeated
+ * KEYBOARD activation carrying the visitor PAST the boundary — the pointer/
+ * `scrollLeft`-driven wrap path is not the same code path as a synthetic
+ * click, and WCAG 2.5.7 specifically requires a keyboard-operable
+ * alternative to work, not merely exist.
+ *
+ * Method: reset the track to a clean starting `scrollLeft` first — the main
+ * probe above deliberately drove `scrollLeft` straight to `max` and past it
+ * to test the boundary, and starting Arm 2 from that leftover position is a
+ * PROBE-CONTAMINATION bug, not a fixture property (caught live: it made
+ * post-grid/trustpilot read as "index frozen" when a fresh-navigation debug
+ * run proved the wrap genuinely works — see the git history for this file).
+ * Then focus the next-arrow via keyboard (`.focus()` is the reachable-outcome
+ * equivalent of Tab, without depending on how many Tab stops precede it on
+ * a given fixture), and press Enter — a native `<button>`'s keyboard
+ * -activation key — exactly `realCardCount` times, waiting for BOTH the
+ * smooth-scroll animation AND the block's own scroll-driven index resync to
+ * settle between presses (proven live to need >400ms on post-grid/
+ * trustpilot; 700ms is used here with margin). With correct modulo wrap, N
+ * presses of "next" lands back at the SAME index the sequence started from
+ * (generic — the starting index is whatever it is, not assumed to be 0).
+ *
+ * NEGATIVE CONTROL for this arm is the assertion shape itself, not a
+ * separate probe: a BROKEN wrap (arrows clamp instead of wrapping) would
+ * leave the active dot at index `realCardCount - 1` after N presses, not
+ * back at the start — the check can genuinely fail, it is not a tautology.
+ * ---------------------------------------------------------------------- */
+// eslint-disable-next-line no-console
+console.log( '\n--- ARM 2: keyboard arrow-wrap at the loop boundary (WCAG 2.5.7) ---' );
+
+/*
+ * Wait for the earlier drag-gesture assertion's momentum coast to actually
+ * FINISH before touching scrollLeft or starting keyboard presses — proven
+ * live to matter: `sgs/gallery` genuinely wrapped correctly (0->1->2->3->4
+ * ->5->0, isolated debug run) but FAILED in-probe (start=4, end=1) when
+ * Arm 2 began immediately after the drag test, because the drag/momentum
+ * gesture holds `el.style.scrollSnapType = 'none'` for its WHOLE duration
+ * (`fx-draggable.js`'s own documented contract, restated in this file's
+ * docblock) and a raw `scrollLeft` write racing against still-decelerating
+ * inertia corrupts the position the block's own scroll-driven dot-resync
+ * then reads. Poll the SAME public signal `fx-carousel-loop.js` itself uses
+ * to detect "drag currently owns this element", so Arm 2 starts from a
+ * state a real visitor would actually be in (gesture fully released), not
+ * a race condition manufactured by testing two arms back-to-back.
+ */
+await page.waitForFunction(
+	() => {
+		const el = document.querySelector( '[data-sgs-loop]' );
+		return el && 'none' !== el.style.scrollSnapType;
+	},
+	{ timeout: 5000 }
+).catch( () => {
+	// eslint-disable-next-line no-console
+	console.log( '  [note] scrollSnapType still \'none\' after 5s — proceeding anyway; Arm 2 below may reflect residual momentum.' );
+} );
+
+// Clean starting position — see the contamination note above.
+await page.evaluate( () => {
+	const el = document.querySelector( '[data-sgs-loop]' );
+	if ( el ) {
+		el.scrollLeft = 0;
+	}
+} );
+await page.waitForTimeout( 800 );
+
+const arrowPresent = await page.evaluate(
+	( sel ) => !! document.querySelector( sel ),
+	NEXT_ARROW_SELECTOR
+);
+
+if ( ! arrowPresent ) {
+	skipped.push(
+		`keyboard arrow-wrap (no next-arrow at "${ NEXT_ARROW_SELECTOR }" on this block)`
+	);
+	// eslint-disable-next-line no-console
+	console.log(
+		`  [N/A ] no element at "${ NEXT_ARROW_SELECTOR }" — this block has no next-arrow (e.g. sgs/buybox navigates its thumbnail strip through the product-card store, not arrows). Pass the block's own selector as the 4th CLI arg if this is wrong.`
+	);
+} else {
+	const activeDotIndex = async () =>
+		page.evaluate( () => {
+			const el = document.querySelector( '[data-sgs-loop]' );
+			const blockRoot = el.closest( '[class*="wp-block-sgs-"]' ) || document;
+			const dots = [
+				...blockRoot.querySelectorAll(
+					'.sgs-gallery__dot, [class*="dot"][role="tab"], button[class*="dot"]'
+				),
+			];
+			if ( ! dots.length ) {
+				return null;
+			}
+			return dots.findIndex(
+				( d ) =>
+					[ ...d.classList ].some(
+						( c ) => c.endsWith( '--active' ) || 'is-active' === c
+					) ||
+					'true' === d.getAttribute( 'aria-selected' ) ||
+					'true' === d.getAttribute( 'aria-current' )
+			);
+		} );
+
+	const realCardCount = counts.real; // From the main probe's earlier measurement.
+	const startIndex = await activeDotIndex();
+
+	await page.evaluate( ( sel ) => document.querySelector( sel ).focus(), NEXT_ARROW_SELECTOR );
+	const focusLanded = await page.evaluate(
+		( sel ) => document.activeElement === document.querySelector( sel ),
+		NEXT_ARROW_SELECTOR
+	);
+	check(
+		'next-arrow is keyboard-focusable',
+		focusLanded,
+		`document.activeElement matches "${ NEXT_ARROW_SELECTOR }": ${ focusLanded }`
+	);
+
+	/*
+	 * Press tolerance: N presses is the THEORETICAL minimum for a full lap
+	 * (index-counted wrap, as `sgs/gallery`/`sgs/post-grid` implement it —
+	 * `currentIndex` is an internal counter, wrapped by modulo on every
+	 * press). `sgs/trustpilot-reviews` syncs its active dot a DIFFERENT way
+	 * — nearest-real-card-to-scroll-position, the same technique
+	 * `sgs/post-grid`'s own drag/scroll resync uses — and that geometry can
+	 * spend one press "inside" the clone region before the loop module's own
+	 * boundary correction re-seats `scrollLeft`, before the dot position
+	 * catches up. Measured live: trustpilot needs N+1 presses, not N, to
+	 * complete a lap; gallery/post-grid need exactly N. N+2 presses is used
+	 * as the tolerance so a genuinely broken wrap (permanently clamped) is
+	 * still caught, without over-fitting the assertion to one mechanism.
+	 */
+	const PRESS_TOLERANCE = realCardCount + 2;
+	let arrowDisabledMidSequence = false;
+	let pressesTaken = 0;
+	let wrappedAtPress = null;
+	for ( let i = 0; i < PRESS_TOLERANCE; i++ ) {
+		const isDisabled = await page.evaluate(
+			( sel ) => document.querySelector( sel ).disabled === true,
+			NEXT_ARROW_SELECTOR
+		);
+		if ( isDisabled ) {
+			arrowDisabledMidSequence = true;
+			break;
+		}
+		await page.keyboard.press( 'Enter' );
+		pressesTaken++;
+		// Settle past the ~120ms loop-module debounce AND the block's own
+		// scroll-driven index resync + smooth-scroll animation — proven live
+		// (post-grid/trustpilot) that 400ms was not enough and produced a
+		// false "frozen index" read; 700ms holds with margin on both, and
+		// 900ms was used for the standalone debug that measured trustpilot's
+		// extra press cleanly.
+		await page.waitForTimeout( 900 );
+		if ( pressesTaken >= realCardCount ) {
+			const probe = await activeDotIndex();
+			if ( probe === startIndex ) {
+				wrappedAtPress = pressesTaken;
+				break;
+			}
+		}
+	}
+
+	check(
+		`next-arrow never disabled across a full lap of repeated keyboard activation (WCAG 2.5.7 — a loop has no last item; tolerance up to ${ PRESS_TOLERANCE } presses)`,
+		! arrowDisabledMidSequence,
+		arrowDisabledMidSequence
+			? `arrow became disabled after ${ pressesTaken } press(es), before completing the lap`
+			: `completed ${ pressesTaken } keyboard activation(s) without the arrow disabling`
+	);
+
+	if ( null === startIndex ) {
+		skipped.push(
+			'keyboard-wrap dot-index assertion (this block renders no dots to read a position from)'
+		);
+		// eslint-disable-next-line no-console
+		console.log(
+			'  [N/A ] no dots found to read active-index from — this block has no dot indicator. The "never disabled" check above still stands as the WCAG 2.5.7 evidence for this block.'
+		);
+	} else {
+		const endIndex = null === wrappedAtPress ? await activeDotIndex() : startIndex;
+		check(
+			`keyboard-driven wrap lands back at the SAME index it started from within ${ PRESS_TOLERANCE } "next" activations (full lap, not clamped at the last real item)`,
+			null !== wrappedAtPress,
+			null !== wrappedAtPress
+				? `start index=${ startIndex } -> back to ${ startIndex } after ${ wrappedAtPress } press(es) (real cards=${ realCardCount }; exact-N is the index-counted mechanism gallery/post-grid use, N+1 is trustpilot's own nearest-scroll-position mechanism — both are a genuine lap, neither is clamped)`
+				: `start index=${ startIndex }, never returned within ${ PRESS_TOLERANCE } presses — last observed index=${ endIndex } — a broken wrap would strand end index at ${ realCardCount - 1 } regardless of start`
+		);
+	}
+}
 
 await browser.close();
 const failed = results.filter( ( r ) => ! r.pass );

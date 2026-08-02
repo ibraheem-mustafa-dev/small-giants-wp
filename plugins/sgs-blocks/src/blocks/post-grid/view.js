@@ -507,9 +507,9 @@ function initCarousel( gridEl, queryData ) {
 
 		if ( target ) {
 			target.scrollIntoView( {
-				behaviour: REDUCED_MOTION ? 'auto' : 'smooth',
-				block:     'nearest',
-				inline:    'start',
+				behavior: REDUCED_MOTION ? 'auto' : 'smooth',
+				block:    'nearest',
+				inline:   'start',
 			} );
 		}
 	};

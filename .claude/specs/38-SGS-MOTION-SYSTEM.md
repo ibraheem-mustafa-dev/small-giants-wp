@@ -286,12 +286,36 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   descendant. `inert` + `aria-hidden` stop a human reaching a clone; they do NOT stop a framework
   hydrating it. Proven live: **0 live attributes across 20 clone subtrees**, with a negative control
   confirming the assertion fails when one is re-planted.
-  2. **Reduced motion for the LOOP is unstated and unmeasured.** The drag module's own SIMPLIFY
-     contract is unchanged and does not transfer: a clone-and-reseat is not autonomous motion, so
-     SIMPLIFY is the likely answer, but §10 carries no row for it yet.
-  3. **Keyboard arrow-wrap at the boundary was never exercised.** Arrows are present and correctly
-     never disable, but the wrap was driven by pointer and `scrollLeft`. WCAG 2.5.7 rests on that
-     discrete alternative actually working AROUND the loop point, which is untested.
+  2. **CLOSED 2026-08-02 (register item M2).** Reduced motion for the LOOP is now measured, not
+     assumed — see §10's new `Carousel loop (FR-38-26)` row. Confirmed on 4 of 5 rollout blocks
+     with a real `reducedMotion:'reduce'` browser context: clones, neutralisation, and boundary
+     re-seat all behave identically under reduce, because the correction is an instantaneous
+     `scrollLeft` write, never a tween — there is genuinely nothing for `prefers-reduced-motion`
+     to gate in this module. A negative control (each block's OWN arrow-click, a separate code
+     path) proved the emulated context was real: `sgs/gallery`/`sgs/post-grid` correctly branch
+     `auto`/`smooth`; `sgs/trustpilot-reviews` and `sgs/google-reviews` hardcode `'smooth'`
+     regardless of preference — a genuine defect in those two blocks' own arrow-click code,
+     separate from the loop module, recorded in §10 rather than fixed here.
+  3. **CLOSED 2026-08-02 (register item M2), with ONE genuine defect found.** Keyboard arrow-wrap
+     was exercised live (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 2 — focus the next-arrow,
+     press Enter repeatedly past the boundary) on all 4 arrow-bearing blocks (`sgs/buybox` has no
+     arrows to test). `sgs/gallery`, `sgs/post-grid`, `sgs/trustpilot-reviews` all wrap correctly —
+     the arrow never disables AND the active position genuinely returns to its starting point
+     (gallery/post-grid in exactly N presses via their internal counted `currentIndex`; trustpilot
+     in N+1, because its dot-sync is nearest-scroll-position rather than a counter, and spends one
+     press "inside" the clone region before the loop module's own correction re-seats it — a real
+     mechanism difference, not a defect). **`sgs/google-reviews` is genuinely BROKEN**: its
+     `nextSlide()` computes an absolute scroll target by scanning only REAL (non-clone) items for
+     one past the current position; once `scrollLeft` moves into clone territory it has no further
+     real item to target and dead-ends at the last real card forever — the arrow never disables
+     (satisfying the letter of "must never disable") but functionally cannot progress past the
+     last real card via repeated keyboard activation, failing WCAG 2.5.7's actual requirement that
+     the alternative work. Root cause: `src/blocks/google-reviews/view.js` `nextSlide()`/
+     `prevSlide()` need to either target clone positions the way the loop module itself does, or
+     switch to relative `scrollBy()` stepping the way `sgs/trustpilot-reviews` already does (which
+     rides into clone territory harmlessly because the loop module's own correction re-seats it).
+     NOT fixed this session — a behavioural change to that block's navigation, not a measurement
+     task, and outside this session's "measure, don't ship" scope.
 
 - **FR-38-14 Physics easings as flavours.** Physics2D / PhysicsProps / CustomBounce /
   CustomWiggle appear ONLY as easing/motion-flavour options inside other G effects' controls
@@ -1047,6 +1071,8 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | MotionPath | **Suppress:** rests at the client-chosen resting position (D441, 2026-08-01 — CSS applies `--sgs-fx-motion-path-rest-y` unconditionally under `prefers-reduced-motion: reduce`, the same custom property the normal-motion handoff uses; superseded the earlier "matches existing decorative-image reduced-motion arm" wording, which predated the resting-position control and meant "wherever the server rendered it") |
 | Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
+| Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
+| Carousel loop (FR-38-26) | **Measured 2026-08-02 (register item M2).** Unstated in this spec until now — the module's own docblock only argued by analogy that it should be a no-op. **Confirmed identical under reduce**, by direct measurement on 4 of 5 rollout blocks with a real `reducedMotion:'reduce'` browser context (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 1): clones still insert, still neutralise (`inert`+`aria-hidden`), and the boundary `scrollLeft` re-seat still fires — because the correction is an instantaneous position WRITE, never a tween, so there is no animation for `prefers-reduced-motion` to gate either way. Negative control (proves the emulated context is real, not self-reported): each block's own arrow-click DOES branch on reduce where implemented — `sgs/gallery`/`sgs/post-grid` pass `auto` vs `smooth` to `scrollIntoView` correctly (post-grid's `behavior` was misspelled `behaviour`, a silent no-op discovered and fixed live this session, `plugins/sgs-blocks/src/blocks/post-grid/view.js`); `sgs/trustpilot-reviews` and `sgs/google-reviews` pass a HARDCODED `'smooth'` regardless of `prefers-reduced-motion` — a real defect in those two blocks' own arrow-click code, NOT in the loop module, recorded here as a finding rather than folded into this row's verdict. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 
