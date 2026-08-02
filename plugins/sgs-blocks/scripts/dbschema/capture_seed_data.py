@@ -287,6 +287,15 @@ def main() -> int:
     if args.self_test:
         return do_self_test()
     if not args.db.exists():
+        if args.check:
+            print(
+                f"SKIPPED — DB not found: {args.db}\n"
+                "  This is expected on a machine without the local dev DB (it is "
+                "unversioned by design). The build proceeds; run "
+                "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to (re)create "
+                "it if you need this check to run."
+            )
+            return 0
         print(f"database not found: {args.db}", file=sys.stderr)
         return 2
     return do_write(args.db) if args.write else do_check(args.db)

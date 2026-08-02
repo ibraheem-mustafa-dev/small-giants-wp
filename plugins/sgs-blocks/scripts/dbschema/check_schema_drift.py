@@ -184,8 +184,14 @@ def compare(schema_con: sqlite3.Connection, live_con: sqlite3.Connection) -> lis
 
 def cmd_check(schema_sql: Path, live_db: Path) -> int:
     if not live_db.exists():
-        print(f"ERROR: live DB not found at {live_db}", file=sys.stderr)
-        return 2
+        print(
+            f"SKIPPED — DB not found: {live_db}\n"
+            "  This is expected on a machine without the local dev DB (it is "
+            "unversioned by design). The build proceeds; run "
+            "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to (re)create "
+            "it if you need this check to run."
+        )
+        return 0
 
     tmp = Path(tempfile.mkdtemp(prefix="sgs-schema-drift-")) / "from-schema.db"
     try:

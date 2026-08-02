@@ -239,8 +239,14 @@ def compare_to_floor(
 
 def cmd_check(floor_path: Path, live_db: Path) -> int:
     if not live_db.exists():
-        print(f"ERROR: live DB not found at {live_db}", file=sys.stderr)
-        return 2
+        print(
+            f"SKIPPED — DB not found: {live_db}\n"
+            "  This is expected on a machine without the local dev DB (it is "
+            "unversioned by design). The build proceeds; run "
+            "`python plugins/sgs-blocks/scripts/sgs-update-v2.py` to (re)create "
+            "it if you need this check to run."
+        )
+        return 0
 
     floor = load_floor(floor_path)
 

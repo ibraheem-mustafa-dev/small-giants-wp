@@ -29,6 +29,7 @@ import functools
 import json
 import re
 import sqlite3
+import sys
 from pathlib import Path
 from typing import NamedTuple
 
@@ -420,6 +421,31 @@ def _seed_table_ordered(table: str) -> None:
         ).fetchall()
         if [tuple(r) for r in current] == seed:
             return  # already exact, including order — nothing to do
+
+        # ⚠ ANNOUNCE A SHRINK BEFORE PERFORMING IT.
+        #
+        # The data file is authoritative: this rebuild DELETEs whatever the table
+        # held and re-INSERTs the file's rows. That is what makes the file the
+        # source of truth — and it also means a file that has LOST rows silently
+        # prunes the live database on the next import, with no error and nothing
+        # to notice. Proven the hard way 2026-08-02: one row was removed from
+        # slots.json to test a gate, an unrelated process imported this module,
+        # and the `attribution` slot (added 2026-07-25 to fix the sgs/quote
+        # cloning bug) was deleted from the live DB. Recovering it needed the
+        # committed blob.
+        #
+        # A shrink is legitimate when someone genuinely retires a slot, so this
+        # does NOT refuse — refusing would break the retirement path and invite a
+        # bypass. It makes the event LOUD instead, matching the deletion notice
+        # _migrate_roles_table() already emits for its orphans.
+        if len(seed) < len(current):
+            sys.stderr.write(
+                f"[db_lookup] WARNING: {_SEEDED_TABLES[table][0]} has "
+                f"{len(seed)} row(s) but `{table}` holds {len(current)} — "
+                f"re-seeding will DELETE {len(current) - len(seed)}. If that was "
+                f"not intended, restore the file (git) before anything else "
+                f"imports this module.\n"
+            )
         conn.execute(f'DELETE FROM "{table}"')  # noqa: S608 — fixed names
         conn.executemany(
             f'INSERT INTO "{table}" ({collist}) '  # noqa: S608 — fixed names

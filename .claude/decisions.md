@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D473 — The three DB gates now RUN, and the seed-file shrink is no longer silent [INCIDENT]
+
+**2026-08-02.** `check_schema_drift.py`, `check_row_floor.py` and `capture_seed_data.py` all existed,
+all passed, and **nothing invoked any of them** — this project's own recurring failure mode. All three
+are now in `plugins/sgs-blocks/package.json`'s `prebuild`, beside the existing
+`db-consistency/run.py --check` precedent (NOT in `handoff-preflight.py`, which is doc-hygiene at
+session end, not a build gate). Total cost **0.63s**.
+
+**An absent database SKIPS, never fails.** The knowledge base is a gitignored local artefact that does
+not exist in CI or on a fresh clone; a gate that broke `npm run build` there would be ripped out within
+a day. `--check` exits 0 with a SKIPPED message when the DB is missing — while `--write`/`--update`
+still error, so the skip cannot become a blanket pass.
+
+⚠ **The agent's "failing path" evidence did NOT prove what it claimed** — it showed the wired chain
+PASSING plus each script's standalone `--self-test` failing, which is not the same as a real drift
+propagating through the wiring. **Proven separately in the main thread:** one row removed from
+`slots.json` → the wired `&&` chain exits **1**. Re-running an agent's own method repeats its blind spot.
+
+### ⛔ THE INCIDENT — a seed file is authoritative, so shrinking it PRUNES THE LIVE DATABASE
+
+Testing that failing path cost a real row. The D470 seeders make the JSON the source of truth: on any
+difference they DELETE the table and re-INSERT the file. So while `slots.json` sat one row short, an
+unrelated process imported `db_lookup` and the seeder **deleted the `attribution` slot from the live
+DB** — an element-scope row added 2026-07-25 to fix the `sgs/quote` 3-block cloning bug. No error, no
+warning. Worse, my `capture_seed_data.py --write` then baked 103 into the file, making file and DB
+*consistently wrong*. **Recovered from the committed blob** (`git show HEAD:…`, which needs no index
+lock — the co-active track held one): file restored to 104, `db_lookup` re-seeded the DB, all three
+seed files verified byte-identical to HEAD, `attribution` present, suite 587/1 skip.
+
+**Fix — announce the shrink, do not refuse it.** `_seed_table_ordered` now writes a loud stderr
+warning naming the file, both counts and the number of rows about to be deleted, before rebuilding. It
+does **not** block: a shrink is legitimate when a slot is genuinely retired, and refusing would break
+the retirement path and invite a bypass. This mirrors the orphan notice `_migrate_roles_table` already
+emits.
+
+### ⛔ AND THE WARNING ITSELF CRASHED — `sys` was never imported at module level
+
+The negative control caught it: `sys.stderr.write` raised `NameError`. `db_lookup.py` imports `sys`
+only inside its `if __name__ == "__main__"` smoke test, so **three separate announcement paths would
+have raised instead of announcing** — my new shrink warning, my `_load_seeded_table` `__columns`
+mismatch notice, and, pre-existing, `_migrate_roles_table`'s orphan-deletion notice at line ~202, which
+has been latently broken since it was written. Fixed with a module-level `import sys`.
+
+**This is the "gate that cannot fail" family in a new costume: a WARNING that crashes instead of
+warning.** Both paths were only ever exercised by a deliberate negative control — the failing arm is
+the only arm that proves an error path exists. Re-verified in a sandbox against a COPY of the data
+directory, so the real seed file was never touched the second time; live DB confirmed at 104
+throughout.
+
 ## D472 — T1.6 CLOSED: `_meta_schema_version` + `block_styles` retired, `enrich-db.py` unblocked [ROUTINE]
 
 **Bean's three calls, 2026-08-02** (T1.6). Two of the three inherited claims were re-measured and
