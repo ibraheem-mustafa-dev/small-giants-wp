@@ -80,7 +80,7 @@ $require_login = $attributes['requireLogin'] ?? false;
 $rate_limit    = absint( $attributes['rateLimit'] ?? 5 );
 
 // Focus ring attributes — editor-controllable, keyboard-only (:focus-visible).
-$focus_ring_colour  = $attributes['formFocusRingColour'] ?? 'primary';
+$focus_ring_colour  = $attributes['formFocusRingColour'] ?? 'accent';
 $focus_ring_width   = absint( $attributes['formFocusRingWidth'] ?? 2 );
 $focus_ring_opacity = absint( $attributes['formFocusRingOpacity'] ?? 40 );
 $focus_ring_offset  = absint( $attributes['formFocusRingOffset'] ?? 2 );

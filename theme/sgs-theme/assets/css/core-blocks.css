@@ -505,6 +505,10 @@ footer .wp-block-list a:hover,
 .wp-block-button.is-style-sgs-primary .wp-block-button__link:focus-visible {
 	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
 	outline-offset: 2px;
+	/* D459 — accent glow layered on the proven-safe outline, matching the
+	   sgs/form input default (see form/style.css D459 comment). The outline
+	   colour is unchanged so button focus never loses its WCAG 2.4.11 floor. */
+	box-shadow: 0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4));
 }
 
 /* SGS Secondary — teal outline */
@@ -524,6 +528,10 @@ footer .wp-block-list a:hover,
 .wp-block-button.is-style-sgs-secondary .wp-block-button__link:focus-visible {
 	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
 	outline-offset: 2px;
+	/* D459 — accent glow layered on the proven-safe outline, matching the
+	   sgs/form input default (see form/style.css D459 comment). The outline
+	   colour is unchanged so button focus never loses its WCAG 2.4.11 floor. */
+	box-shadow: 0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4));
 }
 
 /* SGS Accent — gold bg, dark text (WCAG AA: 4.6:1 on #d8ca50) */
@@ -541,6 +549,10 @@ footer .wp-block-list a:hover,
 .wp-block-button.is-style-sgs-accent .wp-block-button__link:focus-visible {
 	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
 	outline-offset: 2px;
+	/* D459 — accent glow layered on the proven-safe outline, matching the
+	   sgs/form input default (see form/style.css D459 comment). The outline
+	   colour is unchanged so button focus never loses its WCAG 2.4.11 floor. */
+	box-shadow: 0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4));
 }
 
 /* Ghost (legacy M16) — gold border, transparent bg, gold text.

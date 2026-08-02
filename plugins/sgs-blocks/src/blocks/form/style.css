@@ -165,15 +165,28 @@
 /*
  * D454 — the ring's opacity modulates the RING, never the input.
  *
- * D457 — and the ring's COLOUR defaults to `primary-dark`, not `primary`.
- * A focus indicator needs 3:1 against its surroundings (WCAG 2.4.11). Measured
- * on the canary, the ring inherited the brand primary and landed at 2.25:1 —
- * Mama's `#e68a95`, the colour already parked as P-MAMAS-PRIMARY-CONTRAST,
- * surfacing in a place where a keyboard user has nothing else to go on.
- * `primary-dark` exists in all 8 client palettes and clears 3:1 in every one
- * (Mama's 2.25 → 3.32; the rest 3.3–19.8). Bean's call, and the better one:
- * it fixes the ring without touching the brand primary everywhere else, and a
- * future palette clears the bar by construction rather than by luck.
+ * D459 (2026-08-01) — the ring's COLOUR now defaults to `accent`, rendered as
+ * a soft glow, not `primary-dark` as a hard outline. Bean's call: the old
+ * `primary-dark` outline read as too dark/heavy across several client
+ * palettes (several brand `primary`s — e.g. eye-care-ward-end #0D1B2A,
+ * sgs-construction #1C1C1C, sgs-professional #1E2D5E — are near-black, and
+ * `primary-dark` compounds that). `accent` alone FAILS the WCAG 2.4.11 3:1
+ * floor against the input's own painted background (`--wp--preset--color
+ * --surface`, not white — measured 2026-08-01) in 6 of 8 client palettes:
+ * eye-care-ward-end 2.29:1, helping-doctors 2.22:1, indus-foods 1.68:1,
+ * mamas-munches 1.35:1 (vs its own cream `#fbf3dc` surface, not the 1.50:1
+ * a white-background check would show), sgs-healthcare 2.69:1, sgs-mosque
+ * 2.45:1. Only sgs-construction (3.11:1) and sgs-professional (6.38:1) clear
+ * the floor on accent alone.
+ *
+ * So the ring is now TWO layers: a thin NEUTRAL `outline` (still
+ * `primary-dark`, proven ≥3:1 in all 8 palettes — Mama's worst case 3.32:1)
+ * carries the WCAG floor, and the `border-color` + `box-shadow` glow carry
+ * `accent` as the visible feedback colour on top. Losing accent's own
+ * contrast in the 6 failing palettes never makes the indicator invisible —
+ * the neutral outline is still there underneath. `--sgs-focus-ring-colour`
+ * still overrides the glow only (a client palette can still set its own);
+ * introduce `--sgs-focus-underlay-colour` to override the neutral layer.
  *
  * This rule used to carry `opacity: var(--sgs-focus-ring-opacity, 1)`, which
  * applies to the WHOLE ELEMENT. The operator control that feeds it
@@ -186,27 +199,30 @@
  * 5.79:1. Static contrast maths could not see this because the dimming applies
  * to the composited element, not to any colour token.
  *
- * `color-mix` puts the alpha on the outline colour instead, so the control does
+ * `color-mix` puts the alpha on the glow colour instead, so the control does
  * what its name promises and the field's own contrast is never touched. The
- * `1` fallback means an unset variable renders a fully opaque ring, unchanged.
+ * `1` fallback means an unset variable renders a fully opaque glow, unchanged.
  */
 .sgs-form-field__input:focus-visible {
 	outline: var(--sgs-focus-ring-width, 2px) solid
+		var(--sgs-focus-underlay-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
+	outline-offset: var(--sgs-focus-ring-offset, 2px);
+	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b));
+	box-shadow: 0 0 8px 2px
 		color-mix(
 			in srgb,
-			var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c))
+			var(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))
 				calc(var(--sgs-focus-ring-opacity, 1) * 100%),
 			transparent
 		);
-	outline-offset: var(--sgs-focus-ring-offset, 2px);
-	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
 }
 
 /* Fallback for browsers that don't support :focus-visible — still shows ring on :focus */
 .sgs-form-field__input:focus:not(:focus-visible) {
-	outline: var(--sgs-focus-ring-width, 2px) solid var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
+	outline: var(--sgs-focus-ring-width, 2px) solid
+		var(--sgs-focus-underlay-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
 	outline-offset: var(--sgs-focus-ring-offset, 2px);
-	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary-dark, #0a5a5c));
+	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b));
 }
 
 .sgs-form-field__input::placeholder {

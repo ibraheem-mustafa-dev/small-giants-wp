@@ -121,7 +121,13 @@
 					"order": 5,
 					"clusters": [],
 					"prefix": "formFocusRing",
-					"_note": "formFocusRingColour/Width/Opacity/Offset (render.php:82-86,237-243) drive :focus-visible custom-property values on form inputs — a distinct focus-ring control surface outside the Text/Fill/Layout/Position/Motion clusters (no 'outline colour'/'ring width' member exists), so this element declares none and its attributes surface as ORPHANs (FR-35-4), same treatment as sgs/button's icon element."
+					"attrMap": {
+						"css:outline-width": "formFocusRingWidth",
+						"css:outline-offset": "formFocusRingOffset",
+						"css:border-color": "formFocusRingColour",
+						"css:opacity": "formFocusRingOpacity"
+					},
+					"_note": "formFocusRingColour/Width/Opacity/Offset (render.php:82-86,237-243) drive :focus-visible custom-property values on form inputs — a distinct focus-ring control surface outside the Text/Fill/Layout/Position/Motion clusters (no 'outline colour'/'ring width' member exists), so this element declares no CLUSTER members and its attributes surface as ORPHANs (FR-35-4), same treatment as sgs/button's icon element. It DOES declare an explicit attrMap (2026-08-02): these four drive custom-property VALUES rather than being real declarations, so each is mapped to the property it semantically controls — the same treatment progressBarColour gets above, and for the same reason. Opacity is mapped to `css:opacity`, NOT to `css:box-shadow`: style.css:211-217 composes TWO --sgs-* vars (colour + opacity) into ONE box-shadow via color-mix, so no single attr owns that property, and declaring this one as the box-shadow would assert something untrue. Without the attrMap the emission tracer resolved formFocusRingOpacity to box-shadow with css_element NULL, which the F6 reseed-survival check correctly flagged as an undeclared sub-element paint that would misroute on a clone."
 				}
 			}
 		}
@@ -182,7 +188,7 @@
 		},
 		"formFocusRingColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "accent"
 		},
 		"formFocusRingWidth": {
 			"type": "number",

@@ -91,14 +91,22 @@ html {
  *
  * WCAG 2.2 SC 2.4.11 requires the focus indicator to have at least 3:1
  * contrast against the adjacent background colour. We use --primary-dark
- * (#076a8e / teal-dark) as the focus ring colour: 5.54:1 on white, 3.93:1 on
+ * (#076a8e / teal-dark) as the OUTLINE colour: 5.54:1 on white, 3.93:1 on
  * the yellow section bg, and 3.0:1 on the navy footer bg — all passing.
+ *
+ * D459 (2026-08-01) — a soft --accent GLOW now layers on top via box-shadow,
+ * matching the new sgs/form input default (form/style.css D459) and the
+ * button focus rings (core-blocks.css D459). --sgs-focus-color still carries
+ * the WCAG floor unchanged; --sgs-focus-glow is purely additive feedback, so
+ * losing the glow's own contrast on a given background never makes the
+ * indicator invisible.
  *
  * WCAG 2.2 SC 2.4.11 also requires the focus indicator area to be at least
  * as large as a 2px perimeter — 3px outline exceeds this safely.
  */
 :root {
 	--sgs-focus-color: var(--wp--preset--color--primary-dark, #076a8e);
+	--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50);
 }
 
 /* ─── REMOVE INTER-SECTION GAPS ─── */
@@ -124,12 +132,14 @@ body .is-root-container > .wp-block {
 :focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
+	box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 }
 
 /* WordPress core buttons */
 :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) {
 	outline: 3px solid var(--sgs-focus-color) !important;
 	outline-offset: 2px;
+	box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent) !important;
 }
 
 /* WordPress core navigation links */
@@ -137,6 +147,7 @@ body .is-root-container > .wp-block {
 .wp-block-navigation a:focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
+	box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 }
 
 /* ─── HEADER TOP BAR CONTRAST ─── */
