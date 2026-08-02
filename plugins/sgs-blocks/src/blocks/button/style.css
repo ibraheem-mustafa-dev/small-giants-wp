@@ -45,6 +45,25 @@
 	border-color: var(--sgs-btn-border, transparent);
 }
 
+/*
+ * Keyboard focus ring (D467 family). `sgs/button` had NO outline declaration at
+ * all, and the WP rule that would have supplied one —
+ * `:root :where(.wp-element-button:focus, .wp-block-button__link:focus)` — cannot
+ * match it: the block renders `.sgs-button.wp-block-sgs-button` and never carries
+ * `.wp-element-button`. With nothing declaring an outline COLOUR, the ring fell
+ * through to `currentColor`, i.e. the button's own text colour (measured live on
+ * the canary as #3a2e26 = `--wp--preset--color--text`), which is why the D467
+ * sweep's scan of block `:focus-visible` rules found nothing wrong — the writer
+ * was an ABSENCE, not a rule.
+ *
+ * Declared separately from the :hover pair below on purpose: hover must NOT gain
+ * an outline.
+ */
+.sgs-button:focus-visible {
+	outline: 2px solid var( --sgs-focus-color, currentColor );
+	outline-offset: 2px;
+}
+
 .sgs-button:hover,
 .sgs-button:focus-visible {
 	text-decoration: none;

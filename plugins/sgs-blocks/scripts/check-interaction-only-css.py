@@ -46,14 +46,30 @@ A block's staged change is interaction-only iff ALL hold:
   1. Every staged file for the block is ``.css`` or ``.scss``. Any ``.php`` /
      ``.js`` / ``.json`` in the same staged set → the gate applies.
   2. Every staged file is MODIFIED — never added, deleted or renamed.
-  3. Every changed line, added or removed, is a declaration (``prop: value;``),
-     a comment, or blank. A selector line, a brace, or an at-rule → the gate
-     applies, because those restructure which elements match.
+  3. Every changed line, added or removed, is one of: a comment, a blank, a bare
+     brace, a DECLARATION (``prop: value;``), or a SELECTOR line that is itself
+     gesture-only. An at-rule line, or anything unrecognised → the gate applies.
   4. Every changed declaration sits inside a rule whose selector carries at
-     least one GESTURE pseudo-class and whose every compound carries one.
-  5. The multiset of PROPERTY NAMES added equals the multiset removed — i.e. a
-     pure value substitution. Adding or dropping a property changes what the
-     rule does once it matches, and this check declines to reason about that.
+     least one GESTURE pseudo-class and whose every comma-separated compound
+     carries one. Every changed selector line is judged the same way on its own
+     text, so `.a,\\n.b:hover {` is rejected on the `.a` line — `.a` paints.
+
+WIDENED 2026-08-02, Bean-approved, and the reasoning matters because the first
+version of this file was stricter:
+
+  The original rule 5 required the multiset of property names added to EQUAL the
+  multiset removed — a pure value substitution — and rejected anything that added
+  a declaration or a whole rule. That was stricter than FIRST PAINT actually
+  requires, and it blocked a correct `sgs/button` fix that ADDS
+  ``.sgs-button:focus-visible { outline: … }``. A rule that cannot match until the
+  user gestures cannot paint at first paint whether it is edited, added or
+  removed; "what the rule does once it matches" is a real question but it is not
+  the question this gate asks. Removing a gesture-only rule is safe for the same
+  reason — it never painted at first paint, so its absence cannot change it.
+
+  What did NOT relax: every changed line still has to sit inside, or BE, a
+  gesture-only selector. Adding a rule that can match at first paint is still
+  rejected, and there is a negative control for exactly that case.
 
 WHY THE PSEUDO-CLASS ALLOWLIST IS SHORT
 ---------------------------------------
@@ -122,6 +138,33 @@ def _run(args: list[str]) -> str:
     ).stdout
 
 
+def _strip_css_comments(line: str, in_comment: bool) -> tuple[str, bool]:
+    """Remove `/* … */` content from one line, carrying state across lines.
+
+    Returns (code_only_line, still_inside_a_comment). Handles a comment that
+    opens and closes on the same line, one that spans many lines, and several
+    comments on one line.
+    """
+    out = []
+    i = 0
+    while i < len(line):
+        if in_comment:
+            end = line.find("*/", i)
+            if end == -1:
+                return "".join(out), True
+            i = end + 2
+            in_comment = False
+        else:
+            start = line.find("/*", i)
+            if start == -1:
+                out.append(line[i:])
+                return "".join(out), False
+            out.append(line[i:start])
+            i = start + 2
+            in_comment = True
+    return "".join(out), in_comment
+
+
 def _selector_context(text: str) -> dict[int, str]:
     """Map 1-based line number → the innermost selector governing that line.
 
@@ -135,8 +178,14 @@ def _selector_context(text: str) -> dict[int, str]:
     context: dict[int, str] = {}
     stack: list[str] = []
     pending = ""
+    in_comment = False
     for lineno, raw in enumerate(text.splitlines(), start=1):
-        line = re.sub(r"/\*.*?\*/", "", raw)
+        # Strip comments with MULTI-LINE state. Without this the body of a
+        # block comment accumulates into `pending` and is then pushed as the
+        # "selector" of the next rule — which made a correct :focus-visible
+        # rule report its own docblock as a first-paint-matching selector.
+        # Fails safe, but for a reason that is nonsense to read.
+        line, in_comment = _strip_css_comments(raw, in_comment)
         line = re.split(r"//", line, maxsplit=1)[0]
         context[lineno] = stack[-1] if stack else ""
         for ch in line:
@@ -208,25 +257,56 @@ def _changed_lines(path: str, side: str) -> list[tuple[int, str]]:
 
 def _evaluate(changed: list[tuple[int, str]], context: dict[int, str],
               label: str) -> tuple[bool, str, list[str]]:
-    """Apply rules 3 and 4 to one side. Returns (ok, reason, property names)."""
+    """Apply rules 3 and 4 to one side. Returns (ok, reason, property names).
+
+    Every changed line must be one of:
+      * a comment or blank                                        — ignored
+      * a bare brace                                              — structure only
+      * a SELECTOR line that is itself gesture-only               — rule 3a
+      * a DECLARATION inside a gesture-only rule                  — rules 3b + 4
+
+    Anything else fails safe.
+    """
     props: list[str] = []
     for lineno, body in changed:
         if _is_comment_or_blank(body):
             continue
-        if not DECL_RE.match(body):
+
+        stripped = body.strip()
+
+        # Bare structural braces carry no paint of their own.
+        if stripped in ( "{", "}", "};" ):
+            continue
+
+        if DECL_RE.match(body):
+            selector = context.get(lineno, "")
+            if not _is_gesture_selector( selector ):
+                return False, (
+                    f"{label} line {lineno} is in a rule that can match at first "
+                    f"paint: {selector.strip()[:70] or '<unattributed>'}"
+                ), []
+            m = PROP_RE.match(body)
+            if m:
+                props.append(m.group(1).lower())
+            continue
+
+        # A selector line — either opening a rule (`… {`) or one member of a
+        # multi-line selector list (`… ,`). Judged on ITS OWN text, so each
+        # member of a list must independently need a gesture: `.a,\n.b:hover {`
+        # is rejected on the `.a` line, which is correct — `.a` paints.
+        if stripped.endswith( "{" ) or stripped.endswith( "," ):
+            candidate = stripped.rstrip( "{," ).strip()
+            if candidate and _is_gesture_selector( candidate ):
+                continue
             return False, (
-                f"{label} line {lineno} is not a plain declaration: "
-                f"{body.strip()[:70]}"
+                f"{label} line {lineno} adds or removes a rule that CAN match at "
+                f"first paint: {candidate[:70] or '<empty selector>'}"
             ), []
-        selector = context.get(lineno, "")
-        if not _is_gesture_selector(selector):
-            return False, (
-                f"{label} line {lineno} is in a rule that can match at first "
-                f"paint: {selector.strip()[:70] or '<unattributed>'}"
-            ), []
-        m = PROP_RE.match(body)
-        if m:
-            props.append(m.group(1).lower())
+
+        return False, (
+            f"{label} line {lineno} is not a declaration, brace or gesture-only "
+            f"selector: {stripped[:70]}"
+        ), []
     return True, "", props
 
 
@@ -265,18 +345,19 @@ def is_interaction_only(block: str) -> tuple[bool, str]:
             return False, reason
         removed_props += props
 
-    if sorted(added_props) != sorted(removed_props):
-        return False, (
-            "not a pure value substitution — properties added "
-            f"{sorted(added_props)} vs removed {sorted(removed_props)}"
-        )
-
-    if not added_props:
+    # NOTE: there is deliberately no "properties added == properties removed"
+    # check here any more. It was rule 5 until 2026-08-02 and it was stricter
+    # than first paint requires — see the WIDENED note in the module docstring.
+    # Every changed line has already been proven to sit inside, or to BE, a
+    # gesture-only selector, which is the whole question this gate asks.
+    if not added_props and not removed_props:
         return True, "only comments/blank lines changed inside gesture-only rules"
 
+    touched = sorted(set(added_props) | set(removed_props))
     return True, (
-        f"{len(added_props)} value substitution(s) on {sorted(set(added_props))}, "
-        "all inside :hover/:active/:focus-visible rules — cannot match at first paint"
+        f"{len(added_props)} added / {len(removed_props)} removed declaration(s) "
+        f"on {touched}, all inside :hover/:active/:focus-visible rules — "
+        "cannot match at first paint"
     )
 
 
@@ -329,9 +410,34 @@ _SELF_TEST_CASES = [
      13, "\tgap: 12px;", False, "can match at first paint"),
     ("NEGATIVE CONTROL — :focus is NOT a gesture pseudo (autofocus)",
      16, "\toutline: 1px solid blue;", False, "can match at first paint"),
-    ("NEGATIVE CONTROL — adding a PROPERTY is not a value substitution",
+    ("NEGATIVE CONTROL — two declarations crammed on one line are not parseable",
      5, "\toutline: 2px solid currentColor; box-shadow: 0 0 4px red;", False,
-     "not a plain declaration"),
+     "not a declaration, brace or gesture-only selector"),
+]
+
+# Whole-rule ADD/REMOVE cases — the 2026-08-02 widening. Each supplies a full
+# synthetic file plus the line numbers that changed, so the selector-context
+# scanner is exercised on real structure rather than a single spliced line.
+# (name, css, changed_line_numbers, expected_ok, reason_fragment)
+_SELF_TEST_RULE_CASES = [
+    (
+        "adding a whole GESTURE-ONLY rule is INTERACTION-ONLY (the sgs/button case)",
+        ".sgs-button {\n\tcolor: #111;\n}\n"
+        ".sgs-button:focus-visible {\n\toutline: 2px solid var(--sgs-focus-color);\n}\n",
+        [4, 5, 6], True, "",
+    ),
+    (
+        "NEGATIVE CONTROL — adding a rule that CAN match at first paint is blocked",
+        ".sgs-button {\n\tcolor: #111;\n}\n"
+        ".sgs-button__label {\n\tfont-weight: 700;\n}\n",
+        [4, 5, 6], False, "match at first paint",
+    ),
+    (
+        "NEGATIVE CONTROL — a gesture rule nested in a MIXED list is still blocked",
+        ".sgs-button {\n\tcolor: #111;\n}\n"
+        ".sgs-button__label,\n.sgs-button:hover {\n\tfont-weight: 700;\n}\n",
+        [4, 5, 6, 7], False, "match at first paint",
+    ),
 ]
 
 
@@ -348,16 +454,30 @@ def _self_test() -> int:
 
     for name, lineno, replacement, expected, want_reason in _SELF_TEST_CASES:
         added, removed = _apply(lineno, replacement)
-        ok, reason, a_props = _evaluate(added, ctx, "added")
+        ok, reason, _ = _evaluate(added, ctx, "added")
         if ok:
-            ok2, reason2, r_props = _evaluate(removed, ctx, "removed")
-            if not ok2:
-                ok, reason = False, reason2
-            elif sorted(a_props) != sorted(r_props):
-                ok, reason = False, "not a pure value substitution"
+            ok, reason, _ = _evaluate(removed, ctx, "removed")
         got = ok
         failed = got != expected
         # A control that fails for the wrong reason is not a control.
+        wrong_reason = (not expected) and want_reason and want_reason not in reason
+        status = "PASS" if not (failed or wrong_reason) else "FAIL"
+        if failed or wrong_reason:
+            ok_all = False
+        print(f"  [{status}] {name}")
+        if failed:
+            print(f"          expected interaction_only={expected}, got {got} ({reason})")
+        elif wrong_reason:
+            print(f"          rejected for the WRONG reason — wanted {want_reason!r}, "
+                  f"got {reason!r}")
+
+    # Whole-rule add/remove cases (the 2026-08-02 widening).
+    for name, css, linenos, expected, want_reason in _SELF_TEST_RULE_CASES:
+        rule_ctx = _selector_context(css)
+        lines = css.splitlines()
+        changed = [(n, lines[n - 1]) for n in linenos]
+        got, reason, _ = _evaluate(changed, rule_ctx, "added")
+        failed = got != expected
         wrong_reason = (not expected) and want_reason and want_reason not in reason
         status = "PASS" if not (failed or wrong_reason) else "FAIL"
         if failed or wrong_reason:
