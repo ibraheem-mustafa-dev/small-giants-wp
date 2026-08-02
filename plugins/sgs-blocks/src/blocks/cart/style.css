@@ -33,11 +33,25 @@
 	opacity: 0.8;
 }
 
-/* WCAG 2.4.7 — focus must always be visible */
+/*
+ * WCAG 2.4.7 — focus must always be visible.
+ *
+ * Reads the shared `--sgs-focus-*` family rather than `--wp--preset--color--primary`
+ * directly (2026-08-02). This trigger was the ONE focusable element on the page
+ * belonging to no focus-token family at all, so it rendered its own colour while
+ * everything around it moved to the shared one. `--sgs-focus-color` resolves to the
+ * client's `primary-dark`, which is the darker end of their palette and therefore
+ * reads against a light surface; `primary` is the mid-tone and did not.
+ *
+ * The 4px offset is deliberate and kept — the trigger is an icon with its own
+ * padding, so a tighter ring sits on top of the glyph.
+ */
 .sgs-cart__trigger:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary);
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
 	outline-offset: 4px;
 	border-radius: 4px;
+	box-shadow: 0 0 8px 2px
+		color-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent);
 }
 
 /* ── Icon ──────────────────────────────────────────────────────────────────── */

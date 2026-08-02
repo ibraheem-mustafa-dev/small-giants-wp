@@ -254,12 +254,6 @@
         "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
         "linear": "linear"
       },
-      "focus-ring": {
-        "width": "3px",
-        "offset": "2px",
-        "color-primary": "rgba(31, 122, 122, 0.4)",
-        "color-accent": "rgba(245, 158, 11, 0.4)"
-      },
       "fontLinks": [
         "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/astra-local-fonts/montserrat/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXo.woff2",
         "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/astra-local-fonts/source-sans-pro/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7l.woff2"

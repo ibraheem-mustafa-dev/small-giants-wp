@@ -94,18 +94,35 @@ html {
  * (#076a8e / teal-dark) as the OUTLINE colour: 5.54:1 on white, 3.93:1 on
  * the yellow section bg, and 3.0:1 on the navy footer bg — all passing.
  *
- * D459 (2026-08-01) — a soft --accent GLOW now layers on top via box-shadow,
- * matching the new sgs/form input default (form/style.css D459) and the
- * button focus rings (core-blocks.css D459). --sgs-focus-color still carries
- * the WCAG floor unchanged; --sgs-focus-glow is purely additive feedback, so
- * losing the glow's own contrast on a given background never makes the
- * indicator invisible.
+ * D459 (2026-08-01) — a soft --accent GLOW layers on top via box-shadow,
+ * matching the sgs/form input default (form/style.css D459) and the button
+ * focus rings (core-blocks.css D459).
+ *
+ * ⛔ D467 (2026-08-02) — THE OUTLINE IS NOW --accent, NOT --primary-dark.
+ * Everything above this line describing --primary-dark as the outline colour
+ * that "carries the WCAG floor" is SUPERSEDED. Bean's ruling, verbatim:
+ * "the focus outline should be accent since it's supposed to be a glow effect
+ * and not a dark high contrast object", and separately: "it just needs to be
+ * accurate to the site's global colours — it's a default, not a magical
+ * setting… this isn't text, it just needs to be discernable clearly which is
+ * more like a 2:1".
+ *
+ * So the acceptance criterion for this token is PALETTE ACCURACY and clear
+ * discernability, NOT the 3:1 figure in ~/.claude/rules/visual-standards.md.
+ * That was raised twice (D463 and again here) and ruled on twice. **Do not
+ * "fix" this back to a dark high-contrast outline on the strength of a
+ * contrast audit** — that is a decision already made, not an oversight.
+ *
+ * Both tokens now resolve from the CLIENT's own palette, so a re-theme
+ * re-colours the focus ring automatically. They deliberately point at the same
+ * source: outline = accent, glow = the same accent softened, giving one
+ * coherent glow rather than a ring plus an unrelated halo.
  *
  * WCAG 2.2 SC 2.4.11 also requires the focus indicator area to be at least
  * as large as a 2px perimeter — 3px outline exceeds this safely.
  */
 :root {
-	--sgs-focus-color: var(--wp--preset--color--primary-dark, #076a8e);
+	--sgs-focus-color: var(--wp--preset--color--accent, #d8ca50);
 	--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50);
 }
 

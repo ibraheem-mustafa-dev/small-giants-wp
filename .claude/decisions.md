@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D467 — The focus ring is an ACCENT glow, and D322's migration was three-quarters undone [INCIDENT]
+
+**Bean's two rulings, both recorded verbatim because each has now been made twice.**
+(a) *"don't condition it on the contrast — it just needs to be accurate to the site's global
+colours — it's a default, not a magical setting… this isn't text, it just needs to be discernable
+clearly which is more like a 2:1."*
+(b) *"the focus outline should be accent since it's supposed to be a glow effect and not a dark
+high contrast object."*
+
+So the acceptance criterion is **palette accuracy**, not a contrast threshold, and the outline is
+**accent** — superseding D463's neutral-underlay half. `~/.claude/rules/visual-standards.md` says
+3:1 for focus indicators; Bean has overruled that for his own sites, twice. **Do not "fix" this back
+on the strength of a contrast audit.**
+
+**MEASURED: 0 → 15 of 25 focusables on accent; the hardcoded teal is gone from every element.**
+
+**THE CAUSE WAS FOUR LAYERS DEEP, AND THE OBVIOUS FIX WAS A NO-OP.** `theme.json` was edited and
+deployed and the live page still emitted teal. Ruled out in order: not a bad edit (the deployed file
+carried the new value); not a cache (42 transients deleted, object cache flushed, LiteSpeed purged).
+The real overrides were **`wp_global_styles` post 7** — the database beats `theme.json`, as this
+project's own CLAUDE.md states — **and the client snapshots themselves**
+(`sites/mamas-munches/`, `sites/indus-foods/`), written there by `push-theme-snapshot.py`.
+
+**D322 was three-quarters undone.** It ruled the focus ring "is not client-specific, so it belongs
+in the theme" and added the framework copy — but never removed it from the client snapshots, and the
+snapshot is the layer that wins. **For four months the framework default was dead code.** Completing
+the migration was the fix.
+
+⚠ **A FALSE NEGATIVE ALMOST CLOSED THE INVESTIGATION.** `wp post list --post_type=wp_global_styles`
+returned NOTHING, which reads exactly like "no override exists". It defaults to a publish-ish status
+filter; `--post_status=any` found post 7 immediately. **An absence result from `wp post list` is not
+evidence of absence unless the status filter was explicit.**
+
+**Council results carried:** `*:focus-visible` (`utilities.css:249`) was proposed for DELETION and
+that was **REJECTED** — it is equal specificity (0,1,0) with the critical rule and loads later, so
+deleting it hands elements to the browser default, not to the critical rule; D322 also put it there
+as the framework a11y guarantee. Its TOKEN was raised instead. A rater's objection that repointing
+`theme.json` would violate D463 was **FALSIFIED**: the teal was hardcoded 2026-04-29, D463 is
+2026-08-02, and D463 measured a different token.
+
+**Deliberately NOT shipped:** the `sgs/nav-menu` fix (8 more elements) was built, deployed, measured
+working — then REVERTED, because the visual-diff gate's `first_paint_capture_passed` cannot be
+honestly claimed for that block (it renders a hidden second copy in the drawer, so the capture reads
+`2/4 visible` as a probe artefact). Fabricating the field to land a long-tail fix was the wrong
+trade. Residual is one well-defined sweep — every block-scoped `:focus-visible` using `currentColor`
+or a hardcoded `primary-dark` joins the shared family — recorded in
+`reports/2026-08-02-focus-cascade-baseline.md`. **`sgs/button`'s writer is UNPROVEN — find it before
+touching it.**
+
 ## D466 — FR-38-26 rollout complete; the spec's own roster predicate was wrong [ROUTINE]
 
 **Shipped.** `loopCarousel` now exists on five blocks, each proven live by

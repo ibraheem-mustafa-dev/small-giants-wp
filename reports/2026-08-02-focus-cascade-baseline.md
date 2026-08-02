@@ -146,3 +146,112 @@ is NOT.** It is not in any theme CSS file, so it lives in block-scoped CSS lifte
 Re-run the baseline method. **Passing is not "fewer treatments" — it is fewer treatments AND all
 three failures above clearing 3:1, measured alpha-composited over their real local background.**
 A drop to one treatment that lands on the wrong colour is not a pass.
+
+---
+
+# IMPLEMENTED 2026-08-02 (D467) — and the cause was in a THIRD place nobody had named
+
+**Bean's ruling, which sets the acceptance criterion:** *"don't condition it on the contrast — as I
+said it just needs to be accurate to the site's global colours — it's a default, not a magical
+setting… this isn't text, it just needs to be discernable clearly which is more like a 2:1."*
+So the gate is **palette accuracy**, not a contrast threshold. Recorded because it is the second
+time this ruling has been made (see D463) and it should not be re-litigated a third time.
+
+## RESULT — measured, same method as the baseline
+
+**Off-brand focus colours: 4 → 0.** Every focus outline on the homepage now resolves to Mama's own
+palette — `#c56a7a` (`primary-dark`) or `#3a2e26` (`text`). **The teal is gone from every element.**
+
+⚠ **The treatment COUNT is still 8, and that is not a failure to hide.** The baseline key includes
+width, offset and shadow, which legitimately differ per component (a dot, a button and the skip
+link are not meant to be identical). The dimension Bean asked about — colour accuracy to the site's
+palette — went from 4 of 8 treatments off-brand to **zero**.
+
+## THE CAUSE WAS THREE-LAYERED — the token repoint ALONE was a no-op
+
+`theme.json` was edited and deployed, and the live page still emitted the teal. Chasing that
+properly is the whole lesson:
+
+1. **Not a bad edit** — the deployed `theme.json` on the server carried the new value; a server-wide
+   grep found the teal only as a *fallback literal* in `core-blocks.css`.
+2. **Not a cache** — 42 transients deleted, object cache flushed, LiteSpeed purged. Teal persisted.
+3. **`wp_global_styles` post 7 carried its own `settings.custom.focus-ring`** with the teal, and the
+   database beats `theme.json` — as this project's own CLAUDE.md states. Written there by
+   `push-theme-snapshot.py`, which pushes the client snapshot's `settings` into that post.
+4. **The client snapshots themselves** still carried it —
+   `sites/mamas-munches/theme-snapshot.json` and `sites/indus-foods/theme-snapshot.json`.
+
+**⚠ A FALSE NEGATIVE ALMOST CLOSED THIS INVESTIGATION.** The first check for a global-styles
+override ran `wp post list --post_type=wp_global_styles` and returned **nothing** — which reads
+exactly like "no override exists". `wp post list` defaults to `post_status=publish`-ish filtering
+and missed it; re-querying with `--post_status=any` found post 7 immediately. **An absence result
+from `wp post list` is not evidence of absence unless the status filter was explicit.**
+
+**D322 was left half-done.** It ruled the focus ring "is not client-specific, so it belongs in the
+theme" and migrated it there — but never REMOVED it from the client snapshots, and the snapshot is
+the layer that wins. For four months the framework default was dead code. Completing the migration
+is the fix: `focus-ring` deleted from both client snapshots and from the live `wp_global_styles`
+post, so the palette-derived framework default now governs and adapts per client automatically.
+
+## What is now true
+
+| Layer | State |
+|---|---|
+| `theme.json:395-400` | palette-derived: `var(--wp--preset--color--primary-dark, …)` + a `color-mix` accent glow, mirroring `--sgs-focus-*` |
+| `sites/*/theme-snapshot.json` | `focus-ring` REMOVED from both clients (framework concern, per D322) |
+| `wp_global_styles` post 7 (canary) | `focus-ring` REMOVED |
+| `cart/style.css` | joined the shared `--sgs-focus-*` family (was the one element in no family at all) |
+| `extensions.css` `.sgs-has-focus-ring` | **fixed for free** — it reads the same token, so P1 subsumed P3; that file was never touched |
+
+## STILL OPEN
+
+- **P2 stands REJECTED** — do not delete `*:focus-visible`.
+- **The transparent-shadow thread is still unproven.** 7 elements compute
+  `box-shadow: oklab(0 0 0 / 0)`, suppressing the glow. Measured, but the writing rule is still
+  unidentified; it is in block-scoped CSS lifted to `uploads/sgs-css/`. Find the writer first.
+- **`woocommerce.css`'s 27 rules** use a fifth pattern (`--wp--preset--color--primary` direct) and
+  were not touched.
+- **`indus-foods` snapshot is edited but NOT pushed** — its live site still carries the teal in its
+  own `wp_global_styles` until someone runs `push-theme-snapshot.py` against it.
+
+---
+
+# BEAN'S SECOND RULING (2026-08-02) — the outline is ACCENT
+
+*"the focus outline should be accent since it's supposed to be a glow effect and not a dark high
+contrast object."*
+
+That supersedes D463's "accent glow over a NEUTRAL underlay" for the outline colour: there is no
+dark underlay any more. Applied to BOTH token families at once — repointing only one would have
+recreated the exact split just closed.
+
+| Layer | Now |
+|---|---|
+| `theme.json` `focus-ring.color-primary` | `var(--wp--preset--color--accent, #d8ca50)` |
+| `core-blocks-critical.css:108-109` `--sgs-focus-color` / `--sgs-focus-glow` | both `accent` |
+| `utilities.css:249` `*:focus-visible` | **token RAISED, rule KEPT** — the council rejected deleting it |
+| `core-blocks.css:862` nav close button | joined the shared family |
+| `cart/style.css` | joined the shared family |
+
+**Measured: 0 → 15 of 25 focusables on accent. The teal is gone from every element on the page.**
+
+## The remaining 10 — cause PARTLY proven, do not guess the rest
+
+| Cohort | n | Cause |
+|---|---|---|
+| `a.sgs-responsive-logo__link` + 2 | 3 | **PROVEN**: `.sgs-responsive-logo__link:focus-visible { outline: currentcolor solid 2px }`, in block-scoped CSS lifted to `uploads/sgs-css/` |
+| `a.sgs-button` + 6 | 7 | **NOT PROVEN.** Both rules that match it now resolve to accent, yet it computes `#3a2e26`. Something my rule-scan did not catch is winning. **Find the writer before touching it.** |
+
+`sgs/nav-menu` (8 more elements, `style.css:123` `outline: 2px solid currentColor`) was changed,
+deployed, measured working — and then **REVERTED**, deliberately. The visual-diff gate requires
+`first_paint_capture_passed`, and that capture cannot run cleanly on this block (it renders a second
+hidden copy inside the drawer, and the links are in burger mode at the probe's viewport, so the raw
+result is `2/4 visible` — a probe-scope artefact, not a defect). Asserting the field on a
+construction argument would have been fabricating a gate pass, which this project has a captured
+lesson against. The revert was redeployed so live matches source.
+
+**The remaining work is ONE well-defined sweep, not three ad-hoc fixes:** every block-scoped
+`:focus-visible` rule using `currentColor` or a hardcoded `primary-dark` should join the shared
+`--sgs-focus-*` family. Known sites: `nav-menu/style.css:123`, `responsive-logo` (lifted CSS),
+`brand-strip/style.css:459`, `card-grid/style.css:264`, `cta-section/style.css:287`, plus the
+unproven `sgs/button` writer. Doing it as one sweep gives one evidence pass instead of six.

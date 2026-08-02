@@ -395,8 +395,8 @@
       "focus-ring": {
         "width": "3px",
         "offset": "2px",
-        "color-primary": "rgba(31, 122, 122, 0.4)",
-        "color-accent": "rgba(245, 158, 11, 0.4)"
+        "color-primary": "var(--wp--preset--color--accent, #d8ca50)",
+        "color-accent": "color-mix(in srgb, var(--wp--preset--color--accent, #d8ca50) 40%, transparent)"
       }
     },
     "appearanceTools": true,
