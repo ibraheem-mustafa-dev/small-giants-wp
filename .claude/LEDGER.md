@@ -57,9 +57,17 @@ is ACCENT** — a glow effect, not a dark high-contrast object.
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 — PHASE 0 + 1 + 2 COMPLETE 2026-08-02 (D464, D468–D474). T1.1, T1.4–T1.7 all closed.**
+- **⭐ Track 1 — Phases 0/1/1b/2/3 COMPLETE 2026-08-02 (D464, D470–D478). Phase 4 PARTIAL; Phase 5 OPEN.**
   **Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `memory/session-2026-08-02-track1-phase0.md`
-  — read before acting.** Decisions D464/D468–D474 are authoritative.
+  — read before acting.** Decisions D464, D468–D478 are authoritative.
+  ✅ **Phase 1's real bar is MET** — Bean asked for "the vast majority of migrations deleted and
+  replaced"; **28 of 30 are gone** (D478). ⚠ **2 held back deliberately** (`testimonial-*`): they
+  UPDATE `block_attributes.derived_selector` and that regenerability is UNPROVEN.
+  ⛔ **Phase 4 is STILL PARTIAL** — the WIRE-OR-DELETE item
+  (`check_preset_absence_no_slug_literal.py`), the `orchestrator.py`→`dispatch_spine.py` rename and
+  the "Bean's call" file list are untouched, and **`walk.py:20-26` still carries a FALSE claim the
+  plan flagged as having "misled an entire session" — and `walk.py` is exactly the file the next
+  session's cascade rework touches.**
   ⛔ **MIGRATION REPLAY IS A DEAD END — proven.** `slot_synonyms` was retired, so 3 migrations
   reference a table the schema correctly lacks. Void any step premised on replaying `migrations/`.
   ⛔ **Never delete a migration before its replacement seeder is PROVEN** · **scope every DB stat to
@@ -76,7 +84,46 @@ memory alone:
 
 ---
 
+> **HANDOFF QC: the independent rater returned INCONSISTENT, and it was right.** I had already
+> run the same checks myself and called them clean — the rater then found **two stale figures in a
+> plan row I never opened**: Phase 3 claimed "clean at 37 tables" (live is **36** since
+> `array_item_fields` was retired at D475) and "both gates are still invoked MANUALLY" (false from
+> the moment D473 wired them into `prebuild`, and it survived two doc sweeps). Both fixed.
+> ⚠ **This is the day's lesson one final time: my self-review passed and the independent review
+> found real defects.** Everything else the rater checked verified clean — D478's claims against
+> code, D-ceiling 478, 36 tables, 591/1 skip, the plan and LEDGER now agreeing.
+
 ## Standing constraints (carry forward — these are rules, not history)
+
+### Track 1 / DB — restored 2026-08-02 after a handoff edit truncated them (D101: never SUBTRACT)
+
+- ⛔ **`scalar-media` is LOAD-BEARING, not redundant.** `emit_shape` superseded only its
+  no-child-block half; the `--mobile`/`--desktop` routing half has NO replacement. Roster =
+  `data/scalar-media-roles.json`; the seeder REFUSES any block where `is_class_section_block` is
+  False (adding `testimonial-slider` broke it — D476).
+- ⛔ **ORDER IS LOAD-BEARING** for `property_suffixes` + `modifier_suffixes` (`ORDER BY rowid`,
+  `LIMIT 1` for the former — first row WINS). Compare-first + DELETE + ordered re-INSERT, NEVER
+  `INSERT OR REPLACE`.
+- ⛔ **Do NOT add `block_composition.has_inner_blocks` to any population gate** — it is DERIVED, not
+  cached. **A population floor is the right gate for a CACHED fact and the wrong one for a DERIVED
+  one.**
+- ⛔ **`block_composition.composition_role` LOOKS dead from the converter but is LIVE** —
+  `db-consistency/check_tier_composition.py` (in `prebuild`) reads it. Do not drop the column.
+- ⛔ **A SELF-HEALING SEEDER BLINDS AN IN-PROCESS TEST.** Anything importing `db_lookup` repairs
+  drift before an assertion can see it. The detector must be a separate process that never imports
+  it → value-identity assertions in `check_row_floor.py` (sqlite3 only — keep it that way).
+- ⛔ **A population count cannot see a RECLASSIFICATION** (right row, wrong-but-plausible value;
+  1012 → 1012).
+- ⛔ **A table with `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it** —
+  every creator must go, or the schema gate stays red forever.
+- ⛔ **A shrinking seed file PRUNES the live DB on next import** (cost the `attribution` slot once).
+  The seeder now warns before it does.
+- ⚠ **A negative control has its OWN vacuity modes** — confirm the break actually landed. Three in
+  one day: one healed by the seeder, one patching a symbol computed at import, one catching the
+  wrong exception class.
+- ⚠ **Two migrations are HELD BACK deliberately** (`testimonial-*`): they UPDATE
+  `block_attributes.derived_selector` and that regenerability is UNPROVEN. Never delete a migration
+  before its replacement seeder is proven.
 
 - ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug provides the rescue.** `overflow-x: clip` with
   a non-clip `overflow-y` computes to `hidden`, which IS a scroll container, so native
@@ -252,85 +299,33 @@ reconciliation), **O** (drag text-selection — ⛔ Bean re-checks by hand, do N
   ⚠ **A grep's negative result describes the GREP, not the codebase** — this bit three times this
   session, most recently when phrase-greps "proved" these lessons were lost while the catalogue held
   all nine in narrative form. Confirm with a second shape before concluding absence.
-### TRACK 1 (cloning) — a SEPARATE track from the motion/migration tasks below; pick one
+### TRACK 1 (cloning) — ⭐ THE FRONT: Spec 31 wrapper-recognition cascade rework
 
-**T1.1 / T1.2 / T1.3 — ALL CLOSED 2026-08-02** (D461, D464). Do not re-open or re-run. ⛔ Three of
-T1.1's inherited diagnoses were measured FALSE — do not re-derive; detail in
-`memory/session-2026-08-02-track1-phase0.md` + `reports/2026-08-02-t1.1-evidence-pack.md`.
+**Register (read IN FULL before touching code): `plans/2026-08-01-wrapper-recognition-cascade-rework.md`
+— status SCOPED, NOT STARTED. Then Spec 31 §2.3 / §2.4 / §3.A / §13.2.**
 
-**READ FIRST:** `reports/2026-08-02-phase1-table-classification.md` (Phase 1's measured scope) →
-`plans/2026-08-01-db-derivation-and-converter-cleanup.md` status block → D464/D468/D469.
+**The work, in Bean's framing:** rework L1–L4 routing to decide from the **most suitable DB data**, so
+the pipeline stops falling back to fuzzy matching. While replacing the **L2** logic we found three
+container-handling loops "riddled with issues — retired parts that weren't removed, mixed in with
+newer/better logic, all competing for the same routing decision". Deconstruct, expose the flaws,
+fix/replace.
 
-**T1.4 — ✅ CLOSED 2026-08-02 (D470, commit `1f9cc18a`, pushed).** `property_suffixes` 154/154,
-`slots` 104/104, `excluded_properties` 10/10 — all byte-exact AND rowid-order-exact vs live.
-`rebuild_compare.py`: identical **12 → 15**, **`empty (known Phase-1)` = 0**. Suite 587/1 skip,
-unchanged. Seeders in `db_lookup.py` from git-tracked `scripts/data/*.json`, captured by the new
-`dbschema/capture_seed_data.py` (`--check` = drift detector, `--self-test` proves `--check` fails).
-⛔ **ORDER IS LOAD-BEARING for `property_suffixes` too** — `propose_attr_name()` uses
-`ORDER BY rowid LIMIT 1`, so for a css_property with >1 suffix row the FIRST WINS (`Colour` before
-`Color`). All three use compare-first + DELETE + ordered re-INSERT, never `INSERT OR REPLACE`.
-⛔ **`seed-slot-alias-extensions.py` is SUPERSEDED** — its 4 aliases are baked into `slots.json`;
-extend the JSON, never re-run that script. `KNOWN_UNREPRODUCIBLE` is now EMPTY (kept, not deleted),
-so the 13 tables in the "NOT known" bucket are Group-3 history + Group-4 residue (T1.6), already
-classified — not new findings.
+⛔ **FOUR COMPETING MECHANISMS decide "is this a wrapper?" — the plan's §"FOUR COMPETING MECHANISMS"
+has the table.** #1 `layer_detect()` is SOUND and name-free (CSS signature + structural position).
+The other three are the mess: #2 `_sole_passthrough_child()` (alias-vulnerable, and demands the
+parent have EXACTLY ONE element child), #3 `_is_absorbable_wrapper()` (BEM-class-driven), #4 the
+implicit `resolve_slug_from_bem() is None` (hijackable via the alias map).
+⛔ **They DIRECTLY CONTRADICT each other:** #3 treats `padding`/`margin`/`gap` as DISQUALIFYING a
+wrapper, while #1 uses `max-width` + `margin` as the IDENTIFYING signature of the content band. Same
+property, opposite meaning, two files.
+⛔ **Tabs cannot fold today for TWO independent reasons** — `__nav` has false block identity, AND the
+exactly-one-child rule. Fixing recognition alone will not fix it.
+⛔ **The plan opens with FOUR claims I made and Bean disproved** (repeater content loss; "the tabs
+draft is malformed"; `__panel`→`sgs/tab` forced parentage; "background/border disqualify a structural
+wrapper"). **Read that section first and do not re-derive them.**
 
-**T1.4–T1.7 CLOSED · Phases 1b, 2, 3 COMPLETE · Phases 1 and 4 PARTIAL (D470–D476).**
-⛔ **"The parent plan is DONE" was an OVERCLAIM I wrote and a QC rater caught.** Two things Bean
-explicitly asked for are NOT done: **(a) Phase 1's stated bar was "I want the vast majority of all
-migrations deleted and replaced" — ZERO of the 30 have been deleted.** What shipped closes on
-"seeders exist, so they COULD be" — a weaker bar. **(b) Phase 4's WIRE-OR-DELETE item, the
-`orchestrator.py`→`dispatch_spine.py` rename, and the "Bean's call" file list are untouched**, and
-`walk.py:20-26` still carries the false claim the plan flagged as having "misled this entire session".
-
-⛔ **D475 — Spec 31 §4 carried a FALSE claim** (`grid-layout`/`full-width-banner` "gate" — they do
-not; only 3 of 36 capability tags are ever read). Corrected, and 3 working columns it had never
-listed were added. ⛔ **`array_item_fields` RETIRED — and dropping it was NOT enough**: `db_lookup`
-recreated it at import within seconds. **A table with `CREATE TABLE IF NOT EXISTS` on a hot path
-cannot be retired by dropping it — every creator must go.** ⚠ Its seeder NEVER EXISTED (0 INSERTs,
-two search shapes); the comment claiming a seeding loop was false. Do not confuse it with the LIVE
-`array_item_schema` (68 rows) — one character apart.
-
-⛔ **D474 — art-directed media was BROKEN LIVE and I had called it fine.** A hero clone put the
-MOBILE crop in the DESKTOP attr and dropped the desktop image into a stray child. **`scalar-media`
-does TWO jobs; `emit_shape` superseded only ONE** (no-child-block). The other — reading each image's
-`--mobile`/`--desktop` modifier via `run_mechanism_b` branch A — had NO replacement. Do not
-re-derive "it's redundant from emit_shape"; that was measured false. It broke because D128 set the
-role with a hand `UPDATE` recorded only as "DB (gitignored)" — **nothing a rebuild could find**.
-Now: `data/scalar-media-roles.json` + a module-load seeder that ALSO announces drift on stderr.
-⛔ **The real markup carries TWO classes** (`sgs-hero__split-image sgs-hero__split-image--mobile`);
-`_family_element` returns on the FIRST, which has no modifier — so a resolution-level fix never
-reaches it. A synthetic single-class repro hid this and misled 2 of 3 council reviewers.
-⛔ **A SELF-HEALING SEEDER BLINDS AN IN-PROCESS TEST.** My first regression test passed against a
-corrupted DB because importing `db_lookup` repaired it first. The detector must not import the
-seeder → **value-identity assertions in `check_row_floor.py`** (sqlite3 only — keep it that way).
-⛔ **A population floor cannot see a RECLASSIFICATION** — `scalar-media`→`image-object` left the
-count at 1012→1012. The gate named that incident and was blind to it.
-
-- **Detail lives in `decisions.md` D470–D476 + `memory/session-2026-08-02-track1-phase1.md`.** Binding
-  constraints only, below.
-- ⛔ **`scalar-media` is LOAD-BEARING, not redundant.** `emit_shape` superseded only its
-  no-child-block half; the `--mobile`/`--desktop` routing half has NO replacement. Roster =
-  `data/scalar-media-roles.json`; a seeder guard REFUSES any block where `is_class_section_block`
-  is False (adding `testimonial-slider` broke it — D476).
-- ⛔ **Do NOT add `block_composition.has_inner_blocks` to any population gate** — it is DERIVED, not
-  cached. A population floor is the right gate for a CACHED fact and the wrong one for a DERIVED one.
-- ⛔ **`block_composition.composition_role` LOOKS dead from the converter but is LIVE** —
-  `db-consistency/check_tier_composition.py` (in `prebuild`) reads it. Do not drop the column.
-- ⛔ **A self-healing seeder BLINDS an in-process test.** The drift detector must be a separate
-  process that never imports `db_lookup` → value-identity assertions in `check_row_floor.py`.
-- ⛔ **A population count cannot see a RECLASSIFICATION** (right row, wrong-but-plausible value).
-- ⛔ **A table with `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it** —
-  every creator must go, or the schema gate stays red forever.
-- ⚠ **A negative control has its OWN vacuity modes** — confirm the break actually landed (D476: two
-  vacuous controls in one hour, one healed by the seeder, one patching the wrong symbol).
-
-**Next on Track 1 (corrected 2026-08-02 — the paragraph here was stale and contradicted the line
-above it):** Phase 1 residue = **delete the migrations** (Bean's actual ask, 0 of 30 done) · Phase 4
-residue = WIRE-OR-DELETE `check_preset_absence_no_slug_literal.py`, the `dispatch_spine` rename, the
-"Bean's call" file list, and the `walk.py:20-26` false claim · Phase 5 (loop defects) OPEN.
-✅ **The three gates ARE wired** into `package.json` `prebuild` (D473) — the previous claim that they
-were "all manual today" was false. ⚠ A from-nothing rebuild still leaves `patterns`,
-`pattern_coverage`, `style_variations`, `plugins`, `theme_parts`, `components` and `indexed_files`
-EMPTY: their writers exist but `_REBUILD_SEEDERS` wires only 2. "Rebuildable" today means the
-converter-load-bearing tables, not the whole DB.
-
+**Orchestration:** TASK 0 (rebuild the tabs conformance fixture) then Q1–Q3 in the register, INLINE
+on Opus — this is the highest-blast-radius surface in the project and Bean's relational L2 model is
+his, not a derivation. **Design-gate before building (Rule 7).** /qc gate: `/qc-council` per binding
+rule blub.db 255 (converter commits).
+**Acceptance:** the register's own ACCEPTANCE section — not "code shipped".
