@@ -7,15 +7,6 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 
 # small-giants-wp — LEDGER (the one living status)
 
-## Human Summary
-
-### FOR BEAN — plain English (read this first)
-
-**What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
-gets ONE true answer instead of three drifting ones.
-
----
-
 ## CURRENT FRONTS
 
 ### Track 3 — motion drift GATED, looping ROLLED OUT, focus ring on the client palette (D465-D467)
@@ -61,16 +52,6 @@ long-tail fix was the wrong trade.** Do not re-land without a genuine capture.
 accuracy, not contrast** (`visual-standards.md`'s 3:1 is overruled for his sites), and the **outline
 is ACCENT** — a glow effect, not a dark high-contrast object.
 
-### Track 3 (previous) — Wave E (D447–D454, D457) → `memory/session-2026-08-01-wave-e.md`
-
-Two Wave-E results are STANDING CONSTRAINTS, not history:
-- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug provides the rescue.** `overflow-x: clip` with
-  a non-clip `overflow-y` computes to `hidden`, which IS a scroll container, so native
-  scroll-into-view rescues focus. **Do NOT "fix" it to clip on both axes** — that deletes the only
-  WCAG 2.4.11 cover this effect has.
-- **The WooCommerce gallery bug did not exist.** `core/query include:[540]` silently rendered product
-  1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
-
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
 Full detail lives where it already did — read before acting, do not assume it is current from
@@ -96,6 +77,13 @@ memory alone:
 ---
 
 ## Standing constraints (carry forward — these are rules, not history)
+
+- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug provides the rescue.** `overflow-x: clip` with
+  a non-clip `overflow-y` computes to `hidden`, which IS a scroll container, so native
+  scroll-into-view rescues focus. Do NOT "fix" it to clip on both axes — that deletes the only
+  WCAG 2.4.11 cover this effect has. (Wave E; full narrative `memory/session-2026-08-01-wave-e.md`.)
+- **The WooCommerce gallery bug did not exist.** `core/query include:[540]` silently rendered product
+  1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
 
 - Per-row `position:sticky` REJECTED (short-parent trap, D389). Sticky stays HEADER-level.
 - No absolute size value in a shared state-only stylesheet (D386), gated by
@@ -286,7 +274,13 @@ extend the JSON, never re-run that script. `KNOWN_UNREPRODUCIBLE` is now EMPTY (
 so the 13 tables in the "NOT known" bucket are Group-3 history + Group-4 residue (T1.6), already
 classified — not new findings.
 
-**T1.4–T1.7 + PHASES 2, 3, 4 and 1b — ✅ ALL CLOSED 2026-08-02 (D470–D475). The parent plan is DONE.**
+**T1.4–T1.7 CLOSED · Phases 1b, 2, 3 COMPLETE · Phases 1 and 4 PARTIAL (D470–D476).**
+⛔ **"The parent plan is DONE" was an OVERCLAIM I wrote and a QC rater caught.** Two things Bean
+explicitly asked for are NOT done: **(a) Phase 1's stated bar was "I want the vast majority of all
+migrations deleted and replaced" — ZERO of the 30 have been deleted.** What shipped closes on
+"seeders exist, so they COULD be" — a weaker bar. **(b) Phase 4's WIRE-OR-DELETE item, the
+`orchestrator.py`→`dispatch_spine.py` rename, and the "Bean's call" file list are untouched**, and
+`walk.py:20-26` still carries the false claim the plan flagged as having "misled this entire session".
 
 ⛔ **D475 — Spec 31 §4 carried a FALSE claim** (`grid-layout`/`full-width-banner` "gate" — they do
 not; only 3 of 36 capability tags are ever read). Corrected, and 3 working columns it had never
@@ -312,33 +306,31 @@ seeder → **value-identity assertions in `check_row_floor.py`** (sqlite3 only �
 ⛔ **A population floor cannot see a RECLASSIFICATION** — `scalar-media`→`image-object` left the
 count at 1012→1012. The gate named that incident and was blind to it.
 
-- **T1.5** `dbschema/check_row_floor.py` + `row-floor.json` — fails on row/column-population DROPS,
-  tolerates growth. ⛔ **Column-level granularity is the point**; a table-count-only gate would have
-  missed every historical loss. ⛔ **Do NOT add `block_composition.has_inner_blocks`** — FR-31-2.6
-  retired the CACHE deliberately; the fact is derived fresh by `converter/services/has_inner.py`.
-  **A population floor is the right gate for a CACHED fact and the wrong gate for a DERIVED one.**
-- **T1.7** `bootstrap_rebuild()` restores `hooks`/`docs` from the committed gzip archive (offline +
-  deterministic, NOT the GitHub scrape). `hooks` **5494 = 5494 exact**; archive hidden → both come
-  back **0** (negative control). ⚠ `docs` rebuilds to **1123 vs live 1077** — the surplus is entirely
-  `native_wp` from the Stage-2 network scrape; `sgs` docs match **16/16**, zero slug drift. Not a
-  defect; the offline floor is the archive.
-  ⚠ **The agent's "docs at exact parity" did not survive an independent full run** — it measured with
-  `--stage 1`, which skips a later docs writer. Re-running an agent's own method repeats its blind spot.
-- **T1.6** `_meta_schema_version` (1) + `block_styles` (63) RETIRED, archived reversibly.
-  ⛔ **`enrich-db.py`'s stated blocker was FALSE** — `target_21_slot_synonyms` was a stale NAME on
-  correct behaviour (renamed `target_21_canonical_slots`). The real defect was in
-  `target_210_health_check`, which has queried the dropped `slot_synonyms` since D99. Fixed + made
-  degrade-not-die on a missing table. **`--only <ids>` + `--list-targets` shipped**, unblocking the
-  2.4 / 2.8 seeders.
-- **New tools, both with passing `--self-test`s:** `dbschema/retire_table.py` (backup → archive →
-  **round-trip verify** → drop; a corrupt archive blocks the drop) and
-  `check_schema_drift.py --regenerate` (generator lives inside the gate so writer and comparer cannot
-  disagree; explicit, never automatic).
-- **Both gates fired correctly on their first real event** and are clean at **37 tables**.
-  Suite 587/1 skip.
+- **Detail lives in `decisions.md` D470–D476 + `memory/session-2026-08-02-track1-phase1.md`.** Binding
+  constraints only, below.
+- ⛔ **`scalar-media` is LOAD-BEARING, not redundant.** `emit_shape` superseded only its
+  no-child-block half; the `--mobile`/`--desktop` routing half has NO replacement. Roster =
+  `data/scalar-media-roles.json`; a seeder guard REFUSES any block where `is_class_section_block`
+  is False (adding `testimonial-slider` broke it — D476).
+- ⛔ **Do NOT add `block_composition.has_inner_blocks` to any population gate** — it is DERIVED, not
+  cached. A population floor is the right gate for a CACHED fact and the wrong one for a DERIVED one.
+- ⛔ **`block_composition.composition_role` LOOKS dead from the converter but is LIVE** —
+  `db-consistency/check_tier_composition.py` (in `prebuild`) reads it. Do not drop the column.
+- ⛔ **A self-healing seeder BLINDS an in-process test.** The drift detector must be a separate
+  process that never imports `db_lookup` → value-identity assertions in `check_row_floor.py`.
+- ⛔ **A population count cannot see a RECLASSIFICATION** (right row, wrong-but-plausible value).
+- ⛔ **A table with `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it** —
+  every creator must go, or the schema gate stays red forever.
+- ⚠ **A negative control has its OWN vacuity modes** — confirm the break actually landed (D476: two
+  vacuous controls in one hour, one healed by the seeder, one patching the wrong symbol).
 
-**Next on Track 1:** Phase 1b (Spec 31 column reconciliation) · Phase 2 (`scalar-media` derivation) ·
-Phase 4 (purge) · Phase 5 (loop defects). Wiring the standalone gates into a run is still an open
-question — `check_schema_drift.py`, `check_row_floor.py` and `capture_seed_data.py --check` are all
-manual today, and a gate nobody runs is the failure mode this project keeps recording.
+**Next on Track 1 (corrected 2026-08-02 — the paragraph here was stale and contradicted the line
+above it):** Phase 1 residue = **delete the migrations** (Bean's actual ask, 0 of 30 done) · Phase 4
+residue = WIRE-OR-DELETE `check_preset_absence_no_slug_literal.py`, the `dispatch_spine` rename, the
+"Bean's call" file list, and the `walk.py:20-26` false claim · Phase 5 (loop defects) OPEN.
+✅ **The three gates ARE wired** into `package.json` `prebuild` (D473) — the previous claim that they
+were "all manual today" was false. ⚠ A from-nothing rebuild still leaves `patterns`,
+`pattern_coverage`, `style_variations`, `plugins`, `theme_parts`, `components` and `indexed_files`
+EMPTY: their writers exist but `_REBUILD_SEEDERS` wires only 2. "Rebuildable" today means the
+converter-load-bearing tables, not the whole DB.
 
