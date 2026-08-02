@@ -76,7 +76,8 @@ Two Wave-E results are STANDING CONSTRAINTS, not history:
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 — PHASE 0 COMPLETE 2026-08-02 (D464). Phase 1 IN PROGRESS (D468, D469).**
+- **⭐ Track 1 — PHASE 0 COMPLETE 2026-08-02 (D464). Phase 1 CORE COMPLETE (D468, D469, **D470**) —
+  every converter-load-bearing table now rebuilds from git; residue = T1.5 / T1.6 / T1.7.**
   12 commits `78347070`→`2500b3c3`, pushed. **Full narrative swept to
   `memory/session-2026-08-02-track1-phase0.md` — read it before acting.** T1.1 also closed
   same day (D461, `8cdc1460`; evidence `reports/2026-08-02-t1.1-evidence-pack.md`).
@@ -90,10 +91,11 @@ memory alone:
   slot_synonyms`: retired for `slots`, so 3 migrations reference a table the schema correctly lacks.
   A May migration cannot run against an August schema. **Void any step premised on replaying
   `migrations/`.**
-  ✅ **Regenerative now:** `roles` 29/29 · `modifier_suffixes` 19/19 **order-exact** (⚠
+  ✅ **Regenerative now:** `property_suffixes` 154/154 · `slots` 104/104 · `excluded_properties`
+  10/10 (all D470, order-exact) · `roles` 29/29 · `modifier_suffixes` 19/19 **order-exact** (⚠
   `db_lookup.py:2262` reads `ORDER BY rowid`; `side` is CSS-shorthand T/R/B/L, so `INSERT OR
   REPLACE` would SCRAMBLE it) · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 ·
-  `markup_examples` wired. **Remaining gaps: `property_suffixes`, `slots`, `excluded_properties`.**
+  `markup_examples` wired. **No converter-load-bearing table is now unreproducible.**
   ✅ **`hooks`/`docs` refreshed from source** (5407→5468, 1241→1061, stale dropped, SGS untouched).
   `wp-hooks quick-add-all` + `dbschema/refresh_wp_reference.py`. ⛔ Do NOT re-register the MCP —
   that hands back the ~6,000 tokens/session the 2026-04-18 decision saved; the CLI is enough.
@@ -297,15 +299,18 @@ T1.1's inherited diagnoses were measured FALSE — do not re-derive; detail in
 **READ FIRST:** `reports/2026-08-02-phase1-table-classification.md` (Phase 1's measured scope) →
 `plans/2026-08-01-db-derivation-and-converter-cleanup.md` status block → D464/D468/D469.
 
-**T1.4 — Finish Phase 1: the 3 remaining gaps** [inline Opus, ~40 min] — **highest value**
-**What:** `property_suffixes` (154), `slots` (104), `excluded_properties` (10) still rebuild EMPTY
-and are converter-load-bearing. **Orchestration:** inline — each needs the judgement that caught the
-`modifier_suffixes` rowid trap. Follow the proven pattern: capture from LIVE into
-`scripts/data/<table>.json`, add an idempotent module-load seeder in `db_lookup.py`, verify in a
-sandbox with negative controls (wipe → refills; corrupt → self-heals). ⛔ Build the JSON from LIVE
-state, NEVER by replaying migration history (proven impossible). ⛔ Check whether ORDER matters
-before choosing `INSERT OR REPLACE`. **/qc gate: yes** — `/qc-inline`.
-**Acceptance:** `rebuild_compare.py` shows all three at live parity and "empty (known Phase-1)" = 0.
+**T1.4 — ✅ CLOSED 2026-08-02 (D470, commit `1f9cc18a`, pushed).** `property_suffixes` 154/154,
+`slots` 104/104, `excluded_properties` 10/10 — all byte-exact AND rowid-order-exact vs live.
+`rebuild_compare.py`: identical **12 → 15**, **`empty (known Phase-1)` = 0**. Suite 587/1 skip,
+unchanged. Seeders in `db_lookup.py` from git-tracked `scripts/data/*.json`, captured by the new
+`dbschema/capture_seed_data.py` (`--check` = drift detector, `--self-test` proves `--check` fails).
+⛔ **ORDER IS LOAD-BEARING for `property_suffixes` too** — `propose_attr_name()` uses
+`ORDER BY rowid LIMIT 1`, so for a css_property with >1 suffix row the FIRST WINS (`Colour` before
+`Color`). All three use compare-first + DELETE + ordered re-INSERT, never `INSERT OR REPLACE`.
+⛔ **`seed-slot-alias-extensions.py` is SUPERSEDED** — its 4 aliases are baked into `slots.json`;
+extend the JSON, never re-run that script. `KNOWN_UNREPRODUCIBLE` is now EMPTY (kept, not deleted),
+so the 13 tables in the "NOT known" bucket are Group-3 history + Group-4 residue (T1.6), already
+classified — not new findings.
 
 **T1.5 — Phase 3 row-count floor gate** [sonnet, ~45 min]
 **What:** `check_schema_drift.py` gates SCHEMA only. Ship the row-count regression gate the parent

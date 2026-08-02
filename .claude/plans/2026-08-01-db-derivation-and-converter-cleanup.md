@@ -4,7 +4,7 @@ project: small-giants-wp
 created: 2026-08-01
 last_updated: 2026-08-02
 track: Track 1 — cloning pipeline
-status: PHASE 0 COMPLETE (D464) · Phase 1 IN PROGRESS · Phases 1b/2/3/4/5 OPEN
+status: PHASE 0 COMPLETE (D464) · Phase 1 CORE COMPLETE (D470) · Phases 1b/2/3/4/5 OPEN
 spec: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
 owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script files and clean folders")
 ---
@@ -14,7 +14,7 @@ owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script
 > | Phase | State |
 > |---|---|
 > | **0 — make the DB rebuildable** | ✅ **COMPLETE** (D464). Table set rebuilds 39/39 exact. `plans/phase-0-db-rebuildable.md` carries the full result + 5 measured-false plan statements. |
-> | **1 — regenerative seeders** | 🔄 **IN PROGRESS.** `roles` 29/29 (D464) · `modifier_suffixes` 19/19 (order-exact) · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 · `markup_examples` wired. Remaining: `property_suffixes`, `slots`, `excluded_properties`. |
+> | **1 — regenerative seeders** | ✅ **CORE COMPLETE (D470).** `property_suffixes` 154/154 · `slots` 104/104 · `excluded_properties` 10/10 (all order-exact, D470) · `roles` 29/29 (D464) · `modifier_suffixes` 19/19 · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 · `markup_examples` wired. **No converter-load-bearing table is unreproducible.** `rebuild_compare.py`: identical 12→15, `empty (known Phase-1)`=0, `KNOWN_UNREPRODUCIBLE` now empty. Residue is NON-converter: T1.5 floor gate · T1.6 Group-4 decision · T1.7 WP corpus restore. |
 > | **1b — Spec 31 column reconciliation** | OPEN. F1–F8 findings still stand except where corrected below. |
 > | **2 — derive `scalar-media`** | OPEN, unblocked by Phase 0. |
 > | **3 — regression gate** | PARTIALLY DELIVERED: `dbschema/check_schema_drift.py` gates SCHEMA drift (and caught two real drifts on day one). A row-count floor gate is still owed. |
@@ -38,6 +38,16 @@ owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script
 >   the call graph. Zero production callers. Retired at D469.
 >
 > **Canonical scope for Phase 1: `.claude/reports/2026-08-02-phase1-table-classification.md`.**
+>
+> ### ⛔ CARRIED FROM D470 — binding on any future seeder work
+> - **`INSERT OR REPLACE` is the wrong default for a seeded table.** It assigns a NEW rowid, and
+>   `property_suffixes` + `modifier_suffixes` are both read with `ORDER BY rowid` (the former with
+>   `LIMIT 1`, so the first row WINS for a duplicated `css_property`). **Check whether order matters
+>   BEFORE choosing the write mode**; the safe shape is compare-first, then DELETE + ordered re-INSERT.
+> - **`behavioural-analyser/seed-slot-alias-extensions.py` is SUPERSEDED** — its four alias additions
+>   are baked into `scripts/data/slots.json`. Extend the JSON; do not re-run the script.
+> - **One writer per artefact:** `dbschema/capture_seed_data.py` owns the seed JSON, `db_lookup.py`
+>   owns the tables. `--check` catches a hand-edited table that was never back-written.
 
 # DB derivation + converter cleanup
 
@@ -56,7 +66,7 @@ owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script
 
 | Deferred | Owner |
 |---|---|
-| `property_suffixes` / `slots` / `excluded_properties` seeders | LEDGER **T1.4** (Phase 1 core) |
+| ~~`property_suffixes` / `slots` / `excluded_properties` seeders~~ | ✅ CLOSED D470 (T1.4) |
 | Row-count floor gate (Phase 3) | LEDGER **T1.5** |
 | Restore `hooks`/`docs` on rebuild | LEDGER **T1.7** |
 | `enrich-db.py --only` selector · `block_styles` retire/keep | LEDGER **T1.6** |
