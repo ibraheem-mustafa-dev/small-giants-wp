@@ -192,6 +192,47 @@ def bootstrap_rebuild(db_path: Path = None) -> None:
           "[--rebuild] handing over to the seeding stages\n")
 
 
+def run_module_load_seeders(db_path: Path = None) -> None:
+    """Fire db_lookup's module-load seeders, which /sgs-update never triggers.
+
+    MEASURED 2026-08-02 (Phase 0 Step 0.5). ``converter/db/db_lookup.py`` runs
+    three idempotent seeders AT MODULE LOAD (`_migrate_roles_table`,
+    `_migrate_html_tag_to_core_block`, `_migrate_property_suffixes_kind_override`)
+    -- the self-healing pattern Phase 1 is meant to extend. But they only fire
+    when something IMPORTS db_lookup, i.e. when the CONVERTER runs. `/sgs-update`
+    does not import it, so a rebuild left those tables at zero and they looked
+    like missing seeders.
+
+    Proven in a sandbox: importing db_lookup against a freshly-schema'd empty DB
+    took `html_tag_to_core_block` 0 -> 17 (exactly live's count) and `roles`
+    0 -> 21. Neither is a Phase-1 gap; both were simply unwired.
+
+    This is deliberately a subprocess: db_lookup binds its connection at import
+    time, so it must start AFTER the schema exists, in a clean interpreter.
+    """
+    db_path = db_path or SGS_DB
+    scripts = Path(__file__).resolve().parent
+    probe = (
+        "import sys;"
+        f"sys.path.insert(0, r'{scripts / 'converter' / 'db'}');"
+        f"sys.path.insert(0, r'{scripts / 'converter'}');"
+        "import db_lookup"
+    )
+    print("[--rebuild] firing db_lookup module-load seeders ...")
+    result = subprocess.run(
+        [sys.executable, "-c", probe], cwd=str(scripts),
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        tail = (result.stderr or "").strip().splitlines()[-4:]
+        print("[--rebuild] WARNING: db_lookup seeders did not run cleanly:",
+              file=sys.stderr)
+        for line in tail:
+            print(f"    {line}", file=sys.stderr)
+        return
+    print("[--rebuild] db_lookup seeders done\n")
+
+
 def ensure_schema_metadata(conn: sqlite3.Connection) -> None:
     """CREATE TABLE IF NOT EXISTS schema_metadata — Phase 4 addition."""
     conn.execute("""
@@ -5127,6 +5168,7 @@ def main() -> None:
 
     if args.rebuild:
         bootstrap_rebuild(SGS_DB)
+        run_module_load_seeders(SGS_DB)
 
     conn = open_db()
     ensure_schema_metadata(conn)

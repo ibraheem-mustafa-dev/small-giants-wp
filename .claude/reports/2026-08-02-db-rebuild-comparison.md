@@ -18,14 +18,14 @@ the live database's mtime was confirmed unchanged afterwards).
 | | live | rebuilt |
 |---|---|---|
 | tables | 40 | 40 |
-| total rows | 19138 | 3962 |
+| total rows | 19138 | 4004 |
 
 - Missing tables: **none**
 - Extra tables: **none**
-- Tables with identical row counts: **8**
-- Short of live: **10**
-- Empty, known Phase-1 gaps: **4**
-- Empty, NOT a known gap: **18**
+- Tables with identical row counts: **9**
+- Short of live: **11**
+- Empty, known Phase-1 gaps: **3**
+- Empty, NOT a known gap: **17**
 
 ## ⚠ Empty but NOT a known gap
 
@@ -40,7 +40,6 @@ These were not on the Phase-1 list and need explaining before Phase 1 starts.
 | `components` | 13 |
 | `deploy_steps` | 9 |
 | `gotchas` | 12 |
-| `html_tag_to_core_block` | 17 |
 | `legacy_role_lookup` | 15 |
 | `markup_examples` | 399 |
 | `modifier_suffixes` | 19 |
@@ -60,7 +59,6 @@ Already established as having no regenerative source. This is Phase 1's scope.
 |---|---|
 | `excluded_properties` | 10 |
 | `property_suffixes` | 154 |
-| `roles` | 29 |
 | `slots` | 104 |
 
 ## Short of live
@@ -68,7 +66,7 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | table | live | rebuilt | shortfall |
 |---|---|---|---|
 | `animation_tokens` | 8 | 1 | 7 |
-| `block_attributes` | 2947 | 2589 | 358 |
+| `block_attributes` | 2947 | 2593 | 354 |
 | `block_capabilities` | 96 | 23 | 73 |
 | `block_composition` | 210 | 19 | 191 |
 | `block_supports` | 1340 | 521 | 819 |
@@ -77,10 +75,11 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | `docs` | 1257 | 46 | 1211 |
 | `hooks` | 5433 | 161 | 5272 |
 | `indexed_files` | 110 | 83 | 27 |
+| `roles` | 29 | 21 | 8 |
 
 ## Identical
 
-8 tables reproduced with exactly matching row counts.
+9 tables reproduced with exactly matching row counts.
 
 <details><summary>Full list</summary>
 
@@ -90,6 +89,7 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | `array_item_schema` | 68 |
 | `block_selectors` | 86 |
 | `fx_effects` | 15 |
+| `html_tag_to_core_block` | 17 |
 | `preset_implications` | 23 |
 | `schema_metadata` | 4 |
 | `schema_migrations` | 29 |
