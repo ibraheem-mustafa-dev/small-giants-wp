@@ -46,7 +46,9 @@
 		},
 		"layout": {
 			"type": "string",
-			"default": "flex"
+			"enum": [ "flex", "grid" ],
+			"default": "flex",
+			"_comment": "D456-follow-up (2026-08-02) — enum closes the cqi landmine documented on the `gap` attribute's default comment below: `class-sgs-container-wrapper.php:528` only routes the gap onto `.sgs-container__inner` (the row's own query-container ancestor) when layout is 'flex' or 'grid'. Any OTHER stored value would silently fall through to `.uid` itself, where `cqi` cannot resolve. The enum makes a stored value outside {flex,grid} impossible — WP coerces an out-of-enum stored value back to the default at render (observed D291, sgs/button `inheritStyle`). Verified before adding: edit.js LAYOUT_OPTIONS, render.php, the converter (services/arrangement.py), and every theme pattern instantiating this block all use only 'flex'/'grid'."
 		},
 		"columns": {
 			"type": "number",

@@ -73,7 +73,7 @@ if ( ! function_exists( 'sgs_container_gap_value' ) ) {
 }
 
 /**
- * Run the differential corpus and report an honest count.
+ * Run the identical-output corpus and report an honest count.
  *
  * @return int Process exit code (0 pass, 1 fail).
  */
@@ -113,7 +113,55 @@ function sgs_gap_diff_test() {
 		}
 	}
 
-	$passed = $ran - count( $failures );
+	$identical_passed = $ran - count( $failures );
+
+	// --- KNOWN-DIVERGENT corpus -----------------------------------------
+	//
+	// The OLD allowlist ran strtolower() on the whole raw string before
+	// stripping; the NEW sgs_css_length_value() deliberately does NOT
+	// lowercase, because CSS custom-property names (--MyVar) are
+	// case-SENSITIVE and lowercasing would corrupt var(--MyVar) — exactly
+	// the capability this migration added. CSS units and function
+	// keywords ARE case-insensitive in browsers, so a mixed-case unit is
+	// functionally identical either way even though the two functions
+	// return different byte strings for it.
+	//
+	// These cases MUST diverge — a divergence-assertion failure here means
+	// case-preservation regressed, which would silently corrupt custom
+	// property names again.
+	$divergent_corpus = array(
+		// Mixed-case UNIT: old lowercases to '1rem', new preserves '1REM'.
+		// Both resolve to the identical length in a browser (CSS units are
+		// ASCII case-insensitive) — the divergence is cosmetic only.
+		'1REM',
+		// Mixed-case CUSTOM PROPERTY inside var(): old's blind lowercase +
+		// character-strip mangles the identifier into a broken string
+		// ('varmygap 1rem' — parens and dashes stripped, case flattened);
+		// new preserves it verbatim as valid CSS ('var(--MyGap, 1rem)').
+		// This is the case the migration exists to fix, not a regression.
+		'var(--MyGap, 1rem)',
+	);
+
+	$divergent_failures = array();
+	$divergent_ran      = 0;
+
+	foreach ( $divergent_corpus as $input ) {
+		++$divergent_ran;
+		$old = sgs_container_gap_value_old_reference( $input );
+		$new = sgs_container_gap_value( $input );
+		if ( $old === $new ) {
+			// The two functions agreed where we expect them to disagree —
+			// that means case-preservation silently regressed.
+			$divergent_failures[] = sprintf(
+				'UNEXPECTED MATCH (divergence regressed): input=%s old=new=%s',
+				var_export( $input, true ),
+				var_export( $old, true )
+			);
+		}
+	}
+
+	$divergent_confirmed = $divergent_ran - count( $divergent_failures );
+	$failures            = array_merge( $failures, $divergent_failures );
 
 	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI
 	// stdout, not web output; no browser context to escape for (matches the
@@ -123,7 +171,7 @@ function sgs_gap_diff_test() {
 	foreach ( $failures as $failure ) {
 		echo 'FAIL: ' . $failure . "\n";
 	}
-	echo "{$passed}/{$ran} passed\n";
+	echo "{$identical_passed}/{$ran} identical + {$divergent_confirmed}/{$divergent_ran} known-divergent (case-preservation, intentional)\n";
 	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	return empty( $failures ) ? 0 : 1;

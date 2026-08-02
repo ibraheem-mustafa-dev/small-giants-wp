@@ -100,8 +100,27 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 		// own recursive balanced-paren pattern. (?1) recurses group 1 (the
 		// parenthesised body) to any nesting depth, so
 		// "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)" is consumed in one match.
+		//
+		// CASE-INSENSITIVE (/i) — CSS function names are not case-sensitive
+		// ("CLAMP(...)", "Calc(...)" and "clamp(...)" are the same function to
+		// every browser), so a lowercase-only pattern here was a false-negative
+		// bug: legitimate uppercase/mixed-case author input (hand-authored CSS,
+		// or any future emitter that doesn't happen to lowercase) was silently
+		// rejected by step 4 below, because the unconsumed "CALC(" text left
+		// behind still contains a bare "(" that the remainder check flags.
+		//
+		// Making this /i is safe — it does NOT open a new bypass — because the
+		// breakout guard in step 2a runs on the RAW input BEFORE this
+		// consumption step, and step 2a's character class ([\&=}{;<>]) plus its
+		// '/*' check match punctuation only, not letters, so they are already
+		// fully case-agnostic. An attack payload wrapped inside an
+		// allowlisted call, uppercase or not — e.g. "CALC(}body{color:red)" —
+		// is rejected at step 2a on the raw value, before this line ever runs,
+		// exactly as its lowercase twin "calc(}body{color:red)" already is.
+		// This line only changes which SAFE inputs get consumed; it does not
+		// change which UNSAFE inputs get rejected.
 		$consumed = preg_replace(
-			'/\b(?:var|calc|min|max|minmax|clamp)(\((?:[^()]|(?1))*\))/',
+			'/\b(?:var|calc|min|max|minmax|clamp)(\((?:[^()]|(?1))*\))/i',
 			'',
 			$value
 		);
@@ -176,6 +195,14 @@ if ( PHP_SAPI === 'cli' && isset( $argv ) && in_array( '--self-test', $argv, tru
 			array( 'calc(100% - 48px)', 'calc(100% - 48px)' ),
 			array( 'min(100%, 16rem)', 'min(100%, 16rem)' ),
 			array( '16px 12px', '16px 12px' ), // two-value gap.
+
+			// --- Case-insensitivity fix (the finding this task closes) ------
+			// CSS function names are not case-sensitive; these were wrongly
+			// REJECTED before the /i flag was added to the step-3 pattern.
+			array( 'CLAMP(0.5rem, 1vw, 1rem)', 'CLAMP(0.5rem, 1vw, 1rem)' ),
+			array( 'VAR(--MyVar, 1rem)', 'VAR(--MyVar, 1rem)' ), // custom-prop name case preserved.
+			array( 'Calc(100% - 48px)', 'Calc(100% - 48px)' ),
+			array( 'MIN(100%, 16rem)', 'MIN(100%, 16rem)' ),
 		);
 
 		foreach ( $accept_cases as $case ) {
@@ -216,6 +243,21 @@ if ( PHP_SAPI === 'cli' && isset( $argv ) && in_array( '--self-test', $argv, tru
 			'calc-comment-inside'   => 'calc(1px/*x*/)',
 			'calc-equals-inside'    => 'calc(1px=2px)',
 			'calc-style-close-tag'  => 'calc(</style><script>alert(1)</script>)',
+
+			// --- Case-insensitivity regression guards (this task's fix). The
+			// step-3 consumption pattern gained /i so legitimate uppercase
+			// input is accepted (see accept_cases above) — these prove that
+			// change did NOT also let the uppercase twin of every breakout
+			// case above slip through. Each must still be rejected by the
+			// RAW-input step-2a check, which runs before consumption and is
+			// already case-agnostic (it matches punctuation, not letters).
+			'url-upper'                   => 'URL(evil)',
+			'expression-upper'            => 'EXPRESSION(alert(1))',
+			'calc-brace-breakout-upper'   => 'CALC(}body{color:red)',
+			'clamp-script-tag-upper'      => 'CLAMP(<script>,1px,2px)',
+			'calc-semicolon-inside-upper' => 'CALC(1px;color:red)',
+			'calc-comment-inside-upper'   => 'CALC(1px/*x*/)',
+			'calc-url-inside-upper'       => 'Calc(url(evil))',
 		);
 
 		foreach ( $reject_cases as $label => $input ) {
