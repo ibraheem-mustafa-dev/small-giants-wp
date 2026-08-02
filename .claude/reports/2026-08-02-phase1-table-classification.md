@@ -103,7 +103,7 @@ negative search result describes the SEARCH, not the codebase.**
 | table | live | verdict | evidence |
 |---|---|---|---|
 | `modifier_suffixes` | 19 | ⛔ **BELONGS IN GROUP 5 — converter-load-bearing, NO writer** | read at `db_lookup.py:585` (`SELECT suffix, kind`), `:2146` (`kind='breakpoint'`), `:2262`. Empty ⇒ breakpoint/side resolution breaks. **Highest priority of the ten.** |
-| `variations` | 205 | ⛔ **Converter-load-bearing, NO writer** | read at `db_lookup.py:3280` (`SELECT attributes_json`). Mixed provenance: `native_wp` rows derivable from WP core; `sgs` rows ambiguous, several with NULL JSON. **Sample all 205 grouped by `source` before deciding — 5 rows cannot characterise 205.** |
+| `variations` | 205 | ⛔ **RETIREMENT CANDIDATE — I was wrong twice; see below** | superseded by `variant_slots`; zero production callers |
 | `theme_parts` | 28 | SEEDER EXISTS — just run it | `populate-db.py:449` `INSERT OR REPLACE`, wired at `:763`. Pure `.glob('*.html')` mirror; description/variants always NULL ⇒ nothing curated. |
 | `components` | 13 | SEEDER EXISTS — just run it | `populate-db.py:504/520/537` `INSERT OR REPLACE`, wired at `:769`. Scans `src/{components,utils,extensions}/*.js`; auto-generated descriptions. |
 | `plugins` | 3 | SEEDER EXISTS, but **no live reader found** | `populate-db.py:565`, wired at `:772`. Worth asking whether anything surfaces it. |
@@ -113,9 +113,41 @@ negative search result describes the SEARCH, not the codebase.**
 | `_meta_schema_version` | 1 | **RETIRE** | one row from 2026-05-12; only reader is `_retired/migrate-spec-15-p1.py:143` reading its own marker. Superseded by `schema_migrations` (D464, 29 rows). |
 | `block_styles` | 63 | RETIRE (leaning) — **not confirmed** | no live reader, no writer, not converter-read. Caveat: labels like "SGS Primary (Teal)" look hand-curated. **Check the editor JS for `registerBlockStyle` sync before dropping** — a JS-side search that was not performed. |
 
-**Net effect on scope:** Group 4 collapses from "10 unknowns" to **2 real converter-critical gaps**
-(`modifier_suffixes`, `variations`), 4 already-solved-operationally, 1 dangerous-to-run,
-1 human-authored, 1 history, 1 retire.
+**Net effect on scope:** Group 4 collapses from "10 unknowns" to **ONE real converter-critical gap**
+(`modifier_suffixes` — now SEEDED), 4 already-solved-operationally, 1 dangerous-to-run,
+1 human-authored, 1 history, 2 retire.
+
+### ⛔ `variations` — I called it converter-critical. It is not. Two errors.
+
+**Error 1 — presence of a query is not behaviour.** I labelled it load-bearing because
+`db_lookup.py` contains `SELECT attributes_json FROM variations`. Checking the CALL GRAPH instead:
+`variation_attrs_for()` has **zero production callers** — the only hits are
+`converter/tests/test_button_preset_seed.py` and a trace line inside the function itself. The live
+pipeline (`assembly.py`, `walk.py`, `extraction.py`) never calls it. So a rebuild producing 0 rows
+breaks nothing today; it only prevents an unwired button-preset feature from ever activating.
+
+**Error 2 — it duplicates a system that already exists.** Bean identified this: the real variant
+system is `variant_slots` + `blocks.variant_attr` (FR-31-20). Measured side by side:
+
+| `variant_slots` (maintained, stamped 2026-08-02) | `variations` table |
+|---|---|
+| `sgs/hero` → `split` (splitImage, splitImageMobile), `standard` (backgroundImage), `video` (backgroundVideo, bgVideo), `svg-animated` (svgContent) | `sgs/hero` → `hero-split`, `hero-standard`, `hero-video`, `hero-animated` |
+
+**The same four concepts, prefixed, minus the discriminating-slot data.** `variant_slots` carries what
+the walker actually needs; the `variations` row carries a name. Button's entries are a genuinely
+different thing — WP-native STYLE variations, declared in `button/block.json` under `"variations"`.
+
+**Provenance of the 205:** 161 `native_wp` (a live WP+WooCommerce block-registry scrape — WooCommerce
+injects `product`/`product_cat`/`product_tag` into `core/navigation-link`, which vanilla WP has not;
+almost certainly from the deleted `~/.wp-blockmarkup-mcp/`) · 3 `sgs/button` (regenerable verbatim
+from `block.json`) · **41 `sgs` rows with NO source anywhere** — not in any `block.json`
+`"variations"`, not `registerBlockVariation`, and NOT matching `supports.sgs.variants` (a disjoint
+vocabulary: testimonial's variant_slots say `classic-card`/`pull-quote-editorial`…, its `variations`
+rows say `testimonial-card`/`testimonial-inline`…).
+
+**Verdict: do NOT build a seeder.** Retire it, or wire the button-preset feature first and seed only
+the 3 button rows from `block.json`. ⚠ Gap in the other direction: `sgs/business-info` declares 5
+variations in its `block.json` and has **0** rows — so the table was never authoritative anyway.
 
 ### Group 5 — the genuine remaining gaps (3 tables)
 `property_suffixes` (154) · `slots` (104) · `excluded_properties` (10). No writer, no module-load

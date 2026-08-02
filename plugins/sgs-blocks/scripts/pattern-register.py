@@ -392,6 +392,21 @@ def _insert_pattern(
         print(f"\n[dry-run] SQL INSERT:\n  {preview}\n")
     else:
         cur = con.cursor()
+        # `patterns.slug` is a PRIMARY KEY, so a re-run of this CLI on the same
+        # slug used to abort with `UNIQUE constraint failed` — loud, not silent
+        # corruption, but still a crash on a perfectly reasonable second run.
+        # Check first and report, so re-registering an existing pattern is a
+        # clear no-op instead of a traceback. (Audited 2026-08-02: this is the
+        # only non-idempotent writer of the five Group-2 seeders.)
+        already = cur.execute(
+            "SELECT 1 FROM patterns WHERE slug = ?", (slug,)
+        ).fetchone()
+        if already:
+            print(
+                f"[skip] Pattern '{slug}' is already registered — nothing written.\n"
+                f"       Delete the row first if you intend to re-register it."
+            )
+            return
         cur.execute(insert_sql, params)
         con.commit()
         print(f"[ok] Inserted pattern '{slug}' into DB.")

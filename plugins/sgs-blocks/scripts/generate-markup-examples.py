@@ -25,10 +25,21 @@ import glob
 import sqlite3
 import argparse
 from datetime import datetime
+from pathlib import Path
 
 # Paths
 SRC_DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'blocks')
-DB_PATH = r'C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db'
+
+# 2026-08-02: this was a hardcoded absolute literal —
+#   DB_PATH = r'C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db'
+# Two defects in one line. It breaks on any other machine (CLAUDE.md: "No
+# hard-coded environment paths"), and — the reason it was caught — a literal
+# drive path is IMMUNE to HOME redirection, so running this script inside the
+# dbschema sandbox wrote straight through to the LIVE database anyway. A
+# sandbox that a script can silently escape is worse than no sandbox, because
+# it is trusted. Measured: a sandboxed run moved live markup_examples 399->422.
+# Deriving from Path.home() makes the redirect actually bind.
+DB_PATH = str(Path.home() / '.agents' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db')
 
 # ---------------------------------------------------------------------------
 # Helper: content-bearing attribute detection
@@ -188,6 +199,15 @@ def extract_example_attrs(bj: dict) -> dict:
     result = {}
     for name, defn in attrs_def.items():
         if name.startswith('_comment'):
+            continue
+        # A block.json attribute definition is normally an object
+        # ({"type": "string", "default": …}), but at least one block ships a
+        # bare string value here. This used to crash the whole run with
+        # `AttributeError: 'str' object has no attribute 'get'`, which is why
+        # markup_examples seeded ZERO rows on a rebuild despite 399 live rows —
+        # the script died partway and the DB write never happened.
+        # Found 2026-08-02 while wiring this seeder into --rebuild.
+        if not isinstance(defn, dict):
             continue
         default = defn.get('default')
         if default is None:

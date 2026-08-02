@@ -67,16 +67,16 @@
     "hooks": 161,
     "html_tag_to_core_block": 17,
     "indexed_files": 83,
-    "legacy_role_lookup": 0,
+    "legacy_role_lookup": 15,
     "markup_examples": 0,
-    "modifier_suffixes": 0,
+    "modifier_suffixes": 19,
     "pattern_coverage": 0,
     "patterns": 0,
     "pipeline_corrections": 0,
     "plugins": 0,
     "preset_implications": 23,
     "property_suffixes": 0,
-    "roles": 21,
+    "roles": 29,
     "schema_metadata": 4,
     "schema_migrations": 29,
     "slots": 0,
@@ -95,9 +95,7 @@
     "components",
     "deploy_steps",
     "gotchas",
-    "legacy_role_lookup",
     "markup_examples",
-    "modifier_suffixes",
     "pattern_coverage",
     "patterns",
     "pipeline_corrections",
@@ -161,11 +159,6 @@
       "table": "indexed_files",
       "live": 110,
       "rebuilt": 83
-    },
-    {
-      "table": "roles",
-      "live": 29,
-      "rebuilt": 21
     }
   ]
 }

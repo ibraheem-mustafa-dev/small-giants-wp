@@ -18,14 +18,14 @@ the live database's mtime was confirmed unchanged afterwards).
 | | live | rebuilt |
 |---|---|---|
 | tables | 40 | 40 |
-| total rows | 19138 | 4004 |
+| total rows | 19138 | 4046 |
 
 - Missing tables: **none**
 - Extra tables: **none**
-- Tables with identical row counts: **9**
-- Short of live: **11**
+- Tables with identical row counts: **12**
+- Short of live: **10**
 - Empty, known Phase-1 gaps: **3**
-- Empty, NOT a known gap: **17**
+- Empty, NOT a known gap: **15**
 
 ## ⚠ Empty but NOT a known gap
 
@@ -40,9 +40,7 @@ These were not on the Phase-1 list and need explaining before Phase 1 starts.
 | `components` | 13 |
 | `deploy_steps` | 9 |
 | `gotchas` | 12 |
-| `legacy_role_lookup` | 15 |
 | `markup_examples` | 399 |
-| `modifier_suffixes` | 19 |
 | `pattern_coverage` | 108 |
 | `patterns` | 57 |
 | `pipeline_corrections` | 4 |
@@ -75,11 +73,10 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | `docs` | 1257 | 46 | 1211 |
 | `hooks` | 5433 | 161 | 5272 |
 | `indexed_files` | 110 | 83 | 27 |
-| `roles` | 29 | 21 | 8 |
 
 ## Identical
 
-9 tables reproduced with exactly matching row counts.
+12 tables reproduced with exactly matching row counts.
 
 <details><summary>Full list</summary>
 
@@ -90,7 +87,10 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | `block_selectors` | 86 |
 | `fx_effects` | 15 |
 | `html_tag_to_core_block` | 17 |
+| `legacy_role_lookup` | 15 |
+| `modifier_suffixes` | 19 |
 | `preset_implications` | 23 |
+| `roles` | 29 |
 | `schema_metadata` | 4 |
 | `schema_migrations` | 29 |
 | `variant_slots` | 27 |

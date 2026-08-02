@@ -231,6 +231,63 @@ def run_module_load_seeders(db_path: Path = None) -> None:
             print(f"    {line}", file=sys.stderr)
         return
     print("[--rebuild] db_lookup seeders done\n")
+    _run_standalone_seeders(scripts)
+
+
+# Seeders that exist and are IDEMPOTENCY-AUDITED but were never wired into any
+# reseed. Audited 2026-08-02 by source inspection; only these two are safe to run
+# unattended. Deliberately invoked on --rebuild ONLY, never on a normal reseed:
+# a routine `/sgs-update` should not silently start running extra scripts.
+_REBUILD_SEEDERS: tuple[tuple[str, str, str], ...] = (
+    (
+        "uimax-tools/seed-legacy-role-lookup.py",
+        "legacy_role_lookup",
+        "INSERT OR IGNORE on a kebab_role PRIMARY KEY; seed is a list inside the "
+        "script. The only one that writes BOTH DB paths itself.",
+    ),
+    (
+        "generate-markup-examples.py",
+        "markup_examples",
+        "Pre-fetches existing block_slugs then skips them. Reads each block.json. "
+        "NEVER pass --reset-sgs here — it DELETEs the sgs rows.",
+    ),
+)
+
+# NOT wired, with reasons (do not 'helpfully' add these without fixing them first):
+#  * uimax-tools/enrich-db.py  -> style_variations + pattern_coverage.
+#    Both TARGETS are idempotent, but the SCRIPT is all-or-nothing: run_all()
+#    fires all 10 targets with only --repo/--dry-run to control it, and target 2.1
+#    writes `slot_synonyms` — a table RETIRED in favour of `slots`. It also loops
+#    over both DB paths, which are one inode today, so each target would run twice
+#    against the same file. Needs a --only <target> selector before it is safe.
+#  * pattern-register.py / orchestrator/register_patterns.py -> patterns.
+#    Writer B is idempotent but needs a live clone-run artefact, so it cannot
+#    reseed from nothing; Writer A is a manual single-pattern CLI. Note
+#    pattern_coverage reads FROM patterns, so it is order-dependent on this.
+
+
+def _run_standalone_seeders(scripts: Path) -> None:
+    """Run the audited standalone seeders that no reseed ever invoked."""
+    for rel, table, _why in _REBUILD_SEEDERS:
+        script = scripts / rel
+        if not script.exists():
+            print(f"[--rebuild] SKIP {rel} (not found)", file=sys.stderr)
+            continue
+        print(f"[--rebuild] seeding {table} via {rel} ...")
+        result = subprocess.run(
+            [sys.executable, str(script)], cwd=str(scripts),
+            capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            # Non-fatal: a rebuild that seeds 9 of 10 tables and says so is more
+            # useful than one that aborts. The comparison report shows the gap.
+            print(f"[--rebuild] WARNING: {rel} exited {result.returncode}",
+                  file=sys.stderr)
+            for line in (result.stderr or "").strip().splitlines()[-4:]:
+                print(f"    {line}", file=sys.stderr)
+        else:
+            print(f"[--rebuild] {table} seeded")
+    print()
 
 
 def ensure_schema_metadata(conn: sqlite3.Connection) -> None:
