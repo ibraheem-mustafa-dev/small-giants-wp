@@ -32,7 +32,7 @@
 
 /* Focus ring for linked badges (text-only / image-badge variants) */
 a.sgs-trust-bar__badge:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
 	outline-offset: 4px;
 	border-radius: 4px;
 }

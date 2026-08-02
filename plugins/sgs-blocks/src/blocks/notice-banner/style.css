@@ -156,7 +156,7 @@
 
 /* Visible focus ring — WCAG 2.2 AA. */
 .sgs-notice-banner__close:focus-visible {
-	outline: 2px solid currentcolor;
+	outline: 2px solid var(--sgs-focus-color, currentcolor);
 	outline-offset: 2px;
 	opacity: 1;
 }

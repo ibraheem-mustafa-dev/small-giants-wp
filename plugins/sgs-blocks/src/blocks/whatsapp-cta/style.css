@@ -28,7 +28,7 @@
 }
 
 .sgs-whatsapp-cta__btn:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
 	outline-offset: 3px;
 }
 

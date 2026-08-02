@@ -160,7 +160,7 @@
 
 /* ===== Focus for linked cards ===== */
 .sgs-info-box__link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
 	outline-offset: 3px;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
