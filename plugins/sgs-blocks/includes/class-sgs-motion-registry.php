@@ -85,6 +85,21 @@ class SGS_Motion_Registry {
 			'path' => 'build/vendor-modules/gsap-inertia.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
+
+		/*
+		 * Physics canvas (FR-38-27 / D447) — the ONE named exception to
+		 * FR-38-14's "physics are an easing flavour, never a standalone
+		 * toggle" rule. Sole consumer: sgs/physics-canvas's OWN
+		 * `viewScriptModule` (src/blocks/physics-canvas/view.js), which
+		 * enqueues this alongside gsap-draggable/gsap-inertia directly from
+		 * its render.php (the same proxy-enqueue pattern buybox/render.php
+		 * uses) — NOT via the fx_effects DB sniff route, because this is a
+		 * dedicated block, not a data-sgs-fx attribute on an arbitrary block.
+		 */
+		'@sgs/gsap-physics2d'     => array(
+			'path' => 'build/vendor-modules/gsap-physics2d.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
 		'@sgs/gsap-drawsvg'       => array(
 			'path' => 'build/vendor-modules/gsap-drawsvg.js',
 			'deps' => array( '@sgs/gsap' ),

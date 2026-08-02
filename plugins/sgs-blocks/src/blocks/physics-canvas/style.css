@@ -1,0 +1,35 @@
+/**
+ * sgs/physics-canvas — frontend + editor shared styles.
+ *
+ * Deliberately thin: padding/max-width/contentWidth/background/border all
+ * come from the shared SGS_Container_Wrapper scoped <style> (Spec 32 — never
+ * duplicated here). This file only owns what the wrapper does not: the arena
+ * positioning context bodies are lifted into, and the JS-applied gesture
+ * cursor (a transient runtime state, not an authored default — the same
+ * carve-out fx-draggable.js uses for its own cursor writes).
+ */
+
+.wp-block-sgs-physics-canvas .sgs-container__inner {
+	position: relative;
+	/* Flow layout for the no-JS / reduced-motion static state (FR-38-27) —
+	 * children stack normally until view.js lifts them to absolute bodies. */
+	display: flex;
+	flex-wrap: wrap;
+	gap: var( --wp--preset--spacing--40, 16px );
+	align-items: center;
+	justify-content: center;
+}
+
+/* Applied by view.js only once a body is upgraded — never present in SSR
+ * markup or under prefers-reduced-motion (fail-open, FR-38-2). */
+.wp-block-sgs-physics-canvas [data-sgs-physics-body] {
+	position: absolute;
+	touch-action: none;
+	user-select: none;
+	cursor: grab;
+	will-change: transform;
+}
+
+.wp-block-sgs-physics-canvas [data-sgs-physics-body].sgs-physics-canvas__dragging {
+	cursor: grabbing;
+}

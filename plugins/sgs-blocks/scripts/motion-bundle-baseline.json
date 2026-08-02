@@ -2,13 +2,13 @@
   "_comment": [
     "Spec 38 (Motion System) FR-38-24 bundle-size budget baseline.",
     "These are MEASURED (gzip, bytes) build actuals recorded via --update-baseline \u2014 NOT the Spec 38 section 4.4 table (which is an ESTIMATE, see script docstring).",
-    "Last updated: 2026-08-02."
+    "Last updated: 2026-08-03."
   ],
-  "recorded_date": "2026-08-02",
+  "recorded_date": "2026-08-03",
   "unit": "gzip-bytes",
   "modules": {
-    "shared/effects/fx-carousel-loop.js": 930,
-    "shared/effects/fx-cursor-field.js": 1091,
+    "shared/effects/fx-carousel-loop.js": 1012,
+    "shared/effects/fx-cursor-field.js": 1331,
     "shared/effects/gsap/fx-draggable.js": 1017,
     "shared/effects/gsap/fx-draw.js": 673,
     "shared/effects/gsap/fx-horizontal-panel.js": 701,
@@ -27,6 +27,7 @@
     "vendor-modules/gsap-inertia.js": 2875,
     "vendor-modules/gsap-morphsvg.js": 9206,
     "vendor-modules/gsap-motionpath.js": 9138,
+    "vendor-modules/gsap-physics2d.js": 907,
     "vendor-modules/gsap-scrambletext.js": 3587,
     "vendor-modules/gsap-scrolltrigger.js": 17420,
     "vendor-modules/gsap-splittext.js": 3271

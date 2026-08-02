@@ -10,7 +10,7 @@
  * values, edit the relevant block.json / stylesheet / seed-motion-fx-
  * registry.py, then re-run this generator.
  *
- * Blocks with at least one qualifying effect: 28
+ * Blocks with at least one qualifying effect: 30
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 + §7.
  *
@@ -50,8 +50,10 @@ function sgs_get_fx_qualifying_blocks() {
 			'sgs/heading' => array( 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/hero' => array( 'cursor-field', 'draw', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scrub' ),
 			'sgs/icon' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
+			'sgs/image-sequence' => array( 'image-sequence', 'morph', 'motion-path', 'scrub' ),
 			'sgs/info-box' => array( 'cursor-field', 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/label' => array( 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
+			'sgs/physics-canvas' => array( 'cursor-field', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scrub' ),
 			'sgs/post-grid' => array( 'carousel-loop', 'morph', 'motion-path', 'scrub' ),
 			'sgs/pricing-table' => array( 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/product-card' => array( 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),

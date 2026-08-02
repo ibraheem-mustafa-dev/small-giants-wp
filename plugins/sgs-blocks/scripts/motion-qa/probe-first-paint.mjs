@@ -99,11 +99,33 @@ check(
 	0 === seen.clonesInServerMarkup,
 	`${ seen.clonesInServerMarkup } clone(s) found with JS off`
 );
-check(
-	'the loop marker IS server-emitted (so JS has something to enhance)',
-	seen.loopMarkerPresent,
-	seen.loopMarkerPresent ? 'data-sgs-loop present' : 'data-sgs-loop MISSING'
-);
+// `--not-a-loop` is an EXPLICIT opt-out, deliberately not auto-detected.
+//
+// This assertion only means anything for a looping carousel. Run against any
+// other motion block — a physics canvas, a cursor field — it fails on the
+// absence of a marker that block was never supposed to emit, and the whole
+// first-paint verdict reads FAIL for a reason unrelated to first paint. The
+// pressure that creates is to stamp the gate field anyway, which is exactly the
+// dishonesty this probe exists to prevent.
+//
+// Auto-detecting ("no loop marker anywhere, so skip it") would be the wrong fix:
+// a looping block that FORGOT its marker is precisely the bug this catches, and
+// auto-detect would hand it a silent pass. So the caller must declare it, and a
+// loop block that omits the flag still fails exactly as before.
+const NOT_A_LOOP = process.argv.includes( '--not-a-loop' );
+if ( NOT_A_LOOP ) {
+	// eslint-disable-next-line no-console
+	console.log(
+		'  [N/A ] loop-marker assertion skipped — caller passed --not-a-loop ' +
+			'(this block is not a looping carousel). Not counted as a pass.'
+	);
+} else {
+	check(
+		'the loop marker IS server-emitted (so JS has something to enhance)',
+		seen.loopMarkerPresent,
+		seen.loopMarkerPresent ? 'data-sgs-loop present' : 'data-sgs-loop MISSING'
+	);
+}
 
 await browser.close();
 const failed = results.filter( ( r ) => ! r ).length;

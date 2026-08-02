@@ -1,0 +1,134 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/physics-canvas",
+	"version": "0.1.0",
+	"title": "SGS Physics Canvas",
+	"category": "sgs-layout",
+	"description": "A container-equivalent section whose DECORATIVE children become throwable, physics-driven bodies (Spec 38 FR-38-27 / D447). Only non-interactive, non-textual content may be placed inside — nothing operable or must-read, because a thrown object has no discrete single-pointer alternative for WCAG 2.5.7. Physics are disabled under prefers-reduced-motion; children still render, static, in their authored positions.",
+	"keywords": [
+		"physics",
+		"drag",
+		"throw",
+		"decorative",
+		"gsap",
+		"canvas"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "screenoptions",
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"containerKind": "section",
+			"boxFamilies": {
+				"padding": [ "paddingTablet", "paddingMobile" ],
+				"margin": [ "marginTablet", "marginMobile" ],
+				"contentBandPadding": [ "contentBandPadding", "contentBandPaddingTablet", "contentBandPaddingMobile" ]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight"
+					},
+					"_note": "Composite-mirror rule (project CLAUDE.md D152): this block MUST mirror sgs/container's wrapper capabilities (padding, max-width, contentWidth, gap, background) rather than diverging — it is a section-KIND composite so it KEEPS SGS_Container_Wrapper rather than going block-private (D294)."
+				},
+				"content-band": {
+					"label": "Content band (throw arena)",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:background-color": "contentBandBackground",
+						"css:width": "contentWidth"
+					},
+					"_note": "The __inner band IS the physics arena — its rendered box is what view.js reads as Draggable's bounds and the Physics2D floor/wall geometry."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-physics-canvas"
+	},
+	"attributes": {
+		"maxWidth": { "type": "string", "default": "" },
+		"maxWidthTablet": { "type": "string", "default": "" },
+		"maxWidthMobile": { "type": "string", "default": "" },
+		"minHeight": { "type": "string", "default": "480px" },
+		"minHeightTablet": { "type": "string", "default": "" },
+		"minHeightMobile": { "type": "string", "default": "320px" },
+		"contentWidth": { "type": "string", "default": "full" },
+		"contentWidthTablet": { "type": "string", "default": "" },
+		"contentWidthMobile": { "type": "string", "default": "" },
+		"contentBandBackground": { "type": "string", "default": "" },
+		"contentBandPadding": { "type": "object", "default": {} },
+		"contentBandPaddingTablet": { "type": "object", "default": {} },
+		"contentBandPaddingMobile": { "type": "object", "default": {} },
+		"paddingTablet": { "type": "object", "default": {} },
+		"paddingMobile": { "type": "object", "default": {} },
+		"marginTablet": { "type": "object", "default": {} },
+		"marginMobile": { "type": "object", "default": {} },
+		"shadow": { "type": "string" },
+		"physicsGravity": {
+			"type": "number",
+			"default": 1400,
+			"description": "Downward acceleration applied to a thrown body, px/s²."
+		},
+		"physicsBounce": {
+			"type": "number",
+			"default": 0.55,
+			"description": "Restitution (0-1) applied when a body hits an arena edge."
+		},
+		"physicsEdgeResistance": {
+			"type": "number",
+			"default": 0.5,
+			"description": "GSAP Draggable edgeResistance (0-1) — higher resists dragging a body past the arena bounds."
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
+	"example": {
+		"attributes": {
+			"minHeight": "360px"
+		}
+	}
+}

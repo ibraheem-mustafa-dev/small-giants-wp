@@ -269,6 +269,58 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    {
+        # sgs/image-sequence (2026-07-31, Spec 38 FR-38-9, Wave C item C8) —
+        # scroll-scrubbed canvas frame sequence. Renders a poster <img> + a
+        # <canvas> entirely from scalar/object attrs (posterMedia, per-tier
+        # frame-source attrs, fx params) with save:()=>null and NO InnerBlocks
+        # slot — same profile as sgs/audio (standalone content block, no
+        # container wrapper of any kind).
+        "block_slug": "sgs/image-sequence",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/before-after (2026-07-31, Spec 38 FR-38-13, Wave C item C3) —
+        # two-image comparison slider with a draggable divider. Renders both
+        # <img> elements + the divider entirely from typed scalar attrs
+        # (beforeImageUrl/afterImageUrl/orientation/startPosition/fx params)
+        # with save:()=>null and NO InnerBlocks slot — same standalone-leaf
+        # profile as sgs/audio / sgs/image-sequence (content-block, no
+        # container wrapper of any kind; content-KIND / block-private per
+        # D294, never used SGS_Container_Wrapper).
+        "block_slug": "sgs/before-after",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/physics-canvas (2026-08-02, Spec 38 FR-38-27, D447) — a niche
+        # ARTISTIC canvas whose direct children become throwable, gravity-driven
+        # decorative bodies. Unlike the standalone leaves above it IS a genuine
+        # section-KIND composite: render.php delegates to SGS_Container_Wrapper
+        # (D152 composite-mirror), and the wrapper's .sgs-container__inner band
+        # is the throw arena itself, so the row must carry wraps_block +
+        # container_kind='section' or the wrapper routing never applies.
+        # Bean ruled 2026-08-02 that this surface is deliberately NOT built for
+        # accessibility, structure, or cloning — it is operator-discretion
+        # decoration. Seeded so the F6 db-consistency gate passes; NOT seeded
+        # into slots/roles, because it is intentionally unclonable.
+        # Field values verified against the live table, NOT assumed: sgs/hero and
+        # sgs/cta-section both read wraps_block='sgs/container' +
+        # composition_role='section-root' (there is no 'section' role — the four
+        # in use are content-block / leaf / section-root / wrapper-shell), and
+        # accepts_allowed_blocks holds a JSON ARRAY of slugs, as cta-section does,
+        # not a boolean. container_kind is deliberately absent here: it is set by
+        # sync-container-wrapping-blocks.py --apply, like every other row.
+        "block_slug": "sgs/physics-canvas",
+        "wraps_block": "sgs/container",
+        "composition_role": "section-root",
+        "accepts_allowed_blocks": (
+            '["core/image", "sgs/media", "sgs/icon", "sgs/decorative-image"]'
+        ),
+    },
 ]
 
 

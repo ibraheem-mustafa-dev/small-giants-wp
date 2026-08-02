@@ -77,6 +77,9 @@ if ( moduleConfig ) {
 		'gsap/MorphSVGPlugin': '@sgs/gsap-morphsvg',
 		'gsap/MotionPathPlugin': '@sgs/gsap-motionpath',
 		'gsap/ScrambleTextPlugin': '@sgs/gsap-scramble',
+		// Physics sandbox (FR-38-27 / D447) — the one named exception to
+		// FR-38-14's "physics are an easing flavour" rule.
+		'gsap/Physics2DPlugin': '@sgs/gsap-physics2d',
 		// The Tier G provider is externalised too, for the same reason as GSAP
 		// itself: it holds the plugin-registration set and the shared
 		// matchMedia context. Bundled per-effect, each effect would get its own
@@ -118,6 +121,8 @@ if ( moduleConfig ) {
 					'gsap-morphsvg',
 					'gsap-motionpath',
 					'gsap-scrambletext',
+					// Physics sandbox (FR-38-27 / D447).
+					'gsap-physics2d',
 				].map( ( name ) => [
 					`vendor-modules/${ name }`,
 					path.resolve(

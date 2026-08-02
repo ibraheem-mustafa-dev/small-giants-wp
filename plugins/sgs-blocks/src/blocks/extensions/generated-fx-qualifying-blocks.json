@@ -83,6 +83,12 @@
 		"motion-path",
 		"scrub"
 	],
+	"sgs/image-sequence": [
+		"image-sequence",
+		"morph",
+		"motion-path",
+		"scrub"
+	],
 	"sgs/info-box": [
 		"cursor-field",
 		"morph",
@@ -97,6 +103,14 @@
 		"scramble",
 		"scrub",
 		"split-reveal"
+	],
+	"sgs/physics-canvas": [
+		"cursor-field",
+		"horizontal-panel",
+		"morph",
+		"motion-path",
+		"pin-scrub",
+		"scrub"
 	],
 	"sgs/post-grid": [
 		"carousel-loop",

@@ -1,0 +1,29 @@
+.wp-block-sgs-physics-canvas {
+	position: relative;
+}
+
+.wp-block-sgs-physics-canvas .sgs-container__inner {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	align-items: center;
+	justify-content: center;
+	min-height: inherit;
+}
+
+/* Editor-only affordance — physics never runs inside the canvas (§9: the
+ * editor always shows the static end-state), so a light dashed outline marks
+ * the throw arena without implying the drag will work here. */
+.wp-block-sgs-physics-canvas .sgs-container__inner::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border: 1px dashed color-mix(in srgb, currentColor 30%, transparent);
+	pointer-events: none;
+}
+
+.wp-block-sgs-physics-canvas__editor-notice {
+	font-size: 12px;
+	opacity: 0.7;
+	padding: 4px 0 8px;
+}
