@@ -1,4 +1,11 @@
 {
+	"carousel-loop": {
+		"owns_scroll_transform": false,
+		"pins": false,
+		"triggers": [
+			"load"
+		]
+	},
 	"cursor-field": {
 		"owns_scroll_transform": false,
 		"pins": false,

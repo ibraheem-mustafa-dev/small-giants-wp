@@ -181,7 +181,19 @@ function initCarousel( galleryEl ) {
 		return;
 	}
 
-	const items = Array.from( grid.querySelectorAll( '.sgs-gallery__item' ) );
+	/*
+	 * `:not([data-sgs-loop-clone])` — the a11y contract `fx-carousel-loop.js`
+	 * (Spec 38 §11 loop FR) documents in its own docblock: when looping is on
+	 * that module clones every item to both ends of the track so scrolling
+	 * past the last one continues into the first, and marks each clone with
+	 * `data-sgs-loop-clone="true"`. Without this filter `items`/`totalItems`
+	 * below would count the clones too, giving the wrong dot count and wrong
+	 * "am I at the end" arrow state. The filter is a no-op when looping is
+	 * off — there are no clones to exclude.
+	 */
+	const items = Array.from(
+		grid.querySelectorAll( '.sgs-gallery__item:not([data-sgs-loop-clone])' )
+	);
 	if ( ! items.length ) {
 		return;
 	}
@@ -189,6 +201,11 @@ function initCarousel( galleryEl ) {
 	const shouldAutoplay = galleryEl.dataset.autoplay === 'true';
 	const speed          = parseInt( galleryEl.dataset.speed || '5000', 10 );
 	const totalItems     = items.length;
+	// Whether `fx-carousel-loop.js` is attached to THIS track — read off the
+	// same marker the render layer emits (`data-sgs-loop="1"` on the grid),
+	// so arrows/keyboard wrap instead of clamping at the ends. Independent of
+	// drag (Bean's ruling): this reads true whether or not drag is also on.
+	const loopEnabled = grid.dataset.sgsLoop === '1';
 
 	let currentIndex  = 0;
 	let autoplayTimer = null;
@@ -199,10 +216,16 @@ function initCarousel( galleryEl ) {
 	 * @param {number} index Target index.
 	 */
 	function goToItem( index ) {
-		const clamped = Math.max( 0, Math.min( index, totalItems - 1 ) );
-		currentIndex  = clamped;
+		// Looping has no last item to clamp against — wrap instead, the
+		// same modulo shape the lightbox's own nextImage/prevImage already
+		// use. Clamping is kept for the non-looping default so an arrow
+		// click at either end still just stops there, unchanged.
+		const resolved = loopEnabled
+			? ( ( index % totalItems ) + totalItems ) % totalItems
+			: Math.max( 0, Math.min( index, totalItems - 1 ) );
+		currentIndex  = resolved;
 
-		const target = items[ clamped ];
+		const target = items[ resolved ];
 		if ( target ) {
 			target.scrollIntoView( {
 				behavior: REDUCED_MOTION ? 'auto' : 'smooth',
@@ -233,11 +256,15 @@ function initCarousel( galleryEl ) {
 	 * Update disabled state of prev/next arrows.
 	 */
 	function updateArrows() {
+		// A loop has no last item (WCAG 2.5.7 concern the loop module's own
+		// docblock names): "next" must never disable, so a visitor is never
+		// stuck staring at a dead button. Disabled state is meaningful only
+		// for the non-looping default.
 		if ( prevBtn ) {
-			prevBtn.disabled = currentIndex === 0;
+			prevBtn.disabled = ! loopEnabled && currentIndex === 0;
 		}
 		if ( nextBtn ) {
-			nextBtn.disabled = currentIndex >= totalItems - 1;
+			nextBtn.disabled = ! loopEnabled && currentIndex >= totalItems - 1;
 		}
 	}
 

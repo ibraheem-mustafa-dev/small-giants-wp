@@ -1,11 +1,13 @@
 {
 	"sgs/before-after": [
+		"carousel-loop",
 		"draggable",
 		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/buybox": [
+		"carousel-loop",
 		"morph",
 		"motion-path",
 		"scrub"
@@ -48,11 +50,13 @@
 		"scrub"
 	],
 	"sgs/gallery": [
+		"carousel-loop",
 		"morph",
 		"motion-path",
 		"scrub"
 	],
 	"sgs/google-reviews": [
+		"carousel-loop",
 		"morph",
 		"motion-path",
 		"scrub"
@@ -95,6 +99,7 @@
 		"split-reveal"
 	],
 	"sgs/post-grid": [
+		"carousel-loop",
 		"morph",
 		"motion-path",
 		"scrub"
@@ -162,6 +167,7 @@
 		"split-reveal"
 	],
 	"sgs/timeline": [
+		"carousel-loop",
 		"draggable",
 		"morph",
 		"motion-path",
@@ -181,6 +187,7 @@
 		"split-reveal"
 	],
 	"sgs/trustpilot-reviews": [
+		"carousel-loop",
 		"morph",
 		"motion-path",
 		"scrub"

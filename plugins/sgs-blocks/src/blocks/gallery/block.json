@@ -342,6 +342,10 @@
 		"dragMomentum": {
 			"type": "boolean",
 			"default": true
+		},
+		"loopCarousel": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"editorScript": "file:./index.js",

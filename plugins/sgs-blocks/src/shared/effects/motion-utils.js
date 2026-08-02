@@ -81,6 +81,37 @@ export function supportsFinePointer() {
 	);
 }
 
+/**
+ * Does this element structurally qualify as a native horizontal scroller?
+ *
+ * Deliberately a COMPUTED-STYLE + MEASURED-OVERFLOW check, not a class-name or
+ * block check — `overflow-x: auto|scroll` is what makes `scrollLeft` a real,
+ * visible property; anything else (e.g. `overflow: hidden` driving a
+ * `transform`) is a different mechanism this test has no business qualifying.
+ *
+ * ⚠ THIS IS A DELIBERATE, DOCUMENTED DUPLICATE of the identically-named private
+ * function in `gsap/fx-draggable.js`, not an import from it. That file carries
+ * a hard "do not modify, not one line" constraint (Spec 38 FR-38-13's Tier G
+ * contract is frozen — see its own docblock), and its copy is not exported, so
+ * sharing code would require editing it to add an `export` keyword — itself a
+ * modification. Extracting the test here instead gives `fx-carousel-loop.js`
+ * (Tier V, independent control, Spec 38 §11 loop FR) the SAME structural
+ * question without touching the frozen file. Keep both copies identical if
+ * either changes — there is no gate that cross-checks them, the same
+ * hand-maintained-duplicate risk this codebase already carries for a few
+ * effect lists in `fx.js`.
+ *
+ * @param {HTMLElement} el Element to test.
+ * @return {boolean} True when `el` itself natively scrolls horizontally.
+ */
+export function isNativeHorizontalScroller( el ) {
+	const overflowX = getComputedStyle( el ).overflowX;
+	if ( 'auto' !== overflowX && 'scroll' !== overflowX ) {
+		return false;
+	}
+	return el.scrollWidth > el.clientWidth;
+}
+
 /* ==========================================================================
  * Shared rAF loop.
  *

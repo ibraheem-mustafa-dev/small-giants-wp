@@ -229,6 +229,24 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-cursor-field.js',
 			'deps' => array(),
 		),
+
+		/*
+		 * Infinite-loop carousels (Spec 38 §11 loop FR, Bean's ruling that
+		 * looping must be an INDEPENDENT control, never tied to drag). NO
+		 * deps — pure DOM clone + scrollLeft management, no GSAP. Registered
+		 * beside cursor-field/smooth-scroll for the same reason: a page using
+		 * this and no Tier G effect ships zero GSAP bytes.
+		 *
+		 * Sniffed on a SEPARATE attribute (`data-sgs-loop`, see
+		 * `extract_effects()` below), not the shared `data-sgs-fx` grammar —
+		 * an element can carry BOTH `data-sgs-fx="draggable"` and
+		 * `data-sgs-loop="1"` at once, and `data-sgs-fx` can only ever hold
+		 * one value.
+		 */
+		'@sgs/fx-carousel-loop'  => array(
+			'path' => 'build/shared/effects/fx-carousel-loop.js',
+			'deps' => array(),
+		),
 	);
 
 	/**
@@ -838,6 +856,18 @@ class SGS_Motion_Registry {
 		$attr_effect = $block['attrs']['fx'] ?? '';
 		if ( \is_string( $attr_effect ) && '' !== $attr_effect && 'none' !== $attr_effect ) {
 			$effects[] = $attr_effect;
+		}
+
+		/*
+		 * Third, independent signal: `data-sgs-loop`. Deliberately a SEPARATE
+		 * attribute from `data-sgs-fx` (Bean's ruling — looping is an
+		 * independent control, not a value of the shared `fx` grammar), so it
+		 * needs its own scan rather than folding into `extract_effects()`'s
+		 * `data-sgs-fx="…"` pattern. Presence alone is the whole signal; the
+		 * value is always "1" (see each block's render.php).
+		 */
+		if ( false !== \strpos( $block_content, 'data-sgs-loop="1"' ) ) {
+			$effects[] = 'carousel-loop';
 		}
 
 		foreach ( \array_unique( $effects ) as $effect ) {

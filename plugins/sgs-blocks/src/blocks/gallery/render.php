@@ -95,12 +95,23 @@ $carousel_show_arrows = (bool) ( $attributes['carouselShowArrows'] ?? true );
 $drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
 $drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 
+// Infinite loop (Spec 38 §11 loop FR). A SEPARATE marker from
+// `data-sgs-fx="draggable"` above — Bean's ruling that looping is an
+// independent control, not a value of the shared `fx` grammar, and both can
+// be present on the SAME element at once (a single `data-sgs-fx` attribute
+// could never express that). `shared/effects/fx-carousel-loop.js` reads
+// this; it never touches `gsap/fx-draggable.js`.
+$loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
+
 $grid_fx_attr = '';
 if ( 'carousel' === $layout && $drag_to_scroll ) {
 	$grid_fx_attr = ' data-sgs-fx="draggable"';
 	if ( ! $drag_momentum ) {
 		$grid_fx_attr .= ' data-sgs-fx-momentum="false"';
 	}
+}
+if ( 'carousel' === $layout && $loop_carousel ) {
+	$grid_fx_attr .= ' data-sgs-loop="1"';
 }
 
 // Colour attributes — fallbacks match block.json defaults so inline CSS vars

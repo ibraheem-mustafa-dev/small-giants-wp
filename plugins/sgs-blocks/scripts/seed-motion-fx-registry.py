@@ -638,6 +638,65 @@ FX_EFFECTS: list[dict] = [
         # here would put one on 11 blocks including the site header and nav menu.
         "creates_panel": 0,
     },
+    {
+        # Spec 38 §11 loop FR. Bean, verbatim: "looping should not be tied to
+        # the drag effect — they should be independent controls", and "we're
+        # not setting the default behaviour in all carousels, just making the
+        # functionality available to those who want it." Task B (Wave D plan)
+        # falsified the original "add to fx-draggable.js" fix-shape — that
+        # file's own docblock is a documented prior decision rejecting a
+        # block-agnostic module doing wrap-around maths. This is therefore a
+        # SEPARATE module (`shared/effects/fx-carousel-loop.js`) on the SAME
+        # element `draggable` may also mark, coordinating with it rather than
+        # editing it.
+        "effect": "carousel-loop",
+        # Armed on load, same as draggable — not scroll-triggered, and there
+        # is no coherent "hover" reading for a wrap-around correction.
+        "pins": 0,
+        "triggers": "load",
+        # Tier V — pure DOM clone + scrollLeft management, no GSAP import.
+        # Nothing here needs a physics solver; it is a positional correction,
+        # not a tween. A page using this and no Tier G effect ships zero GSAP
+        # bytes, same promise cursor-field/smooth-scroll already keep.
+        "tier": "V",
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # Not a genuine SIMPLIFY/SUPPRESS split — see the module's own
+        # docblock: the scrollLeft correction is an instantaneous position
+        # write, never an animation, so there is nothing to gate either way.
+        # Recorded as 'simplify' because that is the closer of the two
+        # existing values (the capability itself never switches off; only an
+        # arrow's OWN `scrollIntoView({behavior:'smooth'})` — owned by each
+        # block's view.js, unchanged by this effect — is what actually
+        # animates and is already independently reduced-motion-gated there).
+        "reduced_motion": "simplify",
+        # SSR renders the plain, un-looped, real-order scroller — exactly the
+        # finished state with JS blocked, same as draggable's own choice.
+        "editor_story": "end-state",
+        # §2 shape mirrors `draggable` exactly: scope='block', requires=
+        # 'track' (the SAME native-horizontal-scroller structural signal,
+        # reused via motion-utils.js — see the module's own docblock for why
+        # it is a deliberate duplicate rather than an import from the frozen
+        # fx-draggable.js). Roster-gated per block, not a detectable-anywhere
+        # capability: `sgs/gallery`'s carousel layout is the first block
+        # wired to it, via its own `loopCarousel` attribute + inspector
+        # control, exactly the pattern `dragToScroll` already established.
+        "scope": "block",
+        "requires": "track",
+        # creates_panel=0, DELIBERATE, not merely inherited. This effect uses
+        # its OWN `data-sgs-loop` grammar (see class-sgs-motion-registry.php),
+        # never the shared `data-sgs-fx` picker value — a marker on the block
+        # ROOT via the generic "Scroll & effects" panel would be USELESS here
+        # for the same reason it was for `draggable`: the scroller is a
+        # DESCENDANT (`.sgs-gallery__grid`), not the block root, and the
+        # generic panel only ever stamps the root. So this effect is excluded
+        # from `fx.js`'s SHIPPED_EFFECTS/qualifying-blocks roster entirely
+        # (never added there) and creates_panel documents that decision
+        # rather than being consulted by any code path — same shape as
+        # `draggable`'s row above, which also never gained a `creates_panel`
+        # key and is also never offered from the generic panel.
+        "creates_panel": 0,
+    },
 ]
 
 # ---------------------------------------------------------------------------
@@ -676,6 +735,16 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     # invented `fxMomentum` that no block.json has - a row keyed on a name
     # nothing declares would report [skip] forever and prove nothing.
     "dragMomentum": "fx:momentum",
+    #
+    # `loopCarousel` -> fx:loop (Spec 38 s11 loop FR, 2026-08-02). Same shape
+    # as `dragMomentum` above and for the same reason: a real BLOCK attribute
+    # (not an fx extension attribute), declared in sgs/gallery's block.json,
+    # emitted as `data-sgs-loop="1"` from its own render.php and read back by
+    # `shared/effects/fx-carousel-loop.js`. Deliberately its own `fx:loop`
+    # value rather than folded into `fx:momentum`'s neighbourhood — looping
+    # is an INDEPENDENT control from drag (Bean's ruling), so the cloning
+    # grammar keeps them as two separate mappable attributes.
+    "loopCarousel": "fx:loop",
     #
     # `fxPath` -> fx:path. The curated motion-path route (s11.2, D427). This is
     # the AUTHORING surface; `data-sgs-fx-motion-path-target` is render-layer

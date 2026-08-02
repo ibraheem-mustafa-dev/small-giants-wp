@@ -183,6 +183,27 @@ if ( moduleConfig ) {
 				'effects',
 				'fx-cursor-field.js'
 			),
+			/*
+			 * Infinite-loop carousels (Spec 38 §11 loop FR) — Tier V, same
+			 * shape as fx-cursor-field above: pure DOM clone + scrollLeft
+			 * management, no GSAP import, so a page using this and no Tier G
+			 * effect ships zero GSAP bytes. Sniffed on its OWN attribute
+			 * (`data-sgs-loop`), independent of the `data-sgs-fx` grammar —
+			 * see `includes/class-sgs-motion-registry.php` and the module's
+			 * own docblock for why.
+			 *
+			 * FILENAME is load-bearing exactly as it is for the gsap
+			 * entries: the PHP registry derives its module ID as
+			 * '@sgs/fx-' . <fx_effects.effect>, and the DB effect key is
+			 * `carousel-loop` — so this must stay `fx-carousel-loop.js`.
+			 */
+			'shared/effects/fx-carousel-loop': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'fx-carousel-loop.js'
+			),
 			...Object.fromEntries(
 				[
 					'fx-scrub',
