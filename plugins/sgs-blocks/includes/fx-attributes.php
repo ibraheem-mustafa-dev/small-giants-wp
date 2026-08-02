@@ -87,6 +87,20 @@ const FX_ATTR_MAP = array(
 	 * nothing authors it.
 	 */
 	'fxShape'          => 'data-sgs-fx-shape',
+
+	/*
+	 * Cursor field (FR-38-25). These three MUST be here, not just in `fx.js`'s
+	 * save filter: that filter only bakes attributes into STATIC blocks'
+	 * markup, and most qualifying hosts (`sgs/container`, `sgs/hero`,
+	 * `sgs/cta-section`, `sgs/trust-bar`) are DYNAMIC. Without these rows a
+	 * client's chosen field type and colour never reach the rendered root, and
+	 * `fx-cursor-field.php` silently falls back to the default `glow` with no
+	 * colour override — an effect that looks configured and renders something
+	 * else. Caught by a qc-council code-path trace before deploy.
+	 */
+	'fxFieldType'      => 'data-sgs-fx-field',
+	'fxFieldColour'    => 'data-sgs-fx-field-colour',
+	'fxFieldRadius'    => 'data-sgs-fx-field-radius',
 	'fxShapeAssetFrom' => 'data-sgs-fx-shape-asset-from',
 	'fxShapeAssetTo'   => 'data-sgs-fx-shape-asset-to',
 );
@@ -333,6 +347,22 @@ function sgs_fx_effect_param_scope(): array {
 		'split-reveal'     => array( 'fxDuration', 'fxStagger', 'fxEase', 'fxSplit', 'fxMask' ),
 		'motion-path'      => array( 'fxPath', 'fxPathAsset', 'fxPathRotate', 'fxPathRest', 'fxPathRestVh', 'fxScrub' ),
 		'morph'            => array( 'fxShape', 'fxShapeAssetFrom', 'fxShapeAssetTo' ),
+
+		/*
+		 * FR-38-25. Found by LIVE verification, not by review: with the row
+		 * absent, `data-sgs-cursor-field="glow"` reached the page correctly and
+		 * the stylesheet and module were both enqueued — everything looked
+		 * right — while the client's chosen colour and radius were silently
+		 * scoped out here and never injected, so the per-instance override
+		 * <style> was never emitted and every field rendered in the default
+		 * accent at the default size.
+		 *
+		 * That is the THIRD hand-maintained list an effect must join to work
+		 * (this one, `FX_ATTR_MAP` above, and `fx.js`'s `SHIPPED_EFFECTS`), and
+		 * the second of the three to have been missed on this effect. None is
+		 * cross-checked by a gate.
+		 */
+		'cursor-field'     => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius' ),
 	);
 }
 
