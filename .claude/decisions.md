@@ -1,5 +1,68 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D464 — The knowledge-base DB gets a memory: committed schema + tracked migrations [ROUTINE]
+
+**Track 1 / T1.2 Phase 0, part 1 (Steps 0.0–0.3 + QA Gate A). Commit `78347070`. Phase 0 is NOT
+complete** — Steps 0.4–0.7 and QA Gate B (the actual rebuild-from-empty proof) remain.
+
+**The problem.** The DB could not be rebuilt. Its foundational tables exist only because ~29 one-off
+scripts were each run by hand once — no runner, no replay, no record of which ran. Every "it worked
+last month" regression on this track (hero art direction, `emit_shape` 139→117, `container_kind`)
+traces here.
+
+**Shipped, all in `plugins/sgs-blocks/scripts/dbschema/`:**
+- `schema.sql` — 39 tables + 22 indexes, generated VERBATIM from `sqlite_master`. Proven: applied to
+  an empty file, table AND index sets are identical. SQLite-internal `sqlite_*` objects are excluded
+  because SQLite **refuses** an explicit CREATE (`object name reserved for internal use`).
+- `sandbox.py` — runs any `Path.home()`-hardcoding script against a throwaway DB. Creates both the
+  `.claude` and `.agents` spellings as ONE inode; asserts the target is neither a live path nor a
+  hardlink to one. `--self-test` proves the guard FIRES (4 negative controls including a real
+  hardlink probe) and that a subprocess's `Path.home()` lands in the sandbox with the live mtime
+  unchanged.
+- `migrate.py` — `schema_migrations` + `--status` / `--apply` / `--mark-applied`. `--self-test`
+  proves `--apply` can FAIL: a broken migration ⇒ non-zero exit, **no** tracking row, later
+  migrations skipped, target untouched.
+- `migration-manifest.json` (30 files classified) + `schema-baseline-pre.json`.
+
+**Adoption:** 29 migrations marked applied without running. **Zero row drift across all 40
+pre-existing tables**; only `schema_migrations` is new.
+
+**Four plan statements were measured FALSE and corrected — none inherited:**
+1. **30 migrations, not 29** (`2026-08-01-rating-speed-suffix-role.py` landed after the plan). The
+   plan had already corrected 28→29 and went stale within a day. **Counts are derived at runtime now.**
+2. ⛔ **NO migration accepts `--db`.** The plan asserted two did and instructed the runner to pass it;
+   exactly two use `argparse` and both expose only `--dry-run`. That instruction targeted nothing and
+   would have made argparse exit 2, which the runner would have recorded as a genuine failure.
+   **Redirecting `HOME` is the sole mechanism and needs no per-file special case** — this simplified
+   the design rather than complicating it.
+3. ⛔ **The DB runs in WAL mode.** The planned `shutil.copy` backup could capture a snapshot missing
+   committed-but-uncheckpointed data — i.e. the phase's ONLY rollback was unsafe as specified.
+   Backups now use SQLite's own `Connection.backup()`.
+4. The `sync-container-wrapping-blocks.py` invocation is at `sgs-update-v2.py:4825`, not 4718.
+
+**Premise re-verified and CONFIRMED:** no *production* `CREATE TABLE` for `blocks` /
+`block_attributes` / `block_composition` / `property_suffixes` — the only hits are **six test
+fixtures**, which hand-write partial schemas for exactly those tables. Same drift disease one layer
+down; `schema.sql` eventually gives them a source. **Tests untouched this phase.**
+
+**Step 0.6 finding (unblocks D-2):** the DB writes and the block.json mirror are **independent**
+gates. `--apply` alone writes `block_composition.wraps_block` / `container_kind` and idempotently
+adds the `container_kind` column (`ALTER TABLE`). The block.json attribute+supports mirror requires
+**BOTH** `--apply` and `--write-block-json` (`write_apply = args.apply` at :1349 → `apply=` at :1355;
+dry-run return at :787). So auto-applying on reseed would change **nothing beyond those two columns
+plus the column-add**, because `/sgs-update` passes only `--write-block-json`.
+
+**A wart found and fixed in-flight:** `--status` created `schema_migrations` merely by being asked —
+caught by a before/after row-count comparison, not by any test. Now uses a non-creating reader plus
+`mode=ro`, with a self-test guard and a negative control proving the check distinguishes the old
+behaviour from the new (a check that cannot fail is worse than none).
+
+**Method note.** Every subagent finding was re-verified by a *different* method than the agent used
+(classification cross-checked by SQL-keyword scan: 30/30 agreement; the apply-gate claim confirmed
+against source lines). ⛔ A stray **empty, untracked, NOT-gitignored** `scripts/sgs-framework.db`
+(0 bytes, created 2026-08-01 23:31 — the council's own baseline artefact) sits in the repo and would
+be swept up by a careless `git add`. Left in place pending Bean's word.
+
 ## D463 — Form focus indicator: accent-led glow over a neutral underlay [ROUTINE]
 
 **Bean, on the live canary:** *"switch the form input focus colour to a brighter/more vibrant

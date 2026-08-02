@@ -93,7 +93,26 @@ memory alone:
   ✅ **CARRIED AND COMMITTED 2026-08-02** — `src/blocks/form/block.json` (the focus-ring `attrMap`
   fix that makes F6 green, plus that track's colour-default change) landed in the motion track's
   `d4bfa126`. F6 verified green afterwards. Nothing outstanding on that handover.
-- **Track 1 (cloning/Spec 31) — Phase 0 remains the front. Root cause found; plan ready, NOT executed.**
+- **⭐ Track 1 — Phase 0 PART 1 SHIPPED 2026-08-02 (D464, `78347070`, pushed).** The DB now has a
+  memory: `scripts/dbschema/` holds a verbatim `schema.sql` (39 tables + 22 indexes, round-trip
+  proven identical), a `sandbox.py` that runs `Path.home()`-hardcoding scripts against a throwaway
+  DB (guard proven to FIRE, 4 negative controls), and `migrate.py` + `schema_migrations`
+  (`--apply` proven able to FAIL). 29 migrations adopted via `--mark-applied`; **zero row drift
+  across all 40 pre-existing tables.**
+  ⛔ **Phase 0 is NOT complete** — Steps 0.4 (`--rebuild` flag), 0.5 (rebuild-from-empty
+  comparison), 0.7 (baseline commit) and **QA Gate B** (the negative-control rebuild proof, on
+  `property_suffixes` AND `block_attributes`) all remain. **Phase 1 stays BLOCKED until Gate B**:
+  it deletes migrations, and two `CREATE TABLE`s live only inside migrations queued for deletion.
+  ⛔ Four plan statements measured FALSE (see D464): **30 migrations not 29** · **NO migration
+  accepts `--db`** (the plan said 2 did; passing it would argparse-exit-2 into a fake failure) ·
+  **the DB is WAL-mode**, so the planned file-copy backup was unsafe · the sync invocation is at
+  `sgs-update-v2.py:4825`, not 4718. **Derive counts at runtime; never re-cache one here.**
+  ✅ Step 0.6 answered (unblocks D-2): `--apply` alone changes ONLY
+  `block_composition.wraps_block`/`container_kind` + the idempotent column-add; the block.json
+  mirror needs BOTH `--apply` and `--write-block-json`, and `/sgs-update` passes only the latter.
+  ⚠ A stray **empty, untracked, NOT-gitignored** `scripts/sgs-framework.db` sits in the repo — a
+  `git add -A` landmine. Left pending Bean's word.
+- **Track 1 (cloning/Spec 31) — Phase 0 background. Root cause found; parent plan otherwise NOT executed.**
   Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
   decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
   gates, ~105 min). Prior L2 register: `plans/2026-08-01-wrapper-recognition-cascade-rework.md`.
