@@ -116,6 +116,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Flip on filtered grids | **G** — same-document View Transitions snapshot the whole page (UI freeze on rapid re-filter) and give no per-item stagger/interrupt; Flip does | PAIRED block contract | Paired setting surfaced on BOTH `sgs/filter-search` and the filterable block (§3.3) | Pairing contract, not a one-off; VT crossfade is the no-GSAP fallback; Flip loads only when the pair opts in | off | filter-search × card-grid → any future filterable block implementing the contract |
 | Draggable + Inertia | **G** — pointer physics + momentum; CSS scroll-snap remains the Tier V default for carousels | block (curated roster) | Inspector toggle on roster blocks (§3.3 opt-in mechanism) | Roster-gated (`supports.sgs.fx.draggable`); touch-action discipline; keyboard alternative mandatory | off | gallery/testimonial-slider/before-after/hero decorations → any block that declares the support |
 | Physics2D / PhysicsProps / CustomBounce / CustomWiggle | **G** — no CSS equivalent for physics easings | N/A (flavour — inherits its host effect's level) | N/A (flavour — appears as easing/motion options inside other G effects' controls, never its own surface) | Never a standalone toggle; bundled into the consuming effect's chunk | n/a | Easing dropdown of G effects only |
+| Physics sandbox (throwable decorative bodies) | **G** — pointer physics + post-release momentum; no CSS equivalent (FR-38-27) | container (dedicated block, NET-NEW) | New container-equivalent block's inspector | **DECORATIVE-ONLY — nothing operable or must-read may be a body**, which is what dissolves WCAG 2.5.7 (a thrown object has no discrete alternative); the ONE named exception to FR-38-14's never-a-standalone-toggle rule; reduced motion disables the physics while children still render static; inherits the composite-mirror rule | off (n/a — new block, NOT BUILT) | Hero/section decorative layers → any container-equivalent placement (decorative content only) |
 | DrawSVG | **G** (scrubbed) — scroll-scrubbed draw needs ScrollTrigger; **load-triggered simple draw stays covered by Tier V `data-sgs-path-draw`** (not retired) | element (SVG-bearing) | Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator` — each verified to render inline SVG shape geometry (`sgs/separator` conditionally, via the same `sgs_get_wp_icon()`/`sgs_get_lucide_icon()` helpers `sgs/icon` uses, when `contentMode === 'icon'`). **`sgs/decorative-image` REMOVED 2026-07-31 (D434):** it renders a raster `<img>`/video only, so no drawable geometry exists. An `<img src="*.svg">` is not drawable or morphable either — the file is an opaque image resource with no DOM access to its paths, which is precisely why `sgs/responsive-logo` inlines via `wp_kses` instead. | Retires **Vivus** (§3.4, D408); trigger = load OR scroll-scrub | off | Logo/icons/dividers → any SVG-bearing block (`decorative-image` excluded — raster/video only) |
 | MorphSVG | **G** — CSS `d:path()` needs identical point counts; point-matching IS the plugin | element | Inspector, ASSET-GATED (§3.4) | Requires prepared matched path pairs + authoring guidance; revives parking P-10 | off | Icons/logos → decorative SVG anywhere (asset-gated) |
 | MotionPath | **V default / G when scrubbed** — CSS `offset-path` handles autonomous path-follow cross-browser; the plugin is needed only for scroll-scrubbed path progress | element | Inspector on `sgs/decorative-image` | V variant ships without GSAP; G variant needs ScrollTrigger + MotionPathPlugin | off | decorative-image → other media blocks (permitted) |
@@ -433,6 +434,57 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   4. **The participant walk runs at init only** — a child whose background is set or inserted later
      will not participate until re-init. Acceptable while block content is server-rendered and
      static; the fix is a `MutationObserver` in `cursor-field.js`, never per-block code.
+
+- **FR-38-27 Physics sandbox — a container-equivalent block whose children are throwable
+  DECORATIVE bodies. Tier G.** Bean-signed 2026-08-01 (D447). **SPEC ONLY — NOT BUILT.** A new block
+  is high blast radius (project rule 7), so the build is its own design-gated session; this entry
+  exists so the decision is homed rather than carried in a plan file.
+
+  **This is the ONE named exception to FR-38-14**, which says physics are easing FLAVOURS and
+  *never standalone toggles*. FR-38-14 continues to govern every other use; a sandbox is the single
+  surface where physics is the point rather than the easing. Do not read this as reopening
+  FR-38-14 generally.
+
+  **Capability was never the objection** — Physics2DPlugin and InertiaPlugin are already bundled
+  and free. Two real objections stood, and the decorative-only constraint answers both:
+
+  1. **WCAG 2.5.7 (dragging movements).** Every shipped drag effect clears 2.5.7 because it maps
+     onto a discrete single-pointer alternative — a range input, arrow buttons, dots. **A thrown
+     object has no such alternative**, and one cannot be invented for it. Restricting throwable
+     bodies to non-interactive decorative layers **dissolves the requirement rather than answering
+     it**: nothing a user must reach is throwable, so no alternative is owed. This is the load-
+     bearing constraint of the whole FR. If a future change lets a sandbox hold anything operable —
+     a link, a button, a form field, readable body copy — 2.5.7 applies again in full and this FR
+     no longer covers it.
+  2. **Autonomous motion.** An object still moving *after release* is autonomous, so the
+     "drag survives reduced motion" reasoning behind `fx-draggable`'s SIMPLIFY contract does not
+     carry here. Reduced motion must disable the physics outright — see the contract below.
+
+  **Shape (Bean's call, asked and answered in-session): a dedicated container-equivalent block
+  whose children become bodies — NOT a physics toggle bolted onto existing blocks with preset
+  shapes.** A preset-shape toggle locks operators into whatever shapes we happened to imagine; a
+  container-kind block gives them anything they can put in a container. It therefore inherits the
+  **composite-mirror rule** (project CLAUDE.md, D152) and MUST mirror `sgs/container`'s wrapper
+  capabilities rather than diverging — its `container_kind` follows from that, and any missing
+  capability is a gap to add to the block, never a converter workaround.
+
+  **Reduced-motion contract — degrade to MORE content, never less.** Under
+  `prefers-reduced-motion: reduce` the physics are disabled and **the children still render, static,
+  in their authored positions**. The surface does not vanish. "Disables the surface outright" in
+  D447 means *disables the motion*, not *removes the content*: hiding decorative children would be
+  the `degrade-to-more-content-never-less` failure, and a client who placed an ornament deliberately
+  should still see it. ⚠ **Flagged for Bean's confirmation at the design gate** — D447 recorded the
+  ruling in one phrase that admits both readings, and this FR picks the one consistent with the
+  captured rule. It is the cheaper error to correct in either direction.
+
+  ⚠ **§10 row OWED, not dropped** (STOP-29 — mapped, not silently deferred). The per-effect
+  reduced-motion table needs a `physics-sandbox` row carrying the contract above. It is not added
+  in this edit because §10 is being edited concurrently by another track adding the `cursor-field`
+  and `carousel-loop` rows, and a same-file collision would clobber one of them. Add it with the
+  block's build session.
+
+  **Nearest existing anchor:** FR-38-13's still-unbuilt *"hero decorative layers (draggable
+  ornaments)"* roster entry — a sandbox is that idea generalised to a container.
 
 ### 3.4 SVG
 
@@ -778,7 +830,10 @@ ships later; the grammar is stable from day one so drafts authored today clone t
 
 ## 5. Functional requirements (with done-criteria)
 
-FR-38-6 … FR-38-19 are defined in §3 (roster). The infrastructure FRs:
+The ROSTER FRs are defined in §3, not here — FR-38-6 … FR-38-19, plus the later additions
+FR-38-25 (cursor field, §3.3), FR-38-26 (looping carousels, §3.3) and FR-38-27 (physics sandbox,
+§3.3). Each carries its own done-criteria inline. **A new capability FR belongs in §3 + the §2
+taxonomy table, not in this list** — this section is infrastructure only:
 
 - **FR-38-1 — the two-tier doctrine is written, homed, and cross-linked.**
   *Done when:* §1 exists; all five written homes carry the one-line amendment; D406 logged;

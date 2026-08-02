@@ -8,7 +8,11 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN. There are no closed steps in this file.** Nine remain.
+> it is OPEN. There are no closed steps in this file.** Eight remain (verify, don't trust this number:
+`grep -c '^### Step' <this file>`).
+
+> **Closed since the prune:** Step 8 (physics-sandbox FR — written as FR-38-27, 2026-08-02) and
+> M3 (indus-foods snapshot push — DELETED by Bean, not parked; see `LEDGER.md`).
 
 ## Where this stands
 
@@ -81,16 +85,6 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
   ⚠ **Playwright ONLY** — Chrome DevTools MCP has no `prefers-reduced-motion` and no trusted pointer.
   **Also:** Spec 38 §10 carries NO reduced-motion row for `cursor-field` or `carousel-loop`.
   **Done when:** both arms have a live measurement in `probe-carousel-loop.mjs`, and §10 has its rows.
-
-### Step 8 — physics sandbox: the FR write-up is owed [OPEN]
-  **Model:** inline · **Time:** 30 min
-  **DECISION ALREADY MADE (D447) — do not re-present the menu.** Bean ruled physics are permitted on
-  **non-interactive decorative layers only**, which dissolves the WCAG 2.5.7 problem (nothing a user
-  must reach is throwable) and lets reduced motion disable the surface outright. Shape: a **dedicated
-  container-equivalent "physics sandbox" block** whose children become throwable bodies — NOT a
-  physics toggle bolted onto existing blocks with preset shapes.
-  **Remaining work: write the FR into Spec 38 §2/§3.3.** The BLOCK itself is a separate design-gated
-  build (new block = high blast radius, project rule 7) — do not start it from this step.
 
 ### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN]
   **Model:** inline · **Time:** 3 h
