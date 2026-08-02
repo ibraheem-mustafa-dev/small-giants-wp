@@ -286,7 +286,15 @@ extend the JSON, never re-run that script. `KNOWN_UNREPRODUCIBLE` is now EMPTY (
 so the 13 tables in the "NOT known" bucket are Group-3 history + Group-4 residue (T1.6), already
 classified — not new findings.
 
-**T1.4–T1.7 + PHASE 2 — ✅ ALL CLOSED 2026-08-02 (D470–D474).**
+**T1.4–T1.7 + PHASES 2, 3, 4 and 1b — ✅ ALL CLOSED 2026-08-02 (D470–D475). The parent plan is DONE.**
+
+⛔ **D475 — Spec 31 §4 carried a FALSE claim** (`grid-layout`/`full-width-banner` "gate" — they do
+not; only 3 of 36 capability tags are ever read). Corrected, and 3 working columns it had never
+listed were added. ⛔ **`array_item_fields` RETIRED — and dropping it was NOT enough**: `db_lookup`
+recreated it at import within seconds. **A table with `CREATE TABLE IF NOT EXISTS` on a hot path
+cannot be retired by dropping it — every creator must go.** ⚠ Its seeder NEVER EXISTED (0 INSERTs,
+two search shapes); the comment claiming a seeding loop was false. Do not confuse it with the LIVE
+`array_item_schema` (68 rows) — one character apart.
 
 ⛔ **D474 — art-directed media was BROKEN LIVE and I had called it fine.** A hero clone put the
 MOBILE crop in the DESKTOP attr and dropped the desktop image into a stray child. **`scalar-media`
