@@ -26,6 +26,19 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 
 const SCROLL_EPSILON = 4; // px tolerance when comparing scroll positions.
 
+/**
+ * Whether the visitor has asked for reduced motion, read FRESH on every call.
+ *
+ * @return {boolean} True when `prefers-reduced-motion: reduce` is active.
+ */
+function prefersReducedMotion() {
+	return (
+		typeof window !== 'undefined' &&
+		typeof window.matchMedia === 'function' &&
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+	);
+}
+
 // rAF handles keyed per scroller element, so rapid scroll events collapse to
 // one active-dot recompute per frame (mirrors trustpilot-reviews/view.js).
 const scrollRafByList = new WeakMap();
@@ -81,7 +94,13 @@ function scrollToItem( root, index ) {
 	const clamped = Math.max( 0, Math.min( index, items.length - 1 ) );
 	list.scrollTo( {
 		left: items[ clamped ].offsetLeft - list.offsetLeft,
-		behavior: 'smooth',
+		// Read at call time, never cached at module load: the OS setting can be
+		// toggled while the page is open, and a cached value would keep animating
+		// for the rest of the visit. Note the key is `behavior` — the DOM API's
+		// own spelling. UK English is the house rule for everything EXCEPT API
+		// names; `behaviour` is silently DISCARDED by the browser, which is
+		// exactly how sgs/post-grid ignored reduced motion in both directions.
+		behavior: prefersReducedMotion() ? 'auto' : 'smooth',
 	} );
 }
 
@@ -151,13 +170,20 @@ store( 'sgs/google-reviews', {
 				scrollToItem( root, items.length - 1 );
 				return;
 			}
-			let target = 0;
+			// The LAST real item strictly before the current position. When
+			// looping is on, `items` excludes clones (see getSliderEls), so once
+			// scrollLeft sits before the first real item — i.e. inside the
+			// LEADING clone region — no real item qualifies. That is the wrap
+			// point, not a reason to stand still: the old code defaulted
+			// `target` to 0 and re-scrolled to where it already was, so the
+			// keyboard user could never step back past the first card.
+			let target = -1;
 			items.forEach( ( item, idx ) => {
 				if ( item.offsetLeft < list.scrollLeft - SCROLL_EPSILON ) {
 					target = idx;
 				}
 			} );
-			scrollToItem( root, target );
+			scrollToItem( root, target === -1 ? items.length - 1 : target );
 		},
 
 		/**
@@ -178,13 +204,22 @@ store( 'sgs/google-reviews', {
 				scrollToItem( root, 0 );
 				return;
 			}
-			let target = items.length - 1;
+			// The FIRST real item strictly after the current position. This is
+			// the WCAG 2.5.7 bug (found 2026-08-02, register Step Y-1): with
+			// looping on, `items` excludes clones, so once scrollLeft enters the
+			// TRAILING clone region there is no real item ahead. The old code
+			// defaulted `target` to the last real index and scrolled there —
+			// leaving the arrow permanently parked on the last real card. It
+			// never disabled, so it satisfied the letter of "arrows must never
+			// disable" while a keyboard user simply could not get past. Reaching
+			// the end of the real items IS the wrap point.
+			let target = -1;
 			items.forEach( ( item, idx ) => {
 				if ( item.offsetLeft > list.scrollLeft + SCROLL_EPSILON ) {
-					target = Math.min( target, idx );
+					target = target === -1 ? idx : Math.min( target, idx );
 				}
 			} );
-			scrollToItem( root, target );
+			scrollToItem( root, target === -1 ? 0 : target );
 		},
 
 		/**
