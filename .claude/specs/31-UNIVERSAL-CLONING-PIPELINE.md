@@ -300,7 +300,7 @@ Spec 31 derives the entire routing table from the DB (R-31-1). Columns in active
 | `attribute_gap_candidates.(proposed_action)` | the LIVE completeness ledger / prioritised backlog / anti-cheat evidence (2,373 rows; the `add attr: css=…` rows name every dropped property) |
 | `html_tag_to_core_block` | atomic-tag-swap shape fallback only (R-31-2: tag is shape, not recognition) |
 
-Columns with **no CSS-lift utility** (documented so a reviewer knows they were considered, not missed): `block_styles.*` (named presets), `variations.*` (editor preset bundles), `components.*` (editor JS), `block_changes.*` (audit log), `blocks.(grade/source/has_render_php)`.
+Columns with **no CSS-lift utility** (documented so a reviewer knows they were considered, not missed): `components.*` (editor JS), `block_changes.*` (audit log), `blocks.(grade/source/has_render_php)`. ⛔ `block_styles.*` (named presets) and `variations.*` (editor preset bundles) were on this list and are now **RETIRED and DROPPED** — `variations` at D469, `block_styles` at D472; both archived reversibly to `scripts/data/retired/*.json.gz`. Having no CSS-lift utility was not why they went: each had no reader at all. Do not cite either as a live table.
 
 ---
 

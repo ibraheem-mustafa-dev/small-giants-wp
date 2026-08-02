@@ -1,20 +1,12 @@
 -- SGS framework knowledge-base schema
 -- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-02
--- (third capture: the `variations` table was RETIRED and DROPPED — D469.
---  The drift gate correctly FAILED on the drop before this regeneration,
---  which is exactly what it exists to do.)
+-- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex__meta_schema_version_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_block_styles_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_fields_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_legacy_role_lookup_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
-
--- table: _meta_schema_version
-CREATE TABLE _meta_schema_version (
-                version TEXT PRIMARY KEY,
-                applied_at TEXT
-            );
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_fields_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_legacy_role_lookup_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
 
 -- table: animation_tokens
 CREATE TABLE animation_tokens (
@@ -118,17 +110,6 @@ CREATE TABLE block_selectors (
         selector TEXT NOT NULL,
         FOREIGN KEY (block_slug) REFERENCES blocks(slug)
     );
-
--- table: block_styles
-CREATE TABLE block_styles (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    block_slug  TEXT    NOT NULL,
-    style_name  TEXT    NOT NULL,
-    label       TEXT,
-    is_default  INTEGER DEFAULT 0,
-    source      TEXT    NOT NULL DEFAULT 'sgs',
-    UNIQUE(block_slug, style_name, source)
-);
 
 -- table: block_supports
 CREATE TABLE block_supports (
@@ -422,10 +403,6 @@ CREATE INDEX idx_block_changes_date ON block_changes(changed_date);
 
 -- index: idx_block_changes_slug
 CREATE INDEX idx_block_changes_slug ON block_changes(block_slug);
-
--- index: idx_block_styles_block_source
-CREATE INDEX idx_block_styles_block_source
-    ON block_styles(block_slug, source);
 
 -- index: idx_block_supports_slug
 CREATE INDEX idx_block_supports_slug ON block_supports(block_slug);

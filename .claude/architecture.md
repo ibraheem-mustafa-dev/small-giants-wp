@@ -96,8 +96,8 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 │  │  sgs-framework.db (SQLite — via db_lookup.py)         │ │
 │  │  Tables: blocks, block_attributes, block_supports,    │ │
 │  │  slots, roles, property_suffixes, modifier_suffixes,  │ │
-│  │  block_capabilities, variations, block_styles,        │ │
-│  │  design_tokens, hooks, patterns                       │ │
+│  │  block_capabilities, block_composition, variant_slots,│ │
+│  │  design_tokens, hooks, docs, patterns                 │ │
 │  └─────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────┘
 

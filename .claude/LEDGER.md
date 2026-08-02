@@ -76,8 +76,8 @@ Two Wave-E results are STANDING CONSTRAINTS, not history:
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 — PHASE 0 COMPLETE 2026-08-02 (D464). Phase 1 CORE COMPLETE (D468, D469, **D470**) —
-  every converter-load-bearing table now rebuilds from git; residue = T1.5 / T1.6 / T1.7.**
+- **⭐ Track 1 — PHASE 0 COMPLETE 2026-08-02 (D464). Phase 1 COMPLETE (D468–**D472**) —
+  every converter-load-bearing table rebuilds from git; T1.4–T1.7 all closed.**
   12 commits `78347070`→`2500b3c3`, pushed. **Full narrative swept to
   `memory/session-2026-08-02-track1-phase0.md` — read it before acting.** T1.1 also closed
   same day (D461, `8cdc1460`; evidence `reports/2026-08-02-t1.1-evidence-pack.md`).
@@ -312,32 +312,35 @@ extend the JSON, never re-run that script. `KNOWN_UNREPRODUCIBLE` is now EMPTY (
 so the 13 tables in the "NOT known" bucket are Group-3 history + Group-4 residue (T1.6), already
 classified — not new findings.
 
-**T1.5 — Phase 3 row-count floor gate** [sonnet, ~45 min]
-**What:** `check_schema_drift.py` gates SCHEMA only. Ship the row-count regression gate the parent
-plan's Phase 3 owes — fails when a seeded column's populated count drops below a committed floor.
-This loss class has happened 4× (`has_inner_blocks`, `scalar-media`, `emit_shape`, `container_kind`).
-**Brief for the subagent:** mirror `check_schema_drift.py`'s shape exactly (argparse, `--check`,
-`--self-test` proving it FAILS, same `@`-escape idiom). Floor lives in a committed JSON.
-⚠ Must tolerate legitimate growth and only fail on DROPS. **/qc gate: yes.**
-**Acceptance:** `--self-test` proves it fails on a simulated drop and passes on growth.
+**T1.5 / T1.6 / T1.7 — ✅ ALL CLOSED 2026-08-02 (D471, D472). Phase 1 + its residue are DONE.**
 
-**T1.6 — Decide the Group-4 residue** [inline, ~20 min] — needs Bean
-`_meta_schema_version` retire (superseded by `schema_migrations`; only reader is a retired script) ·
-`block_styles` retire-leaning but **UNVERIFIED** — nobody checked the editor JS for
-`registerBlockStyle` sync · `enrich-db.py` needs a `--only <target>` selector before it can be wired
-(all-or-nothing across 10 targets, one writes the RETIRED `slot_synonyms`). **No /qc gate — a
-decision, not a build.**
+- **T1.5** `dbschema/check_row_floor.py` + `row-floor.json` — fails on row/column-population DROPS,
+  tolerates growth. ⛔ **Column-level granularity is the point**; a table-count-only gate would have
+  missed every historical loss. ⛔ **Do NOT add `block_composition.has_inner_blocks`** — FR-31-2.6
+  retired the CACHE deliberately; the fact is derived fresh by `converter/services/has_inner.py`.
+  **A population floor is the right gate for a CACHED fact and the wrong gate for a DERIVED one.**
+- **T1.7** `bootstrap_rebuild()` restores `hooks`/`docs` from the committed gzip archive (offline +
+  deterministic, NOT the GitHub scrape). `hooks` **5494 = 5494 exact**; archive hidden → both come
+  back **0** (negative control). ⚠ `docs` rebuilds to **1123 vs live 1077** — the surplus is entirely
+  `native_wp` from the Stage-2 network scrape; `sgs` docs match **16/16**, zero slug drift. Not a
+  defect; the offline floor is the archive.
+  ⚠ **The agent's "docs at exact parity" did not survive an independent full run** — it measured with
+  `--stage 1`, which skips a later docs writer. Re-running an agent's own method repeats its blind spot.
+- **T1.6** `_meta_schema_version` (1) + `block_styles` (63) RETIRED, archived reversibly.
+  ⛔ **`enrich-db.py`'s stated blocker was FALSE** — `target_21_slot_synonyms` was a stale NAME on
+  correct behaviour (renamed `target_21_canonical_slots`). The real defect was in
+  `target_210_health_check`, which has queried the dropped `slot_synonyms` since D99. Fixed + made
+  degrade-not-die on a missing table. **`--only <ids>` + `--list-targets` shipped**, unblocking the
+  2.4 / 2.8 seeders.
+- **New tools, both with passing `--self-test`s:** `dbschema/retire_table.py` (backup → archive →
+  **round-trip verify** → drop; a corrupt archive blocks the drop) and
+  `check_schema_drift.py --regenerate` (generator lives inside the gate so writer and comparer cannot
+  disagree; explicit, never automatic).
+- **Both gates fired correctly on their first real event** and are clean at **37 tables**.
+  Suite 587/1 skip.
 
-**T1.7 — Restore the WP corpus on `--rebuild`** [sonnet, ~25 min]
-✅ The "hooks shortfall" is **ANSWERED, not open**: 5,469 of 5,494 hooks are IMPORTED
-(`native_wp` 2786 + `third_party` 2683); only **25** are SGS/repo-derivable, so a repo scan can
-never produce the rest. Same for docs (16 of 1,077 are `sgs`).
-**The real remaining gap:** a rebuild therefore ends with hooks 161 / docs 46 and nothing restores
-the corpus. **What:** wire `dbschema/wp_reference_archive.py --restore` (or
-`refresh_wp_reference.py`) into `bootstrap_rebuild()`'s post-stage step, so a rebuilt DB comes back
-with its reference data. Archive already exists and round-trip verifies.
-⚠ Prefer the ARCHIVE restore over a live refresh here — a rebuild should be offline-capable and
-deterministic; refreshing from GitHub mid-rebuild makes the result depend on network + upstream
-state. **/qc gate: yes** — `/qc-inline`.
-**Acceptance:** `rebuild_compare.py` shows `hooks` and `docs` at parity with live.
+**Next on Track 1:** Phase 1b (Spec 31 column reconciliation) · Phase 2 (`scalar-media` derivation) ·
+Phase 4 (purge) · Phase 5 (loop defects). Wiring the standalone gates into a run is still an open
+question — `check_schema_drift.py`, `check_row_floor.py` and `capture_seed_data.py --check` are all
+manual today, and a gate nobody runs is the failure mode this project keeps recording.
 

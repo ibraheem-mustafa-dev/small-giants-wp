@@ -1,7 +1,6 @@
 {
-  "generated_at": "2026-08-02T07:50:48Z",
+  "generated_at": "2026-08-02T08:01:07Z",
   "tables": {
-    "_meta_schema_version": 1,
     "animation_tokens": 8,
     "array_item_fields": 0,
     "array_item_schema": 68,
@@ -11,7 +10,6 @@
     "block_changes": 2735,
     "block_composition": 210,
     "block_selectors": 86,
-    "block_styles": 63,
     "block_supports": 1340,
     "blocks": 205,
     "components": 13,

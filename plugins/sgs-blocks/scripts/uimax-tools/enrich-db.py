@@ -136,8 +136,16 @@ CONTAINER_NEW_ATTR_SLOTS: dict[str, str] = {
 }
 
 
-def target_21_slot_synonyms(conn: sqlite3.Connection, dry_run: bool) -> int:
+def target_21_canonical_slots(conn: sqlite3.Connection, dry_run: bool) -> int:
     """Backfill canonical_slot for anomaly block attrs + container new attrs.
+
+    ⚠ RENAMED 2026-08-02 (was ``target_21_slot_synonyms``). The old name was a
+    STALE LABEL, not a stale behaviour — this writes the current ``slots`` table
+    and has done since D99 — but it cost real time: a grep for "slot_synonyms"
+    flagged this function, and the resulting "one target still writes the retired
+    slot_synonyms" claim was recorded as a BLOCKER on wiring this script. Reading
+    the body cleared it. The real slot_synonyms reference was three targets away,
+    in the health check (2.10), where the name gave no hint at all.
 
     D99 2026-05-29: slot vocab now lives in `slots` (scope='element') not
     slot_synonyms (dropped). NEW_SYNONYMS seeds `slots` accordingly.
@@ -743,8 +751,24 @@ def target_210_health_check(dry_run: bool) -> bool:
 
     try:
         conn = get_conn(_AGENTS_DB)
-        for tbl in ["block_attributes", "slot_synonyms", "design_tokens", "style_variations", "pattern_coverage", "hooks", "patterns", "blocks"]:
-            count = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
+        # `slot_synonyms` was DROPPED at D99 (2026-05-29) in favour of `slots`, and
+        # this loop kept querying it — so target 2.10 has been guaranteed to throw
+        # ever since, landing in the broad `except` below and reporting
+        # `status: error` with no indication of which table was at fault.
+        #
+        # Two fixes, not one: the roster now names `slots`, AND a missing table is
+        # skipped with a recorded warning instead of aborting the whole health
+        # check. The second matters more — the next table to be retired must
+        # degrade this target, never disable it. (`block_styles` and
+        # `_meta_schema_version` were retired 2026-08-02; neither was in this
+        # roster, but the next one might be.)
+        for tbl in ["block_attributes", "slots", "design_tokens", "style_variations",
+                    "pattern_coverage", "hooks", "patterns", "blocks"]:
+            try:
+                count = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
+            except sqlite3.OperationalError:
+                summary["warnings"].append(f"table `{tbl}` no longer exists — skipped")
+                continue
             summary["tables"][tbl] = count
 
         # Check for nulls that indicate gaps
@@ -787,103 +811,149 @@ def target_210_health_check(dry_run: bool) -> bool:
 # Main orchestrator
 # ===========================================================================
 
-def run_all(repo_path: Path | None, dry_run: bool) -> None:
+# ===========================================================================
+# Target registry + orchestrator
+# ===========================================================================
+#
+# WHY A REGISTRY (2026-08-02, T1.6): `run_all` used to hardcode ten call sites in
+# sequence, so this script was all-or-nothing. That was the stated blocker on
+# wiring its two genuinely idempotent, genuinely useful seeders
+# (`style_variations` 2.4 and `pattern_coverage` 2.8) into `/sgs-update`: you
+# could not ask for those two without also firing eight other targets, one of
+# which (2.7 design_tokens) rewrites data a rebuild also produces, and one of
+# which (2.10) was silently broken. A registry makes `--only` a one-line filter
+# and keeps the ordering explicit and reviewable in one place.
+#
+# `needs_repo` marks targets that read files from the repo checkout; `scope`
+# distinguishes the per-database targets from 2.10, which runs once against the
+# agents DB only. ORDER IS MEANINGFUL: 2.8 pattern_coverage reads `patterns`, so
+# anything reseeding `patterns` must run before it.
+_TARGETS: list[dict] = [
+    {"id": "2.1", "title": "canonical slots (anomaly + container attrs)",
+     "fn": target_21_canonical_slots, "needs_repo": False, "scope": "per-db",
+     "verb": "backfilled canonical_slot"},
+    {"id": "2.2", "title": "enum_values from block.json",
+     "fn": target_22_enum_values, "needs_repo": True, "scope": "per-db",
+     "verb": "enum_values updated"},
+    {"id": "2.3", "title": "equivalent_implementations Rosetta Stone",
+     "fn": target_23_equivalent_implementations, "needs_repo": False, "scope": "per-db",
+     "verb": "seeded equivalent_implementations"},
+    {"id": "2.4", "title": "style_variations sync",
+     "fn": target_24_style_variations, "needs_repo": True, "scope": "per-db",
+     "verb": "upserted style_variations"},
+    {"id": "2.5", "title": "inspector_control_type column + parse",
+     "fn": target_25_inspector_control_type, "needs_repo": True, "scope": "per-db",
+     "verb": "populated inspector_control_type"},
+    {"id": "2.6", "title": "block_supports sgs.* verification",
+     "fn": target_26_block_supports_sgs, "needs_repo": True, "scope": "per-db",
+     "verb": "upserted sgs supports"},
+    {"id": "2.7", "title": "design_tokens refresh",
+     "fn": target_27_design_tokens, "needs_repo": True, "scope": "per-db",
+     "verb": "upserted design_tokens"},
+    {"id": "2.8", "title": "pattern_coverage from patterns + block_composition",
+     "fn": target_28_pattern_coverage, "needs_repo": True, "scope": "per-db",
+     "verb": "inserted pattern_coverage"},
+    {"id": "2.9", "title": "hooks upsert from PHP scan",
+     "fn": target_29_hooks, "needs_repo": True, "scope": "per-db",
+     "verb": "upserted hooks"},
+    {"id": "2.10", "title": "post-flight health check JSON",
+     "fn": target_210_health_check, "needs_repo": False, "scope": "once",
+     "verb": "health status"},
+]
+
+TARGET_IDS = [t["id"] for t in _TARGETS]
+
+
+def resolve_targets(only: str | None) -> list[dict]:
+    """Return the targets to run. ``only=None`` means all of them.
+
+    Unknown ids are a hard error listing the valid set — a typo'd ``--only``
+    that silently ran nothing (or everything) would be worse than no selector.
+    """
+    if not only:
+        return list(_TARGETS)
+    wanted = [x.strip() for x in only.split(",") if x.strip()]
+    unknown = [w for w in wanted if w not in TARGET_IDS]
+    if unknown:
+        raise SystemExit(
+            f"unknown target id(s): {', '.join(unknown)}\n"
+            f"valid ids: {', '.join(TARGET_IDS)}"
+        )
+    return [t for t in _TARGETS if t["id"] in wanted]
+
+
+def run_all(repo_path: Path | None, dry_run: bool, only: str | None = None) -> None:
     verb = "[DRY-RUN] " if dry_run else ""
+    selected = resolve_targets(only)
+    if only:
+        print(f"{verb}running {len(selected)} of {len(_TARGETS)} target(s): "
+              f"{', '.join(t['id'] for t in selected)}")
 
     results: dict[str, dict] = {}
+    per_db = [t for t in selected if t["scope"] == "per-db"]
+    once = [t for t in selected if t["scope"] == "once"]
 
-    for label, db_path in [("sgs-claude", _CLAUDE_DB), ("sgs-agents", _AGENTS_DB)]:
-        if not db_path.exists():
-            print(f"  SKIP {label}: DB not found at {db_path}")
-            continue
+    if per_db:
+        for label, db_path in [("sgs-claude", _CLAUDE_DB), ("sgs-agents", _AGENTS_DB)]:
+            if not db_path.exists():
+                print(f"  SKIP {label}: DB not found at {db_path}")
+                continue
 
-        print(f"\n{'='*60}")
-        print(f"DB: {label}  ({db_path})")
-        print(f"{'='*60}")
+            print(f"\n{'='*60}")
+            print(f"DB: {label}  ({db_path})")
+            print(f"{'='*60}")
 
-        conn = get_conn(db_path)
+            conn = get_conn(db_path)
+            try:
+                for t in per_db:
+                    print(f"\n{verb}Target {t['id']} — {t['title']}")
+                    if t["needs_repo"]:
+                        n = t["fn"](conn, repo_path, dry_run)
+                    else:
+                        n = t["fn"](conn, dry_run)
+                    print(f"  {verb}{t['verb']}: {n}")
+                    results.setdefault(t["id"], {})[label] = n
+            finally:
+                conn.close()
 
-        # 2.1 slot_synonyms anomaly attrs
-        print(f"\n{verb}Target 2.1 — slot_synonyms (anomaly + container attrs)")
-        n = target_21_slot_synonyms(conn, dry_run)
-        print(f"  {verb}backfilled canonical_slot: {n} rows")
-        results.setdefault("2.1", {})[label] = n
+    for t in once:
+        print(f"\n{verb}Target {t['id']} — {t['title']}")
+        ok = t["fn"](dry_run)
+        print(f"  {t['verb']}: {'ok' if ok else 'warnings present'}")
 
-        # 2.2 enum_values
-        print(f"\n{verb}Target 2.2 — enum_values from block.json")
-        n = target_22_enum_values(conn, repo_path, dry_run)
-        print(f"  {verb}enum_values updated: {n} rows")
-        results.setdefault("2.2", {})[label] = n
-
-        # 2.3 equivalent_implementations
-        print(f"\n{verb}Target 2.3 — equivalent_implementations Rosetta Stone")
-        n = target_23_equivalent_implementations(conn, dry_run)
-        print(f"  {verb}seeded equivalent_implementations: {n} rows")
-        results.setdefault("2.3", {})[label] = n
-
-        # 2.4 style_variations
-        print(f"\n{verb}Target 2.4 — style_variations sync")
-        n = target_24_style_variations(conn, repo_path, dry_run)
-        print(f"  {verb}upserted style_variations: {n}")
-        results.setdefault("2.4", {})[label] = n
-
-        # 2.5 inspector_control_type
-        print(f"\n{verb}Target 2.5 — inspector_control_type column + parse")
-        n = target_25_inspector_control_type(conn, repo_path, dry_run)
-        print(f"  {verb}populated inspector_control_type: {n} rows")
-        results.setdefault("2.5", {})[label] = n
-
-        # 2.6 block_supports sgs.*
-        print(f"\n{verb}Target 2.6 — block_supports sgs.* verification")
-        n = target_26_block_supports_sgs(conn, repo_path, dry_run)
-        print(f"  {verb}upserted sgs supports: {n}")
-        results.setdefault("2.6", {})[label] = n
-
-        # 2.7 design_tokens
-        print(f"\n{verb}Target 2.7 — design_tokens refresh")
-        n = target_27_design_tokens(conn, repo_path, dry_run)
-        print(f"  {verb}upserted design_tokens: {n}")
-        results.setdefault("2.7", {})[label] = n
-
-        # 2.8 pattern_coverage
-        print(f"\n{verb}Target 2.8 — pattern_coverage from patterns + patterns.block_composition")
-        n = target_28_pattern_coverage(conn, repo_path, dry_run)
-        print(f"  {verb}inserted pattern_coverage: {n}")
-        results.setdefault("2.8", {})[label] = n
-
-        # 2.9 hooks
-        print(f"\n{verb}Target 2.9 — hooks upsert from PHP scan")
-        n = target_29_hooks(conn, repo_path, dry_run)
-        print(f"  {verb}upserted hooks: {n}")
-        results.setdefault("2.9", {})[label] = n
-
-        conn.close()
-
-    # 2.10 health check (once, agents DB only)
-    print(f"\n{verb}Target 2.10 — post-flight health check JSON")
-    ok = target_210_health_check(dry_run)
-    print(f"  health status: {'ok' if ok else 'warnings present'}")
-
-    # Summary
     print(f"\n{'='*60}")
     print("ENRICHMENT SUMMARY")
     print(f"{'='*60}")
     for target, db_results in sorted(results.items()):
-        nums = list(db_results.values())
-        print(f"  {target}: {nums}")
+        print(f"  {target}: {list(db_results.values())}")
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="SGS Framework DB Enrichment — 10 targets")
+    parser = argparse.ArgumentParser(
+        description="SGS Framework DB Enrichment — 10 targets")
     parser.add_argument("--repo", default=None, help="Path to small-giants-wp repo root")
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be done without writing")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Print what would be done without writing")
+    parser.add_argument("--only", default=None,
+                        help="Comma-separated target ids to run (e.g. '2.4,2.8'). "
+                             "Default: all.")
+    parser.add_argument("--list-targets", action="store_true",
+                        help="List the target ids and exit")
     args = parser.parse_args(argv)
+
+    if args.list_targets:
+        for t in _TARGETS:
+            scope = "once" if t["scope"] == "once" else "per-db"
+            repo = " [needs --repo]" if t["needs_repo"] else ""
+            print(f"  {t['id']:<5} {t['title']}  ({scope}){repo}")
+        return 0
 
     repo_path = Path(args.repo) if args.repo else auto_repo()
     if repo_path is None:
-        print("WARNING: could not auto-detect repo path. Pass --repo to enable file-based targets.")
+        print("WARNING: could not auto-detect repo path. Pass --repo to enable "
+              "file-based targets.")
 
-    run_all(repo_path, args.dry_run)
+    run_all(repo_path, args.dry_run, args.only)
     return 0
 
 

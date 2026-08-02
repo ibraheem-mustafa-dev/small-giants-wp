@@ -4,7 +4,7 @@ project: small-giants-wp
 created: 2026-08-01
 last_updated: 2026-08-02
 track: Track 1 — cloning pipeline
-status: PHASE 0 COMPLETE (D464) · Phase 1 CORE COMPLETE (D470) · Phases 1b/2/3/4/5 OPEN
+status: PHASE 0 + PHASE 1 COMPLETE (D464, D470–D472) · Phase 3 DELIVERED · Phases 1b/2/4/5 OPEN
 spec: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
 owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script files and clean folders")
 ---
@@ -17,7 +17,7 @@ owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script
 > | **1 — regenerative seeders** | ✅ **CORE COMPLETE (D470).** `property_suffixes` 154/154 · `slots` 104/104 · `excluded_properties` 10/10 (all order-exact, D470) · `roles` 29/29 (D464) · `modifier_suffixes` 19/19 · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 · `markup_examples` wired. **No converter-load-bearing table is unreproducible.** `rebuild_compare.py`: identical 12→15, `empty (known Phase-1)`=0, `KNOWN_UNREPRODUCIBLE` now empty. Residue is NON-converter: T1.5 floor gate · T1.6 Group-4 decision · T1.7 WP corpus restore. |
 > | **1b — Spec 31 column reconciliation** | OPEN. F1–F8 findings still stand except where corrected below. |
 > | **2 — derive `scalar-media`** | OPEN, unblocked by Phase 0. |
-> | **3 — regression gate** | PARTIALLY DELIVERED: `dbschema/check_schema_drift.py` gates SCHEMA drift (and caught two real drifts on day one). A row-count floor gate is still owed. |
+> | **3 — regression gate** | ✅ **DELIVERED (D471).** `check_schema_drift.py` gates SCHEMA; `check_row_floor.py` gates DATA — row counts AND per-column populated counts against a committed floor, failing only on DROPS, tolerating growth. Both fired correctly on their first real event (the D472 retirements) and are clean at 37 tables. ⚠ Both are still invoked MANUALLY — a gate nobody runs is this project's recurring failure mode; wiring is an open question. |
 > | **4 — purge** | OPEN. ✅ `variations` retired + dropped (D469); stray 0-byte DBs eliminated + `**/sgs-framework.db` gitignore (D464-adjacent). |
 > | **5 — loop defects** | OPEN, unchanged. |
 >
@@ -48,6 +48,15 @@ owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script
 >   are baked into `scripts/data/slots.json`. Extend the JSON; do not re-run the script.
 > - **One writer per artefact:** `dbschema/capture_seed_data.py` owns the seed JSON, `db_lookup.py`
 >   owns the tables. `--check` catches a hand-edited table that was never back-written.
+> - **A population floor is the right gate for a CACHED fact and the WRONG gate for a DERIVED one**
+>   (D471). `has_inner_blocks` is untrackable because FR-31-2.6 deleted the cache on purpose.
+> - **Retiring a table and regenerating `schema.sql` are now TOOLS, not hand-operations** (D472):
+>   `dbschema/retire_table.py` and `check_schema_drift.py --regenerate`. Both were done by hand three
+>   times each first.
+> - ⛔ **A stale FUNCTION NAME cost this plan a false blocker** (D472): `enrich-db.py`'s
+>   `target_21_slot_synonyms` wrote `slots` correctly all along, while the real dropped-table query
+>   sat in `target_210_health_check`, whose name gave no hint. **Read the body before recording a
+>   grep hit as a blocker.**
 
 # DB derivation + converter cleanup
 
@@ -67,9 +76,9 @@ owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script
 | Deferred | Owner |
 |---|---|
 | ~~`property_suffixes` / `slots` / `excluded_properties` seeders~~ | ✅ CLOSED D470 (T1.4) |
-| Row-count floor gate (Phase 3) | LEDGER **T1.5** |
-| Restore `hooks`/`docs` on rebuild | LEDGER **T1.7** |
-| `enrich-db.py --only` selector · `block_styles` retire/keep | LEDGER **T1.6** |
+| ~~Row-count floor gate (Phase 3)~~ | ✅ CLOSED D471 (T1.5) |
+| ~~Restore `hooks`/`docs` on rebuild~~ | ✅ CLOSED D471 (T1.7) |
+| ~~`enrich-db.py --only` selector · `block_styles` retire/keep~~ | ✅ CLOSED D472 (T1.6) |
 | Phase 2 `scalar-media` derivation · Phase 4 purge · Phase 5 loop defects | This plan, unchanged |
 | `delegates_content` full removal | ⛔ Needs its own design gate — demote, don't drop (Bean, D-3) |
 
