@@ -13,25 +13,47 @@ Invoke /autopilot before doing anything else.
 > every remaining open item is a `### Step` heading below. **If a step has a heading, it is open. If it
 > does not, it is closed — check §2, then `git log`.**
 
-## 1. Where this stands (2026-08-01, after wave 2)
+## 1. Where this stands (2026-08-02, after Wave D execution)
 
-**Wave 2 shipped and is deployed to the canary.** The engine works and most client-facing gaps are
-closed. What remains is **9 open steps** (Wave E closed 16 more — see §2), listed below in the order they
-should run. ⚠ This count has drifted before: trust the `### Step` HEADINGS, not this sentence.
+**Wave D's four tasks are CLOSED and LIVE-VERIFIED** (D459 / D460 / D463 — cursor field 10/10,
+looping 8/8, focus indicator measured on the real surface, canary fixtures closed by measurement).
+**This file is the RESIDUAL REGISTER for Spec 38 — every open motion item lives here, nowhere else.**
+Bean-ruled 2026-07-31: parking is for BLOCKED or POSTPONED work only, never a reminder list.
 
-**The three things a fresh session most needs to know:**
+**Open steps, in the order they should run.** ⚠ The count has drifted before — trust the
+`### Step` HEADINGS, not any sentence:
 
-1. **Verification state is PER ITEM, never uniform.** §2's wave-2 table states, row by row, what was
-   measured live with numbers versus what was only artefact-checked. Do not read "deployed" as "proven".
-2. **Bean's eye caught every defect in wave 2's second half** — the drag not following the mouse, the
-   dots not tracking, the text finishing under the header. The automated checks passed all five of
-   their assertions because they asked "did it move?" rather than "did it follow the mouse, and did the
-   dots follow the cards?". **Build the assertion Bean's eye just made into the probe** before assuming
-   a green run means anything.
-3. **Three separate false passes happened in one day.** A probe measured an element 3,000px below the
-   viewport and reported it "clear of the header"; another reported a fix landed when a concurrent
-   agent's `git checkout` had reverted it; a third reported files written that were not on disk.
-   **Grep the file contents / assert the element is on screen. A report is not evidence.**
+| Step | What | Why it is next |
+|---|---|---|
+| **W** | Roll the loop to the other 5 drag-roster blocks | gallery is the ONLY exemplar; the mechanism is proven, the rollout is not |
+| **X** | Gate the three-list drift | the session's highest-value structural fix — 2 of 3 lists were missed on one effect, no gate exists |
+| **Y** | Loop reduced-motion + keyboard arrow-wrap | two arms of the looping contract built but never exercised |
+| **Z** | `extensions.css` 4th focus system | one generation behind after D463; deferred only by a file collision |
+| **R-residual** | `floating-objects`, the participant seam, the init-only walk | stated limits, not defects |
+| **8** | Physics sandbox — DECIDED (D447), write-up owed | decision made; only the FR text is outstanding |
+| **12** | The cloning lift (FR-38-22) | measured NO — motion does not survive a clone today |
+| **20** | Spec ↔ code reconciliation | dead `scroll-smoother` row, stale comments, unwired helper |
+| **O** | Drag text-selection symptom | Bean re-checks by hand; do NOT dispatch an agent |
+| **U** | File-length debt on the grid blocks | logged by Bean's ruling, tackle in a clean session |
+| **21** | Re-run the adversarial council | deliberately LAST, after everything above |
+
+**The four things a fresh session most needs to know:**
+
+1. **Verification state is PER ITEM, never uniform.** Read the per-step evidence line. Do not read
+   "deployed" as "proven" — and do not read "proven" as "rolled out" (Step Q is proven on ONE block).
+2. **Bean's eye set the assertion standard.** Automated checks passed while the drag did not follow
+   the mouse and the dots did not track, because they asked "did it move?" rather than "did it FOLLOW
+   the mouse, and did the dots follow the cards?". Both live probes now encode the stronger form —
+   the looping probe asserts `dots == real cards`, not `dots == elements`.
+3. **A green build proves nothing here. Six defects in ONE feature passed one** (2026-08-02):
+   an undefined identifier (`node --check` validates syntax not scope; this project's eslint config
+   overrides `no-undef`), a missing render-layer offset guard, and absence from THREE separate
+   hand-maintained lists — one of which only surfaced by live verification after the other fixes
+   shipped. **Step X exists to gate that class.**
+4. **Your instrument lies too.** This session: `build-deploy.py --dry-run` does NOT run the dirty
+   gate (a green dry run against a filthy tree proves nothing); a page-HTML grep cannot see scoped
+   block CSS because SGS lifts it to `uploads/sgs-css/`; and a probe's hardcoded viewport points
+   landed on the page header, reporting a tracking failure that did not exist.
 
 ---
 
@@ -188,7 +210,83 @@ park anything else from this plan — this plan is the register.**
   are not human drags. Re-check with Bean on a real machine; if it persists, the measurement set is
   incomplete, not the bug absent.
 
-### Step Q — looping as an INDEPENDENT control (Bean request, 2026-08-01; RESHAPED same day)
+### Step Q — CLOSED 2026-08-02 (`6c19a219`, D460) — but `sgs/gallery` ONLY
+
+> ✅ **BUILT + PROVEN LIVE 8/8** (`scripts/motion-qa/probe-carousel-loop.mjs`, canary
+> `/loop-carousel-canary/`, with drag AND loop both on): 12 clones all inert + aria-hidden;
+> **dots = 6 = the REAL card count, not 18 (the cloned length)**; past-the-end re-seats
+> (max 6080 → 3648) instead of dead-stopping; drag bounds derive from the post-clone
+> `scrollWidth`; a real pointer gesture moves the track (scrollLeft 5118).
+> `fx-draggable.js` was NOT modified — not one line. Report:
+> `reports/visual-diff/gallery-2026-08-02.md`. Spec: **FR-38-26**.
+>
+> ⛔ **This closed the MECHANISM, not the ROLLOUT.** See Step W.
+
+### Step W — roll the loop pattern to the other FIVE drag-roster blocks [OPEN]
+  **Model:** sonnet · **Time:** 1.5 h · **Deps:** Step Q (closed)
+  **Action:** `sgs/gallery` is the exemplar and the ONLY block with `loopCarousel`. The remaining
+  drag-roster blocks need the identical mechanical pattern: **`sgs/buybox`, `sgs/google-reviews`,
+  `sgs/post-grid`, `sgs/testimonial-slider`, `sgs/trustpilot-reviews`.**
+  ⚠ **That roster is MEASURED, not remembered** — it is the set of blocks declaring
+  `supports.sgs.fx.draggable`. Re-derive it before starting; `sgs/testimonial-slider` was wrongly
+  assumed to be on it once already this wave (it was removed 2026-07-31, momentum now block-private).
+  **The pattern, per block:** `loopCarousel` attr (default `false`) → inspector toggle sitting
+  beside but INDEPENDENT of "Drag to scroll" → `data-sgs-loop="1"` on the scroller in render.php →
+  `view.js` item selection excludes `[data-sgs-loop-clone]` so dots/arrows count REAL cards.
+  ⚠ **`sgs/buybox` is the one that is not mechanical** — its scroller is the thumbnail strip and it
+  mounts the product-card Interactivity store; check the clone insertion does not confuse that store.
+  **Done when:** each block passes `probe-carousel-loop.mjs` pointed at its own fixture, with the
+  dots assertion holding. A block whose dots read the cloned length is NOT done.
+
+### Step X — GATE the three-list drift (the session's highest-value structural fix) [OPEN]
+  **Model:** sonnet · **Time:** 1 h
+  **Action:** An fx effect must join **THREE separate hand-maintained lists** to work, and **no gate
+  cross-checks them**:
+  1. `SHIPPED_EFFECTS` — `src/blocks/extensions/fx.js` (gates the editor picker)
+  2. `FX_ATTR_MAP` — `includes/fx-attributes.php` (attr → data-attribute for DYNAMIC blocks)
+  3. `sgs_fx_effect_param_scope()` — `includes/fx-attributes.php` (per-effect param allowlist)
+  **Two of the three were missed on `cursor-field` in one session.** Missing (1) made the whole
+  feature unreachable from the editor while every other layer was correctly wired. Missing (3) let
+  the page render entirely healthy — emitter marked, assets enqueued — while the client's chosen
+  colour and radius were silently dropped. Neither failed a build.
+  **A FOURTH drift of the same shape exists** for field types: `FX_FIELD_TYPE_OPTIONS` (fx.js) ×
+  `SGS_FX_CURSOR_FIELD_TYPES` (`includes/fx-cursor-field.php`) × the rules in
+  `assets/css/fx-cursor-field.css`. A type in the picker with no CSS rule silently paints nothing.
+  **Shape:** a prebuild gate that reads `fx_effects` and asserts every shipped effect appears in
+  each list it needs, and that no list names an effect the DB does not carry. Ship it with a
+  `--self-test` proving it fails when an entry is removed — a gate that cannot fail reads green forever.
+  **Done when:** deleting `'cursor-field'` from any one of the three lists fails the build.
+
+### Step Y — the loop's UNTESTED arms: reduced motion + keyboard wrap [OPEN]
+  **Model:** sonnet · **Time:** 45 min · **Deps:** Step Q (closed)
+  **Action:** Two arms of the looping contract were built but never exercised:
+  1. **Reduced motion.** `fx-draggable.js`'s own contract is SIMPLIFY (drag is user-driven input;
+     only momentum is suppressed) and is unchanged. **The LOOP module has no measured
+     reduced-motion behaviour at all.** Decide and prove it on its own terms — a clone-and-reseat is
+     not autonomous motion, so SIMPLIFY is the likely answer, but it is currently unstated.
+  2. **Keyboard arrow-wrap at the boundary.** Arrows are present and correctly never disable, but
+     the wrap was driven by pointer and `scrollLeft`, never by repeated arrow activation. WCAG 2.5.7
+     rests on that alternative actually working around the loop point.
+  ⚠ **Playwright ONLY** — Chrome DevTools MCP has no `prefers-reduced-motion` parameter and no
+  trusted pointer primitive.
+  **Done when:** both arms have a live measurement in `probe-carousel-loop.mjs`, and §10 of Spec 38
+  carries the loop's reduced-motion row.
+
+### Step Z — `extensions.css` `.sgs-has-focus-ring` is a FOURTH focus system, now one generation behind [OPEN]
+  **Model:** haiku · **Time:** 30 min
+  **Action:** D463 reconciled THREE focus systems onto accent-glow-over-neutral-underlay: form
+  inputs (`form/style.css`), SGS buttons and the sitewide `:focus-visible` catch-all
+  (`core-blocks*.css`). A fourth exists — `plugins/sgs-blocks/assets/css/extensions.css:440-444`,
+  `.sgs-has-focus-ring`, emitted by `includes/hover-effects.php:291` — and was **deliberately left
+  untouched** because a co-active track held uncommitted work in that exact file.
+  It still hardcodes `primary` via `--wp--custom--focus-ring--color-primary`, with no glow and no
+  underlay concept, so any block carrying `sgsFocusRing` now shows a visibly different focus
+  treatment from every other focusable thing on the page.
+  ⚠ **Check that file is clean before starting** — this is the collision that deferred it.
+  **Done when:** the fourth system matches the other three, verified live on a block using
+  `sgsFocusRing`, and the D463 report's "does NOT claim" note is updated.
+
+### Step Q (original brief) — looping as an INDEPENDENT control (Bean request, 2026-08-01; RESHAPED same day)
 
 > ⚠ **RESHAPED 2026-08-01 (D460) — the original fix-shape was FALSIFIED by the file it proposed
 > to edit.** This step used to read "universal across the drag roster", meaning a change to
@@ -216,19 +314,44 @@ park anything else from this plan — this plan is the register.**
   dot tracking modulo position — the assertion Bean's eye made last wave ("did the dots follow the
   cards?", not "did it move?").
 
-### Step R — BUILT 2026-08-01 (`7d535b40`), NOT YET LIVE-VERIFIED
+### Step R — CLOSED 2026-08-02 — PROVEN LIVE 10/10
 
-> ✅ **BUILT + committed + pushed.** Widened by Bean from a glow to a pluggable **field-type
-> system** (D459, Spec 38 §3.3 amended same session). Emitter/painter split: `cursor-field.js`
-> publishes viewport-pixel pointer coordinates; `fx-cursor-field.css` paints. Ships `glow` +
-> `spotlight-mask`; `floating-objects` is recorded in-spec as a named future type.
-> `spotlight.js` is now a thin wrapper preserving its frozen contract for `sgs/mega-panel`.
-> **Tier V, 982 bytes gzip, zero GSAP.** `fx_effects.creates_panel` added — measured roster diff
-> 28 panels before / 28 after, offered on exactly the 7 blocks with a paintable background.
+> ✅ **BUILT, verified, committed.** Widened by Bean from a glow to a pluggable **field-type
+> system** (D459, Spec 38 §3.3 / FR-38-25 amended same session). Emitter/painter split:
+> `cursor-field.js` publishes viewport-pixel pointer coordinates; `fx-cursor-field.css` paints.
+> Ships `glow` + `spotlight-mask`. `spotlight.js` is now a thin wrapper preserving its frozen
+> contract for `sgs/mega-panel`. **Tier V, 982 bytes gzip, zero GSAP.**
+> `fx_effects.creates_panel` added — measured roster diff 28 panels before / 28 after, offered on
+> exactly the 7 blocks with a paintable background.
 >
-> ⛔ **STILL OWED: a live observation.** It builds green and every gate passes, but no instance has
-> been seen painting or following a cursor. Artefact presence is not behaviour — morph sat in every
-> manifest for months having never once animated (D452). Do not mark this closed on the build alone.
+> **LIVE (`probe-cursor-field.mjs`, canary `/cursor-field-canary-2/`): 10/10.** Follows the pointer
+> 1:1 (420→420px, 720→720px, 1020→1020px); the opaque child paints its own share at the SAME
+> coordinates, so seamless by construction; reduced motion paints but stops tracking.
+>
+> **SIX defects were found in this one feature, every one through a green build** — four by
+> `/qc-council` code-path trace (undefined identifier · missing `sgs_fx_root_offset()` guard ·
+> absent from `SHIPPED_EFFECTS` · absent from `FX_ATTR_MAP`), a fifth only by live verification
+> AFTER those shipped (absent from `sgs_fx_effect_param_scope()`), a sixth in the probe itself.
+> Residual gates for that class → **Step X**.
+
+### Step R-residual — the cursor field's stated limits [OPEN, low priority]
+  **Model:** sonnet · **Time:** 1 h
+  **Action:** Three things FR-38-25 states plainly rather than hides. None is a defect; each is a
+  decision that may want revisiting:
+  1. **`floating-objects` is spec'd, not built.** Bean's third example ("move floating objects").
+     Recorded in Spec 38 as a named future field type with its open questions — it is the first
+     type needing per-object JS, so it needs a Tier assignment under §1.3 (not assumed V) and its
+     own §10 reduced-motion answer, since autonomous object motion is not the same SIMPLIFY case
+     as a static field.
+  2. **A participant with its OWN `background-image` is deliberately not marked**, because our
+     layer would replace it. That child keeps a visible seam in the field. The alternative —
+     clobbering a client's chosen image — is plainly worse, but a `::before` fallback for that
+     narrow case is possible if the seam is ever reported.
+  3. **The participant walk runs at init only.** A child whose background is set later, or which is
+     inserted later, will not participate until re-init. Acceptable while block content is
+     server-rendered and static; the fix if a dynamic case appears is a `MutationObserver` in
+     `cursor-field.js`, never per-block code.
+  **Done when:** each is either closed or re-affirmed in-spec with a date.
 
 ### Step R (original brief) — BUILD the cursor-follow glow
   **Model:** sonnet · **Time:** 2 h

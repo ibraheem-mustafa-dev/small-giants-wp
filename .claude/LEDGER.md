@@ -90,8 +90,9 @@ memory alone:
   Spec 31 §4 (needs a design gate). ⛔ Do NOT retry the Task A composite-var classifier fix —
   measured 1→3 violations, reverted. ⛔ `sgs/star-rating` lacks `scalar-content-lift` so the star
   lift no-ops despite the correct role; granting it is Bean's opt-in, not a bug.
-  ⚠ **UNCOMMITTED — the motion track must carry it:** `src/blocks/form/block.json` holds the
-  focus-ring `attrMap` fix (makes F6 green) PLUS that track's own colour-default change.
+  ✅ **CARRIED AND COMMITTED 2026-08-02** — `src/blocks/form/block.json` (the focus-ring `attrMap`
+  fix that makes F6 green, plus that track's colour-default change) landed in the motion track's
+  `d4bfa126`. F6 verified green afterwards. Nothing outstanding on that handover.
 - **Track 1 (cloning/Spec 31) — Phase 0 remains the front. Root cause found; plan ready, NOT executed.**
   Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
   decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
@@ -209,15 +210,76 @@ migration must run with Bean present. The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION — the production migration, then Round 3 (motion)
+## NEXT SESSION — motion residuals (Track 3), or the production migration
 
-**Read FIRST, in order:** this file → `STOP-CATALOGUE.md` (new entries this session) →
-`decisions.md` D447–D457 → `plans/2026-07-31-motion-wave-D-client-readiness.md` → Spec 38 §3.1 + §10.
+**Read FIRST, in order:** this file → `STOP-CATALOGUE.md` →
+`decisions.md` **D459, D460, D463** (this session) → **`plans/2026-07-31-motion-wave-D-client-readiness.md` §1**
+(the residual register — its table names every open motion step in run order) → Spec 38 §3.3
+FR-38-25 + FR-38-26.
+
+### TRACK 3 (motion) — Wave D's four tasks are CLOSED; the residue is five steps
+
+**Everything open lives in the Wave D register, never in `parking.md`** (Bean-ruled 2026-07-31:
+parking is for BLOCKED or POSTPONED work only). Ranked:
+
+**M1 — Step X: gate the three-list drift** [sonnet, ~1 h] — **the highest-value item on this track.**
+An fx effect must join THREE hand-maintained lists to work (`SHIPPED_EFFECTS` in `fx.js`;
+`FX_ATTR_MAP` and `sgs_fx_effect_param_scope()` in `fx-attributes.php`) and **no gate cross-checks
+them**. Two of three were missed on one effect this session; neither failed a build, and one only
+surfaced by live verification after the other fixes shipped. A fourth list of the same shape governs
+field types. Ship the gate with a `--self-test` that proves it fails when an entry is removed.
+
+**M2 — Step W: roll the loop to the other 5 drag-roster blocks** [sonnet, ~1.5 h] — `sgs/gallery` is
+the only exemplar. ⚠ **Re-derive the roster from `supports.sgs.fx.draggable`, do not trust a
+remembered list** — `sgs/testimonial-slider` was wrongly assumed on it once already this wave.
+`sgs/buybox` is the non-mechanical one (thumbnail strip + product-card Interactivity store).
+Done = each block passes `probe-carousel-loop.mjs` with the **dots == real cards** assertion holding.
+
+**M3 — Step Y: the loop's untested arms** [sonnet, ~45 min] — reduced motion for the LOOP is
+unstated (the drag module's SIMPLIFY contract does NOT transfer), and keyboard arrow-wrap at the
+boundary was never exercised though WCAG 2.5.7 rests on it. **Playwright only** — DevTools MCP has
+neither a `prefers-reduced-motion` parameter nor a trusted pointer primitive.
+
+**M4 — Step Z: the fourth focus system** [haiku, ~30 min] — `extensions.css` `.sgs-has-focus-ring`
+is one generation behind D463 (still hardcoded `primary`, no glow, no underlay). Deferred ONLY
+because a co-active track held that file; **check it is clean before starting.**
+
+**M5 — Step R-residual** [sonnet, ~1 h, low priority] — `floating-objects` spec'd not built; the
+participant seam for children with their own background-image; the init-only participant walk.
+
+**M6 — Wave E's unverified residue** [sonnet, ~45 min] — carried from the previous handoff, still
+open: (a) the `:user-valid` cascade fix on a REAL `sgs/form` instance rather than a bare-input
+fixture, (c) the `fx-scrub` and `fx-split-reveal` probes against the SHIPPED bundle. (b) the
+focus-ring item is SUPERSEDED by D463, which re-measured that surface live.
+
+### TRACK 3 — carried forward, unchanged
+Steps **8** (physics sandbox — DECIDED at D447, only the FR write-up is owed), **12** (the cloning
+lift, FR-38-22 — measured NO, motion does not survive a clone today), **20** (spec↔code
+reconciliation), **O** (drag text-selection — ⛔ Bean re-checks by hand, do NOT dispatch an agent),
+**U** (grid-block file-length debt), **21** (re-run `/adversarial-council`, deliberately last).
+
+### Methodology, earned this session — do not re-learn these
+- **`build-deploy.py --dry-run` does NOT run the dirty gate.** A green dry run against a filthy
+  tree with no `--payload` is evidence of nothing.
+- **A page-HTML grep cannot see scoped block CSS** — SGS lifts it to `uploads/sgs-css/`.
+- **A probe's hardcoded viewport points can miss the element entirely** and report a failure that
+  does not exist. Derive points from the target's own bounding box.
+- **The canary currently carries two other tracks' uncommitted PHP** — deployed with
+  `--allow-dirty` on Bean's explicit acceptance. It was NOT reviewed by this track.
 
 ⚠ **Two tracks share this worktree.** Commit BY EXACT PATH, never `git add -A`. **Re-check the
 D-ceiling immediately before writing any D reference** — a collision happened this session: the
 other track took D455/D456 mid-flight and a CSS docblock briefly cited someone else's decision.
 
+- **Carried forward (still binding):**
+  **Four new STOPs from T1.1 (D461) live in `STOP-CATALOGUE.md`** — shared git INDEX, `grep -c`
+  **A grep for a literal cannot see a CSS-variable-driven value.** `opacity: 0.4` returned nothing
+  **Never `head` a verification listing.** `ls sites/*/... | head -4` showed the four clients that
+  **A wrong explanation does not make an observation wrong.** A real bug survived hours because its
+  **Artefact presence is not behaviour.** Morph was in every manifest and roster and had never once
+  **Pixel-sample when a rendered appearance is disputed** — computed said 5.79:1, the pixel said 1.79:1.
+  **After any rebaseline, re-run the gate's `--self-test`** to prove it can still fail.
+  **Reduced motion and gesture-level drag are Playwright-only** — Chrome DevTools MCP has neither a
 ### TRACK 1 (cloning) — a SEPARATE track from the motion/migration tasks below; pick one
 
 **T1.1 — CLOSED 2026-08-02 (D461, `8cdc1460`).** Do not re-open; see the Track 1 bullet above and
@@ -247,73 +309,3 @@ migration over live content — get it again, with the dry-run in front of him.
 **/qc gate:** yes — re-run the oldshape audit after migrating and confirm 0 NEW HIGH.
 **Acceptance:** `build-deploy.py --target palestine-lives` completes with the audit passing on its
 own terms — never via `--skip-oldshape-audit`.
-
-### Task 2 — Step R: build the cursor-follow glow (FR-38-25) [delegated, opus]
-**What:** spec'd and Bean-signed at D444; ZERO code exists. `src/shared/effects/spotlight.js` is
-already generic and consumed only by `sgs/mega-panel`; what is missing is the CSS contract and the
-two-role emitter/participant provision derivation.
-**Context the agent will not have:** measure the two STATED-BUT-UNMEASURED risks FIRST, not last —
-a `radial-gradient` repaints every frame the pointer moves (N participants means N repaints), and
-legibility must be measured at the field's BRIGHTEST position, never at rest. Adding a provision
-category is exactly what zeroed `sgs/decorative-image` before.
-**Time:** 2 h. **Parallel with:** Tasks 3 and 4. **/qc gate:** yes.
-
-### Task 3 — Step Q: looping carousels [delegated, sonnet]
-**What:** Bean's ask, verbatim — "for the dragging physics feel the option to make the carousels
-looping is important so it doesn't get abruptly stopped by the end of the list and just loops
-round". Universal across the drag roster, not per-block. Its stated precondition is now met: the
-drag fixes shipped, so this is no longer layering behaviour onto a faulty base.
-**Context:** the accessibility story is NOT spelled out — a looping carousel versus WCAG 2.5.7's
-discrete alternative needs an answer, the same open concern as Step 8. Owns `fx-draggable.js`.
-**Time:** 1.5 h. **Parallel with:** Tasks 2 and 4. **/qc gate:** yes.
-
-### Task 4 — Step K: rebuild the deleted canary fixtures [delegated, haiku]
-**What:** Bean deleted six contaminated pages (2022, 2023, 2024, 2025, 2026, 2029). Rebuild
-whichever are still needed as baselines using the KNOWN-CLEAN method — pages 2105/2107/2109 carry
-12–18 containers with zero bad wrappers, so the newer build path is already correct.
-**Record the method** in the plan so this cannot recur. **Time:** 30 min. **/qc gate:** no.
-
-### Task 5 — Close Wave E's unverified residue [delegated, sonnet]
-**What:** three fixes shipped but never observed live — (a) the `:user-valid` cascade fix on a REAL
-`sgs/form` instance rather than a bare-input fixture, (b) the focus-ring `color-mix` at a
-non-default ring opacity on a live page, (c) the `fx-scrub` and `fx-split-reveal` probes against the
-SHIPPED bundle after the final deploy.
-**Why:** each is currently proven by mechanism, not by observation — precisely the gap that let
-morph sit broken for months while every artefact said it worked.
-**Time:** 45 min. **Depends on:** a deploy having happened. **/qc gate:** yes.
-
-### Dependency graph
-```
-Task 1 (inline, Opus — Bean present, production, gated on his approval)
-  |  independent of the rest
-Task 2 + Task 3 + Task 4  (parallel; file-disjoint:
-                           spotlight.js+fx.js · fx-draggable.js · canary pages only)
-  v  deploy
-Task 5 (verification sweep — must follow a deploy)
-  v
-Commit by exact path -> push
-```
-
-### Methodology guardrails (earned this session — do not inherit as solved)
-
-- **Four new STOPs from T1.1 (D461) live in `STOP-CATALOGUE.md`** — shared git INDEX, `grep -c`
-  exit-1 killing an `&&` chain, a correct fix that never runs, and fact-checking your own brief.
-- **`node --check` passes an undefined identifier** — it validates syntax, not scope. A fix on the
-  accessibility path would have thrown at runtime after passing it.
-- **`eslint --rule '{"no-undef":"error"}'` is VACUOUS in this project** — the config overrides it.
-  Proven by planting an undefined identifier and watching a clean exit. Verify scope by direct
-  identifier-binding inspection instead.
-- **A grep for a literal cannot see a CSS-variable-driven value.** `opacity: 0.4` returned nothing
-  while `opacity: var(--x)` was the defect — and the line was already in my own earlier output.
-- **Never `head` a verification listing.** `ls sites/*/... | head -4` showed the four clients that
-  were fine and hid the four that were not.
-- **A wrong explanation does not make an observation wrong.** A real bug survived hours because its
-  first report misattributed the mechanism and the whole claim was dismissed.
-- **Artefact presence is not behaviour.** Morph was in every manifest and roster and had never once
-  animated.
-- **Pixel-sample when a rendered appearance is disputed** — computed said 5.79:1, the pixel said 1.79:1.
-- **After any rebaseline, re-run the gate's `--self-test`** to prove it can still fail.
-- Deploy before measuring. Cache-bust every canary read. Poll until `scrollY` settles, never sample
-  at a fixed delay.
-- **Reduced motion and gesture-level drag are Playwright-only** — Chrome DevTools MCP has neither a
-  `prefers-reduced-motion` parameter nor a trusted pointer primitive.

@@ -253,11 +253,24 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   blocks only) and `fx-attributes.php`'s injector only ever stamp the block ROOT.
   `fx_effects.creates_panel = 0` records that decision rather than driving it.
 
-  **Status: `sgs/gallery` only** — the exemplar, proven live 8/8
-  (`scripts/motion-qa/probe-carousel-loop.mjs`, `reports/visual-diff/gallery-2026-08-02.md`).
-  The other five drag-roster blocks (`buybox`, `google-reviews`, `post-grid`,
-  `testimonial-slider`, `trustpilot-reviews`) still need the identical mechanical pattern.
-  Reduced-motion behaviour for the loop itself is **untested** and owed.
+  **STATUS — MECHANISM PROVEN, ROLLOUT NOT.** `sgs/gallery` is the exemplar and the ONLY block
+  carrying `loopCarousel`, proven live 8/8 (`scripts/motion-qa/probe-carousel-loop.mjs`,
+  `reports/visual-diff/gallery-2026-08-02.md`). Three things are explicitly OWED, tracked as Steps
+  W and Y of `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md` (the Spec 38 residual
+  register — motion residuals live there, never in `parking.md`, per Bean 2026-07-31):
+
+  1. **The other five drag-roster blocks** — `sgs/buybox`, `sgs/google-reviews`, `sgs/post-grid`,
+     `sgs/testimonial-slider`, `sgs/trustpilot-reviews`. ⚠ Re-derive that roster from
+     `supports.sgs.fx.draggable` rather than trusting this list: `sgs/testimonial-slider` was
+     wrongly assumed to be on it once already (removed 2026-07-31, momentum now block-private).
+     `sgs/buybox` is the one that is not mechanical — its scroller is the thumbnail strip and it
+     mounts the product-card Interactivity store.
+  2. **Reduced motion for the LOOP is unstated and unmeasured.** The drag module's own SIMPLIFY
+     contract is unchanged and does not transfer: a clone-and-reseat is not autonomous motion, so
+     SIMPLIFY is the likely answer, but §10 carries no row for it yet.
+  3. **Keyboard arrow-wrap at the boundary was never exercised.** Arrows are present and correctly
+     never disable, but the wrap was driven by pointer and `scrollLeft`. WCAG 2.5.7 rests on that
+     discrete alternative actually working AROUND the loop point, which is untested.
 
 - **FR-38-14 Physics easings as flavours.** Physics2D / PhysicsProps / CustomBounce /
   CustomWiggle appear ONLY as easing/motion-flavour options inside other G effects' controls
@@ -363,12 +376,32 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   participants are detected at RUNTIME from computed background — the fact that actually decides
   occlusion — never from a declared capability.
 
-  **KNOWN RESIDUAL (recorded, not assumed away).** A field type is named in THREE places: the
-  `fx.js` picker, the `includes/fx-cursor-field.php` closed list, and the
-  `assets/css/fx-cursor-field.css` rules that paint it. No gate cross-checks them, so a type present
-  in the picker but missing from the CSS would offer a client an option that silently paints
-  nothing. Two hand-maintained lists diverging silently is a failure this codebase has met before
-  (see the `TRANSITION_STYLES` note in `class-sgs-motion-registry.php`).
+  **KNOWN RESIDUALS (recorded, not assumed away).** Tracked as Steps X and R-residual of
+  `.claude/plans/2026-07-31-motion-wave-D-client-readiness.md`.
+
+  1. **THE MULTI-LIST DRIFT — the single most expensive defect class this spec has produced.**
+     An fx effect must join THREE hand-maintained lists to work at all, and **no gate cross-checks
+     any of them**: `SHIPPED_EFFECTS` (`fx.js`, gates the editor picker), `FX_ATTR_MAP`
+     (`fx-attributes.php`, attr → data-attribute for DYNAMIC blocks), and
+     `sgs_fx_effect_param_scope()` (`fx-attributes.php`, per-effect param allowlist).
+     **Two of the three were missed on `cursor-field` in one session, and neither failed a build.**
+     Missing the first made the entire feature unreachable from the editor while every other layer
+     was correctly wired; missing the third rendered a page that looked completely healthy —
+     emitter marked, stylesheet and module enqueued — while the client's chosen colour and radius
+     were silently dropped. The third only surfaced by LIVE verification, after the other fixes had
+     already shipped.
+     A FOURTH list of the same shape governs field types: `FX_FIELD_TYPE_OPTIONS` (`fx.js`) ×
+     `SGS_FX_CURSOR_FIELD_TYPES` (`fx-cursor-field.php`) × the painting rules in
+     `fx-cursor-field.css`. A type in the picker with no CSS rule silently paints nothing.
+     Two hand-maintained lists diverging silently is a failure this codebase has met before (see
+     the `TRANSITION_STYLES` note in `class-sgs-motion-registry.php`) — this is now four.
+  2. **`floating-objects` is spec'd, not built** (see the field-type table above).
+  3. **A participant carrying its own `background-image` is deliberately not marked**, because our
+     layer would replace it; that child keeps a visible seam. Clobbering a client's chosen image is
+     plainly worse. A `::before` fallback for that narrow case is possible if the seam is reported.
+  4. **The participant walk runs at init only** — a child whose background is set or inserted later
+     will not participate until re-init. Acceptable while block content is server-rendered and
+     static; the fix is a `MutationObserver` in `cursor-field.js`, never per-block code.
 
 ### 3.4 SVG
 
