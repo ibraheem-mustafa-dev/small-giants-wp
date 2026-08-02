@@ -1,0 +1,168 @@
+{
+  "generated_at": "2026-08-02",
+  "rebuild_exit_code": 0,
+  "live_counts": {
+    "_meta_schema_version": 1,
+    "animation_tokens": 8,
+    "array_item_fields": 0,
+    "array_item_schema": 68,
+    "attribute_gap_candidates": 3063,
+    "block_attributes": 2947,
+    "block_capabilities": 96,
+    "block_changes": 2735,
+    "block_composition": 210,
+    "block_selectors": 86,
+    "block_styles": 63,
+    "block_supports": 1340,
+    "blocks": 205,
+    "components": 13,
+    "deploy_steps": 9,
+    "design_tokens": 224,
+    "docs": 1257,
+    "excluded_properties": 10,
+    "fx_effects": 15,
+    "gotchas": 12,
+    "hooks": 5433,
+    "html_tag_to_core_block": 17,
+    "indexed_files": 110,
+    "legacy_role_lookup": 15,
+    "markup_examples": 399,
+    "modifier_suffixes": 19,
+    "pattern_coverage": 108,
+    "patterns": 57,
+    "pipeline_corrections": 4,
+    "plugins": 3,
+    "preset_implications": 23,
+    "property_suffixes": 154,
+    "roles": 29,
+    "schema_metadata": 4,
+    "schema_migrations": 29,
+    "slots": 104,
+    "style_variations": 8,
+    "theme_parts": 28,
+    "variant_slots": 27,
+    "variations": 205
+  },
+  "rebuilt_counts": {
+    "_meta_schema_version": 0,
+    "animation_tokens": 1,
+    "array_item_fields": 0,
+    "array_item_schema": 68,
+    "attribute_gap_candidates": 0,
+    "block_attributes": 2589,
+    "block_capabilities": 23,
+    "block_changes": 0,
+    "block_composition": 19,
+    "block_selectors": 86,
+    "block_styles": 0,
+    "block_supports": 521,
+    "blocks": 117,
+    "components": 0,
+    "deploy_steps": 0,
+    "design_tokens": 150,
+    "docs": 46,
+    "excluded_properties": 0,
+    "fx_effects": 15,
+    "gotchas": 0,
+    "hooks": 161,
+    "html_tag_to_core_block": 0,
+    "indexed_files": 83,
+    "legacy_role_lookup": 0,
+    "markup_examples": 0,
+    "modifier_suffixes": 0,
+    "pattern_coverage": 0,
+    "patterns": 0,
+    "pipeline_corrections": 0,
+    "plugins": 0,
+    "preset_implications": 23,
+    "property_suffixes": 0,
+    "roles": 0,
+    "schema_metadata": 4,
+    "schema_migrations": 29,
+    "slots": 0,
+    "style_variations": 0,
+    "theme_parts": 0,
+    "variant_slots": 27,
+    "variations": 0
+  },
+  "missing_tables": [],
+  "extra_tables": [],
+  "empty_unknown": [
+    "_meta_schema_version",
+    "attribute_gap_candidates",
+    "block_changes",
+    "block_styles",
+    "components",
+    "deploy_steps",
+    "gotchas",
+    "html_tag_to_core_block",
+    "legacy_role_lookup",
+    "markup_examples",
+    "modifier_suffixes",
+    "pattern_coverage",
+    "patterns",
+    "pipeline_corrections",
+    "plugins",
+    "style_variations",
+    "theme_parts",
+    "variations"
+  ],
+  "empty_known": [
+    "excluded_properties",
+    "property_suffixes",
+    "roles",
+    "slots"
+  ],
+  "short": [
+    {
+      "table": "animation_tokens",
+      "live": 8,
+      "rebuilt": 1
+    },
+    {
+      "table": "block_attributes",
+      "live": 2947,
+      "rebuilt": 2589
+    },
+    {
+      "table": "block_capabilities",
+      "live": 96,
+      "rebuilt": 23
+    },
+    {
+      "table": "block_composition",
+      "live": 210,
+      "rebuilt": 19
+    },
+    {
+      "table": "block_supports",
+      "live": 1340,
+      "rebuilt": 521
+    },
+    {
+      "table": "blocks",
+      "live": 205,
+      "rebuilt": 117
+    },
+    {
+      "table": "design_tokens",
+      "live": 224,
+      "rebuilt": 150
+    },
+    {
+      "table": "docs",
+      "live": 1257,
+      "rebuilt": 46
+    },
+    {
+      "table": "hooks",
+      "live": 5433,
+      "rebuilt": 161
+    },
+    {
+      "table": "indexed_files",
+      "live": 110,
+      "rebuilt": 83
+    }
+  ]
+}

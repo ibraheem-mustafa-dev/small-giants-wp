@@ -111,6 +111,87 @@ def open_db() -> sqlite3.Connection:
     return conn
 
 
+def _table_count(db_path: Path) -> int:
+    """How many non-internal tables the file holds. 0 for absent/empty."""
+    if not db_path.exists() or db_path.stat().st_size == 0:
+        return 0
+    con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    try:
+        return con.execute(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' "
+            "AND name NOT LIKE 'sqlite@_%' ESCAPE '@'"
+        ).fetchone()[0]
+    finally:
+        con.close()
+
+
+def bootstrap_rebuild(db_path: Path = None) -> None:
+    """Create the schema and replay migrations before the seeding stages run.
+
+    Phase 0 (D464). The knowledge base could not be rebuilt: its foundational
+    tables have no ``CREATE TABLE`` anywhere in production code, so a seeder
+    pointed at an empty file died on `no such table: blocks`. This applies the
+    committed DDL, then replays the tracked migrations, then hands over to the
+    normal stages unchanged.
+
+    REFUSES a populated database. Rebuilding over real data would destroy the
+    only copy of a gitignored file; the operator must delete it deliberately.
+    """
+    db_path = db_path or SGS_DB
+    dbschema = Path(__file__).resolve().parent / "dbschema"
+    schema_sql = dbschema / "schema.sql"
+
+    existing = _table_count(db_path)
+    if existing:
+        print(
+            f"FATAL: --rebuild refuses a populated database.\n"
+            f"  {db_path} already holds {existing} table(s).\n"
+            f"  Rebuilding would destroy the only copy of a gitignored file.\n"
+            f"  Delete it deliberately first if you genuinely mean to rebuild.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if not schema_sql.exists():
+        print(f"FATAL: schema not found at {schema_sql}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"[--rebuild] applying schema: {schema_sql}")
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(str(db_path))
+    try:
+        con.executescript(schema_sql.read_text(encoding="utf-8"))
+        con.commit()
+        made = con.execute(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' "
+            "AND name NOT LIKE 'sqlite@_%' ESCAPE '@'"
+        ).fetchone()[0]
+    finally:
+        con.close()
+    print(f"[--rebuild] schema applied — {made} table(s) created")
+
+    sys.path.insert(0, str(dbschema))
+    import migrate as _migrate  # noqa: PLC0415
+
+    # DO NOT REPLAY MIGRATION HISTORY HERE. Measured 2026-08-02, Step 0.5:
+    # replaying history onto a schema captured from the PRESENT is incoherent by
+    # construction. The rebuild died on migration #2
+    # (2026-05-16-slot-synonyms-roles.py) with `no such table: slot_synonyms` --
+    # because `slot_synonyms` was later RETIRED in favour of `slots`, so the
+    # current schema correctly has no such table while three historical
+    # migrations still reference it. A May migration cannot be applied to an
+    # August schema; they describe different worlds.
+    #
+    # The migrations are therefore RECORDED as applied, not run. That matches
+    # how the live DB itself was adopted (Step 0.3) and is honest: their effects
+    # are already baked into schema.sql. Regenerating the DATA is Phase 1's job
+    # -- regenerative seeders from source -- not a history replay.
+    _migrate.cmd_mark_applied(db_path, _migrate.MANIFEST)
+    print("[--rebuild] migrations recorded as applied (NOT replayed — see the "
+          "comment in bootstrap_rebuild)\n"
+          "[--rebuild] handing over to the seeding stages\n")
+
+
 def ensure_schema_metadata(conn: sqlite3.Connection) -> None:
     """CREATE TABLE IF NOT EXISTS schema_metadata — Phase 4 addition."""
     conn.execute("""
@@ -5026,6 +5107,16 @@ def main() -> None:
             "regardless of this setting — block_attributes has no is_stale column."
         ),
     )
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help=(
+            "Bootstrap an EMPTY/absent database before seeding: apply "
+            "dbschema/schema.sql, replay tracked migrations, then run the "
+            "normal stages. Refuses a populated DB (delete it first). "
+            "Phase 0 / D464."
+        ),
+    )
     args = parser.parse_args()
 
     print(f"sgs-update-v2.py — repo: {REPO_ROOT}")
@@ -5033,6 +5124,9 @@ def main() -> None:
     if args.dry_run:
         print("[DRY RUN — no DB or file writes]")
     print()
+
+    if args.rebuild:
+        bootstrap_rebuild(SGS_DB)
 
     conn = open_db()
     ensure_schema_metadata(conn)
