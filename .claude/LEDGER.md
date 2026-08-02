@@ -18,50 +18,40 @@ gets ONE true answer instead of three drifting ones.
 
 ## CURRENT FRONTS
 
-### Track 3 — Spec 38 motion: WAVE D CLOSED 2026-08-02 (D459, D460, D463) — all four tasks LIVE-VERIFIED
+### Track 3 — Spec 38 motion: the drift GATE + the looping ROLLOUT, both live (D465, D466)
 
-**7 commits, deployed to the canary, and every claim below is an observation with numbers — not
-an artefact check.** Wave D's four tasks are done; the residue is named at the end.
+**Commit `4f07a72a`, pushed. Every claim is a measurement, not an artefact check.**
 
 | What shipped | Proven how |
 |---|---|
-| **Cursor-reactive FIELD system** (FR-38-25, widened by Bean from one glow to pluggable field types) | `probe-cursor-field.mjs` **10/10 live**: follows the pointer 1:1 (420→420px, 720→720px, 1020→1020px); the opaque child paints its own share at the SAME coords, so seamless by construction; reduced motion paints but stops tracking. **982 B gzip, zero GSAP.** |
-| **Looping carousels** as an INDEPENDENT control (FR-38-26) | `probe-carousel-loop.mjs` **8/8 live**: 12 clones all inert+aria-hidden; **dots=6=real cards, not 18 (the cloned length)**; past-the-end re-seats instead of dead-stopping; drag AND loop both live on one element; a real pointer gesture moves it. |
-| **Focus indicator** → accent glow over a neutral underlay (D463) | Measured on canary 2118 against the REAL cream surface: outline `#c56a7a` **3.32:1 clears the floor**, glow `#f5d050` 1.35:1 decorative. All three properties change on focus. |
-| **Canary fixtures** (Step K) | CLOSED by measurement — **no rebuild needed**. Repo-wide search (not just `scripts/motion-qa/`) found the six deleted page IDs referenced by ZERO probes. The clean fixture METHOD is recorded in the Wave D plan. |
+| **The three-list fx drift is GATED** (D465) — `scripts/check-fx-list-drift.py`, 6 invariants, in `prebuild` | `--self-test` breaks each invariant in turn + a vacuity case; **deleting `'cursor-field'` from each of the three lists in turn was verified to fail the build**, each break confirmed in `git diff` first. Reads NO database, so a clean checkout still builds. `fx_effects` gained `in_picker`. |
+| **Looping rolled out** (D466) — `post-grid`, `trustpilot-reviews`, `google-reviews`, `buybox` | `probe-carousel-loop.mjs` per block: **dots == real cards on 4 of 5** (post-grid 9 real / 27 cloned / **9 dots**); buybox 8/8 + 1 honestly `[N/A]` (no dots by design). Plus a new no-JS **first-paint** capture, 3/3 each. |
+| **`sgs/google-reviews` slider navigation BUILT** | It had none: `showDots`/`showArrows` declared, exposed as toggles, read into variables, rendering nothing in any layer. Dots now proven live at 3 == 3 real reviews. |
 
-⚠ **SIX defects were found in ONE feature, and every one passed a green build.** Four by a
-`/qc-council` code-path trace (undefined identifier · missing `sgs_fx_root_offset()` guard ·
-effect absent from `SHIPPED_EFFECTS` so unreachable from the editor · attrs absent from
-`FX_ATTR_MAP`); a FIFTH only by live verification after those four shipped (`cursor-field` missing
-from `sgs_fx_effect_param_scope()` — the page looked entirely healthy while the client's chosen
-colour and radius were silently dropped); a SIXTH was my own probe.
+⛔ **THE SPEC'S OWN ROSTER PREDICATE WAS WRONG.** Spec 38 + this LEDGER both said "derive the roster
+from `supports.sgs.fx.draggable`" — with a ⚠ telling you to trust it. Followed literally it returns
+2 blocks, one with **no scroller at all**. Correct predicate: **"owns a native horizontal scroller"**.
+Corrected in Spec 38 §3.3. `before-after` (no `overflow-x`) and `testimonial-slider` (transform-driven
+track; Bean ruled it out 2026-08-02) are excluded with reasons.
 
-**THE STRUCTURAL FINDING: an effect must join THREE separate hand-maintained lists to work** —
-`SHIPPED_EFFECTS` (fx.js), `FX_ATTR_MAP` and `sgs_fx_effect_param_scope()` (fx-attributes.php).
-Two of the three were missed on this effect. **No gate cross-checks them.** That is the highest-value
-next fix on this track.
+⚠ **THREE PROBE DEFECTS FOUND — all measuring the instrument, not the code.** A hardcoded item
+selector made the headline "dots == real cards" assertion `0 === 0` on any non-gallery block; a
+`|| 0 === dots` escape-hatch let a DOTLESS block bank a silent PASS on that same assertion; and dots
+were counted document-wide while items were counted track-scoped, which FAILED a block that was
+behaving correctly. All fixed, each with a negative control.
 
-⚠ **Methodology traps hit this session, all recorded:**
-- **`build-deploy.py --dry-run` does NOT run the dirty gate.** A dry run with a filthy tree and no
-  `--payload` passes cleanly. A green dry run is not evidence the real deploy is safe.
-- **A page-HTML grep cannot see scoped block CSS** — SGS lifts it to `uploads/sgs-css/`. My grep
-  returned nothing and read exactly like a failure; the rule was already captured and still caught me.
-- **A probe that never reaches the effect measures the probe.** The cursor probe FAILED its first
-  run on hardcoded viewport points that land on the header; a synthetic event at the element moved
-  it to the exact pixel. Points now derive from the emitter's own bounding box.
+⛔ **STEP Z (focus) RE-BASED — both earlier framings were wrong; do not act on either.**
+Not "a fourth system one generation behind" (there are **five**, across **two** token families), and
+NOT the specificity fight I hypothesised (**refuted**: the focused element computes
+`outline-color: #c56a7a` = `--sgs-focus-color`, so D463's rule IS winning). **Proven cause:** the
+deployed `core-blocks-critical.css` has no `--sgs-focus-glow` and no `box-shadow` line at all, while
+local source has both. **The THEME half of D463 was never deployed** — every deploy has been
+`--blocks-only`. Sequence: theme deploy (Bean's call, it touches every client render) → re-measure →
+then council. Full detail in the Wave D register's Step Z.
 
-⛔ **Deployed with `--allow-dirty` on Bean's explicit acceptance** — the shared tree held two other
-tracks' uncommitted PHP (`helpers-container.php`, `render-helpers.php`, `lucide-icons.php`,
-`extensions.css`, new `helpers-css-safety.php`). Raised as the D336 shape; Bean ruled proceed. The
-canary carries that work; **it was not reviewed by this track.**
-
-**OPEN on this track:** looping is `sgs/gallery` ONLY — the other five drag-roster blocks
-(`buybox`, `google-reviews`, `post-grid`, `testimonial-slider`, `trustpilot-reviews`) need the
-identical mechanical pattern · loop reduced-motion untested · keyboard arrow-wrap not separately
-exercised · `extensions.css`'s `.sgs-has-focus-ring` is a FOURTH focus system, deliberately
-untouched (co-active track owns the file) and now one generation behind · a gate for the
-three-list drift.
+**OPEN on this track:** Step Y (loop reduced-motion + keyboard arrow-wrap — now across FIVE blocks,
+not one) · Step Z (above) · Steps 8, 12, 20, O, U, 21 unchanged. `check-dead-controls.js` counts
+assignment as consumption — recorded gate blind spot, not fixed.
 
 ### Track 3 (previous) — Wave E, 2026-08-01 (D447–D454, D457)
 
