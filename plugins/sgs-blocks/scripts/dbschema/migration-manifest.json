@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-08-02",
+  "source_dir": "plugins/sgs-blocks/scripts/migrations",
+  "file_count_found": 30,
+  "counts": {
+    "DB-MIGRATION": 29,
+    "NOT-A-DB-MIGRATION": 1,
+    "UNCLASSIFIED": 0
+  },
+  "migrations": [
+    {
+      "filename": "2026-05-16-slot-synonyms-roles.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB_PATH) at line 79, con.execute() at lines 95, 110-114",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-05-16-slot-synonyms-standalone-block.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB_PATH) at line 60, con.execute() calls at lines 63-76 for ALTER TABLE, UPDATE, INSERT",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-05-17-property-suffixes-per-side.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) at line 45, cur.execute() at lines 50, 53, 56 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-05-29-d99-db-unification.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(db_path)) at line 321, multiple con.execute() calls for CREATE TABLE, INSERT, UPDATE, DROP at lines 113-193",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-07-property-suffixes-flex-justify.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 56, cur.execute() at lines 63-74 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-07-property-suffixes-flex-layout.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) at line 55, cur.execute() at lines 62-82 for INSERT and UPDATE into property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-13-property-suffixes-align-items.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) at line 46, cur.execute() at lines 52-60 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-13-testimonial-selector-fingerprint-override.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) at line 49, cur.execute() at lines 54-63 for UPDATE block_attributes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-16-button-group-alias-disambiguation.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB)) at line 64, con.execute() at lines 66-104 for SELECT, UPDATE on slots table",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-18-create-excluded-properties.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) at line 42, cur.execute() at lines 46-68 for CREATE TABLE and INSERT into excluded_properties",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-21-register-rating-role.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB_PATH)) at line 31, con.execute() at lines 33-46 for INSERT OR IGNORE and SELECT from roles table",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-26-testimonial-media-role-selector.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) at line 46, cur.execute() at lines 51-64 for UPDATE block_attributes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-06-30-property-suffixes-grid-position-bg-flex.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 200, cur.execute() at lines 207-219 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-03-register-icon-source-roles.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB_PATH)) at line 59, con.executemany() at lines 61-65 for INSERT OR IGNORE into roles",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-04-property-suffixes-content-band-padding.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 83, cur.execute() at lines 90-102 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-04-property-suffixes-flex-item-props.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 83, cur.execute() at lines 90-102 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-04-property-suffixes-transform-filter-transition.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 74, cur.execute() at lines 78-102 for CREATE TABLE and INSERT into excluded_properties",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-05-drop-has-inner-blocks-column.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 57, conn.execute() at lines 72 for ALTER TABLE DROP COLUMN",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-05-fontstyle-role-typography.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB_PATH)) at line 35, con.execute() at lines 37-44 for UPDATE and SELECT from property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-05-prune-announcement-bar-orphan.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 41, conn.execute() at lines 43-63 for SELECT and DELETE from block_composition and blocks tables",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-05-register-image-alt-role.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB_PATH)) at line 56, con.execute() at lines 58-68 for INSERT OR IGNORE and SELECT from roles",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-05-register-tag-identity-role.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB_PATH)) at line 52, con.executemany() at lines 54-62 for INSERT OR IGNORE into roles",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-10-property-suffixes-bg-colour.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 48, cur.execute() at lines 54-62 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-16-fix-spec-drift.py",
+      "classification": "NOT-A-DB-MIGRATION",
+      "evidence": "File reads Spec 17 markdown via spec_path.read_text() at line 440 and writes via spec_path.write_text() at line 473. Zero sqlite3 imports, zero database operations. Pure markdown text manipulation using regex and string.replace().",
+      "also_writes_files": true
+    },
+    {
+      "filename": "2026-07-19-property-suffixes-spec35-grid-rows.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(str(DB)) at line 41, conn.execute() at lines 45-57 for INSERT INTO property_suffixes",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-22-exclude-no-destination-props.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 104, cur.execute() at lines 108-132 for CREATE TABLE and INSERT into excluded_properties",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-22-transform-filter-hover-lift-unexclude.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 124, cur.execute() at lines 129-150 for ALTER TABLE, UPDATE block_attributes, and DELETE from excluded_properties",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-23-remove-body-from-text-slot-aliases.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB_PATH) at line 83, conn.execute() at lines 85-127 for SELECT and UPDATE operations on slots table",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-07-25-quote-body-attribution-slot-fix.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(SGS_DB) at line 101, c.execute() at lines 115-152 for SELECT, UPDATE, and INSERT into slots table",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-08-01-rating-speed-suffix-role.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(db_path) at line 139, cur.execute() at lines 145-157 for UPDATE and SELECT from property_suffixes",
+      "also_writes_files": false
+    }
+  ]
+}
