@@ -8,7 +8,7 @@ Invoke /autopilot before doing anything else.
 
 > **PRUNED 2026-08-02: every COMPLETED step was DELETED from this file.** Closed work lives in
 > `decisions.md` (D-numbered) and `git log`, not here. **If a step has a `### Step` heading below,
-> it is OPEN. There are no closed steps in this file.** 9 remain (verify, don't trust this number:
+> it is OPEN. There are no closed steps in this file.** 7 remain (verify, don't trust this number:
 `grep -c '^### Step' <this file>`).
 
 > **Closed since the prune:** Step 8 (FR-38-27, 2026-08-02) · Step Y (both loop arms measured, `216508ce`) · Step W/X/Z earlier · and
@@ -78,30 +78,7 @@ Waves A–E are closed. This session closed **Step X** (the three-list drift gat
      not a fix.
   **Done when:** those three are resolved or explicitly ruled out, with the cause proven for `button`.
 
-### Step Y-1 — ⛔ `sgs/google-reviews` keyboard nav FAILS WCAG 2.5.7 [OPEN — NEW, found by Step Y]
-  **Model:** sonnet · **Time:** 30 min
-  `nextSlide()`/`prevSlide()` in `src/blocks/google-reviews/view.js` compute an ABSOLUTE scroll
-  target by scanning only REAL (non-clone) items for one ahead of the current position. Once
-  `scrollLeft` enters clone territory there is no further real item to target, so it dead-ends at the
-  last real card. **The arrow never disables — technically satisfying "must never disable" while
-  functionally failing the requirement that rule exists to serve.** Keyboard users cannot pass the
-  last real card.
-  **Fix shape (not yet chosen):** clone-position targeting, or relative `scrollBy()` stepping as
-  `trustpilot-reviews` already does. **Diagnosed, deliberately NOT shipped** — Step Y's scope was
-  measurement.
-  ⚠ A dot/arrow that moves is not a dot/arrow that WORKS: this block passed the looping rollout's
-  "dots == real cards" check (3 == 3) while its keyboard path was already broken.
 
-### Step Y-2 — hardcoded `behavior: 'smooth'` ignores reduced motion in 2 blocks [OPEN — NEW]
-  **Model:** haiku · **Time:** 20 min
-  `trustpilot-reviews` and `google-reviews` hardcode `behavior: 'smooth'` in their own arrow-click
-  code with no reduced-motion branch. This is in the BLOCKS, not the loop module — Arm 1's clean
-  result does not cover it.
-  ✅ Already fixed in `post-grid`, which passed `behaviour` (British spelling) to `scrollIntoView` —
-  **an unrecognised DOM key the browser silently discards, so it never respected reduced motion in
-  either direction.** ⚠ **Committed but NOT deployed** — the canary still runs the pre-fix code.
-  ⚠ **Watch the spelling.** UK English is the house rule for everything EXCEPT DOM/CSS API keys,
-  where `behavior` is the API's own name. A silent no-op is the failure mode.
 
 ### Step 12 — the cloning lift: motion that survives a draft (FR-38-22) [OPEN]
   **Model:** inline · **Time:** 3 h
