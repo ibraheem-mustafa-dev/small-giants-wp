@@ -159,13 +159,11 @@ VALUE_ASSERTIONS: list[dict] = [
         "expected": "scalar-media",
         "why": "Destination for the --mobile image. Same incident.",
     },
-    {
-        "table": "block_attributes",
-        "key": {"block_slug": "sgs/testimonial-slider", "attr_name": "sideImage"},
-        "column": "role",
-        "expected": "scalar-media",
-        "why": "Third member of D128's original roster; lost in the same event.",
-    },
+    # ⛔ sgs/testimonial-slider.sideImage was asserted here on 2026-08-02 and REMOVED the
+    # same day: setting role='scalar-media' on it BROKE the block. Measured with the
+    # seeder disabled — 'image-object' lifts sideImage, 'scalar-media' lifts nothing,
+    # because branch A only fires for is_class_section_block blocks and that one is not.
+    # Its correct role is 'image-object'. Do not re-add it here.
 ]
 
 

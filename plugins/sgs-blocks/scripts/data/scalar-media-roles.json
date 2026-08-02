@@ -16,11 +16,7 @@
       "sgs/hero",
       "splitImageMobile",
       "Mobile half. Branch A routes the --mobile image here by appending 'Mobile' to the base attr name."
-    ],
-    [
-      "sgs/testimonial-slider",
-      "sideImage",
-      "Named in D128's original roster. No Mobile companion today, so it uses branch A only for the no-child-block half — included because it was part of the mechanism that was lost, and leaving it out would recreate a partial state nobody can explain later."
     ]
-  ]
+  ],
+  "__WHY_TESTIMONIAL_SLIDER_IS_EXCLUDED": "⛔ sgs/testimonial-slider.sideImage was briefly added to this roster on 2026-08-02 and it BROKE THE BLOCK. Measured with the seeder disabled: role='image-object' lifts sideImage correctly; role='scalar-media' lifts NOTHING. Reason: scalar-media is not a content-bearing role, so it removes the attr from the universal walk's candidate set — and the path that is supposed to take over, run_mechanism_b branch A, only fires for is_class_section_block blocks. sgs/testimonial-slider returns False, so the attr ends up with no route in either direction. D128's own note said exactly this ('testimonial-slider.sideImage NOT routed — tier=block not class-section, gate doesn't fire; DB row not updated') and deliberately left it alone; adding it here overrode a documented decision with an assumption. ⚠ PRE-CONDITION for ever adding a block to this roster: db_lookup.is_class_section_block(slug) MUST return True. scalar-media only pays off when branch A can actually fire; on any other block it strands the attr with no route at all."
 }

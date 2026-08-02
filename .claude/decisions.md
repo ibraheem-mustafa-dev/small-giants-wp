@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D476 — I BROKE `sgs/testimonial-slider` with D474 and caught it hours later [INCIDENT]
+
+**2026-08-02, found during the retrospective QC council, before any rater reported it.**
+
+**D474 added `sgs/testimonial-slider.sideImage` to the `scalar-media` roster. That BROKE the block.**
+Measured with the seeder DISABLED (so it could not repair the control): `role='image-object'` lifts
+`sideImage` correctly; `role='scalar-media'` lifts **NOTHING**.
+
+**Mechanism.** `scalar-media` is not a content-bearing role, so it REMOVES the attr from the universal
+walk's candidate set. The path meant to take over — `run_mechanism_b` branch A — only fires when
+`is_class_section_block(slug)` is True. `sgs/testimonial-slider` returns **False**. So the attr had no
+route in either direction and silently lifted nothing.
+
+⛔ **D128 HAD ALREADY RECORDED THIS EXACT CONSTRAINT** — "testimonial-slider.sideImage NOT routed
+(tier='block' not 'class-section' → gate doesn't fire; **DB row not updated**)" — and deliberately left
+that block out of the roster. My data file's own rationale claimed the opposite: that it "was part of
+the mechanism that was lost". **I overrode a documented decision with an assumption, and wrote the
+assumption down as if it were the history.** The one block D128 excluded is the one I added.
+
+**Two vacuous controls on the way to catching it, both caught:**
+1. Reverting the role in a sandbox and re-running showed "no change" — because importing `db_lookup`
+   re-applied it mid-run. Same self-healing blindness as D474's test. Fixed by hiding the data file.
+2. The guard's own control patched `db._DATA_DIR`, but `_SCALAR_MEDIA_ROLES_FILE` is computed at
+   IMPORT, so nothing changed and the guard read as "did not fire". Fixed by patching the file symbol.
+   **A negative control has its own vacuity modes; confirm the break actually landed.**
+
+**Fixed:** entry removed from the roster, role restored to `image-object` (the seeder deliberately does
+not revert removed entries), the third value-identity assertion dropped, and — the part that matters —
+**a PRE-CONDITION GUARD added to the seeder**: it now REFUSES to apply `scalar-media` to any block
+where `is_class_section_block` is False, and says why on stderr. Prose in the data file was not enough;
+this is the same rule as "propose a structural fix, not 'I'll try harder'". Guard proven to fire by
+adding the ineligible block back to a COPY of the roster.
+
+**Verified after:** `sideImage` lifts `/side.jpg` again · hero art direction still correct
+(`splitImage=/hero-desk.webp`, `splitImageMobile=/hero-mob.jpg`) · suite **591 passed / 1 skipped** ·
+all gates clean, 2 value-identity assertions.
+
+**The honest lesson:** D474 fixed one block and broke another in the same change, and the regression
+sat committed for several hours behind a green suite — because no test covers `sgs/testimonial-slider`
+content lifting at all. The fix restored behaviour; it did not add that coverage. That gap is real and
+named here rather than quietly left.
+
 ## D475 — Phase 1b CLOSED: Spec 31's §4 map corrected against measured reality [ROUTINE]
 
 **2026-08-02.** The reconciliation report (`reports/2026-08-02-spec31-column-reconciliation.md`) traced

@@ -546,6 +546,35 @@ def _migrate_scalar_media_roles() -> None:
                 continue
             if row[0] == _SCALAR_MEDIA_ROLE:
                 continue  # already correct — the quiet, expected path
+
+            # ⛔ PRE-CONDITION GUARD (added 2026-08-02, same day as the incident it
+            # prevents). `scalar-media` is NOT a content-bearing role, so applying it
+            # REMOVES the attr from the universal walk's candidate set. The path meant
+            # to take over — run_mechanism_b branch A — only fires when
+            # `is_class_section_block(slug)` is True. On any other block the attr ends
+            # up with NO route in either direction and silently lifts nothing.
+            #
+            # That is not hypothetical: `sgs/testimonial-slider.sideImage` was added to
+            # the roster and measured BROKEN the same day (image-object lifts it,
+            # scalar-media lifts nothing). D128 had already recorded this exact
+            # constraint and deliberately left that block out; the roster entry
+            # overrode a documented decision with an assumption.
+            #
+            # So the pre-condition is enforced HERE rather than trusted to the note in
+            # the data file. A prose warning is not a gate.
+            try:
+                eligible = is_class_section_block(block_slug)
+            except Exception:  # noqa: BLE001 — never let the guard break the seeder
+                eligible = False
+            if not eligible:
+                sys.stderr.write(
+                    f"[db_lookup] REFUSING to set role='{_SCALAR_MEDIA_ROLE}' on "
+                    f"{block_slug}.{attr_name}: is_class_section_block({block_slug}) is "
+                    f"False, so run_mechanism_b branch A can never fire for it and this "
+                    f"role would strand the attr with no route at all. Remove it from "
+                    f"scripts/data/scalar-media-roles.json.\n"
+                )
+                continue
             conn.execute(
                 "UPDATE block_attributes SET role = ? WHERE block_slug = ? AND attr_name = ?",
                 (_SCALAR_MEDIA_ROLE, block_slug, attr_name),
