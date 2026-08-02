@@ -1,5 +1,36 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D468 — `deploy_steps` stopped re-issuing the D336 outage recipe [INCIDENT]
+
+**The bug.** `populate-db.py::populate_deploy_steps` seeded 9 rows encoding the **hand-rolled deploy
+recipe D336 banned**: `scp -r` straight at production, a temp `opcache_reset()` PHP file written into
+the live webroot and curl'd, `rm -rf` on the LiteSpeed cache directory, and `C:\Users\Bean\...` plus
+the production host hardcoded throughout.
+
+**Why it was a correctness bug, not stale prose.** `/sgs-db deploy <component>` reads these rows back
+**verbatim as instructions to follow**. So the table was not recording history — it was actively
+re-issuing a procedure that on 2026-07-14 deleted a live directory before extracting and took two
+client sites down for ~2.5 hours. Any operator or agent asking "how do I deploy?" was handed it.
+
+**Fixed 2026-08-02.** Rewritten to the canonical `build-deploy.py` path (canary → schema-drift
+verify → production, plus `push-theme-snapshot.py` for per-client tokens), with an explicit `BANNED`
+row naming D336 and the two flags never to reach for (`--allow-dirty`, whose trigger was an
+uncommitted edit; `--skip-verify`, which removes the check that catches a broken deploy).
+
+**Live DB updated surgically:** only `populate_deploy_steps` was invoked, never the whole script —
+it also writes `hooks` with an `INSERT OR IGNORE` that omits `plugin_slug`, which would have degraded
+the D467 reference refresh. Verified: `deploy_steps` 9→7 rows, **no other table changed**, zero rows
+containing a raw `scp`. Consumer re-checked via `/sgs-db deploy sgs-blocks`.
+
+⚠ **`populate-db.py` lives at `~/.agents/skills/sgs-wp-engine/scripts/` and is NOT in any git repo.**
+Recovery is `populate-db.py.bak-2026-08-02-deploy-steps` beside it. **This entry is the only durable
+record of the change** — the file itself cannot be committed.
+
+**NOT changed:** the four `deploy_ssh` literals in `client_meta` are connection *reference* data
+(documented in `dev-setup.md`), not a deploy procedure, so they are out of scope for this fix.
+
+
+
 ## D467 — The focus ring is an ACCENT glow, and D322's migration was three-quarters undone [INCIDENT]
 
 **Bean's two rulings, both recorded verbatim because each has now been made twice.**
