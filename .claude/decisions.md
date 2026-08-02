@@ -1,5 +1,49 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D469 — `variations` table RETIRED and dropped (superseded by `variant_slots`) [ROUTINE]
+
+**Bean's call, 2026-08-02.** ⛔ **`variant_slots` is NOT affected and must never be confused with
+this** — the two names are one character apart with opposite consequences. `variant_slots` (27 rows)
+is the MAINTAINED variant system feeding `_variant_slots_map()` (`db_lookup.py:2816`) → variant
+detection (:2995-3008) for hero / testimonial / product-card / trust-bar / nav-drawer. It stays.
+
+**What was dropped:** the `variations` table, 205 rows. Two independent reasons:
+
+1. **It duplicated `variant_slots` + `blocks.variant_attr` (FR-31-20).** Measured side by side:
+   `variant_slots` holds `sgs/hero` → `split` (splitImage, splitImageMobile) / `standard`
+   (backgroundImage) / `video` / `svg-animated`, each with its DISCRIMINATING SLOTS. The
+   `variations` table held `hero-split` / `hero-standard` / `hero-video` / `hero-animated` — the
+   same four concepts, prefixed, **minus the data that makes them useful**.
+2. **`variation_attrs_for()` had ZERO production callers.** Only `test_button_preset_seed.py` and a
+   trace line inside the function itself. `assembly.py` / `walk.py` / `extraction.py` never called
+   it. ⚠ **I had wrongly called this table "converter-critical" by inferring from the existence of a
+   `SELECT` rather than checking the call graph. Presence of a query is not behaviour.**
+
+**Provenance of the 205 (why no seeder was worth building):** 161 `native_wp` were an orphaned live
+WP+WooCommerce block-registry scrape (WooCommerce injects `product`/`product_cat` variations into
+`core/navigation-link`, which vanilla WP lacks) whose upstream MCP database no longer exists · 41
+`sgs` rows had **no declaration anywhere** — not in any `block.json` `"variations"`, not
+`registerBlockVariation`, and NOT matching `supports.sgs.variants` (a disjoint vocabulary) · only 3
+`sgs/button` rows were regenerable, verbatim from `button/block.json`, and those are WP-native STYLE
+variations — a different concept, correctly owned by block.json. `sgs/business-info` declared 5
+variations in block.json and had 0 rows, so the table was never authoritative in either direction.
+
+**Executed safely:** fresh verified backup (`.bak-pre-variations-drop-2026-08-02`, table-set + row
+counts identical) → all 205 rows archived to `scripts/data/retired/variations.json.gz` **with their
+`CREATE TABLE` DDL** so the drop is reversible → `DROP TABLE` → **no other table changed** (only
+`sqlite_sequence` 16→15, which tracks AUTOINCREMENT tables) → `schema.sql` regenerated, 40→39 tables.
+
+**Verified after:** `variation_attrs_for()` returns `{}` with no exception (it already soft-failed on
+`OperationalError`, which is why it survives the drop) · **all 8 tests in
+`test_button_preset_seed.py` pass** (they were written tolerantly, `if result:`) · the schema-drift
+gate **correctly FAILED on the drop before regeneration** — a live demonstration of the gate doing
+its job — then went clean, and its `--self-test` still proves it can fail · `variant_slots` intact
+at 27 rows.
+
+The accessor is KEPT, not deleted, as a seam if the button-preset feature is ever built — with a
+docstring telling the next reader to read `block.json` rather than revive a DB mirror nothing
+maintained.
+
 ## D468 — `deploy_steps` stopped re-issuing the D336 outage recipe [INCIDENT]
 
 **The bug.** `populate-db.py::populate_deploy_steps` seeded 9 rows encoding the **hand-rolled deploy

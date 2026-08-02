@@ -3341,11 +3341,29 @@ def style_preset_attrs_for_identity(parent_slug: str, identity_slug: str) -> lis
 def variation_attrs_for(block_slug: str, variation_name: str) -> dict:
     """Return the full attribute seed for a block variation, or {} if none.
 
-    Reads the `variations` table (attributes_json) for (block_slug,
-    variation_name), preferring source='sgs'. Used by the converter to seed a
-    button's full preset attribute set (colours + hover + borders) from the DB
-    when a preset modifier is detected — R-31-1 (DB-driven, no hardcoded dict).
-    Returns a parsed dict; {} on missing row / null / malformed JSON.
+    ⛔ THE `variations` TABLE WAS RETIRED AND DROPPED 2026-08-02 (D469).
+    This accessor therefore always returns {} — it soft-fails on the absent
+    table, which is why it and its tests still pass. It is kept, rather than
+    deleted, so the button-preset-seed feature has a seam to be wired into if
+    it is ever actually built.
+
+    ⛔ DO NOT RECREATE THE TABLE to "fix" this. It duplicated `variant_slots` +
+    `blocks.variant_attr` (FR-31-20), which hold the same hero
+    split/standard/video/svg-animated concepts WITH their discriminating slots,
+    and it had ZERO production callers — only these tests and a trace line.
+    Of its 205 rows: 161 were an orphaned WP+WooCommerce registry scrape whose
+    upstream MCP database no longer exists, 41 `sgs` rows had no declaration in
+    any block.json, and only the 3 `sgs/button` rows were regenerable — verbatim
+    from `button/block.json`'s own `"variations"` key, which is WP-native STYLE
+    variation data and the correct source for it.
+
+    If the button-preset seed is wired up, read `block.json` directly rather
+    than reviving a DB mirror that nothing maintained.
+    Archived rows: `scripts/data/retired/variations.json.gz`.
+
+    Historical behaviour (pre-retirement): read `variations.attributes_json` for
+    (block_slug, variation_name), preferring source='sgs'. Returns a parsed
+    dict; {} on missing row / null / malformed JSON.
     """
     if not block_slug or not variation_name:
         return {}
