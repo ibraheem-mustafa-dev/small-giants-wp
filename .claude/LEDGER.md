@@ -193,14 +193,15 @@ sequenced header/footer goals, Track B reconciliation. Reconcile before acting.
 
 ## Blockers
 
-**ONE HARD BLOCKER — production.** `--target palestine-lives` aborts on the
-`oldshape-audit`: 29 NEW HIGH findings across 28 posts, where live `sgs/hero` blocks carry CTA
-attributes the current block.json does not declare, so the next editor save deletes them. The
-migration must run with Bean present. The canary is unblocked and current.
+**NONE.** `--target palestine-lives` still aborts on the `oldshape-audit` (29 NEW HIGH / 28 posts,
+evidence: `reports/2026-08-01-palestine-lives-oldshape-blocker.md`), but **palestine-lives is
+disposable Indus staging that gets remade — not production**, so this blocks nothing that matters
+and the rebuild clears it for free. Fixer if ever needed: `scripts/wp-migrate-oldshape-blocks.js`.
+The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION — motion residuals (Track 3), or the production migration
+## NEXT SESSION — motion residuals (Track 3), or Track 1 Phase 1
 
 **Read FIRST, in order:** this file → `STOP-CATALOGUE.md` →
 `decisions.md` **D459, D460, D463** (this session) → **`plans/2026-07-31-motion-wave-D-client-readiness.md` §1**
@@ -231,19 +232,6 @@ boundary was never exercised though WCAG 2.5.7 rests on it. **Now across FIVE bl
 **Playwright only** — DevTools MCP has neither `prefers-reduced-motion` nor a trusted pointer.
 Spec 38 §10 also has NO row for `cursor-field` or `carousel-loop`. **/qc gate after: yes.**
 
-**M3 — DELETED 2026-08-02 (Bean).** Was "push the `indus-foods` snapshot". Dropped, not parked:
-palestine-lives is a TEST site that gets remade when the theme is finished, so its focus-ring
-colour is not worth a gate. Investigated first and the task was wrong anyway — recorded so nobody
-re-derives it: the teal sits in THREE layers (`wp_global_styles` post 7, the DEPLOYED theme.json,
-and formerly the snapshot), so deleting any one is a no-op; and the snapshot push would have
-stripped `customTemplates` + `templateParts` from a live theme, because the deployed file is the
-FRAMEWORK theme.json and the snapshot is a leaner per-client file. Nothing was pushed.
-⚠ **`step_oldshape_audit` gates EVERY palestine-lives deploy regardless of `--theme-only`**
-(`build-deploy.py:789`) — that is a general fact, still true for any future work on that target.
-✅ Kept from the investigation: `dfa72144` adds palestine-lives to `push-theme-snapshot.py`'s
-`domain_env_map`. Without it the `wp_global_styles` read 401s and the script proceeds BLIND on the
-layer that overrides theme.json and backs `--rollback`.
-
 **M4 / M5 — low priority** [sonnet] — Step R-residual (`floating-objects`, participant seam,
 init-only walk) and Wave E's unverified residue (`:user-valid` on a real `sgs/form`; `fx-scrub` /
 `fx-split-reveal` vs the SHIPPED bundle). Detail in the register.
@@ -252,7 +240,7 @@ init-only walk) and Wave E's unverified residue (`:user-valid` on a real `sgs/fo
 
 ```
 M1 (sonnet, delegated) ──┐
-M2 (sonnet, delegated) ──┴── parallel, disjoint files   (M3 DELETED 2026-08-02)
+M2 (sonnet, delegated) ──┴── parallel, disjoint files
         ↓ /qc-inline per branch
 M4 / M5 (sonnet) — only if time remains
 ```
@@ -348,27 +336,3 @@ deterministic; refreshing from GitHub mid-rebuild makes the result depend on net
 state. **/qc gate: yes** — `/qc-inline`.
 **Acceptance:** `rebuild_compare.py` shows `hooks` and `docs` at parity with live.
 
-### Task 1 — CANCELLED 2026-08-02 (Bean). Was "the production migration for palestine-lives"
-
-**palestine-lives is NOT production.** Bean, 2026-08-02: it is the Indus Foods TEST site, the
-current version is a copy of the `lightsalmon-tarsier-683012.hostingersite.com` original, and it
-gets remade when the theme is finished — **there is nothing on it worth preserving.** The task was
-premised on "live client content", which was wrong. Cancelled, not parked.
-
-⛔ **The DOC was the defect here, and the same wrong premise killed M3 the same day.** This LEDGER
-called palestine-lives "production" while the project CLAUDE.md called it the "Dev site" and Bean
-calls it a test site. Two tasks were scoped and ranked HIGHEST VALUE off that contradiction.
-**`dev-setup.md` + the root `CLAUDE.md` should say plainly that palestine-lives is disposable Indus
-staging** before anything else is scoped against it.
-
-**Still TRUE and still useful** (the diagnosis was sound, only its value was not):
-- The oldshape blocker is real: **189 findings / 28 posts / 29 NEW HIGH**, committed at
-  `reports/2026-08-01-palestine-lives-oldshape-blocker.md`. `sgs/hero` + `sgs/cta-section` instances
-  predate the 2026-07-15 scalar→InnerBlocks change; their CTA attrs are undeclared, so **the next
-  editor save deletes them**, and their headline/subheadline render as an empty shell.
-- `step_oldshape_audit` gates EVERY palestine-lives deploy regardless of `--theme-only`
-  (`build-deploy.py:789`). A rebuild of that site clears the blocker for free.
-- The migration tool is at **`scripts/wp-migrate-oldshape-blocks.js`** — NOT the
-  `plugins/sgs-blocks/scripts/` path this LEDGER wrongly cited. It is dry-run by default and
-  well-hardened (deployed-schema preflight, tree-parity on untouched blocks, rehearsed `--restore`).
-  Keep it: the same defect class will appear on a REAL client site one day.
