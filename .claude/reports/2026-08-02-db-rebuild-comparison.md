@@ -18,12 +18,12 @@ the live database's mtime was confirmed unchanged afterwards).
 | | live | rebuilt |
 |---|---|---|
 | tables | 39 | 39 |
-| total rows | 18684 | 4397 |
+| total rows | 18684 | 10807 |
 
 - Missing tables: **none**
 - Extra tables: **none**
-- Tables with identical row counts: **15**
-- Short of live: **11**
+- Tables with identical row counts: **16**
+- Short of live: **9**
 - Empty, known Phase-1 gaps: **0**
 - Empty, NOT a known gap: **13**
 
@@ -58,14 +58,20 @@ These were not on the Phase-1 list and need explaining before Phase 1 starts.
 | `block_supports` | 1340 | 521 | 819 |
 | `blocks` | 205 | 117 | 88 |
 | `design_tokens` | 224 | 150 | 74 |
-| `docs` | 1077 | 46 | 1031 |
-| `hooks` | 5494 | 161 | 5333 |
 | `indexed_files` | 110 | 83 | 27 |
 | `markup_examples` | 422 | 83 | 339 |
 
+## MORE rows than live
+
+Worth a look: the rebuild produced rows live does not have.
+
+| table | live | rebuilt |
+|---|---|---|
+| `docs` | 1077 | 1123 |
+
 ## Identical
 
-15 tables reproduced with exactly matching row counts.
+16 tables reproduced with exactly matching row counts.
 
 <details><summary>Full list</summary>
 
@@ -76,6 +82,7 @@ These were not on the Phase-1 list and need explaining before Phase 1 starts.
 | `block_selectors` | 86 |
 | `excluded_properties` | 10 |
 | `fx_effects` | 15 |
+| `hooks` | 5494 |
 | `html_tag_to_core_block` | 17 |
 | `legacy_role_lookup` | 15 |
 | `modifier_suffixes` | 19 |

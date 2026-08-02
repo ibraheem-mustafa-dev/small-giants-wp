@@ -1,5 +1,67 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D471 — Row-floor gate (T1.5) + WP reference corpus restored on rebuild (T1.7) [ROUTINE]
+
+**2026-08-02, Track 1.** Two parallel Sonnet agents, both independently re-verified in the main
+thread before acceptance — and the independent check mattered in both cases (below).
+
+### T1.5 — `dbschema/check_row_floor.py` + `row-floor.json`
+
+`check_schema_drift.py` gates STRUCTURE. Nothing gated DATA LOSS: a seeded column quietly losing its
+populated rows has bitten this project repeatedly and was each time noticed only when a clone came
+out wrong. The new gate compares live row counts AND per-column populated counts
+(`WHERE col IS NOT NULL AND col != ''`) against a committed floor, **failing only on DROPS** —
+column-level granularity is the point, since the historical losses were all column-level and a
+table-count gate would have missed every one. Growth is tolerated and reported, never failed; a gate
+that flaps on normal growth gets switched off within a week. `--update` re-baselines and is
+deliberately manual. `--self-test` demonstrates all three arms (pass / **fail on a real drop** /
+green under growth), confirming each mutation landed before asserting. Live DB is opened `mode=ro`
+only. Currently CLEAN at 39 tables + 10 columns.
+
+⛔ **`block_composition.has_inner_blocks` is NOT trackable and must not be added to the roster** —
+one of the four historical losses the gate was commissioned from, it no longer exists as a column.
+**The obvious explanation is wrong:** it was not superseded by `composition_role`/`container_kind`.
+FR-31-2.6 RETIRED the cache on purpose — `block_attributes.emit_shape` took the content-dispatch
+signal, and the surviving block-level fact is now DERIVED FRESH at convert time by
+`converter/services/has_inner.py` (as `delegates_content`) from save.js + render.php, *precisely
+because a stale cached column mis-routes silently*. **The D212 loss class was closed by deleting the
+cache, not by moving it.** Generalised into the script: a population floor is the right gate for a
+CACHED fact and the wrong gate for a DERIVED one — check which before adding an entry, because
+`collect_counts` skips absent columns, so a retired one listed there sits inert and reads as covered.
+
+### T1.7 — reference corpus rehydrated on `--rebuild`
+
+`hooks` (5,494) and `docs` (1,077) are ~99% IMPORTED reference data from an upstream MCP database
+that no longer exists on this machine; only ~25 hooks and 16 docs are SGS-derivable, so a repo scan
+can never produce the rest. `bootstrap_rebuild()` now calls `wp_reference_archive.restore()` from the
+committed gzip archive immediately after schema creation. **Archive, deliberately NOT
+`refresh_wp_reference.py`'s GitHub scrape** — a rebuild must be offline-capable and deterministic,
+and one that only sometimes succeeds depending on network and upstream state is not that. Missing
+archive warns loudly to stderr and continues, matching every sibling seeder.
+
+**`allow_live=True` is safe here and the reasoning is recorded at the call site** — `restore()`
+refuses the live path to stop a ROUTINE call clobbering irreplaceable data, but `bootstrap_rebuild()`
+refuses a populated database at its very top, so by the time restore runs the file has already been
+proven to have started with zero tables. Verified by reading the guard, not by trusting the flag.
+
+**Measured (my own full `rebuild_compare.py`, not the agent's method):** `hooks` **5494 = 5494
+exact**. Negative control — archive renamed away → `hooks`/`docs` come back **0**, proving the
+restore is what populates them.
+
+⚠ **The agent's "docs at exact parity" claim did NOT survive an independent full run**, and this is
+why re-running an agent's own method repeats its blind spot. It measured with `--rebuild --stage 1`,
+which skips a later stage that also writes `docs`; a FULL rebuild yields **1123 vs live's 1077**.
+Diagnosed rather than accepted: the surplus is **entirely `native_wp` (1107 vs 1061) from the Stage-2
+GitHub scrape running fresh**, while `sgs` docs match live **16/16 with zero slug drift in either
+direction**. So it is not duplication from a conflict-key mismatch, and not a defect — but the
+offline floor is the archive; the +46 is a network-dependent increment that will vary by run.
+
+### Also corrected
+
+The brief's premise that a rebuild leaves a "~25/16 repo-scan floor" is **false**: the only writer of
+`source='sgs'` hook rows is `uimax-tools/enrich-db.py`'s `target_29_hooks`, a standalone tool
+`--rebuild` never invokes — so without the archive the tables come back at **0**, not 25/16.
+
 ## D470 — Phase 1 CLOSED: the last three converter-load-bearing tables now rebuild from git [ROUTINE]
 
 **2026-08-02, Track 1 T1.4.** `property_suffixes` (154), `slots` (104) and `excluded_properties`

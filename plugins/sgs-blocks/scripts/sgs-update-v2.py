@@ -188,8 +188,84 @@ def bootstrap_rebuild(db_path: Path = None) -> None:
     # -- regenerative seeders from source -- not a history replay.
     _migrate.cmd_mark_applied(db_path, _migrate.MANIFEST)
     print("[--rebuild] migrations recorded as applied (NOT replayed — see the "
-          "comment in bootstrap_rebuild)\n"
-          "[--rebuild] handing over to the seeding stages\n")
+          "comment in bootstrap_rebuild)\n")
+
+    restore_wp_reference_archive(db_path)
+
+    print("[--rebuild] handing over to the seeding stages\n")
+
+
+def restore_wp_reference_archive(db_path: Path = None) -> None:
+    """Rehydrate the orphaned WordPress reference corpus (`hooks` + `docs`).
+
+    Track 1 T1.7 (2026-08-02). `hooks` and `docs` hold ~6,690 rows imported
+    from an upstream MCP database (`~/.wp-devdocs-mcp/hooks.db`) that no
+    longer exists on this machine — see the module docstring of
+    `dbschema/wp_reference_archive.py`. Neither table's bulk content is
+    derivable from this repo (measured: `--rebuild` alone leaves `hooks` at
+    161 rows and `docs` at 46, against a live ~5,494 / ~1,077), so without
+    this step every `--rebuild`d database silently ends up missing >95% of
+    both tables — the exact silent-rot class `wp_reference_archive.py` exists
+    to end.
+
+    Restores from the committed gzip archive (`scripts/data/wp-reference/
+    *.json.gz`), deliberately NOT `dbschema/refresh_wp_reference.py`'s
+    GitHub-scrape path — a `--rebuild` must stay OFFLINE-CAPABLE and
+    DETERMINISTIC, and a rebuild that only sometimes succeeds depending on
+    network access or upstream repo state is not that.
+
+    Ordering / conflict-safety: this runs immediately after schema creation,
+    while `hooks` and `docs` are still completely empty, so the archive's
+    `INSERT OR REPLACE` (keyed on the `UNIQUE(name, hook_type)` constraint
+    for hooks, and `slug` for docs) has nothing to collide with. No
+    SGS-authored (`source='sgs'`) row can exist yet at this point in
+    `--rebuild`'s sequence: of the three writers of `hooks`, only
+    `uimax-tools/enrich-db.py`'s `target_29_hooks` (a repo PHP scan) ever
+    writes `source='sgs'` rows, and that script is a standalone manual tool
+    `--rebuild` never invokes (see the "NOT wired" note above
+    `_REBUILD_SEEDERS`). The other two writers — this file's own
+    `_scrape_source_2_hooks` (Stage 2, GitHub-scraped, `source='native_wp'`)
+    and this restore — both key on the same `(name, hook_type)` UNIQUE
+    constraint the schema defines, so if Stage 2 later runs against a
+    network it can only add rows the archive lacks, never destroy one.
+
+    Passes `allow_live=True` deliberately: `wp_reference_archive.restore()`'s
+    live-path refusal exists to stop a ROUTINE call from clobbering live
+    reference data by accident outside a deliberate rebuild. Here,
+    `bootstrap_rebuild()`'s own populated-database refusal (above, and the
+    caller in `main()`) is the gate that actually protects live data — by
+    the time this function runs, the database has already been proven to
+    have started with zero tables.
+
+    Non-fatal on a missing/unreadable archive: warns loudly to stderr and
+    lets the rebuild continue with whatever `hooks`/`docs` rows Stage 1/2
+    manage to produce, matching every other seeder wired into `--rebuild`
+    (`run_module_load_seeders`, `_run_standalone_seeders`) — a rebuild that
+    seeds every other table and REPORTS one gap is more useful than one that
+    aborts outright.
+    """
+    db_path = db_path or SGS_DB
+    dbschema = Path(__file__).resolve().parent / "dbschema"
+    if str(dbschema) not in sys.path:
+        sys.path.insert(0, str(dbschema))
+    print(
+        "[--rebuild] restoring the orphaned WordPress reference corpus "
+        "(hooks + docs) from the committed archive ..."
+    )
+    try:
+        import wp_reference_archive  # noqa: PLC0415
+        wp_reference_archive.restore(db_path, allow_live=True)
+    except FileNotFoundError as exc:
+        print(
+            f"[--rebuild] WARNING: reference archive missing or unreadable "
+            f"({exc}). hooks/docs will stay at whatever level Stage 1/2 "
+            f"produce (repo-scan only, near-empty) -- run "
+            f"'python dbschema/wp_reference_archive.py --export' from a "
+            f"checkout that still has the live corpus to regenerate it.",
+            file=sys.stderr,
+        )
+        return
+    print("[--rebuild] reference corpus restored\n")
 
 
 def run_module_load_seeders(db_path: Path = None) -> None:
