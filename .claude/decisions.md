@@ -1,5 +1,44 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D463 — Form focus indicator: accent-led glow over a neutral underlay [ROUTINE]
+
+**Bean, on the live canary:** *"switch the form input focus colour to a brighter/more vibrant
+default global colour. Just checked and dark looks bad. Doesn't need contrast or anything, it's
+just supposed to be a little indicator/feedback, like a coloured glow effect. Maybe going with
+primary or accent would be better."*
+
+**Two corrections before anything was built.**
+
+1. **The proposed fix was falsified by measurement.** The plan said "flip the default to
+   `primary`". Measured across all 8 client palettes, `primary` is itself a near-black on FIVE
+   (`#0D1B2A`, `#1C1C1C`, `#1A3D2B`, `#1E2D5E`, `#1A5F6B`) — the change would have shipped and
+   still looked dark on the majority of the roster. `accent` is the genuinely vibrant slot.
+2. **The stated baseline was wrong.** The default was already `primary`, not `primary-dark`; the
+   latter was only ever a fallback for an unset variable, and `render.php` always sets it. The
+   complaint was real; the recorded cause was not.
+
+**Shape: two layers.** `accent` does the visible work (`border-color` + a soft `box-shadow`
+glow); a neutral outline underneath carries the WCAG 2.4.11 3:1 floor. Both overridable
+(`--sgs-focus-ring-colour`, `--sgs-focus-underlay-colour`). Applied across the three focus systems
+that previously disagreed — form inputs, SGS buttons, the sitewide `:focus-visible` catch-all.
+A FOURTH (`extensions.css` `.sgs-has-focus-ring`) was deliberately left untouched because a
+co-active track held uncommitted work in that file; it is now one generation behind.
+
+**Measured live** (canary 2118, against the input's REAL cream background `#FBF3DC`, not white —
+which would have flattered the figure): outline → `#c56a7a` (`primary-dark`) **3.32:1, clears the
+floor**; glow → `#f5d050` (`accent`) **1.35:1**, deliberately decorative. All three properties
+change on focus.
+
+**The ruling.** The 3:1 concern was raised once, with the 8-palette table in front of Bean (6 of 8
+fail on accent alone). He ruled accent regardless. The underlay is what makes implementing that
+ruling safe rather than an override of the standard — raise once, then build what was asked.
+
+⚠ **Numbering note:** commit `d4bfa126` and the first draft of
+`reports/visual-diff/form-2026-08-02.md` cite this as **D461**. That was a collision — the
+co-active track took D461 and D462 mid-session. The report is corrected; the commit message is
+immutable. This is the second session running in which a mid-flight D collision produced a wrong
+citation: **re-check the ceiling immediately before writing any D reference, not at session start.**
+
 ## D462 — the object-model CSS path was the MORE exposed sibling, and `repeat()` nearly broke every grid closing it [ROUTINE]
 
 **2026-08-02.** Closes the last item of the D455 hardening programme.
@@ -1977,7 +2016,7 @@ authorable content. Three candidate shapes listed in the brief §4; none chosen.
 
 ## D420 — the header row's "wrap" is an AUTHORED stack, not a space failure; fit-cascade design SIGNED [INCIDENT]
 
-**2026-07-30.** Design: `plans/2026-07-30-header-row-fit-cascade-design.md` (APPROVED, not
+**2026-07-30.** Design: `plans/archive/2026-07-30-header-row-fit-cascade-design.md` (APPROVED, not
 yet built). Harness residuals from D419's Gate 2 implemented in the same session
 (`29f732a8`) rather than parked.
 

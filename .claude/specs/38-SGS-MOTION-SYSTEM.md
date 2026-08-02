@@ -215,6 +215,50 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   to `block_capabilities` (§6); the runtime + registry read the DB, never a hardcoded roster
   (R-31-1). CSS scroll-snap remains the default; Draggable is the upgrade. Touch: native scroll
   is never hijacked (`touch-action` discipline); keyboard: arrow-key equivalents mandatory.
+- **FR-38-26 Looping carousels — an INDEPENDENT control, Tier V.** Added 2026-08-02 (D460).
+  Bean's ask: *"for the dragging physics feel the option to make the carousels looping is
+  important so it doesn't get abruptly stopped by the end of the list and just loops round."*
+  A native horizontal scroller with looping ON clones leading/trailing items and re-seats
+  `scrollLeft` at the boundary within one frame, so the track never dead-stops at the last card.
+
+  **NOT a drag setting, and this is the load-bearing part of the requirement.** Bean's ruling:
+  *"looping should not be tied to the drag effect — they should be independent controls"*, and
+  *"we're not setting the default behaviour in all carousels, just making the functionality
+  available to those who want it."* So looping has its **own grammar** (`data-sgs-loop="1"`),
+  never a `data-sgs-fx` value, and an element may carry BOTH `data-sgs-fx="draggable"` and
+  `data-sgs-loop="1"` at once — a single-valued `fx` slot could not express that pair.
+  **Default OFF, opt-in per instance.**
+
+  **Why a separate module rather than an addition to `fx-draggable.js`.** That file's own docblock
+  records a prior decision rejecting exactly it — *"re-deriving such a block's own wrap-around
+  maths inside a block-agnostic module is exactly the per-block hyperfocus R-31-9 forbids"* —
+  alongside a contract that it never creates a wrapper, never transforms, and never reorders DOM,
+  all three of which looping a native scroller requires. `src/shared/effects/fx-carousel-loop.js`
+  owns the DOM work as its explicit job; **`fx-draggable.js` is not modified at all**, so that
+  contract is honoured rather than overturned.
+
+  **Eligibility** is the same STRUCTURAL question the drag module already answers — a genuine
+  native horizontal scroller (`isNativeHorizontalScroller`, extracted to `motion-utils.js` as a
+  deliberate documented duplicate, because sharing it would have required adding an `export` to
+  the frozen file, itself a modification). Never a block name (R-31-9).
+
+  **Accessibility is part of the requirement, not a follow-up.** A loop has no last item, so
+  "next" never disables and the dot count has no natural end. Clones are `inert` + `aria-hidden`
+  with focusables neutralised and are excluded from the block's item selection, so **the dot count
+  keys to the REAL card count** and the active dot tracks modulo position. Verified live: 6 real
+  cards, 18 with clones, **6 dots**.
+
+  **Control home is PER-BLOCK, not the shared fx panel** — the same constraint that already forced
+  `draggable` block-private: the scroller is a DESCENDANT, and both `fx.js`'s save filter (static
+  blocks only) and `fx-attributes.php`'s injector only ever stamp the block ROOT.
+  `fx_effects.creates_panel = 0` records that decision rather than driving it.
+
+  **Status: `sgs/gallery` only** — the exemplar, proven live 8/8
+  (`scripts/motion-qa/probe-carousel-loop.mjs`, `reports/visual-diff/gallery-2026-08-02.md`).
+  The other five drag-roster blocks (`buybox`, `google-reviews`, `post-grid`,
+  `testimonial-slider`, `trustpilot-reviews`) still need the identical mechanical pattern.
+  Reduced-motion behaviour for the loop itself is **untested** and owed.
+
 - **FR-38-14 Physics easings as flavours.** Physics2D / PhysicsProps / CustomBounce /
   CustomWiggle appear ONLY as easing/motion-flavour options inside other G effects' controls
   (e.g. a "spring (physics)" easing choice on a scrub or draggable release). Never standalone

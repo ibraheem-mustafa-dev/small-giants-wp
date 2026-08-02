@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-01
+last_updated: 2026-08-02
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -18,70 +18,63 @@ gets ONE true answer instead of three drifting ones.
 
 ## CURRENT FRONTS
 
-### Track 3 — Spec 38 motion + accessibility: WAVE E EXECUTED 2026-08-01 (D447–D454, D457)
+### Track 3 — Spec 38 motion: WAVE D CLOSED 2026-08-02 (D459, D460, D463) — all four tasks LIVE-VERIFIED
 
-**16 agents, 21 commits, deployed and verified on the canary.** Verification state is stated PER
-ITEM — read it, do not assume a uniform "done".
+**7 commits, deployed to the canary, and every claim below is an observation with numbers — not
+an artefact check.** Wave D's four tasks are done; the residue is named at the end.
 
-| Verified LIVE against the SHIPPED bundle | Built, NOT yet live-verified |
+| What shipped | Proven how |
 |---|---|
-| **Morph** — had NEVER animated on ANY block (D452). Attrs sat on the `<svg>` wrapper; MorphSVG refuses a container. Now on the inner `<path>`; `d` travels circle→square, 150 mid-flight samples | `:user-valid` cascade fix (D457 part 2) — proven on a bare-input fixture, not a real `sgs/form` |
-| **Motion-path** (D451) — animated once per page load; `onLeave` disabled the trigger whose own `onEnterBack` was the only re-enable. 54/54 matched positions agree across two passes × 3 viewports | Focus-ring `color-mix` at a non-default opacity on a live client page |
-| **Keyboard focus reveal** (D453) — pinned/scrubbed content left focusable controls invisible. Fixed in `fx-pin-scrub` (ticker hold), `fx-scrub` (ticker hold), `fx-split-reveal` (**one-shot — no scrub, so no race; deliberately NOT the same shape**) | `fx-scrub`/`fx-split-reveal` probes against the shipped bundle after the final deploy |
-| **Focus ring** (D454 + D457) — `opacity` dimmed the WHOLE field including typed text; ring colour was 2.25:1. Now `color-mix` on the outline + `primary-dark` default, clearing 3:1 on all 8 palettes | |
-| **Per-tier motion disable** — attrs were emitted and read by NOTHING. Gated at `bootEffect`. At 375px the control block ran 0→0.86 while the disabled one held at 1 (fail-open confirmed) | |
-| **Contrast** — placeholder via colour not opacity; muted text ≥4.5:1 on `surface` AND `surface-alt`, all 8 clients; axis files synced so a regeneration cannot revert it | |
-| **Grid fold** — `content-collection` → `card-grid` via ONE shared engine, not a copy. Old block still registered and running the same engine, so migrated and unmigrated pages cannot diverge | |
-| **Buybox drag** — 1:1 pointer tracking (30→30, 60→60, 90→90), clamps at 96 | |
-| **Deploy⇄commit deadlock** broken via `--payload`; **fx panel lint gate** now covers 12 panels | |
+| **Cursor-reactive FIELD system** (FR-38-25, widened by Bean from one glow to pluggable field types) | `probe-cursor-field.mjs` **10/10 live**: follows the pointer 1:1 (420→420px, 720→720px, 1020→1020px); the opaque child paints its own share at the SAME coords, so seamless by construction; reduced motion paints but stops tracking. **982 B gzip, zero GSAP.** |
+| **Looping carousels** as an INDEPENDENT control (FR-38-26) | `probe-carousel-loop.mjs` **8/8 live**: 12 clones all inert+aria-hidden; **dots=6=real cards, not 18 (the cloned length)**; past-the-end re-seats instead of dead-stopping; drag AND loop both live on one element; a real pointer gesture moves it. |
+| **Focus indicator** → accent glow over a neutral underlay (D463) | Measured on canary 2118 against the REAL cream surface: outline `#c56a7a` **3.32:1 clears the floor**, glow `#f5d050` 1.35:1 decorative. All three properties change on focus. |
+| **Canary fixtures** (Step K) | CLOSED by measurement — **no rebuild needed**. Repo-wide search (not just `scripts/motion-qa/`) found the six deleted page IDs referenced by ZERO probes. The clean fixture METHOD is recorded in the Wave D plan. |
 
-**Two results worth more than the fixes themselves:**
+⚠ **SIX defects were found in ONE feature, and every one passed a green build.** Four by a
+`/qc-council` code-path trace (undefined identifier · missing `sgs_fx_root_offset()` guard ·
+effect absent from `SHIPPED_EFFECTS` so unreachable from the editor · attrs absent from
+`FX_ATTR_MAP`); a FIFTH only by live verification after those four shipped (`cursor-field` missing
+from `sgs_fx_effect_param_scope()` — the page looked entirely healthy while the client's chosen
+colour and radius were silently dropped); a SIXTH was my own probe.
 
-- **`fx-horizontal-panel` has NO defect — because a CSS BUG is accidentally providing the rescue.**
+**THE STRUCTURAL FINDING: an effect must join THREE separate hand-maintained lists to work** —
+`SHIPPED_EFFECTS` (fx.js), `FX_ATTR_MAP` and `sgs_fx_effect_param_scope()` (fx-attributes.php).
+Two of the three were missed on this effect. **No gate cross-checks them.** That is the highest-value
+next fix on this track.
+
+⚠ **Methodology traps hit this session, all recorded:**
+- **`build-deploy.py --dry-run` does NOT run the dirty gate.** A dry run with a filthy tree and no
+  `--payload` passes cleanly. A green dry run is not evidence the real deploy is safe.
+- **A page-HTML grep cannot see scoped block CSS** — SGS lifts it to `uploads/sgs-css/`. My grep
+  returned nothing and read exactly like a failure; the rule was already captured and still caught me.
+- **A probe that never reaches the effect measures the probe.** The cursor probe FAILED its first
+  run on hardcoded viewport points that land on the header; a synthetic event at the element moved
+  it to the exact pixel. Points now derive from the emitter's own bounding box.
+
+⛔ **Deployed with `--allow-dirty` on Bean's explicit acceptance** — the shared tree held two other
+tracks' uncommitted PHP (`helpers-container.php`, `render-helpers.php`, `lucide-icons.php`,
+`extensions.css`, new `helpers-css-safety.php`). Raised as the D336 shape; Bean ruled proceed. The
+canary carries that work; **it was not reviewed by this track.**
+
+**OPEN on this track:** looping is `sgs/gallery` ONLY — the other five drag-roster blocks
+(`buybox`, `google-reviews`, `post-grid`, `testimonial-slider`, `trustpilot-reviews`) need the
+identical mechanical pattern · loop reduced-motion untested · keyboard arrow-wrap not separately
+exercised · `extensions.css`'s `.sgs-has-focus-ring` is a FOURTH focus system, deliberately
+untouched (co-active track owns the file) and now one generation behind · a gate for the
+three-list drift.
+
+### Track 3 (previous) — Wave E, 2026-08-01 (D447–D454, D457)
+
+**Swept 2026-08-02 — full narrative + per-item verification state:**
+`memory/session-2026-08-01-wave-e.md`. Superseded as the live front by Wave D above.
+
+Two Wave-E results that are STANDING CONSTRAINTS, not history, so they stay here:
+- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug is accidentally providing the rescue.**
   `overflow-x: clip` paired with a non-clip `overflow-y` computes to `hidden`, which IS a scroll
-  container, so the browser's native scroll-into-view rescues focus. The module docblock claimed the
-  opposite. ⛔ **Do NOT "fix" it to clip on both axes** — that silently deletes the only WCAG 2.4.11
-  cover this effect has. Documented in `assets/css/fx-horizontal-panel.css`; regression probe proven
-  non-vacuous (forcing genuine clip makes it report FAIL).
-- **The WooCommerce gallery bug did not exist.** The canary's `core/query include:[540]` silently
-  rendered product **1125** (the newest), whose gallery is genuinely empty. The blocks were correct
-  throughout. Trap recorded in `plugins/sgs-blocks/CLAUDE.md` gotchas.
-
-⚠ **8 defects surfaced this session; FIVE were in the MEASURING, not the code.** A regex matching
-letters where the values were digits · a DB query assuming a name prefix · a `head -4` hiding
-exactly the four rows that mattered · a grep for a literal against a CSS-variable-driven rule (the
-offending line was in my own earlier output) · two lint runs that could not fail. None became a
-false report only because something checked a second way. **New STOP entries: `STOP-CATALOGUE.md`.**
-
-⛔ **PRODUCTION IS BLOCKED, DELIBERATELY.** `--target palestine-lives` aborts on `oldshape-audit`:
-**29 NEW HIGH findings across 28 posts** (real audit output captured at
-`reports/2026-08-01-palestine-lives-oldshape-blocker.md` — the handoff QC gate correctly flagged that
-this figure was prose-only behind a hard blocker; a number nobody can re-check is not evidence) — live `sgs/hero` blocks carry `ctaPrimaryText`/`ctaPrimaryUrl`
-/`ctaSecondaryText`/`ctaSecondaryUrl` that the current block.json does not declare, so **the next
-editor save DELETES them** (the D338 class), plus old self-closing blocks whose renderer now expects
-InnerBlocks (stranded `headline`, `subHeadline`). Bean approved the production deploy WITHOUT
-knowing this existed. `scripts/wp-migrate-oldshape-blocks.js` (dry-run by default) must run first,
-with its output in front of him. **The canary is current; production is one build behind and keeps
-the field-dimming bug until this is done.**
-
-### Track 2c — header/footer rows + fluid gap: DONE, all live-verified (D455, D456)
-
-Full narrative + lessons: **`memory/session-2026-08-02-track2c.md`**. Commits `18e504b9` `de769386`
-`1a747da4` `45f05c2c` `c5327603` `5db76872` `01ee633a`.
-
-Header row never stacks (sweep 109/109, Bean's eye GIVEN). Footer columns are a CEILING, not a
-count. Fluid header gap live: served CSS carries the clamp intact, computed gap varies 16px→8.8px,
-all on `.sgs-container__inner`. Shared `sgs_css_length_value()` accepts `clamp/min/max/calc/var`
-(53/53) and closed a real hole — breakouts hidden INSIDE an allowlisted call. `layout` gained
-`enum:[flex,grid]` on both rows so WP coerces a bad value rather than letting `cqi` resolve against
-the wrong container. Every dead Spec-17 citation retargeted.
-
-**D462 closed the last item — the object-model path now shares the validator.** Both the flat-scalar
-and object paths run one grammar; `repeat` was restored to the allowlist first, because routing
-naively would have rejected every `grid-template-columns` in the framework including D456's live
-footer value. Verified after deploy: footer grid transitions 1160/1020/860/760px with ZERO overflow
-across 109 widths; header gap 16px→8.8px on `.sgs-container__inner`. The `layout` enum is deployed.
-**Nothing outstanding on this track.**
+  container, so native scroll-into-view rescues focus. **Do NOT "fix" it to clip on both axes** —
+  that silently deletes the only WCAG 2.4.11 cover this effect has.
+- **The WooCommerce gallery bug did not exist.** A `core/query include:[540]` silently rendered
+  product 1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
