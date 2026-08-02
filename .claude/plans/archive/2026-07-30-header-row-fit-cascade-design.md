@@ -3,19 +3,16 @@ doc_type: design
 project: small-giants-wp
 date: 2026-07-30
 status: |
-  PARTIALLY BUILT 2026-08-01 (D455). Stage 1 SHIPPED as designed and verified live — 109-width
-  sweep 1400→320px plus two negative controls, the second proving the two changes are NOT
-  overlapping fixes (commit 18e504b9, reports/visual-diff/site-header-row-2026-08-01.md).
-  Stage 2 (shrinkRole, 5 per-child roles) REPLACED, not built — Bean amended the design on
-  2026-08-01 to uniform CSS shrink; flexbox already does proportional shrink natively.
-  Stage 3 (fluid clamp scaling) BLOCKED, not merely deferred — sgs_container_gap_value()
-  strips parentheses and commas, so a clamp() gap emits as invalid CSS and dies silently;
-  only a static min() logo floor shipped. Parked at P-GAP-CONSOLIDATION-FOLLOWUPS item (5).
-  Stage 4 (nav-menu "More" JS) NOT STARTED — correctly deferred per this design's own
-  sequencing decision #3; parked at P-HEADER-ROW-STAGE4-MORE-MENU.
-  Bean's live-eye sign-off (R-31-13) GIVEN 2026-08-01 — "reads fine" on the live header.
-  Stage 4 consequently CLOSED as not-needed (the row no longer overflows), not parked.
-  ⚠ Read the per-stage table above before assuming any stage shipped as written.
+  COMPLETE 2026-08-02. Stage 1 (lock + release) SHIPPED D455 — verified by a 109-width sweep with
+  two negative controls, Bean's eye GIVEN. Stage 2 (five per-child shrinkRole values) REPLACED at
+  Bean's instruction with uniform CSS shrink — flexbox already does proportional shrink natively, so
+  no attribute was needed. Stage 3 (fluid clamp scaling) SHIPPED D461/D462 — it was blocked by the
+  gap sanitiser stripping parentheses; that blocker is now gone, both CSS-length paths share one
+  validator, and the header gap is live at clamp(0.5rem, 0.25rem + 1.5cqi, 1rem), measured varying
+  16px->8.8px. Stage 4 (nav-menu "More" JS) CLOSED as NOT NEEDED — Bean reviewed the shipped row and
+  reported "reads fine"; the row no longer overflows, so the problem it existed to solve does not
+  occur. Reversible if a future header outgrows one line.
+  Nothing outstanding.
 spec_refs: Spec 37 FR-37-35 / §3.6 · FR-S9-7 · D339b
 supersedes_behaviour_of: FR-37-35's collapse-to-stack reflow (its container-query half is KEPT)
 ---

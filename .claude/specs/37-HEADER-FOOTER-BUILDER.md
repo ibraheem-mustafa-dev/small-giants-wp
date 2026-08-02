@@ -466,6 +466,17 @@ Carried from 07-13 §9, unchanged — it is implementation-ready and independent
   as `repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis,16rem), calc((100% − (N−1)·gap)/N))), 1fr))`.
   The `(N−1)·gap` term is not optional — omit it and one extra column squeezes in. The count control
   is labelled **"Maximum columns"** accordingly.
+- **Both CSS-length paths share one validator (D462, 2026-08-02).**
+  `sgs_responsive_sanitise_css_value()` (`includes/helpers-responsive.php`) — which validates
+  `gap`, `gridTemplateColumns`, `contentWidth`, `maxWidth`, `padding` and `margin` for BOTH row
+  blocks plus `nav-menu`, `nav-drawer`, `mega-panel`, `mega-aside` and the shared wrapper — now
+  delegates to `sgs_css_length_value()`. It previously permitted `/` and `*`, so it never blocked
+  the `/*` comment opener, and it STRIPPED rather than failing closed. It was the more exposed of
+  the two paths, and it is the one that actually validates this row's fluid gap.
+  ⚠ `repeat` had to be restored to the validator's allowlist first: it had been dropped when the
+  validator was scoped to scalar gaps, so routing naively would have rejected every
+  `grid-template-columns` value in the framework — including FR-37-11's live intrinsic-columns
+  value. The RAW-INPUT breakout check, not the function-name list, is what provides the security.
 - `clamp()` for fluid type/space rather than breakpoint steps where possible. **Shipped (Task 2,
   2026-08-01):** `sgs_container_gap_value()` now delegates to the shared `sgs_css_length_value()`
   validator (`helpers-css-safety.php`), which parses `var()`/`calc()`/`min()`/`max()`/`minmax()`/

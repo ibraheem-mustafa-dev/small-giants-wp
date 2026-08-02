@@ -2,7 +2,16 @@
 doc_type: plan
 project: small-giants-wp
 date: 2026-08-01
-status: EXECUTING via /subagent-driven-development
+status: COMPLETE 2026-08-02 (D461 + D462). All 3 tasks shipped, deployed and live-verified.
+  Task 1 validator built (self-test 60/60, one IMPORTANT security hole found + fixed in review:
+  breakouts hid INSIDE an allowlisted call). Task 2 gap sanitiser routed through it + fluid header
+  gap live (16px->8.8px). Task 3 proved live: served CSS carries the clamp intact, gap varies,
+  no-stack sweep 109/109, first paint == settled.
+  SCOPE GREW BEYOND THE PLAN: the object-model path (sgs_responsive_sanitise_css_value) turned out
+  to be the MORE exposed sibling and the one that actually validates the header gap — hardened at
+  D462, with `repeat` restored to the allowlist first so grid track lists survived.
+  CORRECTION recorded in D461: the validator is NOT what enabled the header clamp; that gap always
+  used the object path, whose pre-existing allowlist already passed parentheses.
 decision: UNASSIGNED — D457/D458 were taken by a co-active track on 2026-08-01 and the ceiling
   reached D460. Re-read it live before numbering; the heading-anchored form is the only correct
   one: grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1

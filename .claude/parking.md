@@ -353,15 +353,14 @@ attrs — needs a gap-only control variant or a namespaced wrapper attr. (2) car
 declare `gapTablet`/`gapMobile` (corrected from the original claim) — the real gap is that
 `render.php` doesn't consume them responsively yet. (3) container `blockGap` value migration for
 pre-existing pages is still open (low-risk). (4) MOOT — `BlockDeprecationsTest.php` doesn't exist
-and won't return under the no-deprecations policy. (5) a `calc()`/`clamp()` gap-value whitelist is
-still unbuilt, and **as of D455 (2026-08-01) it is a proven BLOCKER, not a nicety** — it stopped
-Stage 3 of the header fit-cascade design shipping. `sgs_container_gap_value()`
-(`includes/helpers-container.php:124`) sanitises through the allowlist `/[^0-9a-z.% ]/`, which
-strips parentheses, commas and `+`; a `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)` gap default emits as
-the invalid `clamp0.5rem 0.25rem 1.5cqi 1rem`, the browser drops the declaration and the gap
-SILENTLY DIES (verified by running the real regex over the real string, not by reading the code).
-Affects the footer row too, not just the header: `sgs_container_tier_gap()` calls the same
-sanitiser. Widening the allowlist touches every container block -> needs its own design gate.
+and won't return under the no-deprecations policy. (5) RESOLVED 2026-08-02 (D461/D462) — the
+`calc()`/`clamp()` whitelist is BUILT. `sgs_css_length_value()`
+(`includes/helpers-css-safety.php`) accepts `var|calc|min|max|minmax|clamp|repeat` via WordPress
+core's own recursive balanced-paren grammar, checks the raw input for breakout characters BEFORE
+consuming functions, and fails CLOSED. BOTH length paths delegate to it —
+`sgs_container_gap_value()` (flat scalar) and `sgs_responsive_sanitise_css_value()` (object model,
+which was the more exposed of the two: it permitted `/` and `*` so never blocked the `/*` comment
+opener, and stripped rather than rejecting). Live-verified.
 
 **Trigger:** Framework/shop-layer session touching container-wrapper controls.
 
