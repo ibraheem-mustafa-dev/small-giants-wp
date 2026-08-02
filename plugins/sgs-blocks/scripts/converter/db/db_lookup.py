@@ -1574,7 +1574,14 @@ def block_supports_for(block_slug: str) -> dict:
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT support_name, support_value FROM block_supports WHERE block_slug = ?",
+            # `is_stale` filter added 2026-08-02 (Phase 1b). The column existed and
+            # NOTHING filtered on it, so a row marked stale would have been served as
+            # live. Zero behavioural change today — `SELECT COUNT(*) … WHERE is_stale=1`
+            # is 0 of 1354 — which is exactly why it is cheap to add now rather than
+            # after something starts populating it. `IS NOT 1` (not `= 0`) so a NULL
+            # from an older row is treated as live, never silently dropped.
+            "SELECT support_name, support_value FROM block_supports "
+            "WHERE block_slug = ? AND is_stale IS NOT 1",
             (block_slug,),
         ).fetchall()
     finally:
@@ -1702,110 +1709,28 @@ def blocks_with_capability(capability: str) -> frozenset[str]:
 
 
 # ----------------------------------------------------------------------------
-# Idempotent schema migration — array_item_fields (D248, array-resolver)
+# array_item_fields — TABLE + MIGRATION + ACCESSOR REMOVED 2026-08-02 (Phase 1b)
 # ----------------------------------------------------------------------------
-# Stores per-item field schema for array-content-lift blocks. Seeded by
-# sgs-update-v2.py Stage 1 from block.json supports.sgs.arrayItemSchema.
-# Consumed by the array_content resolver + array_item_fields() accessor.
-# Safe to call repeatedly. Runs at module load.
-
-def _migrate_array_item_fields_schema() -> None:
-    """Idempotent migration: create array_item_fields table if absent."""
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS array_item_fields (
-              block_slug      TEXT NOT NULL,
-              array_attr      TEXT NOT NULL,
-              item_selector   TEXT NOT NULL,
-              field_key       TEXT NOT NULL,
-              field_selector  TEXT NOT NULL,
-              role            TEXT NOT NULL,
-              attr_type       TEXT NOT NULL DEFAULT 'string',
-              enum_values     TEXT,
-              gap_reason      TEXT,
-              created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (block_slug, array_attr, field_key)
-            )
-            """
-        )
-        # Idempotent column migration for DBs created before gap_reason was added.
-        cols = {row[1] for row in conn.execute(
-            "PRAGMA table_info(array_item_fields)"
-        ).fetchall()}
-        if "gap_reason" not in cols:
-            conn.execute(
-                "ALTER TABLE array_item_fields ADD COLUMN gap_reason TEXT"
-            )
-        conn.commit()
-    except sqlite3.OperationalError:
-        pass
-    finally:
-        conn.close()
-
-
-# Run migration at module load (idempotent).
-if _SGS_DB_PRESENT_AT_IMPORT:
-    _migrate_array_item_fields_schema()
-
-
-@functools.lru_cache(maxsize=256)
-def array_item_fields(block_slug: str, array_attr: str) -> list[dict]:
-    """Return per-item field schema rows for a block's array attr.
-
-    Queries ``array_item_fields`` (created by _migrate_array_item_fields_schema
-    + seeded by sgs-update-v2.py Stage 1 from block.json
-    ``supports.sgs.arrayItemSchema``). Returns an empty list when no rows
-    exist (block not yet authored) — the caller gates on non-empty.
-
-    Each dict contains:
-      - ``item_selector``   — BEM class of the repeated item element in the draft
-      - ``field_key``       — the render.php item dict key (e.g. ``'text'``)
-      - ``field_selector``  — BEM class for this field inside the item element
-      - ``role``            — 'text-content' | 'image-object' | 'number' | 'gap-pending'
-      - ``attr_type``       — 'string' | 'object' | 'number'
-      - ``enum_values``     — parsed list or None
-      - ``gap_reason``      — str reason (when role='gap-pending') or None
-
-    R-31-1 compliant — DB-only read path; no per-block slug literals.
-    """
-    import json as _json
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        rows = conn.execute(
-            """
-            SELECT item_selector, field_key, field_selector, role,
-                   attr_type, enum_values, gap_reason
-            FROM array_item_fields
-            WHERE block_slug = ? AND array_attr = ?
-            ORDER BY rowid
-            """,
-            (block_slug, array_attr),
-        ).fetchall()
-    except sqlite3.OperationalError:
-        # Table absent (pre-D248 state) — soft-fail to empty.
-        rows = []
-    finally:
-        conn.close()
-    result = []
-    for item_selector, field_key, field_selector, role, attr_type, enum_json, gap_reason in rows:
-        enum_vals = None
-        if enum_json:
-            try:
-                enum_vals = _json.loads(enum_json)
-            except (ValueError, TypeError):
-                pass
-        result.append({
-            "item_selector": item_selector,
-            "field_key": field_key,
-            "field_selector": field_selector,
-            "role": role,
-            "attr_type": attr_type,
-            "enum_values": enum_vals,
-            "gap_reason": gap_reason,
-        })
-    return result
+# D248 built a create + prune + accessor trio for a per-item array field schema.
+# The SEEDING HALF WAS NEVER BUILT: measured 2026-08-02 with two search shapes,
+# there is not a single INSERT into `array_item_fields` anywhere in the repo —
+# only `CREATE TABLE IF NOT EXISTS` (here and in sgs-update-v2.py), an ALTER, and
+# a DELETE prune. So the table was created, pruned and read, but never written;
+# it held 0 rows and the accessor had zero callers, including in tests.
+#
+# ⚠ The comment in sgs-update-v2.py claiming it is "Seeded from block.json
+# supports.sgs.arrayItemSchema by the per-block loop below" was FALSE — that loop
+# only DELETEs. Do not restore this on the strength of that comment.
+#
+# The live mechanism is the sibling `array_item_schema` (68 rows, real callers in
+# resolvers/array_content.py and walk.py). One character apart, opposite status —
+# do not confuse them. Rows archived to scripts/data/retired/array_item_fields.json.gz
+# with its DDL, so this is reversible.
+#
+# ⛔ REMOVING THE TABLE ALONE WAS NOT ENOUGH and that is the lesson: the drop was
+# undone within seconds because this module recreated it at import. A table with a
+# `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it —
+# the creator has to go too, or the schema-drift gate stays red forever.
 
 
 # _capability_rank DELETED (D278 QC, 2026-07-05) — see the retirement note at

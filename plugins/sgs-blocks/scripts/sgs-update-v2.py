@@ -534,35 +534,12 @@ def _index_sgs_block_files(
         """
     )
 
-    # --- array_item_fields schema (D248, array-resolver) ---
-    # Stores the per-item field schema for array-content-lift blocks.
-    # Seeded from block.json supports.sgs.arrayItemSchema by the per-block
-    # loop below.  Consumed by the array_content resolver + the
-    # db_lookup.array_item_fields() accessor.  Idempotent.
-    c.execute(
-        """
-        CREATE TABLE IF NOT EXISTS array_item_fields (
-          block_slug      TEXT NOT NULL,
-          array_attr      TEXT NOT NULL,
-          item_selector   TEXT NOT NULL,
-          field_key       TEXT NOT NULL,
-          field_selector  TEXT NOT NULL,
-          role            TEXT NOT NULL,
-          attr_type       TEXT NOT NULL DEFAULT 'string',
-          enum_values     TEXT,
-          gap_reason      TEXT,
-          created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
-          PRIMARY KEY (block_slug, array_attr, field_key)
-        )
-        """
-    )
-    # Idempotent column migration: add gap_reason if the table was created
-    # by an earlier run that predates this column.
-    _aif_cols = {row[1] for row in c.execute(
-        "PRAGMA table_info(array_item_fields)"
-    ).fetchall()}
-    if "gap_reason" not in _aif_cols:
-        c.execute("ALTER TABLE array_item_fields ADD COLUMN gap_reason TEXT")
+    # array_item_fields REMOVED 2026-08-02 (Phase 1b). The create/prune/accessor
+    # trio existed; the SEEDER NEVER DID — zero INSERTs anywhere in the repo,
+    # verified with two search shapes. The comment that used to sit here claimed
+    # it was "seeded ... by the per-block loop below"; that loop only DELETEd.
+    # 0 rows, no callers. Live mechanism is the sibling `array_item_schema`.
+    # Archived reversibly to scripts/data/retired/array_item_fields.json.gz.
 
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
@@ -861,7 +838,6 @@ def _index_sgs_block_files(
         # converter/resolvers/array_content.py). This REPLACES the retired
         # hand-declared arrayItemSchema → array_item_fields mechanism (D248): prune
         # its stale rows so they can't mis-drive a lift, then seed the field names.
-        c.execute("DELETE FROM array_item_fields WHERE block_slug = ?", (slug,))
         c.execute(
             """CREATE TABLE IF NOT EXISTS array_item_schema (
                 block_slug   TEXT NOT NULL,

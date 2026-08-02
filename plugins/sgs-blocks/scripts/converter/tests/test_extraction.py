@@ -264,8 +264,17 @@ def test_mech_b_scalar_media_column_emits_scalar_lift(monkeypatch):
     import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
-    monkeypatch.setattr(db, "scalar_media_attr_for",
-                        lambda slug, elem: "splitImage" if elem == "split-image" else None)
+    # NOT stubbed: db.scalar_media_attr_for. It WAS stubbed here, and that is exactly how
+    # this family stayed green while the feature was dead in production for ~2 months
+    # (D474) — the stub replaced the very gate that was broken. It now calls the real
+    # function, so these tests exercise the real resolver, the real alias data and the
+    # real DB shape. DO NOT re-add a stub.
+    #
+    # ⚠ BUT THEY STILL CANNOT DETECT ROSTER DRIFT, and that is measured, not assumed:
+    # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
+    # REPAIRS a reverted role before any assertion runs. A negative control (revert the
+    # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
+    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
                         lambda: [("Mobile", ["Mobile"]), ("Desktop", ["Desktop"])])
 
@@ -304,8 +313,17 @@ def test_mech_b_scalar_media_mobile_modifier_appends_Mobile(monkeypatch):
     import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
-    monkeypatch.setattr(db, "scalar_media_attr_for",
-                        lambda slug, elem: "splitImage" if elem == "split-image" else None)
+    # NOT stubbed: db.scalar_media_attr_for. It WAS stubbed here, and that is exactly how
+    # this family stayed green while the feature was dead in production for ~2 months
+    # (D474) — the stub replaced the very gate that was broken. It now calls the real
+    # function, so these tests exercise the real resolver, the real alias data and the
+    # real DB shape. DO NOT re-add a stub.
+    #
+    # ⚠ BUT THEY STILL CANNOT DETECT ROSTER DRIFT, and that is measured, not assumed:
+    # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
+    # REPAIRS a reverted role before any assertion runs. A negative control (revert the
+    # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
+    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
     # REAL DB shape: (media_condition, [tier_markers]).
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
                         lambda: [("min-width: 768", ["Tablet", "Desktop"]),
@@ -339,8 +357,17 @@ def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
     import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
-    monkeypatch.setattr(db, "scalar_media_attr_for",
-                        lambda slug, elem: "splitImage" if elem == "split-image" else None)
+    # NOT stubbed: db.scalar_media_attr_for. It WAS stubbed here, and that is exactly how
+    # this family stayed green while the feature was dead in production for ~2 months
+    # (D474) — the stub replaced the very gate that was broken. It now calls the real
+    # function, so these tests exercise the real resolver, the real alias data and the
+    # real DB shape. DO NOT re-add a stub.
+    #
+    # ⚠ BUT THEY STILL CANNOT DETECT ROSTER DRIFT, and that is measured, not assumed:
+    # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
+    # REPAIRS a reverted role before any assertion runs. A negative control (revert the
+    # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
+    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
                         lambda: [("min-width: 768", ["Tablet", "Desktop"]),
                                  ("max-width: 767", ["Mobile"])])
@@ -371,8 +398,17 @@ def test_mech_b_scalar_media_no_img_emits_content_gap(monkeypatch):
     import converter.db.db_lookup as db
 
     monkeypatch.setattr(db, "is_class_section_block", lambda s: True)
-    monkeypatch.setattr(db, "scalar_media_attr_for",
-                        lambda slug, elem: "splitImage" if elem == "split-image" else None)
+    # NOT stubbed: db.scalar_media_attr_for. It WAS stubbed here, and that is exactly how
+    # this family stayed green while the feature was dead in production for ~2 months
+    # (D474) — the stub replaced the very gate that was broken. It now calls the real
+    # function, so these tests exercise the real resolver, the real alias data and the
+    # real DB shape. DO NOT re-add a stub.
+    #
+    # ⚠ BUT THEY STILL CANNOT DETECT ROSTER DRIFT, and that is measured, not assumed:
+    # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
+    # REPAIRS a reverted role before any assertion runs. A negative control (revert the
+    # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
+    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
     monkeypatch.setattr(db, "breakpoint_suffix_rules", lambda: [("Mobile", ["Mobile"])])
 
     html = (

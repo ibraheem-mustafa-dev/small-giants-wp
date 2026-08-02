@@ -6,7 +6,7 @@
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_fields_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_legacy_role_lookup_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_legacy_role_lookup_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
 
 -- table: animation_tokens
 CREATE TABLE animation_tokens (
@@ -20,20 +20,6 @@ CREATE TABLE animation_tokens (
         category TEXT DEFAULT 'entrance',
         created_at TEXT DEFAULT (datetime('now'))
     );
-
--- table: array_item_fields
-CREATE TABLE array_item_fields (
-          block_slug      TEXT NOT NULL,
-          array_attr      TEXT NOT NULL,
-          item_selector   TEXT NOT NULL,
-          field_key       TEXT NOT NULL,
-          field_selector  TEXT NOT NULL,
-          role            TEXT NOT NULL,
-          attr_type       TEXT NOT NULL DEFAULT 'string',
-          enum_values     TEXT,
-          created_at      TEXT DEFAULT CURRENT_TIMESTAMP, gap_reason TEXT,
-          PRIMARY KEY (block_slug, array_attr, field_key)
-        );
 
 -- table: array_item_schema
 CREATE TABLE array_item_schema (

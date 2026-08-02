@@ -1,5 +1,59 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D475 — Phase 1b CLOSED: Spec 31's §4 map corrected against measured reality [ROUTINE]
+
+**2026-08-02.** The reconciliation report (`reports/2026-08-02-spec31-column-reconciliation.md`) traced
+every pipeline-governing DB column against the spec AND the call graph — not string matches. Acted on:
+
+**⛔ Spec 31 §4 carried a FALSE claim.** The `block_capabilities` row asserted that
+`grid-layout`/`full-width-banner` "gates" behaviour. Neither string appears anywhere in `converter/`
+outside one docstring, and `blocks_with_capability()` — the only generic tag accessor — has **zero
+callers**. **Only 3 of 36 seeded tags are ever read** (`scalar-content-lift`, `scalar-styling-lift`,
+`array-content-lift`); the other 33 sit on 50 `sgs/%` blocks and are inert. Row rewritten to say so.
+
+**Three working columns were missing from the map that exists to prevent exactly that:**
+`block_attributes.alt_companion_attr` + `role='image-alt'` (CG-8, live in `walk.py`),
+`modifier_suffixes` kind=`'unit'` (live in `resolvers/grid_area.py` — the spec named 3 kinds, the table
+has **6**), and `array_item_schema.field_order`. Added, plus a row for the D474 `scalar-media` role.
+
+**A stale §4 note corrected:** it said `has_inner_blocks` "still EXISTS in the DB" with the drop "not
+done". The column was dropped 2026-07-05; the fact is now derived fresh at convert time. Also recorded
+there: **a population floor is the right gate for a CACHED fact and the wrong one for a DERIVED fact.**
+
+### `array_item_fields` RETIRED — and the retirement taught the real lesson
+
+0 rows, zero callers, superseded by the one-character-different `array_item_schema` (68 rows, real
+callers). ⚠ **The seeding half was never built:** measured with two search shapes, there is not a
+single INSERT anywhere — only `CREATE TABLE IF NOT EXISTS` (in TWO places), an ALTER, and a DELETE
+prune. **The comment in `sgs-update-v2.py` claiming it was "seeded ... by the per-block loop below"
+was FALSE — that loop only DELETEd.**
+
+⛔ **DROPPING THE TABLE WAS NOT ENOUGH, and the schema-drift gate caught it within seconds.** The drop
+was undone immediately because `db_lookup` recreates it at module load. **A table with a
+`CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it — every creator must go
+too, or the gate stays red forever.** Removed both creators (107 lines from `db_lookup.py`, the CREATE
+/ALTER block + prune from `sgs-update-v2.py`), then verified the table stays gone across a fresh
+import. Archived reversibly first.
+
+### Also
+
+- **The 4 self-stubbing tests are DE-STUBBED** (D474 follow-up). They now call the real
+  `scalar_media_attr_for`. ⚠ **They still cannot detect roster drift** — measured, not assumed: a
+  negative control passed against a reverted DB because importing `db_lookup` repairs it first, and the
+  rows were back to 3 afterwards. The comment in each test says exactly that, rather than the
+  reassuring-but-false claim I first wrote. The detector is `check_row_floor.py` (sqlite3 only).
+- **`block_supports.is_stale` is now honoured** — the only reader had no `WHERE` clause, so a stale row
+  would have been served as live. Zero behavioural change today (0 of 1354 stale), which is why it was
+  cheap to add before something populates it. `IS NOT 1`, so a NULL from an older row stays live.
+
+**Left for a decision, deliberately not actioned:** `block_composition.composition_role` (zero callers,
+but the fold/recurse logic may be re-deriving the same classification ad hoc — worth checking before
+deleting) and `slot_default_attrs_for()` (a dead element-keyed duplicate of the live modifier-keyed
+path). Both MEDIUM/LOW; neither is a silent-correctness risk.
+
+Gates: schema-drift CLEAN at **36 tables**, row-floor CLEAN + 3 value-identity assertions hold,
+seed-drift PASS, suite **591 passed / 1 skipped**.
+
 ## D474 — Art-directed media routing RESTORED; the role was never written down [INCIDENT]
 
 **2026-08-02, Bean-approved after a 3-reviewer council.** Track 1 Phase 2.
