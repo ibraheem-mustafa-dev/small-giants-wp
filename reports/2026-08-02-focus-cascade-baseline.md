@@ -81,3 +81,68 @@ Load the homepage, focus every visible focusable in turn, and key a Map on
 `outline-width + outline-style + outline-color + outline-offset + box-shadow`. The metric is
 `Map.size`. **Baseline = 8.** A fix is only validated if that number falls and the surviving
 treatments are the intended ones — a drop to 1 that lands on the WRONG treatment is not a pass.
+
+---
+
+# QC COUNCIL OUTCOME (2026-08-02)
+
+Three raters, cross-model, each required to cite `file:line` or a measured value. Fix-shape
+proposals are HYPOTHESES; the verdicts below are the Stage 5 gate result.
+
+## THREE LIVE WCAG 2.4.11 FAILURES — measured, alpha-composited over the REAL local background
+
+| Element | Rendered outline | Local background | Contrast | Verdict |
+|---|---|---|---|---|
+| `.sgs-testimonial-slider__arrow` | `rgba(31,122,122,.4)` teal | pink `#e68a95` | **1.42:1** | **FAIL — worst; effectively invisible** |
+| `.sgs-testimonial-slider__dot` | `rgba(31,122,122,.4)` teal | near-white `#FFF9F0` | **1.75:1** | **FAIL** |
+| `.sgs-cart__trigger` | `#e68a95` | cream `#FBF3DC` | **2.25:1** | **FAIL** |
+| `.sgs-responsive-logo__link` | `#c56a7a` | cream `#FBF3DC` | 3.32:1 | passes — but ON the 3.0 floor, fragile |
+
+A keyboard user tabbing the testimonial slider cannot see where focus is. That is the headline.
+
+## Verdicts
+
+**P1 (repoint `theme.json:395-400` off the hardcoded teal) — VALIDATED, and BIGGER than proposed.**
+All 7 consuming files read the custom property rather than a hardcoded literal, so fixing the token
+at source fixes testimonial-slider **and** modal, accordion, gallery, tabs, product-faq and
+`extensions.css` in one change. No `!important` sits between token and property at any call site.
+
+⚠ **Rater C objected that P1 violates D322/D463. That objection is FALSIFIED and must not be
+inherited.** It claimed the teal "was specifically chosen because D463 measured it at 3.32:1 across
+8 palettes". Two independent disproofs: (a) the teal was hardcoded in commit `618db290` on
+**2026-04-29**, and D463 is **2026-08-02** — an April constant cannot be justified by an August
+measurement; (b) D463's `3.32:1` measured **`#c56a7a` (`primary-dark`)**, a different token
+entirely. The teal has never been measured against a client palette, and Rater A has now measured it
+live at **1.42:1 / 1.75:1 — failing**. On D322 ("focus is framework-level, not per-client"): P1
+keeps the rule in the theme and repoints it at a palette token, which is exactly what
+`--sgs-focus-color` already does at `core-blocks-critical.css:108`. It aligns the two families
+rather than reversing D322.
+
+**P2 (delete `*:focus-visible` at `utilities.css:249-253`) — REJECTED. All three raters converge.**
+It is a NO-OP on all 25 measured elements (every one wins from a more specific rule), AND it is
+protective: D322 put it there deliberately as the framework a11y default for every client, keyed to
+`--wp--preset--color--text` precisely so it reads against any palette. Deleting it does NOT hand
+those elements to `core-blocks-critical.css:132` — the two rules are EQUAL specificity (0,1,0), so
+the fallback would be the UA default, not the critical rule. **Do not delete.**
+
+**P3 (repoint `.sgs-has-focus-ring`) — VALIDATED but COSMETIC, not the fix.**
+Not one of the 25 measured elements carries that class. Worth doing for consistency; it fixes
+nothing visible. (Its original blocker — a co-active track holding `extensions.css` — is gone: the
+whole diff is now a one-line comment rename.)
+
+**P4 (NEW, surfaced by convergence) — `.sgs-cart__trigger` at 2.25:1 belongs to NO named token
+family** (`cart/style.css:37`, reading `--wp--preset--color--primary`). None of P1/P2/P3 touches it.
+It needs its own fix.
+
+## Open thread — not proven, do not build on it
+
+7 of 25 elements compute `box-shadow: oklab(0 0 0 / 0) 0px 0px 0px 0px` — a fully transparent,
+zero-size shadow that **suppresses D463's glow**. That it renders is measured; **which rule sets it
+is NOT.** It is not in any theme CSS file, so it lives in block-scoped CSS lifted to
+`uploads/sgs-css/` — the surface a page-HTML grep cannot see. Find the writer before fixing it.
+
+## Verification for any fix
+
+Re-run the baseline method. **Passing is not "fewer treatments" — it is fewer treatments AND all
+three failures above clearing 3:1, measured alpha-composited over their real local background.**
+A drop to one treatment that lands on the wrong colour is not a pass.
