@@ -186,7 +186,10 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   asset pipeline (frame export from video, compression, resolution ladder, lazy chunked
   fetch) is a named Wave C work item — the block is NOT done when the canvas draws; it is done
   when a client can produce usable frames with the documented tooling. Editor shows the poster
-  frame only.
+  frame only. **The block itself exists** (`src/blocks/image-sequence/`, agency-only, hidden
+  from the inserter) — `scripts/generate-fx-qualifying-blocks.py`'s `EXACT_MATCH_BLOCKS` table
+  carried a stale comment claiming the directory didn't exist yet; corrected 2026-08-02
+  (register item 4) to the real roster `{"sgs/image-sequence"}`.
 
 ### 3.2 Text
 
@@ -345,7 +348,38 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   |---|---|---|
   | `glow` | `radial-gradient` — a soft pool of light at the pointer | SHIPPED (FR-38-25 as originally signed; the default, so instances saved before types existed are unchanged) |
   | `spotlight-mask` | the same gradient as a `mask-image`, revealing a pattern beneath rather than adding light | SHIPPED — deliberately paints by a DIFFERENT CSS property, so the extensibility seam is demonstrated rather than asserted |
-  | `floating-objects` | per-object motion following the pointer | **NAMED FUTURE TYPE, NOT BUILT.** Bean's third example. Open questions before it can ship: it is the first type needing per-object JS (so a Tier assignment under §1.3 is required, not assumed), and it needs its own §10 reduced-motion answer — autonomous object motion is not obviously the same SIMPLIFY case as a static field. Recorded here rather than dropped (STOP-29). |
+  | `floating-objects` | individual `transform: translate()` per marked object, reading the SAME viewport-space `--sgs-cursor-x`/`--sgs-cursor-y` custom properties the emitter already publishes | **TIER V ARGUED (2026-08-02), STILL NOT BUILT.** See below — the tier question is answered but the opt-in surface is a separate, design-gated decision this residual work deliberately did not make. |
+
+  **`floating-objects` — resolved to Tier V, but deliberately still not built (2026-08-02).**
+  The FR's own open question — *"it is the first type needing per-object JS rather than a
+  single custom-property write"* — turns out to be avoidable. A pure-CSS design clears the same
+  bar `glow`/`spotlight-mask` clear, with **zero new JS runtime**: a floating object reads the
+  emitter's existing `--sgs-cursor-x`/`--sgs-cursor-y` (viewport px, published on every move)
+  directly in a `transform: translate(calc(...))` rule — no lerp, no per-object rAF loop, no
+  inertia maths; per-object variance (so objects don't all move identically) is a CSS-only
+  `--sgs-float-factor` custom property, settable via `:nth-of-type()`. This is the same
+  982-bytes-gzip publish already measured for `glow`, read by a different CSS consumer — exactly
+  the same relationship `spotlight-mask` already has to it. §1.3 test (i) capability real, Tier V
+  reaches it — yes, by the above; (ii)-(iv) are the Tier H test, not applicable here.
+
+  **Why it still isn't built despite the tier question closing.** `floating-objects` breaks the
+  load-bearing sentence *"THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT"* — every other field
+  type is a shared BACKGROUND LAYER (`background-image`/`mask-image`, painted identically by
+  emitter and participants via `background-attachment: fixed`). `floating-objects` paints
+  nothing; it MOVES DISCRETE ELEMENTS — a structurally different consumer of the two coordinate
+  properties. That is fine in itself, but it needs an answer this residual task should not
+  invent alone: **which children become floating objects?** Participants are detected at RUNTIME
+  by computed background (a fact about the rendered page). A floating object is the opposite —
+  an author's DECISION that a specific decorative child should move — which needs its own opt-in
+  marker crossing block boundaries the same way `imageControls`/`containerKind` do: a genuine new
+  capability surface, which project CLAUDE.md rule 7 requires design-gating (shared-mechanism,
+  high blast radius) BEFORE building, not after. Shipping it without that decision risks exactly
+  the "13 panels where none makes sense" containment failure `creates_panel` was built to catch
+  for `cursor-field` itself, arriving by a new route. **Recommendation for the design-gate, when
+  it happens:** host the opt-in as a per-instance flag on whatever block already renders inside
+  an emitter as a decorative child (icon, decorative-image), gated the same way `imageControls`
+  is — declared in `block.json` `supports.sgs`, never hand-listed. Do not default it on for any
+  existing block.
 
   **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1\R-31-9). Two roles:
 
@@ -455,9 +489,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   3. **A participant carrying its own `background-image` is deliberately not marked**, because our
      layer would replace it; that child keeps a visible seam. Clobbering a client's chosen image is
      plainly worse. A `::before` fallback for that narrow case is possible if the seam is reported.
-  4. **The participant walk runs at init only** — a child whose background is set or inserted later
-     will not participate until re-init. Acceptable while block content is server-rendered and
-     static; the fix is a `MutationObserver` in `cursor-field.js`, never per-block code.
+  4. ~~The participant walk runs at init only~~ **FIXED 2026-08-02.** `cursor-field.js` gained a
+     bounded `MutationObserver` on the emitter (`childList` + `subtree` +
+     `attributeFilter: ['style', 'class']`) that re-runs the SAME `isParticipant()` test against
+     added nodes and mutated existing nodes, debounced to one pass per animation frame regardless
+     of mutation-burst size, so a large subtree churn cannot fire a computed-style read once per
+     mutation record. Bounded to the emitter's own subtree only — created and disconnected inside
+     the same `init`/`cleanup` pair as everything else in this module, no page-wide observer.
+     Verified present: `src/shared/effects/cursor-field.js`.
 
 - **FR-38-27 Physics sandbox — a container-equivalent block whose children are throwable
   DECORATIVE bodies. Tier G.** Bean-signed 2026-08-01 (D447). **SPEC ONLY — NOT BUILT.** A new block
@@ -928,6 +967,25 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
    suppress|simplify, `editor_story` end-state|toggle|no-preview). Proposed NEW table —
    justified because no existing table keys by effect; `animation_tokens` keys by keyframe
    preset and stays the Tier V preset store.
+
+   > ⚠ **DEAD ROW — confirmed 2026-08-02 (register item 3), NOT YET REMOVED (DB writes are
+   > out of scope for the session that found this).** `fx_effects` still carries an
+   > `effect='scroll-smoother', tier='G', plugin_set=["ScrollSmoother"]` row from before D422
+   > (2026-07-30) moved site-level smoothing to Lenis (Tier H). No Lenis/`smooth-scroll` row
+   > exists in this table at all — correctly, since Lenis is a SITE setting, never reached via
+   > the `data-sgs-fx` grammar, so it was never meant to gain a `fx_effects` row (this table is
+   > specifically the per-element fx grammar registry). The `scroll-smoother` row is therefore
+   > pure leftover, not a placeholder for something that should replace it.
+   >
+   > **Verified zero references:** `generate-fx-qualifying-blocks.py`'s structural roster,
+   > `fx.js`'s `SHIPPED_EFFECTS`, and `fx-attributes.php`'s `FX_ATTR_MAP` all key on the current
+   > 15-row live set (`pin-scrub`, `scrub`, `horizontal-panel`, `split-reveal`, `scramble`,
+   > `flip`, `draggable`, `draw`, `morph`, `motion-path`, `image-sequence`, `page-transitions`,
+   > `cursor-field`, `carousel-loop`) — `scroll-smoother` appears in none of them, so deleting
+   > the row cannot break a live consumer.
+   >
+   > **SQL to run (Bean/DB-write owner only):**
+   > `DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`
 2. **`block_attributes`** — fx param attrs seeded with `css_property` under a new **`fx:*`**
    pseudo-namespace (sibling of `anim:*`; aligns with the approved-unbuilt FR-35-6 `anim:*`
    settings-cluster — recorded in **decisions.md D354**, not in Spec 35's own text — the `fx`
@@ -944,6 +1002,35 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
    (duration/easing tokens) via `migrations/YYYY-MM-DD-motion-token-type.py`; deferred to the
    wave that first needs a seeded motion token (Wave A ships without it — theme.json
    `--wp--custom--duration/easing--*` already serve).
+
+> ⚠ **`sgs_get_fx_qualifying_blocks()` is DEAD CODE — verified 2026-08-02 (register item 5),
+> recommendation: DELETE (not executed this session — see below).**
+>
+> **Evidence.** `includes/generated-fx-qualifying-blocks.php` defines this function, but a
+> repo-wide grep for its name finds only its own definition — zero callers in any `.php` or
+> `.js` file. The file that defines it is also never `require`'d by `class-sgs-blocks.php` (the
+> plugin's central includes loader) or anywhere else, so the function does not even exist at
+> WordPress runtime today. The docstring's implicit claim that this feeds "the render layer"
+> is false: `class-sgs-motion-registry.php` (the actual FR-38-3 conditional-loading registry,
+> §4.4) detects effects by regex-scanning rendered markup for `data-sgs-fx="…"` directly
+> (`/data-sgs-fx="([a-z0-9-]+)"/i`), never by consulting a per-block structural-qualification
+> map. That is also the MORE correct mechanism for that job — the registry needs "does this
+> rendered instance actually carry the effect", not "could this block type ever carry it".
+>
+> The JS twin (`src/blocks/extensions/generated-fx-qualifying-blocks.json`) is NOT dead — `fx.js`
+> imports and uses it to gate which effects appear in a given block's editor picker (`§7`). Only
+> the PHP twin is orphaned.
+>
+> **Recommendation: DELETE**, not WIRE — there is no unmet need for a PHP-side structural map;
+> the render layer's markup-sniff already covers the equivalent job more accurately, and the
+> editor-side need is already served by the JSON file. Full removal is a 4-file change
+> (`generate-fx-qualifying-blocks.py`'s `_render_php`/`PHP_OUTPUT` writer, the generated
+> `.php` file itself, `check_fx_qualifying_blocks_stale.py`'s PHP-side check, and a docstring
+> line in `sgs-update-v2.py`'s Stage 12 description) — **not executed in this session**
+> deliberately: `run-motion-fx-generators.js` re-runs this generator on every `npm run build`
+> (wired into `prebuild`), so touching the generator mid-session on a shared worktree with two
+> other active tracks risks regenerating shared artefacts (`generated-fx-qualifying-blocks.json`
+> included) out from under them. Recorded here as an owed follow-up rather than actioned.
 
 ## 7. Inspector surface (Spec 35-compliant sketches)
 
@@ -1072,6 +1159,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
+| Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
 | Carousel loop (FR-38-26) | **Measured 2026-08-02 (register item M2).** Unstated in this spec until now — the module's own docblock only argued by analogy that it should be a no-op. **Confirmed identical under reduce**, by direct measurement on 4 of 5 rollout blocks with a real `reducedMotion:'reduce'` browser context (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 1): clones still insert, still neutralise (`inert`+`aria-hidden`), and the boundary `scrollLeft` re-seat still fires — because the correction is an instantaneous position WRITE, never a tween, so there is no animation for `prefers-reduced-motion` to gate either way. Negative control (proves the emulated context is real, not self-reported): each block's own arrow-click DOES branch on reduce where implemented — `sgs/gallery`/`sgs/post-grid` pass `auto` vs `smooth` to `scrollIntoView` correctly (post-grid's `behavior` was misspelled `behaviour`, a silent no-op discovered and fixed live this session, `plugins/sgs-blocks/src/blocks/post-grid/view.js`); `sgs/trustpilot-reviews` and `sgs/google-reviews` pass a HARDCODED `'smooth'` regardless of `prefers-reduced-motion` — a real defect in those two blocks' own arrow-click code, NOT in the loop module, recorded here as a finding rather than folded into this row's verdict. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
@@ -1101,6 +1189,18 @@ data-sgs-fx-hold="<value>"        none | short | standard | long — PINNING eff
 data-sgs-fx-scrub                 true | <smoothing number>
 data-sgs-fx-stagger               ms | s
 data-sgs-fx-duration / -ease      token or literal (easing may name a physics flavour)
+data-sgs-fx-momentum="false"      DRAGGABLE only — opt-out of Inertia's release-momentum
+                                  coast (`dragMomentum` block attr → `fx:momentum`, seeded
+                                  in `block_attributes`; live on buybox/gallery/
+                                  google-reviews/post-grid/trustpilot-reviews render.php,
+                                  read by `fx-draggable.js`'s `momentumRequested()`).
+                                  Attribute PRESENT AT ALL is the "off" signal — no
+                                  attribute (the default) means momentum is ON; this is
+                                  the inverse of every other boolean fx flag in this
+                                  grammar, and is unusual enough to flag explicitly for
+                                  a future converter mapping. Corrected into this table
+                                  2026-08-02 — the attr shipped and was seeded in the DB
+                                  without ever being added here (register item 1).
 data-sgs-fx-shape="<preset|custom>"     MORPH only — which shape pair to morph between
 data-sgs-fx-path="<preset|custom>"      MOTION-PATH only — which route to travel along
 data-sgs-fx-motion-path-rest="<preset>"     MOTION-PATH only — below-header | middle |
@@ -1111,7 +1211,24 @@ data-sgs-fx-morph-target="<selector>"       resolved TARGET element (render-laye
 data-sgs-fx-motion-path-target="<selector>" resolved TARGET element (render-layer output)
 data-sgs-fx-pin="true"            IMAGE-SEQUENCE only — holds the block in place for the
                                    whole scrub instead of letting it scroll normally
+data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
+                                   ANY fx effect — per-breakpoint kill switch (D446 Task 15,
+                                   2026-08-01), named with the existing device-tier suffix
+                                   vocabulary. Boolean-shaped: presence means disabled, so
+                                   `fx-attributes.php` and `fx.js` both special-case these
+                                   two outside the generic value-or-absent FX_ATTR_MAP loop.
+                                   Added to this table 2026-08-02 (register item 6) — the
+                                   block attrs (`fxDisableTablet`/`fxDisableMobile`) and
+                                   `block_attributes` rows already existed but this grammar
+                                   table never listed them.
 ```
+
+> **`fxPreset` is deliberately NOT part of this grammar.** It is a real, seeded `block_attributes`
+> row (`fx:preset`) and a real client-facing control (the §7 intensity-preset layer) — but a
+> preset only WRITES the params above into the block's stored attributes at authoring time; no
+> runtime ever reads a `data-sgs-fx-preset` markup attribute, so emitting one would put an inert
+> attribute in the DOM. Noted here so its absence from the grammar table above is never mistaken
+> for a gap (register item 6 cross-check).
 
 > **AMENDMENT 2026-08-01 (D435) — `data-sgs-fx-pin` / `fxPin` added, and `sgs/image-sequence`'s
 > default scrub window redefined as "fully visible only".** Two owner rulings on
@@ -1178,11 +1295,31 @@ data-sgs-fx-pin="true"            IMAGE-SEQUENCE only — holds the block in pla
 > arbitrary drafts cannot have a fixed shape ceiling); a CSS-selector textbox (what the Wave C
 > agents implicitly assumed — fails §7 outright).
 >
-> **Status: DESIGN SIGNED, NOT YET BUILT.** Owed: the preset data file, the render-layer
-> expansion, the `block_attributes` rows under `fx:*`, the thumbnail picker in the fx panel,
-> and `morph`/`motion-path` joining `SHIPPED_EFFECTS` in `fx.js` — which must NOT happen until
-> the control exists, since that array's whole purpose is to keep an unreachable effect out of
-> the picker.
+> **Status: BUILT + SHIPPED — CORRECTED 2026-08-02 (register item 2).** The line above ("DESIGN
+> SIGNED, NOT YET BUILT") is stale and was false when re-checked this session. All five owed
+> items exist: the preset data files (`includes/fx-path-routes.json`,
+> `includes/fx-shape-routes.json`), the render-layer expansion (`includes/fx-path-routes.php`,
+> `includes/fx-shape-routes.php`), the `block_attributes` rows under `fx:*` (`fxPath`,
+> `fxPathAsset`, `fxPathRotate`, `fxPathRest`, `fxPathRestVh`, `fxShape`, `fxShapeAssetFrom`,
+> `fxShapeAssetTo` — all seeded in `scripts/seed-motion-fx-registry.py`), the thumbnail pickers
+> in the fx panel (`fx.js` — `ToolsPanelItem` + `ToggleGroupControl` + `RouteOption` thumbnails
+> for both routes and shape pairs, asset-gated media-library pickers for `custom`), and both
+> `motion-path` and `morph` are present in `SHIPPED_EFFECTS`.
+>
+> These attrs are registered via the block-editor `registerBlockType` filter in
+> `src/blocks/extensions/fx.js`, not declared per-block in any `block.json` — a `grep` for
+> `fxShape`/`fxPath` across `block.json` files finds nothing and looks like an absence; it is
+> the known extension-registered-attrs blind spot (memory:
+> `feedback_extension_registered_attrs_invisible_to_blockjson_audits`), not a missing build.
+>
+> **One genuine caveat carries forward, and is NOT resolved by the above:** D452 (2026-08-01)
+> found morph had never actually animated on any block — `fx-shape-routes.php` was emitting the
+> `data-sgs-fx="morph"` marker on the `<svg>` wrapper instead of the inner `<path>`, and
+> MorphSVGPlugin refuses an `<svg>` container outright. The fix (move the marker onto the
+> `<path>`) is committed but, per D452's own text, still UNVERIFIED live — no one has yet
+> watched an element morph post-fix. So: the CONTROL SURFACE (what this amendment is about) is
+> genuinely built and reachable; the MORPH EFFECT ITSELF is fixed-on-paper only. Motion-path has
+> no equivalent caveat — it was never reported broken.
 
 One effect per element in v1 (a draft needing two composes wrapper elements). Attr-per-property
 (NOT a JSON blob) because: the Spec 31 suffix grammar clones it (base attr + suffix — the same

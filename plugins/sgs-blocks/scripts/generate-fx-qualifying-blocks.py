@@ -387,10 +387,12 @@ CONTAINER_BLOCK = "sgs/container"
 # exact-match table overrides the requires-based check for named effects
 # only; every other effect still resolves purely from block provisions.
 EXACT_MATCH_BLOCKS: dict[str, frozenset[str]] = {
-    # sgs/image-sequence does not exist yet (verified: no such directory
-    # under src/blocks) — so this effect's roster is honestly EMPTY today,
-    # by construction, rather than accidentally universal.
-    "image-sequence": frozenset(),
+    # sgs/image-sequence now EXISTS (src/blocks/image-sequence/block.json,
+    # shipped as an AGENCY-ONLY block hidden from the inserter — comment
+    # corrected 2026-08-02, register item 4; it previously claimed the
+    # directory did not exist, which stopped being true once the block
+    # shipped and was never updated).
+    "image-sequence": frozenset({"sgs/image-sequence"}),
 }
 
 # NOTE on a mechanism that was tried here and REJECTED (2026-07-31, same
