@@ -224,8 +224,12 @@ function initStandardPagination( gridEl, queryData ) {
 			announce( gridEl, 'Page ' + data.currentPage + ' of ' + data.totalPages + ' loaded.' );
 
 			gridEl.scrollIntoView( {
-				behaviour: REDUCED_MOTION ? 'auto' : 'smooth',
-				block:     'start',
+				// `behavior` — the DOM API's own spelling. UK English is the
+				// house rule for prose and identifiers, but NOT for API keys:
+				// an unrecognised key is silently discarded, so `behaviour`
+				// meant this scroll ignored reduced motion in BOTH directions.
+				behavior: REDUCED_MOTION ? 'auto' : 'smooth',
+				block:    'start',
 			} );
 		} catch ( err ) {
 			showError( innerEl, 'Could not load posts. Please try again.' );

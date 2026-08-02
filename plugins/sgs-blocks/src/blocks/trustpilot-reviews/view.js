@@ -58,8 +58,17 @@ const initCarousel = ( root ) => {
 	const atEnd = () => track.scrollLeft >= maxScrollLeft() - SCROLL_EPSILON;
 	const atStart = () => track.scrollLeft <= SCROLL_EPSILON;
 
+	// Read FRESH per call, never cached at module load: the OS setting can be
+	// toggled mid-visit, and a cached value would keep animating for the rest
+	// of it. (The `reduceMotion` const further down is a separate, correct
+	// read — it decides once whether autoplay starts at all.)
+	const scrollBehavior = () =>
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+			? 'auto'
+			: 'smooth';
+
 	const scrollTo = ( left ) => {
-		track.scrollTo( { left, behavior: 'smooth' } );
+		track.scrollTo( { left, behavior: scrollBehavior() } );
 	};
 
 	const scrollByCard = ( dir ) => {
@@ -71,7 +80,7 @@ const initCarousel = ( root ) => {
 			if ( ( dir > 0 && atEnd() ) || ( dir < 0 && atStart() ) ) {
 				return;
 			}
-			track.scrollBy( { left: step * dir, behavior: 'smooth' } );
+			track.scrollBy( { left: step * dir, behavior: scrollBehavior() } );
 			return;
 		}
 
@@ -81,7 +90,7 @@ const initCarousel = ( root ) => {
 		// manual snap-to-start/end needed here, and none of this block's own
 		// arrow/keyboard/dot logic ever disables (WCAG 2.5.7: a loop has no
 		// last item).
-		track.scrollBy( { left: step * dir, behavior: 'smooth' } );
+		track.scrollBy( { left: step * dir, behavior: scrollBehavior() } );
 	};
 
 	if ( prevBtn ) {
