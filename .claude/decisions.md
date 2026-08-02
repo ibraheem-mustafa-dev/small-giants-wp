@@ -1,5 +1,50 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D461 — Four DB mirrors fixed at their derivation; three diagnoses corrected en route [ROUTINE]
+
+**The work.** T1.1's five "measured residuals". Commit `8cdc1460`. Every fix targets the code that
+DERIVES the value, never the rows: `parent_block` 18→23 (a hardcoded `PARENT_CHILD` dict in
+`sgs-update-v2.py:99` was read while the parsed block.json `parent` never was — a straight R-31-1
+violation, so a reseed rewrote the same 18 rows forever); `css_layer` 322→352 (the classifier skipped
+any block lacking `style.css` BEFORE reading its block.json, so a declarative manifest fact could
+never land); 6 mis-typed roles → 0 (`Rating`/`Speed` suffixes mapped every matching attr to
+`number-css-px`; all 6 SGS attrs carrying it were star counts, a filter threshold and millisecond
+durations — zero genuine CSS pixel values); `block_selectors` 92→86 with retired-block rows 10→0
+(the current seeder had no writer at all; the only one lives out-of-repo and is dead on the live path).
+
+**Three inherited diagnoses were WRONG and are struck.** (1) "An `sgs-product-faq__item` silently
+mis-converts to `sgs/info-box`" — FALSE. Gate G3 (`extraction.py:844-860`) validates the child
+against `accepts_allowed_blocks` and emits a loud `ContentGap`; no draft in the repo even contains
+the class, so the path is latent. (2) "Fixing the suffix rows corrects the 6 roles" — FALSE alone;
+`assign-canonical.py` preserved a populated role forever, so the healing pass was the load-bearing
+half. (3) "Setting `testimonial.ratingStars` to role=rating activates the star lift" — FALSE; that
+attr has a NULL `derived_selector` and is dropped by a guard before role is read.
+
+**And one claim of my own, withdrawn after adjudication:** that a star count can now be lifted from a
+draft. `sgs/star-rating` lacks the `scalar-content-lift` capability, so `scalar_content.py:146`
+returns `{}` regardless of the role fix. The role correction stands on its own terms; granting that
+capability is a deliberate opt-in and a separate decision.
+
+**`block_parents` join table REJECTED (Bean).** Token derivation requires the child slug to start
+with the parent name plus a hyphen, so `form-field-text` under `form-step` yields the unusable token
+`form-field-text`; under `sgs/form` it yields the working `field-text`. The second parent buys the
+pipeline nothing. First-parent-only, with the reasoning in a code comment so it is not re-litigated.
+
+**`sgs/form`'s F6 violation fixed AT SOURCE, not bypassed or baselined.** Its `focus-ring` element
+declared a `prefix` but no `attrMap`, so the tracer resolved `formFocusRingOpacity` to `box-shadow`
+with `css_element` NULL. It now declares an explicit attrMap following the `progressBarColour`
+precedent in the same file (an attr driving a custom-property VALUE is mapped to the property it
+semantically controls). Opacity maps to `css:opacity`, NEVER `css:box-shadow` — `style.css:211-217`
+composes TWO `--sgs-*` vars into one box-shadow via `color-mix`, so no single attr owns it, and the
+gate's own suggested fix would have asserted something untrue. ⛔ A Task A classifier fix was
+attempted instead and MEASURED: violations 1→3, `css_layer` 354→349. Reverted. Do not retry it.
+
+**Method notes worth keeping.** Both negative controls were judged non-vacuous by an independent
+adjudicator. A 3-rater adjudication ran on an UNLABELLED evidence pack (no verdict, no pre-attributed
+rows) — one rater's "13 unexplained rows" finding was refuted, and the cause was a wrong artefact date
+in MY brief (file mtime 07-31 quoted where the committed content was 07-25). Second time this session
+a bad brief misled a council. Evidence + limitations: `reports/2026-08-02-t1.1-evidence-pack.md`.
+
 ## D460 — Looping is an INDEPENDENT control, not a drag setting [ROUTINE]
 
 **The question.** Bean asked for looping carousels: *"for the dragging physics feel the option to
