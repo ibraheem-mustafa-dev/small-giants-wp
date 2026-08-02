@@ -1,5 +1,53 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D477 — The guard from D476 was itself broken; QC council caught it [INCIDENT]
+
+**2026-08-02.** The adversarial rater found that **the pre-condition guard added in D476 — the fix for
+the D474 regression — was itself non-functional**, and I verified it before acting.
+
+⛔ **A forward reference, hidden by my own broad `except`.** `_migrate_scalar_media_roles()` ran at
+module load (line ~612); `is_class_section_block()` is defined at line ~2827 of the SAME file. At
+import the call raised `NameError`, `except Exception` swallowed it, `eligible` became `False`, and
+the seeder **REFUSED to repair `sgs/hero`** — printing `is_class_section_block(sgs/hero) is False`,
+which is **untrue**. So the self-healing was dead AND the message actively lied. **Measured:** drift
+simulated in a sandbox → after import, both hero rows still `image-object`.
+
+**Why my own earlier test missed it:** I called `db._migrate_scalar_media_roles()` explicitly AFTER
+the module had fully loaded, so the name existed. The module-load path — the one that matters — was
+never exercised. **Testing a function directly is not testing the path that calls it.**
+
+**Fixed:** the invocation moved to the FOOT of the file (after every definition) and the `except
+Exception` REPLACED with no except at all, so a future ordering regression raises loudly instead of
+silently refusing. Both arms re-proven in a sandbox: drift → **repairs** hero; ineligible block →
+**refuses** with a true message.
+
+### Three more rater findings, all actioned
+
+- ⛔ **The value-identity gate was VACUOUS in the prebuild chain.** `db-consistency/run.py` ran BEFORE
+  it and transitively imports `db_lookup`, whose module-load seeders repair the drift — so by the time
+  `check_row_floor.py` looked, there was nothing to see. Same self-healing blindness as D474's test,
+  one level up, at the *gate ordering*. **The three `dbschema/` gates now run BEFORE
+  `db-consistency`** in `package.json`.
+- ⛔ **A present-but-unreadable DB crashed the build.** `capture_seed_data.py` had no exception
+  handling around its read; a locked or corrupt file produced a raw traceback. Now a clean SKIP.
+  ⚠ **My first fix caught `OperationalError` only and the negative control still leaked a traceback**
+  — a corrupt file raises `DatabaseError`, its PARENT. Widened to `sqlite3.Error`; control now passes.
+- ⛔ **The Phase-4 purge claim "zero inbound refs, individually verified" was INACCURATE.**
+  `sgs-clone-orchestrator.py` still carried four `*_SCRIPT` constants and four lazy-loader wrappers
+  pointing at deleted modules. Harmless only because nothing called them — dead code referencing dead
+  files, which would have produced a confusing `FileNotFoundError` for anyone who wired one up. All
+  four removed.
+
+**Rater findings judged SOUND and NOT actioned:** the retired tables all soft-fail correctly; the
+seeder cannot corrupt a good DB from truncated/invalid JSON (soft-fails to `[]`); fresh-clone
+reproducibility is correct by construction (the rater flagged it INFERRED, not measured, and said so).
+
+Suite **591 passed / 1 skipped**; all gates clean.
+
+**The pattern worth keeping:** today produced a fix that broke something (D474→D476), then a guard
+that was itself broken (D476→D477). Each was caught by an adversarial check rather than by the work
+itself. **A fix is a hypothesis, and so is the guard you write to protect it.**
+
 ## D476 — I BROKE `sgs/testimonial-slider` with D474 and caught it hours later [INCIDENT]
 
 **2026-08-02, found during the retrospective QC council, before any rater reported it.**

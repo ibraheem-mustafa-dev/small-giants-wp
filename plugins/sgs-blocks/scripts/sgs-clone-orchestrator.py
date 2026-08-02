@@ -52,12 +52,8 @@ ROUTER_SCRIPT = RECOGNISER_DIR / "leftover-bucket-router.py"
 REVIEW_SCRIPT = RECOGNISER_DIR / "simple_html_review_report.py"
 CLASSIFIER_SCRIPT = RECOGNISER_DIR / "bucket-c-classifier.py"
 SCAFFOLD_SCRIPT = ORCHESTRATOR_DIR / "atomic-block-scaffold.py"
-TOKEN_RESOLVER_SCRIPT = ORCHESTRATOR_DIR / "token_resolver.py"
-VARIATION_ROUTER_SCRIPT = ORCHESTRATOR_DIR / "variation_router.py"
 TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
-SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
 TRACE_SCRIPT = ORCHESTRATOR_DIR / "trace.py"
-MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
 STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
 ATTRIBUTE_GAP_WRITER_SCRIPT = RECOGNISER_DIR / "attribute-gap-writer.py"
 FUNCTIONALITY_GAP_DETECTOR_SCRIPT = RECOGNISER_DIR / "functionality-gap-detector.py"
@@ -596,30 +592,32 @@ def confidence_matrix():
 
 
 # Lazy-import the token_resolver module on first call (Spec 31 Phase 5d.2 - wired by Phase 6 v2 Step 4a).
-_token_resolver_mod = None
 
 
-def token_resolver():
-    global _token_resolver_mod
-    if _token_resolver_mod is None:
-        _token_resolver_mod = _load_module_from_path("sgs_token_resolver", TOKEN_RESOLVER_SCRIPT)
-    return _token_resolver_mod
 
+
+# ----------------------------------------------------------------------------
+# token_resolver / variation_router / supports_writer / modifier_extractors
+# ----------------------------------------------------------------------------
+# All four lazy-loader wrappers and their *_SCRIPT path constants were REMOVED
+# 2026-08-02. The modules they pointed at were deleted in the same session's Phase-4
+# purge, and every wrapper had exactly ONE occurrence in this file — its own `def`.
+# Zero callers, here or anywhere (checked outside the repo too).
+#
+# ⚠ They are called out because the purge commit claimed "zero inbound refs,
+# individually verified" for token_resolver.py while THIS file still named it. That
+# claim was inaccurate: dead code referencing a dead file is still a reference, and it
+# would have produced a confusing FileNotFoundError for anyone who wired the wrapper up
+# later. An adversarial QC rater caught it.
 
 # Lazy-import variation_router + token-lint slug generator (Spec 31 Phase 6 v2 Step 4b).
 # token-lint is loaded for its canonical _generate_slug() helper -- module reuse
 # avoids duplicating slug rules already covered by the additive token-discovery
 # tests in token-lint's suite. variation_router owns the single write path
 # into client style variation JSONs.
-_variation_router_mod = None
 _token_lint_mod = None
 
 
-def variation_router():
-    global _variation_router_mod
-    if _variation_router_mod is None:
-        _variation_router_mod = _load_module_from_path("sgs_variation_router", VARIATION_ROUTER_SCRIPT)
-    return _variation_router_mod
 
 
 def _token_lint():
@@ -708,25 +706,13 @@ def _reflect_new_token_in_theme_json(theme_json: dict, role: str, slug: str, raw
 # Lazy-import supports_writer (Spec 31 Phase 6 v2 Step 4c). supports_writer
 # itself transitively loads value-matcher/inheritance.py when present, so the
 # Phase 5 inheritance check is reachable through this single dispatch.
-_supports_writer_mod = None
 
 
-def supports_writer():
-    global _supports_writer_mod
-    if _supports_writer_mod is None:
-        _supports_writer_mod = _load_module_from_path("sgs_supports_writer", SUPPORTS_WRITER_SCRIPT)
-    return _supports_writer_mod
 
 
 # Lazy-import modifier_extractors (Spec 31 Phase 6 v2 Step 4d).
-_modifier_extractors_mod = None
 
 
-def modifier_extractors():
-    global _modifier_extractors_mod
-    if _modifier_extractors_mod is None:
-        _modifier_extractors_mod = _load_module_from_path("sgs_modifier_extractors", MODIFIER_EXTRACTORS_SCRIPT)
-    return _modifier_extractors_mod
 
 
 # Lazy-import stage1_boundary_hook (Spec 31 Phase 6 v2 Step 4e). The module

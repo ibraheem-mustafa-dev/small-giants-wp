@@ -132,13 +132,30 @@ DOCS: dict[str, dict[str, str]] = {
 }
 
 
+class DatabaseBusy(RuntimeError):
+    """The DB could not be read — locked, mid-write, or malformed."""
+
+
 def read_table(db: Path, table: str) -> list[list]:
-    """Return every row of *table* as a list of lists, in rowid order."""
+    """Return every row of *table* as a list of lists, in rowid order.
+
+    Raises ``DatabaseBusy`` rather than letting ``sqlite3.OperationalError`` escape.
+    This runs inside ``npm run build`` on a worktree that two tracks share, and this
+    project has already had a concurrent DB writer break both tracks' builds once. An
+    unreadable database at build time is a SKIP condition, not a stack trace — the same
+    contract as the absent-DB path. It must never be a silent PASS either, hence a
+    distinct exception the caller reports on.
+    """
     _, cols, _ = TABLES[table]
-    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    except sqlite3.Error as exc:  # OperationalError=locked, DatabaseError=corrupt
+        raise DatabaseBusy(f"cannot open {db}: {exc}") from exc
     try:
         sql = f'SELECT {", ".join(cols)} FROM "{table}" ORDER BY rowid'  # noqa: S608 — fixed names
         return [list(r) for r in con.execute(sql)]
+    except sqlite3.Error as exc:  # OperationalError=locked, DatabaseError=corrupt
+        raise DatabaseBusy(f"cannot read `{table}` from {db}: {exc}") from exc
     finally:
         con.close()
 
@@ -170,6 +187,15 @@ def do_write(db: Path) -> int:
 
 def do_check(db: Path) -> int:
     failures = 0
+    try:
+        _ = read_table(db, next(iter(TABLES)))
+    except DatabaseBusy as exc:
+        print(f"SKIPPED — {exc}\n"
+              "  The database is present but unreadable (locked by a "
+              f"concurrent writer, mid-write, or malformed). Treated as a skip so a "
+              f"shared-worktree build is not broken by another track's DB activity. "
+              f"Re-run when the writer finishes; this is NOT a pass.")
+        return 0
     for table in TABLES:
         path = file_for(table)
         want = build_payload(db, table)

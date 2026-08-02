@@ -562,10 +562,16 @@ def _migrate_scalar_media_roles() -> None:
             #
             # So the pre-condition is enforced HERE rather than trusted to the note in
             # the data file. A prose warning is not a gate.
-            try:
-                eligible = is_class_section_block(block_slug)
-            except Exception:  # noqa: BLE001 — never let the guard break the seeder
-                eligible = False
+            # ⛔ DO NOT widen this except. It was `except Exception` for about an hour
+            # and that hid a NameError: this seeder is invoked at module load, and
+            # `is_class_section_block` is defined ~2200 lines LOWER in this file, so the
+            # call raised, the broad except swallowed it, `eligible` became False, and the
+            # seeder REFUSED to repair sgs/hero while printing a message that said
+            # `is_class_section_block(sgs/hero) is False` — which was untrue. A guard that
+            # fails closed AND reports a fabricated reason is worse than no guard.
+            # Fixed by moving the module-load invocation to the END of this file; the
+            # narrow except keeps that class of mistake loud if the order ever regresses.
+            eligible = is_class_section_block(block_slug)
             if not eligible:
                 sys.stderr.write(
                     f"[db_lookup] REFUSING to set role='{_SCALAR_MEDIA_ROLE}' on "
@@ -607,9 +613,10 @@ if _SGS_DB_PRESENT_AT_IMPORT:
     _migrate_property_suffixes()
     _migrate_slots()
     _migrate_excluded_properties()
-    # Runs LAST of the group: it re-asserts a column on rows the others may have
-    # just (re)created, and it is the only one that also reports drift.
-    _migrate_scalar_media_roles()
+    # NOTE: _migrate_scalar_media_roles() is deliberately NOT called here. It depends on
+    # is_class_section_block(), defined far below, so calling it at this point in module
+    # execution raises NameError. It is invoked at the FOOT of this file instead.
+
 
 
 # ----------------------------------------------------------------------------
@@ -5576,3 +5583,14 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         print("All equivalent_block_for tests PASS.")
+
+
+# ----------------------------------------------------------------------------
+# Module-load seeder — MUST be last (2026-08-02)
+# ----------------------------------------------------------------------------
+# `_migrate_scalar_media_roles()` calls `is_class_section_block()`, which is defined
+# above this line but ~2200 lines BELOW the other module-load seeders. Invoking it with
+# them raised NameError at import; the guard's broad except swallowed it and the seeder
+# silently refused to repair anything. Keep this call at the foot of the file.
+if _SGS_DB_PRESENT_AT_IMPORT:
+    _migrate_scalar_media_roles()
