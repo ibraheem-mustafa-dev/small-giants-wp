@@ -125,24 +125,49 @@ def test_the_drift_detector_itself_catches_a_reclassified_role():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
 
+    # Build the synthetic DB from VALUE_ASSERTIONS itself, so this test adapts when
+    # the roster grows instead of silently asserting against a stale shape. (It did
+    # exactly that: three assertions were added and this test failed because its
+    # hand-built schema only had one of the three tables — the test working.)
     con = sqlite3.connect(":memory:")
-    con.execute(
-        "CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, role TEXT)"
-    )
-    good = [(a["key"]["block_slug"], a["key"]["attr_name"], a["expected"])
-            for a in mod.VALUE_ASSERTIONS]
-    con.executemany("INSERT INTO block_attributes VALUES (?,?,?)", good)
+    cols_by_table: dict[str, list[str]] = {}
+    for a in mod.VALUE_ASSERTIONS:
+        cols = list(a["key"]) + [a["column"]]
+        cols_by_table.setdefault(a["table"], [])
+        for c in cols:
+            if c not in cols_by_table[a["table"]]:
+                cols_by_table[a["table"]].append(c)
+    for table, cols in cols_by_table.items():
+        con.execute(f'CREATE TABLE "{table}" ({", ".join(f'"{c}" TEXT' for c in cols)})')
+    # ⚠ Group by (table, key) FIRST. Two assertions can target the SAME row via
+    # different columns (splitImage's `role` and its `emit_shape`); inserting one row
+    # per ASSERTION then produces two half-populated rows for one logical row, and the
+    # lookup's fetchone() picks whichever came first. Caught by this test failing.
+    rows: dict[tuple, dict] = {}
+    for a in mod.VALUE_ASSERTIONS:
+        key = (a["table"], tuple(sorted(a["key"].items())))
+        rows.setdefault(key, dict(a["key"]))[a["column"]] = a["expected"]
+    for (table, _), row in rows.items():
+        cols = cols_by_table[table]
+        con.execute(
+            f'INSERT INTO "{table}" ({", ".join(f'"{c}"' for c in cols)}) '
+            f'VALUES ({", ".join("?" for _ in cols)})',
+            [row.get(c) for c in cols],
+        )
     assert mod.check_value_assertions(con) == [], "clean DB must produce no findings"
 
     # The exact historical corruption: right row, wrong-but-plausible value.
-    con.execute("UPDATE block_attributes SET role='image-object' WHERE role='scalar-media'")
+    for a in mod.VALUE_ASSERTIONS:
+        where = " AND ".join(f'"{k}" = ?' for k in a["key"])
+        con.execute(f'UPDATE "{a["table"]}" SET "{a["column"]}" = ? WHERE {where}',
+                    ["WRONG-BUT-PLAUSIBLE", *a["key"].values()])
     findings = mod.check_value_assertions(con)
     con.close()
 
     assert len(findings) == len(mod.VALUE_ASSERTIONS), (
-        f"detector missed the reclassification; got {findings}"
+        f"detector missed a reclassification; got {findings}"
     )
-    assert "image-object" in findings[0], "finding must name the wrong value it found"
+    assert "WRONG-BUT-PLAUSIBLE" in findings[0], "finding must name the wrong value it found"
 
 
 @requires_db

@@ -72,6 +72,23 @@ class MigrationError(RuntimeError):
 # manifest + tracking table
 # --------------------------------------------------------------------------
 
+def load_deleted_set(manifest: Path = MANIFEST) -> list[str]:
+    """Names the manifest records as DELIBERATELY DELETED, not lost.
+
+    Returns [] when the manifest is absent or carries no deleted block, so this is
+    additive: an older manifest simply reports every absent file as MISSING, exactly
+    as before.
+    """
+    if not manifest.exists():
+        return []
+    try:
+        import json as _json
+        blk = _json.loads(manifest.read_text(encoding="utf-8")).get("deleted_2026_08_02")
+    except (OSError, ValueError):
+        return []
+    return list(blk.get("names", [])) if isinstance(blk, dict) else []
+
+
 def load_replay_set(manifest: Path = MANIFEST) -> list[str]:
     """Filenames to replay, in filename order. DB-MIGRATION entries only."""
     if not manifest.exists():
@@ -168,16 +185,30 @@ def cmd_status(db: Path, manifest: Path, migrations_dir: Path) -> int:
     finally:
         con.close()
 
+    # A migration whose FILE was deliberately deleted is not "missing" — it is
+    # retired. Phase 1 (2026-08-02) deleted 28 of them once their effects became
+    # reproducible from committed seed files, and the DB correctly still records
+    # them as applied. Without this distinction `--status` printed 27 lines of
+    # "FILE MISSING ON DISK" and a scary MISSING total for a deliberate act, which
+    # is exactly the sort of alarming-but-meaningless gate output that trains
+    # people to ignore gates.
+    retired = set(load_deleted_set(manifest))
+
     pending = 0
     missing = 0
+    retired_seen = 0
     for name in replay:
         state = "APPLIED" if name in done else "PENDING"
         if state == "PENDING":
             pending += 1
         flag = ""
         if not (migrations_dir / name).exists():
-            flag = "  <-- FILE MISSING ON DISK"
-            missing += 1
+            if name in retired:
+                flag = "  (file retired 2026-08-02 — effects now seed-file-derived)"
+                retired_seen += 1
+            else:
+                flag = "  <-- FILE MISSING ON DISK"
+                missing += 1
         print(f"  {state:8} {name}{flag}")
 
     orphans = sorted(done - set(replay))
@@ -188,8 +219,12 @@ def cmd_status(db: Path, manifest: Path, migrations_dir: Path) -> int:
     print(f"  manifest : {len(replay)} DB-MIGRATION entries")
     print(f"  applied  : {len(replay) - pending}")
     print(f"  pending  : {pending}")
+    if retired_seen:
+        print(f"  retired  : {retired_seen} file(s) deliberately deleted (Phase 1); "
+              f"still recorded as applied, effects reproduced from scripts/data/*.json")
     if missing:
-        print(f"  MISSING  : {missing} file(s) named in the manifest are absent on disk")
+        print(f"  MISSING  : {missing} file(s) named in the manifest are absent on disk "
+              f"and are NOT in the manifest's deleted list — investigate")
     if orphans:
         print(f"  orphans  : {len(orphans)}")
     return 1 if (missing or orphans) else 0

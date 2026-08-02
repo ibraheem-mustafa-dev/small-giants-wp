@@ -159,6 +159,44 @@ VALUE_ASSERTIONS: list[dict] = [
         "expected": "scalar-media",
         "why": "Destination for the --mobile image. Same incident.",
     },
+    # ------------------------------------------------------------------
+    # THE ART-DIRECTION DEPENDENCY CHAIN (added 2026-08-02 after the QC council
+    # observed that 6 seeded columns had only a population floor — the exact
+    # blind spot that hid the scalar-media loss for two months).
+    #
+    # These are NOT arbitrary rows. Each is a link the D474 fix DEPENDS ON: if any
+    # one flips, art-directed image cloning breaks silently, exactly as before, and
+    # a population count would not move because every value stays non-null.
+    # Asserting the mechanism's dependencies is the principled scope — asserting
+    # every seeded value would make this a nuisance gate that gets switched off.
+    {
+        "table": "blocks",
+        "key": {"slug": "sgs/hero"},
+        "column": "tier",
+        "expected": "class-section",
+        "why": "is_class_section_block() reads this. It gates run_mechanism_b branch A — "
+               "the only modifier-aware path — AND the seeder's own pre-condition guard. "
+               "If it flips to 'block', art direction dies AND the seeder refuses to "
+               "re-assert scalar-media, i.e. both the mechanism and its repair fail together.",
+    },
+    {
+        "table": "roles",
+        "key": {"role_name": "scalar-media"},
+        "column": "classification",
+        "expected": "styling-behaviour",
+        "why": "This is what keeps scalar-media OUT of the content-bearing allowlist, which "
+               "is how the attr is handed to branch A instead of being claimed by the "
+               "universal walk. Flip it to 'content-bearing' and the walk re-claims the "
+               "image with no modifier awareness — the original bug, restored.",
+    },
+    {
+        "table": "block_attributes",
+        "key": {"block_slug": "sgs/hero", "attr_name": "splitImage"},
+        "column": "emit_shape",
+        "expected": "nested",
+        "why": "'child' here would emit a separate block instead of lifting the image into "
+               "the hero's own attr — the double-render D128 was built to stop.",
+    },
     # ⛔ sgs/testimonial-slider.sideImage was asserted here on 2026-08-02 and REMOVED the
     # same day: setting role='scalar-media' on it BROKE the block. Measured with the
     # seeder disabled — 'image-object' lifts sideImage, 'scalar-media' lifts nothing,

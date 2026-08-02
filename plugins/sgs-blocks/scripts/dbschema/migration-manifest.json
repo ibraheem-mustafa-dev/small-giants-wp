@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-08-02",
   "source_dir": "plugins/sgs-blocks/scripts/migrations",
-  "file_count_found": 30,
+  "file_count_found": 2,
   "counts": {
     "DB-MIGRATION": 29,
     "NOT-A-DB-MIGRATION": 1,
@@ -188,5 +188,43 @@
       "evidence": "sqlite3.connect(db_path) at line 139, cur.execute() at lines 145-157 for UPDATE and SELECT from property_suffixes",
       "also_writes_files": false
     }
-  ]
+  ],
+  "deleted_2026_08_02": {
+    "why": "Phase 1's actual bar (Bean): 'I want the vast majority of all migrations deleted and replaced'. These are deleted because their effects are now reproducible WITHOUT them: schema.sql carries every CREATE/ALTER, and the committed seed files (property-suffixes.json 154, slots.json 104, excluded-properties.json 10, roles.json 29, modifier-suffixes.json 19, atomic-tag-map.json 17, scalar-media-roles.json) were CAPTURED FROM LIVE — i.e. from the post-migration state — so every data effect is already baked into a committed artefact. bootstrap_rebuild() never replayed them anyway (replay is a proven dead end: slot_synonyms was retired, so May migrations cannot run against an August schema). Full history remains in git.",
+    "held_back": [
+      "2026-06-13-testimonial-selector-fingerprint-override.py",
+      "2026-06-26-testimonial-media-role-selector.py"
+    ],
+    "held_back_reason": "Both UPDATE block_attributes.derived_selector. A writer exists (backfill-from-json-catalogue.py + the /sgs-update corrections catalogue) but that regenerability was NOT PROVEN, and the binding rule is never to delete a migration before its replacement seeder is proven.",
+    "names": [
+      "2026-05-16-slot-synonyms-roles.py",
+      "2026-05-16-slot-synonyms-standalone-block.py",
+      "2026-05-17-property-suffixes-per-side.py",
+      "2026-05-29-d99-db-unification.py",
+      "2026-06-07-property-suffixes-flex-justify.py",
+      "2026-06-07-property-suffixes-flex-layout.py",
+      "2026-06-13-property-suffixes-align-items.py",
+      "2026-06-16-button-group-alias-disambiguation.py",
+      "2026-06-18-create-excluded-properties.py",
+      "2026-06-21-register-rating-role.py",
+      "2026-06-30-property-suffixes-grid-position-bg-flex.py",
+      "2026-07-03-register-icon-source-roles.py",
+      "2026-07-04-property-suffixes-content-band-padding.py",
+      "2026-07-04-property-suffixes-flex-item-props.py",
+      "2026-07-04-property-suffixes-transform-filter-transition.py",
+      "2026-07-05-drop-has-inner-blocks-column.py",
+      "2026-07-05-fontstyle-role-typography.py",
+      "2026-07-05-prune-announcement-bar-orphan.py",
+      "2026-07-05-register-image-alt-role.py",
+      "2026-07-05-register-tag-identity-role.py",
+      "2026-07-10-property-suffixes-bg-colour.py",
+      "2026-07-16-fix-spec-drift.py",
+      "2026-07-19-property-suffixes-spec35-grid-rows.py",
+      "2026-07-22-exclude-no-destination-props.py",
+      "2026-07-22-transform-filter-hover-lift-unexclude.py",
+      "2026-07-23-remove-body-from-text-slot-aliases.py",
+      "2026-07-25-quote-body-attribution-slot-fix.py",
+      "2026-08-01-rating-speed-suffix-role.py"
+    ]
+  }
 }

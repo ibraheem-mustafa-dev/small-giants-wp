@@ -1,5 +1,56 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D478 — Phase 1's ACTUAL bar met: 28 migrations deleted · guard extended · spec gate wired [ROUTINE]
+
+**2026-08-02, Bean-approved.** Closes the three residuals D475's completeness review exposed.
+
+### 1. The migrations are gone — Bean's stated Phase-1 bar, finally met
+His ask was *"I want the vast majority of all migrations deleted and replaced"*; earlier I closed
+Phase 1 on "seeders exist so they COULD be", which was a weaker bar. **28 of 30 deleted (~3,700
+lines).** Safe because their effects are reproducible WITHOUT them: `schema.sql` carries every
+CREATE/ALTER, and the committed seed files were **captured FROM LIVE — i.e. from the post-migration
+state** — so every data effect is already baked into a committed artefact. `bootstrap_rebuild()`
+never replayed them anyway (replay is a proven dead end).
+
+⛔ **TWO HELD BACK, deliberately:** `testimonial-selector-fingerprint-override` and
+`testimonial-media-role-selector` both `UPDATE block_attributes.derived_selector`. A writer exists
+(`backfill-from-json-catalogue.py` + the `/sgs-update` corrections catalogue) but **I could not PROVE
+that regenerability tonight**, and the binding rule is never to delete a migration before its
+replacement seeder is proven. Not deleting them is the rule working, not an oversight.
+
+⚠ **`migrate.py --status` printed 27 lines of "FILE MISSING ON DISK"** after the deletion — alarming
+output for a deliberate act, the exact kind that trains people to ignore gates. It now reads the
+manifest's `deleted_2026_08_02` block and reports them as **retired**, reserving MISSING for a file
+that is absent AND unrecorded (which still fails). The DB correctly still records all 29 as applied.
+
+### 2. Value-identity extended — to the mechanism's dependency chain, not arbitrary rows
+The QC council found 6 seeded columns had only a population floor. Rather than assert everything (a
+nuisance gate that gets switched off), the 3 new assertions pin **exactly what the D474 art-direction
+fix depends on**: `blocks.tier='class-section'` for `sgs/hero` (gates branch A **and** the seeder's own
+guard — flip it and both the mechanism and its repair fail together), `roles.scalar-media
+classification='styling-behaviour'` (what keeps it out of the content allowlist), and
+`hero.splitImage emit_shape='nested'`. **One negative control each: all 3 caught, exit 1, live DB
+untouched.**
+
+### 3. `lint-responsive-controls.py` WIRED — a spec-mandated gate that ran from nothing
+Spec 36 FR-36-24(b) requires it; it was in no prebuild, prestart or pre-commit. Now in `prebuild`
+after `db-consistency` (the dbschema gates keep running FIRST so they observe DB state before
+anything imports `db_lookup` and self-heals it). Failing arm proven through the WIRED chain against a
+real block, then reverted. It passes clean today — 84 files, 0 findings.
+
+### 4. Docs swept
+`parking.md` was already conformant (0 entries to move — the premise that it needed cleaning was
+false). 2 completed/rejected plans archived; 4 rejected as still-live, each with the citation that
+saved it.
+
+⚠ **My roster-driven detector test failed twice while I extended it, and both were the test working.**
+First: the synthetic DB only built one of the three tables the assertions now span. Second: two
+assertions target the SAME row via different columns, so inserting one row per ASSERTION produced two
+half-populated rows and `fetchone()` picked the wrong one. It is now built from `VALUE_ASSERTIONS`
+itself, grouped by row, so it adapts as the roster grows instead of quietly asserting a stale shape.
+
+Suite **591 passed / 1 skipped**; every gate green; doc gate 7/7.
+
 ## D477 — The guard from D476 was itself broken; QC council caught it [INCIDENT]
 
 **2026-08-02.** The adversarial rater found that **the pre-condition guard added in D476 — the fix for

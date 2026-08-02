@@ -77,10 +77,13 @@ cached in this file.
 
 Usage
 -----
-    python lint-responsive-controls.py                 # scan + report, exit 1 on any finding
-    python lint-responsive-controls.py --db-context     # also annotate findings with live DB attr counts
-    python lint-responsive-controls.py --self-test      # prove the gate can fail AND pass (negative control)
-    python lint-responsive-controls.py --quiet          # findings only, no discovery/summary preamble
+    python lint-responsive-controls.py --check                # scan + report, exit 1 on any finding
+    python lint-responsive-controls.py --check --db-context    # also annotate findings with live DB attr counts
+    python lint-responsive-controls.py --self-test             # prove the gate can fail AND pass (negative control)
+    python lint-responsive-controls.py --check --quiet         # findings only, no discovery/summary preamble
+
+Bare invocation (no flag) prints help and exits 0 — mirrors the house
+contract set by scripts/dbschema/check_schema_drift.py.
 """
 
 import argparse
@@ -467,6 +470,7 @@ def self_test() -> int:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--check", action="store_true", help="Scan the live source tree; exit 1 on any finding.")
     parser.add_argument("--self-test", action="store_true", help="Run the negative-control self-test and exit.")
     parser.add_argument("--db-context", action="store_true", help="Annotate findings with live DB tiered-attr counts.")
     parser.add_argument("--quiet", action="store_true", help="Suppress the discovery/summary preamble.")
@@ -475,10 +479,14 @@ def main():
     if args.self_test:
         sys.exit(self_test())
 
-    sanctioned = discover_sanctioned_components()
-    findings, files_scanned = scan(BLOCKS_SRC, sanctioned, args.db_context)
-    exit_code = report(findings, files_scanned, sanctioned, args.quiet)
-    sys.exit(exit_code)
+    if args.check:
+        sanctioned = discover_sanctioned_components()
+        findings, files_scanned = scan(BLOCKS_SRC, sanctioned, args.db_context)
+        exit_code = report(findings, files_scanned, sanctioned, args.quiet)
+        sys.exit(exit_code)
+
+    parser.print_help()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
