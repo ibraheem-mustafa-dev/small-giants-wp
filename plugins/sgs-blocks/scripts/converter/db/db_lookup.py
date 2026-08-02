@@ -1420,38 +1420,21 @@ def per_element_state_attrs(block_slug: str) -> "list[PerElementStateAttr]":
 
 
 @functools.lru_cache(maxsize=256)
-def get_block_composition_role(block_slug: str) -> str | None:
-    """Return composition_role from block_composition table for a block.
-
-    XS-3 refined trigger (2026-05-31): queries block_composition to determine
-    if a block is a section-root, wrapper-shell, content-block, or leaf.
-    Used by the refined layout-bearing wrapper detection to check parent's role.
-
-    Args:
-        block_slug: Fully-qualified SGS slug, e.g. 'sgs/hero'.
-
-    Returns:
-        One of 'section-root', 'wrapper-shell', 'content-block', 'leaf',
-        or None if the block does not exist in the table.
-    """
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        row = conn.execute(
-            "SELECT composition_role FROM block_composition WHERE block_slug = ?",
-            (block_slug,),
-        ).fetchone()
-    except sqlite3.OperationalError:
-        # Table absent (pre-D108 state) — soft-fail to None
-        row = None
-    finally:
-        conn.close()
-    if row:
-        _trace("db_lookup_hit", lookup="get_block_composition_role",
-               block_slug=block_slug, composition_role=row[0])
-        return row[0]
-    _trace("db_lookup_miss", lookup="get_block_composition_role",
-           block_slug=block_slug)
-    return None
+# get_block_composition_role() DELETED 2026-08-02 (Phase 1b). Zero callers anywhere
+# (repo-wide, two search shapes). It was a converter-side accessor for
+# `block_composition.composition_role` that nothing ever called.
+#
+# ⛔ THE COLUMN ITSELF IS LIVE — DO NOT DELETE IT. `db-consistency/check_tier_composition.py`
+# (Check #7, wired into `prebuild`) reads it to cross-check tier vs composition_role.
+# Deleting the accessor is safe; deleting the column would break a running gate. The
+# report that surfaced this scored the column "zero callers" from the converter's
+# perspective, which was true and misleading — hence this note.
+#
+# ⚠ It is ALSO not duplicated by `content_select.py`'s wrapper-shell test, which looks
+# superficially like the same classification. That one is per DOM NODE (does this node
+# carry a BEM element class and have BEM descendants); the column is per BLOCK SLUG. A
+# block legitimately contains nodes of several shapes, so they answer different
+# questions. Do not "unify" them.
 
 
 @functools.lru_cache(maxsize=256)
@@ -3440,31 +3423,18 @@ def _slot_alias_to_default_attrs() -> dict[str, dict]:
     return out
 
 
-def slot_default_attrs_for(sgs_classes: list[str]) -> dict:
-    """Per-slot default attrs for the first sgs BEM element resolving to a slot that
-    carries defaults (mirrors resolve_slug_from_bem Path 2 element matching, incl.
-    the compound-element prefix-strip). E.g. `__buttonSecondary` →
-    {'inheritStyle':'secondary'}. Empty dict when none. The walker applies these via
-    setdefault so any draft-extracted value wins (R-31-1 DB-driven, R-31-9 universal)."""
-    dmap = _slot_alias_to_default_attrs()
-    if not dmap:
-        return {}
-    for cls in sorted(c for c in sgs_classes if c.startswith("sgs-")):
-        bem = parse_sgs_bem(cls)
-        if bem is None or not bem.element:
-            continue
-        hit = dmap.get(bem.element.lower())
-        if hit:
-            return dict(hit)
-        if "-" in bem.element:  # compound element → try each segment (mirror Path 2b)
-            for seg in bem.element.lower().split("-"):
-                hit = dmap.get(seg)
-                if hit:
-                    return dict(hit)
-    return {}
+# slot_default_attrs_for() DELETED 2026-08-02 (Phase 1b). Zero callers anywhere. It was
+# an ELEMENT-keyed duplicate of a working MODIFIER-keyed path: the same
+# `slots.standalone_block_default_attrs` data IS reached in production, via
+# `preset_style_for_element()` -> `inherit_style_for_modifier()`, called live from
+# `services/assembly.py` step 5 and `walk.py`'s foreign-identity arm.
+#
+# ⚠ The data is NOT lost by this deletion — only the unused second route to it. The
+# investigation that found this initially mis-flagged `inherit_style_for_modifier` as
+# dead too, because the grep excluded db_lookup.py itself, where its real caller lives.
+# A second, unfiltered search corrected it. Check the call graph from inside the module
+# before declaring any accessor here dead.
 
-
-@functools.lru_cache(maxsize=1)
 def inherit_style_presets() -> frozenset:
     """The set of `inheritStyle` preset values defined by the button-preset slots
     (derived from slots.standalone_block_default_attrs — e.g. {'primary','secondary',
