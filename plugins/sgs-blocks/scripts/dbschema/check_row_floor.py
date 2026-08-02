@@ -119,6 +119,89 @@ SEEDED_COLUMNS: list[tuple[str, str]] = [
 ]
 
 
+# --------------------------------------------------------------------------
+# VALUE-IDENTITY assertions — the blind spot a population floor cannot cover.
+#
+# A floor counts how many rows hold SOME value. It is structurally incapable of
+# noticing a row whose value CHANGED from the right one to a wrong-but-plausible
+# one, because the count does not move. That is not a hypothetical: this file's
+# own docstring names "the `scalar-media` role row went missing" as a founding
+# incident, and when that happened the roles flipped from 'scalar-media' to
+# 'image-object' — three rows, non-null both before and after, count unchanged
+# at 1000. The gate built to catch it read green straight through it. Measured
+# 2026-08-02.
+#
+# So: named rows, named column, exact expected value. Small and deliberately
+# hand-curated — this is for facts that are load-bearing, easily reclassified by
+# an automated pass, and impossible to notice by eye.
+#
+# ⚠ WHY THIS LIVES HERE AND NOT IN A TEST. `converter/db/db_lookup.py` re-asserts
+# these roles at MODULE LOAD, so anything that imports it silently repairs the
+# drift before it can be observed — a pytest regression test for this is
+# VACUOUS, which was proven by negative control rather than assumed. This script
+# imports sqlite3 only, never db_lookup, so it observes the true stored state.
+# Keep it that way: importing db_lookup here would blind this check completely.
+VALUE_ASSERTIONS: list[dict] = [
+    {
+        "table": "block_attributes",
+        "key": {"block_slug": "sgs/hero", "attr_name": "splitImage"},
+        "column": "role",
+        "expected": "scalar-media",
+        "why": "Opens run_mechanism_b branch A, the only path that reads an image's "
+               "--mobile/--desktop modifier. Lost once already: a hero clone put the "
+               "MOBILE crop in the DESKTOP attribute. Source of truth: "
+               "scripts/data/scalar-media-roles.json.",
+    },
+    {
+        "table": "block_attributes",
+        "key": {"block_slug": "sgs/hero", "attr_name": "splitImageMobile"},
+        "column": "role",
+        "expected": "scalar-media",
+        "why": "Destination for the --mobile image. Same incident.",
+    },
+    {
+        "table": "block_attributes",
+        "key": {"block_slug": "sgs/testimonial-slider", "attr_name": "sideImage"},
+        "column": "role",
+        "expected": "scalar-media",
+        "why": "Third member of D128's original roster; lost in the same event.",
+    },
+]
+
+
+def check_value_assertions(con: sqlite3.Connection) -> list[str]:
+    """Return a finding per VALUE_ASSERTIONS entry that does not hold.
+
+    A missing table or column is reported as a finding rather than raising:
+    that is schema drift, which the sibling gate owns, but staying silent here
+    would let a dropped column read as a passing value check.
+    """
+    findings: list[str] = []
+    for a in VALUE_ASSERTIONS:
+        where = " AND ".join(f'"{k}" = ?' for k in a["key"])
+        sql = f'SELECT "{a["column"]}" FROM "{a["table"]}" WHERE {where}'  # noqa: S608 — fixed identifiers
+        try:
+            row = con.execute(sql, list(a["key"].values())).fetchone()
+        except sqlite3.OperationalError as exc:
+            findings.append(
+                f'VALUE  {a["table"]}.{a["column"]} for {a["key"]} — '
+                f"could not be read ({exc}); treat as UNVERIFIED, not as passing."
+            )
+            continue
+        keydesc = ", ".join(f"{k}={v!r}" for k, v in a["key"].items())
+        if row is None:
+            findings.append(
+                f'VALUE  {a["table"]} row ({keydesc}) IS MISSING — '
+                f'expected {a["column"]}={a["expected"]!r}. {a["why"]}'
+            )
+        elif row[0] != a["expected"]:
+            findings.append(
+                f'VALUE  {a["table"]}.{a["column"]} for ({keydesc}) is {row[0]!r}, '
+                f'expected {a["expected"]!r}. {a["why"]}'
+            )
+    return findings
+
+
 class RowFloorError(RuntimeError):
     pass
 
@@ -253,10 +336,29 @@ def cmd_check(floor_path: Path, live_db: Path) -> int:
     live_con = sqlite3.connect(f"file:{live_db}?mode=ro", uri=True)
     try:
         live = collect_counts(live_con, SEEDED_COLUMNS)
+        value_findings = check_value_assertions(live_con)
     finally:
         live_con.close()
 
     drops, growth = compare_to_floor(floor, live)
+
+    # Value-identity findings are reported FIRST and fail independently of the
+    # floor: a reclassified value never moves a count, so it would otherwise sail
+    # through a clean floor comparison.
+    if value_findings:
+        print(f"VALUE-IDENTITY VIOLATION ({len(value_findings)} finding(s)):")
+        for f in value_findings:
+            print(f"  - {f}")
+        print(f"\nlive db    : {live_db}")
+        print(
+            "\nA named row's value is not what it must be. This is NOT a row-count "
+            "problem -- the row is present and populated, it simply holds the wrong "
+            "value, which is why the floor comparison below reads clean. Re-assert it "
+            "from its source of truth (for scalar-media: import converter.db.db_lookup, "
+            "which re-applies scripts/data/scalar-media-roles.json), then find what "
+            "reclassified it."
+        )
+        return 1
 
     if drops:
         print(f"ROW-FLOOR REGRESSION DETECTED ({len(drops)} finding(s)):")
@@ -275,6 +377,7 @@ def cmd_check(floor_path: Path, live_db: Path) -> int:
 
     print(f"CLEAN -- no row-floor regression ({floor_path.name} vs {live_db.name}).")
     print(f"  {len(floor.get('tables', {}))} table(s) + {len(floor.get('columns', {}))} column(s) checked against the floor.")
+    print(f"  {len(VALUE_ASSERTIONS)} value-identity assertion(s) hold.")
     if growth:
         print(f"  {len(growth)} grew since baseline (tolerated, not re-baselined automatically):")
         for g in growth:

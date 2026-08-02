@@ -1,5 +1,74 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D474 — Art-directed media routing RESTORED; the role was never written down [INCIDENT]
+
+**2026-08-02, Bean-approved after a 3-reviewer council.** Track 1 Phase 2.
+
+⛔ **I CLAIMED THIS WAS ALREADY DELIVERED BY `emit_shape`. THAT WAS FALSE**, and I reached it by
+reading a spec note instead of running the pipeline. Bean pushed back — *"it wouldn't have been added
+if it was fine"* — and he was right. Measured, real walk, live DB, no stubs: a hero with two
+art-directed images emitted `splitImage=/hero-mob.jpg` **only** — the MOBILE crop in the DESKTOP
+attribute, the desktop image dropped into a stray `sgs/media` child, `splitImageMobile` never set.
+
+**`scalar-media` does TWO jobs and only ONE was superseded.** (1) "no child block" — yes, `emit_shape`
+does this now. (2) It opens `run_mechanism_b` branch A, the ONLY path that reads each image's
+`--mobile`/`--desktop` modifier. **Nothing replaced (2).** Do not re-derive "it's redundant" from the
+existence of `emit_shape`; that inference was made and measured false here.
+
+**Why it broke: it was never written down anywhere a rebuild could find it.** D128 set the role with a
+hand-typed `UPDATE` recorded only as a note marked "DB (gitignored)". No migration, no seed, no
+script. So no rebuild could reproduce it, it reverted, and the auto-classifier refilled the blank with
+its generic name-regex guess `image-object`. **It demonstrably worked before**: sandybrown post 65
+(backup 2026-07-16) carries `splitImage=IMG_20260419_173547_107-7.webp` +
+`splitImageMobile=aesthetic-pic-7.jpeg` — two distinct images. This was a REGRESSION, not an
+unfinished feature.
+
+### The council split 2–1 for the other option, and the dissenter was right
+
+Two reviewers ranked "make element resolution modifier-aware" first. The adversarial reviewer found
+what the other two lacked — **and it was a flaw in MY brief**: I gave them a synthetic repro with ONE
+class per image. The real canary markup carries **TWO** (`class="sgs-hero__split-image
+sgs-hero__split-image--mobile"`). `_family_element()` returns on the FIRST parseable class, which has
+no modifier, so a resolution-level fix never reaches it. Branch A already scans every class for a
+modifier — exactly what the real markup needs. Also: `--mobile`/`--desktop` are a MINORITY of
+modifiers in the corpus (`--trial` leads at 16), and full-token-first is safe against those only by
+accident. **Verified in a sandbox against a copy of live before touching anything:** applying the role
+turned `splitImage=/hero-mob.jpg` + stray child into `splitImage=/hero-desk.webp` +
+`splitImageMobile=/hero-mob.jpg`, no stray.
+
+### Shipped
+
+- **`scripts/data/scalar-media-roles.json`** + `db_lookup._migrate_scalar_media_roles()` — re-asserts
+  the role at module load from a git-tracked file. **It is also a drift detector**: silent when
+  nothing moved, loud on stderr when it had to repair. Its first live run announced all three repairs.
+- **`converter/tests/test_art_direction_live_path.py`** — real entry point
+  (`run_universal_content_walk`), real DB, nothing stubbed, REAL two-class markup.
+
+### ⛔ MY FIRST REGRESSION TEST WAS VACUOUS — caught by its own negative control
+
+I wrote a test asserting the live DB holds the roles. A negative control (revert the rows in a
+sandbox, run the test) showed it **PASSING against a corrupted database**: importing `db_lookup` runs
+the self-healing seeder, which repairs the drift before the assertion. **A self-healing seeder and an
+in-process regression test are in direct tension — the healer blinds the test.** Deleted and replaced
+with a test of the DETECTOR against a synthetic DB.
+
+**The real detector had to be a process that does not import the seeder** →
+`check_row_floor.py` gained **VALUE-IDENTITY assertions** (named row, named column, exact expected
+value). It imports `sqlite3` only, never `db_lookup`, and that must stay true or it goes blind.
+
+### ⛔ AND THE FLOOR GATE I SHIPPED THIS MORNING WAS BLIND TO ITS OWN NAMESAKE INCIDENT
+
+`check_row_floor.py`'s docstring names "the `scalar-media` role row went missing" as a founding
+incident. It counts rows holding SOME value. When the roles flipped `scalar-media`→`image-object` the
+count did not move — **1012 before, 1012 after**. Verified with the exact transition. A population
+floor is structurally incapable of seeing a reclassification. **Negative control on the new check: the
+exact historical drift now fails it with 3 findings, exit 1, while the floor comparison still reads
+clean** — which is the point.
+
+Suite **591 passed / 1 skipped**. Related open item: the stub audit
+(`reports/2026-08-02-self-stubbing-test-audit.md`) found **4** self-stubbing tests, all stubbing this
+same gate; now that the role is restored the real function returns a value, so they can be de-stubbed.
+
 ## D473 — The three DB gates now RUN, and the seed-file shrink is no longer silent [INCIDENT]
 
 **2026-08-02.** `check_schema_drift.py`, `check_row_floor.py` and `capture_seed_data.py` all existed,

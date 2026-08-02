@@ -475,6 +475,96 @@ def _migrate_excluded_properties() -> None:
     _seed_table_ordered("excluded_properties")
 
 
+# ----------------------------------------------------------------------------
+# Idempotent seeder — `scalar-media` role assignments (2026-08-02, D474)
+# ----------------------------------------------------------------------------
+# UNLIKE the seeders above this does NOT own a whole table. `block_attributes`
+# is rebuilt from every block.json by /sgs-update; this only re-asserts ONE
+# COLUMN on a named handful of rows.
+#
+# WHY IT EXISTS: D128 built art-directed media routing and set this role with a
+# hand-typed DB UPDATE that was never captured in any migration or script. No
+# rebuild could reproduce it, so it silently reverted and the auto-classifier
+# refilled the blank with its generic guess `image-object`. Measured 2026-08-02:
+# zero rows carried the role, and a hero clone put the MOBILE image into the
+# DESKTOP attr while dropping the desktop image into a stray child block.
+#
+# The role is load-bearing for BOTH halves of the mechanism — see
+# scripts/data/scalar-media-roles.json, which carries the full rationale and is
+# the source of truth for the roster.
+_SCALAR_MEDIA_ROLES_FILE = _DATA_DIR / "scalar-media-roles.json"
+_SCALAR_MEDIA_ROLE = "scalar-media"
+
+
+def _load_scalar_media_roles() -> list[tuple[str, str]]:
+    """Load the [(block_slug, attr_name)] roster. Soft-fails to ``[]``."""
+    try:
+        raw = json.loads(_SCALAR_MEDIA_ROLES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    out: list[tuple[str, str]] = []
+    for entry in raw.get("attrs", []):
+        if isinstance(entry, list) and len(entry) >= 2:
+            out.append((entry[0], entry[1]))
+    return out
+
+
+def _migrate_scalar_media_roles() -> None:
+    """Re-assert ``role='scalar-media'`` on the rostered attrs. Idempotent.
+
+    ⚠ THIS SEEDER IS ALSO A DRIFT DETECTOR, and that is the point. It writes
+    only when a row does NOT already hold the role, and when it does write it
+    says so on stderr. A silent run means nothing drifted; a noisy run means
+    something reclassified these rows again and the message is the evidence.
+    The previous loss was invisible precisely because the value was set once,
+    by hand, with nothing to re-assert or announce it.
+
+    It deliberately does NOT reset rows back to their previous role when an
+    entry is REMOVED from the roster. Unlike the table seeders above, this file
+    is not the owner of the `role` column — /sgs-update's classifier is — so
+    inventing a "correct" value to revert to would be a guess. Removing an entry
+    simply stops this seeder re-asserting it; the classifier then owns it again.
+    """
+    roster = _load_scalar_media_roles()
+    if not roster:
+        return
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        changed: list[tuple[str, str, str]] = []
+        for block_slug, attr_name in roster:
+            row = conn.execute(
+                "SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+                (block_slug, attr_name),
+            ).fetchone()
+            if row is None:
+                # The attr itself is gone — a block.json change, not role drift.
+                # Not this seeder's business to invent the row; announce and skip.
+                sys.stderr.write(
+                    f"[db_lookup] scalar-media roster names {block_slug}.{attr_name}, "
+                    f"which has no block_attributes row — check the block's block.json.\n"
+                )
+                continue
+            if row[0] == _SCALAR_MEDIA_ROLE:
+                continue  # already correct — the quiet, expected path
+            conn.execute(
+                "UPDATE block_attributes SET role = ? WHERE block_slug = ? AND attr_name = ?",
+                (_SCALAR_MEDIA_ROLE, block_slug, attr_name),
+            )
+            changed.append((block_slug, attr_name, row[0]))
+        if changed:
+            conn.commit()
+            for block_slug, attr_name, was in changed:
+                sys.stderr.write(
+                    f"[db_lookup] RE-ASSERTED role='{_SCALAR_MEDIA_ROLE}' on "
+                    f"{block_slug}.{attr_name} (found {was!r}). Something reclassified "
+                    f"it — art-directed media routing was BROKEN until this ran.\n"
+                )
+    except sqlite3.OperationalError:
+        pass  # DB read-only / locked / missing — soft-fail, as the siblings do
+    finally:
+        conn.close()
+
+
 # Run migration at module load (idempotent).
 #
 # property_suffixes is seeded HERE, ahead of
@@ -488,6 +578,9 @@ if _SGS_DB_PRESENT_AT_IMPORT:
     _migrate_property_suffixes()
     _migrate_slots()
     _migrate_excluded_properties()
+    # Runs LAST of the group: it re-asserts a column on rows the others may have
+    # just (re)created, and it is the only one that also reports drift.
+    _migrate_scalar_media_roles()
 
 
 # ----------------------------------------------------------------------------

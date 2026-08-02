@@ -1,0 +1,26 @@
+{
+  "__doc": "Attributes that MUST carry block_attributes.role = 'scalar-media'. THE source of truth for that assignment. db_lookup._migrate_scalar_media_roles() re-applies it at module load.",
+  "__why": "This is a RE-BUILD of a mechanism that was lost, not a new feature. D128 (2026-06-01) built art-directed media routing and set this role with a HAND-TYPED DB UPDATE that was never captured in any migration, seed or script — it was recorded only as a note marked 'DB (gitignored)'. Nothing could reproduce it, so it silently reverted, and the auto-classifier refilled the blank with its generic name-regex guess 'image-object'. Measured 2026-08-02: 0 rows carried the role, and a hero clone put the MOBILE image into the DESKTOP attribute while dropping the desktop image into a stray child block. A real clone (sandybrown post 65, backed up 2026-07-16) proves it once worked: splitImage=IMG_20260419_173547_107-7.webp, splitImageMobile=aesthetic-pic-7.jpeg.",
+  "__what_the_role_does": "Two things, and only the FIRST was superseded. (1) It removes the attr from the universal walk's candidate set, because 'scalar-media' is not in _content_bearing_roles() — so leg 2 stops claiming the image. FR-31-2.6's emit_shape='nested' now also achieves 'no child block', which is why this half looked redundant. (2) It opens run_mechanism_b branch A, the ONLY code path that reads each image's BEM --mobile/--desktop modifier and routes to base vs base+'Mobile'. NOTHING replaced (2). Do not conclude this role is redundant because emit_shape exists — that reasoning was made and measured false on 2026-08-02.",
+  "__why_not_modifier_aware_resolution": "The alternative considered was making element resolution modifier-aware instead. It does NOT work on the real markup: the live mockup emits TWO classes on each image ('sgs-hero__split-image sgs-hero__split-image--mobile'), and _family_element() returns on the FIRST parseable class, which carries no modifier. Branch A already scans every class for a modifier, which is exactly what the real markup needs. Also, --mobile/--desktop are a minority of modifiers in the corpus (--trial is the most common at 16 instances) and a full-token-first strategy is safe against those only by accident, not by design.",
+  "__proven": "Sandbox experiment 2026-08-02 against a COPY of the live DB, real two-class markup, real run_universal_content_walk: BEFORE splitImage=/hero-mob.jpg + stray ChildBlock; AFTER applying these 3 rows splitImage=/hero-desk.webp, splitImageMobile=/hero-mob.jpg, no stray child.",
+  "__format": "[block_slug, attr_name, note] — the role applied is always 'scalar-media'",
+  "__roster_source": "D128's stated roster, re-verified against the live DB 2026-08-02: all three currently hold role='image-object' with canonical_slot='media'.",
+  "attrs": [
+    [
+      "sgs/hero",
+      "splitImage",
+      "Desktop half of the hero split art-direction pair. Branch A routes the un-suffixed image here."
+    ],
+    [
+      "sgs/hero",
+      "splitImageMobile",
+      "Mobile half. Branch A routes the --mobile image here by appending 'Mobile' to the base attr name."
+    ],
+    [
+      "sgs/testimonial-slider",
+      "sideImage",
+      "Named in D128's original roster. No Mobile companion today, so it uses branch A only for the no-child-block half — included because it was part of the mechanism that was lost, and leaving it out would recreate a partial state nobody can explain later."
+    ]
+  ]
+}
