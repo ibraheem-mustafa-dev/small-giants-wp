@@ -218,9 +218,84 @@ def _migrate_roles_table() -> None:
         conn.close()
 
 
+# ----------------------------------------------------------------------------
+# Idempotent seeder — `modifier_suffixes` (2026-08-02, Phase 1)
+# ----------------------------------------------------------------------------
+# This table had NO WRITER ANYWHERE while being CONVERTER-LOAD-BEARING: it is
+# read at line ~585 (all suffix/kind pairs), ~2146 (kind='breakpoint') and
+# ~2262 (per-kind, ORDER BY rowid). A rebuild-from-empty produced 0 rows, which
+# silently breaks breakpoint/side resolution — no error, just wrong answers.
+# Spec 31 §4 declares the table DB-OWNED, so the resolvers must never hardcode
+# these literals; the vocabulary therefore lives in a git-tracked data file.
+_MODIFIER_SUFFIXES_FILE = Path(__file__).resolve().parents[2] / "data" / "modifier-suffixes.json"
+
+
+def _load_modifier_suffixes_seed() -> list[tuple[str, str, str | None]]:
+    """Load the ORDERED [(suffix, kind, notes)] vocabulary from the data file.
+
+    Soft-fails to ``[]`` if the file is missing/unreadable, so a good table is
+    left alone rather than wiped.
+    """
+    try:
+        raw = json.loads(_MODIFIER_SUFFIXES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    out: list[tuple[str, str, str | None]] = []
+    for entry in raw.get("suffixes", []):
+        if not isinstance(entry, list) or len(entry) < 2:
+            continue
+        out.append((entry[0], entry[1], entry[2] if len(entry) > 2 else None))
+    return out
+
+
+def _migrate_modifier_suffixes() -> None:
+    """Idempotent seed of `modifier_suffixes`, PRESERVING ROW ORDER.
+
+    ⚠ ORDER IS LOAD-BEARING. ``breakpoint_suffixes()``-style callers run
+    ``SELECT suffix FROM modifier_suffixes WHERE kind = ? ORDER BY rowid``, so
+    the table's physical row order is what the resolver sees — and for
+    ``kind='side'`` that order is Top/Right/Bottom/Left, i.e. CSS shorthand
+    order. ``INSERT OR REPLACE`` assigns a NEW rowid to a replaced row, so the
+    usual upsert pattern would silently scramble that sequence.
+
+    Therefore: compare first, and only if the table differs from the file do a
+    full DELETE + ordered re-INSERT. That keeps it idempotent (an unchanged
+    table is never rewritten) while guaranteeing rowid order matches the file.
+    """
+    seed = _load_modifier_suffixes_seed()
+    if not seed:
+        return
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS modifier_suffixes ("
+            "  suffix TEXT PRIMARY KEY,"
+            "  kind   TEXT NOT NULL,"
+            "  notes  TEXT"
+            ")"
+        )
+        current = conn.execute(
+            "SELECT suffix, kind, notes FROM modifier_suffixes ORDER BY rowid"
+        ).fetchall()
+        if [tuple(r) for r in current] == [tuple(s) for s in seed]:
+            return  # already exact, including order — nothing to do
+        conn.execute("DELETE FROM modifier_suffixes")
+        conn.executemany(
+            "INSERT INTO modifier_suffixes (suffix, kind, notes) VALUES (?, ?, ?)",
+            seed,
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail, as the sibling seeders do.
+        pass
+    finally:
+        conn.close()
+
+
 # Run migration at module load (idempotent).
 if _SGS_DB_PRESENT_AT_IMPORT:
     _migrate_roles_table()
+    _migrate_modifier_suffixes()
 
 
 # ----------------------------------------------------------------------------
