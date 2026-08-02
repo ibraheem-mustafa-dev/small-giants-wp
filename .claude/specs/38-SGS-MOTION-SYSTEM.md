@@ -116,7 +116,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Flip on filtered grids | **G** — same-document View Transitions snapshot the whole page (UI freeze on rapid re-filter) and give no per-item stagger/interrupt; Flip does | PAIRED block contract | Paired setting surfaced on BOTH `sgs/filter-search` and the filterable block (§3.3) | Pairing contract, not a one-off; VT crossfade is the no-GSAP fallback; Flip loads only when the pair opts in | off | filter-search × card-grid → any future filterable block implementing the contract |
 | Draggable + Inertia | **G** — pointer physics + momentum; CSS scroll-snap remains the Tier V default for carousels | block (curated roster) | Inspector toggle on roster blocks (§3.3 opt-in mechanism) | Roster-gated (`supports.sgs.fx.draggable`); touch-action discipline; keyboard alternative mandatory | off | gallery/testimonial-slider/before-after/hero decorations → any block that declares the support |
 | Physics2D / PhysicsProps / CustomBounce / CustomWiggle | **G** — no CSS equivalent for physics easings | N/A (flavour — inherits its host effect's level) | N/A (flavour — appears as easing/motion options inside other G effects' controls, never its own surface) | Never a standalone toggle; bundled into the consuming effect's chunk | n/a | Easing dropdown of G effects only |
-| Physics sandbox (throwable decorative bodies) | **G** — pointer physics + post-release momentum; no CSS equivalent (FR-38-27) | container (dedicated block, NET-NEW) | New container-equivalent block's inspector | **DECORATIVE-ONLY — nothing operable or must-read may be a body**, which is what dissolves WCAG 2.5.7 (a thrown object has no discrete alternative); the ONE named exception to FR-38-14's never-a-standalone-toggle rule; reduced motion disables the physics while children still render static; inherits the composite-mirror rule | off (n/a — new block, NOT BUILT) | Hero/section decorative layers → any container-equivalent placement (decorative content only) |
+| Physics canvas (throwable decorative bodies) | **G** — pointer physics + post-release momentum; no CSS equivalent (FR-38-27) | container (dedicated block, NET-NEW) | `sgs/physics-canvas` inspector | **NICHE ARTISTIC CANVAS (Bean, 2026-08-02) — deliberately NOT built for accessibility, structure, or cloning.** Operator-discretion surface; the ONE named exception to FR-38-14's never-a-standalone-toggle rule; reduced motion disables the physics while children still render static; inherits the composite-mirror rule at render time | off | Hero/section decorative layers → any container-equivalent placement |
 | DrawSVG | **G** (scrubbed) — scroll-scrubbed draw needs ScrollTrigger; **load-triggered simple draw stays covered by Tier V `data-sgs-path-draw`** (not retired) | element (SVG-bearing) | Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator` — each verified to render inline SVG shape geometry (`sgs/separator` conditionally, via the same `sgs_get_wp_icon()`/`sgs_get_lucide_icon()` helpers `sgs/icon` uses, when `contentMode === 'icon'`). **`sgs/decorative-image` REMOVED 2026-07-31 (D434):** it renders a raster `<img>`/video only, so no drawable geometry exists. An `<img src="*.svg">` is not drawable or morphable either — the file is an opaque image resource with no DOM access to its paths, which is precisely why `sgs/responsive-logo` inlines via `wp_kses` instead. | Retires **Vivus** (§3.4, D408); trigger = load OR scroll-scrub | off | Logo/icons/dividers → any SVG-bearing block (`decorative-image` excluded — raster/video only) |
 | MorphSVG | **G** — CSS `d:path()` needs identical point counts; point-matching IS the plugin | element | Inspector, ASSET-GATED (§3.4) | Requires prepared matched path pairs + authoring guidance; revives parking P-10 | off | Icons/logos → decorative SVG anywhere (asset-gated) |
 | MotionPath | **V default / G when scrubbed** — CSS `offset-path` handles autonomous path-follow cross-browser; the plugin is needed only for scroll-scrubbed path progress | element | Inspector on `sgs/decorative-image` | V variant ships without GSAP; G variant needs ScrollTrigger + MotionPathPlugin | off | decorative-image → other media blocks (permitted) |
@@ -296,9 +296,15 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      `scrollLeft` write, never a tween — there is genuinely nothing for `prefers-reduced-motion`
      to gate in this module. A negative control (each block's OWN arrow-click, a separate code
      path) proved the emulated context was real: `sgs/gallery`/`sgs/post-grid` correctly branch
-     `auto`/`smooth`; `sgs/trustpilot-reviews` and `sgs/google-reviews` hardcode `'smooth'`
+     `auto`/`smooth`; `sgs/trustpilot-reviews` and `sgs/google-reviews` hardcoded `'smooth'`
      regardless of preference — a genuine defect in those two blocks' own arrow-click code,
-     separate from the loop module, recorded in §10 rather than fixed here.
+     separate from the loop module. ✅ **BOTH FIXED 2026-08-02 (`5c45f879`, `ba28ab92`).** Each now
+     reads the media query FRESH per call rather than caching it at module load, so toggling the OS
+     setting takes effect during a visit. The sweep also caught a THIRD instance the measurement had
+     not: `sgs/post-grid` had a SECOND `scrollIntoView` still passing the British spelling
+     `behaviour`, which the browser silently discards — one of two occurrences had been fixed and
+     the other missed. Only one hardcoded `'smooth'` survives, in `google-reviews`' autoplay, which
+     early-returns under reduce (WCAG 2.3.3) and is therefore correctly gated, not a defect.
   3. **CLOSED 2026-08-02 (register item M2), with ONE genuine defect found.** Keyboard arrow-wrap
      was exercised live (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 2 — focus the next-arrow,
      press Enter repeatedly past the boundary) on all 4 arrow-bearing blocks (`sgs/buybox` has no
@@ -307,16 +313,24 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      (gallery/post-grid in exactly N presses via their internal counted `currentIndex`; trustpilot
      in N+1, because its dot-sync is nearest-scroll-position rather than a counter, and spends one
      press "inside" the clone region before the loop module's own correction re-seats it — a real
-     mechanism difference, not a defect). **`sgs/google-reviews` is genuinely BROKEN**: its
-     `nextSlide()` computes an absolute scroll target by scanning only REAL (non-clone) items for
-     one past the current position; once `scrollLeft` moves into clone territory it has no further
-     real item to target and dead-ends at the last real card forever — the arrow never disables
-     (satisfying the letter of "must never disable") but functionally cannot progress past the
+     mechanism difference, not a defect). `sgs/google-reviews` WAS genuinely broken: its
+     `nextSlide()` computed an absolute scroll target by scanning only REAL (non-clone) items for
+     one past the current position; once `scrollLeft` moved into clone territory it had no further
+     real item to target and dead-ended at the last real card forever — the arrow never disabled
+     (satisfying the letter of "must never disable") but functionally could not progress past the
      last real card via repeated keyboard activation, failing WCAG 2.5.7's actual requirement that
-     the alternative work. Root cause: `src/blocks/google-reviews/view.js` `nextSlide()`/
-     `prevSlide()` need to either target clone positions the way the loop module itself does, or
-     switch to relative `scrollBy()` stepping the way `sgs/trustpilot-reviews` already does (which
-     rides into clone territory harmlessly because the loop module's own correction re-seats it).
+     the alternative WORK. Satisfying a rule's wording while defeating its purpose is the failure
+     shape worth remembering here.
+     ✅ **FIXED 2026-08-02 (`ba28ab92`) and PROVEN LIVE.** Both directions now treat "no real item
+     that way" as the WRAP POINT instead of clamping to a card already on screen. `prevSlide()` had
+     the SAME defect mirrored — its fallback re-scrolled to the first real card from inside the
+     LEADING clone region — and was NOT in the original finding; it was caught by reading the pair
+     rather than only the function the report named. Verified on the live canary with the committed
+     probe: **google-reviews 17/17, trustpilot-reviews 17/17, post-grid 17/17**, the decisive
+     assertion being "keyboard-driven wrap lands back at the SAME index within 5 activations —
+     start index=0 → back to 0 after 3 presses".
+     ⚠ This block passed the looping rollout's own "dots == real cards" check (3 == 3) while its
+     keyboard path was already broken. A dot that moves is not a dot that WORKS.
      NOT fixed this session — a behavioural change to that block's navigation, not a measurement
      task, and outside this session's "measure, don't ship" scope.
 
@@ -498,30 +512,53 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      the same `init`/`cleanup` pair as everything else in this module, no page-wide observer.
      Verified present: `src/shared/effects/cursor-field.js`.
 
-- **FR-38-27 Physics sandbox — a container-equivalent block whose children are throwable
-  DECORATIVE bodies. Tier G.** Bean-signed 2026-08-01 (D447). **SPEC ONLY — NOT BUILT.** A new block
-  is high blast radius (project rule 7), so the build is its own design-gated session; this entry
-  exists so the decision is homed rather than carried in a plan file.
+- **FR-38-27 Physics canvas — a container-equivalent block whose children are throwable
+  DECORATIVE bodies. Tier G.** Bean-signed 2026-08-01 (D447); **SCOPE RE-RULED by Bean 2026-08-02
+  after a QC council** (see the box below). BUILT 2026-08-02.
+
+  ⛔ **SCOPE RULING — Bean, 2026-08-02, do not re-litigate.** This block is a **NICHE ARTISTIC
+  CANVAS**. It is **deliberately NOT built for accessibility, NOT built for structure, and NOT
+  expected to be clonable.** It is an operator-discretion surface for decorative flourish, and it is
+  the one place in the framework where those guarantees are knowingly waived. Renamed
+  `sandbox` → `canvas` at the same ruling.
+
+  **What the council established, kept here because the earlier text asserted the opposite.** This
+  FR originally justified itself by claiming the block *dissolves* WCAG 2.5.7 — a thrown object has
+  no discrete single-pointer alternative, so the argument ran that restricting bodies to
+  non-interactive decorative content means nothing operable is ever throwable and no alternative is
+  owed. **A QC council measured that guarantee and it does not hold.** `allowedBlocks` filters by
+  block NAME, not by CAPABILITY: `sgs/media` carries `linkUrl` and `videoControls` (default `true`,
+  giving a focusable native `<video controls>`), `sgs/icon` carries `linkUrl`, and `core/image`
+  carries WP's own `linkTo`. An operator can place operable content inside with no code. The
+  `aria-hidden="true"` on the arena does not compensate — it removes content from the accessibility
+  tree while leaving it in the tab order.
+  **That was a category error in this FR, not a build defect: "decorative" was written as a property
+  of a block TYPE when it is a property of a block's CONFIGURATION.** Bean's ruling above accepts
+  the consequence for this surface rather than requiring the guarantee. **Do NOT cite this FR as
+  evidence that any other SGS surface clears 2.5.7** — every other drag effect earns that separately
+  via a genuine discrete alternative (range input, arrows, dots), and that reasoning is untouched.
+  Residual, unbuilt, offered not owed: `tabindex="-1"` on focusable descendants would keep children
+  throwable by pointer while removing the keyboard trap. ⛔ `inert` is the WRONG primitive — it
+  blocks pointer interaction on the whole subtree and would disable the block.
 
   **This is the ONE named exception to FR-38-14**, which says physics are easing FLAVOURS and
-  *never standalone toggles*. FR-38-14 continues to govern every other use; a sandbox is the single
+  *never standalone toggles*. FR-38-14 continues to govern every other use; this canvas is the single
   surface where physics is the point rather than the easing. Do not read this as reopening
   FR-38-14 generally.
 
   **Capability was never the objection** — Physics2DPlugin and InertiaPlugin are already bundled
-  and free. Two real objections stood, and the decorative-only constraint answers both:
+  and free.
 
-  1. **WCAG 2.5.7 (dragging movements).** Every shipped drag effect clears 2.5.7 because it maps
-     onto a discrete single-pointer alternative — a range input, arrow buttons, dots. **A thrown
-     object has no such alternative**, and one cannot be invented for it. Restricting throwable
-     bodies to non-interactive decorative layers **dissolves the requirement rather than answering
-     it**: nothing a user must reach is throwable, so no alternative is owed. This is the load-
-     bearing constraint of the whole FR. If a future change lets a sandbox hold anything operable —
-     a link, a button, a form field, readable body copy — 2.5.7 applies again in full and this FR
-     no longer covers it.
-  2. **Autonomous motion.** An object still moving *after release* is autonomous, so the
-     "drag survives reduced motion" reasoning behind `fx-draggable`'s SIMPLIFY contract does not
-     carry here. Reduced motion must disable the physics outright — see the contract below.
+  **Autonomous motion.** An object still moving *after release* is autonomous, so the
+  "drag survives reduced motion" reasoning behind `fx-draggable`'s SIMPLIFY contract does not
+  carry here. Reduced motion disables the physics outright — see the contract below.
+
+  **KNOWN CEILING (council, 2026-08-02) — it is a throwable layer, not a physics engine.**
+  Physics2DPlugin has no collision detection; bodies bounce off the arena's edges only and pass
+  straight through each other. There is also no rotation (`type: 'x,y'`) and no resize handling
+  (bodies take fixed pixel `left/top/width/height` at init). Award-tier "physics playground" sections
+  use Matter.js/Rapier for pile-up and stacking. Accepted for a decorative canvas; do NOT describe
+  this block as a physics engine to a client.
 
   **Shape (Bean's call, asked and answered in-session): a dedicated container-equivalent block
   whose children become bodies — NOT a physics toggle bolted onto existing blocks with preset
@@ -541,7 +578,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   captured rule. It is the cheaper error to correct in either direction.
 
   ⚠ **§10 row OWED, not dropped** (STOP-29 — mapped, not silently deferred). The per-effect
-  reduced-motion table needs a `physics-sandbox` row carrying the contract above. It is not added
+  reduced-motion table needs a `physics-canvas` row carrying the contract above. It is not added
   in this edit because §10 is being edited concurrently by another track adding the `cursor-field`
   and `carousel-loop` rows, and a same-file collision would clobber one of them. Add it with the
   block's build session.
@@ -894,7 +931,7 @@ ships later; the grammar is stable from day one so drafts authored today clone t
 ## 5. Functional requirements (with done-criteria)
 
 The ROSTER FRs are defined in §3, not here — FR-38-6 … FR-38-19, plus the later additions
-FR-38-25 (cursor field, §3.3), FR-38-26 (looping carousels, §3.3) and FR-38-27 (physics sandbox,
+FR-38-25 (cursor field, §3.3), FR-38-26 (looping carousels, §3.3) and FR-38-27 (physics canvas,
 §3.3). Each carries its own done-criteria inline. **A new capability FR belongs in §3 + the §2
 taxonomy table, not in this list** — this section is infrastructure only:
 
@@ -1160,7 +1197,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Page transitions | **Suppress:** instant navigation |
 | Cursor-reactive field (FR-38-25) | **Simplify:** the emitted field itself has no per-frame animated motion to gate — it is an rAF-throttled custom-property WRITE tracking the pointer, not a tween — so the participant CSS renders identically; the only thing genuinely gated is whatever CSS transition a field TYPE's own implementation attaches, unchanged by this FR |
 | Cursor-reactive field — `floating-objects` type (FR-38-25, once built) | **Simplify to a fixed resting transform, never suppress the object.** Differs from the `glow`/`spotlight-mask` SIMPLIFY case above: those rest as a static PAINT (a legitimate finished state); an autonomously-moving OBJECT has no equivalent "just stop tracking" answer, because the object is content an operator placed deliberately (`degrade-to-more-content-never-less`). Under `prefers-reduced-motion: reduce` the object renders at its AUTHORED static position (`transform: none`), identical to the fail-open no-JS state — the reduced-motion state and the no-JS state are the SAME state, needing no separate code path. |
-| Carousel loop (FR-38-26) | **Measured 2026-08-02 (register item M2).** Unstated in this spec until now — the module's own docblock only argued by analogy that it should be a no-op. **Confirmed identical under reduce**, by direct measurement on 4 of 5 rollout blocks with a real `reducedMotion:'reduce'` browser context (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 1): clones still insert, still neutralise (`inert`+`aria-hidden`), and the boundary `scrollLeft` re-seat still fires — because the correction is an instantaneous position WRITE, never a tween, so there is no animation for `prefers-reduced-motion` to gate either way. Negative control (proves the emulated context is real, not self-reported): each block's own arrow-click DOES branch on reduce where implemented — `sgs/gallery`/`sgs/post-grid` pass `auto` vs `smooth` to `scrollIntoView` correctly (post-grid's `behavior` was misspelled `behaviour`, a silent no-op discovered and fixed live this session, `plugins/sgs-blocks/src/blocks/post-grid/view.js`); `sgs/trustpilot-reviews` and `sgs/google-reviews` pass a HARDCODED `'smooth'` regardless of `prefers-reduced-motion` — a real defect in those two blocks' own arrow-click code, NOT in the loop module, recorded here as a finding rather than folded into this row's verdict. |
+| Carousel loop (FR-38-26) | **Measured 2026-08-02 (register item M2).** Unstated in this spec until now — the module's own docblock only argued by analogy that it should be a no-op. **Confirmed identical under reduce**, by direct measurement on 4 of 5 rollout blocks with a real `reducedMotion:'reduce'` browser context (`scripts/motion-qa/probe-carousel-loop.mjs`, Arm 1): clones still insert, still neutralise (`inert`+`aria-hidden`), and the boundary `scrollLeft` re-seat still fires — because the correction is an instantaneous position WRITE, never a tween, so there is no animation for `prefers-reduced-motion` to gate either way. Negative control (proves the emulated context is real, not self-reported): each block's own arrow-click DOES branch on reduce where implemented — `sgs/gallery`/`sgs/post-grid` pass `auto` vs `smooth` to `scrollIntoView` correctly (post-grid's `behavior` was misspelled `behaviour`, a silent no-op discovered and fixed live this session, `plugins/sgs-blocks/src/blocks/post-grid/view.js`); `sgs/trustpilot-reviews` and `sgs/google-reviews` passed a HARDCODED `'smooth'` regardless of `prefers-reduced-motion` — a real defect in those two blocks' own arrow-click code, NOT in the loop module. ✅ BOTH FIXED same day (`5c45f879`, `ba28ab92`): each now reads the media query fresh per call. The sweep caught a third instance the measurement missed — a SECOND `scrollIntoView` in post-grid still spelled `behaviour`. The one remaining hardcoded `'smooth'` (google-reviews autoplay) is correctly gated by an early return under reduce. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 
