@@ -95,20 +95,6 @@ _REPORT_NONE_MARKER = "_(none)_"
 # Keys in settings.custom that are routing config, not design tokens.
 # Excluded from design_tokens writes.
 
-# Parent-child block relationships (mirrors populate-db.py PARENT_CHILD)
-PARENT_CHILD = {
-    "accordion": ["accordion-item"],
-    "tabs": ["tab"],
-    "form": [
-        "form-field-text", "form-field-email", "form-field-phone",
-        "form-field-textarea", "form-field-select", "form-field-checkbox",
-        "form-field-radio", "form-field-date", "form-field-number",
-        "form-field-file", "form-field-hidden", "form-field-consent",
-        "form-field-address", "form-field-tiles", "form-step", "form-review",
-    ],
-    "container": None,
-}
-
 
 # ---------------------------------------------------------------------------
 # DB utilities
@@ -176,14 +162,6 @@ def _canonical_attr_type(raw) -> str:
     return raw
 
 
-def _parent_for_block(block_dir_name: str) -> str | None:
-    """Return parent slug for a block dir name, or None."""
-    for parent, children in PARENT_CHILD.items():
-        if children and block_dir_name in children:
-            return f"sgs/{parent}"
-    return None
-
-
 # ---------------------------------------------------------------------------
 # Stage 1 — SGS codebase scan
 # PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py
@@ -219,10 +197,15 @@ def _index_sgs_block_files(
                      row and increment the updated_* counter.
 
     Also updates indexed_files mtime + content_hash per block.json processed.
+    Also writes block_selectors (delete-then-insert per on-disk block, plus a
+    post-loop prune of rows for blocks with no block.json on disk any more —
+    Task 2a/2b, 2026-08-01. See the inline comment at the write site for the
+    two-writer caveat vs populate-db.py.
 
     Returns counters dict: scanned, new_blocks, new_attrs, new_supports,
     updated_blocks, updated_attrs, updated_supports,
-    indexed_inserted, indexed_updated, indexed_skipped.
+    indexed_inserted, indexed_updated, indexed_skipped,
+    new_selectors, pruned_selectors.
 
     The caller (`stage_1_sgs_codebase_scan`) owns `conn.commit()` after this
     helper returns — keeping the commit responsibility at one frame up keeps
@@ -238,6 +221,8 @@ def _index_sgs_block_files(
     indexed_inserted = 0
     indexed_updated = 0
     indexed_skipped = 0
+    new_selectors = 0
+    _live_slugs: set[str] = set()
 
     # --- Canonical core→SGS replacement record (D270, 2026-07-04) ---
     # `replaces` no longer lives in individual block.json; the single
@@ -341,6 +326,7 @@ def _index_sgs_block_files(
             continue
 
         slug = data.get("name", f"sgs/{block_dir.name}")
+        _live_slugs.add(slug)
         title = data.get("title", block_dir.name)
         category = data.get("category", "sgs-blocks")
         description = data.get("description", "")
@@ -350,7 +336,29 @@ def _index_sgs_block_files(
             for fn in ("view.js", "view.ts", "view.jsx", "view.tsx")
         )
         block_type = "dynamic" if has_render else "static"
-        parent = _parent_for_block(block_dir.name)
+        # DB-first parent derivation (R-31-1): block.json's own `parent` array is
+        # already parsed into `data` above — read it directly instead of a
+        # hardcoded PARENT_CHILD dict (removed 2026-08-01; that dict silently
+        # missed 5 blocks that declare `parent` — mega-aside, mega-group,
+        # product-faq-item, site-footer-row, site-header-row — because a reseed
+        # never re-derives from the dict's source of truth).
+        #
+        # Only the FIRST parent is taken when block.json declares more than one
+        # (e.g. the form-field family declares `["sgs/form", "sgs/form-step"]`).
+        # A join table for the second parent was considered and rejected: token
+        # derivation at converter/db/db_lookup.py's child_block_for_parent_token
+        # requires the child slug to start with the parent's name plus a hyphen.
+        # sgs/form-field-text under parent sgs/form-step derives the useless
+        # token 'form-field-text' (a draft would need class
+        # sgs-form-step__form-field-text); under parent sgs/form it derives the
+        # working token 'field-text'. The second parent buys the pipeline
+        # nothing, so first-parent-only is kept.
+        _raw_parent = data.get("parent")
+        parent = (
+            _raw_parent[0]
+            if isinstance(_raw_parent, list) and _raw_parent
+            else None
+        )
         # `replaces` is sourced from the canonical record (block-replacements.json,
         # loaded above), NOT block.json — the mapping lives in ONE version-controlled
         # place (D270, 2026-07-04). A record entry is a list of core slugs (many-core
@@ -710,6 +718,54 @@ def _index_sgs_block_files(
                     )
                     updated_supports += 1
 
+        # --- block_selectors writer (Task 2a, 2026-08-01) ---
+        # Adds the missing writer: block_selectors (92 rows / 44 blocks) was
+        # previously written ONLY by ~/.claude/skills/sgs-wp-engine/scripts/
+        # populate-db.py, which lives OUTSIDE this repo and is DEAD on the live
+        # path (this script reimplements Stage 1 inline with zero subprocess
+        # calls to it — see module docstring). Result before this fix: 3 live
+        # blocks that declare `selectors` (sgs/media, sgs/mega-panel,
+        # sgs/nav-drawer) had ZERO rows.
+        #
+        # Flattening mirrors populate-db.py's pattern EXACTLY (nested dict
+        # entries become "element.sub_el") so this does not change the meaning
+        # of any of the existing rows for blocks whose selectors are unchanged.
+        #
+        # Difference from populate-db.py: populate-db.py only deletes when
+        # `if selectors:` is truthy, so a block that DROPS its `selectors` key
+        # entirely never has its old rows cleaned up — this is exactly how
+        # sgs/heading accumulated 2 stale rows (it used to declare selectors,
+        # no longer does). The delete here is unconditional — every on-disk
+        # block's rows are cleared and re-derived from its CURRENT block.json
+        # on every run, so a dropped `selectors` key correctly empties the
+        # block's rows instead of leaving ghosts.
+        #
+        # CAVEAT — this does NOT make sgs-update-v2.py the sole owner of
+        # block_selectors. populate-db.py still exists outside this repo and
+        # writes the SAME table with the SAME delete-then-insert shape — two
+        # writers now exist, last-one-wins on whichever ran most recently. The
+        # risk is latent (populate-db.py is dead on today's live path), not
+        # eliminated — do not read this comment as "ownership transferred".
+        c.execute("DELETE FROM block_selectors WHERE block_slug = ?", (slug,))
+        _selectors = data.get("selectors", {})
+        if isinstance(_selectors, dict):
+            for _element, _selector in _selectors.items():
+                if isinstance(_selector, str):
+                    c.execute(
+                        "INSERT INTO block_selectors (block_slug, element, selector) "
+                        "VALUES (?, ?, ?)",
+                        (slug, _element, _selector),
+                    )
+                    new_selectors += 1
+                elif isinstance(_selector, dict):
+                    for _sub_el, _sub_sel in _selector.items():
+                        c.execute(
+                            "INSERT INTO block_selectors (block_slug, element, selector) "
+                            "VALUES (?, ?, ?)",
+                            (slug, f"{_element}.{_sub_el}", _sub_sel),
+                        )
+                        new_selectors += 1
+
         # --- Update indexed_files for this block.json ---
         try:
             stat = block_json_path.stat()
@@ -748,6 +804,28 @@ def _index_sgs_block_files(
         except Exception as exc:
             print(f"  WARNING: indexed_files update failed for {block_json_path}: {exc}")
 
+    # --- Prune stale block_selectors rows (Task 2b, 2026-08-01) ---
+    # Retired blocks (block_slug still in block_selectors but no block.json on
+    # disk any more) are never visited by the per-block loop above, so their
+    # rows would otherwise survive forever. Stage 10's prune_orphans does NOT
+    # cover block_selectors — verified: it only touches block_supports,
+    # block_capabilities, block_attributes, and blocks itself (see
+    # _prune_orphans_on_conn docstring) — so this explicit prune is the only
+    # mechanism that removes them. Scoped to 'sgs/%' so any future native_wp
+    # selector rows (none exist today) are left untouched.
+    _stale_selector_slugs = [
+        row[0] for row in c.execute(
+            "SELECT DISTINCT block_slug FROM block_selectors WHERE block_slug LIKE 'sgs/%'"
+        ).fetchall()
+        if row[0] not in _live_slugs
+    ]
+    if not dry_run and _stale_selector_slugs:
+        c.executemany(
+            "DELETE FROM block_selectors WHERE block_slug = ?",
+            [(s,) for s in _stale_selector_slugs],
+        )
+    pruned_selectors = len(_stale_selector_slugs)
+
     return {
         "scanned": scanned,
         "new_blocks": new_blocks,
@@ -759,6 +837,8 @@ def _index_sgs_block_files(
         "indexed_inserted": indexed_inserted,
         "indexed_updated": indexed_updated,
         "indexed_skipped": indexed_skipped,
+        "new_selectors": new_selectors,
+        "pruned_selectors": pruned_selectors,
     }
 
 
@@ -2080,6 +2160,8 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     indexed_inserted = counts["indexed_inserted"]
     indexed_updated = counts["indexed_updated"]
     indexed_skipped = counts["indexed_skipped"]
+    new_selectors = counts["new_selectors"]
+    pruned_selectors = counts["pruned_selectors"]
 
     # --- Stage 1 sub-step A: populate block_composition.accepts_allowed_blocks ---
     ab_counts = _populate_allowed_blocks(blocks_dir, c, dry_run)
@@ -2158,6 +2240,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_updated={ab_updated}, "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
         )
+        print(
+            f"Stage 1 (block_selectors): new_selectors={new_selectors}, "
+            f"pruned_stale_slugs={pruned_selectors}."
+        )
     else:
         print(
             f"Stage 1 [dry-run]: {scanned} blocks scanned. "
@@ -2187,6 +2273,8 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         "allowed_blocks_populated": ab_populated,
         "allowed_blocks_updated": ab_updated,
         "allowed_blocks_dynamic_skipped": ab_dynamic_skipped,
+        "new_selectors": new_selectors,
+        "pruned_selectors": pruned_selectors,
         "dry_run": dry_run,
     }
 

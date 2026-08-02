@@ -11,6 +11,122 @@
       }
     },
     {
+      "slug": "sgs/before-after",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "dividerColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "divider-line"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "dividerWidth",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "divider-line"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "handleColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "handle"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "handleIconColour",
+      "fields": {
+        "css_property": "stroke",
+        "css_element": "handle"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "height",
+      "fields": {
+        "css_property": "height",
+        "css_tier": "desktop",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "heightMobile",
+      "fields": {
+        "css_property": "height",
+        "css_tier": "mobile"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "heightTablet",
+      "fields": {
+        "css_property": "height",
+        "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "desktop",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "startPosition",
+      "fields": {
+        "css_property": "clip-path,left,top",
+        "css_element": "divider"
+      }
+    },
+    {
       "slug": "sgs/brand-strip",
       "attr": "backgroundColourHover",
       "fields": {
@@ -474,14 +590,6 @@
       "attr": "cardBorderColour",
       "fields": {
         "css_property": "border-color",
-        "css_element": "card-tile"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "cardBorderWidth",
-      "fields": {
-        "css_property": "border-width",
         "css_element": "card-tile"
       }
     },
@@ -955,28 +1063,32 @@
       "slug": "sgs/form",
       "attr": "formFocusRingColour",
       "fields": {
-        "css_property": "border-color,outline-color"
+        "css_property": "border-color",
+        "css_element": "focus-ring"
       }
     },
     {
       "slug": "sgs/form",
       "attr": "formFocusRingOffset",
       "fields": {
-        "css_property": "outline-offset"
+        "css_property": "outline-offset",
+        "css_element": "focus-ring"
       }
     },
     {
       "slug": "sgs/form",
       "attr": "formFocusRingOpacity",
       "fields": {
-        "css_property": "opacity"
+        "css_property": "opacity",
+        "css_element": "focus-ring"
       }
     },
     {
       "slug": "sgs/form",
       "attr": "formFocusRingWidth",
       "fields": {
-        "css_property": "outline-width"
+        "css_property": "outline-width",
+        "css_element": "focus-ring"
       }
     },
     {
@@ -1031,7 +1143,7 @@
       "slug": "sgs/gallery",
       "attr": "columns",
       "fields": {
-        "css_property": "column-count,grid-template-columns",
+        "css_property": "column-count,grid-auto-columns,grid-template-columns",
         "css_tier": "desktop",
         "css_layer": "OUTER",
         "css_element": "wrapper"
@@ -1787,15 +1899,6 @@
     },
     {
       "slug": "sgs/icon-list",
-      "attr": "gap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "GRID",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
       "attr": "headingFontSize",
       "fields": {
         "css_property": "font-size",
@@ -1913,6 +2016,13 @@
       }
     },
     {
+      "slug": "sgs/image-sequence",
+      "attr": "aspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio"
+      }
+    },
+    {
       "slug": "sgs/info-box",
       "attr": "backgroundColourHover",
       "fields": {
@@ -2026,13 +2136,6 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "aspectRatio",
-      "fields": {
-        "css_property": "aspect-ratio"
       }
     },
     {
@@ -2183,6 +2286,68 @@
       "fields": {
         "css_property": "order",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBg",
+      "fields": {
+        "css_property": "background-color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "accent",
+      "fields": {
+        "css_property": "background-color,background-image,border-color,color",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "asideWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "aside"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "panelBg",
+      "fields": {
+        "css_property": "background-color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2358,6 +2523,14 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "anchor",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerAlign",
       "fields": {
         "css_property": "align-items",
@@ -2376,19 +2549,17 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "toggleCloseColour",
+      "attr": "surfaceOpacity",
       "fields": {
-        "css_property": "color",
-        "css_element": "close"
+        "css_property": "background-color"
       }
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "width",
+      "attr": "toggleCloseColour",
       "fields": {
-        "css_property": "width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_property": "color",
+        "css_element": "close"
       }
     },
     {
@@ -2511,6 +2682,14 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "indicatorColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "indicator"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "itemBg",
       "fields": {
         "css_property": "background-color",
@@ -2609,6 +2788,28 @@
         "css_property": "border-radius",
         "css_element": "item",
         "css_state": "selected"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "navBg",
+      "fields": {
+        "css_property": "background-color"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "navBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "navColour",
+      "fields": {
+        "css_property": "color"
       }
     },
     {
@@ -4512,6 +4713,15 @@
       }
     },
     {
+      "slug": "sgs/accordion-item",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/brand-strip",
       "attr": "tileShadow",
       "fields": {
@@ -4602,6 +4812,14 @@
         "css_property": "align-items",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "cardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "card-tile"
       }
     },
     {
@@ -5420,6 +5638,123 @@
       }
     },
     {
+      "slug": "sgs/form-field-tiles",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridAutoRows",
+      "fields": {
+        "css_property": "grid-auto-rows",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridTemplateColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridTemplateRows",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "justifyItems",
+      "fields": {
+        "css_property": "justify-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/gallery",
       "attr": "alignContent",
       "fields": {
@@ -5775,6 +6110,15 @@
       }
     },
     {
+      "slug": "sgs/icon-list",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/info-box",
       "attr": "contentWidth",
       "fields": {
@@ -5844,6 +6188,60 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asidePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "groupGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "panelPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -6246,6 +6644,15 @@
       }
     },
     {
+      "slug": "sgs/tab",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/tabs",
       "attr": "alignContent",
       "fields": {
@@ -6583,6 +6990,46 @@
       }
     },
     {
+      "slug": "sgs/timeline",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "connectorColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "date"
+      }
+    },
+    {
       "slug": "sgs/trust-bar",
       "attr": "alignContent",
       "fields": {
@@ -6761,6 +7208,11 @@
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "heightUnit",
+      "fields": {}
     },
     {
       "slug": "sgs/heading",

@@ -869,8 +869,13 @@ def run_fixture(
     # and commonly inherits styling from its parent's stylesheet + block context.
     # Cloning one as a bare top-level section deploys an orphan, so any missing
     # parent-provided style is the FIXTURE's invalid composition, not a converter
-    # transfer failure. Report it; never score it. (18 such blocks exist —
-    # accordion-item, tab, the form-field family — so this is corpus-wide.)
+    # transfer failure. Report it; never score it. (23 such blocks exist as of
+    # 2026-08-01 — accordion-item, tab, the form-field family, plus
+    # mega-aside/mega-group/product-faq-item/site-footer-row/site-header-row
+    # once blocks.parent_block was fixed to derive from block.json's own
+    # `parent` array instead of a hardcoded 18-entry dict — so this is
+    # corpus-wide. Count is DB-derived (blocks.parent_block IS NOT NULL);
+    # do not re-cache it here if it drifts again.)
     invalid_composition = [
         (sec["block_slug"], parent)
         for sec in sections

@@ -3579,8 +3579,15 @@ class AmbiguousLayerAttrError(RuntimeError):
     """MF-4 (Spec 31 §3 step 3 / FR-31-2.8.4): a (block, layer, css_property)
     lookup matched ≥2 registered attrs. A silent rowid-first pick between them
     is insert-order-fragile and misroutes CSS — fail loud instead (raise, never
-    assert, STOP-27). Resolution: a ``block_selectors.element`` disambiguator
-    or removing the duplicate attr registration."""
+    assert, STOP-27). Resolution: declare the css_property/css_layer columns
+    on the correct attr via ``block_attributes.css_element``/``css_state``/
+    ``css_tier`` (see the COLUMN-FIRST branch of ``attr_for_layer_property``
+    below) or remove the duplicate attr registration. A
+    ``block_selectors.element`` disambiguator was proposed for this and
+    REJECTED on 2026-06-20 (F6 design v2,
+    .claude/plans/archive/2026-06-20-f6-db-consistency-design.md — the
+    resolver has zero non-comment references to ``block_selectors``, so a row
+    there has no effect on routing)."""
 
 
 @functools.lru_cache(maxsize=2048)
@@ -3757,11 +3764,17 @@ def attr_for_layer_property(
         # property) combos are ambiguous on the live DB (enumerated
         # 2026-07-04), so this raise is behaviour-identical today; it fires
         # only if a future block registers both attrs of an ambiguous pair —
-        # the fix is a block_selectors.element disambiguator, not a pick.
+        # the fix is declaring css_property/css_layer on the correct attr via
+        # block_attributes.css_element/css_state/css_tier (the COLUMN-FIRST
+        # branch above), not a block_selectors.element disambiguator — that
+        # mechanism was proposed and REJECTED 2026-06-20 (F6 design v2,
+        # .claude/plans/archive/2026-06-20-f6-db-consistency-design.md:28-31 —
+        # the resolver has zero non-comment references to block_selectors).
         raise AmbiguousLayerAttrError(
             f"MF-4: ({block_slug}, {layer}, {css_property}) resolves to "
             f"{len(matches)} candidate attrs {matches} — refusing to "
-            f"rowid-pick. Add a block_selectors.element disambiguator or "
+            f"rowid-pick. Declare css_property/css_layer on block_attributes "
+            f"(css_element/css_state/css_tier) for the correct attr, or "
             f"remove the duplicate attr registration."
         )
 
@@ -3896,7 +3909,18 @@ def child_block_for_parent_token(
         A parent-scoped pre-check that beats the global alias resolves both
         without a per-slug Python branch (R-31-1 / R-31-9).
 
-    Mechanism — pure DB lookup via ``blocks.parent_block`` (18 rows as of 2026-06-10):
+    Mechanism — pure DB lookup via ``blocks.parent_block``:
+        ``blocks.parent_block`` is itself derived STRAIGHT from each block's own
+        block.json ``parent`` array (first entry only) by
+        ``scripts/sgs-update-v2.py``'s Stage 1 scan — not a hand-maintained
+        dict (a hardcoded 18-entry ``PARENT_CHILD`` dict was retired 2026-08-01
+        for exactly this reason: it silently missed 5 blocks that declare
+        ``parent`` — mega-aside, mega-group, product-faq-item, site-footer-row,
+        site-header-row). The row count therefore tracks the codebase and is
+        NOT a fixed number to cache here — query it live via
+        ``SELECT COUNT(*) FROM blocks WHERE parent_block IS NOT NULL`` (or
+        ``/sgs-db``) rather than trusting a comment.
+
         For each child registered under ``parent_block``, a token is derived
         from the child slug:
           • If the child's name portion (after ``sgs/``) starts with the parent's
@@ -3915,9 +3939,6 @@ def child_block_for_parent_token(
                ELSE substr(slug, 5)
            END``
 
-        The SQL derivation is verified against all 18 ``blocks.parent_block`` rows
-        at implementation time — every pair resolves correctly (audit below).
-
         Precedence (STAGE1-DESIGN.md §Commit 2):
             Parent-scoped row beats global alias.  The walker calls this function
             as a PRE-CHECK before consulting the global ``slots`` table.
@@ -3927,25 +3948,16 @@ def child_block_for_parent_token(
         tuple only — parent-aware resolution is a separate walker pre-check per
         the build contract).
 
-    DB parent_block audit (all 18 rows, verified 2026-06-10):
-        parent=sgs/accordion    token=item           → sgs/accordion-item   ✓
-        parent=sgs/form         token=field-address  → sgs/form-field-address ✓
-        parent=sgs/form         token=field-checkbox → sgs/form-field-checkbox ✓
-        parent=sgs/form         token=field-consent  → sgs/form-field-consent ✓
-        parent=sgs/form         token=field-date     → sgs/form-field-date  ✓
-        parent=sgs/form         token=field-email    → sgs/form-field-email ✓
-        parent=sgs/form         token=field-file     → sgs/form-field-file  ✓
-        parent=sgs/form         token=field-hidden   → sgs/form-field-hidden ✓
-        parent=sgs/form         token=field-number   → sgs/form-field-number ✓
-        parent=sgs/form         token=field-phone    → sgs/form-field-phone ✓
-        parent=sgs/form         token=field-radio    → sgs/form-field-radio ✓
-        parent=sgs/form         token=field-select   → sgs/form-field-select ✓
-        parent=sgs/form         token=field-text     → sgs/form-field-text  ✓
-        parent=sgs/form         token=field-textarea → sgs/form-field-textarea ✓
-        parent=sgs/form         token=field-tiles    → sgs/form-field-tiles ✓
-        parent=sgs/form         token=review         → sgs/form-review      ✓
-        parent=sgs/form         token=step           → sgs/form-step        ✓
-        parent=sgs/tabs         token=tab            → sgs/tab              ✓
+        A hand-enumerated per-row audit table used to live here (verified
+        2026-06-10 against the then-18 rows). It was REMOVED 2026-08-01 rather
+        than updated by hand — a hand-maintained mirror of DB state is exactly
+        the drift class this whole fix addresses (it would already be stale:
+        the table never had the 5 blocks above, and would silently go stale
+        again on the next new parent-declaring block). To verify the SQL
+        derivation against the live rows, run:
+          ``python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql
+            "SELECT parent_block, slug FROM blocks WHERE parent_block IS NOT NULL"``
+        and check each row against the CASE expression above by eye.
 
     Args:
         parent_block:   Fully-qualified slug of the resolved ancestor, e.g.

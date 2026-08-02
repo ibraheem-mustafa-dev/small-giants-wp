@@ -1799,6 +1799,25 @@ def extract_css_property_and_layer() -> dict:
         block_dir = BLOCKS_DIR / short_slug
         php_path = block_dir / "render.php"
         css_path = block_dir / "style.css"
+
+        # Manifest-derived data (element layers, root element, attrMap reverse
+        # lookup) is read from block.json alone — a pure declarative fact that
+        # does not depend on render.php or style.css existing. Read it for EVERY
+        # sgs block BEFORE the render.php+style.css gate below, so a block this
+        # gate skips wholesale still populates `manifest_by_block`/
+        # `elem_layer_by_block`/`root_elem_by_block` and remains reachable by the
+        # manifest-only seed pass further down (2026-08-01 fix). Previously this
+        # whole per-block block ran only past the gate, so sgs/form-field-tiles
+        # and sgs/form-step — which declare no style.css at all (neither block
+        # emits its own scoped stylesheet) — were skipped before manifest data was
+        # ever recorded for them, leaving them absent from
+        # `manifest_by_block.items()` in the fallback loop entirely and their
+        # declared `layer`/`attrMap` silently unreachable.
+        block_attr_names = attrs_by_block.get(slug, set())
+        manifest_by_block[slug] = _load_element_manifest_reverse(block_dir, block_attr_names)
+        elem_layer_by_block[slug] = _load_element_layers(block_dir)
+        root_elem_by_block[slug] = _load_root_element(block_dir)
+
         if not php_path.exists() or not css_path.exists():
             continue
 
@@ -1808,10 +1827,6 @@ def extract_css_property_and_layer() -> dict:
 
         consumed, gradient_props, shorthand_slot, state_of, element_of = _custom_props_consumed(css_src_raw, short_slug)
         var_attr = _build_php_var_attr_map(php_src)
-        block_attr_names = attrs_by_block.get(slug, set())
-        manifest_by_block[slug] = _load_element_manifest_reverse(block_dir, block_attr_names)
-        elem_layer_by_block[slug] = _load_element_layers(block_dir)
-        root_elem_by_block[slug] = _load_root_element(block_dir)
 
         raw, php_attr_state, php_attr_element = _attr_to_raw_props_php(php_src, known_css_props, var_attr, short_slug)
         helper = _attrs_from_helper_calls(php_src, block_attr_names)

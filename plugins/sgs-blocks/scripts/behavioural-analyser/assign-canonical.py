@@ -424,6 +424,195 @@ def insert_gap_candidate(
 
 
 # ---------------------------------------------------------------------------
+# Stale-suffix-derived-role healing (2026-08-01)
+# ---------------------------------------------------------------------------
+# Root cause: a populated `block_attributes.role` was preserved FOREVER by the
+# main loop (`final_role = role if existing_role is None else existing_role`),
+# so a correction to `property_suffixes` (e.g. a suffix that was seeded with
+# the wrong role) could never retouch a row that had already derived its role
+# from that suffix — the fix would apply only to attrs not yet processed.
+# This is a universal problem, not specific to any one suffix, so the healing
+# rule below is UNIVERSAL and RULE-SHAPED: it never names a block, attribute,
+# or suffix. It re-derives `role` from the CURRENT `property_suffixes` table
+# only for rows whose existing role has NOT already been "graduated" past the
+# raw suffix-peel layer — i.e. rows still sitting on whatever the peel
+# produced, with no later, more-specific classification layered on top.
+#
+# A role counts as graduated (and is therefore left untouched) when EITHER:
+#   1. It already belongs to the DB's 'content-bearing' classification
+#      (`roles.classification`) — the role-detection pass
+#      (`apply_role_detection_inline`) and hand-authored overrides both only
+#      ever assign content-bearing roles, so a content-bearing role already
+#      reflects a deliberate upgrade past the generic suffix peel, not a
+#      leftover default; or
+#   2. The (block_slug, attr_name) pair is a key in
+#      `attr-classification-overrides.json` (the reseed-durable override
+#      truth file `sgs-update-v2.py` applies as the FINAL Stage-1 writer) —
+#      any field on that row may have been hand-curated, so it is out of
+#      scope for an automatic peel-driven rewrite regardless of which column
+#      the curation targeted.
+#
+# Verified empirically (2026-08-01) against all 846 sgs/* block_attributes
+# rows with a populated role: this guard changes role for exactly the rows
+# whose current role is a stale, non-graduated suffix-peel artefact, and
+# leaves all "graduated" rows (content-bearing OR override-covered) bit-for-
+# bit unchanged — see the run log referenced from the D-log entry for this
+# fix. Both graduation signals are DB/file-driven; neither test ever spells
+# out a block slug, attribute name, or suffix (R-31-9).
+
+_OVERRIDES_JSON_PATH = Path(__file__).resolve().parent.parent / "attr-classification-overrides.json"
+
+
+def load_override_keys(path: Path = _OVERRIDES_JSON_PATH) -> frozenset[tuple[str, str]]:
+    """Return the set of (block_slug, attr_name) pairs curated in the
+    reseed-durable override truth file.
+
+    Only the KEYS are needed here (not the field values) — membership alone
+    means "this row may have been hand-curated on any column", so the role
+    healer must leave it alone regardless of which field the curation
+    actually touched.
+
+    Fails soft (empty set) on a missing/malformed file. This is intentional
+    for THIS guard only: `sgs-update-v2.py`'s own loader already fails loud
+    on a missing/malformed override file for the load-bearing write path
+    (Stage 1C), so by the time this healer runs as part of the same reseed
+    the file is already known-good — a soft fallback here only matters for
+    standalone/test invocations of assign-canonical.py, where treating "no
+    override file found" as "no known overrides" (rather than halting) is
+    the correct behaviour for a read-only guard.
+    """
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        entries = data.get("entries")
+        if not isinstance(entries, list):
+            return frozenset()
+        return frozenset(
+            (entry["slug"], entry["attr"])
+            for entry in entries
+            if isinstance(entry, dict) and entry.get("slug") and entry.get("attr")
+        )
+    except (OSError, ValueError, KeyError):
+        return frozenset()
+
+
+def load_content_bearing_roles(conn: sqlite3.Connection) -> frozenset[str]:
+    """Return role_names classified 'content-bearing' in the `roles` table.
+
+    Mirrors converter/db/db_lookup.py's `_content_bearing_roles()` — DB-driven,
+    never a hardcoded role list (R-31-1).
+    """
+    try:
+        rows = conn.execute(
+            "SELECT role_name FROM roles WHERE classification = 'content-bearing'"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return frozenset()
+    return frozenset(r[0] for r in rows)
+
+
+def resolve_role_with_healing(
+    existing_role: Optional[str],
+    computed_role: Optional[str],
+    prop_info: Optional[dict],
+    block_slug: str,
+    attr_name: str,
+    content_bearing_roles: frozenset[str],
+    override_keys: frozenset[tuple[str, str]],
+) -> Optional[str]:
+    """Decide the role to WRITE for a row, healing a stale suffix-derived role
+    where safe and otherwise preserving whatever is already populated.
+
+    Order of precedence:
+      1. No existing role -> use the freshly computed role (first-fill, the
+         original behaviour, unaffected by this change).
+      2. Existing role populated, but NOT "graduated" (see module docstring
+         above) AND the current property-suffix peel disagrees with it ->
+         HEAL: re-derive from the (possibly just-corrected) suffix table.
+      3. Anything else -> PRESERVE the existing role untouched (original
+         incremental-safety behaviour).
+    """
+    if existing_role is None:
+        return computed_role
+
+    is_graduated = (
+        existing_role in content_bearing_roles
+        or (block_slug, attr_name) in override_keys
+    )
+    if is_graduated:
+        return existing_role
+
+    if prop_info and prop_info.get("role") and prop_info["role"] != existing_role:
+        return prop_info["role"]
+
+    return existing_role
+
+
+def refresh_stale_suffix_roles(
+    conn: sqlite3.Connection,
+    property_suffixes: dict[str, dict],
+    modifier_map: dict[str, str],
+) -> dict:
+    """Heal stale suffix-derived roles on rows the main backfill loop never
+    revisits (`canonical_slot` already populated, so they never match its
+    `WHERE canonical_slot IS NULL` scope).
+
+    Only the `role` column is written here — `canonical_slot` and
+    `derived_selector` are left completely untouched for every row this pass
+    considers, so this cannot regress slot/selector resolution for any
+    attribute; it is scoped purely to healing role drift against the CURRENT
+    `property_suffixes` table via `resolve_role_with_healing`'s graduation
+    guard (content-bearing roles and curated overrides are never touched).
+
+    Universal (R-31-9): iterates every row with a populated role, no
+    block/attr/suffix name appears in this function.
+    """
+    content_bearing_roles = load_content_bearing_roles(conn)
+    override_keys = load_override_keys()
+
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT id, block_slug, attr_name, role "
+        "FROM block_attributes "
+        "WHERE canonical_slot IS NOT NULL AND role IS NOT NULL"
+    )
+    rows = cur.fetchall()
+
+    healed = 0
+    role_updates: list[tuple[str, int]] = []
+    for row in rows:
+        row_id: int = row["id"]
+        block_slug: str = row["block_slug"]
+        attr_name: str = row["attr_name"]
+        existing_role: str = row["role"]
+
+        stem, prop_suffix, prop_info, modifiers = decompose_attr_name(
+            attr_name, property_suffixes, modifier_map
+        )
+        computed_role = prop_info["role"] if prop_info and prop_info.get("role") else None
+
+        final_role = resolve_role_with_healing(
+            existing_role,
+            computed_role,
+            prop_info,
+            block_slug,
+            attr_name,
+            content_bearing_roles,
+            override_keys,
+        )
+        if final_role != existing_role:
+            role_updates.append((final_role, row_id))
+            healed += 1
+
+    if role_updates:
+        conn.executemany(
+            "UPDATE block_attributes SET role = ? WHERE id = ?", role_updates
+        )
+        conn.commit()
+
+    return {"considered": len(rows), "healed": healed}
+
+
+# ---------------------------------------------------------------------------
 # Main processing loop
 # ---------------------------------------------------------------------------
 
@@ -472,6 +661,12 @@ def run() -> None:
     gap_count = 0
     updates: list[tuple[str, str, str, int]] = []  # (canonical_slot, role, derived_selector, id)
     gap_inserts: list[tuple[str, str, str]] = []   # (block_slug, attr_name, stem)
+
+    # Loaded once for the stale-suffix-role healing guard (see the docstring
+    # block above `refresh_stale_suffix_roles`) — reused for both this loop's
+    # existing-role rows and the post-loop `refresh_stale_suffix_roles` pass.
+    content_bearing_roles = load_content_bearing_roles(conn)
+    override_keys = load_override_keys()
 
     for row in rows:
         row_id: int = row["id"]
@@ -526,8 +721,19 @@ def run() -> None:
             # ATTR_CLASSIFICATION_OVERRIDES — applied as the final Stage-1 writer.)
             derived_selector = derive_selector(block_slug, canonical_slot)
 
-            # Preserve existing populated values (loosened scope, 2026-05-30).
-            final_role = role if existing_role is None else existing_role
+            # Preserve existing populated values (loosened scope, 2026-05-30),
+            # EXCEPT heal a stale suffix-derived role per `resolve_role_with_healing`
+            # (2026-08-01) — see the module docstring above `refresh_stale_suffix_roles`
+            # for the universal, rule-shaped graduation guard this applies.
+            final_role = resolve_role_with_healing(
+                existing_role,
+                role,
+                prop_info,
+                block_slug,
+                attr_name,
+                content_bearing_roles,
+                override_keys,
+            )
             final_selector = (
                 derived_selector if existing_selector is None else existing_selector
             )
@@ -558,6 +764,21 @@ def run() -> None:
         insert_gap_candidate(conn, block_slug, attr_name, stem)
 
     conn.commit()
+
+    # ------------------------------------------------------------------
+    # Stale-suffix-role healing — rows the loop above never revisits
+    # (2026-08-01). The loop above only fetches `WHERE canonical_slot IS
+    # NULL`, so any row whose canonical_slot was resolved on an EARLIER run
+    # never re-enters it — a `property_suffixes` correction could never heal
+    # such a row without this pass. See `refresh_stale_suffix_roles` docstring
+    # for the universal, rule-shaped graduation guard (content-bearing roles
+    # and curated overrides are never touched by this pass).
+    # ------------------------------------------------------------------
+    _healing = refresh_stale_suffix_roles(conn, property_suffixes, modifier_map)
+    print(
+        f"[role-healing] rows considered={_healing['considered']} "
+        f"healed={_healing['healed']}"
+    )
 
     # ------------------------------------------------------------------
     # P-PHASE8-13 second-pass role backfill — RETIRED post-D99 (2026-05-29).
