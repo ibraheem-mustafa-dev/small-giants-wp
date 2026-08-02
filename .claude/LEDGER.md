@@ -255,8 +255,18 @@ boundary was never exercised though WCAG 2.5.7 rests on it. **Now across FIVE bl
 **Playwright only** — DevTools MCP has neither `prefers-reduced-motion` nor a trusted pointer.
 Spec 38 §10 also has NO row for `cursor-field` or `carousel-loop`. **/qc gate after: yes.**
 
-**M3 — push the `indus-foods` snapshot** [inline, ~10 min] — fixed in git; its LIVE site still
-carries the teal until `push-theme-snapshot.py` runs against it.
+**M3 — DELETED 2026-08-02 (Bean).** Was "push the `indus-foods` snapshot". Dropped, not parked:
+palestine-lives is a TEST site that gets remade when the theme is finished, so its focus-ring
+colour is not worth a gate. Investigated first and the task was wrong anyway — recorded so nobody
+re-derives it: the teal sits in THREE layers (`wp_global_styles` post 7, the DEPLOYED theme.json,
+and formerly the snapshot), so deleting any one is a no-op; and the snapshot push would have
+stripped `customTemplates` + `templateParts` from a live theme, because the deployed file is the
+FRAMEWORK theme.json and the snapshot is a leaner per-client file. Nothing was pushed.
+⚠ **`step_oldshape_audit` gates EVERY palestine-lives deploy regardless of `--theme-only`**
+(`build-deploy.py:789`) — that is a general fact, still true for any future work on that target.
+✅ Kept from the investigation: `dfa72144` adds palestine-lives to `push-theme-snapshot.py`'s
+`domain_env_map`. Without it the `wp_global_styles` read 401s and the script proceeds BLIND on the
+layer that overrides theme.json and backs `--rollback`.
 
 **M4 / M5 — low priority** [sonnet] — Step R-residual (`floating-objects`, participant seam,
 init-only walk) and Wave E's unverified residue (`:user-valid` on a real `sgs/form`; `fx-scrub` /
@@ -266,8 +276,7 @@ init-only walk) and Wave E's unverified residue (`:user-valid` on a real `sgs/fo
 
 ```
 M1 (sonnet, delegated) ──┐
-M2 (sonnet, delegated) ──┼── parallel, disjoint files
-M3 (inline, 10 min)    ──┘
+M2 (sonnet, delegated) ──┴── parallel, disjoint files   (M3 DELETED 2026-08-02)
         ↓ /qc-inline per branch
 M4 / M5 (sonnet) — only if time remains
 ```
