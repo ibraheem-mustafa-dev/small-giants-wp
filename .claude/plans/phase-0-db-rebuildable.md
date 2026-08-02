@@ -2,13 +2,57 @@
 doc_type: plan
 project: small-giants-wp
 created: 2026-08-01
+completed: 2026-08-02
 parent: .claude/plans/2026-08-01-db-derivation-and-converter-cleanup.md
-status: DRAFT — awaiting Bean's approval
+status: COMPLETE — executed 2026-08-02 (D464). Partial-rebuild pass per Bean's ruling.
 ---
 
 [PLAN: opus]
 
 # Phase 0 — Make the knowledge-base DB rebuildable
+
+> ## ✅ EXECUTED AND CLOSED 2026-08-02 — D464. Do not re-run; read this block first.
+>
+> **All 9 steps + both QA gates done.** Commits `78347070` (Steps 0.0–0.3 + Gate A) and
+> `15865b38` (Steps 0.4–0.5). Built in `plugins/sgs-blocks/scripts/dbschema/`:
+> `schema.sql` · `sandbox.py` · `migrate.py` + `schema_migrations` · `migration-manifest.json` ·
+> `schema-baseline-pre.json` · `rebuild_compare.py`. Later additions: `check_schema_drift.py`,
+> `wp_reference_archive.py`, `refresh_wp_reference.py`.
+>
+> **Bean's two rulings (2026-08-02):** a PARTIAL rebuild PASSES provided shortfalls are written
+> down and carried to Phase 1 · stop at QA Gate A and reassess (later continued through 0.4–0.5).
+>
+> ### Result — `--rebuild` from a genuinely empty file
+> Exit 0. **Table set IDENTICAL: 39 live / 39 rebuilt, none missing, none extra.**
+> 12 tables reproduce with exactly matching row counts; 10 partially; 3 known gaps
+> (`property_suffixes`, `slots`, `excluded_properties`); 15 empty-and-classified.
+> Full breakdown: `.claude/reports/2026-08-02-db-rebuild-comparison.md` +
+> `.claude/reports/2026-08-02-phase1-table-classification.md`.
+>
+> ### ⛔ THE PHASE'S BIGGEST FINDING — replay is structurally impossible
+> The first rebuild died on migration #2 with `no such table: slot_synonyms`. **Cause proven:**
+> `slot_synonyms` was RETIRED in favour of `slots`, so it is correctly absent from the live schema
+> while THREE historical migrations still reference it. **A May migration cannot be applied to an
+> August schema.** `--rebuild` therefore RECORDS migrations as applied and seeds from source; it
+> never replays history. This invalidates any future plan step premised on replaying `migrations/`.
+>
+> ### ⛔ Plan statements MEASURED FALSE during execution (do not trust the text below where it conflicts)
+> 1. **30 migrations, not 29** — one landed after the plan was written. **Derive counts at runtime.**
+> 2. **NO migration accepts `--db`.** The plan said 2 did and told Step 0.2 to pass it; exactly two
+>    use argparse and both expose only `--dry-run`. That instruction targeted nothing and would have
+>    argparse-exit-2 into a fake failure. The HOME-redirect sandbox is the sole uniform mechanism.
+> 3. **The DB is WAL-mode**, so Step 0.0's `shutil.copy` backup could have captured an incomplete
+>    snapshot — the phase's ONLY rollback was unsafe as specified. Now uses `Connection.backup()`.
+> 4. The sync invocation is at `sgs-update-v2.py:4825`, not 4718.
+> 5. QA Gate B as written was unnecessary: the from-empty rebuild IS the negative control, and it
+>    answers the same question more informatively.
+>
+> **Premise re-verified and CONFIRMED:** no *production* `CREATE TABLE` for `blocks` /
+> `block_attributes` / `block_composition` / `property_suffixes` — the only hits are six TEST
+> FIXTURES, which hand-write partial schemas for exactly those tables (same drift disease, one
+> layer down; tests deliberately untouched).
+>
+> **Phase 1 is UNBLOCKED.** Scope is now measured, not guessed — see the classification report.
 
 **USP:** Every "it worked last month" bug this session chased — hero art direction, the `emit_shape`
 139→117 slide, `container_kind` — has the same cause: a database that cannot be rebuilt, so derived
@@ -19,6 +63,33 @@ provable until it passes.**
 **Aggregate estimate:** ~105 min across 9 steps + 2 QA gates (Step 0.05 added by BLOCKER-3).
 **Council:** 3 BLOCKERs + 5 SHOULD-FIXes applied (see COUNCIL FINDINGS). Two would have
 corrupted or destroyed the live DB; nothing was executed.
+
+## Pre-conditions
+
+All were satisfied before execution on 2026-08-02:
+
+- **A verified backup exists.** The DB is gitignored with no other copy, so Step 0.0 backs up FIRST.
+  ⚠ It is WAL-mode, so the backup must use SQLite's `Connection.backup()` — a file copy can capture
+  a snapshot missing committed-but-uncheckpointed data (the plan originally specified `shutil.copy`;
+  corrected during execution).
+- **The sandbox harness exists before anything writes.** 27 migrations hardcode `Path.home()`, so
+  without HOME redirection a "rebuild test" mutates the live database.
+- **Bean present for the pass-criterion ruling** — whether a PARTIAL rebuild passes (he ruled: yes,
+  provided shortfalls are written down and carried to Phase 1).
+- **The tree may be dirty with a co-active track's work** — commit by exact path, never `git add -A`.
+
+## Parking lot (deferred OUT of Phase 0, with owners)
+
+| Deferred | Where it went |
+|---|---|
+| Seeders for `property_suffixes`, `slots`, `excluded_properties` | Phase 1 — LEDGER task **T1.4** |
+| Row-count regression gate (schema drift IS gated; row floors are not) | Phase 1 — LEDGER task **T1.5**, parent plan Phase 3 |
+| Restoring `hooks`/`docs` on a rebuild (archive exists, not wired) | LEDGER task **T1.7** |
+| `enrich-db.py` `--only <target>` selector, needed before its 2 seeders can be wired | LEDGER task **T1.6** |
+| `block_styles` retire/keep — editor JS never checked for `registerBlockStyle` sync | LEDGER task **T1.6** |
+| Deleting any migration | ⛔ Blocked until its replacement seeder is PROVEN — unchanged rule |
+
+**Nothing was silently dropped.** Every deferral above is mapped to a named task, per STOP-29.
 
 ## Phase success criteria (done when)
 

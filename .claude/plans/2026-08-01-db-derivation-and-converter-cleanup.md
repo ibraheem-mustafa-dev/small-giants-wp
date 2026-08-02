@@ -2,13 +2,68 @@
 doc_type: plan
 project: small-giants-wp
 created: 2026-08-01
+last_updated: 2026-08-02
 track: Track 1 — cloning pipeline
-status: DRAFT — awaiting Bean's approval, nothing built
+status: PHASE 0 COMPLETE (D464) · Phase 1 IN PROGRESS · Phases 1b/2/3/4/5 OPEN
 spec: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
 owner_decision: Bean, 2026-08-01 ("derive it, don't restore rows"; "clean script files and clean folders")
 ---
 
+> ## STATUS 2026-08-02 — read before acting on anything below
+>
+> | Phase | State |
+> |---|---|
+> | **0 — make the DB rebuildable** | ✅ **COMPLETE** (D464). Table set rebuilds 39/39 exact. `plans/phase-0-db-rebuildable.md` carries the full result + 5 measured-false plan statements. |
+> | **1 — regenerative seeders** | 🔄 **IN PROGRESS.** `roles` 29/29 (D464) · `modifier_suffixes` 19/19 (order-exact) · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 · `markup_examples` wired. Remaining: `property_suffixes`, `slots`, `excluded_properties`. |
+> | **1b — Spec 31 column reconciliation** | OPEN. F1–F8 findings still stand except where corrected below. |
+> | **2 — derive `scalar-media`** | OPEN, unblocked by Phase 0. |
+> | **3 — regression gate** | PARTIALLY DELIVERED: `dbschema/check_schema_drift.py` gates SCHEMA drift (and caught two real drifts on day one). A row-count floor gate is still owed. |
+> | **4 — purge** | OPEN. ✅ `variations` retired + dropped (D469); stray 0-byte DBs eliminated + `**/sgs-framework.db` gitignore (D464-adjacent). |
+> | **5 — loop defects** | OPEN, unchanged. |
+>
+> ### ⛔ CORRECTIONS to this document, measured 2026-08-02
+> - **Layer 1 table is stale.** `block_attributes` is 2947+ not 2946; the `variations` row is gone
+>   (table retired, D469). **Derive counts at runtime — never trust a number in this file.**
+> - **"Migration replay" is a dead end, not a build step.** Proven: `slot_synonyms` was retired, so
+>   three historical migrations reference a table the current schema correctly lacks. A May migration
+>   cannot run against an August schema. Any plan step premised on replaying `migrations/` is void.
+> - **F2's "24 deletable after seeders" is unsafe as stated** — see the classification report; several
+>   "no writer" tables actually have writers OUTSIDE this repo (`~/.claude/skills/.../populate-db.py`).
+>   ⛔ **`deploy_steps`' seeder re-issued the D336 outage recipe** and was rewritten (D468).
+> - **F8 `design_tokens` and the `hooks`/`docs` question are ANSWERED:** `hooks` (5,433) and `docs`
+>   (1,257) were never repo-derived — they were imported from the `wp-devdocs-mcp` index. That tooling
+>   is still installed; `wp-hooks quick-add-all` + `dbschema/refresh_wp_reference.py` now refresh them
+>   WITH a reconcile step (stale rows dropped, D-noted 2026-08-02).
+> - **`variations` was NOT converter-critical** — I inferred that from a `SELECT` existing rather than
+>   the call graph. Zero production callers. Retired at D469.
+>
+> **Canonical scope for Phase 1: `.claude/reports/2026-08-02-phase1-table-classification.md`.**
+
 # DB derivation + converter cleanup
+
+## Pre-conditions
+
+- **Phase 0 must pass before anything downstream is provable** — satisfied 2026-08-02 (D464).
+- **A verified backup before any DB write.** Gitignored, no other copy; use `Connection.backup()`,
+  not a file copy (WAL-mode).
+- **Never delete a migration before its replacement seeder is PROVEN.** Two `CREATE TABLE`s lived
+  only inside migrations queued for deletion; `dbschema/schema.sql` now also carries the DDL, but
+  the rule stands.
+- **Scope every DB statistic to `sgs/%`** — core blocks inflated a percentage three times.
+- **Shared worktree** — commit by exact path; re-check the D-ceiling immediately before citing a D.
+
+## Parking lot (deferred, with owners)
+
+| Deferred | Owner |
+|---|---|
+| `property_suffixes` / `slots` / `excluded_properties` seeders | LEDGER **T1.4** (Phase 1 core) |
+| Row-count floor gate (Phase 3) | LEDGER **T1.5** |
+| Restore `hooks`/`docs` on rebuild | LEDGER **T1.7** |
+| `enrich-db.py --only` selector · `block_styles` retire/keep | LEDGER **T1.6** |
+| Phase 2 `scalar-media` derivation · Phase 4 purge · Phase 5 loop defects | This plan, unchanged |
+| `delegates_content` full removal | ⛔ Needs its own design gate — demote, don't drop (Bean, D-3) |
+
+**Nothing silently dropped** — every deferral maps to a named task or phase, per STOP-29.
 
 ## THE ROOT CAUSE, IN ONE SENTENCE
 
