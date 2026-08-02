@@ -1,5 +1,48 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D462 — the object-model CSS path was the MORE exposed sibling, and `repeat()` nearly broke every grid closing it [ROUTINE]
+
+**2026-08-02.** Closes the last item of the D455 hardening programme.
+`sgs_responsive_sanitise_css_value()` (`includes/helpers-responsive.php`) now delegates to
+`sgs_css_length_value()`; `repeat` was added to that validator's function allowlist first.
+
+**1. Why it mattered more than the path already hardened.** The flat-scalar gap path got a full
+review + fix earlier in the session. The OBJECT-model path — which validates `gap`,
+`gridTemplateColumns`, `contentWidth`, `maxWidth`, `padding` and `margin` across
+`site-header-row`, `site-footer-row`, `nav-menu`, `nav-drawer`, `mega-panel`, `mega-aside` and the
+shared wrapper — was untouched and weaker: its allowlist `/[^A-Za-z0-9 .,%()+\-\/*#]/` **permitted
+`/` and `*`, so it never blocked the `/*` comment opener**, and it STRIPPED rather than failing
+closed, so malformed input degraded to mangled-but-emitted CSS. The header's own fluid gap was
+validated by THIS function, not by the one that got the attention (recorded at D461).
+
+**2. THE TRAP, caught before dispatch, not after.** `sgs_css_length_value()` rejected `repeat(...)`
+— `repeat` had been deliberately dropped from its allowlist when it was scoped to scalar gaps. A
+naive "route it through" would therefore have rejected every `grid-template-columns` value in the
+framework, including the D456 intrinsic-columns value shipped hours earlier and live on the footer.
+Measured before briefing the fix:
+`repeat(auto-fit, minmax(min(100%, max(16rem, calc(...))), 1fr))` → REJECTED. WP core's own grammar
+includes `repeat`; restoring it is safe because the RAW-INPUT breakout check runs BEFORE consumption
+and is the actual security boundary — the function-name list only decides which safe calls are
+consumed as a unit.
+
+**3. A latent fatal, found by the subagent, not by me.** `nav-drawer/render.php` never requires
+`render-helpers.php` or `helpers-css-safety.php` — unlike every other block. Routing the sanitiser
+through the validator without fixing that would have thrown "Call to undefined function
+`sgs_css_length_value()`" on the first drawer render. The `require_once` went into
+`helpers-responsive.php` ITSELF rather than only the shared loader, so every caller gets the
+dependency regardless of require order.
+
+**4. Verified live, after deploy, on the two values that could not be allowed to break.** Footer
+grid: transitions at 1160/1020/860/760px, **zero horizontal overflow across 109 widths**. Header
+gap: served CSS carries the clamp intact, computed gap varies 16px→8.8px, all on
+`.sgs-container__inner`. Self-test 60/60; `diff-gap-sanitiser` unchanged at
+`10/10 identical + 2/2 known-divergent`.
+
+**5. Measurement note.** My first verification harness produced NO output and looked like a pass at a
+glance: `helpers-responsive.php` carries the WordPress `defined('ABSPATH') || exit;` guard, so the
+probe exited silently before testing anything. Re-run with `ABSPATH` defined. A silent exit is
+indistinguishable from a clean run unless you assert on the output.
+
 ## D461 — Four DB mirrors fixed at their derivation; three diagnoses corrected en route [ROUTINE]
 
 **The work.** T1.1's five "measured residuals". Commit `8cdc1460`. Every fix targets the code that

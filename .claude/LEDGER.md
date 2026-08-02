@@ -76,14 +76,12 @@ all on `.sgs-container__inner`. Shared `sgs_css_length_value()` accepts `clamp/m
 `enum:[flex,grid]` on both rows so WP coerces a bad value rather than letting `cqi` resolve against
 the wrong container. Every dead Spec-17 citation retargeted.
 
-⚠ **Two things NOT to inherit as solved:**
-1. **`sgs_responsive_sanitise_css_value()` (`helpers-responsive.php`) is the more exposed sibling**
-   — it permits `/` and `*` so does NOT block the `/*` comment opener, and STRIPS instead of failing
-   closed. It validates gap/grid/width/padding/margin on BOTH row blocks. Route it through
-   `sgs_css_length_value()`. **This is the one real piece of code work left.**
-2. **The `layout` enum is committed but NOT deployed** — the canary deploy was aborted by
-   `oldshape-audit` on another track's post-2119 findings (`sgs/container`, `sgs/text`,
-   `sgs/info-box`). Zero findings for either row block, so it is safe to ship with the next deploy.
+**D462 closed the last item — the object-model path now shares the validator.** Both the flat-scalar
+and object paths run one grammar; `repeat` was restored to the allowlist first, because routing
+naively would have rejected every `grid-template-columns` in the framework including D456's live
+footer value. Verified after deploy: footer grid transitions 1160/1020/860/760px with ZERO overflow
+across 109 widths; header gap 16px→8.8px on `.sgs-container__inner`. The `layout` enum is deployed.
+**Nothing outstanding on this track.**
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
@@ -290,12 +288,6 @@ SHIPPED bundle after the final deploy.
 **Why:** each is currently proven by mechanism, not by observation — precisely the gap that let
 morph sit broken for months while every artefact said it worked.
 **Time:** 45 min. **Depends on:** a deploy having happened. **/qc gate:** yes.
-
-### Track 2c task — harden the object-model sanitiser [delegated, sonnet]
-See Track 2c item 1 above for the defect. **Acceptance:** the breakout corpus
-(`calc(}body{color:red)`, `calc(1px/*x*/)`, `clamp(<script>,…)`) is REJECTED on the object path
-too, every existing value byte-identical. **/qc gate:** yes. ⚠ Re-read the live D-ceiling before
-numbering — a co-active track is allocating concurrently.
 
 ### Dependency graph
 ```

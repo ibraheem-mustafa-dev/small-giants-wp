@@ -3,10 +3,10 @@
  * Shared CSS-length safety primitive for SGS block server-side rendering.
  *
  * Provides sgs_css_length_value() — a single hardened validator for any CSS
- * length-shaped attribute value (gap, padding, margin, font-size, etc.) that
- * needs to accept modern fluid-CSS function calls (var()/calc()/min()/max()/
- * minmax()/clamp()) while failing closed on anything that could break out of
- * a CSS declaration.
+ * length-shaped attribute value (gap, padding, margin, font-size, grid track
+ * lists, etc.) that needs to accept modern fluid-CSS function calls
+ * (var()/calc()/min()/max()/minmax()/clamp()/repeat()) while failing closed
+ * on anything that could break out of a CSS declaration.
  *
  * This is a SHARED safety primitive, not container-specific — do not fold it
  * back into helpers-container.php. It supersedes the narrow allowlist in
@@ -35,9 +35,20 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	 *      (url(, expression(, @import) BEFORE any parsing — belt and braces;
 	 *      core does not need this guard because `gap` is not in its
 	 *      url-bearing property list, but this is a bespoke path.
-	 *   3. Any var()/calc()/min()/max()/minmax()/clamp() call is then consumed
-	 *      with core's own recursive balanced-paren pattern (PCRE2 (?1)
-	 *      recursion — verified working on this build 2026-08-01).
+	 *   3. Any var()/calc()/min()/max()/minmax()/clamp()/repeat() call is then
+	 *      consumed with core's own recursive balanced-paren pattern (PCRE2
+	 *      (?1) recursion — verified working on this build 2026-08-01).
+	 *      `repeat()` (grid-template-columns track lists, e.g.
+	 *      "repeat(auto-fit, minmax(16rem, 1fr))") is in WP core's own grammar
+	 *      too (`var|calc|min|max|minmax|clamp|repeat`) and was restored here
+	 *      2026-08-02 when this validator was wired up as the object-model
+	 *      responsive sanitiser (sgs_responsive_sanitise_css_value) — that
+	 *      caller's `gridTemplateColumns` values are the exact shape `repeat()`
+	 *      exists for. Safe to add: the raw-input breakout check in step 2a
+	 *      runs BEFORE this consumption and is what actually provides the
+	 *      security (see step 2a's comment) — the function-name allowlist only
+	 *      decides which SAFE calls get consumed as a unit, it is not itself a
+	 *      security boundary.
 	 *   4. If ANYTHING remains after consumption that matches a CSS-breakout
 	 *      character class ([\&=}{;<>]), a comment opener (/*), or an
 	 *      unconsumed parenthesis, the whole value is rejected.
@@ -96,10 +107,12 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 			return '';
 		}
 
-		// 3. Consume var|calc|min|max|minmax|clamp calls with WordPress core's
-		// own recursive balanced-paren pattern. (?1) recurses group 1 (the
-		// parenthesised body) to any nesting depth, so
-		// "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)" is consumed in one match.
+		// 3. Consume var|calc|min|max|minmax|clamp|repeat calls with WordPress
+		// core's own recursive balanced-paren pattern. (?1) recurses group 1
+		// (the parenthesised body) to any nesting depth, so
+		// "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)" and
+		// "repeat(auto-fit, minmax(min(100%, max(16rem, calc(...))), 1fr))"
+		// are each consumed in one match, however deeply nested.
 		//
 		// CASE-INSENSITIVE (/i) — CSS function names are not case-sensitive
 		// ("CLAMP(...)", "Calc(...)" and "clamp(...)" are the same function to
@@ -120,7 +133,7 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 		// This line only changes which SAFE inputs get consumed; it does not
 		// change which UNSAFE inputs get rejected.
 		$consumed = preg_replace(
-			'/\b(?:var|calc|min|max|minmax|clamp)(\((?:[^()]|(?1))*\))/i',
+			'/\b(?:var|calc|min|max|minmax|clamp|repeat)(\((?:[^()]|(?1))*\))/i',
 			'',
 			$value
 		);
@@ -203,6 +216,28 @@ if ( PHP_SAPI === 'cli' && isset( $argv ) && in_array( '--self-test', $argv, tru
 			array( 'VAR(--MyVar, 1rem)', 'VAR(--MyVar, 1rem)' ), // custom-prop name case preserved.
 			array( 'Calc(100% - 48px)', 'Calc(100% - 48px)' ),
 			array( 'MIN(100%, 16rem)', 'MIN(100%, 16rem)' ),
+
+			// --- repeat() restored to the function allowlist (this task) ----
+			// gridTemplateColumns (an object-model responsive property routed
+			// through this validator via sgs_responsive_sanitise_css_value)
+			// legitimately carries repeat() track lists — WP core's own
+			// grammar includes it (var|calc|min|max|minmax|clamp|repeat), it
+			// was dropped from ours only when this validator was scoped to
+			// scalar gap values, and re-adding it is safe because the raw-
+			// input breakout check (step 2a) runs before any function-name
+			// consumption. These two were REJECTED before this fix.
+			array( 'repeat(3,1fr)', 'repeat(3,1fr)' ),
+			array(
+				'repeat(auto-fit, minmax(min(100%, max(16rem, calc((100% - (2 * 48px)) / 3))), 1fr))',
+				'repeat(auto-fit, minmax(min(100%, max(16rem, calc((100% - (2 * 48px)) / 3))), 1fr))',
+			), // the live D456 footer intrinsic-columns value.
+
+			// --- Plain-value corpus named explicitly in this task's brief ---
+			array( '1200px', '1200px' ),
+			array( '0 auto', '0 auto' ),
+			array( 'var(--wp--preset--spacing--30)', 'var(--wp--preset--spacing--30)' ),
+			array( '48px', '48px' ),
+			array( '100%', '100%' ),
 		);
 
 		foreach ( $accept_cases as $case ) {

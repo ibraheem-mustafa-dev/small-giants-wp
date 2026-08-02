@@ -27,6 +27,16 @@ defined( 'ABSPATH' ) || exit;
 // breakpoint source. Require it here so any caller of this file resolves it.
 require_once __DIR__ . '/class-sgs-breakpoints.php';
 
+// sgs_responsive_sanitise_css_value() (below) delegates to sgs_css_length_value().
+// Require it HERE, not just via render-helpers.php, because several render.php
+// files (e.g. nav-drawer) require_once this file directly without ever loading
+// render-helpers.php — without this line, sgs_responsive_sanitise_css_value()
+// would fatal on "Call to undefined function sgs_css_length_value()" on any
+// page rendering one of those blocks. Load order between the two files no
+// longer matters (both guard with function_exists()), only that both load
+// before either function is CALLED — this require makes that unconditional.
+require_once __DIR__ . '/helpers-css-safety.php';
+
 if ( ! function_exists( 'sgs_responsive_sanitise_unit' ) ) {
 	/**
 	 * Strip a CSS unit down to safe letters/percent only.
@@ -401,20 +411,38 @@ if ( ! function_exists( 'sgs_responsive_sanitise_css_value' ) ) {
 	/**
 	 * Sanitise a free-text CSS length/expression value for a scoped <style>.
 	 *
-	 * Permits the character set of typical length values and math functions
-	 * (`clamp()`, `calc()`, `min()`, `max()`, `var()`): letters, digits, spaces,
-	 * `. , % ( ) + - / *` and `#` (hex colours). Strips everything that could
-	 * break out of the declaration (`; { } < > @ " ' \` and backslash), which
-	 * neutralises CSS injection while leaving all legitimate values intact.
+	 * Delegates to the shared hardened validator sgs_css_length_value()
+	 * (helpers-css-safety.php) — the same primitive sgs_container_gap_value()
+	 * already delegates to. This function is the ONLY sanitiser for every
+	 * object-model responsive property (gap, gridTemplateColumns, contentWidth,
+	 * maxWidth, padding, margin, nav-drawer panelSize) across sgs/site-header-row,
+	 * sgs/site-footer-row, sgs/nav-menu, sgs/nav-drawer, sgs/mega-panel,
+	 * sgs/mega-aside and SGS_Container_Wrapper.
+	 *
+	 * PREVIOUS implementation (superseded 2026-08-02) permitted `/` and `*` in
+	 * its character allowlist without checking for the `/*` CSS-comment
+	 * opener, and STRIPPED disallowed characters rather than rejecting the
+	 * whole value — so a malformed/malicious value degraded to mangled-but-
+	 * emitted CSS instead of being refused. sgs_css_length_value() closes both
+	 * gaps: it checks the RAW input for breakout characters (including the
+	 * literal `/*` substring) BEFORE consuming any function call, and it FAILS
+	 * CLOSED — the whole value returns '' the moment anything looks unsafe,
+	 * never a stripped-down remainder. It is the raw-input breakout check that
+	 * provides the security here, not the var|calc|min|max|minmax|clamp|repeat
+	 * function-name allowlist — see that function's own docblock (step 2a).
+	 *
+	 * Return contract is unchanged for every caller: '' means "no safe value —
+	 * emit nothing for this property", exactly as before (verified against
+	 * every call site: sgs_responsive_format_atom_value() treats '' as null/
+	 * absent, helpers-row-behaviour.php's $halve treats '' as null, and
+	 * nav-drawer/render.php's geometry builder only emits a declaration when
+	 * the tier string is non-empty).
 	 *
 	 * @param string $value Raw value.
-	 * @return string Sanitised value (may be '').
+	 * @return string A safe CSS value fragment, or '' on rejection.
 	 */
 	function sgs_responsive_sanitise_css_value( $value ) {
-		$value = (string) $value;
-		// Drop any character outside the safe set.
-		$value = preg_replace( '/[^A-Za-z0-9 .,%()+\-\/*#]/', '', $value );
-		return trim( (string) $value );
+		return sgs_css_length_value( (string) $value );
 	}
 }
 
