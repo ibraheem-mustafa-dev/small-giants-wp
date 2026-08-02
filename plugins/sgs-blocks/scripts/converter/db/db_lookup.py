@@ -292,10 +292,176 @@ def _migrate_modifier_suffixes() -> None:
         conn.close()
 
 
+# ----------------------------------------------------------------------------
+# Idempotent seeders — the three Phase-1 Group-5 gaps (2026-08-02)
+# ----------------------------------------------------------------------------
+# `property_suffixes` (154 rows), `slots` (104) and `excluded_properties` (10)
+# were all CONVERTER-LOAD-BEARING with NO WRITER ANYWHERE. A rebuild-from-empty
+# produced 0 rows in each — which does not error, it just makes the converter
+# answer wrongly:
+#   - property_suffixes empty ⇒ no CSS property resolves to an attribute suffix
+#   - slots empty            ⇒ no BEM element resolves to a canonical slot/block
+#   - excluded_properties    ⇒ every deliberately-excluded property looks liftable
+#
+# Their only historical source was one-off migrations, and MIGRATION REPLAY IS A
+# PROVEN DEAD END (Phase 0 Step 0.5: three migrations reference `slot_synonyms`,
+# retired in favour of `slots`, so a May migration cannot run against an August
+# schema). The seed is therefore captured from LIVE state into git-tracked data
+# files by `dbschema/capture_seed_data.py`, mirroring the roles.json /
+# modifier-suffixes.json / atomic-tag-map.json precedent (R-31-1: the runtime
+# path queries the TABLE, never these files).
+#
+# One writer per artefact: capture_seed_data.py owns the JSON, this module owns
+# the tables. `capture_seed_data.py --check` fails when the two drift.
+_DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
+# table -> (data file, ordered columns, CREATE TABLE DDL matching live)
+_SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...], str]] = {
+    "property_suffixes": (
+        "property-suffixes.json",
+        ("suffix", "role", "css_property", "is_token_matched",
+         "token_source", "notes", "kind_override"),
+        "CREATE TABLE IF NOT EXISTS property_suffixes ("
+        "  suffix TEXT PRIMARY KEY,"
+        "  role TEXT NOT NULL,"
+        "  css_property TEXT,"
+        "  is_token_matched INTEGER DEFAULT 1,"
+        "  token_source TEXT,"
+        "  notes TEXT,"
+        "  kind_override TEXT"
+        ")",
+    ),
+    "slots": (
+        "slots.json",
+        ("slot_name", "scope", "aliases", "standalone_block", "notes",
+         "standalone_block_default_attrs"),
+        "CREATE TABLE IF NOT EXISTS slots ("
+        "  slot_name TEXT NOT NULL,"
+        "  scope TEXT NOT NULL CHECK (scope IN ('section','element')),"
+        "  aliases TEXT,"
+        "  standalone_block TEXT,"
+        "  notes TEXT,"
+        "  created_at TEXT DEFAULT CURRENT_TIMESTAMP,"
+        "  standalone_block_default_attrs TEXT,"
+        "  PRIMARY KEY (slot_name, scope)"
+        ")",
+    ),
+    "excluded_properties": (
+        "excluded-properties.json",
+        ("css_property", "reason", "decided_by", "date"),
+        "CREATE TABLE IF NOT EXISTS excluded_properties ("
+        "  css_property TEXT NOT NULL,"
+        "  reason TEXT NOT NULL,"
+        "  decided_by TEXT NOT NULL,"
+        "  date TEXT NOT NULL,"
+        "  UNIQUE(css_property)"
+        ")",
+    ),
+}
+
+
+def _load_seeded_table(table: str) -> list[tuple]:
+    """Load the ORDERED row list for *table* from its data file.
+
+    Soft-fails to ``[]`` if the file is missing, unreadable, or its ``__columns``
+    header disagrees with the column list this module inserts by — a widened
+    schema must not be unpacked positionally into the old column order. An empty
+    return leaves any existing table untouched: better a stale table than one
+    wiped because a file went walkabout.
+    """
+    filename, cols, _ = _SEEDED_TABLES[table]
+    try:
+        raw = json.loads((_DATA_DIR / filename).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if tuple(raw.get("__columns") or ()) != cols:
+        sys.stderr.write(
+            f"[db_lookup] {filename} __columns does not match the expected column "
+            f"order for `{table}` — refusing to seed positionally. "
+            f"Re-run dbschema/capture_seed_data.py --write.\n"
+        )
+        return []
+    out: list[tuple] = []
+    for row in raw.get("rows") or []:
+        if not isinstance(row, list) or len(row) != len(cols):
+            continue
+        out.append(tuple(row))
+    return out
+
+
+def _seed_table_ordered(table: str) -> None:
+    """Idempotently seed *table* from its data file, PRESERVING ROW ORDER.
+
+    ⚠ ORDER IS LOAD-BEARING for ``property_suffixes``: several readers run
+    ``... ORDER BY rowid``, and ``propose_attr_name()`` runs
+    ``ORDER BY rowid LIMIT 1`` — so where a css_property has more than one suffix
+    row, THE FIRST ROW WINS (``Colour`` before ``Color`` for ``color`` is
+    deliberate). ``INSERT OR REPLACE`` assigns a NEW rowid to a replaced row, so
+    the usual upsert would silently scramble that precedence — the same trap
+    ``modifier_suffixes`` documented for its Top/Right/Bottom/Left ``side`` rows.
+
+    Therefore: compare first, and only if the table differs from the file do a
+    full DELETE + ordered re-INSERT. An unchanged table is never rewritten, so
+    this is quiet and idempotent; a changed one comes back in exactly file order.
+
+    ``slots.created_at`` is not captured and is re-defaulted on any rewrite —
+    it is unread metadata, and capturing it would make every rebuild diff.
+    """
+    seed = _load_seeded_table(table)
+    if not seed:
+        return
+    _, cols, ddl = _SEEDED_TABLES[table]
+    collist = ", ".join(cols)
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(ddl)
+        current = conn.execute(
+            f'SELECT {collist} FROM "{table}" ORDER BY rowid'  # noqa: S608 — fixed names
+        ).fetchall()
+        if [tuple(r) for r in current] == seed:
+            return  # already exact, including order — nothing to do
+        conn.execute(f'DELETE FROM "{table}"')  # noqa: S608 — fixed names
+        conn.executemany(
+            f'INSERT INTO "{table}" ({collist}) '  # noqa: S608 — fixed names
+            f'VALUES ({", ".join("?" for _ in cols)})',
+            seed,
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail, as the sibling seeders do.
+        pass
+    finally:
+        conn.close()
+
+
+def _migrate_property_suffixes() -> None:
+    """Idempotent, order-preserving seed of `property_suffixes` (154 rows)."""
+    _seed_table_ordered("property_suffixes")
+
+
+def _migrate_slots() -> None:
+    """Idempotent seed of `slots` (104 rows, element + section scope)."""
+    _seed_table_ordered("slots")
+
+
+def _migrate_excluded_properties() -> None:
+    """Idempotent seed of `excluded_properties` (10 rows, F4 non-lift set)."""
+    _seed_table_ordered("excluded_properties")
+
+
 # Run migration at module load (idempotent).
+#
+# property_suffixes is seeded HERE, ahead of
+# _migrate_property_suffixes_kind_override() further down the module, so a
+# freshly-created table has its rows before that migration back-fills
+# kind_override. The capture is taken POST-migration, so on a live database the
+# two agree and neither rewrites the other's work on the next import.
 if _SGS_DB_PRESENT_AT_IMPORT:
     _migrate_roles_table()
     _migrate_modifier_suffixes()
+    _migrate_property_suffixes()
+    _migrate_slots()
+    _migrate_excluded_properties()
 
 
 # ----------------------------------------------------------------------------

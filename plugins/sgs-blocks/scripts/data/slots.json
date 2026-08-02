@@ -1,0 +1,848 @@
+{
+  "__doc": "Canonical slot vocabulary (element + section scope) with aliases and standalone-block routing. THE source of truth for the `slots` table (Spec 31 §13.5). db_lookup._migrate_slots() seeds it at module load.",
+  "__why": "Converter-load-bearing with NO writer anywhere: the walker resolves every BEM element name through `slots.aliases` and every section through `slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live 2026-08-02 (Phase 1).",
+  "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 one-off with no callers that appended productName / trialTag / featuredTag / splitimage. Those aliases are BAKED INTO this capture, so the script is now redundant. Do not re-run it against a rebuilt DB expecting to add anything; extend THIS file instead.",
+  "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
+  "__columns": [
+    "slot_name",
+    "scope",
+    "aliases",
+    "standalone_block",
+    "notes",
+    "standalone_block_default_attrs"
+  ],
+  "rows": [
+    [
+      "heading",
+      "element",
+      "[\"aggregate-text\", \"card-title\", \"headline\", \"name\", \"review-header\", \"title\", \"productName\"]",
+      "sgs/heading",
+      "Primary heading",
+      null
+    ],
+    [
+      "subheading",
+      "element",
+      "[\"sub\", \"subHeadline\", \"subTitle\", \"subheadline\", \"subtitle\"]",
+      "sgs/text",
+      "Sub-heading",
+      null
+    ],
+    [
+      "label",
+      "element",
+      "[\"badge-label\", \"badge-text\", \"discount-badge\", \"discount-label\", \"eyebrow\", \"featuredTag\", \"inner-label\", \"kicker\", \"node-icon\", \"pill\", \"ribbon-label\", \"sale-badge\", \"savings-label\", \"slot-label\", \"tag\", \"trialTag\", \"value-badge\"]",
+      "sgs/label",
+      "Pre-heading label",
+      null
+    ],
+    [
+      "text",
+      "element",
+      "[\"attribution\", \"author\", \"bio\", \"caption\", \"consent-text\", \"content-preview\", \"copy\", \"description\", \"excerpt\", \"inner-label\", \"intro\", \"label-control\", \"message\", \"messages\", \"review-content\", \"verified\", \"verified-text\"]",
+      "sgs/text",
+      "Paragraph body",
+      null
+    ],
+    [
+      "media",
+      "element",
+      "[\"badge-img\", \"bg-img\", \"embed\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"photo\", \"picture\", \"side-image\", \"side-img\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"thumb\", \"thumb-img\", \"video\", \"splitimage\"]",
+      "sgs/media",
+      "Polymorphic image/video slot",
+      null
+    ],
+    [
+      "backgroundMedia",
+      "element",
+      "[\"background\", \"backgroundImage\", \"backgroundVideo\", \"bg-img\", \"bg-media\", \"bg-video\", \"bgColor\", \"bgColour\", \"bgImage\", \"bgVideo\", \"heroImage\", \"svg-bg\", \"video-bg\"]",
+      "sgs/media",
+      "Background polymorphic",
+      null
+    ],
+    [
+      "alt",
+      "element",
+      "[]",
+      null,
+      "Image alt text",
+      null
+    ],
+    [
+      "caption",
+      "element",
+      "[\"lightbox-caption\"]",
+      "sgs/text",
+      "Image caption",
+      null
+    ],
+    [
+      "button",
+      "element",
+      "[\"btn\", \"cta\", \"cta-inputs\", \"load-more\", \"readmore\"]",
+      "sgs/button",
+      "Primary CTA / button",
+      null
+    ],
+    [
+      "buttonSecondary",
+      "element",
+      "[\"button-secondary\", \"secondary-button\", \"buttonSecondary\", \"secondaryButton\", \"ctaSecondary\", \"cta-secondary\", \"secondaryCta\", \"secondary-cta\"]",
+      "sgs/button",
+      "Theme-wide button preset -> sgs/button with inheritStyle=secondary (follows the theme.json/style-variation preset CSS). Added 2026-06-03 (Bean). Slot-default-attrs mechanism.",
+      "{\"inheritStyle\": \"secondary\"}"
+    ],
+    [
+      "link",
+      "element",
+      "[\"anchor\", \"count-link\", \"href\", \"image-link\", \"social-link\", \"url\"]",
+      "sgs/button",
+      "Link target URL",
+      null
+    ],
+    [
+      "items",
+      "element",
+      "[\"arrow\", \"arrows\", \"badges\", \"dot\", \"dots\", \"features\", \"filter\", \"filters\", \"list\", \"menu\", \"nav\", \"option\", \"set\", \"social\", \"social-link\", \"thumbs\"]",
+      "sgs/info-box",
+      "Repeating list of items",
+      null
+    ],
+    [
+      "options",
+      "element",
+      "[]",
+      null,
+      "Form-field selection options",
+      null
+    ],
+    [
+      "badge",
+      "element",
+      "[\"pill\"]",
+      null,
+      "Decorative badge / pill [2026-06-03 Bean 2B: badge is the trust-bar grid-item (container), not a leaf label; standalone_block NULLed so __badge resolves to sgs/container. pill alias moved to label row to preserve pack-size pill->label.]",
+      null
+    ],
+    [
+      "avatar",
+      "element",
+      "[\"authorImage\", \"avatar-img\", \"avatar-initials\", \"portrait\", \"profile\"]",
+      "sgs/media",
+      "Person portrait",
+      null
+    ],
+    [
+      "icon",
+      "element",
+      "[\"badge-number\", \"check\", \"feature-icon\", \"feature-icon--check\", \"feature-icon--cross\", \"glyph\", \"iconPosition\", \"iconSize\", \"iconValue\", \"symbol\", \"verified-icon\"]",
+      "sgs/icon",
+      "Iconography",
+      null
+    ],
+    [
+      "date",
+      "element",
+      "[\"card-date\", \"datetime\", \"day\", \"period\", \"time\", \"timestamp\"]",
+      "sgs/text",
+      "Date",
+      null
+    ],
+    [
+      "price",
+      "element",
+      "[\"amount\", \"cost\", \"price-wrapper\", \"ribbon\", \"savings-badge\"]",
+      "sgs/text",
+      "Price",
+      null
+    ],
+    [
+      "rating",
+      "element",
+      "[\"aggregate\", \"card-stars\", \"header-stars\", \"score\", \"stars\"]",
+      "sgs/star-rating",
+      "Star rating",
+      null
+    ],
+    [
+      "separator",
+      "element",
+      "[\"card-sep\", \"divider\", \"line\", \"rule\", \"shape\", \"wave\"]",
+      "sgs/divider",
+      "Visual divider",
+      null
+    ],
+    [
+      "hover",
+      "element",
+      "[\"hoverState\"]",
+      null,
+      "Hover-state slot (state modifier acting as slot)",
+      null
+    ],
+    [
+      "transition",
+      "element",
+      "[\"motion\", \"css-transition\"]",
+      null,
+      "CSS transition motion concept",
+      null
+    ],
+    [
+      "animation",
+      "element",
+      "[\"motion\", \"sgsAnimation\", \"stagger\", \"staggerDelay\"]",
+      null,
+      "Animation motion concept (incl. sgsAnimation)",
+      null
+    ],
+    [
+      "column",
+      "element",
+      "[\"columns\"]",
+      null,
+      "Grid/flex column slot",
+      null
+    ],
+    [
+      "padding",
+      "element",
+      "[\"padding\"]",
+      null,
+      "Padding layout primitive slot",
+      null
+    ],
+    [
+      "margin",
+      "element",
+      "[\"margin\"]",
+      null,
+      "Margin layout primitive slot",
+      null
+    ],
+    [
+      "gap",
+      "element",
+      "[\"blockGap\"]",
+      null,
+      "Gap layout primitive slot",
+      null
+    ],
+    [
+      "width",
+      "element",
+      "[]",
+      null,
+      "Width layout primitive slot",
+      null
+    ],
+    [
+      "border",
+      "element",
+      "[\"borderRadius\", \"borderColor\", \"borderColour\", \"borderWidth\", \"borderStyle\"]",
+      null,
+      "Border-properties container slot",
+      null
+    ],
+    [
+      "variant",
+      "element",
+      "[\"style\"]",
+      null,
+      "Variant/style enum slot",
+      null
+    ],
+    [
+      "layout",
+      "element",
+      "[\"layoutType\"]",
+      null,
+      "Layout-mode slot",
+      null
+    ],
+    [
+      "shadow",
+      "element",
+      "[]",
+      null,
+      "Shadow-properties slot",
+      null
+    ],
+    [
+      "overlay",
+      "element",
+      "[\"dialog\", \"lightbox\", \"lightbox-body\", \"lightbox-caption\", \"lightbox-close\", \"lightbox-counter\", \"lightbox-img\", \"lightbox-next\", \"lightbox-prev\", \"overlay-bio\"]",
+      null,
+      "Overlay-properties slot",
+      null
+    ],
+    [
+      "number",
+      "element",
+      "[\"aggregate\", \"badge-number\", \"count\", \"count-link\", \"numeric\", \"stat\", \"stats\"]",
+      "sgs/counter",
+      "Numeric-display slot",
+      null
+    ],
+    [
+      "aspectRatio",
+      "element",
+      "[\"aspect\"]",
+      null,
+      "Aspect-ratio slot",
+      null
+    ],
+    [
+      "min",
+      "element",
+      "[\"minHeight\", \"minWidth\"]",
+      null,
+      "Min-dimension slot (peeled stem)",
+      null
+    ],
+    [
+      "max",
+      "element",
+      "[\"maxHeight\", \"maxWidth\"]",
+      null,
+      "Max-dimension slot",
+      null
+    ],
+    [
+      "rotation",
+      "element",
+      "[\"rotate\"]",
+      null,
+      "Rotation transform slot",
+      null
+    ],
+    [
+      "positionX",
+      "element",
+      "[]",
+      null,
+      "X-axis position slot",
+      null
+    ],
+    [
+      "positionY",
+      "element",
+      "[]",
+      null,
+      "Y-axis position slot",
+      null
+    ],
+    [
+      "ariaLabel",
+      "element",
+      "[]",
+      null,
+      "ARIA label slot (a11y)",
+      null
+    ],
+    [
+      "opacity",
+      "element",
+      "[]",
+      null,
+      "Opacity slot",
+      null
+    ],
+    [
+      "autoplay",
+      "element",
+      "[]",
+      null,
+      "Autoplay boolean slot",
+      null
+    ],
+    [
+      "autoplaySpeed",
+      "element",
+      "[]",
+      null,
+      "Autoplay-speed slot",
+      null
+    ],
+    [
+      "showDots",
+      "element",
+      "[]",
+      null,
+      "Show-dots boolean slot",
+      null
+    ],
+    [
+      "showArrows",
+      "element",
+      "[]",
+      null,
+      "Show-arrows boolean slot",
+      null
+    ],
+    [
+      "showDate",
+      "element",
+      "[]",
+      null,
+      "Show-date boolean slot",
+      null
+    ],
+    [
+      "split",
+      "element",
+      "[\"body-row\", \"grid\", \"group\", \"row\"]",
+      null,
+      "Split-layout slot",
+      null
+    ],
+    [
+      "panel",
+      "element",
+      "[\"panel-hint\", \"panel-note\", \"panels\", \"preview\", \"preview-container\"]",
+      "sgs/info-box",
+      "Panel-container slot",
+      null
+    ],
+    [
+      "drawer",
+      "element",
+      "[]",
+      null,
+      "Drawer-container slot",
+      null
+    ],
+    [
+      "card",
+      "element",
+      "[\"card-body\", \"card-header\", \"cardStyle\", \"entry\", \"item\", \"item-btn\", \"item-link\", \"node\", \"plan\", \"plan-meta\", \"review\", \"review-row\", \"slide\", \"slot\", \"stage\", \"stat\", \"step\"]",
+      "sgs/info-box",
+      "Card-container slot",
+      null
+    ],
+    [
+      "imageAlt",
+      "element",
+      "[\"imageAltText\"]",
+      null,
+      "Image alt-text slot (a11y)",
+      null
+    ],
+    [
+      "letterSpacing",
+      "element",
+      "[]",
+      null,
+      "Letter-spacing slot",
+      null
+    ],
+    [
+      "hideOn",
+      "element",
+      "[\"hideOnMobile\", \"hideOnTablet\", \"hideOnDesktop\"]",
+      null,
+      "Responsive-hide control slot",
+      null
+    ],
+    [
+      "linkOpensNewTab",
+      "element",
+      "[\"openInNewTab\", \"target\"]",
+      null,
+      "Link-target control slot",
+      null
+    ],
+    [
+      "focusRing",
+      "element",
+      "[]",
+      null,
+      "Focus-ring outline (a11y) — width / colour / offset / opacity",
+      null
+    ],
+    [
+      "backdrop",
+      "element",
+      "[]",
+      null,
+      "Backdrop / scrim — modal / popup / drawer overlay",
+      null
+    ],
+    [
+      "zIndex",
+      "element",
+      "[]",
+      null,
+      "z-index stacking order",
+      null
+    ],
+    [
+      "accent",
+      "element",
+      "[]",
+      null,
+      "Accent colour for interactive states (link underline, focus, hover)",
+      null
+    ],
+    [
+      "parallax",
+      "element",
+      "[]",
+      null,
+      "Scroll-parallax intensity / behaviour",
+      null
+    ],
+    [
+      "breakpoint",
+      "element",
+      "[]",
+      null,
+      "Responsive breakpoint threshold (px)",
+      null
+    ],
+    [
+      "overflow",
+      "element",
+      "[]",
+      null,
+      "CSS overflow control",
+      null
+    ],
+    [
+      "flip",
+      "element",
+      "[]",
+      null,
+      "Mirror / scaleX(-1) transform toggle",
+      null
+    ],
+    [
+      "lazyLoad",
+      "element",
+      "[]",
+      null,
+      "Defer asset load until viewport intersection",
+      null
+    ],
+    [
+      "loop",
+      "element",
+      "[]",
+      null,
+      "Media loop boolean",
+      null
+    ],
+    [
+      "muted",
+      "element",
+      "[]",
+      null,
+      "Video / audio mute boolean",
+      null
+    ],
+    [
+      "mediaType",
+      "element",
+      "[]",
+      null,
+      "Discriminator: image / video / svg / lottie",
+      null
+    ],
+    [
+      "mediaSource",
+      "element",
+      "[]",
+      null,
+      "Source discriminator: upload / youtube / vimeo / url",
+      null
+    ],
+    [
+      "htmlTag",
+      "element",
+      "[]",
+      null,
+      "HTML tag selector (section / div / article)",
+      null
+    ],
+    [
+      "verticalAlign",
+      "element",
+      "[]",
+      null,
+      "Vertical alignment within container",
+      null
+    ],
+    [
+      "query",
+      "element",
+      "[\"queryArgs\", \"wpQuery\"]",
+      null,
+      "WP_Query / Query Loop descriptor",
+      null
+    ],
+    [
+      "logo",
+      "element",
+      "[\"google-logo\", \"header-logo\", \"header-logo-link\", \"logoImage\", \"logoMaxWidth\"]",
+      "sgs/responsive-logo",
+      "Logo container slot",
+      null
+    ],
+    [
+      "size",
+      "element",
+      "[]",
+      null,
+      "Square dimension (button size, icon size, close size)",
+      null
+    ],
+    [
+      "position",
+      "element",
+      "[]",
+      null,
+      "Position slot — CSS position keyword or coordinate object",
+      null
+    ],
+    [
+      "header",
+      "element",
+      "[\"headerBackground\", \"headerColour\"]",
+      null,
+      "accordion item header (distinct from page heading)",
+      null
+    ],
+    [
+      "feature",
+      "element",
+      "[\"featureColour\"]",
+      null,
+      "pricing tier feature list item",
+      null
+    ],
+    [
+      "bar",
+      "element",
+      "[\"barColour\", \"progress\", \"progress-bar\", \"progress-step\", \"progress-step-label\", \"progress-step-number\", \"progress-steps\", \"progress-wrapper\", \"progressBar\", \"track\"]",
+      null,
+      "progress bar visual element",
+      null
+    ],
+    [
+      "star",
+      "element",
+      "[\"starColour\", \"emptyStar\"]",
+      "sgs/star-rating",
+      "star rating visual element (filled or empty variant)",
+      null
+    ],
+    [
+      "tab",
+      "element",
+      "[\"billing-toggle\", \"filter\", \"tabActive\", \"tabActiveIndicator\", \"tabBg\", \"tabText\", \"toggle-input\", \"toggle-label\", \"toggle-track\"]",
+      "sgs/tab",
+      "tab UI primitive (label + active + indicator variants)",
+      null
+    ],
+    [
+      "quote",
+      "element",
+      "[\"blockquote\", \"pullquote\", \"quote\", \"quoteBody\", \"quoteText\"]",
+      "sgs/quote",
+      "testimonial quote body",
+      null
+    ],
+    [
+      "role",
+      "element",
+      "[\"authorRole\", \"card-meta\", \"category\", \"jobTitle\", \"speakerRole\"]",
+      "sgs/label",
+      "testimonial speaker role / job title",
+      null
+    ],
+    [
+      "__form_instance__",
+      "element",
+      "[]",
+      null,
+      "Per-instance form field content (fieldName, placeholder, helpText, required, conditional*). Not a designable visual slot — content lives on each form instance, not in the block-attribute design vocabulary.",
+      null
+    ],
+    [
+      "review",
+      "element",
+      "[\"review-row\", \"review-item\", \"review-card\"]",
+      "sgs/testimonial",
+      "Single review entry (distinct from review-content body text)",
+      null
+    ],
+    [
+      "social",
+      "element",
+      "[\"social-link\", \"social-icon\", \"social-item\"]",
+      "sgs/social-icons",
+      "Social media link / icon container",
+      null
+    ],
+    [
+      "nav",
+      "element",
+      "[\"navigation\", \"menu-nav\"]",
+      null,
+      "Navigation container slot",
+      null
+    ],
+    [
+      "progress",
+      "element",
+      "[\"progress-bar\", \"progressBar\", \"progress-fill\"]",
+      null,
+      "Progress indicator — fill level or step tracker",
+      null
+    ],
+    [
+      "step",
+      "element",
+      "[\"progress-step\", \"wizard-step\", \"stage-item\"]",
+      "sgs/process-steps",
+      "Individual step in a multi-step sequence",
+      null
+    ],
+    [
+      "slot",
+      "element",
+      "[\"slot-placeholder\", \"slot-upload\", \"slot-preview\", \"slot-actions\", \"slot-label\", \"slot-img\"]",
+      null,
+      "Media-manager slot container (admin UI)",
+      null
+    ],
+    [
+      "ribbon",
+      "element",
+      "[\"price-ribbon\", \"plan-ribbon\"]",
+      null,
+      "Decorative ribbon overlay on a card/panel",
+      null
+    ],
+    [
+      "hero",
+      "section",
+      "[]",
+      "sgs/hero",
+      "Universal hero section",
+      null
+    ],
+    [
+      "cta",
+      "section",
+      "[]",
+      "sgs/cta-section",
+      "Call-to-action section",
+      null
+    ],
+    [
+      "cta-section",
+      "section",
+      "[]",
+      "sgs/cta-section",
+      "Alternative kebab for CTA",
+      null
+    ],
+    [
+      "core/group",
+      "section",
+      "[]",
+      "sgs/container",
+      "WP core layout block; SGS canonical section-level replacement per Decision 3 (decisions.md:1238); added 2026-05-23 to make the fallback-to-sgs/container architecturally honest",
+      null
+    ],
+    [
+      "testimonial",
+      "element",
+      "[]",
+      "sgs/testimonial",
+      null,
+      null
+    ],
+    [
+      "testimonial-slider",
+      "element",
+      "[]",
+      "sgs/testimonial-slider",
+      null,
+      null
+    ],
+    [
+      "inner",
+      "element",
+      "[]",
+      null,
+      "XS-3 2026-05-30: passthrough — walker folds CSS into parent block className; no separate emit",
+      null
+    ],
+    [
+      "disclaimer",
+      "element",
+      null,
+      "sgs/notice-banner",
+      "Disclaimer/legal callout text rendered as a notice box (bg+border+padding). Added fresh 2026-06-03 (Task 1 BEM routing fix) — Bean-directed -> sgs/notice-banner.",
+      null
+    ],
+    [
+      "button-group",
+      "element",
+      "[\"ctas\", \"buttons\", \"cta-group\", \"button-group\", \"ctaGroup\", \"buttonGroup\"]",
+      "sgs/multi-button",
+      "CTA-group / button-group wrapper -> sgs/multi-button (mirrors core/buttons>core/button). Added 2026-06-03 P-9; plural ctas/buttons moved here from the singular button slot.",
+      null
+    ],
+    [
+      "button-primary",
+      "element",
+      "[\"button-primary\", \"primary-button\", \"buttonPrimary\", \"primaryButton\", \"ctaPrimary\", \"cta-primary\", \"primaryCta\", \"primary-cta\"]",
+      "sgs/button",
+      "Theme-wide button preset -> sgs/button with inheritStyle=primary (follows the theme.json/style-variation preset CSS). Added 2026-06-03 (Bean). Slot-default-attrs mechanism.",
+      "{\"inheritStyle\": \"primary\"}"
+    ],
+    [
+      "button-outline",
+      "element",
+      "[\"button-outline\", \"outline-button\", \"buttonOutline\", \"outlineButton\", \"ctaOutline\", \"cta-outline\", \"outlineCta\", \"ghost-button\", \"ghostButton\", \"button-ghost\"]",
+      "sgs/button",
+      "Theme-wide button preset -> sgs/button with inheritStyle=outline (follows the theme.json/style-variation preset CSS). Added 2026-06-03 (Bean). Slot-default-attrs mechanism.",
+      "{\"inheritStyle\": \"outline\"}"
+    ],
+    [
+      "option-picker",
+      "element",
+      "[\"pill-group\", \"pills\", \"option-group\", \"variant-group\", \"pack-group\", \"flavour-group\", \"size-group\"]",
+      "sgs/option-picker",
+      "Exclusive radio-group pill chooser — emits sgs/option-picker with optionItems array (FR-24-15)",
+      "{\"pillStyle\": \"filled\", \"typeKey\": \"\"}"
+    ],
+    [
+      "content",
+      "element",
+      "[]",
+      null,
+      "Content-cap sub-area label — the constrained content-width box inside a block's outer box. canonical_slot value for contentWidth*/contentPadding* layout attrs (metadata only; EMPTY aliases by design — never matched against draft wrapper classes; see 2026-05-24 inner/body-row removal note).",
+      null
+    ],
+    [
+      "accordion-item",
+      "element",
+      "[]",
+      "sgs/accordion-item",
+      "Single expandable panel inside sgs/accordion — emits sgs/accordion-item with title attr from __heading child (Gate A 2026-06-10)",
+      null
+    ],
+    [
+      "attribution",
+      "element",
+      "[\"author\"]",
+      null,
+      "Attribution/author scalar content slot — content_attr_for_element alias-tier ONLY (standalone_block intentionally NULL so resolve_slug_from_bem/_slot_alias_to_standalone never routes it to a standalone child block). Universal: any block's content-bearing attr may declare canonical_slot='attribution' to accept an 'author'-classed draft element as its own scalar value. Added 2026-07-25 fixing the sgs/quote 3-block cloning bug.",
+      null
+    ]
+  ]
+}

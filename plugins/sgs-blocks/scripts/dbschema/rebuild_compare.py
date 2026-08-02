@@ -27,10 +27,17 @@ REPO = SCRIPTS.parent.parent.parent
 sys.path.insert(0, str(HERE))
 from sandbox import sandbox  # noqa: E402
 
-# Known to have no regenerative source today -- Phase 1's scope, not Phase 0's.
-KNOWN_UNREPRODUCIBLE = {
-    "property_suffixes", "roles", "slots", "excluded_properties",
-}
+# Known to have no regenerative source -- Phase 1's scope, not Phase 0's.
+#
+# EMPTIED 2026-08-02 (Phase 1, T1.4). All four original members now regenerate:
+# `roles` and `modifier_suffixes` were wired first, then `property_suffixes`,
+# `slots` and `excluded_properties` gained data-file seeders in db_lookup.py
+# (captured from live by `dbschema/capture_seed_data.py`, which owns the JSON).
+# The set stays declared, not deleted: it is the honest place to record the next
+# table that turns out to have no source, and an empty set means every remaining
+# empty table lands in the "NOT known" bucket where it gets explained rather than
+# waved through.
+KNOWN_UNREPRODUCIBLE: set[str] = set()
 
 NOTINT = "name NOT LIKE 'sqlite@_%' ESCAPE '@'"
 

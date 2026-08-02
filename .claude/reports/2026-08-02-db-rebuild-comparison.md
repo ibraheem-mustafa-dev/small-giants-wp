@@ -17,15 +17,15 @@ the live database's mtime was confirmed unchanged afterwards).
 
 | | live | rebuilt |
 |---|---|---|
-| tables | 40 | 40 |
-| total rows | 19138 | 4046 |
+| tables | 39 | 39 |
+| total rows | 18684 | 4397 |
 
 - Missing tables: **none**
 - Extra tables: **none**
-- Tables with identical row counts: **12**
-- Short of live: **10**
-- Empty, known Phase-1 gaps: **3**
-- Empty, NOT a known gap: **15**
+- Tables with identical row counts: **15**
+- Short of live: **11**
+- Empty, known Phase-1 gaps: **0**
+- Empty, NOT a known gap: **13**
 
 ## ⚠ Empty but NOT a known gap
 
@@ -34,30 +34,18 @@ These were not on the Phase-1 list and need explaining before Phase 1 starts.
 | table | live rows |
 |---|---|
 | `_meta_schema_version` | 1 |
-| `attribute_gap_candidates` | 3063 |
+| `attribute_gap_candidates` | 2912 |
 | `block_changes` | 2735 |
 | `block_styles` | 63 |
 | `components` | 13 |
-| `deploy_steps` | 9 |
+| `deploy_steps` | 7 |
 | `gotchas` | 12 |
-| `markup_examples` | 399 |
 | `pattern_coverage` | 108 |
 | `patterns` | 57 |
 | `pipeline_corrections` | 4 |
 | `plugins` | 3 |
 | `style_variations` | 8 |
 | `theme_parts` | 28 |
-| `variations` | 205 |
-
-## Empty — known, carried to Phase 1
-
-Already established as having no regenerative source. This is Phase 1's scope.
-
-| table | live rows |
-|---|---|
-| `excluded_properties` | 10 |
-| `property_suffixes` | 154 |
-| `slots` | 104 |
 
 ## Short of live
 
@@ -70,13 +58,14 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | `block_supports` | 1340 | 521 | 819 |
 | `blocks` | 205 | 117 | 88 |
 | `design_tokens` | 224 | 150 | 74 |
-| `docs` | 1257 | 46 | 1211 |
-| `hooks` | 5433 | 161 | 5272 |
+| `docs` | 1077 | 46 | 1031 |
+| `hooks` | 5494 | 161 | 5333 |
 | `indexed_files` | 110 | 83 | 27 |
+| `markup_examples` | 422 | 83 | 339 |
 
 ## Identical
 
-12 tables reproduced with exactly matching row counts.
+15 tables reproduced with exactly matching row counts.
 
 <details><summary>Full list</summary>
 
@@ -85,14 +74,17 @@ Already established as having no regenerative source. This is Phase 1's scope.
 | `array_item_fields` | 0 |
 | `array_item_schema` | 68 |
 | `block_selectors` | 86 |
+| `excluded_properties` | 10 |
 | `fx_effects` | 15 |
 | `html_tag_to_core_block` | 17 |
 | `legacy_role_lookup` | 15 |
 | `modifier_suffixes` | 19 |
 | `preset_implications` | 23 |
+| `property_suffixes` | 154 |
 | `roles` | 29 |
 | `schema_metadata` | 4 |
 | `schema_migrations` | 29 |
+| `slots` | 104 |
 | `variant_slots` | 27 |
 
 </details>

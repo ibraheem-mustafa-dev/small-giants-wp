@@ -1,0 +1,74 @@
+{
+  "__doc": "F4 excluded_properties — CSS properties deliberately NOT lifted to block attributes (still cloned via passthrough <style>). THE source of truth for the table. db_lookup._migrate_excluded_properties() seeds it.",
+  "__why": "Read as a frozenset by converter/dispatch_table.py:95 and by the excluded-gate. Empty ⇒ every excluded property is wrongly treated as liftable. Captured from live 2026-08-02 (Phase 1).",
+  "__order": "NOT load-bearing — every reader builds a set. Captured in rowid order anyway so the file diffs cleanly.",
+  "__note": "Some `reason` strings contain U+FFFD (a replacement character from an earlier bad write). Captured VERBATIM: byte-exact parity with live is the goal, no reader parses these strings, and silently 'repairing' them would make this capture disagree with the database it mirrors.",
+  "__columns": [
+    "css_property",
+    "reason",
+    "decided_by",
+    "date"
+  ],
+  "rows": [
+    [
+      "transition",
+      "no block declares a bare 'transition' attr (verified: 0 rows, 2026-07-04); the widespread 'transitionDuration' attr is a longhand-property destination unrelated to this shorthand (see module docstring); excluded from LIFT, still cloned via passthrough <style>.",
+      "EXECUTION Step 12 (Phase 5, CSS resolver completeness)",
+      "2026-07-04"
+    ],
+    [
+      "overflow-x",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "overflow-y",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "position",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "right",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "bottom",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "inset",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "flex-grow",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "flex-shrink",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ],
+    [
+      "flex-basis",
+      "no block declares a consuming attribute — CSS passthrough only (D2); verified 2026-07-22 Spec 31 unit A1",
+      "Bean/Spec31-A1",
+      "2026-07-22"
+    ]
+  ]
+}

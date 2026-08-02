@@ -1,5 +1,52 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D470 — Phase 1 CLOSED: the last three converter-load-bearing tables now rebuild from git [ROUTINE]
+
+**2026-08-02, Track 1 T1.4.** `property_suffixes` (154), `slots` (104) and `excluded_properties`
+(10) were the Group-5 residue of the Phase 1 classification — converter-load-bearing with **no
+writer anywhere**, so a rebuild-from-empty produced 0 rows in all three. That does not error; it
+makes the converter answer wrongly: no CSS property resolves to an attribute suffix, no BEM element
+resolves to a canonical slot or standalone block, and every deliberately-excluded property looks
+liftable.
+
+**Shape (the proven `roles.json` / `modifier-suffixes.json` pattern, extended).** Seed captured from
+**LIVE** into git-tracked `scripts/data/{property-suffixes,slots,excluded-properties}.json`;
+idempotent module-load seeders in `converter/db/db_lookup.py`. ⛔ **Never by replaying
+`migrations/`** — Phase 0 Step 0.5 proved that impossible (three migrations reference the retired
+`slot_synonyms`). R-31-1 holds: the runtime path queries the TABLE, never the file.
+
+**ORDER IS LOAD-BEARING for `property_suffixes`, and this was checked before choosing the write
+mode.** Several readers use `ORDER BY rowid`, and `propose_attr_name()` (`db_lookup.py:~2600`) uses
+`ORDER BY rowid LIMIT 1` — so where a css_property has more than one suffix row, **the first row
+wins** (`Colour` precedes `Color` for `color`; UK English is the SGS convention). `INSERT OR REPLACE`
+assigns a NEW rowid to a replaced row, so the usual upsert would silently scramble that precedence —
+the identical trap `modifier_suffixes` documented for its T/R/B/L `side` rows. All three therefore
+use **compare-first, then DELETE + ordered re-INSERT**: an unchanged table is never rewritten (quiet
+and idempotent), a changed one comes back in exactly file order.
+
+**One writer per artefact.** `dbschema/capture_seed_data.py` is the only writer of the JSON;
+`db_lookup.py` is the only writer of the tables. Nothing writes both directions, so there is no
+clobber loop. `capture_seed_data.py --check` is the drift detector (fails when a table is hand-edited
+without back-writing the seed — the exact decay class that left `roles` at 21/29); `--self-test`
+proves `--check` can fail by capturing a throwaway DB, passing, then breaking one file and failing.
+
+**Measured, with negative controls** (`ALL PASS`, live DB untouched and count-verified after):
+empty schema'd sandbox → import → **154/104/10, byte-exact and rowid-order-exact vs live** · wipe
+`slots` → refills · corrupt a `property_suffixes` row + delete another → restored byte-exact ·
+**hide `excluded-properties.json` → the table stays EMPTY**, proving the population came from this
+seeder and not from something else in the import. Converter suite **587 passed / 1 skipped** —
+unchanged. `rebuild_compare.py`: identical-count tables **12 → 15**, `empty (known Phase-1)` = **0**.
+
+**`KNOWN_UNREPRODUCIBLE` emptied, not deleted** — it is the honest place to record the next table
+found to have no source, and an empty set means every remaining empty table lands in the "NOT known"
+bucket where it must be explained rather than waved through. The 13 that now sit there are Group-3
+accumulated history and Group-4 residue (T1.6), both already classified — not new findings.
+
+⚠ **`behavioural-analyser/seed-slot-alias-extensions.py` is now superseded.** Its four alias
+additions (productName / trialTag / featuredTag / splitimage) are baked into the capture. Extend
+`slots.json` instead; re-running that script against a rebuilt DB adds nothing and would be reverted
+on the next import.
+
 ## D469 — `variations` table RETIRED and dropped (superseded by `variant_slots`) [ROUTINE]
 
 **Bean's call, 2026-08-02.** ⛔ **`variant_slots` is NOT affected and must never be confused with
