@@ -76,40 +76,14 @@ Two Wave-E results are STANDING CONSTRAINTS, not history:
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 — PHASE 0 COMPLETE 2026-08-02 (D464). Phase 1 COMPLETE (D468–**D472**) —
-  every converter-load-bearing table rebuilds from git; T1.4–T1.7 all closed.**
-  12 commits `78347070`→`2500b3c3`, pushed. **Full narrative swept to
-  `memory/session-2026-08-02-track1-phase0.md` — read it before acting.** T1.1 also closed
-  same day (D461, `8cdc1460`; evidence `reports/2026-08-02-t1.1-evidence-pack.md`).
-  **`--rebuild` from an EMPTY file: exit 0, table set 39/39 IDENTICAL** (12 exact, 10 partial,
-  3 real gaps). `scripts/dbschema/` holds schema.sql · sandbox.py · migrate.py+`schema_migrations` ·
-  check_schema_drift.py · rebuild_compare.py · wp_reference_archive.py · refresh_wp_reference.py.
-  Registers: `plans/phase-0-db-rebuildable.md` (CLOSED) ·
-  `plans/2026-08-01-db-derivation-and-converter-cleanup.md` (status block) ·
-  **`reports/2026-08-02-phase1-table-classification.md` = Phase 1's measured scope**.
-  ⛔ **MIGRATION REPLAY IS A DEAD END — proven.** The rebuild died on `no such table:
-  slot_synonyms`: retired for `slots`, so 3 migrations reference a table the schema correctly lacks.
-  A May migration cannot run against an August schema. **Void any step premised on replaying
-  `migrations/`.**
-  ✅ **Regenerative now:** `property_suffixes` 154/154 · `slots` 104/104 · `excluded_properties`
-  10/10 (all D470, order-exact) · `roles` 29/29 · `modifier_suffixes` 19/19 **order-exact** (⚠
-  `db_lookup.py:2262` reads `ORDER BY rowid`; `side` is CSS-shorthand T/R/B/L, so `INSERT OR
-  REPLACE` would SCRAMBLE it) · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 ·
-  `markup_examples` wired. **No converter-load-bearing table is now unreproducible.**
-  ✅ **`hooks`/`docs` refreshed from source** (5407→5468, 1241→1061, stale dropped, SGS untouched).
-  `wp-hooks quick-add-all` + `dbschema/refresh_wp_reference.py`. ⛔ Do NOT re-register the MCP —
-  that hands back the ~6,000 tokens/session the 2026-04-18 decision saved; the CLI is enough.
-  ✅ **D468** `deploy_steps` no longer re-issues the D336 outage recipe (`/sgs-db deploy` reads those
-  rows back as INSTRUCTIONS). ⚠ `populate-db.py` is at `~/.agents/…`, **NOT in any git repo** —
-  D468 + its `.bak` are the only record. ⛔ Never run the whole script: it also writes `hooks` with
-  an `INSERT OR IGNORE` omitting `plugin_slug`.
-  ✅ **D469** `variations` retired + dropped. ⛔ **`variant_slots` is NOT affected — one character
-  apart, opposite consequences; it feeds `detect_variant` for 5 blocks.**
-  ⛔ **Carried, binding:** do NOT delete `scalar-media` or Loop 2 · never delete a migration before
-  its seeder is PROVEN · **scope every DB stat to `sgs/%`** · `sgs-card-grid` "cardRadius 12→18px"
-  WITHDRAWN as a probe artefact · do NOT alias `trigger`→`tab` · ⛔ do NOT retry the T1.1 Task A
-  composite-var classifier fix (1→3 violations, reverted). Conformance **30 fail/20 pass**; suite
-  587/1 skip. Bean's 4 settled decisions live in the parent plan.
+- **⭐ Track 1 — PHASE 0 + 1 + 2 COMPLETE 2026-08-02 (D464, D468–D474). T1.1, T1.4–T1.7 all closed.**
+  **Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `memory/session-2026-08-02-track1-phase0.md`
+  — read before acting.** Decisions D464/D468–D474 are authoritative.
+  ⛔ **MIGRATION REPLAY IS A DEAD END — proven.** `slot_synonyms` was retired, so 3 migrations
+  reference a table the schema correctly lacks. Void any step premised on replaying `migrations/`.
+  ⛔ **Never delete a migration before its replacement seeder is PROVEN** · **scope every DB stat to
+  `sgs/%`** · do NOT delete `scalar-media` (D474 restored it — it is LOAD-BEARING).
+  ⚠ `populate-db.py` lives at `~/.agents/…`, **NOT in any git repo**; never run it whole.
 - **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
   Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
@@ -268,17 +242,17 @@ reconciliation), **O** (drag text-selection — ⛔ Bean re-checks by hand, do N
 **U** (grid-block file-length debt), **21** (re-run `/adversarial-council`, deliberately last).
 
 ### Methodology, earned this session — do not re-learn these
-- **`build-deploy.py --dry-run` does NOT run the dirty gate.** A green dry run against a filthy
-  tree with no `--payload` is evidence of nothing.
-- **A page-HTML grep cannot see scoped block CSS** — SGS lifts it to `uploads/sgs-css/`.
 - **A probe's hardcoded viewport points can miss the element entirely** and report a failure that
   does not exist. Derive points from the target's own bounding box.
-- **The canary currently carries two other tracks' uncommitted PHP** — deployed with
-  `--allow-dirty` on Bean's explicit acceptance. It was NOT reviewed by this track.
-
-⚠ **Two tracks share this worktree.** Commit BY EXACT PATH, never `git add -A`. **Re-check the
-D-ceiling immediately before writing any D reference** — a collision happened this session: the
-other track took D455/D456 mid-flight and a CSS docblock briefly cited someone else's decision.
+- **The canary carries two other tracks' uncommitted PHP** — deployed with `--allow-dirty` on Bean's
+  explicit acceptance; NOT reviewed by this track.
+- **A self-healing seeder BLINDS an in-process test** (D474). If a module-load seeder repairs the
+  fact, a pytest assertion on it is vacuous — the detector must be a separate process that never
+  imports the seeder. Proven by negative control, not assumed.
+- **A population count cannot see a RECLASSIFICATION** (D474) — right row, wrong-but-plausible value,
+  count unchanged. Floors catch emptying; value-identity assertions catch reclassification.
+- **A synthetic repro can hide the deciding detail** (D474) — a one-class test markup where the real
+  draft carries two classes sent 2 of 3 council reviewers to the wrong option.
 
 - **Carried forward (still binding): all live in `STOP-CATALOGUE.md`** — 153 STOPs, verified carried
   forward by `handoff-preflight.py`. These bullets were truncated fragments here (bodies lost in an
@@ -312,7 +286,23 @@ extend the JSON, never re-run that script. `KNOWN_UNREPRODUCIBLE` is now EMPTY (
 so the 13 tables in the "NOT known" bucket are Group-3 history + Group-4 residue (T1.6), already
 classified — not new findings.
 
-**T1.5 / T1.6 / T1.7 — ✅ ALL CLOSED 2026-08-02 (D471, D472). Phase 1 + its residue are DONE.**
+**T1.4–T1.7 + PHASE 2 — ✅ ALL CLOSED 2026-08-02 (D470–D474).**
+
+⛔ **D474 — art-directed media was BROKEN LIVE and I had called it fine.** A hero clone put the
+MOBILE crop in the DESKTOP attr and dropped the desktop image into a stray child. **`scalar-media`
+does TWO jobs; `emit_shape` superseded only ONE** (no-child-block). The other — reading each image's
+`--mobile`/`--desktop` modifier via `run_mechanism_b` branch A — had NO replacement. Do not
+re-derive "it's redundant from emit_shape"; that was measured false. It broke because D128 set the
+role with a hand `UPDATE` recorded only as "DB (gitignored)" — **nothing a rebuild could find**.
+Now: `data/scalar-media-roles.json` + a module-load seeder that ALSO announces drift on stderr.
+⛔ **The real markup carries TWO classes** (`sgs-hero__split-image sgs-hero__split-image--mobile`);
+`_family_element` returns on the FIRST, which has no modifier — so a resolution-level fix never
+reaches it. A synthetic single-class repro hid this and misled 2 of 3 council reviewers.
+⛔ **A SELF-HEALING SEEDER BLINDS AN IN-PROCESS TEST.** My first regression test passed against a
+corrupted DB because importing `db_lookup` repaired it first. The detector must not import the
+seeder → **value-identity assertions in `check_row_floor.py`** (sqlite3 only — keep it that way).
+⛔ **A population floor cannot see a RECLASSIFICATION** — `scalar-media`→`image-object` left the
+count at 1012→1012. The gate named that incident and was blind to it.
 
 - **T1.5** `dbschema/check_row_floor.py` + `row-floor.json` — fails on row/column-population DROPS,
   tolerates growth. ⛔ **Column-level granularity is the point**; a table-count-only gate would have
