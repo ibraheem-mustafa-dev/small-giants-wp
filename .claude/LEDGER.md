@@ -76,62 +76,38 @@ Two Wave-E results are STANDING CONSTRAINTS, not history:
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 — T1.1 CLOSED 2026-08-02 (D461, `8cdc1460`). Phase 0 still NOT executed.**
-  All four fixed at their DERIVATION, not as rows: `parent_block` 18→23 (hardcoded dict deleted,
-  R-31-1), `css_layer` 322→352, mis-typed roles 6→0, `block_selectors` 92→86 (retired 10→0).
-  Controls judged non-vacuous by an independent adjudicator. Evidence + LIMITATIONS:
-  `reports/2026-08-02-t1.1-evidence-pack.md`. Full corrections + 3 struck diagnoses: **D461**.
-  ⛔ (e) `design_tokens` CLOSED, not a gap; real finding = `token_snap.py` is an inert stub vs
-  Spec 31 §4 (needs a design gate). ⛔ Do NOT retry the Task A composite-var classifier fix —
-  measured 1→3 violations, reverted. ⛔ `sgs/star-rating` lacks `scalar-content-lift` so the star
-  lift no-ops despite the correct role; granting it is Bean's opt-in, not a bug.
-  ✅ **CARRIED AND COMMITTED 2026-08-02** — `src/blocks/form/block.json` (the focus-ring `attrMap`
-  fix that makes F6 green, plus that track's colour-default change) landed in the motion track's
-  `d4bfa126`. F6 verified green afterwards. Nothing outstanding on that handover.
-- **⭐ Track 1 — Phase 0 PART 1 SHIPPED 2026-08-02 (D464, `78347070`, pushed).** The DB now has a
-  memory: `scripts/dbschema/` holds a verbatim `schema.sql` (39 tables + 22 indexes, round-trip
-  proven identical), a `sandbox.py` that runs `Path.home()`-hardcoding scripts against a throwaway
-  DB (guard proven to FIRE, 4 negative controls), and `migrate.py` + `schema_migrations`
-  (`--apply` proven able to FAIL). 29 migrations adopted via `--mark-applied`; **zero row drift
-  across all 40 pre-existing tables.**
-  ⛔ **Phase 0 is NOT complete** — Steps 0.4 (`--rebuild` flag), 0.5 (rebuild-from-empty
-  comparison), 0.7 (baseline commit) and **QA Gate B** (the negative-control rebuild proof, on
-  `property_suffixes` AND `block_attributes`) all remain. **Phase 1 stays BLOCKED until Gate B**:
-  it deletes migrations, and two `CREATE TABLE`s live only inside migrations queued for deletion.
-  ⛔ Four plan statements measured FALSE (see D464): **30 migrations not 29** · **NO migration
-  accepts `--db`** (the plan said 2 did; passing it would argparse-exit-2 into a fake failure) ·
-  **the DB is WAL-mode**, so the planned file-copy backup was unsafe · the sync invocation is at
-  `sgs-update-v2.py:4825`, not 4718. **Derive counts at runtime; never re-cache one here.**
-  ✅ Step 0.6 answered (unblocks D-2): `--apply` alone changes ONLY
-  `block_composition.wraps_block`/`container_kind` + the idempotent column-add; the block.json
-  mirror needs BOTH `--apply` and `--write-block-json`, and `/sgs-update` passes only the latter.
-  ⚠ A stray **empty, untracked, NOT-gitignored** `scripts/sgs-framework.db` sits in the repo — a
-  `git add -A` landmine. Left pending Bean's word.
-- **Track 1 (cloning/Spec 31) — Phase 0 background. Root cause found; parent plan otherwise NOT executed.**
-  Registers: **`plans/2026-08-01-db-derivation-and-converter-cleanup.md`** (parent, 4 settled
-  decisions + 8 findings) and **`plans/phase-0-db-rebuildable.md`** (fly-through, 9 steps + 2 QA
-  gates, ~105 min). Prior L2 register: `plans/2026-08-01-wrapper-recognition-cascade-rework.md`.
-  **ROOT CAUSE (2026-08-01):** the DB **cannot be rebuilt from scratch** — gitignored, its foundational
-  tables exist only because ~15 one-off `migrations/` were each hand-run once, no runner, no replay. `blocks`/`block_attributes`/`block_composition` have
-  **no `CREATE TABLE` anywhere**; `property_suffixes` (154 rows) has DDL only in test fixtures. Every
-  "worked last month" bug traces here: `role='scalar-media'` 2→0 (hero art direction lost — worked in
-  the real 2026-07-02 run, artefact in `scripts/pipeline-state/sgs-clone/`); `container_kind` never
-  written on reseed.
-  **SHIPPED:** D446 band-arrangement fold (`d2d0579f`) + L2 seam doc (`7a21d07d`).
-  Suite **587/1 skip** (verified). Conformance **30 fail/20 pass** — re-measured 2026-08-01; the
-  long-quoted "23/27" was stale and had never been re-run. Drift PRE-DATES this session.
-  **DECISIONS SETTLED (Bean):** (1) fix `role` UNIVERSALLY, not scalar-media as a spot fix — 78
-  routing call sites/8 files, 1594 of 2440 sgs attrs NULL; (2) `container_kind` auto-applies on
-  reseed, drift → `parking.md`; (3) `delegates_content` DEMOTED not dropped (parent+`allowedBlocks`
-  cover 12 of 17; the other 5 are open containers); (4) the section-annihilation bug stays in Phase 5
-  — zero live blast radius today.
-  **NEXT SESSION: execute Phase 0.** Starts with a backup — the DB is gitignored, no other copy.
-  Council found 3 BLOCKERs, two of which would have damaged the live DB; read COUNCIL FINDINGS first.
-  ⛔ **Do NOT delete `scalar-media` or Loop 2** — both are live/recoverable, evidence in the parent
-  plan. ⛔ **Do NOT delete any migration before its replacement seeder is PROVEN** — two `CREATE
-  TABLE`s live only inside migrations queued for deletion. ⛔ **Scope every DB stat to `sgs/%`** —
-  core blocks inflated a percentage three times this session. ⛔ **`sgs-card-grid` "cardRadius
-  12→18px" is WITHDRAWN as a probe artefact.** ⛔ **Do NOT alias `trigger`→`tab`** — Bean's call.
+- **⭐ Track 1 — PHASE 0 COMPLETE 2026-08-02 (D464). Phase 1 IN PROGRESS (D468, D469).**
+  12 commits `78347070`→`2500b3c3`, pushed. **Full narrative swept to
+  `memory/session-2026-08-02-track1-phase0.md` — read it before acting.** T1.1 also closed
+  same day (D461, `8cdc1460`; evidence `reports/2026-08-02-t1.1-evidence-pack.md`).
+  **`--rebuild` from an EMPTY file: exit 0, table set 39/39 IDENTICAL** (12 exact, 10 partial,
+  3 real gaps). `scripts/dbschema/` holds schema.sql · sandbox.py · migrate.py+`schema_migrations` ·
+  check_schema_drift.py · rebuild_compare.py · wp_reference_archive.py · refresh_wp_reference.py.
+  Registers: `plans/phase-0-db-rebuildable.md` (CLOSED) ·
+  `plans/2026-08-01-db-derivation-and-converter-cleanup.md` (status block) ·
+  **`reports/2026-08-02-phase1-table-classification.md` = Phase 1's measured scope**.
+  ⛔ **MIGRATION REPLAY IS A DEAD END — proven.** The rebuild died on `no such table:
+  slot_synonyms`: retired for `slots`, so 3 migrations reference a table the schema correctly lacks.
+  A May migration cannot run against an August schema. **Void any step premised on replaying
+  `migrations/`.**
+  ✅ **Regenerative now:** `roles` 29/29 · `modifier_suffixes` 19/19 **order-exact** (⚠
+  `db_lookup.py:2262` reads `ORDER BY rowid`; `side` is CSS-shorthand T/R/B/L, so `INSERT OR
+  REPLACE` would SCRAMBLE it) · `html_tag_to_core_block` 17/17 · `legacy_role_lookup` 15/15 ·
+  `markup_examples` wired. **Remaining gaps: `property_suffixes`, `slots`, `excluded_properties`.**
+  ✅ **`hooks`/`docs` refreshed from source** (5407→5468, 1241→1061, stale dropped, SGS untouched).
+  `wp-hooks quick-add-all` + `dbschema/refresh_wp_reference.py`. ⛔ Do NOT re-register the MCP —
+  that hands back the ~6,000 tokens/session the 2026-04-18 decision saved; the CLI is enough.
+  ✅ **D468** `deploy_steps` no longer re-issues the D336 outage recipe (`/sgs-db deploy` reads those
+  rows back as INSTRUCTIONS). ⚠ `populate-db.py` is at `~/.agents/…`, **NOT in any git repo** —
+  D468 + its `.bak` are the only record. ⛔ Never run the whole script: it also writes `hooks` with
+  an `INSERT OR IGNORE` omitting `plugin_slug`.
+  ✅ **D469** `variations` retired + dropped. ⛔ **`variant_slots` is NOT affected — one character
+  apart, opposite consequences; it feeds `detect_variant` for 5 blocks.**
+  ⛔ **Carried, binding:** do NOT delete `scalar-media` or Loop 2 · never delete a migration before
+  its seeder is PROVEN · **scope every DB stat to `sgs/%`** · `sgs-card-grid` "cardRadius 12→18px"
+  WITHDRAWN as a probe artefact · do NOT alias `trigger`→`tab` · ⛔ do NOT retry the T1.1 Task A
+  composite-var classifier fix (1→3 violations, reverted). Conformance **30 fail/20 pass**; suite
+  587/1 skip. Bean's 4 settled decisions live in the parent plan.
 - **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
   Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
@@ -314,41 +290,85 @@ reconciliation), **O** (drag text-selection — ⛔ Bean re-checks by hand, do N
 D-ceiling immediately before writing any D reference** — a collision happened this session: the
 other track took D455/D456 mid-flight and a CSS docblock briefly cited someone else's decision.
 
-- **Carried forward (still binding):**
-  **Four new STOPs from T1.1 (D461) live in `STOP-CATALOGUE.md`** — shared git INDEX, `grep -c`
-  **A grep for a literal cannot see a CSS-variable-driven value.** `opacity: 0.4` returned nothing
-  **Never `head` a verification listing.** `ls sites/*/... | head -4` showed the four clients that
-  **A wrong explanation does not make an observation wrong.** A real bug survived hours because its
-  **Artefact presence is not behaviour.** Morph was in every manifest and roster and had never once
-  **Pixel-sample when a rendered appearance is disputed** — computed said 5.79:1, the pixel said 1.79:1.
-  **After any rebaseline, re-run the gate's `--self-test`** to prove it can still fail.
-  **Reduced motion and gesture-level drag are Playwright-only** — Chrome DevTools MCP has neither a
+- **Carried forward (still binding): all live in `STOP-CATALOGUE.md`** — 153 STOPs, verified carried
+  forward by `handoff-preflight.py`. These bullets were truncated fragments here (bodies lost in an
+  earlier sweep) and are held in full there: the 4 T1.1/D461 STOPs · a grep for a literal cannot see
+  a CSS-variable-driven value · never `head` a verification listing · a wrong explanation does not
+  make an observation wrong · artefact presence is not behaviour · pixel-sample when a rendered
+  appearance is disputed (5.79:1 computed vs 1.79:1 rendered) · after any rebaseline re-prove the
+  gate's `--self-test` · reduced motion + gesture drag are Playwright-only.
+  ⚠ **A grep's negative result describes the GREP, not the codebase** — this bit three times this
+  session, most recently when phrase-greps "proved" these lessons were lost while the catalogue held
+  all nine in narrative form. Confirm with a second shape before concluding absence.
 ### TRACK 1 (cloning) — a SEPARATE track from the motion/migration tasks below; pick one
 
-**T1.1 — CLOSED 2026-08-02 (D461, `8cdc1460`).** Do not re-open; see the Track 1 bullet above and
-`reports/2026-08-02-t1.1-evidence-pack.md`. ⛔ Three of its inherited diagnoses were measured FALSE
-(the `block_selectors` "wiring" was already rejected 2026-06-20; the product-faq mis-conversion is
-caught by gate G3 and is latent, not live; residual (e) was never a gap). Do not re-derive them.
+**T1.1 / T1.2 / T1.3 — ALL CLOSED 2026-08-02** (D461, D464). Do not re-open or re-run. ⛔ Three of
+T1.1's inherited diagnoses were measured FALSE — do not re-derive; detail in
+`memory/session-2026-08-02-track1-phase0.md` + `reports/2026-08-02-t1.1-evidence-pack.md`.
 
-**T1.2 — Execute Phase 0: make the DB rebuildable** [inline Opus, ~105 min]
-**Read `plans/phase-0-db-rebuildable.md` IN FULL — especially COUNCIL FINDINGS (3 BLOCKERs).**
-⛔ Step 0.0 backs up FIRST; the DB is gitignored with no other copy. ⛔ Migrations hardcode
-`Path.home()` — a rebuild MUST use the sandbox harness or it writes to the LIVE DB.
+**READ FIRST:** `reports/2026-08-02-phase1-table-classification.md` (Phase 1's measured scope) →
+`plans/2026-08-01-db-derivation-and-converter-cleanup.md` status block → D464/D468/D469.
 
-**T1.3 — Phase 1 regenerative seeders, ONLY after T1.2 passes** [inline Opus]
-Convert the ~24 remaining migrations to git-tracked JSON + idempotent seeders, per the working
-pattern (`db_lookup._migrate_html_tag_to_core_block` + `scripts/data/*.json`). ⛔ Build the JSON from
-LIVE state, never by replaying migration history; ⛔ never delete a migration before its seeder is proven.
+**T1.4 — Finish Phase 1: the 3 remaining gaps** [inline Opus, ~40 min] — **highest value**
+**What:** `property_suffixes` (154), `slots` (104), `excluded_properties` (10) still rebuild EMPTY
+and are converter-load-bearing. **Orchestration:** inline — each needs the judgement that caught the
+`modifier_suffixes` rowid trap. Follow the proven pattern: capture from LIVE into
+`scripts/data/<table>.json`, add an idempotent module-load seeder in `db_lookup.py`, verify in a
+sandbox with negative controls (wipe → refills; corrupt → self-heals). ⛔ Build the JSON from LIVE
+state, NEVER by replaying migration history (proven impossible). ⛔ Check whether ORDER matters
+before choosing `INSERT OR REPLACE`. **/qc gate: yes** — `/qc-inline`.
+**Acceptance:** `rebuild_compare.py` shows all three at live parity and "empty (known Phase-1)" = 0.
 
-### Task 1 — The production migration for palestine-lives [inline, Opus] — HIGHEST VALUE
-**What:** run `plugins/sgs-blocks/scripts/wp-migrate-oldshape-blocks.js` in DRY-RUN, show Bean the
-output, get explicit approval, migrate, then deploy.
-**Why:** live client content currently loses its hero CTA text the next time anyone opens and saves
-that page in the editor — and production is missing every accessibility fix from this session.
-**Context the agent will not have:** Bean already approved the production deploy, but he approved it
-before the audit revealed 29 high-severity findings. That approval does NOT carry to running a
-migration over live content — get it again, with the dry-run in front of him.
-**Time:** 45 min. **Depends on:** Bean present. Do NOT migrate unattended.
-**/qc gate:** yes — re-run the oldshape audit after migrating and confirm 0 NEW HIGH.
-**Acceptance:** `build-deploy.py --target palestine-lives` completes with the audit passing on its
-own terms — never via `--skip-oldshape-audit`.
+**T1.5 — Phase 3 row-count floor gate** [sonnet, ~45 min]
+**What:** `check_schema_drift.py` gates SCHEMA only. Ship the row-count regression gate the parent
+plan's Phase 3 owes — fails when a seeded column's populated count drops below a committed floor.
+This loss class has happened 4× (`has_inner_blocks`, `scalar-media`, `emit_shape`, `container_kind`).
+**Brief for the subagent:** mirror `check_schema_drift.py`'s shape exactly (argparse, `--check`,
+`--self-test` proving it FAILS, same `@`-escape idiom). Floor lives in a committed JSON.
+⚠ Must tolerate legitimate growth and only fail on DROPS. **/qc gate: yes.**
+**Acceptance:** `--self-test` proves it fails on a simulated drop and passes on growth.
+
+**T1.6 — Decide the Group-4 residue** [inline, ~20 min] — needs Bean
+`_meta_schema_version` retire (superseded by `schema_migrations`; only reader is a retired script) ·
+`block_styles` retire-leaning but **UNVERIFIED** — nobody checked the editor JS for
+`registerBlockStyle` sync · `enrich-db.py` needs a `--only <target>` selector before it can be wired
+(all-or-nothing across 10 targets, one writes the RETIRED `slot_synonyms`). **No /qc gate — a
+decision, not a build.**
+
+**T1.7 — Restore the WP corpus on `--rebuild`** [sonnet, ~25 min]
+✅ The "hooks shortfall" is **ANSWERED, not open**: 5,469 of 5,494 hooks are IMPORTED
+(`native_wp` 2786 + `third_party` 2683); only **25** are SGS/repo-derivable, so a repo scan can
+never produce the rest. Same for docs (16 of 1,077 are `sgs`).
+**The real remaining gap:** a rebuild therefore ends with hooks 161 / docs 46 and nothing restores
+the corpus. **What:** wire `dbschema/wp_reference_archive.py --restore` (or
+`refresh_wp_reference.py`) into `bootstrap_rebuild()`'s post-stage step, so a rebuilt DB comes back
+with its reference data. Archive already exists and round-trip verifies.
+⚠ Prefer the ARCHIVE restore over a live refresh here — a rebuild should be offline-capable and
+deterministic; refreshing from GitHub mid-rebuild makes the result depend on network + upstream
+state. **/qc gate: yes** — `/qc-inline`.
+**Acceptance:** `rebuild_compare.py` shows `hooks` and `docs` at parity with live.
+
+### Task 1 — CANCELLED 2026-08-02 (Bean). Was "the production migration for palestine-lives"
+
+**palestine-lives is NOT production.** Bean, 2026-08-02: it is the Indus Foods TEST site, the
+current version is a copy of the `lightsalmon-tarsier-683012.hostingersite.com` original, and it
+gets remade when the theme is finished — **there is nothing on it worth preserving.** The task was
+premised on "live client content", which was wrong. Cancelled, not parked.
+
+⛔ **The DOC was the defect here, and the same wrong premise killed M3 the same day.** This LEDGER
+called palestine-lives "production" while the project CLAUDE.md called it the "Dev site" and Bean
+calls it a test site. Two tasks were scoped and ranked HIGHEST VALUE off that contradiction.
+**`dev-setup.md` + the root `CLAUDE.md` should say plainly that palestine-lives is disposable Indus
+staging** before anything else is scoped against it.
+
+**Still TRUE and still useful** (the diagnosis was sound, only its value was not):
+- The oldshape blocker is real: **189 findings / 28 posts / 29 NEW HIGH**, committed at
+  `reports/2026-08-01-palestine-lives-oldshape-blocker.md`. `sgs/hero` + `sgs/cta-section` instances
+  predate the 2026-07-15 scalar→InnerBlocks change; their CTA attrs are undeclared, so **the next
+  editor save deletes them**, and their headline/subheadline render as an empty shell.
+- `step_oldshape_audit` gates EVERY palestine-lives deploy regardless of `--theme-only`
+  (`build-deploy.py:789`). A rebuild of that site clears the blocker for free.
+- The migration tool is at **`scripts/wp-migrate-oldshape-blocks.js`** — NOT the
+  `plugins/sgs-blocks/scripts/` path this LEDGER wrongly cited. It is dry-run by default and
+  well-hardened (deployed-schema preflight, tree-parity on untouched blocks, rehearsed `--restore`).
+  Keep it: the same defect class will appear on a REAL client site one day.
