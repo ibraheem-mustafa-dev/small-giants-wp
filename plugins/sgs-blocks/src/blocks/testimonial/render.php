@@ -113,21 +113,6 @@ $avatar_media = $attributes['avatarMedia'] ?? null;
 $org_logo     = $attributes['orgLogo'] ?? null;
 $work_media   = $attributes['workMedia'] ?? null;
 
-// R-22-14-compliant one-way READ of the retired legacy `avatar` object so
-// un-migrated posts still show their author photo until deprecated.js v8 +
-// the WP-CLI batch migrate runs. Synthesise-on-read ONLY — never a content
-// fallback branch.
-$legacy_avatar = $attributes['avatar'] ?? null;
-if ( empty( $avatar_media['url'] ) && ! empty( $legacy_avatar['url'] ) ) {
-	$avatar_media = array(
-		'url'  => $legacy_avatar['url'],
-		'type' => 'image',
-		'id'   => isset( $legacy_avatar['id'] ) ? absint( $legacy_avatar['id'] ) : 0,
-		'alt'  => isset( $legacy_avatar['alt'] ) ? (string) $legacy_avatar['alt'] : '',
-		'mime' => 'image/jpeg',
-	);
-}
-
 // ── Rating fields (fully optional — gated by showRating) ────────────────────
 $show_rating = ! empty( $attributes['showRating'] );
 $rating_type = $attributes['ratingType'] ?? 'stars';

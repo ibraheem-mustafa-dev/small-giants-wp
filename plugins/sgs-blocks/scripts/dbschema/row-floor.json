@@ -3,8 +3,7 @@
   "tables": {
     "animation_tokens": 8,
     "array_item_schema": 68,
-    "attribute_gap_candidates": 3116,
-    "block_attributes": 2972,
+    "block_attributes": 2970,
     "block_capabilities": 96,
     "block_changes": 2735,
     "block_composition": 211,
@@ -39,7 +38,7 @@
   },
   "columns": {
     "block_attributes.box_family": 228,
-    "block_attributes.canonical_slot": 1318,
+    "block_attributes.canonical_slot": 1316,
     "block_attributes.css_property": 863,
     "block_attributes.emit_shape": 118,
     "block_attributes.role": 1006,
@@ -48,5 +47,6 @@
     "blocks.tier": 206,
     "blocks.variant_attr": 5,
     "roles.classification": 29
-  }
+  },
+  "_note_attribute_gap_candidates": "attribute_gap_candidates is DELIBERATELY not floored (removed 2026-08-03). It is a cumulative DIAGNOSTIC ledger the converter writes during clone runs - 'the draft had CSS for X but this block has no attribute to hold it'. Project rules already state it is not a fidelity signal. Its count legitimately FALLS when the converter improves (fewer gaps), so a floor on it encodes 'the pipeline must never get better' and fails the build on progress. Floors belong on SEEDED data whose loss is a regression, not on an accumulating debug log."
 }

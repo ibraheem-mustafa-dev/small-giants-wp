@@ -9,11 +9,32 @@
  * saved HTML — the server either outputs the block or returns an empty string.
  *
  * The editor extension adds:
- * 1. Attributes injected via blocks.registerBlockType
- * 2. A "Visibility Conditions" PanelBody in the standard Inspector (not Advanced)
- * 3. An active-condition Notice at the top of the panel when any rule is set
+ * 1. Attributes injected via blocks.registerBlockType (both the conditional
+ *    rules here AND the sgsHideOnMobile/Tablet/Desktop device toggles, whose
+ *    attributes are registered by ./responsive-visibility.js)
+ * 2. A single collapsible "Visibility conditions" PanelBody inside the
+ *    default (non-Advanced) InspectorControls group: device-visibility
+ *    toggles at the TOP, conditional rules (login/role/date/day/URL/
+ *    referrer) below — one panel, not two.
+ * 3. An active-condition Notice near the top of the panel when any
+ *    conditional rule is set
  * 4. A BlockListBlock HOC that applies a visual indicator (reduced opacity +
  *    dashed orange border) whenever any condition is active
+ *
+ * Panel position: this is a standalone InspectorControls (default group)
+ * panel, NOT InspectorAdvancedControls — Bean wants the collapsible dropdown
+ * grouping, not merged into Advanced. Default-group InspectorControls panels
+ * from every extension render into the same Settings-tab slot, stacked in
+ * the order their editor.BlockEdit filters were registered (each later
+ * filter wraps the previous and appends its own JSX after it — proven by
+ * reading the compose() HOC-wrapping order in filter registration, and
+ * confirmed live in the editor, see the build/verify notes for this file).
+ * WordPress core's BlockInspector renders InspectorAdvancedControls
+ * ("Advanced") as a structurally separate, always-last slot after every
+ * default-group panel — so simply being the LAST default-group panel
+ * registered (index.js imports this file last) places "Visibility
+ * conditions" immediately above "Advanced" with no Advanced-panel hack
+ * needed.
  *
  * @package SGS\Blocks
  */
@@ -21,11 +42,14 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
+import { mobile, tablet, desktop } from '@wordpress/icons';
 import {
 	PanelBody,
 	SelectControl,
 	CheckboxControl,
 	TextControl,
+	ToggleControl,
+	Icon,
 	Notice,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -233,11 +257,13 @@ function hasActiveCondition( attributes ) {
 const { sprintf } = wp.i18n;
 
 /**
- * HOC that injects the "Visibility Conditions" panel into the block inspector.
+ * HOC that injects the "Visibility conditions" panel into the block inspector.
  *
- * Uses InspectorControls (the standard panel, not Advanced) so the controls
- * are discoverable. The panel is collapsed by default (initialOpen={false})
- * to keep the inspector tidy.
+ * Renders a single collapsible PanelBody in the default InspectorControls
+ * group: device-visibility toggles (attributes registered by
+ * ./responsive-visibility.js) at the top, conditional rules below — see
+ * this file's header for why it's one panel and why it lands directly
+ * above "Advanced".
  */
 const withConditionalVisibilityControls = createHigherOrderComponent(
 	( BlockEdit ) => {
@@ -253,20 +279,108 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 			const conditionActive = hasActiveCondition( attributes );
 			const summary = conditionActive ? buildConditionSummary( attributes ) : '';
 
+			// Device-visibility summary badge (moved here from
+			// responsive-visibility.js so both halves share one panel).
+			const visibleOn = [];
+			if ( ! attributes.sgsHideOnMobile ) {
+				visibleOn.push( __( 'Mobile', 'sgs-blocks' ) );
+			}
+			if ( ! attributes.sgsHideOnTablet ) {
+				visibleOn.push( __( 'Tablet', 'sgs-blocks' ) );
+			}
+			if ( ! attributes.sgsHideOnDesktop ) {
+				visibleOn.push( __( 'Desktop', 'sgs-blocks' ) );
+			}
+			const hasDeviceRestriction =
+				attributes.sgsHideOnMobile ||
+				attributes.sgsHideOnTablet ||
+				attributes.sgsHideOnDesktop;
+
 			return (
 				<>
 					<BlockEdit { ...props } />
 					<InspectorControls>
 						<PanelBody
-							title={ __( 'Visibility Conditions', 'sgs-blocks' ) }
+							title={ __( 'Visibility conditions', 'sgs-blocks' ) }
 							initialOpen={ false }
 						>
-							{ /* Active-condition notice — shown at the top of the panel */ }
-							{ conditionActive && (
+							{ /* ─── Device visibility (top half) ─── */ }
+							<p
+								style={ {
+									marginBottom: '8px',
+									fontWeight: 600,
+									fontSize: '11px',
+									textTransform: 'uppercase',
+									letterSpacing: '0.5px',
+								} }
+							>
+								{ __( 'Device visibility', 'sgs-blocks' ) }
+							</p>
+
+							{ hasDeviceRestriction && (
 								<Notice
 									status="warning"
 									isDismissible={ false }
 									style={ { marginBottom: '12px' } }
+								>
+									{ __( 'Visible on: ', 'sgs-blocks' ) }
+									<strong>
+										{ visibleOn.length > 0
+											? visibleOn.join( ', ' )
+											: __( 'None (hidden everywhere)', 'sgs-blocks' ) }
+									</strong>
+								</Notice>
+							) }
+
+							<ToggleControl
+								label={
+									<>
+										<Icon icon={ mobile } size={ 16 } />{ ' ' }
+										{ __( 'Hide on mobile', 'sgs-blocks' ) }
+									</>
+								}
+								help={ __( 'Below 768px', 'sgs-blocks' ) }
+								checked={ !! attributes.sgsHideOnMobile }
+								onChange={ ( val ) =>
+									setAttributes( { sgsHideOnMobile: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={
+									<>
+										<Icon icon={ tablet } size={ 16 } />{ ' ' }
+										{ __( 'Hide on tablet', 'sgs-blocks' ) }
+									</>
+								}
+								help={ __( '768px to 1023px', 'sgs-blocks' ) }
+								checked={ !! attributes.sgsHideOnTablet }
+								onChange={ ( val ) =>
+									setAttributes( { sgsHideOnTablet: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={
+									<>
+										<Icon icon={ desktop } size={ 16 } />{ ' ' }
+										{ __( 'Hide on desktop', 'sgs-blocks' ) }
+									</>
+								}
+								help={ __( '1024px and above', 'sgs-blocks' ) }
+								checked={ !! attributes.sgsHideOnDesktop }
+								onChange={ ( val ) =>
+									setAttributes( { sgsHideOnDesktop: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+
+							{ /* Active-condition notice — shown above the rule fields */ }
+							{ conditionActive && (
+								<Notice
+									status="warning"
+									isDismissible={ false }
+									style={ { marginTop: '16px', marginBottom: '12px' } }
 								>
 									{ __( 'Conditionally hidden: ', 'sgs-blocks' ) }
 									<strong>{ summary }</strong>

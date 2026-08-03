@@ -12,15 +12,21 @@
  * The client-side blocks.getSaveContent.extraProps filter handles
  * static blocks (those with a JS save function).
  *
+ * UI position: this file registers the sgsHideOnMobile/Tablet/Desktop
+ * attributes and applies the resulting classes/editor indicator, but does
+ * NOT render its own inspector panel. The device-visibility toggles are
+ * rendered by ./conditional-visibility.js, at the TOP of its own
+ * collapsible "Visibility conditions" panel (device toggles above the
+ * conditional rules), because attributes registered here are available on
+ * `props.attributes` by the time that file's editor.BlockEdit filter runs.
+ * See conditional-visibility.js's file header for the panel-placement
+ * rationale and index.js for import order.
+ *
  * @package SGS\Blocks
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { getBlockType } from '@wordpress/blocks';
-import { InspectorAdvancedControls } from '@wordpress/block-editor';
-import { ToggleControl, Icon, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { mobile, tablet, desktop } from '@wordpress/icons';
 
 /**
  * Guard against double registration.
@@ -76,131 +82,6 @@ addFilter(
 	'blocks.registerBlockType',
 	'sgs/device-visibility-attributes',
 	addVisibilityAttributes
-);
-
-/**
- * Higher-order component that adds visibility toggle controls
- * to the Advanced panel of every block's inspector sidebar.
- */
-const withVisibilityControls = createHigherOrderComponent( ( BlockEdit ) => {
-	return ( props ) => {
-		const { name, attributes, setAttributes } = props;
-
-		// Skip blocks that do not support className.
-		const blockType = getBlockType( name );
-		if ( blockType?.supports?.className === false ) {
-			return <BlockEdit { ...props } />;
-		}
-
-		// Build "Visible on" summary for the indicator badge.
-		const visibleOn = [];
-		if ( ! attributes.sgsHideOnMobile ) {
-			visibleOn.push( __( 'Mobile', 'sgs-blocks' ) );
-		}
-		if ( ! attributes.sgsHideOnTablet ) {
-			visibleOn.push( __( 'Tablet', 'sgs-blocks' ) );
-		}
-		if ( ! attributes.sgsHideOnDesktop ) {
-			visibleOn.push( __( 'Desktop', 'sgs-blocks' ) );
-		}
-
-		const hasRestriction =
-			attributes.sgsHideOnMobile ||
-			attributes.sgsHideOnTablet ||
-			attributes.sgsHideOnDesktop;
-
-		return (
-			<>
-				<BlockEdit { ...props } />
-				<InspectorAdvancedControls>
-					<p
-						style={ {
-							marginBottom: '8px',
-							fontWeight: 600,
-							fontSize: '11px',
-							textTransform: 'uppercase',
-							letterSpacing: '0.5px',
-						} }
-					>
-						{ __( 'Device visibility', 'sgs-blocks' ) }
-					</p>
-
-					{ hasRestriction && (
-						<Notice
-							status="warning"
-							isDismissible={ false }
-							style={ { marginBottom: '12px' } }
-						>
-							{ __( 'Visible on: ', 'sgs-blocks' ) }
-							<strong>
-								{ visibleOn.length > 0
-									? visibleOn.join( ', ' )
-									: __( 'None (hidden everywhere)', 'sgs-blocks' ) }
-							</strong>
-						</Notice>
-					) }
-
-					<ToggleControl
-						label={
-							<>
-								<Icon icon={ mobile } size={ 16 } />{ ' ' }
-								{ __( 'Hide on mobile', 'sgs-blocks' ) }
-							</>
-						}
-						help={ __(
-							'Below 768px',
-							'sgs-blocks'
-						) }
-						checked={ !! attributes.sgsHideOnMobile }
-						onChange={ ( val ) =>
-							setAttributes( { sgsHideOnMobile: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={
-							<>
-								<Icon icon={ tablet } size={ 16 } />{ ' ' }
-								{ __( 'Hide on tablet', 'sgs-blocks' ) }
-							</>
-						}
-						help={ __(
-							'768px to 1023px',
-							'sgs-blocks'
-						) }
-						checked={ !! attributes.sgsHideOnTablet }
-						onChange={ ( val ) =>
-							setAttributes( { sgsHideOnTablet: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={
-							<>
-								<Icon icon={ desktop } size={ 16 } />{ ' ' }
-								{ __( 'Hide on desktop', 'sgs-blocks' ) }
-							</>
-						}
-						help={ __(
-							'1024px and above',
-							'sgs-blocks'
-						) }
-						checked={ !! attributes.sgsHideOnDesktop }
-						onChange={ ( val ) =>
-							setAttributes( { sgsHideOnDesktop: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</InspectorAdvancedControls>
-			</>
-		);
-	};
-}, 'withDeviceVisibilityControls' );
-
-addFilter(
-	'editor.BlockEdit',
-	'sgs/device-visibility-controls',
-	withVisibilityControls
 );
 
 /**

@@ -131,13 +131,6 @@
 				"type": "object"
 			}
 		},
-		"images": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "object"
-			}
-		},
 		"layout": {
 			"type": "string",
 			"default": "grid",

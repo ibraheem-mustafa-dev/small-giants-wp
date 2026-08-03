@@ -78,34 +78,9 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 			</p>
 			<div style={ { marginBottom: '8px' } }>
 				<MediaPicker
-					value={ item.media || ( item.image?.url ? {
-						url: item.image.url,
-						type: 'image',
-						id: item.image.id || 0,
-						alt: item.image.alt || '',
-						mime: 'image/jpeg',
-					} : null ) }
-					onChange={ ( media ) => {
-						// Persist to new unified slot AND keep legacy `image`
-						// hydrated when the picked media is an image — the
-						// existing render path / overlay still reads from it
-						// during the deprecation window.
-						const next = { ...item, media };
-						if ( media && media.type === 'image' ) {
-							next.image = {
-								id: media.id || 0,
-								url: media.url,
-								alt: media.alt || '',
-							};
-						} else if ( media && media.type === 'video' ) {
-							// Clear legacy image to avoid double-render.
-							next.image = undefined;
-						}
-						onChange( next );
-					} }
-					onRemove={ () =>
-						onChange( { ...item, media: null, image: undefined } )
-					}
+					value={ item.media || null }
+					onChange={ ( media ) => onChange( { ...item, media } ) }
+					onRemove={ () => onChange( { ...item, media: null } ) }
 					label={ __( 'Select card media', 'sgs-blocks' ) }
 					instructionsImage={ __(
 						'Choose an image or video for this card',
@@ -268,7 +243,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				...items,
 				{
 					media: null,
-					image: undefined,
 					title: '',
 					subtitle: '',
 					badge: '',
@@ -623,12 +597,23 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ items.map( ( item, index ) => (
 						<div key={ index } className="sgs-card-grid__item">
 							<div className="sgs-card-grid__image-wrap">
-								{ item.image?.url ? (
-									<img
-										src={ item.image.url }
-										alt={ item.image.alt || '' }
-										className="sgs-card-grid__image"
-									/>
+								{ item.media?.url ? (
+									item.media.type === 'video' ? (
+										// eslint-disable-next-line jsx-a11y/media-has-caption
+										<video
+											src={ item.media.url }
+											className="sgs-card-grid__image"
+											muted
+											loop
+											playsInline
+										/>
+									) : (
+										<img
+											src={ item.media.url }
+											alt={ item.media.alt || '' }
+											className="sgs-card-grid__image"
+										/>
+									)
 								) : (
 									<span className="sgs-card-grid__image-placeholder" />
 								) }

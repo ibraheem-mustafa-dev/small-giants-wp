@@ -83,7 +83,7 @@
     },
     "core/details": {
       "name": {
-        "reason": "HTML5 <details name> exclusive-group mechanism; SGS achieves exclusivity via accordion-level `allowMultiple` instead \u2014 architectural, not a per-item attr.",
+        "reason": "HTML5 <details name> exclusive-group mechanism; SGS achieves exclusivity via accordion-level `allowMultiple` instead — architectural, not a per-item attr.",
         "wave": "native"
       },
       "showContent": {
@@ -173,7 +173,7 @@
     },
     "core/columns": {
       "isStackedOnMobile": {
-        "reason": "Achieved via responsive `gridTemplateColumnsMobile`/`gridTemplateColumnsTablet` \u2014 mobile stacking is the default responsive behaviour, not a separate toggle.",
+        "reason": "Achieved via responsive `gridTemplateColumnsMobile`/`gridTemplateColumnsTablet` — mobile stacking is the default responsive behaviour, not a separate toggle.",
         "wave": "over-report"
       },
       "templateLock": {
@@ -197,13 +197,13 @@
     },
     "core/row": {
       "(none)": {
-        "reason": "core/row has no native_wp rows in the DB (newer WP core block not yet ingested) \u2014 re-run /sgs-update; not a functional gap, an audit data-source gap.",
+        "reason": "core/row has no native_wp rows in the DB (newer WP core block not yet ingested) — re-run /sgs-update; not a functional gap, an audit data-source gap.",
         "wave": "native"
       }
     },
     "core/stack": {
       "(none)": {
-        "reason": "core/stack has no native_wp rows in the DB (newer WP core block not yet ingested) \u2014 re-run /sgs-update; not a functional gap, an audit data-source gap.",
+        "reason": "core/stack has no native_wp rows in the DB (newer WP core block not yet ingested) — re-run /sgs-update; not a functional gap, an audit data-source gap.",
         "wave": "native"
       }
     }
@@ -211,11 +211,11 @@
   "sgs/form": {
     "core/form": {
       "action": {
-        "reason": "SGS forms submit exclusively via the plugin's own secured REST endpoint (nonce + rate-limit + honeypot) \u2014 an external action URL is deliberately not exposed; see plugin CLAUDE.md forms architecture.",
+        "reason": "SGS forms submit exclusively via the plugin's own secured REST endpoint (nonce + rate-limit + honeypot) — an external action URL is deliberately not exposed; see plugin CLAUDE.md forms architecture.",
         "wave": "over-report"
       },
       "email": {
-        "reason": "SGS forms notify via N8N webhooks, not wp_mail/a per-block email attr \u2014 documented plugin architecture (plugins/sgs-blocks/CLAUDE.md).",
+        "reason": "SGS forms notify via N8N webhooks, not wp_mail/a per-block email attr — documented plugin architecture (plugins/sgs-blocks/CLAUDE.md).",
         "wave": "over-report"
       },
       "method": {
@@ -223,13 +223,13 @@
         "wave": "over-report"
       },
       "submissionMethod": {
-        "reason": "Same fixed-pipeline architecture as `action`/`method` \u2014 one secure server-side processing path, no mode selector needed.",
+        "reason": "Same fixed-pipeline architecture as `action`/`method` — one secure server-side processing path, no mode selector needed.",
         "wave": "over-report"
       }
     },
     "core/form-submit-button": {
       "(none)": {
-        "reason": "core/form-submit-button has no native_wp rows in the DB \u2014 re-run /sgs-update once WP re-ingests this sub-block; not a functional gap, an audit data-source gap.",
+        "reason": "core/form-submit-button has no native_wp rows in the DB — re-run /sgs-update once WP re-ingests this sub-block; not a functional gap, an audit data-source gap.",
         "wave": "native"
       }
     }
@@ -241,7 +241,7 @@
         "wave": "native"
       },
       "caption": {
-        "reason": "Per-image captions are supported inside the `mediaItems` repeater (gated by `showCaptions`) \u2014 a nested object field, invisible to the DB's flat attr-name scan.",
+        "reason": "Per-image captions are supported inside the `mediaItems` repeater (gated by `showCaptions`) — a nested object field, invisible to the DB's flat attr-name scan.",
         "wave": "over-report"
       },
       "fixedHeight": {
@@ -249,7 +249,7 @@
         "wave": "over-report"
       },
       "ids": {
-        "reason": "Attachment IDs live inside the `mediaItems`/`images` repeater objects \u2014 nested, invisible to the flat attr-name scan.",
+        "reason": "Attachment IDs live inside the `mediaItems`/`images` repeater objects — nested, invisible to the flat attr-name scan.",
         "wave": "over-report"
       },
       "imageCrop": {
@@ -279,6 +279,10 @@
       "sizeSlug": {
         "reason": "Equivalent to `imageSize`.",
         "wave": "over-report"
+      },
+      "images": {
+        "reason": "Renamed, not lost. core/gallery's `images` array is `mediaItems` on sgs/gallery (the 2026-05-05 media-slot migration). The legacy `images` attr was a read-only render.php fallback with no editor control and was removed 2026-08-03 once Bean confirmed there is no live content to preserve (D270 pre-production). The capability is fully present; this audit compares core attribute NAMES and cannot see a rename.",
+        "wave": "over-report"
       }
     }
   },
@@ -297,11 +301,11 @@
         "wave": "over-report"
       },
       "backgroundType": {
-        "reason": "Determined implicitly by which of `backgroundImage`/`bgVideo` is populated \u2014 functionally equivalent, just not an explicit enum toggle.",
+        "reason": "Determined implicitly by which of `backgroundImage`/`bgVideo` is populated — functionally equivalent, just not an explicit enum toggle.",
         "wave": "over-report"
       },
       "contentPosition": {
-        "reason": "Achieved by combining `verticalAlign` + `textAlignDesktop`/`Tablet`/`Mobile` \u2014 together they cover the same 9-point content-position grid.",
+        "reason": "Achieved by combining `verticalAlign` + `textAlignDesktop`/`Tablet`/`Mobile` — together they cover the same 9-point content-position grid.",
         "wave": "over-report"
       },
       "customOverlayColor": {
@@ -313,7 +317,7 @@
         "wave": "over-report"
       },
       "focalPoint": {
-        "reason": "No precise x/y focal-point picker for the background image \u2014 only preset `backgroundPosition` keywords (center/top/etc.); deferred.",
+        "reason": "No precise x/y focal-point picker for the background image — only preset `backgroundPosition` keywords (center/top/etc.); deferred.",
         "wave": "Wave-parity-1"
       },
       "hasParallax": {
@@ -341,7 +345,7 @@
         "wave": "Wave-parity-1"
       },
       "sizeSlug": {
-        "reason": "Hero backgrounds are always rendered full-bleed/full-resolution \u2014 a thumbnail-size preset is not a meaningful use case for a full-viewport background.",
+        "reason": "Hero backgrounds are always rendered full-bleed/full-resolution — a thumbnail-size preset is not a meaningful use case for a full-viewport background.",
         "wave": "over-report"
       },
       "templateLock": {
@@ -359,7 +363,7 @@
     },
     "core/media-text": {
       "focalPoint": {
-        "reason": "Same focal-point gap as core/cover \u2014 only preset position keywords, no x/y picker; deferred.",
+        "reason": "Same focal-point gap as core/cover — only preset position keywords, no x/y picker; deferred.",
         "wave": "Wave-parity-1"
       },
       "href": {
@@ -371,7 +375,7 @@
         "wave": "over-report"
       },
       "isStackedOnMobile": {
-        "reason": "Split hero layout always stacks to a single column at the mobile breakpoint (`splitImageMobile`/`splitContentOrderMobile`) \u2014 built-in responsive behaviour, not a separate toggle.",
+        "reason": "Split hero layout always stacks to a single column at the mobile breakpoint (`splitImageMobile`/`splitContentOrderMobile`) — built-in responsive behaviour, not a separate toggle.",
         "wave": "over-report"
       },
       "linkClass": {
@@ -387,11 +391,11 @@
         "wave": "Wave-parity-1"
       },
       "mediaAlt": {
-        "reason": "No alt-text control for the hero's split/media image \u2014 genuine accessibility gap, worth prioritising over the other hero deferrals.",
+        "reason": "No alt-text control for the hero's split/media image — genuine accessibility gap, worth prioritising over the other hero deferrals.",
         "wave": "Wave-parity-1"
       },
       "mediaId": {
-        "reason": "No attachment-ID reference stored for the split image (URL-only); deferred \u2014 verify whether this blocks any WP media-library re-selection workflow.",
+        "reason": "No attachment-ID reference stored for the split image (URL-only); deferred — verify whether this blocks any WP media-library re-selection workflow.",
         "wave": "Wave-parity-1"
       },
       "mediaLink": {
@@ -459,7 +463,7 @@
         "wave": "Wave-parity-1"
       },
       "linkClass": {
-        "reason": "Plumbing/niche \u2014 no custom CSS class control specifically for the generated link wrapper; deferred, low priority.",
+        "reason": "Plumbing/niche — no custom CSS class control specifically for the generated link wrapper; deferred, low priority.",
         "wave": "Wave-parity-1"
       },
       "linkDestination": {
@@ -525,7 +529,7 @@
         "wave": "Wave-parity-1"
       },
       "tracks": {
-        "reason": "No captions/subtitles-track support for direct video \u2014 genuine accessibility gap, worth prioritising.",
+        "reason": "No captions/subtitles-track support for direct video — genuine accessibility gap, worth prioritising.",
         "wave": "Wave-parity-1"
       }
     }
@@ -541,11 +545,11 @@
         "wave": "over-report"
       },
       "customOverlayBackgroundColor": {
-        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream, tracked separately; do not duplicate.",
+        "reason": "Mobile-drawer surface colour — closing under the nav-menu drawer-surface workstream, tracked separately; do not duplicate.",
         "wave": "W-nav-surface"
       },
       "customOverlayTextColor": {
-        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream.",
+        "reason": "Mobile-drawer surface colour — closing under the nav-menu drawer-surface workstream.",
         "wave": "W-nav-surface"
       },
       "hasIcon": {
@@ -565,19 +569,19 @@
         "wave": "Wave-parity-1"
       },
       "overlay": {
-        "reason": "Mobile-drawer surface presentation \u2014 closing under the nav-menu drawer-surface workstream.",
+        "reason": "Mobile-drawer surface presentation — closing under the nav-menu drawer-surface workstream.",
         "wave": "W-nav-surface"
       },
       "overlayBackgroundColor": {
-        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream.",
+        "reason": "Mobile-drawer surface colour — closing under the nav-menu drawer-surface workstream.",
         "wave": "W-nav-surface"
       },
       "overlayMenu": {
-        "reason": "Distinct from the 5 surface-colour attrs above: this is the on/off mode toggle for whether mobile uses the overlay/drawer presentation at all (sgs/nav-menu's `<dialog>` drawer is always the mobile mode \u2014 no alternate 'default' mobile mode to toggle between). Deferred if an alternate mode is ever wanted.",
+        "reason": "Distinct from the 5 surface-colour attrs above: this is the on/off mode toggle for whether mobile uses the overlay/drawer presentation at all (sgs/nav-menu's `<dialog>` drawer is always the mobile mode — no alternate 'default' mobile mode to toggle between). Deferred if an alternate mode is ever wanted.",
         "wave": "Wave-parity-1"
       },
       "overlayTextColor": {
-        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream.",
+        "reason": "Mobile-drawer surface colour — closing under the nav-menu drawer-surface workstream.",
         "wave": "W-nav-surface"
       },
       "rgbBackgroundColor": {
@@ -589,7 +593,7 @@
         "wave": "native"
       },
       "showSubmenuIcon": {
-        "reason": "Covered by `indicatorStyle` (default `'none'`) \u2014 setting it to `'none'` is the equivalent of hiding the submenu indicator.",
+        "reason": "Covered by `indicatorStyle` (default `'none'`) — setting it to `'none'` is the equivalent of hiding the submenu indicator.",
         "wave": "over-report"
       },
       "submenuVisibility": {
@@ -605,7 +609,7 @@
   "sgs/post-grid": {
     "core/latest-posts": {
       "addLinkToFeaturedImage": {
-        "reason": "Each post card is already a single whole-card link (cardStyle) \u2014 the featured image is inherently linked, no separate toggle needed.",
+        "reason": "Each post card is already a single whole-card link (cardStyle) — the featured image is inherently linked, no separate toggle needed.",
         "wave": "over-report"
       },
       "displayAuthor": {
@@ -621,7 +625,7 @@
         "wave": "over-report"
       },
       "displayPostContentRadio": {
-        "reason": "Paired enum plumbing for `displayPostContent`/`showExcerpt` \u2014 excerpt-vs-full-content choice; bundled with that capability.",
+        "reason": "Paired enum plumbing for `displayPostContent`/`showExcerpt` — excerpt-vs-full-content choice; bundled with that capability.",
         "wave": "over-report"
       },
       "displayPostDate": {
@@ -645,7 +649,7 @@
         "wave": "over-report"
       },
       "postLayout": {
-        "reason": "Grid/list presentation is controlled by sgs/post-grid's own `layout`/`gridTemplateColumns`/column attrs \u2014 a richer, more general layout engine than core's grid/list enum.",
+        "reason": "Grid/list presentation is controlled by sgs/post-grid's own `layout`/`gridTemplateColumns`/column attrs — a richer, more general layout engine than core's grid/list enum.",
         "wave": "over-report"
       },
       "postsToShow": {
@@ -669,7 +673,7 @@
         "wave": "Wave-parity-1"
       },
       "value": {
-        "reason": "Quote text is child-owned via InnerBlocks (sgs/text child), per the project's HC2 parent-owns-layout/child-owns-content pattern \u2014 not a scalar attr on the parent.",
+        "reason": "Quote text is child-owned via InnerBlocks (sgs/text child), per the project's HC2 parent-owns-layout/child-owns-content pattern — not a scalar attr on the parent.",
         "wave": "over-report"
       }
     },
@@ -699,7 +703,7 @@
         "wave": "Wave-parity-1"
       },
       "shouldSyncIcon": {
-        "reason": "WP-native Site Icon sync toggle \u2014 internal plumbing tied to a separate WP Customizer setting, not an SGS block capability.",
+        "reason": "WP-native Site Icon sync toggle — internal plumbing tied to a separate WP Customizer setting, not an SGS block capability.",
         "wave": "native"
       }
     }
@@ -707,7 +711,7 @@
   "sgs/social-icons": {
     "core/social-link": {
       "label": {
-        "reason": "Per-icon label lives inside the `icons` repeater objects \u2014 nested, invisible to the flat attr-name scan.",
+        "reason": "Per-icon label lives inside the `icons` repeater objects — nested, invisible to the flat attr-name scan.",
         "wave": "over-report"
       },
       "rel": {
@@ -715,11 +719,11 @@
         "wave": "Wave-parity-1"
       },
       "service": {
-        "reason": "Per-icon service/platform lives inside the `icons` repeater objects \u2014 nested.",
+        "reason": "Per-icon service/platform lives inside the `icons` repeater objects — nested.",
         "wave": "over-report"
       },
       "url": {
-        "reason": "Per-icon URL lives inside the `icons` repeater objects \u2014 nested.",
+        "reason": "Per-icon URL lives inside the `icons` repeater objects — nested.",
         "wave": "over-report"
       }
     },
@@ -749,7 +753,7 @@
         "wave": "Wave-parity-1"
       },
       "headings": {
-        "reason": "sgs/table-of-contents is a dynamic block that recomputes headings live server-side each render, rather than caching a `headings` array attr \u2014 an architectural equivalent, arguably more robust (always current).",
+        "reason": "sgs/table-of-contents is a dynamic block that recomputes headings live server-side each render, rather than caching a `headings` array attr — an architectural equivalent, arguably more robust (always current).",
         "wave": "over-report"
       },
       "maxLevel": {
@@ -769,7 +773,7 @@
   "sgs/tabs": {
     "core/tabs": {
       "activeTabIndex": {
-        "reason": "core/tabs is itself an experimental WP core block; this is its internal default-active-tab state attr \u2014 SGS's own tabs interactivity handles active-tab state client-side instead.",
+        "reason": "core/tabs is itself an experimental WP core block; this is its internal default-active-tab state attr — SGS's own tabs interactivity handles active-tab state client-side instead.",
         "wave": "native"
       },
       "editorActiveTabIndex": {

@@ -43,12 +43,7 @@ $sgs_css_ratio = static function ( $value ) {
 // -------------------------------------------------------------------------
 // Normalise attributes with safe defaults.
 // -------------------------------------------------------------------------
-// Prefer the new unified mediaItems attribute. Fall back to the legacy
-// `images` array (pre-media-slot migration) so posts that have not yet
-// round-tripped through the editor still render correctly.
-$media_items_raw = (array) ( $attributes['mediaItems'] ?? [] );
-$legacy_images   = (array) ( $attributes['images'] ?? [] );
-$images          = ! empty( $media_items_raw ) ? $media_items_raw : $legacy_images;
+$images          = (array) ( $attributes['mediaItems'] ?? [] );
 $layout          = sanitize_key( $attributes['layout'] ?? 'grid' );
 $columns         = absint( $attributes['columns'] ?? 3 );
 $columns_tablet  = absint( $attributes['columnsTablet'] ?? 2 );

@@ -633,9 +633,9 @@ foreach ( $items as $index => $item ) :
 		$card_grid_stagger_css .= $root_sel . ' .sgs-card-grid__item:nth-child(' . ( absint( $index ) + 1 ) . '){--sgs-item-index:' . absint( $index ) . ';}';
 	}
 
-	// Unified media slot (added 2026-05-05). When only the legacy
-	// $item['image'] is set, synthesise a media object so the shared
-	// sgs_render_media() helper can emit the right tag for video too.
+	// Unified media slot — sgs_render_media() emits the right tag for either
+	// image or video. The legacy per-item `image` field (never declared in
+	// block.json's items schema) was removed 2026-08-03.
 	$item_media = $item['media'] ?? null;
 	// A BARE URL STRING is a first-class accepted shape (2026-07-29). block.json
 	// declares `items[].media` as `{"type":"string"}` while edit.js writes the
@@ -658,28 +658,12 @@ foreach ( $items as $index => $item ) :
 			)
 			: null;
 	}
-	if ( empty( $item_media ) && ! empty( $item['image']['url'] ) ) {
-		$item_media = array(
-			'url'  => $item['image']['url'],
-			'type' => 'image',
-			'id'   => isset( $item['image']['id'] ) ? absint( $item['image']['id'] ) : 0,
-			'alt'  => isset( $item['image']['alt'] ) ? (string) $item['image']['alt'] : '',
-			'mime' => 'image/jpeg',
-		);
-	}
 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
 		<div class="sgs-card-grid__image-wrap">
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
-			<?php elseif ( ! empty( $item['image']['url'] ) ) : ?>
-				<img
-					src="<?php echo esc_url( $item['image']['url'] ); ?>"
-					alt="<?php echo esc_attr( $item['image']['alt'] ?? '' ); ?>"
-					class="sgs-card-grid__image"
-					loading="lazy"
-				/>
 			<?php endif; ?>
 			<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
 				<div class="sgs-card-grid__overlay">

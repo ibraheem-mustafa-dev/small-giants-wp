@@ -1,7 +1,7 @@
 /**
  * SGS Image Gallery — block editor component.
  *
- * Provides a live image preview via the images attribute array, with
+ * Provides a live image preview via the mediaItems attribute array, with
  * MediaUpload for multi-image selection, drag-to-reorder thumbnails,
  * and inspector panels covering layout, colours, hover, and carousel options.
  */
@@ -157,7 +157,6 @@ function resolveGalleryMedia( media, preferSize ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		mediaItems,
-		images,
 		layout,
 		columns,
 		columnsTablet,
@@ -187,10 +186,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 
-	// Use the new unified mediaItems if present, otherwise fall back to legacy
-	// images. The deprecation migrates on load, so this fallback only fires
-	// for posts that have not yet round-tripped through the editor.
-	const items = mediaItems && mediaItems.length ? mediaItems : images || [];
+	const items = mediaItems || [];
 
 	// Drag-to-reorder state.
 	const dragSourceIndex = useRef( null );
@@ -217,9 +213,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		const next = [ ...items ];
 		const [ moved ] = next.splice( sourceIndex, 1 );
 		next.splice( targetIndex, 0, moved );
-		// Always write to the new attribute and clear the legacy one so we do
-		// not maintain two sources of truth post-migration.
-		setAttributes( { mediaItems: next, images: [] } );
+		setAttributes( { mediaItems: next } );
 		dragSourceIndex.current = null;
 	};
 
@@ -230,7 +224,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	 */
 	const removeImage = ( index ) => {
 		const next = items.filter( ( _, i ) => i !== index );
-		setAttributes( { mediaItems: next, images: [] } );
+		setAttributes( { mediaItems: next } );
 	};
 
 	/**
@@ -243,7 +237,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	 * @param {Object[]} mappedItems Array already resolved to the SGS media-slot shape.
 	 */
 	const onSelectImages = ( mappedItems ) => {
-		setAttributes( { mediaItems: mappedItems, images: [] } );
+		setAttributes( { mediaItems: mappedItems } );
 	};
 
 	// Wrapper inline styles — CSS custom properties for layout.
