@@ -320,14 +320,6 @@ const EXTENSIONS = [
 		isUtility: true,
 	},
 	{
-		id: 'customSpacing',
-		file: 'custom-spacing.js',
-		panel: 'Spacing',
-		attrs: [ 'sgsMarginTop', 'sgsMarginBottom', 'sgsPaddingTop', 'sgsPaddingBottom' ],
-		hideSlug: 'spacing',
-		appliesTo: ( b ) => b.name.startsWith( 'sgs/' ) && ! b.hasNativeSpacingSupport,
-	},
-	{
 		id: 'parallax',
 		file: 'parallax.js',
 		panel: 'Parallax',

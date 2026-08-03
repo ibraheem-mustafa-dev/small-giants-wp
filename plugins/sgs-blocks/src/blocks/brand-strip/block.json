@@ -21,7 +21,7 @@
 		"sgs": {
 			"imageControls": true,
 			"arrayContentLift": true,
-			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ],
+			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax" ],
 			"elements": {
 				"tile": {
 					"label": "Tile",

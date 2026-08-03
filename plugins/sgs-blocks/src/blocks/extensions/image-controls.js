@@ -25,8 +25,9 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
-import { FocalPointPicker, InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls } from '@wordpress/block-editor';
 import {
+	FocalPointPicker,
 	PanelBody,
 	RangeControl,
 	SelectControl,

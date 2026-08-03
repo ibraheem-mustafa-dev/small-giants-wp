@@ -36,6 +36,9 @@ def q(sql: str):
 
 
 def main():
+    # Parse command-line args
+    check_mode = "--check" in sys.argv
+
     blocks = q(
         "SELECT slug, title, category, tier, replaces, has_render_php "
         "FROM blocks WHERE source='sgs' AND status='built' AND is_stale=0 ORDER BY slug;"
@@ -121,16 +124,36 @@ def main():
         },
         "blocks": roster,
     }
-    OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    # Summary to stdout
+    # Summary helper
     def cnt(flag):
         return sum(1 for b in roster if b["surfaces"][flag])
-    print(f"roster.json written: {len(roster)} SGS built blocks")
-    print(f"  styling={cnt('styling')} colour={cnt('colour')} link={cnt('link')} "
-          f"media={cnt('media')} animation={cnt('animation')}")
-    with_replaces = sum(1 for b in roster if b["replaces"])
-    print(f"  with a `replaces` map (feature-parity scope): {with_replaces}")
+
+    if check_mode:
+        # Drift check: compare on-disk roster against what would be generated
+        if not OUT.exists():
+            print(f"[FAIL] roster.json does not exist at {OUT}")
+            sys.exit(1)
+
+        current = json.loads(OUT.read_text(encoding="utf-8"))
+        # Compare payloads (ignore formatting differences)
+        if current == payload:
+            print(f"[PASS] roster.json is in sync with DB ({len(roster)} blocks)")
+            sys.exit(0)
+        else:
+            print(f"[FAIL] roster.json is STALE (DB: {len(roster)} blocks, "
+                  f"File: {current.get('_meta', {}).get('count', '?')} blocks)")
+            print(f"  Run: python scripts/consistency/build-roster.py")
+            sys.exit(1)
+    else:
+        # Normal mode: write roster
+        OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+        print(f"roster.json written: {len(roster)} SGS built blocks")
+        print(f"  styling={cnt('styling')} colour={cnt('colour')} link={cnt('link')} "
+              f"media={cnt('media')} animation={cnt('animation')}")
+        with_replaces = sum(1 for b in roster if b["replaces"])
+        print(f"  with a `replaces` map (feature-parity scope): {with_replaces}")
 
 
 if __name__ == "__main__":

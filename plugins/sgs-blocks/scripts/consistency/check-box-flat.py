@@ -26,6 +26,58 @@ EXCLUDED (legit keep-scalar patterns — never flagged):
   - single-side margins matching /Margin(Top|Bottom|Left|Right)$/ — an
     intentional single-side nudge, not a 4-side box family member.
 
+Baselined items carry a TRIAGE STATUS (2026-08-03 revision)
+-------------------------------------------------------------
+Before this revision the non-Track-2 baselined set printed under one
+undifferentiated "UPGRADE WORKLIST" heading. That heading caused a real
+mistake: it reads as a to-do list, but 10 of the 11 items on it are a
+DOCUMENTED, Bean-approved, qc-council-validated DECISION to keep them as
+scalars (Spec 32 §6.1c, decisions.md D383, memory/session-2026-07-26-2.md)
+— intentionally-uniform pill/tag/badge/icon-circle radii, `sgs/label`
+radius, and brand-strip tile padding/border-width are NOT box-object
+candidates. The 11th (`icon::backgroundPadding`) was the single "spot-check"
+item from that same triage, resolved to KEEP and recorded directly in its
+own `block.json` description. The GENUINE-UPGRADE set from that triage (grid-
+item paddings/radii + product-card CTA border) was already closed at D383.
+
+So every baselined key now carries a `status` + `ref` in the baseline JSON
+itself (data, not a hardcoded Python dict — see "Why the baseline file, not
+a dict" below), and the report groups by status instead of printing one flat
+"worklist":
+  - `deliberate-keep`   — a recorded decision NOT to convert. Printed with
+                          its citation. Never actionable without a fresh,
+                          explicit instruction that names the decision it
+                          overrides.
+  - `genuine-upgrade`   — an accepted-but-not-yet-converted candidate. THIS
+                          is the only status that reads as a to-do. Currently
+                          empty (the 2026-07-25 genuine-upgrade set closed at
+                          D383; card-grid landed the same week).
+  - `track2`            — belongs to a paused in-flight track (mega-*/site-*/
+                          nav-drawer/nav-menu/adaptive-nav). Informational
+                          only, matches the pre-existing Track-2 exclusion.
+  - `untriaged`         — a baselined key with NO recorded status. This is
+                          the safety net: any entry written by an
+                          `--update-baseline` run that a human didn't
+                          consciously classify lands here, loud and separate,
+                          rather than silently vanishing into either bucket.
+                          A gate reader should treat `untriaged` as "ask
+                          Bean before touching this", the same as
+                          `deliberate-keep` — the difference is `untriaged`
+                          means nobody has recorded WHY yet.
+
+Why the baseline file, not a dict
+-----------------------------------
+This project's binding rule (blub.db 260 / R-31-1) is DB-first / no hardcoded
+lookup dicts where a data source can carry the same information instead. The
+triage state here is exactly that kind of data — a per-key classification —
+so it lives in `box-flat-baseline.json` (already the mechanism this gate uses
+for "known" state) as a `status`/`ref` pair per key, not as a Python dict
+literal in this file. The script itself carries only the print/grouping LOGIC
+and the closed, tiny vocabulary of valid status values (`_VALID_STATUSES`) —
+that vocabulary is not per-key classification data, it is the fixed set of
+labels the data is allowed to use, the same way an enum column is not a
+"hardcoded lookup".
+
 Usage
 -----
     python scripts/consistency/check-box-flat.py               # gate (default)
@@ -36,7 +88,11 @@ Baseline
 `box-flat-baseline.json` (alongside this script) — freezes CURRENT reality
 (including Track 2's in-flight mega-*/nav-*/site-* blocks) so nothing that
 already exists today fails the gate. New flat box scalars added AFTER the
-baseline was taken are flagged as violations.
+baseline was taken are flagged as violations. `--update-baseline` PRESERVES
+every existing key's recorded `status`/`ref` — it only ADDS newly-discovered
+keys (as `untriaged`) and drops keys no longer present. It never overwrites
+an existing status, so a conscious triage decision can't be silently erased
+by a routine re-baseline.
 
 Exit codes
 ----------
@@ -70,6 +126,11 @@ _BASELINE_PATH = _HERE / "box-flat-baseline.json"
 # in the "ready to fix now" worklist).
 # ---------------------------------------------------------------------------
 _TRACK2_PREFIXES = ("mega-", "site-", "nav-drawer", "nav-menu", "adaptive-nav")
+
+# The closed, fixed vocabulary of valid triage statuses — NOT per-key
+# classification data (see "Why the baseline file, not a dict" above). A
+# status outside this set is a baseline-authoring error, flagged loudly.
+_VALID_STATUSES = frozenset({"deliberate-keep", "genuine-upgrade", "track2", "untriaged"})
 
 
 def _is_track2_block(block_slug: str) -> bool:
@@ -156,40 +217,92 @@ def collect_flat_box_scalars() -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Baseline helpers
+# Baseline helpers — schema v2: {"_comment", "generated", "entries": {key:
+# {"status": ..., "ref": ...}}}. Back-compat: a legacy `{"keys": [...]}` or
+# bare-list baseline loads every key as status="untriaged" (never silently
+# promoted to deliberate-keep) so an old-format file still surfaces loudly
+# instead of being misread.
 # ---------------------------------------------------------------------------
-def _load_baseline() -> list[str]:
+def _load_baseline() -> dict[str, dict[str, str]]:
     if not _BASELINE_PATH.exists():
-        return []
+        return {}
     try:
         with open(_BASELINE_PATH, encoding="utf-8") as fh:
             data = json.load(fh)
-        if isinstance(data, dict):
-            return sorted(data.get("keys", []))
-        if isinstance(data, list):
-            return sorted(data)
     except (OSError, json.JSONDecodeError):
-        pass
-    return []
+        return {}
+
+    if isinstance(data, dict) and isinstance(data.get("entries"), dict):
+        entries: dict[str, dict[str, str]] = {}
+        for key, info in data["entries"].items():
+            if isinstance(info, dict):
+                status = info.get("status", "untriaged")
+                if status not in _VALID_STATUSES:
+                    print(
+                        f"[check-box-flat] WARNING: baseline key {key!r} has "
+                        f"unrecognised status {status!r} — treating as "
+                        "'untriaged'. Valid statuses: "
+                        f"{sorted(_VALID_STATUSES)}",
+                        file=sys.stderr,
+                    )
+                    status = "untriaged"
+                entries[key] = {"status": status, "ref": info.get("ref", "")}
+            else:
+                entries[key] = {"status": "untriaged", "ref": ""}
+        return entries
+
+    # Legacy shapes (pre-2026-08-03): {"keys": [...]} or a bare list.
+    legacy_keys: list[str] = []
+    if isinstance(data, dict):
+        legacy_keys = list(data.get("keys", []))
+    elif isinstance(data, list):
+        legacy_keys = list(data)
+    return {
+        key: {
+            "status": "untriaged",
+            "ref": "migrated from legacy baseline format — status not yet recorded",
+        }
+        for key in legacy_keys
+    }
 
 
-def _save_baseline(keys: list[str]) -> None:
+def _save_baseline(current_keys: list[str], existing: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+    """Write the baseline, PRESERVING every existing key's status/ref and
+    adding newly-discovered keys as 'untriaged' (never silently defaulted to
+    deliberate-keep). Keys no longer present are dropped."""
+    new_entries: dict[str, dict[str, str]] = {}
+    for key in current_keys:
+        if key in existing:
+            new_entries[key] = existing[key]
+        else:
+            new_entries[key] = {
+                "status": "untriaged",
+                "ref": "newly discovered — needs a conscious triage decision "
+                       "(deliberate-keep / genuine-upgrade / track2) before "
+                       "this is either converted or relied upon as settled.",
+            }
+
     data = {
         "_comment": (
             "box-flat-baseline.json — DISCOVERY-GATE baseline for "
             "check-box-flat.py. Freezes the flat box scalars present in the "
             "tree at generation time (including Track 2 in-flight "
             "mega-*/nav-*/site-*/adaptive-nav blocks) so nothing CURRENT "
-            "fails the gate. Regenerate with --update-baseline only after "
-            "consciously reviewing new entries — do not blindly re-baseline "
-            "to silence a real regression."
+            "fails the gate. Each entry carries a triage `status` "
+            "(deliberate-keep / genuine-upgrade / track2 / untriaged) + a "
+            "`ref` citation — see the script's module docstring "
+            "'Baselined items carry a TRIAGE STATUS'. Regenerate with "
+            "--update-baseline only after consciously reviewing new entries "
+            "— it preserves every existing status, only newly-discovered "
+            "keys land as 'untriaged'."
         ),
-        "generated": "2026-07-25",
-        "keys": sorted(keys),
+        "generated": "2026-08-03",
+        "entries": new_entries,
     }
     with open(_BASELINE_PATH, "w", encoding="utf-8") as fh:
         json.dump(data, fh, indent=2)
         fh.write("\n")
+    return new_entries
 
 
 # ---------------------------------------------------------------------------
@@ -201,18 +314,25 @@ def main() -> int:
     )
     parser.add_argument(
         "--update-baseline", action="store_true", default=False,
-        help="Write current flat-box-scalar set to the baseline and exit 0.",
+        help="Write current flat-box-scalar set to the baseline and exit 0. "
+             "Preserves every existing key's triage status.",
     )
     args = parser.parse_args()
 
     current = collect_flat_box_scalars()
+    baseline = _load_baseline()
 
     if args.update_baseline:
-        _save_baseline(current)
-        print(f"[check-box-flat] Baseline updated — {len(current)} key(s) written to {_BASELINE_PATH}")
+        updated = _save_baseline(current, baseline)
+        added = sorted(set(updated) - set(baseline))
+        removed = sorted(set(baseline) - set(updated))
+        print(f"[check-box-flat] Baseline updated — {len(updated)} key(s) written to {_BASELINE_PATH}")
+        if added:
+            print(f"  {len(added)} newly-discovered key(s) added as 'untriaged': {added}")
+        if removed:
+            print(f"  {len(removed)} key(s) no longer present, dropped: {removed}")
         return 0
 
-    baseline = _load_baseline()
     baseline_set = set(baseline)
     current_set = set(current)
 
@@ -231,7 +351,8 @@ def main() -> int:
             "contract, upgrade to a box-object attr driven by WP's native "
             "BoxControl, gated by the DB `block_attributes.box_family` "
             "column. If this addition is deliberate short-term debt, run "
-            "--update-baseline to accept it consciously."
+            "--update-baseline to accept it consciously — it will land as "
+            "'untriaged' until a status is recorded in the baseline file."
         )
 
     if removed_entries:
@@ -253,20 +374,51 @@ def main() -> int:
         print(f"OK — {len(current)} flat box scalars, all baselined")
 
     # ------------------------------------------------------------------
-    # Upgrade worklist — flat box scalars EXCLUDING Track 2 in-flight
-    # blocks. Informational only, does not affect exit code.
+    # Triage-state report — replaces the old undifferentiated "UPGRADE
+    # WORKLIST". Groups every baselined (i.e. NOT new-violation) key by its
+    # recorded status so a reader can never mistake a documented
+    # deliberate-keep decision for a to-do again.
     # ------------------------------------------------------------------
-    worklist = [key for key in current if not _is_track2_block(key.split("::", 1)[0])]
+    baselined_now = [key for key in current if key in baseline]
+    by_status: dict[str, list[str]] = {status: [] for status in _VALID_STATUSES}
+    for key in baselined_now:
+        by_status[baseline[key]["status"]].append(key)
+
     print()
     print("=" * 78)
-    print(f"UPGRADE WORKLIST — {len(worklist)} flat box scalar(s) outside Track 2 in-flight blocks")
-    print("(mega-*, site-*, nav-drawer, nav-menu, adaptive-nav excluded — informational only)")
+    print("BASELINED FLAT BOX SCALARS — triage state (2026-08-03 revision)")
     print("=" * 78)
-    if worklist:
-        for key in worklist:
-            print(f"  {key}")
+
+    genuine = sorted(by_status["genuine-upgrade"])
+    print(f"\nGENUINE-UPGRADE ({len(genuine)}) — the ONLY status that reads as a to-do:")
+    if genuine:
+        for key in genuine:
+            ref = baseline[key]["ref"]
+            print(f"  {key}" + (f"   [{ref}]" if ref else ""))
     else:
-        print("  (none)")
+        print("  (none — the 2026-07-25 genuine-upgrade set closed at D383;")
+        print("   see decisions.md D383 + memory/session-2026-07-26-2.md)")
+
+    keep = sorted([k for k in by_status["deliberate-keep"] if not _is_track2_block(k.split("::", 1)[0])])
+    print(f"\nDELIBERATE-KEEP ({len(keep)}) — a recorded decision NOT to convert.")
+    print("  Do not treat these as a to-do without a fresh instruction that")
+    print("  explicitly names and overrides the cited decision:")
+    for key in keep:
+        ref = baseline[key]["ref"] or "(no citation recorded)"
+        print(f"  {key}   [{ref}]")
+
+    untriaged = sorted([k for k in by_status["untriaged"] if not _is_track2_block(k.split("::", 1)[0])])
+    if untriaged:
+        print(f"\nUNTRIAGED ({len(untriaged)}) — NO recorded decision. Do NOT assume either")
+        print("  'safe to convert' or 'safe to leave' — ask before touching:")
+        for key in untriaged:
+            print(f"  {key}   [{baseline[key]['ref']}]")
+
+    track2 = sorted([k for k in baselined_now if _is_track2_block(k.split("::", 1)[0])])
+    print(f"\nTRACK2 IN-FLIGHT ({len(track2)}) — paused track, informational only,")
+    print("  never actionable until the track resumes:")
+    for key in track2:
+        print(f"  {key}")
 
     return 1 if new_entries else 0
 

@@ -1,18 +1,54 @@
 {
-  "_comment": "box-flat-baseline.json \u2014 DISCOVERY-GATE baseline for check-box-flat.py. Freezes the flat box scalars present in the tree at generation time (including Track 2 in-flight mega-*/nav-*/site-*/adaptive-nav blocks) so nothing CURRENT fails the gate. Regenerate with --update-baseline only after consciously reviewing new entries \u2014 do not blindly re-baseline to silence a real regression.",
-  "generated": "2026-07-25",
-  "keys": [
-    "brand-strip::tileBorderWidth",
-    "brand-strip::tilePadding",
-    "icon::backgroundPadding",
-    "label::borderRadius",
-    "mega-panel::borderRadius",
-    "option-picker::pillBorderRadius",
-    "option-picker::pillSelectedBorderRadius",
-    "product-card::pickerPillBorderRadius",
-    "product-card::pickerPillSelectedBorderRadius",
-    "product-card::tagBorderRadius",
-    "trust-bar::badgeImageBorderRadius",
-    "trust-bar::iconCircleBorderRadius"
-  ]
+  "_comment": "box-flat-baseline.json — DISCOVERY-GATE baseline for check-box-flat.py. Freezes the flat box scalars present in the tree at generation time (including Track 2 in-flight mega-*/nav-*/site-*/adaptive-nav blocks) so nothing CURRENT fails the gate. Each entry carries a triage `status` (deliberate-keep / genuine-upgrade / track2 / untriaged) + a `ref` citation — see the script's module docstring 'Baselined items carry a TRIAGE STATUS'. Regenerate with --update-baseline only after consciously reviewing new entries — it preserves every existing status, only newly-discovered keys land as 'untriaged'.",
+  "generated": "2026-08-03",
+  "entries": {
+    "brand-strip::tileBorderWidth": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'brand-strip tile'; decisions.md D383 + memory/session-2026-07-26-2.md:41 ('The 10 DELIBERATE-KEEP scalars stay')"
+    },
+    "brand-strip::tilePadding": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'brand-strip tile'; decisions.md D383 + memory/session-2026-07-26-2.md:41 ('The 10 DELIBERATE-KEEP scalars stay')"
+    },
+    "icon::backgroundPadding": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c '1 spot-check', resolved KEEP; recorded verbatim in icon/block.json's own backgroundPadding description ('NOT a 4-side box family — Spec 32 6.1c')"
+    },
+    "label::borderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'sgs/label radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"
+    },
+    "option-picker::pillBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'pill radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"
+    },
+    "option-picker::pillSelectedBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'pill radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"
+    },
+    "product-card::pickerPillBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'pill radius' — forwarded to sgs/option-picker's own pillBorderRadius, same decision; decisions.md D383"
+    },
+    "product-card::pickerPillSelectedBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'pill radius' — forwarded to sgs/option-picker's own pillSelectedBorderRadius, same decision; decisions.md D383"
+    },
+    "product-card::tagBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'tag radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"
+    },
+    "trust-bar::badgeImageBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'badge radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"
+    },
+    "trust-bar::iconCircleBorderRadius": {
+      "status": "deliberate-keep",
+      "ref": "Spec 32 §6.1c 'icon-circle radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"
+    },
+    "mega-panel::borderRadius": {
+      "status": "track2",
+      "ref": "Track 2 in-flight (mega-* paused); excluded from the worklist by check-box-flat.py's own Track2 rule, not part of the 2026-07-25 triage"
+    }
+  }
 }
