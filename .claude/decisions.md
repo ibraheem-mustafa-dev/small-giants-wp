@@ -1,5 +1,49 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D480 — Routing audit: 8-surface critique + live run + the content tier axis [INCIDENT]
+
+**2026-08-03.** A full audit of the cloning pipeline's routing (8 parallel surface critiques, a live
+`/sgs-clone` run to canary page 2130, a 3-rater QC council). Findings register:
+`reports/2026-08-02-pipeline-routing-review.md`. Block/DB defects handed off separately to Spec 35:
+`reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
+
+**SHIPPED — the per-device content tier axis.** `content_attr_for_element` gained a `tier` param;
+base resolution now EXCLUDES tier-suffixed attrs (name ends in a `modifier_suffixes(kind='breakpoint')`
+suffix AND the base name is also a declared attr on that block); `walk.py` maps the node's BEM
+modifier to a tier via the same DB vocabulary. **Tier requested but sibling absent → LOUD GAP, no
+fallback to base** (Bean-ruled). Live: `sgs/hero.backgroundImage`/`…Mobile`/`…Tablet` now route by
+tier. Negative control proven — the pre-fix algorithm was shown to wrongly return `imageMobile` on a
+reversed-rowid fixture. 597 pass / 1 skip.
+
+⛔ **The axis does NOT yet reach `sgs/hero.splitImage`.** Those rows carry `role='scalar-media'`,
+classified `styling-behaviour`, so they never enter the content walk. Reclassifying them is the
+prerequisite for retiring loop 2 — a Spec 35 item, NOT done here.
+
+**BEAN'S RULING — supersedes D474/D476's standing constraint.** The LEDGER carried
+"⛔ do NOT delete `scalar-media` or Loop 2" as a binding rule. **Bean did not set that rule**; it was
+written by a prior session and contradicts his universal principle. REMOVED from `LEDGER.md` and
+replaced with: *"it functions" is not "it is safe" — the target is 100% deterministic routing;
+"works here", "good for now" and "it was only just fixed" are not reasons to keep a mechanism.*
+The transferable half of D474 is retained: **prove a path is dead by REACHING it, never by observing
+it not fire** — the original incident was a broken caller gate hiding a live mechanism.
+
+**MEASURED, not fixed (routing):** Stage 2's answer never reaches the converter, but it has EIGHT
+consumers (its `matches` list is Stage 4's iteration source) — removal is a re-plumbing, not a delete;
+removal map complete. Loop 2's body duplicates loop 3, but its GATE (`is_class_section_block`) is a
+capability check that belongs in `recognise_section` and is currently absent there — measured: a
+section classed `sgs-quote` becomes `sgs/quote`, never a container. Nine sites where two options are
+resolved by rowid / document order / catalogue order / name construction rather than a categorical
+DB fact.
+
+**REVERTED deliberately:** an agent added a `video-object` role + selector corrections for
+`sgs/media`. Bean ruled the role wrong (a video poster IS an image) and the change out of a routing
+session's scope. Files and DB rows fully reverted; DB backup at
+`~/.agents/skills/sgs-wp-engine/sgs-framework.db.bak-videoposter-20260803`.
+
+⚠ **Instrument warning:** `trace.jsonl` and `summary.log` stop at stage 4 — stages 7/9/9b/9c/4i/4j/10/11.6
+all run and leave artefacts but appear in no trace, and `errors.log` is never created. Any analysis
+anchored on the trace reads ~a third of the run.
+
 ## D479 — Tier W (WebGL) admitted to the motion doctrine [ROUTINE]
 
 **2026-08-03, Bean-approved on all four open decisions.** The motion doctrine is now **V / G / H / W**.

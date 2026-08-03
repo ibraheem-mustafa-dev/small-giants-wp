@@ -234,6 +234,31 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
                     return bem.element
         return None
 
+    def _family_modifier(el) -> str | None:
+        """Return the raw --modifier token from the SAME own-family BEM
+        class `_family_element` matched (e.g. 'mobile' from
+        'sgs-hero__image--mobile'), or None if that class carries no
+        modifier. Uses the shared `parse_sgs_bem` helper — no bespoke regex
+        (per the content-router design)."""
+        for cls in (el.get("class", []) or []):
+            if isinstance(cls, str):
+                bem = db_lookup.parse_sgs_bem(cls)
+                if bem and bem.element and bem.block == own_block_name:
+                    return bem.modifier
+        return None
+
+    # Content-router device-tier axis (design settled): the BEM modifier is
+    # mapped CASE-INSENSITIVELY to the DB breakpoint-suffix vocabulary
+    # (`modifier_suffixes(kind='breakpoint')` — the SAME accessor the CSS
+    # router reads; R-31-1, no hardcoded Mobile/Tablet/Desktop literals). A
+    # missing/empty vocabulary (degraded DB) means no modifier ever maps to a
+    # tier — `tier=None` for every element, i.e. today's behaviour.
+    try:
+        _breakpoint_suffixes = db_lookup.modifier_suffixes("breakpoint")
+    except Exception:  # noqa: BLE001 — a degraded vocabulary must never break the walk
+        _breakpoint_suffixes = ()
+    _tier_by_lower = {sfx.lower(): sfx for sfx in _breakpoint_suffixes}
+
     def _typed_value_for_role(el, role, attr_type, media_map):
         """Role-driven, type-guarded extraction shared by BOTH content-
         routing arms below (family-element leg 2 + the foreign-identity
@@ -406,8 +431,22 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         # be swallowed into one attr; its leaf descendants lift individually.
         if any(_family_element(d) for d in el.find_all(True)):
             continue
-        hit = db_lookup.content_attr_for_element(rec.slug, element)
+        _modifier = _family_modifier(el)
+        _device_tier = _tier_by_lower.get(_modifier.lower()) if _modifier else None
+        hit = db_lookup.content_attr_for_element(rec.slug, element, tier=_device_tier)
         if hit is None:
+            if _device_tier is not None:
+                # The loud gap (content_attr_for_element's tier_sibling_missing
+                # trace already fired) — surface it through the SAME channel
+                # every other content drop uses, never a parallel report.
+                results.append(ContentGap(
+                    where=f"{rec.slug}.{element}--{_modifier}",
+                    detail=(f"element '{element}' requested device tier "
+                            f"'{_device_tier}' but no '{{base}}{_device_tier}' "
+                            f"attr is declared on {rec.slug} — no fallback to "
+                            f"the base attr (owner ruling); add the sibling "
+                            f"attr or accept the gap"),
+                ))
             continue
         attr_name, emit_shape, role, attr_type = hit
         if emit_shape is None:

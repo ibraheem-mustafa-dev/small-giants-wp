@@ -69,22 +69,25 @@ which WP silently discards. The oldshape audit caught it. This project documents
 Full detail lives where it already did — read before acting, do not assume it is current from
 memory alone:
 
-- **⭐ Track 1 — Phases 0/1/1b/2/3 COMPLETE 2026-08-02 (D464, D470–D478). Phase 4 PARTIAL; Phase 5 OPEN.**
-  **Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `memory/session-2026-08-02-track1-phase0.md`
-  — read before acting.** Decisions D464, D468–D478 are authoritative.
-  ✅ **Phase 1's real bar is MET** — Bean asked for "the vast majority of migrations deleted and
-  replaced"; **28 of 30 are gone** (D478). ⚠ **2 held back deliberately** (`testimonial-*`): they
-  UPDATE `block_attributes.derived_selector` and that regenerability is UNPROVEN.
-  ⛔ **Phase 4 is STILL PARTIAL** — the WIRE-OR-DELETE item
-  (`check_preset_absence_no_slug_literal.py`), the `orchestrator.py`→`dispatch_spine.py` rename and
-  the "Bean's call" file list are untouched, and **`walk.py:20-26` still carries a FALSE claim the
-  plan flagged as having "misled an entire session" — and `walk.py` is exactly the file the next
-  session's cascade rework touches.**
-  ⛔ **MIGRATION REPLAY IS A DEAD END — proven.** `slot_synonyms` was retired, so 3 migrations
-  reference a table the schema correctly lacks. Void any step premised on replaying `migrations/`.
-  ⛔ **Never delete a migration before its replacement seeder is PROVEN** · **scope every DB stat to
-  `sgs/%`** · do NOT delete `scalar-media` (D474 restored it — it is LOAD-BEARING).
-  ⚠ `populate-db.py` lives at `~/.agents/…`, **NOT in any git repo**; never run it whole.
+- **⭐ Track 1 — ROUTING AUDIT COMPLETE + tier axis SHIPPED 2026-08-03 (D480).**
+  **Registers: `reports/2026-08-02-pipeline-routing-review.md` (the findings) +
+  `reports/2026-08-03-handover-to-spec35-block-attribute-defects.md` (block/DB defects → Spec 35).**
+  8 surface critiques + a LIVE `/sgs-clone` run (canary **2130**) + a 3-rater QC council.
+  ✅ **SHIPPED: the per-device content tier axis.** `content_attr_for_element(slug, element, tier)`;
+  base resolution excludes tier-suffixed attrs; **tier requested but sibling absent → LOUD GAP, no
+  fallback** (Bean-ruled). Negative control proven. **597 pass / 1 skip.**
+  ⛔ **Axis does NOT reach `splitImage`** — `role='scalar-media'` is `styling-behaviour`, so it never
+  enters the content walk. Reclassifying it is the prerequisite for retiring loop 2 → **Spec 35**.
+  ⛔ **Stage 2 has EIGHT consumers** (its `matches` list is Stage 4's ITERATION SOURCE) and **loop 2's
+  GATE belongs in `recognise_section` and is ABSENT there** — measured: `sgs-quote` becomes
+  `sgs/quote`, never a container. Both are re-plumbings, not deletes. See TRACK 1 (routing) below.
+  ⚠ **`trace.jsonl` STOPS AT STAGE 4**; `errors.log` never created. **Live parity: content 99%,
+  CSS 83/84/89% — worst at MOBILE**, matching the 145 unseeded tier rows in the Spec 35 handover.
+- **Track 1 — Phases 0/1/1b/2/3 COMPLETE 2026-08-02 (D464, D470–D478). Phase 4 PARTIAL; Phase 5 OPEN.**
+  **Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md` — read before acting.**
+  ⛔ Phase 4 residuals + **`walk.py:20-26`'s FALSE claim** (says Step 6 is future; it shipped).
+  ⛔ **MIGRATION REPLAY IS A DEAD END** · never delete a migration before its seeder is PROVEN ·
+  **scope every DB stat to `sgs/%`** · `populate-db.py` is at `~/.agents/…`, not in git — never run whole.
 - **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
   Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
@@ -109,10 +112,22 @@ memory alone:
 
 ### Track 1 / DB — restored 2026-08-02 after a handoff edit truncated them (D101: never SUBTRACT)
 
-- ⛔ **`scalar-media` is LOAD-BEARING, not redundant.** `emit_shape` superseded only its
-  no-child-block half; the `--mobile`/`--desktop` routing half has NO replacement. Roster =
-  `data/scalar-media-roles.json`; the seeder REFUSES any block where `is_class_section_block` is
-  False (adding `testimonial-slider` broke it — D476).
+- ⛔ **"IT FUNCTIONS" IS NOT "IT IS SAFE" (Bean, 2026-08-03 — supersedes the D474/D476 wording).**
+  The target is **100% routing accuracy, totally deterministic**. *"It works here"*, *"good for
+  now"* and *"it was only just fixed"* are **not** reasons to keep a mechanism. A mechanism that
+  cannot generalise to any block, page and content shape is a **cheat to replace**, not an asset to
+  protect — being recently repaired makes it no safer.
+  ⚠ **A previous session wrote "do NOT delete `scalar-media` or Loop 2" into this section as a
+  standing rule. Bean did not set that rule and it contradicts the universal principle above.**
+  It is REMOVED. `role='scalar-media'` is a **per-block cheat**: 2 rows in the whole DB, both
+  `sgs/hero`, serving one bespoke branch that is the codebase's only `--mobile` BEM → `*Mobile`
+  route. It is being **replaced** by a universal per-device content-routing axis, not preserved.
+  **Retain only the transferable lesson:** the D474/D476 incident proved a *measurement* error —
+  a mechanism was called dead because a **broken caller gate** hid it. Prove a path is dead by
+  reaching it, never by observing it not fire.
+- ⛔ **Do NOT write a tactical "never delete X" rule into this section.** Standing constraints are
+  for *universal* principles and *measurement* lessons. A per-artefact preservation order dressed
+  as a rule blocks exactly the ruthless replacement the design philosophy requires.
 - ⛔ **ORDER IS LOAD-BEARING** for `property_suffixes` + `modifier_suffixes` (`ORDER BY rowid`,
   `LIMIT 1` for the former — first row WINS). Compare-first + DELETE + ordered re-INSERT, NEVER
   `INSERT OR REPLACE`.
@@ -286,3 +301,40 @@ Commit by EXACT PATH → push main
   D-ceiling immediately before writing any D reference.
 - **Deploy before measure**; `--dry-run` does NOT run the dirty gate; a page-HTML grep cannot see
   block CSS (it is lifted to `uploads/sgs-css/`).
+
+---
+
+### TRACK 1 (routing) — ordered follow-on from D480. Register: `reports/2026-08-02-pipeline-routing-review.md`
+
+**Read FIRST:** that report (§THE FOUR DECISIONS, §7 the categorical target, §APPENDIX 18 corrections)
++ `reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
+**The design bar (Bean):** 100% routing accuracy, totally deterministic. Every branch must separate
+its options by an INNATE CATEGORICAL DB FACT — never rowid, document order, catalogue order or a name
+guess. "No match" is an intended outcome (class-section → `sgs/container`), never a fallback; a tie
+is a LOUD failure. **Nine sites currently violate this — the report lists them.**
+
+**R4 — Fix the trace** [haiku, ~30 min] — **do FIRST; everything else depends on it.**
+
+**R1 — Relocate the capability gate into `recognise_section`** [inline, Opus, ~30 min]
+`is_class_section_block` is called in the Stage-1 voter and loop 2's entry — NEITHER decides the
+emitted block. Insert at `converter/recognition.py:201-202`, before the container default.
+**Changes output** — verify `sgs-quote`/`sgs-info-box` become containers, hero/trust-bar unaffected.
+/qc gate + **Bean's eye (R-31-13)**. Acceptance: the review report's §Q2 table flips its two ✗ rows.
+
+**R2 — Stage 2 removal** [sonnet, ~90 min] — after R1. Re-source Stage 4's loop from `voter.json`;
+re-key 4 bucket routers on `per_section_results`; **amend FR-31-12 in the same commit**. /qc-council.
+
+**R3 — Loop 2 body → loop 3** [sonnet] — **BLOCKED on Spec 35 reclassifying `scalar-media`.**
+⛔ Before cutting, measure `sgs/cta-section`'s real interior — loop 3 enforces `accepts_allowed_blocks`
+and loop 2 never did, so a non-allowed child becomes a ContentGap (content loss).
+
+```
+R4 (haiku, first) · R1 (inline, Opus) → R2 (sonnet) · R3 blocked on Spec 35
+```
+
+### Routing guardrails (earned 2026-08-03)
+- **A static audit of this pipeline is a THIRD of the truth** — 8 agents read the scripts; ONE live
+  `/sgs-clone` run overturned two headline findings. Run the pipeline before concluding.
+- **Establish the DENOMINATOR before quoting a percentage; derive nothing you can count.**
+- **A fix is a hypothesis too** — two proposed fixes would have shipped silent WRONG VALUES.
+- **Prove a path is dead by REACHING it, not by observing it not fire** (D474).

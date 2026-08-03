@@ -5344,32 +5344,66 @@ def nested_attr_named(
 
 
 def content_attr_for_element(
-    block_slug: str, bem_element: str
+    block_slug: str, bem_element: str, tier: str | None = None
 ) -> tuple[str, str | None, str | None, str | None] | None:
     """Resolve a draft BEM __element token to `block_slug`'s content attr.
 
     Spec 31 §13.3 FR-31-2.6: the per-attr content walk resolves each draft
     element to the composite's own typed attr by MATCH STRENGTH, not DB row
-    order. Ranking (lower tier wins; first DB row breaks a same-tier tie):
+    order. Ranking (lower match-tier wins; first DB row breaks a same-tier
+    tie):
 
-      Tier 0 (direct/exact): the attr's `canonical_slot` == element token, OR
-              the attr's own `attr_name` == element token.
-      Tier 1 (alias): the element token appears in the alias list of the
-              element-scope `slots` row named by the attr's `canonical_slot`.
+      Match-tier 0 (direct/exact): the attr's `canonical_slot` == element
+              token, OR the attr's own `attr_name` == element token.
+      Match-tier 1 (alias): the element token appears in the alias list of
+              the element-scope `slots` row named by the attr's
+              `canonical_slot`.
 
     Only content-bearing roles enter (FR-31-2.2 positive allowlist:
     'text-content', 'identity', 'image-object', 'content', 'rating') — styling
     and behaviour attrs never resolve as a content destination.
 
+    ``tier`` (added — content-router device-tier axis, mirrors the CSS
+    router's `modifier_suffixes(kind='breakpoint')` vocabulary so content and
+    CSS share ONE suffix grammar, no new table):
+
+    1. Base resolution (this function's existing match-strength ranking)
+       EXCLUDES any attr that is itself tier-suffixed — i.e. whose name ends
+       with a DB breakpoint suffix (Mobile/Tablet/Desktop, sourced from
+       `modifier_suffixes(kind='breakpoint')`) AND whose name-minus-suffix is
+       ALSO a declared content-role attr on this same block. This is the
+       fix for the rowid-wins bug: `sgs/hero.splitImageMobile` no longer
+       competes for the base `image` lookup that `splitImage` should win.
+       Both clauses matter — an attr that merely ends in a suffix WORD but
+       has no base sibling (e.g. a hypothetical `heroMobile` with no `hero`
+       attr) is NOT excluded.
+    2. If ``tier`` is given, the base attr is resolved first (per the
+       exclusion above), then `{base_attr}{Suffix}` is looked up among the
+       block's OWN declared attrs (any of the fetched rows, tier-suffixed or
+       not).
+    3. Found → that row's `(attr_name, emit_shape, role, attr_type)` wins.
+    4. NOT found (``tier`` requested but no sibling attr exists) → returns
+       None, no fallback to the base attr. A loud `db_lookup_miss` trace is
+       emitted with `reason="tier_sibling_missing"` — this is a tracked gap
+       for the responsive-toggle rollout, never a silent scalar substitution.
+
     NOT lru-cached: tests (and future callers) monkeypatch `SGS_DB`; a cache
     keyed on the args would leak rows across DB swaps.
 
-    R-31-1: DB-only read path. No hardcoded slug→attr dicts.
+    R-31-1: DB-only read path. No hardcoded slug→attr dicts, no hardcoded
+    suffix literals — the breakpoint vocabulary is read from
+    `modifier_suffixes(kind='breakpoint')`, the SAME accessor the CSS router
+    uses, so content and CSS share one grammar.
 
     Args:
         block_slug:  Fully-qualified SGS slug, e.g. 'sgs/product-card'.
         bem_element: The draft BEM element token, e.g. 'name' from
                      '.sgs-product-card__name'.
+        tier:        Optional DB breakpoint-suffix value (e.g. 'Mobile'),
+                     already resolved by the caller against
+                     `modifier_suffixes(kind='breakpoint')`. None = no tier
+                     requested (byte-identical to the pre-tier behaviour,
+                     modulo the rule-1 exclusion correction above).
 
     Returns:
         (attr_name, emit_shape, role, attr_type) for the best match, or None.
@@ -5430,19 +5464,50 @@ def content_attr_for_element(
     # whole). Added 2026-07-04 (Gate A — the card's __price-note element).
     _norm_el = bem_element.replace("-", "").lower()
 
+    # Rule 1 (the fix): base resolution must exclude tier-suffixed siblings.
+    # `_declared_names` is EVERY content-role attr name fetched above (the
+    # full, unfiltered set) — an attr is tier-suffixed iff its name ends with
+    # a DB breakpoint suffix AND the name-minus-suffix is ALSO in this set.
+    # Degrades to an empty suffix vocabulary (no exclusion) if the
+    # `modifier_suffixes` table itself is unavailable — this keeps the
+    # isolated-fixture tests (which build only `block_attributes` + `slots`)
+    # working unchanged; a missing table is a "nothing to exclude" signal,
+    # not an error.
+    try:
+        _tier_suffixes = modifier_suffixes("breakpoint")
+    except sqlite3.OperationalError:
+        _tier_suffixes = ()
+
+    _declared_names = {r[0] for r in attr_rows}
+    _by_name: dict[str, tuple[str, str | None, str | None, str | None]] = {
+        r[0]: (r[0], r[2], r[3], r[4]) for r in attr_rows
+    }
+
+    def _is_tier_suffixed(name: str) -> str | None:
+        """Return the base attr name if `name` is a tier-suffixed sibling of
+        a declared content attr on this block, else None."""
+        for sfx in _tier_suffixes:
+            if sfx and name.endswith(sfx) and len(name) > len(sfx):
+                base = name[: -len(sfx)]
+                if base and base in _declared_names:
+                    return base
+        return None
+
+    base_rows = [row for row in attr_rows if _is_tier_suffixed(row[0]) is None]
+
     best: tuple[str, str | None, str | None, str | None] | None = None
     best_tier: int | None = None
-    for attr_name, canonical_slot, emit_shape, role, attr_type in attr_rows:
+    for attr_name, canonical_slot, emit_shape, role, attr_type in base_rows:
         if (canonical_slot == bem_element or attr_name == bem_element
                 or attr_name.replace("-", "").lower() == _norm_el):
-            tier = 0
+            match_tier = 0
         elif bem_element in slot_aliases.get(canonical_slot or "", ()):
-            tier = 1
+            match_tier = 1
         else:
             continue
-        if best_tier is None or tier < best_tier:
+        if best_tier is None or match_tier < best_tier:
             best = (attr_name, emit_shape, role, attr_type)
-            best_tier = tier
+            best_tier = match_tier
         if best_tier == 0:
             break  # rows are rowid-ordered; the first tier-0 hit is final.
 
@@ -5451,10 +5516,30 @@ def content_attr_for_element(
                block_slug=block_slug, element=bem_element, reason="no_match")
         return None
 
+    if tier is None:
+        _trace("db_lookup_hit", lookup="content_attr_for_element",
+               block_slug=block_slug, element=bem_element,
+               attr_name=best[0], tier=best_tier)
+        return best
+
+    # A device tier WAS requested — the base attr must have a declared
+    # `{base_attr}{Suffix}` sibling; no fallback to the base attr (the
+    # owner's ruling — a silent fallback here would hide the exact gap this
+    # mechanism exists to surface).
+    sibling_name = f"{best[0]}{tier}"
+    sibling = _by_name.get(sibling_name)
+    if sibling is None:
+        _trace("db_lookup_miss", lookup="content_attr_for_element",
+               block_slug=block_slug, element=bem_element,
+               reason="tier_sibling_missing", base_attr=best[0],
+               requested_tier=tier, sibling_name=sibling_name)
+        return None
+
     _trace("db_lookup_hit", lookup="content_attr_for_element",
            block_slug=block_slug, element=bem_element,
-           attr_name=best[0], tier=best_tier)
-    return best
+           attr_name=sibling[0], tier=best_tier, device_tier=tier,
+           base_attr=best[0])
+    return sibling
 
 
 def content_attrs_for_identity(
