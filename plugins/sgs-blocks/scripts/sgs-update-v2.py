@@ -326,12 +326,13 @@ def run_module_load_seeders(db_path: Path = None) -> None:
 # unattended. Deliberately invoked on --rebuild ONLY, never on a normal reseed:
 # a routine `/sgs-update` should not silently start running extra scripts.
 _REBUILD_SEEDERS: tuple[tuple[str, str, str], ...] = (
-    (
-        "uimax-tools/seed-legacy-role-lookup.py",
-        "legacy_role_lookup",
-        "INSERT OR IGNORE on a kebab_role PRIMARY KEY; seed is a list inside the "
-        "script. The only one that writes BOTH DB paths itself.",
-    ),
+    # legacy_role_lookup entry REMOVED 2026-08-03. The table was retired (its role
+    # is served by `slots`), and its seeder was deleted — it carried
+    # CREATE TABLE IF NOT EXISTS, which is how the table came back after its first
+    # retirement at D99 and silently survived every reseed since. The entry was a
+    # dead reference to a missing script: harmless, because _run_standalone_seeders
+    # guards on script.exists(), but a guard is not a reason to keep a pointer to
+    # something that no longer exists.
     (
         "generate-markup-examples.py",
         "markup_examples",
