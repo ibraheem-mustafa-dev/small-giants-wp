@@ -8,7 +8,7 @@ first_paint_capture_run: true
 capture_command: "node scripts/motion-qa/probe-first-paint.mjs https://sandybrown-nightingale-600381.hostingersite.com/physics-canvas-canary/ .sgs-icon --not-a-loop"
 decision: FR-38-27 / D447 — new block, renamed sandbox → canvas per Bean 2026-08-03
 site: sandybrown-nightingale-600381.hostingersite.com
-fixture: /physics-canvas-canary/ (page 2138, created this session)
+fixture: /physics-canvas-canary/ (page 2139 — see the correction note below)
 ---
 
 # sgs/physics-canvas — first-paint capture
@@ -20,6 +20,21 @@ A niche ARTISTIC canvas whose direct children become throwable, gravity-driven d
 built for accessibility, structure, or cloning** — it is operator-discretion decoration. That ruling
 is recorded in Spec 38 FR-38-27 and is why the QC council's WCAG finding is not treated as a blocker
 here.
+
+## ⚠ Fixture page ID corrected — 2138 is WRONG, it is 2139
+
+This report first said page **2138**. That page was DELETED and recreated as **2139** before the
+capture ran, and this line was not updated. Verified against the live site:
+`wp post list --name=physics-canvas-canary --post_status=any` returns `2139,physics-canvas-canary,publish`.
+
+**Why 2138 was destroyed, because the reason is the more useful record:** I hand-authored its block
+markup and guessed an attribute name — `iconSlug`, which `sgs/icon` does not declare. WordPress
+SILENTLY DISCARDS undeclared attributes (D338), so the page looked fine while the oldshape audit
+correctly refused the next deploy. Replaced with attribute-free markup. **Do not hand-author block
+markup with a guessed attribute; serialise from a known-clean page or use no attributes.**
+
+*(Found by an independent QC gate, which flagged the LEDGER/report mismatch but proposed correcting
+the LEDGER. The live site settled it the other way — the LEDGER was right.)*
 
 ## The capture — genuinely run, not reasoned
 

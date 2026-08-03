@@ -50,20 +50,22 @@ chosen chair size. Neither is a plain on/off boolean.
 
 ## Reference Images
 
-All in `sites/snooza-chair/assets/` (**path corrected 2026-08-03** — the previously
-documented `assets/product-images/` does not exist; a build-plan agent found it missing).
-19 files, including an `assets/3d-model/` subdirectory:
-- `ophir-01` through `ophir-14` — gallery images from Ophir website
-- `ophir-video.mp4` — full 10-minute product demonstration video
-- `video-still-001` through `video-still-203` — frames from video (every 3 seconds)
-- `fortuna-pink/blue/green/orange.jpg` — isolated product shots per colour
-- `fortuna-legrest/pommel/tray/headrest.jpg` — isolated accessory shots
+⛔ **CORRECTED TWICE — read this carefully, the first correction was WRONG.**
 
-**Best images for AI model generation:**
-- `fortuna-blue.jpg` — cleanest isolated shot, high resolution
-- `video-still-001.jpg` — front angle, clean background
-- `video-still-020.jpg` — three-quarter front view
-- `video-still-100.jpg` — side view
+`sites/snooza-chair/assets/` exists and holds **19 files** plus an `assets/3d-model/` subdirectory.
+**But NONE of the filenames this document used to list actually exist.** There are no `ophir-01`..`14`,
+no `video-still-001`..`203`, no `fortuna-*.jpg`. The real contents are **Wix-CDN hash-named images**
+(`bc3963_<32-hex>~mv2.jpg`), presumably scraped from the client's current Wix site.
+
+⚠ **Why this is recorded rather than quietly rewritten:** the first correction (earlier the same day)
+fixed the DIRECTORY path and left the filename list untouched — which made the section look resolved
+(right folder, right file count) while every specific reference in it was still fiction. **A
+half-correct correction is worse than the original error**, because it stops the next reader checking.
+
+**What this means in practice:** nobody can cite a specific reference image by name. Whoever
+generates the 3D model must OPEN the directory and choose from what is actually there. There is no
+curated "best images for AI model generation" shortlist any more — the old one named files that do
+not exist.
 
 ## Source Pages
 

@@ -40,8 +40,8 @@ on client sites is explicitly fine. **But the Prohibited Uses clause bans**, ver
 | Item | Reality | Note |
 |---|---|---|
 | **LYGIA** | ⛔ `NOASSERTION` / Prosperity — **commercial = 30-day trial** | I wrongly recommended it earlier. Do not vendor. |
-| **OGL** | ✅ **Unlicense (public domain)** | Better than "MIT". Strengthens it as the Tier W pick. |
-| `gl-transitions` | SPDX `NOASSERTION`; per-file — **124 MIT, 1 BSD-3** | Two reports called it flatly MIT. Check per transition. |
+| **OGL** | ⚠ **npm `package.json` declares Unlicense; the repo has NO LICENSE file**, so `gh api ... .license.spdx_id` returns null | Directionally public-domain and still the Tier W pick, but this was stated as "verified" on weaker evidence than that word implies. If it ever becomes load-bearing, ask the author. |
+| `gl-transitions` | SPDX `NOASSERTION`; per-file — **123 MIT, 1 BSD-3-Clause (`InvertedPageCurl.glsl`), 1 BSD-2-Clause (`StereoViewer.glsl`)** | Two reports called it flatly MIT; a first recount said 124/1 and MISSED a whole licence family. Check per transition. |
 | `PavelDoGreat/WebGL-Fluid-Simulation` | ✅ MIT, ★16.5k | Last push Nov 2024 — fork it, don't depend on it. |
 | `curtainsjs` | ✅ MIT, ★1.8k | Author has moved to a WebGPU successor. |
 | `model-viewer` | ✅ Apache-2.0, ★8.2k, active | Bundles three.js — heavy. |

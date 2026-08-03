@@ -1,56 +1,68 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-02
+last_updated: 2026-08-03
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
+## Human Summary
+
+### FOR BEAN — plain English (read this first)
+
+**What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
+gets ONE true answer instead of three drifting ones.
+
+**Where today left things, in a sentence each:**
+- **WebGL is now officially part of the framework** (Tier W), with a budget and a closed list, so it
+  cannot quietly spread and blow the page-weight limit.
+- **The physics canvas block is built and live on the test site** — a decorative layer where things
+  can be thrown around. It is not a physics engine and should never be sold as one.
+- **Every gap found across nine research reports is now in ONE ranked document** instead of nine.
+- **The Snooza chair job is bigger than the proposal says** — 72 product combinations, not 24, and
+  two accessories that are not simple on/off choices.
+- ⛔ **GSAP's licence has a clause worth knowing about** before you sell a plugin built on it.
+
 ## CURRENT FRONTS
 
-### Track 3 — motion drift GATED, looping ROLLED OUT, focus ring on the client palette (D465-D467)
+### Track 3 — Tier W ADMITTED · physics-canvas SHIPPED · nine reports consolidated (D479)
 
-**Commits `4f07a72a`, `b490bc40` (+ docs `d050fe62`/`8455c8f1`/`6ad91d19`), pushed. Every claim is a
-measurement.**
+**Pushed: `50c9122b` (physics-canvas) · `19d4d33f` (Tier W/D479 + Snooza) · `09960945` (gap register)
+· `3a581721` (council fixes) · `faa1652f` (spec staleness). Every claim below is a measurement.**
 
 | Shipped | Proven how |
 |---|---|
-| **Three-list fx drift GATED** (D465) — `scripts/check-fx-list-drift.py`, 6 invariants, in `prebuild` | `--self-test` breaks each invariant + a vacuity case; **deleting `'cursor-field'` from each list in turn was verified to fail the build**, each break confirmed in `git diff` first. Reads NO database. `fx_effects` gained `in_picker`. |
-| **Looping rolled out** (D466) to `post-grid` / `trustpilot-reviews` / `google-reviews` / `buybox` | **dots == real cards on 4 of 5** (post-grid 9 real / 27 cloned / **9 dots**); buybox 8/8 + 1 honest `[N/A]`. Plus a no-JS **first-paint** capture, 3/3 each. |
-| **`sgs/google-reviews` slider nav BUILT** | It had NONE: `showDots`/`showArrows` declared, exposed as toggles, read into variables, rendering nothing. Dots now live at 3 == 3 real reviews. |
-| **Focus ring = ACCENT glow on the client's own palette** (D467) | **0 → 15 of 25 focusables on accent; the hardcoded teal is gone from every element.** |
+| **Tier W (WebGL) ADMITTED — doctrine is now V/G/H/W** (D479, Bean-approved 4/4) | Justified from the doctrine's own text: **OGL FAILS Tier H's admission test at part (iii), "single-purpose"**. 120KB Tier-W-pages-only budget · OGL (npm declares **Unlicense**; ⚠ NO LICENSE file in the repo, so `gh api` returns null — directionally fine, NOT verified; wrapped for swappability) · no-WebGL falls back to the Tier V equivalent · CLOSED list. |
+| **`sgs/physics-canvas` shipped + seeded** (renamed from sandbox per Bean) | 70 identifier replacements, 0 residual; `dbschema/sandbox.py` verified untouched. Seeded `section-root`/`sgs/container`. **First-paint capture GENUINELY RAN**: 3/3 children visible JS-off, 0 clones, 0 inline styles, fixture 2139. |
+| **`sgs/google-reviews` WCAG 2.5.7 + reduced-motion sweep** | google-reviews **17/17**, trustpilot **17/17**, post-grid **17/17** live. `prevSlide()` carried the SAME defect mirrored and was NOT in the finding — found by reading the pair. |
+| **Master gap register** — nine reports into one ranked doc | `plans/2026-08-03-motion-gap-register.md`: licences · 8 built-weaknesses · **13 missing categories** · client-usability patterns · Tier W. |
 
-⛔ **THE SPEC'S OWN ROSTER PREDICATE WAS WRONG.** Spec 38 + this LEDGER said "derive the roster from
-`supports.sgs.fx.draggable`" — with a ⚠ to trust it. It returns 2 blocks, one with **no scroller at
-all**. Correct: **"owns a native horizontal scroller"**. Fixed in Spec 38 §3.3; `before-after` and
-`testimonial-slider` excluded with reasons.
+⛔ **GSAP IS NOT MIT.** SPDX `NONE`, "Standard 'no charge' license", free since **30 April 2025**.
+Its Prohibited Uses clause bans use in tools letting users build visual animations without code in
+competition with Webflow. **Client sites are fine; a DISTRIBUTED plugin sold on visual motion
+authoring (the 299/yr Configurator Pro) is the exposed case.** MIT escape hatches: Motion, anime.js v4.
+⛔ **LYGIA is Prosperity-licensed** (commercial = 30-day trial). I recommended it earlier in-session;
+that correction is at the top of the register. **Reworking a restrictive library does NOT make it
+yours** — a derivative work stays bound. Implementing the published technique yourself is the legit route.
 
-⛔ **D322 WAS THREE-QUARTERS UNDONE FOR FOUR MONTHS.** The focus fix looked like a one-line
-`theme.json` edit and was a **no-op**: the real overrides were **`wp_global_styles` post 7** (the DB
-beats theme.json) **and the client snapshots**. D322 added the framework copy but never removed the
-client copies, and the client copy wins. Ruled out first, in order: not a bad edit (deployed file
-had the new value), not a cache (42 transients deleted + object cache + LiteSpeed purged).
+⛔ **A STALE SPEC MADE A FRESH AUDIT RECOMMEND RE-FIXING WORKING CODE.** Spec 38 still described two
+bugs fixed hours earlier; a client-readiness audit called one "the single highest-value fix in this
+whole audit". The agent was not careless — **it cited the spec, and the spec was wrong.** Fixed
+(`faa1652f`). Treat every "known defect" in any register as a claim with a date on it.
 
-⚠ **A `wp post list` FALSE NEGATIVE ALMOST CLOSED THAT INVESTIGATION.** It returned NOTHING for
-`--post_type=wp_global_styles` — reading exactly like "no override". It defaults to a publish-ish
-status filter; `--post_status=any` found post 7 instantly. **An absence from `wp post list` is not
-evidence of absence unless the status filter was explicit.**
+⚠ **A doc council then found I cited D479 in Spec 38 without writing the decision.** Written
+(`3a581721`). Also fixed: the Snooza plan contradicted its own corrected product data; the register
+had dropped a WCAG 2.2.2/2.3.1 finding from its own sources.
 
-⚠ **FOUR probe defects, all measuring the INSTRUMENT not the code:** a hardcoded item selector made
-"dots == real cards" read `0 === 0` on any non-gallery block; a `|| 0 === dots` escape-hatch let a
-DOTLESS block bank a silent PASS; dots were counted document-wide against track-scoped items,
-FAILING a correct block; `networkidle` never settles on a WooCommerce page. All fixed with negative
-controls.
+⚠ **Snooza product data CORRECTED by Bean:** **THREE** variant axes — 4 sizes x 6 colours x **3
+headrests = 72 SKUs**, not 24. Two accessories are NOT booleans (Medial Thigh Support has 2 nested
+variants; **Leg Rest has 4 sizes constrained to match the chair**). The existing engine models
+add-ons nowhere. Reference images are at `sites/snooza-chair/assets/` (the documented path did not exist).
 
-⛔ **`sgs/nav-menu`'s focus fix was built, deployed, measured working — then REVERTED + redeployed.**
-`first_paint_capture_passed` cannot be honestly claimed for a block rendering a hidden second copy in
-the drawer (capture reads `2/4 visible` — a probe artefact). **Faking a gate field to land a
-long-tail fix was the wrong trade.** Do not re-land without a genuine capture.
+⚠ **I hand-authored a fixture with a guessed attribute** (`iconSlug` — not declared on `sgs/icon`),
+which WP silently discards. The oldshape audit caught it. This project documents that exact trap (D338).
 
-**Bean's rulings (each now made TWICE — do not re-litigate):** the focus ring is gated on **palette
-accuracy, not contrast** (`visual-standards.md`'s 3:1 is overruled for his sites), and the **outline
-is ACCENT** — a glow effect, not a dark high-contrast object.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
@@ -212,120 +224,65 @@ The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION — motion residuals (Track 3), or Track 1 Phase 1
+## NEXT SESSION — Snooza pitch demo (revenue), or the motion gap register
 
-**Read FIRST, in order:** this file → `STOP-CATALOGUE.md` →
-`decisions.md` **D459, D460, D463** (this session) → **`plans/2026-07-31-motion-wave-D-client-readiness.md` §1**
-(the residual register — its table names every open motion step in run order) → Spec 38 §3.3
-FR-38-25 + FR-38-26.
+**Read FIRST, in order:** this file → `STOP-CATALOGUE.md` → `decisions.md` **D479** →
+**`plans/2026-08-03-motion-gap-register.md`** (THE consolidated register — 13 missing categories,
+8 built-weaknesses, all licence reality) → `plans/2026-08-03-snooza-configurator-build-plan.md`
+(⛔ read its SUPERSEDED banner first) → Spec 38 §1 (Tier W) + §3.3.
 
-### TRACK 3 (motion) — the residue, ranked. Register = `plans/2026-07-31-motion-wave-D-client-readiness.md`
+### Task 1 — Snooza PITCH DEMO [inline, Opus] — HIGHEST VALUE, revenue-bearing
+**What:** one `.glb` + one `.usdz` in a standalone `model-viewer` page. No WordPress, no configurator.
+**Why:** Bean's proposal ends *"I'll bring the Snooza Chair in 3D on my phone."* That demo needs a 3D
+file and an HTML page — nothing else. It is a separate deliverable from the 6-week build, and it is
+the one with a real deadline.
+⚠ **Android AR uses the `.glb`; iOS AR Quick Look needs a `.usdz`.** model-viewer can auto-generate
+one, but Google's own docs warn it "might not produce desired results" — for a live pitch on an
+iPhone, ship an explicit `.usdz`. Assets: `sites/snooza-chair/assets/` (19 files + `3d-model/`).
+⚠ Bean's ruling: **the model need NOT be dimensionally exact** — it must read convincingly on a phone.
+**Time:** 2-3 days. **/qc gate:** Bean's eye on a real phone.
+**Acceptance:** AR launches on iOS AND Android from one page.
 
-**Everything open lives in that register, never `parking.md`** (Bean-ruled 2026-07-31).
+### Task 2 — Tier W first effect: fluid cursor field [delegated, sonnet]
+**What:** `sgs/cursor-field` gains a `webgl` mode using OGL, wrapped behind `init/setUniform/destroy`.
+**Brief:** start from `PavelDoGreat/WebGL-Fluid-Simulation` (**MIT**, ★16.5k, clean config object for
+radius/dissipation/force). Must honour all three Tier-W-only contracts (context-loss recovery,
+explicit GPU disposal, pause off-screen) and fall back to the existing CSS glow.
+**Depends on:** none. **Parallel with:** Tasks 3, 4. **/qc gate:** yes — `/qc-inline` + a live probe.
+**Acceptance:** fluid visible on canary; a no-WebGL context still paints the Tier V glow; zero bytes
+shipped on a page without it.
 
-**M1 — Step Z residual: ONE block-scoped focus sweep** [sonnet, ~45 min]
-Every block-scoped `:focus-visible` still using `currentColor` or a hardcoded `primary-dark` joins
-the shared `--sgs-focus-*` family: `nav-menu/style.css:123`, `responsive-logo` (lifted CSS),
-`brand-strip/style.css:459`, `card-grid/style.css:264`, `cta-section/style.css:287`.
-- **Orchestration:** delegated, sonnet, single agent. Brief: one sweep, one evidence pass — not five
-  ad-hoc fixes. **/qc gate after: yes** (`/qc-inline`).
-- ⛔ **`sgs/button` is NOT in the sweep until its writer is FOUND.** 7 elements compute `#3a2e26`
-  while both matching rules resolve to accent — something the rule-scan missed is winning. Prove the
-  cause first.
-- ⛔ **`sgs/nav-menu` needs the first-paint probe fixed for multi-instance blocks first**, or a
-  genuine capture. It was reverted once precisely to avoid faking that field.
-- **Acceptance:** re-run the baseline method in `reports/2026-08-02-focus-cascade-baseline.md`;
-  accent count rises from 15/25 and no element regresses off-palette.
+### Task 3 — Client-usability sweep [delegated, sonnet] — PRESETS BEFORE PARAMETERS
+**What:** the register §3 item every audit independently landed on. Named presets a client picks
+("Ripple", "Brick reveal"); raw numbers move behind an "Advanced" toggle. Plus: an audio
+sensitivity/gain control (~15 min), and LABEL the three agency-only tools (image-sequence, fx-morph,
+fx-scramble) in the editor so the capability roster stays honest.
+**Parallel with:** Tasks 2, 4. **/qc gate:** yes. **Acceptance:** a preset dropdown ships on ≥1 effect.
 
-**M2 — Step Y: the loop's untested arms** [sonnet, ~45 min] — reduced motion for the LOOP is
-unstated (the drag module's SIMPLIFY contract does NOT transfer), and keyboard arrow-wrap at the
-boundary was never exercised though WCAG 2.5.7 rests on it. **Now across FIVE blocks, not one.**
-**Playwright only** — DevTools MCP has neither `prefers-reduced-motion` nor a trusted pointer.
-Spec 38 §10 also has NO row for `cursor-field` or `carousel-loop`. **/qc gate after: yes.**
-
-**M4 / M5 — low priority** [sonnet] — Step R-residual (`floating-objects`, participant seam,
-init-only walk) and Wave E's unverified residue (`:user-valid` on a real `sgs/form`; `fx-scrub` /
-`fx-split-reveal` vs the SHIPPED bundle). Detail in the register.
+### Task 4 — Verify the two unproven fixes [delegated, haiku] — 20 min total
+`fx-morph` live on canary (D452's fix is committed but was never verified) and D451's motion-path
+repeat-trigger status. Register §1 items 4 and 5.
 
 ### Dependency graph
-
 ```
-M1 (sonnet, delegated) ──┐
-M2 (sonnet, delegated) ──┴── parallel, disjoint files
+Task 1 (inline, Opus — revenue deadline, do first)
+Task 2 + Task 3 + Task 4 (parallel, delegated)
         ↓ /qc-inline per branch
-M4 / M5 (sonnet) — only if time remains
+Commit by EXACT PATH → push main
 ```
 
 ### Methodology guardrails (do not skip)
-
-- **Deploy before measure.** A theme change needs a `style.css` Version bump + deploy + LiteSpeed
-  purge before any probe. This session's whole Step Z detour existed because a THEME half was never
-  deployed while `--blocks-only` deploys looked complete.
-- **`build-deploy.py --dry-run` does NOT run the dirty gate** — a green dry run proves nothing.
-- **A page-HTML grep cannot see scoped block CSS** — SGS lifts it to `uploads/sgs-css/`.
-- **A probe that never reaches the effect measures the probe.** Four such defects this session.
-- **Never claim a gate field you did not measure.** `first_paint_capture_passed` was the live case.
-- **`wp post list` absence is not evidence of absence** unless `--post_status` was explicit.
-- **Two tracks share this worktree.** Commit BY EXACT PATH, never `git add -A`; the pre-commit hook
-  now enforces a pathspec. **Re-check the D-ceiling immediately before writing any D reference** —
-  the other track took D464 mid-session and committed 3 times during this one.
-
-### TRACK 3 — carried forward, unchanged
-Steps **8** (physics sandbox — DECIDED at D447, only the FR write-up is owed), **12** (the cloning
-lift, FR-38-22 — measured NO, motion does not survive a clone today), **20** (spec↔code
-reconciliation), **O** (drag text-selection — ⛔ Bean re-checks by hand, do NOT dispatch an agent),
-**U** (grid-block file-length debt), **21** (re-run `/adversarial-council`, deliberately last).
-
-### Methodology, earned this session — do not re-learn these
-- **A probe's hardcoded viewport points can miss the element entirely** and report a failure that
-  does not exist. Derive points from the target's own bounding box.
-- **The canary carries two other tracks' uncommitted PHP** — deployed with `--allow-dirty` on Bean's
-  explicit acceptance; NOT reviewed by this track.
-- **A self-healing seeder BLINDS an in-process test** (D474). If a module-load seeder repairs the
-  fact, a pytest assertion on it is vacuous — the detector must be a separate process that never
-  imports the seeder. Proven by negative control, not assumed.
-- **A population count cannot see a RECLASSIFICATION** (D474) — right row, wrong-but-plausible value,
-  count unchanged. Floors catch emptying; value-identity assertions catch reclassification.
-- **A synthetic repro can hide the deciding detail** (D474) — a one-class test markup where the real
-  draft carries two classes sent 2 of 3 council reviewers to the wrong option.
-
-- **Carried forward (still binding): all live in `STOP-CATALOGUE.md`** — 153 STOPs, verified carried
-  forward by `handoff-preflight.py`. These bullets were truncated fragments here (bodies lost in an
-  earlier sweep) and are held in full there: the 4 T1.1/D461 STOPs · a grep for a literal cannot see
-  a CSS-variable-driven value · never `head` a verification listing · a wrong explanation does not
-  make an observation wrong · artefact presence is not behaviour · pixel-sample when a rendered
-  appearance is disputed (5.79:1 computed vs 1.79:1 rendered) · after any rebaseline re-prove the
-  gate's `--self-test` · reduced motion + gesture drag are Playwright-only.
-  ⚠ **A grep's negative result describes the GREP, not the codebase** — this bit three times this
-  session, most recently when phrase-greps "proved" these lessons were lost while the catalogue held
-  all nine in narrative form. Confirm with a second shape before concluding absence.
-### TRACK 1 (cloning) — ⭐ THE FRONT: Spec 31 wrapper-recognition cascade rework
-
-**Register (read IN FULL before touching code): `plans/2026-08-01-wrapper-recognition-cascade-rework.md`
-— status SCOPED, NOT STARTED. Then Spec 31 §2.3 / §2.4 / §3.A / §13.2.**
-
-**The work, in Bean's framing:** rework L1–L4 routing to decide from the **most suitable DB data**, so
-the pipeline stops falling back to fuzzy matching. While replacing the **L2** logic we found three
-container-handling loops "riddled with issues — retired parts that weren't removed, mixed in with
-newer/better logic, all competing for the same routing decision". Deconstruct, expose the flaws,
-fix/replace.
-
-⛔ **FOUR COMPETING MECHANISMS decide "is this a wrapper?" — the plan's §"FOUR COMPETING MECHANISMS"
-has the table.** #1 `layer_detect()` is SOUND and name-free (CSS signature + structural position).
-The other three are the mess: #2 `_sole_passthrough_child()` (alias-vulnerable, and demands the
-parent have EXACTLY ONE element child), #3 `_is_absorbable_wrapper()` (BEM-class-driven), #4 the
-implicit `resolve_slug_from_bem() is None` (hijackable via the alias map).
-⛔ **They DIRECTLY CONTRADICT each other:** #3 treats `padding`/`margin`/`gap` as DISQUALIFYING a
-wrapper, while #1 uses `max-width` + `margin` as the IDENTIFYING signature of the content band. Same
-property, opposite meaning, two files.
-⛔ **Tabs cannot fold today for TWO independent reasons** — `__nav` has false block identity, AND the
-exactly-one-child rule. Fixing recognition alone will not fix it.
-⛔ **The plan opens with FOUR claims I made and Bean disproved** (repeater content loss; "the tabs
-draft is malformed"; `__panel`→`sgs/tab` forced parentage; "background/border disqualify a structural
-wrapper"). **Read that section first and do not re-derive them.**
-
-**Orchestration:** TASK 0 (rebuild the tabs conformance fixture) then Q1–Q3 in the register, INLINE
-on Opus — this is the highest-blast-radius surface in the project and Bean's relational L2 model is
-his, not a derivation. **Design-gate before building (Rule 7).** /qc gate: `/qc-council` per binding
-rule blub.db 255 (converter commits).
-**Acceptance:** the register's own ACCEPTANCE section — not "code shipped".
+- **A stale doc is a trap that fires on the next reader.** Proven twice today: a spec described fixed
+  bugs as live and an audit recommended re-fixing them; a client doc named a directory that never existed.
+- **Never hand-author block markup with a guessed attribute** — WP silently DISCARDS undeclared attrs
+  (D338). Serialise from a known-clean page, or use no attributes at all.
+- **A probe that never reaches the effect measures the probe.** Two "failures" today were my own
+  measurement bugs (an SVG object stringified; headless rAF throttling).
+- **Fix the instrument, never the gate field.** `probe-first-paint.mjs` gained an EXPLICIT
+  `--not-a-loop` opt-out; auto-detect was REJECTED because a loop block that FORGOT its marker is
+  precisely the bug that assertion exists to catch.
+- **Verify licences with `gh api`, never a README badge.** Two "MIT" claims were wrong today.
+- **Shared worktree, other tracks active.** Commit BY EXACT PATH, never `git add -A`. Re-check the
+  D-ceiling immediately before writing any D reference.
+- **Deploy before measure**; `--dry-run` does NOT run the dirty gate; a page-HTML grep cannot see
+  block CSS (it is lifted to `uploads/sgs-css/`).

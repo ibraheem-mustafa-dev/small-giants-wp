@@ -15,8 +15,9 @@ unbounded state §1 exists to prevent.
 1. **Byte allowance:** a NAMED 120KB JS allowance for Tier W **pages only**; the 50KB/page rule is
    untouched everywhere else. Explicit because a budget quietly breached is a budget abandoned.
 2. **Library: OGL**, wrapped behind an SGS-side `init / setUniform / destroy` interface so it stays
-   REPLACEABLE. OGL is **Unlicense (public domain)** — verified via npm + GitHub, stronger than MIT —
-   but quiet upstream (last release 2025-01), and curtains.js's author has already moved to a WebGPU
+   REPLACEABLE. OGL's npm `package.json` declares **Unlicense** — but ⚠ the repo has NO LICENSE file, so
+   `gh api` returns null; directionally public-domain, NOT verified to the standard that word
+   implies (corrected same-day by a doc council). It is also quiet upstream (last release 2025-01), and curtains.js's author has already moved to a WebGPU
    successor. Assume the dependency gets swapped; do not weld effects to it.
 3. **Fallback:** no-WebGL visitors (~2-3%, plus low-power modes) get **the Tier V version of the same
    block**. Never a blank canvas, never a hidden section.
