@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/image-no-decorative-toggle",
+	"title": "Fixture: renders <img>, no decorative/aria attr",
+	"category": "sgs",
+	"attributes": {
+		"imageUrl": { "type": "string", "default": "" },
+		"imageAlt": { "type": "string", "default": "" }
+	}
+}

@@ -1447,10 +1447,12 @@ The skill's enforcement hook is a no-op stub while its docs previously overclaim
 
 **Trigger:** next hooks/enforcement session — Bean chose fix-the-claim-now, implement-later.
 
-### P-SKILL-UPDATE-DB-SEEDS-RETIRED-TABLES — a skill-side DB update script still seeds two retired tables
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-15
+### P-SKILL-UPDATE-DB-SEEDS-RETIRED-TABLES — a skill-side DB update script still seeds a retired table
+**Status:** PARTIAL · **Bucket:** tooling · **Parked:** 2026-07-15
 
-`sgs-wp-engine`'s `update-db.py` still creates and seeds `slot_synonyms`/`legacy_role_lookup`, both replaced by `slots`/`roles` in the current schema. Not blind-removed because the script is genuinely live (invoked by the orchestrator's register tail, and a sibling function it imports is cited elsewhere in the converter) — "it seeds dead tables" isn't proof that nothing reads them. Needs: a grep for any live consumer of the two old tables, then strip the seeders if genuinely unread, and a decision on whether the orchestrator should call the project's own `/sgs-update` instead of this skill-side legacy script at all (the two DB-reseed paths risk drifting apart).
+`legacy_role_lookup` half RESOLVED 2026-08-03: Bean confirmed the table had no purpose, the grep this entry asked for found zero live readers (`db_lookup.legacy_role_lookup_for()` has queried `slots WHERE scope='section'` since D99, not the table), so the sole creator — `plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py` (a `CREATE TABLE IF NOT EXISTS` + seed, called from both `sgs-update-v2.py`'s `_REBUILD_SEEDERS` and `update-db.py`'s `run_seed_legacy_role_lookup()`) — was deleted, `schema.sql`/`row-floor.json` regenerated, and the table dropped via `dbschema/retire_table.py` (archive: `scripts/data/retired/legacy_role_lookup.json.gz`, 15 rows). Both call sites now resolve to a missing script and SKIP cleanly (verified) rather than being hand-edited, since `sgs-update-v2.py` was mid-edit by another track and `update-db.py` lives outside this repo.
+
+Residual scope: `update-db.py` still creates and seeds `slot_synonyms`, replaced by `slots`/`roles` in the current schema. Same open questions as before, now for `slot_synonyms` alone: confirm zero live readers, then strip that seeder, and decide whether the orchestrator should call the project's own `/sgs-update` instead of this skill-side legacy script at all (the two DB-reseed paths risk drifting apart).
 
 **Trigger:** next `/sgs-update` or converter-DB session.
 

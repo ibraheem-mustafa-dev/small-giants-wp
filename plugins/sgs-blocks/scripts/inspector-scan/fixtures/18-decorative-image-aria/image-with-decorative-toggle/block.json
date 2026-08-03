@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/image-with-decorative-toggle",
+	"title": "Fixture: renders <img>, HAS a decorative toggle attr",
+	"category": "sgs",
+	"attributes": {
+		"imageUrl": { "type": "string", "default": "" },
+		"imageAlt": { "type": "string", "default": "" },
+		"isDecorative": { "type": "boolean", "default": false }
+	}
+}

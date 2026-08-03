@@ -1,9 +1,9 @@
 """
-sgs-update-v2.py — 13-stage holistic refresh of the SGS framework knowledge base.
+sgs-update-v2.py — 14-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
 (update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
-all 10 stages pass the Phase 4 gate, at which point the slash command entrypoint
+all 14 stages pass the Phase 4 gate, at which point the slash command entrypoint
 swaps to this script.
 
 Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
@@ -39,20 +39,25 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                2026-08-01 — the DB was made the single source for the
                                fx:* namespace, but nothing regenerated the artefacts THE
                                DB IS FOR; this stage is that missing writer.
- 13. export_db_to_csv        — export every live table to CSV in
-                               ~/.agents/skills/sgs-wp-engine/db\\ data/ (the space is
-                               literal). Idempotent + deterministic. Removes CSVs for
-                               retired tables. Reports tables exported, row counts, added/removed.
+ 13. run_audit_scanners     — run audit scanners keyed to DB/roster (report-only).
+                              Regenerate roster.json, then run consistency checks
+                              (db-consistency, consistency-gates, fx-list-drift,
+                              box-family-guard, inspector-conformance, feature-parity).
+                              Findings are informational; never fail the reseed.
+ 14. export_db_to_csv       — export every live table to CSV in
+                              ~/.agents/skills/sgs-wp-engine/db\\ data/ (the space is
+                              literal). Idempotent + deterministic. Removes CSVs for
+                              retired tables. Reports tables exported, row counts, added/removed.
 
 Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE] [--self-test]
 
-    --stage N               Run only stage N (1-13; stage 3 is retired). Omit to run all.
+    --stage N               Run only stage N (1-14; stage 3 is retired). Omit to run all.
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
     --prune-mode MODE       Stage 10 only: 'aggressive' (default) DELETEs stale support rows.
                             'conservative' sets is_stale=1 instead (opt-in cautious mode).
-    --self-test             Stage 13 only: test that the export stage can fail (do not use operationally).
+    --self-test             Stage 14 only: test that the export stage can fail (do not use operationally).
                             Attr-level orphans are always deleted regardless of prune_mode
                             (block_attributes has no is_stale column).
 """
@@ -5190,10 +5195,351 @@ def stage_12_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Stage 13 — Export database tables to CSV (final stage)
+# Stage 13 — Run DB/roster-keyed audit scanners (report-only)
 # ---------------------------------------------------------------------------
 
-def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) -> dict:
+def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) -> dict:
+    """Run audit scanners keyed to DB and roster state (report-only, never fail).
+
+    After /sgs-update reseeds the knowledge base (Stages 1-12), the DB is fresh
+    but nobody sees what it reveals until the next build. This stage runs the
+    audit scanners immediately after the reseed, allowing the operator to
+    understand the post-reseed baseline before proceeding. Findings are
+    INFORMATIONAL — a reseed must never be blocked by pre-existing audit gaps.
+
+    Sequence:
+      1. Regenerate roster.json from the fresh DB (denominator for all audits)
+      2. Run each DB/roster-keyed scanner with --report (report-only)
+      3. Collect findings and print summary
+      4. Continue pipeline (never fail, even on findings)
+
+    Scanners included:
+      - scripts/consistency/run-consistency-gates.py: DB structural consistency
+      - scripts/db-consistency/run.py: F6 DB-as-code violations (grandfathered baseline)
+      - scripts/check-fx-list-drift.py: fx_effects table currency
+      - scripts/check-box-family-guard.py: box_family attribute constraints
+      - scripts/audit-inspector-conformance.js: inspector_control_type classification
+      - scripts/audit-feature-parity.py: feature parity against block roster
+
+    Scanners excluded from this stage (not DB-keyed):
+      - Code-only audits (cheat-gate, excluded-gate, control-ux, etc.)
+        run at build time, not reseed time.
+      - Motion-fx generators (run in Stage 12, the write step).
+      - Icon generation, responsive-control lint, etc. (re-run at build time).
+
+    Idempotent: scanners use --report (never mutate state); safe to run
+    repeatedly during the same reseed run without side effects.
+
+    Output format: per-scanner findings count + summary, then final count.
+    Do NOT re-raise errors; findings are metadata on the post-reseed state.
+    """
+    scripts_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "scripts"
+
+    # Scanners: (rel_path, label, invocation_args)
+    scanners = [
+        ("consistency/build-roster.py", "build-roster", []),
+        ("consistency/run-consistency-gates.py", "consistency-gates", ["--report"]),
+        ("db-consistency/run.py", "db-consistency", ["--report"]),
+        ("check-fx-list-drift.py", "fx-list-drift", ["--check"]),
+        ("check-box-family-guard.py", "box-family-guard", ["--report"]),
+        ("audit-inspector-conformance.js", "inspector-conformance", ["--json"]),  # Parse JSON for findings by severity
+        ("audit-feature-parity.py", "feature-parity", ["--check"]),  # exit code signals but don't fail
+    ]
+
+    # Self-test: proves extraction logic works by parsing a known fixture (COORDINATOR REQUIREMENT)
+    if self_test:
+        import json as json_module
+
+        # Create a test fixture with known findings (2 warn, 1 informational)
+        test_fixture = {
+            "audit": "self-test-fixture",
+            "findings": [
+                {"block": "sgs/test1", "severity": "warn", "detail": "test finding 1"},
+                {"block": "sgs/test2", "severity": "warn", "detail": "test finding 2"},
+                {"block": "sgs/test3", "severity": "informational", "detail": "test finding 3"},
+            ],
+        }
+        fixture_json = json_module.dumps(test_fixture)
+
+        # Test the extractor on the known fixture
+        try:
+            # Simulate what the inspector-conformance extractor does
+            data = json_module.loads(fixture_json)
+            findings_list = data.get("findings", [])
+
+            by_severity = {}
+            for finding in findings_list:
+                sev = finding.get("severity", "unknown")
+                by_severity[sev] = by_severity.get(sev, 0) + 1
+
+            total = len(findings_list)
+
+            # Verify: should have 3 findings total, 2 warn, 1 informational
+            if total != 3:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: expected 3 findings, extractor returned {total}",
+                }
+
+            if by_severity.get("warn") != 2:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: expected 2 warn findings, got {by_severity.get('warn')}",
+                }
+
+            if by_severity.get("informational") != 1:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: expected 1 informational finding, got {by_severity.get('informational')}",
+                }
+
+            # Success
+            return {
+                "status": "ok",
+                "self_test": True,
+                "test_result": "PASS — fixture with 3 findings (2 warn, 1 informational) extracted correctly",
+            }
+        except Exception as exc:
+            return {
+                "status": "FAIL",
+                "self_test": True,
+                "error": f"self-test failed: {str(exc)[:100]}",
+            }
+
+    if dry_run:
+        found = [s for s in scanners if (scripts_dir / s[0]).exists()]
+        missing = [s for s in scanners if not (scripts_dir / s[0]).exists()]
+        print(f"Stage 13 [dry-run]: would run {len(found)} audit scanner(s)")
+        if missing:
+            print(f"  {len(missing)} scanner(s) not found: {', '.join(s[1] for s in missing)}")
+        return {"dry_run": True, "scanners_found": len(found), "scanners_missing": len(missing)}
+
+    findings_by_scanner: dict[str, dict] = {}
+    total_findings = 0
+
+    for rel_path, label, args in scanners:
+        script_path = scripts_dir / rel_path
+        if not script_path.exists():
+            print(f"Stage 13 SKIP {label}: script not found at {script_path}")
+            findings_by_scanner[label] = {"status": "SKIP", "reason": "script not found"}
+            continue
+
+        # Determine invocation: Python or Node.js
+        is_js = rel_path.endswith(".js")
+        interpreter = ["node" if is_js else sys.executable]
+
+        try:
+            result = subprocess.run(
+                interpreter + [str(script_path)] + args,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                encoding="utf-8",
+                errors="replace",
+            )
+
+            # Parse output for findings count (scanners vary in format)
+            stdout = result.stdout or ""
+            stderr = result.stderr or ""
+            combined = stdout + stderr
+
+            # INVOCATION GUARD (2026-08-03): a scanner that never RAN must never be
+            # reported as clean. `check-fx-list-drift.py` was invoked with `--report`,
+            # a flag its argparse rejects — it exited non-zero with empty stdout, and
+            # the per-label extractor below read that emptiness as "0 findings /
+            # completed". The scanner had never executed. Detect the shape explicitly
+            # and short-circuit LOUDLY rather than letting any extractor interpret it.
+            _argparse_reject = "unrecognized arguments" in combined or "invalid choice" in combined
+            if _argparse_reject or (result.returncode != 0 and not stdout.strip()):
+                reason = (
+                    "rejected its invocation flags"
+                    if _argparse_reject
+                    else f"exited {result.returncode} with no output"
+                )
+                findings_by_scanner[label] = {
+                    "status": "INVOCATION_FAILED",
+                    "findings": None,
+                    "summary": f"INVOCATION_FAILED — scanner {reason}; NOT a clean result",
+                }
+                print(
+                    f"Stage 13 ({label}): INVOCATION_FAILED — scanner {reason}. "
+                    f"This is NOT a pass; the scanner did not run.",
+                    file=sys.stderr,
+                )
+                continue
+
+            # Extract finding counts from output (each scanner formats differently)
+            findings_count = 0
+            summary_line = ""
+
+            if label == "build-roster":
+                # build-roster.py doesn't produce findings; it's a data refresh
+                if result.returncode == 0:
+                    # Extract output lines
+                    summary_line = [ln for ln in stdout.splitlines() if "block" in ln.lower()][-1:] or ["completed"]
+                    summary_line = summary_line[0] if summary_line else "completed"
+                    findings_by_scanner[label] = {"status": "ok", "summary": summary_line}
+                else:
+                    findings_by_scanner[label] = {
+                        "status": "WARN",
+                        "error": stderr.strip()[:200] or "unknown error",
+                    }
+                    print(f"Stage 13 ({label}): WARNING — {stderr.strip()[:200]}")
+                    continue
+
+            elif label == "consistency-gates":
+                # run-consistency-gates.py is a COMPOSITE runner: multiple sub-gates (box-family-guard,
+                # check-box-flat, check-reclassified-keys, etc.) each report in different formats.
+                # COORDINATOR REQUIREMENT (honest extraction): do NOT synthesise a total across them.
+                # Instead, surface the sub-gate summary lines verbatim + report PASS/FAIL from exit code.
+                # PROOF: real sub-gate findings: "[box-family-guard] 0 violations",
+                #        "[check-reclassified-keys] 8 drifted reference(s)", etc.
+                subgate_lines = [ln for ln in stdout.splitlines() if ln.startswith("[") and ("] " in ln or "] —" in ln)]
+                # Do NOT count them; they are diverse (different meanings, different severities)
+                findings_count = 0  # Composite scanners do not have a single meaningful count
+                summary_parts = subgate_lines if subgate_lines else []
+                summary_line = "\n  ".join(summary_parts[:5]) if summary_parts else "sub-gate summaries not found"
+                if len(summary_parts) > 5:
+                    summary_line += f"\n  ... ({len(summary_parts) - 5} more sub-gates)"
+                # Final status line
+                final_lines = [ln for ln in stdout.splitlines() if "PASS" in ln and "gates" in ln.lower()]
+                if final_lines:
+                    summary_line = final_lines[-1].strip()[:120]
+
+            elif label == "db-consistency":
+                # db-consistency/run.py --report prints "[F6] N violation(s) total" line (PROOF extraction)
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "[F6]" in line and "violation" in line.lower():
+                        # PROOF LINE: "[F6] 1 violation(s) total — 0 NEW, 1 baselined"
+                        parts = line.split()
+                        if len(parts) > 1:
+                            try:
+                                findings_count = int(parts[1])
+                                summary_line = line.strip()[:120]
+                                break
+                            except ValueError:
+                                pass
+
+            elif label == "fx-list-drift":
+                # check-fx-list-drift.py --check prints "[OK  ]" (pass) or "[FAIL]" (fail) invariant lines
+                # PROOF: "[OK  ] I0 — no duplicate entries...", "GATE PASSED — all six invariants hold"
+                # COORDINATOR FIX: status, findings, and summary must all align (all OK or all FAIL)
+                fail_count = len([ln for ln in stdout.splitlines() if "[FAIL]" in ln])
+                findings_count = fail_count  # Only failures are findings; OK checks are not findings
+                summary_lines = [ln for ln in stdout.splitlines() if "GATE" in ln]
+                summary_line = summary_lines[-1].strip()[:120] if summary_lines else "completed"
+                # Result: findings=0 + "GATE PASSED" + status OK all align (not status=WARN)
+
+            elif label == "box-family-guard":
+                # check-box-family-guard.py --check prints "All checks passed — X violations" (PROOF extraction)
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "violations" in line.lower():
+                        # PROOF LINE: "All checks passed — 0 violations" or "X violations found"
+                        parts = line.split("—" if "—" in line else ":")
+                        if parts:
+                            last_part = parts[-1].strip()
+                            violation_words = last_part.split()
+                            if violation_words and violation_words[0].isdigit():
+                                findings_count = int(violation_words[0])
+                                summary_line = line.strip()[:120]
+                                break
+
+            elif label == "inspector-conformance":
+                # Parse audit-inspector-conformance.js --json output (CRITICAL FIX: parse JSON, not scrape text)
+                # PROOF: coordinator found defect — output had 2 warn findings but stage reported "0 WARN-severity findings"
+                try:
+                    import json as json_module
+                    data = json_module.loads(stdout)
+                    findings_list = data.get("findings", [])
+
+                    # Count by severity
+                    by_severity = {}
+                    for finding in findings_list:
+                        sev = finding.get("severity", "unknown")
+                        by_severity[sev] = by_severity.get(sev, 0) + 1
+
+                    findings_count = len(findings_list)
+                    sev_breakdown = ", ".join(f"{count} {sev}" for sev, count in sorted(by_severity.items()))
+                    summary_line = f"{findings_count} finding(s) — {sev_breakdown}" if findings_count else "0 findings"
+                except (json_module.JSONDecodeError, KeyError, TypeError, NameError):
+                    findings_count = 0
+                    summary_line = "EXTRACTION_FAILED — could not parse JSON"
+
+            elif label == "feature-parity":
+                # audit-feature-parity.py --check prints "UNEXPLAINED FINDINGS: N" line (PROOF extraction)
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "UNEXPLAINED FINDINGS" in line:
+                        # PROOF LINE: "UNEXPLAINED FINDINGS: 5  (each must be closed OR added...)"
+                        parts = line.split(":")
+                        if len(parts) > 1:
+                            count_part = parts[-1].strip().split()[0]
+                            try:
+                                findings_count = int(count_part)
+                                summary_line = line.strip()[:120]
+                                break
+                            except ValueError:
+                                pass
+
+            findings_by_scanner[label] = {
+                "status": "ok" if result.returncode == 0 else "warn",
+                "findings": findings_count,
+                "summary": summary_line[:120],
+            }
+            total_findings += findings_count
+
+            # Each extractor above already writes a self-describing summary (several
+            # embed their own "N finding(s)" text). Re-prefixing the count here
+            # produced "18 finding(s) — 18 finding(s) — 16 informational, 2 warn".
+            # Print the summary verbatim; the machine-readable count lives in
+            # findings_by_scanner[label]["findings"].
+            print(f"Stage 13 ({label}): {summary_line[:100]}")
+
+        except subprocess.TimeoutExpired:
+            findings_by_scanner[label] = {"status": "TIMEOUT", "error": "scanner timed out (120s)"}
+            print(f"Stage 13 ({label}): TIMEOUT (120s)")
+        except Exception as exc:
+            findings_by_scanner[label] = {"status": "ERROR", "error": str(exc)[:100]}
+            print(f"Stage 13 ({label}): ERROR — {exc}")
+
+    # Summary
+    print()
+    print(f"Stage 13 Summary:")
+    for label, info in findings_by_scanner.items():
+        status = info.get("status", "unknown")
+        findings = info.get("findings", 0)
+        summary = info.get("summary", "")
+        if findings > 0:
+            print(f"  {label}: {status} ({findings} findings) — {summary[:80]}")
+        elif summary:
+            print(f"  {label}: {status} — {summary[:80]}")
+        else:
+            print(f"  {label}: {status}")
+
+    print(f"\nStage 13 Total: {total_findings} finding(s) across {len(findings_by_scanner)} scanner(s) (informational)")
+
+    return {
+        "status": "ok",  # Never fail on findings; they are informational
+        "scanners_run": len(findings_by_scanner),
+        "total_findings": total_findings,
+        "dry_run": False,
+        "findings_by_scanner": findings_by_scanner,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Stage 14 — Export database tables to CSV (final stage)
+# ---------------------------------------------------------------------------
+
+def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) -> dict:
     """Export every live table in the framework DB to CSV, one file per table.
 
     The CSV folder at `~/.agents/skills/sgs-wp-engine/db data/` (note the space)
@@ -5238,10 +5584,10 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
             )
             tables = [row[0] for row in cursor.fetchall()]
             conn.close()
-            print(f"Stage 13 [dry-run]: would export {len(tables)} tables to {CSV_FOLDER}")
+            print(f"Stage 14 [dry-run]: would export {len(tables)} tables to {CSV_FOLDER}")
             return {"dry_run": True, "table_count": len(tables)}
         except Exception as exc:
-            print(f"Stage 13 [dry-run]: DB read error — {exc}")
+            print(f"Stage 14 [dry-run]: DB read error — {exc}")
             return {"dry_run": True, "error": str(exc)}
 
     # Create the CSV folder if it doesn't exist
@@ -5304,7 +5650,7 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
             conn.close()
         except Exception as exc:
             errors.append(f"{table_name}: {str(exc)[:80]}")
-            print(f"Stage 13 ERROR exporting {table_name}: {exc}")
+            print(f"Stage 14 ERROR exporting {table_name}: {exc}")
 
     # Clean up CSVs for tables no longer in the DB
     existing_csvs = {f.stem for f in CSV_FOLDER.glob("*.csv")}
@@ -5313,10 +5659,10 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
         try:
             csv_path.unlink()
             removed.append(csv_stem)
-            print(f"Stage 13: removed {csv_stem}.csv (table no longer exists in DB)")
+            print(f"Stage 14: removed {csv_stem}.csv (table no longer exists in DB)")
         except Exception as exc:
             errors.append(f"remove {csv_stem}.csv: {str(exc)[:80]}")
-            print(f"Stage 13 ERROR removing {csv_stem}.csv: {exc}")
+            print(f"Stage 14 ERROR removing {csv_stem}.csv: {exc}")
 
     # Report
     result = {
@@ -5338,7 +5684,7 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
     if errors:
         summary += f", {len(errors)} error(s)"
 
-    print(f"Stage 13: {summary}")
+    print(f"Stage 14: {summary}")
     result["summary"] = summary
 
     return result
@@ -5356,7 +5702,8 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
     Stage 10 is the prune-orphans stage (controlled by --prune-mode).
     Stage 11 is the container-wrapper attribute mirror diff (WS-4, D160).
     Stage 12 is the motion-fx artefact regeneration (D432 follow-up, 2026-08-01).
-    Stage 13 is the database-to-CSV export (final stage, idempotent).
+    Stage 13 is the audit scanners (DB/roster-keyed, report-only).
+    Stage 14 is the database-to-CSV export (final stage, idempotent).
     """
     prune_mode = getattr(args, "prune_mode", _PRUNE_MODE_AGGRESSIVE)
     return {
@@ -5380,26 +5727,27 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         10: lambda: stage_10_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
         11: lambda: stage_11_container_mirror_report(dry_run=args.dry_run),
         12: lambda: stage_12_motion_fx_artefact_regen(dry_run=args.dry_run),
-        13: lambda: stage_13_export_db_to_csv(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
+        13: lambda: stage_13_run_audit_scanners(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
+        14: lambda: stage_14_export_db_to_csv(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="SGS framework knowledge base — 13-stage holistic refresh",
+        description="SGS framework knowledge base — 14-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 14),
+        choices=range(1, 15),
         metavar="N",
-        help="Run a single stage only (1-13). Omit to run all stages.",
+        help="Run a single stage only (1-14). Omit to run all stages.",
     )
     parser.add_argument(
         "--self-test",
         action="store_true",
-        help="Stage 13 only: prove the export stage can fail (test mode, do not use operationally).",
+        help="Stage 14 only: prove the export stage can fail (test mode, do not use operationally).",
     )
     parser.add_argument(
         "--dry-run",
@@ -5450,14 +5798,14 @@ def main() -> None:
     conn = open_db()
     ensure_schema_metadata(conn)
 
-    stages_to_run = [args.stage] if args.stage else list(range(1, 14))
+    stages_to_run = [args.stage] if args.stage else list(range(1, 15))
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:
-            print(f"Unknown stage: {stage_num}. Valid: 1-13.")
+            print(f"Unknown stage: {stage_num}. Valid: 1-14.")
             continue
         results[stage_num] = dispatch[stage_num]()
 

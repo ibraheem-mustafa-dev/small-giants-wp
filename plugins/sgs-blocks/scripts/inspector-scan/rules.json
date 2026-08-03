@@ -1,0 +1,50 @@
+{
+	"_meta": {
+		"spec": "35",
+		"checklist": ".claude/plans/spec-35-inspector-DONE-checklist.md",
+		"note": "This file is the ONLY mode table. Every rule starts advisory. Promotion to gate is a one-line edit here, per rule, once its openBacklog reaches 0 and every remaining baseline entry carries a real human reason (Bean-locked, 2026-08-03). No prose-cached backlog counts elsewhere — run `node run.js --json` for the live number.",
+		"zeroIsAClaim": "A rule returning ZERO findings on the live tree is a claim requiring evidence, not a pass (Bean-locked, 2026-08-03, after coordinator review caught rule 01 counting <InspectorControls> elements instead of panels and silently missing 42+ real unrouted blocks — including hero, the specific block flagged as unusable). Whoever adds a rule MUST: (1) state its expected population BEFORE trusting a live run, using a method independent of the rule's own code — a second script in a different style, a manual grep, or a hand count; (2) if the rule returns 0 or a suspiciously round/small number, treat that as a red flag and re-derive the condition from what the checklist item actually requires, not from what was easy to detect in one file; (3) record the comparison (expected vs actual) somewhere reviewable before setting the rule's advisoryReason. All three shipped rules here (01/18/20) were cross-checked this way on 2026-08-03: 01 measured 65 (was silently 0 under the first, wrong condition), 18 measured 15 (was 12 before a shared-component blind spot — MediaPicker.js — was found and fixed), 20 measured 23 (was 43 before a wrong exclusion mechanism — filename prefix instead of the pattern's own 'Post Types:' header — was found and fixed)."
+	},
+	"rules": [
+		{
+			"id": "roster-drift",
+			"checklistItem": null,
+			"file": null,
+			"mode": "advisory",
+			"advisoryReason": "New mechanism, first run of this scanner. Reconciliation confirmed CLEAN 2026-08-03 (roster.json and src/blocks/ both 84, fully agree). Prove clean across a few real runs before promoting to gate.",
+			"openBacklog": 0
+		},
+		{
+			"id": "parse-error",
+			"checklistItem": null,
+			"file": null,
+			"mode": "advisory",
+			"advisoryReason": "New mechanism, first run. Prove clean across a few real runs before promoting to gate.",
+			"openBacklog": 0
+		},
+		{
+			"id": "01-tab-group",
+			"checklistItem": 1,
+			"file": "rules/01-tab-group.js",
+			"mode": "advisory",
+			"advisoryReason": "Measured live 2026-08-03: 65/84 blocks have 2+ inspector panels with no group prop (panel-counted, not InspectorControls-element-counted — see the rule file header for the false-green this replaced). Independently cross-checked with a second, differently-written script: 65/65 match, exact same population. This is a large real backlog, not close to promotable.",
+			"openBacklog": 65
+		},
+		{
+			"id": "18-decorative-image-aria",
+			"checklistItem": 18,
+			"file": "rules/18-decorative-image-aria.js",
+			"mode": "advisory",
+			"advisoryReason": "Measured live 2026-08-03: 15/84 blocks render an <img> (directly or via the shared MediaPicker component) with no decorative/ariaLabel attribute declared. Independently cross-checked (12 matched a first script exactly; a further check for shared-component indirection found 3 more genuinely missed blocks — brand-strip, team-member, cta-section — now included; see the rule file header).",
+			"openBacklog": 15
+		},
+		{
+			"id": "20-pattern-template-lock",
+			"checklistItem": 20,
+			"file": "rules/20-pattern-template-lock.js",
+			"mode": "advisory",
+			"advisoryReason": "Measured live 2026-08-03: 23/23 genuine client page-content patterns (patterns with a blank 'Post Types:' header — about-*, hero-*, cta-*, testimonials-*, etc.) declare no templateLock. Chrome/component-builder patterns (header-*, footer-*, mega-*, drawer-scratch — 23 files, identified by their own non-blank 'Post Types:' header, not a filename guess) are excluded: two of the largest families (site-header/site-footer) are already structurally locked at the block level (templateLock:'all' hard-coded in src/blocks/site-header/edit.js:383 and site-footer/edit.js:232). Independently cross-checked with a second script: 23/23 match.",
+			"openBacklog": 23
+		}
+	]
+}

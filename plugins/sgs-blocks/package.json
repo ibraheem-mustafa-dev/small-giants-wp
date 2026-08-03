@@ -31,7 +31,11 @@
     "ledger-check": "python -m pytest scripts/ledger/tests/ -q && python scripts/ledger/declare_input.py --check",
     "check:scoped-selector": "node scripts/audit-scoped-selector-live.js --page 8",
     "check:scoped-selector-plant": "node scripts/audit-scoped-selector-live.js --plant",
-    "clean:build": "node -e \"require('fs').rmSync('build',{recursive:true,force:true})\""
+    "clean:build": "node -e \"require('fs').rmSync('build',{recursive:true,force:true})\"",
+    "inspector-scan": "node scripts/inspector-scan/run.js",
+    "inspector-scan:check": "node scripts/inspector-scan/run.js --check",
+    "inspector-scan:json": "node scripts/inspector-scan/run.js --json",
+    "inspector-scan:selftest": "node scripts/inspector-scan/run.js --self-test"
   },
   "devDependencies": {
     "@wordpress/icons": "^11.6.0",

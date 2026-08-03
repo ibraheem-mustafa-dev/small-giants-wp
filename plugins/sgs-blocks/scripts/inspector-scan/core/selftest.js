@@ -1,0 +1,249 @@
+'use strict';
+
+// GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.9
+// source=file evidence=live-read plugins/sgs-blocks/scripts/check-dead-controls.js
+// self-test (`:844-987`, `:912-924` "confirm the plant landed on disk") — the
+// generic harness below generalises that pattern rather than re-deriving it.
+
+const fs = require( 'fs' );
+const path = require( 'path' );
+const os = require( 'os' );
+const { SourceCache } = require( './sources' );
+const { applyBaseline } = require( './baseline' );
+const components = require( './components' );
+
+function copyDirSync( src, dest ) {
+	fs.mkdirSync( dest, { recursive: true } );
+	for ( const entry of fs.readdirSync( src, { withFileTypes: true } ) ) {
+		const s = path.join( src, entry.name );
+		const d = path.join( dest, entry.name );
+		if ( entry.isDirectory() ) copyDirSync( s, d );
+		else fs.copyFileSync( s, d );
+	}
+}
+
+function buildTestCtx( cache, tmpBase ) {
+	return {
+		cache,
+		blocksDir: tmpBase,
+		patternsDir: tmpBase,
+		roster: { entries: [] },
+		// Resolved against the REAL src/components/index.js, not the fixture
+		// temp dir — shared-component discovery is a property of the framework,
+		// not of any one fixture, exactly like the real run context.
+		components: components.discover( cache ),
+		ast: ( f ) => cache.parse( f ),
+		text: ( f ) => cache.text( f ),
+		stripped: ( f ) => cache.strippedText( f ),
+		json: ( f ) => cache.json( f ),
+	};
+}
+
+/**
+ * A finding "belongs to" a fixture name if its block slug, its file's
+ * directory name, or its file's basename (sans extension) matches — this
+ * covers both per-block fixtures (subdirectories) and global/file-scoped
+ * fixtures (flat files) without the harness needing per-rule knowledge.
+ */
+function findingMatchesName( finding, name ) {
+	if ( finding.block && ( finding.block === name || finding.block === `sgs/${ name }` ) ) return true;
+	if ( finding.file ) {
+		const base = path.basename( finding.file, path.extname( finding.file ) );
+		if ( base === name ) return true;
+		if ( path.basename( path.dirname( finding.file ) ) === name ) return true;
+	}
+	return false;
+}
+
+/**
+ * Materialises a rule's fixture directory into a temp dir, CONFIRMS the copy
+ * actually landed (every top-level fixture entry present in the copy) before
+ * trusting anything derived from it, then runs the rule against the copy in
+ * complete isolation (fresh SourceCache, no real baseline, no real roster).
+ */
+function runRuleAgainstFixture( mod, fixtureAbsPath ) {
+	const tmpBase = fs.mkdtempSync( path.join( os.tmpdir(), 'inspector-scan-selftest-' ) );
+	try {
+		copyDirSync( fixtureAbsPath, tmpBase );
+
+		const originalNames = fs.readdirSync( fixtureAbsPath );
+		const copiedNames = fs.readdirSync( tmpBase );
+		const missing = originalNames.filter( ( n ) => ! copiedNames.includes( n ) );
+		if ( missing.length ) {
+			return {
+				pass: false,
+				reason: `fixture copy is INCOMPLETE — missing after copy: ${ missing.join( ', ' ) }. Refusing to trust a result derived from an unconfirmed plant.`,
+				findings: [],
+			};
+		}
+
+		const cache = new SourceCache();
+		const ctx = buildTestCtx( cache, tmpBase );
+		let findings = [];
+
+		if ( mod.scope === 'per-block' ) {
+			for ( const name of originalNames ) {
+				const full = path.join( tmpBase, name );
+				if ( ! fs.statSync( full ).isDirectory() ) continue;
+				if ( ! fs.existsSync( path.join( full, 'block.json' ) ) ) continue;
+				const block = { slug: `sgs/${ name }`, tail: name, onDisk: true, inRoster: true };
+				let f;
+				try {
+					f = mod.run( ctx, block ) || [];
+				} catch ( e ) {
+					return {
+						pass: false,
+						reason: `rule threw during self-test on fixture "${ name }": ${ e.message }`,
+						findings: [],
+					};
+				}
+				findings = findings.concat(
+					f.map( ( x ) => ( { ...x, rule: mod.id, checklistItem: mod.checklistItem } ) )
+				);
+			}
+		} else {
+			try {
+				findings = ( mod.run( ctx ) || [] ).map( ( x ) => ( {
+					...x,
+					rule: mod.id,
+					checklistItem: mod.checklistItem,
+				} ) );
+			} catch ( e ) {
+				return { pass: false, reason: `rule threw during self-test: ${ e.message }`, findings: [] };
+			}
+		}
+
+		return { pass: true, findings };
+	} finally {
+		fs.rmSync( tmpBase, { recursive: true, force: true } );
+	}
+}
+
+function assertMandatoryFindingShape( findings ) {
+	for ( const f of findings ) {
+		if ( ! f.fix || typeof f.fix !== 'string' || ! f.fix.trim() ) {
+			return `finding for ${ f.block || f.file } has no non-empty 'fix' text`;
+		}
+		if ( ! f.key || typeof f.key !== 'string' ) {
+			return `finding for ${ f.block || f.file } has no well-formed 'key'`;
+		}
+	}
+	return null;
+}
+
+/**
+ * Runs the full proof protocol for one rule (design §4.9, steps 1-6):
+ * materialise+confirm, run, mustFlag/mustNotFlag + finding-shape assertions,
+ * baseline-suppression proof, mode-table proof.
+ */
+function testRule( ruleDef, mod ) {
+	if ( ! mod.selfTest ) {
+		return { pass: false, failures: [ `rule ${ ruleDef.id } has no selfTest block` ] };
+	}
+	const { fixture, mustFlag = [], mustNotFlag = [] } = mod.selfTest;
+	const fixtureAbsPath = path.resolve( __dirname, '..', fixture );
+	if ( ! fs.existsSync( fixtureAbsPath ) ) {
+		return { pass: false, failures: [ `fixture directory missing: ${ fixtureAbsPath }` ] };
+	}
+
+	const runResult = runRuleAgainstFixture( mod, fixtureAbsPath );
+	if ( ! runResult.pass ) {
+		return { pass: false, failures: [ runResult.reason ] };
+	}
+	const findings = runResult.findings;
+	const failures = [];
+
+	const shapeErr = assertMandatoryFindingShape( findings );
+	if ( shapeErr ) failures.push( `finding-shape: ${ shapeErr }` );
+
+	for ( const name of mustFlag ) {
+		if ( ! findings.some( ( f ) => findingMatchesName( f, name ) ) ) {
+			failures.push( `expected a finding for "${ name }" (mustFlag) but none was produced` );
+		}
+	}
+	for ( const name of mustNotFlag ) {
+		if ( findings.some( ( f ) => findingMatchesName( f, name ) ) ) {
+			failures.push( `unexpected finding for "${ name }" (mustNotFlag) was produced` );
+		}
+	}
+
+	// Baseline-suppression proof — a real-reason entry must suppress; nothing
+	// today tests this path (design §4.9 step 5).
+	if ( findings.length ) {
+		const target = findings[ 0 ];
+		const tmpBaselineDir = fs.mkdtempSync( path.join( os.tmpdir(), 'inspector-scan-baseline-' ) );
+		try {
+			fs.writeFileSync(
+				path.join( tmpBaselineDir, `${ ruleDef.id }.json` ),
+				JSON.stringify(
+					{
+						_meta: { rule: ruleDef.id, ruleVersion: 1 },
+						entries: [
+							{
+								key: target.key,
+								reason: 'self-test: proving the baseline-suppression path works end-to-end',
+								seededAt: null,
+								expires: null,
+							},
+						],
+					},
+					null,
+					2
+				)
+			);
+			const suppressed = applyBaseline( ruleDef.id, [ target ], { baselineDir: tmpBaselineDir } );
+			const stillPresent = suppressed.find( ( f ) => f.key === target.key );
+			if ( ! stillPresent || stillPresent.status !== 'BASELINED' ) {
+				failures.push(
+					'baseline-suppression: a baseline entry with a real reason did not mark the matching finding BASELINED'
+				);
+			}
+		} finally {
+			fs.rmSync( tmpBaselineDir, { recursive: true, force: true } );
+		}
+	} else if ( mustFlag.length ) {
+		failures.push(
+			'baseline-suppression test skipped — mustFlag fixtures produced 0 findings, so nothing could be proven'
+		);
+	}
+
+	// Mode-table proof (design §4.9 step 6) — with real findings present, gate
+	// mode and advisory mode must compute DIFFERENT exit codes. This is exactly
+	// the class of bug check-control-ux.js:535 shipped (--check changing nothing).
+	if ( findings.length ) {
+		const gateExit = findings.some( ( f ) => f.status !== 'BASELINED' ) ? 1 : 0;
+		const advisoryExit = 0; // advisory NEVER gates by definition
+		if ( gateExit === advisoryExit ) {
+			failures.push(
+				'mode-test: with real findings present, gate mode and advisory mode computed the same exit code — the mode table would be decorative'
+			);
+		}
+	}
+
+	return { pass: failures.length === 0, failures, liveFindingCount: findings.length };
+}
+
+function runLiveInformational( mod, realCtx ) {
+	try {
+		let findings = [];
+		if ( mod.scope === 'per-block' ) {
+			for ( const entry of realCtx.roster.entries ) {
+				if ( ! entry.onDisk ) continue;
+				findings = findings.concat( mod.run( realCtx, entry ) || [] );
+			}
+		} else {
+			findings = mod.run( realCtx ) || [];
+		}
+		return findings.length;
+	} catch ( e ) {
+		return null;
+	}
+}
+
+module.exports = {
+	testRule,
+	runRuleAgainstFixture,
+	copyDirSync,
+	findingMatchesName,
+	runLiveInformational,
+};

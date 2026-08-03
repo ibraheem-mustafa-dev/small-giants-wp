@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/image-via-shared-component",
+	"title": "Fixture: renders an image ONLY via the shared MediaPicker component, no literal <img>",
+	"category": "sgs",
+	"attributes": {
+		"imageId": { "type": "number", "default": 0 }
+	}
+}

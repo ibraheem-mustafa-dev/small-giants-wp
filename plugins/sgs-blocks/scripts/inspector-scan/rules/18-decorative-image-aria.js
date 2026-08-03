@@ -1,0 +1,94 @@
+'use strict';
+
+// GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/01-enforcer-truth-matrix.md row 18
+// source=file evidence=row 18 verdict "ABSENT (claim CORRECT)" — no script in
+// the tree checks a decorative-image toggle or an ARIA-label control. Genuinely
+// NEW detector.
+//
+// REVISED 2026-08-03 — cross-checked per the coordinator's "apply the same
+// scrutiny to 18 and 20" instruction. An independent re-implementation
+// confirmed the raw COUNT (12) was right for the literal-<img>-in-edit.js
+// condition, but a further check ("could an <img> live in a shared component
+// this rule can't see, the same class of bug as rule 01?") found a REAL gap:
+// `MediaPicker.js` genuinely renders `<img>` (confirmed :125) and is used by
+// 9 blocks via a direct path import, not the index.js barrel. Two of those —
+// brand-strip, team-member — have ZERO literal `<img>` of their own and were
+// completely invisible to the original version of this rule. Fixed by
+// resolving image-rendering shared components from core/components.js
+// (widened 2026-08-03 to scan the whole components/ directory, not only
+// barrel exports) the same way rule 01 resolves panel-wrapping components —
+// never by import-path string matching (the block is credited with using
+// MediaPicker because its JSX contains `<MediaPicker`, cross-referenced
+// against a component whose OWN source was read and found to render <img>).
+
+const path = require( 'path' );
+const { makeFinding } = require( '../core/finding' );
+
+const IMG_TAG_RE = /<img\b/;
+const DECORATIVE_ATTR_RE = /decorative|arialabel|alttext/i;
+
+function imageWrappingComponentNames( ctx ) {
+	const names = [];
+	if ( ctx.components && ctx.components.ok ) {
+		for ( const [ name, info ] of Object.entries( ctx.components.exportsMap ) ) {
+			if ( info.wrapsImage ) names.push( name );
+		}
+	}
+	return names;
+}
+
+function rendersAnImage( text, componentNames ) {
+	if ( IMG_TAG_RE.test( text ) ) return true;
+	for ( const name of componentNames ) {
+		if ( new RegExp( `<${ name }\\b` ).test( text ) ) return true;
+	}
+	return false;
+}
+
+module.exports = {
+	id: '18-decorative-image-aria',
+	checklistItem: 18,
+	title: 'Decorative-image toggle + ARIA-label control present where an <img> is rendered',
+	scope: 'per-block',
+	needs: [ 'stripped:edit.js', 'json:block.json', 'components' ],
+	run( ctx, block ) {
+		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
+		const blockJsonFile = path.join( ctx.blocksDir, block.tail, 'block.json' );
+
+		// Comment-stripped text, not raw text — an <img> mentioned only inside a
+		// comment (e.g. "no <img> anywhere in this block") must not count as a
+		// render. Caught live by this rule's own negative-control fixture during
+		// self-test (2026-08-03): the fixture's own explanatory comment contained
+		// the literal substring "<img" and false-positived on raw text.
+		const text = ctx.stripped( editFile );
+		if ( text == null ) return [];
+
+		const componentNames = imageWrappingComponentNames( ctx );
+		if ( ! rendersAnImage( text, componentNames ) ) return []; // no <img>, direct or via a shared component
+
+		const blockJson = ctx.json( blockJsonFile );
+		if ( ! blockJson.ok ) return []; // malformed/absent block.json is a different rule's concern
+
+		const attrNames = Object.keys( blockJson.data.attributes || {} );
+		const hasDecorativeAttr = attrNames.some( ( a ) => DECORATIVE_ATTR_RE.test( a ) );
+		if ( hasDecorativeAttr ) return [];
+
+		return [
+			makeFinding( {
+				rule: this.id,
+				block: block.slug,
+				file: editFile,
+				severity: 'warn',
+				detail:
+					'edit.js renders an <img> (directly or via a shared image-rendering component) but block.json declares no attribute matching /decorative|ariaLabel|altText/i — no decorative-image toggle or general ARIA-label control is exposed.',
+				fix: 'Add a boolean attribute such as "isDecorative" (renders empty alt + aria-hidden when true) and/or an "ariaLabel" text attribute with an inspector control, per Spec 35 item 18.',
+				keyParts: [ 'no-decorative-toggle' ],
+			} ),
+		];
+	},
+	selfTest: {
+		fixture: 'fixtures/18-decorative-image-aria',
+		mustFlag: [ 'image-no-decorative-toggle', 'image-via-shared-component' ],
+		mustNotFlag: [ 'image-with-decorative-toggle', 'no-image-at-all' ],
+	},
+};

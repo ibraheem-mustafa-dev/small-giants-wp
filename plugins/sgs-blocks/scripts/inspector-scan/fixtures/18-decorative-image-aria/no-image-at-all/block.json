@@ -1,0 +1,9 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-image-at-all",
+	"title": "Fixture: renders no <img> at all",
+	"category": "sgs",
+	"attributes": {
+		"text": { "type": "string", "default": "" }
+	}
+}

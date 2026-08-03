@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/single-panel",
+	"title": "Fixture: single panel, nothing to route",
+	"category": "sgs",
+	"attributes": {}
+}

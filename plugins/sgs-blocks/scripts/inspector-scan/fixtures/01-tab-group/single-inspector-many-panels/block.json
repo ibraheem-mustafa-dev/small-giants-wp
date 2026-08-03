@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/single-inspector-many-panels",
+	"title": "Fixture: ONE InspectorControls, MANY panels, no group — the real-world shape",
+	"category": "sgs",
+	"attributes": {}
+}
