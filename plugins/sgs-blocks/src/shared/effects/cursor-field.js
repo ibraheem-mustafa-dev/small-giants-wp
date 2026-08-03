@@ -41,11 +41,14 @@
  * decides occlusion — rather than trusting a block's declared capability,
  * which describes what an operator COULD set, not what is actually painted.
  *
- * Known limit, stated rather than hidden: the walk runs at init, so a child
- * whose background is set later (or which is inserted later) will not
- * participate until re-init. That is acceptable for v1 because block content
- * is server-rendered and static on the frontend; if a dynamic case appears,
- * the fix is a MutationObserver here, not per-block code.
+ * The initial walk runs at init, and a `MutationObserver` on the emitter's
+ * own subtree keeps it current after that — a child whose background is set
+ * later (or which is inserted later) is picked up on its own mutation record
+ * rather than only at the next full re-init. The observer is bounded to this
+ * emitter (created and disconnected inside this module's own `init`/`cleanup`
+ * pair — never a page-wide observer) and its callback is rAF-coalesced, so a
+ * burst of mutations costs one computed-style pass per frame, not one per
+ * record.
  *
  * ── HOUSE CONTRACTS (Spec 38 §1.6) ────────────────────────────────────────
  *
@@ -186,15 +189,110 @@ function markParticipants( el ) {
 }
 
 /**
+ * Watch an emitter's subtree for late-added or late-styled participants.
+ *
+ * CSS cannot tell us "this element just became opaque" any more than it can
+ * tell us it currently is, so a mutation observer is the only way to catch a
+ * background set after init (a client-side state change, a lazily-rendered
+ * child, an Interactivity-API-driven class toggle). Two mutation kinds matter:
+ * a NEW node appearing (`childList`), and an EXISTING node's `style`/`class`
+ * changing (`attributeFilter`) — a background is almost always set one of
+ * those two ways. Nothing else is watched: text nodes, unrelated attributes,
+ * and ancestor mutations outside this subtree are all noise this effect does
+ * not need to pay for.
+ *
+ * Coalesced to one pass per animation frame regardless of how many mutation
+ * records land in that frame, so a large paste/re-render cannot turn into one
+ * `getComputedStyle()` read per node per record.
+ *
+ * @param {HTMLElement}   el     The emitter.
+ * @param {HTMLElement[]} marked The running list of marked participants —
+ *                               mutated in place so cleanup's existing
+ *                               `unmark()` closure (which already iterates
+ *                               this array) covers late arrivals for free.
+ * @return {MutationObserver} The observer — caller disconnects it on cleanup.
+ */
+function observeParticipants( el, marked ) {
+	let scheduled = false;
+	let pending = new Set();
+
+	const flush = () => {
+		scheduled = false;
+		const candidates = pending;
+		pending = new Set();
+
+		candidates.forEach( ( node ) => {
+			// A candidate can be removed from the DOM, or become a nested
+			// emitter's own subtree, between being queued and being flushed.
+			if ( ! node.isConnected || ! el.contains( node ) ) {
+				return;
+			}
+			if ( node.hasAttribute( EMITTER_ATTR ) ) {
+				return;
+			}
+			if ( node.hasAttribute( PARTICIPANT_ATTR ) ) {
+				return;
+			}
+			if ( ! isParticipant( node ) ) {
+				return;
+			}
+			node.setAttribute( PARTICIPANT_ATTR, '' );
+			marked.push( node );
+		} );
+	};
+
+	const schedule = () => {
+		if ( scheduled ) {
+			return;
+		}
+		scheduled = true;
+		window.requestAnimationFrame( flush );
+	};
+
+	const observer = new window.MutationObserver( ( mutations ) => {
+		mutations.forEach( ( mutation ) => {
+			if ( 'childList' === mutation.type ) {
+				mutation.addedNodes.forEach( ( node ) => {
+					if ( node.nodeType !== 1 ) {
+						return;
+					}
+					pending.add( node );
+					node.querySelectorAll( '*' ).forEach( ( child ) =>
+						pending.add( child )
+					);
+				} );
+				return;
+			}
+			// 'attributes' — style/class changed on an existing node.
+			if ( mutation.target.nodeType === 1 ) {
+				pending.add( mutation.target );
+			}
+		} );
+		if ( pending.size > 0 ) {
+			schedule();
+		}
+	} );
+
+	observer.observe( el, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: [ 'style', 'class' ],
+	} );
+
+	return observer;
+}
+
+/**
  * Attach a cursor-reactive field emitter to `el`.
  *
- * @param {HTMLElement} el                    The element the field is painted on.
- * @param {Object}      [opts]                Options.
+ * @param {HTMLElement} el                     The element the field is painted on.
+ * @param {Object}      [opts]                 Options.
  * @param {string}      [opts.coordinateSpace] `'viewport'` (default — the
- *                                            multi-element field) or
- *                                            `'element'` (percentages relative
- *                                            to `el`, the single-element
- *                                            `spotlight.js` contract).
+ *                                             multi-element field) or
+ *                                             `'element'` (percentages relative
+ *                                             to `el`, the single-element
+ *                                             `spotlight.js` contract).
  * @return {Function} Cleanup — removes listeners and participant marks. Safe
  *                    to call on a detached or empty element.
  */
@@ -220,8 +318,14 @@ export function initCursorField( el, opts = {} ) {
 			return;
 		}
 		const rect = el.getBoundingClientRect();
-		el.style.setProperty( varX, `${ Math.round( rect.left + rect.width / 2 ) }px` );
-		el.style.setProperty( varY, `${ Math.round( rect.top + rect.height / 2 ) }px` );
+		el.style.setProperty(
+			varX,
+			`${ Math.round( rect.left + rect.width / 2 ) }px`
+		);
+		el.style.setProperty(
+			varY,
+			`${ Math.round( rect.top + rect.height / 2 ) }px`
+		);
 	};
 
 	// The resting position is applied unconditionally and FIRST, so the field
@@ -231,12 +335,22 @@ export function initCursorField( el, opts = {} ) {
 
 	const participants = elementSpace ? [] : markParticipants( el );
 
+	// Element-space mode is the single-element `spotlight.js` contract — it
+	// has no participants and therefore nothing for the observer to watch.
+	const participantObserver =
+		! elementSpace && 'undefined' !== typeof window.MutationObserver
+			? observeParticipants( el, participants )
+			: null;
+
 	/**
 	 * Undo everything this init did.
 	 *
 	 * @return {void}
 	 */
 	const unmark = () => {
+		if ( participantObserver ) {
+			participantObserver.disconnect();
+		}
 		participants.forEach( ( child ) =>
 			child.removeAttribute( PARTICIPANT_ATTR )
 		);
@@ -256,11 +370,19 @@ export function initCursorField( el, opts = {} ) {
 			}
 			el.style.setProperty(
 				varX,
-				`${ clamp( ( ( clientX - rect.left ) / rect.width ) * 100, 0, 100 ).toFixed( 2 ) }%`
+				`${ clamp(
+					( ( clientX - rect.left ) / rect.width ) * 100,
+					0,
+					100
+				).toFixed( 2 ) }%`
 			);
 			el.style.setProperty(
 				varY,
-				`${ clamp( ( ( clientY - rect.top ) / rect.height ) * 100, 0, 100 ).toFixed( 2 ) }%`
+				`${ clamp(
+					( ( clientY - rect.top ) / rect.height ) * 100,
+					0,
+					100
+				).toFixed( 2 ) }%`
 			);
 			return;
 		}

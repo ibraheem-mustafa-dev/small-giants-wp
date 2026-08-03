@@ -43,7 +43,7 @@ control surface where it belongs) and a **technically permitted range** (so unus
 documented choice, not an impossibility) — Bean's containment principle: contained where they
 apply, never completely walled off from areas of potential.
 
-## 1. The two-tier motion doctrine (constitutional)
+## 1. The motion-tier doctrine (constitutional) — V / G / H / W
 
 > **This section is the written home of the SGS motion principle.** The one-line "vanilla JS
 > only / no external libraries" statements in root `CLAUDE.md`, `plugins/sgs-blocks/CLAUDE.md`,
@@ -78,6 +78,43 @@ apply, never completely walled off from areas of potential.
    membership: Lenis (site-level smooth scrolling) and nothing else.**
    Tier H carries the identical house contracts as Tier V and G (§1.6): live reduced-motion,
    `init → cleanup`, fail-open no-JS, bfcache teardown, Spec 32 no-inline styling.
+2b. **Tier W (rendering substrate) — WebGL.** Added **2026-08-03 (D479)**, Bean-approved on all four
+   open decisions. **Tier W is NOT "another library" — it is a different RENDERING SUBSTRATE**: the
+   GPU instead of the DOM. That is why it cannot be filed under Tier H, and the distinction is not
+   cosmetic — **OGL fails Tier H's own admission test at part (iii), which requires SINGLE-PURPOSE.**
+   Lenis does one thing; a WebGL wrapper is a general-purpose rendering engine. Filing it under H
+   would make "single-purpose" meaningless, which is the exact unbounded state §1 exists to prevent.
+   **Admission test — all five must hold, or it is not Tier W:** (i) Tier V genuinely cannot reach it
+   — CSS moves and recolours whole elements, it cannot warp the inside of one; (ii) **GSAP cannot
+   reach it either** — GSAP animates VALUES, it does not rasterise pixels, so if GSAP can drive it,
+   it is Tier G; (iii) the effect is bounded to ONE surface (a hero, a gallery, a configurator), never
+   page-wide chrome; (iv) it degrades to something meaningful with no WebGL, no JS, or reduced
+   motion; (v) its admission is a D-numbered decision naming the effect it enables.
+   **Bean's four decisions (D479), do not re-litigate:**
+   - **Byte allowance:** a NAMED **120KB JS allowance for Tier W pages only**. The 50KB/page rule is
+     untouched everywhere else. A budget quietly breached is a budget abandoned, so this is explicit.
+   - **Library: OGL**, wrapped behind an SGS-side `init / setUniform / destroy` interface so the
+     library is REPLACEABLE. OGL is **Unlicense (public domain)** — verified, stronger than MIT — but
+     it is quiet upstream (last release 2025-01) and curtains.js's author has already moved to a
+     WebGPU successor. Assume this dependency gets swapped; do not weld effects to it.
+   - **Fallback:** a visitor without WebGL (~2-3%, plus low-power modes) gets **the Tier V version of
+     the same block** — never a blank canvas, never a hidden section.
+   - **Scope: a CLOSED LIST of effects**, exactly as Tier H is a closed list of libraries. First entry
+     is the fluid cursor field. "We have WebGL now" is precisely how a byte budget dies.
+   **Three house contracts Tier W carries ON TOP of §1.6** (which binds it identically otherwise):
+   **context-loss recovery** (the single most-reported WebGL complaint across every major library's
+   issue tracker — iOS Safari discards the GPU context under memory pressure; never leave a dead
+   black rectangle), **explicit GPU disposal** (textures and buffers are not garbage-collected like
+   DOM nodes; leaks compound across navigations), and **power/thermal awareness** (pause off-screen
+   and when the tab is hidden).
+   **Cloning: permanently unclonable, stated plainly.** The pipeline reads computed CSS; a shader has
+   none — `getComputedStyle()` on a `<canvas>` says nothing about what the GPU drew. It is DECLARED
+   via a BEM signal resolved to a block attribute, never inferred, and its fidelity is Bean's eye
+   alone with no numeric score behind it (R-31-13's second half without the first).
+   **Tier W must never become:** a 3D engine (three.js is 182KB gzip — 3.6× the whole page budget —
+   and "since we're doing WebGL anyway" is the single most likely way this goes over), or the default
+   for anything merely difficult. The doctrine is a ratchet TOWARD cheap: a Tier W effect whose CSS
+   equivalent later becomes viable gets DEMOTED, exactly as Tier G does.
 3. **The tier assignment is an engineering judgment recorded in the §2 taxonomy** — every G
    assignment carries a "why the lower tier can't do it" justification, and a G capability whose
    V equivalent later becomes universally supported in CSS is a candidate to DEMOTE to V (the
@@ -88,9 +125,9 @@ apply, never completely walled off from areas of potential.
    freely" is false** — Tier H is a closed list with a four-part admission test (§1.2a) and a
    D-numbered decision per member. Any track claiming any of the three is misquoting this
    section.
-5. **Naming.** The tiers are deliberately **V/G/H**, not 1/2/3 — "Tier 1/Tier 2" already mean the
+5. **Naming.** The tiers are deliberately **V/G/H/W**, not 1/2/3 — "Tier 1/Tier 2" already mean the
    `blocks.replaces` reverse-walk in Spec 31 Appendix B, and "tier" alone also means the
-   Mobile/Tablet/Desktop device system. In prose always write "Tier V" / "Tier G" / "Tier H".
+   Mobile/Tablet/Desktop device system. In prose always write "Tier V" / "Tier G" / "Tier H" / "Tier W". W is for **WebGL** — a rendering SUBSTRATE, not a library.
    H is for **helper** (Bean's framing, D422): a single-purpose utility admitted for one
    capability, not a general-purpose engine like GSAP.
 6. **House contracts bind Tier G identically** (§5 FR-38-2): live-checked reduced motion,
