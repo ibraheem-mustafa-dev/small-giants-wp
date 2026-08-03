@@ -1,5 +1,52 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D479 — Tier W (WebGL) admitted to the motion doctrine [ROUTINE]
+
+**2026-08-03, Bean-approved on all four open decisions.** The motion doctrine is now **V / G / H / W**.
+
+**Why a new tier rather than stuffing WebGL into Tier H.** Tier W is NOT another library — it is a
+different **rendering substrate**, the GPU instead of the DOM. The principled test came from the
+doctrine's own text: **OGL FAILS Tier H's admission test at part (iii), which requires
+SINGLE-PURPOSE.** Lenis does one thing; a WebGL wrapper is a general-purpose rendering engine.
+Filing it under H would have hollowed out the one word that keeps that tier closed — the exact
+unbounded state §1 exists to prevent.
+
+**Bean's four decisions — do not re-litigate:**
+1. **Byte allowance:** a NAMED 120KB JS allowance for Tier W **pages only**; the 50KB/page rule is
+   untouched everywhere else. Explicit because a budget quietly breached is a budget abandoned.
+2. **Library: OGL**, wrapped behind an SGS-side `init / setUniform / destroy` interface so it stays
+   REPLACEABLE. OGL is **Unlicense (public domain)** — verified via npm + GitHub, stronger than MIT —
+   but quiet upstream (last release 2025-01), and curtains.js's author has already moved to a WebGPU
+   successor. Assume the dependency gets swapped; do not weld effects to it.
+3. **Fallback:** no-WebGL visitors (~2-3%, plus low-power modes) get **the Tier V version of the same
+   block**. Never a blank canvas, never a hidden section.
+4. **Scope: a CLOSED LIST of effects**, as Tier H is a closed list of libraries. First entry: the
+   fluid cursor field. "We have WebGL now" is precisely how a byte budget dies.
+
+**Three house contracts on top of §1.6:** context-loss recovery (the most-reported WebGL complaint
+across every major library's tracker — iOS Safari discards the GPU context under memory pressure),
+explicit GPU disposal (textures/buffers are not garbage-collected like DOM nodes), and pause when
+off-screen or hidden.
+
+**Cloning: permanently unclonable, stated rather than discovered.** `getComputedStyle()` on a
+`<canvas>` says nothing about what the GPU drew. Declared via a BEM signal resolved to a block
+attribute; fidelity is Bean's eye alone, with no numeric score behind it.
+
+**What forced the decision.** A QC council established that the two hardest-to-fake award-tier
+effects — genuine physics with object collision, and WebGL/shader cursor work — are unreachable by
+construction on Tier V/G/H. Physics2DPlugin has no collision detection; CSS has no primitive for
+velocity-driven pixel displacement. An SVG-filter alternative was built and tested first and was
+correctly rejected by Bean as "basically just animations and basic hover effects" — one binary
+reaction, not continuous interactivity.
+
+⚠ **GSAP licence caveat recorded here because it bounds what Tier W may ship inside:** GSAP is NOT
+MIT (SPDX `NONE`; "Standard 'no charge' license"), free for commercial use since **30 April 2025**,
+but its Prohibited Uses clause bans use in tools that let users build visual animations without code
+in competition with Webflow. Client sites are fine; a DISTRIBUTED commercial plugin sold on visual
+motion authoring is the exposed case. MIT escape hatches: Motion, anime.js v4.
+
+Spec: `specs/38-SGS-MOTION-SYSTEM.md` §1.2b. Register: `plans/2026-08-03-motion-gap-register.md` §4.
+
 ## D478 — Phase 1's ACTUAL bar met: 28 migrations deleted · guard extended · spec gate wired [ROUTINE]
 
 **2026-08-02, Bean-approved.** Closes the three residuals D475's completeness review exposed.

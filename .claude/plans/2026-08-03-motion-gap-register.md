@@ -31,8 +31,9 @@ on client sites is explicitly fine. **But the Prohibited Uses clause bans**, ver
   Configurator Pro in the Snooza proposal) is the exposed case.
 - **Escape hatch if ever needed:** Motion (MIT, 33k★, 2.3kb mini) and anime.js v4 (MIT, 71.7k★,
   ships `scrambleText()` built in). Migration, not catastrophe.
-- GSAP went free **April 2025** (not 2026 — an agent got this wrong; verified against Webflow's
-  own announcement).
+- GSAP went free **30 April 2025** — date pinned because the doc set carried THREE different ones
+  (2026-04-30, 2024, April 2025). 2026 was wrong by a year; 2024 was the ACQUISITION date.
+  Verified against Webflow's own announcement.
 
 **Other licence facts, all API-verified 2026-08-03:**
 
@@ -83,6 +84,20 @@ editor so the roster is honest:**
 - **`fx-morph`** — requires matched-topology SVG path pairs. No restaurant, wedding planner or law
   firm will ever supply those.
 - **`fx-scramble`** — deliberately and honestly scoped as developer-only.
+
+
+### ⚠ Added 2026-08-03 after a coherence review — an omission from this register's own sources
+
+**Two effects recommended by the ecosystem survey FAIL Bean's own WCAG 2.1 AA baseline as described,
+and this register originally dropped that finding** (source: `2026-08-03-motion-survey-gapcheck.md`):
+
+- **CSS marquee** — continuous motion with no pause/stop control breaches **SC 2.2.2 (Pause, Stop,
+  Hide)** for anything moving more than five seconds.
+- **tsParticles backgrounds** — as recommended, risk **SC 2.3.1 (Three Flashes)** and 2.2.2.
+
+Both are fixable (a pause control, a motion cap), but **neither is safe to ship as-recommended**, and
+WCAG 2.1 AA is a project non-negotiable rather than a preference. Any effect admitted to the roster
+needs its §10 reduced-motion row AND a 2.2.2 answer where it moves autonomously.
 
 ---
 
