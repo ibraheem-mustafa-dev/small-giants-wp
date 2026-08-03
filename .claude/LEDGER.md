@@ -78,7 +78,7 @@ memory alone:
   fallback** (Bean-ruled). Negative control proven. **597 pass / 1 skip.**
   ⛔ **Axis does NOT reach `splitImage`** — `role='scalar-media'` is `styling-behaviour`, so it never
   enters the content walk. Reclassifying it is the prerequisite for retiring loop 2 → **Spec 35**.
-  ⛔ **Stage 2 has ~7 read sites** (its `matches` list is Stage 4's ITERATION SOURCE) and **loop 2's
+  ⛔ **Stage 2 has 8 read sites across 3 processes** (its `matches` list is Stage 4's ITERATION SOURCE) and **loop 2's
   GATE belongs in `recognise_section` and is ABSENT there** — measured: `sgs-quote` becomes
   `sgs/quote`, never a container. Both are re-plumbings, not deletes. See TRACK 1 (routing) below.
   ⚠ **`trace.jsonl` STOPS AT STAGE 4**; `errors.log` never created. **Live parity: content 99%,

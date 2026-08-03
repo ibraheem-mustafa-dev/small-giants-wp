@@ -29,8 +29,19 @@ it not fire** — the original incident was a broken caller gate hiding a live m
 
 **MEASURED, not fixed (routing):** Stage 2's block CHOICE never reaches the converter, but its
 `matches` list is Stage 4's ITERATION SOURCE (`orchestrator:1249-1253` — empty matches aborts Stage 4
-with zero markup). **~7 read sites** (QC-measured 2026-08-03; an earlier "eight" was never
-enumerated). Removal is a re-plumbing, not a delete. Loop 2's body duplicates loop 3, but its GATE (`is_class_section_block`) is a
+with zero markup). **8 read sites across 3 PROCESSES** — orchestrator `:851 :1139 :1249 :1305 :2144
+:2551`, plus two subprocess readers: `leftover-bucket-router.py:220` (via `--match`) and
+`simple_html_review_report.py:200` (reads `stage-2.json` off disk). Removal is a re-plumbing.
+⚠ **A mid-session "correction" to ~7 was itself WRONG** and is reverted — the first count was right;
+the corrector missed the out-of-process readers. A wrong number carrying a provenance stamp is worse
+than a right one carrying none.
+
+⚠ **COUPLING FOR SPEC 35 — currently inert, becomes a fidelity regression on reclassification.**
+D480's no-fallback ruling drops the base value when a tier sibling is absent. On Mama's this path is
+empty *because* hero's device-modified elements are `scalar-media` and never enter the content walk.
+The moment `scalar-media` is reclassified to a content role, `sgs-hero__split-image--desktop` (x7)
+becomes 7 base-resolving nodes with no `splitImageDesktop` sibling → 7 loud gaps AND 7 dropped
+images. **Seed the Desktop siblings in the same change, or the reclassification regresses the hero.** Loop 2's body duplicates loop 3, but its GATE (`is_class_section_block`) is a
 capability check that belongs in `recognise_section` and is currently absent there — measured: a
 section classed `sgs-quote` becomes `sgs/quote`, never a container. Nine sites where two options are
 resolved by rowid / document order / catalogue order / name construction rather than a categorical

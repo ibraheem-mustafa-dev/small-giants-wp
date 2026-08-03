@@ -116,9 +116,10 @@ if not matches:
 
 Stage 4 does not iterate boundaries — it iterates **Stage 2's matches list** and looks
 boundaries up by id. Together with Stage 3's `block.json` choice, the coverage pass
-(`:2144`) and the leftover-bucket router, that is **at least 7 distinct read sites**
-(measured independently at the QC gate; an earlier "eight consumers" figure in `LEDGER.md`
-and D480 was never enumerated in this report and should be read as ~7).
+(`:2144`) and two SUBPROCESS readers, that is **8 distinct read sites across 3 processes**:
+orchestrator `:851` `:1139` `:1249` `:1305` `:2144` `:2551`, plus
+`recogniser/leftover-bucket-router.py:220` (fed `--match`) and
+`recogniser/simple_html_review_report.py:200` (reads `stage-2.json` off disk).
 
 **Deletion is therefore a re-plumbing, not a delete** — Stage 4's loop must be re-sourced
 from `voter.json` boundaries first. Moving Stage 3 after Stage 4 solves one coupling of
@@ -560,4 +561,5 @@ Steps 0, 0b, 1 are independent of each other and of everything below.
 | "Stage 2 provably disagrees with Stage 4" | Stages 1-3 agent + lead | Live: agrees **7/7** on emitting sections. The deletion case rests on it contributing signal on only **2 of 9** boundaries, not on disagreement. |
 | "the artefacts are the authority" | lead, in the run brief | Partly. `trace.jsonl` stops at stage 4 and `errors.log` is never created — the artefact set covers ~a third of the run. |
 | **"deleting Stage 2 changes nothing in the markup; its only coupling is Stage 3"** | **lead, §2.1 of this report** | **FALSE — corrected in place above (QC gate, 2026-08-03).** Stage 4 iterates Stage 2's `matches` list and hard-fails on empty (`orchestrator:1249-1253`). ~7 read sites, not 1. Deletion is a re-plumbing. |
-| "EIGHT consumers of Stage 2" | lead, in `LEDGER.md` + D480 | Never enumerated in a committed report. Independently measured at the QC gate: **7** distinct read sites. Treat 8 as unsourced. |
+| "EIGHT consumers of Stage 2" | lead, in `LEDGER.md` + D480 | **Unsourced but CORRECT.** A QC round-1 "correction" to 7 was itself wrong (it missed the two out-of-process readers) and was reverted at QC round 2. Now enumerated above: **8 across 3 processes**. |
+| **the "~7 read sites" correction itself** | **lead, correcting the above** | **WRONG, and worse than what it replaced** — it stamped a wrong number with a "QC-measured" provenance claim. Reverted. The session's own correction pass introduced a new error; that is the 21st entry in this table and the reason it exists. |

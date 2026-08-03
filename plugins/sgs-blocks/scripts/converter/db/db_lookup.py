@@ -5430,6 +5430,20 @@ def content_attr_for_element(
             "ORDER BY rowid",
             (block_slug, *_content_roles),
         ).fetchall()
+        # EVERY attr name on the block, regardless of role — the tier-exclusion
+        # base-sibling test below must NOT be content-filtered. If it were, an
+        # asymmetric reclassification (tier row content, base row still
+        # styling-behaviour) would leave the base name absent from the set, the
+        # Mobile attr would escape exclusion, enter base_rows and win the base
+        # lookup by rowid — silently resurrecting the exact defect the exclusion
+        # exists to kill. Measured 2026-08-03: 0 such pairs today, but 331 of the
+        # 339 base/tier pairs are one reclassification away (QC round 2).
+        all_attr_names = {
+            r[0] for r in conn.execute(
+                "SELECT attr_name FROM block_attributes WHERE block_slug = ?",
+                (block_slug,),
+            ).fetchall()
+        }
         slot_rows = conn.execute(
             "SELECT slot_name, aliases FROM slots WHERE scope = 'element'"
         ).fetchall()
@@ -5478,7 +5492,9 @@ def content_attr_for_element(
     except sqlite3.OperationalError:
         _tier_suffixes = ()
 
-    _declared_names = {r[0] for r in attr_rows}
+    # Role-AGNOSTIC (see the all_attr_names query above): the exclusion asks
+    # "does a base sibling exist on this block", never "is that base content".
+    _declared_names = all_attr_names or {r[0] for r in attr_rows}
     _by_name: dict[str, tuple[str, str | None, str | None, str | None]] = {
         r[0]: (r[0], r[2], r[3], r[4]) for r in attr_rows
     }
