@@ -99,9 +99,30 @@ high-severity `unrecognised_section` gaps.
 the 0.0 sentinel to 0.3 and defeating a design a comment 200 lines earlier exists to
 protect. Dead code with a live side effect.
 
-**If Stage 2 were deleted, nothing in the emitted markup would change.** `[M+R]` Its only
-structural coupling is telling Stage 3 which `block.json` to read — solved by moving
-Stage 3 after Stage 4, where it would get the *correct* block.
+> ⛔ **THIS PARAGRAPH WAS WRONG AND IS CORRECTED IN PLACE (QC gate, 2026-08-03).** It read:
+> *"If Stage 2 were deleted, nothing in the emitted markup would change. Its only structural
+> coupling is telling Stage 3 which `block.json` to read."* The second sentence is FALSE.
+
+**Stage 2's block CHOICE never reaches the emitted markup — but its `matches` list is a live
+structural input.** `[M]` `sgs-clone-orchestrator.py:1249-1253`, inside
+`stage_4_5_6_7_8_extract`:
+
+```python
+matches = match_output.get("matches", [])
+if not matches:
+    errors = ["no matches from stage 2 -- nothing to extract"]
+    return output          # Stage 4 aborts. Zero markup.
+```
+
+Stage 4 does not iterate boundaries — it iterates **Stage 2's matches list** and looks
+boundaries up by id. Together with Stage 3's `block.json` choice, the coverage pass
+(`:2144`) and the leftover-bucket router, that is **at least 7 distinct read sites**
+(measured independently at the QC gate; an earlier "eight consumers" figure in `LEDGER.md`
+and D480 was never enumerated in this report and should be read as ~7).
+
+**Deletion is therefore a re-plumbing, not a delete** — Stage 4's loop must be re-sourced
+from `voter.json` boundaries first. Moving Stage 3 after Stage 4 solves one coupling of
+several, not the whole thing.
 
 ### 2.2 "Which block does this BEM token mean?" — 2 resolvers that disagree
 
@@ -538,3 +559,5 @@ Steps 0, 0b, 1 are independent of each other and of everything below.
 | "161 of 255 resolutions missed, none recorded" | CSS-pass agent | The miss count is a probe-scoped figure, not a fidelity measure. Live parity: **content 99%, CSS 83–89%**. |
 | "Stage 2 provably disagrees with Stage 4" | Stages 1-3 agent + lead | Live: agrees **7/7** on emitting sections. The deletion case rests on it contributing signal on only **2 of 9** boundaries, not on disagreement. |
 | "the artefacts are the authority" | lead, in the run brief | Partly. `trace.jsonl` stops at stage 4 and `errors.log` is never created — the artefact set covers ~a third of the run. |
+| **"deleting Stage 2 changes nothing in the markup; its only coupling is Stage 3"** | **lead, §2.1 of this report** | **FALSE — corrected in place above (QC gate, 2026-08-03).** Stage 4 iterates Stage 2's `matches` list and hard-fails on empty (`orchestrator:1249-1253`). ~7 read sites, not 1. Deletion is a re-plumbing. |
+| "EIGHT consumers of Stage 2" | lead, in `LEDGER.md` + D480 | Never enumerated in a committed report. Independently measured at the QC gate: **7** distinct read sites. Treat 8 as unsourced. |

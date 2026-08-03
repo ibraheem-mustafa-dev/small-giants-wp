@@ -27,9 +27,10 @@ replaced with: *"it functions" is not "it is safe" — the target is 100% determ
 The transferable half of D474 is retained: **prove a path is dead by REACHING it, never by observing
 it not fire** — the original incident was a broken caller gate hiding a live mechanism.
 
-**MEASURED, not fixed (routing):** Stage 2's answer never reaches the converter, but it has EIGHT
-consumers (its `matches` list is Stage 4's iteration source) — removal is a re-plumbing, not a delete;
-removal map complete. Loop 2's body duplicates loop 3, but its GATE (`is_class_section_block`) is a
+**MEASURED, not fixed (routing):** Stage 2's block CHOICE never reaches the converter, but its
+`matches` list is Stage 4's ITERATION SOURCE (`orchestrator:1249-1253` — empty matches aborts Stage 4
+with zero markup). **~7 read sites** (QC-measured 2026-08-03; an earlier "eight" was never
+enumerated). Removal is a re-plumbing, not a delete. Loop 2's body duplicates loop 3, but its GATE (`is_class_section_block`) is a
 capability check that belongs in `recognise_section` and is currently absent there — measured: a
 section classed `sgs-quote` becomes `sgs/quote`, never a container. Nine sites where two options are
 resolved by rowid / document order / catalogue order / name construction rather than a categorical

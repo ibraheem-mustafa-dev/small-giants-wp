@@ -435,18 +435,27 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         _device_tier = _tier_by_lower.get(_modifier.lower()) if _modifier else None
         hit = db_lookup.content_attr_for_element(rec.slug, element, tier=_device_tier)
         if hit is None:
-            if _device_tier is not None:
-                # The loud gap (content_attr_for_element's tier_sibling_missing
-                # trace already fired) — surface it through the SAME channel
-                # every other content drop uses, never a parallel report.
+            # `hit is None` has THREE causes inside content_attr_for_element:
+            # no_rows / no_match / tier_sibling_missing. Only the third means
+            # "declare the sibling attr". Claiming it for the other two points
+            # the responsive rollout at a fix that cannot work — a confident
+            # reason attached to an unproven cause (QC finding, 2026-08-03).
+            # Establish WHICH by re-asking without the tier: if the BASE
+            # resolves, the tier sibling is genuinely the only thing missing.
+            if _device_tier is not None and db_lookup.content_attr_for_element(
+                rec.slug, element, tier=None
+            ) is not None:
                 results.append(ContentGap(
                     where=f"{rec.slug}.{element}--{_modifier}",
-                    detail=(f"element '{element}' requested device tier "
-                            f"'{_device_tier}' but no '{{base}}{_device_tier}' "
-                            f"attr is declared on {rec.slug} — no fallback to "
-                            f"the base attr (owner ruling); add the sibling "
-                            f"attr or accept the gap"),
+                    detail=(f"element '{element}' resolves on {rec.slug} but "
+                            f"requested device tier '{_device_tier}' has no "
+                            f"'{{base}}{_device_tier}' sibling attr declared — "
+                            f"no fallback to the base attr (owner ruling); "
+                            f"declare the sibling attr or accept the gap"),
                 ))
+            # Base did not resolve either → a plain element no-match, which this
+            # leg has always skipped silently (the A2 ledger owns completeness).
+            # Do NOT relabel it as a tier problem.
             continue
         attr_name, emit_shape, role, attr_type = hit
         if emit_shape is None:
