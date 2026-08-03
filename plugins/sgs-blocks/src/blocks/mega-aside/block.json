@@ -60,8 +60,8 @@
 			"default": ""
 		},
 		"asideBorderWidth": {
-			"type": "string",
-			"default": "0px"
+			"type": "object",
+			"default": { "top": "0px", "right": "0px", "bottom": "0px", "left": "0px" }
 		}
 	},
 	"editorScript": "file:./index.js",

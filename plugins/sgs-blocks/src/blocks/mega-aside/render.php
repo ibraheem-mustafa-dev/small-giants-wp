@@ -52,8 +52,14 @@ $aside_format    = isset( $attributes['asideFormat'] ) && in_array( $attributes[
 $aside_bg_raw            = isset( $attributes['asideBg'] ) ? (string) $attributes['asideBg'] : '';
 $aside_border_colour_raw = isset( $attributes['asideBorderColour'] ) ? (string) $attributes['asideBorderColour'] : '';
 $aside_radius            = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideRadius'] ?? '' ) : '';
-$aside_border_width      = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideBorderWidth'] ?? '0px' ) : '0px';
-$aside_padding_obj       = is_array( $attributes['asidePadding'] ?? null ) ? $attributes['asidePadding'] : array();
+// Box-object interface contract §1/§2: asideBorderWidth is an SGS custom
+// OBJECT attr { top, right, bottom, left } — no tiers (mirrors sgs/button's
+// base-only borderWidth). box_family = 'asideBorderWidth' (a per-area family,
+// like hero's imageBorderWidth / product-card's ctaBorderWidth — not the
+// generic root 'borderWidth' family, since this is a per-element scoped box).
+$aside_border_width_obj       = is_array( $attributes['asideBorderWidth'] ?? null ) ? $attributes['asideBorderWidth'] : array();
+$aside_border_width_shorthand = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $aside_border_width_obj ) : null;
+$aside_padding_obj            = is_array( $attributes['asidePadding'] ?? null ) ? $attributes['asidePadding'] : array();
 
 // ---------------------------------------------------------------------------
 // 1. Content-addressed uid + selectors (STOP-NO-KSORT: $attributes hashed
@@ -82,14 +88,22 @@ if ( '' !== $aside_radius ) {
 	$css .= $root_sel . '{border-radius:' . $aside_radius . ';}';
 }
 
-// Border only paints when a non-zero width is set (an empty/0 width means
-// "no border", matching the block's honest-absence contract).
-$border_width_px = (float) $aside_border_width;
-if ( $border_width_px > 0 ) {
+// Border only paints when at least one side has a non-zero width (an empty/
+// all-zero box means "no border", matching the block's honest-absence
+// contract). Per-side widths need border-width/-style/-color as separate
+// declarations (a shorthand `border:` can't carry 4 distinct widths).
+$aside_border_has_width = false;
+foreach ( array( 'top', 'right', 'bottom', 'left' ) as $aside_border_side ) {
+	if ( (float) sgs_css_length_sanitise( $aside_border_width_obj[ $aside_border_side ] ?? '' ) > 0 ) {
+		$aside_border_has_width = true;
+		break;
+	}
+}
+if ( $aside_border_has_width && null !== $aside_border_width_shorthand ) {
 	$aside_border_colour_value = '' !== $aside_border_colour_raw
 		? sgs_colour_value( $aside_border_colour_raw )
 		: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
-	$css                      .= $root_sel . '{border:' . $aside_border_width . ' solid ' . $aside_border_colour_value . ';}';
+	$css                      .= $root_sel . '{border-width:' . $aside_border_width_shorthand . ';border-style:solid;border-color:' . $aside_border_colour_value . ';}';
 }
 
 if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {

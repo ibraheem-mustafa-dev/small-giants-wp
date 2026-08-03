@@ -156,15 +156,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						clearable
 					/>
 
-					<UnitControl
+					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
-						value={ asideBorderWidth || '' }
-						onChange={ ( value ) =>
-							setAttributes( {
-								asideBorderWidth: value || '0px',
-							} )
+						values={ { base: asideBorderWidth ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) =>
+							setAttributes( { asideBorderWidth: next } )
 						}
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>
