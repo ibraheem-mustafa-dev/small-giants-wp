@@ -256,6 +256,55 @@ The canary is unblocked and current.
 
 ---
 
+## NEXT SESSION (Track 1b / Spec 35) — run alongside or instead of the motion track
+
+### THE GOAL — why this track exists (state it before picking up any task)
+
+**Bean's clients are tech-illiterate and use the block editor exclusively.** Spec 35 exists so every
+SGS block's inspector is genuinely usable by them: controls that exist for things the block can do,
+no controls for things it cannot, nothing that crashes, and one consistent shape across all 84
+blocks. A setting that needs code is not done.
+
+**The enforcement half — what this session was about:** 24 end conditions define that standard, and
+they are only worth having if they are ENFORCED. Today's measurement: **0 of 24 have a script
+validated to cover all instantiations.** The lesson underneath it is the actual deliverable — all
+three rules built today were blind on first build (0-vs-65, 12-vs-15, 43-vs-23), each caught only
+by challenging a low number. **"Has a script" and "is enforced" have been read as the same claim.**
+The goal is to close that gap rule by rule, not to accumulate more scripts.
+
+### Tasks, in order
+
+**Task A — the 31 content misses [delegated, sonnet].** List all 31 (26 label/message strings +
+the 5-instance `svgContent`/`bgSvgContent` family). Show the logic that correctly finds the rest,
+explain why it missed these, categorise manually, then fingerprint each category and work that into
+the `/sgs-update` seeding script. **Acceptance:** each category has a deterministic fingerprint and
+the seeder populates them; no name-regex.
+
+**Task B — hero background design gate + `/qc-council` [inline, Opus].** The collision gate proved
+it is a FOUR-block class (hero/container/cta-section/trust-bar), not a hero quirk. Bean's
+identity-rename approach (D484) leads: give each colliding attr a distinct DRAFT-side selector
+(`__background-image` / `__background-video` / `__background-svg`; `__image` vs `__poster`).
+Data-only, no schema change. **Design-gate + council BEFORE building** (rule 7). **Acceptance:**
+`check_content_attr_collisions.py` reports 0 genuine groups.
+
+**Task C — migrate the 6 existing gating rules into inspector-scan [delegated, sonnet].** The one
+step that can LOSE enforcement while reading green: run old and new together, diff finding sets,
+explain every delta in writing, delete the old scripts in a separate later commit.
+
+**Task D — flip advisory rules to fail-closed, one at a time.** Each rule flips only when its own
+backlog reaches zero AND its fixtures cover the dominant real shape. Never flip a rule that has
+never been challenged on a suspicious number.
+
+**Task E — `supports.sgs.attrRoles` (FR-31-2.1a / D258).** Spec'd, zero of 84 blocks use it. The
+declarative channel that ends name-guessing entirely. ⛔ Do NOT read WP 7.0's inline
+`"role":"content"` key into the SGS role column — different API, collides on the key name, would
+corrupt 8 attrs.
+
+### Guardrail carried from this session
+
+**A rule returning zero is a claim requiring evidence, not a pass.** Every new or migrated rule
+declares its EXPECTED population before it runs. Three for three were blind without this.
+
 ## NEXT SESSION — Snooza pitch demo (revenue), or the motion gap register
 
 **Read FIRST, in order:** this file → `STOP-CATALOGUE.md` → `decisions.md` **D479** →
