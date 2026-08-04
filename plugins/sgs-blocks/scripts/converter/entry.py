@@ -186,6 +186,7 @@ def convert_section(html: str, css: str, media_map: dict,
     """
     from converter.db import db_lookup
     from converter.services import content_gap_collector as _gap_collector
+    from converter.services import token_resolution_check as _token_check
     from converter.services.section_passes import set_trace_fn
     from converter.services.styling_helpers import configure_colour_resolution_from_run
 
@@ -193,6 +194,11 @@ def convert_section(html: str, css: str, media_map: dict,
     # theme palette map so draft `var(--X)` colours snap to the correct theme
     # token (P-DRAFT-CSSVAR). Inert when no client/theme-snapshot is available.
     configure_colour_resolution_from_run(css, client_slug, repo_root)
+
+    # Advisory token-resolution known-token state (client theme-snapshot +
+    # framework theme.json + real bare-CSS-defined custom properties). Inert
+    # when no repo_root is supplied — see token_resolution_check.py.
+    _token_check.configure_token_resolution_from_run(client_slug, repo_root)
 
     # Content-gap observability (task: surface every content gap — dropped
     # content AND fuzzy/alias-fallback resolutions, never silent). Two channels
@@ -210,6 +216,7 @@ def convert_section(html: str, css: str, media_map: dict,
     #      existing --debug-trace JSONL evidence chain gains these events too
     #      without losing anything it already carried.
     _gap_collector.clear()
+    _token_check.clear()
     set_trace_fn(_bind_trace(trace, boundary_id))
     db_lookup.set_trace(_gap_collector.FallbackTraceSink(trace), boundary_id)
     try:
@@ -231,6 +238,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     from bs4 import BeautifulSoup
 
     from converter.services import content_gap_collector as _gap_collector
+    from converter.services import token_resolution_check as _token_check
     from converter.services.css_parse import parse_css
     from converter.services.section_passes import SKIP_TOP_LEVEL_TAGS
 
@@ -250,6 +258,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         "token_resolutions": [],
         "essence_matches": [],
         "content_gaps": [],
+        "token_resolution_findings": [],
     }
 
     # Find the section root — first element child of soup
@@ -276,6 +285,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "token_resolutions": [],
             "essence_matches": [],
             "content_gaps": [],
+            "token_resolution_findings": [],
         }
 
     # The transparent-wrapper absorb PRE-PASS was DELETED here 2026-08-01 (Bean-directed).
@@ -343,6 +353,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             # Whatever the content pass recorded before the failure fired (may be
             # partial/empty — the section never emitted markup either way).
             "content_gaps": _gap_collector.flush(),
+            "token_resolution_findings": _token_check.flush(),
         }
 
     # Universal section-wrapper className guarantee (2026-05-21).
@@ -418,4 +429,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         # plus every recognised db_lookup fuzzy/alias-fallback resolution event.
         # See converter/services/content_gap_collector.py.
         "content_gaps": _gap_collector.flush(),
+        # Advisory-only unresolvable var(--name) findings from the token-
+        # resolution check (detection only — see token_resolution_check.py).
+        "token_resolution_findings": _token_check.flush(),
     }

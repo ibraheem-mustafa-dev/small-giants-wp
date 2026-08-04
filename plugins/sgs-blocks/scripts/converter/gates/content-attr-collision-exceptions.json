@@ -1,0 +1,4 @@
+{
+  "__doc": "Human-curated allowlist for check_content_attr_collisions.py. Empty by design (2026-08-04): the live DB carries no structural signal — no 'deprecated' column on block_attributes, no populated 'description' text on any of the collision groups found, and no WP-native 'deprecated' marker in the corresponding block.json attribute declarations — that would let a script infer 'this pair collides on purpose, mid-migration' versus 'nobody has noticed yet'. Add an entry ONLY after a human has confirmed a specific group is an intentional legacy/current pair, with a decisions.md reference (a D-number) as evidence. Do not add an entry to silence a finding without that confirmation.",
+  "exceptions": []
+}

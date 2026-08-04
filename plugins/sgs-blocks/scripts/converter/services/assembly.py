@@ -417,6 +417,24 @@ def build_block_markup(
         if not _sec_base.get("max-width") and "full" in _align_support:
             attrs.setdefault("align", "full")
 
+    # step 8: token-resolution advisory check (detection-only — see
+    # converter/services/token_resolution_check.py module docstring). This is
+    # the ONE chokepoint where every resolver's CSS Write AND every content
+    # ScalarLift have already merged into the final `attrs` dict (steps 1-7
+    # above), so it is the earliest point that sees the value WordPress will
+    # actually render, regardless of which resolver produced it (the proven
+    # gap: a resolver with role=None or an ungated colour branch — e.g.
+    # grid.py's GRID-item props, grid_area.py's per-area attrs, pseudo_
+    # overlay.py's solid/gradient colours — can write a draft-local
+    # `var(--x)` straight through with no token resolution at all). Findings
+    # are RECORDED, never acted on: no attr is dropped, no value rewritten,
+    # no build failed. `token_resolution_check.check_attrs` is inert
+    # (returns []) until `configure_token_resolution_from_run` has been
+    # called (entry.py does this once per convert_section call).
+    if rec.slug is not None:
+        from converter.services import token_resolution_check as _token_check
+        _token_check.record_findings(_token_check.check_attrs(attrs, rec.slug, _css_rules))
+
     # ChildBlock.content is now ALWAYS the child's COMPLETE block markup (W3 MF4
     # collapse) — emit it verbatim. The prior `if attr: emit_block_markup(slug,
     # {attr: content}, "")` fork is DELETED: it dropped every non-primary content
