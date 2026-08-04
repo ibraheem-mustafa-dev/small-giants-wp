@@ -300,6 +300,52 @@ declarative channel that ends name-guessing entirely. ⛔ Do NOT read WP 7.0's i
 `"role":"content"` key into the SGS role column — different API, collides on the key name, would
 corrupt 8 attrs.
 
+**Task F — BUILD THE 24 ENFORCEMENT SCRIPTS. This is the track's actual deliverable; A-E exist
+to settle the architecture first so these are written once, not twice.**
+
+⚠ **Why F comes last, not first (Bean's ruling):** A/B/E decide BLOCK STRUCTURE. Rules written
+before them would be rewritten after them. More importantly, every new universal architectural rule
+ENLARGES the drift surface these scripts exist to contain — so the architecture settles, then the
+enforcement is written against it. Some of the 24 may change shape as a result, and new end
+conditions may need ADDING to cover the architecture A/B/E introduce. Re-read the checklist against
+the settled architecture before writing anything.
+
+**Scope:** 21 remaining (items 2-17, 19, 21 + T1/T2/T3). Items 1, 18, 20 exist and run on the
+harness at `scripts/inspector-scan/`. Do NOT start a new tool — the registry, one-parse-per-block
+cache, roster/disk reconciliation, `rules.json` mode table and self-test harness are built.
+
+**DEFINITION OF ENFORCED — a rule counts only when ALL of these hold. This bar exists because 3 of
+3 rules built 2026-08-04 were blind on first build and each was caught by a human challenging a low
+number, never by a gate.**
+
+1. **Expected population declared BEFORE the rule runs.** Write down what you predict it will find
+   and why. A result at or near zero is a CLAIM REQUIRING EVIDENCE, not a pass.
+2. **Population cross-checked by an independent method** — a second script, a different language, a
+   different parse strategy. Item 1 read 0 against a true 65 and passed its own self-test doing it.
+3. **Fixtures cover the DOMINANT real-world shape**, not the convenient one. Item 1's fixtures only
+   ever exercised multi-`InspectorControls` blocks, so it never saw the single-wrapper shape that is
+   most of the roster. Include at least one `mustFlag` fixture drawn from a REAL block.
+4. **`mustNotFlag` fixtures for every legitimate exemption**, each proving the exemption is
+   load-bearing rather than decorative.
+5. **`--self-test` proves the rule can FAIL** — plant a violation, confirm the plant landed on disk
+   before trusting the result, assert it flags.
+6. **Baseline suppression proven to suppress**, and **mode data proven to change the exit code** in
+   both directions.
+7. **Blind spots ENUMERATED in the rule's own header** — what shapes it cannot see, and roughly how
+   many instances that leaves unmeasured. A rule with no stated blind spots has not been examined.
+8. **The right document.** State which artefact the value under test is supposed to describe and
+   prove it by reading the CONSUMER. `check-derived-selector-drift.py` was deleted at D484 for
+   measuring `derived_selector` against block render output when it is a DRAFT-side matcher - 666
+   confident, plausible, wholly false findings.
+9. **Advisory first.** Ship reporting, exit 0. Flip to fail-closed ONLY when that rule's backlog is
+   zero AND points 1-8 hold. Never flip a rule that has not been challenged on a suspicious number.
+10. **The checklist row updated** with the real enforcer name — no phantom tools. 9 of 21 rows once
+    named a `consistency-scanner` that has never existed.
+
+**Acceptance for the TRACK (not per rule):** every one of the 24 rows carries a rule meeting points
+1-10, or a recorded exception naming a decisions.md D-number. "Has a script" is not the bar; the
+2026-08-04 measurement of 0-of-24-validated is the baseline this must move.
+
 ### Guardrail carried from this session
 
 **A rule returning zero is a claim requiring evidence, not a pass.** Every new or migrated rule
