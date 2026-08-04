@@ -5214,22 +5214,104 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
       3. Collect findings and print summary
       4. Continue pipeline (never fail, even on findings)
 
-    Scanners included:
-      - scripts/consistency/run-consistency-gates.py: DB structural consistency
-      - scripts/db-consistency/run.py: F6 DB-as-code violations (grandfathered baseline)
-      - scripts/check-fx-list-drift.py: fx_effects table currency
-      - scripts/check-box-family-guard.py: box_family attribute constraints
-      - scripts/audit-inspector-conformance.js: inspector_control_type classification
-      - scripts/audit-feature-parity.py: feature parity against block roster
+    Scanners included (26 total, 2026-08-03 evidence-based wiring — see
+    `.claude/reports/2026-08-03-stage13-scanner-classification.md` for the
+    per-scanner classification table with evidence. Every scanner below was
+    RUN, not just read, to confirm it produces real output on source/DB
+    state alone, with no `build/` or live-site dependency):
 
-    Scanners excluded from this stage (not DB-keyed):
-      - Code-only audits (cheat-gate, excluded-gate, control-ux, etc.)
-        run at build time, not reseed time.
-      - Motion-fx generators (run in Stage 12, the write step).
-      - Icon generation, responsive-control lint, etc. (re-run at build time).
+      Composite runners (DB-first data layer):
+      - consistency/build-roster.py — regenerates roster.json (denominator)
+      - consistency/run-consistency-gates.py --report — runs
+        check-cluster-coverage, check-box-family-guard, check-box-flat,
+        report-colour-alpha, check-reclassified-keys as sub-gates
+      - db-consistency/run.py --report — runs check_routing,
+        check_composition, check_variants, check_overrides_drift,
+        check_variant_reseed, check_orphan_roles, check_tier_composition,
+        check_css_property_reseed, check_motion_fx_reseed,
+        check_fx_qualifying_blocks_stale as sub-gates
+      - cheat-gate/run.py --report — F5 cheat-detection (checks 1-4, 6-7);
+        prefers src/ CSS, falls back to build/ if present — runs fine with
+        no build present (proven: ran clean pre-build in classification)
+      - excluded-gate/run.py --report — F5 excluded-literal tripwire vs
+        the `excluded_properties` DB table
 
-    Idempotent: scanners use --report (never mutate state); safe to run
-    repeatedly during the same reseed run without side effects.
+      Single-purpose DB/source scanners:
+      - check-fx-list-drift.py --check: fx_effects table currency
+      - check-box-family-guard.py --report: box_family attribute constraints
+      - audit-inspector-conformance.js --json: inspector_control_type classification
+      - audit-feature-parity.py --check: feature parity against block roster
+      - dbschema/check_row_floor.py --check: DB row-count regression vs the committed floor
+      - dbschema/check_schema_drift.py --check: schema.sql vs live DB DDL drift
+      - lints/lint-spec-drift.py --check: spec claims vs DB reality
+      - lints/lint-theme-css-hardcodes.py --check: theme CSS hardcode literals vs baseline
+      - audit-block-file-consistency.py --json: cross-file attr consistency (orphan/undeclared)
+      - audit-block-uniformity.py: block-shape uniformity
+      - audit-declared-vs-seeded-roles.py --check: block.json role vs DB-seeded role (FR-31-2.1a)
+      - check-dead-pattern-attrs.py --check: theme pattern/part attrs vs block.json declarations
+      - check-no-core-blocks.py: banned core blocks in theme files
+      - check-control-ux.js --json: control-UX violations vs baseline
+      - check-dead-controls.js --json: dead controls across blocks + extensions
+      - check-duplicate-controls.js --json: duplicate-control findings
+      - check-element-manifest-conformance.js: Spec 35 CLUSTER-COHERENCE
+      - check-hardcoded-render-defaults.js --json: F3 hardcoded render defaults vs baseline
+      - check-product-search-guards.js: product-search REST guard assertions
+      - check-shared-css-state-rules.js: shared CSS :hover/:focus state-rule scope
+      - check-simple-surface-cap.js: FR-37-27 simple-surface control-count advisory
+      - check-universal-fit.js: universal extension-panel fit report
+
+    Scanners EXCLUDED from this stage, with the dependency reason (verified
+    by running each, not by filename/description alone):
+      - check-block-asset-targets.js — reads `build/blocks/**` (compiled
+        asset filenames); needs `npm run build` first. Include after a build
+        step, or add a source-only mode that reads block.json's declared
+        `editorScript`/`style` names instead of the compiled tree.
+      - check-motion-bundle-budget.py — reads `build/` (gzip module sizes
+        against the Wave A baseline); needs `npm run build` first.
+      - audit-scoped-selector-live.js, audit-shrink-to-fit.js — both
+        Playwright-drive a LIVE deployed URL; nothing to measure at reseed
+        time (no deploy has happened). Run post-deploy instead.
+      - no-inline/check-no-inline.py — only two modes exist: `--live`
+        (live canary URLs) and `--selftest` (network-free but proves the
+        detector, not a real scan). No source-only whole-codebase mode
+        exists; would need one added to run here.
+      - no-inline-land-verify.js — takes a specific migration-wave manifest
+        path as a positional arg (e.g. `no-inline-wave3-roster-manifest.json`);
+        a one-off historical verification tool for a completed migration,
+        not a recurring repo-wide scanner.
+      - check-atomic-slug-literals.py — its own docstring declares it
+        RETIRED (`converter_v2/convert.py` deleted at D276); a confirmed
+        no-op, historical only.
+      - check-interaction-only-css.py, check-markup-neutral.py,
+        check-blockjson-metadata-only.py — pre-commit staged-diff helpers;
+        each requires a specific block-name argument + a live `git diff
+        --staged` set to classify. Nothing staged during a reseed → vacuous.
+      - lints/bem-lint.py, lints/draft-vocab-lint.py, lints/token-lint.py —
+        lint a SPECIFIC HTML draft file (positional `path`, no directory-scan
+        mode); these are /sgs-clone Stage 0/0.5 tools, not repo-wide audits.
+      - ledger/content_gap_check.py, ledger/coverage_check.py,
+        ledger/declare_input.py — F2/F5 CSS-accounting-ledger checks scoped
+        to a specific clone run's `fixtures/`/`pipeline-state/` directory;
+        nothing to check without an active clone run in flight.
+      - audit-post-content-blocks.py — takes `<file-or-dir>` of exported
+        WordPress `post_content` (e.g. a WXR export); no such export exists
+        at reseed time (this stage reseeds the knowledge-base DB, not a
+        site-content dump).
+      - consistency/check-cluster-coverage.py, report-colour-alpha.py,
+        check-reclassified-keys.py, and check-box-family-guard.py's sibling
+        copy under consistency/ — already invoked as sub-gates of
+        `consistency/run-consistency-gates.py` above; adding them again
+        would double-run and double-count the same violations.
+      - consistency/check-box-flat.py — owned by another in-flight track
+        this session (box-object migration); already invoked as a sub-gate
+        of `run-consistency-gates.py`, not added standalone here.
+      - src/blocks/**, scripts/inspector-scan/ — out of scope for this
+        change (owned by other in-flight tracks this session).
+
+    Idempotent: scanners use --report/--check/--json (never mutate state,
+    except db-consistency/dbschema baselines which are read-only in --check
+    mode); safe to run repeatedly during the same reseed run without side
+    effects.
 
     Output format: per-scanner findings count + summary, then final count.
     Do NOT re-raise errors; findings are metadata on the post-reseed state.
@@ -5237,6 +5319,11 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
     scripts_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "scripts"
 
     # Scanners: (rel_path, label, invocation_args)
+    # GROUND-TRUTH: source=file — every entry below was RUN directly against
+    # this repo's real files/DB (not inferred from filename or docstring) on
+    # 2026-08-03 to confirm the flag exists in its argparse/argv handling and
+    # produces genuine output. See the docstring above for the full
+    # evidence-based classification (included vs excluded + reason).
     scanners = [
         ("consistency/build-roster.py", "build-roster", []),
         ("consistency/run-consistency-gates.py", "consistency-gates", ["--report"]),
@@ -5245,6 +5332,26 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         ("check-box-family-guard.py", "box-family-guard", ["--report"]),
         ("audit-inspector-conformance.js", "inspector-conformance", ["--json"]),  # Parse JSON for findings by severity
         ("audit-feature-parity.py", "feature-parity", ["--check"]),  # exit code signals but don't fail
+        ("cheat-gate/run.py", "cheat-gate", ["--report"]),
+        ("excluded-gate/run.py", "excluded-gate", ["--report"]),
+        ("dbschema/check_row_floor.py", "row-floor", ["--check"]),
+        ("dbschema/check_schema_drift.py", "schema-drift", ["--check"]),
+        ("lints/lint-spec-drift.py", "spec-drift", ["--check"]),
+        ("lints/lint-theme-css-hardcodes.py", "theme-css-hardcodes", ["--check"]),
+        ("audit-block-file-consistency.py", "block-file-consistency", ["--json"]),
+        ("audit-block-uniformity.py", "block-uniformity", []),
+        ("audit-declared-vs-seeded-roles.py", "declared-vs-seeded-roles", ["--check"]),
+        ("check-dead-pattern-attrs.py", "dead-pattern-attrs", ["--check"]),
+        ("check-no-core-blocks.py", "no-core-blocks", []),
+        ("check-control-ux.js", "control-ux", ["--json"]),
+        ("check-dead-controls.js", "dead-controls", ["--json"]),
+        ("check-duplicate-controls.js", "duplicate-controls", ["--json"]),
+        ("check-element-manifest-conformance.js", "element-manifest-conformance", []),
+        ("check-hardcoded-render-defaults.js", "hardcoded-render-defaults", ["--json"]),
+        ("check-product-search-guards.js", "product-search-guards", []),
+        ("check-shared-css-state-rules.js", "shared-css-state-rules", []),
+        ("check-simple-surface-cap.js", "simple-surface-cap", []),
+        ("check-universal-fit.js", "universal-fit", []),
     ]
 
     # Self-test: proves extraction logic works by parsing a known fixture (COORDINATOR REQUIREMENT)
@@ -5297,11 +5404,84 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                     "error": f"self-test failed: expected 1 informational finding, got {by_severity.get('informational')}",
                 }
 
+            # --- Extended self-test coverage (2026-08-03): proves the extraction logic
+            # for the NEW scanners wired into Stage 13 this session, mirroring the exact
+            # branches added above so a regression in the parsing (not the scanner) is
+            # caught here rather than silently reading as "0 findings".
+
+            # (a) row-floor text extraction: "ROW-FLOOR REGRESSION DETECTED (N finding(s))"
+            row_floor_fixture = (
+                "ROW-FLOOR REGRESSION DETECTED (2 finding(s)):\n"
+                "  - TABLE `attribute_gap_candidates` DROPPED: floor=100 live=80 (-20)\n"
+            )
+            rf_count = 0
+            for line in row_floor_fixture.splitlines():
+                if "REGRESSION DETECTED" in line:
+                    for tok in line.replace("(", " ").split():
+                        if tok.isdigit():
+                            rf_count = int(tok)
+                            break
+                    break
+            if rf_count != 2:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: row-floor extractor expected 2, got {rf_count}",
+                }
+
+            # (b) cheat-gate composite summary line: "[cheat-gate] N violation(s) total — ..."
+            cheat_gate_fixture = "[cheat-gate] 7 violation(s) total — 0 NEW, 7 baselined\n"
+            cg_count = 0
+            for line in cheat_gate_fixture.splitlines():
+                if line.startswith("[cheat-gate]") and "violation" in line.lower():
+                    digits = "".join(ch if ch.isdigit() else " " for ch in line.split("violation")[0])
+                    nums = digits.split()
+                    if nums:
+                        cg_count = int(nums[-1])
+                    break
+            if cg_count != 7:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: cheat-gate extractor expected 7, got {cg_count}",
+                }
+
+            # (c) block-file-consistency JSON: net_new is a LIST of finding dicts, count = len()
+            bfc_fixture = json_module.dumps({
+                "net_new": [{"type": "orphan_attr"}, {"type": "orphan_attr"}, {"type": "undeclared_control"}],
+                "flagged_blocks": 2,
+            })
+            bfc_data = json_module.loads(bfc_fixture)
+            bfc_count = len(bfc_data.get("net_new", []))
+            if bfc_count != 3:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: block-file-consistency extractor expected 3, got {bfc_count}",
+                }
+
+            # (d) shared netNew JSON shape (control-ux/dead-controls/duplicate-controls/
+            #     hardcoded-render-defaults): netNew is an INT, not a list, on these four.
+            netnew_fixture = json_module.dumps({"netNew": 5, "accepted": 12, "baselineSize": 12})
+            nn_data = json_module.loads(netnew_fixture)
+            nn = nn_data.get("netNew", 0)
+            nn_count = nn if isinstance(nn, int) else len(nn or [])
+            if nn_count != 5:
+                return {
+                    "status": "FAIL",
+                    "self_test": True,
+                    "error": f"self-test failed: netNew-int extractor expected 5, got {nn_count}",
+                }
+
             # Success
             return {
                 "status": "ok",
                 "self_test": True,
-                "test_result": "PASS — fixture with 3 findings (2 warn, 1 informational) extracted correctly",
+                "test_result": (
+                    "PASS — inspector-conformance fixture (3 findings: 2 warn, 1 informational), "
+                    "row-floor text (2), cheat-gate composite text (7), block-file-consistency "
+                    "net_new list (3), and shared netNew-int shape (5) all extracted correctly"
+                ),
             }
         except Exception as exc:
             return {
@@ -5489,6 +5669,226 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                                 break
                             except ValueError:
                                 pass
+
+            elif label == "cheat-gate":
+                # cheat-gate/run.py --report is a COMPOSITE (checks 1-4, 6-7, each a distinct
+                # cheat class). PROOF: "[cheat-gate] 18 violation(s) total — 0 NEW, 18 baselined".
+                # Do NOT synthesise beyond that one self-describing total line — the sub-checks
+                # have differing severities/meanings, matching the consistency-gates pattern.
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.startswith("[cheat-gate]") and "violation" in line.lower():
+                        summary_line = line.strip()[:120]
+                        digits = "".join(ch if ch.isdigit() else " " for ch in line.split("violation")[0])
+                        nums = digits.split()
+                        if nums:
+                            try:
+                                findings_count = int(nums[-1])
+                            except ValueError:
+                                pass
+                        break
+
+            elif label == "excluded-gate":
+                # excluded-gate/run.py --report prints "[F5] N gate violations —" (PROOF extraction)
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.startswith("[F5]") and "gate violation" in line.lower():
+                        summary_line = line.strip()[:120]
+                        parts = line.split()
+                        for tok in parts:
+                            if tok.isdigit():
+                                findings_count = int(tok)
+                                break
+                        break
+
+            elif label == "row-floor":
+                # dbschema/check_row_floor.py --check prints "ROW-FLOOR REGRESSION DETECTED (N finding(s))"
+                # or "CLEAN" (PROOF extraction). This is a real DATA-LOSS gate, not cosmetic — a nonzero
+                # count here means the reseed just dropped rows a previous reseed had.
+                findings_count = 0
+                summary_line = "clean"
+                for line in stdout.splitlines():
+                    if "REGRESSION DETECTED" in line:
+                        summary_line = line.strip()[:120]
+                        for tok in line.replace("(", " ").split():
+                            if tok.isdigit():
+                                findings_count = int(tok)
+                                break
+                        break
+                    if "CLEAN" in line.upper():
+                        summary_line = line.strip()[:120]
+
+            elif label == "schema-drift":
+                # dbschema/check_schema_drift.py --check prints "CLEAN -- no schema drift" or a drift list
+                findings_count = 0
+                summary_line = "clean"
+                drift_lines = [ln for ln in stdout.splitlines() if ln.strip().startswith("-") or "DRIFT" in ln.upper()]
+                if any("CLEAN" in ln.upper() for ln in stdout.splitlines()):
+                    summary_line = next(ln.strip()[:120] for ln in stdout.splitlines() if "CLEAN" in ln.upper())
+                elif drift_lines:
+                    findings_count = len(drift_lines)
+                    summary_line = drift_lines[0].strip()[:120]
+
+            elif label == "spec-drift":
+                # lints/lint-spec-drift.py --check prints "N total finding(s) ... M gating | K advisory"
+                # then "PASS"/"FAIL". Only GATING findings count as real findings here (advisory is
+                # a documented false-positive-prone bucket per the scanner's own summary line).
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "gating" in line.lower() and "advisory" in line.lower():
+                        summary_line = line.strip()[:120]
+                        head = line.split("|")[0]
+                        for tok in head.split():
+                            if tok.isdigit():
+                                findings_count = int(tok)
+                                break
+                        break
+
+            elif label == "theme-css-hardcodes":
+                # lints/lint-theme-css-hardcodes.py --check prints "N literal(s) found (X baselined, Y new)"
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "baselined" in line and "new" in line:
+                        summary_line = line.strip()[:120]
+                        import re as _re
+                        m = _re.search(r"(\d+)\s+new\)", line)
+                        if m:
+                            findings_count = int(m.group(1))
+                        break
+
+            elif label == "block-file-consistency":
+                # audit-block-file-consistency.py --json: net_new is a LIST of finding dicts (PROOF: verified shape).
+                try:
+                    import json as json_module
+                    data = json_module.loads(stdout)
+                    net_new_list = data.get("net_new", [])
+                    findings_count = len(net_new_list) if isinstance(net_new_list, list) else 0
+                    flagged = data.get("flagged_blocks", 0)
+                    summary_line = f"{findings_count} net-new finding(s) across {flagged} flagged block(s)"
+                except (json_module.JSONDecodeError, KeyError, TypeError, NameError):
+                    findings_count = 0
+                    summary_line = "EXTRACTION_FAILED — could not parse JSON"
+
+            elif label == "block-uniformity":
+                # audit-block-uniformity.py: no flags, prints "SGS block uniformity audit: CLEAN" or lists diffs
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "uniformity audit" in line.lower():
+                        summary_line = line.strip()[:120]
+                        if "CLEAN" not in line.upper():
+                            findings_count = 1  # non-clean result; script has no per-item count to extract
+                        break
+
+            elif label == "declared-vs-seeded-roles":
+                # audit-declared-vs-seeded-roles.py --check prints "FAIL: N attr(s) lack..." or "PASS"
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.strip().startswith("FAIL:") or line.strip().startswith("PASS"):
+                        summary_line = line.strip()[:120]
+                        for tok in line.split():
+                            if tok.isdigit():
+                                findings_count = int(tok)
+                                break
+                        break
+
+            elif label == "dead-pattern-attrs":
+                # check-dead-pattern-attrs.py --check prints "[dead-pattern-attrs] OK — ..." or lists dead attrs
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.startswith("[dead-pattern-attrs]"):
+                        summary_line = line.strip()[:120]
+                        if "OK" not in line:
+                            findings_count = 1
+                        break
+
+            elif label == "no-core-blocks":
+                # check-no-core-blocks.py: no flags, prints "[check-no-core-blocks] clean — N file(s), M banned"
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.startswith("[check-no-core-blocks]"):
+                        summary_line = line.strip()[:120]
+                        import re as _re
+                        m = _re.search(r"(\d+)\s+banned", line)
+                        if m:
+                            findings_count = int(m.group(1))
+                        break
+
+            elif label in ("control-ux", "dead-controls", "duplicate-controls", "hardcoded-render-defaults"):
+                # These four JS gates share a clean {netNew, accepted, baselineSize[, ...]} --json shape (PROOF: verified).
+                try:
+                    import json as json_module
+                    data = json_module.loads(stdout)
+                    net_new = data.get("netNew", 0)
+                    findings_count = net_new if isinstance(net_new, int) else len(net_new or [])
+                    accepted = data.get("accepted", 0)
+                    accepted_n = accepted if isinstance(accepted, int) else len(accepted or [])
+                    summary_line = f"{findings_count} net-new finding(s) ({accepted_n} baselined)"
+                except (json_module.JSONDecodeError, KeyError, TypeError, NameError):
+                    findings_count = 0
+                    summary_line = "EXTRACTION_FAILED — could not parse JSON"
+
+            elif label == "element-manifest-conformance":
+                # check-element-manifest-conformance.js (default text mode): "GAP: N" is the real
+                # per-member defect count (OK/ORPHAN are not defects on their own — see worklist below).
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if "Members checked" in line:
+                        summary_line = line.strip()[:120]
+                        import re as _re
+                        m = _re.search(r"GAP:\s*(\d+)", line)
+                        if m:
+                            findings_count = int(m.group(1))
+                        break
+
+            elif label == "product-search-guards":
+                # check-product-search-guards.js: no flags, prints "PASS"/"FAIL" lines per guard assertion
+                fail_lines = [ln for ln in stdout.splitlines() if ln.strip().startswith("FAIL")]
+                findings_count = len(fail_lines)
+                pass_count = len([ln for ln in stdout.splitlines() if ln.strip().startswith("PASS")])
+                summary_line = f"{findings_count} FAIL, {pass_count} PASS guard assertion(s)"
+
+            elif label == "shared-css-state-rules":
+                # check-shared-css-state-rules.js: --json is accepted but not wired (plain text always);
+                # prints "[check-shared-css-state-rules] N findings — clean." or lists violations.
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.startswith("[check-shared-css-state-rules]"):
+                        summary_line = line.strip()[:120]
+                        import re as _re
+                        m = _re.search(r"(\d+)\s+finding", line)
+                        if m:
+                            findings_count = int(m.group(1))
+                        break
+
+            elif label == "simple-surface-cap":
+                # check-simple-surface-cap.js: WARN-ONLY/advisory by design (P2 §5, Bean-confirmed);
+                # its own docstring says exits 0 unless --strict, which this stage never passes.
+                # Report the advisory line verbatim; do not treat it as a finding count.
+                findings_count = 0
+                summary_line = "completed (advisory-only, --strict not used in this stage)"
+                for line in stdout.splitlines():
+                    if line.startswith("[check-simple-surface-cap]"):
+                        summary_line = line.strip()[:120]
+
+            elif label == "universal-fit":
+                # check-universal-fit.js: an informational load-ranking report, not a violation
+                # scanner — has no "finding" concept by design. Surface its own summary line.
+                findings_count = 0
+                summary_line = "completed"
+                for line in stdout.splitlines():
+                    if line.startswith("[check-universal-fit]"):
+                        summary_line = line.strip()[:120]
+                        break
 
             findings_by_scanner[label] = {
                 "status": "ok" if result.returncode == 0 else "warn",

@@ -661,6 +661,16 @@ def run() -> None:
     gap_count = 0
     updates: list[tuple[str, str, str, int]] = []  # (canonical_slot, role, derived_selector, id)
     gap_inserts: list[tuple[str, str, str]] = []   # (block_slug, attr_name, stem)
+    # Role-only updates for rows where canonical_slot did NOT resolve but role
+    # is independently derivable (2026-08-04, see the root-cause report at
+    # .claude/reports/2026-08-04-attribute-seeding-root-cause.md §2). Writing
+    # `role` was illegally coupled to `canonical_slot` resolving: root-scoped
+    # block-level colour props (e.g. borderColourHover) have no element word
+    # left after the peel, so canonical_slot correctly stays NULL — but a
+    # correctly-computed role must not be thrown away with it. This list is
+    # written via its own UPDATE that touches ONLY the role column, so
+    # canonical_slot/derived_selector are never disturbed for these rows.
+    role_only_updates: list[tuple[str, int]] = []  # (role, id)
 
     # Loaded once for the stale-suffix-role healing guard (see the docstring
     # block above `refresh_stale_suffix_roles`) — reused for both this loop's
@@ -716,24 +726,26 @@ def run() -> None:
         else:
             role = None
 
+        # Role resolution is independent of whether canonical_slot resolves
+        # (2026-08-04 decoupling — see role_only_updates comment above).
+        # Preserve existing populated values (loosened scope, 2026-05-30),
+        # EXCEPT heal a stale suffix-derived role per `resolve_role_with_healing`
+        # (2026-08-01) — see the module docstring above `refresh_stale_suffix_roles`
+        # for the universal, rule-shaped graduation guard this applies.
+        final_role = resolve_role_with_healing(
+            existing_role,
+            role,
+            prop_info,
+            block_slug,
+            attr_name,
+            content_bearing_roles,
+            override_keys,
+        )
+
         if canonical_slot is not None:
             # Derive selector from formula. (Fingerprint selector overrides moved to
             # ATTR_CLASSIFICATION_OVERRIDES — applied as the final Stage-1 writer.)
             derived_selector = derive_selector(block_slug, canonical_slot)
-
-            # Preserve existing populated values (loosened scope, 2026-05-30),
-            # EXCEPT heal a stale suffix-derived role per `resolve_role_with_healing`
-            # (2026-08-01) — see the module docstring above `refresh_stale_suffix_roles`
-            # for the universal, rule-shaped graduation guard this applies.
-            final_role = resolve_role_with_healing(
-                existing_role,
-                role,
-                prop_info,
-                block_slug,
-                attr_name,
-                content_bearing_roles,
-                override_keys,
-            )
             final_selector = (
                 derived_selector if existing_selector is None else existing_selector
             )
@@ -747,6 +759,14 @@ def run() -> None:
             gap_inserts.append((block_slug, attr_name, stem))
             gap_count += 1
 
+            # role is written independently, even though canonical_slot did
+            # not resolve — a root-scoped block-level colour prop (e.g.
+            # borderColourHover) has no element word to resolve a slot from,
+            # but its role ('color') is still correctly computed above and
+            # must not be discarded (2026-08-04 root-cause report §2).
+            if final_role is not None and final_role != existing_role:
+                role_only_updates.append((final_role, row_id))
+
     # Batch UPDATE block_attributes
     conn.executemany(
         """
@@ -758,6 +778,14 @@ def run() -> None:
         """,
         updates,
     )
+
+    # Batch UPDATE role-only rows (canonical_slot/derived_selector untouched —
+    # 2026-08-04 decoupling, see role_only_updates comment above).
+    if role_only_updates:
+        conn.executemany(
+            "UPDATE block_attributes SET role = ? WHERE id = ?",
+            role_only_updates,
+        )
 
     # Batch INSERT gap candidates (INSERT OR IGNORE handles idempotency)
     for block_slug, attr_name, stem in gap_inserts:
@@ -863,6 +891,7 @@ def run() -> None:
     print("=" * 70)
     print(f"Total rows processed          : {total}")
     print(f"canonical_slot populated      : {resolved_count}")
+    print(f"role-only populated (no slot) : {len(role_only_updates)}")
     print(f"Gap candidates (this run)     : {gap_count}")
     print(f"DB canonical_slot non-null    : {populated_count}")
     print(f"Gap candidates in DB total    : {gap_candidate_total}")
