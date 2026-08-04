@@ -1536,6 +1536,32 @@
       "fields": {
         "role": "rating"
       }
+    },
+    {
+      "_why": "Track B, 2026-08-04. The `price` slot lists \"ribbon\" among its own aliases, and load_slot_aliases() builds its map first-writer-wins over an unordered scan, so `price` claims the name before the dedicated `ribbon` slot (which exists) can register its own. A draft authoring a cta-section ribbon writes .sgs-cta-section__ribbon, which the price-derived selector cannot match. Measured: 10 such alias collisions exist, 4 touch a live sgs/% attr, 3 are wrong. Fixed by override, NOT by de-duplicating slots.aliases: 179 of 1170 attrs depend on that alias layer for genuine synonym work (title->heading, url->link, columns->column), so removing it would break ~175 rows to fix 3.",
+      "slug": "sgs/cta-section",
+      "attr": "ribbon",
+      "fields": {
+        "canonical_slot": "ribbon",
+        "derived_selector": ".sgs-cta-section__ribbon"
+      }
+    },
+    {
+      "_why": "Track B, 2026-08-04. Same alias-collision class: the `text` slot claims \"caption\" as an alias, so sgs/media.caption seeded canonical_slot='text'. The block genuinely renders .sgs-media__caption (verified: 2 occurrences in its own source), which is what a draft would author.",
+      "slug": "sgs/media",
+      "attr": "caption",
+      "fields": {
+        "canonical_slot": "caption",
+        "derived_selector": ".sgs-media__caption"
+      }
+    },
+    {
+      "_why": "Track B, 2026-08-04. Same alias-collision class, opposite remedy: the `card` slot claims \"step\" as an alias, so a number field's numeric increment (e.g. 0.01) seeded canonical_slot='card'. This attr is not a content slot at all, so the correct value is NULL rather than a better slot name — matching the sgs/product-card.priceNote precedent above. Corroborated independently by the Track A fingerprint, whose D1 detector vetoed this attr after examining every usage site.",
+      "slug": "sgs/form-field-number",
+      "attr": "step",
+      "fields": {
+        "canonical_slot": null
+      }
     }
   ]
 }

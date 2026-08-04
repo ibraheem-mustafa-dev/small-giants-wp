@@ -26,13 +26,13 @@ gets ONE true answer instead of three drifting ones.
 
 ## CURRENT FRONTS
 
-> **QC-BYPASSED (2026-08-04, Spec 35 enforcement handoff):** the independent QC subagent was
-> dispatched but had not returned by session end. The author self-verified the six load-bearing
-> figures (D-ceiling 484 · 11 UNENFORCED · colour-NULL-role 21 · role-only 1099 · 13 placeholder
-> rows · 29 role descriptions) — all correct, but that is SELF-review, which is the exact thing
-> the QC gate exists to prevent. **Treat the D481–D484 figures as author-verified, not
-> independently verified.** Next session: re-run the check before building on them. All work is
-> committed and pushed to main regardless; nothing is at risk.
+> **QC-BYPASSED CLEARED (2026-08-04, re-verification session).** Independent re-check
+> (`.claude/reports/2026-08-04-step0-qc-bypassed-reverification.md`) by a route that reused none of
+> the original measurement: 4 of 6 figures CONFIRMED exact (D-ceiling 484, 11 UNENFORCED, 13
+> placeholder rows, 29 role descriptions); 2 (colour-NULL-role, role-only) reproduced to the digit
+> but only across all 2,970 `block_attributes` rows including 506 `core/*` rows — restated scoped
+> to `sgs/%`: **21 -> 19, 1099 -> 955**. Nothing fabricated. D485-D488 record this session's own
+> work (Task A shipped, Track B/C root-causes, fluid-typography cause). D-ceiling now **488**.
 
 ### Track 3 — Tier W ADMITTED · physics-canvas SHIPPED · nine reports consolidated (D479)
 
@@ -107,6 +107,27 @@ memory alone:
   (0-vs-65, 12-vs-15, 43-vs-23), each caught only by challenging a low number. **"Has a script" and
   "is enforced" are different claims.**
   OPEN: Part I (2), Part-L 4–32%, T1 parity 157 gaps/23 blocks, the 31 content misses.
+- **⭐ Track 1b (Spec 35) Task A — structural content-role detection SHIPPED 2026-08-04 (D485).**
+  Three structural detectors (`plugins/sgs-blocks/scripts/content-role-detect/`) replace
+  `assign-canonical.py`'s ~60-name regex (kept as fallback, not deleted). After `/sgs-update`:
+  `sgs/%` `role IS NULL` 703 -> 669 (-34 exact). Eligible pool 262: **34 assigned, 28 report-only
+  (needs a human), 8 vetoed, 127 reached by no detector at all** — the last is an honest open
+  search space, NOT claimed complete. **4 open Task A residuals for the next session:** (1) the 28
+  report-only rows need a human decision, (2) the 127 unreached rows have only a content-shaped-name
+  subset hand-verified, a full sweep is still open, (3) a11y-metadata rows still have no valid role
+  in the taxonomy (flagged, not resolved), (4) the name-regex fallback is still present in
+  `assign-canonical.py:1279-1316` — Tier-0 structural detection sits above it, it was never deleted.
+  **Ad hoc same-session investigations (not Task A/B/C from the plan — separate tracks feeding
+  Task F conditions):** Track B found + fixed via override 3 `slots.aliases` self-collisions
+  (D486, `sgs/cta-section.ribbon`/`sgs/media.caption`/`sgs/form-field-number.step`); Track C
+  REFUTED the "145 tier-sibling NULL rows" as a mobile-parity cause — correct by design, do not
+  "fix" (D487); the REAL mobile-parity cause is fluid typography, PROVEN by clamp-formula
+  hand-verification, Bean rules KEEP fluid typography and fix the measurement instead (D488). **6
+  new Task-F enforcement-design conditions appended to `plans/spec-35-inspector-DONE-checklist.md`**
+  (items 22-27: silence≠rejection, recall-vs-pool not vs-own-output, artefact-existence checks,
+  name-the-consumer-before-measuring, positive-control-before-trusting-zero, denominator+scope on
+  DB stats) — item 25 records that D484's own lesson was repeated in the SAME session (a
+  `derived_selector`-vs-render-output measurement, withdrawn) despite being read at session start.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
 - **Tracks 2+2b (nav/header/footer merge):** 5-wave strategic plan landed (D413), Wave 1 CLOSED,
@@ -207,7 +228,8 @@ memory alone:
   `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
   the hex colour `#0D5557`; true ceiling was D453)
-  (currently D467 — D464 went to a co-active track mid-session; re-check live BEFORE writing any D reference) · framework
+  (currently D488 as of 2026-08-04 — re-check live BEFORE writing any D reference; this line has
+  drifted before and will again) · framework
   counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
   cloning session). Motion = `specs/38-SGS-MOTION-SYSTEM.md`. Nav = `specs/36-...`; header/footer
@@ -274,11 +296,9 @@ The goal is to close that gap rule by rule, not to accumulate more scripts.
 
 ### Tasks, in order
 
-**Task A — the 31 content misses [delegated, sonnet].** List all 31 (26 label/message strings +
-the 5-instance `svgContent`/`bgSvgContent` family). Show the logic that correctly finds the rest,
-explain why it missed these, categorise manually, then fingerprint each category and work that into
-the `/sgs-update` seeding script. **Acceptance:** each category has a deterministic fingerprint and
-the seeder populates them; no name-regex.
+**Task A — the 31 content misses. SHIPPED 2026-08-04 (D485), 4 residuals open — see the Track 1b
+Task A bullet above for the full breakdown (28 report-only rows, 127 unreached, a11y-metadata roles,
+name-regex fallback still present).** Do not re-run this task from scratch; pick up the 4 residuals.
 
 **Task B — hero background design gate + `/qc-council` [inline, Opus].** The collision gate proved
 it is a FOUR-block class (hero/container/cta-section/trust-bar), not a hero quirk. Bean's

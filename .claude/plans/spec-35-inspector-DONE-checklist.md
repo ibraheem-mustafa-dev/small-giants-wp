@@ -118,7 +118,63 @@ proven LIVE on the pilot (`sgs/media`) at Gate 0 before any wave. Every block in
   first and promote to a hard prebuild gate at Spec close (plan Gate 3). The LIVE-DOM shrink-to-fit
   audit runs in CI / on-demand, gated at Phase 4 close.
 
+## Conditions to add or refine before Task F
+
+Surfaced 2026-08-04 during Task A (structural content-role detection) + the QC-BYPASSED
+re-verification of D481-D484. These are enforcement-design lessons for the 24 Task-F scripts, not
+inspector-UX end conditions — kept here per the instruction to record them against this checklist
+before Task F is built, since they change what "enforced" must mean for every rule Task F writes.
+
+- [ ] **22. Silence is not rejection — an aggregator must distinguish the two.** A detector's
+  ABSENCE from a supporting list and its PRESENCE-with-a-negative-verdict are different facts; folding
+  both into "no evidence" or "some evidence" loses the distinction that decides correctness.
+  Evidence: an aggregator this session assigned `sgs/button.rel` (an HTML `rel` attribute) as
+  client-editable content because D1's presence in the supporting list was read as endorsement, when
+  D1's actual verdict on that row was a rejection. **[enforced by]** UNENFORCED — no automated gate
+  exists; this is a rule-authoring discipline for Task F, not a script to write in isolation.
+- [ ] **23. Recall is measured against the eligible POOL, never the rule's own output** (REFINES
+  end condition 2's ENFORCED-bar point 2, "population cross-checked by an independent method" —
+  turns it from a general instruction into a concrete failure mode to test for). Evidence: a
+  three-detector suite reported 85% recall measured against its own union; re-measured against the
+  true 262-row eligible pool the honest figure was 52%, and the gap between the two contained real
+  misses (`sgs/hero.svgContent`, `sgs/media.svgContent`), not noise. A recall figure computed
+  against a self-referential denominator is not evidence of coverage.
+- [ ] **24. A report's named artefact must exist on disk — mechanically checkable, not asserted.**
+  Evidence: a report this session claimed two "durable regression fixtures" by filename
+  (`plant_render2.php`, `plant_edit2.js`); `find . -name 'plant_*'` returned nothing — both were
+  transient and lost. **[enforced by]** trivially scriptable: any report claiming a filename runs a
+  `find`/`test -f` check before the claim ships; UNENFORCED today, cheap for Task F to add as a
+  report-linting step.
+- [ ] **25. Name the CONSUMER before measuring a value, then prove it by reading that consumer**
+  (REFINES the NEXT SESSION "DEFINITION OF ENFORCED" bar point 8, "the right document" — turns the
+  prose instruction into a required action: read the consumer's source, don't infer its contract).
+  Evidence: `derived_selector` was measured against what a block RENDERS and reported 593 of 889 as
+  phantom — the exact D484 error (a deleted gate reported 666/889 the same way for the same reason:
+  `derived_selector` is a DRAFT-side matcher, `scalar_content.py` consumes it against the draft DOM,
+  never against render output). Reading D484 at session start did not prevent repeating it — only
+  reading the actual consuming code would have.
+- [ ] **26. A zero from a search you wrote requires a positive control before it is trusted.** Find
+  something you KNOW is present first; only then trust that nothing else is. Evidence: three separate
+  zero-or-empty results this session were broken searches, not empty worlds — a comma-delimited LIKE
+  defeated by JSON-quoted values, a column split on two spaces instead of the real delimiter, and a
+  detector that never actually reached the target file. **[enforced by]** UNENFORCED — a
+  `--self-test` with a known-present plant (per the existing DEFINITION OF ENFORCED point 5) is the
+  general mechanism; this item names the specific failure mode point 5 exists to catch.
+- [ ] **27. A DB statistic quoted as evidence of framework health declares its denominator and is
+  scoped to `sgs/%`.** Evidence: two figures this session (colour-NULL-role "21", role-only "1099")
+  reproduced to the digit ONLY when computed across all 2,970 `block_attributes` rows, including 506
+  `core/*` rows describing WordPress core blocks the framework replaces, not SGS blocks; scoped
+  correctly the true figures are 19 and 955. Nothing was fabricated — the arithmetic was right, the
+  population was wrong. **[enforced by]** UNENFORCED — cheap to gate as a prose/reviewer rule (any
+  bare DB count in a report or doc must carry `WHERE block_slug LIKE 'sgs/%'` or state why not),
+  not worth a script.
+
 ## Reference
 - Spec: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (Part L source; Parts A–K rationale).
 - Plan / waves: `.claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md`.
 - Sibling (rendered output): `.claude/plans/block-migration-DONE-checklist.md`.
+- 2026-08-04 session evidence: `.claude/reports/2026-08-04-content-attr-miss-denominator.md`,
+  `.claude/reports/2026-08-04-step0-qc-bypassed-reverification.md`,
+  `.claude/reports/2026-08-04-trackB-ribbon-canonical-slot-root-cause.md`,
+  `.claude/reports/2026-08-04-trackC-tier-sibling-rows-root-cause.md`,
+  `.claude/reports/2026-08-04-fluid-typography-mobile-parity-hypothesis.md`.

@@ -94,7 +94,245 @@ const DRAFT = toURL(arg('draft')), CLONE = toURL(arg('clone'));
 const VIEWPORTS = arg('viewports', '375,768,1440').split(',').map(Number);
 const OUT = arg('out', '');
 const EXCLUDE = arg('exclude', '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-if (!DRAFT || !CLONE) { console.error('ERROR: --draft <url> and --clone <url> are required.'); process.exit(2); }
+const SELF_TEST = process.argv.includes('--self-test');
+if (!SELF_TEST && (!DRAFT || !CLONE)) { console.error('ERROR: --draft <url> and --clone <url> are required.'); process.exit(2); }
+
+// ── Fluid-typography equivalence (v1.2.0-fluid, 2026-08-04) ────────────────────────────────
+// GROUND-TRUTH: theme/sgs-theme/theme.json settings.typography.fluid (read direct 2026-08-04):
+// minViewportWidth 375px, maxViewportWidth 1200px, no minFontSize override. fontSizes[] read
+// verbatim from the same file (x-small/medium are the only `"fluid": false` presets).
+// The clamp-generation algorithm below is a line-for-line port of WordPress core's
+// wp_get_typography_font_size_value() + wp_get_computed_fluid_typography_value()
+// (wp-includes/block-supports/typography.php, fetched verbatim from
+// WordPress/wordpress-develop trunk 2026-08-04 — quoted in
+// .claude/reports/2026-08-04-parity-fluid-equivalence-fix.md). Root cause proven this session
+// (.claude/reports/2026-08-04-fluid-typography-mobile-parity-hypothesis.md): the DRAFT is
+// hand-authored flat px; the CLONE renders through WP's theme.json-driven fluid clamp(). A
+// font-size "mismatch" below the 1200px ceiling that is EXACTLY the clamp() transform of the
+// draft's own value is a faithful transfer, not a fidelity loss — Bean's decision: fix the
+// MEASUREMENT (never theme.json, never disable fluid typography).
+const THEME_FLUID = {
+  minViewportWidth: 375,
+  maxViewportWidth: 1200,
+  minFontSizeLimit: 14,   // WP's own hardcoded default ($default_minimum_font_size_limit); this
+                           // theme.json does not override typography.fluid.minFontSize.
+  // Registered presets (theme.json settings.typography.fontSizes, verbatim). A base px value
+  // that matches one of these EXACTLY uses ITS declared fluid setting (respects `fluid:false`
+  // per-size, req. 3) instead of the generic auto-generation path below.
+  presets: [
+    { sizePx: 12, fluid: false },                    // x-small
+    { sizePx: 14, fluid: { min: 13, max: 14 } },      // small
+    { sizePx: 18, fluid: false },                     // medium
+    { sizePx: 20, fluid: { min: 17, max: 20 } },      // large
+    { sizePx: 24, fluid: { min: 20, max: 24 } },      // x-large
+    { sizePx: 36, fluid: { min: 26, max: 36 } },      // xx-large
+    { sizePx: 50, fluid: { min: 32, max: 50 } },      // hero
+  ],
+};
+// DRIFT GUARD (adversarial-review finding, 2026-08-04): THEME_FLUID above is a hand-copied
+// snapshot of theme.json, exactly the class of hardcoded-dict bug this project's own DB-first
+// rule (R-31-1) exists to catch. If theme.json's fluid settings or fontSizes list ever change,
+// a stale snapshot would confidently compute against the WRONG curve — silently masking a real
+// regression OR wrongly failing a correct clone. Read theme.json LIVE at run time and fail
+// CLOSED (never grant fluid-equivalence for the rest of the run) if it has drifted, rather than
+// trusting the hardcoded copy. Runs once per process; the parsed live file, not the hardcoded
+// object, becomes the source of truth for wpFluidBounds() from that point on.
+const THEME_JSON_PATH = path.join(__dirname, '..', '..', '..', '..', 'theme', 'sgs-theme', 'theme.json');
+let THEME_FLUID_VERIFIED = false;
+function verifyThemeFluidFreshness() {
+  try {
+    const theme = JSON.parse(fs.readFileSync(THEME_JSON_PATH, 'utf8'));
+    const fluid = (theme.settings && theme.settings.typography && theme.settings.typography.fluid) || {};
+    const fontSizes = (theme.settings && theme.settings.typography && theme.settings.typography.fontSizes) || [];
+    const px = (v) => (v == null ? null : parseFloat(String(v)));
+    const drifts = [];
+    if (px(fluid.minViewportWidth) !== THEME_FLUID.minViewportWidth) drifts.push(`minViewportWidth theme.json=${fluid.minViewportWidth} vs THEME_FLUID=${THEME_FLUID.minViewportWidth}`);
+    if (px(fluid.maxViewportWidth) !== THEME_FLUID.maxViewportWidth) drifts.push(`maxViewportWidth theme.json=${fluid.maxViewportWidth} vs THEME_FLUID=${THEME_FLUID.maxViewportWidth}`);
+    if (fluid.minFontSize) drifts.push(`theme.json now sets typography.fluid.minFontSize=${fluid.minFontSize} (an override THEME_FLUID.minFontSizeLimit=${THEME_FLUID.minFontSizeLimit} does not account for)`);
+    for (const fs_ of fontSizes) {
+      const sizePx = px(fs_.size);
+      if (sizePx == null) continue;
+      const known = THEME_FLUID.presets.find((p) => Math.abs(p.sizePx - sizePx) < 0.5);
+      if (!known) { drifts.push(`theme.json has an unrecognised fontSize preset "${fs_.slug}"=${fs_.size} not in THEME_FLUID.presets`); continue; }
+      const themeFluidFalse = fs_.fluid === false;
+      const knownFluidFalse = known.fluid === false;
+      if (themeFluidFalse !== knownFluidFalse) drifts.push(`preset "${fs_.slug}" fluid:false mismatch — theme.json=${themeFluidFalse} vs THEME_FLUID=${knownFluidFalse}`);
+      if (!themeFluidFalse && !knownFluidFalse) {
+        const tMin = px(fs_.fluid && fs_.fluid.min), tMax = px(fs_.fluid && fs_.fluid.max);
+        if (tMin !== known.fluid.min || tMax !== known.fluid.max) drifts.push(`preset "${fs_.slug}" fluid min/max drifted — theme.json=${tMin}/${tMax} vs THEME_FLUID=${known.fluid.min}/${known.fluid.max}`);
+      }
+    }
+    if (drifts.length) {
+      console.error('\n⚠⚠⚠ FLUID-EQUIVALENCE DISABLED — THEME_FLUID has drifted from the live theme.json:');
+      drifts.forEach((d) => console.error('    - ' + d));
+      console.error('    Update THEME_FLUID in computed-parity.js to match, then re-run. Failing CLOSED: no font-size/line-height mismatch will be granted fluid-equivalence this run.\n');
+      return false;
+    }
+    THEME_FLUID_VERIFIED = true;
+    return true;
+  } catch (e) {
+    console.error(`\n⚠⚠⚠ FLUID-EQUIVALENCE DISABLED — could not read/parse theme.json at ${THEME_JSON_PATH}: ${e.message}\n`);
+    return false;
+  }
+}
+verifyThemeFluidFreshness();
+
+// ── wpFluidBounds/wpFluidValueAt: SELF-TEST-ONLY replica of WP's generation formula ────────
+// SUPERSEDED for live decisions (2026-08-04, post-review). Both dispatched reviews independently
+// found the ORIGINAL design unsafe: it INFERRED which theme.json preset a measured px belonged
+// to from numeric coincidence alone, then trusted THAT preset's declared bounds. Two presets can
+// resolve to overlapping computed pixels at a given viewport, so a wrong-preset guess means wrong
+// bounds — which means validating a genuinely broken clone against the WRONG curve and PASSING
+// it. That is the exact failure mode this rule exists to prevent (correctness review, grounded in
+// `sgs_font_size_value()`, plugins/sgs-blocks/includes/helpers-tokens.php:729-749: a NUMERIC
+// attribute renders as a flat px string with NO clamp() at all — only a SLUG renders via
+// `var(--wp--preset--font-size--slug)` — so numeric coincidence is not evidence of routing).
+// FIX: `fluidEquivalentFontSize` below now reads the ACTUAL declared CSS text off the live
+// element (captured by `declaredValue()` in CAPTURE_SRC) and parses ITS OWN literal clamp()
+// expression — zero attribution guessing. These two functions are kept ONLY to construct the
+// --self-test's synthetic "good-clone" fixture (which needs a real, WP-formula-correct clamp()
+// string to embed) and as a cross-check that this file's understanding of the WP algorithm
+// still matches theme.json (verifyThemeFluidFreshness above) — they are NOT called from
+// fluidEquivalentFontSize/lineHeightIsMechanicalConsequence any more.
+function wpFluidBounds(basePx) {
+  const nonFluidPreset = THEME_FLUID.presets.find((p) => p.fluid === false && Math.abs(p.sizePx - basePx) < 0.5);
+  if (nonFluidPreset) return null;
+  if (basePx <= THEME_FLUID.minFontSizeLimit) return null;
+  const factor = Math.min(0.75, Math.max(0.25, 1 - 0.075 * Math.log2(basePx)));
+  const calculatedMin = Math.round(basePx * factor * 1000) / 1000;
+  const min = calculatedMin <= THEME_FLUID.minFontSizeLimit ? THEME_FLUID.minFontSizeLimit : calculatedMin;
+  return { min, max: basePx };
+}
+function wpFluidValueAt(basePx, viewportPx) {
+  const bounds = wpFluidBounds(basePx);
+  if (!bounds) return null;
+  const { min, max } = bounds;
+  if (viewportPx <= THEME_FLUID.minViewportWidth) return min;
+  if (viewportPx >= THEME_FLUID.maxViewportWidth) return max;
+  const denom = THEME_FLUID.maxViewportWidth - THEME_FLUID.minViewportWidth;
+  const offset = Math.round((THEME_FLUID.minViewportWidth / 100) * 1000) / 1000;
+  let linearFactor = 100 * ((max - min) / denom);
+  linearFactor = Math.round(linearFactor * 1000) / 1000;
+  if (linearFactor === 0) linearFactor = 1;
+  const vw = viewportPx / 100;
+  const preferred = min + (vw - offset) * linearFactor;
+  return Math.min(max, Math.max(min, preferred));
+}
+
+// ── Source-verified fluid-equivalence (2026-08-04, post-review rewrite) ────────────────────
+// Parses WP's OWN generated clamp() expression directly off the live element's declared CSS
+// text (never a guess). WP authors the middle (preferred-value) term as
+// `<base>rem + ((1vw - <offset>px) * <factor>)`, but the LIVE BROWSER algebraically simplifies
+// this before `getPropertyValue()`/CSSOM returns it — VERIFIED live via Playwright, 2026-08-04:
+// the authored `0.875rem + ((1vw - 3.75px) * 0.242)` comes back from Chromium as
+// `-0.9075px + 0.875rem + 0.242vw` (distributed and reordered; -3.75*0.242=-0.9075 folded into
+// a px constant). Parsing therefore does NOT match WP's authored shape — it sums every px/rem
+// TERM into a constant (rem*16) and every vw term's coefficient into a factor, order-independent
+// (mathematically identical to WP's own form: preferred(viewportPx) = constPx + factor*(vw%)).
+// BLIND SPOT: recognises linear px/rem/vw calc() terms only — a clamp() using any other unit
+// (%, em, ch, container query units) or a non-linear expression is NOT this generation pattern
+// and DECLINES rather than guesses. A font-size set via any mechanism `declaredValue()` cannot
+// see (deeper var() chain, cross-origin sheet, ambiguous cascade — see its own blind-spot
+// comment) also DECLINES.
+function parseClampExpr(text) {
+  if (!text) return null;
+  const outer = /^clamp\(\s*([-\d.]+)(px|rem)\s*,\s*(.+?)\s*,\s*([-\d.]+)(px|rem)\s*\)$/i.exec(String(text).trim());
+  if (!outer) return null;
+  const toPx = (v, u) => (u.toLowerCase() === 'rem' ? parseFloat(v) * 16 : parseFloat(v));
+  const minPx = toPx(outer[1], outer[2]), maxPx = toPx(outer[4], outer[5]);
+  const termRe = /([+-]?\s*[\d.]+)\s*(px|rem|vw)/gi;
+  let term, constPx = 0, factor = 0, sawAny = false, consumed = 0;
+  const mid = outer[3];
+  while ((term = termRe.exec(mid))) {
+    sawAny = true;
+    consumed += term[0].length;
+    const val = parseFloat(term[1].replace(/\s+/g, ''));
+    const unit = term[2].toLowerCase();
+    if (unit === 'px') constPx += val;
+    else if (unit === 'rem') constPx += val * 16;
+    else if (unit === 'vw') factor += val;
+  }
+  // Sanity check: every non-whitespace/operator/paren character in the middle term must have
+  // been consumed as a recognised px/rem/vw token — if the browser emitted anything this parser
+  // doesn't understand (a function call, an unrecognised unit), decline rather than silently
+  // ignore it and compute against a partial/wrong reconstruction.
+  const strippedLen = mid.replace(/[\s()+\-*]/g, '').length;
+  if (!sawAny || consumed < strippedLen * 0.9) return null;
+  return { minPx, maxPx, constPx, factor };
+}
+function evalClampAt(expr, viewportPx) {
+  const preferred = expr.constPx + expr.factor * (viewportPx / 100);
+  return Math.min(expr.maxPx, Math.max(expr.minPx, preferred));
+}
+// Tolerance ±0.5px: the capture pipeline's `normVal()` already rounds every fractional px to
+// the nearest integer BEFORE it reaches here, so `crec.css['font-size']` is always an integer;
+// ±0.5px absorbs exactly one round-half tie against our exact (unrounded) `evalClampAt()`
+// prediction — it can NEVER swallow a real 1px+ regression (proven by the --self-test negative
+// control, which plants a 4px-off mobile font-size and asserts it still misses).
+const FLUID_TOLERANCE_PX = 0.5;
+// Returns {equivalent, declined, predictedPx}. THREE conditions must ALL hold for `equivalent`:
+//  1. The clone's DECLARED font-size text parses as WP's clamp() shape (else DECLINED — cannot
+//     verify, treated as a normal miss, never guessed).
+//  2. The clamp's own ceiling (maxPx) equals the DRAFT's flat value within tolerance — THIS is
+//     the proof of correspondence: it confirms the clamp is a transform OF THIS element's own
+//     draft value, not some unrelated clamp() that coincidentally evaluates near the right
+//     pixel (the exact attack both reviews probed for). Not merely declined but scored as a
+//     genuine miss when it fails, since a clamp existing with the WRONG ceiling is itself real
+//     evidence of a transfer defect.
+//  3. Evaluating that clamp() at the CURRENT viewport reproduces the clone's own computed value
+//     (a parse-correctness sanity check; near-tautological when steps 1-2 hold, but catches a
+//     malformed parse rather than silently trusting it).
+function fluidEquivalentFontSize(drec, crec, viewportPx) {
+  // BUG FOUND + FIXED (2026-08-04, caught by /qc-inline's own negative test on the drift guard
+  // added earlier this session): verifyThemeFluidFreshness() SET `THEME_FLUID_VERIFIED` but
+  // nothing ever READ it — the drift warning printed to console while every downstream check
+  // kept silently trusting the (possibly stale) THEME_FLUID constants anyway. Proven live: a
+  // deliberately-corrupted THEME_FLUID.minViewportWidth still passed the self-test's positive
+  // fluid-equivalent assertion despite the drift banner firing. A gate that detects but doesn't
+  // act is worse than no gate (it looks like protection while providing none). Also note: the
+  // viewport-ceiling comparison below itself reads THEME_FLUID.maxViewportWidth, so an unverified
+  // THEME_FLUID cannot be trusted for ANY branch here, not just the preset/formula ones — decline
+  // outright rather than partially trust it.
+  if (!THEME_FLUID_VERIFIED) return { equivalent: false, declined: true, predictedPx: null };
+  if (viewportPx >= THEME_FLUID.maxViewportWidth) return { equivalent: false, declined: false, predictedPx: null };
+  const expr = parseClampExpr(crec.declared && crec.declared.fontSize);
+  if (!expr) return { equivalent: false, declined: true, predictedPx: null };
+  const draftPx = parseFloat(drec.css['font-size']);
+  if (!isFinite(draftPx)) return { equivalent: false, declined: true, predictedPx: null };
+  if (Math.abs(expr.maxPx - draftPx) > FLUID_TOLERANCE_PX) return { equivalent: false, declined: false, predictedPx: null };
+  const predictedPx = evalClampAt(expr, viewportPx);
+  const actualPx = parseFloat(crec.css['font-size']);
+  const equivalent = isFinite(actualPx) && Math.abs(predictedPx - actualPx) <= FLUID_TOLERANCE_PX;
+  return { equivalent, declined: false, predictedPx };
+}
+// line-height (req. 4 + tolerance-compounding review finding): NOT an independent heuristic.
+// REWRITTEN 2026-08-04 to eliminate compounded rounding error rather than widen the tolerance to
+// tolerate it (a wider tolerance would also let a genuine regression through — the opposite of
+// what's needed). The ORIGINAL version back-computed a ratio from FOUR already-integer-rounded
+// measurements (dfs, dlh, cfs, clh), so rounding error from three separate roundings compounded
+// into the comparison before a FOURTH rounding (clh) was compared against it — the tolerance
+// budget for one rounding step was being asked to cover four. This version instead reads the
+// clone's ACTUAL declared line-height multiplier (a bare unitless number is this framework's
+// proven mechanism — evidence report §"line-height: consequence, not an independent cause") and
+// multiplies it by `fsResult.predictedPx`, the EXACT (unrounded) clamp-evaluated font-size
+// already derived above — not the rounded computed value. That removes 3 of the 4 rounding
+// steps from the derivation entirely, leaving exactly ONE rounding step (the measured `clh`
+// itself) to compare against, which is exactly what FLUID_TOLERANCE_PX was already calibrated
+// for — no compounding, no widened/loosened tolerance, no new heuristic.
+// BLIND SPOT: only a BARE unitless multiplier (`line-height:1.625`, no unit, no clamp(), no
+// var()) is recognised as the mechanical-consequence pattern; an explicit px/clamp()/var()
+// line-height is a DIFFERENT mechanism and DECLINES (never assumed derived).
+function lineHeightIsMechanicalConsequence(drec, crec, fsResult) {
+  if (!fsResult || !fsResult.equivalent || fsResult.predictedPx == null) return { equivalent: false, declined: false };
+  const declared = (crec.declared && crec.declared.lineHeight || '').trim();
+  const m = /^([\d.]+)$/.exec(declared);
+  if (!m) return { equivalent: false, declined: true };  // px / clamp() / var() / % -> not the proven pattern
+  const multiplier = parseFloat(m[1]);
+  const expectedClh = fsResult.predictedPx * multiplier;
+  const actualClh = parseFloat(crec.css['line-height']);
+  const equivalent = isFinite(actualClh) && Math.abs(expectedClh - actualClh) <= FLUID_TOLERANCE_PX;
+  return { equivalent, declined: false };
+}
 
 // Blocklist (documented, FR-20-6). NONE of these is a property_suffixes property the converter
 // transfers EXCEPT width/height (rendered geometry; a documented limit). Vendor-prefixed props
@@ -220,6 +458,78 @@ const CAPTURE_SRC = `() => {
     return 'img#' + norm(base);
   };
 
+  // v1.2.0-fluid (2026-08-04): declared-value lookup for the fluid-equivalence check. Reads the
+  // ACTUAL CSS text (not the resolved computed px) for font-size/line-height, walking UP the
+  // ancestor chain (both properties are inherited — WP's fluid clamp() is typically declared
+  // ONCE on body/:root :where(body) in the global-styles sheet and inherited by every text
+  // element below with no closer override, per the live-verified pattern in the evidence
+  // report). BLIND SPOTS (documented, never silently assumed away): (a) rule-matching
+  // approximates cascade by "last matching rule in stylesheet source order wins" — it does NOT
+  // model selector specificity or !important, so a lower-specificity LATER rule could
+  // theoretically be picked over a higher-specificity EARLIER one (rare in this codebase's
+  // generated CSS, which does not fight itself over font-size specificity); (b) var()
+  // indirection is resolved ONE level only — a custom property whose value is itself another
+  // var() will not resolve; (c) cross-origin stylesheets are inaccessible (CORS) and skipped.
+  // Any of these DECLINE (return null) rather than guess — the caller then treats that element
+  // as a normal, unforgiven mismatch (never grants fluid-equivalence on unverifiable evidence).
+  const ruleIndex = []; const customProps = {};
+  try {
+    for (const sheet of Array.from(document.styleSheets)) {
+      let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+      if (!rules) continue;
+      // BUG FOUND + FIXED LIVE (2026-08-04, via Playwright against the sandybrown canary): modern
+      // Chromium's CSS Nesting support means EVERY CSSStyleRule now exposes a .cssRules
+      // property (an empty CSSRuleList when it has no nested rules) — so checking rule.cssRules
+      // for truthiness was ALWAYS true and this walk recursed into it and skipped WITHOUT EVER
+      // reading the rule's own .style, silently finding zero font-size/line-height declarations
+      // on the entire live page (confirmed: a direct probe found the body selector's
+      // font-size:clamp(...) rule sitting in global-styles-inline-css with cssRules = an empty
+      // object, truthy but empty). Process a rule's OWN .style unconditionally, THEN also
+      // recurse into .cssRules when it actually HAS nested entries (length > 0) — the two are
+      // not mutually exclusive.
+      const walk = (list) => {
+        for (const rule of Array.from(list)) {
+          if (rule.style) {
+            for (const prop of ['font-size', 'line-height']) {
+              const v = rule.style.getPropertyValue(prop);
+              if (v && rule.selectorText) ruleIndex.push({ sel: rule.selectorText, prop, val: v.trim() });
+            }
+            for (let i = 0; i < rule.style.length; i++) {
+              const name = rule.style[i];
+              if (name && name.indexOf('--') === 0) customProps[name] = rule.style.getPropertyValue(name).trim();
+            }
+          }
+          if (rule.cssRules && rule.cssRules.length > 0) walk(rule.cssRules);
+        }
+      };
+      walk(rules);
+    }
+  } catch (e) { /* leave ruleIndex/customProps empty -> declaredValue always declines */ }
+  // Resolves var(--name) AND var(--name, fallback) — the fallback portion is discarded (the
+  // resolved custom-property value always wins when the property IS defined, which is the only
+  // case this index can see; an UNDEFINED custom property correctly falls through to null below
+  // rather than guessing the fallback was used).
+  const resolveVar = (text) => {
+    const m = /^var\\(\\s*(--[a-zA-Z0-9-]+)\\s*(?:,.*)?\\)$/.exec((text || '').trim());
+    if (!m) return text;
+    const resolved = customProps[m[1]];
+    return resolved !== undefined ? resolved : null;  // unresolvable indirection -> caller declines
+  };
+  const declaredValue = (startEl, prop) => {
+    for (let el = startEl; el && el.nodeType === 1; el = el.parentElement) {
+      const inline = el.style && el.style.getPropertyValue(prop);
+      if (inline) return resolveVar(inline.trim());
+      let found = null;
+      for (const r of ruleIndex) {
+        if (r.prop !== prop) continue;
+        let m = false; try { m = el.matches(r.sel); } catch (e) { m = false; }
+        if (m) found = r.val;  // last match in source order wins (cascade approximation)
+      }
+      if (found) return resolveVar(found);
+    }
+    return null;
+  };
+
   // per-tag defaults from bare (unstyled) elements -> the "initial" for the meaningful filter
   const defaults = {};
   const hold = document.createElement('div');
@@ -232,7 +542,9 @@ const CAPTURE_SRC = `() => {
   const texts = [], images = [], links = [], textEls = {};
   const dkeyOccurrence = {};
   const boxElsRaw = {};
-  const mk = (el) => ({ tag: el.tagName.toLowerCase(), cls: clsList(el), css: readAll(el), ...ctx(el) });
+  const mk = (el) => ({ tag: el.tagName.toLowerCase(), cls: clsList(el), css: readAll(el),
+    declared: { fontSize: declaredValue(el, 'font-size'), lineHeight: declaredValue(el, 'line-height') },
+    ...ctx(el) });
   document.querySelectorAll('*').forEach((el) => {
     if (inChrome(el) || SKIP_TAGS[el.tagName]) return;
     const isHtmlOrBody = el.tagName === 'HTML' || el.tagName === 'BODY';
@@ -381,22 +693,177 @@ function meaningfulCountUnmatched(drec, dDef) {
   return n;
 }
 
-function comparePair(drec, crec, dDef) {
-  let total = 0, match = 0; const diffs = [], sub = [];
+function comparePair(drec, crec, dDef, viewportPx) {
+  let total = 0, match = 0, declined = 0; const diffs = [], sub = [], fluid = [];
   const ddef = dDef[drec.tag] || {};
+  // Computed ONCE per pair (not per-prop) so the line-height branch below can require it.
+  // `fsResult` = {equivalent, declined, predictedPx} — see fluidEquivalentFontSize's docblock.
+  const fsResult = fluidEquivalentFontSize(drec, crec, viewportPx);
   for (const p of Object.keys(drec.css)) {
     const dv = drec.css[p], cv = crec.css[p];
     if (cv === undefined) continue;
     const meaningful = (dv !== cv) || (ddef[p] !== undefined && dv !== ddef[p]);
     if (!meaningful) continue;
     if (propMatches(p, dv, cv)) { total++; match++; continue; }
+    // FLUID-EQUIVALENCE (v1.2.0-fluid, 2026-08-04, source-verified per post-review rewrite): a
+    // genuine PASS — counts toward match/total like any other pass — but recorded in its OWN
+    // bucket so it stays visible rather than being silently absorbed into `match`. DECLINED
+    // (evidence insufficient to verify either way) is counted separately and falls through to
+    // the ordinary real-miss path below — never silently dropped, never guessed into a pass.
+    if (p === 'font-size') {
+      if (fsResult.equivalent) { total++; match++; fluid.push({ prop: p, draft: dv, clone: cv, basis: 'wp-fluid-clamp-source-verified' }); continue; }
+      if (fsResult.declined) declined++;
+    }
+    if (p === 'line-height') {
+      const lhResult = lineHeightIsMechanicalConsequence(drec, crec, fsResult);
+      if (lhResult.equivalent) { total++; match++; fluid.push({ prop: p, draft: dv, clone: cv, basis: 'unitless-multiplier-source-verified' }); continue; }
+      if (lhResult.declined) declined++;
+    }
     const bucket = subVisibleBucket(p, dv, cv, drec, crec);
     if (bucket) { sub.push({ prop: p, draft: dv, clone: cv, bucket }); continue; }  // unscored
     total++; diffs.push({ prop: p, draft: dv, clone: cv });
   }
-  return { total, match, diffs, sub };
+  return { total, match, diffs, sub, fluid, declined };
 }
 
+// ── --self-test (2026-08-04, rewritten post-review) ────────────────────────────────────────
+// Proves the fluid-equivalence rule via the REAL pipeline (capture() + comparePair()), not a
+// reimplementation — on-disk HTML fixtures stand in for "draft" and "clone", run through the
+// actual browser + the actual comparison code this file ships.
+//   1. POSITIVE: draft flat 16px/26px-lh vs a clone using the EXACT live clamp() formula
+//      measured on the canary -> expect 0 real font-size/line-height misses, >=1 fluid-equivalent.
+//   2. NEGATIVE CONTROL: same draft vs a clone with a flat, clamp-unrelated 10px/14px (not a
+//      point on the 14-16px clamp curve, and not a clamp() at all) -> expect a REAL scored miss,
+//      DECLINED (no parseable clamp() text), NOT fluid-equivalent. Per the task's own warning, a
+//      negative control can be vacuous if the planted break never lands — so this reads the
+//      fixture file back off disk and asserts the injected "10px" string is actually present
+//      BEFORE trusting the comparison result.
+//   3. UNPARSEABLE-SOURCE GUARD: a flat 11px clone against a 12px draft (no clamp() text at all)
+//      -> DECLINED, never guessed into a pass, regardless of how "shrink-shaped" the numbers look.
+//   4. MISATTRIBUTION REGRESSION (the exact bug both reviewers found in the ORIGINAL design):
+//      draft=20px (which numerically coincides with the "large" preset's OWN declared size).
+//      The clone renders a genuinely FLAT, non-fluid 17px (simulating a discrete device-tier
+//      hardcode, or any other non-fluid mechanism) — 17px is exactly what the OLD preset-identity
+//      guess would have predicted as "large"'s min bound at the 375px floor, so the ORIGINAL code
+//      would have WRONGLY GRANTED fluid-equivalence here (validating a broken clone against a
+//      curve it never actually used). The rewritten source-verified code MUST decline (no
+//      clamp() in the clone's declared CSS) and score it as a real miss.
+async function selfTest() {
+  const dir = path.join(__dirname, '__fluid_selftest_fixtures__');
+  fs.mkdirSync(dir, { recursive: true });
+  const TEXT = 'she was struggling with breastfeeding her newborn';
+  const TEXT2 = 'handmade in birmingham for the mum who deserves it';
+  const write = (name, text, fontSize, lineHeight) => {
+    const p = path.join(dir, name);
+    fs.writeFileSync(p, `<!DOCTYPE html><html><body><p style="font-size:${fontSize};line-height:${lineHeight};margin:0;">${text}</p></body></html>`);
+    return p;
+  };
+  const draftPath = write('draft.html', TEXT, '16px', '26px');
+  // Exact live formula for base=16px measured on the canary (report §"the mechanism, traced to
+  // source"): clamp(14px, 0.875rem + ((1vw - 3.75px) * 0.242), 16px). line-height follows the
+  // SAME unitless multiplier (26/16 = 1.625) the framework uses everywhere.
+  const goodClonePath = write('good-clone.html', TEXT, 'clamp(14px, 0.875rem + ((1vw - 3.75px) * 0.242), 16px)', '1.625');
+  // Negative control: a flat, clamp-unrelated mobile font-size — NOT a point on any fluid curve
+  // for base=16px (predicted clamp value at 375px is 14px; 10px is 4px off, far outside tolerance)
+  // and NOT a clamp() at all, so this must DECLINE rather than be evaluated-and-rejected.
+  const badClonePath = write('bad-clone.html', TEXT, '10px', '14px');
+  // Unparseable-source guard: base=12px, clone flat 11px (no clamp() text at all).
+  const guardDraftPath = write('guard-draft.html', TEXT, '12px', '18px');
+  const guardClonePath = write('guard-clone.html', TEXT, '11px', '17px');
+  // Misattribution regression (Test 4): base=20px exactly equals the "large" preset's declared
+  // size (theme.json fontSizes: large=20px, fluid min 17/max 20). The OLD wpFluidBounds() would
+  // have matched this numeric coincidence and used large's OWN bounds -> predicted 17px at
+  // 375px (the viewport floor returns `min` exactly) -> WOULD have wrongly matched a flat,
+  // non-fluid clone hardcoded to 17px. The clone here is a FLAT 17px (no clamp() at all).
+  const misDraftPath = write('mis-draft.html', TEXT2, '20px', '30px');
+  const misClonePath = write('mis-clone.html', TEXT2, '17px', '25.5px');
+
+  // Confirm the planted breaks actually landed on disk (measurement-vs-vacuity guard, per task).
+  const badOnDisk = fs.readFileSync(badClonePath, 'utf8');
+  const guardOnDisk = fs.readFileSync(guardClonePath, 'utf8');
+  const misOnDisk = fs.readFileSync(misClonePath, 'utf8');
+  if (!badOnDisk.includes('10px')) { console.error('SELF-TEST SETUP FAILED: injected 10px break not found on disk in bad-clone.html'); process.exit(1); }
+  if (!guardOnDisk.includes('11px')) { console.error('SELF-TEST SETUP FAILED: injected 11px break not found on disk in guard-clone.html'); process.exit(1); }
+  if (!misOnDisk.includes('17px')) { console.error('SELF-TEST SETUP FAILED: injected 17px misattribution break not found on disk in mis-clone.html'); process.exit(1); }
+  console.log('  [setup] confirmed all 3 planted breaks are present on disk (bad-clone.html has 10px, guard-clone.html has 11px, mis-clone.html has 17px)');
+
+  const browser = await chromium.launch();
+  const page = await (await browser.newContext({ deviceScaleFactor: 1 })).newPage();
+  const VW = 375;
+  let failures = 0;
+  const check = (label, cond, detail) => {
+    console.log(`  [${cond ? 'PASS' : 'FAIL'}] ${label}${detail ? ' — ' + detail : ''}`);
+    if (!cond) failures++;
+  };
+
+  // --- Test 1: POSITIVE (fluid-equivalent font-size + line-height) ---
+  {
+    const d = await capture(page, toURL(draftPath), VW);
+    const c = await capture(page, toURL(goodClonePath), VW);
+    const drec = d.textEls[TEXT], crec = c.textEls[TEXT];
+    check('positive fixture: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
+    const lhMiss = r.diffs.some((x) => x.prop === 'line-height');
+    const fsFluid = r.fluid.some((x) => x.prop === 'font-size');
+    const lhFluid = r.fluid.some((x) => x.prop === 'line-height');
+    check('positive: font-size is NOT a real miss', !fsMiss, `draft=${drec.css['font-size']} clone=${crec.css['font-size']}`);
+    check('positive: font-size IS bucketed fluid-equivalent', fsFluid);
+    check('positive: line-height is NOT a real miss', !lhMiss, `draft=${drec.css['line-height']} clone=${crec.css['line-height']}`);
+    check('positive: line-height IS bucketed fluid-equivalent (derived)', lhFluid);
+    check('positive: declined count is 0 (clean pass, nothing unverifiable)', r.declined === 0);
+  }
+
+  // --- Test 2: NEGATIVE CONTROL (genuinely wrong mobile font-size must still miss) ---
+  {
+    const d = await capture(page, toURL(draftPath), VW);
+    const c = await capture(page, toURL(badClonePath), VW);
+    const drec = d.textEls[TEXT], crec = c.textEls[TEXT];
+    check('negative fixture: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
+    const fsFluid = r.fluid.some((x) => x.prop === 'font-size');
+    check('negative control: font-size IS still a real scored miss', fsMiss, `draft=${drec.css['font-size']} clone=${crec.css['font-size']} (flat 10px, no clamp() to verify)`);
+    check('negative control: font-size is NOT granted fluid-equivalence', !fsFluid);
+    check('negative control: declined (no clamp() text to verify) rather than silently guessed', r.declined >= 1);
+  }
+
+  // --- Test 3: UNPARSEABLE-SOURCE GUARD (flat clone value must never be guessed into a pass) ---
+  {
+    const d = await capture(page, toURL(guardDraftPath), VW);
+    const c = await capture(page, toURL(guardClonePath), VW);
+    const drec = d.textEls[TEXT], crec = c.textEls[TEXT];
+    check('guard fixture: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
+    const fsFluid = r.fluid.some((x) => x.prop === 'font-size');
+    check('unparseable-source guard: 12px->11px is still a real scored miss', fsMiss);
+    check('unparseable-source guard: NOT granted fluid-equivalence despite resembling a shrink', !fsFluid);
+    check('unparseable-source guard: declined, not guessed', r.declined >= 1);
+  }
+
+  // --- Test 4: MISATTRIBUTION REGRESSION (the exact bug the reviews found — see comment above) ---
+  {
+    const d = await capture(page, toURL(misDraftPath), VW);
+    const c = await capture(page, toURL(misClonePath), VW);
+    const drec = d.textEls[TEXT2], crec = c.textEls[TEXT2];
+    check('misattribution fixture: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
+    const fsFluid = r.fluid.some((x) => x.prop === 'font-size');
+    check('misattribution regression: 20px->17px (old code\'s exact false-pass case) IS a real scored miss', fsMiss, `draft=${drec.css['font-size']} clone=${crec.css['font-size']}`);
+    check('misattribution regression: NOT granted fluid-equivalence (no clamp() in the clone\'s source)', !fsFluid);
+    check('misattribution regression: declined (evidence insufficient), never guessed via preset identity', r.declined >= 1);
+  }
+
+  await browser.close();
+  console.log(failures ? `\n${failures} SELF-TEST CHECK(S) FAILED` : '\nALL SELF-TEST CHECKS PASSED');
+  process.exit(failures ? 1 : 0);
+}
+
+if (SELF_TEST) {
+  selfTest().catch((e) => { console.error(e); process.exit(1); });
+} else {
 (async () => {
   const browser = await chromium.launch();
   const page = await (await browser.newContext({ deviceScaleFactor: 1 })).newPage();
@@ -405,7 +872,7 @@ function comparePair(drec, crec, dDef) {
     method: 'computed values, matched by content, all-props-minus-blocklist, meaningful-only, visible-fidelity (Spec 20 v1.2.0 / rule 4a). font-family primary-only; sub-visible twins bucketed (unscored) by invisibility predicate; tag scored separately; classes context-only. v1.2.0 (2026-08-04): a draft element with NO clone counterpart now scores its meaningful props as MISSES instead of being excluded from the score, and every pct carries its denominator.',
     viewports: {},
   };
-  let gT = 0, gM = 0, gSub = 0, gTagT = 0, gTagM = 0;
+  let gT = 0, gM = 0, gSub = 0, gTagT = 0, gTagM = 0, gFluid = 0, gFluidDeclined = 0;
 
   for (const vw of VIEWPORTS) {
     const d = await capture(page, DRAFT, vw);
@@ -426,7 +893,7 @@ function comparePair(drec, crec, dDef) {
     // Tier 2+3: CSS + TAG over text-leaf (fuzzy) + structural (exact), ALL props, meaningful-only.
     // `unmT` tracks how much of T came from MISSING elements, so the honest all-in score and the
     // legacy matched-only score can both be reported without one hiding the other.
-    let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0; const mis = [], unm = [], subv = [], tagMis = [];
+    let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0; const mis = [], unm = [], subv = [], tagMis = [], fluidv = [];
     const runTier = (map, cloneMap, exact) => {
       for (const [key, drec] of Object.entries(map)) {
         if (excluded(key)) continue;
@@ -447,21 +914,23 @@ function comparePair(drec, crec, dDef) {
         if (drec.tag === crec.tag) tagM++;
         else tagMis.push({ text: key.slice(0, 40), draft_tag: drec.tag, clone_tag: crec.tag });
         // CSS dimension.
-        const r = comparePair(drec, crec, d.defaults);
-        T += r.total; M += r.match;
+        const r = comparePair(drec, crec, d.defaults, vw);
+        T += r.total; M += r.match; fluidDeclined += r.declined;
         if (r.diffs.length) mis.push({
           text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs,
           // FR-20-10: class context ONLY — never scored, present for human/debug audit.
           classes: { draft: drec.cls || [], clone: crec.cls || [] },
         });
         if (r.sub.length) subv.push({ text: key.slice(0, 46), tag: drec.tag, sub: r.sub });
+        if (r.fluid.length) fluidv.push({ text: key.slice(0, 46), tag: drec.tag, fluid: r.fluid });
       }
     };
     runTier(d.textEls, c.textEls, false);
     runTier(d.boxEls, c.boxEls, true);
 
     const subCount = subv.reduce((n, e) => n + e.sub.length, 0);
-    gT += T; gM += M; gSub += subCount; gTagT += tagT; gTagM += tagM;
+    const fluidCount = fluidv.reduce((n, e) => n + e.fluid.length, 0);
+    gT += T; gM += M; gSub += subCount; gTagT += tagT; gTagM += tagM; gFluid += fluidCount; gFluidDeclined += fluidDeclined;
     report.viewports[vw] = {
       // DENOMINATORS ARE MANDATORY (2026-08-04). `content` previously reported a bare `pct` with
       // no match/total, so "content 99%" could not be checked against anything — a percentage
@@ -483,10 +952,21 @@ function comparePair(drec, crec, dDef) {
       },
       tag: { pct: tagT ? Math.round(100 * tagM / tagT) : null, pairs: tagT, match: tagM, mismatches: tagMis },
       sub_visible: { count: subCount, elements: subv },
+      // fluid_equivalent (v1.2.0-fluid, 2026-08-04): font-size/line-height "mismatches" that are
+      // exactly WP's own fluid clamp() transform of the draft's flat value at this viewport —
+      // counted as PASSES (in css.match above) but kept visible in their own bucket per the
+      // requirement that this NOT be silently absorbed.
+      fluid_equivalent: { count: fluidCount, elements: fluidv },
+      // fluid_declined (2026-08-04, adversarial-review follow-up): font-size/line-height
+      // mismatches where the evidence to VERIFY a fluid transform was insufficient (no parseable
+      // clamp() text, or no bare unitless line-height multiplier) — never guessed, always folded
+      // into the ordinary real-miss count (visible in `css.mismatches`), counted separately here
+      // ONLY so the "how many did we decline rather than guess" question is answerable.
+      fluid_declined: fluidDeclined,
     };
     console.log(`\n===== ${vw}px =====`);
     console.log(`  CONTENT  ${contentPct}%   (${cTot - cDrop}/${cTot}; ${cDrop} dropped: ${dropText.length} text / ${dropImg.length} img / ${dropLink.length} link)`);
-    console.log(`  CSS      ${T ? Math.round(100 * M / T) : 0}%   (${M}/${T} MEANINGFUL props; ${mis.length} elements off; ${subCount} sub-visible excluded)`);
+    console.log(`  CSS      ${T ? Math.round(100 * M / T) : 0}%   (${M}/${T} MEANINGFUL props; ${mis.length} elements off; ${subCount} sub-visible excluded; ${fluidCount} fluid-equivalent [scored as PASS]; ${fluidDeclined} fluid-declined [unverifiable, scored as normal miss])`);
     if (unm.length) {
       console.log(`  ⚠ MISSING  ${unm.length} draft element(s) have NO counterpart in the clone — ${unmT} meaningful prop(s) scored as LOST (was: excluded from the score entirely).`);
       for (const u of unm.slice(0, 6)) console.log(`      [${u.tag}] "${u.text}" (${u.meaningful_props_lost} props)`);
@@ -503,7 +983,10 @@ function comparePair(drec, crec, dDef) {
   report.overall_css_pct = gT ? Math.round(100 * gM / gT) : null;
   report.overall_tag_pct = gTagT ? Math.round(100 * gTagM / gTagT) : null;
   report.sub_visible_total = gSub;
-  console.log(`\n##### OVERALL CSS ${report.overall_css_pct}% (${gM}/${gT} meaningful props) | TAG ${report.overall_tag_pct}% (${gTagM}/${gTagT} pairs) | ${gSub} sub-visible excluded, ${VIEWPORTS.length} viewports. VISIBLE-fidelity (Spec 20 v1.2.0; missing elements SCORED as misses); pairs with Bean's eye, never closes alone. Excludes text: ${EXCLUDE.join(', ') || 'none'} #####`);
+  report.fluid_equivalent_total = gFluid;
+  report.fluid_declined_total = gFluidDeclined;
+  console.log(`\n##### OVERALL CSS ${report.overall_css_pct}% (${gM}/${gT} meaningful props) | TAG ${report.overall_tag_pct}% (${gTagM}/${gTagT} pairs) | ${gSub} sub-visible excluded | ${gFluid} fluid-equivalent (scored PASS) | ${gFluidDeclined} fluid-declined (unverifiable, scored as normal miss), ${VIEWPORTS.length} viewports. VISIBLE-fidelity (Spec 20 v1.2.0; missing elements SCORED as misses); pairs with Bean's eye, never closes alone. Excludes text: ${EXCLUDE.join(', ') || 'none'} #####`);
   if (OUT) { fs.writeFileSync(OUT, JSON.stringify(report, null, 1)); console.log('report -> ' + OUT); }
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });
+}

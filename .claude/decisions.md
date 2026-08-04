@@ -1,5 +1,101 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D488 — Fluid typography PROVEN as the mobile clone-fidelity cause; Bean rules KEEP fluid, fix the measurement [ROUTINE]
+
+**2026-08-04.** `.claude/reports/2026-08-04-fluid-typography-mobile-parity-hypothesis.md`. `theme.json`
+sets global `settings.typography.fluid` (`minViewportWidth:375px`/`maxViewportWidth:1200px`); WP's
+typography engine auto-fluids ANY numeric font-size a block declares (preset or literal) unless that
+value opts out with its own `fluid:false`. The draft authors a flat 16px; the clone emits the same
+16px through no non-fluid preset, so WordPress wraps it in `clamp(14px, 0.875rem + ((1vw - 3.75px) *
+0.242), 16px)`. Walked by hand: 375px → 14.00px, 768px → 14.95px≈15px, 1440px → flat 16px (matches)
+— the exact measured clone values at all three viewports, on three unrelated block families
+(testimonial text, trust-bar badge, an `<img>` reading only inherited font-size). Line-height tracks
+as a pure consequence of the shrinking font-size (unitless multiplier), not an independent defect.
+**Bean's ruling: KEEP fluid typography** (it is a legitimate, wanted design-system feature) — **fix
+the MEASUREMENT**, not the CSS. Fix direction (not executed, converter work): snap a literal/computed
+px value to the nearest registered preset (which already carries the theme's intended `fluid` flag)
+rather than emitting a bare custom px that falls into WP's implicit global-fluid path; where no preset
+is close enough, add a `fluid:false` preset (theme.json is spec-governed, Rule 7 design-gate). A
+separate, smaller `small` preset max/13px-vs-14px mismatch was found at the 1440px ceiling — do not
+conflate it with this finding.
+
+## D487 — Track C: the "145 tier-sibling NULL rows" premise REFUTED — correct by design, not a defect [ROUTINE]
+
+**2026-08-04.** `.claude/reports/2026-08-04-trackC-tier-sibling-rows-root-cause.md`. The suspected
+link between 145 `sgs/%` `block_attributes` rows carrying NULL `css_property`/`css_tier` on
+Mobile/Tablet-suffixed siblings and the mobile clone-fidelity gap is REFUTED. Mechanism: DERIVED, not
+cached — `db_lookup.py::declared_attrs_for_css_property(..., base_only=True)` resolves a tier
+sibling's `css_property` from its BASE row at READ TIME and deliberately EXCLUDES tier rows from its
+own scan; the sibling never carries its own value by design. Denominator, verified: 2,464 `sgs/%`
+rows -> 554 tier-suffixed -> 339 with a matching base -> 238 with a populated base `css_property` ->
+**145/238 (61%)**, not /554 and not the whole table. Live parity artefact trace showed the actual
+375px/768px font-size mismatch (draft 16px -> clone 14/15px, uniform across unrelated block families,
+vanishing above 1200px) does not match the tier-NULL signature (would be scoped to ~12 font-size/
+line-height rows and would differ 375 vs 768) — see D488 for the real cause. Added a code comment at
+`db_lookup.py::declared_attrs_for_css_property`'s `base_only` clause and a note in Spec 31 §3.A (the
+`css_property`/`css_layer`/… row) stating the NULL is correct-by-design so a future session does not
+"fix" it. Open fragility flagged, not fixed this session: 331 of 339 base/tier pairs are one
+asymmetric `role` reclassification away from the exclusion logic mis-firing (documented at
+`db_lookup.py` ~line 5439, dated the day before this investigation).
+
+## D486 — Track B: 3 slot-alias collisions corrected via override channel; alias-removal alternative REJECTED [ROUTINE]
+
+**2026-08-04.** `.claude/reports/2026-08-04-trackB-ribbon-canonical-slot-root-cause.md`. Root cause,
+proven not inferred: `slots` row 18 (`price`) lists `"ribbon"` in its own `aliases` JSON array, and
+`assign-canonical.py::load_slot_aliases()` scans `slots` with no `ORDER BY` (physical/rowid order) and
+resolves first-writer-wins — `price` (rowid 18) loads before the dedicated `ribbon` slot (rowid 89)
+and claims the term, so `sgs/cta-section.ribbon` resolved to `canonical_slot='price'`. A system-wide
+self-join found **9 raw alias-collisions**, of which **4 touch a live `sgs/%` attribute**: `sgs/quote.
+attribution` (already patched via the existing override channel), and three genuinely wrong live
+values — `sgs/cta-section.ribbon` (price->ribbon), `sgs/media.caption` (text->caption), `sgs/form-
+field-number.step` (card->NULL, a non-content numeric HTML attribute that should not carry a
+canonical_slot at all). Fixed via 3 new entries in `attr-classification-overrides.json` (the project's
+existing per-row hand-authored override channel, same mechanism the `attribution` precedent already
+used) — no DB schema change, no seeder rerun this session. **Alternative REJECTED after testing:**
+dropping alias matching entirely from `content_attr_for_element()`'s tier-1 fallback was considered
+and rejected — 179 of 1170 attrs genuinely depend on alias resolution for correct synonym matching
+(`title`->`heading`, `url`->`link`, `columns`->`column`); removing it would break ~175 correct rows to
+fix 3. Blast-radius trace for `ribbon` specifically found the wrong value was, until this fix,
+accidentally INERT (gated on `role`, which was NULL) — fragile-but-harmless, not currently causing
+content loss; `caption`'s exposure was not fully traced (flagged open). A second, independent
+alias-resolution implementation (`db_lookup.py::_slot_synonyms()`, last-writer-wins) already resolved
+`ribbon` correctly by accident — the two resolvers disagree on collision order, a latent defect class
+this session did not fix.
+
+## D485 — Spec 35 Task A: structural content-role detection SHIPPED, replacing name-guessing [ROUTINE]
+
+**2026-08-04.** `.claude/reports/2026-08-04-content-attr-miss-denominator.md` +
+`.claude/reports/2026-08-04-step0-qc-bypassed-reverification.md`. New directory
+`plugins/sgs-blocks/scripts/content-role-detect/` — three independent structural detectors replacing
+`assign-canonical.py:1279-1316`'s ~60-name regex (kept as a fallback, not deleted): D1 walks
+render.php escaping via PHP `token_get_all` (precision 97%), D2 reads edit.js control bindings
+(precision 66% — 34% of raw hits are technical settings, not content), D3 finds i18n-wrapped defaults
+(precision 100%). Combination rule is derived from MEASURED precision: D1/D3 may assign a role alone;
+D2 alone never may (too noisy). New Tier-0 structural hook in `apply_role_detection_inline`, ordered
+ABOVE the name regex. After `/sgs-update`: `sgs/%` `role IS NULL` 703 -> 669 (-34, exact); `text-
+content` 76 -> 108; `content` 40 -> 42. row-floor + db-consistency gates PASS. Eligible pool 262: **34
+assigned, 28 report-only (needs a human), 8 vetoed, 127 reached by no detector at all** (honest open
+search space, not claimed complete).
+**Mid-session correction discipline that held:** an initial pass under-counted (union 71, content-
+bearing 50) because recall was checked against the union's own output, not the full 262-row pool — a
+coordinator-directed re-derivation against the true pool found 4 detector bugs (control-structure glue
+in D1's statement splitter; a missing `wp_kses_post` in D1's tracked-function list; a `value={ x || ''
+}` fallback shape D2 never matched; a JS comment breaking D2's destructuring parser) plus 2 further
+genuine misses (`svgContent` icon-identity, `form.successRedirect`), landing on a corrected 76-row
+union / 55 content-bearing / 55/262=52% "reached by at least one detector" figure. **QC-BYPASSED flag
+from the same session's earlier enforcement work (D481-D484) was independently re-verified and
+CLEARED**: 4 of 6 load-bearing figures confirmed exact; 2 (colour-NULL-role, role-only) reproduced to
+the digit but only when computed across ALL 2,970 `block_attributes` rows including 506 `core/*` rows
+— restated scoped to `sgs/%`: **21 -> 19, 1099 -> 955**. Nothing fabricated; two figures needed a
+scoped denominator.
+**A retraction recorded as evidence, not omitted:** mid-session an agent measured `derived_selector`
+against what blocks RENDER and reported 593/889 as phantom selectors — reproducing the EXACT error
+D484 already recorded and purged (a deleted gate reported 666/889 the same way, for the same reason:
+`derived_selector` is a DRAFT-side matcher, not a render-output matcher). The finding was withdrawn.
+Recorded here because D484's lesson was read at session start and the same measurement mistake was
+made again in the same session — proof that a prose rule in decisions.md does not by itself bind
+without a structural check.
+
 ## D484 — `derived_selector` is a DRAFT-side matcher; the drift gate was removed [INCIDENT]
 
 **2026-08-04.** A gate built this session (`check-derived-selector-drift.py`) compared

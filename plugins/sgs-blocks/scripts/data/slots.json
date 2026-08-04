@@ -1,7 +1,7 @@
 {
   "__doc": "Canonical slot vocabulary (element + section scope) with aliases and standalone-block routing. THE source of truth for the `slots` table (Spec 31 §13.5). db_lookup._migrate_slots() seeds it at module load.",
   "__why": "Converter-load-bearing with NO writer anywhere: the walker resolves every BEM element name through `slots.aliases` and every section through `slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live 2026-08-02 (Phase 1).",
-  "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 one-off that appended productName / trialTag / featuredTag / splitimage. Those aliases are BAKED INTO this capture, so it became redundant and the script was DELETED 2026-08-02. Extend THIS file to add an alias; there is no script to re-run.",
+  "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 one-off whose four alias additions are BAKED INTO this capture. It became redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; there is no script to re-run.",
   "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
   "__columns": [
     "slot_name",
@@ -39,7 +39,7 @@
     [
       "text",
       "element",
-      "[\"attribution\", \"author\", \"bio\", \"caption\", \"consent-text\", \"content-preview\", \"copy\", \"description\", \"excerpt\", \"inner-label\", \"intro\", \"label-control\", \"message\", \"messages\", \"review-content\", \"verified\", \"verified-text\"]",
+      "[\"author\", \"bio\", \"consent-text\", \"content-preview\", \"copy\", \"description\", \"excerpt\", \"inner-label\", \"intro\", \"label-control\", \"message\", \"messages\", \"review-content\", \"verified\", \"verified-text\"]",
       "sgs/text",
       "Paragraph body",
       null
@@ -103,7 +103,7 @@
     [
       "items",
       "element",
-      "[\"arrow\", \"arrows\", \"badges\", \"dot\", \"dots\", \"features\", \"filter\", \"filters\", \"list\", \"menu\", \"nav\", \"option\", \"set\", \"social\", \"social-link\", \"thumbs\"]",
+      "[\"arrow\", \"arrows\", \"badges\", \"dot\", \"dots\", \"features\", \"filter\", \"filters\", \"list\", \"menu\", \"option\", \"set\", \"social-link\", \"thumbs\"]",
       "sgs/info-box",
       "Repeating list of items",
       null
@@ -151,7 +151,7 @@
     [
       "price",
       "element",
-      "[\"amount\", \"cost\", \"price-wrapper\", \"ribbon\", \"savings-badge\"]",
+      "[\"amount\", \"cost\", \"price-wrapper\", \"savings-badge\"]",
       "sgs/text",
       "Price",
       null
@@ -415,7 +415,7 @@
     [
       "card",
       "element",
-      "[\"card-body\", \"card-header\", \"cardStyle\", \"entry\", \"item\", \"item-btn\", \"item-link\", \"node\", \"plan\", \"plan-meta\", \"review\", \"review-row\", \"slide\", \"slot\", \"stage\", \"stat\", \"step\"]",
+      "[\"card-body\", \"card-header\", \"cardStyle\", \"entry\", \"item\", \"item-btn\", \"item-link\", \"node\", \"plan\", \"plan-meta\", \"review-row\", \"slide\", \"stage\", \"stat\"]",
       "sgs/info-box",
       "Card-container slot",
       null
@@ -623,7 +623,7 @@
     [
       "bar",
       "element",
-      "[\"barColour\", \"progress\", \"progress-bar\", \"progress-step\", \"progress-step-label\", \"progress-step-number\", \"progress-steps\", \"progress-wrapper\", \"progressBar\", \"track\"]",
+      "[\"barColour\", \"progress-bar\", \"progress-step\", \"progress-step-label\", \"progress-step-number\", \"progress-steps\", \"progress-wrapper\", \"progressBar\", \"track\"]",
       null,
       "progress bar visual element",
       null

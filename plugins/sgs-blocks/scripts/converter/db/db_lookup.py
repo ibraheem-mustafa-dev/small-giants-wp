@@ -1184,6 +1184,19 @@ def declared_attrs_for_css_property(
     # orderTablet]. Element is NOT excluded here — the layer resolver's CONTENT/GRID
     # layers legitimately own non-root elements; element narrowing lives in
     # _base_domain_attrs_for_css_property (the attr_for_property OUTER path) only.
+    #
+    # CORRECT-BY-DESIGN NULL (Track C root-cause, 2026-08-04, do NOT "fix"): because
+    # this function derives a tier sibling's css_property from its BASE row at READ
+    # TIME, the sibling's OWN css_property/css_tier columns are deliberately never
+    # populated — a Mobile/Tablet-suffixed attr row correctly carries css_property IS
+    # NULL and css_tier IS NULL. Measured 2026-08-04: 145 of 238 sgs/% tier-suffixed
+    # rows whose base has css_property populated show this NULL pair; that is the
+    # exact expected count, not a defect count. Denominator chain: 2,464 sgs/%
+    # block_attributes rows -> 554 tier-suffixed -> 339 with a matching base row ->
+    # 238 with a populated base css_property -> 145 NULL-on-sibling (61%, all correct).
+    # A future session "fixing" these 145 by writing css_property/css_tier onto the
+    # sibling row would be redundant at best and a fresh source of drift at worst —
+    # see .claude/reports/2026-08-04-trackC-tier-sibling-rows-root-cause.md.
     _base_clause = (
         " AND (css_tier IS NULL OR css_tier = 'desktop') AND css_state IS NULL"
         if base_only else ""

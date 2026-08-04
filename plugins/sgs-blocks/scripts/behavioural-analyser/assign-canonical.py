@@ -1516,6 +1516,50 @@ def run_role_detection_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
     }
 
 
+def _structural_role_map() -> tuple[dict, str | None]:
+    """Structural content-role proposals, computed ONCE per reseed.
+
+    Track A / Spec 35 (2026-08-04). Returns ({(block_slug, attr_name): role}, error).
+
+    This is the FR-31-2.1a replacement for name-guessing. Roles come from what the
+    block's own source actually DOES with a value -- which escaping function receives it
+    in render.php, which control edit.js binds it to, whether its default is i18n-wrapped
+    -- never from its spelling. Full rationale, measured per-detector precision and the
+    enumerated blind spots live in
+    `plugins/sgs-blocks/scripts/content-role-detect/fingerprint_content_roles.py`.
+
+    Computed once because the detectors shell out to a PHP tokenizer and two Python
+    passes over the whole block tree; calling that per attribute would be pathological.
+
+    On failure this returns an EMPTY map and a non-None error string. The caller MUST
+    surface that error -- it must never look like "the structural tier ran and found
+    nothing", because a silently-degraded tier that falls back to the name regex would
+    read exactly like a working one. That is the self-repairing-mechanism trap: anything
+    that quietly heals also quietly hides.
+    """
+    detect_dir = Path(__file__).resolve().parent.parent / "content-role-detect"
+    module_path = detect_dir / "fingerprint_content_roles.py"
+    if not module_path.is_file():
+        return {}, f"fingerprint module missing at {module_path}"
+
+    try:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("sgs_fingerprint", module_path)
+        if spec is None or spec.loader is None:
+            return {}, f"could not load a module spec from {module_path}"
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        result = mod.compute()
+    except Exception as exc:  # noqa: BLE001 - surfaced to the caller, never swallowed
+        return {}, f"{type(exc).__name__}: {exc}"
+
+    return (
+        {(a["block_slug"], a["attr_name"]): a["role"] for a in result["assignments"]},
+        None,
+    )
+
+
 def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     """Role detection wired into the standard /sgs-update flow (2026-06-30).
 
@@ -1542,7 +1586,34 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     cur = conn.cursor()
     filled = 0
     upgraded = 0
+    structural_filled = 0
+
+    # TIER 0 -- STRUCTURAL, ordered ABOVE the name regex (Track A, 2026-08-04).
+    # A measured fact about what the block DOES with a value always beats a guess from
+    # how the value is spelled. This demotes _ATTR_NAME_RULES to a fallback, which is the
+    # first step toward deleting it (FR-31-2.1a).
+    structural, structural_error = _structural_role_map()
+    if structural_error:
+        print(
+            "\n!! STRUCTURAL ROLE TIER DID NOT RUN -- falling back to the name regex.\n"
+            f"   reason: {structural_error}\n"
+            "   Roles for content attrs whose NAME is not in _ATTR_NAME_RULES will be\n"
+            "   left NULL, and their text will be silently dropped from clones. This is\n"
+            "   reported rather than raised so a reseed still completes, but it is a\n"
+            "   DEGRADED run -- do not read a clean exit as a clean result.\n",
+            file=sys.stderr,
+        )
+
     for row_id, block_slug, attr_name, attr_type, enum_values, description, current in rows:
+        structural_role = structural.get((block_slug, attr_name))
+        if structural_role is not None and current is None:
+            cur.execute(
+                "UPDATE block_attributes SET role = ? WHERE id = ?",
+                (structural_role, row_id),
+            )
+            structural_filled += 1
+            continue
+
         proposed, source, confidence = detect_role_from_block_json(
             block_slug, attr_name,
             {
@@ -1568,7 +1639,15 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
                 )
                 upgraded += 1
     conn.commit()
-    return {"filled": filled, "upgraded": upgraded}
+    return {
+        "filled": filled,
+        "upgraded": upgraded,
+        "structural_filled": structural_filled,
+        # Present and TRUE when the structural tier failed. Callers/logs must show this:
+        # a degraded run that silently reverts to name-guessing is indistinguishable from
+        # a healthy one unless the failure is carried out with the counts.
+        "structural_error": structural_error,
+    }
 
 
 # ---------------------------------------------------------------------------
