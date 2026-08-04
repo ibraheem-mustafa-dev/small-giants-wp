@@ -90,8 +90,14 @@ memory alone:
   ⛔ Phase 4 residuals + **`walk.py:20-26`'s FALSE claim** (says Step 6 is future; it shipped).
   ⛔ **MIGRATION REPLAY IS A DEAD END** · never delete a migration before its seeder is PROVEN ·
   **scope every DB stat to `sgs/%`** · `populate-db.py` is at `~/.agents/…`, not in git — never run whole.
-- **Track 1b (Spec 35 components):** editor gap CLOSED (D425); open residue = Part I (2 items),
-  Part-L rollout 4–32%, T1 parity 157 gaps/23 blocks. `reports/2026-07-30-track1-verification-audit.md`.
+- **⭐ Track 1b (Spec 35) — ENFORCEMENT SESSION 2026-08-04 (D481–D484). Full narrative +
+  the 5 corrections: `memory/session-2026-08-04-spec35-enforcement.md` — READ IT before acting.**
+  **ENFORCEMENT COVERAGE (the measured answer): 0 of 24 end conditions have a script VALIDATED to
+  cover all instantiations.** 11 UNENFORCED · 10 named-enforcer (measured 1 enforced / 8 partial /
+  **4 vacuous** / 2 unwired) · 3 new advisory rules. **All 3 new rules were BLIND on first build**
+  (0-vs-65, 12-vs-15, 43-vs-23), each caught only by challenging a low number. **"Has a script" and
+  "is enforced" are different claims.**
+  OPEN: Part I (2), Part-L 4–32%, T1 parity 157 gaps/23 blocks, the 31 content misses.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
 - **Tracks 2+2b (nav/header/footer merge):** 5-wave strategic plan landed (D413), Wave 1 CLOSED,

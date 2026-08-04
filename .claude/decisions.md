@@ -1,5 +1,71 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D484 — `derived_selector` is a DRAFT-side matcher; the drift gate was removed [INCIDENT]
+
+**2026-08-04.** A gate built this session (`check-derived-selector-drift.py`) compared
+`derived_selector` against classes the BLOCK renders and reported 666 of 889 as fictional. **Wrong
+document.** `scalar_content.py:106-120` matches the selector against the **draft DOM subtree**;
+Spec 00 §3.1 calls it "a documented per-attr DB mapping"; Spec 31 §3.B calls hover selectors
+"synthetic placeholders that never exist in real markup". Invented selectors are the DESIGN. Styling
+attrs were never at risk either — the content lift is gated on the `scalar-content-lift` capability
+AND on role. Gate deleted (`d700f238`) before it drove a large rework. **Bean caught the premise.**
+**Consequence — the cheap fix for routing collisions:** because selectors are invented draft-side
+identities, a collision is fixed by giving each attr a DISTINCT identity (`__background-image` /
+`__background-video` / `__background-svg`; `__image` vs `__poster`), which is DATA-ONLY. This
+supersedes the media-object schema redesign proposed earlier the same day as over-engineering.
+
+## D483 — Four DB-enforcement gates, advisory-first, each proven able to fail [ROUTINE]
+
+**2026-08-04.** Commit `ceada1d4`. (1) `converter/gates/check_content_attr_collisions.py` — 2+ attrs
+on one block identical on every routing dimension, which the converter resolves by catalogue order
+silently. **7 groups**; the `sgs/media` one reproduces the live defect id-for-id; **4 of 7 are the
+background-media family** across hero/container/cta-section/trust-bar — evidence it is a four-block
+class. Legitimate-vs-genuine requires a human exceptions entry naming a D-number, never inferred
+from attr-name shape. (2) `check-unresolvable-token-refs.py` + `services/token_resolution_check.py`
+— an emitted value naming something undefined in the target document. Wired at `services/assembly.py`
+because the defect is NOT confined to the colour resolver: `grid.py`, `grid_area.py` and
+`pseudo_overlay.py` all write raw CSS with no role gate. (3) `roles.description` populated for all
+29 roles from what the converter actually does; **6 roles have NO consumer**. (4)
+`audit-declared-vs-seeded-roles.py` wired into prebuild, advisory.
+⚠ One gate shipped WITHOUT `--check`, so invoking it the house way returned an argparse error and
+exit 2 — the same trap found in sgs-update Stage 13 the same morning, in a gate built by an agent
+briefed about that exact failure. Fixed at source.
+
+## D482 — placeholder is content, not behaviour [ROUTINE]
+
+**2026-08-04.** `placeholder` carried `role='behaviour'` on 13 rows (11 `form-field-*` that declare
+it, plus `filter-search` and `product-search`). `behaviour` classifies as `styling-behaviour`, which
+deliberately excludes an attr from the content walk (`walk.py:405-408`), so a draft's
+`placeholder="Your full name"` was never transferred. **Bean's ruling:** a placeholder is
+client-authored text rendered to the visitor; hiding-on-input is presentation, not a different class.
+Precedent agrees — `image-alt` and `link-href` are content-bearing despite being HTML attributes.
+Set to `content`, not `text-content`. ⚠ **Honest limit:** this removes the classification blocker but
+does NOT yet transfer placeholder text — all 13 rows have `canonical_slot`/`derived_selector` NULL
+and no extractor reads a placeholder out of a draft. Follow-on work.
+⚠ **Correction recorded:** the earlier claim that `text-content` licenses promotion to a standalone
+`sgs/text` block and `content` does not is FALSE — `db_lookup.py:3743-3751` gates promotion on
+`canonical_slot` after one `role not in _content_bearing_roles()` check, so any content-bearing role
+promotes identically. The two differ in exactly one place (`array_content.py:249-254`).
+
+## D481 — role decoupled from canonical_slot; 4 slot aliases registered [INCIDENT]
+
+**2026-08-04.** Commit `8bb106e1`. `assign-canonical.py` returned `(canonical_slot, role)` as a pair
+and `(None, None)` when no slot resolved, writing only inside `if canonical_slot is not None`. An
+attr styling the block's OWN ROOT (`borderColourHover`, `backgroundColourHover`, `textColourHover`)
+has no element word to resolve a slot from, so a correctly-computed `role='color'` was discarded with
+it. Two values with different preconditions bound into one return type. Downstream the colour
+resolver runs only on `role='color'`, so the draft's raw `var(--primary)` was emitted verbatim and
+painted transparent. **Measured after reseed: colour attrs with NULL role 131 → 21 (110 healed);
+role-only rows 0 → 1099; 14 stages exit 0; no row-floor regression.**
+**Bean's occupied-slot hypothesis was FALSE** — `canonical_slot` is a pure name→alias dictionary
+lookup with no notion of occupancy, so deleting a legacy sibling frees nothing. Registered the 4
+missing aliases instead (`memberMedia`/`decorMedia`/`splitMedia`→media, `avatarMedia`→avatar):
+additive, reversible, and it UNBLOCKS the legacy purges rather than requiring them.
+⚠ **Scope correction:** the peer handover described this as a visible defect on live client sites.
+NOT reproducible — those buttons use `inheritStyle` and resolve through the theme preset chain, a
+separate mechanism, and render real borders. No published canary page exercises the affected attrs.
+Production unverified (REST 403). **Latent defect, correctly fixed, wrongly ranked as an emergency.**
+
 ## D480 — Routing audit: 8-surface critique + live run + the content tier axis [INCIDENT]
 
 **2026-08-03.** A full audit of the cloning pipeline's routing (8 parallel surface critiques, a live
