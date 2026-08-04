@@ -360,6 +360,27 @@ function subVisibleBucket(prop, dv, cv, drec, crec) {
 // Compare one matched pair over ALL props; only MEANINGFUL props count (differs OR non-default
 // on the draft). Sub-visible twins are diverted to `sub` (reported, unscored). Returns
 // {total, match, diffs, sub}.
+// How many MEANINGFUL props a draft element carries when it has NO clone counterpart at all
+// (FR-20-4 fix, 2026-08-04). For a matched pair `comparePair` calls a prop meaningful when it
+// DIFFERS from the clone OR is non-default on the draft. With no clone record the first half is
+// uncomputable, so only the non-default half is used — the conservative direction (it can only
+// UNDER-count, never invent failures).
+//
+// WHY THIS EXISTS: an unmatched draft element used to `continue` before touching total/match, so
+// an element the clone was MISSING ENTIRELY contributed nothing to the score and was invisible to
+// the headline percentage. Measured live on Mama's 2026-08-04: the missing brand image sat in
+// `unmatched_elements` while the report read "content 99%" — a real, eye-confirmed defect that
+// the number could not see. A missing element is the WORST possible fidelity outcome; it must
+// score as a total loss, not as an exemption.
+function meaningfulCountUnmatched(drec, dDef) {
+  const ddef = dDef[drec.tag] || {};
+  let n = 0;
+  for (const p of Object.keys(drec.css)) {
+    if (ddef[p] !== undefined && drec.css[p] !== ddef[p]) n++;
+  }
+  return n;
+}
+
 function comparePair(drec, crec, dDef) {
   let total = 0, match = 0; const diffs = [], sub = [];
   const ddef = dDef[drec.tag] || {};
@@ -381,7 +402,7 @@ function comparePair(drec, crec, dDef) {
   const page = await (await browser.newContext({ deviceScaleFactor: 1 })).newPage();
   const report = {
     draft: DRAFT, clone: CLONE,
-    method: 'computed values, matched by content, all-props-minus-blocklist, meaningful-only, visible-fidelity (Spec 20 v1.1.0 / rule 4a). font-family primary-only; sub-visible twins bucketed (unscored) by invisibility predicate; tag scored separately; classes context-only.',
+    method: 'computed values, matched by content, all-props-minus-blocklist, meaningful-only, visible-fidelity (Spec 20 v1.2.0 / rule 4a). font-family primary-only; sub-visible twins bucketed (unscored) by invisibility predicate; tag scored separately; classes context-only. v1.2.0 (2026-08-04): a draft element with NO clone counterpart now scores its meaningful props as MISSES instead of being excluded from the score, and every pct carries its denominator.',
     viewports: {},
   };
   let gT = 0, gM = 0, gSub = 0, gTagT = 0, gTagM = 0;
@@ -403,12 +424,24 @@ function comparePair(drec, crec, dDef) {
     const contentPct = cTot ? Math.round(100 * (cTot - cDrop) / cTot) : null;
 
     // Tier 2+3: CSS + TAG over text-leaf (fuzzy) + structural (exact), ALL props, meaningful-only.
-    let T = 0, M = 0, tagT = 0, tagM = 0; const mis = [], unm = [], subv = [], tagMis = [];
+    // `unmT` tracks how much of T came from MISSING elements, so the honest all-in score and the
+    // legacy matched-only score can both be reported without one hiding the other.
+    let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0; const mis = [], unm = [], subv = [], tagMis = [];
     const runTier = (map, cloneMap, exact) => {
       for (const [key, drec] of Object.entries(map)) {
         if (excluded(key)) continue;
         const crec = findByAnchor(key, cloneMap, exact);
-        if (!crec) { unm.push(key.slice(0, 44)); continue; }  // FR-20-4: unmatched, per dimension
+        if (!crec) {
+          // FR-20-4 (FIXED 2026-08-04): the draft element has NO clone counterpart — it is
+          // MISSING from the clone. Previously this `continue`d before touching total/match, so
+          // the worst possible outcome scored as nothing at all. Now every meaningful prop it
+          // carried counts as a MISS (total += n, match += 0), and its tag counts as a miss too.
+          const lost = meaningfulCountUnmatched(drec, d.defaults);
+          unm.push({ text: key.slice(0, 44), tag: drec.tag, meaningful_props_lost: lost });
+          T += lost; unmT += lost;
+          tagT++;
+          continue;
+        }
         // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
         tagT++;
         if (drec.tag === crec.tag) tagM++;
@@ -430,14 +463,34 @@ function comparePair(drec, crec, dDef) {
     const subCount = subv.reduce((n, e) => n + e.sub.length, 0);
     gT += T; gM += M; gSub += subCount; gTagT += tagT; gTagM += tagM;
     report.viewports[vw] = {
-      content: { pct: contentPct, dropped_text: dropText, dropped_images: dropImg, dropped_links: dropLink },
-      css: { pct: T ? Math.round(100 * M / T) : null, meaningful_props: T, match: M, unmatched_elements: unm, mismatches: mis },
+      // DENOMINATORS ARE MANDATORY (2026-08-04). `content` previously reported a bare `pct` with
+      // no match/total, so "content 99%" could not be checked against anything — a percentage
+      // over an unstated population. total/matched/dropped are now always present.
+      content: {
+        pct: contentPct, total: cTot, matched: cTot - cDrop, dropped: cDrop,
+        dropped_text: dropText, dropped_images: dropImg, dropped_links: dropLink,
+      },
+      css: {
+        // `pct` is the HONEST score: missing elements included as misses.
+        pct: T ? Math.round(100 * M / T) : null,
+        meaningful_props: T, match: M,
+        // `pct_matched_only` is the LEGACY score (pre-2026-08-04): computed over matched pairs
+        // only, ignoring elements absent from the clone. Kept for run-to-run comparability with
+        // older artefacts — NEVER quote it as fidelity; it cannot see a missing element.
+        pct_matched_only: (T - unmT) ? Math.round(100 * M / (T - unmT)) : null,
+        meaningful_props_lost_to_unmatched: unmT,
+        unmatched_elements: unm, mismatches: mis,
+      },
       tag: { pct: tagT ? Math.round(100 * tagM / tagT) : null, pairs: tagT, match: tagM, mismatches: tagMis },
       sub_visible: { count: subCount, elements: subv },
     };
     console.log(`\n===== ${vw}px =====`);
-    console.log(`  CONTENT  ${contentPct}%   (${cDrop} dropped: ${dropText.length} text / ${dropImg.length} img / ${dropLink.length} link)`);
-    console.log(`  CSS      ${T ? Math.round(100 * M / T) : 0}%   (${M}/${T} MEANINGFUL props; ${mis.length} elements off; ${unm.length} draft els UNMATCHED; ${subCount} sub-visible excluded)`);
+    console.log(`  CONTENT  ${contentPct}%   (${cTot - cDrop}/${cTot}; ${cDrop} dropped: ${dropText.length} text / ${dropImg.length} img / ${dropLink.length} link)`);
+    console.log(`  CSS      ${T ? Math.round(100 * M / T) : 0}%   (${M}/${T} MEANINGFUL props; ${mis.length} elements off; ${subCount} sub-visible excluded)`);
+    if (unm.length) {
+      console.log(`  ⚠ MISSING  ${unm.length} draft element(s) have NO counterpart in the clone — ${unmT} meaningful prop(s) scored as LOST (was: excluded from the score entirely).`);
+      for (const u of unm.slice(0, 6)) console.log(`      [${u.tag}] "${u.text}" (${u.meaningful_props_lost} props)`);
+    }
     console.log(`  TAG      ${tagT ? Math.round(100 * tagM / tagT) : 0}%   (${tagM}/${tagT} pairs; ${tagMis.length} tag divergences [reported, not failed])`);
     if (vw === VIEWPORTS[VIEWPORTS.length - 1]) {
       if (dropText.length) console.log('  dropped text: ' + dropText.slice(0, 8).map(t => '"' + t.slice(0, 26) + '"').join(', '));
@@ -450,7 +503,7 @@ function comparePair(drec, crec, dDef) {
   report.overall_css_pct = gT ? Math.round(100 * gM / gT) : null;
   report.overall_tag_pct = gTagT ? Math.round(100 * gTagM / gTagT) : null;
   report.sub_visible_total = gSub;
-  console.log(`\n##### OVERALL CSS ${report.overall_css_pct}% (${gM}/${gT} meaningful props) | TAG ${report.overall_tag_pct}% (${gTagM}/${gTagT} pairs) | ${gSub} sub-visible excluded, ${VIEWPORTS.length} viewports. VISIBLE-fidelity (Spec 20 v1.1.0); pairs with Bean's eye, never closes alone. Excludes text: ${EXCLUDE.join(', ') || 'none'} #####`);
+  console.log(`\n##### OVERALL CSS ${report.overall_css_pct}% (${gM}/${gT} meaningful props) | TAG ${report.overall_tag_pct}% (${gTagM}/${gTagT} pairs) | ${gSub} sub-visible excluded, ${VIEWPORTS.length} viewports. VISIBLE-fidelity (Spec 20 v1.2.0; missing elements SCORED as misses); pairs with Bean's eye, never closes alone. Excludes text: ${EXCLUDE.join(', ') || 'none'} #####`);
   if (OUT) { fs.writeFileSync(OUT, JSON.stringify(report, null, 1)); console.log('report -> ' + OUT); }
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });
