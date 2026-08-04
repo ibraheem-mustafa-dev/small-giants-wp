@@ -1,5 +1,7 @@
 ---
-doc_type: state
+doc_type: memory
+note: "VERBATIM pre-sweep snapshot of .claude/LEDGER.md, taken 2026-08-05 before the LEDGER byte-cap sweep (37,035 -> target <=24,576 bytes). Nothing below this line was edited. See .claude/reports/2026-08-04-ledger-sweep-recommendations.md for the sweep plan."
+original_doc_type: state
 project: small-giants-wp
 last_updated: 2026-08-03
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
@@ -26,71 +28,194 @@ gets ONE true answer instead of three drifting ones.
 
 ## CURRENT FRONTS
 
-> **QC-BYPASSED CLEARED (2026-08-04).** Independent re-check confirmed 4/6 figures exact and
-> corrected 2 (scoped to `sgs/%`: 21->19, 1099->955); nothing fabricated. Full re-check:
-> `.claude/reports/2026-08-04-step0-qc-bypassed-reverification.md`. D-ceiling now **488**
-> (D485-D488 this session: Task A shipped, Track B/C root-causes, fluid-typography cause).
+> **QC-BYPASSED CLEARED (2026-08-04, re-verification session).** Independent re-check
+> (`.claude/reports/2026-08-04-step0-qc-bypassed-reverification.md`) by a route that reused none of
+> the original measurement: 4 of 6 figures CONFIRMED exact (D-ceiling 484, 11 UNENFORCED, 13
+> placeholder rows, 29 role descriptions); 2 (colour-NULL-role, role-only) reproduced to the digit
+> but only across all 2,970 `block_attributes` rows including 506 `core/*` rows — restated scoped
+> to `sgs/%`: **21 -> 19, 1099 -> 955**. Nothing fabricated. D485-D488 record this session's own
+> work (Task A shipped, Track B/C root-causes, fluid-typography cause). D-ceiling now **488**.
 
 ### Track 3 — Tier W ADMITTED · physics-canvas SHIPPED · nine reports consolidated (D479)
 
 **Pushed: `50c9122b` (physics-canvas) · `19d4d33f` (Tier W/D479 + Snooza) · `09960945` (gap register)
-· `3a581721` (council fixes) · `faa1652f` (spec staleness).** Full narrative (proof-for-every-claim
-table, licence detail, hand-authored-fixture correction): `memory/session-2026-08-03-track3.md`.
+· `3a581721` (council fixes) · `faa1652f` (spec staleness). Every claim below is a measurement.**
 
-- **Tier W (WebGL) ADMITTED — doctrine now V/G/H/W** (D479, Bean-approved 4/4). 120KB
-  Tier-W-pages-only budget; OGL wrapped for swappability; no-WebGL falls back to Tier V.
-- **`sgs/physics-canvas` shipped + seeded**; **`sgs/google-reviews` WCAG 2.5.7 + reduced-motion
-  sweep** (google-reviews/trustpilot/post-grid all 17/17 live).
-- **Master gap register** — nine reports consolidated: `plans/2026-08-03-motion-gap-register.md`.
-- ⛔ **GSAP is NOT MIT** (SPDX `NONE`; Prohibited Uses bans visual-motion-authoring tools competing
-  with Webflow — exposes the 299/yr Configurator Pro, not client sites; MIT escape hatch: Motion,
-  anime.js v4). ⛔ **LYGIA is Prosperity-licensed** (commercial = 30-day trial).
-- ⛔ **A stale spec (Spec 38) made a fresh audit recommend re-fixing already-working code** —
-  fixed `faa1652f`. Treat every "known defect" in any register as a claim with a date on it.
-- ⚠ **Snooza product data CORRECTED by Bean:** 4 sizes x 6 colours x **3 headrests = 72 SKUs**
-  (not 24); two accessories are NOT booleans. Assets: `sites/snooza-chair/assets/`.
+| Shipped | Proven how |
+|---|---|
+| **Tier W (WebGL) ADMITTED — doctrine is now V/G/H/W** (D479, Bean-approved 4/4) | Justified from the doctrine's own text: **OGL FAILS Tier H's admission test at part (iii), "single-purpose"**. 120KB Tier-W-pages-only budget · OGL (npm declares **Unlicense**; ⚠ NO LICENSE file in the repo, so `gh api` returns null — directionally fine, NOT verified; wrapped for swappability) · no-WebGL falls back to the Tier V equivalent · CLOSED list. |
+| **`sgs/physics-canvas` shipped + seeded** (renamed from sandbox per Bean) | 70 identifier replacements, 0 residual; `dbschema/sandbox.py` verified untouched. Seeded `section-root`/`sgs/container`. **First-paint capture GENUINELY RAN**: 3/3 children visible JS-off, 0 clones, 0 inline styles, fixture 2139. |
+| **`sgs/google-reviews` WCAG 2.5.7 + reduced-motion sweep** | google-reviews **17/17**, trustpilot **17/17**, post-grid **17/17** live. `prevSlide()` carried the SAME defect mirrored and was NOT in the finding — found by reading the pair. |
+| **Master gap register** — nine reports into one ranked doc | `plans/2026-08-03-motion-gap-register.md`: licences · 8 built-weaknesses · **13 missing categories** · client-usability patterns · Tier W. |
+
+⛔ **GSAP IS NOT MIT.** SPDX `NONE`, "Standard 'no charge' license", free since **30 April 2025**.
+Its Prohibited Uses clause bans use in tools letting users build visual animations without code in
+competition with Webflow. **Client sites are fine; a DISTRIBUTED plugin sold on visual motion
+authoring (the 299/yr Configurator Pro) is the exposed case.** MIT escape hatches: Motion, anime.js v4.
+⛔ **LYGIA is Prosperity-licensed** (commercial = 30-day trial). I recommended it earlier in-session;
+that correction is at the top of the register. **Reworking a restrictive library does NOT make it
+yours** — a derivative work stays bound. Implementing the published technique yourself is the legit route.
+
+⛔ **A STALE SPEC MADE A FRESH AUDIT RECOMMEND RE-FIXING WORKING CODE.** Spec 38 still described two
+bugs fixed hours earlier; a client-readiness audit called one "the single highest-value fix in this
+whole audit". The agent was not careless — **it cited the spec, and the spec was wrong.** Fixed
+(`faa1652f`). Treat every "known defect" in any register as a claim with a date on it.
+
+⚠ **A doc council then found I cited D479 in Spec 38 without writing the decision.** Written
+(`3a581721`). Also fixed: the Snooza plan contradicted its own corrected product data; the register
+had dropped a WCAG 2.2.2/2.3.1 finding from its own sources.
+
+⚠ **Snooza product data CORRECTED by Bean:** **THREE** variant axes — 4 sizes x 6 colours x **3
+headrests = 72 SKUs**, not 24. Two accessories are NOT booleans (Medial Thigh Support has 2 nested
+variants; **Leg Rest has 4 sizes constrained to match the chair**). The existing engine models
+add-ons nowhere. Reference images are at `sites/snooza-chair/assets/` (the documented path did not exist).
+
+⚠ **I hand-authored a fixture with a guessed attribute** (`iconSlug` — not declared on `sgs/icon`),
+which WP silently discards. The oldshape audit caught it. This project documents that exact trap (D338).
 
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
-Per-sub-track status (one line each) + the pointer that owns the full narrative — read the pointer
-before acting, do not assume it is current from memory alone:
+Full detail lives where it already did — read before acting, do not assume it is current from
+memory alone:
 
-- **⭐ Track 1 — ROUTING AUDIT COMPLETE + tier axis SHIPPED 2026-08-03 (D480).** Content tier axis
-  is live (597 pass/1 skip) but does not yet reach `splitImage` (`scalar-media` blocks it from the
-  content walk — Spec 35 prerequisite). Live parity: content 99%, CSS 83/84/89% (worst mobile).
-  Registers: `.claude/reports/2026-08-02-pipeline-routing-review.md` +
-  `.claude/reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
+- **⭐ Track 1 — ROUTING AUDIT COMPLETE + tier axis SHIPPED 2026-08-03 (D480).**
+  **Registers: `.claude/reports/2026-08-02-pipeline-routing-review.md` (the findings) +
+  `.claude/reports/2026-08-03-handover-to-spec35-block-attribute-defects.md` (block/DB defects → Spec 35).**
+  ⚠ Both paths were written WITHOUT the `.claude/` prefix until 2026-08-04 — they resolved to
+  nothing from the repo root, so a fresh session looking for the register found no such file.
+  8 surface critiques + a LIVE `/sgs-clone` run (canary **2130**) + a 3-rater QC council.
+  ✅ **SHIPPED: the per-device content tier axis.** `content_attr_for_element(slug, element, tier)`;
+  base resolution excludes tier-suffixed attrs; **tier requested but sibling absent → LOUD GAP, no
+  fallback** (Bean-ruled). Negative control proven. **597 pass / 1 skip.**
+  ⛔ **Axis does NOT reach `splitImage`** — `role='scalar-media'` is `styling-behaviour`, so it never
+  enters the content walk. Reclassifying it is the prerequisite for retiring loop 2 → **Spec 35**.
+  ⛔ **Stage 2 has 8 read sites across 3 processes** (its `matches` list is Stage 4's ITERATION SOURCE) and **loop 2's
+  GATE belongs in `recognise_section` and is ABSENT there** — measured: `sgs-quote` becomes
+  `sgs/quote`, never a container. Both are re-plumbings, not deletes. See TRACK 1 (routing) below.
+  ⚠ **`trace.jsonl` STOPS AT STAGE 4**; `errors.log` never created. **Live parity: content 99%,
+  CSS 83/84/89% — worst at MOBILE**, matching the 145 unseeded tier rows in the Spec 35 handover.
 - **Track 1 — Phases 0/1/1b/2/3 COMPLETE 2026-08-02 (D464, D470–D478). Phase 4 PARTIAL; Phase 5 OPEN.**
-  Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md`.
-- **⭐ Track 1b (Spec 35) — ENFORCEMENT SESSION 2026-08-04 (D481–D484).** Measured: 0 of 24 end
-  conditions have a script validated to cover all instantiations (1 enforced/8 partial/4 vacuous/2
-  unwired/9 absent). Full narrative + 5 corrections: `memory/session-2026-08-04-spec35-enforcement.md`.
+  **Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md` — read before acting.**
+  ⛔ Phase 4 residuals + **`walk.py:20-26`'s FALSE claim** (says Step 6 is future; it shipped).
+  ⛔ **MIGRATION REPLAY IS A DEAD END** · never delete a migration before its seeder is PROVEN ·
+  **scope every DB stat to `sgs/%`** · `populate-db.py` is at `~/.agents/…`, not in git — never run whole.
+- **⭐ Track 1b (Spec 35) — ENFORCEMENT SESSION 2026-08-04 (D481–D484). Full narrative +
+  the 5 corrections: `memory/session-2026-08-04-spec35-enforcement.md` — READ IT before acting.**
+  **ENFORCEMENT COVERAGE (the measured answer): 0 of 24 end conditions have a script VALIDATED to
+  cover all instantiations.** checklist self-tags 11 UNENFORCED; the truth matrix MEASURED all 24 as
+  **1 enforced · 8 partial · 4 vacuous · 2 unwired · 9 absent** (=24; the two taxonomies are
+  different and must not be summed together) · 3 new advisory rules this session. **All 3 new rules were BLIND on first build**
+  (0-vs-65, 12-vs-15, 43-vs-23), each caught only by challenging a low number. **"Has a script" and
+  "is enforced" are different claims.**
+  OPEN: Part I (2), Part-L 4–32%, T1 parity 157 gaps/23 blocks, the 31 content misses.
 - **⭐ Track 1b (Spec 35) Task A — structural content-role detection SHIPPED 2026-08-04 (D485).**
-  `sgs/%` `role IS NULL` 703 -> 669. 4 open residuals (28 report-only rows need a human; 127
-  unreached rows still open; a11y-metadata roles unresolved; name-regex fallback not yet deleted).
-  Same-session: Track B fixed 3 `slots.aliases` collisions (D486); Track C refuted the tier-NULL
-  mobile-parity theory and identified fluid typography as the real cause (D487/D488). Full detail
-  + the 6 new Task-F conditions: `memory/session-2026-08-04-spec35-enforcement.md` +
-  `plans/spec-35-inspector-DONE-checklist.md` (items 22-27).
+  Three structural detectors (`plugins/sgs-blocks/scripts/content-role-detect/`) replace
+  `assign-canonical.py`'s ~60-name regex (kept as fallback, not deleted). After `/sgs-update`:
+  `sgs/%` `role IS NULL` 703 -> 669 (-34 exact). Eligible pool 262: **34 assigned, 28 report-only
+  (needs a human), 8 vetoed, 127 reached by no detector at all** — the last is an honest open
+  search space, NOT claimed complete. **4 open Task A residuals for the next session:** (1) the 28
+  report-only rows need a human decision, (2) the 127 unreached rows have only a content-shaped-name
+  subset hand-verified, a full sweep is still open, (3) a11y-metadata rows still have no valid role
+  in the taxonomy (flagged, not resolved), (4) the name-regex fallback is still present in
+  `assign-canonical.py:1279-1316` — Tier-0 structural detection sits above it, it was never deleted.
+  **Ad hoc same-session investigations (not Task A/B/C from the plan — separate tracks feeding
+  Task F conditions):** Track B found + fixed via override 3 `slots.aliases` self-collisions
+  (D486, `sgs/cta-section.ribbon`/`sgs/media.caption`/`sgs/form-field-number.step`); Track C
+  REFUTED the "145 tier-sibling NULL rows" as a mobile-parity cause — correct by design, do not
+  "fix" (D487); the REAL mobile-parity cause is fluid typography, PROVEN by clamp-formula
+  hand-verification, Bean rules KEEP fluid typography and fix the measurement instead (D488). **6
+  new Task-F enforcement-design conditions appended to `plans/spec-35-inspector-DONE-checklist.md`**
+  (items 22-27: silence≠rejection, recall-vs-pool not vs-own-output, artefact-existence checks,
+  name-the-consumer-before-measuring, positive-control-before-trusting-zero, denominator+scope on
+  DB stats) — item 25 records that D484's own lesson was repeated in the SAME session (a
+  `derived_selector`-vs-render-output measurement, withdrawn) despite being read at session start.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
-- **Tracks 2+2b (nav/header/footer merge):** 5-wave plan landed (D413), Wave 1 CLOSED, Wave 2 in
-  progress. `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`. Task 5 (drawer variants)
-  REJECTED by Bean 2026-07-29 (`memory/session-2026-07-29-task5-drawer-rejection.md`).
+- **Tracks 2+2b (nav/header/footer merge):** 5-wave strategic plan landed (D413), Wave 1 CLOSED,
+  Wave 2 in progress. `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`. Task 5 (drawer
+  variants) was REJECTED by Bean 2026-07-29 — do not re-present those pairs without real work
+  first (`memory/session-2026-07-29-task5-drawer-rejection.md`).
 
 ---
 
-> **HANDOFF QC (resolved):** an independent rater caught two stale figures my own self-review
-> missed (a plan row claiming "37 tables" when live is 36; "gates invoked manually" when D473 had
-> already wired them into `prebuild`). Both fixed. Lesson: self-review passed, independent review
-> found real defects — don't skip the second pair of eyes. Full detail: `memory/session-2026-08-03-track3.md`.
+> **HANDOFF QC: the independent rater returned INCONSISTENT, and it was right.** I had already
+> run the same checks myself and called them clean — the rater then found **two stale figures in a
+> plan row I never opened**: Phase 3 claimed "clean at 37 tables" (live is **36** since
+> `array_item_fields` was retired at D475) and "both gates are still invoked MANUALLY" (false from
+> the moment D473 wired them into `prebuild`, and it survived two doc sweeps). Both fixed.
+> ⚠ **This is the day's lesson one final time: my self-review passed and the independent review
+> found real defects.** Everything else the rater checked verified clean — D478's claims against
+> code, D-ceiling 478, 36 tables, 591/1 skip, the plan and LEDGER now agreeing.
 
 ## Standing constraints (carry forward — these are rules, not history)
 
-**MOVED to `STOP-CATALOGUE.md` §E1 (2026-08-05 sweep) — 23 rules, verbatim.** Read before touching
-Track 1/DB, sticky/axe/template-lock, or block versioning. Headline: **"IT FUNCTIONS" IS NOT "IT IS
-SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pre-production (D293).
+### Track 1 / DB — restored 2026-08-02 after a handoff edit truncated them (D101: never SUBTRACT)
+
+- ⛔ **"IT FUNCTIONS" IS NOT "IT IS SAFE" (Bean, 2026-08-03 — supersedes the D474/D476 wording).**
+  The target is **100% routing accuracy, totally deterministic**. *"It works here"*, *"good for
+  now"* and *"it was only just fixed"* are **not** reasons to keep a mechanism. A mechanism that
+  cannot generalise to any block, page and content shape is a **cheat to replace**, not an asset to
+  protect — being recently repaired makes it no safer.
+  ⚠ **A previous session wrote "do NOT delete `scalar-media` or Loop 2" into this section as a
+  standing rule. Bean did not set that rule and it contradicts the universal principle above.**
+  It is REMOVED. `role='scalar-media'` is a **per-block cheat**: 2 rows in the whole DB, both
+  `sgs/hero`, serving one bespoke branch that is the codebase's only `--mobile` BEM → `*Mobile`
+  route. It is being **replaced** by a universal per-device content-routing axis, not preserved.
+  **Retain only the transferable lesson:** the D474/D476 incident proved a *measurement* error —
+  a mechanism was called dead because a **broken caller gate** hid it. Prove a path is dead by
+  reaching it, never by observing it not fire.
+- ⛔ **Do NOT write a tactical "never delete X" rule into this section.** Standing constraints are
+  for *universal* principles and *measurement* lessons. A per-artefact preservation order dressed
+  as a rule blocks exactly the ruthless replacement the design philosophy requires.
+- ⛔ **ORDER IS LOAD-BEARING** for `property_suffixes` + `modifier_suffixes` (`ORDER BY rowid`,
+  `LIMIT 1` for the former — first row WINS). Compare-first + DELETE + ordered re-INSERT, NEVER
+  `INSERT OR REPLACE`.
+- ⛔ **Do NOT add `block_composition.has_inner_blocks` to any population gate** — it is DERIVED, not
+  cached. **A population floor is the right gate for a CACHED fact and the wrong one for a DERIVED
+  one.**
+- ⛔ **`block_composition.composition_role` LOOKS dead from the converter but is LIVE** —
+  `db-consistency/check_tier_composition.py` (in `prebuild`) reads it. Do not drop the column.
+- ⛔ **A SELF-HEALING SEEDER BLINDS AN IN-PROCESS TEST.** Anything importing `db_lookup` repairs
+  drift before an assertion can see it. The detector must be a separate process that never imports
+  it → value-identity assertions in `check_row_floor.py` (sqlite3 only — keep it that way).
+- ⛔ **A population count cannot see a RECLASSIFICATION** (right row, wrong-but-plausible value;
+  1012 → 1012).
+- ⛔ **A table with `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it** —
+  every creator must go, or the schema gate stays red forever.
+- ⛔ **A shrinking seed file PRUNES the live DB on next import** (cost the `attribution` slot once).
+  The seeder now warns before it does.
+- ⚠ **A negative control has its OWN vacuity modes** — confirm the break actually landed. Three in
+  one day: one healed by the seeder, one patching a symbol computed at import, one catching the
+  wrong exception class.
+- ⚠ **Two migrations are HELD BACK deliberately** (`testimonial-*`): they UPDATE
+  `block_attributes.derived_selector` and that regenerability is UNPROVEN. Never delete a migration
+  before its replacement seeder is proven.
+
+- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug provides the rescue.** `overflow-x: clip` with
+  a non-clip `overflow-y` computes to `hidden`, which IS a scroll container, so native
+  scroll-into-view rescues focus. Do NOT "fix" it to clip on both axes — that deletes the only
+  WCAG 2.4.11 cover this effect has. (Wave E; full narrative `memory/session-2026-08-01-wave-e.md`.)
+- **The WooCommerce gallery bug did not exist.** `core/query include:[540]` silently rendered product
+  1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
+
+- Per-row `position:sticky` REJECTED (short-parent trap, D389). Sticky stays HEADER-level.
+- No absolute size value in a shared state-only stylesheet (D386), gated by
+  `check-shared-css-state-rules.js`.
+- After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor (D388).
+- A scoped axe run on a CLOSED surface passes vacuously — guard openness or the run proves
+  nothing; any earlier drawer-axe claim from before D418 proves nothing.
+- `templateLock:'all'`/`'contentOnly'` re-applies the template on EVERY mount, matched by ARRAY
+  POSITION (D393) — pass the template only into a genuinely empty container.
+- The D343 phantom border was WP core's `html :where([style*="border-width"])` substring-matching
+  a custom property *named* `--sgs-tile-border-width` — not shadows-as-borders. Width vars are
+  named `--*-thickness`. Do not re-propagate the wrong diagnosis.
+- No-login shareable preview link is DROPPED, not deferred (Bean, 2026-07-27).
+- `<footer>` is generic — key any assertion on the CLASS `wp-block-template-part`, never a naive
+  regex; the canary page has 5 `<footer>` elements, four are quote attributions.
+- `~/.agents` is NOT a git repo — the skillscore script + 5 grafted skills + `nextjs-testing` are
+  LIVE but UNVERSIONED (recovery = per-file `.bak-2026-07-17-*`).
+- **No block version bumps / deprecations pre-production** (Bean D293, overrides STOP-57).
 
 ---
 
@@ -136,7 +261,7 @@ sequenced header/footer goals, Track B reconciliation. Reconcile before acting.
 
 | For | Read |
 |---|---|
-| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
+| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101; 144 STOPs as of 2026-07-31) |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Decisions (D-numbered, INCIDENT/ROUTINE tagged) | `decisions.md` (+ `memory/decisions-archive.md`) |
 | Parked work (OPEN/PARTIAL/BLOCKED/DEFERRED only) | `parking.md` (+ `memory/parking-archive.md`) |
@@ -245,8 +370,8 @@ number, never by a gate.**
 
 ### Guardrail carried from this session
 
-**MOVED to `STOP-CATALOGUE.md` §E3.** Headline: a rule returning zero is a claim requiring
-evidence, not a pass.
+**A rule returning zero is a claim requiring evidence, not a pass.** Every new or migrated rule
+declares its EXPECTED population before it runs. Three for three were blind without this.
 
 ## NEXT SESSION — Snooza pitch demo (revenue), or the motion gap register
 
@@ -296,9 +421,20 @@ Commit by EXACT PATH → push main
 ```
 
 ### Methodology guardrails (do not skip)
-**MOVED to `STOP-CATALOGUE.md` §E2** — 7 rules (stale-doc trap, never hand-author a guessed
-attribute, probe-vs-effect, fix-the-instrument, verify licences via `gh api`, shared-worktree
-commit discipline, deploy-before-measure). Read them there before this track.
+- **A stale doc is a trap that fires on the next reader.** Proven twice today: a spec described fixed
+  bugs as live and an audit recommended re-fixing them; a client doc named a directory that never existed.
+- **Never hand-author block markup with a guessed attribute** — WP silently DISCARDS undeclared attrs
+  (D338). Serialise from a known-clean page, or use no attributes at all.
+- **A probe that never reaches the effect measures the probe.** Two "failures" today were my own
+  measurement bugs (an SVG object stringified; headless rAF throttling).
+- **Fix the instrument, never the gate field.** `probe-first-paint.mjs` gained an EXPLICIT
+  `--not-a-loop` opt-out; auto-detect was REJECTED because a loop block that FORGOT its marker is
+  precisely the bug that assertion exists to catch.
+- **Verify licences with `gh api`, never a README badge.** Two "MIT" claims were wrong today.
+- **Shared worktree, other tracks active.** Commit BY EXACT PATH, never `git add -A`. Re-check the
+  D-ceiling immediately before writing any D reference.
+- **Deploy before measure**; `--dry-run` does NOT run the dirty gate; a page-HTML grep cannot see
+  block CSS (it is lifted to `uploads/sgs-css/`).
 
 ---
 
@@ -358,5 +494,8 @@ R4 (haiku, first) · R1 (inline, Opus) → R2 (sonnet) · R3 blocked on Spec 35
 ```
 
 ### Routing guardrails (earned 2026-08-03)
-**MOVED to `STOP-CATALOGUE.md` §E4** — 4 rules (static audit is a third of the truth, establish
-the denominator, a fix is a hypothesis too, prove a path dead by reaching it — D474).
+- **A static audit of this pipeline is a THIRD of the truth** — 8 agents read the scripts; ONE live
+  `/sgs-clone` run overturned two headline findings. Run the pipeline before concluding.
+- **Establish the DENOMINATOR before quoting a percentage; derive nothing you can count.**
+- **A fix is a hypothesis too** — two proposed fixes would have shipped silent WRONG VALUES.
+- **Prove a path is dead by REACHING it, not by observing it not fire** (D474).

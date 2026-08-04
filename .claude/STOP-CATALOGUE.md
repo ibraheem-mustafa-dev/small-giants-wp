@@ -1284,3 +1284,118 @@ for real before claiming done?
   had never once animated; a static contrast calculation reading 5.79:1 against a rendered 1.79:1
   because of applied `opacity`; a rebaselined budget gate whose teeth were not re-proven with a
   self-test; and a D-number cited by this session that collided with a co-active track's D455.
+- **2026-08-05 (LEDGER.md byte-cap sweep, per `.claude/reports/2026-08-04-ledger-sweep-recommendations.md`)
+  re-run:** previous DEFINED `STOP-*` entries = **153** (`grep -c '^- \*\*STOP-' .claude/STOP-CATALOGUE.md`,
+  matches the file's own canonical command). This sweep RELOCATES rather than adds/removes STOP-format
+  entries — none were touched — so the mechanical `STOP-*` count is unchanged at **153**. 153 >= 153.
+  PASS. **Separately, this sweep carries forward 34 standing-constraint-shaped statements that were
+  living in LEDGER.md's narrative/task-plan sections** (23 in LEDGER's labelled "Standing constraints"
+  section + 11 embedded in its NEXT SESSION / TRACK 1 follow-on blocks) — see new §E below. All 34
+  moved VERBATIM; LEDGER.md now carries only short pointers to this file. Before/after count of the
+  34: **34 before (in LEDGER only) -> 34 after (in STOP-CATALOGUE.md §E, 0 remaining in LEDGER,
+  4 one-line pointers left in their place)**. Zero lost. D101 satisfied by construction — this was a
+  pure relocation, not a rewrite, so no drop is possible.
+
+---
+
+## E. Standing constraints relocated from LEDGER.md (2026-08-05 sweep)
+
+LEDGER.md was over its own 24,576-byte cap (37,035 bytes). Per
+`.claude/reports/2026-08-04-ledger-sweep-recommendations.md`, every standing-constraint-shaped
+statement it held is moved here VERBATIM (D101 — relocation, not deletion). LEDGER.md now carries a
+one-line pointer to this section instead. Grouped by where each item lived in LEDGER before the move.
+
+### E1. Track 1 / DB — restored 2026-08-02 after a handoff edit truncated them (D101: never SUBTRACT)
+
+- ⛔ **"IT FUNCTIONS" IS NOT "IT IS SAFE" (Bean, 2026-08-03 — supersedes the D474/D476 wording).**
+  The target is **100% routing accuracy, totally deterministic**. *"It works here"*, *"good for
+  now"* and *"it was only just fixed"* are **not** reasons to keep a mechanism. A mechanism that
+  cannot generalise to any block, page and content shape is a **cheat to replace**, not an asset to
+  protect — being recently repaired makes it no safer.
+  ⚠ **A previous session wrote "do NOT delete `scalar-media` or Loop 2" into this section as a
+  standing rule. Bean did not set that rule and it contradicts the universal principle above.**
+  It is REMOVED. `role='scalar-media'` is a **per-block cheat**: 2 rows in the whole DB, both
+  `sgs/hero`, serving one bespoke branch that is the codebase's only `--mobile` BEM → `*Mobile`
+  route. It is being **replaced** by a universal per-device content-routing axis, not preserved.
+  **Retain only the transferable lesson:** the D474/D476 incident proved a *measurement* error —
+  a mechanism was called dead because a **broken caller gate** hid it. Prove a path is dead by
+  reaching it, never by observing it not fire.
+- ⛔ **Do NOT write a tactical "never delete X" rule into this section.** Standing constraints are
+  for *universal* principles and *measurement* lessons. A per-artefact preservation order dressed
+  as a rule blocks exactly the ruthless replacement the design philosophy requires.
+- ⛔ **ORDER IS LOAD-BEARING** for `property_suffixes` + `modifier_suffixes` (`ORDER BY rowid`,
+  `LIMIT 1` for the former — first row WINS). Compare-first + DELETE + ordered re-INSERT, NEVER
+  `INSERT OR REPLACE`.
+- ⛔ **Do NOT add `block_composition.has_inner_blocks` to any population gate** — it is DERIVED, not
+  cached. **A population floor is the right gate for a CACHED fact and the wrong one for a DERIVED
+  one.**
+- ⛔ **`block_composition.composition_role` LOOKS dead from the converter but is LIVE** —
+  `db-consistency/check_tier_composition.py` (in `prebuild`) reads it. Do not drop the column.
+- ⛔ **A SELF-HEALING SEEDER BLINDS AN IN-PROCESS TEST.** Anything importing `db_lookup` repairs
+  drift before an assertion can see it. The detector must be a separate process that never imports
+  it → value-identity assertions in `check_row_floor.py` (sqlite3 only — keep it that way).
+- ⛔ **A population count cannot see a RECLASSIFICATION** (right row, wrong-but-plausible value;
+  1012 → 1012).
+- ⛔ **A table with `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it** —
+  every creator must go, or the schema gate stays red forever.
+- ⛔ **A shrinking seed file PRUNES the live DB on next import** (cost the `attribution` slot once).
+  The seeder now warns before it does.
+- ⚠ **A negative control has its OWN vacuity modes** — confirm the break actually landed. Three in
+  one day: one healed by the seeder, one patching a symbol computed at import, one catching the
+  wrong exception class.
+- ⚠ **Two migrations are HELD BACK deliberately** (`testimonial-*`): they UPDATE
+  `block_attributes.derived_selector` and that regenerability is UNPROVEN. Never delete a migration
+  before its replacement seeder is proven.
+- ⛔ **`fx-horizontal-panel` has NO defect — a CSS bug provides the rescue.** `overflow-x: clip` with
+  a non-clip `overflow-y` computes to `hidden`, which IS a scroll container, so native
+  scroll-into-view rescues focus. Do NOT "fix" it to clip on both axes — that deletes the only
+  WCAG 2.4.11 cover this effect has. (Wave E; full narrative `memory/session-2026-08-01-wave-e.md`.)
+- **The WooCommerce gallery bug did not exist.** `core/query include:[540]` silently rendered product
+  1125, whose gallery is genuinely empty. Check WHICH product rendered before diagnosing.
+- Per-row `position:sticky` REJECTED (short-parent trap, D389). Sticky stays HEADER-level.
+- No absolute size value in a shared state-only stylesheet (D386), gated by
+  `check-shared-css-state-rules.js`.
+- After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor (D388).
+- A scoped axe run on a CLOSED surface passes vacuously — guard openness or the run proves
+  nothing; any earlier drawer-axe claim from before D418 proves nothing.
+- `templateLock:'all'`/`'contentOnly'` re-applies the template on EVERY mount, matched by ARRAY
+  POSITION (D393) — pass the template only into a genuinely empty container.
+- The D343 phantom border was WP core's `html :where([style*="border-width"])` substring-matching
+  a custom property *named* `--sgs-tile-border-width` — not shadows-as-borders. Width vars are
+  named `--*-thickness`. Do not re-propagate the wrong diagnosis.
+- No-login shareable preview link is DROPPED, not deferred (Bean, 2026-07-27).
+- `<footer>` is generic — key any assertion on the CLASS `wp-block-template-part`, never a naive
+  regex; the canary page has 5 `<footer>` elements, four are quote attributions.
+- `~/.agents` is NOT a git repo — the skillscore script + 5 grafted skills + `nextjs-testing` are
+  LIVE but UNVERSIONED (recovery = per-file `.bak-2026-07-17-*`).
+- **No block version bumps / deprecations pre-production** (Bean D293, overrides STOP-57).
+
+### E2. Methodology guardrails — earned 2026-08-03/04 (motion / Snooza track)
+
+- **A stale doc is a trap that fires on the next reader.** Proven twice: a spec described fixed
+  bugs as live and an audit recommended re-fixing them; a client doc named a directory that never existed.
+- **Never hand-author block markup with a guessed attribute** — WP silently DISCARDS undeclared attrs
+  (D338). Serialise from a known-clean page, or use no attributes at all.
+- **A probe that never reaches the effect measures the probe.** Two "failures" were the probe's own
+  measurement bugs (an SVG object stringified; headless rAF throttling).
+- **Fix the instrument, never the gate field.** `probe-first-paint.mjs` gained an EXPLICIT
+  `--not-a-loop` opt-out; auto-detect was REJECTED because a loop block that FORGOT its marker is
+  precisely the bug that assertion exists to catch.
+- **Verify licences with `gh api`, never a README badge.** Two "MIT" claims were wrong on inspection.
+- **Shared worktree, other tracks active.** Commit BY EXACT PATH, never `git add -A`. Re-check the
+  D-ceiling immediately before writing any D reference.
+- **Deploy before measure**; `--dry-run` does NOT run the dirty gate; a page-HTML grep cannot see
+  block CSS (it is lifted to `uploads/sgs-css/`).
+
+### E3. Guardrail carried from the 2026-08-04 Spec 35 enforcement session
+
+- **A rule returning zero is a claim requiring evidence, not a pass.** Every new or migrated rule
+  declares its EXPECTED population before it runs. Three for three were blind without this.
+
+### E4. Routing guardrails — earned 2026-08-03 (TRACK 1 routing follow-on)
+
+- **A static audit of this pipeline is a THIRD of the truth** — 8 agents read the scripts; ONE live
+  `/sgs-clone` run overturned two headline findings. Run the pipeline before concluding.
+- **Establish the DENOMINATOR before quoting a percentage; derive nothing you can count.**
+- **A fix is a hypothesis too** — two proposed fixes would have shipped silent WRONG VALUES.
+- **Prove a path is dead by REACHING it, not by observing it not fire** (D474).

@@ -1562,6 +1562,22 @@
       "fields": {
         "canonical_slot": null
       }
+    },
+    {
+      "_why": "a11y-text role, seeded for DOCUMENTATION not routing (Bean, 2026-08-04). structural check: binds into an aria-* attribute",
+      "slug": "sgs/cart",
+      "attr": "ariaLabel",
+      "fields": {
+        "role": "a11y-text"
+      }
+    },
+    {
+      "_why": "a11y-text role, seeded for DOCUMENTATION not routing (Bean, 2026-08-04). MANUAL verification: tabs/render.php:218-219 assigns it to $aria_label. The structural check MISSED this - PHP spells the variable aria_label (underscore) while HTML spells the attribute aria-label (hyphen), and the marker only matched the hyphen. Blind spot recorded.",
+      "slug": "sgs/tabs",
+      "attr": "blockLabel",
+      "fields": {
+        "role": "a11y-text"
+      }
     }
   ]
 }
