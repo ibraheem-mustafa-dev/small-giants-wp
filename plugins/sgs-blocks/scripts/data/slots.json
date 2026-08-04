@@ -47,7 +47,7 @@
     [
       "media",
       "element",
-      "[\"badge-img\", \"bg-img\", \"embed\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"photo\", \"picture\", \"side-image\", \"side-img\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"thumb\", \"thumb-img\", \"video\", \"splitimage\"]",
+      "[\"badge-img\", \"bg-img\", \"decorMedia\", \"embed\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"memberMedia\", \"photo\", \"picture\", \"side-image\", \"side-img\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"splitimage\", \"splitMedia\", \"thumb\", \"thumb-img\", \"video\"]",
       "sgs/media",
       "Polymorphic image/video slot",
       null
@@ -127,7 +127,7 @@
     [
       "avatar",
       "element",
-      "[\"authorImage\", \"avatar-img\", \"avatar-initials\", \"portrait\", \"profile\"]",
+      "[\"authorImage\", \"avatar-img\", \"avatar-initials\", \"avatarMedia\", \"portrait\", \"profile\"]",
       "sgs/media",
       "Person portrait",
       null
