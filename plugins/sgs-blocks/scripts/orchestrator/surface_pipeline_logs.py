@@ -4,11 +4,19 @@ Reads `<run_dir>/trace.jsonl`, groups events into severity buckets, and writes
 human-readable companion logs that surface issues operators care about without
 forcing them to scan the full trace.
 
-Output files (each only written if the bucket has >0 entries):
-  - chrome-skipped.log    — every chrome-skip event (B1 fix, 2026-05-19)
-  - errors.log            — events with `passed: false` or `error*` fields
-  - warnings.log          — bem-lint violations, token-lint findings, soft-fails
-  - summary.log           — one-line per stage outcome
+Output files:
+  - chrome-skipped.log    — every chrome-skip event (B1 fix, 2026-05-19).
+                            Conditional: written only when >0 chrome-skips.
+  - errors.log            — events with `passed: false` or `error*` fields.
+                            ALWAYS written, count on line 1 (R4, 2026-08-04).
+  - warnings.log          — bem-lint violations, token-lint findings, soft-fails.
+                            ALWAYS written, count on line 1 (R4, 2026-08-04).
+  - summary.log           — one line per stage outcome. ALWAYS written.
+
+`surface()` is called TWICE per run by the orchestrator — once at stage 9c and
+once from its `__main__` finally-block — because summary.log is derived wholly
+from trace.jsonl and stages 10 / 11.6 / 4k run after the 9c call site. Each call
+fully REWRITES its outputs, so the last pass wins and describes the whole run.
 
 Per Bean's request 2026-05-19: surface the info/debug/warning/error/critical
 messages into separate files so operators don't have to scan trace.jsonl.
@@ -101,15 +109,23 @@ def surface(run_dir: Path) -> dict:
         )
         written["chrome-skipped.log"] = str(path)
 
-    if buckets["error"]:
-        path = run_dir / "errors.log"
-        path.write_text("\n".join(buckets["error"]) + "\n", encoding="utf-8")
-        written["errors.log"] = str(path)
-
-    if buckets["warning"]:
-        path = run_dir / "warnings.log"
-        path.write_text("\n".join(buckets["warning"]) + "\n", encoding="utf-8")
-        written["warnings.log"] = str(path)
+    # errors.log / warnings.log are written UNCONDITIONALLY, including at zero
+    # (R4, 2026-08-04). They used to be written only when their bucket was
+    # non-empty, which made their absence ambiguous: a consumer globbing for
+    # errors.log could not tell "the run was clean" from "the stage never ran"
+    # — and stages 10 / 11.6 / 4k genuinely never reached the trace at all.
+    # The count is stated on line 1 so an empty file cannot be misread as an
+    # unfinished write, and a MISSING file now means exactly one thing: this
+    # surfacer never ran for that run.
+    for bucket, filename, title in (
+        ("error", "errors.log", "Pipeline errors"),
+        ("warning", "warnings.log", "Pipeline warnings"),
+    ):
+        path = run_dir / filename
+        lines = buckets[bucket]
+        body = "\n".join(lines) + "\n" if lines else ""
+        path.write_text(f"# {title}: {len(lines)}\n\n" + body, encoding="utf-8")
+        written[filename] = str(path)
 
     # summary.log — one line per stage with counts
     summary_lines = ["# Pipeline stage outcomes", ""]

@@ -654,6 +654,52 @@ def _emit(tr, **kwargs) -> None:
         pass
 
 
+# The run directory of the in-flight run, published by main() so the __main__
+# finally-block can re-surface the per-severity logs after the final stage.
+# See _surface_logs() for why a second pass is required.
+_RUN_DIR: "Path | None" = None
+
+
+def _surface_logs(run_dir: "Path | None", tag: str) -> dict:
+    """Regenerate the per-severity companion logs from trace.jsonl. Soft-fail.
+
+    Called TWICE per run, deliberately (R4, 2026-08-04):
+
+      1. at stage 9c — before the ``--skip-autonomy-gate`` early return, so a
+         dev run still gets its logs (the 2026-05-19 /qc-inline fix);
+      2. from the ``__main__`` finally-block — AFTER the last stage.
+
+    The second pass exists because ``summary.log`` is derived wholly from
+    ``trace.jsonl``, and stages 10 / 11.6 / 4k run *after* the 9c call site.
+    Without it those stages could never appear in the summary no matter how
+    well they were instrumented — the artefact would keep describing a
+    prefix of the run while looking complete.
+
+    Returns the surfacer's result dict, or ``{}`` when it could not run.
+    """
+    if run_dir is None:
+        return {}
+    try:
+        mod = _load_module_from_path(
+            "surface_pipeline_logs",
+            Path(__file__).parent / "orchestrator" / "surface_pipeline_logs.py",
+        )
+        result = mod.surface(run_dir)
+        if result.get("status") == "ok":
+            counts = result.get("counts", {})
+            print(
+                f"[{tag}] surfaced logs: "
+                f"chrome_skip={counts.get('chrome_skip', 0)} "
+                f"errors={counts.get('error', 0)} "
+                f"warnings={counts.get('warning', 0)} "
+                f"-> {', '.join(result.get('files_written', {}).keys())}"
+            )
+        return result
+    except Exception as exc:  # noqa: BLE001 - surfacing is observability; soft-fail
+        print(f"[{tag}] surface-logs soft-failed: {exc}", file=sys.stderr)
+        return {}
+
+
 # Role names from token_resolver (color / spacing / font_size / shadow / family)
 # map onto token-lint's TokenClass values (color / spacing / fontSize / shadow /
 # fontFamily) for slug generation. Keep this dict in lock-step with both modules.
@@ -2466,6 +2512,14 @@ def main():
     run_dir = REPO / "pipeline-state" / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
+    # Publish the run dir module-globally so the __main__ finally-block can
+    # re-surface the per-severity logs after the LAST stage, on every exit path
+    # (early return, sys.exit from the stage gate, or an exception). Without
+    # this, summary.log is frozen at the stage-9c call site and can never
+    # describe stages 10 / 11.6 / 4k, which run after it (R4, 2026-08-04).
+    global _RUN_DIR
+    _RUN_DIR = run_dir
+
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")
     print(f"[orchestrator] mode={args.mode}")
@@ -2571,9 +2625,20 @@ def main():
     print(f"[stage-9] leftover entries: {report['leftover_total_count']} across {sum(1 for v in report['leftover_totals'].values() if v > 0)} buckets")
     print(f"[stage-9] recognition_log rows inserted: {report['recognition_log_rows_inserted']}")
     print(f"[stage-9] operator-review: {report['operator_review_html_path']}")
+    _emit(_trace_for(run_dir), stage="stage_9_report",
+          leftover_total_count=report.get("leftover_total_count"),
+          leftover_totals=report.get("leftover_totals"),
+          recognition_log_rows_inserted=report.get("recognition_log_rows_inserted"),
+          operator_review_html_path=report.get("operator_review_html_path"))
+
     autonomy = report.get("autonomy_chain") or {}
     if autonomy.get("enabled"):
         print(f"[stage-9b] autonomy: {autonomy.get('scaffolded_count', 0)} scaffolded ({autonomy.get('promoted_count', 0)} promoted) from {autonomy.get('candidates_seen', 0)} candidates")
+    _emit(_trace_for(run_dir), stage="stage_9b_autonomy_chain",
+          enabled=bool(autonomy.get("enabled")),
+          candidates_seen=autonomy.get("candidates_seen", 0),
+          scaffolded_count=autonomy.get("scaffolded_count", 0),
+          promoted_count=autonomy.get("promoted_count", 0))
 
     # ------------------------------------------------------------------
     # R-31-15 ANTI-MIRROR GATE (STOP-6 wire — 2026-06-21).
@@ -2589,11 +2654,18 @@ def main():
     # ------------------------------------------------------------------
     if args.skip_stage_gate:
         print("[stage-gate] skipped per --skip-stage-gate")
+        _emit(_trace_for(run_dir), stage="stage_gate_anti_mirror",
+              decision="skipped", reason="--skip-stage-gate")
     else:
         gate_proc = subprocess.run(
             [sys.executable, str(PIPELINE_STAGE_GATE_SCRIPT), str(run_dir)],
         )
         if gate_proc.returncode != 0:
+            _emit(_trace_for(run_dir), stage="stage_gate_anti_mirror",
+                  decision="halted", passed=False,
+                  error="NEW mirror-cheat violation in converter output",
+                  returncode=gate_proc.returncode)
+            _surface_logs(run_dir, "stage-9c")
             print(
                 "[stage-gate] HALTED: the anti-mirror gate found a NEW mirror-cheat "
                 "violation in the converter output (a draft-class container or a "
@@ -2606,6 +2678,8 @@ def main():
             )
             sys.exit(gate_proc.returncode)
         print("[stage-gate] anti-mirror gate passed (no NEW violations).")
+        _emit(_trace_for(run_dir), stage="stage_gate_anti_mirror",
+              decision="passed", passed=True)
 
     # ------------------------------------------------------------------
     # Phase 6 v2 Step 4i — Apply-module surface (between Stage 7 compose
@@ -2711,6 +2785,15 @@ def main():
         json.dumps(stage_4i_summary, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+    _ms = stage_4i_summary.get("media_sideload") or {}
+    _emit(_trace_for(run_dir), stage="stage_4i_media_sideload",
+          mode=_ms.get("mode"),
+          slots_found=_ms.get("slots_found"),
+          new_uploads=_ms.get("new_uploads"),
+          reused=_ms.get("reused"),
+          modules_loaded=stage_4i_summary.get("modules_loaded", []),
+          passed="error" not in _ms,
+          **({"error": _ms["error"]} if "error" in _ms else {}))
 
     # ------------------------------------------------------------------
     # Phase 6 v2 Step 4j — wp_integration: validate aggregate block markup
@@ -2751,6 +2834,17 @@ def main():
         json.dumps(stage_4j_summary, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+    _vb = stage_4j_summary.get("validate_block_markup") or {}
+    # NB: field names here must NOT start with "error" — surface_pipeline_logs
+    # ._classify() buckets an event as an ERROR on `any(k.startswith("error"))`,
+    # so a plain `error_count=0` files a CLEAN validation as a pipeline error.
+    # Caught on the first live run after instrumenting this stage (2026-08-04).
+    _emit(_trace_for(run_dir), stage="stage_4j_wp_blocks_validate",
+          validate_status=_vb.get("status"),
+          invalid_count=len(_vb.get("errors") or []),
+          warning_count=len(_vb.get("warnings") or []),
+          passed=_vb.get("status") not in ("errored", "invalid"),
+          **({"reason": _vb["reason"]} if "reason" in _vb else {}))
 
     # ------------------------------------------------------------------
     # Phase 6 Step 0 — compose with the Phase 5 module surface
@@ -2771,23 +2865,11 @@ def main():
     # is written on every pipeline invocation (regardless of autonomy flag).
     # Caught 2026-05-19 by /qc-inline — original placement was AFTER the
     # early return so the surfacer never executed in dev mode.
-    try:
-        _logsurf = _load_module_from_path(
-            "surface_pipeline_logs",
-            Path(__file__).parent / "orchestrator" / "surface_pipeline_logs.py",
-        )
-        _surf = _logsurf.surface(run_dir)
-        if _surf.get("status") == "ok":
-            counts = _surf.get("counts", {})
-            print(
-                f"[stage-9c] surfaced logs: "
-                f"chrome_skip={counts.get('chrome_skip',0)} "
-                f"errors={counts.get('error',0)} "
-                f"warnings={counts.get('warning',0)} "
-                f"-> {', '.join(_surf.get('files_written', {}).keys())}"
-            )
-    except Exception as exc:  # noqa: BLE001 - surfacing is observability; soft-fail
-        print(f"[stage-9c] surface-logs soft-failed: {exc}", file=sys.stderr)
+    _surf = _surface_logs(run_dir, "stage-9c")
+    _emit(_trace_for(run_dir), stage="stage_9c_surface_logs",
+          counts=_surf.get("counts", {}),
+          files_written=sorted((_surf.get("files_written") or {}).keys()),
+          passed=_surf.get("status") == "ok")
 
     # Stage 10 — per-page deploy (upload images + patch target page) if requested.
     # Soft-fail: any deploy error logs to stderr but does NOT halt the pipeline.
@@ -2883,8 +2965,16 @@ def main():
                 )
             else:
                 print(f"[stage-10] deploy soft-failed (exit {result.returncode}): {result.stderr[:200]}", file=sys.stderr)
+            _emit(_trace_for(run_dir), stage="stage_10_deploy",
+                  target_kind=target_kind, target_id=target_id,
+                  returncode=result.returncode,
+                  passed=result.returncode == 0,
+                  **({"error": result.stderr.strip()[:300]} if result.returncode != 0 else {}))
         except Exception as exc:  # noqa: BLE001 — Stage 10 is opt-in observability; soft-fail
             print(f"[stage-10] deploy soft-failed: {exc}", file=sys.stderr)
+            _emit(_trace_for(run_dir), stage="stage_10_deploy",
+                  passed=False, error=str(exc),
+                  deploy_target=args.deploy_target)
 
     # ------------------------------------------------------------------
     # Stage 11 (pixel-diff) and Stage 11.5 (parity2) REMOVED 2026-07-04.
@@ -2951,13 +3041,30 @@ def main():
                             print(f"[stage-11.6]   [{_vp}px] content {_cc.get('pct')}% | css {_cs.get('pct')}% "
                                   f"({_cs.get('match')}/{_cs.get('meaningful_props')} props, {_unm} draft els unmatched)")
                         print(f"[stage-11.6] computed-parity report → {cp_out}")
+                        _emit(_trace_for(run_dir), stage="stage_11_6_computed_parity",
+                              overall_css_pct=_cp.get("overall_css_pct"),
+                              viewports={
+                                  _vp: {
+                                      "content_pct": (_v.get("content") or {}).get("pct"),
+                                      "css_pct": (_v.get("css") or {}).get("pct"),
+                                  }
+                                  for _vp, _v in (_cp.get("viewports") or {}).items()
+                              },
+                              report_path=str(cp_out), passed=True)
         except FileNotFoundError:
             print("[stage-11.6] computed-parity SKIPPED — 'node' not on PATH.", file=sys.stderr)
+            _emit(_trace_for(run_dir), stage="stage_11_6_computed_parity",
+                  decision="skipped", reason="node not on PATH", passed=False)
         except Exception as exc:  # noqa: BLE001 — observability; soft-fail
             print(f"[stage-11.6] computed-parity soft-failed: {exc}", file=sys.stderr)
+            _emit(_trace_for(run_dir), stage="stage_11_6_computed_parity",
+                  passed=False, error=str(exc))
 
     if args.skip_autonomy_gate:
         print("[orchestrator] DONE (autonomy gate skipped per --skip-autonomy-gate).")
+        _emit(_trace_for(run_dir), stage="orchestrator_done",
+              decision="autonomy-gate-skipped", reason="--skip-autonomy-gate",
+              last_stage_reached="stage_11_6_computed_parity")
         return
 
     om = _load_module_from_path(
@@ -3094,9 +3201,25 @@ def main():
         print(f"[stage-4k] critical-fix-verification: {summary.get('passed', 0)}/{summary.get('total', 0)} checks passed; artefact at {cfv_path}")
     except Exception as exc:  # noqa: BLE001 - harness is post-flight audit; soft-fail
         print(f"[stage-4k] critical-fix-verification soft-failed: {exc}", file=sys.stderr)
+    _cfv_summary = cfv_result.get("summary") or {}
+    _emit(_trace_for(run_dir), stage="stage_4k_critical_fix_verification",
+          checks_passed=_cfv_summary.get("passed", 0),
+          checks_failed=_cfv_summary.get("failed", 0),
+          checks_total=_cfv_summary.get("total", 0),
+          passed=_cfv_summary.get("failed", 0) == 0)
 
     print(f"[orchestrator] DONE. Artefacts in {run_dir} + {so_run_dir}")
+    _emit(_trace_for(run_dir), stage="orchestrator_done",
+          decision="complete", last_stage_reached="stage_4k_critical_fix_verification")
 
 
 if __name__ == "__main__":
-    main()
+    # The final log-surface pass MUST run on every exit path — normal return,
+    # the --skip-autonomy-gate early return, the stage-gate sys.exit, or an
+    # uncaught exception. summary.log is derived wholly from trace.jsonl, so a
+    # pass that only ran mid-pipeline would permanently describe a PREFIX of
+    # the run while looking complete (R4, 2026-08-04).
+    try:
+        main()
+    finally:
+        _surface_logs(_RUN_DIR, "stage-9c-final")

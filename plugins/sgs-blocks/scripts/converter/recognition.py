@@ -43,6 +43,19 @@ def _root_classes(node: Any) -> list[str]:
             if c.startswith("sgs-") and "__" not in c and "--" not in c]
 
 
+def _noop_trace(stage: str, **kwargs) -> None:  # noqa: ARG001
+    """Default no-op trace (injectable — entry.py binds the live trace)."""
+
+
+_trace = _noop_trace
+
+
+def set_trace_fn(fn) -> None:
+    """Bind the live trace callable (or None → no-op). Mirrors section_passes."""
+    global _trace
+    _trace = fn if callable(fn) else _noop_trace
+
+
 def recognise(node: Any, css_rules: dict | None = None) -> Recognition:
     """Resolve one draft node to a Recognition (block identity + variant), DB-driven.
 
@@ -182,9 +195,16 @@ def recognise_section(node: Any) -> Recognition:
     container (FR-31-4.1 #5 — the content-leaf rule lives in the dispatch, not here).
 
     Precedence:
-      1. ``recognise()`` returns anything other than ``unrecognised`` (named /
-         atomic / scalar) → return it verbatim. Hero/trust-bar still win via
-         branch 1 (FR-31-16); the 2 working sections are untouched.
+      1. ``recognise()`` returns a NAMED match whose slug is registered
+         ``blocks.tier='class-section'`` → return it verbatim. Hero / trust-bar /
+         cta-section win via branch 1 (FR-31-16).
+      1b. ``recognise()`` returns a NAMED match that is NOT class-section → the
+         SECTION-ROOT CAPABILITY GATE demotes it to the container default
+         (FR-31-16: "class-section blocks emit their composite, ALL OTHERS fall
+         to the FR-31-4 default"). See the gate note below.
+      1c. ``atomic`` / ``scalar`` → returned verbatim. FR-31-4's subject is a
+         *class-section* (a node with a BEM ROOT class); neither of those kinds
+         resolves from a root class, so the gate's scope does not reach them.
       2. ``unrecognised`` + the node has BEM ROOT classes + a GENUINE no-match
          (zero registered candidates) → the container default.
       3. ``unrecognised`` from an AMBIGUOUS tie (≥2 registered roots at the same
@@ -192,30 +212,74 @@ def recognise_section(node: Any) -> Recognition:
          RED). A real recognition failure is NEVER silently swallowed into a
          container (R-31-9 over-broad-universality is also a break).
 
-    DB-driven (R-31-1): the container slug comes from
-    ``db_lookup.container_default_slug()`` (the block composites wrap), never a
+    THE SECTION-ROOT CAPABILITY GATE (R1, 2026-08-04) — a conformance fix, not a
+    new rule. FR-31-4 and FR-31-16 both already require it, and it is what
+    ``is_class_section_block()`` was built for; the flag was only ever consulted
+    in the Stage-1 voter and loop 2's content entry, NEITHER of which decides the
+    emitted block. Measured before the fix: a section classed ``sgs-quote``
+    emitted ``sgs/quote`` — a CONTENT component standing in as a whole page
+    section, never a container. Being a section root is a CAPABILITY, declared
+    per block by ``supports.sgs.is_section_root`` in block.json and reflected onto
+    ``blocks.tier`` by /sgs-update; it is NOT a property of matching a name.
+    MEASURED CONSEQUENCE (2026-08-04 — do not restate this from intuition, it
+    was wrong the first time): the demoted node's identity DISSOLVES, it does
+    not nest. FR-31-4 recurses the demoted section's CHILDREN, and those
+    children are its BEM *elements* (``sgs-quote__text`` / ``__attribution``),
+    which resolve individually. So a top-level ``sgs-quote`` becomes
+    ``sgs/container > sgs/text + sgs/text`` — NOT ``sgs/container > sgs/quote``.
+    Text content survives; the block's typed attrs and element semantics
+    (``<cite>`` → generic text) do not. On a childless-stub emitter such as
+    ``sgs/tabs`` the same dissolution instead RECOVERS content the typed emit
+    was dropping entirely. Both outcomes are real; see the R1 decision note.
+
+    DB-driven (R-31-1): both the capability flag and the container slug come from
+    the DB (``is_class_section_block`` / ``container_default_slug``), never a
     literal. Soft-fails to the ``recognise()`` result when the DB is absent.
     """
     base = recognise(node)
-    if base.kind != "unrecognised":
-        return base
+    demoted_from: str | None = None
 
-    # Only the genuine NO-MATCH case defaults. Re-derive the registered candidates
-    # the same way recognise() branch 1 does: a non-empty set here means the
-    # unrecognised was an AMBIGUOUS TIE (pick_root → None), which must stay loud.
-    root_classes = _root_classes(node)
-    if not root_classes:
-        return base  # no BEM root class → not a class-section; stay unrecognised.
-    candidates = [
-        s for c in root_classes
-        if db_lookup.block_exists(s := "sgs/" + c[4:])
-    ]
-    if candidates:
-        return base  # ambiguous tie — a real failure, never a silent container.
+    if base.kind != "unrecognised":
+        # SECTION-ROOT CAPABILITY GATE (FR-31-16). Only a NAMED match can claim a
+        # section root off a BEM root class, so only NAMED is gated.
+        if (base.kind == "named" and base.slug is not None
+                and not db_lookup.is_class_section_block(base.slug)):
+            demoted_from = base.slug  # fall through to the container default
+        else:
+            return base
+    else:
+        # Only the genuine NO-MATCH case defaults. Re-derive the registered
+        # candidates the same way recognise() branch 1 does: a non-empty set here
+        # means the unrecognised was an AMBIGUOUS TIE (pick_root → None), which
+        # must stay loud.
+        root_classes = _root_classes(node)
+        if not root_classes:
+            return base  # no BEM root class → not a class-section; stay unrecognised.
+        candidates = [
+            s for c in root_classes
+            if db_lookup.block_exists(s := "sgs/" + c[4:])
+        ]
+        if candidates:
+            return base  # ambiguous tie — a real failure, never a silent container.
 
     container_slug = db_lookup.container_default_slug()
     if container_slug is None:
         return base  # DB absent — no-op fall-through, never a crash.
+
+    if demoted_from is not None:
+        # Never silent: the operator must be able to see that a block was denied
+        # a section root, and WHY (Bean 2026-08-04 — trace event, no gap row:
+        # marking a new class-section block is a declaration responsibility, and
+        # container-as-default is the designed outcome, not a defect).
+        _trace(
+            "recognise_section_capability_gate",
+            decision="demoted-to-container",
+            demoted_from=demoted_from,
+            emitted=container_slug,
+            reason="block is not registered blocks.tier='class-section'",
+            root_classes=_root_classes(node),
+            requirement="FR-31-16",
+        )
 
     return Recognition(
         kind="named",

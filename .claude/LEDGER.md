@@ -70,8 +70,10 @@ Full detail lives where it already did — read before acting, do not assume it 
 memory alone:
 
 - **⭐ Track 1 — ROUTING AUDIT COMPLETE + tier axis SHIPPED 2026-08-03 (D480).**
-  **Registers: `reports/2026-08-02-pipeline-routing-review.md` (the findings) +
-  `reports/2026-08-03-handover-to-spec35-block-attribute-defects.md` (block/DB defects → Spec 35).**
+  **Registers: `.claude/reports/2026-08-02-pipeline-routing-review.md` (the findings) +
+  `.claude/reports/2026-08-03-handover-to-spec35-block-attribute-defects.md` (block/DB defects → Spec 35).**
+  ⚠ Both paths were written WITHOUT the `.claude/` prefix until 2026-08-04 — they resolved to
+  nothing from the repo root, so a fresh session looking for the register found no such file.
   8 surface critiques + a LIVE `/sgs-clone` run (canary **2130**) + a 3-rater QC council.
   ✅ **SHIPPED: the per-device content tier axis.** `content_attr_for_element(slug, element, tier)`;
   base resolution excludes tier-suffixed attrs; **tier requested but sibling absent → LOUD GAP, no
@@ -304,22 +306,49 @@ Commit by EXACT PATH → push main
 
 ---
 
-### TRACK 1 (routing) — ordered follow-on from D480. Register: `reports/2026-08-02-pipeline-routing-review.md`
+### TRACK 1 (routing) — ordered follow-on from D480. Register: `.claude/reports/2026-08-02-pipeline-routing-review.md`
 
 **Read FIRST:** that report (§THE FOUR DECISIONS, §7 the categorical target, §APPENDIX 18 corrections)
-+ `reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
++ `.claude/reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
 **The design bar (Bean):** 100% routing accuracy, totally deterministic. Every branch must separate
 its options by an INNATE CATEGORICAL DB FACT — never rowid, document order, catalogue order or a name
 guess. "No match" is an intended outcome (class-section → `sgs/container`), never a fallback; a tie
 is a LOUD failure. **Nine sites currently violate this — the report lists them.**
 
-**R4 — Fix the trace** [haiku, ~30 min] — **do FIRST; everything else depends on it.**
+**R4 — Fix the trace — SHIPPED 2026-08-04.** It was **THREE defects, not one**, and "fix the trace"
+mis-framed all three: the trace was never TRUNCATED, it was never INSTRUMENTED past stage 4 (9 emit
+sites, all ≤ stage 4 → now 26). (a) instrumented 9 / 9b / anti-mirror gate / 4i / 4j / 4k / 10 /
+11.6 / run-completion; (b) `errors.log`+`warnings.log` were written ONLY when non-empty, so absence
+could not distinguish "clean" from "never ran" — now always written, count on line 1; (c) **the one
+no register caught** — the log surfacer ran at `orchestrator:2774`, BEFORE stages 10/11.6/4k, so
+`summary.log` could never describe them however well instrumented. Now re-surfaced in a `__main__`
+finally-block covering every exit path (early return, stage-gate `sys.exit`, exception).
+Negative control proven: a stage-4-only trace fails the assertion.
 
-**R1 — Relocate the capability gate into `recognise_section`** [inline, Opus, ~30 min]
-`is_class_section_block` is called in the Stage-1 voter and loop 2's entry — NEITHER decides the
-emitted block. Insert at `converter/recognition.py:201-202`, before the container default.
-**Changes output** — verify `sgs-quote`/`sgs-info-box` become containers, hero/trust-bar unaffected.
-/qc gate + **Bean's eye (R-31-13)**. Acceptance: the review report's §Q2 table flips its two ✗ rows.
+**R1 — Section-root capability gate — BUILT 2026-08-04, Bean-ruled DISSOLVE.**
+NOT a design change: **FR-31-16 already mandates this exact gate** ("Recognition consults
+`blocks.tier='class-section'` via `is_class_section_block()`; class-section blocks emit their
+composite, ALL OTHERS fall to the FR-31-4 default"). The flag was only ever read by the Stage-1
+voter and loop 2's content entry — neither decides the emitted block. Gate inserted in
+`recognise_section`, gating the NAMED branch only (atomic/scalar resolve from no root class, so
+FR-31-4's subject does not reach them). Demotion emits a `recognise_section_capability_gate` trace
+event — **trace only, no gap row** (Bean: marking a new class-section block is a declaration
+responsibility; container-as-default is the designed outcome, not a defect). `entry.py` binds
+`recognition.set_trace_fn` or the event is a guaranteed no-op.
+⛔ **MEASURED, and it corrected my own docstring:** the demoted node's identity **DISSOLVES, it does
+not nest** — FR-31-4 recurses the section's BEM *element* children, so `sgs-quote` →
+`sgs/container > sgs/text + sgs/text`, NOT `> sgs/quote`. Text survives; typed attrs + `<cite>`
+semantics do not. On a childless-stub emitter the same dissolution **RECOVERS** dropped content:
+`sgs/tabs` went from a self-closing stub with ZERO children (all tab content silently lost) to a
+container carrying its buttons + info-box.
+**BEAN'S RULING (2026-08-04) — dissolve is CORRECT, and this is the justification to keep:** a
+class-section in a draft is *literally a container/wrapper around a group of blocks*, so the
+container default is a **1:1 structural match** with what the draft actually is. The few
+class-section blocks have a container layer built into them. A standalone non-class-section block
+as a whole section is improbable — it would at minimum be paired with a heading, which is a group,
+which is a container.
+**Blast radius: exactly 7 tests, one root cause** (6 golden byte-compares + 1 tab dissolve test).
+**Every real-draft golden (`mamas-munches-homepage__*`) passes** — inert on the real corpus.
 
 **R2 — Stage 2 removal** [sonnet, ~90 min] — after R1. Re-source Stage 4's loop from `voter.json`;
 re-key 4 bucket routers on `per_section_results`; **amend FR-31-12 in the same commit**. /qc-council.

@@ -187,6 +187,7 @@ def convert_section(html: str, css: str, media_map: dict,
     from converter.db import db_lookup
     from converter.services import content_gap_collector as _gap_collector
     from converter.services import token_resolution_check as _token_check
+    from converter.recognition import set_trace_fn as set_recognition_trace_fn
     from converter.services.section_passes import set_trace_fn
     from converter.services.styling_helpers import configure_colour_resolution_from_run
 
@@ -217,12 +218,19 @@ def convert_section(html: str, css: str, media_map: dict,
     #      without losing anything it already carried.
     _gap_collector.clear()
     _token_check.clear()
+    #   3. recognition.set_trace_fn() — the SECTION-ROOT CAPABILITY GATE
+    #      (FR-31-16) demotes a non-class-section named match to the container
+    #      default. That is a designed outcome, not a defect, but it must never
+    #      be silent: without this binding recognition._trace is a guaranteed
+    #      no-op and the demotion would leave no evidence anywhere.
     set_trace_fn(_bind_trace(trace, boundary_id))
+    set_recognition_trace_fn(_bind_trace(trace, boundary_id))
     db_lookup.set_trace(_gap_collector.FallbackTraceSink(trace), boundary_id)
     try:
         return _convert_section_body(html, css, media_map, section_id=section_id)
     finally:
         set_trace_fn(None)
+        set_recognition_trace_fn(None)
         db_lookup.set_trace(None)
 
 
