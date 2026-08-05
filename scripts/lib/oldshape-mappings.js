@@ -138,6 +138,51 @@ const FAIL_CLOSED = {
 	'sgs/brand-strip': [],
 };
 
+/**
+ * ATTRIBUTE RENAMES — a second migration SHAPE, distinct from the scalar→InnerBlocks
+ * rebuild the BUILDERS above perform (added 2026-08-05).
+ *
+ * WHY IT IS SEPARATE. A rebuild constructs a NEW block from scratch and hands the
+ * driver `children` to re-create; a rename must leave the block's existing
+ * innerBlocks strictly alone. Routing a rename through the rebuild path would call
+ * createBlock with no children and DESTROY them — sgs/multi-button wraps its
+ * sgs/button children, so that would have deleted the buttons. The driver therefore
+ * writes renames with updateBlockAttributes (attrs only, subtree untouched) rather
+ * than replaceBlock.
+ *
+ * ⛔ ORDERING. The NEW names must already be DECLARED in the DEPLOYED block.json
+ * before a rename runs. WordPress discards an undeclared attribute at parse, so
+ * writing one is a silent no-op — and the driver's preflight validates every planned
+ * attr against the LIVE runtime schema (wp.blocks.getBlockType), so it fails closed
+ * rather than appearing to succeed. The safe sequence, used for multi-button:
+ *   phase A — declare BOTH names, render new-first-legacy-fallback, deploy
+ *   (migrate)
+ *   phase B — delete the legacy names + the fallback, deploy
+ * Declaring both first is also what keeps the deploy's own oldshape-audit green:
+ * with only the new names declared it reported 3 NEW HIGH, because the stored
+ * legacy values would have been deleted on the next editor save.
+ */
+const RENAMES = {
+	'sgs/multi-button': {
+		direction: 'flexDirection',
+		directionTablet: 'flexDirectionTablet',
+		directionMobile: 'flexDirectionMobile',
+		wrap: 'flexWrap',
+		wrapTablet: 'flexWrapTablet',
+		wrapMobile: 'flexWrapMobile',
+	},
+};
+
+/** Old keys present + populated on this block, i.e. it has something to rename. */
+function renameKeysPresent(block) {
+	const map = RENAMES[block.name];
+	if (!map) return [];
+	return Object.keys(map).filter((k) => {
+		const v = block.attrs[k];
+		return v !== undefined && v !== '' && v !== null;
+	});
+}
+
 const BUILDERS = {
 	'sgs/hero'(attrs, tokens, errors) {
 		const children = [];
@@ -275,6 +320,11 @@ const BUILDERS = {
 
 /** A stored instance qualifies as a casualty needing migration. */
 function needsMigration(block) {
+	// A rename qualifies on its own terms and must be tested FIRST: the
+	// `!block.selfClosing` gate below is a rebuild-shape rule, and a block being
+	// renamed normally HAS children (that is precisely why it needs the attrs-only
+	// path). Testing rebuild-first would return false and silently skip it.
+	if (renameKeysPresent(block).length) return true;
 	if (!BUILDERS[block.name]) return false;
 	if (block.name === 'sgs/brand-strip') {
 		// Qualifies unless every logo is already in the deployed-compatible legacy
@@ -301,6 +351,36 @@ function buildPlan(raw) {
 			continue;
 		}
 		if (!needsMigration(block)) continue;
+
+		// RENAME shape — attrs only, children untouched. Emitted with mode:'rename'
+		// so the driver uses updateBlockAttributes instead of replaceBlock.
+		const renameKeys = renameKeysPresent(block);
+		if (renameKeys.length) {
+			const map = RENAMES[block.name];
+			const newAttrs = {};
+			const tokens = [];
+			for (const oldKey of renameKeys) {
+				const value = block.attrs[oldKey];
+				newAttrs[map[oldKey]] = value;
+				// Content-preservation inventory: the driver must find each value again
+				// on the migrated block, so a dropped rename cannot pass silently.
+				tokens.push({ source: `${block.name}.${oldKey}`, value });
+			}
+			// Explicitly clear the legacy keys so phase B's block.json deletion cannot
+			// strand them. undefined is how the block editor removes an attribute.
+			for (const oldKey of renameKeys) newAttrs[oldKey] = undefined;
+			entries.push({
+				name: block.name,
+				kth: kthCounter[block.name],
+				mode: 'rename',
+				sourceAttrs: block.attrs,
+				newAttrs,
+				children: null,
+				tokens,
+			});
+			continue;
+		}
+
 		for (const key of FAIL_CLOSED[block.name]) {
 			const v = block.attrs[key];
 			if (v && !(Array.isArray(v) && !v.length) && !(typeof v === 'object' && !Object.keys(v).length)) {
@@ -321,4 +401,4 @@ function buildPlan(raw) {
 	return { entries, errors, sgsNameCounts: kthCounter };
 }
 
-module.exports = { parseBlockComments, buildPlan };
+module.exports = { parseBlockComments, buildPlan, RENAMES };

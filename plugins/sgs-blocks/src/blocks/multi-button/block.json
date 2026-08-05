@@ -1,151 +1,180 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/multi-button",
-  "version": "1.4.0",
-  "title": "SGS Button Group",
-  "category": "sgs-content",
-  "description": "A flexible container for one or more SGS Buttons. Provides per-breakpoint layout, gap, alignment, and wrap controls.",
-  "keywords": [
-    "button group",
-    "cta",
-    "buttons",
-    "multi button"
-  ],
-  "icon": "button",
-  "textdomain": "sgs-blocks",
-  "editorScript": "file:./index.js",
-  "style": "file:./style-index.css",
-  "editorStyle": "file:./index.css",
-  "render": "file:./render.php",
-  "allowedBlocks": [
-    "sgs/button"
-  ],
-  "supports": {
-    "anchor": true,
-    "customClassName": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "gradients": true,
-      "text": true,
-      "__experimentalSkipSerialization": true
-    },
-    "__experimentalBorder": {
-      "radius": true,
-      "width": true,
-      "color": true,
-      "style": true,
-      "__experimentalSkipSerialization": true
-    },
-    "sgs": {
-      "elements": {
-        "group": {
-          "label": "Button group",
-          "layer": "OUTER",
-          "order": 1,
-          "clusters": [ "text", "fill", "layout" ],
-          "isWrapper": true,
-          "attrMap": {
-            "css:color": "native:color.text",
-            "css:background-color": "native:color.background",
-            "css:border-width": "native:__experimentalBorder.width",
-            "css:border-style": "native:__experimentalBorder.style",
-            "css:border-color": "native:__experimentalBorder.color",
-            "css:border-radius": "native:__experimentalBorder.radius",
-            "css:max-width": "maxWidth",
-            "css:gap": "gap",
-            "css:flex-direction": "direction",
-            "css:flex-wrap": "wrap",
-            "css:justify-content": "justifyContent",
-            "css:align-items": "alignItems"
-          },
-          "_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. No `spacing` or `typography` support is declared in block.json (padding/margin/font members are honest gaps). `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
-        },
-        "button": {
-          "label": "Button",
-          "order": 2,
-          "clusters": [],
-          "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls — this element documents that ownership; multi-button itself controls only the group's own arrangement (see `group`)."
-        }
-      }
-    }
-  },
-  "attributes": {
-    "direction": {
-      "type": "string",
-      "default": "row"
-    },
-    "directionTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "directionMobile": {
-      "type": "string",
-      "default": "column"
-    },
-    "gap": {
-      "type": "string",
-      "default": "12px"
-    },
-    "gapTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "gapMobile": {
-      "type": "string",
-      "default": "8px"
-    },
-    "justifyContent": {
-      "type": "string",
-      "default": "flex-start"
-    },
-    "justifyContentTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "justifyContentMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "wrap": {
-      "type": "string",
-      "default": "nowrap"
-    },
-    "wrapTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "wrapMobile": {
-      "type": "string",
-      "default": "nowrap"
-    },
-    "alignItems": {
-      "type": "string",
-      "default": "center"
-    },
-    "alignItemsTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "alignItemsMobile": {
-      "type": "string",
-      "default": "stretch"
-    },
-    "contentWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "maxWidth": {
-      "type": "string",
-      "default": ""
-    }
-  },
-  "example": {
-    "attributes": {
-      "direction": "row",
-      "gap": "12px",
-      "justifyContent": "flex-start"
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/multi-button",
+	"version": "1.4.0",
+	"title": "SGS Button Group",
+	"category": "sgs-content",
+	"description": "A flexible container for one or more SGS Buttons. Provides per-breakpoint layout, gap, alignment, and wrap controls.",
+	"keywords": [
+		"button group",
+		"cta",
+		"buttons",
+		"multi button"
+	],
+	"icon": "button",
+	"textdomain": "sgs-blocks",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"render": "file:./render.php",
+	"allowedBlocks": [
+		"sgs/button"
+	],
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"gradients": true,
+			"text": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"group": {
+					"label": "Button group",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:gap": "gap",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap",
+						"css:justify-content": "justifyContent",
+						"css:align-items": "alignItems"
+					},
+					"_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. No `spacing` or `typography` support is declared in block.json (padding/margin/font members are honest gaps). `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
+				},
+				"button": {
+					"label": "Button",
+					"order": 2,
+					"clusters": [],
+					"_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls — this element documents that ownership; multi-button itself controls only the group's own arrangement (see `group`)."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"direction": {
+			"type": "string",
+			"default": "row"
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "row",
+			"_comment": "TRANSITIONAL DUAL-DECLARE (2026-08-05, phase A of 2). This block named its flex attrs `direction`/`wrap` while the whole framework — and the shared SGS_Container_Wrapper it renders through (class-sgs-container-wrapper.php:441-442) — uses `flexDirection`/`flexWrap`. The divergent name is invisible to every mechanism keyed on the convention. Both names are declared for exactly one deploy so no STORED value is ever undeclared: WordPress silently DISCARDS an undeclared attr and DELETES it on the next editor save, and the deploy's oldshape-audit found 3 such HIGH findings on canary posts 1596/2130 when the rename was attempted as a single step. Phase B removes the legacy names once that content is migrated."
+		},
+		"directionTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"flexDirectionTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"directionMobile": {
+			"type": "string",
+			"default": "column"
+		},
+		"flexDirectionMobile": {
+			"type": "string",
+			"default": "column"
+		},
+		"gap": {
+			"type": "string",
+			"default": "12px"
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": "8px"
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "flex-start"
+		},
+		"justifyContentTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyContentMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"wrap": {
+			"type": "string",
+			"default": "nowrap"
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "nowrap"
+		},
+		"wrapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"flexWrapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapMobile": {
+			"type": "string",
+			"default": "nowrap"
+		},
+		"flexWrapMobile": {
+			"type": "string",
+			"default": "nowrap"
+		},
+		"alignItems": {
+			"type": "string",
+			"default": "center"
+		},
+		"alignItemsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"alignItemsMobile": {
+			"type": "string",
+			"default": "stretch"
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"example": {
+		"attributes": {
+			"direction": "row",
+			"gap": "12px",
+			"justifyContent": "flex-start"
+		}
+	}
 }

@@ -73,18 +73,24 @@ const ALIGN_ITEMS_OPTIONS_WITH_INHERIT = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
-		direction,
-		directionTablet,
-		directionMobile,
+		// New-name-first with a legacy fallback for the editor PREVIEW only, mirroring
+		// render.php. Both names are declared for one deploy (phase A of the flex-attr
+		// rename) so stored values are never undeclared while content migrates; the
+		// controls below WRITE only the new names, so any edit moves a block forward.
+		flexDirection,
+		direction: legacyDirection,
 		gap,
 		justifyContent,
-		justifyContentTablet,
-		justifyContentMobile,
-		wrap,
-		wrapTablet,
-		wrapMobile,
+		flexWrap,
+		wrap: legacyWrap,
 		alignItems,
 	} = attributes;
+
+	// Only the DESKTOP pair is read here (the editorStyle preview below). The tier
+	// controls read attributes[...] directly through their own attrMap, so merged
+	// tier locals would be dead code — ESLint caught exactly that on the first cut.
+	const direction = flexDirection || legacyDirection;
+	const wrap      = flexWrap || legacyWrap;
 
 	// "Apply to all buttons" — bulk preset-as-seed for every sgs/button child.
 	const [ groupPreset, setGroupPreset ] = useState( 'primary' );
@@ -168,10 +174,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<ResponsiveControl label={ __( 'Direction', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => {
+							// Writes the NEW names only — an edit migrates the block forward.
 							const attrMap = {
-								desktop: 'direction',
-								tablet:  'directionTablet',
-								mobile:  'directionMobile',
+								desktop: 'flexDirection',
+								tablet:  'flexDirectionTablet',
+								mobile:  'flexDirectionMobile',
 							};
 							return (
 								<SelectControl
@@ -207,10 +214,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<ResponsiveControl label={ __( 'Wrap', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => {
+							// Writes the NEW names only — an edit migrates the block forward.
 							const attrMap = {
-								desktop: 'wrap',
-								tablet:  'wrapTablet',
-								mobile:  'wrapMobile',
+								desktop: 'flexWrap',
+								tablet:  'flexWrapTablet',
+								mobile:  'flexWrapMobile',
 							};
 							return (
 								<SelectControl

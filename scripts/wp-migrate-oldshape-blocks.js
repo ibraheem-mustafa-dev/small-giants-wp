@@ -143,6 +143,22 @@ const PAGE_FN = ({ plan, mode, oldRaw, newRawAfterSave }) => {
 
 	if (mode === 'dryrun') {
 		return plan.entries.map((e) => {
+			// RENAME shape: attrs only. Preview the target's EXISTING block with the
+			// renamed attrs merged in, so the serialized preview shows the real
+			// children rather than an empty rebuild.
+			if (e.mode === 'rename') {
+				const target = kthOf(e.name, e.kth);
+				if (!target) return { name: e.name, kth: e.kth, error: `dryrun: could not locate ${e.name} #${e.kth}` };
+				const merged = { ...target.attributes, ...e.newAttrs };
+				const missing = e.tokens.filter((t) => !deepHasValue(merged, t.value));
+				return {
+					name: e.name, kth: e.kth, mode: 'rename',
+					renamedTo: Object.keys(e.newAttrs).filter((k) => e.newAttrs[k] !== undefined),
+					clearedLegacy: Object.keys(e.newAttrs).filter((k) => e.newAttrs[k] === undefined),
+					innerBlocksPreserved: (target.innerBlocks || []).length,
+					missingTokens: missing,
+				};
+			}
 			const fresh = build({ name: e.name, attrs: e.newAttrs, children: e.children });
 			const attrSets = collectAttrs(fresh);
 			const missing = e.tokens.filter((t) => !attrSets.some((a) => deepHasValue(a, t.value)));
@@ -155,6 +171,15 @@ const PAGE_FN = ({ plan, mode, oldRaw, newRawAfterSave }) => {
 		for (const e of plan.entries) {
 			const target = kthOf(e.name, e.kth);
 			if (!target) return { error: `apply: could not locate ${e.name} #${e.kth}` };
+			// RENAME shape: updateBlockAttributes, NOT replaceBlock. replaceBlock
+			// rebuilds from `children`, which a rename does not carry — it would
+			// delete the block's existing subtree (sgs/multi-button's buttons).
+			// updateBlockAttributes touches attrs only and leaves innerBlocks alone.
+			if (e.mode === 'rename') {
+				dispatch('core/block-editor').updateBlockAttributes(target.clientId, e.newAttrs);
+				replaced.push({ name: e.name, kth: e.kth, mode: 'rename' });
+				continue;
+			}
 			const fresh = build({ name: e.name, attrs: e.newAttrs, children: e.children });
 			dispatch('core/block-editor').replaceBlock(target.clientId, fresh);
 			replaced.push({ name: e.name, kth: e.kth });
@@ -292,7 +317,18 @@ async function savePost(page) {
 
 		const dry = await page.evaluate(PAGE_FN, { plan, mode: 'dryrun' });
 		for (const d of dry) {
-			console.log(`\n===== DRY ${d.name} #${d.kth} =====\n${d.serialized}`);
+			if (d.error) { console.error(`[dry] ${d.error}`); continue; }
+			if (d.mode === 'rename') {
+				// A rename has no rebuilt serialization to show — printing `serialized`
+				// here output "undefined", which reads like a broken plan rather than a
+				// different shape. Show what actually changes instead.
+				console.log(`\n===== DRY ${d.name} #${d.kth} (RENAME, attrs only) =====`);
+				console.log(`  set:                   ${d.renamedTo.join(', ')}`);
+				console.log(`  cleared (legacy):      ${d.clearedLegacy.join(', ')}`);
+				console.log(`  innerBlocks preserved: ${d.innerBlocksPreserved} (untouched — updateBlockAttributes, not replaceBlock)`);
+			} else {
+				console.log(`\n===== DRY ${d.name} #${d.kth} =====\n${d.serialized}`);
+			}
 			if (d.missingTokens.length) {
 				d.missingTokens.forEach((t) => console.error(`[dry] MISSING TOKEN ${t.source}: ${JSON.stringify(t.value)}`));
 			}
