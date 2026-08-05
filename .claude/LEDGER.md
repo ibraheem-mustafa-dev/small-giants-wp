@@ -36,11 +36,11 @@ gets ONE true answer instead of three drifting ones.
 
 ## CURRENT FRONTS
 
-> **QC-BYPASSED CLEARED (2026-08-04).** Independent re-check confirmed 4/6 figures exact and
-> corrected 2 (scoped to `sgs/%`: 21->19, 1099->955); nothing fabricated. Full re-check:
-> `.claude/reports/2026-08-04-step0-qc-bypassed-reverification.md`. D-ceiling now **490**
-> (D485-D488 2026-08-04: Task A shipped, Track B/C root-causes, fluid-typography cause; D489-D490
-> 2026-08-05: svg role + D1 forward-tracking + aggregator fixes shipped, `authored-alt-text` split).
+> **D-ceiling 496** — re-measure before writing any D reference, never trust this line.
+> D491-D496 (2026-08-05) = the Step 0 close: tier inheritance, `styling` + `technical` roles,
+> Detector 4, the never-wired pattern-attr gate, responsive-logo image shape, header/footer box
+> spacing. (2026-08-04 QC-bypass: CLEARED, nothing fabricated —
+> `reports/2026-08-04-step0-qc-bypassed-reverification.md`.)
 
 ### Track 3 — Tier W ADMITTED · physics-canvas SHIPPED · nine reports consolidated (D479)
 
@@ -116,7 +116,7 @@ SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pr
   `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
   the hex colour `#0D5557`; true ceiling was D453)
-  (currently D490 as of 2026-08-05 — re-check live BEFORE writing any D reference; this line has
+  (currently D496 as of 2026-08-05 — re-check live BEFORE writing any D reference; this line has
   drifted before and will again) · framework
   counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
@@ -318,7 +318,7 @@ Side-job (responsive-logo rename) -- independent, run anytime, feeds authored-al
   with no output slot).
 - A fix that does not reach the WRITER changes nothing while looking done.
 - Shared worktree: commit BY EXACT PATH, never `git add -A`. Re-check the D-ceiling immediately
-  before writing any D reference (currently 490).
+  before writing any D reference (currently 496).
 - `/sgs-update` is a CROSS-TRACK action on a shared DB — announce before running.
 
 ### Known non-blocker

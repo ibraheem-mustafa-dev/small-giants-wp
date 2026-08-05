@@ -125,10 +125,21 @@ CATEGORY_TO_ROLE = {
     # transfer from a draft. Split out of a11y-metadata on 2026-08-05: routing it to
     # a11y-text (styling-behaviour) EXCLUDED it from the content walk and would have
     # silently dropped it. Not 'image-alt' -- that role pairs to a sibling image-object
-    # via alt_companion_attr, and the block that exposed this (sgs/responsive-logo)
-    # stores three bare attachment IDs (type=number) with one unprefixed `alt`, so
-    # there is no single image attr to name as the companion. text-content routes a
-    # plain string correctly today; revisit if that block's attr shape is normalised.
+    # via alt_companion_attr, and walk.py:295 only captures alt when that companion is
+    # attr_type='string'.
+    #
+    # ⚠ THE BLOCK THAT FORCED THIS CATEGORY NO LONGER NEEDS IT (2026-08-05, D496).
+    # sgs/responsive-logo stored three bare attachment IDs (type=number) with one
+    # unprefixed `alt`, so there was no string image attr to name as the companion --
+    # that absence is the whole reason this category exists. It has since been given
+    # logoUrl/logoUrlTablet/logoUrlMobile (string) beside the IDs, mirroring sgs/media's
+    # imageId+imageUrl pair, and its `alt` now carries role='image-alt' with
+    # alt_companion_attr='logoUrl'. So this mapping is retained for any OTHER block that
+    # lands in the same shape, not for the one that created it.
+    #
+    # Note the rename from the desktopLogoId PREFIX scheme did NOT achieve this and was
+    # wrongly recorded as the retirement condition -- renaming changed no attr_type. The
+    # attr SHAPE change did. Retire this entry once no block resolves to it.
     "authored-alt-text": "text-content",
 }
 
