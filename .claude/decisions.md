@@ -1,5 +1,153 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D496 — responsive-logo image-shape mirror (retires authored-alt-text for it) + header/footer box-spacing + 12 dead attrs deleted [ROUTINE]
+
+**2026-08-05.** Commit `12931409`, deployed to sandybrown canary and live-verified before commit.
+Three independent pieces:
+
+**responsive-logo image-shape mirror.** Beside the existing integer `logoId`/`logoIdTablet`/
+`logoIdMobile` (renamed prefix→suffix from `desktopLogoId`/`tabletLogoId`/`mobileLogoId` the same
+day), added string `logoUrl`/`logoUrlTablet`/`logoUrlMobile` mirroring `sgs/media`'s `imageId`+
+`imageUrl` pair — ID wins, URL falls back. `alt` now carries `role='image-alt'` with
+`alt_companion_attr='logoUrl'`. **This is the change that actually retires `authored-alt-text` for
+this block** — see the correction appended to D490 above; the earlier prefix→suffix rename alone did
+not, because it changed no `attr_type`. Also fixed a silent editor-only data-loss bug: `edit.js` read
+`attributes._desktopLogoUrl`, never declared in `block.json`, so WordPress discarded it — after
+save-and-reload every preview URL was `undefined` and each slot fell back to its placeholder even
+though the ID stored correctly and the frontend rendered correctly. Visible only on editor reload, a
+surface no existing gate covers.
+
+**site-header / site-footer box-spacing.** 32 flat per-side responsive spacing scalars replaced by 8
+box-object attrs (`padding`/`paddingTablet`/`paddingMobile`/`margin`/`marginTablet`/`marginMobile` +
+their siblings) per Spec 32's `box_family`-driven `BoxControl` pattern — bringing both blocks in line
+with every other box-object migration rather than carrying bespoke per-side scalars.
+
+**12 dead attrs deleted.** Bare `direction`/`wrap` removed from card-grid, content-collection,
+feature-grid, gallery, google-reviews, trustpilot-reviews — nothing rendered them (a `check-dead-
+controls.js` class of finding).
+
+All three deployed + verified against the real homepage before this commit; visual-diff reports at
+`reports/visual-diff/responsive-logo-2026-08-05.md` (+ siblings for the other two).
+
+## D495 — URL-template groundwork recovered into output_signature; link-content role deliberately NOT seeded [ROUTINE]
+
+**2026-08-05.** Commit `580f7885`. Captures the template a block assembles around a fragment
+attribute — e.g. `sgs/whatsapp-cta render.php:54-58` builds `'https://wa.me/' . $clean_phone`, so
+`phoneNumber`'s template records as `https://wa.me/{value}`. Follows up to two hops of aliasing (the
+concatenation applies to a sanitised alias, not the raw attribute). Stored on the existing
+`output_signature` column, not a new one (Bean's ruling) — it is already the structured record of what
+render.php does with a value, and a URL template is exactly that; `default_value` is occupied
+(`whatsapp-cta.message` holds real default copy) and `description` is human prose, not a machine
+contract.
+
+**Groundwork only — `link-content` is NOT seeded.** This programme's own rule is that a role ships in
+the same commit as its extractor (a DB-only role flip returns `None` silently). The extractor was
+drafted against an assumed `extra` parameter and reverted before commit once the real signature —
+`extract_field_value(element, role, media_map=None)` — showed no such parameter exists; wiring it
+through `array_content`/`scalar_content` (the highest-blast-radius shared entry point in the repo)
+needs a session that has read Spec 31 §3.B.0 in full first, not the tail of this one. The capture is
+inert until then — one extra JSON key nothing yet reads, no role routes to it.
+
+## D494 — grid-element declared explicitly for google-reviews / trustpilot-reviews (closes a convention gap, not a bug) [ROUTINE]
+
+**2026-08-05.** Commit `36df6561`. Bean's ruling: a `gap` sits between a block's internal pieces,
+inside neither the OUTER layer nor the content-width layer — it belongs to the GRID element. Both
+blocks render their grid through the shared `SGS_Container_Wrapper`
+(`class-sgs-container-wrapper.php:166-169` reads `gap`/`gapTablet`/`gapMobile`), but the emission
+scanner only reads each block's own `render.php`/`style.css`, so it never saw the wrapper. `sgs/
+container` and `sgs/accordion` already escape this by declaring `"css:gap": "gap"` explicitly — this
+is the established fix, not a workaround, applied to the two blocks that were still relying on the
+prefix convention instead. **The convention could never have covered them:** with an empty prefix the
+candidate name builds as `"" + "Gap" = "Gap"`, which never matches the real lowercase `gap` —
+`extract-signatures.py:1634`'s underlying case-mismatch remains open on its own merits (silently
+disables the convention path for every bare lowercase attribute) but is out of scope here. Measured:
+32 new classified rows, 0 changed, 0 removed; 12 of the 32 are device-tier siblings resolved
+automatically by the D493 tier-inheritance rule — the two mechanisms composing without either knowing
+about the other.
+
+## D493 — `technical` role seeded from Detector-1 vetoes; `check-dead-pattern-attrs.py` wired into prebuild after running in NO build for 3 weeks [INCIDENT]
+
+**2026-08-05.** Commit `2d413758`. Two independent pieces in one commit:
+
+**`technical` role** (33rd/32nd role, `roles.json`) — symmetric with `styling` (D491, same day): a
+bare `role IS NULL` cannot distinguish "nobody has examined this" from "examined, and it is a backend
+key", and both readings sent repeated sessions re-investigating already-settled rows. Assigned ONLY
+from a Detector-1 VETO — D1 walked every usage site in `render.php` and the shared `includes/` tree
+and found none content-bearing (17 rows this pass: form `fieldName`/`step`/`defaultValue`, button/
+icon/media `rel`+`linkRel`, `nav-menu.drawerRef`, `option-picker.typeKey`, `post-grid.filterTaxonomy`,
+`icon-list.headingLevel`, `team-member.photoShape`). Deliberately narrow: rows no detector reached
+stay `NULL` — "unreached" and "proven technical" are different facts, and conflating them rebuilds the
+exact ambiguity the role exists to remove. Precedence enforced structurally by pass ordering: content
+tiers > `css_property` (`styling`) > D1 veto (`technical`) > `NULL`.
+
+**`check-dead-pattern-attrs.py` wired into `prebuild`.** Built at D338 (2026-07-15) because WordPress
+silently discards any attribute a block.json doesn't declare — no error, no warning, no failing build
+— and found 45 instances (39 fixed) at build time. It has been documented ever since as a standing
+defence while running in **zero builds**: `package.json` had no reference to it until this commit.
+Verified clean (exit 0, no findings) BEFORE wiring, so this closes a silent-regression risk rather than
+introducing a red build. Standalone `npm run check:dead-pattern-attrs` added to match every other
+gate's convention.
+
+## D492 — Detector 4 (referenced-not-output) built, then found silently inert inside the seeder [INCIDENT]
+
+**2026-08-05.** Commits `801a076a` (build) + `40273154` (fix). D1/D2/D3 all hunt for evidence a value
+IS content; Detector 4 is the first to hunt the opposite positive evidence — a value the block
+demonstrably READS that never reaches an output-escaping call and paints no CSS property (a
+form-processing key, a conditional operand, a query argument). Assigns `technical` and splits its
+output three ways: `referenced-not-output` (42 rows — the `conditionalField`/`conditionalOperator`/
+`conditionalValue` trio across 14 form-field blocks), `wrapper-rendered-styling` (23 rows — an attr
+read only by `SGS_Container_Wrapper`, a CSS-rendering engine by construction, so it owes an explicit
+`attrMap` declaration rather than a role) and `d4-needs-review` (32 rows — a bare
+`$x = $attributes['x'] ?? ''` whose paint site can't be resolved without variable-flow analysis, D1's
+job, not D4's). **The claim is deliberately narrow:** NOT "no detector reached it, so it must be
+technical" (inference from ignorance) but three measured facts together — read found, no escaping call
+found, no `css_property` found.
+
+**INCIDENT:** the detector assigned 42 rows in every direct run and 0 in the real `/sgs-update`.
+`assign-canonical` loads the fingerprint via `importlib.spec_from_file_location`, which does not place
+the loaded module's own directory on `sys.path`, so `import detector4_referenced_not_output` resolved
+when run standalone from its own folder and raised `ModuleNotFoundError` inside the seeder — swallowed
+by an `except` branch that printed a warning to stderr, buried in a 14-stage log. Caught because the DB
+showed `role='technical'` at 17 rather than the expected 59, not because the warning was read. **A
+degraded run that still exits 0 is indistinguishable from a healthy one unless you check the number.**
+The probe and the production path were different code paths and only the probe had been exercised —
+every measurement in the commit that introduced D4 was taken from the working one. Fixed; both paths
+now assign 42.
+
+## D491 — generic `styling` role backstop + deterministic tier-inheritance rule [ROUTINE]
+
+**2026-08-05.** Commit `6992e47e`. Two deterministic classifiers replacing bare `role IS NULL`s, both
+DB-vocabulary additions (`roles.json`, now 33 roles):
+
+**`styling`** fills `role IS NULL AND css_property IS NOT NULL` (109 rows at seed time; 124 after
+`36df6561`'s grid-element fix added more `css_property` values). A bare NULL reads identically to
+"nobody has looked at this yet", which sent repeated sessions re-investigating rows that were already
+understood. Family roles (layout/typography/color/visual/motion/position) take precedence by
+construction — the pass runs structurally last in `assign-canonical.apply_role_detection_inline` and
+only fills NULLs. Chosen generic over precedent-derived deliberately: 81 of 90 distinct
+`css_property` values do map to exactly one role elsewhere, but only 53 of the 109 had any precedent
+at all, and precedent-derivation is inference from OTHER rows' classifications — self-referential at
+seed time, so one wrong row could cascade.
+
+**Tier inheritance** (`extract-signatures.py`) — an attr named `<base><Tier>` (`Tablet`/`Mobile`/
+`Desktop` suffix) whose `<base>` carries a `css_property` now inherits that property with `css_tier`
+set, as a gap-fill pass alongside the existing manifest-only pass; it also carries the base's
+`css_layer`/`css_element`/`css_state` selector context, not just the property, so the sibling is aimed
+at the right element rather than merely routable. Declared 61 candidates before running; measured 151.
+Reconciled, not accepted on faith: 57 fall inside the 220-row content-role pool, all 94 outsiders are
+explained (62 already had a role, 30 are `type=number`, 2 `box_family`), zero unexplained. The base
+must itself carry a real `css_property` — inheriting from an unclassified base would manufacture a
+classification out of two unknowns (4 rows, google-reviews/trustpilot-reviews `gridTemplateColumns*`,
+correctly stay open on this basis).
+
+**Also three Detector-1 defects found and fixed while measuring the above:** multi-hop provenance (an
+assignment naming a tracked variable now inherits its provenance — single-hop broke every 2-hop chain
+silently); inheritance no longer overwrites a direct binding (first cut clobbered
+`nav-menu.navLabel`'s correct `a11y-text`); `printf_context` now outranks the raw statement window
+(`icon.ariaLabel` resolved NOT-content because its sprintf format string also carries
+`class="sgs-icon__emoji"` — the same position-vs-rule trap as the D489 `content_cats[0]`
+document-order tie-break).
+
 ## D490 — `authored-alt-text` category split from `a11y-metadata`; interim patch, not the fix [ROUTINE]
 
 **2026-08-05.** `plugins/sgs-blocks/scripts/content-role-detect/classify_detector1.py` (uncommitted
@@ -55,6 +203,17 @@ green regardless, because none of them check naming-convention direction against
 postdates the block. Report: `.claude/reports/2026-08-05-d1-forward-variable-tracking-fix.md` (D1
 forward-tracking context) + `.claude/reports/2026-08-05-report-only-row-categorisation.md`
 (`responsive-logo.alt` dispute + companion-shape analysis).
+
+**⚠ CORRECTION (same day, D496):** the retirement condition stated above — "once `responsive-logo`'s
+tier attrs are renamed prefix→suffix and `image-alt` fires natively" — was WRONG and was verified
+wrong immediately after the rename shipped. Renaming `desktopLogoId`/`tabletLogoId`/`mobileLogoId` →
+`logoId`/`logoIdTablet`/`logoIdMobile` changed no `attr_type` (all three stayed `number`), and
+`converter/walk.py:295` gates alt capture on `role == 'image-object' AND attr_type == 'string'` — a
+`number` attr can never satisfy that regardless of naming direction. The actual retirement condition
+was the SEPARATE attr-shape change in D496: adding string `logoUrl`/`logoUrlTablet`/`logoUrlMobile`
+attrs (mirroring `sgs/media`'s `imageId`+`imageUrl` pair) gave `alt` a string sibling to name as its
+`alt_companion_attr`, at which point `image-alt` fires natively. Do not re-cite the rename alone as
+sufficient for any other block with this shape — check `attr_type`, not naming direction.
 
 ## D489 — svg role SHIPPED + D1 forward variable tracking SHIPPED + two aggregator position-vs-rule fixes SHIPPED [ROUTINE]
 

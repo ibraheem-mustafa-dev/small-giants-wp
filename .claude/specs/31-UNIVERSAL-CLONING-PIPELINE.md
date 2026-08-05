@@ -690,6 +690,76 @@ python plugins/sgs-blocks/scripts/sgs-db.py query \
 
 All DB access via the `db_lookup.py` accessor layer + `wp-blocks.py` CLI — **never raw `sqlite3` in pipeline scripts**. Cross-DB authority: `sgs-framework.db` is authoritative for block schema/composition/variants; `uimax` is a recognition oracle for gap-writing only (the walker never queries uimax at runtime — FR-31-9 down-scoped). Performance: `db_lookup` ≤2ms cache-warm.
 
+### 13.7.1 Content-role vocabulary + detectors (FR-31-24, Spec 35 Track 1b)
+
+**What this closes.** `block_attributes.role` is the DB column the converter routes content extraction
+and CSS emission on (§3.A/§3.B). A `role IS NULL` row is ambiguous by construction — it reads
+identically whether nobody has examined the attribute yet, or someone has and concluded it is neither
+content nor styling. The mechanisms below exist to make every row an explicit, evidence-backed
+verdict rather than a silent gap. **Row counts below are a snapshot at time of writing (2026-08-05) —
+query `role`/`roles` via `/sgs-db` for the live figure, never trust this prose for a current count.**
+
+**Role vocabulary (`plugins/sgs-blocks/scripts/data/roles.json`).** Every role carries a
+`classification` (`content-bearing` or `styling-behaviour`) that the converter's content walk gates
+on. Two generic backstop roles were added 2026-08-05 (D491/D493) alongside the existing named-family
+roles (layout/typography/color/visual/motion/position/text-content/svg/…):
+
+- **`styling`** — classification `styling-behaviour`. Fills `role IS NULL AND css_property IS NOT
+  NULL`: a structural mechanism has already proven the row paints CSS, but no more specific family
+  was established. Assigned by `assign-canonical.apply_role_detection_inline()` as a structurally-LAST
+  pass — it can only fill a NULL, never pre-empt a content-bearing or family-specific verdict.
+- **`technical`** — classification `styling-behaviour`. A machine-facing value (form key, element ref,
+  `rel`, taxonomy/query key, enum dispatch key) that a draft mockup carries no signal to lift. Assigned
+  ONLY from positive evidence — a Detector-1 veto (the row's every usage site was walked and none was
+  content-bearing) or a Detector-4 referenced-not-output finding (below) — **never** from "nothing else
+  claimed it". An unreached row stays `NULL`; conflating "unreached" with "proven technical" would
+  rebuild the exact ambiguity this role exists to remove.
+
+**Precedence (enforced structurally by pass ordering in `apply_role_detection_inline`, not by a
+priority field):** content tiers (D1/D2/D3 structural detectors, D485) > `css_property` (`styling`) >
+evidence-of-not-content (`technical`, from a D1 veto or Detector 4) > `NULL`. A veto only says "not
+content"; a `css_property` says positively what the value IS, so `styling` wins a row that qualifies
+for both.
+
+**Detector 4 — `content-role-detect/detector4_referenced_not_output.py`.** D1/D2/D3 (D485) all hunt
+for evidence a value IS content. D4 hunts the opposite positive evidence: an attribute the block
+demonstrably READS (a structured access pattern, never a bare-word match) that never reaches an
+output-escaping call (D1 walked every escaping call site and found none) and paints no CSS property
+(the emission parser found no declaration). All three facts are measured, not inferred from absence.
+D4 splits its findings three ways — read its module docstring for the authoritative definitions:
+
+- **`referenced-not-output`** → assigned role `technical`. The dominant case is the form
+  conditional-visibility trio (`conditionalField`/`conditionalOperator`/`conditionalValue`) consumed by
+  `includes/forms/` to decide field visibility — configuration, not copy.
+- **`wrapper-rendered-styling`** → NOT a role. An attribute read only by `SGS_Container_Wrapper` (a
+  CSS-rendering engine by construction) owes an explicit `attrMap`/`css:` declaration instead — the
+  same fix class as the D494 grid-element gap below.
+- **`d4-needs-review`** → a human call. A bare `$x = $attributes['x'] ?? ''` whose paint site can't be
+  resolved without variable-flow analysis (D1's job, D4 does not attempt it).
+
+An attribute nothing reads at all is a DIFFERENT finding (a dead attribute — delete it) and belongs to
+`check-dead-controls.js` CHECK 4, not D4. D4's known blind spots (dynamic/computed reads, sibling-block
+consumption, theme-pattern-only reads) are enumerated in the module docstring and are bounded to false
+NEGATIVES — they cannot manufacture a false positive.
+
+**Tier-inheritance rule (`behavioural-analyser/extract-signatures.py`, D491).** An attribute named
+`<base><Tier>` (`Tablet`/`Mobile`/`Desktop` suffix — the framework's universal device-tier convention,
+see §13.4's responsive-breakpoint discipline) whose `<base>` carries a `css_property` inherits that
+property with `css_tier` set, plus the base's `css_layer`/`css_element`/`css_state` selector context
+so the sibling routes to the right element, not merely to the right property. The base must itself
+carry a real `css_property` — inheriting from an unclassified base would manufacture a classification
+out of two unknowns, so those rows correctly stay open. **This rule requires the property to already
+be declared somewhere on the base** — a block relying purely on the bare-prefix convention with an
+EMPTY prefix (candidate name `"" + "Gap" = "Gap"`, which never matches a real lowercase `gap`) is
+invisible to it and needs an explicit `attrMap`/`css:` declaration instead (D494 — `sgs/google-reviews`
+and `sgs/trustpilot-reviews` both needed this because they render their grid through the shared
+wrapper rather than declaring `gap` themselves).
+
+**Consuming this in future sessions:** never write a new hardcoded attribute-name dict for "is this
+technical/styling" — check `roles.json` first, and if a row is genuinely unclassified, run the
+detectors (`content-role-detect/`) rather than guessing from the attribute's name (R-31-1/R-31-2
+apply equally to this data layer).
+
 ### 13.8 Appendices (implementation reference)
 
 **Appendix A — the single-recursive walker** (the FR-31-3 three-exception contract, pseudocode):
