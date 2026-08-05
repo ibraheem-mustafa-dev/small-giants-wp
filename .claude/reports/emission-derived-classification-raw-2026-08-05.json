@@ -1,10 +1,10 @@
 {
   "task_a": {
     "resolved_count": 543,
-    "css_property_written": 994,
-    "css_layer_written": 357,
+    "css_property_written": 1026,
+    "css_layer_written": 377,
     "unit_attrs_excluded": 11,
-    "tier_inherited": 151,
+    "tier_inherited": 163,
     "unit_control_written": 0,
     "resolved": {
       "sgs/audio::accentColour": [

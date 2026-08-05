@@ -5888,6 +5888,96 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "alignItems",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridAutoRows",
+      "fields": {
+        "css_property": "grid-auto-rows",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridTemplateColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridTemplateRows",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "justifyItems",
+      "fields": {
+        "css_property": "justify-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "sgsAnimation",
       "fields": {
         "css_property": "anim:preset",
@@ -7217,6 +7307,96 @@
     },
     {
       "slug": "sgs/trustpilot-reviews",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "alignItems",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridAutoRows",
+      "fields": {
+        "css_property": "grid-auto-rows",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridTemplateColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridTemplateRows",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "justifyItems",
+      "fields": {
+        "css_property": "justify-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
       "attr": "sgsAnimation",
       "fields": {
         "css_property": "anim:preset",
@@ -8065,6 +8245,66 @@
       }
     },
     {
+      "slug": "sgs/google-reviews",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
       "slug": "sgs/heading",
       "attr": "fontSizeMobile",
       "fields": {
@@ -8714,6 +8954,66 @@
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
       }
     },
     {

@@ -46,6 +46,27 @@
 						"anim:easing": "sgsAnimationEasing"
 					},
 					"_note": "Root, rendered by SGS_Container_Wrapper (container_kind=layout, wraps sgs/container — WS-4). Empty-string prefix lets the default {suffix} convention resolve the bare universal-container attrs case-insensitively: maxWidth, gap(+Tablet/Mobile), gridTemplateColumns/Rows(+Tablet/Mobile), gridAutoRows, flexDirection, flexWrap, alignItems, alignContent, justifyContent, justifyItems all resolve this way — no attrMap needed for those. Honest gaps: no display/order/overflow/width/height/max-height/min-height/box-shadow/aspect-ratio attribute exists on this block; no padding/margin attribute or native support is declared (spacing support absent); opacity/overlay/background-attachment/-position/-repeat/object-fit/object-position have no control (this block has no image element); anim:stagger/parallax/trigger have no matching attrs (no staggerDelay/parallax/scroll-trigger control here) — honest gaps, not orphans. starColour/cardStyle/theme/variant are variant/preset selectors, not style-cluster members — deliberately undeclared (no prefix claims them, so they surface neither as gap nor orphan)."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "alignItems",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Mirrors sgs/container's `grid` element (block.json). Added 2026-08-05 (Bean): gaps are GRID-element properties — they sit between a block's internal pieces, inside both the OUTER layer and the content-width layer, so they belong to neither. Before this, gap/gapTablet/gapMobile on this block resolved to NO css_property at all: the shared SGS_Container_Wrapper renders them (class-sgs-container-wrapper.php:166-169) but the emission scanner only reads each block's OWN render.php/style.css, and this block declared no explicit attrMap to fall back on. The prefix convention could not have covered it either — with an empty prefix the candidate is built as prefix + PascalCase suffix (\"\" + \"Gap\" = \"Gap\"), which never matches the real lowercase attribute name. That is the same limitation sgs/container's own grid `_note` documents. Explicit mapping is the established fix, not a workaround."
 				}
 			},
 			"fx": {
