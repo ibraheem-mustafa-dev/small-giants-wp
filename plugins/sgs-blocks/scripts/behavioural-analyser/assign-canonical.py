@@ -837,10 +837,25 @@ def run() -> None:
     # never touches a specific non-'content' role (protects scalar-media etc.).
     # ------------------------------------------------------------------
     _rd = apply_role_detection_inline(conn)
+    # Every tier's count is printed, not just the content ones: a tier that claims rows
+    # silently is indistinguishable from a tier that did not run (the exact shape of the
+    # 2026-06-30 root cause, where role derivation never fired and nothing said so).
     print(
         f"[role-detection] content-bearing roles: filled={_rd['filled']} "
-        f"upgraded={_rd['upgraded']}"
+        f"upgraded={_rd['upgraded']} structural={_rd['structural_filled']} | "
+        f"technical={_rd['technical_filled']} styling={_rd['styling_filled']} "
+        f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
+        f"boolean-swept={_rd['boolean_swept']} | "
+        f"companion-image={_rd['companion_image_filled']} "
+        f"companion-alt={_rd['companion_alt_filled']} "
+        f"companion-link={_rd['companion_link_filled']} "
+        f"companion-conflicts={_rd['companion_conflicts']}"
     )
+    if _rd.get("companion_error"):
+        print(
+            f"[role-detection] !! companion tier DEGRADED: {_rd['companion_error']}",
+            file=sys.stderr,
+        )
 
     # ------------------------------------------------------------------
     # Self-checks
@@ -1278,11 +1293,24 @@ _CONTENT_BEARING_ROLES = frozenset({
 # population that the original plain-lowercase regex missed (~100 SGS rows).
 _ATTR_NAME_RULES = [
     # identity — icon/glyph/name-like identity attrs
-    (re.compile(r"^(icon|iconName|iconSource|glyph|productName|productSlug)$"),
+    # `dashiconName`/`wpIconName` added 2026-08-05 (D497 root-cause): both are icon SLUGS,
+    # the exact shape `identity` resolves (field_extractors.py:233 icon-slug chain), and
+    # both previously required a hand override naming a role (`icon-dashicon`/`icon-wp-icon`)
+    # that `roles.json` records as having NO consumer in the converter. Verified unique
+    # DB-wide (one block each), so this is universal, not a per-block carve-out.
+    (re.compile(r"^(icon|iconName|iconSource|glyph|productName|productSlug|"
+                r"dashiconName|wpIconName)$"),
      "identity", "high"),
     # link-href — URL-like attrs
+    # `ctaUrl`/`cta2Url` added 2026-08-05 (D497 root-cause). The `Url` property suffix
+    # resolves to the GENERIC `content` role because it cannot distinguish a hyperlink URL
+    # from a media-asset URL (`imageUrl`, `videoUrl`). `ctaUrl` carried a hand override to
+    # force `link-href`; its identical sibling `cta2Url` did NOT, and sat on the wrong
+    # generic role — live proof the override was a one-off patch over a mechanism gap
+    # rather than a real "code X means Y" case. Both verified unique DB-wide.
     (re.compile(
-        r"^(link|linkTarget|linkUrl|linkHref|url|href|destination|destinationUrl)$"
+        r"^(link|linkTarget|linkUrl|linkHref|url|href|destination|destinationUrl|"
+        r"ctaUrl|cta2Url)$"
     ), "link-href", "high"),
     # image-object — image/media URL attrs
     (re.compile(
@@ -1296,6 +1324,14 @@ _ATTR_NAME_RULES = [
         # plain lowercase content stems
         r"content|text|body|description|headline|title|subtitle|caption|"
         r"label|name|heading|"
+        # 2026-08-05 (D497 root-cause): three real copy attrs that each needed a hand
+        # override purely because they were absent here. `role` is sgs/team-member's
+        # JOB TITLE text (the collision with the DB's own `role` COLUMN is a human
+        # legibility trap, not a mechanism one — nothing branches on the literal attr
+        # name). `attribution` is sgs/quote's byline. `quote` is sgs/testimonial's body
+        # copy, which was sitting on the generic `content` catch-all rather than the
+        # specific role. All three verified unique DB-wide (one block each).
+        r"role|attribution|quote|"
         # camelCase sub-* variants
         r"subHeadline|subheadline|subTitle|subtitle|subHeading|subheading|"
         # camelCase tag/eyebrow content
@@ -1585,6 +1621,190 @@ def _structural_role_map() -> tuple[dict, str | None, set]:
     )
 
 
+def _companion_role_pairs() -> tuple[list[dict], str | None]:
+    """Load Detector 5's (block_slug, image_attr, alt_attr) pairs (D497, 2026-08-05).
+
+    Mirrors `_structural_role_map()`'s load-by-path shape deliberately: Detector 5
+    (`content-role-detect/detector5_image_alt_companion.py`) is the SAME evidence
+    class as the structural detectors it sits beside -- a measured fact about which
+    attribute's VALUE physically reaches the ``src=``/``alt=`` slot of the same
+    rendered ``<img>`` emission, not a guess from either attribute's name. See the
+    detector module's own docstring for the full method; this function only loads it
+    and calls its ``run_all()`` (every block, not a single one) -- never
+    ``KNOWN_PAIRS``, which is the detector's own self-grading scoreboard against the
+    six pairs D497 named, not an input to derive from.
+
+    Returns ``([], error)`` on any failure -- import error, parse error, whatever --
+    so the caller can degrade exactly like the structural tier: report loudly and
+    keep the reseed alive rather than crash it.
+    """
+    detect_dir = Path(__file__).resolve().parent.parent / "content-role-detect"
+    module_path = detect_dir / "detector5_image_alt_companion.py"
+    if not module_path.is_file():
+        return [], f"detector5 module missing at {module_path}"
+
+    try:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "sgs_detector5_companion", module_path
+        )
+        if spec is None or spec.loader is None:
+            return [], f"could not load a module spec from {module_path}"
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        pairs = mod.run_all()
+    except Exception as exc:  # noqa: BLE001 - surfaced to the caller, never swallowed
+        return [], f"{type(exc).__name__}: {exc}"
+
+    return pairs, None
+
+
+def _apply_companion_pairs(conn: sqlite3.Connection, pairs: list[dict]) -> dict:
+    """Write Detector 5's derived pairs to `block_attributes` (D497, 2026-08-05).
+
+    Factored out from `apply_companion_role_tier()` so the self-test can drive this
+    write logic directly against planted rows without invoking Detector 5 or touching
+    a real block tree at all.
+
+    Per derived ``(block_slug, image_attr, alt_attr)`` triple, writes up to three
+    facts, each with its own overwrite discipline:
+
+      1. ``role='image-object'`` on the image attr row  -- FILL-NULL ONLY. An image
+         attr that already carries ``role='image-object'`` (e.g. the name regex
+         already got there first) is AGREEMENT, not conflict, and is left alone. Any
+         OTHER pre-existing role is also left alone -- every tier in this file obeys
+         "never overwrite an existing role"; this one is not an exception.
+      2. ``role='image-alt'`` on the alt attr row        -- same FILL-NULL discipline.
+      3. ``alt_companion_attr=<image_attr>`` on the alt attr row -- a DIFFERENT rule.
+         This column has a single writer (this tier), so it is set whenever the pair
+         is derived and the column is currently NULL. If it already holds a
+         DIFFERING value, that is a genuine conflict: the existing value wins and the
+         conflict is reported to stderr, never silently overwritten.
+    """
+    cur = conn.cursor()
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(block_attributes)").fetchall()]
+    has_companion_col = "alt_companion_attr" in cols
+
+    image_filled = 0
+    alt_filled = 0
+    companion_filled = 0
+    companion_conflicts = 0
+
+    for pair in pairs:
+        block_slug = pair["block_slug"]
+        image_attr = pair["image_attr"]
+        alt_attr = pair["alt_attr"]
+
+        image_row = conn.execute(
+            "SELECT id, role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, image_attr),
+        ).fetchone()
+        if image_row is not None:
+            image_id, image_role = image_row
+            if image_role is None:
+                cur.execute(
+                    "UPDATE block_attributes SET role = 'image-object' WHERE id = ?",
+                    (image_id,),
+                )
+                image_filled += 1
+            # else: role already set (whether 'image-object' -- agreement -- or
+            # something else entirely) -- fill-NULL discipline, never overwritten.
+
+        alt_row = conn.execute(
+            "SELECT id, role"
+            + (", alt_companion_attr" if has_companion_col else "")
+            + " FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, alt_attr),
+        ).fetchone()
+        if alt_row is None:
+            continue
+        alt_id, alt_role = alt_row[0], alt_row[1]
+        existing_companion = alt_row[2] if has_companion_col and len(alt_row) > 2 else None
+
+        if alt_role is None:
+            cur.execute(
+                "UPDATE block_attributes SET role = 'image-alt' WHERE id = ?", (alt_id,)
+            )
+            alt_filled += 1
+        # else: role already set -- fill-NULL discipline, never overwritten (this is
+        # the row a stripped guard would break: see `_self_test_companion_tier`).
+
+        if has_companion_col:
+            if existing_companion is None:
+                cur.execute(
+                    "UPDATE block_attributes SET alt_companion_attr = ? WHERE id = ?",
+                    (image_attr, alt_id),
+                )
+                companion_filled += 1
+            elif existing_companion != image_attr:
+                companion_conflicts += 1
+                print(
+                    f"!! COMPANION CONFLICT: {block_slug}.{alt_attr}.alt_companion_attr "
+                    f"already = {existing_companion!r}, Detector 5 derived "
+                    f"{image_attr!r} for this pair -- keeping the existing value, "
+                    "NOT overwriting.",
+                    file=sys.stderr,
+                )
+            # else: existing_companion == image_attr -- agreement, no-op.
+
+    conn.commit()
+    return {
+        "image_filled": image_filled,
+        "alt_filled": alt_filled,
+        "companion_filled": companion_filled,
+        "companion_conflicts": companion_conflicts,
+    }
+
+
+def apply_companion_role_tier(conn: sqlite3.Connection) -> dict:
+    """TIER 0A -- IMAGE<->ALT COMPANION, from Detector 5 (D497, 2026-08-05).
+
+    Sits WITH the structural tier, ABOVE the name regex, and runs literally FIRST in
+    `apply_role_detection_inline()` -- before that function's `rows` snapshot is
+    taken. That ordering is load-bearing, not cosmetic: the name-regex loop below
+    decides whether to fill a role by trusting the value it already read into that
+    snapshot, not a fresh DB read, so any tier writing roles ahead of the name regex
+    must land its writes BEFORE the snapshot query runs, or the snapshot would still
+    show NULL and the name regex would go on to guess (and possibly clobber) a row
+    this tier already settled.
+
+    WHY THIS EVIDENCE CLASS OUTRANKS A NAME GUESS: Detector 5 does not read either
+    attribute's NAME. It reads which attribute's VALUE physically arrives at the
+    ``src=``/``alt=`` slot of the SAME rendered ``<img>`` emission in the block's own
+    render.php -- the identical "measured fact about what the block DOES" argument
+    the structural tier already makes for outranking `_ATTR_NAME_RULES`.
+
+    Degrades exactly like the structural tier on any detector failure (import error,
+    parse error, missing module): prints a loud DEGRADED warning to stderr and
+    returns zero counts with `companion_error` set -- never raises, so a reseed still
+    completes on a bad day, but the run is visibly degraded rather than silently one.
+    """
+    pairs, error = _companion_role_pairs()
+    if error:
+        print(
+            "\n!! COMPANION ROLE TIER DID NOT RUN -- image<->alt pairs will not be "
+            "derived this reseed.\n"
+            f"   reason: {error}\n"
+            "   The known pairs stay on their hand-declared entries in\n"
+            "   attr-classification-overrides.json (D497) until this tier runs clean\n"
+            "   again. Reported rather than raised so the reseed still completes, but\n"
+            "   this is a DEGRADED run -- do not read a clean exit as a clean result.\n",
+            file=sys.stderr,
+        )
+        return {
+            "image_filled": 0,
+            "alt_filled": 0,
+            "companion_filled": 0,
+            "companion_conflicts": 0,
+            "companion_error": error,
+        }
+
+    result = _apply_companion_pairs(conn, pairs)
+    result["companion_error"] = None
+    return result
+
+
 def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     """Role detection wired into the standard /sgs-update flow (2026-06-30).
 
@@ -1603,7 +1823,15 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         content-bearing role, ONLY on a high-confidence Tier-1 attr-name regex
         match (proposed != 'content'). Never touches a row whose role is a
         specific non-'content' value (protects 'scalar-media' etc.).
+
+    TIER 0A (companion) runs FIRST, before the `rows` snapshot below is even taken --
+    see `apply_companion_role_tier()`'s docstring for why that ordering is load-bearing.
     """
+    # TIER 0A -- IMAGE<->ALT COMPANION (D497, 2026-08-05). Must run before the `rows`
+    # snapshot immediately below, or a row it fills would still show role=NULL in that
+    # snapshot and the name-regex loop would go on to guess (or clobber) it.
+    _companion = apply_companion_role_tier(conn)
+
     rows = conn.execute(
         "SELECT id, block_slug, attr_name, attr_type, enum_values, description, role "
         "FROM block_attributes WHERE role IS NULL OR role = 'content'"
@@ -1613,7 +1841,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     upgraded = 0
     structural_filled = 0
 
-    # TIER 0 -- STRUCTURAL, ordered ABOVE the name regex (Track A, 2026-08-04).
+    # TIER 0B -- STRUCTURAL, ordered ABOVE the name regex (Track A, 2026-08-04).
     # A measured fact about what the block DOES with a value always beats a guess from
     # how the value is spelled. This demotes _ATTR_NAME_RULES to a fallback, which is the
     # first step toward deleting it (FR-31-2.1a).
@@ -1734,6 +1962,149 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         )
         styling_filled += 1
 
+    # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
+    # CSS unit for `<base>`; it is the same styling fact, split across two columns
+    # because CSS needs the number and the unit separately. So its ROLE is its base's
+    # role, by construction -- exactly the argument the device-tier inheritance rule
+    # makes for `<base>Tablet` (extract-signatures.py, 2026-08-05).
+    #
+    # ROLE ONLY, NEVER css_property. Bean ruled 2026-07-21 that unit attrs never enter
+    # css_property at all (extract-signatures.py's `unit_attrs_excluded`) -- a unit is
+    # not itself a declaration, and writing one would feed the emission layer a mapping
+    # that paints nothing. The established rows agree: widthUnit=layout,
+    # contentFontSizeUnit=typography, maxWidthUnit=layout, all with css_property NULL.
+    #
+    # GATED ON THE BASE BEING STYLING-BEHAVIOUR, not merely non-NULL. A base that is
+    # itself unclassified proves nothing about its unit sibling, and a CONTENT-bearing
+    # base must never hand a content role to a unit attr -- that would walk a bare
+    # 'px' into the content lift. Same shape as the tier rule's "base must carry a real
+    # css_property" guard: two unknowns never make a classification.
+    #
+    # RUNS BEFORE THE ENUM BACKSTOP BELOW -- STATED, not left to line order. A unit attr
+    # that also declares an enum (e.g. a px/% select) inherits the base's SPECIFIC family
+    # role rather than the generic 'enum-mode'; both exclude it from the content
+    # lift, so this ordering picks the more informative of two safe answers.
+    #
+    # The unit suffix comes from `modifier_suffixes` (kind='unit'), never a 'Unit'
+    # literal -- R-31-1.
+    unit_suffixes = sorted(
+        (sfx for sfx, kind in load_modifier_suffixes(conn).items() if kind == "unit"),
+        key=len,
+        reverse=True,
+    )
+    styling_behaviour_roles = {
+        r[0] for r in conn.execute(
+            "SELECT role_name FROM roles WHERE classification = 'styling-behaviour'"
+        ).fetchall()
+    }
+    unit_inherited = 0
+    if unit_suffixes and styling_behaviour_roles:
+        for row_id, block_slug, attr_name in conn.execute(
+            "SELECT id, block_slug, attr_name FROM block_attributes WHERE role IS NULL"
+        ).fetchall():
+            base = None
+            for sfx in unit_suffixes:
+                if attr_name.endswith(sfx) and len(attr_name) > len(sfx):
+                    base = attr_name[: -len(sfx)]
+                    break
+            if not base:
+                continue
+            base_row = conn.execute(
+                "SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+                (block_slug, base),
+            ).fetchone()
+            if not base_row or base_row[0] not in styling_behaviour_roles:
+                continue
+            cur.execute(
+                "UPDATE block_attributes SET role = ? WHERE id = ?", (base_row[0], row_id)
+            )
+            unit_inherited += 1
+
+    # TIER 3.5 -- ENUM BACKSTOP (2026-08-05, Bean). A row that declares `enum` in its
+    # block.json is a SELECT: the author picks one of a fixed list. That is a positive,
+    # structural fact seeded by /sgs-update Stage 1 straight from block.json
+    # (sgs-update-v2.py:895) -- not an inference from the attribute's name -- and it is
+    # the same shape of evidence `styling` takes from css_property.
+    #
+    # WHY THIS TIER EXISTS AT ALL (Bean's ruling, 2026-08-05): `role IS NULL` must mean
+    # exactly ONE thing -- "no seeding mechanism reached this row". A row left NULL merely
+    # because no role happened to fit is indistinguishable from a row nobody examined, and
+    # that is the signal STEP 0 was built to create. Same argument the `technical` tier
+    # makes for staying narrow.
+    #
+    # ROLE = 'enum-mode', NOT 'select-from-enum'. The first draft of this tier used
+    # select-from-enum and was WRONG: that role's contract is "a string CSS VALUE chosen
+    # from a fixed enum", and two live consumers rely on that promise -- _kind_for()
+    # (db_lookup.py:1964-1965) resolves it to CSS kind 'string', and the BEM-modifier probe
+    # (db_lookup.py:4889-4896) may WRITE a draft's modifier into it. Most enum attrs are
+    # not CSS values at all (sgs/card-grid.source = manual|query|wc-product,
+    # sgs/container.tagName, sgs/audio.audioSource), so filing them there feeds both
+    # consumers a falsehood. `enum-mode` is in neither consumer group. See its roles.json
+    # entry for the full contract.
+    #
+    # IT DOES NOT FORECLOSE A BETTER ANSWER. `enum-mode` is not "graduated" in
+    # resolve_role_with_healing() (only content-bearing roles and hand-override rows are),
+    # so the moment property_suffixes can resolve one of these attrs to a specific family
+    # the healer OVERWRITES this role -- e.g. sgs/container.backgroundRepeat carries
+    # enum-mode today and should become `visual` + css_property='background-repeat' once a
+    # suffix reaches it. Generic now, specific later, automatically.
+    #
+    # SAFETY -- stated precisely rather than overclaimed. An enum row CAN be
+    # content-bearing: sgs/* today has one 'link-href' and one 'identity' row carrying an
+    # enum. That is exactly why this pass runs LAST and only where `role IS NULL` -- both
+    # of those rows already carry their content role from an earlier tier and are
+    # untouchable here. The residual risk is a genuinely content-bearing enum attr that
+    # NO earlier tier reaches; the fix then is to reach it in the structural tier, not to
+    # loosen this gate. The self-test plants that shape.
+    #
+    # NOT tag-identity: `tag_identity_attrs` (db_lookup.py:1107) gates on
+    # role='tag-identity' set through the override channel, and its own docstring rejects
+    # bare enum-contains as over-broad (naming quote.attributionTag). Overrides are
+    # applied AFTER this pass (sgs-update-v2.py Stage 1C), so promoting any of these rows
+    # to tag-identity later remains available and is not blocked by this fill.
+    enum_filled = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes "
+        "WHERE role IS NULL AND enum_values IS NOT NULL AND enum_values NOT IN ('', '[]', 'null')"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'enum-mode' WHERE id = ?", (row_id,)
+        )
+        enum_filled += 1
+
+    # TIER 3.6 -- BOOLEAN CONTENT-ROLE SWEEP (2026-08-05, Bean). A BOOLEAN attribute can
+    # never be content. `boolean-visibility`'s own roles.json entry makes the argument:
+    # "A draft's HTML/CSS carries no signal a boolean toggle could be lifted from, so the
+    # absence of a resolver is expected, not a gap."
+    #
+    # THE LIVE DEFECT THIS REPAIRS. Neither the property-suffix peel nor the Tier-1 name
+    # regex gates on `attr_type` -- both map a NAME to a role. So `showTitle` (boolean)
+    # peels the `Title` suffix to `text-content`, which is CONTENT-BEARING, which means the
+    # cloning content walk will try to lift a draft's title TEXT into a boolean attribute.
+    # Measured 2026-08-05: 10 such rows live -- post-grid.showTitle/showDate/showImage,
+    # trustpilot-reviews.showSubtitle/showDate/showSchema, google-reviews.showDate,
+    # business-info.linkPhone/linkEmail, accordion.faqSchema. Found by root-causing why
+    # 5 `behaviour` overrides existed: they were DEFENDING against exactly this
+    # (sgs/container.bgSvgTextShadow is a boolean whose name peels to role='color',
+    # css_property='box-shadow'), not declaring debt.
+    #
+    # WHY A SWEEP AND NOT A GUARD AT EACH WRITER -- one fix, chosen deliberately. Guarding
+    # every site that can write a role (the main run() loop, the healer, the name-regex
+    # fill/upgrade, each tier) means N edits where missing ONE leaves the bug live, and it
+    # would still need a separate one-off pass to repair the 10 rows already wrong. This
+    # single choke point repairs AND prevents, and catches any future writer by
+    # construction. Two overlapping fixes would be unfalsifiable -- you could never tell
+    # which one was load-bearing -- so this is deliberately the only one.
+    #
+    # It runs LAST so it can never pre-empt a legitimate tier, and it RECLASSIFIES rather
+    # than NULLing: NULL means "no mechanism reached this row" (D497), and these rows WERE
+    # reached -- by a mechanism that was wrong about them. `boolean-visibility` is
+    # classification='styling-behaviour', so the row leaves the content walk immediately.
+    #
+    # DB-FIRST (R-31-1): content-bearing-ness is read from the `roles` table's own
+    # classification column, never a hardcoded role list that would drift from it.
+    boolean_swept = _sweep_boolean_content_roles(conn)
+
     conn.commit()
     return {
         "filled": filled,
@@ -1741,6 +2112,23 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         "structural_filled": structural_filled,
         "technical_filled": technical_filled,
         "styling_filled": styling_filled,
+        "unit_inherited": unit_inherited,
+        "enum_filled": enum_filled,
+        # TIER 3.6 -- boolean attrs whose role was content-bearing, reclassified to
+        # 'boolean-visibility'. A NON-ZERO count here on a steady-state reseed means a
+        # writer upstream is still mapping a NAME to a content role without checking
+        # attr_type -- worth investigating, not ignoring.
+        "boolean_swept": boolean_swept,
+        # TIER 0A -- image<->alt companion (D497). image_filled/alt_filled are role
+        # fills; companion_filled is the alt_companion_attr column fill; conflicts is
+        # a DIFFERING pre-existing alt_companion_attr value (reported, never clobbered).
+        "companion_image_filled": _companion["image_filled"],
+        "companion_alt_filled": _companion["alt_filled"],
+        "companion_link_filled": _companion["companion_filled"],
+        "companion_conflicts": _companion["companion_conflicts"],
+        # Present and non-None when Detector 5 itself failed to run (import/parse
+        # error) -- same degrade contract as structural_error below.
+        "companion_error": _companion["companion_error"],
         # Present and TRUE when the structural tier failed. Callers/logs must show this:
         # a degraded run that silently reverts to name-guessing is indistinguishable from
         # a healthy one unless the failure is carried out with the counts.
@@ -2241,6 +2629,452 @@ def _self_test_styling_backstop() -> int:
     return 0
 
 
+def _self_test_unit_inheritance() -> int:
+    """Prove the TIER 3.4 unit-inheritance pass can FAIL, on a throwaway in-memory DB.
+
+    Planted rows, each one a way the pass could be wrong:
+      1. a unit attr whose base is styling-behaviour  -> MUST inherit the base's role
+      2. a unit attr whose base is CONTENT-bearing    -> MUST NOT inherit (a content role
+         on a bare 'px' would walk it into the content lift)
+      3. a unit attr whose base is itself unclassified -> MUST NOT inherit (two unknowns)
+      4. a unit attr with NO base attr at all          -> MUST NOT inherit
+      5. a unit attr that ALREADY has a role           -> MUST NOT be overwritten
+      6. a non-unit attr                               -> MUST be untouched
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, css_property TEXT, enum_values TEXT)"
+    )
+    conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
+    conn.execute("CREATE TABLE modifier_suffixes (suffix TEXT, kind TEXT)")
+    conn.executemany(
+        "INSERT INTO roles (role_name, classification) VALUES (?,?)",
+        [("layout", "styling-behaviour"), ("typography", "styling-behaviour"),
+         ("text-content", "content-bearing")],
+    )
+    conn.execute("INSERT INTO modifier_suffixes (suffix, kind) VALUES ('Unit', 'unit')")
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, css_property, "
+        "enum_values) VALUES (?,?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "width", "layout", "width", None),
+            (2, "sgs/plant", "widthUnit", None, None, None),
+            (3, "sgs/plant", "caption", "text-content", None, None),
+            (4, "sgs/plant", "captionUnit", None, None, None),
+            (5, "sgs/plant", "mystery", None, None, None),
+            (6, "sgs/plant", "mysteryUnit", None, None, None),
+            (7, "sgs/plant", "orphanUnit", None, None, None),
+            (8, "sgs/plant", "thicknessUnit", "typography", None, None),
+            (9, "sgs/plant", "thickness", "layout", "border-width", None),
+            (10, "sgs/plant", "plainAttr", None, None, None),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    unit_suffixes = sorted(
+        (s for s, k in conn.execute("SELECT suffix, kind FROM modifier_suffixes").fetchall()
+         if k == "unit"),
+        key=len, reverse=True,
+    )
+    sb_roles = {r[0] for r in conn.execute(
+        "SELECT role_name FROM roles WHERE classification = 'styling-behaviour'"
+    ).fetchall()}
+    claimed = 0
+    for row_id, block_slug, attr_name in conn.execute(
+        "SELECT id, block_slug, attr_name FROM block_attributes WHERE role IS NULL"
+    ).fetchall():
+        base = None
+        for sfx in unit_suffixes:
+            if attr_name.endswith(sfx) and len(attr_name) > len(sfx):
+                base = attr_name[: -len(sfx)]
+                break
+        if not base:
+            continue
+        base_row = conn.execute(
+            "SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, base),
+        ).fetchone()
+        if not base_row or base_row[0] not in sb_roles:
+            continue
+        cur.execute("UPDATE block_attributes SET role = ? WHERE id = ?", (base_row[0], row_id))
+        claimed += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if claimed == 0:
+        failures.append("unit inheritance claimed ZERO rows against a planted set -- it "
+                        "cannot fire, so it proves nothing")
+    if got.get("widthUnit") != "layout":
+        failures.append(f"widthUnit -> {got.get('widthUnit')!r}, expected 'layout' "
+                        "inherited from its base")
+    if got.get("captionUnit") is not None:
+        failures.append(
+            f"captionUnit -> {got.get('captionUnit')!r}: inherited a CONTENT-bearing role. "
+            "A unit value is never content -- this would walk a bare unit into the lift."
+        )
+    if got.get("mysteryUnit") is not None:
+        failures.append(f"mysteryUnit -> {got.get('mysteryUnit')!r}: inherited from an "
+                        "UNCLASSIFIED base. Two unknowns are not a classification.")
+    if got.get("orphanUnit") is not None:
+        failures.append(f"orphanUnit -> {got.get('orphanUnit')!r}: claimed with no base "
+                        "attr present at all.")
+    if got.get("thicknessUnit") != "typography":
+        failures.append(
+            f"thicknessUnit -> {got.get('thicknessUnit')!r}: an EXISTING role was "
+            "overwritten. This row proves the `role IS NULL` guard -- its base carries a "
+            "different styling role, so without the guard the value would change."
+        )
+    if got.get("plainAttr") is not None:
+        failures.append(f"plainAttr -> {got.get('plainAttr')!r}: a non-unit attr was claimed.")
+    conn.close()
+
+    if failures:
+        print(f"UNIT-INHERITANCE SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"UNIT-INHERITANCE SELF-TEST PASSED -- {claimed} rows claimed, 6 checks green.")
+    return 0
+
+
+def _self_test_enum_backstop() -> int:
+    """Prove the TIER 3.5 enum backstop can FAIL, on a throwaway in-memory DB.
+
+    Planted rows:
+      1. an enum row with role NULL      -> MUST be claimed as 'enum-mode'
+      2. an enum row that already has a CONTENT role -> MUST NOT be overwritten (the
+         real sgs/* rows of this shape are the link-href and identity enum attrs)
+      3. a row with NO enum              -> MUST NOT be claimed
+      4. an empty-list / 'null' enum     -> MUST NOT be claimed (seeded as a literal by
+         a block.json declaring `"enum": []`; it names no choices, so it is no evidence)
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, enum_values TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, enum_values) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "plantedEnum", None, '["a", "b"]'),
+            (2, "sgs/plant", "plantedContentEnum", "link-href", '["a", "b"]'),
+            (3, "sgs/plant", "plantedNoEnum", None, None),
+            (4, "sgs/plant", "plantedEmptyEnum", None, "[]"),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    claimed = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes "
+        "WHERE role IS NULL AND enum_values IS NOT NULL "
+        "AND enum_values NOT IN ('', '[]', 'null')"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'enum-mode' WHERE id = ?", (row_id,)
+        )
+        claimed += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if claimed == 0:
+        failures.append("enum backstop claimed ZERO rows against a planted set -- it "
+                        "cannot fire, so it proves nothing")
+    if got.get("plantedEnum") != "enum-mode":
+        failures.append(f"plantedEnum -> {got.get('plantedEnum')!r}, expected 'enum-mode'. "
+                        "NOTE: 'select-from-enum' is the WRONG answer here and this check "
+                        "exists to say so -- that role promises the value IS a CSS value and "
+                        "is wired into _kind_for() + the BEM-modifier probe.")
+    if got.get("plantedContentEnum") != "link-href":
+        failures.append(
+            f"plantedContentEnum -> {got.get('plantedContentEnum')!r}: the backstop "
+            "OVERWROTE a content role on an enum row. This is the row that proves the "
+            "`role IS NULL` guard -- content-bearing enum attrs exist on sgs/* today."
+        )
+    if got.get("plantedNoEnum") is not None:
+        failures.append(f"plantedNoEnum -> {got.get('plantedNoEnum')!r}: a row with no "
+                        "enum was claimed. The enum IS the evidence.")
+    if got.get("plantedEmptyEnum") is not None:
+        failures.append(f"plantedEmptyEnum -> {got.get('plantedEmptyEnum')!r}: an EMPTY "
+                        "enum was treated as evidence. It names no choices.")
+    conn.close()
+
+    if failures:
+        print(f"ENUM-BACKSTOP SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"ENUM-BACKSTOP SELF-TEST PASSED -- {claimed} rows claimed, 4 checks green.")
+    return 0
+
+
+def _self_test_companion_tier() -> int:
+    """Prove the TIER 0A image<->alt companion pass can FAIL, on a throwaway
+    in-memory DB. Drives `_apply_companion_pairs()` directly with a synthetic pairs
+    list -- Detector 5 itself is never invoked, so this proves the WRITE discipline
+    (fill-NULL roles, single-writer companion column, conflict reporting), not the
+    detector's own parsing (that is Detector 5's own `--self-test`, 6/6 green).
+
+    Six planted rows, four fixture SHAPES, each one a way this tier could be wrong:
+      1. a pair that MUST be claimed (both rows NULL) -- proves the tier can act.
+      2. an alt row that ALREADY has a role -- MUST NOT be overwritten. Its companion
+         image attr also already carries a DIFFERENT role ('link-href') -- proves the
+         image-side `role IS NULL` guard too, in the same fixture. This is the row
+         that ONLY the `if image_role is None` / `if alt_role is None` guards
+         protect: strip either guard and this row's role flips, exactly the negative
+         control shape `_self_test_styling_backstop`'s row 5 comment describes --
+         without a row whose PRE-EXISTING role differs from what this tier would
+         write, removing the guard is undetectable (a row that was already going to
+         end up NULL either way proves nothing).
+      3. a row with no derived pair referencing it -- MUST NOT be touched at all.
+      4. a companion-column CONFLICT: an alt row whose `alt_companion_attr` already
+         names a DIFFERENT image attr than the one this pair derives, with role
+         itself still NULL. The role fill still applies (it is an independent fact,
+         governed only by the role-NULL guard proven in fixture 2) but the
+         alt_companion_attr value MUST NOT be overwritten, and MUST be counted as a
+         conflict.
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, alt_companion_attr TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, alt_companion_attr) "
+        "VALUES (?,?,?,?,?)",
+        [
+            # 1. MUST be claimed: both sides NULL.
+            (1, "sgs/plant", "imageUrl", None, None),
+            (2, "sgs/plant", "imageAlt", None, None),
+            # 2. MUST NOT be overwritten on EITHER side -- both already carry a role
+            #    that differs from what this tier would write. This is the row that
+            #    ONLY the `role IS NULL` guards protect.
+            (3, "sgs/plant2", "weirdUrl", "link-href", None),
+            (4, "sgs/plant2", "weirdAlt", "text-content", None),
+            # 3. No derived pair references this row -- MUST NOT be touched.
+            (5, "sgs/plant3", "unrelatedAttr", None, None),
+            # 4. Companion-column CONFLICT: alt_companion_attr already names a
+            #    DIFFERENT image attr than the one this pair would derive.
+            (6, "sgs/plant4", "logoAlt", None, "someOtherImageAttr"),
+        ],
+    )
+    conn.commit()
+
+    pairs = [
+        {"block_slug": "sgs/plant", "image_attr": "imageUrl", "alt_attr": "imageAlt",
+         "evidence_shape": "test"},
+        {"block_slug": "sgs/plant2", "image_attr": "weirdUrl", "alt_attr": "weirdAlt",
+         "evidence_shape": "test"},
+        {"block_slug": "sgs/plant4", "image_attr": "logoUrl", "alt_attr": "logoAlt",
+         "evidence_shape": "test"},
+    ]
+    result = _apply_companion_pairs(conn, pairs)
+
+    got_role = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    got_companion = dict(
+        conn.execute("SELECT attr_name, alt_companion_attr FROM block_attributes").fetchall()
+    )
+    failures = []
+
+    if result["image_filled"] == 0 or result["alt_filled"] == 0:
+        failures.append(
+            f"tier claimed ZERO rows against a planted pair (image_filled="
+            f"{result['image_filled']}, alt_filled={result['alt_filled']}) -- it "
+            "cannot fail, so it proves nothing"
+        )
+    if got_role.get("imageUrl") != "image-object":
+        failures.append(f"imageUrl -> {got_role.get('imageUrl')!r}, expected 'image-object'")
+    if got_role.get("imageAlt") != "image-alt":
+        failures.append(f"imageAlt -> {got_role.get('imageAlt')!r}, expected 'image-alt'")
+    if got_companion.get("imageAlt") != "imageUrl":
+        failures.append(
+            f"imageAlt.alt_companion_attr -> {got_companion.get('imageAlt')!r}, "
+            "expected 'imageUrl'"
+        )
+
+    if got_role.get("weirdUrl") != "link-href":
+        failures.append(
+            f"weirdUrl -> {got_role.get('weirdUrl')!r}: the tier overwrote an EXISTING "
+            "role on the IMAGE side of a pair. This is the row that proves the "
+            "image-side `role IS NULL` guard -- without it, its removal is undetectable."
+        )
+    if got_role.get("weirdAlt") != "text-content":
+        failures.append(
+            f"weirdAlt -> {got_role.get('weirdAlt')!r}: the tier overwrote an EXISTING "
+            "role on the ALT side of a pair. This is the row that proves the "
+            "alt-side `role IS NULL` guard -- without it, its removal is undetectable."
+        )
+    # Even though the role was left alone, the companion column is a SEPARATE fact
+    # with its own single-writer rule -- it must still be filled since it was NULL.
+    if got_companion.get("weirdAlt") != "weirdUrl":
+        failures.append(
+            f"weirdAlt.alt_companion_attr -> {got_companion.get('weirdAlt')!r}, "
+            "expected 'weirdUrl' -- the companion column is a different fact from "
+            "role and must be filled independently of whether role was overwritable"
+        )
+
+    if got_role.get("unrelatedAttr") is not None:
+        failures.append(
+            f"unrelatedAttr -> {got_role.get('unrelatedAttr')!r}: a row with NO "
+            "derived pair referencing it was touched."
+        )
+
+    if got_role.get("logoAlt") != "image-alt":
+        failures.append(
+            f"logoAlt -> {got_role.get('logoAlt')!r}, expected 'image-alt' -- role "
+            "was NULL going in, so the fill-NULL rule still applies here even though "
+            "the companion COLUMN (a separate fact, tested below) is in conflict"
+        )
+    if got_companion.get("logoAlt") != "someOtherImageAttr":
+        failures.append(
+            f"logoAlt.alt_companion_attr -> {got_companion.get('logoAlt')!r}: a "
+            "DIFFERING pre-existing alt_companion_attr value was overwritten instead "
+            "of being left alone and reported as a conflict."
+        )
+    if result["companion_conflicts"] != 1:
+        failures.append(
+            f"companion_conflicts -> {result['companion_conflicts']}, expected 1 "
+            "(the logoAlt/someOtherImageAttr vs logoUrl mismatch)"
+        )
+
+    conn.close()
+
+    if failures:
+        print(f"COMPANION-TIER SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(
+        f"COMPANION-TIER SELF-TEST PASSED -- image_filled={result['image_filled']} "
+        f"alt_filled={result['alt_filled']} companion_filled={result['companion_filled']} "
+        f"conflicts={result['companion_conflicts']}, 10 checks green."
+    )
+    return 0
+
+
+def _sweep_boolean_content_roles(conn: sqlite3.Connection) -> int:
+    """TIER 3.6's write logic. Reclassify every BOOLEAN attr carrying a content-bearing
+    role to 'boolean-visibility'. Returns the number of rows swept.
+
+    Factored out (rather than inlined like the older sibling tiers) so the self-test drives
+    THIS function instead of re-implementing its query. The re-implementing style the other
+    self-tests in this file use cannot detect production/test drift: the fixture keeps
+    passing while the real query changes underneath it. The companion tier established the
+    better pattern in this same module; this follows it.
+
+    Content-bearing-ness comes from the `roles` table's own classification column (R-31-1),
+    never a hardcoded role list that could drift from it.
+    """
+    cur = conn.cursor()
+    swept = 0
+    for row_id, slug, attr, bad_role in conn.execute(
+        "SELECT ba.id, ba.block_slug, ba.attr_name, ba.role "
+        "FROM block_attributes ba JOIN roles r ON r.role_name = ba.role "
+        "WHERE ba.attr_type = 'boolean' AND r.classification = 'content-bearing'"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'boolean-visibility' WHERE id = ?", (row_id,)
+        )
+        print(
+            f"  [boolean-sweep] {slug}.{attr}: role {bad_role!r} -> 'boolean-visibility' "
+            "(a boolean cannot be content)"
+        )
+        swept += 1
+    return swept
+
+
+def _self_test_boolean_sweep() -> int:
+    """Prove the TIER 3.6 boolean content-role sweep can FAIL, on a throwaway in-memory DB.
+
+    Planted rows, each one a way the sweep could be wrong:
+      1. boolean + content-bearing role  -> MUST be swept to 'boolean-visibility'
+      2. boolean + STYLING role          -> MUST NOT be touched (only content is impossible
+         on a boolean; a boolean legitimately carries styling/behaviour roles, and several
+         real ones carry an `anim:`/`fx:` css_property)
+      3. STRING + content-bearing role   -> MUST NOT be touched. This is the row that only
+         the `attr_type = 'boolean'` guard protects: drop that guard and the sweep would
+         wipe every genuine content role in the database.
+      4. boolean + NULL role             -> MUST stay NULL. The sweep RECLASSIFIES a wrong
+         role; it never claims an unreached row (NULL means "no mechanism reached this",
+         D497) .
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, attr_type TEXT, role TEXT)"
+    )
+    conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
+    conn.executemany(
+        "INSERT INTO roles (role_name, classification) VALUES (?,?)",
+        [("text-content", "content-bearing"), ("image-object", "content-bearing"),
+         ("styling", "styling-behaviour"), ("boolean-visibility", "styling-behaviour")],
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, attr_type, role) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "showTitle", "boolean", "text-content"),
+            (2, "sgs/plant", "showImage", "boolean", "image-object"),
+            (3, "sgs/plant", "bgParallax", "boolean", "styling"),
+            (4, "sgs/plant", "headline", "string", "text-content"),
+            (5, "sgs/plant", "untouched", "boolean", None),
+        ],
+    )
+    conn.commit()
+
+    # Drives the PRODUCTION function, not a copy of its query — so this fixture cannot
+    # pass while the real sweep drifts underneath it.
+    swept = _sweep_boolean_content_roles(conn)
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if swept == 0:
+        failures.append("sweep claimed ZERO rows against a planted set -- it cannot fire, "
+                        "so it proves nothing")
+    for name in ("showTitle", "showImage"):
+        if got.get(name) != "boolean-visibility":
+            failures.append(
+                f"{name} -> {got.get(name)!r}: a BOOLEAN carrying a content-bearing role "
+                "was not swept. That row is liftable by the content walk."
+            )
+    if got.get("bgParallax") != "styling":
+        failures.append(f"bgParallax -> {got.get('bgParallax')!r}: a boolean with a "
+                        "STYLING role was swept. Only content roles are impossible here.")
+    if got.get("headline") != "text-content":
+        failures.append(
+            f"headline -> {got.get('headline')!r}: a STRING content role was swept. This is "
+            "the row that proves the attr_type guard -- without it this sweep would wipe "
+            "every genuine content role in the DB."
+        )
+    if got.get("untouched") is not None:
+        failures.append(f"untouched -> {got.get('untouched')!r}: an unreached (NULL) row "
+                        "was claimed. The sweep reclassifies; it never claims NULL.")
+    conn.close()
+
+    if failures:
+        print(f"BOOLEAN-SWEEP SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"BOOLEAN-SWEEP SELF-TEST PASSED -- {swept} rows swept, 5 checks green.")
+    return 0
+
+
 def _self_test_role_detection() -> int:
     """Synthetic test cases covering the heuristic families. Returns exit code
     (0 = pass, 1 = fail). Called by `--self-test` CLI flag."""
@@ -2309,5 +3143,7 @@ if __name__ == "__main__":
     # tests without touching the DB. Other args fall through to main().
     if len(sys.argv) >= 2 and sys.argv[1] == "--self-test":
         sys.exit(_self_test_role_detection() or _self_test_styling_backstop()
-                 or _self_test_technical_veto())
+                 or _self_test_technical_veto() or _self_test_unit_inheritance()
+                 or _self_test_enum_backstop() or _self_test_companion_tier()
+                 or _self_test_boolean_sweep())
     main()

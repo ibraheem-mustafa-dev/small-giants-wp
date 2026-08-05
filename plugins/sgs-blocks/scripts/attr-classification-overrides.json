@@ -577,23 +577,16 @@
       "slug": "sgs/product-card",
       "attr": "tagPadding",
       "fields": {
-        "role": "visual",
         "canonical_slot": "label",
-        "derived_selector": ".sgs-product-card__tag--trial"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ctaUrl",
-      "fields": {
-        "role": "link-href"
+        "derived_selector": ".sgs-product-card__tag--trial",
+        "role": "layout",
+        "_note": "2026-08-05 (Bean): role CORRECTED visual -> layout. `visual` was a copy-paste from the sibling tagBorderRadius (where visual IS right for border-radius); padding is spacing, which is what `layout` means per its roles.json entry. Bean asked for the hand role to be DROPPED so a mechanism would derive it -- tested empirically and it does NOT: decompose_attr_name proposes 'layout' in isolation, but with the role field removed and the row cleared, a full reseed left it NULL (attr_type='object', css_property NULL, so neither the main assignment nor the styling backstop claims it). Declared by hand with the CORRECT value rather than left unclassified. RETIREMENT CONDITION: remove when a reseed can assign 'layout' to this row unaided -- verify by clearing it and reseeding."
       }
     },
     {
       "slug": "sgs/team-member",
       "attr": "name",
       "fields": {
-        "role": "text-content",
         "derived_selector": ".sgs-team-member__name"
       }
     },
@@ -601,7 +594,6 @@
       "slug": "sgs/team-member",
       "attr": "role",
       "fields": {
-        "role": "text-content",
         "derived_selector": ".sgs-team-member__role"
       }
     },
@@ -665,8 +657,9 @@
       "slug": "sgs/testimonial",
       "attr": "ratingSize",
       "fields": {
+        "derived_selector": ".sgs-testimonial__rating",
         "role": "select-from-enum",
-        "derived_selector": ".sgs-testimonial__rating"
+        "_note": "2026-08-05: role RESTORED after an empirical clear-and-reseed test proved it is NOT redundant. The `Size` property suffix does derive 'select-from-enum' in isolation, but this row also carries a css_property, so once the role is cleared the generic TIER-3 styling backstop claims it first and the specific role is LOST (measured: select-from-enum -> styling). Same degradation that hit 53 rows when the CSS-family role fields were stripped wholesale. RETIREMENT CONDITION: retire this entry only when a suffix-derived role is written BEFORE the styling backstop runs, verified by clearing this row and reseeding -- never by a decompose_attr_name probe, which measures the mechanism in isolation and not what the pipeline actually writes."
       }
     },
     {
@@ -1071,7 +1064,6 @@
       "slug": "sgs/testimonial",
       "attr": "quote",
       "fields": {
-        "role": "content",
         "derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote"
       }
     },
@@ -1122,7 +1114,6 @@
       "slug": "sgs/icon",
       "attr": "iconName",
       "fields": {
-        "role": "icon-lucide",
         "derived_selector": ".sgs-icon__glyph, [data-icon-name]"
       }
     },
@@ -1132,20 +1123,6 @@
       "fields": {
         "role": "icon-emoji",
         "derived_selector": ".sgs-icon__emoji"
-      }
-    },
-    {
-      "slug": "sgs/icon",
-      "attr": "dashiconName",
-      "fields": {
-        "role": "icon-dashicon"
-      }
-    },
-    {
-      "slug": "sgs/icon",
-      "attr": "wpIconName",
-      "fields": {
-        "role": "icon-wp-icon"
       }
     },
     {
@@ -1176,7 +1153,6 @@
       "slug": "sgs/quote",
       "attr": "attribution",
       "fields": {
-        "role": "text-content",
         "emit_shape": "nested",
         "canonical_slot": "attribution",
         "derived_selector": ".sgs-quote__attribution"
@@ -1588,6 +1564,22 @@
       "fields": {
         "role": "image-object",
         "_note": "The string image attr `alt` names via alt_companion_attr. Must be role='image-object' AND attr_type='string' together — walk.py:295 requires both before it will capture alt text."
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "beforeVideoAlt",
+      "fields": {
+        "role": "a11y-text",
+        "_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `beforeVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "afterVideoAlt",
+      "fields": {
+        "role": "a11y-text",
+        "_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `afterVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
       }
     }
   ]

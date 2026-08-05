@@ -1398,6 +1398,15 @@
       null,
       "CSS grid-auto-rows -> grid-family blocks gridAutoRows attr (17 blocks). Row sibling of GridAutoColumns. Spec 35 gap closure 2026-07-19.",
       null
+    ],
+    [
+      "TextWrap",
+      "typography",
+      "text-wrap",
+      0,
+      null,
+      "2026-08-05 (Bean): text-wrap IS a typography CSS property, so the FAMILY must come from this suffix table, not from a generic enum backstop -- 'the enum is a shape fact, the family is the category fact'. Appended at the END: order is load-bearing only for a css_property with MORE THAN ONE suffix row (first-row-wins), and no other row maps text-wrap. Cannot collide with FlexWrap: the peel is a case-insensitive endswith, and 'flexwrap' does not end with 'textwrap'.",
+      null
     ]
   ]
 }

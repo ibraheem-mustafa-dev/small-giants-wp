@@ -1,9 +1,10 @@
 {
-  "generated_at": "2026-08-03T19:57:50Z",
+  "generated_at": "2026-08-05T20:50:22Z",
   "tables": {
     "animation_tokens": 8,
     "array_item_schema": 68,
-    "block_attributes": 2970,
+    "attribute_gap_candidates": 3111,
+    "block_attributes": 2943,
     "block_capabilities": 96,
     "block_changes": 2735,
     "block_composition": 211,
@@ -28,7 +29,7 @@
     "plugins": 3,
     "preset_implications": 23,
     "property_suffixes": 154,
-    "roles": 29,
+    "roles": 33,
     "schema_metadata": 4,
     "schema_migrations": 29,
     "slots": 104,
@@ -37,16 +38,15 @@
     "variant_slots": 27
   },
   "columns": {
-    "block_attributes.box_family": 228,
-    "block_attributes.canonical_slot": 1316,
-    "block_attributes.css_property": 863,
-    "block_attributes.emit_shape": 118,
-    "block_attributes.role": 1006,
+    "block_attributes.box_family": 236,
+    "block_attributes.canonical_slot": 1313,
+    "block_attributes.css_property": 1050,
+    "block_attributes.emit_shape": 199,
+    "block_attributes.role": 2374,
     "block_composition.container_kind": 36,
     "block_composition.wraps_block": 37,
     "blocks.tier": 206,
     "blocks.variant_attr": 5,
-    "roles.classification": 29
-  },
-  "_note_attribute_gap_candidates": "attribute_gap_candidates is DELIBERATELY not floored (removed 2026-08-03). It is a cumulative DIAGNOSTIC ledger the converter writes during clone runs - 'the draft had CSS for X but this block has no attribute to hold it'. Project rules already state it is not a fidelity signal. Its count legitimately FALLS when the converter improves (fewer gaps), so a floor on it encodes 'the pipeline must never get better' and fails the build on progress. Floors belong on SEEDED data whose loss is a regression, not on an accumulating debug log."
+    "roles.classification": 33
+  }
 }

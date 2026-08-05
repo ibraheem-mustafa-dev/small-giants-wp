@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D497 — attribute roles are MECHANISM-DERIVED; Task E (`supports.sgs.attrRoles`) is to be made irrelevant, not built [ROUTINE]
+
+**2026-08-05.** Bean's ruling, recorded mid-session. Two linked decisions.
+
+**1. `role IS NULL` means exactly one thing: no seeding mechanism reached this row.** It must never
+mean "reached, but no existing role fitted". Overloading it destroys the signal STEP 0 was built to
+create — an unexamined row becomes indistinguishable from an examined one. This is the same argument
+the `technical` tier already makes for staying narrow. Consequence: when a row is reached but no role
+fits, the answer is to add the RIGHT role, never to leave it NULL. `enum-mode` was added under this
+ruling (see below).
+
+**2. Task E is a redundancy to eliminate, not a feature to ship.** `supports.sgs.attrRoles`
+(FR-31-2.1a / D258) would let each `block.json` declare its own converter role. But the
+hand-authored `attr-classification-overrides.json` is ALREADY that channel — Task E does not reduce
+hand-declaration, it RELOCATES it, turning 73 auditable lines in one file into 73 lines spread across
+84 block.json files: harder to count, easier to drift. If mechanisms reach every row, both channels
+die together. Measured this session: **2,024 of 2,097 `sgs/%` roles (96%) are already
+mechanism-derived; only 73 (3%) are hand-declared overrides.**
+
+**The end condition (measurable, so Task E can be deleted on evidence rather than by decision):** the
+override file contains ONLY entries where the code does X but genuinely MEANS Y — its stated purpose
+— and ZERO entries that exist because no mechanism reaches the row. The two kinds must be
+distinguishable per entry so the second count is visible and can only go down.
+
+**Attack order on the remaining 73:**
+1. **14 `image-object`/`image-alt` companion rows — the irreducible core today.** `db_lookup`'s own
+   docstring says the companion cannot be name-derived (`product-card.image`→`imageAlt` vs
+   `media.imageUrl`→`imageAlt`). But there IS an unused structural signal: the URL and the alt are
+   passed as arguments to the SAME helper call in render.php (`sgs_responsive_image($id,$url,$alt)`,
+   `sgs_before_after_resolve_image`). A detector asking "which attrs are co-passed to one image
+   resolver?" would DERIVE the companion instead of declaring it — the Detector-1/4 evidence class
+   applied to a new question.
+2. **35 CSS-family rows** (`color` 16, `typography` 13, `visual` 6) — suffix/emission-shaped. Proven
+   reachable this session: one `property_suffixes` row (`TextWrap` → typography/text-wrap) replaced
+   what would otherwise have been a hand entry.
+3. **Residual 24** — case-by-case; whatever survives is the honest answer to "what can code not tell
+   us?"
+
+**Consequence for an existing gate:** `audit-declared-vs-seeded-roles.py` currently measures "lacks
+an SGS-owned declaration" and its closing advice is literally "add `supports.sgs.attrRoles`". Under
+this ruling it is pointed at the wrong target — it should measure "lacks a MECHANISM that reaches
+it". Left as-is it keeps generating pressure toward the thing this decision makes irrelevant.
+
+**Supporting mechanisms shipped the same session** (all deterministic, zero hand entries): `enum-mode`
+role seeded from `enum_values` (54 rows) + `<base>Unit` role inheritance from the base's family (4
+rows) + `TextWrap` property suffix. A fourth, the `_`-prefixed-annotation strip in the override
+loader, stopped documentation keys silently becoming DB columns. Of ~94 rows classified this session
+**88 came from mechanisms and 6 by hand** — and those 6 are exactly the image-alt companion class
+item 1 attacks.
+
+**Gotcha found while shipping this:** a NEW `property_suffixes` entry needs TWO `/sgs-update` passes.
+The assignment pass reads the suffix table before the seed lands, so the run that adds a suffix cannot
+use it — `heading.textWrap` stayed NULL after a full run and became `typography` only on the second.
+Anyone adding a suffix and seeing "no effect" will otherwise conclude their entry is broken.
+
+
 ## D496 — responsive-logo image-shape mirror (retires authored-alt-text for it) + header/footer box-spacing + 12 dead attrs deleted [ROUTINE]
 
 **2026-08-05.** Commit `12931409`, deployed to sandybrown canary and live-verified before commit.

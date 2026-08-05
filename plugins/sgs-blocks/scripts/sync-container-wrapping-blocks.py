@@ -1102,7 +1102,19 @@ def main() -> int:
         # sgs/site-header-row children; delegates its outer frame to SGS_Container_Wrapper.
         # sgs/site-footer added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325 footer system):
         # section-KIND footer shell delegating to SGS_Container_Wrapper.
-        "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar", "sgs/site-header", "sgs/site-footer"},
+        "section": {
+            "sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar",
+            "sgs/site-header", "sgs/site-footer",
+            # sgs/mega-panel + sgs/physics-canvas CONFIRMED + added 2026-08-05. Both were
+            # reported as "EXTRA (detected but not expected)" — the roster had not been
+            # refreshed since they gained their container attrs, the same shape as
+            # sgs/brand-strip below. Detection is definitionally correct for these two:
+            # each DECLARES `supports.sgs.containerKind: "section"` in its own block.json,
+            # so the detector is reading an explicit declaration, not inferring. Reasons
+            # reported: mega-panel = InnerBlocks | structural-parent | containerKind-
+            # override:section; physics-canvas = InnerBlocks | containerKind-override:section.
+            "sgs/mega-panel", "sgs/physics-canvas",
+        },
         "layout": {
             "sgs/card-grid", "sgs/content-collection", "sgs/feature-grid", "sgs/gallery",
             "sgs/multi-button", "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
@@ -1139,6 +1151,12 @@ def main() -> int:
             # detection (InnerBlocks + containerKind override) — listing it keeps the validator
             # honest; it does not imply wrapper delegation. See Spec 36 FR-36-13.
             "sgs/nav-drawer",
+            # sgs/mega-aside + sgs/mega-group CONFIRMED + added 2026-08-05, same refresh as
+            # the two section-KIND entries above. Neither declares a containerKind override;
+            # both were detected on `InnerBlocks` alone, which is the default content-KIND
+            # signal. Listing them keeps the validator honest about what detection sees — it
+            # does NOT assert wrapper delegation (same caveat as sgs/nav-drawer above).
+            "sgs/mega-aside", "sgs/mega-group",
             # sgs/mobile-nav REMOVED 2026-07-16 (qc-council, 2 raters): the block was
             # DELETED by `7c60b8ff` ("wire the theme to adaptive-nav drawer + delete
             # mobile-nav", Wave 2) and its off-canvas drawer absorbed into

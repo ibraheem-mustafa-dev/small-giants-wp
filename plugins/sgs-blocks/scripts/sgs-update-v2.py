@@ -1475,7 +1475,21 @@ def _load_attr_classification_overrides(path: Path = _ATTR_OVERRIDES_JSON_PATH) 
                 f"{path}: malformed entry {entry!r} — every entry needs "
                 "'slug', 'attr' and a 'fields' dict."
             )
-        out[(slug, attr)] = fields
+        # `_`-prefixed keys are HUMAN ANNOTATIONS, never database columns. They stay in
+        # the JSON truth file (where the rationale is useful to the next reader) and are
+        # dropped here, before the caller's idempotent column-add sees them.
+        #
+        # WHY THIS GUARD EXISTS (2026-08-05). The apply layer derives its column list
+        # straight from these field names and ALTERs the table for any it does not
+        # recognise, so a `_note` written as documentation SILENTLY became a real
+        # `block_attributes._note` column holding paragraphs of prose. Nothing rejected
+        # it; the failure surfaced only when `check_schema_drift.py` blocked every
+        # prebuild with "COLUMN block_attributes._note live-has-not-in-schema", by which
+        # point the column was already in the live DB shared with a co-active track.
+        # The leading underscore always meant "not a field" — this makes that convention
+        # load-bearing instead of decorative, and closes the class rather than the one
+        # key: any future `_rationale`/`_ticket` annotation is now inert by construction.
+        out[(slug, attr)] = {k: v for k, v in fields.items() if not k.startswith("_")}
     return out
 
 
