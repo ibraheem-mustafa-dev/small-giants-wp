@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-03
+last_updated: 2026-08-05
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -14,14 +14,24 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where today left things, in a sentence each:**
-- **WebGL is now officially part of the framework** (Tier W), with a budget and a closed list, so it
-  cannot quietly spread and blow the page-weight limit.
-- **The physics canvas block is built and live on the test site** — a decorative layer where things
-  can be thrown around. It is not a physics engine and should never be sold as one.
-- **Every gap found across nine research reports is now in ONE ranked document** instead of nine.
-- **The Snooza chair job is bigger than the proposal says** — 72 product combinations, not 24, and
-  two accessories that are not simple on/off choices.
+**Where 2026-08-05 left things, in a sentence each:**
+- **The framework now understands 251 more of its own settings than it did this morning** — 661
+  unclassified down to 410. Every one worked out by a rule, none typed in by hand, so the same rules
+  keep working on new blocks without anyone maintaining a list.
+- **Clients can finally set header and footer spacing on phone and tablet.** The controls existed in
+  the code but were wired to nothing, so the setting silently did nothing.
+- **The logo block was quietly losing your chosen logo in the editor** — it looked fine on the live
+  site, but reopening the page showed an empty slot. Fixed.
+- **A safety check that was written months ago had never actually run.** It is now wired into every
+  build. Separately, another safety check stopped today's deploy from deleting settings off two
+  pages — it caught a mistake my own checking had missed.
+- **69 settings still need a human decision** — that is the first job next session, and they are
+  listed with what to do about each.
+
+**Older, still true:**
+- **WebGL is officially part of the framework** (Tier W), with a budget and a closed list.
+- **The physics canvas block is live on the test site** — decorative only, not a physics engine.
+- **The Snooza chair job is bigger than the proposal says** — 72 combinations, not 24.
 - ⛔ **GSAP's licence has a clause worth knowing about** before you sell a plugin built on it.
 
 ## CURRENT FRONTS
@@ -64,27 +74,16 @@ before acting, do not assume it is current from memory alone:
   `.claude/reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
 - **Track 1 — Phases 0/1/1b/2/3 COMPLETE 2026-08-02 (D464, D470–D478). Phase 4 PARTIAL; Phase 5 OPEN.**
   Full narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md`.
-- **⭐ Track 1b (Spec 35) — ENFORCEMENT SESSION 2026-08-04 (D481–D484).** Measured: 0 of 24 end
+- **⭐ Track 1b (Spec 35) — STEP 0 CLOSED 2026-08-05. `role IS NULL` on `sgs/%` 661 → 410 (251 rows
+  classified, ZERO hand-authored overrides).** Four deterministic mechanisms shipped + `/sgs-update`
+  run + deployed and live-verified on the canary. Commits `6992e47e` `2d413758` `ddab201c`
+  `36df6561` `801a076a` `40273154` `580f7885` `12931409`. Detail below under NEXT SESSION.
+- **Track 1b (Spec 35) — ENFORCEMENT SESSION 2026-08-04 (D481–D484).** Measured: 0 of 24 end
   conditions have a script validated to cover all instantiations (1 enforced/8 partial/4 vacuous/2
   unwired/9 absent). Full narrative + 5 corrections: `memory/session-2026-08-04-spec35-enforcement.md`.
-- **⭐ Track 1b (Spec 35) Task A — structural content-role detection SHIPPED 2026-08-04 (D485).**
-  `sgs/%` `role IS NULL` 703 -> 669 -> **661 after 2026-08-05 follow-ons (D489/D490)**. Residuals
-  narrowed: a11y-metadata roles now RESOLVED (D489 a11y-text seeded + D490 `authored-alt-text` split
-  fixes the alt/placeholder-excluded-from-content-walk defect); 127 unreached rows + name-regex
-  fallback-still-present remain open. Same-session (2026-08-04): Track B fixed 3 `slots.aliases`
-  collisions (D486); Track C refuted the tier-NULL mobile-parity theory and identified fluid
-  typography as the real cause (D487/D488). **2026-08-05 follow-on (D489/D490):** svg role SHIPPED
-  (was actively destructive — `rich_text_content()` stripped `<svg>`/`<path>` to empty text) + D1
-  forward variable tracking SHIPPED (9/9 previously-unresolved rows now classify) + two aggregator
-  position-vs-rule fixes SHIPPED (`content_cats[0]` document-order tie-break; D1-only-veto vanishing
-  bucket) + `authored-alt-text` category split completed (PHP half pre-existed, Python `final_
-  category` half was missing — now matches). `sgs/responsive-logo.alt` uses `authored-alt-text` as
-  an INTERIM measure: its real defect is naming the device tier as a PREFIX
-  (`desktopLogoId`/`tabletLogoId`/`mobileLogoId`) where the whole framework uses a SUFFIX
-  (`backgroundImage`/`backgroundImageTablet`), making it invisible to the D480 device-tier axis —
-  see D490 for the retirement condition. Full detail + the 6 new Task-F conditions:
-  `memory/session-2026-08-04-spec35-enforcement.md` + `plans/spec-35-inspector-DONE-checklist.md`
-  (items 22-27, condition 22 extended 2026-08-05 with the position-vs-rule aggregator pattern).
+- **Track 1b Task A (2026-08-04, D485-D490)** — superseded by STEP 0 CLOSED above. Full narrative
+  swept to `memory/session-2026-08-05-spec35-step0-close.md` (which also carries the corrected
+  `authored-alt-text` retirement condition).
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
 - **Tracks 2+2b (nav/header/footer merge):** 5-wave plan landed (D413), Wave 1 CLOSED, Wave 2 in
@@ -178,17 +177,76 @@ blocks. A setting that needs code is not done. The 24 end conditions are only wo
 ENFORCED — measured 2026-08-04 at **0 of 24 validated**. Task F closes that gap; A-E settle block
 architecture first so F is written once.
 
-### STEP 0 — close Task A's residuals FIRST. Task A is not done while these are open.
+### STEP 0 — CLOSED 2026-08-05. `role IS NULL` on `sgs/%` **661 → 410**, zero hand-authored overrides.
 
-| # | What / Why | Est. | Orchestration | Acceptance |
-|---|---|---|---|---|
-| 1 | **Apply the 6 confident role assignments** from `.claude/reports/2026-08-05-report-only-row-categorisation.md`: `buybox.addToCartLabel`, `buybox.perUnitDenomination`, `whatsapp-cta.message` → `text-content`; `icon.ariaLabel`, `button.ariaLabel`, `nav-menu.navLabel` → `a11y-text`. | 10 min | Inline (main thread) — small, precise DB writes via the hand-authored override channel (`attr-classification-overrides.json`), not a raw DB write, so a reseed doesn't revert them. | `role IS NULL` count for `sgs/%` drops by 6 (from 661); overrides file diff shows exactly these 6 keys. |
-| 2 | **Verify this session's direct DB role writes survive `/sgs-update`.** `a11y-text` on `cart.ariaLabel`+`tabs.blockLabel`; `svg` on 8 rows — written straight to the DB, not through the override channel. | 15 min | Inline. Read `assign-canonical.py`'s override precedence, confirm each of the 10 rows has a durable override entry OR is re-derived by a detector (svg role has one — the D489 extractor branch). ⚠ Known risk: `sgs/responsive-logo.alt`'s existing override sets ONLY `derived_selector`, no role — check it isn't silently dropping the role on reseed. | Announce before running `/sgs-update` (cross-track DB action). A dry-run diff of role columns pre/post shows zero unintended reverts. |
-| 3 | **Update `P-FR-31-2.1A-CLOSURE`** (`.claude/parking.md:303-311`) OPEN → **PARTIAL**. Strip shipped clauses (the apiVersion-3 sub-item IS done per its own text), keep residual: `supports.sgs.attrRoles` not built (= Task E), name-regex still present as fallback not deleted. | 5 min | Inline edit. | Entry reads `**Status:** PARTIAL`, residual scope only, apiVersion-3 clause removed. |
-| 4 | **Explain `sgs/container.bgSvgContent`** — genuine SVG markup landing in NO fingerprint bucket. Best current hypothesis (unproven): its only consumer is `includes/class-sgs-container-wrapper.php`, which the emission scanner never opens. | 15 min | Delegated, sonnet, foreground. Brief: read `class-sgs-container-wrapper.php`'s handling of `bgSvgContent`, then read the emission-scanner's file globs — confirm or refute the consumer hypothesis by reading the actual code, not by re-asserting it. | A stated PROVEN or REFUTED verdict with the file:line that decides it — not a repeated hypothesis. |
-| 5 | **Document the 192 unreached rows** (of the 220-row eligible pool) as the honest open search space — mostly genuine styling (`gapTablet`, `gridTemplateColumnsMobile`, `shapeDividerTop`, `anchor`, `className`) but that composition is an ASSUMPTION, not a measurement. | 10 min | Inline — write the assumption + its unproven status into the Task A residual note; no new investigation this step, just stop treating it as measured. | LEDGER/checklist text no longer states the 192's composition as fact. |
+Bean's steer ("check for a deterministic signal before writing overrides") paid off: every one of the
+251 rows was classified by a mechanism, not a hand entry. Four shipped:
 
-**Only after Step 0 closes** move to Tasks B-F below.
+| Mechanism | Where | Effect |
+|---|---|---|
+| **Tier inheritance** | `extract-signatures.py` | `<base><Tier>` inherits its base's `css_property` + `css_tier`. 151 rows |
+| **`styling` role** | `roles.json` + `assign-canonical.py` | Backstop for `css_property` set, no family role. 124 rows |
+| **`technical` role** | same | Machine-facing values, positive evidence only. 59 rows |
+| **Detector 4** | `content-role-detect/detector4_referenced_not_output.py` | "read by code, never escaped, never CSS". 42 rows |
+
+Precedence is structural, not commented: content tiers > `css_property` > evidence-of-not-content >
+NULL. `technical` is deliberately narrow — rows NO detector reached stay NULL, because "unreached"
+and "proven technical" are different facts and merging them rebuilds the ambiguity the role removes.
+
+**Also shipped:** `gap` = a GRID-element property (Bean's ruling) — explicit `attrMap` on
+google-reviews + trustpilot, 32 rows, 12 of them resolved automatically by the tier rule. Emission
+parser no longer collapses multi-element `css_element` evidence. `check-dead-pattern-attrs.py` WIRED
+into `prebuild` — built at D338 against WP's silent attr-discard, it had **never run** (zero
+references in `package.json`). `check-dead-controls.js` CHECK 4 added (advisory) for attrs with
+neither a control nor any consumer.
+
+**Blocks shipped + live-verified on the canary** (`12931409`, reports in `reports/visual-diff/`):
+`responsive-logo` (prefix→suffix rename + `logoUrl*` string attrs mirroring `sgs/media`, so
+`image-alt` fires natively), `site-header`/`site-footer` (32 flat scalars → 8 box-objects, Spec 32),
+12 dead `direction`/`wrap` attrs removed from 6 blocks.
+
+⛔ **LEDGER CORRECTION.** This file previously recorded the responsive-logo **rename** as the
+retirement condition for `authored-alt-text`. Wrong, and verified wrong AFTER the rename: renaming
+changed no `attr_type`, and `walk.py:295` gates alt capture on `role=='image-object' AND
+attr_type=='string'`. It is the **attr-shape change** (`logoUrl` string attrs) that retires it.
+
+### STEP 0.1 — the 69 rows that need a human call (FIRST TASK NEXT SESSION, Bean's instruction)
+
+Produced by `python plugins/sgs-blocks/scripts/content-role-detect/fingerprint_content_roles.py`.
+Re-run it rather than trusting these numbers.
+
+| Bucket | Rows | What to do |
+|---|---|---|
+| **Wrapper-rendered styling** | 23 | Mechanical, same fix as `gap`: declare an explicit `attrMap` on the owning block (copy `sgs/container`'s `grid` element). `overlayGradientFrom/To` ×4, `shapeDividerTop/Bottom(+Colour)` ×3 each, `backgroundOverlayColour` ×2, `gridItemBorder` |
+| **D4 needs review** | 32 | Technical OR styling painted later via a variable — separating them needs D1-style variable-flow analysis. `anchor`, `sgsCustomCss`, `justifyContent`, `rowSlot`, `customWidthUnit`, `orderBy`, `contentIconName`, `gradientColourStart/End`, + ~17 singletons |
+| **Report-only (D2-only)** | 13 | Needs corroboration: 8× `fieldName`, `formName`, `excludeKeywords`, `posterAlt`, `drawerRef`, `schemaItemName`, `whatsapp-cta.message` |
+| **Content gap** | 1 | `whatsapp-cta.phoneNumber` — waits on the `link-content` extractor below |
+
+### STEP 0.2 — three residuals, each with its blocker already identified
+
+1. **`sgs/multi-button` rename** (`direction`/`wrap` → `flexDirection`/`flexWrap`) — BUILT then
+   REVERTED before deploy. The deploy's `oldshape-audit` found **3 NEW HIGH**: canary posts 1596 and
+   2130 store those attrs, and shipping the rename would have WordPress silently DELETE them on the
+   next editor save. The gate caught what the subagent's own verification missed (it checked theme
+   patterns — and correctly fixed two — but not stored post content). **Blocker:**
+   `scripts/lib/oldshape-mappings.js` has no attribute-RENAME shape; it is built for
+   scalar→InnerBlocks. Add one, migrate posts 1596 + 2130 via
+   `scripts/wp-migrate-oldshape-blocks.js` (dry-run default), THEN re-apply the rename. Do not
+   baseline it — this is real content loss.
+2. **`link-content` role + extractor** — the CAPTURE half shipped (`580f7885`): render.php's URL
+   template is recovered structurally into `output_signature.link_template` (no new column — Bean's
+   call; `default_value` is occupied and `description` is prose). The EXTRACTOR is NOT built and the
+   role is deliberately NOT seeded. It was drafted against an assumed `extra` parameter; the real
+   signature is `extract_field_value(element, role, media_map=None)`, so it would have raised
+   `NameError` on first use. Threading the template through changes a shared converter entry point
+   used by both `array_content` and `scalar_content` — read Spec 31 §3.B.0 first. Covers
+   `phoneNumber` AND `message` (Bean's scope call).
+3. **Case mismatch `extract-signatures.py:1634`** — `base_candidate = prefix + suffix` builds
+   `"" + "Gap"` = `"Gap"`, never matching a bare lowercase attr, silently disabling the
+   prefix-convention path. `sgs/container`'s own `grid` `_note` documents the same limitation.
+
+**Only after Step 0.1/0.2** move to Tasks B-F below.
+
 
 ### Tasks B–F, in order (per checklist `.claude/plans/spec-35-inspector-DONE-checklist.md` items 22-27 + Task-F bar)
 
@@ -227,17 +285,12 @@ blind on first build, each caught only by a human challenging a low number):
 **Track acceptance:** every one of the 24 rows meets points 1-10 or carries a recorded exception
 naming a `decisions.md` D-number. "Has a script" is not the bar.
 
-### Side-job — standardise `sgs/responsive-logo`
+### Side-job — standardise `sgs/responsive-logo` — DONE 2026-08-05 (`12931409`)
 
-Names responsive tiers with a PREFIX (`desktopLogoId`/`tabletLogoId`/`mobileLogoId`) where the whole
-framework uses a SUFFIX (`backgroundImageTablet`) — `modifier_suffixes` peels a suffix, so the D480
-device-tier axis is structurally blind to it (all 3 rows `is_responsive=0`, `css_tier=NULL`, every
-gate green). Renaming to the suffix convention collapses the 3 images into one base attr with tier
-siblings, gives `alt_companion_attr` a single image attr to name, lets `image-alt` fire natively, and
-**retires the `authored-alt-text` category** (record this as its retirement condition — do not
-maintain it once the rename lands). ⚠ `placeholder`'s D482 justification is SEPARATE and does not
-depend on this rename. **Est. 30 min. Delegated, sonnet, worktree — block.json + converter attr
-rename across one block.**
+Renamed to the suffix convention AND given the `sgs/media` image shape, so `image-alt` now
+fires natively. Deployed + live-verified. ⛔ Note the retirement condition recorded here
+previously was WRONG — see STEP 0 above. Swept detail:
+`memory/session-2026-08-05-spec35-step0-close.md`.
 
 ### Dependency graph
 
