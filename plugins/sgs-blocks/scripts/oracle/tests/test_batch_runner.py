@@ -162,12 +162,37 @@ class TestAttribution:
 # ---------------------------------------------------------------------------
 
 class TestDiscoverSectionsReal:
-    def test_recognises_a_named_block_root(self):
+    def test_recognises_a_class_section_block_root(self):
+        # A CLASS-SECTION block survives as itself. Only `blocks.tier='class-section'`
+        # blocks may claim a section root (FR-31-16) — today exactly three:
+        # sgs/hero, sgs/cta-section, sgs/trust-bar.
+        html = """<html><body>
+          <section class="sgs-hero"><p class="sgs-hero__text">Body copy</p></section>
+        </body></html>"""
+        sections = batch_runner.discover_sections(html)
+        assert [s["block_slug"] for s in sections] == ["sgs/hero"]
+        assert sections[0]["draft_selector"] == ".sgs-hero"
+
+    def test_non_class_section_root_dissolves_to_container(self):
+        # The other half of FR-31-16, and the reason this test was rewritten
+        # 2026-08-05: it previously asserted `sgs/info-box` survived as a section
+        # root, which the SECTION-ROOT CAPABILITY GATE (recognition.py:239-247,
+        # commit `2b5a6b64`) deliberately stopped on 2026-08-04. sgs/info-box is
+        # tier='block', a content-KIND composite (D294) — Bean ruled the dissolve
+        # CORRECT: "a class-section in a draft is literally a container/wrapper
+        # around a group of blocks... a standalone non-class-section block as a
+        # whole section is improbable."
+        #
+        # These two tests predate that gate by four days, and the gate commit's
+        # self-reported blast radius ("exactly 7 tests: 6 golden byte-compares +
+        # 1 tab dissolve test") did not count them — so they had been failing
+        # every build since. The identity dissolves; the SELECTOR is preserved,
+        # which is what lets the walker recurse the draft's BEM into the container.
         html = """<html><body>
           <section class="sgs-info-box"><p class="sgs-info-box__text">Body copy</p></section>
         </body></html>"""
         sections = batch_runner.discover_sections(html)
-        assert [s["block_slug"] for s in sections] == ["sgs/info-box"]
+        assert [s["block_slug"] for s in sections] == ["sgs/container"]
         assert sections[0]["draft_selector"] == ".sgs-info-box"
 
     def test_only_top_level_sections_are_returned(self):
@@ -185,13 +210,19 @@ class TestDiscoverSectionsReal:
         assert sections[0]["block_slug"] == "sgs/container"
 
     def test_two_sibling_sections_are_both_found_and_distinct(self):
+        # Uses TWO class-section blocks so this test measures sibling DISTINCTNESS
+        # only. It previously paired sgs-info-box with sgs-hero and asserted both
+        # survived — but info-box is tier='block' and now dissolves to
+        # sgs/container (FR-31-16, see test_non_class_section_root_dissolves_to_container),
+        # which meant this test was silently entangling two separate behaviours.
         html = """<html><body>
-          <section class="sgs-info-box">One</section>
+          <section class="sgs-cta-section">One</section>
           <section class="sgs-hero">Two</section>
         </body></html>"""
         sections = batch_runner.discover_sections(html)
         slugs = [s["block_slug"] for s in sections]
-        assert "sgs/info-box" in slugs and "sgs/hero" in slugs
+        assert "sgs/cta-section" in slugs
+        assert "sgs/hero" in slugs
         assert len({s["section_id"] for s in sections}) == len(sections)
 
     def test_unrecognised_markup_yields_no_sections(self):

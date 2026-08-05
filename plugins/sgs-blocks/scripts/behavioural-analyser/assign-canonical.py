@@ -556,14 +556,50 @@ def refresh_stale_suffix_roles(
     revisits (`canonical_slot` already populated, so they never match its
     `WHERE canonical_slot IS NULL` scope).
 
+    Covers TWO shapes of the same problem, both invisible to the main loop for
+    the same reason (`canonical_slot` already set):
+      1. HEAL — `role` is populated but stale against the CURRENT
+         `property_suffixes` table (the original 2026-08-01 case).
+      2. REVIVE — `role` is NULL (2026-08-05, D497 follow-up). Proven root
+         cause: a row whose `canonical_slot` survived a role-clearing
+         operation (e.g. clearing hand overrides for reseed) was invisible to
+         BOTH this healer's old `role IS NOT NULL` scope AND the main loop's
+         `canonical_slot IS NULL` scope, so it reached
+         `apply_role_detection_inline()` still NULL. That function's own
+         name-regex/structural tiers rarely match a bare CSS-family suffix
+         (e.g. `Size`, `Colour`), so the row fell through to TIER 3 (the
+         generic `styling` backstop, `role IS NULL AND css_property IS NOT
+         NULL`), which claims ANY still-NULL row with a css_property before a
+         suffix-derived family role (`typography`/`color`/`visual`/`layout`)
+         ever gets a chance to re-assert itself. Measured 2026-08-05: clearing
+         172 override-adjacent rows and reseeding degraded 53 to `styling` and
+         left 18 NULL. Revive runs the SAME suffix peel this healer already
+         does for case 1, just without requiring a pre-existing role — the
+         `resolve_role_with_healing(existing_role=None, ...)` branch already
+         handles that correctly (first-fill: "no existing role -> use the
+         freshly computed role"), so no new decision logic is needed, only a
+         wider `WHERE`.
+
+    Ordering this runs BEFORE `apply_role_detection_inline()` is what makes
+    REVIVE work: by the time TIER 3's styling backstop runs, a row this pass
+    could resolve is no longer NULL, so TIER 3 never sees it. A row this pass
+    canNOT resolve (no property-suffix match — e.g. a genuine content attr
+    like an image/alt companion) is left NULL exactly as before, so TIER 0A /
+    the structural tier / the name regex / TIER 3 downstream all still get
+    their normal first look at it. TIER 3.6's boolean sweep runs LAST and
+    re-reads the DB by `roles.classification` rather than by write source, so
+    it still catches a boolean this pass might mis-fill with a content-bearing
+    suffix role (none exist in `property_suffixes` today, but the sweep is the
+    backstop either way).
+
     Only the `role` column is written here — `canonical_slot` and
     `derived_selector` are left completely untouched for every row this pass
     considers, so this cannot regress slot/selector resolution for any
-    attribute; it is scoped purely to healing role drift against the CURRENT
+    attribute; it is scoped purely to (re)deriving role from the CURRENT
     `property_suffixes` table via `resolve_role_with_healing`'s graduation
     guard (content-bearing roles and curated overrides are never touched).
 
-    Universal (R-31-9): iterates every row with a populated role, no
+    Universal (R-31-9): iterates every row `canonical_slot` already covers, no
     block/attr/suffix name appears in this function.
     """
     content_bearing_roles = load_content_bearing_roles(conn)
@@ -573,17 +609,18 @@ def refresh_stale_suffix_roles(
     cur.execute(
         "SELECT id, block_slug, attr_name, role "
         "FROM block_attributes "
-        "WHERE canonical_slot IS NOT NULL AND role IS NOT NULL"
+        "WHERE canonical_slot IS NOT NULL"
     )
     rows = cur.fetchall()
 
     healed = 0
+    revived = 0
     role_updates: list[tuple[str, int]] = []
     for row in rows:
         row_id: int = row["id"]
         block_slug: str = row["block_slug"]
         attr_name: str = row["attr_name"]
-        existing_role: str = row["role"]
+        existing_role: Optional[str] = row["role"]
 
         stem, prop_suffix, prop_info, modifiers = decompose_attr_name(
             attr_name, property_suffixes, modifier_map
@@ -601,7 +638,10 @@ def refresh_stale_suffix_roles(
         )
         if final_role != existing_role:
             role_updates.append((final_role, row_id))
-            healed += 1
+            if existing_role is None:
+                revived += 1
+            else:
+                healed += 1
 
     if role_updates:
         conn.executemany(
@@ -609,7 +649,7 @@ def refresh_stale_suffix_roles(
         )
         conn.commit()
 
-    return {"considered": len(rows), "healed": healed}
+    return {"considered": len(rows), "healed": healed, "revived": revived}
 
 
 # ---------------------------------------------------------------------------
@@ -805,7 +845,7 @@ def run() -> None:
     _healing = refresh_stale_suffix_roles(conn, property_suffixes, modifier_map)
     print(
         f"[role-healing] rows considered={_healing['considered']} "
-        f"healed={_healing['healed']}"
+        f"healed={_healing['healed']} revived={_healing['revived']}"
     )
 
     # ------------------------------------------------------------------
@@ -3075,6 +3115,139 @@ def _self_test_boolean_sweep() -> int:
     return 0
 
 
+def _self_test_suffix_role_revive() -> int:
+    """Prove the `refresh_stale_suffix_roles` REVIVE path (D497 follow-up, 2026-08-05)
+    can FAIL, on a throwaway in-memory DB. Drives the PRODUCTION function directly --
+    not a re-implementation of its query -- following the pattern
+    `_sweep_boolean_content_roles`/`_self_test_boolean_sweep` established, because the
+    older re-implementing self-tests in this file cannot catch production/test drift.
+
+    THE DEFECT THIS GUARDS: a row whose `canonical_slot` survives a role-clearing
+    operation (e.g. clearing a hand override for reseed) is invisible to the main
+    `run()` loop (`WHERE canonical_slot IS NULL`) AND, before this fix, invisible to
+    this healer too (`WHERE role IS NOT NULL`). It reaches
+    `apply_role_detection_inline()` still NULL, and TIER 3 (the generic `styling`
+    backstop) claims ANY still-NULL row with a `css_property` before a suffix-derived
+    family role ever gets a chance. Measured live: 53 rows degraded to `styling`, 18
+    left NULL, across 172 cleared override-adjacent rows.
+
+    Five planted rows, each one a way the fix could be wrong:
+      1. role=NULL, canonical_slot SET, suffix resolves to a SPECIFIC family role
+         -> MUST be revived to that role (the exact degrading shape above).
+      2. role=NULL, canonical_slot SET, attr name has NO property-suffix match
+         -> MUST stay NULL. Proves revive does not overreach into rows a LATER
+         tier (TIER 0A / structural / name-regex / TIER 3) is meant to resolve --
+         if this negative control breaks, revive has started guessing.
+      3. role already POPULATED and content-bearing (graduated)
+         -> MUST be preserved untouched, regardless of what the suffix peel would
+         compute. Proves revive cannot regress the pre-existing HEAL/PRESERVE
+         behaviour for rows that already carry a role.
+      4. role already POPULATED, stale, non-graduated, suffix disagrees
+         -> MUST be healed to the current suffix role (the ORIGINAL 2026-08-01
+         behaviour). Proves the widened WHERE clause did not break the existing
+         HEAL path for already-populated rows.
+      5. canonical_slot IS NULL (main-loop territory)
+         -> MUST NOT be considered at all by this pass, role stays exactly as
+         planted. Proves the pass still respects the `canonical_slot IS NOT NULL`
+         boundary that keeps it from colliding with `run()`'s own loop.
+
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.row_factory = _sq.Row
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, attr_type TEXT, role TEXT, canonical_slot TEXT)"
+    )
+    conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
+    conn.executemany(
+        "INSERT INTO roles (role_name, classification) VALUES (?,?)",
+        [("text-content", "content-bearing"), ("typography", "styling-behaviour"),
+         ("color", "styling-behaviour"), ("styling", "styling-behaviour")],
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes "
+        "(id, block_slug, attr_name, attr_type, role, canonical_slot) VALUES (?,?,?,?,?,?)",
+        [
+            # 1. the degrading shape: NULL role, canonical_slot survives, suffix
+            #    resolves to a specific family role -- must be REVIVED, not left for
+            #    TIER 3's generic 'styling' backstop.
+            (1, "sgs/plant", "ratingSize", "number", None, "rating"),
+            # 2. NULL role, canonical_slot survives, no suffix match -- must stay
+            #    NULL for a later tier to resolve.
+            (2, "sgs/plant", "logoAlt", "string", None, "logo"),
+            # 3. already-populated content-bearing role -- must be preserved
+            #    untouched even though its own suffix ("Size") would compute
+            #    'typography' if this guard were missing.
+            (3, "sgs/plant", "ratingTextSize", "string", "text-content", "rating"),
+            # 4. already-populated, stale, non-graduated role -- original HEAL
+            #    behaviour must still fire.
+            (4, "sgs/plant", "borderColour", "string", "typography", "border"),
+            # 5. canonical_slot NULL -- outside this pass's scope entirely.
+            (5, "sgs/plant", "unprocessedRatingSize", "number", None, None),
+        ],
+    )
+    conn.commit()
+
+    property_suffixes = {
+        "Size": {"role": "typography", "css_property": "font-size"},
+        "Colour": {"role": "color", "css_property": "color"},
+    }
+    modifier_map: dict[str, str] = {}
+
+    # Drives the PRODUCTION function, not a copy of its query.
+    result = refresh_stale_suffix_roles(conn, property_suffixes, modifier_map)
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if result.get("revived", 0) == 0:
+        failures.append("revived count is ZERO against a planted revivable row -- the "
+                        "REVIVE path cannot fire, so it proves nothing")
+    if got.get("ratingSize") != "typography":
+        failures.append(
+            f"ratingSize -> {got.get('ratingSize')!r}, expected 'typography': a "
+            "suffix-derived family role on a NULL-role row with a surviving "
+            "canonical_slot was not revived. This is the exact shape TIER 3 would "
+            "otherwise degrade to the generic 'styling' backstop."
+        )
+    if got.get("logoAlt") is not None:
+        failures.append(
+            f"logoAlt -> {got.get('logoAlt')!r}, expected None: revive claimed a row "
+            "with no property-suffix match. That row belongs to a LATER tier "
+            "(TIER 0A / structural / name-regex / TIER 3) -- revive has overreached."
+        )
+    if got.get("ratingTextSize") != "text-content":
+        failures.append(
+            f"ratingTextSize -> {got.get('ratingTextSize')!r}, expected 'text-content': "
+            "a graduated content-bearing role was overwritten by the suffix peel."
+        )
+    if got.get("borderColour") != "color":
+        failures.append(
+            f"borderColour -> {got.get('borderColour')!r}, expected 'color': the "
+            "original 2026-08-01 HEAL behaviour (stale, non-graduated role healed "
+            "against the current suffix table) regressed."
+        )
+    if got.get("unprocessedRatingSize") is not None:
+        failures.append(
+            f"unprocessedRatingSize -> {got.get('unprocessedRatingSize')!r}, expected "
+            "None: a row with canonical_slot IS NULL was considered by this pass -- "
+            "it collides with run()'s own loop scope."
+        )
+    conn.close()
+
+    if failures:
+        print(f"SUFFIX-ROLE-REVIVE SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(
+        f"SUFFIX-ROLE-REVIVE SELF-TEST PASSED -- considered={result['considered']} "
+        f"healed={result['healed']} revived={result['revived']}, 5 checks green."
+    )
+    return 0
+
+
 def _self_test_role_detection() -> int:
     """Synthetic test cases covering the heuristic families. Returns exit code
     (0 = pass, 1 = fail). Called by `--self-test` CLI flag."""
@@ -3145,5 +3318,5 @@ if __name__ == "__main__":
         sys.exit(_self_test_role_detection() or _self_test_styling_backstop()
                  or _self_test_technical_veto() or _self_test_unit_inheritance()
                  or _self_test_enum_backstop() or _self_test_companion_tier()
-                 or _self_test_boolean_sweep())
+                 or _self_test_boolean_sweep() or _self_test_suffix_role_revive())
     main()

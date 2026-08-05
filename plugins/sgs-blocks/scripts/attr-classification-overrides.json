@@ -657,9 +657,7 @@
       "slug": "sgs/testimonial",
       "attr": "ratingSize",
       "fields": {
-        "derived_selector": ".sgs-testimonial__rating",
-        "role": "select-from-enum",
-        "_note": "2026-08-05: role RESTORED after an empirical clear-and-reseed test proved it is NOT redundant. The `Size` property suffix does derive 'select-from-enum' in isolation, but this row also carries a css_property, so once the role is cleared the generic TIER-3 styling backstop claims it first and the specific role is LOST (measured: select-from-enum -> styling). Same degradation that hit 53 rows when the CSS-family role fields were stripped wholesale. RETIREMENT CONDITION: retire this entry only when a suffix-derived role is written BEFORE the styling backstop runs, verified by clearing this row and reseeding -- never by a decompose_attr_name probe, which measures the mechanism in isolation and not what the pipeline actually writes."
+        "derived_selector": ".sgs-testimonial__rating"
       }
     },
     {
