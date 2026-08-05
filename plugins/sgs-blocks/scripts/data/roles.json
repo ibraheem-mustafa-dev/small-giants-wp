@@ -26,7 +26,12 @@
   "colour-gradient": [
     "styling-behaviour",
     "Marks a background-image gradient/url attr (property_suffixes suffix='Gradient', css_property='background-image'). Consumer: _kind_for() (converter/db/db_lookup.py:1962-1963) resolves it to CSS kind 'string' (a raw `url(...)`/gradient() value); converter/resolvers/outer_box.py:51-57 resolves the block's own Gradient-suffix attr when a background-image declaration needs a destination.",
-    {"excludes_attr_types": ["boolean"], "excludes_reason": "The contract's value IS the raw url()/gradient() string -- a boolean cannot hold it. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/container|cta-section|hero|trust-bar.overlayGradient is a plain ON/OFF toggle (its sibling overlayGradientFrom/To strings carry the actual colour-gradient value) -- the role belonged on the siblings, not the toggle. See assign-canonical.py TIER 3.7."}
+    {
+      "excludes_attr_types": [
+        "boolean"
+      ],
+      "excludes_reason": "The contract's value IS the raw url()/gradient() string -- a boolean cannot hold it. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/container|cta-section|hero|trust-bar.overlayGradient is a plain ON/OFF toggle (its sibling overlayGradientFrom/To strings carry the actual colour-gradient value) -- the role belonged on the siblings, not the toggle. See assign-canonical.py TIER 3.7."
+    }
   ],
   "colour-text": [
     "styling-behaviour",
@@ -39,23 +44,28 @@
   "enum-class-probe": [
     "styling-behaviour",
     "A BEM `--modifier` class carries this attr's value (a variant/style selector expressed only as a modifier suffix on the draft element, never as a CSS declaration). Consumer: converter/db/db_lookup.py:4889-4896 scans a block's attrs for role IN (select-from-enum, enum-class-probe, behaviour) whose derived_selector or canonical_slot ends with `--<modifier>`, then matches it against the draft's actual BEM modifier class.",
-    {"excludes_attr_types": ["boolean"], "excludes_reason": "The matched consumer (db_lookup.py:4916) writes the LITERAL MODIFIER STRING into the attr (`result[attr_name] = modifier`) -- a string value, unconditionally. A boolean attr fed that string is a type-shape mismatch (WP coerces an out-of-schema value to the attr's default, per feedback_blockjson_enum_coerces_invalid_to_default). Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/business-info|notice-banner.showIcon, sgs/cart.hideOnCartCheckoutPages -- plain editor toggles with no BEM-modifier signal at all (derived_selector/canonical_slot both NULL). See assign-canonical.py TIER 3.7."}
+    {
+      "excludes_attr_types": [
+        "boolean"
+      ],
+      "excludes_reason": "The matched consumer (db_lookup.py:4916) writes the LITERAL MODIFIER STRING into the attr (`result[attr_name] = modifier`) -- a string value, unconditionally. A boolean attr fed that string is a type-shape mismatch (WP coerces an out-of-schema value to the attr's default, per feedback_blockjson_enum_coerces_invalid_to_default). Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/business-info|notice-banner.showIcon, sgs/cart.hideOnCartCheckoutPages -- plain editor toggles with no BEM-modifier signal at all (derived_selector/canonical_slot both NULL). See assign-canonical.py TIER 3.7."
+    }
   ],
   "icon-dashicon": [
     "content-bearing",
-    "Icon-source value: a Dashicons name (e.g. sgs/icon.dashiconName). NO consumer in the converter: icon resolution (converter/services/field_extractors.py:201-213) walks a fixed priority chain -- data-icon/data-lucide attribute, then inline <svg> via icon_resolver, then BEM modifier -- and never reads block_attributes.role to choose which of sgs/icon's 4 icon-source attrs (dashiconName/emojiChar/iconName/wpIconName) to populate; the role rows were added by a one-off migration (db_lookup.py:112-115) whose consumer was never built. A role nothing reads: a genuine finding, shared with icon-emoji/icon-lucide/icon-wp-icon below."
+    "Icon-source value: a Dashicons name (e.g. sgs/icon.dashiconName). CONSUMER (corrected 2026-08-05 — the previous text claimed 'NO consumer in the converter' for all four icon-* roles and that was WRONG): converter/services/extraction.py:1110-1116 builds `icon_source_attrs` from EVERY attr whose role starts with 'icon-', then `icon_source_attrs.get('icon-' + kind)` binds the kind resolved by resolve_icon_kind() (field_extractors.py:100-142) to its target attr. Shipped at D263 (2026-07-03), live-verified on page 8. WHY THE OLD CLAIM LOOKED TRUE: it cited field_extractors.py:201-213, the icon-resolver's fixed priority chain, which genuinely never branches on the role — but that is not the consumer. A file-scoped read of one function concluded absence for the whole codebase. PROVEN BY EXPERIMENT 2026-08-05: acting on that claim, the icon-lucide/icon-dashicon/icon-wp-icon declarations were retired so the Tier-1 name regex claimed those attrs as 'identity'; that dropped them out of this dispatch and broke test_icon_leaf_lifts_lucide_slug / _dashicon_by_kind / _wp_icon_by_kind. Restoring the three roles turned '3 failed, 3 passed' into '6 passed' with no other change. ⛔ DO NOT retire an icon-* role without first running `pytest scripts/converter/tests/test_extraction.py -k icon`."
   ],
   "icon-emoji": [
     "content-bearing",
-    "Icon-source value: a bare emoji glyph (e.g. sgs/icon.emojiChar). NO consumer in the converter -- see the icon-dashicon entry for the shared root cause (converter/services/field_extractors.py:201-213 never branches on this role)."
+    "Icon-source value: a bare emoji glyph (e.g. sgs/icon.emojiChar), matched by resolve_icon_kind()'s `_is_bare_emoji` step (<=8 chars, all-emoji codepoints) against the recognised icon node's own text. CONSUMER (corrected 2026-08-05 — the previous text claimed 'NO consumer in the converter' for all four icon-* roles and that was WRONG): converter/services/extraction.py:1110-1116 builds `icon_source_attrs` from EVERY attr whose role starts with 'icon-', then `icon_source_attrs.get('icon-' + kind)` binds the kind resolved by resolve_icon_kind() (field_extractors.py:100-142) to its target attr. Shipped at D263 (2026-07-03), live-verified on page 8. WHY THE OLD CLAIM LOOKED TRUE: it cited field_extractors.py:201-213, the icon-resolver's fixed priority chain, which genuinely never branches on the role — but that is not the consumer. A file-scoped read of one function concluded absence for the whole codebase. PROVEN BY EXPERIMENT 2026-08-05: acting on that claim, the icon-lucide/icon-dashicon/icon-wp-icon declarations were retired so the Tier-1 name regex claimed those attrs as 'identity'; that dropped them out of this dispatch and broke test_icon_leaf_lifts_lucide_slug / _dashicon_by_kind / _wp_icon_by_kind. Restoring the three roles turned '3 failed, 3 passed' into '6 passed' with no other change. ⛔ DO NOT retire an icon-* role without first running `pytest scripts/converter/tests/test_extraction.py -k icon`."
   ],
   "icon-lucide": [
     "content-bearing",
-    "Icon-source value: a Lucide slug (e.g. sgs/icon.iconName). NO consumer in the converter -- see the icon-dashicon entry for the shared root cause (converter/services/field_extractors.py:201-213 never branches on this role); the icon-resolver's fingerprint-match path (services/icon_resolver.py) also never reads block_attributes.role."
+    "Icon-source value: a Lucide slug (e.g. sgs/icon.iconName), resolved from data-lucide/data-icon or an inline <svg> fingerprint. CONSUMER (corrected 2026-08-05 — the previous text claimed 'NO consumer in the converter' for all four icon-* roles and that was WRONG): converter/services/extraction.py:1110-1116 builds `icon_source_attrs` from EVERY attr whose role starts with 'icon-', then `icon_source_attrs.get('icon-' + kind)` binds the kind resolved by resolve_icon_kind() (field_extractors.py:100-142) to its target attr. Shipped at D263 (2026-07-03), live-verified on page 8. WHY THE OLD CLAIM LOOKED TRUE: it cited field_extractors.py:201-213, the icon-resolver's fixed priority chain, which genuinely never branches on the role — but that is not the consumer. A file-scoped read of one function concluded absence for the whole codebase. PROVEN BY EXPERIMENT 2026-08-05: acting on that claim, the icon-lucide/icon-dashicon/icon-wp-icon declarations were retired so the Tier-1 name regex claimed those attrs as 'identity'; that dropped them out of this dispatch and broke test_icon_leaf_lifts_lucide_slug / _dashicon_by_kind / _wp_icon_by_kind. Restoring the three roles turned '3 failed, 3 passed' into '6 passed' with no other change. ⛔ DO NOT retire an icon-* role without first running `pytest scripts/converter/tests/test_extraction.py -k icon`."
   ],
   "icon-wp-icon": [
     "content-bearing",
-    "Icon-source value: a @wordpress/icons name (e.g. sgs/icon.wpIconName). NO consumer in the converter -- see the icon-dashicon entry for the shared root cause (converter/services/field_extractors.py:201-213 never branches on this role)."
+    "Icon-source value: a @wordpress/icons name (e.g. sgs/icon.wpIconName). CONSUMER (corrected 2026-08-05 — the previous text claimed 'NO consumer in the converter' for all four icon-* roles and that was WRONG): converter/services/extraction.py:1110-1116 builds `icon_source_attrs` from EVERY attr whose role starts with 'icon-', then `icon_source_attrs.get('icon-' + kind)` binds the kind resolved by resolve_icon_kind() (field_extractors.py:100-142) to its target attr. Shipped at D263 (2026-07-03), live-verified on page 8. WHY THE OLD CLAIM LOOKED TRUE: it cited field_extractors.py:201-213, the icon-resolver's fixed priority chain, which genuinely never branches on the role — but that is not the consumer. A file-scoped read of one function concluded absence for the whole codebase. PROVEN BY EXPERIMENT 2026-08-05: acting on that claim, the icon-lucide/icon-dashicon/icon-wp-icon declarations were retired so the Tier-1 name regex claimed those attrs as 'identity'; that dropped them out of this dispatch and broke test_icon_leaf_lifts_lucide_slug / _dashicon_by_kind / _wp_icon_by_kind. Restoring the three roles turned '3 failed, 3 passed' into '6 passed' with no other change. ⛔ DO NOT retire an icon-* role without first running `pytest scripts/converter/tests/test_extraction.py -k icon`."
   ],
   "identity": [
     "content-bearing",
@@ -88,7 +98,12 @@
   "number-css-px": [
     "styling-behaviour",
     "A numeric CSS value whose native unit is px. Consumer: grouped into the shared px-unit CSS-kind inference at _kind_for() (converter/db/db_lookup.py:1955-1957).",
-    {"excludes_attr_types": ["boolean"], "excludes_reason": "'Numeric value whose native unit is px' cannot be a two-state boolean. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/mega-panel.bgBlur is a plain ON/OFF blur toggle, css_property NULL -- no px value exists on the attr at all. See assign-canonical.py TIER 3.7."}
+    {
+      "excludes_attr_types": [
+        "boolean"
+      ],
+      "excludes_reason": "'Numeric value whose native unit is px' cannot be a two-state boolean. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/mega-panel.bgBlur is a plain ON/OFF blur toggle, css_property NULL -- no px value exists on the attr at all. See assign-canonical.py TIER 3.7."
+    }
   ],
   "position": [
     "styling-behaviour",
@@ -109,7 +124,12 @@
   "select-from-enum": [
     "styling-behaviour",
     "A string CSS value chosen from a fixed enum (e.g. font-style: italic/normal). Consumer: _kind_for() (converter/db/db_lookup.py:1964-1965) resolves it to CSS kind 'string'; also grouped into the BEM-modifier probe at db_lookup.py:4889-4896 alongside enum-class-probe/behaviour.",
-    {"excludes_attr_types": ["boolean"], "excludes_reason": "The contract promises 'a string CSS value chosen from a fixed enum' -- both wired consumers (_kind_for's CSS-kind resolution, the BEM-modifier probe's literal-string write) expect a string/number VALUE, never a two-state flag. Numeric enums (e.g. font-weight steps) are a legitimate CSS value shape and stay admitted -- only boolean is excluded. Found live 2026-08-05 (D497 follow-up, TIER 3.7): 9 boolean rows -- sgs/countdown-timer.evergreenMode (plain mode toggle, no css_property, no draft signal -> 'boolean-visibility') and 8 image-effect toggles across card-grid/gallery/info-box/post-grid/team-member (imageZoomHover/grayscaleHover, css_property='transform'/'filter' legitimately set for INPUT-side routing -- the css_property lets the converter match a draft's filter:grayscale()/transform declaration onto the toggle, but the toggle's OWN value is never itself that CSS value; the actual value is hardcoded in the block's preset stylesheet -> new role 'css-gate', not 'boolean-visibility', because 'boolean-visibility' promises NO CSS signal exists and that would be false for these rows). See assign-canonical.py TIER 3.7 and the 'css-gate' role entry below."}
+    {
+      "excludes_attr_types": [
+        "boolean"
+      ],
+      "excludes_reason": "The contract promises 'a string CSS value chosen from a fixed enum' -- both wired consumers (_kind_for's CSS-kind resolution, the BEM-modifier probe's literal-string write) expect a string/number VALUE, never a two-state flag. Numeric enums (e.g. font-weight steps) are a legitimate CSS value shape and stay admitted -- only boolean is excluded. Found live 2026-08-05 (D497 follow-up, TIER 3.7): 9 boolean rows -- sgs/countdown-timer.evergreenMode (plain mode toggle, no css_property, no draft signal -> 'boolean-visibility') and 8 image-effect toggles across card-grid/gallery/info-box/post-grid/team-member (imageZoomHover/grayscaleHover, css_property='transform'/'filter' legitimately set for INPUT-side routing -- the css_property lets the converter match a draft's filter:grayscale()/transform declaration onto the toggle, but the toggle's OWN value is never itself that CSS value; the actual value is hardcoded in the block's preset stylesheet -> new role 'css-gate', not 'boolean-visibility', because 'boolean-visibility' promises NO CSS signal exists and that would be false for these rows). See assign-canonical.py TIER 3.7 and the 'css-gate' role entry below."
+    }
   ],
   "spacing-token": [
     "styling-behaviour",
@@ -126,7 +146,12 @@
   "tag-identity": [
     "styling-behaviour",
     "The attr stores the source element's HTML tag (sgs/heading.level, sgs/media.mediaType). R-31-2 shape fact written by assembly step 3a2 (converter/services/assembly.py:160), gated on enum membership and read back via converter/db/db_lookup.py:1110-1125. Structural identity, never content-walked (classified styling-behaviour on purpose).",
-    {"excludes_attr_types": ["boolean"], "excludes_reason": "An HTML tag name (h1..h6, div, span...) is inherently a string/enum value -- a boolean cannot store it. Zero live rows carry this pairing today (verified 2026-08-05, D497 follow-up, TIER 3.7); recorded pre-emptively from the contract text alone, same reasoning class as select-from-enum/colour-gradient/enum-class-probe/number-css-px above, so a future writer that DID map a boolean here would be caught rather than silently accepted."}
+    {
+      "excludes_attr_types": [
+        "boolean"
+      ],
+      "excludes_reason": "An HTML tag name (h1..h6, div, span...) is inherently a string/enum value -- a boolean cannot store it. Zero live rows carry this pairing today (verified 2026-08-05, D497 follow-up, TIER 3.7); recorded pre-emptively from the contract text alone, same reasoning class as select-from-enum/colour-gradient/enum-class-probe/number-css-px above, so a future writer that DID map a boolean here would be caught rather than silently accepted."
+    }
   ],
   "technical": [
     "styling-behaviour",

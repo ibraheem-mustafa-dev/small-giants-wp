@@ -91,8 +91,15 @@ def test_generic_wrapper_dissolve_preserves_content():
     from tests.test_converter_conformance import _reproduce_golden_result
 
     markup = _reproduce_golden_result("sgs-tab").get("block_markup", "")
-    # __inner dissolved → its max-width folded up to the tab's contentWidth …
-    assert "sgs/tab" in markup and "contentWidth" in markup
+    # The ROOT identity: `sgs/tab` is blocks.tier='block', not 'class-section', so the
+    # FR-31-16 section-root capability gate (recognition.py:239-247, commit `2b5a6b64`)
+    # dissolves it to sgs/container — Bean ruled that dissolve CORRECT in the gate commit.
+    # This test predates the gate; what it actually guards is the CONTENT surviving the
+    # dissolve, asserted separately below. Split from a composite assert 2026-08-05 so a
+    # failure names which condition broke instead of hiding three behind one `and`.
+    assert "sgs/container" in markup, "the tab root did not dissolve to a container"
+    # __inner dissolved → its max-width folded up to the root's contentWidth …
+    assert "contentWidth" in markup, "the __inner max-width fold-up was lost"
     # … and its __content <p> survived as a sgs/text child (was silently dropped).
     assert "wp:sgs/text" in markup, "the tab body text child was dropped (not dissolved)"
     assert "individual tab panel" in markup, "the tab body TEXT itself was dropped"
