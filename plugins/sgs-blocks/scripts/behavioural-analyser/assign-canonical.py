@@ -1516,10 +1516,11 @@ def run_role_detection_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
     }
 
 
-def _structural_role_map() -> tuple[dict, str | None]:
+def _structural_role_map() -> tuple[dict, str | None, set]:
     """Structural content-role proposals, computed ONCE per reseed.
 
-    Track A / Spec 35 (2026-08-04). Returns ({(block_slug, attr_name): role}, error).
+    Track A / Spec 35 (2026-08-04). Returns
+    ({(block_slug, attr_name): role}, error, {(block_slug, attr_name) vetoed by D1}).
 
     This is the FR-31-2.1a replacement for name-guessing. Roles come from what the
     block's own source actually DOES with a value -- which escaping function receives it
@@ -1540,23 +1541,35 @@ def _structural_role_map() -> tuple[dict, str | None]:
     detect_dir = Path(__file__).resolve().parent.parent / "content-role-detect"
     module_path = detect_dir / "fingerprint_content_roles.py"
     if not module_path.is_file():
-        return {}, f"fingerprint module missing at {module_path}"
+        return {}, f"fingerprint module missing at {module_path}", set()
 
     try:
         import importlib.util
 
         spec = importlib.util.spec_from_file_location("sgs_fingerprint", module_path)
         if spec is None or spec.loader is None:
-            return {}, f"could not load a module spec from {module_path}"
+            return {}, f"could not load a module spec from {module_path}", set()
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         result = mod.compute()
     except Exception as exc:  # noqa: BLE001 - surfaced to the caller, never swallowed
-        return {}, f"{type(exc).__name__}: {exc}"
+        return {}, f"{type(exc).__name__}: {exc}", set()
 
+    # Two maps, deliberately kept apart.
+    #
+    # `assignments` are POSITIVE content verdicts -- D1/D3 saw the value reach visible
+    # output. `vetoed` is the opposite evidence of equal quality: D1 walked EVERY usage
+    # site and found none content-bearing (verdicts are all NOT-content / value-fragment).
+    # A veto is a measurement, not an absence, so it earns the 'technical' role rather
+    # than a bare NULL -- see that role's entry in data/roles.json.
+    #
+    # Rows NO detector reached are in neither map and stay NULL. "Unreached" and "proven
+    # technical" are different facts; collapsing them would rebuild the very ambiguity
+    # these roles were added to remove.
     return (
         {(a["block_slug"], a["attr_name"]): a["role"] for a in result["assignments"]},
         None,
+        {(v["block_slug"], v["attr_name"]) for v in result.get("vetoed", [])},
     )
 
 
@@ -1592,7 +1605,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # A measured fact about what the block DOES with a value always beats a guess from
     # how the value is spelled. This demotes _ATTR_NAME_RULES to a fallback, which is the
     # first step toward deleting it (FR-31-2.1a).
-    structural, structural_error = _structural_role_map()
+    structural, structural_error, d1_vetoed = _structural_role_map()
     if structural_error:
         print(
             "\n!! STRUCTURAL ROLE TIER DID NOT RUN -- falling back to the name regex.\n"
@@ -1638,6 +1651,34 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
                     "UPDATE block_attributes SET role = ? WHERE id = ?", (proposed, row_id)
                 )
                 upgraded += 1
+    # TIER 2.5 -- TECHNICAL, from a Detector-1 VETO (2026-08-05, Bean). Runs BEFORE the
+    # styling backstop and AFTER every content tier, so a content verdict wins over it and
+    # a css_property wins over it (a row with both a veto and a css_property is styling --
+    # the veto only says "not content", and css_property says positively what it IS).
+    #
+    # A veto is EVIDENCE, not an absence: D1 walked every usage site of the attribute in
+    # render.php and the shared includes/ tree and found none content-bearing -- the value
+    # feeds a form `name=`, an element id, an `aria-describedby`, a link `rel`, a taxonomy
+    # key. That is a measurement of what the value does. Leaving it NULL threw away a fact
+    # we had already established, and made 17 settled rows read identically to rows nobody
+    # had looked at.
+    #
+    # DELIBERATELY NARROW: rows no detector reached are NOT given this role. They stay
+    # NULL. "Unreached" and "proven technical" are different facts, and a role that
+    # conflated them would rebuild the ambiguity this role exists to remove -- the same
+    # reason `styling` is gated on css_property rather than on "not obviously content".
+    technical_filled = 0
+    if d1_vetoed:
+        for row_id, block_slug, attr_name in conn.execute(
+            "SELECT id, block_slug, attr_name FROM block_attributes "
+            "WHERE role IS NULL AND css_property IS NULL"
+        ).fetchall():
+            if (block_slug, attr_name) in d1_vetoed:
+                cur.execute(
+                    "UPDATE block_attributes SET role = 'technical' WHERE id = ?", (row_id,)
+                )
+                technical_filled += 1
+
     # TIER 3 -- GENERIC STYLING BACKSTOP (2026-08-05, Bean). Deliberately a SEPARATE pass
     # AFTER the loop above, not another branch inside it: that makes "never pre-empts a
     # content verdict" structural rather than a promise about branch ordering. Every row
@@ -1686,6 +1727,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         "filled": filled,
         "upgraded": upgraded,
         "structural_filled": structural_filled,
+        "technical_filled": technical_filled,
         "styling_filled": styling_filled,
         # Present and TRUE when the structural tier failed. Callers/logs must show this:
         # a degraded run that silently reverts to name-guessing is indistinguishable from
@@ -2026,6 +2068,78 @@ def main() -> None:
         conn.close()
 
 
+def _self_test_technical_veto() -> int:
+    """Prove the TIER 2.5 technical-from-veto pass can FAIL, on a throwaway in-memory DB.
+
+    The role's whole justification is that it is assigned from EVIDENCE (a D1 veto) and
+    never from absence. These checks pin exactly that, because the tempting loosening --
+    "anything left over is technical" -- would silently relabel every unreached row and
+    destroy the distinction the role was added to create.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, css_property) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "vetoedKey", None, None),        # vetoed -> technical
+            (2, "sgs/plant", "unreachedKey", None, None),      # NOT vetoed -> stays NULL
+            (3, "sgs/plant", "vetoedButStyled", None, "gap"),  # css_property wins
+            (4, "sgs/plant", "vetoedButContent", "text-content", None),  # content wins
+        ],
+    )
+    conn.commit()
+    d1_vetoed = {("sgs/plant", "vetoedKey"), ("sgs/plant", "vetoedButStyled"),
+                 ("sgs/plant", "vetoedButContent")}
+
+    cur = conn.cursor()
+    filled = 0
+    for row_id, slug, attr in conn.execute(
+        "SELECT id, block_slug, attr_name FROM block_attributes "
+        "WHERE role IS NULL AND css_property IS NULL"
+    ).fetchall():
+        if (slug, attr) in d1_vetoed:
+            cur.execute("UPDATE block_attributes SET role = 'technical' WHERE id = ?", (row_id,))
+            filled += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if filled == 0:
+        failures.append("claimed ZERO rows against a planted veto set -- cannot fail, proves nothing")
+    if got.get("vetoedKey") != "technical":
+        failures.append(f"vetoedKey -> {got.get('vetoedKey')!r}, expected 'technical'")
+    if got.get("unreachedKey") is not None:
+        failures.append(
+            f"unreachedKey -> {got.get('unreachedKey')!r}: a row NO detector reached was "
+            "claimed. 'Unreached' is not 'proven technical' -- collapsing them rebuilds "
+            "the ambiguity this role removes."
+        )
+    if got.get("vetoedButStyled") is not None:
+        failures.append(
+            f"vetoedButStyled -> {got.get('vetoedButStyled')!r}: a row with a css_property "
+            "was claimed as technical. A veto says only 'not content'; css_property says "
+            "positively what it IS, and must win."
+        )
+    if got.get("vetoedButContent") != "text-content":
+        failures.append(
+            f"vetoedButContent -> {got.get('vetoedButContent')!r}: an existing content role "
+            "was overwritten. Content tiers run first and are final."
+        )
+    conn.close()
+    if failures:
+        print(f"TECHNICAL-VETO SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"TECHNICAL-VETO SELF-TEST PASSED -- {filled} rows claimed, 5 checks green.")
+    return 0
+
+
 def _self_test_styling_backstop() -> int:
     """Prove the TIER 3 generic-styling backstop can FAIL, on a throwaway in-memory DB.
 
@@ -2182,5 +2296,6 @@ if __name__ == "__main__":
     # Lightweight self-test entry — `--self-test` runs synthetic role-detection
     # tests without touching the DB. Other args fall through to main().
     if len(sys.argv) >= 2 and sys.argv[1] == "--self-test":
-        sys.exit(_self_test_role_detection() or _self_test_styling_backstop())
+        sys.exit(_self_test_role_detection() or _self_test_styling_backstop()
+                 or _self_test_technical_veto())
     main()
