@@ -103,17 +103,38 @@ def _classify_esc_attr_core(before: str, after: str, stmt: str, key: str) -> str
     # fallback windows make some of those rows reachable, so the pattern
     # must not over-claim them as a11y-metadata (e.g.
     # sgs/form-field-address's aria-describedby, built from `fieldName`).
+    # SPLIT 2026-08-05 (Bean challenged the lumping; mirrors the PHP-side
+    # split in detector1_render_escaping.php's classify_call()). `alt` and
+    # `placeholder` were classified 'a11y-metadata' alongside aria-label/
+    # title. That routes them to the a11y-text role, classification
+    # styling-behaviour — EXCLUDED from the converter's content walk. Both
+    # are wrong there:
+    #   * alt         — a client AUTHORS alt text and edits it; it must
+    #                    transfer from a draft.
+    #   * placeholder — D482 ruled explicitly "a placeholder is content" and
+    #                    reclassified 13 rows from 'behaviour' to content on
+    #                    exactly that basis.
+    # aria-label/title ARE functional accessible names, often DERIVED in
+    # render.php rather than authored (responsive-logo builds a fallback
+    # from the site name), so they stay a11y-metadata. One coarse category
+    # made two real content shapes invisible.
     window = before[-80:]
-    if re.search(r"(aria-label|alt|title|placeholder)\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
+    if re.search(r"(alt|placeholder)\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
+        return "authored-alt-text"
+    if re.search(r"(aria-label|title)\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
         return "a11y-metadata"
     # PHP associative-array literal form: 'aria-label' => esc_attr( $x ) —
     # the SGS_Container_Wrapper::render() `extra_attrs` shape (sgs/nav-menu).
-    if re.search(r"['\"](aria-label|alt|title|placeholder)['\"]\s*=>\s*$", window, re.IGNORECASE):
+    if re.search(r"['\"](alt|placeholder)['\"]\s*=>\s*$", window, re.IGNORECASE):
+        return "authored-alt-text"
+    if re.search(r"['\"](aria-label|title)['\"]\s*=>\s*$", window, re.IGNORECASE):
         return "a11y-metadata"
     # Sometimes the attribute name appears just AFTER, e.g.
     # `. esc_attr($x) . '" aria-label="' ...` (rare, but check).
     windowAfter = after[:80]
-    if re.search(r"^\)\s*\.\s*['\"][^'\"]*\b(aria-label|alt|title)\s*=", windowAfter, re.IGNORECASE):
+    if re.search(r"^\)\s*\.\s*['\"][^'\"]*\balt\s*=", windowAfter, re.IGNORECASE):
+        return "authored-alt-text"
+    if re.search(r"^\)\s*\.\s*['\"][^'\"]*\b(aria-label|title)\s*=", windowAfter, re.IGNORECASE):
         return "a11y-metadata"
 
     # 3) STYLING/behavioural — feeds a `--sgs-*` custom property or a JS

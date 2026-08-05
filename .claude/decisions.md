@@ -1,5 +1,106 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D490 — `authored-alt-text` category split from `a11y-metadata`; interim patch, not the fix [ROUTINE]
+
+**2026-08-05.** `plugins/sgs-blocks/scripts/content-role-detect/classify_detector1.py` (uncommitted
+in this session — Bean's instruction was document-only, no commit). Detector 1 classified `alt=` and
+`placeholder=` into the same `a11y-metadata` category as `aria-label=`/`title=`. The fingerprint maps
+`a11y-metadata` → role `a11y-text`, classification `styling-behaviour` — **EXCLUDED from the
+converter's content walk**. That silently dropped real content: `alt` is client-authored text a draft
+carries and a clone must transfer; `placeholder` was already ruled content by D482 (13 rows moved
+`behaviour`→content on that basis). `aria-label`/`title` correctly stay `a11y-metadata` — they are
+genuinely functional accessible names, often DERIVED in render.php rather than authored
+(`responsive-logo/render.php:106-116` builds a fallback from the site name).
+
+**Fix:** split `classify_call()`'s three `a11y-metadata` return sites into two branches — `alt`/
+`placeholder` → new category `authored-alt-text` (maps to role `text-content` in
+`fingerprint_content_roles.py`, already correctly wired ahead of this session); `aria-label`/`title`
+unchanged. Mirrors the equivalent split already shipped in `detector1_render_escaping.php`'s raw-fact
+stage (that file's half was done before this session; `classify_detector1.py`'s `final_category`
+computation — the field the pipeline actually consumes — was not, so the two files disagreed until
+now).
+
+**Verified, full before/after diff across all 379 rows (`--glob`), not just the targeted attrs:** 7
+rows changed, all and only `a11y-metadata`→`authored-alt-text`, all on `alt`/`placeholder` attrs —
+`sgs/responsive-logo.alt` (×4, lines 348/374/385/397), `sgs/media.imageAlt`, `sgs/product-card.image`,
+one `placeholder` row in the shared `includes/forms/field-render-helpers.php:178`. `sgs/button.
+ariaLabel` and `sgs/nav-menu.navLabel` confirmed unchanged at `a11y-metadata`. `fingerprint_content_
+roles.py --self-test` PASSES, including a new case added this session locking `authored-alt-text` →
+`text-content` and asserting it must NOT collapse into `a11y-text` (the exact defect being fixed).
+
+**`sgs/responsive-logo.alt` — the real cause is a naming-order defect, not a shape defect (Bean
+corrected the framing mid-session).** The block names its three responsive logo attrs
+`desktopLogoId`/`tabletLogoId`/`mobileLogoId` — the device tier is a **PREFIX**. Every other SGS
+block puts the tier as a **SUFFIX** (`sgs/container.backgroundImage` /
+`backgroundImageTablet` / `backgroundImageMobile`), matching `modifier_suffixes`
+(`Mobile`/`Tablet`/`Desktop`, `kind='breakpoint'`), which peels a suffix to recognise a tier. Verified:
+all three `responsive-logo` logo attrs sit at `is_responsive=0`, `css_tier=NULL` — the D480 universal
+device-tier axis (shipped before this block existed in its current form) is structurally blind to
+them, not because anything is malformed, but because the tier sits at the wrong end of the name.
+Normalised to `logo`/`logoTablet`/`logoMobile` the three IDs would collapse into one base attribute
+with tier siblings, giving `alt` a single companion to pair against via `alt_companion_attr` — at
+which point `image-alt` would fire natively and this special case becomes unnecessary for that block.
+**`authored-alt-text` is therefore an INTERIM measure for `responsive-logo` specifically, not
+permanent architecture:** correct and necessary today (stops authored alt text being silently
+dropped), but the retirement condition is explicit — once `responsive-logo`'s tier attrs are renamed
+prefix→suffix and `image-alt` fires natively for it, `authored-alt-text` may be able to drop back to
+being the general-purpose category it already is for `placeholder` and any other alt-shaped case.
+**`placeholder` is a separate, independent justification (D482) and does NOT depend on this rename** —
+keep the two reasons distinct; do not let the responsive-logo story swallow the placeholder one.
+
+**General lesson:** a block predating a universal mechanism can be invisible to it while looking
+perfectly well-formed. Nothing about `responsive-logo`'s attrs is malformed — the tier token is simply
+at the wrong end of the name — and every existing gate (row-floor, db-consistency, self-test) reads
+green regardless, because none of them check naming-convention direction against a mechanism that
+postdates the block. Report: `.claude/reports/2026-08-05-d1-forward-variable-tracking-fix.md` (D1
+forward-tracking context) + `.claude/reports/2026-08-05-report-only-row-categorisation.md`
+(`responsive-logo.alt` dispute + companion-shape analysis).
+
+## D489 — svg role SHIPPED + D1 forward variable tracking SHIPPED + two aggregator position-vs-rule fixes SHIPPED [ROUTINE]
+
+**2026-08-05.** Commit `0e0e6d15`. Three independent fixes, same commit.
+
+**svg role — a 3-part build, not a bare DB relabel** (role + a new extractor branch in `converter/
+services/field_extractors.py` returning `<svg>` MARKUP + reclassifying 8 rows off `content`).
+`hero.svgContent`/`media.svgContent` previously carried `role='content'`, routed through
+`rich_text_content()` — a rich-TEXT extractor with a tag whitelist (`br, strong, em, a, span, b, i,
+code`) that strips every other tag, including `<svg>`/`<path>`, to empty text. This was **actively
+destructive**, not merely imprecise: any draft SVG matched by these attrs would have been silently
+reduced to nothing. The new `role == "svg"` branch extracts raw markup instead.
+
+**D1 forward variable tracking** — `classify_call()` previously anchored the HTML-attribute match to
+the END of the text immediately before the escaping call, so it only saw an a11y attribute when the
+name and value shared one statement. `responsive-logo/render.php` assigns `$alt` at line ~67 and
+reads it into `<img alt="">` roughly 50 lines later — unreachable under the old rule. Fixed via
+`printf_placeholder_context()` (resolves positional `printf`/`sprintf` args back to the format
+string) + `forward_variable_context()` (scans the whole file for a variable's later HTML-attribute
+use site). All 9 previously-`esc_attr-unresolved` rows now classify, verified independently 9/9: 3 to
+`a11y-metadata`, 6 correctly REJECTED as non-content. Full 379-row before/after diff caught a
+self-introduced bug (`button.label` cross-contaminated by `$aria_label`'s forward context) before it
+shipped — a check scoped only to the 9 target rows would have missed it. Bonus fix: `form-field-
+consent.fieldName` was previously WRONGLY `a11y-metadata` (blanket `aria-[a-z]+` matched an unrelated
+`aria-describedby`), now correctly `NOT-content`. `/qc-inline`: ship, 92/100.
+
+**Two aggregator fixes in `fingerprint_content_roles.py`, both inert today, fixed anyway.** Both are
+the SAME shape as the D1 veto-bucket bug: an aggregator resolving a conflict by **POSITION** rather
+than by **RULE**. (a) `content_cats[0]` took document order — an attribute rendered both as visible
+text and into an `aria-label` resolved to whichever site's line came first in the file, so moving a
+line could silently flip its role; replaced with an explicit priority ranking, unknown categories
+sorting LAST. (b) a D1-only rejection (no D2/D3 corroboration) reached NO result bucket at all —
+`sgs/icon.linkRel`/`sgs/media.linkRel` simply vanished, a correct verdict leaving no trace, which is
+indistinguishable from "never examined." Both now emit explicit vetoes and carry self-test cases.
+
+**Deliberately NOT applied in this commit:** `authored-alt-text` — see D490, built same session, one
+commit later (the PHP half of that split existed before `0e0e6d15`; the Python half — the field the
+pipeline actually consumes — is D490).
+
+`role IS NULL` on `sgs/%`: 703 at session start → **661** after this session's changes (down from
+669 after D485/Task A). Converter suite: 595 pass (2 pre-existing failures proven to belong to a
+different track's R1 dissolve blast radius, confirmed by reverting this session's `field_extractors.py`
+change and re-running — identical failure set). `/sgs-update` NOT run (DB read-only this session
+per constraint). Reports: `.claude/reports/2026-08-05-d1-forward-variable-tracking-fix.md`,
+`.claude/reports/2026-08-05-report-only-row-categorisation.md`.
+
 ## D488 — Fluid typography PROVEN as the mobile clone-fidelity cause; Bean rules KEEP fluid, fix the measurement [ROUTINE]
 
 **2026-08-04.** `.claude/reports/2026-08-04-fluid-typography-mobile-parity-hypothesis.md`. `theme.json`

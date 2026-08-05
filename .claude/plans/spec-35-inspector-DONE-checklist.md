@@ -132,6 +132,24 @@ before Task F is built, since they change what "enforced" must mean for every ru
   client-editable content because D1's presence in the supporting list was read as endorsement, when
   D1's actual verdict on that row was a rejection. **[enforced by]** UNENFORCED — no automated gate
   exists; this is a rule-authoring discipline for Task F, not a script to write in isolation.
+  **Extended 2026-08-05 (D489, same session as the fix, not a later re-discovery):** the general
+  shape is broader than "silence vs rejection" — it is **an aggregator resolving a conflict by
+  POSITION rather than by RULE**, and it recurred in THREE independent places this session, not one:
+  (a) the original finding above (a D1 rejection read as endorsement); (b)
+  `fingerprint_content_roles.py`'s `content_cats[0]` took document order — an attribute rendered
+  BOTH as visible text and into an `aria-label` resolved to whichever usage site's line came first in
+  the file, so moving a line in `render.php` could silently flip its role, with no rule stating which
+  category should win; (c) a D1-only rejection with no D2/D3 corroboration reached **no result bucket
+  at all** — `sgs/icon.linkRel`/`sgs/media.linkRel` simply vanished, a correct verdict that left no
+  trace, indistinguishable from "never examined." All three were fixed the same way: replace the
+  positional default (first-in-document, first-in-list, "whatever fell through") with an EXPLICIT
+  ranking or an EXPLICIT veto bucket, so the tie-break is a stated decision rather than an accident of
+  iteration order. **The generalised rule for Task F: whenever a script merges evidence from more than
+  one source (detectors, files, statements, list positions), the tie-break must be STATED in the
+  script's own logic or comments — never left to be whatever the underlying data structure's default
+  ordering happens to produce.** A rule that merges N≥2 sources without a written tie-break policy has
+  not met this condition regardless of how correct its output looks today, because correctness by
+  accident of ordering breaks the moment the input order changes.
 - [ ] **23. Recall is measured against the eligible POOL, never the rule's own output** (REFINES
   end condition 2's ENFORCED-bar point 2, "population cross-checked by an independent method" —
   turns it from a general instruction into a concrete failure mode to test for). Evidence: a

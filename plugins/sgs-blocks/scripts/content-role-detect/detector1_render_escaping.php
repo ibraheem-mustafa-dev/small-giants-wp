@@ -354,12 +354,28 @@ function classify_esc_attr_window(string $before): string {
     // NOT a blanket `aria-[a-z]+`: most other aria-* attributes
     // (aria-describedby, aria-controls, aria-owns...) hold ID REFERENCES or
     // boolean state, not accessible TEXT.
-    if (preg_match('/(aria-label|alt|title|placeholder)\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $before)) {
+    // SPLIT 2026-08-05 (Bean challenged the lumping). `alt` and `placeholder` were
+    // classified 'a11y-metadata' alongside aria-label/title. That routes them to the
+    // a11y-text role, classification styling-behaviour -- EXCLUDED from the content walk.
+    // Both are wrong there:
+    //   * alt         -- a client AUTHORS alt text and edits it; it must transfer.
+    //   * placeholder -- D482 ruled explicitly "a placeholder is content"; 13 rows were
+    //                    reclassified from 'behaviour' to content on exactly that basis.
+    // aria-label/title ARE functional accessible names, often DERIVED in render.php rather
+    // than authored (responsive-logo builds a fallback from the site name), so they stay
+    // a11y-metadata. One coarse category made two real content shapes invisible.
+    if (preg_match('/(^|[^a-z-])(alt|placeholder)\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $before)) {
+        return 'authored-alt-text';
+    }
+    if (preg_match('/(aria-label|title)\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $before)) {
         return 'a11y-metadata';
     }
     // PHP associative-array literal form: 'aria-label' => esc_attr( $x ) —
     // the SGS_Container_Wrapper::render() `extra_attrs` shape (sgs/nav-menu).
-    if (preg_match('/[\'"](aria-label|alt|title|placeholder)[\'"]\s*=>\s*$/i', $before)) {
+    if (preg_match('/[\'"](alt|placeholder)[\'"]\s*=>\s*$/i', $before)) {
+        return 'authored-alt-text';
+    }
+    if (preg_match('/[\'"](aria-label|title)[\'"]\s*=>\s*$/i', $before)) {
         return 'a11y-metadata';
     }
     return 'esc_attr-unclassified';

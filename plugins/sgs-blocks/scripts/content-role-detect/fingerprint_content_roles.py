@@ -121,6 +121,15 @@ CATEGORY_TO_ROLE = {
     # intends as content is never passed through an HTML sanitiser; it is escaped flat.
     "wp_kses-other": "text-content",
     "a11y-metadata": "a11y-text",
+    # AUTHORED alt / placeholder text -- content a client writes and edits, so it must
+    # transfer from a draft. Split out of a11y-metadata on 2026-08-05: routing it to
+    # a11y-text (styling-behaviour) EXCLUDED it from the content walk and would have
+    # silently dropped it. Not 'image-alt' -- that role pairs to a sibling image-object
+    # via alt_companion_attr, and the block that exposed this (sgs/responsive-logo)
+    # stores three bare attachment IDs (type=number) with one unprefixed `alt`, so
+    # there is no single image attr to name as the companion. text-content routes a
+    # plain string correctly today; revisit if that block's attr shape is normalised.
+    "authored-alt-text": "text-content",
 }
 
 # Categories recognised but deliberately NOT assigned a role. Reported instead.
@@ -147,6 +156,7 @@ TRUSTED_ALONE = ("D1", "D3")
 # labels itself, and filing it as a11y would exclude it from the content walk entirely.
 _CATEGORY_PRIORITY = (
     "visible-text",
+    "authored-alt-text",
     "svg-markup",
     "wp_kses-other",
     "link-href",
@@ -603,6 +613,25 @@ def self_test() -> int:
                 f"{a11y_roles.get('plantedVisible')!r})")
         if "image-alt" in a11y_roles.values():
             failures.append("a11y-metadata was assigned image-alt — corrupts the image arm")
+
+        # 7. authored-alt-text (split from a11y-metadata 2026-08-05, D483/D484) must
+        #    map to text-content, and must NOT collapse back into a11y-text — that
+        #    collapse is exactly the defect being fixed (alt/placeholder silently
+        #    excluded from the converter's content walk via the a11y-text role).
+        alt_text = fingerprint(
+            {"D1": [{"block_slug": "sgs/plantblock", "attr_key": "plantedVisible",
+                     "final_category": "authored-alt-text"}], "D2": [], "D3": []},
+            pool,
+        )
+        alt_text_roles = {a["attr_name"]: a["role"] for a in alt_text["assignments"]}
+        if alt_text_roles.get("plantedVisible") != "text-content":
+            failures.append(
+                "authored-alt-text was not assigned 'text-content' (got "
+                f"{alt_text_roles.get('plantedVisible')!r})")
+        if "a11y-text" in alt_text_roles.values():
+            failures.append(
+                "authored-alt-text collapsed into a11y-text — this is the exact defect "
+                "the split fixes (alt/placeholder excluded from the content walk)")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
