@@ -224,15 +224,18 @@ Re-run it rather than trusting these numbers.
 
 ### STEP 0.2 — three residuals, each with its blocker already identified
 
-1. **`sgs/multi-button` rename** (`direction`/`wrap` → `flexDirection`/`flexWrap`) — BUILT then
-   REVERTED before deploy. The deploy's `oldshape-audit` found **3 NEW HIGH**: canary posts 1596 and
-   2130 store those attrs, and shipping the rename would have WordPress silently DELETE them on the
-   next editor save. The gate caught what the subagent's own verification missed (it checked theme
-   patterns — and correctly fixed two — but not stored post content). **Blocker:**
-   `scripts/lib/oldshape-mappings.js` has no attribute-RENAME shape; it is built for
-   scalar→InnerBlocks. Add one, migrate posts 1596 + 2130 via
-   `scripts/wp-migrate-oldshape-blocks.js` (dry-run default), THEN re-apply the rename. Do not
-   baseline it — this is real content loss.
+1. **`sgs/multi-button` rename — PHASE A SHIPPED (`1d13997d`), PHASE B outstanding.** Both names are
+   now declared; `render.php` reads new-first-legacy-fallback; `edit.js` writes only the new names;
+   `attrMap` repointed. Deploy audit **0 NEW HIGH** (was 3), live-captured `row`@1309 / `column`@341
+   with children intact — and those values reach CSS ONLY through the fallback, since posts 1596/2130
+   store the legacy names. The attribute-RENAME shape the blocker called for is BUILT
+   (`oldshape-mappings.js` `RENAMES` + a driver path using `updateBlockAttributes`, not
+   `replaceBlock` — the latter rebuilds from `children` and would delete the button subtree).
+   **Phase B = migrate posts 1596 + 2130, then delete the legacy declarations + fallback arms.**
+   Blocked on `wp-login` rejecting the driver after its first successful run (3 attempts + 45s pause;
+   credentials parse correctly and run 1 authenticated, so it reads as a lockout — stopped rather
+   than risk locking the account). Steps: `reports/visual-diff/multi-button-2026-08-05.md`.
+   ⚠ Stored legacy values are HARMLESS meanwhile — they are declared, so nothing is discarded.
 2. **`link-content` role + extractor** — the CAPTURE half shipped (`580f7885`): render.php's URL
    template is recovered structurally into `output_signature.link_template` (no new column — Bean's
    call; `default_value` is occupied and `description` is prose). The EXTRACTOR is NOT built and the
