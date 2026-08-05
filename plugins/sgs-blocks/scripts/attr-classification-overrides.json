@@ -1092,7 +1092,9 @@
       "slug": "sgs/icon",
       "attr": "iconName",
       "fields": {
-        "derived_selector": ".sgs-icon__glyph, [data-icon-name]"
+        "derived_selector": ".sgs-icon__glyph, [data-icon-name]",
+        "role": "icon-lucide",
+        "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-lucide' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
       }
     },
     {
@@ -1544,6 +1546,22 @@
       "fields": {
         "role": "a11y-text",
         "_note": "2026-08-05: role='a11y-text', NOT 'image-alt'. media-render.php:138 reads `afterVideoAlt` and media-render.php:183-188 emits it as aria-label= on the <video> (with a translated fallback) -- there is no image companion for it to name, and the a11y-text role description explicitly rejects image-alt for an aria-label with no companion image. a11y-text is classification='styling-behaviour', so the row is excluded from the content walk. HAND-DECLARED DELIBERATELY: root-caused 2026-08-05 as IRREDUCIBLE today -- the content-role fingerprint DOES structurally propose a11y-text for this shape, but it is a read-only proposer and its write step is not built or wired into sgs-update-v2.py. Retire this entry when that writer ships. The sibling image alts need NO entry: the companion tier (detector5) derives them from source."
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "dashiconName",
+      "fields": {
+        "role": "icon-dashicon",
+        "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-dashicon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "wpIconName",
+      "fields": {
+        "role": "icon-wp-icon",
+        "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-wp-icon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
       }
     }
   ]

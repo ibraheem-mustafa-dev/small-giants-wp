@@ -15,7 +15,7 @@
     [
       "heading",
       "element",
-      "[\"aggregate-text\", \"card-title\", \"headline\", \"name\", \"review-header\", \"title\", \"productName\"]",
+      "[\"aggregate-text\", \"card-title\", \"headline\", \"name\", \"review-header\", \"reviewer-name\", \"title\", \"productName\"]",
       "sgs/heading",
       "Primary heading",
       null

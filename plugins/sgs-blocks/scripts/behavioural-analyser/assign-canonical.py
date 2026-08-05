@@ -462,6 +462,15 @@ def insert_gap_candidate(
 
 _OVERRIDES_JSON_PATH = Path(__file__).resolve().parent.parent / "attr-classification-overrides.json"
 
+# TIER 3.7 (2026-08-05, Bean) reads this file directly for the optional 3rd array
+# element roles.json entries may carry (`{"excludes_attr_types": [...]}`) — see
+# `_load_role_type_exclusions()` below. Same file db_lookup.py's `_migrate_roles_table()`
+# syncs into the `roles` DB table; that loader only ever reads val[0]/val[1] (classification,
+# description) by INDEX, not tuple-unpack, so a 3rd element is invisible to it and safe to add
+# without touching db_lookup.py (verified: `_load_roles_seed()` does
+# `out[name] = (val[0], val[1] if len(val) > 1 else "")`).
+_ROLES_JSON_PATH = Path(__file__).resolve().parent.parent / "data" / "roles.json"
+
 
 def load_override_keys(path: Path = _OVERRIDES_JSON_PATH) -> frozenset[tuple[str, str]]:
     """Return the set of (block_slug, attr_name) pairs curated in the
@@ -1333,13 +1342,23 @@ _CONTENT_BEARING_ROLES = frozenset({
 # population that the original plain-lowercase regex missed (~100 SGS rows).
 _ATTR_NAME_RULES = [
     # identity — icon/glyph/name-like identity attrs
-    # `dashiconName`/`wpIconName` added 2026-08-05 (D497 root-cause): both are icon SLUGS,
-    # the exact shape `identity` resolves (field_extractors.py:233 icon-slug chain), and
-    # both previously required a hand override naming a role (`icon-dashicon`/`icon-wp-icon`)
-    # that `roles.json` records as having NO consumer in the converter. Verified unique
-    # DB-wide (one block each), so this is universal, not a per-block carve-out.
-    (re.compile(r"^(icon|iconName|iconSource|glyph|productName|productSlug|"
-                r"dashiconName|wpIconName)$"),
+    # ⛔ REGRESSION + REVERT, 2026-08-05. `dashiconName`/`wpIconName` were briefly added here
+    # (and `sgs/icon.iconName`'s override deleted so this rule would claim it) on the belief
+    # — taken from `roles.json`'s own description — that `icon-lucide`/`icon-dashicon`/
+    # `icon-wp-icon` have "NO consumer in the converter". THAT DESCRIPTION IS WRONG. The
+    # consumer is `resolve_icon_kind()` (converter/services/field_extractors.py:100-142) plus
+    # the ICON arm in `converter/services/extraction.py:1100-1141`, which dispatches on
+    # `role.startswith("icon-")` — shipped at D263 (2026-07-03) and live-verified on page 8.
+    # Routing these attrs to `identity` removed them from that dispatch and broke 3 tests
+    # (`test_icon_leaf_lifts_lucide_slug`, `..._dashicon_by_kind`, `..._wp_icon_by_kind`).
+    #
+    # Proven by experiment, not inferred: restoring the three `icon-*` roles in the DB turned
+    # 3 failed / 3 passed back into 6 passed with no other change.
+    #
+    # ⚠ THE BUILD DID NOT CATCH THIS. `npm run build`'s prebuild pytest step runs only
+    # `scripts/oracle/tests/`; `scripts/converter/tests/` is outside it, so a converter
+    # regression ships green. That gap is the real lesson here.
+    (re.compile(r"^(icon|iconName|iconSource|glyph|productName|productSlug)$"),
      "identity", "high"),
     # link-href — URL-like attrs
     # `ctaUrl`/`cta2Url` added 2026-08-05 (D497 root-cause). The `Url` property suffix
@@ -2145,6 +2164,48 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # classification column, never a hardcoded role list that would drift from it.
     boolean_swept = _sweep_boolean_content_roles(conn)
 
+    # TIER 3.7 -- ROLE/ATTR_TYPE COMPATIBILITY SWEEP (2026-08-05, Bean). GENERALISES
+    # TIER 3.6: that tier closed ONE instance of this defect class (a boolean carrying a
+    # CONTENT-BEARING role); Bean found a second instance of the SAME class (a boolean
+    # carrying role='select-from-enum', whose own contract promises "a string CSS VALUE
+    # chosen from a fixed enum" -- a boolean is not a string CSS value). Rather than add a
+    # second hand-picked instance, this tier makes the check a PROPERTY OF THE ROLE: any
+    # role may declare, in its own roles.json entry, which attr_types its documented
+    # contract cannot honour (`excludes_attr_types`) -- so the next instance of this class
+    # closes by DATA, not by a third bespoke sweep.
+    #
+    # WHY A ROLES.JSON FIELD, NOT A DB COLUMN (R-31-1 read the correct way here): roles.json
+    # is ALREADY the two-way-synced truth source for the `roles` table
+    # (db_lookup.py:_migrate_roles_table, INSERT OR REPLACE + delete-not-in). Adding a 3rd
+    # array element to a role's entry needs NO schema change and NO reseed to take effect in
+    # THIS script, because `_load_roles_seed()` (db_lookup.py:127-144) reads `val[0]`/`val[1]`
+    # by INDEX, not by tuple-unpack arity -- a 3rd element is structurally invisible to it.
+    # (`roles` table itself gains no new column here; that is a separate, later change if the
+    # DB ever needs to query this compatibility fact directly.)
+    #
+    # 17 boolean rows measured non-compliant 2026-08-05 across 5 roles (select-from-enum x9,
+    # colour-gradient x4, enum-class-probe x3, number-css-px x1; tag-identity x0 live but
+    # excluded pre-emptively from its own contract text). PER-ROLE JUSTIFICATION lives in
+    # each role's roles.json entry (`excludes_reason`), not duplicated here.
+    #
+    # TWO TARGETS, chosen by evidence already ON the row, never by block/attr name:
+    #   - attr_type='boolean' AND css_property IS NOT NULL -> 'css-gate'. Proven live only
+    #     for select-from-enum's imageZoomHover/grayscaleHover (css_property='transform'/
+    #     'filter', legitimately set for INPUT-side routing per the card-grid/style.css
+    #     preset-stylesheet audit this session -- see the 'css-gate' roles.json entry for the
+    #     full contract). Reclassifying these to 'boolean-visibility' instead would be FALSE:
+    #     that role's own contract says no CSS signal exists for it, and here one genuinely
+    #     does. TIER 3.7 never touches css_property -- role only.
+    #   - attr_type='boolean' AND css_property IS NULL -> 'boolean-visibility' (the same
+    #     target TIER 3.6 already uses for the sibling defect class) -- a plain editor toggle
+    #     with no CSS signal, which is exactly what that role's contract promises.
+    #   - Any OTHER excluded (role, attr_type) pairing -- e.g. a future entry excluding
+    #     'string' or 'number' -- has no proven safe universal target and is left UNTOUCHED,
+    #     only reported via the returned count. Guessing a target here would risk exactly
+    #     the failure mode Bean warned against: "a wrong exclusion silently destroys a
+    #     correct classification."
+    type_swept = _sweep_incompatible_role_types(conn)
+
     conn.commit()
     return {
         "filled": filled,
@@ -2159,6 +2220,14 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # writer upstream is still mapping a NAME to a content role without checking
         # attr_type -- worth investigating, not ignoring.
         "boolean_swept": boolean_swept,
+        # TIER 3.7 -- rows reclassified because their attr_type violates their role's
+        # OWN documented contract (roles.json excludes_attr_types). Split by target so a
+        # steady-state reseed can tell the two remediation shapes apart; 'unhandled' is
+        # non-zero only if a future roles.json exclusion names a (role, attr_type) pairing
+        # this tier has no proven safe target for -- those rows are reported, never guessed.
+        "type_sweep_to_css_gate": type_swept["to_css_gate"],
+        "type_sweep_to_boolean_visibility": type_swept["to_boolean_visibility"],
+        "type_sweep_unhandled": type_swept["unhandled"],
         # TIER 0A -- image<->alt companion (D497). image_filled/alt_filled are role
         # fills; companion_filled is the alt_companion_attr column fill; conflicts is
         # a DIFFERING pre-existing alt_companion_attr value (reported, never clobbered).
@@ -3115,6 +3184,212 @@ def _self_test_boolean_sweep() -> int:
     return 0
 
 
+def _load_role_type_exclusions(path: Path = _ROLES_JSON_PATH) -> dict[str, frozenset[str]]:
+    """Load ``{role_name: frozenset(excluded_attr_type, ...)}`` from roles.json's optional
+    3rd array element -- ``{"excludes_attr_types": [...], "excludes_reason": "..."}``.
+
+    A role with no 3rd element, or whose 3rd element carries no `excludes_attr_types` key, is
+    PERMISSIVE by construction (absent from the returned dict) -- exactly the "leave it
+    permissive" instruction for a role whose contract is ambiguous about a given attr_type.
+    This function only ever NARROWS what TIER 3.7 touches; it can never invent a restriction
+    the data file does not state.
+
+    Soft-fails to ``{}`` on a missing/unreadable file, matching db_lookup.py's
+    `_load_roles_seed()` soft-fail contract -- a degraded run should skip TIER 3.7 rather than
+    crash the whole assignment pass over a walked-away data file.
+    """
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, frozenset[str]] = {}
+    for name, val in raw.items():
+        if name.startswith("__") or not isinstance(val, list) or len(val) < 3:
+            continue
+        extra = val[2]
+        if not isinstance(extra, dict):
+            continue
+        excluded = extra.get("excludes_attr_types")
+        if excluded:
+            out[name] = frozenset(excluded)
+    return out
+
+
+def _sweep_incompatible_role_types(conn: sqlite3.Connection) -> dict:
+    """TIER 3.7's write logic. Reclassify a row whose `attr_type` violates its role's own
+    documented value-shape contract (roles.json `excludes_attr_types`, loaded fresh from the
+    file every call -- never cached -- so an edit to roles.json takes effect without a code
+    change, same contract `_sweep_boolean_content_roles` gets from the `roles` table).
+
+    Two proven-safe reclassification targets, chosen by evidence ALREADY ON the row
+    (attr_type + css_property), never by block/attr name (R-31-9):
+      - attr_type='boolean' AND css_property IS NOT NULL -> 'css-gate' (a real CSS input
+        signal exists; 'boolean-visibility' would misdocument it as absent).
+      - attr_type='boolean' AND css_property IS NULL     -> 'boolean-visibility' (no CSS
+        signal; matches TIER 3.6's own target for the sibling defect class).
+      - Anything else excluded (non-boolean attr_type, or a future exclusion this tier has no
+        target for) is left UNTOUCHED and only counted under 'unhandled' -- guessing a target
+        without evidence would risk destroying a correct classification.
+
+    Returns {"to_css_gate": int, "to_boolean_visibility": int, "unhandled": int}.
+    """
+    exclusions = _load_role_type_exclusions()
+    cur = conn.cursor()
+    to_css_gate = 0
+    to_boolean_visibility = 0
+    unhandled = 0
+    for role, bad_types in exclusions.items():
+        placeholders = ",".join("?" for _ in bad_types)
+        for row_id, slug, attr, attr_type, css_property in conn.execute(
+            "SELECT id, block_slug, attr_name, attr_type, css_property "
+            f"FROM block_attributes WHERE role = ? AND attr_type IN ({placeholders})",
+            (role, *bad_types),
+        ).fetchall():
+            if attr_type == "boolean" and css_property is not None:
+                new_role = "css-gate"
+                to_css_gate += 1
+            elif attr_type == "boolean":
+                new_role = "boolean-visibility"
+                to_boolean_visibility += 1
+            else:
+                unhandled += 1
+                print(
+                    f"  [type-sweep] {slug}.{attr}: role {role!r} excludes attr_type "
+                    f"{attr_type!r} but TIER 3.7 has no proven safe target for a non-boolean "
+                    "mismatch -- left UNTOUCHED, reported only."
+                )
+                continue
+            cur.execute("UPDATE block_attributes SET role = ? WHERE id = ?", (new_role, row_id))
+            print(
+                f"  [type-sweep] {slug}.{attr}: role {role!r} incompatible with attr_type "
+                f"{attr_type!r} -> {new_role!r}"
+                + (" (css_property preserved, input-routing signal)" if new_role == "css-gate" else "")
+            )
+    return {
+        "to_css_gate": to_css_gate,
+        "to_boolean_visibility": to_boolean_visibility,
+        "unhandled": unhandled,
+    }
+
+
+def _self_test_type_sweep() -> int:
+    """Prove the TIER 3.7 role/attr_type compatibility sweep can FAIL, on a throwaway
+    in-memory DB. Drives `_sweep_incompatible_role_types()` directly -- not a re-implemented
+    copy of its query -- following the pattern `_sweep_boolean_content_roles`/
+    `_self_test_boolean_sweep` established (production/test drift only shows up when the
+    self-test calls the real function).
+
+    Loads the REAL roles.json exclusions (this tier's actual production data source), so this
+    test also catches an accidental exclusion edit breaking a live row -- it is not a fixture
+    isolated from the data file.
+
+    Planted rows, each one a way the sweep could be wrong:
+      1. select-from-enum + boolean + css_property SET   -> MUST become 'css-gate' (the
+         imageZoomHover/grayscaleHover shape: a real input-routing signal exists).
+      2. select-from-enum + boolean + css_property NULL  -> MUST become 'boolean-visibility'
+         (the evergreenMode shape: no CSS signal at all).
+      3. colour-gradient + boolean + css_property NULL   -> MUST become 'boolean-visibility'
+         (the overlayGradient shape).
+      4. select-from-enum + STRING                       -> MUST NOT be touched. This is the
+         row ONLY the compatibility judgement protects -- select-from-enum's contract legitimately
+         admits a string CSS value; the exclusion names 'boolean' only, never 'string'.
+      5. select-from-enum + NUMBER                        -> MUST NOT be touched. A second
+         legitimate pairing (numeric CSS enum, e.g. font-weight steps) proven live today
+         (19 real rows) -- proves the exclusion is narrow, not "boolean is bad" dressed up.
+      6. behaviour + boolean                              -> MUST NOT be touched. 'behaviour'
+         carries NO excludes_attr_types entry in roles.json (Bean ruled it a legitimate
+         boolean pairing) -- this is the row that proves TIER 3.7 does not invent restrictions
+         roles.json never stated.
+      7. layout + boolean                                 -> MUST NOT be touched. Same proof
+         as #6 for a second legitimate-boolean role.
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, attr_type TEXT, role TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes "
+        "(id, block_slug, attr_name, attr_type, role, css_property) VALUES (?,?,?,?,?,?)",
+        [
+            (1, "sgs/card-grid", "imageZoomHover", "boolean", "select-from-enum", "transform"),
+            (2, "sgs/countdown-timer", "evergreenMode", "boolean", "select-from-enum", None),
+            (3, "sgs/container", "overlayGradient", "boolean", "colour-gradient", None),
+            (4, "sgs/heading", "fontStyle", "string", "select-from-enum", None),
+            (5, "sgs/heading", "fontWeight", "number", "select-from-enum", None),
+            (6, "sgs/product-card", "ctaStyle", "boolean", "behaviour", None),
+            (7, "sgs/hero", "stackOnMobile", "boolean", "layout", None),
+        ],
+    )
+    conn.commit()
+
+    # Drives the PRODUCTION function against the REAL roles.json -- not a copy of its query
+    # or a fixture of its exclusion data.
+    result = _sweep_incompatible_role_types(conn)
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if got.get("imageZoomHover") != "css-gate":
+        failures.append(
+            f"imageZoomHover -> {got.get('imageZoomHover')!r}: a boolean with a css_property "
+            "(real input-routing signal) was not routed to 'css-gate'."
+        )
+    if got.get("evergreenMode") != "boolean-visibility":
+        failures.append(
+            f"evergreenMode -> {got.get('evergreenMode')!r}: a boolean with NO css_property "
+            "was not routed to 'boolean-visibility'."
+        )
+    if got.get("overlayGradient") != "boolean-visibility":
+        failures.append(
+            f"overlayGradient -> {got.get('overlayGradient')!r}: a colour-gradient boolean "
+            "with no css_property was not routed to 'boolean-visibility'."
+        )
+    if got.get("fontStyle") != "select-from-enum":
+        failures.append(
+            f"fontStyle -> {got.get('fontStyle')!r}: a STRING carrying select-from-enum was "
+            "touched. select-from-enum's contract legitimately admits a string CSS value -- "
+            "only 'boolean' is excluded."
+        )
+    if got.get("fontWeight") != "select-from-enum":
+        failures.append(
+            f"fontWeight -> {got.get('fontWeight')!r}: a NUMBER carrying select-from-enum was "
+            "touched. This is the row that proves the exclusion is narrow, not a blanket "
+            "'select-from-enum is broken' sweep -- 19 real number rows depend on this."
+        )
+    if got.get("ctaStyle") != "behaviour":
+        failures.append(
+            f"ctaStyle -> {got.get('ctaStyle')!r}: a legitimate boolean+'behaviour' pairing "
+            "was touched. 'behaviour' carries no excludes_attr_types in roles.json -- this "
+            "row proves the sweep invents no restriction the data file doesn't state."
+        )
+    if got.get("stackOnMobile") != "layout":
+        failures.append(
+            f"stackOnMobile -> {got.get('stackOnMobile')!r}: a legitimate boolean+'layout' "
+            "pairing was touched."
+        )
+    if result["to_css_gate"] != 1:
+        failures.append(f"to_css_gate={result['to_css_gate']}, expected 1")
+    if result["to_boolean_visibility"] != 2:
+        failures.append(f"to_boolean_visibility={result['to_boolean_visibility']}, expected 2")
+    conn.close()
+
+    if failures:
+        print(f"TYPE-SWEEP SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(
+        "TYPE-SWEEP SELF-TEST PASSED -- "
+        f"to_css_gate={result['to_css_gate']} "
+        f"to_boolean_visibility={result['to_boolean_visibility']} "
+        f"unhandled={result['unhandled']}, 9 checks green."
+    )
+    return 0
+
+
 def _self_test_suffix_role_revive() -> int:
     """Prove the `refresh_stale_suffix_roles` REVIVE path (D497 follow-up, 2026-08-05)
     can FAIL, on a throwaway in-memory DB. Drives the PRODUCTION function directly --
@@ -3318,5 +3593,6 @@ if __name__ == "__main__":
         sys.exit(_self_test_role_detection() or _self_test_styling_backstop()
                  or _self_test_technical_veto() or _self_test_unit_inheritance()
                  or _self_test_enum_backstop() or _self_test_companion_tier()
-                 or _self_test_boolean_sweep() or _self_test_suffix_role_revive())
+                 or _self_test_boolean_sweep() or _self_test_suffix_role_revive()
+                 or _self_test_type_sweep())
     main()

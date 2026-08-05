@@ -25,7 +25,8 @@
   ],
   "colour-gradient": [
     "styling-behaviour",
-    "Marks a background-image gradient/url attr (property_suffixes suffix='Gradient', css_property='background-image'). Consumer: _kind_for() (converter/db/db_lookup.py:1962-1963) resolves it to CSS kind 'string' (a raw `url(...)`/gradient() value); converter/resolvers/outer_box.py:51-57 resolves the block's own Gradient-suffix attr when a background-image declaration needs a destination."
+    "Marks a background-image gradient/url attr (property_suffixes suffix='Gradient', css_property='background-image'). Consumer: _kind_for() (converter/db/db_lookup.py:1962-1963) resolves it to CSS kind 'string' (a raw `url(...)`/gradient() value); converter/resolvers/outer_box.py:51-57 resolves the block's own Gradient-suffix attr when a background-image declaration needs a destination.",
+    {"excludes_attr_types": ["boolean"], "excludes_reason": "The contract's value IS the raw url()/gradient() string -- a boolean cannot hold it. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/container|cta-section|hero|trust-bar.overlayGradient is a plain ON/OFF toggle (its sibling overlayGradientFrom/To strings carry the actual colour-gradient value) -- the role belonged on the siblings, not the toggle. See assign-canonical.py TIER 3.7."}
   ],
   "colour-text": [
     "styling-behaviour",
@@ -37,7 +38,8 @@
   ],
   "enum-class-probe": [
     "styling-behaviour",
-    "A BEM `--modifier` class carries this attr's value (a variant/style selector expressed only as a modifier suffix on the draft element, never as a CSS declaration). Consumer: converter/db/db_lookup.py:4889-4896 scans a block's attrs for role IN (select-from-enum, enum-class-probe, behaviour) whose derived_selector or canonical_slot ends with `--<modifier>`, then matches it against the draft's actual BEM modifier class."
+    "A BEM `--modifier` class carries this attr's value (a variant/style selector expressed only as a modifier suffix on the draft element, never as a CSS declaration). Consumer: converter/db/db_lookup.py:4889-4896 scans a block's attrs for role IN (select-from-enum, enum-class-probe, behaviour) whose derived_selector or canonical_slot ends with `--<modifier>`, then matches it against the draft's actual BEM modifier class.",
+    {"excludes_attr_types": ["boolean"], "excludes_reason": "The matched consumer (db_lookup.py:4916) writes the LITERAL MODIFIER STRING into the attr (`result[attr_name] = modifier`) -- a string value, unconditionally. A boolean attr fed that string is a type-shape mismatch (WP coerces an out-of-schema value to the attr's default, per feedback_blockjson_enum_coerces_invalid_to_default). Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/business-info|notice-banner.showIcon, sgs/cart.hideOnCartCheckoutPages -- plain editor toggles with no BEM-modifier signal at all (derived_selector/canonical_slot both NULL). See assign-canonical.py TIER 3.7."}
   ],
   "icon-dashicon": [
     "content-bearing",
@@ -85,7 +87,8 @@
   ],
   "number-css-px": [
     "styling-behaviour",
-    "A numeric CSS value whose native unit is px. Consumer: grouped into the shared px-unit CSS-kind inference at _kind_for() (converter/db/db_lookup.py:1955-1957)."
+    "A numeric CSS value whose native unit is px. Consumer: grouped into the shared px-unit CSS-kind inference at _kind_for() (converter/db/db_lookup.py:1955-1957).",
+    {"excludes_attr_types": ["boolean"], "excludes_reason": "'Numeric value whose native unit is px' cannot be a two-state boolean. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/mega-panel.bgBlur is a plain ON/OFF blur toggle, css_property NULL -- no px value exists on the attr at all. See assign-canonical.py TIER 3.7."}
   ],
   "position": [
     "styling-behaviour",
@@ -105,7 +108,8 @@
   ],
   "select-from-enum": [
     "styling-behaviour",
-    "A string CSS value chosen from a fixed enum (e.g. font-style: italic/normal). Consumer: _kind_for() (converter/db/db_lookup.py:1964-1965) resolves it to CSS kind 'string'; also grouped into the BEM-modifier probe at db_lookup.py:4889-4896 alongside enum-class-probe/behaviour."
+    "A string CSS value chosen from a fixed enum (e.g. font-style: italic/normal). Consumer: _kind_for() (converter/db/db_lookup.py:1964-1965) resolves it to CSS kind 'string'; also grouped into the BEM-modifier probe at db_lookup.py:4889-4896 alongside enum-class-probe/behaviour.",
+    {"excludes_attr_types": ["boolean"], "excludes_reason": "The contract promises 'a string CSS value chosen from a fixed enum' -- both wired consumers (_kind_for's CSS-kind resolution, the BEM-modifier probe's literal-string write) expect a string/number VALUE, never a two-state flag. Numeric enums (e.g. font-weight steps) are a legitimate CSS value shape and stay admitted -- only boolean is excluded. Found live 2026-08-05 (D497 follow-up, TIER 3.7): 9 boolean rows -- sgs/countdown-timer.evergreenMode (plain mode toggle, no css_property, no draft signal -> 'boolean-visibility') and 8 image-effect toggles across card-grid/gallery/info-box/post-grid/team-member (imageZoomHover/grayscaleHover, css_property='transform'/'filter' legitimately set for INPUT-side routing -- the css_property lets the converter match a draft's filter:grayscale()/transform declaration onto the toggle, but the toggle's OWN value is never itself that CSS value; the actual value is hardcoded in the block's preset stylesheet -> new role 'css-gate', not 'boolean-visibility', because 'boolean-visibility' promises NO CSS signal exists and that would be false for these rows). See assign-canonical.py TIER 3.7 and the 'css-gate' role entry below."}
   ],
   "spacing-token": [
     "styling-behaviour",
@@ -121,7 +125,8 @@
   ],
   "tag-identity": [
     "styling-behaviour",
-    "The attr stores the source element's HTML tag (sgs/heading.level, sgs/media.mediaType). R-31-2 shape fact written by assembly step 3a2 (converter/services/assembly.py:160), gated on enum membership and read back via converter/db/db_lookup.py:1110-1125. Structural identity, never content-walked (classified styling-behaviour on purpose)."
+    "The attr stores the source element's HTML tag (sgs/heading.level, sgs/media.mediaType). R-31-2 shape fact written by assembly step 3a2 (converter/services/assembly.py:160), gated on enum membership and read back via converter/db/db_lookup.py:1110-1125. Structural identity, never content-walked (classified styling-behaviour on purpose).",
+    {"excludes_attr_types": ["boolean"], "excludes_reason": "An HTML tag name (h1..h6, div, span...) is inherently a string/enum value -- a boolean cannot store it. Zero live rows carry this pairing today (verified 2026-08-05, D497 follow-up, TIER 3.7); recorded pre-emptively from the contract text alone, same reasoning class as select-from-enum/colour-gradient/enum-class-probe/number-css-px above, so a future writer that DID map a boolean here would be caught rather than silently accepted."}
   ],
   "technical": [
     "styling-behaviour",
@@ -142,5 +147,9 @@
   "enum-mode": [
     "styling-behaviour",
     "An author-picked MODE KEY: the value is one of a fixed list DECLARED in the block's block.json `enum`, and it selects WHICH BRANCH RENDERS -- a CSS rule set, a markup arrangement, or a dispatch path. The value is NOT necessarily itself a CSS value. SEEDED DETERMINISTICALLY (assign-canonical.py TIER 3.5) from `enum_values IS NOT NULL`, which /sgs-update Stage 1 reads straight out of block.json (sgs-update-v2.py:895) -- so this role is a structural fact about the schema, never a name guess. WHY IT IS NOT `select-from-enum`: that role's contract is 'a string CSS VALUE chosen from a fixed enum' and it is wired into two consumers that rely on that promise -- _kind_for() (db_lookup.py:1964-1965) resolves it to CSS kind 'string', and the BEM-modifier probe (db_lookup.py:4889-4896) may WRITE a draft's modifier into it. Most enum attrs are not CSS values at all (sgs/card-grid.source = manual|query|wc-product; sgs/container.tagName; sgs/audio.audioSource), so filing them there would feed both consumers a falsehood. `enum-mode` is deliberately in NEITHER consumer group. GENERIC AND UPGRADEABLE, by design: it is classification='styling-behaviour' (so the row is excluded from the content walk -- walk.py's _typed_value_for returns None for it) but it is NOT 'graduated' in resolve_role_with_healing(), so the moment property_suffixes can resolve the attr to a specific family (typography/color/layout/visual...) the healer OVERWRITES this role automatically. e.g. sgs/container.backgroundRepeat carries this today and should become `visual` + css_property='background-repeat' once a suffix reaches it. WHAT IT PROTECTS (Bean, 2026-08-05): role IS NULL must mean ONE thing -- 'no seeding mechanism reached this row'. Leaving a row NULL merely because no role fitted destroys that signal and makes an unexamined row indistinguishable from an examined one, which is the same argument that keeps `technical` narrow (see its entry)."
+  ],
+  "css-gate": [
+    "styling-behaviour",
+    "A BOOLEAN attr whose own value is NEVER itself a CSS value -- it only GATES whether a companion css_property applies. The property's actual value lives elsewhere (hardcoded in the block's own preset stylesheet, e.g. card-grid/style.css:233-254's `.sgs-card-grid--zoom-hover:hover img{transform:scale(1.05)}`), and block_attributes.css_property is set on the boolean PURELY for INPUT-side routing: it lets the cloning converter match a draft's raw `filter: grayscale(...)`/`transform: scale(...)` CSS declaration onto this toggle during extraction (the SAME css_property join every other role uses for OUTPUT routing, here repurposed one-directionally for INPUT). ADDED 2026-08-05 (Bean, D497 follow-up / TIER 3.7) for exactly the class of row `select-from-enum` could not honestly hold: sgs/card-grid|gallery|post-grid|team-member.imageZoomHover (css_property='transform') and sgs/card-grid|gallery|info-box|team-member.grayscaleHover (css_property='filter'). WHY NOT 'boolean-visibility' -- that role's own contract states 'a draft's HTML/CSS carries no signal a boolean toggle could be lifted from, so the absence of a resolver is expected, not a gap'; that claim is FALSE for these rows (there is a real css_property-driven input signal), so filing them there would misdocument a working mechanism as absent. WHY NOT 'select-from-enum' -- its two consumers (_kind_for's CSS-kind resolution, the BEM-modifier probe's literal-string write, both converter/db/db_lookup.py) expect a STRING/NUMBER CSS value; writing either into a boolean attr is the exact type-shape mismatch this role exists to prevent. Do NOT clear or alter the row's css_property when assigning this role -- css_property is CORRECT here, only the role was wrong (assign-canonical.py TIER 3.7 asserts this: it never touches css_property, role only)."
   ]
 }

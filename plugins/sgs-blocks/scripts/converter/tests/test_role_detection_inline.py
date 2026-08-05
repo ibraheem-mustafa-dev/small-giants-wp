@@ -32,10 +32,47 @@ def _load_ac():
 def _make_db(rows):
     """rows: list of (block_slug, attr_name, role|None, attr_type)."""
     conn = sqlite3.connect(":memory:")
+    # `css_property`, `canonical_slot` and the `roles` table are part of this fixture
+    # because `apply_role_detection_inline` grew tiers that read them — TIER 3 (generic
+    # styling backstop, gated on `css_property IS NOT NULL`), TIER 3.6 (boolean sweep) and
+    # TIER 3.7 (role/attr_type compatibility), the last two joining `roles` for its
+    # `classification` column. Without them the fixture raised
+    # `sqlite3.OperationalError: no such column: css_property` before reaching a single
+    # assertion, so BOTH tests in this module failed for a schema reason, not a logic one.
+    #
+    # A fixture narrower than the schema its subject queries does not "test less" — it
+    # fails closed and stops testing anything. Keep this in step with the real table when
+    # a new tier reads a new column.
     conn.execute(
         "CREATE TABLE block_attributes ("
         " id INTEGER PRIMARY KEY, block_slug TEXT, attr_name TEXT, role TEXT,"
-        " attr_type TEXT, enum_values TEXT, description TEXT)"
+        " attr_type TEXT, enum_values TEXT, description TEXT,"
+        " css_property TEXT, canonical_slot TEXT)"
+    )
+    conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
+    # TIER 3.4 (unit inheritance) reads the unit suffix from `modifier_suffixes` rather
+    # than hardcoding the literal 'Unit' (R-31-1, DB-first), so the fixture must carry it.
+    conn.execute("CREATE TABLE modifier_suffixes (suffix TEXT, kind TEXT)")
+    conn.executemany(
+        "INSERT INTO modifier_suffixes (suffix, kind) VALUES (?,?)",
+        [("Unit", "unit"), ("Tablet", "breakpoint"), ("Mobile", "breakpoint"),
+         ("Desktop", "breakpoint"), ("Top", "side"), ("Right", "side"),
+         ("Bottom", "side"), ("Left", "side")],
+    )
+    # Mirrors the real `roles` table's classification split — the only column these tiers
+    # read. Content-bearing vs styling-behaviour is what decides whether a row is eligible
+    # for the content walk, so both sides must be represented.
+    conn.executemany(
+        "INSERT INTO roles (role_name, classification) VALUES (?,?)",
+        [
+            ("text-content", "content-bearing"), ("content", "content-bearing"),
+            ("image-object", "content-bearing"), ("image-alt", "content-bearing"),
+            ("link-href", "content-bearing"), ("identity", "content-bearing"),
+            ("styling", "styling-behaviour"), ("technical", "styling-behaviour"),
+            ("layout", "styling-behaviour"), ("typography", "styling-behaviour"),
+            ("boolean-visibility", "styling-behaviour"), ("enum-mode", "styling-behaviour"),
+            ("select-from-enum", "styling-behaviour"), ("behaviour", "styling-behaviour"),
+        ],
     )
     for i, (slug, attr, role, atype) in enumerate(rows, 1):
         conn.execute(
