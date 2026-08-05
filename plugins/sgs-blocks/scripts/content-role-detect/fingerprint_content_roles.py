@@ -478,8 +478,46 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
             "clone. Needs a declared role (Task E), not a guessed one."
         )
 
+    # DETECTOR 4 -- referenced in code, never escaped, never CSS (2026-08-05, Bean).
+    #
+    # Runs LAST and only over what everything else left behind: rows no detector
+    # claimed as content and no D1 veto covered. For each, D4 asks a different
+    # question -- "does the block's own code (or the shared includes/components
+    # trees) actually READ this value?" A yes, combined with D1 having found no
+    # escaping call and the emission parser having found no css_property, is
+    # positive evidence of a machine-facing value: a form key, a conditional
+    # operand, a query argument.
+    #
+    # This is NOT "leftovers are technical". An attribute nothing reads is left
+    # alone here -- that is a DEAD attribute, a different finding owned by
+    # check-dead-controls.js CHECK 4, with a different fix (delete it).
+    claimed = set(seen) | {(a["block_slug"], a["attr_name"]) for a in assignments}
+    d4_candidates = sorted(pool - claimed)
+    technical_refs = []
+    wrapper_styling = []
+    d4_review = []
+    if d4_candidates:
+        try:
+            import detector4_referenced_not_output as _d4
+            _d4_all = _d4.detect(d4_candidates)
+            # D4 emits two categories. Only 'referenced-not-output' earns the
+            # technical role; 'wrapper-rendered-styling' is a block owing an
+            # attrMap declaration and is reported as its own actionable bucket.
+            technical_refs = [x for x in _d4_all if x["category"] == "referenced-not-output"]
+            wrapper_styling = [x for x in _d4_all if x["category"] == "wrapper-rendered-styling"]
+            d4_review = [x for x in _d4_all if x["category"] == "d4-needs-review"]
+        except Exception as exc:  # surfaced, never swallowed
+            technical_refs = []
+            wrapper_styling = []
+            d4_review = []
+            print(f"!! DETECTOR 4 DID NOT RUN: {type(exc).__name__}: {exc}",
+                  file=sys.stderr)
+
     reached = (
         set().union(*(set(d) for d in per_detector.values())) | d1_vetoes
+        | {(t["block_slug"], t["attr_name"]) for t in technical_refs}
+        | {(t["block_slug"], t["attr_name"]) for t in wrapper_styling}
+        | {(t["block_slug"], t["attr_name"]) for t in d4_review}
         if per_detector else set(d1_vetoes)
     )
     return {
@@ -490,6 +528,9 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
         "report_only": sorted(report_only, key=lambda a: (a["block_slug"], a["attr_name"])),
         "disagreements": disagreements,
         "vetoed": sorted(vetoed, key=lambda a: (a["block_slug"], a["attr_name"])),
+        "technical_refs": sorted(technical_refs, key=lambda a: (a["block_slug"], a["attr_name"])),
+        "wrapper_styling": sorted(wrapper_styling, key=lambda a: (a["block_slug"], a["attr_name"])),
+        "d4_review": sorted(d4_review, key=lambda a: (a["block_slug"], a["attr_name"])),
         "content_gaps": sorted(content_gaps, key=lambda a: (a["block_slug"], a["attr_name"])),
     }
 
@@ -713,6 +754,9 @@ def main() -> int:
     print(f"REPORT-ONLY              {len(r)}   (expected 20-40)")
     print(f"VETOED by D1             {len(result['vetoed'])}   (D2/D3 claimed, D1 rejected)")
     print(f"CONTENT GAPS             {len(result['content_gaps'])}   (content, but no whole-value role fits -> Task E)")
+    print(f"D4 REFERENCED-NOT-OUTPUT {len(result['technical_refs'])}   (read by code, never escaped, never CSS -> technical)")
+    print(f"D4 WRAPPER-STYLING       {len(result['wrapper_styling'])}   (wrapper-painted; owe an attrMap declaration, NOT a role)")
+    print(f"D4 NEEDS REVIEW          {len(result['d4_review'])}   (read but not escaped; technical OR late-painted styling — human call)")
     if result["disagreements"]:
         print(f"DISAGREEMENTS            {len(result['disagreements'])}   (D1 wins each)")
 

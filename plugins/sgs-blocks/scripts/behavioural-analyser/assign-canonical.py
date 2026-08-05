@@ -1569,7 +1569,19 @@ def _structural_role_map() -> tuple[dict, str | None, set]:
     return (
         {(a["block_slug"], a["attr_name"]): a["role"] for a in result["assignments"]},
         None,
-        {(v["block_slug"], v["attr_name"]) for v in result.get("vetoed", [])},
+        # D1 vetoes UNION D4's proven referenced-not-output rows. Both are
+        # positive evidence that the value is machine-facing, reached by
+        # different routes:
+        #   D1 veto  -- walked every escaping call, none content-bearing.
+        #   D4       -- the block demonstrably READS it, it never reaches an
+        #               escaping call, it paints no CSS, and its consumer lives
+        #               in a subsystem proven to emit no CSS at all.
+        # D4's own 'needs-review' and 'wrapper-rendered-styling' buckets are
+        # deliberately NOT included: they are reported for a human, and folding
+        # them in here would be the "leftovers are technical" inference this
+        # role was specifically built to avoid.
+        {(v["block_slug"], v["attr_name"]) for v in result.get("vetoed", [])}
+        | {(t["block_slug"], t["attr_name"]) for t in result.get("technical_refs", [])},
     )
 
 
