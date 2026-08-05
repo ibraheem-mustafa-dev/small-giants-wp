@@ -172,6 +172,73 @@ def _build_var_map(php_src: str) -> dict[str, str]:
     return var_to_attr
 
 
+_LINK_TEMPLATE_PLACEHOLDER = "{value}"
+
+
+def _detect_link_template(
+    lines: list[str], attr_name: str, var_to_attr: dict[str, str]
+) -> Optional[str]:
+    """Recover the URL template a block assembles around a fragment attribute.
+
+    THE SHAPE THIS CATCHES (sgs/whatsapp-cta, render.php:54-58):
+
+        $clean_phone     = preg_replace( '/[^0-9]/', '', $phone_number );
+        $wa_url          = 'https://wa.me/' . $clean_phone;
+        $wa_url         .= '?text=' . $encoded_message;
+
+    The operator supplies only the VARIABLE part; the block supplies the rest.
+    Returned as e.g. ``https://wa.me/{value}`` — the literal, with the attribute's
+    position marked.
+
+    WHY THIS IS NEEDED AT ALL. Cloning a draft gives you the finished
+    ``<a href>``. Without the template there is no way back to the fragment: the
+    `link-href` role would write the whole assembled URL into an attribute the
+    render then re-prefixes, producing `https://wa.me/https://wa.me/...`. The
+    template is what makes the round trip reversible.
+
+    WHY IT LIVES IN output_signature AND NOT A NEW COLUMN (Bean, 2026-08-05).
+    `output_signature` is already the structured record of *what render.php does
+    with the value*, and a URL template is exactly that. `default_value` is
+    occupied and load-bearing (whatsapp-cta.message holds real default copy —
+    overwriting it would corrupt the block). `description` is human prose, and
+    parsing a machine contract out of prose is the wrong-document failure this
+    programme exists to stop.
+
+    Deliberately conservative: only a LITERAL string concatenated with a tracked
+    variable counts. A template built from another variable is not guessed at —
+    it returns None and the attribute stays unclaimed, which is honest.
+    """
+    # Variables carrying this attribute's value, including one hop of aliasing
+    # (`$clean_phone = preg_replace(..., $phone_number)`), because the
+    # concatenation is almost always applied to the sanitised alias rather than
+    # the raw attribute.
+    carriers = {v for v, a in var_to_attr.items() if a == attr_name}
+    if not carriers:
+        return None
+    for _ in range(2):  # two passes = up to two hops; enough for every real case
+        for line in lines:
+            m = re.match(r"\s*\$([A-Za-z_]\w*)\s*=\s*(.+?);\s*$", line)
+            if not m:
+                continue
+            target, expr = m.group(1), m.group(2)
+            if target in carriers:
+                continue
+            if any(re.search(rf"\${re.escape(c)}\b", expr) for c in carriers):
+                carriers.add(target)
+
+    for line in lines:
+        for carrier in carriers:
+            # 'literal' . $carrier      → prefix template
+            m = re.search(rf"(['\"])([^'\"]{{1,120}})\1\s*\.\s*\${re.escape(carrier)}\b", line)
+            if m and ("://" in m.group(2) or m.group(2).startswith(("?", "&", "#", "/"))):
+                return m.group(2) + _LINK_TEMPLATE_PLACEHOLDER
+            # $carrier . 'literal'      → suffix template
+            m = re.search(rf"\${re.escape(carrier)}\s*\.\s*(['\"])([^'\"]{{1,120}})\1", line)
+            if m and ("://" in m.group(2) or m.group(2).startswith(("?", "&", "#", "/"))):
+                return _LINK_TEMPLATE_PLACEHOLDER + m.group(2)
+    return None
+
+
 def _analyse_attr_in_php(
     lines: list[str],
     attr_name: str,
@@ -484,6 +551,14 @@ def extract_all_signatures() -> None:
             )
 
             final_sig = _merge_signatures(php_sig, js_sig)
+
+            # LINK TEMPLATE (2026-08-05). Recorded on the signature rather than in
+            # a new column — output_signature already describes what render.php
+            # does with the value, and a URL template is precisely that.
+            if final_sig and php_lines:
+                link_template = _detect_link_template(php_lines, attr_name, var_to_attr)
+                if link_template:
+                    final_sig["link_template"] = link_template
 
             if final_sig:
                 sig_json = json.dumps(final_sig, separators=(",", ":"))
