@@ -346,7 +346,6 @@
       "slug": "sgs/product-card",
       "attr": "descColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -354,7 +353,6 @@
       "slug": "sgs/product-card",
       "attr": "descFontSize",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -362,7 +360,6 @@
       "slug": "sgs/product-card",
       "attr": "descFontSizeUnit",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -370,7 +367,6 @@
       "slug": "sgs/product-card",
       "attr": "descFontSizeTablet",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -378,7 +374,6 @@
       "slug": "sgs/product-card",
       "attr": "descFontSizeMobile",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -386,7 +381,6 @@
       "slug": "sgs/product-card",
       "attr": "descLineHeight",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -394,7 +388,6 @@
       "slug": "sgs/product-card",
       "attr": "descLineHeightUnit",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__description"
       }
     },
@@ -402,7 +395,6 @@
       "slug": "sgs/product-card",
       "attr": "priceNoteColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__price-note"
       }
     },
@@ -410,7 +402,6 @@
       "slug": "sgs/product-card",
       "attr": "priceNoteFontSize",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__price-note"
       }
     },
@@ -418,7 +409,6 @@
       "slug": "sgs/product-card",
       "attr": "priceNoteFontSizeUnit",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__price-note"
       }
     },
@@ -426,7 +416,6 @@
       "slug": "sgs/product-card",
       "attr": "priceNoteFontSizeTablet",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__price-note"
       }
     },
@@ -434,7 +423,6 @@
       "slug": "sgs/product-card",
       "attr": "priceNoteFontSizeMobile",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-product-card__price-note"
       }
     },
@@ -550,7 +538,6 @@
       "slug": "sgs/product-card",
       "attr": "tagBackgroundColour",
       "fields": {
-        "role": "color",
         "canonical_slot": "label",
         "derived_selector": ".sgs-product-card__tag--trial"
       }
@@ -559,7 +546,6 @@
       "slug": "sgs/product-card",
       "attr": "tagTextColour",
       "fields": {
-        "role": "color",
         "canonical_slot": "label",
         "derived_selector": ".sgs-product-card__tag--trial"
       }
@@ -568,7 +554,6 @@
       "slug": "sgs/product-card",
       "attr": "tagBorderRadius",
       "fields": {
-        "role": "visual",
         "canonical_slot": "label",
         "derived_selector": ".sgs-product-card__tag--trial"
       }
@@ -617,7 +602,6 @@
       "slug": "sgs/testimonial",
       "attr": "quoteFontStyle",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-testimonial__quote"
       }
     },
@@ -625,7 +609,6 @@
       "slug": "sgs/testimonial",
       "attr": "nameFontWeight",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-testimonial__name"
       }
     },
@@ -633,7 +616,6 @@
       "slug": "sgs/testimonial",
       "attr": "orgColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-testimonial__org"
       }
     },
@@ -641,7 +623,6 @@
       "slug": "sgs/testimonial",
       "attr": "summaryColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-testimonial__summary"
       }
     },
@@ -649,7 +630,6 @@
       "slug": "sgs/testimonial",
       "attr": "summaryFontSize",
       "fields": {
-        "role": "typography",
         "derived_selector": ".sgs-testimonial__summary"
       }
     },
@@ -1160,7 +1140,6 @@
       "slug": "sgs/option-picker",
       "attr": "pillBgColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-option-picker__pill"
       }
     },
@@ -1168,7 +1147,6 @@
       "slug": "sgs/option-picker",
       "attr": "pillSelectedBgColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-option-picker__pill--active"
       }
     },
@@ -1176,7 +1154,6 @@
       "slug": "sgs/option-picker",
       "attr": "pillSelectedTextColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-option-picker__pill--active"
       }
     },
@@ -1184,7 +1161,6 @@
       "slug": "sgs/option-picker",
       "attr": "pillSelectedBorderColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-option-picker__pill--active"
       }
     },
@@ -1192,7 +1168,6 @@
       "slug": "sgs/option-picker",
       "attr": "pillBorderRadius",
       "fields": {
-        "role": "visual",
         "derived_selector": ".sgs-option-picker__pill"
       }
     },
@@ -1200,7 +1175,6 @@
       "slug": "sgs/option-picker",
       "attr": "pillSelectedBorderRadius",
       "fields": {
-        "role": "visual",
         "derived_selector": ".sgs-option-picker__pill--active"
       }
     },
@@ -1208,7 +1182,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillBgColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__pill"
       }
     },
@@ -1216,7 +1189,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillTextColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__pill"
       }
     },
@@ -1224,7 +1196,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillBorderColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__pill"
       }
     },
@@ -1232,7 +1203,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillSelectedBgColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__pill--active"
       }
     },
@@ -1240,7 +1210,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillSelectedTextColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__pill--active"
       }
     },
@@ -1248,7 +1217,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillSelectedBorderColour",
       "fields": {
-        "role": "color",
         "derived_selector": ".sgs-product-card__pill--active"
       }
     },
@@ -1256,7 +1224,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillBorderRadius",
       "fields": {
-        "role": "visual",
         "derived_selector": ".sgs-product-card__pill"
       }
     },
@@ -1264,7 +1231,6 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillSelectedBorderRadius",
       "fields": {
-        "role": "visual",
         "derived_selector": ".sgs-product-card__pill--active"
       }
     },
