@@ -8,20 +8,25 @@ Ground truth:
     default '_self', role content), shouldSyncIcon (boolean). supports:
     align:true / alignWide:false, color.text/background both false, spacing
     margin+padding.
-  - sgs/responsive-logo/block.json (read 2026-07-16): attributes =
-    desktopLogoId/tabletLogoId/mobileLogoId/svgAnimationSource (number),
+  - sgs/responsive-logo/block.json (read 2026-08-05, post-rename): attributes =
+    logoId/logoIdTablet/logoIdMobile/svgAnimationSource (number),
     animationStyle (string enum), width (number, default 240), linkToHome
     (boolean, default true), alt (string), paddingTablet/paddingMobile/
     marginTablet/marginMobile (object). supports.align: left/center/right/
     wide (NOT "align" itself declared as a static attribute — see the align
     note below). supports.spacing: margin+padding, skip-serialised.
-  - sgs/responsive-logo/render.php (read 2026-07-16): when desktopLogoId is
+    (Renamed 2026-08-05 from desktopLogoId/tabletLogoId/mobileLogoId — the old
+    PREFIX scheme was invisible to the framework's suffix-based device-tier
+    detection; logoId is now the base/desktop attr with Tablet/Mobile tier
+    siblings, matching backgroundImage/backgroundImageTablet/backgroundImageMobile
+    elsewhere in the framework.)
+  - sgs/responsive-logo/render.php (read 2026-08-05): when logoId is
     0/unset, falls back to `get_theme_mod('custom_logo', 0)` — the SAME
     WordPress Customizer "Site Identity" logo core/site-logo always renders
     ("Per Bean's directive 2026-05-20", render.php comment). None of the 3
     safe-zone instances (header-centred.php, header-full.php, header-minimal.
     php — footer-*.php + framework-footer-default.php are HANDS-OFF) carry a
-    logo id/url at all, so leaving desktopLogoId/tabletLogoId/mobileLogoId
+    logo id/url at all, so leaving logoId/logoIdTablet/logoIdMobile
     unset reproduces core/site-logo's behaviour EXACTLY: both blocks resolve
     to the same Customizer logo. This is not a gap — it is a verified 1:1
     behavioural match.
@@ -172,7 +177,7 @@ def transform(node, text):
             f'problem — everything else in this instance mapped cleanly.')
 
     notes.append(
-        'no desktopLogoId/tabletLogoId/mobileLogoId set — falls back to '
+        'no logoId/logoIdTablet/logoIdMobile set — falls back to '
         "get_theme_mod('custom_logo'), the SAME site logo core/site-logo always rendered "
         '(verified behavioural match, render.php).')
 

@@ -1026,7 +1026,10 @@
       "slug": "sgs/responsive-logo",
       "attr": "alt",
       "fields": {
-        "derived_selector": ".sgs-responsive-logo__image, img"
+        "derived_selector": ".sgs-responsive-logo__image, img",
+        "role": "image-alt",
+        "alt_companion_attr": "logoUrl",
+        "_note": "2026-08-05: sgs/responsive-logo now mirrors how every other SGS image block declares an image. `logoUrl` (attr_type='string') was added beside the existing `logoId` (number) — the sgs/media imageUrl+imageId shape, ID-wins-URL-fallback — so `alt` finally has a string sibling to name as its companion. walk.py:295 gates alt capture on `role == 'image-object' AND attr_type == 'string'`, which three bare attachment IDs could never satisfy; that is why `alt` was routed through the interim `authored-alt-text` category. RETIREMENT CONDITION MET: `authored-alt-text` existed for this one block and can now be retired. Note the LEDGER previously recorded the prefix->suffix RENAME as the retirement condition — that was wrong, and verified wrong post-rename: renaming changed no attr_type, so image-alt stayed non-viable. It is THIS change, the attr-shape mirror, that retires it."
       }
     },
     {
@@ -1577,6 +1580,14 @@
       "attr": "blockLabel",
       "fields": {
         "role": "a11y-text"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "logoUrl",
+      "fields": {
+        "role": "image-object",
+        "_note": "The string image attr `alt` names via alt_companion_attr. Must be role='image-object' AND attr_type='string' together — walk.py:295 requires both before it will capture alt text."
       }
     }
   ]

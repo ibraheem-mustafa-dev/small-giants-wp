@@ -156,9 +156,9 @@ function LogoSlot( { mediaId, mediaUrl, onSelect, onRemove, label, placeholder }
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		desktopLogoId,
-		tabletLogoId,
-		mobileLogoId,
+		logoId,
+		logoIdTablet,
+		logoIdMobile,
 		logoSwitchMode,
 		logoSwitchCustomPx,
 		svgAnimationSource,
@@ -202,36 +202,47 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
-	// We store URLs in the editor state via onSelect but don't persist them
-	// as block attributes — render.php derives them server-side from IDs.
-	// For editor preview we resolve them inline.
+	// The picker now persists BOTH the attachment ID and its URL, to the declared
+	// `logoId*` / `logoUrl*` attribute pairs — the shape every other SGS image
+	// block uses (sgs/media imageId + imageUrl).
+	//
+	// This replaces `_desktopLogoUrl` / `_tabletLogoUrl` / `_mobileLogoUrl`, which
+	// were written by setAttributes but never DECLARED in block.json. WordPress
+	// silently discards any attribute a block does not declare — no error, no
+	// warning — so those values existed only in editor memory for the length of a
+	// session and were gone on reload. That is the exact class
+	// `check-dead-pattern-attrs.py` was built for at D338 (45 found, 39 fixed),
+	// and it is why the old comment's "not persisted as attribute" was accurate
+	// while describing a silent data loss rather than a design.
+	//
+	// Persisting the URL is also what makes the a11y half work: `image-alt` pairs
+	// an alt attr to a sibling image attr via `alt_companion_attr`, and
+	// `walk.py:295` only captures alt when that companion is
+	// `attr_type='string'`. Three bare attachment IDs could never satisfy it, so
+	// `alt` had to go through the interim `authored-alt-text` category.
 	const blockProps = useBlockProps( {
 		className: 'sgs-responsive-logo-editor',
 	} );
 
 	const onSelectDesktop = ( media ) => {
-		setAttributes( {
-			desktopLogoId: media.id,
-			// Store URL for live editor preview only (not persisted as attribute).
-			_desktopLogoUrl: media.url,
-		} );
+		setAttributes( { logoId: media.id, logoUrl: media.url } );
 	};
 	const onRemoveDesktop = () => {
-		setAttributes( { desktopLogoId: undefined, _desktopLogoUrl: undefined } );
+		setAttributes( { logoId: undefined, logoUrl: '' } );
 	};
 
 	const onSelectTablet = ( media ) => {
-		setAttributes( { tabletLogoId: media.id, _tabletLogoUrl: media.url } );
+		setAttributes( { logoIdTablet: media.id, logoUrlTablet: media.url } );
 	};
 	const onRemoveTablet = () => {
-		setAttributes( { tabletLogoId: undefined, _tabletLogoUrl: undefined } );
+		setAttributes( { logoIdTablet: undefined, logoUrlTablet: '' } );
 	};
 
 	const onSelectMobile = ( media ) => {
-		setAttributes( { mobileLogoId: media.id, _mobileLogoUrl: media.url } );
+		setAttributes( { logoIdMobile: media.id, logoUrlMobile: media.url } );
 	};
 	const onRemoveMobile = () => {
-		setAttributes( { mobileLogoId: undefined, _mobileLogoUrl: undefined } );
+		setAttributes( { logoIdMobile: undefined, logoUrlMobile: '' } );
 	};
 
 	const onSelectSvg = ( media ) => {
@@ -241,10 +252,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { svgAnimationSource: undefined } );
 	};
 
-	// Internal preview URL attrs (not in block.json, editor-only transient state).
-	const desktopUrl = attributes._desktopLogoUrl;
-	const tabletUrl  = attributes._tabletLogoUrl;
-	const mobileUrl  = attributes._mobileLogoUrl;
+	// Preview URLs now come from the DECLARED, PERSISTED attrs. The previous
+	// `attributes._desktopLogoUrl` reads were the visible symptom of the silent
+	// discard described above: WordPress drops undeclared attributes, so after a
+	// save-and-reload every one of these was undefined and each slot fell back to
+	// its placeholder — the operator's chosen logo appeared to vanish from the
+	// editor even though the ID had been stored correctly and the FRONTEND
+	// rendered fine. A bug that only shows on reload, and only in the editor,
+	// which is a surface no gate in this repo covers.
+	const desktopUrl = attributes.logoUrl;
+	const tabletUrl  = attributes.logoUrlTablet;
+	const mobileUrl  = attributes.logoUrlMobile;
 
 	const hasAnimation = animationStyle && 'none' !== animationStyle;
 
@@ -261,7 +279,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</p>
 
 					<LogoSlot
-						mediaId={ desktopLogoId }
+						mediaId={ logoId }
 						mediaUrl={ desktopUrl }
 						onSelect={ onSelectDesktop }
 						onRemove={ onRemoveDesktop }
@@ -269,7 +287,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 
 					<LogoSlot
-						mediaId={ tabletLogoId }
+						mediaId={ logoIdTablet }
 						mediaUrl={ tabletUrl }
 						onSelect={ onSelectTablet }
 						onRemove={ onRemoveTablet }
@@ -278,7 +296,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 
 					<LogoSlot
-						mediaId={ mobileLogoId }
+						mediaId={ logoIdMobile }
 						mediaUrl={ mobileUrl }
 						onSelect={ onSelectMobile }
 						onRemove={ onRemoveMobile }
@@ -487,12 +505,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			   live site (ssr-fixes-hand-built-preview-drift lesson,
 			   2026-07-18). Tradeoff: the SVG view.js animation itself doesn't
 			   run inside the static SSR preview — only its markup/CSS does.
-			   Gated on desktopLogoId (not the transient preview URL) so the
+			   Gated on logoId (not the transient preview URL) so the
 			   placeholder is correct on reload before a logo is chosen; a
 			   theme-customiser fallback logo (when set) still renders once a
 			   logo is picked here, matching render.php's own fallback. ── */ }
 			<div { ...blockProps }>
-				{ desktopLogoId || desktopUrl ? (
+				{ logoId || desktopUrl ? (
 					<ServerSideRender
 						block="sgs/responsive-logo"
 						attributes={ attributes }

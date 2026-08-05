@@ -57,9 +57,9 @@ $sgs_css_length = static function ( $value ) {
 
 // ── Attribute extraction ──────────────────────────────────────────────────────
 
-$desktop_logo_id  = isset( $attributes['desktopLogoId'] ) ? absint( $attributes['desktopLogoId'] ) : 0;
-$tablet_logo_id   = isset( $attributes['tabletLogoId'] ) ? absint( $attributes['tabletLogoId'] ) : 0;
-$mobile_logo_id   = isset( $attributes['mobileLogoId'] ) ? absint( $attributes['mobileLogoId'] ) : 0;
+$desktop_logo_id  = isset( $attributes['logoId'] ) ? absint( $attributes['logoId'] ) : 0;
+$tablet_logo_id   = isset( $attributes['logoIdTablet'] ) ? absint( $attributes['logoIdTablet'] ) : 0;
+$mobile_logo_id   = isset( $attributes['logoIdMobile'] ) ? absint( $attributes['logoIdMobile'] ) : 0;
 $svg_animation_id = isset( $attributes['svgAnimationSource'] ) ? absint( $attributes['svgAnimationSource'] ) : 0;
 $animation_style  = isset( $attributes['animationStyle'] ) ? sanitize_key( $attributes['animationStyle'] ) : 'none';
 $width            = isset( $attributes['width'] ) ? absint( $attributes['width'] ) : 240;
@@ -81,7 +81,26 @@ if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
 // upload a single logo via the Customiser get all three breakpoints pointing
 // at it automatically. Per Bean's directive 2026-05-20.
 
-if ( 0 === $desktop_logo_id ) {
+// ID-wins-URL-fallback (2026-08-05) — the same resolution order every other SGS
+// image block uses (`media/render.php:467`: "imageId wins; fall back to
+// imageUrl"). The attachment ID stays authoritative because it resolves to the
+// CURRENT file if the media item is replaced, while the stored URL survives when
+// the ID is absent — which is the case for a cloned block, where the draft gave
+// a `<img src>` and no library item exists yet.
+//
+// That fallback is the whole point of the change: it gives `alt` a
+// `attr_type='string'` sibling to name as its `alt_companion_attr`, which is what
+// `walk.py:295` requires before it will capture alt text at all. Three bare
+// attachment IDs could never satisfy it.
+$sgs_logo_url_attr = static function ( $key ) use ( $attributes ): string {
+	return isset( $attributes[ $key ] ) ? esc_url_raw( (string) $attributes[ $key ] ) : '';
+};
+
+$desktop_logo_url_attr = $sgs_logo_url_attr( 'logoUrl' );
+$tablet_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlTablet' );
+$mobile_logo_url_attr  = $sgs_logo_url_attr( 'logoUrlMobile' );
+
+if ( 0 === $desktop_logo_id && '' === $desktop_logo_url_attr ) {
 	$sgs_site_logo_id = (int) get_theme_mod( 'custom_logo', 0 );
 	if ( $sgs_site_logo_id > 0 ) {
 		$desktop_logo_id = $sgs_site_logo_id;
@@ -90,14 +109,23 @@ if ( 0 === $desktop_logo_id ) {
 	}
 }
 
-$desktop_url = wp_get_attachment_url( $desktop_logo_id );
+$desktop_url = $desktop_logo_id > 0 ? wp_get_attachment_url( $desktop_logo_id ) : '';
+if ( ! $desktop_url ) {
+	$desktop_url = $desktop_logo_url_attr;
+}
 if ( ! $desktop_url ) {
 	return;
 }
 $desktop_url = (string) $desktop_url;
 
 $tablet_url = $tablet_logo_id > 0 ? (string) wp_get_attachment_url( $tablet_logo_id ) : '';
+if ( '' === $tablet_url ) {
+	$tablet_url = $tablet_logo_url_attr;
+}
 $mobile_url = $mobile_logo_id > 0 ? (string) wp_get_attachment_url( $mobile_logo_id ) : '';
+if ( '' === $mobile_url ) {
+	$mobile_url = $mobile_logo_url_attr;
+}
 
 // Fall back to desktop when optional slots are empty.
 $effective_tablet_url = $tablet_url ? $tablet_url : $desktop_url;

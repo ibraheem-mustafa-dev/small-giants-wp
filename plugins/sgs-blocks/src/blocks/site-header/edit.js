@@ -16,11 +16,18 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
+// No-inline migration (2026-08-05, D-pending): sgs/site-header no longer uses
+// <ContainerWrapperControls>'s ResponsiveSpacingPanel — its flat
+// paddingTopTablet/…/marginLeftMobile attrs are LEGACY and became dead
+// controls once paddingTablet/paddingMobile/marginTablet/marginMobile became
+// box OBJECT attrs read by class-sgs-container-wrapper.php (matches
+// sgs/container's + sgs/cta-section's own edit.js, which took the same
+// approach). Roll this block's own "Padding & margin" panel below using
+// ResponsiveBoxControl bound to the object attrs.
 import {
 	WidthPanel,
-	ResponsiveSpacingPanel,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveTriStateControl } from '../../components';
+import { ResponsiveTriStateControl, ResponsiveBoxControl } from '../../components';
 
 // FR-37-28 — Layout preset (Centred / Split / Minimal). A preset is a
 // convenience action that WRITES the block's EXISTING layout attributes
@@ -441,10 +448,60 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 					/>
 				</PanelBody>
-				<ResponsiveSpacingPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
+
+				{ /* Responsive spacing (padding + margin) — box-object interface
+				     contract (.claude/plans/2026-07-09-box-object-interface-contract.md
+				     §5). Base tier writes to the WP-native style.spacing object (also
+				     visible in the Styles > Dimensions panel); tablet/mobile write to
+				     the paddingTablet/paddingMobile and marginTablet/marginMobile
+				     object attrs read by the wrapper's @media tiers. */ }
+				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.padding ?? {},
+							tablet: attributes.paddingTablet ?? {},
+							mobile: attributes.paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.margin ?? {},
+							tablet: attributes.marginTablet ?? {},
+							mobile: attributes.marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, margin: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls group="settings">

@@ -295,10 +295,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"direction": {
-			"type": "string",
-			"default": ""
-		},
 		"flexDirection": {
 			"type": "string",
 			"default": ""
@@ -306,10 +302,6 @@
 		"flexWrap": {
 			"type": "string",
 			"default": ""
-		},
-		"wrap": {
-			"type": "boolean",
-			"default": false
 		},
 		"justifyContent": {
 			"type": "string",

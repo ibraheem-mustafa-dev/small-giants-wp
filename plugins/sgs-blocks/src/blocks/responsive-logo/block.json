@@ -32,10 +32,12 @@
 		},
 		"sgs": {
 			"headerEssential": true,
-		"fx": {
-			"providesNatively": [ "draw" ],
-			"_comment_providesNatively": "Spec 38 FR-38-15 / §7. This block ALREADY exposes stroke-draw through its own `animationStyle` enum (draw-on-load | hover-redraw | scroll-trigger), whose values FR-38-15 keeps byte-identical across the Vivus->DrawSVG swap. Listing `draw` again in the generic 'Scroll & effects' picker would put TWO controls for ONE capability on this block, which this codebase bans. `generate-fx-qualifying-blocks.py` subtracts every effect named here from the block's derived roster, so the exclusion is a declaration this block OWNS rather than a per-block carve-out in the generator or in fx.js. Any future block that natively owns an fx capability declares it the same way."
-		},
+			"fx": {
+				"providesNatively": [
+					"draw"
+				],
+				"_comment_providesNatively": "Spec 38 FR-38-15 / §7. This block ALREADY exposes stroke-draw through its own `animationStyle` enum (draw-on-load | hover-redraw | scroll-trigger), whose values FR-38-15 keeps byte-identical across the Vivus->DrawSVG swap. Listing `draw` again in the generic 'Scroll & effects' picker would put TWO controls for ONE capability on this block, which this codebase bans. `generate-fx-qualifying-blocks.py` subtracts every effect named here from the block's derived roster, so the exclusion is a declaration this block OWNS rather than a per-block carve-out in the generator or in fx.js. Any future block that natively owns an fx capability declares it the same way."
+			},
 			"imageControls": true,
 			"boxFamilies": {
 				"padding": [
@@ -51,14 +53,16 @@
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin"
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). No background-color/border/box-shadow/gap/aspect-ratio attribute or native support exists (no color/border supports declared on this block — logo images carry no theme-colour fill) — honest gaps. Governed separately by supports.sgs.imageControls (universal image extension) for the <img>/<picture> itself, which is not a Text/Fill/Layout member. desktopLogoId/tabletLogoId/mobileLogoId/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). No background-color/border/box-shadow/gap/aspect-ratio attribute or native support exists (no color/border supports declared on this block — logo images carry no theme-colour fill) — honest gaps. Governed separately by supports.sgs.imageControls (universal image extension) for the <img>/<picture> itself, which is not a Text/Fill/Layout member. logoId/logoIdTablet/logoIdMobile/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
 				}
 			}
 		},
@@ -73,19 +77,40 @@
 			"default": "left",
 			"_comment": "FR-36-22 basics: explicit left-align default (NN/g: 6x better home-return). Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (D291 gotcha: an out-of-enum stored value silently resets to default)."
 		},
-		"desktopLogoId": {
+		"logoId": {
+			"type": "number",
+			"_comment": "Desktop/base logo — media library attachment ID. Renamed from desktopLogoId (2026-08-05): the base attr carries no tier suffix, matching the framework's universal responsive-tier convention (e.g. backgroundImage/backgroundImageTablet/backgroundImageMobile) instead of the old desktop/tablet/mobile PREFIX scheme, which was structurally invisible to the DB's modifier_suffixes tier-detection (a suffix strip, not a prefix strip)."
+		},
+		"logoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"_comment": "Media-library URL for this tier's logo, stored ALONGSIDE the attachment ID. Added 2026-08-05 so this block mirrors how every other SGS image block declares an image (sgs/media imageUrl+imageId, sgs/decorative-image, sgs/product-card): the ID wins at render and the URL is the fallback (media/render.php:467). WHY IT MATTERS BEYOND TIDINESS: the `image-alt` role pairs an alt attr to a SIBLING image attr via block_attributes.alt_companion_attr, and walk.py:295 only captures alt when that companion is attr_type='string'. With three bare attachment IDs (type=number) and no string image attr, there was nothing to name as the companion, so `alt` had to be routed through the interim `authored-alt-text` category. This attr is that companion."
+		},
+		"logoIdTablet": {
 			"type": "number"
 		},
-		"tabletLogoId": {
+		"logoUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"logoIdMobile": {
 			"type": "number"
 		},
-		"mobileLogoId": {
-			"type": "number"
+		"logoUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
 		},
 		"logoSwitchMode": {
 			"type": "string",
 			"default": "mobile",
-			"enum": [ "mobile", "tablet", "custom" ],
+			"enum": [
+				"mobile",
+				"tablet",
+				"custom"
+			],
 			"_comment": "When the compact/alternate logo replaces the desktop logo. mobile = at the mobile tier (<=767px viewport); tablet = at the tablet tier (<=1023px viewport); custom = at the operator's own breakpoint (<= logoSwitchCustomPx, viewport). Only takes effect once an alternate (mobile or tablet) logo is set."
 		},
 		"logoSwitchCustomPx": {

@@ -238,9 +238,9 @@ class ResponsiveLogoTest extends TestCase {
 		);
 		$attrs = $data['attributes'];
 
-		$this->assertArrayHasKey( 'desktopLogoId', $attrs );
-		$this->assertArrayHasKey( 'tabletLogoId', $attrs );
-		$this->assertArrayHasKey( 'mobileLogoId', $attrs );
+		$this->assertArrayHasKey( 'logoId', $attrs );
+		$this->assertArrayHasKey( 'logoIdTablet', $attrs );
+		$this->assertArrayHasKey( 'logoIdMobile', $attrs );
 		$this->assertArrayHasKey( 'svgAnimationSource', $attrs );
 		$this->assertArrayHasKey( 'animationStyle', $attrs );
 		$this->assertArrayHasKey( 'width', $attrs );
@@ -281,7 +281,7 @@ class ResponsiveLogoTest extends TestCase {
 	 * Render with desktop logo only: must output exactly two source elements.
 	 */
 	public function test_render_desktop_only_has_two_sources(): void {
-		$html = render_responsive_logo( array( 'desktopLogoId' => 10 ) );
+		$html = render_responsive_logo( array( 'logoId' => 10 ) );
 
 		$this->assertSame(
 			2,
@@ -294,7 +294,7 @@ class ResponsiveLogoTest extends TestCase {
 	 * Render with desktop logo only: both source srcsets must point to desktop URL.
 	 */
 	public function test_render_desktop_only_sources_both_point_to_desktop(): void {
-		$html        = render_responsive_logo( array( 'desktopLogoId' => 10 ) );
+		$html        = render_responsive_logo( array( 'logoId' => 10 ) );
 		$desktop_url = 'https://example.com/wp-content/uploads/logo-10.png';
 
 		preg_match_all( '/srcset="([^"]+)"/', $html, $matches );
@@ -315,9 +315,9 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_all_three_slots_uses_correct_urls(): void {
 		$html        = render_responsive_logo(
 			array(
-				'desktopLogoId' => 10,
-				'tabletLogoId'  => 20,
-				'mobileLogoId'  => 30,
+				'logoId' => 10,
+				'logoIdTablet'  => 20,
+				'logoIdMobile'  => 30,
 			)
 		);
 		$desktop_url = 'https://example.com/wp-content/uploads/logo-10.png';
@@ -327,19 +327,19 @@ class ResponsiveLogoTest extends TestCase {
 		$this->assertMatchesRegularExpression(
 			'#<source media="\(max-width: 600px\)" srcset="' . preg_quote( $mobile_url, '#' ) . '">#',
 			$html,
-			'Mobile source must use mobileLogoId URL.'
+			'Mobile source must use logoIdMobile URL.'
 		);
 
 		$this->assertMatchesRegularExpression(
 			'#<source media="\(max-width: 1024px\)" srcset="' . preg_quote( $tablet_url, '#' ) . '">#',
 			$html,
-			'Tablet source must use tabletLogoId URL.'
+			'Tablet source must use logoIdTablet URL.'
 		);
 
 		$this->assertStringContainsString(
 			'src="' . $desktop_url . '"',
 			$html,
-			'img src must use desktopLogoId URL.'
+			'img src must use logoId URL.'
 		);
 	}
 
@@ -351,7 +351,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_link_to_home_true_wraps_in_anchor(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId' => 10,
+				'logoId' => 10,
 				'linkToHome'    => true,
 			)
 		);
@@ -367,7 +367,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_link_to_home_false_has_no_anchor(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId' => 10,
+				'logoId' => 10,
 				'linkToHome'    => false,
 			)
 		);
@@ -383,7 +383,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_svg_animation_adds_data_animation_attribute(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId'      => 10,
+				'logoId'      => 10,
 				'animationStyle'     => 'draw-on-load',
 				'svgAnimationSource' => 99,
 			)
@@ -398,7 +398,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_no_animation_omits_data_animation_attribute(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId'  => 10,
+				'logoId'  => 10,
 				'animationStyle' => 'none',
 			)
 		);
@@ -412,7 +412,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_animation_modifier_class_draw(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId'  => 10,
+				'logoId'  => 10,
 				'animationStyle' => 'draw-on-load',
 			)
 		);
@@ -426,7 +426,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_animation_modifier_class_hover(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId'  => 10,
+				'logoId'  => 10,
 				'animationStyle' => 'hover-redraw',
 			)
 		);
@@ -440,7 +440,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_animation_modifier_class_scroll(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId'  => 10,
+				'logoId'  => 10,
 				'animationStyle' => 'scroll-trigger',
 			)
 		);
@@ -451,7 +451,7 @@ class ResponsiveLogoTest extends TestCase {
 	// ── render.php: empty state ───────────────────────────────────────────────
 
 	/**
-	 * Render with no desktopLogoId must return empty string (early exit).
+	 * Render with no logoId must return empty string (early exit).
 	 */
 	public function test_render_without_desktop_logo_returns_empty(): void {
 		$html = render_responsive_logo( array() );
@@ -464,7 +464,7 @@ class ResponsiveLogoTest extends TestCase {
 	 * Root wrapper must carry the sgs-responsive-logo class.
 	 */
 	public function test_render_root_has_bem_class(): void {
-		$html = render_responsive_logo( array( 'desktopLogoId' => 10 ) );
+		$html = render_responsive_logo( array( 'logoId' => 10 ) );
 		$this->assertStringContainsString( 'sgs-responsive-logo', $html );
 	}
 
@@ -472,7 +472,7 @@ class ResponsiveLogoTest extends TestCase {
 	 * picture element must carry sgs-responsive-logo__picture class.
 	 */
 	public function test_render_picture_has_bem_class(): void {
-		$html = render_responsive_logo( array( 'desktopLogoId' => 10 ) );
+		$html = render_responsive_logo( array( 'logoId' => 10 ) );
 		$this->assertStringContainsString( 'sgs-responsive-logo__picture', $html );
 	}
 
@@ -480,7 +480,7 @@ class ResponsiveLogoTest extends TestCase {
 	 * img element must carry sgs-responsive-logo__image--desktop class.
 	 */
 	public function test_render_img_has_bem_class(): void {
-		$html = render_responsive_logo( array( 'desktopLogoId' => 10 ) );
+		$html = render_responsive_logo( array( 'logoId' => 10 ) );
 		$this->assertStringContainsString( 'sgs-responsive-logo__image--desktop', $html );
 	}
 
@@ -492,7 +492,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_sets_logo_width_custom_property(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId' => 10,
+				'logoId' => 10,
 				'width'         => 320,
 			)
 		);
@@ -506,7 +506,7 @@ class ResponsiveLogoTest extends TestCase {
 	 * Empty alt must fall back to the site name (get_bloginfo stub returns 'Test Site').
 	 */
 	public function test_render_alt_text_uses_site_name_when_empty(): void {
-		$html = render_responsive_logo( array( 'desktopLogoId' => 10 ) );
+		$html = render_responsive_logo( array( 'logoId' => 10 ) );
 		$this->assertStringContainsString( 'alt="Test Site"', $html );
 	}
 
@@ -516,7 +516,7 @@ class ResponsiveLogoTest extends TestCase {
 	public function test_render_alt_text_uses_provided_value(): void {
 		$html = render_responsive_logo(
 			array(
-				'desktopLogoId' => 10,
+				'logoId' => 10,
 				'alt'           => 'Acme Corp logo',
 			)
 		);

@@ -532,19 +532,11 @@
 			"type": "string",
 			"default": ""
 		},
-		"direction": {
-			"type": "string",
-			"default": ""
-		},
 		"flexDirection": {
 			"type": "string",
 			"default": ""
 		},
 		"flexWrap": {
-			"type": "string",
-			"default": ""
-		},
-		"wrap": {
 			"type": "string",
 			"default": ""
 		},
