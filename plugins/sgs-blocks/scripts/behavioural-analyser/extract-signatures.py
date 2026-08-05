@@ -2036,6 +2036,70 @@ def extract_css_property_and_layer() -> dict:
             css_property_written += 1
             _manifest_seeded += 1
 
+    # Device-tier siblings (2026-08-05, Bean). Gap-fill pass, same shape and same
+    # `emitted` guard as the manifest-only pass above.
+    #
+    # THE GAP, measured before the rule was written: of the 183 attrs no content-role
+    # detector reaches, 65 (36%) are device-tier siblings — `gapTablet`, `gapMobile`,
+    # `gridTemplateColumnsTablet` — whose BASE attr is already fully classified:
+    #
+    #     gap                        role=layout  css_property=gap                    is_responsive=1
+    #     gapTablet                  role=NULL    css_property=NULL                   is_responsive=0
+    #     gridTemplateColumns                     css_property=grid-template-columns  is_responsive=1
+    #     gridTemplateColumnsTablet               css_property=NULL                   is_responsive=0
+    #
+    # The base paints through a --sgs-* chain the emission parser can follow; the tier
+    # sibling usually only appears inside an @media block the parser does not resolve to
+    # the same token, so it drops out with no evidence and no marker. Nothing is
+    # malformed and every gate reads green — the same failure shape as
+    # sgs/responsive-logo's prefix naming, where a device tier sat somewhere the
+    # classifier structurally could not look.
+    #
+    # ON PARSING THE NAME: _derive_tier's docstring says tier must come from emission
+    # evidence "never by parsing the attribute's own name WHERE THAT EVIDENCE IS
+    # AVAILABLE". This pass runs only where it is NOT available — every row it touches
+    # produced zero emission evidence. It never competes with `resolved`, never
+    # overwrites an emission-derived tier, and the `emitted` guard makes that structural
+    # rather than a promise.
+    #
+    # The inherited property is the BASE's, not a guess: `gapTablet` sets the same CSS
+    # property as `gap` by construction — that is what the suffix convention MEANS. Only
+    # the tier differs, and the suffix names it.
+    _tier_inherited = 0
+    _TIER_SUFFIXES = (("Tablet", "tablet"), ("Mobile", "mobile"), ("Desktop", "desktop"))
+    _entry_by_key = {(e["slug"], e["attr"]): e["fields"] for e in classification_entries}
+    for slug in sorted(attrs_by_block):
+        for attr in sorted(attrs_by_block[slug]):
+            if (slug, attr) in emitted or (slug, attr) in unit_attrs_excluded:
+                continue
+            for suffix, tier in _TIER_SUFFIXES:
+                if not attr.endswith(suffix):
+                    continue
+                base = attr[: -len(suffix)]
+                if not base:
+                    continue
+                base_fields = _entry_by_key.get((slug, base))
+                # The base must carry a real css_property. A base that is itself
+                # unclassified proves nothing about the sibling — inheriting NULL would
+                # manufacture a classification out of two unknowns. Measured: 4 of the 65
+                # are this shape (google-reviews / trustpilot-reviews
+                # gridTemplateColumns*), and they stay open, correctly.
+                if not base_fields or not base_fields.get("css_property"):
+                    continue
+                fields = {"css_property": base_fields["css_property"], "css_tier": tier}
+                # Carry the base's SELECTOR context too. The sibling paints the same
+                # property on the same element in the same state — only the breakpoint
+                # differs. Dropping these would leave the tier row routable but aimed at
+                # the wrong element, which is harder to spot than a plain NULL.
+                for inherited in ("css_layer", "css_element", "css_state"):
+                    if base_fields.get(inherited):
+                        fields[inherited] = base_fields[inherited]
+                classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
+                emitted.add((slug, attr))
+                css_property_written += 1
+                _tier_inherited += 1
+                break
+
     # Unit attrs (Bean's ruling, 2026-07-21): NEVER enter css_property at all — no
     # entry means the merge/apply layer leaves that column NULL for them (and clears
     # any stale prior value, since the reseed-durable channel is authoritative).
@@ -2117,6 +2181,7 @@ def extract_css_property_and_layer() -> dict:
         "css_property_written": css_property_written,
         "css_layer_written": css_layer_written,
         "unit_attrs_excluded": len(unit_attrs_excluded),
+        "tier_inherited": _tier_inherited,
         "unit_control_written": unit_control_written,
         "resolved": {f"{s}::{a}": sorted(p) for (s, a), p in resolved.items()},
         "unresolved_reasons": {f"{s}::{a}": r for (s, a), r in unresolved_reasons.items()},

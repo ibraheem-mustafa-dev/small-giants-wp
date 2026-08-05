@@ -208,6 +208,39 @@ def classify_esc_attr(row: dict) -> str:
     before = stmt[:idx] if idx != -1 else ""
     after = stmt[idx:] if idx != -1 else ""
 
+    # printf_context OUTRANKS the raw statement window (2026-08-05). The PHP
+    # stage computes printf_context STRUCTURALLY: it counts placeholders in the
+    # format string to find which `%s` this positional argument fills, and
+    # returns the format-string text immediately before that placeholder. When
+    # it exists it therefore names the exact HTML attribute the value lands in
+    # — strictly better evidence than "whatever text precedes the esc_attr call
+    # in the flattened statement", which for a sprintf is the format string's
+    # OPENING, not the value's actual slot.
+    #
+    # Previously both windows were tried in the order (statement, printf,
+    # forward) with the statement always first, so a loose heuristic firing on
+    # the statement window PRE-EMPTED the structural answer. Measured live:
+    #     sgs/icon.ariaLabel, icon/render.php:380
+    #     $output = sprintf( '<span class="sgs-icon__emoji" role="img"
+    #                         aria-label="%s">%s</span>',
+    #                        esc_attr( $emoji_aria_label ), ... );
+    # The statement window contains `class="sgs-icon__emoji"`, so the
+    # class-token rule returned NOT-content — and because that is a decision,
+    # not an "unresolved", the printf fallback never ran. Its printf_context is
+    # exactly `...role="img" aria-label="`, which the a11y-metadata rule matches
+    # on sight. One row, two windows, opposite verdicts, resolved by ORDER
+    # rather than by a stated rule — the same position-vs-rule trap as the
+    # `content_cats[0]` document-order tie-break (D490).
+    #
+    # The tie-break is now STATED: structural placeholder resolution beats
+    # textual proximity. The statement window remains the fallback for every
+    # non-printf call site, which is the overwhelming majority.
+    printf_ctx = row.get("printf_context")
+    if printf_ctx:
+        printf_result = _classify_esc_attr_core(printf_ctx, "", printf_ctx, key)
+        if printf_result != "esc_attr-unresolved":
+            return printf_result
+
     result = _classify_esc_attr_core(before, after, stmt, key)
     if result != "esc_attr-unresolved":
         return result
@@ -248,7 +281,121 @@ def classify_wp_kses(row: dict) -> str:
     return "wp_kses-other"
 
 
+def self_test() -> int:
+    """Prove the multi-hop provenance chain can FAIL.
+
+    Runs the REAL PHP extractor over `fixtures/multihop_provenance.php` and the
+    REAL classifier over its output, then asserts the four shapes that chain was
+    built for. This is deliberately end-to-end: the 2026-08-05 defects lived in
+    the seam between the two stages (a provenance clobber in PHP, a window
+    precedence bug in Python), and testing either half alone would have passed
+    both times.
+
+    Vacuity guard first: if the fixture yields no rows at all, every
+    "expected category" assertion below would be checking an empty world.
+    """
+    import subprocess
+    from pathlib import Path
+
+    here = Path(__file__).resolve().parent
+    fixture = here / "fixtures" / "multihop_provenance.php"
+    if not fixture.is_file():
+        print(f"FAIL: fixture missing at {fixture}")
+        return 1
+
+    proc = subprocess.run(
+        ["php", str(here / "detector1_render_escaping.php"), str(fixture)],
+        capture_output=True, text=True,
+    )
+    if proc.returncode != 0:
+        print(f"FAIL: PHP extractor exited {proc.returncode}\n{proc.stderr[:1500]}")
+        return 1
+
+    rows = []
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        row = json.loads(line)
+        func = row["func"].lower()
+        if row.get("fragment"):
+            row["final_category"] = "value-fragment"
+        elif func in FUNC_CATEGORY:
+            row["final_category"] = FUNC_CATEGORY[func]
+        elif func in ("esc_attr", "esc_attr_e", "esc_attr__"):
+            row["final_category"] = classify_esc_attr(row)
+        elif func in FUNC_WP_KSES_LIKE:
+            row["final_category"] = classify_wp_kses(row)
+        else:
+            row["final_category"] = "unclassified"
+        rows.append(row)
+
+    if not rows:
+        print("FAIL: fixture produced ZERO rows — the test cannot fail, so it "
+              "proves nothing. Check the extractor's statement splitter.")
+        return 1
+
+    by_key: dict[str, set[str]] = {}
+    for r in rows:
+        by_key.setdefault(r["attr_key"], set()).add(r["final_category"])
+
+    # (attr_key, category that MUST appear, why it is load-bearing)
+    expected = [
+        ("fxAriaLabel", "a11y-metadata",
+         "2-hop ternary into a sprintf'd aria-label (sgs/icon.ariaLabel). Needs "
+         "multi-hop provenance AND printf_context outranking the statement window."),
+        ("fxCartLabel", "visible-text",
+         "2-hop sanitiser+ternary into esc_html (sgs/buybox.addToCartLabel)."),
+        ("fxPhoneNumber", "value-fragment",
+         "literal-prefixed concatenation into esc_url (sgs/whatsapp-cta.phoneNumber) "
+         "must be a fragment veto, never link-href."),
+        ("fxNavLabel", "a11y-metadata",
+         "a DIRECT binding must survive a later conditional reassignment from "
+         "unrelated locals (sgs/nav-menu.navLabel)."),
+    ]
+
+    failures = []
+    for key, want, why in expected:
+        got = by_key.get(key)
+        if got is None:
+            failures.append(f"{key}: NO rows extracted — expected {want!r}. {why}")
+        elif want not in got:
+            failures.append(f"{key}: got {sorted(got)}, expected to include {want!r}. {why}")
+
+    # Negative assertion: the fragment must NOT also surface as a whole-value
+    # category. Without this the test would pass on an implementation that
+    # emitted BOTH verdicts, and the aggregator takes any content verdict over
+    # a non-content one — so link-href would win and the veto would be lost.
+    phone_cats = by_key.get("fxPhoneNumber", set())
+    if phone_cats - {"value-fragment"}:
+        failures.append(
+            f"fxPhoneNumber ALSO produced whole-value verdict(s) "
+            f"{sorted(phone_cats - {'value-fragment'})}; any content verdict beats "
+            f"the veto in fingerprint_content_roles.py, so the fragment rule is inert."
+        )
+
+    # Cross-contamination guard: fxOtherAttr exists only to be the wrong answer
+    # for Shape D. If it picked up the aria-label verdict, provenance leaked.
+    if "a11y-metadata" in by_key.get("fxOtherAttr", set()):
+        failures.append(
+            "fxOtherAttr was credited with the aria-label verdict that belongs to "
+            "fxNavLabel — inherited provenance clobbered a direct binding."
+        )
+
+    if failures:
+        print(f"SELF-TEST FAILED ({len(failures)} of {len(expected) + 2} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+
+    print(f"SELF-TEST PASSED — {len(rows)} rows from the fixture; "
+          f"{len(expected) + 2} checks green.")
+    return 0
+
+
 def main() -> None:
+    if "--self-test" in sys.argv[1:]:
+        raise SystemExit(self_test())
     path = sys.argv[1] if len(sys.argv) > 1 else None
     lines = open(path, encoding="utf-8") if path else sys.stdin
     for line in lines:
@@ -257,7 +404,17 @@ def main() -> None:
             continue
         row = json.loads(line)
         func = row["func"].lower()
-        if func in FUNC_CATEGORY:
+        # A value that only ever reached the escaping call as a CONCATENATED
+        # PIECE of a larger string is not that string. Every content-bearing
+        # role is a whole-value contract, so a fragment can never satisfy one
+        # -- decided before the func dispatch, because the FUNCTION is exactly
+        # what would otherwise mislabel it (esc_url on `'https://wa.me/' .
+        # $clean_phone` reads as link-href for all three of its pieces).
+        # Reported as its own category rather than dropped: a dropped row is
+        # indistinguishable from an attribute no detector ever reached.
+        if row.get("fragment"):
+            row["final_category"] = "value-fragment"
+        elif func in FUNC_CATEGORY:
             row["final_category"] = FUNC_CATEGORY[func]
         elif func in ("esc_attr", "esc_attr_e", "esc_attr__"):
             row["final_category"] = classify_esc_attr(row)

@@ -657,11 +657,125 @@ function run(array $files, array $eligibleSet): void {
                 if (!empty($keys)) {
                     // Take the first resolved key as the var's provenance.
                     $varToAttr[$varName] = $keys[0];
-                } elseif (preg_match('/^\$([A-Za-z_][A-Za-z0-9_]*)$/', trim($exprText), $mm)) {
-                    // $var2 = $var1;  (alias) — chase through symbol table.
-                    $src = $mm[1];
-                    if (isset($varToAttr[$src])) {
-                        $varToAttr[$varName] = $varToAttr[$src];
+                } else {
+                    // MULTI-HOP PROVENANCE (2026-08-05). Previously this branch
+                    // matched ONLY a bare alias (`$var2 = $var1;`), anchored
+                    // `^\$name$`, so any assignment that WRAPPED a tracked
+                    // variable in an expression broke the chain and the
+                    // attribute became invisible to D1 — silently, with no
+                    // ::UNRESOLVED:: marker, exactly like the wp_kses_post
+                    // allowlist gap.
+                    //
+                    // Three real rows measured NULL because of it, each a
+                    // two-hop chain no single-hop tracker can follow:
+                    //   sgs/icon.ariaLabel
+                    //     $aria_label = $attributes['ariaLabel'] ?? '';        (hop 1)
+                    //     $emoji_aria_label = '' !== $aria_label ? ... ;       (hop 2 — ternary)
+                    //     esc_attr( $emoji_aria_label )  into aria-label="%s"
+                    //   sgs/buybox.addToCartLabel
+                    //     $add_to_cart_label_raw = $attributes['addToCartLabel'] ?? '';
+                    //     $add_to_cart_label = '' !== sanitize_text_field( $add_to_cart_label_raw )
+                    //                          ? sanitize_text_field( $add_to_cart_label_raw ) : __( ... );
+                    //     esc_html( $add_to_cart_label )
+                    //   sgs/whatsapp-cta.message
+                    //     $encoded_message = $message ? rawurlencode( $message ) : '';
+                    //
+                    // The rule now mirrors what the ESCAPING-CALL resolver at
+                    // step 2 already does (it credits EVERY variable in the
+                    // argument, not just a leading one): an assignment whose
+                    // expression names a tracked variable inherits that
+                    // variable's provenance. First tracked variable wins, the
+                    // same "first resolved key" convention used directly above.
+                    //
+                    // Bounded by construction: provenance only ever ADDS usage
+                    // sites for an attribute. It cannot un-assign a row — the
+                    // aggregator takes any content verdict over non-content
+                    // ones (fingerprint_content_roles.py:311) — so the worst
+                    // case is a spurious NOT-content verdict on a row that had
+                    // no content verdict anyway, which turns "unreached" into
+                    // "vetoed". Both leave role NULL, and vetoed is the
+                    // VISIBLE state of the two.
+                    //
+                    // INHERITANCE NEVER OVERWRITES A DIRECT BINDING. Measured
+                    // regression on the first cut of this change (2026-08-05):
+                    // sgs/nav-menu.navLabel LOST its correct a11y-text
+                    // assignment. `$nav_label` is bound directly at
+                    // nav-menu/render.php:639
+                    //     $nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
+                    // then CONDITIONALLY reassigned at :653 from unrelated
+                    // locals (`$stripped` / `$derived`) — a fallback branch that
+                    // may never execute. Letting a weak inherited binding
+                    // clobber a strong direct one traded a true positive for a
+                    // false one. Direct `$attributes[...]` provenance is the
+                    // strongest evidence available and is never displaced here;
+                    // a straight-line tracker cannot know which branch ran, so
+                    // it keeps the binding it can prove.
+                    if (!isset($varToAttr[$varName])
+                        && preg_match_all('/\$([A-Za-z_][A-Za-z0-9_]*)/', $exprText, $mm)) {
+                        foreach ($mm[1] as $src) {
+                            // Never let a variable inherit from itself
+                            // (`$x = trim( $x );` is a no-op for provenance,
+                            // and self-inheritance on an UNtracked var would
+                            // read the entry this branch is about to write).
+                            if ($src === $varName) {
+                                continue;
+                            }
+                            if (isset($varToAttr[$src])) {
+                                // FRAGMENT vs WHOLE VALUE. Every content-bearing
+                                // role is a WHOLE-VALUE contract: `link-href`
+                                // extracts the nearest <a href> entire,
+                                // `text-content` the element's entire rich text.
+                                // An attribute CONCATENATED into a larger string
+                                // is a fragment of that value, not the value, so
+                                // it must never inherit a whole-value role.
+                                //
+                                // Measured live on the first cut of multi-hop
+                                // (2026-08-05): sgs/whatsapp-cta.phoneNumber was
+                                // assigned `link-href` off
+                                //     whatsapp-cta/render.php:56
+                                //     $wa_url = 'https://wa.me/' . $clean_phone;
+                                //     ...  href="[php] echo esc_url( $wa_url ); [/php]"
+                                //     (written [php] not the real tag: a literal
+                                //     PHP close tag inside a // comment ENDS php
+                                //     mode and truncates the file — this comment
+                                //     did exactly that until it was caught by
+                                //     `php -l`.)
+                                // D1's observation is true — the digits do reach
+                                // an href — but the role's own consumer
+                                // (field_extractors.py:248-253) would write the
+                                // WHOLE `https://wa.me/44...?text=...` back into
+                                // an attribute render.php treats as bare digits
+                                // and re-prefixes with `https://wa.me/`. A
+                                // plausible role that corrupts the value on the
+                                // next clone is worse than NULL.
+                                //
+                                // Transforms and branches are NOT fragments: a
+                                // ternary (`$x = $cond ? $tracked : 'fallback';`)
+                                // or a wrapping call (`preg_replace(...,$tracked)`)
+                                // still yields the whole value. Only literal
+                                // concatenation splits it, so that is what is
+                                // detected — `'lit' . $var` or `$var . 'lit'`,
+                                // including the `.=` append form.
+                                $isFragment = (bool) preg_match(
+                                    '/[\'"]\s*\.\s*\$|\$[A-Za-z_][A-Za-z0-9_]*\s*\.\s*[\'"]/',
+                                    $exprText
+                                ) || (bool) preg_match(
+                                    '/^\$' . preg_quote($varName, '/') . '\s*\.=/',
+                                    strip_statement_glue($text)
+                                );
+                                if ($isFragment) {
+                                    // Recorded, not dropped. A dropped row is
+                                    // indistinguishable from a row no detector
+                                    // ever reached; this one WAS reached and
+                                    // deliberately rejected, and that must stay
+                                    // visible in the output.
+                                    $varToAttr[$varName] = '::FRAGMENT::' . $varToAttr[$src];
+                                } else {
+                                    $varToAttr[$varName] = $varToAttr[$src];
+                                }
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -741,6 +855,18 @@ function run(array $files, array $eligibleSet): void {
                         $key = $pair['key'];
                         $sourceVar = $pair['var'];
 
+                        // Unwrap the fragment marker written by the multi-hop
+                        // provenance branch. The KEY must be the real attribute
+                        // name (a marker-prefixed key would match nothing in the
+                        // eligible pool, so the row would silently disappear —
+                        // the opposite of the visibility this records). The
+                        // fragment fact travels as its own field instead.
+                        $isFragmentKey = false;
+                        if (strpos($key, '::FRAGMENT::') === 0) {
+                            $isFragmentKey = true;
+                            $key = substr($key, strlen('::FRAGMENT::'));
+                        }
+
                         // Forward variable->use-site tracking (D1 fix,
                         // 2026-08-05). Candidate variable is EITHER the one
                         // that carried the key INTO this call (when resolved
@@ -796,6 +922,13 @@ function run(array $files, array $eligibleSet): void {
                             'dynamic' => $isDynamic,
                             'printf_context' => $printfContext,
                             'forward_context' => $forwardContext,
+                            // True when this attribute reached the escaping call
+                            // only as a CONCATENATED PIECE of a larger value
+                            // (see the fragment note in the provenance branch).
+                            // The Python stage turns this into an explicit
+                            // 'value-fragment' verdict so the row is reported,
+                            // not silently dropped.
+                            'fragment' => $isFragmentKey,
                         ];
                         echo json_encode($row) . "\n";
                     }

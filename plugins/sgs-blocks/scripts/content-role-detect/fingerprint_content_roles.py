@@ -145,6 +145,13 @@ NON_CONTENT_CATEGORIES = {
     "STYLING-exclude",
     "numeric-adornment",
     "esc_attr-unclassified",
+    # The attribute reached an escaping call only as a concatenated PIECE of a
+    # larger value (D1's `fragment` flag). Every content-bearing role is a
+    # whole-value contract, so a fragment satisfies none of them and this
+    # counts as a D1 rejection -- which is the point: a rejection is VISIBLE in
+    # the `vetoed` list, whereas dropping the row would make a deliberately
+    # rejected attribute look like one no detector ever reached.
+    "value-fragment",
 }
 
 TRUSTED_ALONE = ("D1", "D3")
@@ -431,6 +438,46 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
         )
         seen.add(k)
 
+    # FRAGMENT rows are a GAP, not a rejection (Bean, 2026-08-05).
+    #
+    # A `value-fragment` veto says only "no WHOLE-VALUE role can carry this" — it says
+    # nothing about whether the value is content. Usually it IS: sgs/whatsapp-cta's
+    # phoneNumber and message are both client-authored copy that a client edits, and both
+    # reach the page only as pieces concatenated into a wa.me URL. Leaving them filed
+    # beside genuine non-content vetoes (`linkRel`, class tokens) states a verdict the
+    # evidence does not support, and buries a real gap in a list nobody re-reads.
+    #
+    # They stay OUT of `assignments` — every existing content-bearing role is a
+    # whole-value contract, and assigning one would corrupt the value on the next clone
+    # (link-href would write `https://wa.me/447700900123?text=Hi` into an attribute
+    # render.php re-prefixes with `https://wa.me/`). But they are surfaced separately, as
+    # the same shape as sgs/responsive-logo.alt: genuine content with no compatible role.
+    # The durable fix is a DECLARED role (supports.sgs.attrRoles, FR-31-2.1a / Task E),
+    # not a guessed one — this bucket is that task's inbox.
+    # ONLY when fragmentation is D1's WHOLE story. If D1 also rejected the value
+    # somewhere for a substantive reason, that reason stands and the row is an ordinary
+    # veto. Measured 2026-08-05: a first cut tested `"value-fragment" in verdicts` and
+    # swept in five `fieldName` rows (form-field-address/checkbox/file/radio/tiles) whose
+    # verdict lists read like
+    #     ['NOT-content', 'value-fragment', 'value-fragment', 'value-fragment']
+    # — the NOT-content entries are `name="`/`id="`/`aria-describedby` sites, i.e. D1
+    # saying plainly that a form-processing key is not content. Those are not gaps; the
+    # fragment verdicts are just the same key being concatenated into element ids. Calling
+    # them "plausibly content" would have put five backend keys in Task E's inbox and
+    # inflated the gap count six-fold.
+    content_gaps = [
+        v for v in vetoed
+        if (v.get("d1_verdicts") or []) and set(v["d1_verdicts"]) == {"value-fragment"}
+    ]
+    vetoed = [v for v in vetoed if v not in content_gaps]
+    for gap in content_gaps:
+        gap["reason"] = (
+            "REACHED and plausibly content, but it only ever renders as a CONCATENATED "
+            "FRAGMENT of a larger value. No existing role fits: every content-bearing "
+            "role extracts a WHOLE value, so assigning one would corrupt this attr on "
+            "clone. Needs a declared role (Task E), not a guessed one."
+        )
+
     reached = (
         set().union(*(set(d) for d in per_detector.values())) | d1_vetoes
         if per_detector else set(d1_vetoes)
@@ -443,6 +490,7 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
         "report_only": sorted(report_only, key=lambda a: (a["block_slug"], a["attr_name"])),
         "disagreements": disagreements,
         "vetoed": sorted(vetoed, key=lambda a: (a["block_slug"], a["attr_name"])),
+        "content_gaps": sorted(content_gaps, key=lambda a: (a["block_slug"], a["attr_name"])),
     }
 
 
@@ -664,6 +712,7 @@ def main() -> int:
     print(f"\nASSIGNABLE               {len(a)}   (expected 45-60)")
     print(f"REPORT-ONLY              {len(r)}   (expected 20-40)")
     print(f"VETOED by D1             {len(result['vetoed'])}   (D2/D3 claimed, D1 rejected)")
+    print(f"CONTENT GAPS             {len(result['content_gaps'])}   (content, but no whole-value role fits -> Task E)")
     if result["disagreements"]:
         print(f"DISAGREEMENTS            {len(result['disagreements'])}   (D1 wins each)")
 

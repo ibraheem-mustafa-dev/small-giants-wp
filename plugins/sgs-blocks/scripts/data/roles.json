@@ -7,6 +7,10 @@
     "styling-behaviour",
     "unclassified"
   ],
+  "a11y-text": [
+    "styling-behaviour",
+    "Accessibility metadata: a screen-reader-facing string (aria-label, alt on a decorative image, a nav landmark label). SEEDED FOR DOCUMENTATION, NOT ROUTING (Bean, 2026-08-04). Classification is deliberately 'styling-behaviour' so these rows are EXCLUDED from the content walk: they are content in the everyday sense, but nothing in the converter reads a draft's aria-label into an attr (the only aria-label consumer is field_extractors' STAR-rating count), and marking them content-bearing would let the walk lift screen-reader text into visible clone content. Do NOT use 'image-alt' for these -- that role means alt text for a SIBLING image-object attr, resolved via block_attributes.alt_companion_attr and consumed by the image arm (db_lookup.py:2611-2636, walk.py:485); an aria-label with no companion image would feed a consumer expecting one. This role exists so a future agent reading the DB knows what these attrs ARE rather than finding a bare NULL and assuming something is missing."
+  ],
   "behaviour": [
     "styling-behaviour",
     "Excludes the attr from the content-bearing walk (FR-31-2.2) -- equivalent_block_for()/content_attrs_for_identity() deliberately skip role='behaviour' rows (converter/walk.py:405-408). Real consumer: style_preset_attrs_for_identity() (converter/db/db_lookup.py:3518-3553) mirrors a nested identity's inheritStyle onto the parent's OWN behaviour-role string attr (e.g. sgs/product-card.ctaStyle mirroring a nested sgs/button's --primary/--secondary modifier); also grouped into the BEM-modifier probe at db_lookup.py:4889-4896 alongside select-from-enum/enum-class-probe. MISCLASSIFICATION FOUND + FIXED 2026-08-04: `placeholder` on 11 sgs/form-field-* blocks + sgs/filter-search + sgs/product-search carried role='behaviour', which silently dropped a draft's placeholder text (it never reaches the content walk) -- changed to role='content' (see the 'content' entry) since a placeholder is client-authored text, not a style preset."
@@ -107,6 +111,14 @@
     "styling-behaviour",
     "A design-token-backed spacing value. Consumer: _kind_for() (converter/db/db_lookup.py:1966-1968) lifts ONLY the BlockGap suffix (gap: Npx, a single CSS property) as CSS kind 'number_px'; the Spacing suffix (a padding/margin preset, multi-property) is deliberately NOT CSS-lifted through this path."
   ],
+  "styling": [
+    "styling-behaviour",
+    "Generic STYLING attribute: the row carries a non-NULL css_property, so a structural mechanism has already proven it paints CSS, but no more specific styling family (layout / color / typography / visual / motion / position) was established for it. Classification 'styling-behaviour' keeps it OUT of the content walk, exactly like those specific families. ADDED 2026-08-05 (Bean) to end the ambiguity of a bare NULL: before this, 109 sgs/% rows had a css_property AND role IS NULL, which reads identically to 'nobody has looked at this yet' and sent repeated sessions re-investigating rows that were already understood. WHY GENERIC RATHER THAN DERIVED: 81 of 90 distinct css_property values do map to exactly one role elsewhere in the table, but only 53 of the 109 had any precedent at all, and a precedent-derived role is inference from OTHER rows' classifications, not evidence about THIS row -- it would also be self-referential at seed time, so one wrong row could cascade. This role claims only what is proven: it is styling. Assigned by assign-canonical.apply_role_detection_inline() as a structurally-LAST pass, so it can never pre-empt a content-bearing verdict."
+  ],
+  "svg": [
+    "content-bearing",
+    "Raw inline SVG markup (sgs/hero.svgContent, sgs/media.svgContent, and the four bgSvgContent attrs consumed by includes/class-sgs-container-wrapper.php:458). CONTENT-BEARING with its own extractor branch at converter/services/field_extractors.py (role == 'svg'), which returns the <svg> element's MARKUP. It exists because routing SVG through the text branch is ACTIVELY DESTRUCTIVE, not merely imprecise: rich_text_content() keeps only a text-tag whitelist, so <svg>/<path>/<g> are stripped and a real icon arrives as the empty string -- these attrs carried role='content' and would have been mangled the moment a draft matched. Distinct from the icon-* roles and from 'identity': those resolve an <svg> to a NAMED library icon SLUG via icon_resolver; this returns the bespoke markup itself, which has no slug. Added 2026-08-05 (Bean) as a 3-part build -- role + extractor branch + reclassification in one change -- deliberately NOT as a bare DB relabel, because four icon-* roles in this table already have no consumer and do nothing."
+  ],
   "tag-identity": [
     "styling-behaviour",
     "The attr stores the source element's HTML tag (sgs/heading.level, sgs/media.mediaType). R-31-2 shape fact written by assembly step 3a2 (converter/services/assembly.py:160), gated on enum membership and read back via converter/db/db_lookup.py:1110-1125. Structural identity, never content-walked (classified styling-behaviour on purpose)."
@@ -122,13 +134,5 @@
   "visual": [
     "styling-behaviour",
     "A generic visual/effects CSS value (opacity, box-shadow, and similar). Consumer: grouped into the shared px-unit CSS-kind inference at _kind_for() (converter/db/db_lookup.py:1955-1957); converter/resolvers/outer_box.py:82,307 additionally give role='color' priority over role='visual' when both resolve to the same box-shadow destination attr (rowid-ordering tie-break, e.g. Shadow vs BoxShadow)."
-  ],
-  "a11y-text": [
-    "styling-behaviour",
-    "Accessibility metadata: a screen-reader-facing string (aria-label, alt on a decorative image, a nav landmark label). SEEDED FOR DOCUMENTATION, NOT ROUTING (Bean, 2026-08-04). Classification is deliberately 'styling-behaviour' so these rows are EXCLUDED from the content walk: they are content in the everyday sense, but nothing in the converter reads a draft's aria-label into an attr (the only aria-label consumer is field_extractors' STAR-rating count), and marking them content-bearing would let the walk lift screen-reader text into visible clone content. Do NOT use 'image-alt' for these -- that role means alt text for a SIBLING image-object attr, resolved via block_attributes.alt_companion_attr and consumed by the image arm (db_lookup.py:2611-2636, walk.py:485); an aria-label with no companion image would feed a consumer expecting one. This role exists so a future agent reading the DB knows what these attrs ARE rather than finding a bare NULL and assuming something is missing."
-  ],
-  "svg": [
-    "content-bearing",
-    "Raw inline SVG markup (sgs/hero.svgContent, sgs/media.svgContent, and the four bgSvgContent attrs consumed by includes/class-sgs-container-wrapper.php:458). CONTENT-BEARING with its own extractor branch at converter/services/field_extractors.py (role == 'svg'), which returns the <svg> element's MARKUP. It exists because routing SVG through the text branch is ACTIVELY DESTRUCTIVE, not merely imprecise: rich_text_content() keeps only a text-tag whitelist, so <svg>/<path>/<g> are stripped and a real icon arrives as the empty string -- these attrs carried role='content' and would have been mangled the moment a draft matched. Distinct from the icon-* roles and from 'identity': those resolve an <svg> to a NAMED library icon SLUG via icon_resolver; this returns the bespoke markup itself, which has no slug. Added 2026-08-05 (Bean) as a 3-part build -- role + extractor branch + reclassification in one change -- deliberately NOT as a bare DB relabel, because four icon-* roles in this table already have no consumer and do nothing."
   ]
 }

@@ -1638,11 +1638,55 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
                     "UPDATE block_attributes SET role = ? WHERE id = ?", (proposed, row_id)
                 )
                 upgraded += 1
+    # TIER 3 -- GENERIC STYLING BACKSTOP (2026-08-05, Bean). Deliberately a SEPARATE pass
+    # AFTER the loop above, not another branch inside it: that makes "never pre-empts a
+    # content verdict" structural rather than a promise about branch ordering. Every row
+    # it touches has already been offered to the structural tier and the name regex and
+    # been declined by both.
+    #
+    # THE PROBLEM IT CLOSES: a row with css_property SET and role NULL is not unknown --
+    # an emission-derived mechanism already proved it paints CSS. But it reads exactly
+    # like a row nobody has looked at, so sessions re-investigate it. Measured 2026-08-05:
+    # 109 such rows on sgs/%.
+    #
+    # SAFETY -- stated precisely, because the first draft of this comment overclaimed.
+    # It asserted "it cannot touch a content attr, because a content attr has no
+    # css_property". That is NOT structurally guaranteed; it happens to be true today.
+    # What is actually established:
+    #   (a) STRUCTURAL: this pass runs last and only where role IS NULL, so every
+    #       content-bearing verdict from the structural tier or the name regex above has
+    #       already been written and is untouchable here.
+    #   (b) STRUCTURAL: the content-role fingerprint's eligible pool excludes
+    #       `css_property IS NOT NULL` rows, so the two mechanisms partition the space
+    #       and never compete for the same row.
+    #   (c) EMPIRICAL, not structural: the rows this pass claims were enumerated on
+    #       2026-08-05. Of the 109, the 35 that also match every other content-pool
+    #       criterion (string-typed, no enum, no box_family, is_responsive=0) were read
+    #       individually and are all unambiguous styling -- justify-content, align-items,
+    #       border-color, gap, grid-template-columns, flex-direction, flex-wrap, width,
+    #       background-color, plus image-sequence's two fx:start/fx:end motion rows.
+    #       Zero content attrs among them.
+    # RESIDUAL RISK, named rather than hidden: a genuinely content-bearing attr that ALSO
+    # carries a css_property and that no earlier mechanism reached would be mis-filed
+    # 'styling' here. None exists today (c). If one ever does, the fix is to reach it in
+    # the structural tier, not to loosen this gate -- and the self-test below plants
+    # exactly that shape so the day it appears, the gate says so.
+    styling_filled = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes "
+        "WHERE role IS NULL AND css_property IS NOT NULL"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'styling' WHERE id = ?", (row_id,)
+        )
+        styling_filled += 1
+
     conn.commit()
     return {
         "filled": filled,
         "upgraded": upgraded,
         "structural_filled": structural_filled,
+        "styling_filled": styling_filled,
         # Present and TRUE when the structural tier failed. Callers/logs must show this:
         # a degraded run that silently reverts to name-guessing is indistinguishable from
         # a healthy one unless the failure is carried out with the counts.
@@ -1982,6 +2026,95 @@ def main() -> None:
         conn.close()
 
 
+def _self_test_styling_backstop() -> int:
+    """Prove the TIER 3 generic-styling backstop can FAIL, on a throwaway in-memory DB.
+
+    Three planted rows, each one a way the backstop could be wrong:
+      1. a styling row it MUST claim   (css_property set, role NULL)
+      2. a content row it MUST NOT claim (role already set by an earlier tier)
+      3. the NAMED RESIDUAL RISK from the pass's own comment -- a content-bearing attr
+         that ALSO carries a css_property and that no earlier tier reached. Today none
+         exists; this asserts the CURRENT behaviour (it gets claimed) so that if the
+         situation ever arises the failure is visible and dated, rather than silent.
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, css_property) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "plantedStyling", None, "justify-content"),
+            (2, "sgs/plant", "plantedContent", "text-content", None),
+            (3, "sgs/plant", "plantedContentWithCss", None, "color"),
+            (4, "sgs/plant", "plantedUnreached", None, None),
+            # Row 5 exists because a NEGATIVE CONTROL caught this fixture passing a
+            # defect it was written to catch (2026-08-05). Deleting the `role IS NULL`
+            # guard from the query left the test GREEN: the only row with a role
+            # (plantedContent) had css_property=NULL, so `css_property IS NOT NULL`
+            # excluded it anyway and the missing guard was undetectable. Proving a
+            # guard needs a row that ONLY that guard protects -- role set AND
+            # css_property set.
+            (5, "sgs/plant", "plantedStyledContent", "text-content", "color"),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    claimed = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes WHERE role IS NULL AND css_property IS NOT NULL"
+    ).fetchall():
+        cur.execute("UPDATE block_attributes SET role = 'styling' WHERE id = ?", (row_id,))
+        claimed += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if claimed == 0:
+        failures.append("backstop claimed ZERO rows against a planted set -- it cannot "
+                        "fail, so it proves nothing")
+    if got.get("plantedStyling") != "styling":
+        failures.append(f"plantedStyling -> {got.get('plantedStyling')!r}, expected 'styling'")
+    if got.get("plantedStyledContent") != "text-content":
+        failures.append(
+            f"plantedStyledContent -> {got.get('plantedStyledContent')!r}: the backstop "
+            "overwrote an EXISTING role on a row that also has a css_property. This is "
+            "the row that proves the `role IS NULL` guard -- without it the guard's "
+            "removal is undetectable."
+        )
+    if got.get("plantedContent") != "text-content":
+        failures.append(
+            f"plantedContent -> {got.get('plantedContent')!r}: the backstop OVERWROTE a "
+            "role an earlier tier had already assigned. It must only fill NULLs."
+        )
+    if got.get("plantedUnreached") is not None:
+        failures.append(
+            f"plantedUnreached -> {got.get('plantedUnreached')!r}: a row with NO "
+            "css_property was claimed. css_property IS the evidence of styling; without "
+            "it the backstop is guessing."
+        )
+    if got.get("plantedContentWithCss") != "styling":
+        failures.append(
+            "plantedContentWithCss changed behaviour: the documented residual risk is "
+            "that such a row IS claimed as styling. If this now differs, update the "
+            "pass's comment -- do not silently accept a new verdict."
+        )
+    conn.close()
+
+    if failures:
+        print(f"STYLING-BACKSTOP SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"STYLING-BACKSTOP SELF-TEST PASSED -- {claimed} rows claimed, 5 checks green.")
+    return 0
+
+
 def _self_test_role_detection() -> int:
     """Synthetic test cases covering the heuristic families. Returns exit code
     (0 = pass, 1 = fail). Called by `--self-test` CLI flag."""
@@ -2049,5 +2182,5 @@ if __name__ == "__main__":
     # Lightweight self-test entry — `--self-test` runs synthetic role-detection
     # tests without touching the DB. Other args fall through to main().
     if len(sys.argv) >= 2 and sys.argv[1] == "--self-test":
-        sys.exit(_self_test_role_detection())
+        sys.exit(_self_test_role_detection() or _self_test_styling_backstop())
     main()

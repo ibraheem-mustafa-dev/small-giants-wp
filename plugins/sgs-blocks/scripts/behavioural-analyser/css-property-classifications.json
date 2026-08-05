@@ -1216,7 +1216,7 @@
       "attr": "starColour",
       "fields": {
         "css_property": "background-color",
-        "css_element": "breakdown-fill"
+        "css_element": "dot"
       }
     },
     {
@@ -2293,6 +2293,24 @@
       "attr": "asideBg",
       "fields": {
         "css_property": "background-color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBorderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
@@ -6193,24 +6211,6 @@
     },
     {
       "slug": "sgs/mega-aside",
-      "attr": "asideBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/mega-aside",
-      "attr": "asideBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/mega-aside",
       "attr": "asidePadding",
       "fields": {
         "css_property": "padding",
@@ -6321,6 +6321,42 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "contentBandBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -7205,6 +7241,1480 @@
       "attr": "sgsAnimationEasing",
       "fields": {
         "css_property": "anim:easing",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "customWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "customWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "fontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "fontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "letterSpacingMobile",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "letterSpacingTablet",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "lineHeightMobile",
+      "fields": {
+        "css_property": "line-height",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "lineHeightTablet",
+      "fields": {
+        "css_property": "line-height",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "contentWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "contentWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "contentWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "contentWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionXMobile",
+      "fields": {
+        "css_property": "left",
+        "css_tier": "mobile"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionXTablet",
+      "fields": {
+        "css_property": "left",
+        "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionYMobile",
+      "fields": {
+        "css_property": "top",
+        "css_tier": "mobile"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionYTablet",
+      "fields": {
+        "css_property": "top",
+        "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "widthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "widthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "fontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "fontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "contentWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "contentWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "fontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "fontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "paddingMobile",
+      "fields": {
+        "css_property": "padding",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "paddingTablet",
+      "fields": {
+        "css_property": "padding",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "contentWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "contentWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionMarginTopMobile",
+      "fields": {
+        "css_property": "margin-top",
+        "css_tier": "mobile",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionMarginTopTablet",
+      "fields": {
+        "css_property": "margin-top",
+        "css_tier": "tablet",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thicknessMobile",
+      "fields": {
+        "css_property": "border-width",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thicknessTablet",
+      "fields": {
+        "css_property": "border-width",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "widthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "widthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "fontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "fontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "letterSpacingMobile",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "letterSpacingTablet",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "lineHeightMobile",
+      "fields": {
+        "css_property": "line-height",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "lineHeightTablet",
+      "fields": {
+        "css_property": "line-height",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

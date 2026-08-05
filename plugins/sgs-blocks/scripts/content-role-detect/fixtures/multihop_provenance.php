@@ -1,0 +1,63 @@
+<?php
+/**
+ * Negative-control fixture for Detector 1's MULTI-HOP PROVENANCE branch.
+ *
+ * Not a real block. It is a synthetic `render.php` whose only job is to
+ * contain, in isolation, each attribute-flow shape the multi-hop branch was
+ * built to resolve — so that if someone later narrows or deletes that branch,
+ * `php detector1_render_escaping.php --self-test` fails loudly instead of the
+ * detector quietly under-reporting again.
+ *
+ * Every shape below was copied from a REAL block that measured NULL on
+ * 2026-08-05 because single-hop tracking could not follow it. Cited inline.
+ *
+ * Path note: this file lives under `fixtures/`, NOT `src/blocks/*\/render.php`,
+ * so `collect_default_files()` never picks it up and it can never contaminate
+ * a `--glob` production run.
+ */
+
+// Shape A — two-hop ternary into a sprintf'd aria-label.
+// Real instance: sgs/icon.ariaLabel (icon/render.php:113,379-382).
+// Needs BOTH multi-hop provenance (to reach $emoji_aria_label at all) AND
+// printf_context outranking the statement window (the format string also
+// carries `class="sgs-icon__emoji"`, whose class-token rule would otherwise
+// return NOT-content first). Expect: a11y-metadata.
+$fx_aria_label       = $attributes['fxAriaLabel'] ?? '';
+$fx_emoji_aria_label = '' !== $fx_aria_label ? $fx_aria_label : 'icon';
+$fx_output           = sprintf(
+	'<span class="sgs-fixture__emoji" role="img" aria-label="%s">%s</span>',
+	esc_attr( $fx_emoji_aria_label ),
+	esc_html( $fx_safe_emoji )
+);
+
+// Shape B — two-hop through a sanitiser + ternary into visible text.
+// Real instance: sgs/buybox.addToCartLabel (buybox/render.php:393-395,623).
+// Expect: visible-text.
+$fx_cart_label_raw = $attributes['fxCartLabel'] ?? '';
+$fx_cart_label     = '' !== sanitize_text_field( $fx_cart_label_raw )
+	? sanitize_text_field( $fx_cart_label_raw )
+	: __( 'Add to Cart', 'sgs-blocks' );
+echo esc_html( $fx_cart_label );
+
+// Shape C — FRAGMENT. The attribute is concatenated behind a literal prefix
+// and only ever reaches the escaper as part of a larger URL.
+// Real instance: sgs/whatsapp-cta.phoneNumber (whatsapp-cta/render.php:54-56,327).
+// Expect: value-fragment (a VETO), never link-href — the role's consumer
+// would write the whole URL back into a digits-only attribute.
+$fx_phone       = $attributes['fxPhoneNumber'] ?? '';
+$fx_clean_phone = preg_replace( '/[^0-9]/', '', $fx_phone );
+$fx_url         = 'https://example.test/' . $fx_clean_phone;
+echo esc_url( $fx_url );
+
+// Shape D — a DIRECT binding must NOT be clobbered by a later conditional
+// reassignment from unrelated locals. Real instance: sgs/nav-menu.navLabel
+// (nav-menu/render.php:639,653), which LOST its correct a11y-text assignment
+// on the first cut of multi-hop. $fx_other is deliberately tracked to a
+// DIFFERENT attribute, so a clobbering implementation mis-attributes this
+// aria-label to `fxOtherAttr`. Expect: fxNavLabel resolves a11y-metadata.
+$fx_other     = $attributes['fxOtherAttr'] ?? '';
+$fx_nav_label = trim( (string) ( $attributes['fxNavLabel'] ?? '' ) );
+if ( '' === $fx_nav_label ) {
+	$fx_nav_label = '' !== $fx_other ? $fx_other : 'Primary';
+}
+echo '<nav aria-label="' . esc_attr( $fx_nav_label ) . '">';
