@@ -30,6 +30,55 @@
  * ContainerWrapperControls.js. Only the small structural allowlists below are
  * constant, each with a one-line justification.
  *
+ * CHECK 4 (per block, added 2026-08-05): a THIRD class of dead attribute sits
+ * in the gap between this file and check-dead-pattern-attrs.py — a block.json
+ * attribute with NEITHER an editor control (so CHECK 1/2 never see it — they
+ * only fire when a control exists) NOR any render consumption (so it isn't
+ * the control-without-render shape either). check-dead-pattern-attrs.py only
+ * inspects THEME PATTERN markup against block.json; an attribute absent from
+ * every pattern is never examined by it. Reuses this file's existing
+ * consumption-resolution engine (isConsumed / sharedCorpus / prefixed-helper
+ * / live-context / responsive-variant rules) — the SAME rules that already
+ * prove `sgs/google-reviews`'s `gap`/`gapTablet`/`gapMobile` are consumed by
+ * the shared wrapper (they are textually present in
+ * includes/class-sgs-container-wrapper.php, part of sharedCorpus) even though
+ * neither attribute has its own control. See checkFullyDeadAttrs() below.
+ *
+ * CHECK 4 BLIND SPOTS (enumerated 2026-08-05 — read before trusting a "0
+ * findings" result for a specific block):
+ *   1. JS-only computed-key consumption. If an attribute's ONLY consumer is a
+ *      frontend/editor JS file reading a template-literal key (e.g.
+ *      `attributes[ \`${side}Suffix\` ]`), CHECK 4 cannot resolve it — only
+ *      the PHP shape (`$attributes[ $var . 'Suffix' ]`) is structurally
+ *      resolved (isDynamicPrefixConsumed). A rough grep for the JS shape
+ *      (`${...}` immediately followed by an identifier) across src/blocks/
+ *      (excluding extensions/) hits ~22 files on 2026-08-05 — each is a
+ *      candidate for a false positive this check cannot yet clear on its own
+ *      merits; every current CHECK 4 finding was hand-verified against this
+ *      blind spot before being reported as real backlog (see commit message).
+ *   2. src/blocks/extensions/*.js is NOT in CHECK 4's consumption corpus
+ *      (only sharedCorpus = includes/*.php + the block's own ownCorpus are
+ *      scanned). An attribute consumed only by an extension's JS-side
+ *      getSaveContent.extraProps consumer (rather than a shared includes/
+ *      PHP file) would false-positive. Low risk in practice — extension
+ *      attrs are almost always `sgs*`-prefixed and already exempted via
+ *      isSystemAttr() — but a non-`sgs*` attribute an extension reads would
+ *      not be caught by that exemption. Unmeasured; 11 extension files exist
+ *      on 2026-08-05.
+ *   3. theme/sgs-theme/ (patterns, parts, templates, inc/) is NOT in the
+ *      consumption corpus. WordPress block patterns are static markup, not
+ *      render logic, so this is expected to be a non-issue architecturally —
+ *      but it is asserted, not measured, and inc/ does contain PHP that COULD
+ *      theoretically read a block attribute directly. Unmeasured.
+ *   4. The dynamic-prefix resolver (isDynamicPrefixConsumed) treats ANY
+ *      quoted string literal matching the candidate prefix as proof of
+ *      consumption, anywhere in the corpus — it does not verify the literal
+ *      is actually passed to the SAME function that performs the
+ *      concatenation. A corpus containing an unrelated string that happens to
+ *      match a prefix could produce a false negative (a genuinely dead attr
+ *      wrongly cleared). Bounded risk: this only weakens the gate's ability
+ *      to catch a dead attr, never causes a false positive on a live one.
+ *
  * BASELINE: scripts/dead-controls-baseline.json lists already-known findings
  * that are accepted (with a reason) so the guard fails ONLY on NET-NEW dead
  * controls. Empty baseline = zero tolerance. To accept a finding, add it to the
@@ -290,7 +339,18 @@ function readBlock( dir ) {
 	} catch ( e ) {
 		throw new Error( `Invalid block.json in ${ dir }: ${ e.message }` );
 	}
-	const attrs = new Set( Object.keys( meta.attributes || {} ) );
+	// House convention (JSON has no comment syntax): a block.json `attributes`
+	// key prefixed `_comment` or `_note` is inline documentation, not a real
+	// attribute — WordPress would happily register it as a schema field with no
+	// consumer, which is exactly the false-positive CHECK 4 measured on
+	// 2026-08-05 (11 such keys across the block library, e.g. before-after's
+	// `_comment_ssr_nullable`). Excluded once here so every downstream check
+	// (CHECK 1-4) sees only real attributes.
+	const attrs = new Set(
+		Object.keys( meta.attributes || {} ).filter(
+			( k ) => ! k.startsWith( '_comment' ) && ! k.startsWith( '_note' )
+		)
+	);
 	const dynamic = fs.existsSync( path.join( dir, 'render.php' ) );
 	const editJs = readIfExists( path.join( dir, 'edit.js' ) );
 	const usesWrapper = /ContainerWrapperControls/.test( editJs );
@@ -424,6 +484,67 @@ function collectPrefixedHelperConsumed( corpus ) {
 	return consumed;
 }
 
+// A generalised version of the R-22-13 prefixed-attribute-set pattern above,
+// for the DYNAMIC-prefix shape found live in sgs/before-after's media
+// resolver (media-render.php, added 2026-08-05 while building CHECK 4): the
+// prefix is not a literal call-site argument to a fixed helper name — it's a
+// LOCAL variable ($prefix = 'before' === $modifier ? 'before' : 'after';)
+// used to build `$attributes[ $prefix . 'ImageId' ]`. The literal attribute
+// name never appears verbatim anywhere in source; only the SUFFIX ('ImageId')
+// and the candidate PREFIX values ('before' / 'after', passed as literal
+// string args at the resolver's OWN call sites in render.php) appear, as
+// separate tokens. Unlike PREFIXED_HELPER_SUFFIXES this needs no per-function
+// suffix roster: it is discovered structurally from the `$var . 'Suffix'`
+// concatenation shape itself, so it generalises to any block using the same
+// dynamic-prefix convention without a new dict entry per block.
+const DYNAMIC_PREFIX_SUFFIX_RE = /\$attributes\[\s*\$\w+\s*\.\s*['"]([A-Za-z0-9_]+)['"]\s*\]/g;
+
+/**
+ * Collect every SUFFIX used in a `$attributes[ $var . 'Suffix' ]` dynamic-key
+ * read anywhere in `corpus`.
+ *
+ * @param {string} corpus PHP source (comments already stripped).
+ * @return {Set<string>} Suffix strings (e.g. 'ImageId', 'MediaType').
+ */
+function collectDynamicPrefixSuffixes( corpus ) {
+	const suffixes = new Set();
+	let m;
+	DYNAMIC_PREFIX_SUFFIX_RE.lastIndex = 0;
+	while ( ( m = DYNAMIC_PREFIX_SUFFIX_RE.exec( corpus ) ) !== null ) {
+		suffixes.add( m[ 1 ] );
+	}
+	return suffixes;
+}
+
+/**
+ * Is `attr` consumed via the dynamic-prefix-concatenation shape? True only
+ * when `attr` ends with a KNOWN dynamic-read suffix AND the remaining prefix
+ * portion appears as its OWN quoted string literal somewhere in the same
+ * corpus (proving that exact prefix value is genuinely used, not merely a
+ * coincidental suffix match on an unrelated attribute name).
+ *
+ * @param {string}      attr     Candidate attribute name.
+ * @param {string}      corpus   PHP source (comments already stripped).
+ * @param {Set<string>} suffixes Suffixes collected by collectDynamicPrefixSuffixes().
+ * @return {boolean}
+ */
+function isDynamicPrefixConsumed( attr, corpus, suffixes ) {
+	for ( const suffix of suffixes ) {
+		if ( attr.length <= suffix.length || ! attr.endsWith( suffix ) ) {
+			continue;
+		}
+		const prefix = attr.slice( 0, -suffix.length );
+		if ( ! prefix ) {
+			continue;
+		}
+		const litRe = new RegExp( '[\'"]' + prefix + '[\'"]' );
+		if ( litRe.test( corpus ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 // ---------------------------------------------------------------------------
 // CHECK 1 — per-block dead controls
 // ---------------------------------------------------------------------------
@@ -532,6 +653,106 @@ function checkSharedControls( wrapperControlled, sharedCorpus, declaredAnywhere 
 					'shared wrapper renders a control for this attr but no shared includes PHP consumes it — dead on EVERY block that mounts the shared controls (unless that block consumes it itself)',
 			} );
 		}
+	}
+	return findings;
+}
+
+// ---------------------------------------------------------------------------
+// CHECK 4 — fully-dead attribute (no control AND no consumption anywhere)
+// ---------------------------------------------------------------------------
+//
+// The blind spot in the gap between this file and check-dead-pattern-attrs.py
+// (2026-08-05): CHECK 1 only fires when a CONTROL exists (nothing to check
+// otherwise); check-dead-pattern-attrs.py only inspects theme PATTERN markup
+// against block.json (an attr absent from every pattern is never examined).
+// A block.json attribute that has neither is invisible to both.
+//
+// This reuses CHECK 1's own consumption-resolution engine — corpus, prefixed-
+// helper resolution, live-context, responsive-variant rule — applied to EVERY
+// declared attribute, not only the controlled subset. Attributes that DO have
+// a control (own edit.js or the shared wrapper) are explicitly skipped here:
+// that shape is CHECK 1/2's job, already reported there, and reporting it
+// twice under two different check names would double-count the same finding.
+//
+// NEGATIVE CONTROL (must never fire here): sgs/google-reviews declares `gap`,
+// `gapTablet`, `gapMobile` with NO editor control anywhere — the exact shape
+// this check exists to catch. They are legitimate: SGS_Container_Wrapper
+// (includes/class-sgs-container-wrapper.php, part of sharedCorpus) reads
+// `$attributes['gap']` / `['gapTablet']` / `['gapMobile']` directly, so
+// isConsumed() finds them and this check correctly does not flag them.
+
+function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextConsumed ) {
+	const findings = [];
+	const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
+	const controlled = collectControlledAttrs( editJs );
+	const corpus = block.ownCorpus + '\n' + sharedCorpus;
+	const prefixedHelperConsumed = collectPrefixedHelperConsumed( corpus );
+	const dynamicPrefixSuffixes = collectDynamicPrefixSuffixes( corpus );
+
+	for ( const attr of block.attrs ) {
+		if ( isSystemAttr( attr ) ) {
+			continue; // extension attr — different gate (generate-extension-attributes.js)
+		}
+		if ( EDITOR_ONLY_ATTRS.has( attr ) || KEY_NOISE.has( attr ) ) {
+			continue; // by-design editor-only, or stray non-attribute key
+		}
+
+		// Attrs with a control are CHECK 1/2's responsibility (own edit.js, or the
+		// shared wrapper mounted via ContainerWrapperControls). Skip here so a
+		// genuinely dead control-bearing attr is reported once, not twice.
+		const hasOwnControl = controlled.has( attr );
+		const hasWrapperControl = block.usesWrapper && wrapperControlled.has( attr );
+		if ( hasOwnControl || hasWrapperControl ) {
+			continue;
+		}
+
+		// Rule (b) — live cross-block context (same as CHECK 1).
+		if ( contextConsumed.has( attr ) ) {
+			continue;
+		}
+		// Prefixed-attribute-set helper (same as CHECK 1).
+		if ( prefixedHelperConsumed.has( attr ) ) {
+			continue;
+		}
+		// Dynamic-prefix-concatenation resolver (e.g. sgs/before-after's
+		// media-render.php `$attributes[ $prefix . 'ImageId' ]`, where $prefix
+		// is a local variable, not a literal call-site argument).
+		if ( isDynamicPrefixConsumed( attr, corpus, dynamicPrefixSuffixes ) ) {
+			continue;
+		}
+
+		let consumed = isConsumed( attr, corpus );
+		if ( ! consumed ) {
+			// Rule (a) — responsive variant (same as CHECK 1): a {base}Tablet/
+			// Mobile/Desktop attr is consumed if its base is consumed AND the
+			// block's own corpus builds responsive keys dynamically / emits @media.
+			const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
+			if ( suffix ) {
+				const base = attr.slice( 0, -suffix[ 1 ].length );
+				if (
+					base &&
+					isConsumed( base, corpus ) &&
+					BREAKPOINT_TOKEN_RE.test( block.ownCorpus )
+				) {
+					consumed = true;
+				}
+			}
+		}
+		if ( consumed ) {
+			continue;
+		}
+
+		findings.push( {
+			check: 'fully-dead',
+			block: block.name,
+			attr,
+			reason:
+				'declared in block.json but has NEITHER an editor control (own edit.js or the ' +
+				'shared wrapper) NOR any render consumption (own .php/save.js/*view*.js, shared ' +
+				'includes/*.php, a prefixed-helper call, or live block context) — invisible to both ' +
+				'check-dead-controls.js CHECK 1/2 (require a control) and check-dead-pattern-attrs.py ' +
+				'(only inspects theme pattern markup)',
+		} );
 	}
 	return findings;
 }
@@ -799,14 +1020,52 @@ function main() {
 		);
 	}
 
-	// Subtract the baseline (accepted, with reasons).
+	// CHECK 4 — fully-dead attrs (no control anywhere AND no consumption
+	// anywhere). Kept in a SEPARATE array from CHECK 1-3's `findings`: this is a
+	// brand-new gate closing a backlog that has never been measured before, so
+	// (per the ADVISORY-FIRST rule below) it must not fail builds on day one.
+	let fullyDeadFindings = [];
+	for ( const block of blocks ) {
+		fullyDeadFindings = fullyDeadFindings.concat(
+			checkFullyDeadAttrs(
+				block,
+				wrapperControlled,
+				sharedCorpus,
+				contextConsumedByBlock.get( block.name ) || new Set()
+			)
+		);
+	}
+
+	// Subtract the baseline (accepted, with reasons). Baseline entries are keyed
+	// by `check:block:attr`, so `fully-dead` findings can be individually
+	// baselined the same way as CHECK 1-3 findings once triaged.
 	const baseline = new Set( loadBaseline().map( findingKey ) );
 	const netNew = findings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
 	const accepted = findings.filter( ( f ) => baseline.has( findingKey( f ) ) );
+	const fullyDeadNetNew = fullyDeadFindings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
+	const fullyDeadAccepted = fullyDeadFindings.filter( ( f ) => baseline.has( findingKey( f ) ) );
+
+	// ADVISORY-FIRST FLAG (2026-08-05): CHECK 4 ships advisory-only — it reports
+	// but never fails the build — because its backlog has not yet been triaged
+	// to zero (see the script's --self-test output / commit message for the
+	// measured count on the day this shipped). Flipping it to blocking later is
+	// this ONE line: change `false` to `true`. Do not flip it without first
+	// baselining or fixing the then-current backlog, or a correct build starts
+	// failing on day one of enforcement.
+	const CHECK_4_BLOCKS_BUILD = false;
 
 	if ( asJson ) {
 		process.stdout.write(
-			JSON.stringify( { netNew, accepted, baselineSize: baseline.size }, null, 2 ) + '\n'
+			JSON.stringify(
+				{
+					netNew,
+					accepted,
+					baselineSize: baseline.size,
+					fullyDead: { netNew: fullyDeadNetNew, accepted: fullyDeadAccepted, blocking: CHECK_4_BLOCKS_BUILD },
+				},
+				null,
+				2
+			) + '\n'
 		);
 	} else {
 		if ( accepted.length ) {
@@ -833,11 +1092,53 @@ function main() {
 					`+ ${ extensionFiles.length } extension file(s).\n`
 			);
 		}
+
+		// CHECK 4 report — always printed, ADVISORY (never affects exit code
+		// unless CHECK_4_BLOCKS_BUILD is flipped to true).
+		if ( fullyDeadAccepted.length ) {
+			process.stdout.write(
+				`[check-dead-controls] CHECK 4 (advisory): ${ fullyDeadAccepted.length } baselined ` +
+					'fully-dead finding(s) (accepted with reason).\n'
+			);
+		}
+		if ( fullyDeadNetNew.length ) {
+			process.stdout.write(
+				`[check-dead-controls] CHECK 4 (ADVISORY — does not fail the build): ` +
+					`${ fullyDeadNetNew.length } fully-dead attribute(s) — no control anywhere AND no ` +
+					'render consumption anywhere:\n'
+			);
+			for ( const f of fullyDeadNetNew ) {
+				process.stdout.write( `  - ${ f.block } :: ${ f.attr }\n` );
+			}
+			process.stdout.write(
+				'Fix: WIRE the attr into render, add a control, or REMOVE it from block.json. ' +
+					'Or accept it in scripts/dead-controls-baseline.json with a reason.\n'
+			);
+		} else {
+			process.stdout.write(
+				'[check-dead-controls] CHECK 4 (advisory): OK — 0 net-new fully-dead attributes.\n'
+			);
+		}
 	}
 
-	if ( check && netNew.length ) {
+	if ( shouldFailBuild( check, netNew.length, CHECK_4_BLOCKS_BUILD, fullyDeadNetNew.length ) ) {
 		process.exit( 1 );
 	}
+}
+
+/**
+ * Pure exit-decision function, extracted so the self-test can assert the
+ * CHECK_4_BLOCKS_BUILD flag genuinely changes the exit code BOTH ways without
+ * spawning a subprocess or duplicating main()'s logic.
+ *
+ * @param {boolean} checkFlag           Whether `--check` was passed.
+ * @param {number}  netNewLen           CHECK 1-3 net-new finding count (always blocking).
+ * @param {boolean} check4BlocksBuild   The CHECK_4_BLOCKS_BUILD flip flag.
+ * @param {number}  fullyDeadNetNewLen  CHECK 4 net-new finding count.
+ * @return {boolean} True if the process should exit(1).
+ */
+function shouldFailBuild( checkFlag, netNewLen, check4BlocksBuild, fullyDeadNetNewLen ) {
+	return checkFlag && ( netNewLen > 0 || ( check4BlocksBuild && fullyDeadNetNewLen > 0 ) );
 }
 
 // ---------------------------------------------------------------------------
@@ -978,12 +1279,145 @@ function runSelfTest() {
 
 	log(
 		pass
-			? '\n[check-dead-controls --self-test] ALL SYNTHETIC TESTS PASS.'
-			: '\n[check-dead-controls --self-test] FAIL.'
+			? '\n[check-dead-controls --self-test] CHECK 3 — ALL SYNTHETIC TESTS PASS.'
+			: '\n[check-dead-controls --self-test] CHECK 3 — FAIL.'
 	);
-	if ( ! pass ) {
+
+	const check4Pass = runCheck4SelfTest( log );
+
+	if ( ! pass || ! check4Pass ) {
 		process.exit( 1 );
 	}
+}
+
+// ---------------------------------------------------------------------------
+// CHECK 4 self-test (2026-08-05) — proves the fully-dead-attribute gate can
+// FAIL, proves its negative controls hold (own-corpus consumption, shared/
+// wrapper-corpus consumption — the exact sgs/google-reviews `gap` shape,
+// editor-only exemption), proves baseline suppression works, and proves the
+// CHECK_4_BLOCKS_BUILD advisory flag genuinely changes the exit code both
+// ways via the pure shouldFailBuild() function (no subprocess needed).
+// ---------------------------------------------------------------------------
+function runCheck4SelfTest( log ) {
+	const os = require( 'os' );
+	let pass = true;
+
+	log( '\n[check-dead-controls --self-test] CHECK 4 (fully-dead attributes)\n' );
+
+	const tmpDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-fully-dead-self-test-' ) );
+
+	const blockJson = {
+		name: 'sgs/fixture-fully-dead',
+		attributes: {
+			liveAttr: { type: 'string', default: '' }, // consumed in this fixture's own render.php
+			deadAttr: { type: 'string', default: '' }, // PLANTED DEFECT — consumed nowhere
+			wrapperAttr: { type: 'string', default: '' }, // consumed only via shared/wrapper corpus — mirrors sgs/google-reviews' gap/gapTablet/gapMobile shape
+			templateMode: { type: 'string', default: '' }, // documented EDITOR_ONLY_ATTRS exemption
+		},
+	};
+	fs.writeFileSync( path.join( tmpDir, 'block.json' ), JSON.stringify( blockJson, null, 2 ), 'utf8' );
+	fs.writeFileSync(
+		path.join( tmpDir, 'render.php' ),
+		"<?php\n$live = $attributes['liveAttr'] ?? '';\necho esc_html( $live );\n",
+		'utf8'
+	);
+
+	// Confirm the plant actually landed on disk before trusting anything
+	// derived from it.
+	const readBackJson = fs.readFileSync( path.join( tmpDir, 'block.json' ), 'utf8' );
+	const readBackRender = fs.readFileSync( path.join( tmpDir, 'render.php' ), 'utf8' );
+	const planted =
+		readBackJson.includes( '"deadAttr"' ) && ! new RegExp( '\\bdeadAttr\\b' ).test( readBackRender );
+	if ( ! planted ) {
+		log( 'FAIL — the planted defect ("deadAttr") did not land correctly in the fixture on disk.' );
+		fs.rmSync( tmpDir, { recursive: true, force: true } );
+		return false;
+	}
+	log( 'CONFIRMED — planted defect ("deadAttr") is present in block.json and absent from render.php.\n' );
+
+	const block = readBlock( tmpDir );
+	// Fake shared/wrapper corpus: `wrapperAttr` is consumed here, NOT in the
+	// fixture's own render.php — the exact mechanism that makes
+	// sgs/google-reviews' gap/gapTablet/gapMobile legitimate (consumed by
+	// includes/class-sgs-container-wrapper.php, not the block's own files).
+	const fakeSharedCorpus = "$x = $attributes['wrapperAttr'] ?? '';";
+
+	const findings = checkFullyDeadAttrs( block, new Set(), fakeSharedCorpus, new Set() );
+	const findingAttrs = new Set( findings.map( ( f ) => f.attr ) );
+
+	if ( findingAttrs.has( 'deadAttr' ) ) {
+		log( 'PASS — Test A: the KNOWN FAILURE ("deadAttr") was flagged.' );
+	} else {
+		log( 'FAIL — Test A: the KNOWN FAILURE ("deadAttr") was NOT flagged. The guard cannot fail.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'liveAttr' ) ) {
+		log( 'PASS — Test B (negative control): own-corpus-consumed "liveAttr" was NOT flagged.' );
+	} else {
+		log( 'FAIL — Test B: own-corpus-consumed "liveAttr" was flagged — false positive.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'wrapperAttr' ) ) {
+		log(
+			'PASS — Test C (negative control, sgs/google-reviews shape): shared-corpus-consumed ' +
+				'"wrapperAttr" (no control, consumed only by the shared includes corpus) was NOT flagged.'
+		);
+	} else {
+		log( 'FAIL — Test C: shared-corpus-consumed "wrapperAttr" was flagged — would false-positive on ' +
+			'real wrapper-consumed attrs like sgs/google-reviews\' gap/gapTablet/gapMobile.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'templateMode' ) ) {
+		log( 'PASS — Test D: documented editor-only attr ("templateMode") was NOT flagged.' );
+	} else {
+		log( 'FAIL — Test D: documented editor-only attr ("templateMode") was flagged — allowlist broken.' );
+		pass = false;
+	}
+
+	// Test E — baseline suppression: a baselined finding key must move from
+	// netNew to accepted.
+	const baselineKey = 'fully-dead:sgs/fixture-fully-dead:deadAttr';
+	const baseline = new Set( [ baselineKey ] );
+	const netNewWithBaseline = findings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
+	const acceptedWithBaseline = findings.filter( ( f ) => baseline.has( findingKey( f ) ) );
+	if (
+		acceptedWithBaseline.some( ( f ) => f.attr === 'deadAttr' ) &&
+		! netNewWithBaseline.some( ( f ) => f.attr === 'deadAttr' )
+	) {
+		log( 'PASS — Test E: baselining "deadAttr" moves it from netNew to accepted (suppression proven).' );
+	} else {
+		log( 'FAIL — Test E: baseline entry did not suppress "deadAttr".' );
+		pass = false;
+	}
+
+	// Test F — the CHECK_4_BLOCKS_BUILD flip flag genuinely changes the exit
+	// code BOTH ways, using the real production shouldFailBuild() function.
+	const failsWhenAdvisory = shouldFailBuild( true, 0, false, findings.length );
+	const failsWhenBlocking = shouldFailBuild( true, 0, true, findings.length );
+	if ( ! failsWhenAdvisory && failsWhenBlocking ) {
+		log(
+			'PASS — Test F: CHECK_4_BLOCKS_BUILD=false does NOT fail the build; ' +
+				'CHECK_4_BLOCKS_BUILD=true DOES — the flip flag works both ways.'
+		);
+	} else {
+		log(
+			`FAIL — Test F: shouldFailBuild(advisory)=${ failsWhenAdvisory } (expected false), ` +
+				`shouldFailBuild(blocking)=${ failsWhenBlocking } (expected true).`
+		);
+		pass = false;
+	}
+
+	fs.rmSync( tmpDir, { recursive: true, force: true } );
+
+	log(
+		pass
+			? '\n[check-dead-controls --self-test] CHECK 4 — ALL SYNTHETIC TESTS PASS.'
+			: '\n[check-dead-controls --self-test] CHECK 4 — FAIL.'
+	);
+	return pass;
 }
 
 if ( process.argv.includes( '--self-test' ) ) {
