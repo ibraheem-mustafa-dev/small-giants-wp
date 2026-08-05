@@ -837,7 +837,7 @@ def _custom_props_consumed(
     dict[str, set[str]],
     dict[tuple[str, str], str],
     dict[tuple[str, str], str],
-    dict[tuple[str, str], str],
+    dict[tuple[str, str], "set[str]"],
 ]:
     """Map ``--sgs-var`` -> the set of props (real CSS OR another --sgs-* var) whose
     declared value consumes it, anywhere in the stylesheet (base + every @media tier —
@@ -874,8 +874,8 @@ def _custom_props_consumed(
         (sgs/hero `backgroundColourHover`/`borderColourHover` colliding with resting
         attrs on the same property purely because state was never captured — see the
         selector-context bug-family note above `_derive_state_from_selector`).
-      `element_of` — for each (var, prop) pair, the BEM element name the OWNING
-        SELECTOR expresses (`_derive_bem_element_from_selector`), gated to the
+      `element_of` — for each (var, prop) pair, the SET of BEM element names any
+        OWNING SELECTOR expresses (`_derive_bem_element_from_selector`), gated to the
         SAME top-level-var-only rule as state (a var nested inside another var's
         fallback does not inherit the outer rule's element either — same
         `sgs/icon` nested-fallback reasoning as state). New 2026-07-21 (widen-
@@ -884,13 +884,33 @@ def _custom_props_consumed(
         are NOT the same concept despite `hero/block.json:189`'s note (that note
         covers `mediaBackground` vs `mediaBackgroundColour` — BOTH targeting
         `.sgs-hero__media` — not this pair).
+
+        SET-valued, not scalar (fixed 2026-08-05, Defect 1 — non-deterministic
+        sgs/google-reviews `starColour` css_element): the same (var, prop) pair can
+        legitimately be fed by TWO DIFFERENT selectors targeting TWO DIFFERENT BEM
+        elements — e.g. google-reviews' `--sgs-gr-star-colour` feeds
+        `background-color` from BOTH `.sgs-google-reviews__breakdown-fill{...}`
+        (style.css:120, resting) AND `.sgs-google-reviews__dot.is-active::before{...}`
+        (style.css:579, active state). A scalar `dict[(var, prop)] = element`
+        silently OVERWRITES the first candidate with whichever selector occurs LAST
+        in the stylesheet — an undocumented "last selector in the file wins"
+        tie-break, never a stated rule, that fed the "unanimous or unassigned" check
+        below a pre-collapsed single-candidate evidence set instead of the true
+        multi-candidate set, so the check could never catch the ambiguity it exists
+        to catch. Collecting a SET here lets that unanimity check see the REAL
+        evidence and correctly decline to guess (mirrors `sgs/trust-bar`'s
+        `icon-badge` element, which sidesteps this ambiguity entirely via an
+        explicit manifest `attrMap` declaration — not available here because
+        `starColour` is deliberately UNDECLARED in google-reviews' element manifest,
+        block.json:48, as a variant/preset selector rather than a style-cluster
+        member).
     """
     css_src = _strip_css_comments(css_src)
     out: dict[str, set[str]] = defaultdict(set)
     gradient_props: dict[str, set[str]] = defaultdict(set)
     shorthand_slot: dict[tuple[str, str], str] = {}
     state_of: dict[tuple[str, str], str] = {}
-    element_of: dict[tuple[str, str], str] = {}
+    element_of: dict[tuple[str, str], "set[str]"] = defaultdict(set)
     for selector, body in _iter_rule_blocks(css_src):
         state = _derive_state_from_selector(selector)
         element = _derive_bem_element_from_selector(selector, block_short_slug) if block_short_slug else None
@@ -916,7 +936,7 @@ def _custom_props_consumed(
                 if state and var in top_level:
                     state_of[(var, prop)] = state
                 if element and var in top_level:
-                    element_of[(var, prop)] = element
+                    element_of[(var, prop)].add(element)
     return out, gradient_props, shorthand_slot, state_of, element_of
 
 
@@ -956,7 +976,7 @@ def _resolve_var_chain(
     gradient_props: "dict[str, set[str]] | None" = None,
     shorthand_slot: "dict[tuple[str, str], str] | None" = None,
     state_of: "dict[tuple[str, str], str] | None" = None,
-    element_of: "dict[tuple[str, str], str] | None" = None,
+    element_of: "dict[tuple[str, str], set[str]] | None" = None,
     depth: int = 0,
     visited: "set[str] | None" = None,
 ) -> tuple[set[str], set[str], set[str], set[str]]:
@@ -1005,9 +1025,9 @@ def _resolve_var_chain(
         leaf_state = state_of.get((var, p))
         if leaf_state:
             states.add(leaf_state)
-        leaf_element = element_of.get((var, p))
-        if leaf_element:
-            elements.add(leaf_element)
+        leaf_elements = element_of.get((var, p))
+        if leaf_elements:
+            elements |= leaf_elements
     chained_vars = {p for p in direct if p.startswith("--")}
     for cv in chained_vars:
         cv_real, cv_visited, cv_states, cv_elements = _resolve_var_chain(
@@ -2486,9 +2506,79 @@ def extract_inspector_control_types() -> dict:
     }
 
 
+# ── Regression guard (Defect 1, 2026-08-05) ─────────────────────────────────
+
+def _self_test_multi_element_var_is_not_collapsed() -> bool:
+    """`--self-test` fixture proving `element_of`/`_resolve_var_chain` correctly
+    surface a `--sgs-*` custom property that genuinely feeds the SAME real CSS
+    property under TWO DIFFERENT BEM-element selectors (google-reviews'
+    `starColour`: `--sgs-gr-star-colour` feeds `background-color` from BOTH
+    `.sgs-google-reviews__breakdown-fill{...}` (resting) and
+    `.sgs-google-reviews__dot.is-active::before{...}` (active state) —
+    style.css:120/579).
+
+    Before the 2026-08-05 fix, `element_of` was a SCALAR dict
+    (`dict[(var, prop)] = element`), so the second matching selector silently
+    OVERWROTE the first — an undocumented "last selector in the file wins"
+    tie-break, never a stated rule. The unanimous-or-unassigned check at
+    `extract_css_property_and_layer` (`if len(attr_bem_elements) == 1`) then saw
+    only ONE (already-collapsed) candidate and confidently, wrongly, "resolved"
+    a genuinely ambiguous attribute.
+
+    This fixture recreates that exact shape with a synthetic block/CSS pair and
+    asserts BOTH elements survive into `_resolve_var_chain`'s returned element
+    set — i.e. the ambiguity is preserved for the unanimity check to correctly
+    decline, rather than silently pre-collapsed. Reverting `element_of`/the
+    `elements.add(leaf_element)` call in `_resolve_var_chain` back to a scalar
+    assignment makes this fixture FAIL (only one of the two elements would
+    survive) — proving the guard is not vacuous.
+    """
+    fixture_css = (
+        ".sgs-selftest__alpha { background-color: var(--sgs-selftest-colour, red); }\n"
+        ".sgs-selftest__beta.is-active::before { "
+        "background-color: var(--sgs-selftest-colour, red); }\n"
+    )
+    consumed, gradient_props, shorthand_slot, state_of, element_of = _custom_props_consumed(
+        fixture_css, "selftest"
+    )
+    var = "--sgs-selftest-colour"
+    prop = "background-color"
+
+    raw_evidence = element_of.get((var, prop))
+    expected = {"alpha", "beta"}
+    if raw_evidence != expected:
+        print(
+            f"[self-test] FAIL: element_of[{(var, prop)!r}] = {raw_evidence!r}, "
+            f"expected {expected!r} (both selectors' elements should survive, "
+            "not be collapsed to one)",
+            file=sys.stderr,
+        )
+        return False
+
+    real_props, visited_vars, states, elements = _resolve_var_chain(
+        var, consumed, gradient_props, shorthand_slot, state_of, element_of
+    )
+    if elements != expected:
+        print(
+            f"[self-test] FAIL: _resolve_var_chain(...) elements = {elements!r}, "
+            f"expected {expected!r}",
+            file=sys.stderr,
+        )
+        return False
+
+    print("[self-test] PASS: a --sgs-* var feeding the same property under two "
+          "different BEM-element selectors is NOT silently collapsed to one "
+          f"(element_of + _resolve_var_chain both returned {sorted(expected)}).")
+    return True
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    if "--self-test" in sys.argv:
+        ok = _self_test_multi_element_var_is_not_collapsed()
+        sys.exit(0 if ok else 1)
+
     if not DB_PATH.exists():
         print(f"ERROR: Database not found at {DB_PATH}", file=sys.stderr)
         sys.exit(1)

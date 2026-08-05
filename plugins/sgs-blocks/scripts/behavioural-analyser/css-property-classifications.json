@@ -753,16 +753,14 @@
       "slug": "sgs/card-grid",
       "attr": "transitionDuration",
       "fields": {
-        "css_property": "transition,transition-duration",
-        "css_element": "image"
+        "css_property": "transition,transition-duration"
       }
     },
     {
       "slug": "sgs/card-grid",
       "attr": "transitionEasing",
       "fields": {
-        "css_property": "transition,transition-timing-function",
-        "css_element": "image"
+        "css_property": "transition,transition-timing-function"
       }
     },
     {
@@ -1215,8 +1213,7 @@
       "slug": "sgs/google-reviews",
       "attr": "starColour",
       "fields": {
-        "css_property": "background-color",
-        "css_element": "dot"
+        "css_property": "background-color"
       }
     },
     {
@@ -3141,7 +3138,7 @@
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow,transform",
-        "css_element": "card--card",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
