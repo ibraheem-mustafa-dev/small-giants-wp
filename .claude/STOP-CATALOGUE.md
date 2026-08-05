@@ -1399,3 +1399,36 @@ one-line pointer to this section instead. Grouped by where each item lived in LE
 - **Establish the DENOMINATOR before quoting a percentage; derive nothing you can count.**
 - **A fix is a hypothesis too** — two proposed fixes would have shipped silent WRONG VALUES.
 - **Prove a path is dead by REACHING it, not by observing it not fire** (D474).
+
+### E5. Role-derivation guardrails — earned 2026-08-05/06 (Spec 35 / D497 session)
+
+- **STOP-70 — A GATE THAT DOES NOT COVER A TEST SUITE LETS REGRESSIONS SHIP GREEN.** `npm run build`'s
+  prebuild pytest step ran only `scripts/oracle/tests/` (38 tests). `scripts/converter/tests/` — 599
+  tests over the highest-blast-radius code in the project — sat outside EVERY gate. A role change
+  that broke 3 icon-extraction tests was committed, pushed, and reported as verified-green, because
+  nothing in the build could see it. Widened to both (245 -> 843) in `60a920b6`. **Before trusting a
+  green build, ask which suites it actually runs** — a passing gate is a claim about its own scope,
+  not about the codebase.
+- **STOP-71 — A PROBE IS NOT THE PIPELINE.** `decompose_attr_name()` returning the right role proves
+  NOTHING about what a reseed writes. Acting on that probe produced a confident "34 rows are
+  redundant" conclusion that measurement refuted: stripping them degraded 53 rows to generic
+  `styling` and left 18 NULL. **The only valid test that a role is mechanism-derivable is: clear the
+  row, reseed, and read it back.** Same shape as calling `peel_property_suffix` without peeling
+  modifiers first, which understated mechanism reach by 7 rows in the same session.
+- **STOP-72 — A DOC'S OWN DESCRIPTION CAN BE THE SOURCE OF THE REGRESSION.** `roles.json` asserted
+  "NO consumer in the converter" for all four `icon-*` roles, citing a real function that genuinely
+  never branches on the role — but not the consumer. The actual consumer
+  (`extraction.py:1110-1116`, dispatching on `role.startswith("icon-")`) was two files away. A
+  file-scoped read of ONE function had concluded absence for the whole codebase, and that sentence
+  sat in the truth source until someone acted on it. **An absence claim in a doc is a hypothesis with
+  a date on it, not a fact** — verify it against the consumer before you delete anything it licenses.
+- **STOP-73 — VERIFY A SUBAGENT'S ABSENCE CLAIM BEFORE ACTING ON IT.** The above reached `main`
+  because an agent repeated the stale doc and I acted on the agent. Two other agents in the same
+  session correctly REFUSED to build things that already existed (`emojiChar` extraction, the a11y
+  writer). **An agent saying "X does not exist" and an agent saying "X already exists" both need the
+  same check: read the consumer.**
+- **STOP-74 — CAPTURE STATE BEFORE MUTATING, ESPECIALLY WITH A FILTER.** A clear-and-reseed intended
+  for 35 rows hit 172, because the selection filter caught every override entry LACKING a role field
+  rather than the ones whose role had been stripped. Fully recoverable only because `role_before` was
+  captured first. **Mutate from an EXPLICIT list, never a filter, when the list is short enough to
+  enumerate** — and snapshot before the write regardless.

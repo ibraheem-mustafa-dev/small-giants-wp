@@ -165,6 +165,19 @@ The canary is unblocked and current.
 
 ## NEXT SESSION (Track 1b / Spec 35) — orchestrate, don't do inline
 
+### ⛔ FIRST ACTION — deploy + visual-verify. 15 `block.json` files are UNCOMMITTED and blocked.
+
+Held in the tree: 4 enum declarations (brand-strip/image-sequence/mega-aside/mega-panel), 266
+container-mirror attrs across 10 wrapper-wired blocks, brand-strip's `containerMirror:false`. All
+blocked by the visual-diff gate, which wants `reports/visual-diff/<block>-<date>.md` with
+`verdict: PASS` + `first_paint_capture_passed: true`. **Do NOT write a PASS you did not capture.**
+⚠ Circularity to solve first: the gate wants a report from a canary deploy, but `build-deploy.py`
+carries a dirty-tree gate and `--allow-dirty` is what caused D336 (2 client sites down ~2.5h).
+⚠ `generated-fx-qualifying-blocks.json` must be regenerated ATOMICALLY with `physics-canvas/block.json`
+— the mirror added the `bgSvg*` family, which legitimately makes it qualify for the `draw` effect.
+**This is also the LIVE VERIFICATION the whole 2026-08-05/06 session never did** — everything shipped
+is DB + static analysis only. Same task; do it once.
+
 ### THE GOAL — why this track exists (state it before picking up any task)
 
 **Bean's clients are tech-illiterate and use the block editor exclusively.** Spec 35 exists so every
@@ -176,36 +189,13 @@ architecture first so F is written once.
 
 ### STEP 0 — CLOSED 2026-08-05. `role IS NULL` on `sgs/%` **661 → 410**, zero hand-authored overrides.
 
-Bean's steer ("check for a deterministic signal before writing overrides") paid off: every one of the
-251 rows was classified by a mechanism, not a hand entry. Four shipped:
-
-| Mechanism | Where | Effect |
-|---|---|---|
-| **Tier inheritance** | `extract-signatures.py` | `<base><Tier>` inherits its base's `css_property` + `css_tier`. 151 rows |
-| **`styling` role** | `roles.json` + `assign-canonical.py` | Backstop for `css_property` set, no family role. 124 rows |
-| **`technical` role** | same | Machine-facing values, positive evidence only. 59 rows |
-| **Detector 4** | `content-role-detect/detector4_referenced_not_output.py` | "read by code, never escaped, never CSS". 42 rows |
-
-Precedence is structural, not commented: content tiers > `css_property` > evidence-of-not-content >
-NULL. `technical` is deliberately narrow — rows NO detector reached stay NULL, because "unreached"
-and "proven technical" are different facts and merging them rebuilds the ambiguity the role removes.
-
-**Also shipped:** `gap` = a GRID-element property (Bean's ruling) — explicit `attrMap` on
-google-reviews + trustpilot, 32 rows, 12 of them resolved automatically by the tier rule. Emission
-parser no longer collapses multi-element `css_element` evidence. `check-dead-pattern-attrs.py` WIRED
-into `prebuild` — built at D338 against WP's silent attr-discard, it had **never run** (zero
-references in `package.json`). `check-dead-controls.js` CHECK 4 added (advisory) for attrs with
-neither a control nor any consumer.
-
-**Blocks shipped + live-verified on the canary** (`12931409`, reports in `reports/visual-diff/`):
-`responsive-logo` (prefix→suffix rename + `logoUrl*` string attrs mirroring `sgs/media`, so
-`image-alt` fires natively), `site-header`/`site-footer` (32 flat scalars → 8 box-objects, Spec 32),
-12 dead `direction`/`wrap` attrs removed from 6 blocks.
-
-⛔ **LEDGER CORRECTION.** This file previously recorded the responsive-logo **rename** as the
-retirement condition for `authored-alt-text`. Wrong, and verified wrong AFTER the rename: renaming
-changed no `attr_type`, and `walk.py:295` gates alt capture on `role=='image-object' AND
-attr_type=='string'`. It is the **attr-shape change** (`logoUrl` string attrs) that retires it.
+All 251 rows classified by MECHANISM, not hand entries (Bean's steer): tier inheritance (151),
+`styling` backstop (124), `technical` from a D1 veto (59), Detector 4 (42). Precedence is structural:
+content tiers > `css_property` > evidence-of-not-content > NULL. Also shipped: `gap` as a GRID-element
+property, and `check-dead-pattern-attrs.py` WIRED into prebuild (built D338, had never run).
+Blocks live-verified on the canary (`12931409`): responsive-logo image-shape mirror, site-header/footer
+box-spacing, 12 dead `direction`/`wrap` attrs deleted. Full narrative + the corrected
+`authored-alt-text` retirement condition: `memory/session-2026-08-05-spec35-step0-close.md`.
 
 ### STEP 0.1 — the 69 rows that need a human call (FIRST TASK NEXT SESSION, Bean's instruction)
 
