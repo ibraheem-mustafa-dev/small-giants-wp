@@ -28,11 +28,9 @@ gets ONE true answer instead of three drifting ones.
 - **69 settings still need a human decision** — that is the first job next session, and they are
   listed with what to do about each.
 
-**Older, still true:**
-- **WebGL is officially part of the framework** (Tier W), with a budget and a closed list.
-- **The physics canvas block is live on the test site** — decorative only, not a physics engine.
-- **The Snooza chair job is bigger than the proposal says** — 72 combinations, not 24.
-- ⛔ **GSAP's licence has a clause worth knowing about** before you sell a plugin built on it.
+**Older, still true:** WebGL is officially in the framework (Tier W, budgeted, closed list) · the
+physics canvas block is live on the test site, decorative only · the Snooza job is 72 combinations,
+not 24 · ⛔ GSAP's licence has a clause worth knowing before you sell a plugin built on it.
 
 ## CURRENT FRONTS
 
@@ -92,10 +90,9 @@ before acting, do not assume it is current from memory alone:
 
 ---
 
-> **HANDOFF QC (resolved):** an independent rater caught two stale figures my own self-review
-> missed (a plan row claiming "37 tables" when live is 36; "gates invoked manually" when D473 had
-> already wired them into `prebuild`). Both fixed. Lesson: self-review passed, independent review
-> found real defects — don't skip the second pair of eyes. Full detail: `memory/session-2026-08-03-track3.md`.
+> **Independent review beats self-review — twice now.** 2026-08-03: a rater caught two stale figures
+> self-review missed. 2026-08-05: a doc subagent flagged a stale reference, and chasing WHY found the
+> responsive-logo work sitting inert in the DB. Don't skip the second pair of eyes.
 
 ## Standing constraints (carry forward — these are rules, not history)
 
