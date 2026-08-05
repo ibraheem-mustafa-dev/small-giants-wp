@@ -167,98 +167,111 @@ The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION (Track 1b / Spec 35) — run alongside or instead of the motion track
+## NEXT SESSION (Track 1b / Spec 35) — orchestrate, don't do inline
 
 ### THE GOAL — why this track exists (state it before picking up any task)
 
 **Bean's clients are tech-illiterate and use the block editor exclusively.** Spec 35 exists so every
 SGS block's inspector is genuinely usable by them: controls that exist for things the block can do,
 no controls for things it cannot, nothing that crashes, and one consistent shape across all 84
-blocks. A setting that needs code is not done.
+blocks. A setting that needs code is not done. The 24 end conditions are only worth having if
+ENFORCED — measured 2026-08-04 at **0 of 24 validated**. Task F closes that gap; A-E settle block
+architecture first so F is written once.
 
-**The enforcement half — what this session was about:** 24 end conditions define that standard, and
-they are only worth having if they are ENFORCED. Today's measurement: **0 of 24 have a script
-validated to cover all instantiations.** The lesson underneath it is the actual deliverable — all
-three rules built today were blind on first build (0-vs-65, 12-vs-15, 43-vs-23), each caught only
-by challenging a low number. **"Has a script" and "is enforced" have been read as the same claim.**
-The goal is to close that gap rule by rule, not to accumulate more scripts.
+### STEP 0 — close Task A's residuals FIRST. Task A is not done while these are open.
 
-### Tasks, in order
+| # | What / Why | Est. | Orchestration | Acceptance |
+|---|---|---|---|---|
+| 1 | **Apply the 6 confident role assignments** from `.claude/reports/2026-08-05-report-only-row-categorisation.md`: `buybox.addToCartLabel`, `buybox.perUnitDenomination`, `whatsapp-cta.message` → `text-content`; `icon.ariaLabel`, `button.ariaLabel`, `nav-menu.navLabel` → `a11y-text`. | 10 min | Inline (main thread) — small, precise DB writes via the hand-authored override channel (`attr-classification-overrides.json`), not a raw DB write, so a reseed doesn't revert them. | `role IS NULL` count for `sgs/%` drops by 6 (from 661); overrides file diff shows exactly these 6 keys. |
+| 2 | **Verify this session's direct DB role writes survive `/sgs-update`.** `a11y-text` on `cart.ariaLabel`+`tabs.blockLabel`; `svg` on 8 rows — written straight to the DB, not through the override channel. | 15 min | Inline. Read `assign-canonical.py`'s override precedence, confirm each of the 10 rows has a durable override entry OR is re-derived by a detector (svg role has one — the D489 extractor branch). ⚠ Known risk: `sgs/responsive-logo.alt`'s existing override sets ONLY `derived_selector`, no role — check it isn't silently dropping the role on reseed. | Announce before running `/sgs-update` (cross-track DB action). A dry-run diff of role columns pre/post shows zero unintended reverts. |
+| 3 | **Update `P-FR-31-2.1A-CLOSURE`** (`.claude/parking.md:303-311`) OPEN → **PARTIAL**. Strip shipped clauses (the apiVersion-3 sub-item IS done per its own text), keep residual: `supports.sgs.attrRoles` not built (= Task E), name-regex still present as fallback not deleted. | 5 min | Inline edit. | Entry reads `**Status:** PARTIAL`, residual scope only, apiVersion-3 clause removed. |
+| 4 | **Explain `sgs/container.bgSvgContent`** — genuine SVG markup landing in NO fingerprint bucket. Best current hypothesis (unproven): its only consumer is `includes/class-sgs-container-wrapper.php`, which the emission scanner never opens. | 15 min | Delegated, sonnet, foreground. Brief: read `class-sgs-container-wrapper.php`'s handling of `bgSvgContent`, then read the emission-scanner's file globs — confirm or refute the consumer hypothesis by reading the actual code, not by re-asserting it. | A stated PROVEN or REFUTED verdict with the file:line that decides it — not a repeated hypothesis. |
+| 5 | **Document the 192 unreached rows** (of the 220-row eligible pool) as the honest open search space — mostly genuine styling (`gapTablet`, `gridTemplateColumnsMobile`, `shapeDividerTop`, `anchor`, `className`) but that composition is an ASSUMPTION, not a measurement. | 10 min | Inline — write the assumption + its unproven status into the Task A residual note; no new investigation this step, just stop treating it as measured. | LEDGER/checklist text no longer states the 192's composition as fact. |
 
-**Task A — the 31 content misses. SHIPPED 2026-08-04 (D485), 4 residuals open — see the Track 1b
-Task A bullet above for the full breakdown (28 report-only rows, 127 unreached, a11y-metadata roles,
-name-regex fallback still present).** Do not re-run this task from scratch; pick up the 4 residuals.
+**Only after Step 0 closes** move to Tasks B-F below.
 
-**Task B — hero background design gate + `/qc-council` [inline, Opus].** The collision gate proved
-it is a FOUR-block class (hero/container/cta-section/trust-bar), not a hero quirk. Bean's
-identity-rename approach (D484) leads: give each colliding attr a distinct DRAFT-side selector
-(`__background-image` / `__background-video` / `__background-svg`; `__image` vs `__poster`).
-Data-only, no schema change. **Design-gate + council BEFORE building** (rule 7). **Acceptance:**
-`check_content_attr_collisions.py` reports 0 genuine groups.
+### Tasks B–F, in order (per checklist `.claude/plans/spec-35-inspector-DONE-checklist.md` items 22-27 + Task-F bar)
 
-**Task C — migrate the 6 existing gating rules into inspector-scan [delegated, sonnet].** The one
-step that can LOSE enforcement while reading green: run old and new together, diff finding sets,
-explain every delta in writing, delete the old scripts in a separate later commit.
+| Task | What / Why | Est. | Orchestration | Depends on | /qc gate | Acceptance |
+|---|---|---|---|---|---|---|
+| **B** | Hero-background design gate. Collision gate proved a FOUR-block class (hero/container/cta-section/trust-bar). Bean's identity-rename lead (D484): distinct DRAFT-side selectors per colliding attr (`__background-image`/`__background-video`/`__background-svg`; `__image` vs `__poster`). Data-only, no schema change. | 20 min | Inline, Opus — Rule 7 design-gate (shared-mechanism) + `/qc-council` BEFORE building. | Step 0 | `/qc-council` pre-build | `check_content_attr_collisions.py` reports 0 genuine groups |
+| **C** | Migrate the 6 existing gating rules into `inspector-scan`. The one step that can LOSE enforcement while reading green. | 30 min | Delegated, sonnet. Brief: run old + new rule sets side by side, diff finding sets, explain every delta in writing BEFORE deleting anything; delete old scripts in a separate later commit. | Step 0 | `/qc-inline` on the diff | Delta explained per-finding; old scripts deleted only after zero unexplained deltas |
+| **D** | Flip advisory rules to fail-closed, one at a time. Each rule flips only when its backlog is zero AND fixtures cover the dominant real shape. | 15 min/rule | Inline — judgment call per rule, not mechanical. | C | n/a (self-test per rule) | Backlog=0 proven, not asserted; flip recorded in `decisions.md` |
+| **E** | `supports.sgs.attrRoles` (FR-31-2.1a/D258). Declarative channel ending name-guessing. ⛔ Do NOT read WP 7.0's inline `"role":"content"` into the SGS role column — collides, corrupts 8 attrs. | 45 min | Delegated, sonnet, worktree isolation (touches block.json across many blocks). Brief: add the channel parallel to WP's own `role`, column-first-else-name-regex-fallback in the seeder. | B (schema settled) | `/qc-council` (shared-mechanism) | Audit script proves parity name-regex vs channel on every block before any flip |
+| **F** | Build the 24 enforcement scripts — the track's actual deliverable. Scope: 21 remaining (items 2-17, 19, 21 + T1/T2/T3); items 1/18/20 exist on `scripts/inspector-scan/` — do not start a new tool. | 30-60 min/rule | Delegated per rule, sonnet, `/subagent-driven-development` (implementer + 2 reviewers) — each rule is independent once B/E settle. | A-E settled | `/qc-council` per rule before fail-closed flip | Each of 24 rows meets the DEFINITION OF ENFORCED below, or a recorded exception naming a D-number |
 
-**Task D — flip advisory rules to fail-closed, one at a time.** Each rule flips only when its own
-backlog reaches zero AND its fixtures cover the dominant real shape. Never flip a rule that has
-never been challenged on a suspicious number.
+⚠ **Why F is last (Bean's ruling):** A/B/E decide block structure; rules written before them get
+rewritten after. Every new universal rule also enlarges the drift surface F exists to contain — so
+architecture settles, then enforcement is written against it once. Re-read the checklist against the
+settled architecture before writing F.
 
-**Task E — `supports.sgs.attrRoles` (FR-31-2.1a / D258).** Spec'd, zero of 84 blocks use it. The
-declarative channel that ends name-guessing entirely. ⛔ Do NOT read WP 7.0's inline
-`"role":"content"` key into the SGS role column — different API, collides on the key name, would
-corrupt 8 attrs.
+**Add to Task F's catch list this session earned:** a block INVISIBLE to a universal mechanism while
+looking well-formed — nothing malformed, the device tier is just at the wrong end of the attr name
+(prefix vs the framework's suffix convention) and every gate reads green. `sgs/responsive-logo` is
+the live instance (see side-job below).
 
-**Task F — BUILD THE 24 ENFORCEMENT SCRIPTS. This is the track's actual deliverable; A-E exist
-to settle the architecture first so these are written once, not twice.**
+**DEFINITION OF ENFORCED** — a rule counts only when ALL hold (3 of 3 rules built 2026-08-04 were
+blind on first build, each caught only by a human challenging a low number):
+1. Expected population declared BEFORE the rule runs; a near-zero result is a claim requiring
+   evidence, not a pass.
+2. Population cross-checked by an independent method (second script/language/parse strategy).
+3. Fixtures cover the DOMINANT real shape, not the convenient one — ≥1 `mustFlag` from a REAL block.
+4. `mustNotFlag` fixtures for every legitimate exemption, each proving it load-bearing.
+5. `--self-test` plants a violation, confirms it landed on disk, asserts it flags.
+6. Baseline suppression proven to suppress; mode data proven to change the exit code both ways.
+7. Blind spots ENUMERATED in the rule's own header, with a rough unmeasured-instance count.
+8. The right document — name the consumer and prove it by reading the consumer, not the source doc.
+9. Advisory first (exit 0); flip to fail-closed only when backlog is zero AND points 1-8 hold.
+10. Checklist row updated with the real enforcer name — no phantom tools.
 
-⚠ **Why F comes last, not first (Bean's ruling):** A/B/E decide BLOCK STRUCTURE. Rules written
-before them would be rewritten after them. More importantly, every new universal architectural rule
-ENLARGES the drift surface these scripts exist to contain — so the architecture settles, then the
-enforcement is written against it. Some of the 24 may change shape as a result, and new end
-conditions may need ADDING to cover the architecture A/B/E introduce. Re-read the checklist against
-the settled architecture before writing anything.
+**Track acceptance:** every one of the 24 rows meets points 1-10 or carries a recorded exception
+naming a `decisions.md` D-number. "Has a script" is not the bar.
 
-**Scope:** 21 remaining (items 2-17, 19, 21 + T1/T2/T3). Items 1, 18, 20 exist and run on the
-harness at `scripts/inspector-scan/`. Do NOT start a new tool — the registry, one-parse-per-block
-cache, roster/disk reconciliation, `rules.json` mode table and self-test harness are built.
+### Side-job — standardise `sgs/responsive-logo`
 
-**DEFINITION OF ENFORCED — a rule counts only when ALL of these hold. This bar exists because 3 of
-3 rules built 2026-08-04 were blind on first build and each was caught by a human challenging a low
-number, never by a gate.**
+Names responsive tiers with a PREFIX (`desktopLogoId`/`tabletLogoId`/`mobileLogoId`) where the whole
+framework uses a SUFFIX (`backgroundImageTablet`) — `modifier_suffixes` peels a suffix, so the D480
+device-tier axis is structurally blind to it (all 3 rows `is_responsive=0`, `css_tier=NULL`, every
+gate green). Renaming to the suffix convention collapses the 3 images into one base attr with tier
+siblings, gives `alt_companion_attr` a single image attr to name, lets `image-alt` fire natively, and
+**retires the `authored-alt-text` category** (record this as its retirement condition — do not
+maintain it once the rename lands). ⚠ `placeholder`'s D482 justification is SEPARATE and does not
+depend on this rename. **Est. 30 min. Delegated, sonnet, worktree — block.json + converter attr
+rename across one block.**
 
-1. **Expected population declared BEFORE the rule runs.** Write down what you predict it will find
-   and why. A result at or near zero is a CLAIM REQUIRING EVIDENCE, not a pass.
-2. **Population cross-checked by an independent method** — a second script, a different language, a
-   different parse strategy. Item 1 read 0 against a true 65 and passed its own self-test doing it.
-3. **Fixtures cover the DOMINANT real-world shape**, not the convenient one. Item 1's fixtures only
-   ever exercised multi-`InspectorControls` blocks, so it never saw the single-wrapper shape that is
-   most of the roster. Include at least one `mustFlag` fixture drawn from a REAL block.
-4. **`mustNotFlag` fixtures for every legitimate exemption**, each proving the exemption is
-   load-bearing rather than decorative.
-5. **`--self-test` proves the rule can FAIL** — plant a violation, confirm the plant landed on disk
-   before trusting the result, assert it flags.
-6. **Baseline suppression proven to suppress**, and **mode data proven to change the exit code** in
-   both directions.
-7. **Blind spots ENUMERATED in the rule's own header** — what shapes it cannot see, and roughly how
-   many instances that leaves unmeasured. A rule with no stated blind spots has not been examined.
-8. **The right document.** State which artefact the value under test is supposed to describe and
-   prove it by reading the CONSUMER. `check-derived-selector-drift.py` was deleted at D484 for
-   measuring `derived_selector` against block render output when it is a DRAFT-side matcher - 666
-   confident, plausible, wholly false findings.
-9. **Advisory first.** Ship reporting, exit 0. Flip to fail-closed ONLY when that rule's backlog is
-   zero AND points 1-8 hold. Never flip a rule that has not been challenged on a suspicious number.
-10. **The checklist row updated** with the real enforcer name — no phantom tools. 9 of 21 rows once
-    named a `consistency-scanner` that has never existed.
+### Dependency graph
 
-**Acceptance for the TRACK (not per rule):** every one of the 24 rows carries a rule meeting points
-1-10, or a recorded exception naming a decisions.md D-number. "Has a script" is not the bar; the
-2026-08-04 measurement of 0-of-24-validated is the baseline this must move.
+```
+Step 0 (1-5, mostly inline, parallel-safe except item 2 needs item 1's overrides written first)
+   -> Task B (design-gate + council)
+        -> Task E (attrRoles channel; needs B's schema settled)
+   -> Task C (migrate 6 rules)
+        -> Task D (flip advisory -> fail-closed, per rule)
+   B + E settled -> Task F (24 scripts, per-rule subagent-driven-development, parallel across rules)
+Side-job (responsive-logo rename) -- independent, run anytime, feeds authored-alt-text retirement
+```
 
-### Guardrail carried from this session
+### Methodology guardrails (earned this session — MOVED headline to `STOP-CATALOGUE.md` §E3)
 
-**MOVED to `STOP-CATALOGUE.md` §E3.** Headline: a rule returning zero is a claim requiring
-evidence, not a pass.
+- A number below your declared expectation is a CLAIM REQUIRING EVIDENCE. Declare the expected
+  population BEFORE a rule runs.
+- Measure recall against the eligible POOL, never the rule's own output — that is circular.
+- A zero from a search you wrote needs a POSITIVE control before you trust it (3 zeroes this session
+  were broken searches, not empty worlds).
+- Name the CONSUMER before measuring a value, and prove it by reading that consumer (a wrong-document
+  measurement produced 593 confident, plausible, wholly false findings — D484 repeat pattern).
+- When merging evidence sources, the tie-break must be STATED or position becomes the tie-break by
+  default (proven 3x: a rejection read as endorsement; `content_cats[0]` document order; a decision
+  with no output slot).
+- A fix that does not reach the WRITER changes nothing while looking done.
+- Shared worktree: commit BY EXACT PATH, never `git add -A`. Re-check the D-ceiling immediately
+  before writing any D reference (currently 490).
+- `/sgs-update` is a CROSS-TRACK action on a shared DB — announce before running.
+
+### Known non-blocker
+
+`npm run build` fails on 2 tests (`test_batch_runner.py`) from the OTHER track's R1 section-root
+gate. PROVEN not ours: identical failure with our converter change reverted. Converter suite 595 pass.
 
 ## NEXT SESSION (other backlog) — Snooza pitch demo + Track 1 (routing)
 
