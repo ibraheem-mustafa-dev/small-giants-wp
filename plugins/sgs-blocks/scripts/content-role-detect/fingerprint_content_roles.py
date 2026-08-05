@@ -498,6 +498,17 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     d4_review = []
     if d4_candidates:
         try:
+            # sys.path insert is REQUIRED, not tidy-up. assign-canonical loads
+            # THIS module via importlib.spec_from_file_location, which does NOT
+            # put the module's own directory on sys.path — so a plain
+            # `import detector4_...` resolves when the fingerprint is run
+            # directly from this folder and raises ModuleNotFoundError when the
+            # seeder loads it. Measured 2026-08-05: D4 assigned 42 rows in every
+            # direct run and 0 in the actual /sgs-update, and the difference was
+            # a stderr line buried in a 14-stage log. The bug was caught by the
+            # role count being 17 instead of 59, not by the warning.
+            if str(SCRIPT_DIR) not in sys.path:
+                sys.path.insert(0, str(SCRIPT_DIR))
             import detector4_referenced_not_output as _d4
             _d4_all = _d4.detect(d4_candidates)
             # D4 emits two categories. Only 'referenced-not-output' earns the
