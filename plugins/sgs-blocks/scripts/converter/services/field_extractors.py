@@ -184,6 +184,32 @@ def extract_field_value(element: Tag, role: str, media_map: dict | None = None) 
         return value if value else None
 
     # ------------------------------------------------------------------
+    # svg — RAW SVG markup (Bean, 2026-08-05)
+    #
+    # This role exists because routing SVG through the text branch above is
+    # ACTIVELY DESTRUCTIVE, not merely imprecise: rich_text_content() keeps only
+    # a text-tag whitelist, so <svg>/<path>/<g> are stripped and a real icon
+    # arrives as the empty string. sgs/hero.svgContent and sgs/media.svgContent
+    # carried role='content' and would have been mangled the moment a draft
+    # matched them.
+    #
+    # Distinct from the icon-slug path below: that resolves an <svg> to a NAMED
+    # icon via icon_resolver and returns a slug. This returns the markup itself,
+    # which is what svgContent / bgSvgContent attributes actually store — a
+    # bespoke inline SVG that has no slug because it is not a library icon.
+    #
+    # Returns the element's own markup when it IS an <svg>, else the first <svg>
+    # descendant. No match returns None so the caller gap-tracks it (flag, never
+    # silently drop).
+    # ------------------------------------------------------------------
+    if role == "svg":
+        svg_el = element if element.name == "svg" else element.find("svg")
+        if svg_el is not None and isinstance(svg_el, Tag):
+            markup = str(svg_el).strip()
+            return markup if markup else None
+        return None
+
+    # ------------------------------------------------------------------
     # image-object — resolve a scalar media dict from an <img>
     # ------------------------------------------------------------------
     if role == "image-object":

@@ -110,19 +110,25 @@ def resolve_db() -> Path:
 # --- category -> role. Only these four categories are ever assigned. -------------------
 CATEGORY_TO_ROLE = {
     "visible-text": "text-content",
-    "svg-markup": "content",
+    # Was "content" until 2026-08-05. That routed SVG through rich_text_content(),
+    # which strips <svg>/<path> to the empty string -- destructive, not imprecise.
+    # 'svg' has its own extractor branch (field_extractors.py, role == 'svg').
+    "svg-markup": "svg",
     "link-href": "link-href",
     # wp_kses with a NON-SVG allow-list means "let some HTML through" -- that is rich text
     # by definition. Verified 2026-08-04 against the three rows it covers:
     # product-faq-item.question, team-member.bio, testimonial.summaryPhrase. A value nobody
     # intends as content is never passed through an HTML sanitiser; it is escaped flat.
     "wp_kses-other": "text-content",
+    "a11y-metadata": "a11y-text",
 }
 
 # Categories recognised but deliberately NOT assigned a role. Reported instead.
-REPORT_ONLY_CATEGORIES = {
-    "a11y-metadata": "no correct role exists yet (image-alt requires alt_companion_attr)",
-}
+# a11y-metadata graduated OUT of report-only on 2026-08-05: the 'a11y-text' role now
+# exists (styling-behaviour, documentation-only, deliberately excluded from the content
+# walk). Before it existed, correctly-classified a11y rows had nowhere to go and fell to
+# report-only -- the classifier was right and the vocabulary was the gap.
+REPORT_ONLY_CATEGORIES: dict[str, str] = {}
 
 # Categories that mean 'this is not content' -- silently skipped, not reported as gaps.
 NON_CONTENT_CATEGORIES = {
@@ -133,6 +139,28 @@ NON_CONTENT_CATEGORIES = {
 }
 
 TRUSTED_ALONE = ("D1", "D3")
+
+# Tie-break order when ONE attribute carries several content categories (it is rendered
+# more than one way). Explicit ranking, never document order — see the note at the
+# per_detector["D1"] assignment. Lower index wins. Visible/painted content outranks a11y
+# metadata: a value that is both painted AND used as an accessible name is content that
+# labels itself, and filing it as a11y would exclude it from the content walk entirely.
+_CATEGORY_PRIORITY = (
+    "visible-text",
+    "svg-markup",
+    "wp_kses-other",
+    "link-href",
+    "a11y-metadata",
+)
+
+
+def _category_rank(category: str) -> int:
+    """Rank for the tie-break. An unknown category sorts LAST, never first — a category
+    nobody has ranked must not win a conflict by accident."""
+    try:
+        return _CATEGORY_PRIORITY.index(category)
+    except ValueError:
+        return len(_CATEGORY_PRIORITY)
 
 
 def eligible_pool(conn: sqlite3.Connection) -> set[tuple[str, str]]:
@@ -272,7 +300,22 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     for k, cats in d1_all.items():
         content_cats = [c for c in cats if c not in NON_CONTENT_CATEGORIES]
         if content_cats:
-            per_detector["D1"][k] = content_cats[0]
+            # Rank by CATEGORY PRIORITY, never by file order.
+            #
+            # This was `content_cats[0]` until 2026-08-05 — whichever category the
+            # detector happened to emit FIRST won, which is document order, not a rule.
+            # An attribute rendered BOTH as visible text and into an aria-label (e.g.
+            # table-of-contents.title, team-member.name) would resolve to whichever
+            # usage site appeared earlier in render.php, so moving a line could silently
+            # change its role. Found by the D1 forward-tracking QC pass while both rows
+            # were still outside the eligible pool — inert, but inert is a bug with a
+            # delay.
+            #
+            # Visible content outranks a11y metadata: if a value is BOTH painted on the
+            # page and used as an accessible name, it is content that also happens to
+            # label itself. Classifying it a11y-text would exclude it from the content
+            # walk and drop the visible text.
+            per_detector["D1"][k] = min(content_cats, key=_category_rank)
         else:
             # ⛔ D1 looked at this attribute and said NO. Recorded as a VETO, not as
             # support. Before this was split out, `rel` (an HTML rel attribute, escaped
@@ -359,7 +402,29 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
                 )
             seen.add(k)
 
-    reached = set().union(*(set(d) for d in per_detector.values())) if per_detector else set()
+    # A D1-ONLY rejection must still be VISIBLE. Added 2026-08-05.
+    #
+    # A key that D1 examined and rejected, and that no other detector touched, never
+    # entered the loop above (it is in d1_vetoes, not per_detector["D1"]), so it landed in
+    # NO bucket at all — not assigned, not reported, not vetoed. `sgs/icon.linkRel` and
+    # `sgs/media.linkRel` were invisible this way. The verdict was CORRECT; the row simply
+    # vanished, which is indistinguishable from a row nothing ever looked at. A decision
+    # that leaves no trace cannot be reviewed or challenged later.
+    for k in sorted(d1_vetoes):
+        if k in seen:
+            continue
+        vetoed.append(
+            {"block_slug": k[0], "attr_name": k[1], "claimed_by": None,
+             "d1_verdicts": d1_all.get(k, []),
+             "reason": "D1-only: examined every usage site, found none content-bearing "
+                       "(no other detector saw this attr)"}
+        )
+        seen.add(k)
+
+    reached = (
+        set().union(*(set(d) for d in per_detector.values())) | d1_vetoes
+        if per_detector else set(d1_vetoes)
+    )
     return {
         "eligible_pool": len(pool),
         "reached_by_any_detector": len(reached),
@@ -433,8 +498,8 @@ def self_test() -> int:
         roles = {(a["block_slug"], a["attr_name"]): a["role"] for a in got["assignments"]}
         if roles.get(("sgs/plantblock", "plantedVisible")) != "text-content":
             failures.append("planted visible-text was NOT assigned text-content")
-        if roles.get(("sgs/plantblock", "plantedSvg")) != "content":
-            failures.append("planted svg-markup was NOT assigned content")
+        if roles.get(("sgs/plantblock", "plantedSvg")) != "svg":
+            failures.append("planted svg-markup was NOT assigned the 'svg' role")
 
         # 3. NEGATIVE CONTROL: with no findings the rule must assign NOTHING. A rule that
         #    fires on an empty input cannot distinguish signal from noise.
@@ -493,14 +558,51 @@ def self_test() -> int:
                 "over-strict; content anywhere means content"
             )
 
+        # 5c. PRIORITY tie-break: an attr rendered BOTH as visible text and into an
+        #     aria-label must resolve to the CONTENT role, not a11y. Before 2026-08-05
+        #     this took content_cats[0] — document order — so moving a line in render.php
+        #     could silently flip the role.
+        both = fingerprint(
+            {"D1": [{"block_slug": "sgs/plantblock", "attr_key": "plantedVisible",
+                     "final_category": "a11y-metadata"},
+                    {"block_slug": "sgs/plantblock", "attr_key": "plantedVisible",
+                     "final_category": "visible-text"}],
+             "D2": [], "D3": []},
+            pool,
+        )
+        both_roles = {a["attr_name"]: a["role"] for a in both["assignments"]}
+        if both_roles.get("plantedVisible") != "text-content":
+            failures.append(
+                "priority tie-break failed: a dual-rendered attr resolved to "
+                f"{both_roles.get('plantedVisible')!r}, not text-content (a11y won by order)")
+
+        # 5d. A D1-ONLY rejection must land in a bucket. Before 2026-08-05 such a row
+        #     appeared in NONE — a correct verdict that left no trace.
+        only = fingerprint(
+            {"D1": [{"block_slug": "sgs/plantblock", "attr_key": "plantedSvg",
+                     "final_category": "NOT-content"}], "D2": [], "D3": []},
+            pool,
+        )
+        if not any(v["attr_name"] == "plantedSvg" for v in only["vetoed"]):
+            failures.append("a D1-only rejection reached NO bucket — the row vanishes silently")
+
         # 6. a11y-metadata must be reported, never assigned.
         a11y = fingerprint(
             {"D1": [{"block_slug": "sgs/plantblock", "attr_key": "plantedVisible",
                      "final_category": "a11y-metadata"}], "D2": [], "D3": []},
             pool,
         )
-        if a11y["assignments"]:
-            failures.append("a11y-metadata was ASSIGNED a role — would corrupt the image-alt consumer")
+        # CONTRACT CHANGED 2026-08-05. This assertion previously required a11y-metadata to
+        # be REPORTED and never assigned, because no correct role existed. 'a11y-text' now
+        # does. It must be assigned THAT and nothing else -- assigning 'image-alt' would
+        # still feed a consumer expecting a companion image (db_lookup.py:2611-2636).
+        a11y_roles = {a["attr_name"]: a["role"] for a in a11y["assignments"]}
+        if a11y_roles.get("plantedVisible") != "a11y-text":
+            failures.append(
+                "a11y-metadata was not assigned 'a11y-text' (got "
+                f"{a11y_roles.get('plantedVisible')!r})")
+        if "image-alt" in a11y_roles.values():
+            failures.append("a11y-metadata was assigned image-alt — corrupts the image arm")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

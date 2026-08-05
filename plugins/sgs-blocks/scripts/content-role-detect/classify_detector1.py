@@ -64,27 +64,56 @@ JS_RENDERED_TEXT_KEY_HINTS = re.compile(
 JS_RENDERED_ADORNMENT_KEY_HINTS = re.compile(r"^(prefix|suffix|separator)$", re.IGNORECASE)
 
 
-def classify_esc_attr(row: dict) -> str:
-    stmt = row["statement"]
-    key = row["attr_key"]
-    idx = stmt.find("esc_attr")
-    before = stmt[:idx] if idx != -1 else ""
-    after = stmt[idx:] if idx != -1 else ""
+def _classify_esc_attr_core(before: str, after: str, stmt: str, key: str) -> str:
+    """Core esc_attr classification given an explicit 'before' window.
 
-    # 1) STYLING exclude — feeds a style="" attribute.
+    Factored out 2026-08-05 (D1 forward variable-tracking fix) so the SAME
+    rule set can be retried against PHP's `printf_context`/`forward_context`
+    fallback windows without duplicating the rules. Unchanged from the
+    pre-2026-08-05 body except: (a) the a11y match narrowed from a blanket
+    `aria-[a-z]+` to `aria-label` specifically, and (b) two PHP
+    associative-array-literal ('aria-label' => ..., 'style' => ...,
+    'name' => ...) branches added alongside the existing HTML-attribute
+    (`aria-label="..."`) branches — see the module docstring update below.
+    """
+    # 1) STYLING exclude — feeds a style="" attribute (HTML or PHP array-key form).
     if re.search(r"style\s*=\s*['\"]?[^'\";]{0,80}$", before, re.IGNORECASE):
+        return "STYLING-exclude"
+    # `style="` closed by a string-concatenation quote before the esc_attr()
+    # call — e.g. `'style="color:' . esc_attr( $x ) . '"'` — found by the
+    # negative-control fixture (plant_forward_and_printf.php) 2026-08-05:
+    # the pattern above requires NO quote character in the tail, so it never
+    # matched this (very common) concatenation shape; the aria-label/alt/
+    # title branch below already tolerates it via `['"]{0,2}\s*\.?\s*$` and
+    # style needed the same tolerance.
+    if re.search(r"style\s*=\s*['\"][^'\";]{0,80}['\"]{0,2}\s*\.?\s*$", before, re.IGNORECASE):
+        return "STYLING-exclude"
+    if re.search(r"['\"]style['\"]\s*=>\s*$", before, re.IGNORECASE):
         return "STYLING-exclude"
     if "sgsCustomCss" in stmt or "sgs_custom_css" in stmt:
         return "STYLING-exclude"
 
-    # 2) a11y-metadata — feeds aria-*, alt=, title=, placeholder=.
+    # 2) a11y-metadata — feeds aria-label=, alt=, title=, placeholder=.
+    # Narrowed 2026-08-05 from a blanket `aria-[a-z]+` to `aria-label`
+    # specifically: most other aria-* attributes (aria-describedby,
+    # aria-controls, aria-owns, aria-hidden...) hold ID REFERENCES or
+    # boolean state, not accessible TEXT. This was previously moot (the
+    # broader pattern never got REACHED for those rows because the
+    # printf/forward resolution below didn't exist yet) but the new
+    # fallback windows make some of those rows reachable, so the pattern
+    # must not over-claim them as a11y-metadata (e.g.
+    # sgs/form-field-address's aria-describedby, built from `fieldName`).
     window = before[-80:]
-    if re.search(r"(aria-[a-z]+|alt|title|placeholder)\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
+    if re.search(r"(aria-label|alt|title|placeholder)\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
+        return "a11y-metadata"
+    # PHP associative-array literal form: 'aria-label' => esc_attr( $x ) —
+    # the SGS_Container_Wrapper::render() `extra_attrs` shape (sgs/nav-menu).
+    if re.search(r"['\"](aria-label|alt|title|placeholder)['\"]\s*=>\s*$", window, re.IGNORECASE):
         return "a11y-metadata"
     # Sometimes the attribute name appears just AFTER, e.g.
     # `. esc_attr($x) . '" aria-label="' ...` (rare, but check).
     windowAfter = after[:80]
-    if re.search(r"^\)\s*\.\s*['\"][^'\"]*\b(aria-[a-z]+|alt|title)\s*=", windowAfter, re.IGNORECASE):
+    if re.search(r"^\)\s*\.\s*['\"][^'\"]*\b(aria-label|alt|title)\s*=", windowAfter, re.IGNORECASE):
         return "a11y-metadata"
 
     # 3) STYLING/behavioural — feeds a `--sgs-*` custom property or a JS
@@ -109,15 +138,86 @@ def classify_esc_attr(row: dict) -> str:
         return "NOT-content"
     if key == "anchor" or re.search(r"\bid\s*(\]|=)\s*$", window, re.IGNORECASE):
         return "NOT-content"
-    # Technical HTML form/input attributes — never visible content.
+    # Any aria-* attribute OTHER than aria-label is an ID reference or
+    # boolean state (aria-describedby, aria-controls, aria-owns,
+    # aria-hidden, aria-expanded...), never accessible TEXT — added
+    # 2026-08-05 alongside the aria-label narrowing above. Needed so
+    # sgs/form-field-address.fieldName's aria-describedby row (built from
+    # `$base_fid`, which the multi-variable resolution also attributes to
+    # `fieldName`) resolves to an explicit NOT-content veto rather than
+    # staying an ambiguous 'esc_attr-unresolved' — the aggregation in
+    # fingerprint_content_roles.py picks content_cats[0] over any
+    # unresolved leftover, which is exactly the trap that hid
+    # button.ariaLabel's correct a11y-metadata verdict behind an unrelated
+    # unresolved row on 2026-08-04/05 (see report).
+    if re.search(r"aria-(?!label\b)[a-z]+\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
+        return "NOT-content"
+    if re.search(r"['\"]aria-(?!label['\"])[a-z]+['\"]\s*=>\s*$", window, re.IGNORECASE):
+        return "NOT-content"
+    # Technical HTML form/input attributes — never visible content. `rel`
+    # and `value` added 2026-08-05: `rel` is a machine-readable
+    # link-relationship token (sgs/icon.linkRel, sgs/media.linkRel), never
+    # visible content; `value` on a hidden field is the raw submitted
+    # payload (sgs/form-field-hidden.defaultValue) rather than displayed
+    # text — verified narrow (only 2 render.php files in the whole plugin
+    # feed an esc_attr()'d value into a `value="` placeholder; the other,
+    # sgs/option-picker, binds an array element outside this detector's
+    # tracked pool, so this addition is scoped to the one row it targets).
     if re.search(
-        r"\b(name|id|min|max|step|accept|for|method|type|autocomplete)\s*=\s*['\"]{0,2}\s*\.?\s*$",
+        r"\b(name|id|min|max|step|accept|for|method|type|autocomplete|rel|value)\s*=\s*['\"]{0,2}\s*\.?\s*$",
+        window,
+        re.IGNORECASE,
+    ):
+        return "NOT-content"
+    # PHP associative-array literal form of the same technical-attribute set.
+    if re.search(
+        r"['\"](name|id|min|max|step|accept|for|method|type|autocomplete|rel|value)['\"]\s*=>\s*$",
         window,
         re.IGNORECASE,
     ):
         return "NOT-content"
 
     return "esc_attr-unresolved"
+
+
+def classify_esc_attr(row: dict) -> str:
+    stmt = row["statement"]
+    key = row["attr_key"]
+    idx = stmt.find("esc_attr")
+    before = stmt[:idx] if idx != -1 else ""
+    after = stmt[idx:] if idx != -1 else ""
+
+    result = _classify_esc_attr_core(before, after, stmt, key)
+    if result != "esc_attr-unresolved":
+        return result
+
+    # Fallback windows (2026-08-05, D1 forward variable-tracking fix). The
+    # same statement's immediate text couldn't place this value into an
+    # HTML/array attribute context — retry against the two context windows
+    # detector1_render_escaping.php computed structurally:
+    #   printf_context  — Blind Spot #3 closure: printf()/sprintf() split
+    #                      the HTML attribute name (in the format string)
+    #                      from the escaped value (a positional argument),
+    #                      so "the text immediately before this call" was
+    #                      never the right place to look.
+    #   forward_context — the value was escaped INTO a variable at
+    #                      assignment time; the attribute name it becomes
+    #                      lives in a LATER (or earlier) statement where
+    #                      that variable is read. D1 already tracked
+    #                      attribute->variable; this is the other
+    #                      direction, variable->use-site.
+    # Same rule set, same order of trust — a real classification from
+    # either fallback wins; if both are absent or also inconclusive, the
+    # row stays exactly what it was: an honest, reported gap.
+    for ctx_field in ("printf_context", "forward_context"):
+        ctx = row.get(ctx_field)
+        if not ctx:
+            continue
+        ctx_result = _classify_esc_attr_core(ctx, "", ctx, key)
+        if ctx_result != "esc_attr-unresolved":
+            return ctx_result
+
+    return result
 
 
 def classify_wp_kses(row: dict) -> str:

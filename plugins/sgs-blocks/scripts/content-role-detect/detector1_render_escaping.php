@@ -266,8 +266,21 @@ function extract_attr_keys(string $expr): array {
 
 /**
  * Classify an escaping call by function name + surrounding statement text.
+ *
+ * $printfContext / $forwardContext are optional fallback "before" windows
+ * (see printf_placeholder_context()/forward_variable_context() below) tried
+ * in order when the immediate same-statement text doesn't show an HTML
+ * attribute name. Two blind spots closed 2026-08-05 (independent-verification
+ * pass): (1) `printf`/`sprintf` split the HTML attribute name (in the format
+ * string) from the escaped value (a positional argument) — the immediate
+ * "text right before the call" is the wrong place to look; (2) a value is
+ * escaped INTO a local variable at assignment time (e.g. button's
+ * `$aria_label = ... ? esc_attr( $attributes['ariaLabel'] ) : ...;`) and the
+ * HTML attribute it becomes lives in a LATER statement where that variable
+ * is read — D1 already tracked attribute->variable; this closes the other
+ * direction, variable->use-site.
  */
-function classify_call(string $func, string $stmt): string {
+function classify_call(string $func, string $stmt, ?string $printfContext = null, ?string $forwardContext = null): string {
     $lower = strtolower($func);
     if (in_array($lower, ['esc_html', 'esc_html__', 'esc_html_e', 'esc_textarea'], true)) {
         return 'visible-text';
@@ -296,23 +309,309 @@ function classify_call(string $func, string $stmt): string {
         return 'wp_kses-other';
     }
     if ($lower === 'esc_attr' || $lower === 'esc_attr_e' || $lower === 'esc_attr__') {
-        // Look at the statement text around the call for the HTML attribute
-        // it is feeding: aria-label=, alt=, title=  -> a11y-metadata
-        // style=  -> STYLING (exclude)
-        if (preg_match('/style\s*=\s*[\'"]?[^;]{0,60}$/i', substr($stmt, 0, strpos($stmt, $func) ?: 0))) {
-            return 'STYLING-exclude';
+        $idx = strpos($stmt, $func);
+        $before = substr($stmt, 0, $idx !== false ? $idx : 0);
+
+        $result = classify_esc_attr_window($before);
+        if ($result !== 'esc_attr-unclassified') {
+            return $result;
         }
-        // Search whole statement for nearest preceding HTML-attr token.
-        $before = substr($stmt, 0, strpos($stmt, $func) ?: 0);
-        if (preg_match('/(aria-label|alt|title)\s*=\s*[\'"]?\s*$/i', $before, $m)) {
-            return 'a11y-metadata';
+        if (null !== $printfContext) {
+            $result = classify_esc_attr_window($printfContext);
+            if ($result !== 'esc_attr-unclassified') {
+                return $result;
+            }
         }
-        if (preg_match('/style\s*[:=]/i', $before)) {
-            return 'STYLING-exclude';
+        if (null !== $forwardContext) {
+            $result = classify_esc_attr_window($forwardContext);
+            if ($result !== 'esc_attr-unclassified') {
+                return $result;
+            }
         }
         return 'esc_attr-unclassified';
     }
     return 'unclassified-' . $lower;
+}
+
+/**
+ * Given a "before" window (the text immediately preceding an esc_attr* call,
+ * from ANY of the three candidate windows above), decide what the value
+ * feeds. Kept intentionally narrow — this PHP-side field is a diagnostic
+ * mirror of classify_detector1.py's classify_esc_attr(), which is the field
+ * actually consumed downstream (its output wins via `final_category` in
+ * fingerprint_content_roles.py); the two are kept in sync deliberately so
+ * this raw-fact stage is trustworthy on its own if ever read directly.
+ */
+function classify_esc_attr_window(string $before): string {
+    // STYLING — feeds a style="" attribute, either HTML or PHP array-key form.
+    if (preg_match('/style\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $before)) {
+        return 'STYLING-exclude';
+    }
+    if (preg_match('/[\'"]style[\'"]\s*=>\s*$/i', $before)) {
+        return 'STYLING-exclude';
+    }
+    // a11y-metadata — aria-label=, alt=, title=, placeholder=. Deliberately
+    // NOT a blanket `aria-[a-z]+`: most other aria-* attributes
+    // (aria-describedby, aria-controls, aria-owns...) hold ID REFERENCES or
+    // boolean state, not accessible TEXT.
+    if (preg_match('/(aria-label|alt|title|placeholder)\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $before)) {
+        return 'a11y-metadata';
+    }
+    // PHP associative-array literal form: 'aria-label' => esc_attr( $x ) —
+    // the SGS_Container_Wrapper::render() `extra_attrs` shape (sgs/nav-menu).
+    if (preg_match('/[\'"](aria-label|alt|title|placeholder)[\'"]\s*=>\s*$/i', $before)) {
+        return 'a11y-metadata';
+    }
+    return 'esc_attr-unclassified';
+}
+
+/**
+ * Depth-balanced split of a comma-separated argument list into
+ * ['text' => .., 'start' => absolute offset, 'end' => absolute offset]
+ * entries, respecting quoted strings and nested ()/[] so a comma inside a
+ * string literal or a nested call never splits an argument.
+ */
+function split_top_level_args(string $s, int $baseOffset): array {
+    $args = [];
+    $depth = 0;
+    $inStr = null;
+    $start = 0;
+    $n = strlen($s);
+    for ($i = 0; $i < $n; $i++) {
+        $ch = $s[$i];
+        if (null !== $inStr) {
+            if ('\\' === $ch) {
+                $i++;
+                continue;
+            }
+            if ($ch === $inStr) {
+                $inStr = null;
+            }
+            continue;
+        }
+        if ("'" === $ch || '"' === $ch) {
+            $inStr = $ch;
+            continue;
+        }
+        if ('(' === $ch || '[' === $ch) {
+            $depth++;
+            continue;
+        }
+        if (')' === $ch || ']' === $ch) {
+            $depth--;
+            continue;
+        }
+        if (',' === $ch && 0 === $depth) {
+            $args[] = ['text' => trim(substr($s, $start, $i - $start)), 'start' => $baseOffset + $start, 'end' => $baseOffset + $i];
+            $start = $i + 1;
+        }
+    }
+    if ('' !== trim(substr($s, $start))) {
+        $args[] = ['text' => trim(substr($s, $start)), 'start' => $baseOffset + $start, 'end' => $baseOffset + $n];
+    }
+    return $args;
+}
+
+/**
+ * Depth/quote-aware split on the top-level '.' concatenation operator —
+ * used to read a printf()/sprintf() format-string expression built from
+ * plain string-literal concatenation ('a' . 'b' . 'c'), the WPCS multi-line
+ * pattern used throughout this codebase's render.php files.
+ */
+function split_dot_concat(string $expr): array {
+    $parts = [];
+    $depth = 0;
+    $inStr = null;
+    $start = 0;
+    $n = strlen($expr);
+    for ($i = 0; $i < $n; $i++) {
+        $ch = $expr[$i];
+        if (null !== $inStr) {
+            if ('\\' === $ch) {
+                $i++;
+                continue;
+            }
+            if ($ch === $inStr) {
+                $inStr = null;
+            }
+            continue;
+        }
+        if ("'" === $ch || '"' === $ch) {
+            $inStr = $ch;
+            continue;
+        }
+        if ('(' === $ch || '[' === $ch) {
+            $depth++;
+            continue;
+        }
+        if (')' === $ch || ']' === $ch) {
+            $depth--;
+            continue;
+        }
+        if ('.' === $ch && 0 === $depth) {
+            $parts[] = trim(substr($expr, $start, $i - $start));
+            $start = $i + 1;
+        }
+    }
+    $parts[] = trim(substr($expr, $start));
+    return $parts;
+}
+
+/**
+ * Resolve a printf() format-string ARGUMENT EXPRESSION to its literal text,
+ * ONLY when it is built entirely from plain string-literal concatenation
+ * ('a' . 'b' . 'c'). Returns null for anything else (a variable, a
+ * translation-wrapped string, a function call) — deliberately conservative;
+ * a wrong literal would misplace every downstream placeholder lookup.
+ */
+function resolve_literal_string_concat(string $expr): ?string {
+    $out = '';
+    foreach (split_dot_concat($expr) as $part) {
+        if (preg_match('/^\'((?:[^\'\\\\]|\\\\.)*)\'$/s', $part, $m)) {
+            $out .= str_replace(["\\'", '\\\\'], ["'", '\\'], $m[1]);
+        } elseif (preg_match('/^"((?:[^"\\\\]|\\\\.)*)"$/s', $part, $m)) {
+            $out .= str_replace(['\\"', '\\\\'], ['"', '\\'], $m[1]);
+        } else {
+            return null;
+        }
+    }
+    return $out;
+}
+
+/**
+ * Blind Spot #3 closure (printf/sprintf splits the HTML attribute name from
+ * the escaped value across positional arguments). Given the FULL raw
+ * statement text and the byte offset of an escaping-call match within it,
+ * find the nearest enclosing printf()/sprintf() call, resolve its literal
+ * format string, locate the value-argument's matching placeholder
+ * (positional `%N$s` preferred, else the Nth plain `%s`/`%d` in source
+ * order), and return the format-string text immediately preceding that
+ * placeholder — the SAME shape classify_esc_attr_window() already parses
+ * (e.g. `alt="%4$s"` -> `alt="`).
+ */
+function printf_placeholder_context(string $text, int $matchStart, int $matchEnd): ?string {
+    if (!preg_match_all('/\b(?:printf|sprintf)\s*\(/', $text, $pm, PREG_OFFSET_CAPTURE)) {
+        return null;
+    }
+    $best = null;
+    foreach ($pm[0] as $m) {
+        $openParenPos = $m[1] + strlen($m[0]) - 1;
+        $depth = 0;
+        $n = strlen($text);
+        $closeParenPos = null;
+        for ($i = $openParenPos; $i < $n; $i++) {
+            if ('(' === $text[$i]) {
+                $depth++;
+            } elseif (')' === $text[$i]) {
+                $depth--;
+                if (0 === $depth) {
+                    $closeParenPos = $i;
+                    break;
+                }
+            }
+        }
+        if (null === $closeParenPos) {
+            continue;
+        }
+        if ($matchStart > $openParenPos && $matchEnd <= $closeParenPos) {
+            // The innermost (closest-opening) enclosing call wins.
+            if (null === $best || $openParenPos > $best['open']) {
+                $best = ['open' => $openParenPos, 'close' => $closeParenPos];
+            }
+        }
+    }
+    if (null === $best) {
+        return null;
+    }
+
+    $argsText = substr($text, $best['open'] + 1, $best['close'] - $best['open'] - 1);
+    $args = split_top_level_args($argsText, $best['open'] + 1);
+    if (count($args) < 2) {
+        return null;
+    }
+
+    $format = resolve_literal_string_concat($args[0]['text']);
+    if (null === $format) {
+        return null;
+    }
+
+    $valueIndex = null; // 1-based among value args (args[0] is the format string).
+    for ($i = 1, $len = count($args); $i < $len; $i++) {
+        if ($matchStart >= $args[$i]['start'] && $matchStart < $args[$i]['end']) {
+            $valueIndex = $i;
+            break;
+        }
+    }
+    if (null === $valueIndex) {
+        return null;
+    }
+
+    $placeholderPos = null;
+    if (preg_match('/%' . $valueIndex . '\$[sd]/', $format, $pm2, PREG_OFFSET_CAPTURE)) {
+        $placeholderPos = $pm2[0][1];
+    } elseif (preg_match_all('/%(?!\d+\$)[sd]/', $format, $pm3, PREG_OFFSET_CAPTURE)) {
+        if (isset($pm3[0][$valueIndex - 1])) {
+            $placeholderPos = $pm3[0][$valueIndex - 1][1];
+        }
+    }
+    if (null === $placeholderPos) {
+        return null;
+    }
+
+    return substr($format, max(0, $placeholderPos - 80), min(80, $placeholderPos));
+}
+
+/**
+ * D1 forward variable-tracking closure (2026-08-05). D1 already tracks
+ * attribute -> variable (backwards, via $varToAttr, populated left-to-right
+ * as the file is walked). The gap is the OTHER direction: variable -> the
+ * later statement where it is actually read into an HTML attribute — e.g.
+ * button's `$aria_label = ... esc_attr( $attributes['ariaLabel'] ) ...;`
+ * followed ~880 lines later by
+ * `' aria-label="' . esc_attr( $aria_label ) . '"'`. Scans every statement
+ * in the file (order-agnostic — the use site can be above OR below the
+ * assignment) for the variable landing inside an HTML-attribute-name
+ * context, either literal HTML syntax (`aria-label="..."`) or a PHP
+ * associative-array literal passed to a shared helper
+ * (`'aria-label' => esc_attr( $var )`, the SGS_Container_Wrapper::render()
+ * `extra_attrs` shape used by sgs/nav-menu).
+ *
+ * Returns the matched window (ending exactly where the variable token
+ * begins, with any single intervening wrapper-escaping call stripped off
+ * the tail) so classify_esc_attr_window() can parse it with the SAME regexes
+ * it already applies to a same-statement "before" window — no separate rule
+ * set to keep in sync.
+ */
+function forward_variable_context(string $varName, array $statements): ?string {
+    $needle = '$' . $varName;
+    $needleLen = strlen($needle);
+    $wrapStrip = '/(?:esc_attr(?:_e|__)?|esc_html(?:_e|__)?|wp_kses(?:_post)?)\s*\(\s*$/i';
+
+    foreach ($statements as $stmt) {
+        $text = $stmt['text'];
+        $offset = 0;
+        while (false !== ($pos = strpos($text, $needle, $offset))) {
+            $after = $pos + $needleLen;
+            $offset = $pos + 1;
+            // Require a whole-variable match — not a longer identifier
+            // sharing this name as a prefix (e.g. $aria_label_extra).
+            if ($after < strlen($text) && (ctype_alnum($text[$after]) || '_' === $text[$after])) {
+                continue;
+            }
+
+            $window = substr($text, max(0, $pos - 100), min(100, $pos));
+            $window = preg_replace($wrapStrip, '', $window);
+
+            if (preg_match('/(aria-label|alt|title|placeholder)\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $window)
+                || preg_match('/[\'"](aria-label|alt|title|placeholder)[\'"]\s*=>\s*$/i', $window)
+                || preg_match('/style\s*=\s*[\'"]{0,2}\s*\.?\s*$/i', $window)
+                || preg_match('/[\'"]style[\'"]\s*=>\s*$/i', $window)
+            ) {
+                return $window;
+            }
+        }
+    }
+    return null;
 }
 
 function run(array $files, array $eligibleSet): void {
@@ -326,6 +625,7 @@ function run(array $files, array $eligibleSet): void {
 
         $varToAttr = []; // varName => attrKey (or ::DYNAMIC...:: marker)
         $blockSlugGuess = infer_block_slug($file);
+        $forwardContextCache = []; // varName => string|false (false = "looked, found nothing")
 
         foreach ($statements as $stmt) {
             $text = $stmt['text'];
@@ -333,8 +633,10 @@ function run(array $files, array $eligibleSet): void {
 
             // 1) Track assignments: $var = <expr containing $attributes[...]>
             $assign = match_assignment($text);
+            $assignTargetVar = null;
             if ($assign !== null) {
                 [$varName, $exprText] = $assign;
+                $assignTargetVar = $varName;
                 $keys = extract_attr_keys($exprText);
                 if (!empty($keys)) {
                     // Take the first resolved key as the var's provenance.
@@ -362,21 +664,34 @@ function run(array $files, array $eligibleSet): void {
             // eligible-262 pool today, but closes the same allowlist-gap
             // shape before a future block wraps an attribute default with
             // one of these instead of `esc_attr`/`esc_html`.
+            //
+            // PREG_OFFSET_CAPTURE added 2026-08-05 — the printf/sprintf
+            // placeholder resolution (Blind Spot #3) needs each match's byte
+            // offset in $text to identify WHICH positional argument it is.
             if (preg_match_all(
                 '/\b(esc_html_e|esc_html__|esc_html|esc_textarea|esc_url_raw|esc_url|esc_attr_e|esc_attr__|esc_attr|wp_kses_post|wp_kses)\s*\(\s*([^,()]+(?:\([^()]*\))?[^,()]*)/',
                 $text,
                 $calls,
-                PREG_SET_ORDER
+                PREG_SET_ORDER | PREG_OFFSET_CAPTURE
             )) {
                 foreach ($calls as $c) {
-                    $func = $c[1];
-                    $argRaw = trim($c[2]);
+                    $func = $c[1][0];
+                    $argRaw = trim($c[2][0]);
+                    $matchStart = $c[0][1];
+                    $matchEnd = $matchStart + strlen($c[0][0]);
+                    $funcLower = strtolower($func);
+                    $isEscAttrFamily = in_array($funcLower, ['esc_attr', 'esc_attr_e', 'esc_attr__'], true);
 
-                    // Resolve argument to an attribute key.
-                    $resolvedKeys = [];
+                    // Resolve argument to (key, sourceVar) pairs — sourceVar
+                    // is null when the key came from a direct
+                    // $attributes['key'] access (no variable indirection),
+                    // otherwise the variable name that carried it.
+                    $resolvedPairs = [];
                     $directKeys = extract_attr_keys($argRaw);
                     if (!empty($directKeys)) {
-                        $resolvedKeys = $directKeys;
+                        foreach ($directKeys as $k) {
+                            $resolvedPairs[] = ['key' => $k, 'var' => null];
+                        }
                     } elseif (preg_match_all('/\$([A-Za-z_][A-Za-z0-9_]*)/', $argRaw, $mm)) {
                         // EVERY variable in the argument, not just the first.
                         //
@@ -389,47 +704,84 @@ function run(array $files, array $eligibleSet): void {
                         // while its identical twin `prefix` was assigned. Two attributes,
                         // one line, opposite verdicts — which is how the bug surfaced.
                         // Under-reports silently on every multi-variable escaped concat.
-                        foreach (array_unique($mm[1]) as $varName) {
-                            if (isset($varToAttr[$varName])) {
-                                $resolvedKeys[] = $varToAttr[$varName];
+                        $seenKeys = [];
+                        foreach (array_unique($mm[1]) as $vn) {
+                            if (isset($varToAttr[$vn]) && !isset($seenKeys[$vn])) {
+                                $seenKeys[$vn] = true;
+                                $resolvedPairs[] = ['key' => $varToAttr[$vn], 'var' => $vn];
                             }
                         }
-                        $resolvedKeys = array_values(array_unique($resolvedKeys));
                     }
 
-                    foreach ($resolvedKeys as $key) {
-                        $category = classify_call($func, $text);
+                    // Blind Spot #3 (printf/sprintf placeholder split) —
+                    // computed once per match, independent of which key(s)
+                    // resolved from it. Only meaningful for esc_attr-family
+                    // calls (the only ones classify_esc_attr_window() reads).
+                    $printfContext = $isEscAttrFamily
+                        ? printf_placeholder_context($text, $matchStart, $matchEnd)
+                        : null;
+
+                    foreach ($resolvedPairs as $pair) {
+                        $key = $pair['key'];
+                        $sourceVar = $pair['var'];
+
+                        // Forward variable->use-site tracking (D1 fix,
+                        // 2026-08-05). Candidate variable is EITHER the one
+                        // that carried the key INTO this call (when resolved
+                        // via indirection, e.g. responsive-logo's $alt / nav-
+                        // menu's $nav_label) OR — ONLY when this call's own
+                        // argument was a DIRECT $attributes[key] access
+                        // ($sourceVar === null) — this statement's assignment
+                        // TARGET (button's shape: the call is on
+                        // `$attributes['ariaLabel']` directly, but the
+                        // ESCAPED RESULT is what `$aria_label` becomes, and
+                        // THAT variable is what later lands in
+                        // `aria-label="..."`).
+                        //
+                        // CONFIRMED LIVE BUG caught by the full-glob
+                        // before/after diff (2026-08-05): using
+                        // assignTargetVar for EVERY resolved pair in the
+                        // statement — not just direct-resolution ones — cross-
+                        // contaminated button's OWN `$label` row (the
+                        // ternary's OTHER branch, a completely different
+                        // attribute) with `$aria_label`'s forward context,
+                        // wrongly turning button.label into a11y-metadata.
+                        // Restricting to $sourceVar === null keeps the
+                        // fallback scoped to the call that actually feeds the
+                        // assignment's result, not every call syntactically
+                        // inside the same statement.
+                        $forwardContext = null;
+                        if ($isEscAttrFamily) {
+                            $candidateVars = null === $sourceVar
+                                ? array_unique(array_filter([$assignTargetVar]))
+                                : [$sourceVar];
+                            foreach ($candidateVars as $candidateVar) {
+                                if (!array_key_exists($candidateVar, $forwardContextCache)) {
+                                    $forwardContextCache[$candidateVar] = forward_variable_context($candidateVar, $statements) ?? false;
+                                }
+                                if (false !== $forwardContextCache[$candidateVar]) {
+                                    $forwardContext = $forwardContextCache[$candidateVar];
+                                    break;
+                                }
+                            }
+                        }
+
+                        $category = classify_call($func, $text, $printfContext, $forwardContext);
                         $isDynamic = str_starts_with($key, '::DYNAMIC');
-                        $rows = [];
-                        if ($isDynamic) {
-                            // Emit a dynamic-key marker row; the caller
-                            // (Python side) will expand against the real
-                            // eligible attr list by suffix/prefix match.
-                            $rows[] = [
-                                'file' => $file,
-                                'block_slug' => $blockSlugGuess,
-                                'line' => $line,
-                                'attr_key' => $key,
-                                'func' => $func,
-                                'category' => $category,
-                                'statement' => mb_substr($text, 0, 220),
-                                'dynamic' => true,
-                            ];
-                        } else {
-                            $rows[] = [
-                                'file' => $file,
-                                'block_slug' => $blockSlugGuess,
-                                'line' => $line,
-                                'attr_key' => $key,
-                                'func' => $func,
-                                'category' => $category,
-                                'statement' => mb_substr($text, 0, 220),
-                                'dynamic' => false,
-                            ];
-                        }
-                        foreach ($rows as $r) {
-                            echo json_encode($r) . "\n";
-                        }
+
+                        $row = [
+                            'file' => $file,
+                            'block_slug' => $blockSlugGuess,
+                            'line' => $line,
+                            'attr_key' => $key,
+                            'func' => $func,
+                            'category' => $category,
+                            'statement' => mb_substr($text, 0, 220),
+                            'dynamic' => $isDynamic,
+                            'printf_context' => $printfContext,
+                            'forward_context' => $forwardContext,
+                        ];
+                        echo json_encode($row) . "\n";
                     }
                 }
             }
