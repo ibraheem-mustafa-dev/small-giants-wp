@@ -209,12 +209,18 @@ attr_type=='string'`. It is the **attr-shape change** (`logoUrl` string attrs) t
 
 ### STEP 0.1 — the 69 rows that need a human call (FIRST TASK NEXT SESSION, Bean's instruction)
 
-Produced by `python plugins/sgs-blocks/scripts/content-role-detect/fingerprint_content_roles.py`.
-Re-run it rather than trusting these numbers.
+Re-run `fingerprint_content_roles.py`; still **69** on 2026-08-06.
+
+⚠ **ALL 4 BUCKETS ROOT-CAUSED — verdicts exist, NOTHING APPLIED.** Per-row calls + file:line in the
+2026-08-05/06 agent reports. Re-investigating is waste; APPLYING is the work. Apply by MECHANISM,
+not hand overrides (D497); `technical` may be assigned ONLY from a D1 veto, so the 13 report-only
+rows need D1 to REACH them.
+⚠ **0.1 CANNOT CLOSE BEFORE 0.2** — `whatsapp-cta.phoneNumber` + `.message` both wait on 0.2's
+`link-content` extractor. 67 of 69 independent; those 2 hard-blocked.
 
 | Bucket | Rows | What to do |
 |---|---|---|
-| **Wrapper-rendered styling** | 23 | Mechanical, same fix as `gap`: declare an explicit `attrMap` on the owning block (copy `sgs/container`'s `grid` element). `overlayGradientFrom/To` ×4, `shapeDividerTop/Bottom(+Colour)` ×3 each, `backgroundOverlayColour` ×2, `gridItemBorder` |
+| **Wrapper-rendered styling** | 33 | ⛔ **"declare an attrMap" is WRONG for ~10 rows (2026-08-05).** `shapeDividerTop/Bottom` pick an SVG PATH not a CSS prop → `select-from-enum`. `trust-bar.gridItemBorder` is DEAD (items are `__badge`, never `.sgs-container`). `overlayGradientTo` can't share `css:background-image` with `From` in a flat map. `container`/`cta-section` declare a deliberate `decorative` opt-out — extend it. Only `*Colour` is the plain attrMap case |
 | **D4 needs review** | 32 | Technical OR styling painted later via a variable — separating them needs D1-style variable-flow analysis. `anchor`, `sgsCustomCss`, `justifyContent`, `rowSlot`, `customWidthUnit`, `orderBy`, `contentIconName`, `gradientColourStart/End`, + ~17 singletons |
 | **Report-only (D2-only)** | 13 | Needs corroboration: 8× `fieldName`, `formName`, `excludeKeywords`, `posterAlt`, `drawerRef`, `schemaItemName`, `whatsapp-cta.message` |
 | **Content gap** | 1 | `whatsapp-cta.phoneNumber` — waits on the `link-content` extractor below |
@@ -222,16 +228,11 @@ Re-run it rather than trusting these numbers.
 ### STEP 0.2 — three residuals, each with its blocker already identified
 
 1. **`sgs/multi-button` rename — PHASE A SHIPPED (`1d13997d`), PHASE B outstanding.** Both names are
-   now declared; `render.php` reads new-first-legacy-fallback; `edit.js` writes only the new names;
-   `attrMap` repointed. Deploy audit **0 NEW HIGH** (was 3), live-captured `row`@1309 / `column`@341
-   with children intact — and those values reach CSS ONLY through the fallback, since posts 1596/2130
-   store the legacy names. The attribute-RENAME shape the blocker called for is BUILT
-   (`oldshape-mappings.js` `RENAMES` + a driver path using `updateBlockAttributes`, not
-   `replaceBlock` — the latter rebuilds from `children` and would delete the button subtree).
+   now declared; render.php reads new-first-legacy-fallback; the attribute-RENAME driver is BUILT.
    **Phase B = migrate posts 1596 + 2130, then delete the legacy declarations + fallback arms.**
-   Blocked on `wp-login` rejecting the driver after its first successful run (3 attempts + 45s pause;
-   credentials parse correctly and run 1 authenticated, so it reads as a lockout — stopped rather
-   than risk locking the account). Steps: `reports/visual-diff/multi-button-2026-08-05.md`.
+   Blocked on `wp-login` rejecting the driver after its first successful run (reads as a lockout;
+   stopped rather than risk the account). Full detail + steps:
+   `reports/visual-diff/multi-button-2026-08-05.md`.
    ⚠ Stored legacy values are HARMLESS meanwhile — they are declared, so nothing is discarded.
 2. **`link-content` role + extractor** — the CAPTURE half shipped (`580f7885`): render.php's URL
    template is recovered structurally into `output_signature.link_template` (no new column — Bean's
@@ -255,7 +256,7 @@ Re-run it rather than trusting these numbers.
 | **B** | Hero-background design gate. Collision gate proved a FOUR-block class (hero/container/cta-section/trust-bar). Bean's identity-rename lead (D484): distinct DRAFT-side selectors per colliding attr (`__background-image`/`__background-video`/`__background-svg`; `__image` vs `__poster`). Data-only, no schema change. | 20 min | Inline, Opus — Rule 7 design-gate (shared-mechanism) + `/qc-council` BEFORE building. | Step 0 | `/qc-council` pre-build | `check_content_attr_collisions.py` reports 0 genuine groups |
 | **C** | Migrate the 6 existing gating rules into `inspector-scan`. The one step that can LOSE enforcement while reading green. | 30 min | Delegated, sonnet. Brief: run old + new rule sets side by side, diff finding sets, explain every delta in writing BEFORE deleting anything; delete old scripts in a separate later commit. | Step 0 | `/qc-inline` on the diff | Delta explained per-finding; old scripts deleted only after zero unexplained deltas |
 | **D** | Flip advisory rules to fail-closed, one at a time. Each rule flips only when its backlog is zero AND fixtures cover the dominant real shape. | 15 min/rule | Inline — judgment call per rule, not mechanical. | C | n/a (self-test per rule) | Backlog=0 proven, not asserted; flip recorded in `decisions.md` |
-| **E** | `supports.sgs.attrRoles` (FR-31-2.1a/D258). Declarative channel ending name-guessing. ⛔ Do NOT read WP 7.0's inline `"role":"content"` into the SGS role column — collides, corrupts 8 attrs. | 45 min | Delegated, sonnet, worktree isolation (touches block.json across many blocks). Brief: add the channel parallel to WP's own `role`, column-first-else-name-regex-fallback in the seeder. | B (schema settled) | `/qc-council` (shared-mechanism) | Audit script proves parity name-regex vs channel on every block before any flip |
+| **E** | ⛔ **STRUCK — superseded by D497 (2026-08-05).** `supports.sgs.attrRoles` would RELOCATE hand declarations into 84 block.json files, not reduce them; the override file is already that channel. Goal is to make it irrelevant: 26 hand roles left of 67. Do NOT build. | — | — | — | — | Deleted, not deferred |
 | **F** | Build the 24 enforcement scripts — the track's actual deliverable. Scope: 21 remaining (items 2-17, 19, 21 + T1/T2/T3); items 1/18/20 exist on `scripts/inspector-scan/` — do not start a new tool. | 30-60 min/rule | Delegated per rule, sonnet, `/subagent-driven-development` (implementer + 2 reviewers) — each rule is independent once B/E settle. | A-E settled | `/qc-council` per rule before fail-closed flip | Each of 24 rows meets the DEFINITION OF ENFORCED below, or a recorded exception naming a D-number |
 
 ⚠ **Why F is last (Bean's ruling):** A/B/E decide block structure; rules written before them get
