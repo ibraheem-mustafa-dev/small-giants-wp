@@ -1663,8 +1663,19 @@ def _structural_role_map() -> tuple[dict, str | None, set, set]:
     # Rows NO detector reached are in neither map and stay NULL. "Unreached" and "proven
     # technical" are different facts; collapsing them would rebuild the very ambiguity
     # these roles were added to remove.
+    # Content verdicts FIRST, then D6/D7's specific-role verdicts. `dict(a, **b)` order
+    # matters: `assignments` is written last so a content verdict can never be overwritten
+    # by a styling/technical one. The two sets are disjoint today by construction
+    # (specific_roles is drawn from D4's leftovers, which excludes anything assigned), so
+    # this ordering decides nothing right now — it is here so the RULE is right if that
+    # ever stops being true.
+    _specific = {
+        (s["block_slug"], s["attr_name"]): s["role"]
+        for s in result.get("specific_roles", [])
+    }
+    _content = {(a["block_slug"], a["attr_name"]): a["role"] for a in result["assignments"]}
     return (
-        {(a["block_slug"], a["attr_name"]): a["role"] for a in result["assignments"]},
+        {**_specific, **_content},
         None,
         # D1 vetoes UNION D4's proven referenced-not-output rows. Both are
         # positive evidence that the value is machine-facing, reached by

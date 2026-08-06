@@ -59,6 +59,17 @@ const MAX_HOPS = 3;
  * established by reading them, not inferred from the names -- the same standard
  * detector4 applies to `includes/forms/`.
  */
+/**
+ * Helpers that exist SPECIFICALLY to resolve a colour. A carrier reaching one of these is
+ * not merely "styling" — it is a colour value, which is the `color` role's own contract
+ * ("an attr whose value is a colour"), and that role has a live consumer
+ * (attr_is_colour_role(), converter/db/db_lookup.py). Kept separate from CSS_HELPERS so
+ * the detector emits the SPECIFIC role rather than the coarsest one that fits.
+ */
+const COLOUR_HELPERS = array(
+    'sgs_colour_value',
+);
+
 const CSS_HELPERS = array(
     'sgs_colour_value',
     'sgs_shadow_value',
@@ -95,17 +106,33 @@ function looks_like_css_text(string $s): bool {
     return (bool) preg_match('/\b(linear-gradient|radial-gradient|calc|clamp)\s*\(/i', $s);
 }
 
-/** The statement appends to / builds a class list. */
-function looks_like_class_context(string $s, string $var): bool {
-    // `$classes[] = ... $var`, `$wrapper_classes[] = ...`, `$x_class = ... $var`
-    if (preg_match('/\$[a-z0-9_]*class[a-z0-9_]*\s*(\[\s*\]\s*)?(\.)?=/i', $s)) {
-        return true;
+/**
+ * The carrier's value is concatenated onto a BEM `--modifier` prefix.
+ *
+ * NARROWED 2026-08-06 from "appears in any class context" to "IS the modifier suffix".
+ * The wider form matched a value merely mentioned near a class list, which is not the
+ * same claim and cannot support the specific role below.
+ *
+ * This shape maps to `enum-class-probe`, NOT to generic `styling`: that role's own
+ * definition is "a BEM `--modifier` class carries this attr's value ... never as a CSS
+ * declaration", and it has a live cloning consumer (db_lookup.py:4889-4896) that matches
+ * the modifier against the draft's actual BEM class. Seeding `styling` here would be
+ * measuring the right thing and then filing it under the coarsest role available, losing
+ * that consumer.
+ */
+function is_bem_modifier_sink(string $s, string $var): bool {
+    $v = preg_quote(ltrim($var, '$'), '/');
+    // 'sgs-timeline--' . $orientation   /   "sgs-x--" . $var
+    return (bool) preg_match('/[\'"][A-Za-z0-9_-]*--[\'"]\s*\.\s*\$' . $v . '\b/', $s);
+}
+
+function calls_colour_helper(string $s, string $var): bool {
+    foreach (COLOUR_HELPERS as $fn) {
+        if (preg_match('/\b' . preg_quote($fn, '/') . '\s*\([^)]*\$' . preg_quote(ltrim($var, '$'), '/') . '\b/i', $s)) {
+            return true;
+        }
     }
-    // A BEM modifier literal concatenated with the carrier: 'sgs-timeline--' . $orientation
-    if (preg_match('/[\'"][a-z0-9-]*--[\'"]\s*\.\s*\$' . preg_quote(ltrim($var, '$'), '/') . '\b/i', $s)) {
-        return true;
-    }
-    return (bool) preg_match('/\bclass\s*=\s*[\'"]/i', $s);
+    return false;
 }
 
 function calls_css_helper(string $s, string $var): bool {
@@ -193,7 +220,15 @@ function carriers_for(array $statements, string $attr): array {
 }
 
 /**
- * @return array{shape:string,line:int}|null
+ * Locate the paint site and name the SPECIFIC role it implies.
+ *
+ * EACH SHAPE RESOLVES TO ITS OWN ROLE (2026-08-06, Bean). The first cut of this detector
+ * emitted `styling` for everything it found. That was measuring the right thing and then
+ * filing it under the coarsest role that fits — which throws away the consumer that makes
+ * the specific role worth having (the BEM-modifier probe for `enum-class-probe`,
+ * attr_is_colour_role() for `color`). Generic `styling` is the FALLBACK, not the answer.
+ *
+ * @return array{shape:string,role:string,line:int}|null
  */
 function find_paint_site(array $statements, array $carriers): ?array {
     foreach ($statements as $st) {
@@ -205,15 +240,22 @@ function find_paint_site(array $statements, array $carriers): ?array {
             }
             // Skip the assignment that CREATED this carrier -- a read is not a paint.
             $assign = match_assignment($text);
-            if ($assign && ltrim((string) ($assign[0] ?? ''), '$') === $var
-                && !looks_like_css_text($text) && !calls_css_helper($text, $var)) {
+            $isOwnAssign = $assign && ltrim((string) ($assign[0] ?? ''), '$') === $var;
+
+            // A BEM modifier sink is checked FIRST and is exempt from the own-assignment
+            // skip: `$slot_class = 'sgs-site-header-row--' . $row_slot;` is BOTH an
+            // assignment and the paint instruction, so skipping it would lose the row.
+            if (is_bem_modifier_sink($text, $var)) {
+                return array('shape' => 'BEM_MODIFIER', 'role' => 'enum-class-probe', 'line' => $line);
+            }
+            if (calls_colour_helper($text, $var)) {
+                return array('shape' => 'CSS_COLOUR', 'role' => 'color', 'line' => $line);
+            }
+            if ($isOwnAssign && !looks_like_css_text($text) && !calls_css_helper($text, $var)) {
                 continue;
             }
             if (calls_css_helper($text, $var) || looks_like_css_text($text)) {
-                return array('shape' => 'CSS_VALUE', 'line' => $line);
-            }
-            if (looks_like_class_context($text, $var)) {
-                return array('shape' => 'CSS_CLASS', 'line' => $line);
+                return array('shape' => 'CSS_VALUE', 'role' => 'styling', 'line' => $line);
             }
         }
     }
@@ -250,7 +292,7 @@ function detect_css_paint(array $candidates): array {
         $out[] = array(
             'block_slug'    => $slug,
             'attr_name'     => $attr,
-            'role'          => 'styling',
+            'role'          => $paint['role'],
             'mechanism'     => 'css-paint-flow',
             'shape'         => $paint['shape'],
             'carriers'      => array_keys($carriers),
@@ -266,21 +308,33 @@ function detect_css_paint(array $candidates): array {
 function self_test(): int {
     $failures = array();
 
-    // 1. POSITIVE — CSS_VALUE. Real row: separator.gradientColourStart is read at
-    //    render.php:84 and reaches sgs_colour_value() at :146.
+    // 1. POSITIVE — CSS_COLOUR -> role `color`. Real row: separator.gradientColourStart
+    //    is read at render.php:84 and reaches sgs_colour_value() at :145.
+    //    The ROLE is asserted, not just the shape: emitting the right shape under the
+    //    wrong role is the exact defect this pass fixed.
     $r = detect_css_paint(array(array('sgs/separator', 'gradientColourStart')));
-    if (count($r) !== 1 || $r[0]['shape'] !== 'CSS_VALUE') {
-        $failures[] = 'separator.gradientColourStart did not resolve to CSS_VALUE (got '
-            . (count($r) ? $r[0]['shape'] : 'NOTHING') . '). This is the grounding case; '
-            . 'a miss here means the flow tracking is broken, not that the world is empty.';
+    if (count($r) !== 1 || $r[0]['shape'] !== 'CSS_COLOUR' || $r[0]['role'] !== 'color') {
+        $failures[] = 'separator.gradientColourStart did not resolve to CSS_COLOUR/color (got '
+            . (count($r) ? $r[0]['shape'] . '/' . $r[0]['role'] : 'NOTHING') . '). This is a '
+            . 'grounding case; a miss means the flow tracking is broken, not that the world is empty.';
     }
 
-    // 2. POSITIVE — CSS_CLASS. Real row: timeline.orientation reaches
-    //    `$wrapper_classes[] = 'sgs-timeline--' . $orientation` at render.php:339.
+    // 2. POSITIVE — BEM_MODIFIER -> role `enum-class-probe`. Real row: timeline.orientation
+    //    reaches `$wrapper_classes[] = 'sgs-timeline--' . $orientation` at render.php:339.
     $r = detect_css_paint(array(array('sgs/timeline', 'orientation')));
-    if (count($r) !== 1 || $r[0]['shape'] !== 'CSS_CLASS') {
-        $failures[] = 'timeline.orientation did not resolve to CSS_CLASS (got '
-            . (count($r) ? $r[0]['shape'] : 'NOTHING') . ').';
+    if (count($r) !== 1 || $r[0]['shape'] !== 'BEM_MODIFIER' || $r[0]['role'] !== 'enum-class-probe') {
+        $failures[] = 'timeline.orientation did not resolve to BEM_MODIFIER/enum-class-probe (got '
+            . (count($r) ? $r[0]['shape'] . '/' . $r[0]['role'] : 'NOTHING') . ').';
+    }
+
+    // 2b. POSITIVE — the modifier sink that is ALSO its own assignment.
+    //     `$slot_class = 'sgs-site-header-row--' . $row_slot;` (render.php:59) would be
+    //     skipped by the own-assignment guard if the modifier check did not run first.
+    $r = detect_css_paint(array(array('sgs/site-header-row', 'rowSlot')));
+    if (count($r) !== 1 || $r[0]['role'] !== 'enum-class-probe') {
+        $failures[] = 'site-header-row.rowSlot did not resolve to enum-class-probe (got '
+            . (count($r) ? $r[0]['role'] : 'NOTHING') . ') — the own-assignment guard is '
+            . 'swallowing a sink that is itself an assignment.';
     }
 
     // 3. NEGATIVE CONTROL — a real attribute that must NOT be claimed. post-grid.orderBy
@@ -314,7 +368,7 @@ function self_test(): int {
         }
         return 1;
     }
-    echo "DETECTOR-7 SELF-TEST PASSED — 5 checks green.\n";
+    echo "DETECTOR-7 SELF-TEST PASSED — 6 checks green.\n";
     return 0;
 }
 

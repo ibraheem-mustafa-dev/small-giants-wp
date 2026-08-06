@@ -403,6 +403,9 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
 
     assignments, report_only, disagreements, vetoed = [], [], [], []
     seen = set()
+    # Rows whose ONLY claim is a D2-only report. Reported, but NOT treated as claimed when
+    # D4's candidate pool is computed — see the note at the branch that fills this.
+    d2_only_unclaimed: set = set()
     for det in ("D1", "D3", "D2"):
         for k, cat in per_detector[det].items():
             if k in seen:
@@ -454,6 +457,9 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
                      "detectors": supporting,
                      "reason": "D2-only: control type alone is 66% precise, never assigns"}
                 )
+                # Tracked for diagnostics only — see the note at `claimed` below for why
+                # subtracting these from D4's candidate pool was measured and reverted.
+                d2_only_unclaimed.add(k)
             elif cat in CATEGORY_TO_ROLE:
                 assignments.append(
                     {"block_slug": k[0], "attr_name": k[1], "role": CATEGORY_TO_ROLE[cat],
@@ -538,6 +544,22 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     # This is NOT "leftovers are technical". An attribute nothing reads is left
     # alone here -- that is a DEAD attribute, a different finding owned by
     # check-dead-controls.js CHECK 4, with a different fix (delete it).
+    # WHY D2-ONLY ROWS ARE STILL TREATED AS CLAIMED — measured 2026-08-06, do not "fix" this
+    # again without re-measuring. A D2-only report is a claim from a detector that never
+    # assigns, and it does exclude those rows from D4 below. That looks like a bug, and the
+    # obvious change (subtract the D2-only keys) was implemented and MEASURED:
+    # d4_candidates 20 -> 33, `technical_refs` 0 -> 0. Not one row gained a role.
+    #
+    # The reason is D4's `proven_non_css` gate: it awards `technical` only when the
+    # reference site is inside a subsystem established to emit no CSS at all (today,
+    # `includes/forms/`). For sgs/form-field-*.fieldName the decisive reference resolves to
+    # the BLOCK'S OWN render.php (`field_id( $attributes['fieldName'] )`,
+    # form-field-text/render.php:18), and a block's own render.php is not such a subsystem
+    # — it routinely emits CSS. So D4 correctly declines, exactly as it did before.
+    #
+    # Net effect of the change was 13 rows double-listed in two buckets and zero
+    # classifications, so it was reverted. Unblocking D4 only becomes worthwhile once D4 can
+    # actually decide these rows; the blocker is D4's evidence gate, not this line.
     claimed = set(seen) | {(a["block_slug"], a["attr_name"]) for a in assignments}
     d4_candidates = sorted(pool - claimed)
     technical_refs = []
@@ -571,6 +593,53 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
             print(f"!! DETECTOR 4 DID NOT RUN: {type(exc).__name__}: {exc}",
                   file=sys.stderr)
 
+    # SPECIFIC-ROLE DETECTORS (D6 / D7) — run over exactly what D4 could not decide.
+    #
+    # Both answer D4's open question ("technical, or styling painted later?") with a
+    # SPECIFIC role rather than a generic one, which is the whole point: `enum-class-probe`
+    # and `color` each have a live converter consumer, and filing those rows as generic
+    # `styling` would measure the right thing and then throw the consumer away.
+    #
+    # Scoped to `d4_review` deliberately. These detectors must never get a chance to
+    # re-decide a row a trusted detector already assigned — the ordering guarantee is
+    # structural (this list is D4's leftovers), not a promise about precedence.
+    specific_roles = []
+    if d4_review:
+        _pairs = [[x["block_slug"], x["attr_name"]] for x in d4_review]
+        for _script, _fn in (
+            ("detector6_native_support_and_style_emission.py", "python"),
+            ("detector7_css_paint_flow.php", "php"),
+        ):
+            try:
+                _tmp = SCRIPT_DIR / f".{_script}.candidates.json"
+                _tmp.write_text(json.dumps(_pairs), encoding="utf-8")
+                _cmd = [sys.executable if _fn == "python" else "php",
+                        str(SCRIPT_DIR / _script), "--candidates", str(_tmp)]
+                _out = subprocess.run(_cmd, capture_output=True, text=True)
+                _tmp.unlink(missing_ok=True)
+                if _out.returncode != 0:
+                    print(f"!! {_script} DID NOT RUN: exit {_out.returncode}\n"
+                          f"{_out.stderr[:800]}", file=sys.stderr)
+                    continue
+                for _line in _out.stdout.splitlines():
+                    _line = _line.strip()
+                    if _line.startswith("{"):
+                        specific_roles.append(json.loads(_line))
+            except Exception as exc:  # surfaced, never swallowed
+                print(f"!! {_script} DID NOT RUN: {type(exc).__name__}: {exc}",
+                      file=sys.stderr)
+
+    # First verdict wins per key, so a row claimed by both detectors is not double-counted.
+    _seen_specific = set()
+    _deduped = []
+    for _r in specific_roles:
+        _k = (_r["block_slug"], _r["attr_name"])
+        if _k in _seen_specific:
+            continue
+        _seen_specific.add(_k)
+        _deduped.append(_r)
+    specific_roles = _deduped
+
     reached = (
         set().union(*(set(d) for d in per_detector.values())) | d1_vetoes
         | {(t["block_slug"], t["attr_name"]) for t in technical_refs}
@@ -590,6 +659,10 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
         "wrapper_styling": sorted(wrapper_styling, key=lambda a: (a["block_slug"], a["attr_name"])),
         "d4_review": sorted(d4_review, key=lambda a: (a["block_slug"], a["attr_name"])),
         "content_gaps": sorted(content_gaps, key=lambda a: (a["block_slug"], a["attr_name"])),
+        # D6/D7 verdicts, each naming a SPECIFIC role. Consumed by assign-canonical's
+        # `_structural_role_map()`; a row here is still listed in `d4_review` too, because
+        # D4 genuinely could not decide it — these detectors answered the question D4 asked.
+        "specific_roles": sorted(specific_roles, key=lambda a: (a["block_slug"], a["attr_name"])),
     }
 
 

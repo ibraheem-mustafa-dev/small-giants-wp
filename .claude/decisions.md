@@ -1,5 +1,51 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D502 — detectors resolve to the SPECIFIC role, not the nearest broad one; pool 34 → 24 [ROUTINE]
+
+**2026-08-06.** Bean's push — *"several of these match a role by definition/purpose"* — was right,
+and reading the source per attribute changed several answers. The role vocabulary is ~29 roles; I had
+been reasoning in three buckets and was about to seed the coarsest one that fitted.
+
+**The correction that mattered most.** `enum-class-probe` is defined as *"a BEM `--modifier` class
+carries this attr's value, never a CSS declaration"* and has a live cloning consumer
+(`db_lookup.py:4889-4896`) that matches the modifier against the draft's actual BEM class. That is
+EXACTLY the shape D7 was detecting and filing as generic `styling` — measuring the right thing and
+then discarding the consumer that made it worth measuring. Same for `color` (consumer
+`attr_is_colour_role()`) on the separator gradients.
+
+**Narrowing D7 removed two wrong claims with no special-casing.** Tightening "appears in a class
+context" to "IS the `'…--' . $var` modifier suffix" dropped `separator.contentIconName` (content-
+bearing `icon-lucide`, which D7 would have mis-seeded as styling) and `mega-panel.viewAllPlacement`
+(an `enum-mode`, not a modifier). A more precise rule was also a more correct one.
+
+**D8 — undeclared-enum scanner, a SCHEMA gap not a role gap.** `eligible_pool()` excludes
+`enum_values IS NOT NULL`, so every unclassified row by construction has no `enum` in its block.json
+— yet several enforce one in PHP (`in_array( $attributes['source'], array('typed','menu'), true )`,
+icon-list/render.php:158). D8 reports the block as owing an `enum` DECLARATION rather than seeding a
+role, because `/sgs-update` Stage 1 already reads block.json enums into `enum_values` and TIER 3.5
+already seeds `enum-mode` from that column. Declaring it fixes three things at once with no new role
+logic: the row classifies via existing tested machinery, WordPress validates the value, and the
+client gets a real select control instead of a free-text box — which is Spec 35's whole point.
+Found 3 (`icon-list.source`, `mega-panel.viewAllPlacement`, `timeline.orientation`). Its documented
+blind spot is a closed set expressed as a comparison CHAIN (`responsive-logo.align`), because proving
+a chain exhaustive is a much weaker inference.
+
+**A NEGATIVE RESULT, kept rather than buried.** The planned third mechanism was "extend D1's
+candidate set". The real blocker turned out to be different and better-shaped: `seen.add(k)` fires on
+a D2-ONLY report, and `seen` is subtracted from D4's candidate pool — so D2, which by design never
+assigns, was vetoing D4, which can. The obvious fix was implemented and MEASURED: `d4_candidates`
+20 → 33, `technical_refs` **0 → 0**. Not one row gained a role, because D4 awards `technical` only
+when the reference sits in a subsystem proven to emit no CSS, and `fieldName`'s decisive reference is
+the block's OWN render.php (`field_id(...)`, form-field-text/render.php:18). Reverted — it delivered
+zero classifications and double-listed 13 rows — with the measurement recorded in-code so a future
+session does not re-derive it. The blocker is D4's evidence gate, not that line.
+
+**Measured, expectation declared first:** 10 rows seeded (3 `technical`, 2 `styling`, 2 `color`,
+3 `enum-class-probe`), pool 34 → **24**, `role IS NULL` 289 → **279**. DB diff vs a hash-verified
+backup: exactly 10 rows changed, all `None` → a role, **zero existing roles overwritten**, zero rows
+added or deleted. D1's `--glob` output still byte-identical to its pre-guard baseline. Converter
+suite 598 pass (same one pre-existing failure). All 7 self-tests green.
+
 ## D501 — Detectors 6 + 7 built and VERIFIED, deliberately NOT wired to seed yet [ROUTINE]
 
 **2026-08-06.** Task 2's 20 rows had verdicts but no mechanism. Two were built. Both are
