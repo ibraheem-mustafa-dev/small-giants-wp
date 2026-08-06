@@ -894,6 +894,7 @@ def run() -> None:
         f"upgraded={_rd['upgraded']} structural={_rd['structural_filled']} | "
         f"technical={_rd['technical_filled']} styling={_rd['styling_filled']} "
         f"styling-wrapper={_rd['wrapper_styling_filled']} "
+        f"styling-upgraded={_rd['styling_upgraded']} "
         f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
         f"boolean-swept={_rd['boolean_swept']} | "
         f"companion-image={_rd['companion_image_filled']} "
@@ -1612,7 +1613,7 @@ def run_role_detection_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
     }
 
 
-def _structural_role_map() -> tuple[dict, str | None, set, set]:
+def _structural_role_map() -> tuple[dict, str | None, set, set, dict]:
     """Structural content-role proposals, computed ONCE per reseed.
 
     Track A / Spec 35 (2026-08-04). Returns
@@ -1638,19 +1639,19 @@ def _structural_role_map() -> tuple[dict, str | None, set, set]:
     detect_dir = Path(__file__).resolve().parent.parent / "content-role-detect"
     module_path = detect_dir / "fingerprint_content_roles.py"
     if not module_path.is_file():
-        return {}, f"fingerprint module missing at {module_path}", set()
+        return {}, f"fingerprint module missing at {module_path}", set(), set(), {}
 
     try:
         import importlib.util
 
         spec = importlib.util.spec_from_file_location("sgs_fingerprint", module_path)
         if spec is None or spec.loader is None:
-            return {}, f"could not load a module spec from {module_path}", set()
+            return {}, f"could not load a module spec from {module_path}", set(), set(), {}
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         result = mod.compute()
     except Exception as exc:  # noqa: BLE001 - surfaced to the caller, never swallowed
-        return {}, f"{type(exc).__name__}: {exc}", set()
+        return {}, f"{type(exc).__name__}: {exc}", set(), set(), {}
 
     # Two maps, deliberately kept apart.
     #
@@ -1713,6 +1714,12 @@ def _structural_role_map() -> tuple[dict, str | None, set, set]:
         # So TIER 3's `css_property IS NOT NULL` gate can never reach them, and
         # leaving them NULL made 33 settled rows read as open work on every run.
         {(w["block_slug"], w["attr_name"]) for w in result.get("wrapper_styling", [])},
+        # GENERIC-STYLING UPGRADES (2026-08-06, Bean). Rows already holding the generic
+        # `styling` backstop whose paint site proves a SPECIFIC role. Kept separate from
+        # every map above because these OVERWRITE an existing role rather than filling a
+        # NULL — the only pass in this file that does, and deliberately narrow for it.
+        {(u["block_slug"], u["attr_name"]): u["role"]
+         for u in result.get("styling_upgrades", [])},
     )
 
 
@@ -1940,7 +1947,8 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # A measured fact about what the block DOES with a value always beats a guess from
     # how the value is spelled. This demotes _ATTR_NAME_RULES to a fallback, which is the
     # first step toward deleting it (FR-31-2.1a).
-    structural, structural_error, d1_vetoed, d4_wrapper_painted = _structural_role_map()
+    (structural, structural_error, d1_vetoed, d4_wrapper_painted,
+     styling_upgrades) = _structural_role_map()
     if structural_error:
         print(
             "\n!! STRUCTURAL ROLE TIER DID NOT RUN -- falling back to the name regex.\n"
@@ -2090,6 +2098,38 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
             "UPDATE block_attributes SET role = 'styling' WHERE id = ?", (row_id,)
         )
         styling_filled += 1
+
+    # TIER 3.15 -- GENERIC-STYLING UPGRADE (2026-08-06, Bean). Runs immediately after
+    # TIER 3 so it re-examines what that backstop just assigned, as well as rows the
+    # backstop assigned on an earlier reseed.
+    #
+    # THE ONLY PASS IN THIS FILE THAT OVERWRITES AN EXISTING ROLE, and narrow to match:
+    # the WHERE clause pins `role = 'styling'` exactly, so it can never touch a content
+    # verdict, a specific styling family, or a NULL. `styling` is documented as the
+    # fallback ("no more specific styling family was established"), and the vocabulary
+    # already sanctions replacing it -- `enum-mode`'s entry records that a generic role is
+    # overwritten the moment a specific family becomes resolvable. This is that, driven by
+    # a measured paint site instead of a suffix.
+    #
+    # MEASURED 2026-08-06: 83 rows on the backstop, 3 upgraded (button.colourBorder +
+    # .colourBorderHover + mega-panel.accent, all -> `color` via sgs_colour_value()).
+    # The 27 other border-color rows already carried `color`, so the same CSS property was
+    # being filed two ways depending on which mechanism reached it first.
+    #
+    # NEGATIVE CONTROL, and it is a REAL row not a fixture: gridItemBorder on
+    # container/cta-section/hero also carries css_property='border-color' and is
+    # indistinguishable from the upgraded rows in a GROUP BY -- but its value is a border
+    # SHORTHAND emitted raw, so `color` would be WRONG. It must survive unchanged; the
+    # self-test asserts that.
+    styling_upgraded = 0
+    if styling_upgrades:
+        for (u_slug, u_attr), u_role in styling_upgrades.items():
+            cur.execute(
+                "UPDATE block_attributes SET role = ? "
+                "WHERE block_slug = ? AND attr_name = ? AND role = 'styling'",
+                (u_role, u_slug, u_attr),
+            )
+            styling_upgraded += cur.rowcount
 
     # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
     # CSS unit for `<base>`; it is the same styling fact, split across two columns
@@ -2287,6 +2327,10 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # container wrapper. Printed separately from styling_filled so a reseed can tell
         # the two evidence routes apart (css_property vs wrapper-only read).
         "wrapper_styling_filled": wrapper_styling_filled,
+        # TIER 3.15 -- rows upgraded OFF the generic backstop onto a specific role. A
+        # non-zero count on a steady-state reseed means a new row landed on `styling` that
+        # a specific mechanism can now resolve — worth reading, not ignoring.
+        "styling_upgraded": styling_upgraded,
         "unit_inherited": unit_inherited,
         "enum_filled": enum_filled,
         # TIER 3.6 -- boolean attrs whose role was content-bearing, reclassified to
@@ -2679,6 +2723,89 @@ def _apply_wrapper_styling_tier(conn, d4_wrapper_painted: set) -> int:
             filled += 1
     conn.commit()
     return filled
+
+
+def _self_test_styling_upgrade() -> int:
+    """Prove the TIER 3.15 generic-styling upgrade can FAIL, on a throwaway in-memory DB.
+
+    Pins the one property that makes this pass safe: it is an UPGRADE OFF `styling` and
+    nothing else. The tempting loosening — "apply the verdict wherever it matches" — would
+    let a measured paint site overwrite a CONTENT verdict, which no evidence here licenses.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, css_property) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/button", "colourBorder", "styling", "border-color"),   # upgrade
+            (2, "sgs/container", "gridItemBorder", "styling", "border-color"),  # SHORTHAND
+            (3, "sgs/x", "someText", "text-content", None),                 # content untouchable
+            (4, "sgs/x", "alreadySpecific", "typography", "font-size"),     # specific untouchable
+            (5, "sgs/x", "stillNull", None, None),                          # NULL is not this pass's
+        ],
+    )
+    conn.commit()
+    # gridItemBorder is deliberately ABSENT from the verdict map — D7 declines it because
+    # its value is a shorthand, not a colour. The other three are present to prove the
+    # `role = 'styling'` guard is what protects them, not their absence from the map.
+    upgrades = {
+        ("sgs/button", "colourBorder"): "color",
+        ("sgs/x", "someText"): "color",
+        ("sgs/x", "alreadySpecific"): "color",
+        ("sgs/x", "stillNull"): "color",
+    }
+
+    cur = conn.cursor()
+    upgraded = 0
+    for (s, a), r in upgrades.items():
+        cur.execute(
+            "UPDATE block_attributes SET role = ? "
+            "WHERE block_slug = ? AND attr_name = ? AND role = 'styling'",
+            (r, s, a),
+        )
+        upgraded += cur.rowcount
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if upgraded == 0:
+        failures.append("claimed ZERO rows against a planted upgrade — cannot fail, proves nothing")
+    if got.get("colourBorder") != "color":
+        failures.append(f"colourBorder -> {got.get('colourBorder')!r}, expected 'color'")
+    if got.get("gridItemBorder") != "styling":
+        failures.append(
+            f"gridItemBorder -> {got.get('gridItemBorder')!r}: the border SHORTHAND was "
+            "upgraded. Its value is `1px solid #ccc`, not a colour — filing it `color` "
+            "hands attr_is_colour_role() a shorthand and calls it a colour."
+        )
+    if got.get("someText") != "text-content":
+        failures.append(
+            f"someText -> {got.get('someText')!r}: a CONTENT verdict was overwritten. This "
+            "pass upgrades off `styling` only; nothing here licenses touching content."
+        )
+    if got.get("alreadySpecific") != "typography":
+        failures.append(
+            f"alreadySpecific -> {got.get('alreadySpecific')!r}: an already-specific family "
+            "was overwritten — the pass must only replace the generic backstop."
+        )
+    if got.get("stillNull") is not None:
+        failures.append(
+            f"stillNull -> {got.get('stillNull')!r}: a NULL row was claimed. NULL belongs to "
+            "the filling tiers; this pass only upgrades."
+        )
+    conn.close()
+    if failures:
+        print(f"STYLING-UPGRADE SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"STYLING-UPGRADE SELF-TEST PASSED -- {upgraded} row(s) upgraded, 6 checks green.")
+    return 0
 
 
 def _self_test_wrapper_styling_tier() -> int:
@@ -3777,5 +3904,6 @@ if __name__ == "__main__":
                  or _self_test_technical_veto() or _self_test_unit_inheritance()
                  or _self_test_enum_backstop() or _self_test_companion_tier()
                  or _self_test_boolean_sweep() or _self_test_suffix_role_revive()
-                 or _self_test_type_sweep() or _self_test_wrapper_styling_tier())
+                 or _self_test_type_sweep() or _self_test_wrapper_styling_tier()
+                 or _self_test_styling_upgrade())
     main()

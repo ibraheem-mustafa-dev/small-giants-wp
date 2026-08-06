@@ -666,13 +666,85 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     }
 
 
+def generic_styling_rows(conn: sqlite3.Connection) -> list[tuple[str, str]]:
+    """Rows carrying the GENERIC `styling` backstop — candidates for an upgrade.
+
+    `styling` means "proven to paint CSS, but no more specific family was established".
+    It is explicitly the fallback, not an answer, and the vocabulary already sanctions
+    replacing it: `enum-mode`'s own entry records that a generic role is OVERWRITTEN the
+    moment a specific family becomes resolvable.
+
+    These rows are NOT in `eligible_pool()` (that pool is `role IS NULL`), so once a row
+    landed on the backstop nothing ever looked at it again. Measured 2026-08-06: four
+    rows sat on `styling` while carrying css_property='border-color' —
+    sgs/button.colourBorder/.colourBorderHover and sgs/product-card.ctaColourBorder/
+    .ctaColourBorderHover — every one of them passed through `sgs_colour_value()`, which
+    is the `color` role's own contract. 27 OTHER border-color rows already carried
+    `color`, so the same property was filed two ways.
+    """
+    return [
+        (r[0], r[1])
+        for r in conn.execute(
+            "SELECT block_slug, attr_name FROM block_attributes "
+            "WHERE block_slug LIKE 'sgs/%' AND role = 'styling'"
+        ).fetchall()
+    ]
+
+
 def compute(db_path: Path | None = None) -> dict:
     conn = sqlite3.connect(f"file:{db_path or resolve_db()}?mode=ro", uri=True)
     try:
         pool = eligible_pool(conn)
+        styling_rows = generic_styling_rows(conn)
     finally:
         conn.close()
-    return fingerprint(run_detectors(), pool)
+    result = fingerprint(run_detectors(), pool)
+    result["styling_upgrades"] = _styling_upgrades(styling_rows)
+    return result
+
+
+def _styling_upgrades(rows: list[tuple[str, str]]) -> list[dict]:
+    """Run D7 over rows already holding generic `styling` and keep only SPECIFIC verdicts.
+
+    STRICTLY AN UPGRADE, never a lateral move or a downgrade: a verdict of `styling`
+    (D7's own generic CSS_VALUE shape) is discarded here, because re-writing `styling`
+    with `styling` is churn that would make a reseed look like it changed something.
+
+    THE BUILT-IN NEGATIVE CONTROL is a real row, not a fixture: `gridItemBorder` on
+    container/cta-section/hero ALSO carries css_property='border-color' and looks
+    identical to the four upgradeable rows in a GROUP BY — but its value is a border
+    SHORTHAND (`1px solid #ccc`), sanitised by a regex that deliberately permits spaces
+    and emitted raw into `--sgs-gi-border`. Filing it `color` would hand
+    `attr_is_colour_role()` a shorthand and call it a colour. It must survive this sweep
+    unchanged, and the self-test asserts exactly that.
+    """
+    if not rows:
+        return []
+    out = []
+    try:
+        tmp = SCRIPT_DIR / ".styling_upgrade.candidates.json"
+        tmp.write_text(json.dumps([[b, a] for b, a in rows]), encoding="utf-8")
+        proc = subprocess.run(
+            ["php", str(SCRIPT_DIR / "detector7_css_paint_flow.php"), "--candidates", str(tmp)],
+            capture_output=True, text=True,
+        )
+        tmp.unlink(missing_ok=True)
+        if proc.returncode != 0:
+            print(f"!! STYLING-UPGRADE PASS DID NOT RUN: exit {proc.returncode}\n"
+                  f"{proc.stderr[:800]}", file=sys.stderr)
+            return []
+        for line in proc.stdout.splitlines():
+            line = line.strip()
+            if not line.startswith("{"):
+                continue
+            rec = json.loads(line)
+            if rec.get("role") and rec["role"] != "styling":
+                out.append(rec)
+    except Exception as exc:  # surfaced, never swallowed
+        print(f"!! STYLING-UPGRADE PASS DID NOT RUN: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
+        return []
+    return sorted(out, key=lambda r: (r["block_slug"], r["attr_name"]))
 
 
 # --- self-test ------------------------------------------------------------------------

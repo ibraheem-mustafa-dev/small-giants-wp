@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D503 — the generic `styling` backstop is now re-examined; and 3 of 4 proposed role deletions were WRONG [ROUTINE]
+
+**2026-08-06.** Bean asked whether anything already filed `layout`/`styling` fits a more specific
+role. It does — and answering it also disproved most of a cleanup I had proposed.
+
+**THE CLEANUP I PROPOSED WAS MOSTLY WRONG. Recorded in full so it is not re-proposed.**
+- `spacing-token` + `colour-text` are NOT bloat. `property_suffixes` has a `role` COLUMN that
+  PROVISIONS a role for a suffix: `BlockGap`/`Spacing` → `spacing-token`, `LinkColor` → `colour-text`.
+  Their `notes` name the origin — theme.json `settings.spacing.blockGap`, `settings.spacing.spacingSizes`,
+  block.json `supports.color.link`. They describe the **WordPress-native** half of the vocabulary and
+  are empty because no SGS block declares a custom attr for those. `spacing-token` also has a live
+  branch at `db_lookup.py:2017`. Deleting either would leave suffix derivation resolving to a role
+  that no longer exists.
+- **The four `icon-*` roles are a ROUTING KEY, not bloat.** `services/extraction.py:1110-1121` builds
+  `{role: attr_name}` for every role starting `icon-`, then does
+  `icon_source_attrs.get("icon-" + kind)`. All four sit on `sgs/icon` (dashiconName / emojiChar /
+  iconName / wpIconName). Merging them collapses that dict to ONE entry and breaks icon cloning
+  outright. This one would have been a regression, not a tidy-up.
+- `content`→`text-content` and the `number-css-*` merge deliver ZERO functional change (documented
+  aliases / identical `_kind_for()` resolution) and both are suffix-provisioned, so each would need
+  `property_suffixes` repointed too. Dropped on Bean's criterion: no functionality gained.
+- Only `query-descriptor` was genuinely dead — 0 rows, 0 code refs, 0 provisioning suffixes. Dropped.
+
+**THE REAL FINDING, from the question itself.** `border-color` was filed TWO ways: 27 rows on `color`,
+7 on the generic `styling` backstop. Reading each consumer split those 7 cleanly:
+- `button.colourBorder`/`.colourBorderHover` → `sgs_colour_value()` (`button/render.php:267`) — genuine
+  colours, misfiled.
+- `product-card.ctaColourBorder`/`Hover` → `sgs_colour_value()` (`helpers-button-style.php:129,178`) —
+  also colours, but consumed through a SHARED helper, which is D7's documented single-file blind spot.
+- `gridItemBorder` ×N → a border SHORTHAND (`1px solid #ccc`), sanitised by a regex that deliberately
+  permits spaces and emitted raw into `--sgs-gi-border`. `color` would be WRONG here: it would hand
+  `attr_is_colour_role()` a shorthand and call it a colour. **Identical by `css_property`, opposite
+  correct answers — which is why this needed the consumer read, not a GROUP BY.**
+
+**MECHANISM — TIER 3.15, the only pass in `assign-canonical` that OVERWRITES a role.** It re-runs D7
+over rows holding `role='styling'` and upgrades where the paint site proves a specific role. Narrow to
+match: the WHERE pins `role = 'styling'` exactly, so it cannot touch a content verdict, an
+already-specific family, or a NULL. Sanctioned by the vocabulary's own design — `enum-mode`'s entry
+records that a generic role is overwritten once a specific family becomes resolvable. `styling` rows
+are invisible to `eligible_pool()` (which is `role IS NULL`), so nothing had re-examined them since
+assignment.
+
+**Measured, expectation declared first:** 83 backstop rows examined, **3 upgraded** (`button.colourBorder`,
+`.colourBorderHover`, `mega-panel.accent` — the last one I had not spotted by hand), `styling` 83 → 80,
+`color` 284 → 287. DB diff vs a hash-verified backup: **5 rows changed, 0 added, 0 deleted** — the 3
+upgrades plus `image-sequence.posterAlt`→`image-alt` and `.posterMedia`→`image-object`, which is the D5
+companion fix landing and accounts for `role IS NULL` 279 → 277.
+
+**NEGATIVE CONTROL IS A REAL ROW, not a fixture:** all five `gridItemBorder` rows survived the sweep
+unchanged. The self-test plants the same shape plus a content verdict, an already-specific family and a
+NULL; dropping the `role = 'styling'` guard turns it red on all three. Six self-tests green, converter
+suite 633 pass.
+
+**⚠ STILL OPEN:** the D5 pair is seeded in the DB but may be INERT in the converter — `walk.py` gates
+`image-object` handling on `attr_type == "string"` and `posterMedia` is an object. Seeded ≠ firing.
+
 ## D502 — detectors resolve to the SPECIFIC role, not the nearest broad one; pool 34 → 24 [ROUTINE]
 
 **2026-08-06.** Bean's push — *"several of these match a role by definition/purpose"* — was right,
