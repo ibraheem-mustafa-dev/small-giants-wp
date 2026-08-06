@@ -1,5 +1,46 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D511 — `scalar-media` is NOT retirable: phase 3c's premise measured FALSE, the same inference that D474 already recorded as false [INCIDENT]
+
+**2026-08-07. B4 / phase 3c is BLOCKED. No code was deleted.** Nothing shipped from this — the value
+is the measurement and the correction to the plan.
+
+**The plan said "Now genuinely unblocked. D506 fixed the real blocker (`_family_modifier`), which is
+what the generic path needed in order to replace Branch A." That is false.** Measured on the real
+entry point with the plan's own named proof
+(`converter/tests/test_art_direction_live_path.py`, 4 tests, green before):
+
+| probe | result |
+|---|---|
+| `scalar_media_attr_for` → None (Branch A off), trio untouched | **3 of 4 FAIL** — `splitImage` lifts `{}`, a stray `ChildBlock` leaks |
+| Branch A off **AND** the trio set to `role='image-object'`, `emit_shape='nested'` (the plan's own compensating step) | **3 of 4 FAIL, identically** |
+
+The second row is the one that matters: the first probe was UNFAIR (it removed Branch A without the
+reclassification the plan pairs with it), so it was re-run with the full compensation applied. The
+generic path still lifts NOTHING for `splitImage`. Retiring `scalar-media` today reintroduces the
+exact D474 regression — the mobile crop in the desktop attribute, the desktop image leaking to a stray
+child.
+
+**This is the SAME error shape, from a different premise, for the second time.** D474 wrote it down:
+"Do not re-derive 'it's redundant' from the existence of `emit_shape`; that inference was made and
+measured false here." The inference has now been re-derived from the existence of D506 instead, and is
+false again. **`scalar-media`'s second job — opening `run_mechanism_b` branch A, the only path that
+reads each IMG's own `--mobile`/`--desktop` modifier — still has no replacement.** D506 fixed
+`_family_modifier`, which is about the device tier of a CLASS on the element being resolved; it does
+not give the generic path per-`<img>` modifier routing inside one column. Necessary, not sufficient.
+
+**A real inconsistency found while testing, worth fixing regardless of retirement:** the trio is
+split across two canonical slots — `splitImage`/`splitImageMobile` sit on `image`, but
+`splitImageTablet` sits on `slot='split'` with `emit_shape='child'`. The model it is supposed to match
+(`backgroundImage`/`Tablet`/`Mobile`) shares ONE slot, `background-image`, across all three. So the
+tablet tier is not in the same family as its own siblings. Not changed here — it is Task B's call and
+it should be made with the retirement question, not ahead of it.
+
+**Restored, hash-verified:** DB md5 `761352ea…` before and after; proof test green again; no probe
+files left in the tree. **The bar for reopening B4 is unchanged and specific: build the generic
+per-`<img>` modifier routing FIRST, then let this test go green with Branch A deleted. Green test, not
+an argument.**
+
 ## D510 — the `Shadow` suffix said a box-shadow is a colour; both cloning-side role defects reduced to their irreducible cores [INCIDENT]
 
 **2026-08-07.** Answers the Track 1 / cloning-pipeline correction that `role` is load-bearing for
