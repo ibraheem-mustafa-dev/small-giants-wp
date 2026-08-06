@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-05
+last_updated: 2026-08-06
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -14,19 +14,17 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where 2026-08-05 left things, in a sentence each:**
-- **The framework now understands 251 more of its own settings than it did this morning** — 661
-  unclassified down to 410. Every one worked out by a rule, none typed in by hand, so the same rules
-  keep working on new blocks without anyone maintaining a list.
-- **Clients can finally set header and footer spacing on phone and tablet.** The controls existed in
-  the code but were wired to nothing, so the setting silently did nothing.
-- **The logo block was quietly losing your chosen logo in the editor** — it looked fine on the live
-  site, but reopening the page showed an empty slot. Fixed.
-- **A safety check that was written months ago had never actually run.** It is now wired into every
-  build. Separately, another safety check stopped today's deploy from deleting settings off two
-  pages — it caught a mistake my own checking had missed.
-- **69 settings still need a human decision** — that is the first job next session, and they are
-  listed with what to do about each.
+**Where 2026-08-06 left things, in a sentence each:**
+- **The 14 half-finished blocks are finished and live.** They were described as waiting on a
+  screenshot check; they actually did not build at all. Two settings were wired to nothing — a client
+  could pick an option and nothing would happen. Both fixed.
+- **Your footer spot was a real bug.** Screen readers had no way to jump to the footer on any page,
+  because nothing marked it as one. Now there is exactly one, checked on the live site.
+- **A piece of the framework had been switched off without anyone noticing** — a spelling mismatch
+  meant 56 settings across 7 blocks were being skipped. Working again.
+- **A warning that cried wolf on every run now only fires when something is genuinely wrong.**
+- **69 settings still need a human decision — and they need YOUR decisions, not more code.** No
+  amount of clever detection closes them; that is the honest shape of the remaining work.
 
 **Older, still true:** WebGL is officially in the framework (Tier W, budgeted, closed list) · the
 physics canvas block is live on the test site, decorative only · the Snooza job is 72 combinations,
@@ -34,31 +32,20 @@ not 24 · ⛔ GSAP's licence has a clause worth knowing before you sell a plugin
 
 ## CURRENT FRONTS
 
-> **D-ceiling 496** — re-measure before writing any D reference, never trust this line.
+> **D-ceiling 498** — re-measure before writing any D reference, never trust this line.
 > D491-D496 (2026-08-05) = the Step 0 close: tier inheritance, `styling` + `technical` roles,
 > Detector 4, the never-wired pattern-attr gate, responsive-logo image shape, header/footer box
 > spacing. (2026-08-04 QC-bypass: CLEARED, nothing fabricated —
 > `reports/2026-08-04-step0-qc-bypassed-reverification.md`.)
 
-### Track 3 — Tier W ADMITTED · physics-canvas SHIPPED · nine reports consolidated (D479)
+### Track 3 — CLOSED. Tier W admitted, physics-canvas shipped (D479)
 
-**Pushed: `50c9122b` (physics-canvas) · `19d4d33f` (Tier W/D479 + Snooza) · `09960945` (gap register)
-· `3a581721` (council fixes) · `faa1652f` (spec staleness).** Full narrative (proof-for-every-claim
-table, licence detail, hand-authored-fixture correction): `memory/session-2026-08-03-track3.md`.
-
-- **Tier W (WebGL) ADMITTED — doctrine now V/G/H/W** (D479, Bean-approved 4/4). 120KB
-  Tier-W-pages-only budget; OGL wrapped for swappability; no-WebGL falls back to Tier V.
-- **`sgs/physics-canvas` shipped + seeded**; **`sgs/google-reviews` WCAG 2.5.7 + reduced-motion
-  sweep** (google-reviews/trustpilot/post-grid all 17/17 live).
-- **Master gap register** — nine reports consolidated: `plans/2026-08-03-motion-gap-register.md`.
-- ⛔ **GSAP is NOT MIT** (SPDX `NONE`; Prohibited Uses bans visual-motion-authoring tools competing
-  with Webflow — exposes the 299/yr Configurator Pro, not client sites; MIT escape hatch: Motion,
-  anime.js v4). ⛔ **LYGIA is Prosperity-licensed** (commercial = 30-day trial).
-- ⛔ **A stale spec (Spec 38) made a fresh audit recommend re-fixing already-working code** —
-  fixed `faa1652f`. Treat every "known defect" in any register as a claim with a date on it.
-- ⚠ **Snooza product data CORRECTED by Bean:** 4 sizes x 6 colours x **3 headrests = 72 SKUs**
-  (not 24); two accessories are NOT booleans. Assets: `sites/snooza-chair/assets/`.
-
+Pushed `50c9122b` `19d4d33f` `09960945` `3a581721` `faa1652f`. Full narrative, licence detail and
+the proof-for-every-claim table: `memory/session-2026-08-03-track3.md`. Standing facts kept because
+they bind future work: ⛔ **GSAP is NOT MIT** (Prohibited Uses bans visual-motion-authoring tools
+competing with Webflow — exposes the Configurator Pro, not client sites; MIT escapes: Motion,
+anime.js v4) · ⛔ **LYGIA is Prosperity-licensed** (commercial = 30-day trial) · ⚠ **Snooza = 72 SKUs**
+(4 sizes x 6 colours x 3 headrests), two accessories are NOT booleans.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
@@ -113,7 +100,7 @@ SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pr
   `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
   the hex colour `#0D5557`; true ceiling was D453)
-  (currently D496 as of 2026-08-05 — re-check live BEFORE writing any D reference; this line has
+  (currently D498 as of 2026-08-06 — re-check live BEFORE writing any D reference; this line has
   drifted before and will again) · framework
   counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
@@ -165,18 +152,29 @@ The canary is unblocked and current.
 
 ## NEXT SESSION (Track 1b / Spec 35) — orchestrate, don't do inline
 
-### ⛔ FIRST ACTION — deploy + visual-verify. 15 `block.json` files are UNCOMMITTED and blocked.
+### ✅ FIRST ACTION — CLOSED 2026-08-06. All 14 blocks landed; 0 deploy-relevant dirty files.
 
-Held in the tree: 4 enum declarations (brand-strip/image-sequence/mega-aside/mega-panel), 266
-container-mirror attrs across 10 wrapper-wired blocks, brand-strip's `containerMirror:false`. All
-blocked by the visual-diff gate, which wants `reports/visual-diff/<block>-<date>.md` with
-`verdict: PASS` + `first_paint_capture_passed: true`. **Do NOT write a PASS you did not capture.**
-⚠ Circularity to solve first: the gate wants a report from a canary deploy, but `build-deploy.py`
-carries a dirty-tree gate and `--allow-dirty` is what caused D336 (2 client sites down ~2.5h).
-⚠ `generated-fx-qualifying-blocks.json` must be regenerated ATOMICALLY with `physics-canvas/block.json`
-— the mirror added the `bgSvg*` family, which legitimately makes it qualify for the `draw` effect.
-**This is also the LIVE VERIFICATION the whole 2026-08-05/06 session never did** — everything shipped
-is DB + static analysis only. Same task; do it once.
+`c9857923` (11 blocks) + `271d0ab9` (the 3 enum-narrowed) + `6ed15e11` (roster). Every block carries
+a first-paint capture taken with **JS disabled** against a published canary URL; fixtures were
+published via the editor's own data layer for the 3 that had no public surface. The fx artefacts were
+regenerated atomically (physics-canvas correctly gained `draw`).
+
+⚠ **TWO CORRECTIONS to what this section used to say — do not re-derive the old belief:**
+1. **There was no circularity.** `build-deploy.py` already had `--payload` (see its own docstring,
+   "Breaks the deploy<->commit deadlock"): you name the files you are deliberately shipping
+   uncommitted and anything ELSE dirty still blocks. No `--allow-dirty`, no D336 risk. It worked
+   first time.
+2. **Those files were not blocked by the visual gate — they did not BUILD.** `npm run build` exited
+   1 on two defects inside the pending work: six blocks declared a `tagName` attr that NOTHING read
+   (dead control), and nav-menu hardcoded `justify-content` on the block ROOT, which the new
+   `justifyContent` attr is meant to own (dead on arrival). Both fixed; see D498.
+
+Also shipped this session: **D498** — `sgs/site-footer` now emits `<footer>`; the page had ZERO
+contentinfo landmark (mirror of D375's header bug). `60f7fbbb` — a silently-disabled code path in
+`extract-signatures.py` restored (224 -> 280 attr->element matches). `fc71ee16` — the fingerprint's
+expected population re-declared against the real pool + its always-firing warning re-armed.
+`3cbdd89f` — Task C: 6 conformance rules ported to `inspector-scan`, equivalence independently
+re-verified (16 FLAGGED + 2 BASELINED both sides), old script deliberately left in place.
 
 ### THE GOAL — why this track exists (state it before picking up any task)
 
@@ -199,7 +197,20 @@ box-spacing, 12 dead `direction`/`wrap` attrs deleted. Full narrative + the corr
 
 ### STEP 0.1 — the 69 rows that need a human call (FIRST TASK NEXT SESSION, Bean's instruction)
 
-Re-run `fingerprint_content_roles.py`; still **69** on 2026-08-06.
+Re-run `fingerprint_content_roles.py`; still **69** on 2026-08-06 — **re-confirmed AFTER a full
+`/sgs-update` reseed** (1609 roled / 69 NULL, byte-identical buckets before and after). The reseed
+picked up the `extract-signatures` fix and changed nothing here: that fix moves element manifests,
+not role assignment.
+
+⚠ **The bucket figures below were WRONG in an earlier revision** (D4-needs-review read 32, which made
+the four buckets sum to 79 against a pool of 69). Measured 2026-08-06: 33 + 22 + 13 + 1 = 69.
+
+⚠ **These 69 are DECISIONS, not detector work — budget them accordingly.** `ASSIGNABLE` is 0 and that
+is the CORRECT steady state, not a blind rule: the pool was 262 when the 45-60 expectation was
+written and has been worked down (1609 roled vs 69 NULL). Every one of the 69 IS reached by a
+detector (`unreached` = 0); each lands in a bucket that deliberately declines to assign. Closing them
+needs `attrMap` declarations, human calls, and a new role with a real consumer. No better detector
+closes any of them. The script's expectation + warning were re-declared at `fc71ee16`.
 
 ⚠ **ALL 4 BUCKETS ROOT-CAUSED — verdicts exist, NOTHING APPLIED.** Per-row calls + file:line in the
 2026-08-05/06 agent reports. Re-investigating is waste; APPLYING is the work. Apply by MECHANISM,
@@ -211,7 +222,7 @@ rows need D1 to REACH them.
 | Bucket | Rows | What to do |
 |---|---|---|
 | **Wrapper-rendered styling** | 33 | ⛔ **"declare an attrMap" is WRONG for ~10 rows (2026-08-05).** `shapeDividerTop/Bottom` pick an SVG PATH not a CSS prop → `select-from-enum`. `trust-bar.gridItemBorder` is DEAD (items are `__badge`, never `.sgs-container`). `overlayGradientTo` can't share `css:background-image` with `From` in a flat map. `container`/`cta-section` declare a deliberate `decorative` opt-out — extend it. Only `*Colour` is the plain attrMap case |
-| **D4 needs review** | 32 | Technical OR styling painted later via a variable — separating them needs D1-style variable-flow analysis. `anchor`, `sgsCustomCss`, `justifyContent`, `rowSlot`, `customWidthUnit`, `orderBy`, `contentIconName`, `gradientColourStart/End`, + ~17 singletons |
+| **D4 needs review** | 22 | Technical OR styling painted later via a variable — separating them needs D1-style variable-flow analysis. `anchor`, `sgsCustomCss`, `justifyContent`, `rowSlot`, `customWidthUnit`, `orderBy`, `contentIconName`, `gradientColourStart/End`, + ~17 singletons |
 | **Report-only (D2-only)** | 13 | Needs corroboration: 8× `fieldName`, `formName`, `excludeKeywords`, `posterAlt`, `drawerRef`, `schemaItemName`, `whatsapp-cta.message` |
 | **Content gap** | 1 | `whatsapp-cta.phoneNumber` — waits on the `link-content` extractor below |
 
