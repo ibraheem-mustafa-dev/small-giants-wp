@@ -242,7 +242,8 @@ These are existing, working resolvers (content was ~100% draft→clone). The reb
 > The SAME draft `<h3>` / `<a>` / `<img>` / icon / `<span>` — by CONTEXT — becomes EITHER a nested child block OR a built-in scalar element OR an array-item field; but its content AND its CSS are recognised + lifted by the SAME shared extractors either way (**R-31-2:** tag is shape, context is meaning; the bare-tag→block/element map `html_tag_to_core_block` is that shape layer. **R-31-9:** one universal mechanism). Bean's example: a `<p>` inside a `sgs/container` becomes a `sgs/text` child block; the SAME `<p>` inside a `sgs/button` is the button's built-in text element — different output, identical recognition+extraction.
 >
 > **Binding consequences:**
-> 1. The **role-handler library** (the per-element value extractors: `text-content`, `image-object`, `rating`, `icon-slug`, `url-href`, `plain-integer`, …) MUST live in ONE shared module used by B1 / B2 / B3 / B4 + the atomic-tag swap. Building a handler block-private or array-private (as the 2026-06-28 array build did, `array_content.py`) is an **R-31-9 violation to refactor into the shared library** — content extraction for a built-in element and for an array item is the SAME operation.
+> 1. The **role-handler library** (the per-element value extractors: `text-content`, `image-object`, `rating`, `icon-slug`, `url-href`, `link-href`, `link-content`, `plain-integer`, …) MUST live in ONE shared module used by B1 / B2 / B3 / B4 + the atomic-tag swap.
+>    - **`link-content` (added 2026-08-06, D-log entry for the `link-content` build).** A role whose value is a CONCATENATED FRAGMENT of a URL the block assembles around it — not a whole href. `sgs/whatsapp-cta.phoneNumber` and `.message` are both fragments of the single `https://wa.me/<phone>?text=<message>` the block's own render builds (`whatsapp-cta/render.php`). Handled by the SAME shared entry point as every other role — `services/field_extractors.extract_field_value()`, which dispatches `role == "link-content"` to `extract_link_fragment()`. The block's captured URL template arrives as a **4th keyword-DEFAULTED parameter** (`link_template=`), so both pre-existing call paths keep their 3 positional arguments unchanged — the shared signature was extended, not forked (R-31-9). The template itself is DB-declared: `block_attributes.output_signature`'s `link_template` key, read via `db_lookup.link_template_for()` (§4). **Fail-closed by design:** no captured template, no single `{value}` placeholder, a non-allowlisted scheme, or an href missing the template's literals ⇒ `None`, never a guessed fragment. **Why not `link-href`:** every other content-bearing role extracts a WHOLE value, so storing the assembled href in `phoneNumber` would have render.php re-prefix it (`https://wa.me/httpswame447700900123texthi`) — a corrupted phone number that still LOOKS like a successful clone. Two call sites, both in `walk.py`: NESTED leg 1b (the block's OWN root `<a href>`) and `_typed_value_for_role` (a link hanging off a BEM-tokened descendant). Building a handler block-private or array-private (as the 2026-06-28 array build did, `array_content.py`) is an **R-31-9 violation to refactor into the shared library** — content extraction for a built-in element and for an array item is the SAME operation.
 > 2. The shared **recognition primitives** (`icon_resolver.resolve_icon` for icon identity, `html_tag_to_core_block` for tag shape, `_safe_href` for hrefs, `lift_styling_content` for per-element CSS) MUST be reusable from EVERY extraction path. The `import_ban` gate's allowlist therefore extends beyond `db_lookup` to these shared recognition modules (`icon_resolver` etc.) — walling them off forces per-path duplication, the exact R-31-9 break this principle forbids.
 >    - **Icon content resolves to one of `sgs/icon`'s FOUR real sources (2026-07-03; corrected same day):** a **Lucide slug**, a **bare emoji glyph**, a **Dashicons name** (`dashicons-<name>` class), or a **WordPress-icon name** (explicit `data-wp-icon` / `wp-icon-<name>` marker) — via the shared `field_extractors.resolve_icon_kind(element)`. These are exactly `sgs/icon`'s `iconSource` enum in `block.json`: `lucide | wp-icon | dashicon | emoji`. There is **NO raw-svg source** — a raw `<svg>` the fingerprinter cannot map to a Lucide slug returns `(None, None)` and becomes a LOUD content gap upstream, never a silent default-star (the earlier "raw-svg kind" wrote to a non-existent `iconSvg` attr and, on a linked icon, fell through to `sgs/icon`'s default star — a confirmed defect). A wp-icon authored as an inline `<svg>` from `@wordpress/icons` folds into `('lucide', slug)` via the shared fingerprint chain (visually identical). Emoji + all source detection live in this ONE shared resolver, so every icon path (leaf, array item, nested child) gets it uniformly — not a per-block case. A resolved icon sets its block's attrs by kind: `iconName`+`iconSource='lucide'`, `emojiChar`+`iconSource='emoji'`, `dashiconName`+`iconSource='dashicon'`, or `wpIconName`+`iconSource='wp-icon'` (each guarded on the block declaring that attr).
 >    - **The named-leaf arm (`run_mechanism_leaf`) covers the icon-source role, not only text/image/link (2026-07-03).** An **icon-source leaf** — a `has_inner_blocks=0` block DECLARING an icon-source attr (`emojiChar`/`iconName`/`dashiconName`/`wpIconName`, e.g. `sgs/icon`, whose `primary_content_attr` is NULL) — routes through the named-leaf arm (DB signal = the block declares an icon-source attr, a self-sufficient schema fact, never a slug literal, and NOT the broader `identity` role, which `sgs/button` carries WITHOUT any icon-source attr), where the icon arm lifts its icon via `resolve_icon_kind`. Without this, an icon leaf child (e.g. an info-box's first child) emitted EMPTY. An icon-source leaf whose draft icon resolves to no supported source emits a LOUD gap (even when a link on the same leaf was lifted). Decorative leaves (no primary + no icon source) still fall through to the Case-4 loud gap.
@@ -284,7 +285,8 @@ Spec 31 derives the entire routing table from the DB (R-31-1). Columns in active
 |--------------|--------------------|
 | `property_suffixes.(css_property, suffix, role, kind_override, is_token_matched, token_source)` | THE property→attr-suffix→parse map (step 2/5/6) |
 | `block_attributes.(attr_name, attr_type, canonical_slot, role, enum_values, derived_selector)` | the destination table; slot/role join (step 2), serialise (step 5), validate (step 7), verify-landed (`derived_selector`) |
-| `block_attributes.alt_companion_attr` + `role='image-alt'` | **ADDED to this map 2026-08-02 (Phase 1b) — working code the map had simply never listed.** `image_alt_companion_for()` routes a lifted image's alt text onto the DB-declared companion attr; live call site in `walk.py`'s B1 scalar-content-lift path (CG-8, 2026-07-05). R-31-1: the companion is declared per row, never a hardcoded attr name. |
+| `block_attributes.alt_companion_attr` + `role='image-alt'` | **ADDED to this map 2026-08-02 (Phase 1b) — working code the map had simply never listed.** `image_alt_companion_for()` routes a lifted image's alt text onto the DB-declared companion attr; live call site in `walk.py`'s B1 scalar-content-lift path (CG-8, 2026-07-05). R-31-1: the companion is declared per row, never a hardcoded attr name. **CODE NOW MATCHES THIS ROW (2026-08-06).** The alt capture used to sit INSIDE `_typed_value_for_role`'s `attr_type == "string"` branch, so an OBJECT-typed image attr cloned its image and silently dropped the alt (`alt_value` stayed `None`, the caller's companion lift never fired) — i.e. the gate was the attr's TYPE, contradicting this row's "declared per row" contract. The capture moved out of the type branch (`walk.py` `_typed_value_for_role`): **the companion DECLARATION is the only gate**. Proven safe for the other object shape — `sgs/hero.splitMedia` keeps its alt INSIDE the object and declares no companion, so `image_alt_companion_for()` returns `None` and nothing is lifted. ⚠ **RESIDUAL, not closed:** this is still INSUFFICIENT for `sgs/image-sequence`, which lifts nothing at all for its `posterMedia`/`posterAlt` pair; the DB rows are seeded (D503 — `posterAlt`→`image-alt`, `posterMedia`→`image-object`) but SEEDED ≠ FIRING. Held open by an `xfail(strict=True)` in the converter suite so the gap cannot be forgotten or silently "pass". |
+| `block_attributes.output_signature` (`link_template` key) + `role='link-content'` | **ADDED 2026-08-06 with the `link-content` role (§3.B.0 consequence 1).** The block's captured URL TEMPLATE — the shape the block's own render assembles around an operator-supplied fragment (e.g. `sgs/whatsapp-cta` → `https://wa.me/{value}` / `?text={value}`). Written by `behavioural-analyser/extract-signatures.py::_detect_link_template`; read by `db_lookup.link_template_for(block_slug, attr_name)`; threaded into the shared `field_extractors.extract_field_value(..., link_template=)` by both `walk.py` call paths. R-31-1: the template is DERIVED from the block's render source into a DB column — never a per-block branch in the converter, and never a hardcoded URL literal. A row with no captured template makes its `link-content` attr fail closed (`None`), which is why the role and the column shipped in ONE change rather than the role first. |
 | `block_attributes.role='scalar-media'` | **RESTORED 2026-08-02 (D474)** — opens `run_mechanism_b` branch A, the ONLY path reading an image's `--mobile`/`--desktop` modifier to route art-directed pairs. ⛔ `emit_shape='nested'` superseded only the *no-child-block* half of this role; the device-tier half has NO replacement. Roster + rationale: `scripts/data/scalar-media-roles.json`; re-asserted at module load and gated by a value-identity assertion in `check_row_floor.py`. |
 | `array_item_schema.field_order` | **ADDED to this map 2026-08-02 (Phase 1b).** Orders the fields of a lifted array item; `array_item_field_names()`/`array_item_field_schema()` both `ORDER BY field_order`, with live callers in `resolvers/array_content.py` and `walk.py`. §13.3 FR-31-2.5 describes the mechanism in prose but never named the column. ⚠ Not to be confused with `array_item_fields` (no trailing `_schema`) — a 0-row, zero-caller dead twin RETIRED 2026-08-02. |
 | `block_attributes.(css_property, css_layer, css_element, css_state, css_tier)` | **the declarative routing columns (SEEDED + load-bearing since Front 1, 2026-07-21 `7a6a7586`; row count is DB-authoritative — query `/sgs-db`, never cache it here).** `_base_domain_attrs_for_css_property` (`db_lookup.py:708-773`) keys on the base-resolver domain — `css_element IN ('','root','self')`, `css_tier IN (NULL,'desktop')`, `css_state IS NULL` — and raises `AmbiguousCssPropAttrError` on a genuine tie (MF-4 fail-loud, no rowid-pick). Tier/state siblings re-append their suffix via the shared `tier_state_suffix` helper (`services/tier_suffix.py`) across all 4 box resolvers (step 4/4a). **A tier-suffixed sibling's OWN `css_property`/`css_tier` are correct-by-design NULL, not a defect (Track C root-cause, 2026-08-04, `db_lookup.py::declared_attrs_for_css_property`'s `base_only` clause) — `declared_attrs_for_css_property(..., base_only=True)` derives the sibling's property from its BASE row at READ time and deliberately excludes rows with `css_tier IN ('mobile','tablet')`; populating a sibling's own `css_property` is redundant, not a gap. Measured 2026-08-04: of 238 `sgs/%` tier-suffixed rows whose base attr has `css_property` populated, 145 have `css_property`/`css_tier` NULL on the sibling — 145/238, not /554 (all tier-suffixed rows) or /339 (rows with any matching base) — and all 145 are the expected-NULL case. Do NOT "fix" these NULLs; see the code comment at the `base_only` clause and `.claude/reports/2026-08-04-trackC-tier-sibling-rows-root-cause.md`.** **`css_layer` (L1-L4 OUTER/CONTENT/GRID/GRID_AREA) FULLY SEEDED 2026-07-23 (`50622ed8`):** PRIMARY source is each block's own `block.json supports.sgs.elements.<el>.layer` field (the declarative L1-L4 signal already declared on 22 shared-wrapper blocks but never read), keyed on the FINAL resolved element; FALLBACK = a per-attr name-convention for block-private container blocks (`max-width`/`min-height`/`box-shadow`→OUTER, `content*`+width→CONTENT, `inner`+padding→CONTENT, arrangement→GRID), root-gated so a leaf sub-element (e.g. tabs indicator delivered via box-shadow) stays NULL (the leaf guard). The reseed is AUTHORITATIVE for `css_layer` (`_apply_attr_classification_overrides` clears the column then re-applies, `sgs-update-v2.py`), so a de-classified value cannot persist stale. **`css_element` NORMALISED 2026-07-23 (`a5518437`):** every block's own `isWrapper:true` root element seeds `css_element='wrapper'` (was arbitrary per-block labels box/card/grid/quote-box/banner/dialog/…) — the `css_layer` disambiguates which part; named SUB-elements keep their real name (P4 area routing depends on them). **The two RESOLVERS that consume these columns (qc-council-validated 2026-07-23, `77bacdda`):** (a) `_base_domain_attrs_for_css_property` widened to the OUTER-LAYER UNION `css_element IN ('','root','self') OR css_layer='OUTER'` (P3a) — a wrapper attr whose element is the block's arbitrary label was invisible to the element-only filter; it now resolves by MEANING (26 wrapper attrs recovered); (b) `attr_for_area_property` (§3.A L4) replaced its fuzzy `area+suffix` name-build with a DECLARATIVE `css_property + css_element=area` match in the base domain (fail-loud `AmbiguousAreaAttrError` on a tie) — +213 correct routes recovered, 6 wrong routes removed, all 3 known conflicts fixed. Both changes were gated by two Wave-0 mis-seed fixes (`50622ed8`): 6 quote/testimonial hover attrs carried `css_property` with `css_state=NULL` (a silent misroute → set `css_state='hover'`); `sgs/hero.splitImageMobileHeight` (a duplicate of `imageHeightMobile`) de-routed. |
@@ -704,10 +706,21 @@ query `role`/`roles` via `/sgs-db` for the live figure, never trust this prose f
 on. Two generic backstop roles were added 2026-08-05 (D491/D493) alongside the existing named-family
 roles (layout/typography/color/visual/motion/position/text-content/svg/…):
 
-- **`styling`** — classification `styling-behaviour`. Fills `role IS NULL AND css_property IS NOT
-  NULL`: a structural mechanism has already proven the row paints CSS, but no more specific family
-  was established. Assigned by `assign-canonical.apply_role_detection_inline()` as a structurally-LAST
-  pass — it can only fill a NULL, never pre-empt a content-bearing or family-specific verdict.
+- **`styling`** — classification `styling-behaviour`. The GENERIC BACKSTOP: a structural mechanism has
+  proven the row paints CSS, but no more specific family was established. **TWO assigning passes, both
+  in `assign-canonical.apply_role_detection_inline()`** (the second added 2026-08-06, D499):
+  - **TIER 3** — fills `role IS NULL AND css_property IS NOT NULL`, structurally LAST among the
+    css_property passes; it can only fill a NULL, never pre-empt a content-bearing or family-specific
+    verdict.
+  - **TIER 2.4 (`_apply_wrapper_styling_tier()`)** — fills a NULL row whose ONLY consumer is
+    `class-sgs-container-wrapper.php`. The wrapper is a CSS-rendering engine by construction, so
+    everything it reads off the attributes bag it reads in order to PAINT: that is positive evidence
+    of the same class as the D1 veto behind `technical`, not an absence argument. Ordered BEFORE
+    TIER 2.5 on purpose — a veto says only "not content", a wrapper-only read says positively what
+    the value IS, which is the precedence TIER 3 already encodes for `css_property`. (Measured
+    disjoint from `d1_vetoed`/`technical_refs` at build time, so the ordering decides nothing today;
+    it is there so the RULE is right.)
+  - **It is not a terminal verdict — TIER 3.15 upgrades OFF it** (see the upgrade pass below).
 - **`technical`** — classification `styling-behaviour`. A machine-facing value (form key, element ref,
   `rel`, taxonomy/query key, enum dispatch key) that a draft mockup carries no signal to lift. Assigned
   ONLY from positive evidence — a Detector-1 veto (the row's every usage site was walked and none was
@@ -716,10 +729,38 @@ roles (layout/typography/color/visual/motion/position/text-content/svg/…):
   rebuild the exact ambiguity this role exists to remove.
 
 **Precedence (enforced structurally by pass ordering in `apply_role_detection_inline`, not by a
-priority field):** content tiers (D1/D2/D3 structural detectors, D485) > `css_property` (`styling`) >
-evidence-of-not-content (`technical`, from a D1 veto or Detector 4) > `NULL`. A veto only says "not
-content"; a `css_property` says positively what the value IS, so `styling` wins a row that qualifies
-for both.
+priority field):** content tiers (D1/D2/D3 structural detectors, D485) > wrapper-only paint
+(`styling`, TIER 2.4) > evidence-of-not-content (`technical`, TIER 2.5 — a D1 veto or Detector 4) >
+`css_property` (`styling`, TIER 3) > `NULL`. A veto only says "not content"; positive paint evidence
+(a wrapper-only read, or a `css_property`) says what the value IS, so `styling` wins a row that
+qualifies for both.
+
+**⛔ THE GOVERNING RULE ON `NULL` (Bean-locked 2026-08-06, D499). A NULL role means the row is
+UNREACHED or UNSEEDABLE — never "reached, understood, and filed nowhere".** A mechanism that examines
+a row, forms a verdict, and then leaves the column NULL rebuilds the exact ambiguity this vocabulary
+exists to remove. This is what promoted `wrapper-rendered-styling` from a report bucket to a seeding
+tier, and it is the test any future detector bucket must pass before it is allowed to report rather
+than seed.
+
+**Role-vocabulary integrity — three families that LOOK like bloat and are NOT (D503, recorded so the
+cleanup is not re-proposed).** An empty or near-empty role is not evidence of a dead role:
+- **`spacing-token` / `colour-text`** are PROVISIONED by `property_suffixes.role` (`BlockGap`/`Spacing`
+  → `spacing-token`, `LinkColor` → `colour-text`) and describe the **WordPress-NATIVE** half of the
+  vocabulary (theme.json `settings.spacing.blockGap`/`spacingSizes`, block.json `supports.color.link`).
+  They are empty only because no SGS block declares a custom attr for those. `spacing-token` also has
+  a live branch in `db_lookup.py`. Deleting either leaves suffix derivation resolving to a role that
+  no longer exists.
+- **The four `icon-*` roles are a ROUTING KEY, not four spellings of one idea.**
+  `services/extraction.py` builds a `{role: attr_name}` dict for every role starting `icon-` and then
+  looks up `icon_source_attrs.get("icon-" + kind)`. All four sit on `sgs/icon`
+  (`dashiconName`/`emojiChar`/`iconName`/`wpIconName`). Merging them collapses that dict to ONE entry
+  and breaks icon cloning outright — a regression, not a tidy-up.
+- **`content`→`text-content` and the `number-css-*` merge** are documented aliases resolving
+  identically; merging delivers ZERO functional change and would need `property_suffixes` repointed
+  too. Dropped on Bean's criterion: no functionality gained.
+- Only `query-descriptor` was genuinely dead (0 rows, 0 code refs, 0 provisioning suffixes) and was
+  dropped. **Before proposing any role deletion, check `property_suffixes.role` for provisioning AND
+  grep for a prefix-keyed dict lookup — a row count of 0 proves neither.**
 
 **Detector 4 — `content-role-detect/detector4_referenced_not_output.py`.** D1/D2/D3 (D485) all hunt
 for evidence a value IS content. D4 hunts the opposite positive evidence: an attribute the block
@@ -731,9 +772,19 @@ D4 splits its findings three ways — read its module docstring for the authorit
 - **`referenced-not-output`** → assigned role `technical`. The dominant case is the form
   conditional-visibility trio (`conditionalField`/`conditionalOperator`/`conditionalValue`) consumed by
   `includes/forms/` to decide field visibility — configuration, not copy.
-- **`wrapper-rendered-styling`** → NOT a role. An attribute read only by `SGS_Container_Wrapper` (a
-  CSS-rendering engine by construction) owes an explicit `attrMap`/`css:` declaration instead — the
-  same fix class as the D494 grid-element gap below.
+- **`wrapper-rendered-styling`** → **assigned role `styling`, via TIER 2.4. ⚠ CORRECTED 2026-08-06
+  (D499) — this bucket previously read "NOT a role … owes an explicit `attrMap`/`css:` declaration
+  instead", and that was FALSE for 29 of the 33 rows it covered.** The decorative families
+  (`overlayGradientFrom`/`To`, `shapeDividerTop`/`Bottom`, `bgSvgContent`) are ones `sgs/container` —
+  the block every composite mirrors (R-31-9) — **deliberately declines to map**: its `decorative`
+  element declares `"clusters": []` with a written note that these are governed by dedicated controls
+  outside the style clusters (`container/block.json`). Declaring attrMaps for them would have REVERSED
+  a standing architectural decision in order to close a reporting nuisance. Only `gridItemBorder` was
+  a genuine attrMap case. **Proof the opt-out does not by itself discharge a row:** `sgs/container`
+  declares `decorative` and still showed its OWN `overlayGradientFrom`/`To` in the bucket — the only
+  thing that removed a row was a non-NULL `css_property`, which the decorative families will never
+  carry, because the emission scanner reads each block's own render.php/style.css and never the
+  shared wrapper.
 - **`d4-needs-review`** → a human call. A bare `$x = $attributes['x'] ?? ''` whose paint site can't be
   resolved without variable-flow analysis (D1's job, D4 does not attempt it).
 
@@ -741,6 +792,104 @@ An attribute nothing reads at all is a DIFFERENT finding (a dead attribute — d
 `check-dead-controls.js` CHECK 4, not D4. D4's known blind spots (dynamic/computed reads, sibling-block
 consumption, theme-pattern-only reads) are enumerated in the module docstring and are bounded to false
 NEGATIVES — they cannot manufacture a false positive.
+
+**D4 tie-break — a RENDER-side read outranks an EDITOR-side one (D500, 2026-08-06).**
+`find_reference()` used to return "the first structured read" in `_iter_sources` order, and that
+iterator yields the block's OWN directory before the shared trees — so the answer depended on
+DIRECTORY LAYOUT rather than on which consumer decides the attribute's role. Measured failure:
+`sgs/container.shapeDividerTop`/`Bottom` resolved to a block-local `SelectControl value={…}` binding
+and were filed "needs human review", while the SAME attribute on hero / cta-section / trust-bar /
+site-header / site-footer / physics-canvas resolved to `class-sgs-container-wrapper.php` and was
+correctly auto-classified wrapper-painted — one attribute, one shared paint site, two buckets.
+**The rule, stated once: what RENDERS a value decides its role; an editor control merely AUTHORS it.**
+`find_reference()` now collects both kinds and PREFERS the render-side read, falling back to the
+editor-side hit only when nothing renders the value — so behaviour is unchanged for any attribute
+with only one kind of reference. This is a tie-break, not a new classification: `technical_refs`
+measured 0 before and 0 after, so no row silently gained an auto-`technical` role.
+
+**Detectors resolve to the SPECIFIC role, not the coarsest that fits (D502, 2026-08-06).** The role
+vocabulary is ~29 roles; reasoning in three broad buckets and seeding the widest one that fits is a
+defect, not a safe default. Two live examples: `enum-class-probe` (*"a BEM `--modifier` class carries
+this attr's value, never a CSS declaration"*) has a real cloning consumer in `db_lookup.py` that
+matches the modifier against the draft's actual BEM class — filing such a row as generic `styling`
+measures the right thing and then discards the consumer that made it worth measuring; likewise
+`color` (consumer `attr_is_colour_role()`) on the separator gradients. **Narrowing a detector's rule
+also made it more correct:** tightening "appears in a class context" to "IS the `'…--' . $var`
+modifier suffix" dropped two wrong claims (`separator.contentIconName`, a content-bearing
+`icon-lucide`; `mega-panel.viewAllPlacement`, an `enum-mode` not a modifier) with no special-casing.
+
+**TIER 3.15 — GENERIC-STYLING UPGRADE (D503, 2026-08-06). The ONLY pass in `assign-canonical` that
+OVERWRITES an existing role**, and narrow to match: its `WHERE` pins `role = 'styling'` exactly, so
+it can never touch a content verdict, an already-specific family, or a NULL. It re-runs D7 over
+backstop rows and upgrades where the PAINT SITE proves a specific role. Sanctioned by the
+vocabulary's own design — `enum-mode`'s entry already records that a generic role is overwritten once
+a specific family becomes resolvable. It exists because `styling` rows are invisible to
+`eligible_pool()` (which is `role IS NULL`), so nothing had re-examined them since assignment.
+**The finding that motivated it, and its permanent negative control:** `border-color` was filed TWO
+ways — most rows on `color`, a handful on the backstop. Reading each CONSUMER split them cleanly:
+`button.colourBorder`/`Hover` and `product-card.ctaColourBorder`/`Hover` reach `sgs_colour_value()`
+(genuine colours, the latter through a SHARED helper — D7's documented single-file blind spot),
+whereas `gridItemBorder` is a border SHORTHAND (`1px solid #ccc`) sanitised by a regex that
+deliberately permits spaces and emitted raw into a custom property. **`color` would be WRONG there:
+it would hand `attr_is_colour_role()` a shorthand and call it a colour.** Identical by `css_property`,
+opposite correct answers — which is why this needs the consumer read, not a `GROUP BY`. The
+`gridItemBorder` rows are the self-test's negative control (a real row, not a fixture); dropping the
+`role = 'styling'` guard turns it red.
+
+**Detectors 6 / 7 / 8 (built 2026-08-06, D501/D502).** All three run over exactly what Detector 4
+could NOT decide — the `d4-needs-review` bucket — and answer its open question ("technical, or styling
+painted later?") with a SPECIFIC role. Scoping them to D4's leftovers is the structural ordering
+guarantee: they never get a chance to re-decide a row a trusted detector already assigned.
+
+- **Detector 6 — `content-role-detect/detector6_native_support_and_style_emission.py`.** Two
+  mechanisms, both by-construction rather than inferential: (a) an attribute WordPress core injects
+  because the block declares the matching `supports` key is `technical`; (b) a value written into the
+  CONTENTS of a `<style>` element is `styling`. **The trap it had to avoid, recorded because a
+  detector keyed the obvious way would have been silently INERT:** `sgs/button` has no
+  `supports.className` key at all — the backing key is `customClassName`.
+- **Detector 7 — `content-role-detect/detector7_css_paint_flow.php`.** Forward variable-flow to a
+  PAINT site — the gap D4's own module comment names. It does NOT re-implement PHP statement
+  splitting: it `require`s `detector1_render_escaping.php` and reuses its tokeniser (that file gained
+  a CLI guard whose behaviour-neutrality was proven by a byte-identical `--glob` output diff). Two
+  paint shapes, both derived from real code: **CSS_VALUE** (reaches a CSS helper / custom property)
+  and **CSS_CLASS** (concatenated into a class list — a BEM modifier IS a paint instruction, mapping
+  to `enum-class-probe`, never generic `styling`).
+  - **Two structural guards its own negative control forced, and which any future flow analysis needs:
+    (1) COMBINATION DILUTES** — an RHS mentioning more than one variable owns no single value;
+    **(2) A PREDICATE IS NOT ITS SUBJECT** — a comparison yields a boolean ABOUT the value, not the
+    value. Without them, naive transitive carrier tracking laundered DERIVED values back into evidence
+    about their source (`option-picker.defaultSelected` chained through an `is_checked` boolean and
+    then "landed in a class"). A generic "declaration shape" regex was also removed for claiming
+    `post-grid.orderBy`, a WP_Query key that paints nothing.
+- **Wiring status:** D6 + D7 verdicts ARE consumed — `fingerprint_content_roles.compute()` runs both
+  over `d4_review`, first-verdict-wins per key, and returns them as `specific_roles`, which
+  `assign-canonical` merges UNDER the content verdicts (`{**specific, **content}`) so a content
+  verdict can never be overwritten by a styling/technical one. **D501's "deliberately NOT wired to
+  seed yet" was the state at that decision and was superseded the same day by D502** — do not cite it
+  as current. The reason for the pause was real and worth keeping: D7 CONTRADICTED the 2026-08-05
+  hand investigation on 3 of its 7 rows (`separator.contentIconName`, `site-header-row`/
+  `site-footer-row.rowSlot`) — a genuine judgement disagreement on identical evidence, not a bug.
+  **Auto-seeding over a considered human verdict is the failure this vocabulary exists to prevent;
+  the resolution was Bean's call, not the detector's.**
+- **Detector 8 — `content-role-detect/detector8_undeclared_enum.php`. Reports a SCHEMA gap; it seeds
+  no role, deliberately.** `eligible_pool()` excludes `enum_values IS NOT NULL`, so every unclassified
+  row by construction has no `enum` in its block.json — yet several ENFORCE one in PHP
+  (`in_array( $attributes['source'], array('typed','menu'), true )`). D8 reports the block as owing
+  an `enum` DECLARATION, because `/sgs-update` Stage 1 already reads block.json enums into
+  `enum_values` and TIER 3.5 already seeds `enum-mode` from that column. Declaring it fixes three
+  things with **no new role logic**: the row classifies via existing tested machinery, WordPress
+  validates the value, and the client gets a real select control instead of a free-text box — which
+  is Spec 35's whole point. **Documented blind spot:** a closed set expressed as a comparison CHAIN
+  (rather than an `in_array` set) is not reported — proving a chain exhaustive is a much weaker
+  inference.
+- **A negative result kept rather than buried (D502).** "Extend D1's candidate set" was the planned
+  third mechanism. The real blocker is different: `seen.add(k)` fires on a D2-ONLY report and `seen`
+  is subtracted from D4's candidate pool, so D2 — which by design never assigns — was vetoing D4,
+  which can. The fix was implemented and MEASURED: `d4_candidates` 20 → 33, `technical_refs`
+  **0 → 0**. Not one row gained a role, because D4 awards `technical` only when the reference sits in
+  a subsystem proven to emit no CSS, and the decisive reference is typically the block's OWN
+  render.php. Reverted, with the measurement recorded in-code. **The blocker is D4's evidence gate,
+  not that line — do not re-derive this.**
 
 **Tier-inheritance rule (`behavioural-analyser/extract-signatures.py`, D491).** An attribute named
 `<base><Tier>` (`Tablet`/`Mobile`/`Desktop` suffix — the framework's universal device-tier convention,
@@ -757,8 +906,10 @@ wrapper rather than declaring `gap` themselves).
 
 **Consuming this in future sessions:** never write a new hardcoded attribute-name dict for "is this
 technical/styling" — check `roles.json` first, and if a row is genuinely unclassified, run the
-detectors (`content-role-detect/`) rather than guessing from the attribute's name (R-31-1/R-31-2
-apply equally to this data layer).
+detectors (`content-role-detect/`, D1–D8, aggregated by `fingerprint_content_roles.compute()`)
+rather than guessing from the attribute's name (R-31-1/R-31-2 apply equally to this data layer).
+**And resolve to the SPECIFIC role the evidence supports, not the coarsest one that fits** — a
+generic verdict discards the very consumer that made the measurement worth taking (D502).
 
 ### 13.8 Appendices (implementation reference)
 
