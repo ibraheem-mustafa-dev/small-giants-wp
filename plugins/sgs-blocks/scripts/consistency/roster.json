@@ -857,8 +857,8 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
-        "animation": false
+        "media": true,
+        "animation": true
       }
     },
     {
@@ -1022,8 +1022,8 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
-        "animation": false
+        "media": true,
+        "animation": true
       }
     },
     {
@@ -1052,8 +1052,8 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
-        "animation": false
+        "media": true,
+        "animation": true
       }
     },
     {
