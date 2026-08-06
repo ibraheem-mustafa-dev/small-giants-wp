@@ -1369,6 +1369,28 @@ one-line pointer to this section instead. Grouped by where each item lived in LE
 - `~/.agents` is NOT a git repo — the skillscore script + 5 grafted skills + `nextjs-testing` are
   LIVE but UNVERSIONED (recovery = per-file `.bak-2026-07-17-*`).
 - **No block version bumps / deprecations pre-production** (Bean D293, overrides STOP-57).
+- ⛔ **A PRESERVE-IF-POPULATED column does not re-derive on a reseed — changing its input changes
+  nothing.** `assign-canonical.py:797-800` writes `final_selector = derived_selector if
+  existing_selector is None else existing_selector`; `role` has the same guard. So "split the slot
+  vocabulary and re-run `/sgs-update`" would have updated `canonical_slot` and left every colliding
+  `derived_selector` exactly as it was — an inert change that looks like work. **Before relying on a
+  reseed to propagate anything, read whether the writer is COALESCE-shaped; if it is, NULL the column
+  first.** (Task B council, 2026-08-06. Same family as STOP-71: clear the row, reseed, read it back.)
+- ⛔ **A gate keyed on MORE columns than its consumer reads can go green while the defect persists.**
+  `check_content_attr_collisions.py` groups on `(block_slug, role, canonical_slot, derived_selector)`,
+  but the converter routes on `derived_selector` ALONE. Diverging only `canonical_slot` splits the
+  group in the report while both attrs still point at one draft node. **When a gate passes, confirm
+  the columns it keys on are the columns the consumer actually uses** — otherwise you have measured
+  the gate, not the system. (Task B council, 2026-08-06; the `a-green-measurement-is-not-fidelity`
+  family, in its most specific form yet.)
+- ⛔ **A FIRST-MATCH scan over an element's classes is blind to a modifier on a later class.**
+  `walk._family_modifier` returned the modifier of the first own-family BEM class whether or not it
+  had one; drafts author `class="sgs-x__y sgs-x__y--mobile"`, so the tier was never detected and the
+  mobile asset landed in the desktop attr. **It was NOT hero-only** — reproduced on `sgs/container`,
+  which has no bespoke branch; hero's Mechanism-B branch A merely hid it, which is exactly why a
+  general defect read as a per-block quirk. Selection among several candidates must be a STATED RULE
+  (here: "the modifier that maps to a DB breakpoint suffix wins"), never document order. (D506;
+  checklist item 22's positional-tie-break ban, second live instance in two commits — see also D505.)
 
 ### E2. Methodology guardrails — earned 2026-08-03/04 (motion / Snooza track)
 

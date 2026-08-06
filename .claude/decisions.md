@@ -1,5 +1,51 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D506 — the device tier was blind to a modifier on any but the first class — and it was never hero-only [INCIDENT]
+
+**2026-08-06.** Commit `7f460333`. Task B Phase 2.
+
+**The defect.** `walk._family_modifier` returned `bem.modifier` from the FIRST own-family BEM class
+it matched, **whether or not that class carried a modifier**. SGS drafts author the modifier as a
+supplementary second class (`class="sgs-x__y sgs-x__y--mobile"` — ordinary BEM, the modifier
+supplements the base), so the first class parsed to `modifier=None`, the device tier was never
+detected, and the element resolved to the BASE attr. The mobile asset was written into the DESKTOP
+attribute and the desktop asset dropped.
+
+⛔ **The record said this was a `sgs/hero` problem. It was not.** Measured on **`sgs/container`** —
+no `scalar-media` role, no bespoke branch, nothing hero-specific — the pre-fix walk lifted
+`backgroundImage='/bg-mob.jpg'` from two-class markup. **Every block whose draft uses that shape was
+affected.** Hero only looked special because Mechanism-B branch A was papering over it; that branch
+is what made a general walker defect read as a per-block quirk for two months. D474's dissenting
+reviewer named the mechanism on 2026-08-02 ("`_family_element` returns on the first class, which
+carries no modifier, so a resolution-level fix never reaches it") — it was recorded as an argument
+for keeping the bespoke branch, not as a defect to fix.
+
+**The fix.** `_family_modifiers(el, element)` returns every modifier the element carries for the
+element `_family_element` already resolved. Scoping to that element makes "the same element's
+modifier" a GUARANTEE rather than a docstring claim — the old version's docstring asserted it and
+the code did not deliver it. The caller then selects by a **stated rule**: the modifier that maps to
+a DB breakpoint suffix wins. A non-tier modifier (`--active`, `--trial`) therefore neither blocks
+tier detection nor invents one. "Whichever modifier came first" would have been the positional
+tie-break D505 removed one commit earlier — same defect class, not reintroduced.
+
+**Blast radius measured BEFORE the change.** Of 104 own-family elements across the 3 committed
+drafts, **3** carry a modifier on a non-first class: 2 hero split-images (the target) and one
+`--active` (unaffected by construction). The same census found drafts use BOTH shapes — 3
+`base+modifier`, 1 `modifier-only` — and the walker now resolves them identically, so an author's
+choice between them no longer changes routing. ⚠ That census rests on 4 modifier-bearing elements;
+it is a description of the current corpus, **not** proof of a settled convention. Spec 00 §3.1 is
+silent on whether a modifier class must accompany its base.
+
+**Inert on its own, deliberately.** Hero's split-images cannot resolve through this path until
+`splitImage` becomes content-bearing, so the suite is unchanged (637 + 3 new guards = 640). Its real
+proof arrives with that change — this commit does not claim a live-DOM verification it cannot yet
+make.
+
+**Gate:** `test_family_modifier_scan.py` pins all three shapes on the real entry point
+(`run_universal_content_walk`), nothing stubbed, real DB, skip-if-absent. Negative control: the
+regression test fails against pre-fix `walk.py` with the exact diagnostic it was written to emit;
+the other two pass both ways because they pin behaviour that must NOT change.
+
 ## D505 — `--desktop` A-collapses to the BASE content attr (Task B Phase 1) [ROUTINE]
 
 **2026-08-06.** Commit `15df8264`. First phase of Spec 35 Task B, post-`/qc-council`.
