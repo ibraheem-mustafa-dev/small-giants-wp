@@ -1,5 +1,58 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D499 — wrapper-painted attrs are SEEDED `styling`, not left NULL: Step 0.1 pool 69 → 36 [ROUTINE]
+
+**2026-08-06.** Bean's ruling, which reshaped the task: **a NULL role means the row is UNREACHED or
+UNSEEDABLE — never "reached, understood, and filed nowhere".** These 33 rows were reached, understood,
+and filed nowhere.
+
+**The plan's premise was wrong for 29 of 33.** LEDGER Task 1 said the wrapper-styling bucket "owes an
+attrMap declaration, NOT a role", flagging ~10 exceptions. Measured, the exception is the rule: only
+`gridItemBorder` (4 rows) is a genuine attrMap case. The other 29 are the decorative families —
+`overlayGradientFrom`/`To`, `shapeDividerTop`/`Bottom`, `bgSvgContent` — which `sgs/container`, the
+block every composite mirrors (R-31-9), **deliberately declines to map**: its `decorative` element
+declares `"clusters": []` with a written note that these are governed by dedicated controls outside the
+style clusters (`container/block.json:155-159`). Declaring attrMaps for them would have REVERSED a
+standing architectural decision to close a reporting nuisance.
+
+**Proof the opt-out does not discharge a row:** `sgs/container` declares `decorative` and still showed
+its own `overlayGradientFrom`/`To` in the bucket. The only thing that removed a row was a non-NULL
+`css_property` in `css-property-classifications.json`, which the decorative families will never carry —
+the emission scanner reads each block's own render.php/style.css and never the shared wrapper.
+
+**Mechanism (D497-compliant, zero hand overrides).** New **TIER 2.4** in
+`assign-canonical.apply_role_detection_inline()` — `_apply_wrapper_styling_tier()` — assigns `styling`
+to any row whose ONLY consumer is `class-sgs-container-wrapper.php`. That is positive evidence of the
+same class as the D1 veto behind `technical`: the wrapper is a CSS-rendering engine, so everything it
+reads off the attributes bag it reads in order to paint. Ordered BEFORE TIER 2.5 because a veto says
+only "not content" while a wrapper-only read says positively what the value IS — the precedence TIER 3
+already encodes for `css_property`. Measured disjoint (0 of 33 overlap `d1_vetoed`/`technical_refs`),
+so the ordering decides nothing today; it is there so the rule is right, not because a row needs it.
+
+**Measured, against an expectation declared BEFORE the run.** Pool 69 → **36** (22 + 13 + 1), wrapper
+bucket → **0**, `role IS NULL` on `sgs/%` 324 → **291** (exact hit). 31 rows claimed, **zero content
+roles touched**. `styling` 54 → 79 and total 2703 → 2695 were 6 BELOW expectation — explained per-row
+by DB diff against a hash-verified pre-reseed backup, not waved through: six `sgs/multi-button`
+`direction`/`wrap` rows, orphaned by the already-committed `96136e77` and pruned by this reseed. Not
+this change.
+
+**`gridItemBorder`, the 4 real ones.** `site-header`/`site-footer` now resolve to `styling` via TIER 2.4,
+matching `sgs/container` exactly. `trust-bar` and `physics-canvas` were DEAD by two different
+mechanisms and their attrs are DELETED: trust-bar's children are `.sgs-trust-bar__badge` while the
+consuming selector is `.sgs-container--grid > .sgs-container`; physics-canvas has `container_kind` NULL
+so the emit is gated out entirely (`class-sgs-container-wrapper.php:669`). Neither appears in any theme
+pattern, part or template, and neither had an editor control — checked before deleting, per D338.
+
+**Docs corrected in the same commit** (three places asserted the old mechanism): the `styling` role
+description in `roles.json`, the fingerprint module docstring, and its two printed expectation strings,
+which still read "expected 0 at pool=69" — the exact cry-wolf shape re-declared only last session.
+
+**Gate:** `_self_test_wrapper_styling_tier()` drives the REAL function (not a re-implementation, per
+this file's own newer standard) and proves it can fail — negative control run: dropping the
+`css_property IS NULL` guard turned it red with the correct message, exit 1, then reverted green.
+Pre-existing unrelated failure `test_content_gap_collector.py` confirmed NOT ours by re-running it
+against the restored pre-session DB, where it fails identically. Converter suite 598 pass.
+
 ## D498 — `sgs/site-footer` emits `<footer>`: the contentinfo landmark was missing, not delegated [INCIDENT]
 
 **2026-08-06.** Bean spotted it — "why not switch footer to a footer class?" — and the live DOM

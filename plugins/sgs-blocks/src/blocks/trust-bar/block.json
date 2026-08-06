@@ -632,10 +632,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
 		"gridItemShadow": {
 			"type": "string",
 			"default": ""

@@ -294,10 +294,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
 		"gridItemBorderRadius": {
 			"type": "object",
 			"default": {}

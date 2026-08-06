@@ -893,6 +893,7 @@ def run() -> None:
         f"[role-detection] content-bearing roles: filled={_rd['filled']} "
         f"upgraded={_rd['upgraded']} structural={_rd['structural_filled']} | "
         f"technical={_rd['technical_filled']} styling={_rd['styling_filled']} "
+        f"styling-wrapper={_rd['wrapper_styling_filled']} "
         f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
         f"boolean-swept={_rd['boolean_swept']} | "
         f"companion-image={_rd['companion_image_filled']} "
@@ -1611,11 +1612,12 @@ def run_role_detection_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
     }
 
 
-def _structural_role_map() -> tuple[dict, str | None, set]:
+def _structural_role_map() -> tuple[dict, str | None, set, set]:
     """Structural content-role proposals, computed ONCE per reseed.
 
     Track A / Spec 35 (2026-08-04). Returns
-    ({(block_slug, attr_name): role}, error, {(block_slug, attr_name) vetoed by D1}).
+    ({(block_slug, attr_name): role}, error, {(block_slug, attr_name) vetoed by D1},
+     {(block_slug, attr_name) proven wrapper-painted by D4}).
 
     This is the FR-31-2.1a replacement for name-guessing. Roles come from what the
     block's own source actually DOES with a value -- which escaping function receives it
@@ -1671,12 +1673,35 @@ def _structural_role_map() -> tuple[dict, str | None, set]:
         #   D4       -- the block demonstrably READS it, it never reaches an
         #               escaping call, it paints no CSS, and its consumer lives
         #               in a subsystem proven to emit no CSS at all.
-        # D4's own 'needs-review' and 'wrapper-rendered-styling' buckets are
-        # deliberately NOT included: they are reported for a human, and folding
-        # them in here would be the "leftovers are technical" inference this
-        # role was specifically built to avoid.
+        # D4's 'needs-review' bucket is deliberately NOT included: it is reported
+        # for a human, and folding it in here would be the "leftovers are
+        # technical" inference this role was specifically built to avoid.
+        #
+        # D4's 'wrapper-rendered-styling' bucket is excluded HERE for a different
+        # reason and is NOT unreached -- it is returned separately below, because
+        # those rows are proven STYLING, not technical. Filing them technical
+        # would be a wrong classification, not merely a weak one.
         {(v["block_slug"], v["attr_name"]) for v in result.get("vetoed", [])}
         | {(t["block_slug"], t["attr_name"]) for t in result.get("technical_refs", [])},
+        # D4 WRAPPER-PAINTED (2026-08-06, Bean's ruling: NULL is only for a row
+        # that is UNREACHED or UNSEEDABLE -- these are neither).
+        #
+        # Evidence, of the same positive class as a D1 veto and reached by a
+        # third route: the attribute's ONLY consumer anywhere in the plugin is
+        # `includes/class-sgs-container-wrapper.php`, which is a CSS-rendering
+        # engine end to end -- everything it reads off the attributes bag, it
+        # reads in order to paint a declaration. So a wrapper-only read is
+        # styling BY CONSTRUCTION. That is a measurement of what the value does,
+        # not an inference from its spelling.
+        #
+        # These rows carry NO css_property and never will: the emission scanner
+        # reads each block's own render.php/style.css and never the shared
+        # wrapper, and `sgs/container` -- the block every composite mirrors
+        # (R-31-9) -- deliberately declines to map the decorative families
+        # (overlayGradient*/shapeDivider*/bgSvg*) in its `decorative` element.
+        # So TIER 3's `css_property IS NOT NULL` gate can never reach them, and
+        # leaving them NULL made 33 settled rows read as open work on every run.
+        {(w["block_slug"], w["attr_name"]) for w in result.get("wrapper_styling", [])},
     )
 
 
@@ -1904,7 +1929,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # A measured fact about what the block DOES with a value always beats a guess from
     # how the value is spelled. This demotes _ATTR_NAME_RULES to a fallback, which is the
     # first step toward deleting it (FR-31-2.1a).
-    structural, structural_error, d1_vetoed = _structural_role_map()
+    structural, structural_error, d1_vetoed, d4_wrapper_painted = _structural_role_map()
     if structural_error:
         print(
             "\n!! STRUCTURAL ROLE TIER DID NOT RUN -- falling back to the name regex.\n"
@@ -1966,6 +1991,40 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # NULL. "Unreached" and "proven technical" are different facts, and a role that
     # conflated them would rebuild the ambiguity this role exists to remove -- the same
     # reason `styling` is gated on css_property rather than on "not obviously content".
+    # TIER 2.4 -- STYLING, from a Detector-4 WRAPPER-ONLY verdict (2026-08-06, Bean).
+    #
+    # Bean's ruling, which this tier implements: a NULL role means the row is UNREACHED
+    # or UNSEEDABLE. It must not mean "reached, understood, and filed nowhere". These 33
+    # rows are reached by D4 and understood -- their sole consumer is the shared
+    # container wrapper, a CSS-rendering engine -- so they are seeded like every other
+    # non-content attribute.
+    #
+    # ORDERED BEFORE TIER 2.5 ON PURPOSE. A D1 veto says only "not content"; a
+    # wrapper-only read says positively what the value IS. That is exactly the precedence
+    # TIER 3 already encodes for css_property ("a row with both a veto and a css_property
+    # is styling"), and this tier is the same evidence class reaching the same conclusion
+    # by a different route. Measured 2026-08-06: the two sets are disjoint (0 of 33
+    # overlap d1_vetoed or technical_refs), so no row is decided by this ordering today
+    # -- the order is here so the RULE is right, not because a row currently needs it.
+    #
+    # WHY NOT AN attrMap INSTEAD: an attrMap entry would give these a css_property and let
+    # TIER 3 claim them. It would also route decorative attrs into the CSS layer that
+    # `sgs/container` -- the reference block every composite mirrors -- deliberately keeps
+    # them out of (its `decorative` element, "clusters": [], with a written note). Mapping
+    # them would reverse a standing architectural decision to close a reporting nuisance.
+    # Verified 2026-08-06: container itself still shows its own rows in this bucket, so
+    # the opt-out demonstrably does not discharge a row on its own.
+    #
+    # NARROW BY CONSTRUCTION: `role IS NULL AND css_property IS NULL` plus membership of
+    # D4's wrapper bucket, which D4 only awards when `find_reference()` resolves the
+    # attribute's single consumer to the wrapper file. A row with any other consumer is
+    # not in the set and is untouched here.
+    #
+    # Factored into `_apply_wrapper_styling_tier()` (rather than inlined like the older
+    # sibling tiers) so the self-test drives the REAL function -- the re-implementing
+    # self-tests elsewhere in this file cannot detect production/test drift.
+    wrapper_styling_filled = _apply_wrapper_styling_tier(conn, d4_wrapper_painted)
+
     technical_filled = 0
     if d1_vetoed:
         for row_id, block_slug, attr_name in conn.execute(
@@ -2213,6 +2272,10 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         "structural_filled": structural_filled,
         "technical_filled": technical_filled,
         "styling_filled": styling_filled,
+        # TIER 2.4 -- rows given 'styling' because their only consumer is the shared
+        # container wrapper. Printed separately from styling_filled so a reseed can tell
+        # the two evidence routes apart (css_property vs wrapper-only read).
+        "wrapper_styling_filled": wrapper_styling_filled,
         "unit_inherited": unit_inherited,
         "enum_filled": enum_filled,
         # TIER 3.6 -- boolean attrs whose role was content-bearing, reclassified to
@@ -2575,6 +2638,115 @@ def main() -> None:
             _triple_null_sanity_check(conn)
     finally:
         conn.close()
+
+
+def _apply_wrapper_styling_tier(conn, d4_wrapper_painted: set) -> int:
+    """TIER 2.4's write logic. Assign 'styling' to every still-unclassified row whose
+    ONLY consumer is the shared container wrapper (Detector 4's wrapper bucket).
+
+    Returns the number of rows claimed. Takes the verdict set as a PARAMETER rather than
+    recomputing it, so the self-test can plant a known set and drive this exact function.
+
+    The two guards in the WHERE clause are the whole contract:
+      * `role IS NULL`         -- every content tier ran first and is final.
+      * `css_property IS NULL` -- a row the emission layer already classified belongs to
+                                  TIER 3; two writers for one fact is the defect this
+                                  file's `eligible_pool` partition exists to prevent.
+    """
+    cur = conn.cursor()
+    filled = 0
+    if not d4_wrapper_painted:
+        return 0
+    for row_id, block_slug, attr_name in conn.execute(
+        "SELECT id, block_slug, attr_name FROM block_attributes "
+        "WHERE role IS NULL AND css_property IS NULL"
+    ).fetchall():
+        if (block_slug, attr_name) in d4_wrapper_painted:
+            cur.execute(
+                "UPDATE block_attributes SET role = 'styling' WHERE id = ?", (row_id,)
+            )
+            filled += 1
+    conn.commit()
+    return filled
+
+
+def _self_test_wrapper_styling_tier() -> int:
+    """Prove the TIER 2.4 wrapper-styling pass can FAIL, on a throwaway in-memory DB.
+
+    Drives the REAL `_apply_wrapper_styling_tier()`, so production/test drift is caught.
+
+    The tempting loosening this pins against is the mirror of TIER 2.5's: "anything the
+    wrapper is near is styling". The rule is narrower than that -- D4 awards the bucket
+    only when the attribute's SINGLE resolved consumer is the wrapper file -- and a row
+    no detector reached must still come out NULL.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, css_property) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "overlayGradientFrom", None, None),   # wrapper-only -> styling
+            (2, "sgs/plant", "unreachedKey", None, None),          # NOT in set -> stays NULL
+            (3, "sgs/plant", "wrapperButMapped", None, "gap"),     # css_property -> TIER 3's
+            (4, "sgs/plant", "wrapperButContent", "text-content", None),  # content wins
+        ],
+    )
+    conn.commit()
+    planted = {
+        ("sgs/plant", "overlayGradientFrom"),
+        ("sgs/plant", "wrapperButMapped"),
+        ("sgs/plant", "wrapperButContent"),
+    }
+
+    filled = _apply_wrapper_styling_tier(conn, planted)
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if filled == 0:
+        failures.append(
+            "claimed ZERO rows against a planted wrapper set -- cannot fail, proves nothing"
+        )
+    if got.get("overlayGradientFrom") != "styling":
+        failures.append(
+            f"overlayGradientFrom -> {got.get('overlayGradientFrom')!r}, expected 'styling'"
+        )
+    if got.get("unreachedKey") is not None:
+        failures.append(
+            f"unreachedKey -> {got.get('unreachedKey')!r}: a row NO detector reached was "
+            "claimed. Bean's rule is that NULL means unreached or unseedable -- widening "
+            "this tier to leftovers would destroy exactly that distinction."
+        )
+    if got.get("wrapperButMapped") is not None:
+        failures.append(
+            f"wrapperButMapped -> {got.get('wrapperButMapped')!r}: a row carrying a "
+            "css_property was claimed here. That row is TIER 3's; two writers for one "
+            "fact is the partition defect this gate exists to avoid."
+        )
+    if got.get("wrapperButContent") != "text-content":
+        failures.append(
+            f"wrapperButContent -> {got.get('wrapperButContent')!r}: an existing content "
+            "role was overwritten. Content tiers run first and are final."
+        )
+    # An empty verdict set must be a NO-OP, never a sweep. A degraded detector returning
+    # nothing must not read as "no rows qualified" -- it must change nothing at all.
+    conn.execute("UPDATE block_attributes SET role = NULL WHERE id = 1")
+    conn.commit()
+    if _apply_wrapper_styling_tier(conn, set()) != 0:
+        failures.append("an EMPTY verdict set claimed rows -- a degraded detector must be a no-op")
+
+    conn.close()
+    if failures:
+        print(f"WRAPPER-STYLING SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"WRAPPER-STYLING SELF-TEST PASSED -- {filled} rows claimed, 6 checks green.")
+    return 0
 
 
 def _self_test_technical_veto() -> int:
@@ -3594,5 +3766,5 @@ if __name__ == "__main__":
                  or _self_test_technical_veto() or _self_test_unit_inheritance()
                  or _self_test_enum_backstop() or _self_test_companion_tier()
                  or _self_test_boolean_sweep() or _self_test_suffix_role_revive()
-                 or _self_test_type_sweep())
+                 or _self_test_type_sweep() or _self_test_wrapper_styling_tier())
     main()

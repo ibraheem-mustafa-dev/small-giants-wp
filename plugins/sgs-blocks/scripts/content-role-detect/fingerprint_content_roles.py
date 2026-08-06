@@ -55,16 +55,27 @@ Expected REPORT-ONLY: ~13.  Expected D4 WRAPPER-STYLING: ~33.  D4 NEEDS REVIEW: 
 
 Why the original range no longer applies, measured not assumed: the eligible pool is
 `sgs/%` + string-typed + `role IS NULL`, and that population has been WORKED DOWN by the
-Step 0 classification programme. A live count on 2026-08-06 returned **1609 string-typed
-`sgs/%` rows WITH a role against 69 NULL**. The detectors already assigned everything
-they can assign; ASSIGNABLE 0 is the CORRECT steady state, not a blind rule.
+Step 0 classification programme. The detectors already assigned everything they can
+assign; ASSIGNABLE 0 is the CORRECT steady state, not a blind rule.
 
-The 69 survivors are not an unexplored space — `reached by any detector` is 69 and
+POOL RE-BASED 2026-08-06 (Bean): 69 -> **36**. The 33 wrapper-styling rows are no longer
+survivors — Bean's ruling is that a NULL role means the row is UNREACHED or UNSEEDABLE,
+never "reached, understood, and filed nowhere", and a wrapper-only read is positive
+evidence of styling (the shared container wrapper is a CSS-rendering engine, so
+everything it reads it reads to paint). They are now SEEDED `styling` by
+`assign-canonical.apply_role_detection_inline()` TIER 2.4, so this bucket reads 0 after
+a reseed. Measured post-reseed: 31 rows claimed, 0 content roles touched. NOTE they will
+never carry a `css_property` — `sgs/container`, the block every composite mirrors
+(R-31-9), deliberately declines to map the decorative families in its `decorative`
+element, so the earlier "owes an attrMap declaration" reading would have REVERSED a
+standing architectural decision rather than completing one.
+
+The 36 survivors are not an unexplored space — `reached by any detector` is 36 and
 `unreached` is 0. Every one lands in a bucket that DELIBERATELY does not assign:
-wrapper-styling owes an `attrMap` declaration rather than a role; needs-review is an
-explicit human call; report-only is D2-alone plus the a11y rows this docstring already
-explains are deliberately left NULL; the content gap has no fitting role. Closing those
-needs decisions and new roles with real consumers — not a better detector.
+needs-review is an explicit human call; report-only is D2-alone plus the a11y rows this
+docstring already explains are deliberately left NULL; the content gap has no fitting
+role. Closing those needs decisions and new roles with real consumers — not a better
+detector.
 
 The zero-is-a-claim doctrine below still stands and is why this range was re-derived from
 a live count rather than edited to match the output. Three rules built on this project on
@@ -790,12 +801,12 @@ def main() -> int:
     print(f"eligible pool            {result['eligible_pool']}")
     print(f"reached by any detector  {result['reached_by_any_detector']}")
     print(f"unreached (open space)   {result['unreached']}")
-    print(f"\nASSIGNABLE               {len(a)}   (expected 0 at pool=69; see EXPECTED POPULATION)")
-    print(f"REPORT-ONLY              {len(r)}   (expected ~13 at pool=69)")
+    print(f"\nASSIGNABLE               {len(a)}   (expected 0 at pool=36; see EXPECTED POPULATION)")
+    print(f"REPORT-ONLY              {len(r)}   (expected ~13 at pool=36)")
     print(f"VETOED by D1             {len(result['vetoed'])}   (D2/D3 claimed, D1 rejected)")
     print(f"CONTENT GAPS             {len(result['content_gaps'])}   (content, but no whole-value role fits -> Task E)")
     print(f"D4 REFERENCED-NOT-OUTPUT {len(result['technical_refs'])}   (read by code, never escaped, never CSS -> technical)")
-    print(f"D4 WRAPPER-STYLING       {len(result['wrapper_styling'])}   (wrapper-painted; owe an attrMap declaration, NOT a role)")
+    print(f"D4 WRAPPER-STYLING       {len(result['wrapper_styling'])}   (wrapper-painted; SEEDED 'styling' by assign-canonical TIER 2.4 -- expected 0 after a reseed)")
     print(f"D4 NEEDS REVIEW          {len(result['d4_review'])}   (read but not escaped; technical OR late-painted styling — human call)")
     if result["disagreements"]:
         print(f"DISAGREEMENTS            {len(result['disagreements'])}   (D1 wins each)")
