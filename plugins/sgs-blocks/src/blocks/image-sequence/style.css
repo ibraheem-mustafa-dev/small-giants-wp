@@ -1,8 +1,8 @@
 /**
  * Image Sequence — frontend and editor styles.
  *
- * Layering contract (fail-open, FR-38-2): the poster `<img>` and the canvas
- * occupy the SAME box, poster underneath. The canvas starts fully
+ * Layering contract (fail-open, FR-38-2): the thumbnail `<img>` and the canvas
+ * occupy the SAME box, thumbnail underneath. The canvas starts fully
  * transparent and is revealed only once `fx-image-sequence.js` has decoded
  * and drawn a real frame (`.is-ready`), gated behind the site-wide `.sgs-js`
  * progressive-enhancement class (set unconditionally by
@@ -30,7 +30,7 @@
 	aspect-ratio: 16 / 9;
 }
 
-.sgs-image-sequence__poster,
+.sgs-image-sequence__thumbnail,
 .sgs-image-sequence__canvas {
 	position: absolute;
 	inset: 0;
@@ -47,7 +47,7 @@
 /* Reveal the canvas only once JS has confirmed it can paint a real frame —
    never on the strength of .sgs-js alone (that only proves JS ran, not that
    a frame decoded). With JS blocked, or under reduced motion (the effect
-   never initialises — see fx-image-sequence.js), the poster is permanent. */
+   never initialises — see fx-image-sequence.js), the thumbnail is permanent. */
 .sgs-js .sgs-image-sequence.is-ready .sgs-image-sequence__canvas {
 	opacity: 1;
 }

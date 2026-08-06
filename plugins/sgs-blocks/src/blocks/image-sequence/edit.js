@@ -55,7 +55,7 @@ const EXTENSION_OPTIONS = [
  * file over REST (server-side, so no CORS issue and no client-side SSRF
  * surface) and reports back by exact filename. Catches the four free-text
  * fields (url/count/pad/ext) being wrong in a way that otherwise fails
- * silently to poster-only with no explanation.
+ * silently to thumbnail-only with no explanation.
  *
  * @param {Object} props       Component props.
  * @param {string} props.url   Frames-folder URL to check.
@@ -203,8 +203,8 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		posterMedia,
-		posterAlt,
+		thumbnail,
+		thumbnailAlt,
 		aspectRatio,
 		desktopFramesUrl,
 		desktopFrameCount,
@@ -230,13 +230,13 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const onSelectPoster = ( media ) => {
 		setAttributes( {
-			posterMedia: media
+			thumbnail: media
 				? { id: media.id, url: media.url, alt: media.alt || '' }
 				: null,
 		} );
 	};
 
-	const onRemovePoster = () => setAttributes( { posterMedia: null } );
+	const onRemovePoster = () => setAttributes( { thumbnail: null } );
 
 	const desktopConfigured = Boolean(
 		desktopFramesUrl && desktopFrameCount > 0
@@ -259,7 +259,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Notice>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Poster frame', 'sgs-blocks' ) }>
+				<PanelBody title={ __( 'Thumbnail', 'sgs-blocks' ) }>
 					<p>
 						{ __(
 							'Always shown to visitors without JavaScript, and to anyone with reduced-motion enabled. Choose the same image as your sequence’s first frame for a seamless handoff.',
@@ -267,21 +267,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</p>
 					<MediaPicker
-						value={ posterMedia }
+						value={ thumbnail }
 						onChange={ onSelectPoster }
 						onRemove={ onRemovePoster }
 						allowedTypes={ [ 'image' ] }
-						label={ __( 'Select poster image', 'sgs-blocks' ) }
+						label={ __( 'Select thumbnail image', 'sgs-blocks' ) }
 					/>
 					<TextControl
-						label={ __( 'Poster alt text', 'sgs-blocks' ) }
+						label={ __( 'Thumbnail alt text', 'sgs-blocks' ) }
 						help={ __(
 							'Describes the sequence for screen readers and no-JS visitors.',
 							'sgs-blocks'
 						) }
-						value={ posterAlt }
+						value={ thumbnailAlt }
 						onChange={ ( value ) =>
-							setAttributes( { posterAlt: value } )
+							setAttributes( { thumbnailAlt: value } )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -525,16 +525,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ ! posterMedia ? (
+				{ ! thumbnail ? (
 					<div className="sgs-image-sequence-editor__placeholder">
 						<MediaPicker
 							value={ null }
 							onChange={ onSelectPoster }
 							onRemove={ onRemovePoster }
 							allowedTypes={ [ 'image' ] }
-							label={ __( 'Select Poster Image', 'sgs-blocks' ) }
+							label={ __( 'Select Thumbnail Image', 'sgs-blocks' ) }
 							instructionsImage={ __(
-								'An image sequence needs a poster frame. Add one to get started, then configure the frame source in the sidebar.',
+								'An image sequence needs a thumbnail frame. Add one to get started, then configure the frame source in the sidebar.',
 								'sgs-blocks'
 							) }
 						/>
@@ -545,11 +545,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ { aspectRatio } }
 					>
 						<img
-							src={ posterMedia.url }
+							src={ thumbnail.url }
 							alt={
-								posterMedia.alt ||
+								thumbnail.alt ||
 								__(
-									'Image sequence poster preview',
+									'Image sequence thumbnail preview',
 									'sgs-blocks'
 								)
 							}
@@ -560,7 +560,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<Notice status="info" isDismissible={ false }>
 					{ __(
-						'Scroll effects preview on the live site. The editor always shows the poster frame.',
+						'Scroll effects preview on the live site. The editor always shows the thumbnail frame.',
 						'sgs-blocks'
 					) }
 				</Notice>
@@ -568,7 +568,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ ! desktopConfigured && (
 					<p className="sgs-image-sequence-editor__frame-count">
 						{ __(
-							'No frame source configured yet — this block will render as a static poster image until you add one.',
+							'No frame source configured yet — this block will render as a static thumbnail image until you add one.',
 							'sgs-blocks'
 						) }
 					</p>

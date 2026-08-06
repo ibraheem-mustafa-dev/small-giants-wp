@@ -177,6 +177,7 @@ $hover_border_colour     = $attributes['borderColourHover'] ?? '';
 $bg_parallax     = ! empty( $attributes['bgParallax'] );
 $bg_ken_burns    = ! empty( $attributes['bgKenBurns'] );
 $bg_video_attr   = $attributes['bgVideo'] ?? null;
+$bg_video_tablet = $attributes['bgVideoTablet'] ?? null;
 $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 
 // Split-image bleed — removes border-radius and inner padding from the media column.
@@ -767,22 +768,36 @@ $has_attr_video    = ! empty( $bg_video_attr['url'] );
 
 if ( $has_variant_video || $has_attr_video ) {
 	$desktop_src = ! empty( $bg_video_attr['url'] ) ? $bg_video_attr['url'] : ( $bg_video['url'] ?? '' );
-	$mobile_src  = ! empty( $bg_video_mobile['url'] ) ? $bg_video_mobile['url'] : $desktop_src;
+	// Tiers fall back UPWARD (mobile -> tablet -> desktop), matching
+	// SGS_Container_Wrapper::render()'s three-tier resolution. Hero duplicates the
+	// wrapper's video path rather than calling it (a composite-mirror divergence
+	// predating this change) — so the two must be kept in step by hand until hero
+	// is routed through the wrapper. If you change one, change the other.
+	$has_tablet_src = ! empty( $bg_video_tablet['url'] );
+	$tablet_src     = $has_tablet_src ? $bg_video_tablet['url'] : $desktop_src;
+	$mobile_src     = ! empty( $bg_video_mobile['url'] ) ? $bg_video_mobile['url'] : $tablet_src;
 
-	if ( $desktop_src === $mobile_src ) {
-		// Single source — no viewport switching needed.
+	if ( $desktop_src === $mobile_src && $desktop_src === $tablet_src ) {
+		// Single source across every tier — no viewport switching needed.
 		$video_html = sprintf(
 			'<video class="sgs-hero__video-bg" autoplay loop muted playsinline aria-hidden="true">' .
 			'<source src="%s" type="video/mp4"></video>',
 			esc_url( $desktop_src )
 		);
 	} else {
-		// Two sources — JS swaps src based on viewport via data attributes.
+		// Multiple sources — JS swaps src based on viewport via data attributes.
+		// `data-src-tablet` is emitted ONLY when a tablet override was actually set,
+		// so a block with no tablet value renders byte-identically to before.
+		$tablet_attr = $has_tablet_src
+			? sprintf( ' data-src-tablet="%s"', esc_attr( $tablet_src ) )
+			: '';
+
 		$video_html = sprintf(
 			'<video class="sgs-hero__video-bg sgs-hero__video-bg--responsive" autoplay loop muted playsinline aria-hidden="true"' .
-			' data-src-desktop="%s" data-src-mobile="%s">' .
+			' data-src-desktop="%s"%s data-src-mobile="%s">' .
 			'<source src="%s" type="video/mp4"></video>',
 			esc_attr( $desktop_src ),
+			$tablet_attr,
 			esc_attr( $mobile_src ),
 			esc_url( $desktop_src )
 		);

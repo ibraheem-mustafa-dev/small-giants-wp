@@ -1,7 +1,7 @@
 /**
  * Image Sequence — editor-only styles.
  *
- * Spec 38 §9: the editor canvas shows the poster frame plus a Notice; it
+ * Spec 38 §9: the editor canvas shows the thumbnail frame plus a Notice; it
  * never runs the scroll-scrub effect (Tier G never loads in wp-admin).
  */
 

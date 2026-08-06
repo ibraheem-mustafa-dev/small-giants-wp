@@ -636,6 +636,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 		backgroundAttachment = 'scroll',
 		backgroundOverlayOpacity = 50,
 		bgVideo,
+		bgVideoTablet,
 		bgVideoMobile,
 		bgParallax = false,
 		bgKenBurns = false,
@@ -804,6 +805,33 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 													<>
 														<p style={ { fontSize: '12px', marginBottom: '4px' } }>{ bgVideo.url.split( '/' ).pop() }</p>
 														<Button variant="secondary" onClick={ () => setAttributes( { bgVideo: undefined } ) } isDestructive>
+															{ __( 'Remove video', 'sgs-blocks' ) }
+														</Button>
+													</>
+												) : (
+													<Button variant="secondary" onClick={ open }>
+														{ __( 'Select video', 'sgs-blocks' ) }
+													</Button>
+												) }
+											</div>
+										) }
+									/>
+								</MediaUploadCheck>
+
+								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px', marginTop: '8px' } }>
+									{ __( 'Tablet video (optional)', 'sgs-blocks' ) }
+								</p>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) => setAttributes( { bgVideoTablet: { id: media.id, url: media.url } } ) }
+										allowedTypes={ [ 'video' ] }
+										value={ bgVideoTablet?.id }
+										render={ ( { open } ) => (
+											<div style={ { marginBottom: '8px' } }>
+												{ bgVideoTablet?.url ? (
+													<>
+														<p style={ { fontSize: '12px', marginBottom: '4px' } }>{ bgVideoTablet.url.split( '/' ).pop() }</p>
+														<Button variant="secondary" onClick={ () => setAttributes( { bgVideoTablet: undefined } ) } isDestructive>
 															{ __( 'Remove video', 'sgs-blocks' ) }
 														</Button>
 													</>

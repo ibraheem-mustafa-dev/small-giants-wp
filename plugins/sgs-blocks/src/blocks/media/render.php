@@ -526,29 +526,29 @@ if ( 'image' === $media_type ) {
 // ---------------------------------------------------------------------------
 $video_html = '';
 if ( 'video' === $media_type ) {
-	$video_url       = isset( $attributes['videoUrl'] ) ? (string) $attributes['videoUrl'] : '';
-	$video_source    = isset( $attributes['videoSource'] ) ? (string) $attributes['videoSource'] : 'external';
-	$video_id        = isset( $attributes['videoId'] ) ? absint( $attributes['videoId'] ) : 0;
-	$video_mime      = isset( $attributes['videoMimeType'] ) ? (string) $attributes['videoMimeType'] : '';
-	$video_poster    = isset( $attributes['videoPoster'] ) ? (string) $attributes['videoPoster'] : '';
-	$video_poster_id = isset( $attributes['videoPosterId'] ) ? absint( $attributes['videoPosterId'] ) : 0;
-	$video_autoplay  = ! empty( $attributes['videoAutoplay'] );
-	$video_loop      = ! empty( $attributes['videoLoop'] );
-	$video_muted     = isset( $attributes['videoMuted'] ) ? (bool) $attributes['videoMuted'] : true;
-	$video_controls  = isset( $attributes['videoControls'] ) ? (bool) $attributes['videoControls'] : true;
-	$video_inline    = isset( $attributes['videoPlaysInline'] ) ? (bool) $attributes['videoPlaysInline'] : true;
-	$video_lazy      = isset( $attributes['videoLazyLoad'] ) ? (bool) $attributes['videoLazyLoad'] : true;
+	$video_url      = isset( $attributes['videoUrl'] ) ? (string) $attributes['videoUrl'] : '';
+	$video_source   = isset( $attributes['videoSource'] ) ? (string) $attributes['videoSource'] : 'external';
+	$video_id       = isset( $attributes['videoId'] ) ? absint( $attributes['videoId'] ) : 0;
+	$video_mime     = isset( $attributes['videoMimeType'] ) ? (string) $attributes['videoMimeType'] : '';
+	$thumbnail      = isset( $attributes['thumbnail'] ) ? (string) $attributes['thumbnail'] : '';
+	$thumbnail_id   = isset( $attributes['thumbnailId'] ) ? absint( $attributes['thumbnailId'] ) : 0;
+	$video_autoplay = ! empty( $attributes['videoAutoplay'] );
+	$video_loop     = ! empty( $attributes['videoLoop'] );
+	$video_muted    = isset( $attributes['videoMuted'] ) ? (bool) $attributes['videoMuted'] : true;
+	$video_controls = isset( $attributes['videoControls'] ) ? (bool) $attributes['videoControls'] : true;
+	$video_inline   = isset( $attributes['videoPlaysInline'] ) ? (bool) $attributes['videoPlaysInline'] : true;
+	$video_lazy     = isset( $attributes['videoLazyLoad'] ) ? (bool) $attributes['videoLazyLoad'] : true;
 
-	// Resolve poster image URL: videoPosterId wins; fall back to videoPoster.
+	// Resolve poster image URL: thumbnailId wins; fall back to thumbnail.
 	$poster_url = '';
-	if ( $video_poster_id ) {
-		$poster_src = wp_get_attachment_image_url( $video_poster_id, 'full' );
+	if ( $thumbnail_id ) {
+		$poster_src = wp_get_attachment_image_url( $thumbnail_id, 'full' );
 		if ( $poster_src ) {
 			$poster_url = $poster_src;
 		}
 	}
-	if ( '' === $poster_url && '' !== $video_poster ) {
-		$poster_url = $video_poster;
+	if ( '' === $poster_url && '' !== $thumbnail ) {
+		$poster_url = $thumbnail;
 	}
 
 	// Resolve internal video source from WP media library.

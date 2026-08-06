@@ -306,6 +306,9 @@
 		"splitImage": {
 			"type": "object"
 		},
+		"splitImageTablet": {
+			"type": "object"
+		},
 		"_comment_splitMedia": "Migrated 2026-05-05 â€” splitImage retained for deprecation. New instances should use splitMedia.",
 		"splitMedia": {
 			"type": "object",
@@ -407,6 +410,9 @@
 			"default": false
 		},
 		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoTablet": {
 			"type": "object"
 		},
 		"bgVideoMobile": {

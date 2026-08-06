@@ -1,118 +1,139 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/image-sequence",
-    "version": "0.1.0",
-    "title": "SGS Image Sequence",
-    "category": "sgs-content",
-    "description": "AGENCY-ONLY — hidden from the block inserter. Scroll-scrubbed canvas frame sequence (Apple-style product reveal). Setting one up requires running a Python command-line tool (scripts/image-sequence-prep.py) that needs ffmpeg installed — not something a client should be asked to do. If a client build genuinely needs this effect, Small Giants Studio sets it up. See scripts/IMAGE-SEQUENCE-PREP-README.md for the full agency-side process.",
-    "keywords": [
-        "scroll",
-        "canvas",
-        "sequence",
-        "scrub",
-        "gsap",
-        "video"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "images-alt2",
-    "supports": {
-        "anchor": false,
-        "html": false,
-        "align": [ "wide", "full" ],
-        "inserter": false,
-        "sgs": {
-            "imageControls": true
-        }
-    },
-    "attributes": {
-        "posterMedia": {
-            "type": "object",
-            "default": null
-        },
-        "posterAlt": {
-            "type": "string",
-            "default": ""
-        },
-        "aspectRatio": {
-            "type": "string",
-            "default": "16 / 9"
-        },
-        "desktopFramesUrl": {
-            "type": "string",
-            "default": ""
-        },
-        "desktopFrameCount": {
-            "type": "number",
-            "default": 0
-        },
-        "desktopFramePad": {
-            "type": "number",
-            "default": 4
-        },
-        "desktopFrameExt": {
-            "type": "string",
-            "default": "webp",
-            "enum": ["webp", "avif", "jpg", "jpeg", "png"]
-        },
-        "tabletFramesUrl": {
-            "type": "string",
-            "default": ""
-        },
-        "tabletFrameCount": {
-            "type": "number",
-            "default": 0
-        },
-        "tabletFramePad": {
-            "type": "number",
-            "default": 4
-        },
-        "tabletFrameExt": {
-            "type": "string",
-            "default": "webp",
-            "enum": ["webp", "avif", "jpg", "jpeg", "png"]
-        },
-        "mobileFramesUrl": {
-            "type": "string",
-            "default": ""
-        },
-        "mobileFrameCount": {
-            "type": "number",
-            "default": 0
-        },
-        "mobileFramePad": {
-            "type": "number",
-            "default": 4
-        },
-        "mobileFrameExt": {
-            "type": "string",
-            "default": "webp",
-            "enum": ["webp", "avif", "jpg", "jpeg", "png"]
-        },
-        "fxStart": {
-            "type": "string",
-            "default": ""
-        },
-        "fxEnd": {
-            "type": "string",
-            "default": ""
-        },
-        "fxScrub": {
-            "type": "number",
-            "default": 1
-        },
-        "fxPin": {
-            "type": "boolean",
-            "default": false
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": "file:./style-index.css",
-    "example": {
-        "attributes": {
-            "aspectRatio": "16 / 9"
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/image-sequence",
+	"version": "0.1.0",
+	"title": "SGS Image Sequence",
+	"category": "sgs-content",
+	"description": "AGENCY-ONLY — hidden from the block inserter. Scroll-scrubbed canvas frame sequence (Apple-style product reveal). Setting one up requires running a Python command-line tool (scripts/image-sequence-prep.py) that needs ffmpeg installed — not something a client should be asked to do. If a client build genuinely needs this effect, Small Giants Studio sets it up. See scripts/IMAGE-SEQUENCE-PREP-README.md for the full agency-side process.",
+	"keywords": [
+		"scroll",
+		"canvas",
+		"sequence",
+		"scrub",
+		"gsap",
+		"video"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "images-alt2",
+	"supports": {
+		"anchor": false,
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"inserter": false,
+		"sgs": {
+			"imageControls": true
+		}
+	},
+	"attributes": {
+		"thumbnail": {
+			"type": "object",
+			"default": null
+		},
+		"thumbnailAlt": {
+			"type": "string",
+			"default": ""
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "16 / 9"
+		},
+		"desktopFramesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"desktopFrameCount": {
+			"type": "number",
+			"default": 0
+		},
+		"desktopFramePad": {
+			"type": "number",
+			"default": 4
+		},
+		"desktopFrameExt": {
+			"type": "string",
+			"default": "webp",
+			"enum": [
+				"webp",
+				"avif",
+				"jpg",
+				"jpeg",
+				"png"
+			]
+		},
+		"tabletFramesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"tabletFrameCount": {
+			"type": "number",
+			"default": 0
+		},
+		"tabletFramePad": {
+			"type": "number",
+			"default": 4
+		},
+		"tabletFrameExt": {
+			"type": "string",
+			"default": "webp",
+			"enum": [
+				"webp",
+				"avif",
+				"jpg",
+				"jpeg",
+				"png"
+			]
+		},
+		"mobileFramesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"mobileFrameCount": {
+			"type": "number",
+			"default": 0
+		},
+		"mobileFramePad": {
+			"type": "number",
+			"default": 4
+		},
+		"mobileFrameExt": {
+			"type": "string",
+			"default": "webp",
+			"enum": [
+				"webp",
+				"avif",
+				"jpg",
+				"jpeg",
+				"png"
+			]
+		},
+		"fxStart": {
+			"type": "string",
+			"default": ""
+		},
+		"fxEnd": {
+			"type": "string",
+			"default": ""
+		},
+		"fxScrub": {
+			"type": "number",
+			"default": 1
+		},
+		"fxPin": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"aspectRatio": "16 / 9"
+		}
+	}
 }

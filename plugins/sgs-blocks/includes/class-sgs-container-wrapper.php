@@ -197,6 +197,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
 				$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
 				$bg_video               = $attributes['bgVideo'] ?? null;
+				$bg_video_tablet        = $attributes['bgVideoTablet'] ?? null;
 				$bg_video_mobile        = $attributes['bgVideoMobile'] ?? null;
 				$bg_parallax            = ! empty( $attributes['bgParallax'] );
 				$bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
@@ -217,6 +218,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$overlay_gradient_from  = '';
 				$overlay_gradient_to    = '';
 				$bg_video               = null;
+				$bg_video_tablet        = null;
 				$bg_video_mobile        = null;
 				$bg_parallax            = false;
 				$bg_ken_burns           = false;
@@ -889,21 +891,33 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$video_html = '';
 			if ( $is_section && $has_bg_video ) {
-				$desktop_src = esc_url( $bg_video['url'] );
-				$mobile_src  = ! empty( $bg_video_mobile['url'] ) ? esc_url( $bg_video_mobile['url'] ) : $desktop_src;
+				$has_bg_video_tablet = ! empty( $bg_video_tablet['url'] );
+				$desktop_src         = esc_url( $bg_video['url'] );
+				// Fall back upward when a tier has no override: tablet falls back to
+				// desktop, mobile falls back to tablet (which itself may already have
+				// fallen back to desktop) — mirrors the client-side swapVideoSrc() fallback.
+				$tablet_src = $has_bg_video_tablet ? esc_url( $bg_video_tablet['url'] ) : $desktop_src;
+				$mobile_src = ! empty( $bg_video_mobile['url'] ) ? esc_url( $bg_video_mobile['url'] ) : $tablet_src;
 
-				if ( $desktop_src === $mobile_src ) {
+				if ( $desktop_src === $tablet_src && $tablet_src === $mobile_src ) {
 					$video_html = sprintf(
 						'<video class="sgs-container__video-bg" autoplay loop muted playsinline preload="none" aria-hidden="true">' .
 						'<source src="%s" type="video/mp4"></video>',
 						$desktop_src
 					);
 				} else {
-					$video_html = sprintf(
+					// data-src-tablet is emitted ONLY when a tablet override was actually
+					// set — a block with no tablet value renders byte-identically to
+					// before this tier existed (no stray attribute carrying the desktop
+					// fallback value). swapVideoSrc() falls back the same way when the
+					// attribute is simply absent from the DOM.
+					$tablet_attr = $has_bg_video_tablet ? sprintf( ' data-src-tablet="%s"', esc_attr( $tablet_src ) ) : '';
+					$video_html  = sprintf(
 						'<video class="sgs-container__video-bg sgs-container__video-bg--responsive" autoplay loop muted playsinline preload="none" aria-hidden="true"' .
-						' data-src-desktop="%s" data-src-mobile="%s">' .
+						' data-src-desktop="%s"%s data-src-mobile="%s">' .
 						'<source src="%s" type="video/mp4"></video>',
 						esc_attr( $desktop_src ),
+						$tablet_attr,
 						esc_attr( $mobile_src ),
 						$desktop_src
 					);
@@ -1085,7 +1099,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $object_model
 				|| '' !== $overlay_decls
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
-				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) )
+				|| ( $is_section && $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) )
 				// An SVG background emits `--sgs-svg-opacity` as a scoped rule on the
 				// `.sgs-container__svg-bg` layer (FR-32-4 / D345 — it used to ride inline
 				// on that div). Without a uid there is nowhere to scope it, so the SVG

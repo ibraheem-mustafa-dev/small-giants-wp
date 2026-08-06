@@ -4,7 +4,7 @@
  *
  * Spec 38 FR-38-9. Outputs TWO layers, always both present:
  *
- *   1. A real `<img>` poster frame — the fail-open surface (FR-38-2). With
+ *   1. A real `<img>` thumbnail frame — the fail-open surface (FR-38-2). With
  *      JS blocked, under reduced motion, or before the Tier G effect module
  *      finishes loading its first frame, this is the ONLY thing a visitor
  *      ever sees. It is never a placeholder box.
@@ -34,18 +34,19 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$poster_media = $attributes['posterMedia'] ?? null;
+$thumbnail_media = $attributes['thumbnail'] ?? null;
 
-// Nothing to render without a poster — no half-built block, no empty canvas
-// (FR-38-2's fail-open contract has nothing to fail open TO without one).
-if ( empty( $poster_media['url'] ) ) {
+// Nothing to render without a thumbnail — no half-built block, no empty
+// canvas (FR-38-2's fail-open contract has nothing to fail open TO without
+// one).
+if ( empty( $thumbnail_media['url'] ) ) {
 	return;
 }
 
-$poster_url   = (string) $poster_media['url'];
-$poster_id    = isset( $poster_media['id'] ) ? absint( $poster_media['id'] ) : 0;
-$poster_alt   = (string) ( $attributes['posterAlt'] ?? '' );
-$aspect_ratio = (string) ( $attributes['aspectRatio'] ?? '16 / 9' );
+$thumbnail_url = (string) $thumbnail_media['url'];
+$thumbnail_id  = isset( $thumbnail_media['id'] ) ? absint( $thumbnail_media['id'] ) : 0;
+$thumbnail_alt = (string) ( $attributes['thumbnailAlt'] ?? '' );
+$aspect_ratio  = (string) ( $attributes['aspectRatio'] ?? '16 / 9' );
 
 // Whitelist — this reaches a scoped <style> rule, so it is validated against
 // known-good values rather than trusted as free text.
@@ -140,7 +141,7 @@ $canvas_attrs = array(
 );
 
 // Only wire the Tier G effect when at least one tier's pipeline output is
-// configured. Without it the block is a plain poster image — a legitimate,
+// configured. Without it the block is a plain thumbnail image — a legitimate,
 // fully-rendered state for a fresh block, not a broken one, and the sniff
 // registry never sees a data-sgs-fx marker, so zero GSAP bytes load for it.
 if ( ! empty( $has_any_tier ) ) {
@@ -175,11 +176,11 @@ printf(
 );
 
 echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes internally.
-	$poster_id,
-	$poster_url,
-	$poster_alt,
+	$thumbnail_id,
+	$thumbnail_url,
+	$thumbnail_alt,
 	'large',
-	array( 'class' => 'sgs-image-sequence__poster' )
+	array( 'class' => 'sgs-image-sequence__thumbnail' )
 );
 
 printf(

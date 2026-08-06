@@ -399,6 +399,9 @@
 		"bgVideo": {
 			"type": "object"
 		},
+		"bgVideoTablet": {
+			"type": "object"
+		},
 		"bgVideoMobile": {
 			"type": "object"
 		},

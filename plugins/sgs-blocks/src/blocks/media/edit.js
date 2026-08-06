@@ -131,8 +131,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Video.
 		videoUrl,
 		videoSource,
-		videoPoster,
-		videoPosterId,
+		thumbnail,
+		thumbnailId,
 		videoAutoplay,
 		videoLoop,
 		videoMuted,
@@ -175,8 +175,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const onSelectPoster = ( media ) => {
 		setAttributes( {
-			videoPosterId: media.id || null,
-			videoPoster: media.url || '',
+			thumbnailId: media.id || null,
+			thumbnail: media.url || '',
 		} );
 	};
 
@@ -809,9 +809,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						</MediaUploadCheck>
 					) }
 
-					{ /* Poster image */ }
+					{ /* Thumbnail image */ }
 					<PanelBody
-						title={ __( 'Poster Image', 'sgs-blocks' ) }
+						title={ __( 'Thumbnail', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
 						<p className="components-base-control__help">
@@ -824,14 +824,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							<MediaUpload
 								onSelect={ onSelectPoster }
 								allowedTypes={ [ 'image' ] }
-								value={ videoPosterId }
+								value={ thumbnailId }
 								render={ ( { open } ) => (
 									<>
-										{ videoPoster && (
+										{ thumbnail && (
 											<img
-												src={ videoPoster }
+												src={ thumbnail }
 												alt={ __(
-													'Video poster',
+													'Video thumbnail',
 													'sgs-blocks'
 												) }
 												style={ {
@@ -845,24 +845,24 @@ export default function Edit( { attributes, setAttributes } ) {
 											variant="secondary"
 											onClick={ open }
 										>
-											{ videoPoster
+											{ thumbnail
 												? __(
-														'Replace Poster',
+														'Replace Thumbnail',
 														'sgs-blocks'
 												  )
 												: __(
-														'Select Poster',
+														'Select Thumbnail',
 														'sgs-blocks'
 												  ) }
 										</Button>
-										{ videoPoster && (
+										{ thumbnail && (
 											<Button
 												variant="link"
 												isDestructive
 												onClick={ () =>
 													setAttributes( {
-														videoPosterId: null,
-														videoPoster: '',
+														thumbnailId: null,
+														thumbnail: '',
 													} )
 												}
 												style={ { marginLeft: '8px' } }
