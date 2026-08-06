@@ -2,8 +2,23 @@
 
 ## D509 — A8: the 28-attribute grid surface on site-header/site-footer deleted; it could never fire [ROUTINE]
 
-**2026-08-06.** Bean-approved. `site-header`/`site-footer` `block.json` only — no wrapper change, no
-other block touched.
+**2026-08-06.** Bean-approved. Commit **`8cc4f543`** — `site-header`/`site-footer` `block.json` only,
+no wrapper change, no other block touched.
+
+⚠ **`8cc4f543` CARRIES THE WRONG SUBJECT LINE** ("chore(parking): archive 13 verified-resolved
+entries…"). A co-active session on this shared worktree committed in the same instant and its
+`COMMIT_EDITMSG` won the race; that session's real work landed separately at `af5f1f24`. The CONTENT
+of `8cc4f543` is correct and fully gated — the three files listed here and nothing else. History was
+NOT rewritten to fix the label: both are pushed and the other session is live on the branch, so a
+reword would be a shared-branch rebase for a cosmetic gain. Read this entry, not that subject.
+
+⚠ **The same commit ALSO nearly shipped a file I never staged.** The shared index already held the
+other track's staged deletion of `class-sgs-lucide-icons-rest.php`, so my first stage-and-commit swept
+it in (114 deletions). Caught by reading `git show --stat` on my OWN commit, undone with
+`reset --soft` + `restore --staged`; their deletion later reached `main` under their own commit as
+intended. **Staging by exact path does NOT protect you when the index is already dirty — diff your own
+commit's file list afterwards.** The `git-commit-must-be-path-scoped` hook exists for exactly this and
+fired correctly later in the same session.
 
 **Unreachable by construction, verified three ways.** Each block declared 14 grid attrs whose every
 emit is gated `'grid' === $layout` (`class-sgs-container-wrapper.php:671,704` among 10 such gates),
