@@ -1449,14 +1449,22 @@ def _load_attr_classification_overrides(path: Path = _ATTR_OVERRIDES_JSON_PATH) 
     """Load the hand-authored override layer from its JSON truth-source file.
 
     FAIL LOUD if the file is missing or malformed — this is load-bearing data
-    (175 corrections spanning role/derived_selector/css_property/box_family/
-    etc across the whole framework); a silent empty-dict fallback would quietly
+    (corrections spanning role/derived_selector/css_property/box_family/etc
+    across the whole framework); a silent empty-dict fallback would quietly
     wipe every one of those corrections on the next /sgs-update.
+
+    Also FAIL LOUD on a duplicated ``(slug, attr)`` key. The map is built by plain
+    assignment, so a duplicate is silently LAST-WINS: the earlier entry — the one
+    a reader scrolling the file would find and trust — is discarded with no
+    diagnostic. That is the exact shape of the original seed regression this guard
+    exists for. It lives in the LOADER rather than a standalone gate so it fires
+    for EVERY consumer (/sgs-update, check_css_property_reseed.py, any importing
+    test) instead of only when someone remembers to run the gate.
     """
     if not path.exists():
         raise FileNotFoundError(
             f"ATTR_CLASSIFICATION_OVERRIDES truth file not found at {path}. "
-            "This file is the reseed-durable override layer (175 entries) — "
+            "This file is the reseed-durable override layer — "
             "restore it before running /sgs-update."
         )
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -1465,6 +1473,10 @@ def _load_attr_classification_overrides(path: Path = _ATTR_OVERRIDES_JSON_PATH) 
         raise ValueError(
             f"{path} has no top-level 'entries' list — malformed override truth file."
         )
+    # Counts are DERIVED, never written into prose. The prior hardcoded "175 entries"
+    # in this function's messages and the comment below had drifted to a live 215 —
+    # a stale number in a fail-loud message misinforms exactly when it is read.
+    _entry_count = len(entries)
     out: dict[tuple[str, str], dict[str, object]] = {}
     for entry in entries:
         slug = entry.get("slug")
@@ -1472,8 +1484,14 @@ def _load_attr_classification_overrides(path: Path = _ATTR_OVERRIDES_JSON_PATH) 
         fields = entry.get("fields")
         if not slug or not attr or not isinstance(fields, dict):
             raise ValueError(
-                f"{path}: malformed entry {entry!r} — every entry needs "
-                "'slug', 'attr' and a 'fields' dict."
+                f"{path}: malformed entry {entry!r} (1 of {_entry_count}) — every "
+                "entry needs 'slug', 'attr' and a 'fields' dict."
+            )
+        if (slug, attr) in out:
+            raise ValueError(
+                f"{path}: duplicate override key {(slug, attr)!r} — the later entry "
+                "would silently win and the earlier one be discarded. Merge the two "
+                "entries' 'fields' into a single entry."
             )
         # `_`-prefixed keys are HUMAN ANNOTATIONS, never database columns. They stay in
         # the JSON truth file (where the rationale is useful to the next reader) and are
@@ -1496,8 +1514,10 @@ def _load_attr_classification_overrides(path: Path = _ATTR_OVERRIDES_JSON_PATH) 
 ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_attr_classification_overrides()
 
 # ---------------------------------------------------------------------------
-# The 175 entries formerly declared inline here (with per-entry rationale
-# comments — TAG-IDENTITY fix, box_family corrections, etc.) now live in
+# The entries formerly declared inline here (175 of them at the 2026-07-21 lift-out;
+# the live count is whatever the JSON holds — do NOT cache a count in prose, this
+# comment and the loader's own messages had both drifted by 40) with per-entry
+# rationale comments — TAG-IDENTITY fix, box_family corrections, etc. — now live in
 # attr-classification-overrides.json (see _load_attr_classification_overrides
 # above). The original inline dict + comments are preserved in git history
 # (see the commit that introduced this loader) — the LIVE data is the JSON

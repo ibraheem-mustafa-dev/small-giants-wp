@@ -1563,6 +1563,27 @@
         "role": "icon-wp-icon",
         "_note": "2026-08-05 RESTORED after a REGRESSION. This role was briefly retired on the belief — taken from roles.json's own description — that 'icon-wp-icon' has NO consumer in the converter. That description is WRONG: the consumer is resolve_icon_kind() (converter/services/field_extractors.py:100-142) plus the ICON arm in converter/services/extraction.py:1100-1141, which dispatches on role.startswith('icon-'). Shipped at D263 (2026-07-03), live-verified on page 8. Retiring it routed the attr to 'identity' via the Tier-1 name regex and dropped it out of that dispatch, breaking test_icon_leaf_lifts_* in converter/tests/test_extraction.py (3 failed -> 6 passed on restore, proven by experiment). DO NOT retire this again without first running `pytest scripts/converter/tests/test_extraction.py -k icon` — `npm run build` does NOT cover converter/tests, so this regression ships green."
       }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryPhrase",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__summary"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgName",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__org"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "reviewDate",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__date"
+      }
     }
   ]
 }
