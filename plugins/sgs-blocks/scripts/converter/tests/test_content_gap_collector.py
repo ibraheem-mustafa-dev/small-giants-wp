@@ -167,36 +167,65 @@ class TestConvertSectionContentGaps:
         assert r["status"] == "chrome-skipped"
         assert r["content_gaps"] == []
 
-    def test_sgs_tabs_fixture_surfaces_the_proven_gaps(self) -> None:
-        """The exact repro from the task brief: 2 ContentGap objects are
-        constructed (G3 validation — sgs/info-box rejected by sgs/tabs's
-        accepts_allowed_blocks=['sgs/tab']) and, until this channel existed,
-        convert_section()'s return dict carried no trace of them at all.
+    def test_sgs_tabs_identity_is_dissolved_by_the_section_root_gate(self) -> None:
+        """sgs-tabs records NO gaps, because sgs/tabs is never emitted.
+
+        This test previously asserted 2 ``dropped`` gaps from a G3 validation
+        failure (sgs/info-box rejected by sgs/tabs's accepts_allowed_blocks).
+        That path is now unreachable: the FR-31-16 section-root capability gate
+        (``recognition.py:246-249`` — ``is_class_section_block``) demotes any
+        NAMED root whose ``blocks.tier`` is not ``class-section``. ``sgs/tabs``
+        is tier ``block``, so its root class dissolves to the container default
+        and the G3 check is never reached. ``recognition.py:228-233`` documents
+        this dissolution and names this exact childless-stub case.
+
+        The old assertions were committed three days BEFORE that gate landed —
+        a test outliving a deliberate behaviour change, not a regression. The
+        "real gaps surface" channel it used to prove now lives on the
+        sgs-feature-grid fixture below, which still produces both kinds.
         """
         html, css = _section_and_css("sgs-tabs")
         r = convert_section(html=html, css=css, media_map={})
         assert r["status"] == "complete"
         assert "content_gaps" in r
 
-        dropped = [g for g in r["content_gaps"] if g["kind"] == "dropped"]
-        assert len(dropped) == 2
-        for g in dropped:
-            assert g["block_slug"] == "sgs/tabs"
-            assert "G3 validation failed" in g["detail"]
-            assert "sgs/info-box" in g["detail"]
-        wheres = {g["where"] for g in dropped}
-        assert wheres == {"sgs-tabs__nav", "sgs-tabs__panel"}
+        # The root resolved to the container default — sgs/tabs is absent.
+        assert r["block_markup"].lstrip().startswith("<!-- wp:sgs/container")
+        assert "wp:sgs/tabs" not in r["block_markup"]
 
-        # The fuzzy-fallback events explain WHY sgs/info-box was even reached:
-        # a Path-2 slot-alias walk resolved the 'nav'/'panel' BEM segments to
-        # sgs/info-box (there is no direct 'sgs/nav' or 'sgs/panel' block).
+        # No sgs/tabs identity means no G3 rejection and no gaps at all.
+        assert r["content_gaps"] == []
+
+    def test_sgs_feature_grid_surfaces_both_gap_kinds(self) -> None:
+        """The non-vacuous channel proof: a fixture that still produces BOTH a
+        ``fuzzy_fallback`` and a ``dropped`` gap, so this module is verified to
+        carry real gaps rather than passing on an empty list.
+
+        Measured on the current engine: 2 fuzzy fallbacks (the ``title`` and
+        ``text`` BEM segments miss a direct bare-block match and resolve via the
+        Path-2 slot-alias walk) and 1 dropped band (``sgs/container`` has no
+        destination attr for ``margin``). No fixture now produces a
+        "G3 validation failed" dropped gap, so that detail string is deliberately
+        NOT asserted here — the real detail text is.
+        """
+        html, css = _section_and_css("sgs-feature-grid")
+        r = convert_section(html=html, css=css, media_map={})
+        assert r["status"] == "complete"
+
         fuzzy = [g for g in r["content_gaps"] if g["kind"] == "fuzzy_fallback"]
         assert len(fuzzy) == 2
         for g in fuzzy:
             assert g["stage"] == "bem_resolve_slot_fallback"
-            assert g["resolved_to"] == "sgs/info-box"
-        selectors = {g["token_or_selector"] for g in fuzzy}
-        assert selectors == {"sgs-tabs__nav", "sgs-tabs__panel"}
+        assert {g["token_or_selector"]: g["resolved_to"] for g in fuzzy} == {
+            "sgs-feature-grid__title": "sgs/heading",
+            "sgs-feature-grid__text": "sgs/text",
+        }
+
+        dropped = [g for g in r["content_gaps"] if g["kind"] == "dropped"]
+        assert len(dropped) == 1
+        assert dropped[0]["block_slug"] == "sgs/container"
+        assert dropped[0]["where"] == "band:margin"
+        assert dropped[0]["detail"].startswith("[NO_DESTINATION]")
 
     def test_sgs_tabs_block_markup_unaffected_by_gap_collection(self) -> None:
         """Regression guard: recording gaps must never change block_markup.

@@ -45,17 +45,35 @@ _MEDIA_MIN_RE = re.compile(r"min-width\s*:\s*(\d+)")
 _MEDIA_MAX_RE = re.compile(r"max-width\s*:\s*(\d+)")
 
 
+def _has_width_constraint(media_cond: str) -> bool:
+    """True if the @media condition carries any ``min-width``/``max-width`` token.
+
+    A condition with none (``print``, ``prefers-color-scheme``, ``orientation``,
+    ``prefers-reduced-motion``) is OUTSIDE the width cascade entirely — see
+    ``_media_condition_applies_at``.
+    """
+    return bool(_MEDIA_MIN_RE.search(media_cond) or _MEDIA_MAX_RE.search(media_cond))
+
+
 def _media_condition_applies_at(media_cond: str, width: int) -> bool:
     """True if a ``width``px viewport satisfies the @media condition.
 
     Handles the common single-constraint and ``... and ...`` cases (ALL min/max
     constraints in a part must hold) plus a comma OR-list (any part applies).
-    A part with no width constraint (e.g. a bare ``@media screen``) is treated as
-    always-applies so its declarations are not spuriously dropped.
+    A condition with NO width constraint at all (``print``, ``prefers-color-scheme``,
+    ``orientation``, ``prefers-reduced-motion``) does not participate in the width
+    cascade in either direction — it returns False at every width. Its declarations
+    are not dropped: they are captured as an F-ii residual and passed through
+    verbatim (see the residual block in ``collect_css_decls_for_element`` and the
+    no-width arm of ``bound_residual_media_conds``). Folding them into the screen
+    base instead — which is what an unguarded ``all([]) is True`` did — applied a
+    print/dark-mode/orientation value to all three screen tiers.
 
     Spec 31 §3 F-fork / FR-31-5.2 — the cascade evaluates each device-tier sample
     width against every matched @media rule to derive the effective per-tier value.
     """
+    if not _has_width_constraint(media_cond):
+        return False
     for part in media_cond.split(","):
         if all(width >= int(m.group(1)) for m in _MEDIA_MIN_RE.finditer(part)) and all(
             width <= int(m.group(1)) for m in _MEDIA_MAX_RE.finditer(part)
@@ -814,7 +832,9 @@ def collect_css_decls_for_element(
         thresholds = [
             int(v) for v in re.findall(r"(?:min|max)-width\s*:\s*(\d+)", media_cond)
         ]
-        if any(t not in device_thresholds for t in thresholds):
+        if not _has_width_constraint(media_cond) or any(
+            t not in device_thresholds for t in thresholds
+        ):
             # D303: confine the residual to the device tier its threshold falls
             # inside, so it never bleeds into an adjacent tier that legitimately
             # differs (the tier attrs + whole-tier folding above already hold any

@@ -115,6 +115,8 @@ _REAL_DRAFT_SLUG_PREFIX = _seed_mod._REAL_DRAFT_SLUG_PREFIX
 collect_real_draft_sections = _seed_mod.collect_real_draft_sections
 _seed_extract_fixture_parts = _seed_mod.extract_fixture_parts
 _seed_run_converter_full = _seed_mod.run_converter_full
+_seed_real_draft_client_slug = _seed_mod.real_draft_client_slug
+_seed_repo_root = _seed_mod._REPO_ROOT
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -185,10 +187,13 @@ def _reproduce_golden_result(golden_id: str) -> dict:
     did, returning the FULL convert_section result dict."""
     if golden_id.startswith(_REAL_DRAFT_SLUG_PREFIX):
         tag, css_text = _real_draft_sections_by_id()[golden_id]
-        return _seed_run_converter_full(tag, css_text)
+        return _seed_run_converter_full(
+            tag, css_text,
+            client_slug=_seed_real_draft_client_slug(), repo_root=_seed_repo_root,
+        )
     html_path = _FIXTURE_DIR / f"{golden_id}.html"
     css_text, section = _seed_extract_fixture_parts(html_path.read_text(encoding="utf-8"))
-    return _seed_run_converter_full(section, css_text)
+    return _seed_run_converter_full(section, css_text, client_slug="", repo_root=_seed_repo_root)
 
 
 # ---------------------------------------------------------------------------

@@ -104,12 +104,45 @@ def extract_fixture_parts(html_content: str) -> tuple[str, Tag]:
     return css_text, section
 
 
-def run_converter_full(section_tag: Tag, css_text: str) -> dict:
+def run_converter_full(
+    section_tag: Tag,
+    css_text: str,
+    client_slug: str = "",
+    repo_root: Path | None = None,
+) -> dict:
     """Run the converter on a single section via the real production entry
     point and return the FULL result dict (not just the markup string), so
     goldens also pin ``status``/``selector``/``block_name``  -  load-bearing
-    for the header/footer chrome-skip goldens, which have empty markup."""
-    return convert_section(html=str(section_tag), css=css_text, media_map={})
+    for the header/footer chrome-skip goldens, which have empty markup.
+
+    ``client_slug``/``repo_root`` are threaded straight through to
+    ``convert_section``. They are NOT optional decoration: ``converter.entry``
+    calls ``configure_colour_resolution_from_run(css, client_slug, repo_root)``,
+    which loads ``<repo_root>/sites/<client_slug>/theme-snapshot.json``. With an
+    empty slug that path resolves to nothing and the palette comes back ``{}``
+    best-effort  -  so hex-to-token colour snapping is inert and EVERY colour is
+    silently dropped from the emit. Seeding colour-blind produced goldens that
+    could never carry a colour. Real-draft sections must pass the real client;
+    synthetic fixtures (which have no client) correctly pass ``""``.
+    """
+    return convert_section(
+        html=str(section_tag),
+        css=css_text,
+        media_map={},
+        client_slug=client_slug,
+        repo_root=repo_root,
+    )
+
+
+def real_draft_client_slug() -> str:
+    """The client slug owning the real-draft sections, derived from the existing
+    ``MAMAS_DRAFT_PATH`` (``sites/<client-slug>/mockups/...``).
+
+    Derived, never a second hardcoded client literal  -  the draft path and the
+    ``_REAL_DRAFT_SLUG_PREFIX`` golden-id prefix are the only client-bearing
+    constants in this module, and this reuses one of them.
+    """
+    return MAMAS_DRAFT_PATH.relative_to(_REPO_ROOT).parts[1]
 
 
 def iter_conformance_fixtures() -> Iterator[tuple[str, Path]]:
@@ -224,7 +257,8 @@ def seed_all(write: bool = True) -> dict[str, dict]:
 
     for golden_id, html_path in iter_conformance_fixtures():
         css_text, section = extract_fixture_parts(html_path.read_text(encoding="utf-8"))
-        result = run_converter_full(section, css_text)
+        # Synthetic fixture — no owning client, so no palette to snap against.
+        result = run_converter_full(section, css_text, client_slug="", repo_root=_REPO_ROOT)
         record = build_golden_record(golden_id, f"fixture:{html_path.name}", result)
         records[golden_id] = record
         if write:
@@ -233,7 +267,10 @@ def seed_all(write: bool = True) -> dict[str, dict]:
             )
 
     for golden_id, section_tag, css_text in collect_real_draft_sections():
-        result = run_converter_full(section_tag, css_text)
+        result = run_converter_full(
+            section_tag, css_text,
+            client_slug=real_draft_client_slug(), repo_root=_REPO_ROOT,
+        )
         record = build_golden_record(golden_id, real_draft_source_tag(golden_id), result)
         records[golden_id] = record
         if write:

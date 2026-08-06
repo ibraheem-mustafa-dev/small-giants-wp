@@ -561,11 +561,20 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         if emit_shape is None:
             # A CONTENT-role attr with UNSEEDED emit_shape is a tracked GAP,
             # never a silent skip (Rule 4 — the emit_shape_for docstring's
-            # promise, made real here per the D277 QC). Unreachable today:
-            # every sgs/* content-role row is seeded (139/139); the only NULL
-            # rows are core/* blocks, unseeded BY DESIGN (no block source in
-            # this repo) and unreachable via slots.standalone_block. This
-            # guard fires only if a future block ships with an unseeded row.
+            # promise, made real here per the D277 QC).
+            #
+            # This guard IS REACHABLE. An earlier comment here claimed "every
+            # sgs/* content-role row is seeded (139/139)" and that only core/*
+            # rows were NULL — both false. Measured against the live DB: of the
+            # 202 sgs/* rows in the FR-31-2.2 content-bearing role allowlist
+            # ('text-content'/'identity'/'image-object'/'content'/'rating' — the
+            # same allowlist content_attr_for_element admits), 12 have a NULL
+            # emit_shape: `label` (text-content) and `placeholder` (content) on
+            # each of sgs/form-field-address|email|number|phone|text|textarea.
+            # Those rows resolve through this lookup, so a draft carrying a
+            # matching element on one of those blocks lands here and emits the
+            # gap below. Seeding them is a converter-BEHAVIOUR change on live
+            # form blocks — deliberately out of scope for this correction.
             results.append(ContentGap(
                 where=f"{rec.slug}.{attr_name}",
                 detail=(f"content-role attr matched element '{element}' but "
