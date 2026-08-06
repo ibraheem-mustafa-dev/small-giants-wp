@@ -108,12 +108,25 @@ def _block_dir(block_slug: str) -> Path:
 # Mechanism A -- native support.
 # ---------------------------------------------------------------------------
 
-# Maps the attribute NAME (the only two names WordPress core wires this way)
-# to the actual `supports` key that governs it. `className` deliberately does
-# NOT map to a `className` key -- see module docstring CRITICAL note.
+# Maps the attribute NAME WordPress core wires from a `supports` key to
+# (supports_key, role). `className` deliberately does NOT map to a `className`
+# key -- see module docstring CRITICAL note.
+#
+# THE ROLE IS PER-KEY, NOT A CONSTANT (2026-08-06). It was hardcoded `technical`
+# for every native support, which is right for `anchor`/`className` -- plumbing
+# WordPress injects, carrying nothing a draft could be cloned from -- and WRONG
+# for `align`. `align` is core's ALIGNMENT attribute (`supports.align`), and core
+# paints it as `alignleft`/`aligncenter`/`alignright`/`alignwide` on the wrapper:
+# it carries real layout information, so a draft with a centred logo SHOULD clone
+# to `align: center`. Filing it `technical` (classification styling-behaviour,
+# excluded from the content walk) would tell the pipeline to discard that.
+# `property_suffixes` independently corroborates the family: every `margin-*`
+# row it holds carries role `layout`, and align's only SGS-side effect is a
+# margin rule (responsive-logo/render.php:201).
 _NATIVE_SUPPORT_KEY = {
-    "anchor": "anchor",
-    "className": "customClassName",
+    "anchor": ("anchor", "technical"),
+    "className": ("customClassName", "technical"),
+    "align": ("align", "layout"),
 }
 
 
@@ -122,9 +135,10 @@ def native_support_evidence(block_slug: str, attr: str) -> dict | None:
     matching supports key TRUE. None if the block.json is missing, the key is
     absent, or the key is explicitly false.
     """
-    support_key = _NATIVE_SUPPORT_KEY.get(attr)
-    if support_key is None:
+    entry = _NATIVE_SUPPORT_KEY.get(attr)
+    if entry is None:
         return None
+    support_key = entry[0]
     path = _block_dir(block_slug) / "block.json"
     if not path.is_file():
         return None
@@ -135,7 +149,18 @@ def native_support_evidence(block_slug: str, attr: str) -> dict | None:
     # element inside a variants array (never followed by `:`).
     m = re.search(rf'"{re.escape(support_key)}"\s*:\s*(true|false)', text)
     if not m:
-        return None
+        # ARRAY FORM (2026-08-06). `supports.align` is declared as a LIST of
+        # permitted alignments (`["left","center","right","wide"]`), never a
+        # boolean, so the boolean pattern above cannot match it -- adding
+        # `align` to the map without this would have been SILENTLY INERT, the
+        # same shape as the `supports.className` trap in the module docstring.
+        # A non-empty array is the "declared true" equivalent; an empty array
+        # means the block permits no alignment at all and is treated as false.
+        m_arr = re.search(rf'"{re.escape(support_key)}"\s*:\s*\[([^\]]*)\]', text)
+        if not m_arr or not m_arr.group(1).strip():
+            return None
+        line = text[: m_arr.start()].count("\n") + 1
+        return {"evidence_file": str(path), "evidence_line": line}
     if m.group(1) != "true":
         return None
     line_no = text.count("\n", 0, m.start()) + 1
@@ -205,7 +230,7 @@ def detect(candidates: list[tuple[str, str]]) -> list[dict]:
                 out.append({
                     "block_slug": slug,
                     "attr_name": attr,
-                    "role": "technical",
+                    "role": _NATIVE_SUPPORT_KEY[attr][1],
                     "mechanism": "native-support",
                     **evidence,
                 })
@@ -244,6 +269,35 @@ def self_test() -> int:
         failures.append(
             "sgs/button.className did not resolve -- likely keying on the wrong "
             "supports name (className instead of customClassName)."
+        )
+
+    # 3b. Positive, ARRAY FORM -- sgs/responsive-logo.align: supports.align is
+    #     ["left","center","right","wide"], a LIST not a boolean. The boolean
+    #     pattern cannot match it, so without the array branch this detector
+    #     would be SILENTLY INERT for align -- the exact failure shape the
+    #     module docstring records for supports.className. Also asserts the
+    #     per-key role: align is `layout` (core paints alignleft/aligncenter/
+    #     alignright/alignwide and the block adds a margin rule), NOT the
+    #     `technical` that anchor/className get.
+    r = native_support_evidence("sgs/responsive-logo", "align")
+    if not r:
+        failures.append(
+            "sgs/responsive-logo.align did not resolve -- the ARRAY form of "
+            "supports.align is not being matched, so the align rule is inert."
+        )
+    got = detect([("sgs/responsive-logo", "align")])
+    if not got or got[0].get("role") != "layout":
+        failures.append(
+            f"sgs/responsive-logo.align role should be 'layout', got {got!r}. "
+            "align carries real layout the converter must be able to target; "
+            "'technical' would exclude it from the walk."
+        )
+    # And the per-key map must NOT have flipped anchor/className to layout.
+    got_anchor = detect([("sgs/button", "anchor")])
+    if not got_anchor or got_anchor[0].get("role") != "technical":
+        failures.append(
+            f"sgs/button.anchor role should still be 'technical', got {got_anchor!r} "
+            "-- the per-key role map leaked layout onto WP plumbing."
         )
 
     # 4. NEGATIVE CONTROL -- sgs/nav-drawer.anchor: supports.anchor === FALSE
