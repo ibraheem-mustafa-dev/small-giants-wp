@@ -1,5 +1,48 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D498 — `sgs/site-footer` emits `<footer>`: the contentinfo landmark was missing, not delegated [INCIDENT]
+
+**2026-08-06.** Bean spotted it — "why not switch footer to a footer class?" — and the live DOM
+agreed with him.
+
+**What was wrong.** `site-footer/render.php` rendered `<div>`, justified by a docblock claiming the
+FSE footer template part provides `<footer role="contentinfo">`. Measured on the canary homepage:
+the page carried FOUR `<footer>` elements and **zero site-level contentinfo landmark**. All four were
+sub-elements — `sgs-quote__attribution` and `sgs-testimonial__footer` x3 — sitting inside `<main>`,
+so none qualifies. Screen-reader landmark navigation had no route to the footer at all.
+
+**Cause — the exact mirror of D375's header bug.** `Sgs_Footer_Rules::filter_template_part()`
+(`class-sgs-footer-rules.php:263`) short-circuits `core/template-part` on `pre_render_block` whenever
+the rules engine serves a footer. Core therefore never emits its own `<footer>` wrapper, even though
+the theme templates reference the part as `{"slug":"footer","tagName":"footer"}`. D375 found and fixed
+precisely this for the header; the footer half was never revisited, and its docblock kept asserting a
+delegation that had stopped happening.
+
+**Two false claims retired from that docblock.** (a) "'footer' is not in the wrapper's tag allowlist"
+— it has been since D344 (2026-07-16), `class-sgs-container-wrapper.php:385-397`. (b) "the landmark is
+provided by the FSE footer template part" — measured false above. Both had sat there long enough to
+look authoritative. A docblock justifying a behaviour is a dated opinion, not evidence.
+
+**Safety established BEFORE the change, not after.** The block renders outside `<main>` (starts byte
+123217; `</main>` closes at 123208) with zero unclosed `<footer>` ancestors, so exactly one contentinfo
+results. Verified after deploying: one contentinfo-qualifying `<footer>`, the other four unchanged and
+correctly non-qualifying.
+
+**RESIDUAL, mirroring the header's parked `P-HEADER-DOUBLE-SLOT-NEST`:** if the rules engine ever falls
+through (`has_served()` hands a second slot back to core), core WOULD wrap a second `sgs/site-footer`
+in its own `<footer>` = nested landmarks. Operators can select `div` via the new `tagName` attr if that
+case ever ships.
+
+**Companion change (same commit `c9857923`):** six composites — hero, cta-section, trust-bar,
+physics-canvas, site-header, site-footer — declared a `tagName` attribute mirrored from `sgs/container`
+that NOTHING read. A client could pick a tag and nothing happened. All six now read it as
+`container/render.php:36` does, with per-block-correct enums so the capability cannot break semantics:
+site-header is `header|div` (not the container's full 9-tag list), site-footer `footer|div|section`.
+trust-bar and physics-canvas moved `div` → `section` on Bean's ruling that they are section-KIND
+composites; no CSS selects any of these by tag, so that change is visually inert and semantically
+correct.
+
+
 ## D497 — attribute roles are MECHANISM-DERIVED; Task E (`supports.sgs.attrRoles`) is to be made irrelevant, not built [ROUTINE]
 
 **2026-08-05.** Bean's ruling, recorded mid-session. Two linked decisions.
