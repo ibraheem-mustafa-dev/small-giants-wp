@@ -9,13 +9,22 @@ INFORMATIONAL gates (output printed, exit code never propagated).
 BLOCKING (in order):
     1. check-cluster-coverage.py     (this directory)
     2. check-box-family-guard.py     (../check-box-family-guard.py)
+    3. check-reclassified-keys.py    (this directory) — Spec 35 regeneration
+       tripwire for Bean-ruled setting keys. PROMOTED from informational to
+       blocking (2026-08-06): as an informational gate it printed the same
+       eight-line failure into every green build for weeks with its exit code
+       explicitly discarded — a tripwire whose alarm was disconnected. It is
+       blocking now that it diffs against `reclassified-keys-baseline.json`,
+       so it fails only on a DIFFERENCE from the accepted upstream drift
+       (new/increased references, or an obsolete baseline line), not on the
+       known-good state.
 
 INFORMATIONAL (in order — printed but never affects the final exit code):
-    3. check-box-flat.py             (this directory) — Track 2 is mid-flight
+    4. check-box-flat.py             (this directory) — Track 2 is mid-flight
        on several blocks, so this discovery gate is informational for now.
-    4. node ../check-element-manifest-conformance.js — summary lines only
+    5. node ../check-element-manifest-conformance.js — summary lines only
        ("Members checked:" + "States (FR-35-5" lines from stdout).
-    5. report-colour-alpha.py        (this directory) — always exits 0 anyway.
+    6. report-colour-alpha.py        (this directory) — always exits 0 anyway.
 
 Final exit code is non-zero iff any BLOCKING gate failed. A clear PASS/FAIL
 banner is printed at the end naming which blocking gate(s) failed, if any.
@@ -110,19 +119,26 @@ def main() -> int:
     # =====================================================================
     # BLOCKING GATES
     # =====================================================================
-    _print_header("BLOCKING GATE 1/2 — check-cluster-coverage.py")
+    _print_header("BLOCKING GATE 1/3 — check-cluster-coverage.py")
     exit_code, output = _run_python(_CLUSTER_COVERAGE)
     print(output.rstrip())
     print(f"[run-consistency-gates] exit code: {exit_code}")
     if exit_code != 0:
         blocking_failures.append("check-cluster-coverage.py")
 
-    _print_header("BLOCKING GATE 2/2 — check-box-family-guard.py")
+    _print_header("BLOCKING GATE 2/3 — check-box-family-guard.py")
     exit_code, output = _run_python(_BOX_FAMILY_GUARD)
     print(output.rstrip())
     print(f"[run-consistency-gates] exit code: {exit_code}")
     if exit_code != 0:
         blocking_failures.append("check-box-family-guard.py")
+
+    _print_header("BLOCKING GATE 3/3 — check-reclassified-keys.py (Spec 35 regeneration tripwire)")
+    exit_code, output = _run_python(_RECLASSIFIED_KEYS)
+    print(output.rstrip())
+    print(f"[run-consistency-gates] exit code: {exit_code}")
+    if exit_code != 0:
+        blocking_failures.append("check-reclassified-keys.py")
 
     # =====================================================================
     # INFORMATIONAL GATES — printed, never propagate exit code
@@ -137,13 +153,8 @@ def main() -> int:
     print(_extract_manifest_summary(output))
     print(f"[run-consistency-gates] exit code: {exit_code} (informational — not propagated)")
 
-    _print_header("INFORMATIONAL 3/4 — report-colour-alpha.py")
+    _print_header("INFORMATIONAL 3/3 — report-colour-alpha.py")
     exit_code, output = _run_python(_COLOUR_ALPHA)
-    print(output.rstrip())
-    print(f"[run-consistency-gates] exit code: {exit_code} (informational — not propagated)")
-
-    _print_header("INFORMATIONAL 4/4 — check-reclassified-keys.py (regeneration tripwire)")
-    exit_code, output = _run_python(_RECLASSIFIED_KEYS)
     print(output.rstrip())
     print(f"[run-consistency-gates] exit code: {exit_code} (informational — not propagated)")
 

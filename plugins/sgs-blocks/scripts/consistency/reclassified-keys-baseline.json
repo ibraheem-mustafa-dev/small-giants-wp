@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "what": "ACCEPTED upstream drift for check-reclassified-keys.py.",
+    "why": [
+      "The Bean rulings in setting-registry.json's `bean_rulings*` metadata reclassified",
+      "several setting keys away from the automated Phase-1 conclusion. The upstream",
+      "Phase-1 artefacts (setting-types.json, setting-registry-css.json) were never",
+      "rewritten, so they still carry the ORIGINAL classification. That state is",
+      "DELIBERATE and accepted — it is not a live inconsistency, because the golden",
+      "master is not currently regenerated from those artefacts.",
+      "",
+      "This file records exactly that accepted state so the guard can be BLOCKING",
+      "without failing the build on the known-good baseline. The guard fails on any",
+      "DIFFERENCE from this file in either direction:",
+      "  * a NEW or INCREASED (file, key, count) triple  -> a regeneration is adding",
+      "    references and is about to revert a ruling;",
+      "  * an accepted line whose upstream references are GONE or REDUCED -> the drift",
+      "    was fixed upstream and this baseline line is now obsolete and must be",
+      "    deleted, otherwise the baseline rots into permanent blindness."
+    ],
+    "keyed_on": "count, NOT mere presence — adding a 3rd `css:stroke` row to setting-types.json trips the gate even though the (file, key) pair is already accepted.",
+    "seeded": "2026-08-06, from a live run of check-reclassified-keys.py against this tree.",
+    "do_not": "Do NOT add a line here to silence a genuine regeneration. Fix the upstream artefact, or carry the ruling forward in whatever regenerates the golden master."
+  },
+  "accepted": [
+    {
+      "file": "setting-registry-css.json",
+      "key": "css:background-image",
+      "count": 1,
+      "reason": "Phase-1 row predates the ruling that css:background-image is a background OVERLAY (GradientPicker + alpha); the real background image is a separate media picker. Never rewritten upstream."
+    },
+    {
+      "file": "setting-registry-css.json",
+      "key": "css:background-position",
+      "count": 1,
+      "reason": "Phase-1 row predates the ruling that css:background-position is not exposed today (verify-if-dead, then FocalPointPicker or delete). Never rewritten upstream."
+    },
+    {
+      "file": "setting-registry-css.json",
+      "key": "css:font-family",
+      "count": 1,
+      "reason": "Phase-1 row predates the ruling that css:font-family is a curated font picker on DISPLAY blocks only (heading/quote/button). Never rewritten upstream."
+    },
+    {
+      "file": "setting-registry-css.json",
+      "key": "css:stroke",
+      "count": 1,
+      "reason": "Phase-1 row predates the ruling that accentStroke is a decoration toggle, not a colour. Never rewritten upstream."
+    },
+    {
+      "file": "setting-types.json",
+      "key": "css:background-image",
+      "count": 2,
+      "reason": "Two Phase-1 type rows predate the background-overlay ruling. Never rewritten upstream."
+    },
+    {
+      "file": "setting-types.json",
+      "key": "css:background-position",
+      "count": 1,
+      "reason": "Phase-1 type row predates the not-exposed-today ruling. Never rewritten upstream."
+    },
+    {
+      "file": "setting-types.json",
+      "key": "css:font-family",
+      "count": 1,
+      "reason": "Phase-1 type row predates the curated-display-blocks-only ruling. Never rewritten upstream."
+    },
+    {
+      "file": "setting-types.json",
+      "key": "css:stroke",
+      "count": 2,
+      "reason": "Two Phase-1 type rows predate the decoration-toggle ruling. Never rewritten upstream."
+    }
+  ]
+}

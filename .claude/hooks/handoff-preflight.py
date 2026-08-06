@@ -15,7 +15,19 @@ the agent can skip is not a gate". The evidence they were being skipped:
   * the D101 STOP carry-forward count-check — the defence that stops captured failure
     patterns evaporating — was asserted in four docs and machine-checked in zero.
 
-This script is the missing mechanical layer. Seven checks, machine evidence only, no prose.
+This script is the missing mechanical layer. Nine checks, machine evidence only, no prose.
+
+2026-08-06 (doc-size gate): added checks 8 and 9, `check_decisions_size` and
+`check_memory_size`. parking.md credited this script with "mechanically enforcing the size
+discipline" for decisions.md and MEMORY.md. It did not: the CHECKS tuple had seven entries,
+none of which read either file, and `CAP_BYTES` had exactly one consumer
+(`check_ledger_size`). decisions.md had meanwhile grown to ~1.03MB / ~6,750 lines entirely
+unobserved, under a gate that read green — the same shape of failure as the 38,799-byte
+LEDGER above. CAP_BYTES is deliberately NOT reused for decisions.md: 24KB is a LEDGER
+number for a replace-not-append doc, whereas decisions.md is an append-only log that is
+legitimately large. It is gated on GROWTH SINCE A RECORDED BASELINE
+(`.claude/hooks/doc-size-baseline.json`), which is change-keyed, with an absolute fallback
+cap the file already exceeds so a missing baseline fails CLOSED rather than open.
 
 2026-07-31 (a56d… STOP-CATALOGUE recovery): added check 7, `check_citations_resolve` — the
 citation guard that was the actual gap behind the phantom-STOP incident. `check_no_dangling_links`
@@ -62,6 +74,27 @@ _CLAUDE = _REPO / ".claude"
 # Mirrors ledger-rotate.py's _THRESHOLD_BYTES deliberately: the Stop hook snapshots at
 # this size, this gate refuses to close a handoff above it.
 CAP_BYTES = 24576
+
+# --- decisions.md / MEMORY.md size discipline (added 2026-08-06) -------------------
+# parking.md credited this script with "mechanically enforcing the size discipline".
+# It was not: CAP_BYTES had exactly ONE consumer (check_ledger_size), and no check read
+# decisions.md or MEMORY.md at all. decisions.md had grown to ~1.03MB / ~6,750 lines
+# entirely unobserved under a gate that read green.
+#
+# CAP_BYTES is deliberately NOT reused for decisions.md. 24KB is a LEDGER number — the
+# LEDGER is a replace-not-append living-status doc. decisions.md is an APPEND-ONLY
+# architectural log that is legitimately large and is already an order of magnitude past
+# any sane absolute number, so an absolute cap alone would just block /handoff forever.
+#
+# So decisions.md is gated on GROWTH SINCE THE LAST RECORDED SIZE, which is change-keyed:
+# a normal handoff appending a decision or two passes; an unswept accumulation trips it.
+# The recorded size lives in DOC_SIZE_BASELINE. An ABSENT or unreadable baseline falls
+# back to DECISIONS_ABS_CAP_BYTES — a cap the file ALREADY EXCEEDS — so the gate can
+# never fail open on missing state.
+DECISIONS_GROWTH_BUDGET = 65536      # 64KB of growth between sweeps/re-baselines
+DECISIONS_ABS_CAP_BYTES = 262144     # 256KB fallback; decisions.md is ~4x this today
+MEMORY_CAP_BYTES = 24576             # MEMORY.md's own documented cap (.claude/CLAUDE.md)
+DOC_SIZE_BASELINE = _CLAUDE / "hooks" / "doc-size-baseline.json"
 
 # parking.md's four permitted Status values (Bean-locked 2026-06-02, D150).
 LEGAL_STATUS = ("OPEN", "PARTIAL", "BLOCKED", "DEFERRED")
@@ -552,6 +585,125 @@ def check_citations_resolve(
     )
 
 
+def _load_size_baseline() -> dict:
+    """Recorded accepted sizes. Missing/corrupt returns {} — callers must fail CLOSED."""
+    try:
+        data = json.loads(DOC_SIZE_BASELINE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return data.get("sizes", {}) if isinstance(data, dict) else {}
+
+
+def check_decisions_size(size: int | None = None, baseline: int | None = None) -> Result:
+    """8 — decisions.md may not grow past its recorded size by more than the budget.
+
+    Growth-keyed, not absolute: decisions.md is an append-only architectural log that is
+    legitimately large. An absolute cap would block every handoff until someone swept,
+    which is why the FALLBACK cap only applies when no baseline has been recorded — the
+    gate then fails closed rather than open.
+    """
+    path = _CLAUDE / "decisions.md"
+    if size is None:
+        if not path.exists():
+            return Result("decisions-size", True, "no decisions.md")
+        size = path.stat().st_size
+    if baseline is None:
+        baseline = _load_size_baseline().get("decisions.md")
+
+    if not isinstance(baseline, int) or baseline < 0:
+        # No recorded size: fall back to an absolute cap the file already breaches.
+        if size <= DECISIONS_ABS_CAP_BYTES:
+            return Result("decisions-size", True,
+                          f"{size:,} bytes, no recorded baseline, under the "
+                          f"{DECISIONS_ABS_CAP_BYTES:,} fallback cap")
+        return Result(
+            "decisions-size", False,
+            f"decisions.md is {size:,} bytes and there is NO recorded baseline in "
+            f"{DOC_SIZE_BASELINE.name}; the fallback absolute cap is "
+            f"{DECISIONS_ABS_CAP_BYTES:,} (over by {size - DECISIONS_ABS_CAP_BYTES:,})",
+            "Sweep retired/superseded/non-load-bearing entries to "
+            ".claude/memory/decisions-archive.md, then record the new accepted size in "
+            f"{DOC_SIZE_BASELINE.name}. An absent baseline fails CLOSED on purpose.",
+        )
+
+    ceiling = baseline + DECISIONS_GROWTH_BUDGET
+    if size <= ceiling:
+        note = ""
+        if size > DECISIONS_ABS_CAP_BYTES:
+            note = (f"; NOTE a sweep is owed — this is {size / DECISIONS_ABS_CAP_BYTES:.1f}x "
+                    f"the {DECISIONS_ABS_CAP_BYTES:,}-byte fallback cap")
+        return Result("decisions-size", True,
+                      f"{size:,} bytes, baseline {baseline:,}, grown {size - baseline:,} "
+                      f"of {DECISIONS_GROWTH_BUDGET:,} budget{note}")
+    return Result(
+        "decisions-size", False,
+        f"decisions.md is {size:,} bytes, {size - baseline:,} more than the recorded "
+        f"baseline {baseline:,} — over the {DECISIONS_GROWTH_BUDGET:,}-byte growth budget "
+        f"by {size - ceiling:,}",
+        "Sweep retired/superseded/non-load-bearing entries to "
+        ".claude/memory/decisions-archive.md, then record the post-sweep size in "
+        f"{DOC_SIZE_BASELINE.name}. Do NOT just raise the baseline to silence this — the "
+        "baseline records a size that was ACCEPTED after a sweep, not merely the current one.",
+    )
+
+
+def _find_memory_files() -> list[Path]:
+    """Locate MEMORY.md: repo-local first, then the Claude Code per-project memory dir.
+
+    The CC memory dir is keyed by a slug of the MAIN repo path, so a worktree checkout
+    resolves to the same slug — matched by suffix on the repo directory name rather than
+    by reimplementing CC's slugifier, which would drift silently if that format changed.
+    """
+    found: list[Path] = []
+    local = _CLAUDE / "MEMORY.md"
+    if local.exists():
+        found.append(local)
+
+    repo = _REPO
+    parts = repo.as_posix().split("/.claude/worktrees/")
+    main_repo_name = Path(parts[0]).name if parts else repo.name
+    projects = Path.home() / ".claude" / "projects"
+    if projects.is_dir():
+        for slug_dir in sorted(projects.iterdir()):
+            if not slug_dir.is_dir() or not slug_dir.name.endswith(main_repo_name):
+                continue
+            candidate = slug_dir / "memory" / "MEMORY.md"
+            if candidate.exists():
+                found.append(candidate)
+    return found
+
+
+def check_memory_size(sizes: dict[str, int] | None = None) -> Result:
+    """9 — MEMORY.md must stay under its own documented cap.
+
+    `.claude/CLAUDE.md` states `MEMORY.md <= 24,576 bytes -> MEMORY-archive.md`. Nothing
+    enforced it. An oversized MEMORY.md silently drops autoload rules — the exact failure
+    the doc-balloon rule exists to prevent.
+    """
+    if sizes is None:
+        sizes = {p.as_posix(): p.stat().st_size for p in _find_memory_files()}
+    if not sizes:
+        return Result("memory-size", True,
+                      "no MEMORY.md found (repo .claude/ or ~/.claude/projects/*/memory/)")
+    over = {name: size for name, size in sizes.items() if size > MEMORY_CAP_BYTES}
+    if not over:
+        biggest = max(sizes.values())
+        return Result("memory-size", True,
+                      f"{len(sizes)} MEMORY.md file(s), largest {biggest:,} / "
+                      f"{MEMORY_CAP_BYTES:,} bytes "
+                      f"({MEMORY_CAP_BYTES - biggest:,} bytes of headroom)")
+    detail = "; ".join(
+        f"{name} is {size:,} (over by {size - MEMORY_CAP_BYTES:,})"
+        for name, size in sorted(over.items())
+    )
+    return Result(
+        "memory-size", False,
+        f"{len(over)} MEMORY.md file(s) over the {MEMORY_CAP_BYTES:,}-byte cap: {detail}",
+        "Sweep the oldest one-line index entries to MEMORY-archive.md, keeping the index "
+        "itself. An oversized MEMORY.md silently drops autoload rules.",
+    )
+
+
 CHECKS = (
     check_ledger_size,
     check_stop_carry_forward,
@@ -560,6 +712,8 @@ CHECKS = (
     check_no_tombstones,
     check_no_dangling_links,
     check_citations_resolve,
+    check_decisions_size,
+    check_memory_size,
 )
 
 
@@ -611,6 +765,22 @@ def self_test() -> int:
              stop_catalogue_text="- **STOP-16** — x\n",
              parking_text="### P-GOOD\n**Status:** OPEN\n", parking_archive_text="",
              source_overrides={"fake.md": "See STOP-16 and P-GOOD.\n"}, allowlist={})),
+        ("decisions-size",
+         # bad: grown past the recorded baseline by more than the budget.
+         lambda: check_decisions_size(
+             size=1_000_000 + DECISIONS_GROWTH_BUDGET + 1, baseline=1_000_000),
+         # good: grown, but within budget — the normal append-a-decision handoff.
+         lambda: check_decisions_size(size=1_000_000 + 1, baseline=1_000_000)),
+        ("decisions-size-no-baseline",
+         # baseline=-1 is the explicit "no recorded baseline" sentinel: passing None
+         # here would silently read the REAL baseline file and test nothing.
+         # bad: no recorded baseline AND over the fallback cap -> must fail CLOSED.
+         lambda: check_decisions_size(size=DECISIONS_ABS_CAP_BYTES + 1, baseline=-1),
+         # good: no recorded baseline but comfortably under the fallback cap.
+         lambda: check_decisions_size(size=1024, baseline=-1)),
+        ("memory-size",
+         lambda: check_memory_size({"synthetic/MEMORY.md": MEMORY_CAP_BYTES + 1}),
+         lambda: check_memory_size({"synthetic/MEMORY.md": MEMORY_CAP_BYTES - 1})),
     ]
     failures = 0
     print("Two-sided control — each check must REJECT a violation AND ACCEPT clean input:\n")
@@ -640,7 +810,7 @@ def main() -> int:
         description="Mechanical doc-hygiene gate for /handoff (LEDGER size, D101 STOP "
                     "carry-forward, parking Status conformance, archive-on-resolve, "
                     "tombstones at live paths, dangling links, STOP-N/P-slug citation "
-                    "resolution).")
+                    "resolution, decisions.md growth, MEMORY.md size).")
     ap.add_argument("--check", action="store_true",
                     help="gate mode: exit 1 if any check fails")
     ap.add_argument("--self-test", action="store_true",

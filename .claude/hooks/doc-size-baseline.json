@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "what": "Last ACCEPTED byte sizes for append-only docs, read by handoff-preflight.py.",
+    "why": [
+      "decisions.md is an append-only architectural log that is legitimately large and is",
+      "already ~4x any sane absolute cap. Gating it on an absolute number would block every",
+      "/handoff until someone swept. It is gated on GROWTH SINCE THIS RECORDED SIZE instead,",
+      "which is change-keyed: a normal handoff appending a decision or two passes; an unswept",
+      "accumulation past the growth budget trips it.",
+      "",
+      "An ABSENT or corrupt file here does NOT mean 'fine' — handoff-preflight.py falls back",
+      "to an absolute cap that decisions.md already exceeds, so it fails CLOSED."
+    ],
+    "how_to_update": [
+      "Sweep retired/superseded/non-load-bearing entries to .claude/memory/decisions-archive.md,",
+      "THEN record the post-sweep size here. Do NOT raise this number merely to silence the",
+      "gate: it records a size that was ACCEPTED after a sweep, not merely the current one."
+    ],
+    "seeded": "2026-08-06, measured from this tree.",
+    "sweep_owed": "decisions.md is ~1.03MB, roughly 4x the 262,144-byte fallback cap. A sweep to .claude/memory/decisions-archive.md is owed; the growth budget only stops it getting WORSE."
+  },
+  "sizes": {
+    "decisions.md": 1053789
+  }
+}
