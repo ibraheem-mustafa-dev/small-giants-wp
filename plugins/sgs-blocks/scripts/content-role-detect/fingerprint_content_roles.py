@@ -47,13 +47,31 @@ consumer -- a decision, not a detector.
 
 EXPECTED POPULATION (declared BEFORE the rule runs -- mandatory, see rules.json doctrine)
 -----------------------------------------------------------------------------------------
-Eligible pool: 262 rows (sgs/%, string-typed, role IS NULL, minus the negative pre-filter).
-Expected ASSIGNABLE: 45-60.  Expected REPORT-ONLY (D2-alone + a11y): 20-40.
+ORIGINAL DECLARATION (2026-08-04, pool = 262 rows): expected ASSIGNABLE 45-60,
+expected REPORT-ONLY (D2-alone + a11y) 20-40.
 
-A result at or near ZERO is a CLAIM REQUIRING EVIDENCE, not a pass. Three rules built on
-this project on 2026-08-04 were blind on first build (0 vs a true 65; 12 vs 15; 43 vs 23)
-and every one was caught by a human challenging a suspiciously low number, never by a gate.
-If this script reports under 40 assignable, SUSPECT THE SCRIPT FIRST.
+RE-DECLARED 2026-08-06, pool = 69 rows. Expected ASSIGNABLE: 0.
+Expected REPORT-ONLY: ~13.  Expected D4 WRAPPER-STYLING: ~33.  D4 NEEDS REVIEW: ~22.
+
+Why the original range no longer applies, measured not assumed: the eligible pool is
+`sgs/%` + string-typed + `role IS NULL`, and that population has been WORKED DOWN by the
+Step 0 classification programme. A live count on 2026-08-06 returned **1609 string-typed
+`sgs/%` rows WITH a role against 69 NULL**. The detectors already assigned everything
+they can assign; ASSIGNABLE 0 is the CORRECT steady state, not a blind rule.
+
+The 69 survivors are not an unexplored space — `reached by any detector` is 69 and
+`unreached` is 0. Every one lands in a bucket that DELIBERATELY does not assign:
+wrapper-styling owes an `attrMap` declaration rather than a role; needs-review is an
+explicit human call; report-only is D2-alone plus the a11y rows this docstring already
+explains are deliberately left NULL; the content gap has no fitting role. Closing those
+needs decisions and new roles with real consumers — not a better detector.
+
+The zero-is-a-claim doctrine below still stands and is why this range was re-derived from
+a live count rather than edited to match the output. Three rules built on this project on
+2026-08-04 were blind on first build (0 vs a true 65; 12 vs 15; 43 vs 23) and every one
+was caught by a human challenging a suspiciously low number, never by a gate. If the
+POOL grows again (new blocks, new string attrs) and ASSIGNABLE stays 0, that is a
+different claim and SUSPECT THE SCRIPT FIRST.
 
 BLIND SPOTS (enumerated, per the Task F "ENFORCED" bar point 7)
 ---------------------------------------------------------------
@@ -772,8 +790,8 @@ def main() -> int:
     print(f"eligible pool            {result['eligible_pool']}")
     print(f"reached by any detector  {result['reached_by_any_detector']}")
     print(f"unreached (open space)   {result['unreached']}")
-    print(f"\nASSIGNABLE               {len(a)}   (expected 45-60)")
-    print(f"REPORT-ONLY              {len(r)}   (expected 20-40)")
+    print(f"\nASSIGNABLE               {len(a)}   (expected 0 at pool=69; see EXPECTED POPULATION)")
+    print(f"REPORT-ONLY              {len(r)}   (expected ~13 at pool=69)")
     print(f"VETOED by D1             {len(result['vetoed'])}   (D2/D3 claimed, D1 rejected)")
     print(f"CONTENT GAPS             {len(result['content_gaps'])}   (content, but no whole-value role fits -> Task E)")
     print(f"D4 REFERENCED-NOT-OUTPUT {len(result['technical_refs'])}   (read by code, never escaped, never CSS -> technical)")
@@ -782,13 +800,31 @@ def main() -> int:
     if result["disagreements"]:
         print(f"DISAGREEMENTS            {len(result['disagreements'])}   (D1 wins each)")
 
-    if len(a) < 40:
+    # RE-ARMED 2026-08-06. The old condition was `len(a) < 40`, calibrated against a
+    # 262-row pool. That pool has been worked down to 69 (1609 string-typed sgs/% rows
+    # now carry a role), so ASSIGNABLE 0 became the CORRECT steady state and the warning
+    # fired on every run — a tripwire that always fires is one nobody reads.
+    #
+    # It is re-pointed, NOT removed. The condition that would genuinely indicate a blind
+    # detector today is the pool GROWING (new blocks / new string attrs arriving unroled)
+    # while ASSIGNABLE stays flat: new rows should be assignable, because the reason the
+    # current 69 are not is that each already reached a detector that deliberately
+    # declines to assign it (`unreached` is 0).
+    POOL_AT_REDECLARATION = 69
+    pool_grew = result["eligible_pool"] > POOL_AT_REDECLARATION
+    if pool_grew and len(a) == 0:
         # ASCII only: the Windows console defaults to cp1252 and a non-ASCII glyph raises
         # UnicodeEncodeError, which would crash the run at the exact moment it is trying to
         # warn you. A warning path that kills the process is worse than no warning.
-        print("\n!! ASSIGNABLE is below the declared expectation. Per this project's own")
-        print("   record, a low number is a CLAIM REQUIRING EVIDENCE - suspect the script")
+        grew_by = result["eligible_pool"] - POOL_AT_REDECLARATION
+        print(f"\n!! The eligible pool GREW by {grew_by} (now {result['eligible_pool']}, was")
+        print(f"   {POOL_AT_REDECLARATION} at re-declaration) yet ASSIGNABLE is still 0. New unroled attrs")
+        print("   should be assignable - the current residue is unassignable only because")
+        print("   each already reached a detector that declines to assign. Per this project's")
+        print("   own record, a low number is a CLAIM REQUIRING EVIDENCE - suspect the script")
         print("   before accepting the result.")
+    if result["unreached"]:
+        print(f"\n!! {result['unreached']} row(s) reached NO detector at all - open space, not residue.")
 
     by_role: dict[str, int] = {}
     for x in a:
