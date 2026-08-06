@@ -278,18 +278,38 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
                     return bem.element
         return None
 
-    def _family_modifier(el) -> str | None:
-        """Return the raw --modifier token from the SAME own-family BEM
-        class `_family_element` matched (e.g. 'mobile' from
-        'sgs-hero__image--mobile'), or None if that class carries no
-        modifier. Uses the shared `parse_sgs_bem` helper — no bespoke regex
-        (per the content-router design)."""
+    def _family_modifiers(el, element: str) -> list[str]:
+        """Every `--modifier` token this element carries on its own-family
+        BEM classes FOR `element`, in document order — e.g. `['mobile']` from
+        ``class="sgs-hero__split-image sgs-hero__split-image--mobile"``.
+
+        Returns ALL of them rather than one, because CHOOSING between them is
+        a routing decision the caller states explicitly (see the device-tier
+        selection below). Scoping to `element` — the value `_family_element`
+        already resolved — is what makes "the same element's modifier" a
+        guarantee rather than a comment.
+
+        ⚠ The previous single-value form returned `bem.modifier` from the
+        FIRST own-family class whether or not it carried one, so the
+        two-class shape above yielded None and the device tier was NEVER
+        detected for it. D474's dissenting reviewer identified this in
+        2026-08-02 ("`_family_element` returns on the first class, which
+        carries no modifier, so a resolution-level fix never reaches it") and
+        it was re-measured 2026-08-06: 2 of 104 own-family elements across the
+        committed drafts hit it, both hero split-images — the art-direction
+        pair whose desktop crop was being dropped.
+
+        Uses the shared `parse_sgs_bem` helper — no bespoke regex (per the
+        content-router design).
+        """
+        out: list[str] = []
         for cls in (el.get("class", []) or []):
             if isinstance(cls, str):
                 bem = db_lookup.parse_sgs_bem(cls)
-                if bem and bem.element and bem.block == own_block_name:
-                    return bem.modifier
-        return None
+                if (bem and bem.element == element
+                        and bem.block == own_block_name and bem.modifier):
+                    out.append(bem.modifier)
+        return out
 
     # Content-router device-tier axis (design settled): the BEM modifier is
     # mapped CASE-INSENSITIVELY to the DB breakpoint-suffix vocabulary
@@ -499,8 +519,20 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         # be swallowed into one attr; its leaf descendants lift individually.
         if any(_family_element(d) for d in el.find_all(True)):
             continue
-        _modifier = _family_modifier(el)
-        _device_tier = _tier_by_lower.get(_modifier.lower()) if _modifier else None
+        # Device tier by a STATED RULE, never by position: among this
+        # element's own-family modifiers, the one that maps to a DB
+        # breakpoint suffix wins. So a non-tier modifier (`--active`,
+        # `--trial`) never BLOCKS tier detection on an element that also
+        # carries `--mobile`, and never invents a tier where there is none.
+        # Taking "whichever modifier came first" would be the positional
+        # tie-break D505 removed from the sibling resolver — same defect
+        # class, so it is not reintroduced here.
+        _device_tier = next(
+            (_tier_by_lower[m.lower()]
+             for m in _family_modifiers(el, element)
+             if m.lower() in _tier_by_lower),
+            None,
+        )
         hit = db_lookup.content_attr_for_element(rec.slug, element, tier=_device_tier)
         if hit is None:
             # `hit is None` has THREE causes inside content_attr_for_element:
