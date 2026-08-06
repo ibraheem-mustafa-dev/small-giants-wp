@@ -39,7 +39,8 @@
 	"attributes": {
 		"asideFormat": {
 			"type": "string",
-			"default": "feature"
+			"default": "feature",
+			"enum": [ "feature", "preview", "cta" ]
 		},
 		"asideBg": {
 			"type": "string",

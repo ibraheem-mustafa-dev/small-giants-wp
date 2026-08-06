@@ -21,6 +21,7 @@
 		"sgs": {
 			"imageControls": true,
 			"arrayContentLift": true,
+			"containerMirror": false,
 			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax" ],
 			"elements": {
 				"tile": {
@@ -148,7 +149,8 @@
 		},
 		"scrollDirection": {
 			"type": "string",
-			"default": "left"
+			"default": "left",
+			"enum": [ "left", "right" ]
 		},
 		"fadeEdges": {
 			"type": "boolean",

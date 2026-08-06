@@ -78,7 +78,8 @@
 		},
 		"colourScheme": {
 			"type": "string",
-			"default": "light"
+			"default": "light",
+			"enum": [ "light", "dark", "auto" ]
 		},
 		"accent": {
 			"type": "string",
