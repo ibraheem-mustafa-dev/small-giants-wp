@@ -1432,3 +1432,24 @@ one-line pointer to this section instead. Grouped by where each item lived in LE
   rather than the ones whose role had been stripped. Fully recoverable only because `role_before` was
   captured first. **Mutate from an EXPLICIT list, never a filter, when the list is short enough to
   enumerate** — and snapshot before the write regardless.
+
+
+### E6. DEFINITION OF ENFORCED — the Task-F bar (moved from LEDGER 2026-08-06, byte cap)
+
+**DEFINITION OF ENFORCED** — a rule counts only when ALL hold (3 of 3 rules built 2026-08-04 were
+blind on first build, each caught only by a human challenging a low number):
+1. Expected population declared BEFORE the rule runs; a near-zero result is a claim requiring
+   evidence, not a pass.
+2. Population cross-checked by an independent method (second script/language/parse strategy).
+3. Fixtures cover the DOMINANT real shape, not the convenient one — ≥1 `mustFlag` from a REAL block.
+4. `mustNotFlag` fixtures for every legitimate exemption, each proving it load-bearing.
+5. `--self-test` plants a violation, confirms it landed on disk, asserts it flags.
+6. Baseline suppression proven to suppress; mode data proven to change the exit code both ways.
+7. Blind spots ENUMERATED in the rule's own header, with a rough unmeasured-instance count.
+8. The right document — name the consumer and prove it by reading the consumer, not the source doc.
+9. Advisory first (exit 0); flip to fail-closed only when backlog is zero AND points 1-8 hold.
+10. Checklist row updated with the real enforcer name — no phantom tools.
+
+**Track acceptance:** every one of the 24 rows meets points 1-10 or carries a recorded exception
+naming a `decisions.md` D-number. "Has a script" is not the bar.
+
