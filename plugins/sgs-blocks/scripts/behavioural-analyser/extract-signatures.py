@@ -1671,6 +1671,30 @@ def _load_element_manifest_reverse(
     if not isinstance(elements, dict):
         return {}
 
+    # Case-insensitive attr lookup, mirroring check-element-manifest-conformance.js's
+    # own `findAttrKeyCaseInsensitive()` exactly (2026-08-06 fix). Without this, a
+    # bare-attrs element (`prefix: ""`) builds `base_candidate = "" + suffix`, e.g.
+    # `"" + "Gap" = "Gap"` — PascalCase, because every cluster-member suffix in
+    # cluster-member-sets.json is PascalCase by convention (tried against
+    # `{prefix}{suffix}`). A real bare attribute is camelCase (`gap`, not `Gap`), so
+    # the old exact `candidate in block_attr_names` check could never match it: the
+    # prefix-convention path was silently disabled for every bare-lowercase attr on
+    # every block with a "" prefix. The real JS linter never had this bug — it always
+    # matched case-insensitively (see its own comment: "findAttrKeyCaseInsensitive()
+    # makes the bare case work: prefix '' + suffix 'FontSize' -> candidate 'FontSize'
+    # -> matches the real attr `fontSize`"). Measured impact (2026-08-06, via this
+    # function itself, pre-fix HEAD vs on-disk fix): 224 -> 280 prefix-source matches
+    # (+56) across the framework's `sgs/*` blocks. All 56 came from the 7 blocks that
+    # declare an explicit `"prefix": ""` element — collapsible-text (`body`),
+    # decorative-image (`image`), google-reviews (`wrapper`), modal (`dialog`),
+    # nav-menu (`bar`), responsive-logo (`wrapper`), trustpilot-reviews (`wrapper`) —
+    # every other block was unaffected (its prefix/suffix already happened to be
+    # already-correctly-cased camelCase, e.g. "title" + "Gap" = "titleGap").
+    attr_lower_map: dict[str, str] = {}
+    if block_attr_names is not None:
+        for real_attr in block_attr_names:
+            attr_lower_map.setdefault(real_attr.lower(), real_attr)
+
     out: dict[str, dict[str, "str | None"]] = {}
     for element_key, element_def in elements.items():
         if not isinstance(element_def, dict):
@@ -1738,11 +1762,15 @@ def _load_element_manifest_reverse(
                 # directly; the tiered forms needed this same suffix-stripping the
                 # real linter already does.
                 for candidate in (base_candidate, base_candidate + "Tablet", base_candidate + "Mobile", base_candidate + "Desktop"):
-                    if block_attr_names is not None and candidate not in block_attr_names:
-                        continue
-                    if candidate in out:
+                    if block_attr_names is None:
+                        real_attr = candidate
+                    else:
+                        real_attr = attr_lower_map.get(candidate.lower())
+                        if real_attr is None:
+                            continue
+                    if real_attr in out:
                         continue  # an explicit attrMap/state entry already claimed it — wins
-                    out[candidate] = {
+                    out[real_attr] = {
                         "css_element": element_key,
                         "css_state": None,
                         "css_layer": element_layer,
