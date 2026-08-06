@@ -31,7 +31,7 @@ worth knowing before selling a plugin built on it · the Snooza job is 72 combin
 
 ## CURRENT FRONTS
 
-> **D-ceiling 499** — re-measure before writing any D reference, never trust this line.
+> **D-ceiling 500** — re-measure before writing any D reference, never trust this line.
 > D491-D496 (2026-08-05) = the Step 0 close: tier inheritance, `styling` + `technical` roles,
 > Detector 4, the never-wired pattern-attr gate, responsive-logo image shape, header/footer box
 > spacing. (2026-08-04 QC-bypass: CLEARED, nothing fabricated —
@@ -168,36 +168,27 @@ not done. The 24 end conditions are only worth having if ENFORCED — measured 2
 251 rows classified by MECHANISM (tier inheritance 151, `styling` backstop 124, `technical` from a D1
 veto 59, Detector 4 42). Detail: `memory/session-2026-08-05-spec35-step0-close.md`.
 
-### STEP 0.1 — pool 69 → **36** (2026-08-06, D499). Bucket 1 CLOSED; 3 buckets left.
+### STEP 0.1 — pool 69 → **34** (2026-08-06, D499+D500). Bucket 1 CLOSED; 20+13+1 left.
 
 **Bean's ruling that reshaped it:** a NULL role means the row is UNREACHED or UNSEEDABLE — never
-"reached, understood, and filed nowhere". The 33 wrapper rows were all three, so they are now SEEDED
-`styling` by mechanism (`assign-canonical` TIER 2.4), not left NULL. Commit `49aca606`.
+"reached, understood, and filed nowhere". Full narrative + all measurements: **D499 + D500**.
+Commits `49aca606` `b6010874`.
 
-⛔ **The old Task-1 guidance here was WRONG and is deleted — do not restore it from an older
-revision.** It said the 33 "owe an attrMap declaration", flagging ~10 exceptions. Measured: only
-`gridItemBorder` (4 rows) was a real attrMap case; the other 29 are the decorative families
-(`overlayGradientFrom`/`To`, `shapeDivider*`, `bgSvgContent`) which `sgs/container` — the block every
-composite mirrors (R-31-9) — **deliberately declines to map** (`decorative` element, `"clusters": []`,
-with a written note). Declaring attrMaps would have REVERSED that decision. Proof the opt-out does
-not discharge a row by itself: container declares it and still showed its own rows in the bucket.
+⛔ **The old Task-1 guidance ("the 33 owe an attrMap declaration") was WRONG and is deleted — do not
+restore it from an older revision.** Only `gridItemBorder` was a real attrMap case; the other 29 are
+decorative families `sgs/container` deliberately declines to map (R-31-9). Declaring them would have
+REVERSED that decision.
 
-**Measured against an expectation declared BEFORE the run:** pool 69 → 36, wrapper bucket → 0,
-`role IS NULL` on `sgs/%` 324 → **291** (exact hit), 31 rows claimed, zero content roles touched.
-`styling` 54→79 and total 2703→2695 came in 6 BELOW expectation — explained per-row by DB diff vs a
-hash-verified backup as six `sgs/multi-button` rows orphaned by the already-committed `96136e77`.
-
-⚠ **The remaining 36 are DECISIONS, not detector work.** `ASSIGNABLE` is 0 and that is the CORRECT
-steady state. Every one IS reached (`unreached` = 0); each lands in a bucket that deliberately
-declines to assign. Apply by MECHANISM, never hand overrides (D497); `technical` may be assigned ONLY
-from a D1 veto, so the 13 report-only rows need D1 to REACH them.
-⚠ **0.1 CANNOT CLOSE BEFORE 0.2** — `whatsapp-cta.phoneNumber` + `.message` both wait on 0.2's
-`link-content` extractor. 34 of 36 independent; those 2 hard-blocked.
+⚠ **The remaining 34 are DECISIONS, not detector work.** `ASSIGNABLE` 0 is the CORRECT steady state;
+every row IS reached (`unreached` = 0) and lands in a bucket that deliberately declines to assign.
+Apply by MECHANISM, never hand overrides (D497).
+⚠ **0.1 CANNOT CLOSE BEFORE 0.2** — `whatsapp-cta.phoneNumber` + `.message` wait on 0.2's
+`link-content` extractor. 32 of 34 independent; those 2 hard-blocked.
 
 | Bucket | Rows | What to do |
 |---|---|---|
 | ~~**Wrapper-rendered styling**~~ | ~~33~~ **0** | ✅ **CLOSED D499.** 31 seeded `styling` via TIER 2.4. `trust-bar`/`physics-canvas` `gridItemBorder` DELETED — dead by two different mechanisms (badge children vs the `.sgs-container--grid > .sgs-container` selector; `container_kind` NULL gating the emit out). `site-header`/`site-footer` now match container |
-| **D4 needs review** | 22 | Technical OR styling painted later via a variable — separating them needs D1-style variable-flow analysis. `anchor`, `sgsCustomCss`, `justifyContent`, `rowSlot`, `customWidthUnit`, `orderBy`, `contentIconName`, `gradientColourStart/End`, + ~17 singletons. ⚠ `container.shapeDividerTop/Bottom` sit here rather than in bucket 1 ONLY because `find_reference()` returns its first hit and the editor JS matched before the wrapper — same family, detector artefact, already decided by D499 |
+| **D4 needs review** | 20 | ⛔ **BLOCKED ON A DECISION, not on effort — read before starting.** Verdicts exist for all 20 (2026-08-05 report): 11 technical, 8 styling, 1 content. **There is no MECHANISM to apply them.** `technical` may come ONLY from a D1 veto (the role's own contract) and D1 vetoes none of them; the 8 styling rows have no `css_property` and a non-wrapper consumer, so TIER 2.4 can't reach them either. Hand-assigning is banned (D497). Two clean sub-mechanisms are available if Bean wants them: (a) `button.anchor`/`className` + `heading.anchor` are WP-CORE native supports, checkable against `block_supports`; (b) `sgsCustomCss` ×2 is raw CSS emitted into a `<style>` element. That is 5 of 20; the other 15 need a widened evidence contract or a new flow-analysis detector |
 | **Report-only (D2-only)** | 13 | Needs corroboration: 8× `fieldName`, `formName`, `excludeKeywords`, `posterAlt`, `drawerRef`, `schemaItemName`, `whatsapp-cta.message` |
 | **Content gap** | 1 | `whatsapp-cta.phoneNumber` — waits on the `link-content` extractor below |
 
@@ -239,24 +230,33 @@ DELIBERATELY declines to classify it. They need decisions.
 file:line. Re-deriving them is waste; APPLYING them is the work. Apply by MECHANISM, never hand
 overrides (D497); `technical` may be assigned ONLY from a D1 veto.
 
-## ~~Task 1 — Wrapper-rendered styling (33 rows)~~ ✅ DONE 2026-08-06 (D499, `49aca606`)
+## ~~Task 1 — Wrapper-rendered styling~~ ✅ DONE 2026-08-06 (D499+D500)
 
-Closed by MECHANISM, not attrMaps — see STEP 0.1 above for why the original instruction was wrong and
-must not be restored. TIER 2.4 in `assign-canonical` + `_self_test_wrapper_styling_tier` (negative
-control proven). Pool 69 → 36.
+Closed by MECHANISM (TIER 2.4 + the D500 render-over-editor tie-break), not attrMaps. Pool 69 → 34.
 
-## Task 2 — D4 needs review (22 rows)
+## Task 2 — D4 needs review (20 rows) — ⛔ NEEDS BEAN'S CALL FIRST, not effort
 
-**What:** technical OR styling-painted-later-via-a-variable — separating them needs D1-style
-variable-flow analysis.
-**Why:** the only bucket that genuinely needs judgement per row.
-**Estimated time:** 30 min
+**What:** the verdicts already exist (11 technical / 8 styling / 1 content, 2026-08-05 report with
+per-row file:line). **What does NOT exist is a mechanism to apply them**, and D497 bans hand
+overrides — so this cannot be ground out inline. 2026-08-06 fixed the 2 rows that DID have one
+(D500) and re-pointed 5 more onto their true render.php consumer; the residue is a design call.
 
-**Orchestration:** inline, Opus (per-row judgement, not mechanical). Rows: `anchor`, `sgsCustomCss`,
-`justifyContent`, `rowSlot`, `customWidthUnit`, `orderBy`, `contentIconName`,
-`gradientColourStart/End`, + ~17 singletons.
-**Depends on:** none. **/qc gate after:** `/qc-inline`.
-**Acceptance:** every row resolved to technical or styling WITH its variable-flow evidence.
+**The blocker, precisely:** `technical` may be assigned ONLY from a D1 veto (that role's own
+documented contract, and the reason it is trustworthy). D1 vetoes none of these 20. The 8 styling
+rows carry no `css_property` and their consumer is their own render.php, not the shared wrapper,
+so TIER 2.4 cannot reach them either.
+
+**Menu for Bean (ranked):**
+1. **Two narrow mechanisms, 5 rows** — (a) an attr that exists because the block declares the
+   WP-CORE native support of the same name is technical by construction (`button.anchor`,
+   `button.className`, `heading.anchor`); checkable against `block_supports`, no new evidence
+   class. (b) an attr whose value is emitted INSIDE a `<style>` element is styling by
+   construction (`nav-drawer`/`nav-menu.sgsCustomCss`). Leaves 15.
+2. **Build the flow-analysis detector** — D1-style, follows a value from read site to paint site.
+   Closes most of the 15 honestly. The largest build on this track.
+3. **Widen the `technical` evidence contract** — cheapest, and the one to be most careful with:
+   the role's trustworthiness comes from being veto-only.
+**Acceptance:** every row resolved WITH its evidence, by mechanism — never a hand override.
 
 ## Task 3 — Report-only (13 rows) — needs a DECISION, not code
 
@@ -322,14 +322,12 @@ the live instance (see side-job below).
 **DEFINITION OF ENFORCED (the Task-F bar, 10 points) + track acceptance: `STOP-CATALOGUE.md` §E6.**
 Moved there 2026-08-06 (byte cap); it is a structural defence, uncapped by design. "Has a script" is not the bar.
 
-### Side-job — standardise `sgs/responsive-logo` — DONE 2026-08-05 (`12931409`)
+### Side-job — `sgs/responsive-logo` — DONE 2026-08-05 (`12931409`)
 
-Renamed to the suffix convention AND given the `sgs/media` image shape, so `image-alt` now
-fires natively. Deployed + live-verified. ⛔ Note the retirement condition recorded here
-previously was WRONG — see STEP 0 above. Swept detail:
-`memory/session-2026-08-05-spec35-step0-close.md`.
+Suffix convention + `sgs/media` image shape, so `image-alt` fires natively. Live-verified.
+Detail: `memory/session-2026-08-05-spec35-step0-close.md`.
 
-### Dependency graph + guardrails for Tasks B/F — see the NEXT SESSION section above.
+### Tasks B/F guardrails — see the NEXT SESSION section above.
 
 ### Known non-blocker
 
