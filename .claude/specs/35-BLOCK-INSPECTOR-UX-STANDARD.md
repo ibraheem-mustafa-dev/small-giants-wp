@@ -411,6 +411,13 @@ against the stale ones. Read the number, do not quote this file's memory of it.
 cd plugins/sgs-blocks/scripts/content-role-detect && python fingerprint_content_roles.py
 ```
 
+**Pool reached 0 on 2026-08-06 (Spec 35 "Track 1b").** Every role in the pool was assigned BY
+MECHANISM — hand-assignment stayed banned throughout (D497). `ASSIGNABLE 0` at `pool=0` is now the
+TERMINAL STEADY STATE for this data layer: a future non-zero reading is a regression (a new
+attribute landed unrouted), not a backlog to clear by hand. The command above still regenerates
+the true figure every time — the "never cache a count" discipline does not relax just because the
+count is currently zero; it is exactly the number a stale cache would get wrong first.
+
 ### N.1 — The mechanism map (what may LEGALLY seed each role)
 
 Hand-assigning a role is BANNED (D497). A role may be written only by the mechanism that owns it:
@@ -424,6 +431,13 @@ Hand-assigning a role is BANNED (D497). A role may be written only by the mechan
 | `link-content` | TIER 3.45 reading `output_signature.link_template` with EXACTLY ONE `{value}` |
 | `layout` and other families | `property_suffixes` provisioning, or D6's per-key native-support map |
 | `image-alt` | `alt_companion_attr`, declared per row — never name-guessed |
+| `icon-*` family | TIER 3.16 (correction pass), guarded `role NOT LIKE 'icon-%'` so it only ever
+  fixes a wrongly-classified icon-source attr — it cannot invent a new icon-* row |
+| `technical` (second route) | The token-sanitiser veto (D1) — a value passed through
+  `sanitize_key()` / `sanitize_html_class()` / `wp_validate_redirect()` before use, which proves it
+  is a machine token regardless of what a naive content read would suggest |
+| `a11y-text` | D-series accessibility-text detection — routed alongside the other content roles,
+  never hand-assigned |
 
 **Detector inventory** (`plugins/sgs-blocks/scripts/content-role-detect/`). D1/D3 are trusted alone;
 D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a role.
@@ -459,6 +473,19 @@ D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a rol
 - **N-8. The visual-diff gate applies to a block.json `enum` declaration.** Adding an `enum` can
   change render: WP coerces an out-of-enum stored value back to the default. Never fabricate
   `first_paint_capture_passed` to clear it.
+- **N-9. A gate can be DATE-keyed instead of CHANGE-keyed.** The visual-diff gate is satisfied by
+  `reports/visual-diff/<block>-<DATE>.md` carrying `verdict: PASS`. A concurrent track's same-day
+  report for a DIFFERENT change to the same block would satisfy it for yours too. Evidence must
+  bind to the diff it is meant to certify, not merely to the block and the date.
+- **N-10. A dead ASSIGNMENT is dead CODE, not automatically a dead CONTROL.** CHECK 5 (N-1) returned
+  18 findings; triage showed 13 were unused local variables whose FEATURE STILL WORKS (the shared
+  helper reads the raw `$attributes` directly, bypassing the dead local), 2 were abandoned attrs,
+  and only 3 were genuine dead controls. The raw count was misread by its own author within
+  minutes of the run. A severity split is owed before any finding is treated as a defect count.
+- **N-11. A conservative gate refusing a provably-safe change is CORRECT, not a blocker to work
+  around.** `check-markup-neutral.py` refuses ANY deletion of a non-comment line, so even a
+  provably-dead variable deletion still needs real visual verification before it lands. Do not
+  weaken a gate to land your own commit faster.
 
 ### N.3 — Enforcement status
 

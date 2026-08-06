@@ -783,6 +783,13 @@ Confirmed unreachable by both converter engines and every shipped pattern — on
 
 ### P-DEAD-NULL-ROLE-CONTROLS — trust-bar shape-divider controls are declared-but-unbuilt dead render paths
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-12
+⚠ **UPDATED 2026-08-06 — the thing this entry warned against HAS HAPPENED.** It says "seeding a
+`role` for them would create a phantom lift with no render effect". Both rows now carry
+`role='color'` (seeded by the suffix mechanism during the Step 0 programme), so the phantom-lift
+risk is live, not hypothetical. The residual decision is unchanged — wire the divider feature or
+delete the two dead controls — but it is now also a role-correctness question, not only a
+control-completeness one. NOTE this is a CHECK 4 shape (declared, consumed nowhere), NOT the
+CHECK 5 dead-ASSIGNMENT class cleared on 2026-08-06, so it was deliberately out of that scope.
 
 `shapeDividerTopColour`/`shapeDividerBottomColour` are declared in `sgs/trust-bar`'s block.json but consumed nowhere in its render.php or style.css — the whole shape-divider feature is declared but never built, confirmed still true on re-check. (The paired mobile-nav attrs this entry originally covered are moot — that block was deleted.) Because the controls are genuinely dead, seeding a `role` for them would create a phantom lift with no render effect. The decision is: wire the divider feature properly, or remove the two dead controls.
 

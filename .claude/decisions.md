@@ -1,5 +1,39 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D504 — Spec 35 pool 23 → 0; four detector defects and two inert mechanisms [ROUTINE]
+
+**2026-08-06.** Spec 35 "Track 1b" drove the unclassified attribute-role pool from 23 to 0. Every
+role came from a mechanism (D1–D8 detectors, D6 native-support map, TIER 3.x rules) — zero hand
+overrides, per D497.
+
+**FOUR detector defects found and fixed:** (1) `fragment` was wrongly suppressing a `NOT-content`
+verdict — fragmentation only suppresses CONTENT categories, never TECHNICAL ones. (2) A
+nested-argument capture bug. (3) Statement-glue mishandled a `?>`/`<?php` boundary. (4) A
+single-hop interprocedural parameter-binding gap. All four are D1-class detector bugs, not data
+gaps — each shipped as its own commit (`0ecdbbd2` etc.) rather than a hand override.
+
+**TWO built-but-inert mechanisms:** the `link-content` chain (role + extractor + reader all
+existed, wired, tested) never fired because nothing assigned the role and `/sgs-update` runs
+`extract-signatures --task-b-only`, which never invoked the writer — closed by seeding
+`link-content` at TIER 3.45. D6's new native-support rules never fed their candidate set because
+D6 was scoped to `d4_review` only — a built mechanism that never receives candidates reads exactly
+like a missing one (Spec 35 PART N, N-2).
+
+**THREE claims measured FALSE this session** (recorded so they are not re-proposed): "A1 reseed
+closes 7 rows" — a reseed alone changed nothing, the rows needed the D1 fragment fix first.
+"`value-fragment` blocks `technical`" — the role contract always accepted it; the real defect was
+elsewhere. "3 image-object siblings share the A6 gap" — 4 of 7 resolve fine; the failing ones sit
+on chrome-skipped blocks, a different cause entirely.
+
+**`sgs/separator` icon cloning was BROKEN** — TIER 3.16 was misrouting the icon-source family
+(icon-* roles are a routing key into `icon_source_attrs`, not decoration); fixed same session
+(`ca5a336c`).
+
+**Process finding:** the visual-diff gate is DATE-keyed, not CHANGE-keyed —
+`reports/visual-diff/<block>-<DATE>.md` with `verdict: PASS` is satisfied by any same-day report
+for the same block, including a concurrent track's unrelated change. Evidence must bind to the
+diff, not the date. Full detail: Spec 35 PART N (rules N-1–N-11, added/extended today).
+
 ## D503 — the generic `styling` backstop is now re-examined; and 3 of 4 proposed role deletions were WRONG [ROUTINE]
 
 **2026-08-06.** Bean asked whether anything already filed `layout`/`styling` fits a more specific
