@@ -36,10 +36,17 @@ const ASPECT_RATIO_OPTIONS = [
 	{ label: __( 'Tall (9:16)', 'sgs-blocks' ), value: '9 / 16' },
 ];
 
+// Must stay in sync with `$allowed_ext` in render.php AND the `enum` on the three
+// *FrameExt attrs in block.json — all three now list the same five values. They did
+// not: render.php accepted `jpeg` while this list offered four, so a sequence prepped
+// as .jpeg rendered correctly but its file type was uneditable in the inspector, and
+// declaring the enum as the editor's four would have made WP silently coerce that
+// stored `jpeg` to the `webp` default on the next save.
 const EXTENSION_OPTIONS = [
 	{ label: 'WebP', value: 'webp' },
 	{ label: 'AVIF', value: 'avif' },
 	{ label: 'JPG', value: 'jpg' },
+	{ label: 'JPEG', value: 'jpeg' },
 	{ label: 'PNG', value: 'png' },
 ];
 

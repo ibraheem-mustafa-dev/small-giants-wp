@@ -13,6 +13,16 @@
 .sgs-nav-menu {
 	align-items: center;
 	display: flex;
+}
+
+/*
+ * `justify-content` is attr-owned (`justifyContent`, default '' = unset), so it
+ * sits in a zero-specificity :where() — this stays the unset default, and the
+ * wrapper's #uid-scoped rule wins the moment an operator sets the attribute.
+ * Without :where() the literal (0,1,0) would tie-break by source order and the
+ * new control would be silently dead (F3, check-hardcoded-render-defaults).
+ */
+:where(.sgs-nav-menu) {
 	justify-content: space-between;
 }
 

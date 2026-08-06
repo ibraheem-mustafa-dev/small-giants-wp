@@ -46,8 +46,20 @@
  * is the current from-scratch rebuild under that role.
  */
 
-/* Icons cluster (cart + burger) stays a tight, non-wrapping group on the right. */
+/*
+ * Icons cluster (cart + burger) stays a tight, non-wrapping group on the right.
+ *
+ * `.sgs-header-icons` is NOT a site-header sub-element — it is an operator
+ * `className` on a nested sgs/container block (see patterns/framework-header-
+ * default.php et al), so that child owns its own alignment attrs. `align-items`
+ * therefore sits in a zero-specificity :where(): at (0,2,0) this rule would tie
+ * with the child's own #uid-scoped attr rule and win or lose on source order,
+ * silently overriding an operator's setting. flex-shrink has no attr and stays.
+ */
 .sgs-site-header .sgs-header-icons {
 	flex-shrink: 0;
+}
+
+:where(.sgs-site-header .sgs-header-icons) {
 	align-items: center;
 }

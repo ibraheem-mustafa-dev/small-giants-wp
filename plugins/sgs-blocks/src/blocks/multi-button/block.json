@@ -168,6 +168,82 @@
 		"maxWidth": {
 			"type": "string",
 			"default": ""
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"columns": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
 		}
 	},
 	"example": {

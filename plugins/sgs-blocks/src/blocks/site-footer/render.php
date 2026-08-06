@@ -8,10 +8,26 @@
  * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9 / D294) —
  * no divergent per-block styling path.
  *
- * Rendered with tag <div>: the footer landmark (<footer role="contentinfo">) is
- * provided by the FSE footer template part that this block lives inside, so the
- * block does not duplicate it (and 'footer' is not in the wrapper's tag
- * allowlist).
+ * Rendered with tag <footer> (2026-08-06): this block IS the site contentinfo
+ * landmark. Exact mirror of the header's D375 fix, for the same cause —
+ * Sgs_Footer_Rules::filter_template_part() short-circuits core/template-part on
+ * pre_render_block whenever the rules engine serves a footer, so core never
+ * emits its own <footer> wrapper despite the theme templates referencing the
+ * part as {"slug":"footer","tagName":"footer"}.
+ *
+ * This corrects TWO false claims that previously sat here. (a) "'footer' is not
+ * in the wrapper's tag allowlist" — it has been since D344 (2026-07-16); see
+ * class-sgs-container-wrapper.php:385-397. (b) "the landmark is provided by the
+ * FSE footer template part" — measured false on the canary homepage 2026-08-06:
+ * the page carried FOUR <footer> elements, every one a sub-element
+ * (sgs-quote__attribution, sgs-testimonial__footer x3), and ZERO site-level
+ * contentinfo landmark. Verified safe to emit: the block renders outside <main>
+ * with no unclosed <footer> ancestor, so exactly one contentinfo results.
+ *
+ * RESIDUAL (mirrors the header's parked P-HEADER-DOUBLE-SLOT-NEST): if the
+ * rules engine ever falls through (has_served() hands a second slot back to
+ * core), core WOULD wrap a second sgs/site-footer in its own <footer> = nested
+ * landmarks. Operators can select 'div' via tagName if that case ever ships.
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes.
@@ -131,7 +147,7 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	'section',
 	array(
-		'tag'           => 'div',
+		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'footer',
 		'extra_classes' => $classes,
 		'extra_attrs'   => array( 'id' => $uid ),
 	)

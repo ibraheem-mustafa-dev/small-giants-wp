@@ -52,7 +52,8 @@
         },
         "desktopFrameExt": {
             "type": "string",
-            "default": "webp"
+            "default": "webp",
+            "enum": ["webp", "avif", "jpg", "jpeg", "png"]
         },
         "tabletFramesUrl": {
             "type": "string",
@@ -68,7 +69,8 @@
         },
         "tabletFrameExt": {
             "type": "string",
-            "default": "webp"
+            "default": "webp",
+            "enum": ["webp", "avif", "jpg", "jpeg", "png"]
         },
         "mobileFramesUrl": {
             "type": "string",
@@ -84,7 +86,8 @@
         },
         "mobileFrameExt": {
             "type": "string",
-            "default": "webp"
+            "default": "webp",
+            "enum": ["webp", "avif", "jpg", "jpeg", "png"]
         },
         "fxStart": {
             "type": "string",

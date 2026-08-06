@@ -400,6 +400,124 @@
     "submenuPadding": {
       "type": "object",
       "default": {}
+    },
+    "alignContent": {
+      "type": "string",
+      "default": "stretch",
+      "enum": [
+        "stretch",
+        "start",
+        "center",
+        "end",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ]
+    },
+    "columns": {
+      "type": "number",
+      "default": 2
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "columnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "contentWidth": {
+      "type": "string",
+      "default": "full"
+    },
+    "flexDirection": {
+      "type": "string",
+      "default": "",
+      "enum": [
+        "",
+        "row",
+        "row-reverse",
+        "column",
+        "column-reverse"
+      ]
+    },
+    "flexWrap": {
+      "type": "string",
+      "default": "",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "wrap-reverse"
+      ]
+    },
+    "gapMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "gapTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "gridAutoRows": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateColumns": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateColumnsMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateColumnsTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateRows": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateRowsMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "gridTemplateRowsTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "justifyContent": {
+      "type": "string",
+      "default": "",
+      "enum": [
+        "",
+        "flex-start",
+        "center",
+        "flex-end",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ]
+    },
+    "justifyItems": {
+      "type": "string",
+      "default": "stretch",
+      "enum": [
+        "stretch",
+        "start",
+        "center",
+        "end"
+      ]
+    },
+    "templateMode": {
+      "type": "string",
+      "default": "free",
+      "enum": [
+        "free",
+        "grid-section",
+        "card-grid"
+      ]
     }
   },
   "render": "file:./render.php",

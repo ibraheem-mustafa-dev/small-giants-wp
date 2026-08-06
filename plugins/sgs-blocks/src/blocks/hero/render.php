@@ -1030,7 +1030,7 @@ foreach ( array(
 }
 
 $hero_helper_opts = array(
-	'tag'           => 'section',
+	'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
 	'extra_classes' => $classes,
 	'extra_styles'  => $styles,
 	'no_overlay'    => true,

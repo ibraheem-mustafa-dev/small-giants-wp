@@ -100,6 +100,359 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"alignContent": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundImage": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "number",
+			"default": 50
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"bgAnimationDuration": {
+			"type": "number",
+			"default": 20
+		},
+		"bgKenBurns": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgParallax": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgSvgAnimation": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"pulse",
+				"float",
+				"wave"
+			]
+		},
+		"bgSvgAnimationSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"columns": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"contentBandBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBandPadding": {
+			"type": "object",
+			"default": {}
+		},
+		"contentBandPaddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"contentBandPaddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"flexDirection": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"row",
+				"row-reverse",
+				"column",
+				"column-reverse"
+			]
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"wrap-reverse"
+			]
+		},
+		"gap": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridAutoRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"gridItemPadding": {
+			"type": "object",
+			"default": {}
+		},
+		"gridItemShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRows": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateRowsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"flex-start",
+				"center",
+				"flex-end",
+				"space-between",
+				"space-around",
+				"space-evenly"
+			]
+		},
+		"justifyItems": {
+			"type": "string",
+			"default": "stretch",
+			"enum": [
+				"stretch",
+				"start",
+				"center",
+				"end"
+			]
+		},
+		"layout": {
+			"type": "string",
+			"default": ""
+		},
+		"minHeight": {
+			"type": "string"
+		},
+		"minHeightMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"minHeightTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"overlayGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"overlayGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientTo": {
+			"type": "string",
+			"default": ""
+		},
+		"shadow": {
+			"type": "string"
+		},
+		"shapeDividerBottom": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerBottomFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerBottomHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"shapeDividerBottomInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerTop": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shapeDividerTopFlip": {
+			"type": "boolean",
+			"default": false
+		},
+		"shapeDividerTopHeight": {
+			"type": "number",
+			"default": 80
+		},
+		"shapeDividerTopInvert": {
+			"type": "boolean",
+			"default": false
+		},
+		"tagName": {
+			"type": "string",
+			"enum": [
+				"footer",
+				"div",
+				"section"
+			],
+			"default": "footer"
+		},
+		"templateMode": {
+			"type": "string",
+			"default": "free",
+			"enum": [
+				"free",
+				"grid-section",
+				"card-grid"
+			]
+		},
+		"verticalAlign": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

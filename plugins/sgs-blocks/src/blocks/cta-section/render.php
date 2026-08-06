@@ -403,7 +403,7 @@ echo SGS_Container_Wrapper::render(
 	$cta_inner_html,
 	'section',
 	array(
-		'tag'           => 'section',
+		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
 		'extra_classes' => $classes,
 		'extra_styles'  => $wrapper_styles,
 		'no_overlay'    => true,

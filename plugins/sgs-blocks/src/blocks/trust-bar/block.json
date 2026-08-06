@@ -773,6 +773,21 @@
 		"maxWidthTablet": {
 			"type": "string",
 			"default": ""
+		},
+		"tagName": {
+			"type": "string",
+			"enum": [
+				"div",
+				"section",
+				"article",
+				"aside",
+				"main",
+				"nav",
+				"header",
+				"footer",
+				"figure"
+			],
+			"default": "section"
 		}
 	},
 	"render": "file:./render.php",

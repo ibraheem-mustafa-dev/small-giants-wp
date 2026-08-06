@@ -327,7 +327,7 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	'section',
 	array(
-		'tag'           => 'header',
+		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'header',
 		'extra_classes' => $classes,
 		'extra_attrs'   => $sh_extra_attrs,
 	)

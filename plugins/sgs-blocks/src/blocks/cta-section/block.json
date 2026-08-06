@@ -672,6 +672,21 @@
 		"maxWidthTablet": {
 			"type": "string",
 			"default": ""
+		},
+		"tagName": {
+			"type": "string",
+			"enum": [
+				"div",
+				"section",
+				"article",
+				"aside",
+				"main",
+				"nav",
+				"header",
+				"footer",
+				"figure"
+			],
+			"default": "section"
 		}
 	},
 	"editorScript": "file:./index.js",

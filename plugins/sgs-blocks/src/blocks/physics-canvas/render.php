@@ -93,7 +93,7 @@ $sgs_ps_edge_resistance = isset( $attributes['physicsEdgeResistance'] ) ? (float
 $sgs_ps_edge_resistance = max( 0, min( 1, $sgs_ps_edge_resistance ) );
 
 $sgs_ps_wrapper_opts = array(
-	'tag'         => 'div',
+	'tag'         => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
 	'wrap_inner'  => true, // Always emit __inner — it IS the throw arena view.js binds to.
 	'extra_attrs' => array(
 		'data-sgs-physics-canvas' => '1',
