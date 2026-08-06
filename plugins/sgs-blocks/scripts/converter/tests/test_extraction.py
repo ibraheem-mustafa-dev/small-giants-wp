@@ -1100,6 +1100,50 @@ def test_walk_leg2_image_with_alt_lifts_both_url_and_alt():
     )
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "OPEN GAP, measured 2026-08-06 — kept as a live failing guard rather than deleted. "
+        "The walk.py alt-capture fix (removing the attr_type=='string' condition around "
+        "alt_value) is NECESSARY but NOT SUFFICIENT: this fixture lifts NOTHING at all "
+        "(lifted={}), so sgs/image-sequence's poster is not reaching the scalar-lift leg in "
+        "the first place — the alt is the second half of a gap whose first half is that the "
+        "image itself is not lifted. strict=True so this FLIPS TO A FAILURE the moment the "
+        "remaining half lands, instead of silently passing unnoticed."
+    ),
+)
+def test_object_typed_image_attr_still_lifts_its_alt_companion():
+    """An OBJECT-typed image-object attr must lift its alt onto the declared companion.
+
+    Regression guard for the 2026-08-06 fix. Alt capture used to sit INSIDE the
+    `attr_type == "string"` branch, so an object-typed image attr cloned its image
+    correctly and silently dropped the alt — alt_value stayed None and the caller's
+    `if alt_value:` companion lift never fired. `image-alt` is a content-bearing role,
+    so that was a real content drop.
+
+    sgs/image-sequence is the live instance: `posterMedia` is object-typed {url,id} and
+    declares `posterAlt` as a SEPARATE string companion. Spec 31's data map is explicit
+    that the companion DECLARATION is the gate ("declared per row, never a hardcoded attr
+    name") — never the attribute's type.
+    """
+    node = _node(
+        '<div class="sgs-image-sequence">'
+        '<img class="sgs-image-sequence__poster" src="/frame-001.jpg" '
+        'alt="Snooza chair rotating through 36 frames">'
+        "</div>"
+    )
+    rec = recognise(node)
+    if rec is None or rec.slug != "sgs/image-sequence":
+        pytest.skip(f"recognition did not resolve sgs/image-sequence (got {rec and rec.slug})")
+    results = extract_content(rec, node)
+    lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
+    assert "posterAlt" in lifted, (
+        "object-typed image attr dropped its alt — the companion lift did not fire. "
+        f"lifted={lifted}"
+    )
+    assert lifted["posterAlt"] == "Snooza chair rotating through 36 frames"
+
+
 def test_walk_leg2_image_without_alt_emits_no_alt_key():
     """An <img> with NO alt attribute must not emit a phantom imageAlt key —
     strict no-op (B1 contract), not an empty-string placeholder."""

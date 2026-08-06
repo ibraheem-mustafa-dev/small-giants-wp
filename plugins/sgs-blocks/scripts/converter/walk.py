@@ -344,14 +344,27 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         if role in ("image-object", "rating"):
             value = extract_field_value(el, role, media_map)
             alt_value = None
-            if role == "image-object" and attr_type == "string" and isinstance(value, dict):
-                # CG-8: capture the alt BEFORE downcasting to the bare URL —
-                # a string image attr wants the URL, but the dict's alt text
-                # must not be silently discarded (a11y). Lifted onto the
-                # block's declared image-alt companion attr by the caller,
-                # DB-driven (R-31-1).
+            if role == "image-object" and isinstance(value, dict):
+                # CG-8: capture the alt BEFORE any downcast — the dict's alt text must
+                # not be silently discarded (a11y). Lifted onto the block's declared
+                # image-alt companion attr by the caller, DB-driven (R-31-1).
+                #
+                # ALT CAPTURE NO LONGER DEPENDS ON attr_type (2026-08-06). It used to sit
+                # inside the `attr_type == "string"` branch, so an OBJECT-typed image attr
+                # cloned its image correctly and silently dropped the alt: alt_value stayed
+                # None and the caller's `if alt_value:` companion lift never fired.
+                # Measured on sgs/image-sequence, whose `posterMedia` is an object {url,id}
+                # with alt declared SEPARATELY as `posterAlt` — the poster cloned, the
+                # accessible name did not. `image-alt` is a content-bearing role, so that
+                # was a real content drop, not a cosmetic gap.
+                #
+                # Safe for the other object shape: sgs/hero.splitMedia keeps its alt INSIDE
+                # the object and declares no companion, so image_alt_companion_for() returns
+                # None and nothing is lifted. The companion declaration is what gates this,
+                # never the attr's type.
                 alt_value = value.get("alt") or None
-                value = value.get("url") or None  # string image attr wants the URL
+                if attr_type == "string":
+                    value = value.get("url") or None  # string image attr wants the URL
             return value, alt_value
         return None, None
 
