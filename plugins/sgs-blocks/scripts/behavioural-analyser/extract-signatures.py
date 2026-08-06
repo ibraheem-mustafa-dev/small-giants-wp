@@ -1706,17 +1706,42 @@ def _load_element_manifest_reverse(
         # a container layer and correctly contributes no css_layer. This value rides on
         # every attr the element claims (attrMap + prefix convention below).
         element_layer = element_def.get("layer")
+
+        # An attr may be mapped to MORE THAN ONE css key on the same element — a
+        # SHORTHAND. `sgs/container.gridItemBorder` declares css:border-width +
+        # css:border-style + css:border-color, three entries pointing at one attr.
+        # This used to `out[attr_name] = {...}` per key, so the last key silently WON
+        # and the other two were lost: a 3-property shorthand recorded as the single
+        # property `border-color`, indistinguishable from a genuine colour attr. That
+        # loss erased the only signal separating the two (2026-08-06, A7). Keys now
+        # ACCUMULATE per attr; `manifest_css_key` carries them comma-joined, the same
+        # multi-value shape the emission path already writes (see `emission_css_property`
+        # in extract_css_property_and_layer). Everything else stays last-wins, exactly
+        # as before — only the key set changed.
+        def _record(attr_name: str, css_key: str, state_name: "str | None") -> None:
+            prop = css_key[4:] if css_key.startswith("css:") else css_key
+            entry = out.get(attr_name)
+            # Accumulate only over PRIOR attrMap entries. A prefix-convention entry
+            # carries no keys and is not a declaration — attrMap replaces it outright,
+            # exactly as it did before this accumulation existed.
+            keys: set[str] = set()
+            if entry and entry.get("source") == "attrMap":
+                keys = set(entry.get("manifest_css_keys") or [])  # type: ignore[arg-type]
+            keys.add(prop)
+            out[attr_name] = {
+                "css_element": element_key,
+                "css_state": state_name,
+                "css_layer": element_layer,
+                "manifest_css_key": ",".join(sorted(keys)),
+                "manifest_css_keys": sorted(keys),
+                "source": "attrMap",
+            }
+
         # Base (resting) attrMap — no state.
         for css_key, attr_name in (element_def.get("attrMap") or {}).items():
             if not isinstance(attr_name, str):
                 continue
-            out[attr_name] = {
-                "css_element": element_key,
-                "css_state": None,
-                "css_layer": element_layer,
-                "manifest_css_key": css_key[4:] if css_key.startswith("css:") else css_key,
-                "source": "attrMap",
-            }
+            _record(attr_name, css_key, None)
         # Per-state attrMaps (e.g. states.selected.attrMap, states.hover.attrMap).
         for state_name, state_def in (element_def.get("states") or {}).items():
             if not isinstance(state_def, dict):
@@ -1724,13 +1749,7 @@ def _load_element_manifest_reverse(
             for css_key, attr_name in (state_def.get("attrMap") or {}).items():
                 if not isinstance(attr_name, str):
                     continue
-                out[attr_name] = {
-                    "css_element": element_key,
-                    "css_state": state_name,
-                    "css_layer": element_layer,
-                    "manifest_css_key": css_key[4:] if css_key.startswith("css:") else css_key,
-                    "source": "attrMap",
-                }
+                _record(attr_name, css_key, state_name)
         # Default prefix convention (see docstring point 2). `!== undefined` test,
         # not truthiness — an explicit empty-string prefix means "bare attrs, no
         # prefix" and is legitimate (matches the real linter's own rule), NOT "skip".
@@ -1839,6 +1858,73 @@ def _load_root_element(block_dir: Path) -> "str | None":
 CSS_PROPERTY_CLASSIFICATIONS_PATH = Path(__file__).resolve().parent / "css-property-classifications.json"
 
 
+def _load_colour_terminal_props(conn: sqlite3.Connection) -> frozenset[str]:
+    """CSS properties whose VALUE *is* a colour, derived by SET-DIFFERENCE over
+    `property_suffixes` — no hardcoded property dict (R-31-1).
+
+    A property qualifies when every suffix that declares it agrees on role='color'.
+    `box-shadow` is the case that makes the set-difference load-bearing rather than
+    decorative: the `Shadow` suffix calls it `color` while `BoxShadow` calls it
+    `visual`, so the table itself does not agree that a box-shadow value is a colour —
+    and it is not (offset/blur/spread precede the colour). Selecting role='color'
+    naively would have swept 8 live `boxShadow*` attrs off their correct `visual` role.
+    The DB's own disagreement is the honest signal, and the query below reads it.
+    """
+    rows = conn.execute(
+        """
+        SELECT css_property
+          FROM property_suffixes
+         WHERE css_property IS NOT NULL
+           AND css_property IN (SELECT css_property FROM property_suffixes WHERE role = 'color')
+         GROUP BY css_property
+        HAVING COUNT(DISTINCT role) = 1
+        """
+    ).fetchall()
+    return frozenset(r[0] for r in rows)
+
+
+def _manifest_role_verdict(
+    css_keys: "list[str] | None",
+    existing_role: "str | None",
+    colour_terminal: frozenset[str],
+) -> "str | None":
+    """A7 (2026-08-06) — the OCCURRENCE-COUNT method, from the /qc-council that
+    rejected the Detector-7 shape I proposed first.
+
+    An attrMap declaration answers "colour or shorthand?" by ARITY, which is a fact
+    about the declaration rather than a guess about the attr's name:
+
+      * exactly ONE css key, and that property is colour-terminal  -> `color`
+      * MORE THAN ONE css key                                      -> a shorthand,
+        so no single-property role fits -> `styling`
+
+    WHY THIS AND NOT DETECTOR 7: D7 cannot reach `sgs/product-card` at all — the block
+    passes its whole `$attributes` bag to `sgs_button_element_style_css`, so
+    `carriers_for()` builds no carrier and the tokeniser has nothing to follow. A JSON
+    key-count needs no PHP tokeniser and cannot be defeated by a call shape.
+
+    POSITIVE-ONLY, AND IT NEVER DEMOTES A MORE SPECIFIC ROLE. The `>1` leg fires only
+    against NULL or `color` — i.e. only where the row would otherwise be mistaken for a
+    single colour. Measured before writing: an unconditional `>1` leg would have
+    overwritten `select-from-enum` on `nav-menu.burgerSize`, `trust-bar.badgeImageSize`
+    and `trust-bar.iconCircleSize` (each an enum size picker mapped to width+height) —
+    three regressions dressed as three fixes. The `color` leg DOES override `styling`
+    and `text-content`, both of which are wrong about a value that is a colour
+    (`text-content` is content-BEARING: it would send a colour into rich-text
+    extraction).
+
+    This is also what finally makes `gridItemBorder`'s `styling` hold BY CONSTRUCTION.
+    Today it survives only because D7 cannot reach the file, so the reasoning recorded
+    in its comment has never actually been exercised; here the shorthand arity is read
+    every run, and this layer is the final writer on role (sgs-update-v2 Stage 1C).
+    """
+    if not css_keys:
+        return None
+    if len(css_keys) == 1:
+        return "color" if css_keys[0] in colour_terminal else None
+    return "styling" if existing_role in (None, "color") else None
+
+
 def extract_css_property_and_layer() -> dict:
     """TASK A entry point. DERIVES `css_property` / `css_layer` / `css_element` /
     `css_state` / `css_tier` for every SGS block with both a render.php and a
@@ -1859,6 +1945,7 @@ def extract_css_property_and_layer() -> dict:
     cur = conn.cursor()
 
     known_css_props = _load_known_css_props(conn)
+    colour_terminal = _load_colour_terminal_props(conn)
 
     cur.execute(
         "SELECT block_slug, attr_name, role FROM block_attributes ORDER BY block_slug, attr_name"
@@ -2038,6 +2125,18 @@ def extract_css_property_and_layer() -> dict:
         css_property = manifest_css_property or emission_css_property
         fields: dict[str, object] = {"css_property": css_property}
         css_property_written += 1
+        # A7 role verdict — attrMap arity only (see _manifest_role_verdict). Emission-
+        # derived rows are untouched: sgs/post-grid.borderColourHover legitimately
+        # carries three EMISSION-parsed properties and is correctly `color`, which the
+        # `>1 -> styling` leg would have wrecked had it keyed on css_property instead.
+        if manifest_hit and manifest_hit.get("source") == "attrMap":
+            verdict = _manifest_role_verdict(
+                manifest_hit.get("manifest_css_keys"),
+                role_of.get((slug, attr)),
+                colour_terminal,
+            )
+            if verdict:
+                fields["role"] = verdict
         tier = resolved_tier.get((slug, attr))
         if tier:
             fields["css_tier"] = tier
@@ -2139,10 +2238,25 @@ def extract_css_property_and_layer() -> dict:
                 or (root_key is not None and element == root_key)
             )
             fields = {"css_property": css_key}
+            # Same A7 verdict on the manifest-only path (an attrMap-declared attr the
+            # emission parser could not trace). `attr in known_attrs` above already
+            # excludes `native:*` targets, which are not real block attrs.
+            verdict = _manifest_role_verdict(
+                hit.get("manifest_css_keys"), role_of.get((slug, attr)), colour_terminal,
+            )
+            if verdict:
+                fields["role"] = verdict
             css_layer = (
                 elem_layer_by_block.get(slug, {}).get(element)
                 or hit.get("css_layer")
-                or _classify_css_layer(attr, {css_key}, is_root_element)
+                or _classify_css_layer(
+                    attr,
+                    # The real key SET, not the comma-joined string: a shorthand's
+                    # `manifest_css_key` is now "border-color,border-style,..." and
+                    # passing that as a single pseudo-property would match nothing.
+                    set(hit.get("manifest_css_keys") or [css_key]),
+                    is_root_element,
+                )
             )
             if css_layer:
                 fields["css_layer"] = css_layer

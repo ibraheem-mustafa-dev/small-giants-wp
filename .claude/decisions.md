@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D508 — A7: attrMap ARITY decides colour-vs-shorthand; 4 mis-roled colours healed; the 3-key shorthand stopped being flattened to 1 [ROUTINE]
+
+**2026-08-06.** Task A7 (Track 1b / Spec 35). `extract-signatures.py` only — the derived
+classification JSON and the DB reseed are pending a clean tree (a co-active track holds ~22
+uncommitted files, three of which change this JSON's output).
+
+**The rule, from the /qc-council that rejected my own fix-shape.** An `attrMap` declaration answers
+"is this a colour or a shorthand?" by ARITY — a fact about the declaration, not a guess about the
+attr's name. Exactly one `css:*` key whose property is colour-terminal → `color`; more than one →
+a shorthand, so no single-property role fits → `styling`. No PHP tokeniser, so it cannot be defeated
+by a call shape — which is precisely how Detector 7 fails on `sgs/product-card` (the block passes its
+whole `$attributes` bag, so `carriers_for()` builds no carrier at all).
+
+**The lossiness was real, and it destroyed the very signal the rule needs.**
+`_load_element_manifest_reverse` did `out[attr] = {...}` per css key, so for a shorthand the LAST key
+won: `gridItemBorder`'s three keys (`border-width`/`border-style`/`border-color`) were recorded as the
+single property `border-color` — indistinguishable from a genuine colour. Keys now accumulate;
+`css_property` carries them comma-joined, the same multi-value shape the emission path already writes.
+
+**Colour-terminal is a SET-DIFFERENCE over `property_suffixes`, not a dict (R-31-1).** A property
+qualifies only when every suffix declaring it agrees on `role='color'`. `box-shadow` is what makes
+that load-bearing: `Shadow` calls it `color`, `BoxShadow` calls it `visual`, so the table does not
+agree a box-shadow value is a colour — and it is not. Selecting `role='color'` naively would have
+swept 8 live `boxShadow*` attrs off their correct `visual` role.
+
+**Measured BEFORE writing, and the measurement changed the rule.** An unconditional `>1 → styling`
+leg would have overwritten `select-from-enum` on `nav-menu.burgerSize`, `trust-bar.badgeImageSize`
+and `trust-bar.iconCircleSize` — three enum size pickers mapped to width+height, i.e. three
+regressions dressed as three fixes. The leg is now gated to NULL/`color` only: it never demotes a
+more specific role.
+
+**Result, proven by applying the real production loader to a DB COPY** (the shared DB has a co-active
+track on it): 127 role verdicts written, of which **122 confirm the existing role and 5 change it** —
+`product-card.ctaColourBorder`/`ctaColourBorderHover` off a wrong `styling`, and
+`button.colourText` + `product-card.ctaColourText`/`ctaColourTextHover` off `text-content`, which is
+CONTENT-BEARING: the cloning pipeline was being told to run rich-text extraction on a colour value.
+`gridItemBorder` keeps `styling` and now carries all three properties; `burgerSize` keeps
+`select-from-enum`; `post-grid.borderColourHover` (emission-derived, 3 properties) keeps `color`.
+
+**`gridItemBorder` still holds by ARITY rather than by accident, but only conditionally** — the
+`>1` leg does not rewrite a row that already reads `styling`, so it corrects a future wrong `color`
+claim rather than re-asserting the value every run. Stated plainly because the A7 brief expected
+"by construction" and this is the honest, narrower version of it.
+
+Truth table incl. a NEGATIVE CONTROL (adding `box-shadow` to the colour-terminal set flips
+`text.boxShadow` to `color`, proving the exclusion is load-bearing) — 8/8. The pre-existing
+`test_hero_headline_has_wp_kses_post_on_h1` failure is NOT ours: it fails identically with HEAD's
+copy of this file against the same tree.
+
 ## D507 — the polymorphic media slots are split; a live video→image mis-route closed; collisions 9 → 2 [INCIDENT]
 
 **2026-08-06.** Commits `b717717d` (blocks) + `13a42d83` (data). Task B phase 3.
@@ -56,8 +105,11 @@ hidden behind a shared consumer is a gate blind spot.** `container/view.js`'s `M
 different widths depending on which block painted it (classified as device-tier before changing, per
 the discipline rule; same class as D228).
 
-**⚠ The rename nearly deleted client content, and a gate caught it, not me.** My "absent from stored
-content" check read the 2026-07-15 backup; I said I would confirm with a live scan and did not. The
+**⚠ The rename would have silently deleted stored attrs, and a gate caught it, not me.** ⛔ **Correction
+(Bean, same day): this was CANARY content, not client content — nothing is live for public or real
+client work, so "nearly deleted client content" overstated it. The mechanism was real; the stakes
+were not.** My "absent from stored content" check read the 2026-07-15 backup; I said I would confirm
+with a live scan and did not. The
 deploy's `oldshape-audit` found canary post 2114 storing `posterMedia`/`posterAlt` and refused to
 deploy — WordPress discards an undeclared attr, so the next editor save would have deleted them (the
 D496 multi-button failure). Per Bean's pre-production ruling (no migrations, no deprecations) that
