@@ -47,7 +47,7 @@
     [
       "media",
       "element",
-      "[\"badge-img\", \"bg-img\", \"decorMedia\", \"embed\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"memberMedia\", \"photo\", \"picture\", \"side-image\", \"side-img\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"splitimage\", \"splitMedia\", \"thumb\", \"thumb-img\", \"video\"]",
+      "[\"badge-img\", \"bg-img\", \"decorMedia\", \"embed\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"memberMedia\", \"photo\", \"picture\", \"poster\", \"posterMedia\", \"side-image\", \"side-img\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"splitimage\", \"splitMedia\", \"thumb\", \"thumb-img\", \"video\"]",
       "sgs/media",
       "Polymorphic image/video slot",
       null

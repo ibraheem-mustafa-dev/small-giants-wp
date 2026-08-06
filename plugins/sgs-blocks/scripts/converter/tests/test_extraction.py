@@ -1100,20 +1100,18 @@ def test_walk_leg2_image_with_alt_lifts_both_url_and_alt():
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "OPEN GAP, measured 2026-08-06 — kept as a live failing guard rather than deleted. "
-        "The walk.py alt-capture fix (removing the attr_type=='string' condition around "
-        "alt_value) is NECESSARY but NOT SUFFICIENT: this fixture lifts NOTHING at all "
-        "(lifted={}), so sgs/image-sequence's poster is not reaching the scalar-lift leg in "
-        "the first place — the alt is the second half of a gap whose first half is that the "
-        "image itself is not lifted. strict=True so this FLIPS TO A FAILURE the moment the "
-        "remaining half lands, instead of silently passing unnoticed."
-    ),
-)
 def test_object_typed_image_attr_still_lifts_its_alt_companion():
     """An OBJECT-typed image-object attr must lift its alt onto the declared companion.
+
+    CLOSED 2026-08-06 (Task A6). Was xfail(strict=True) for a few hours: the walk.py
+    alt-capture fix (2ca99d6f) was necessary but NOT sufficient, because the fixture
+    lifted NOTHING at all - sgs/image-sequence's poster never reached the scalar-lift
+    leg, so its alt could not follow. ROOT CAUSE was DATA, not converter code:
+    `content_attr_for_element('sgs/image-sequence', 'poster')` returned None because
+    `posterMedia` had `canonical_slot = NULL` and neither `poster` nor `posterMedia`
+    was an alias of the `media` slot, so BOTH match tiers were unreachable. Fixed by
+    adding both aliases to data/slots.json (the seed that owns the `slots` table);
+    the reseed then resolved canonical_slot -> `media` and the lift fired.
 
     Regression guard for the 2026-08-06 fix. Alt capture used to sit INSIDE the
     `attr_type == "string"` branch, so an object-typed image attr cloned its image
