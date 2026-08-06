@@ -222,15 +222,16 @@ file:line. Apply by MECHANISM, never hand overrides (D497).
 ⚠ **`posterAlt` is NOT in the pool any more** (D5 seeded it `image-alt`), but its clone path is
 BROKEN — see the open gap below. Seeded ≠ working.
 
-### ALSO BUILT-BUT-UNWIRED / OPEN (not pool rows — do not lose these)
+### A6 + A7 — REAL DEFECTS, NOT NOTES. ⛔ Pool 0 does NOT close this front without them.
 
-- **D5 companion → `image-sequence` lifts NOTHING.** `walk.py` alt capture was fixed (`2ca99d6f`) but
-  proven INSUFFICIENT: the fixture lifts `{}`, so the poster never reaches the scalar-lift leg.
-  Committed as `xfail(strict=True)` in `test_extraction.py` — it FLIPS TO A FAILURE when fixed.
-  `image-alt` is content-bearing, so this is a real content drop on cloned image-sequence blocks.
-- **`product-card.ctaColourBorder`/`Hover`** still on generic `styling`; they ARE colours
-  (`helpers-button-style.php:129,178`) but reach it via a shared helper — D7's documented single-file
-  blind spot. Extending D7 across helper bodies would close them.
+These are NOT pool rows, so A1-A5 can all complete and the pool can read 0 while both are still
+broken. They are numbered deliberately: a task list you work top-to-bottom must contain them, or
+"do not lose these" is a hope rather than a mechanism.
+
+| # | Task | State |
+|---|---|---|
+| **A6** | **`sgs/image-sequence` clone lifts NOTHING** — a REAL CONTENT DROP, not cosmetic. `walk.py` alt capture was fixed (`2ca99d6f`) and PROVEN INSUFFICIENT: the fixture lifts `{}`, so the poster never reaches the scalar-lift leg and its alt therefore cannot follow. `image-alt` is content-bearing, so a cloned image-sequence loses its accessible name. Guarded by `xfail(strict=True)` in `test_extraction.py::test_object_typed_image_attr_still_lifts_its_alt_companion` — **it flips to a hard FAILURE the moment the remaining half lands**, so the suite tells you when it is fixed. Start there, not from scratch. | measured, unfixed |
+| **A7** | **`product-card.ctaColourBorder`/`Hover` stuck on generic `styling`** — they ARE colours (`helpers-button-style.php:129,178`, both via `sgs_colour_value()`), but reach it through a SHARED helper, which is D7's documented single-file blind spot ("does not cross into a helper's body"). Extending D7 across helper bodies closes these two and likely others. ⚠ Whatever does that must keep `gridItemBorder` on `styling` — it is a border SHORTHAND and `color` would be WRONG; it is the existing negative control. | mechanism known |
 - **DROPPED, do not revive:** widening `eligible_pool`'s `attr_type='string'` filter (Bean 2026-08-06).
   The 255 non-string NULLs are NOT misreported (they are outside the pool, so never counted as
   unreached), `boolean-visibility` has no converter consumer, and targeted detectors already seed
@@ -244,8 +245,10 @@ BROKEN — see the open gap below. Seeded ≠ working.
 ### Dependency graph
 
 ```
-A1 (reseed, D1 wired) ─→ licenses A3 + A4 ─→ A5 confirms
-A2 (declare 3 enums) ── independent, any order
+A1 (reseed, D1 wired) ─→ licenses A3 + A4 ─→ A5 confirms   } pool 23 → 0
+A2 (declare 3 enums) ── independent, any order             }
+A6 (image-sequence lift)  ─┐ independent of the pool entirely —
+A7 (D7 across helpers)    ─┘ the front is NOT closed until both land
 ```
 
 ### Methodology guardrails (do not skip)
