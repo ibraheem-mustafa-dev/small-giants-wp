@@ -317,17 +317,7 @@ def self_test() -> int:
         if not line:
             continue
         row = json.loads(line)
-        func = row["func"].lower()
-        if row.get("fragment"):
-            row["final_category"] = "value-fragment"
-        elif func in FUNC_CATEGORY:
-            row["final_category"] = FUNC_CATEGORY[func]
-        elif func in ("esc_attr", "esc_attr_e", "esc_attr__"):
-            row["final_category"] = classify_esc_attr(row)
-        elif func in FUNC_WP_KSES_LIKE:
-            row["final_category"] = classify_wp_kses(row)
-        else:
-            row["final_category"] = "unclassified"
+        row["final_category"] = resolve_final_category(row, row["func"].lower())
         rows.append(row)
 
     if not rows:
@@ -352,6 +342,12 @@ def self_test() -> int:
         ("fxNavLabel", "a11y-metadata",
          "a DIRECT binding must survive a later conditional reassignment from "
          "unrelated locals (sgs/nav-menu.navLabel)."),
+        ("fxFieldName", "NOT-content",
+         "a fragment landing in `name=` is a form-processing key, NOT content — "
+         "fragmentation must suppress CONTENT categories only (the 2026-08-06 fix). "
+         "If the fragment short-circuit is restored ahead of the func dispatch this "
+         "goes back to 'value-fragment' and the seven delegating sgs/form-field-* "
+         "blocks silently lose their D1 veto again."),
     ]
 
     failures = []
@@ -374,6 +370,19 @@ def self_test() -> int:
             f"the veto in fingerprint_content_roles.py, so the fragment rule is inert."
         )
 
+    # Paired negative assertion for Shape E: the technical-attribute exemption
+    # must be NARROW. fxFieldName is a fragment that lands in `name=`, so it is
+    # exempt; it must NOT also acquire a whole-value content verdict, or the
+    # exemption has leaked past NOT-content into the categories the fragment rule
+    # exists to suppress.
+    field_cats = by_key.get("fxFieldName", set())
+    if field_cats - {"NOT-content"}:
+        failures.append(
+            f"fxFieldName ALSO produced {sorted(field_cats - {'NOT-content'})}; the "
+            f"NOT-content exemption must not admit a content category — that would "
+            f"reopen the exact hole the fragment rule was written to close."
+        )
+
     # Cross-contamination guard: fxOtherAttr exists only to be the wrong answer
     # for Shape D. If it picked up the aria-label verdict, provenance leaked.
     if "a11y-metadata" in by_key.get("fxOtherAttr", set()):
@@ -383,14 +392,74 @@ def self_test() -> int:
         )
 
     if failures:
-        print(f"SELF-TEST FAILED ({len(failures)} of {len(expected) + 2} checks)")
+        print(f"SELF-TEST FAILED ({len(failures)} of {len(expected) + 3} checks)")
         for f in failures:
             print(f"  - {f}")
         return 1
 
     print(f"SELF-TEST PASSED — {len(rows)} rows from the fixture; "
-          f"{len(expected) + 2} checks green.")
+          f"{len(expected) + 3} checks green.")
     return 0
+
+
+# Categories that a FRAGMENT verdict does NOT suppress.
+#
+# Fragmentation's rationale (see resolve_final_category) is a statement about
+# CONTENT roles only: "every content-bearing role is a whole-value contract, so a
+# fragment can never satisfy one". `NOT-content` makes no whole-value claim -- it
+# says the value is machine-facing wherever it lands -- so concatenation is simply
+# irrelevant to it, and suppressing it discards real evidence.
+#
+# DELIBERATELY NARROW: `STYLING-exclude` is also non-content but is NOT listed,
+# because zero fragment rows currently resolve to it (measured 2026-08-06: of 33
+# fragment rows, 31 -> NOT-content, 1 -> visible-text, 1 -> link-href). Add it when
+# a real row needs it, with the measurement, rather than pre-emptively widening a
+# rule whose whole value is that it is narrow and right.
+FRAGMENT_EXEMPT_CATEGORIES = frozenset({"NOT-content"})
+
+
+def resolve_final_category(row: dict, func: str) -> str:
+    """Resolve one D1 row's `final_category`, applying the fragment rule correctly.
+
+    A value that only ever reached the escaping call as a CONCATENATED PIECE of a
+    larger string is not that string, so it cannot satisfy a whole-value content
+    contract -- `esc_url` on `'https://wa.me/' . $clean_phone` reads as link-href
+    for all three of its pieces, which is the bug the fragment rule exists to stop.
+
+    THE FIX (2026-08-06): fragmentation now suppresses CONTENT categories ONLY.
+    Previously `fragment` short-circuited BEFORE the func dispatch, so the explicit
+    `NOT-content` rule for `name=`/`id=`/`for=` HTML attributes (classify_esc_attr)
+    could never run on a concatenated value. Live consequence, measured: the seven
+    blocks sgs/form-field-{date,email,number,phone,select,text,textarea} delegate
+    their whole render to includes/forms/field-render-helpers.php, whose submission
+    key is built by concatenation (`'sgs-field-' . $field_slug`) and emitted as
+    `name=""`. Their ONLY D1 row was therefore stamped `value-fragment`, so
+    fragmentation was "D1's whole story" and fingerprint_content_roles.py filed them
+    as content GAPS. The other seven form-field blocks read `fieldName` directly in
+    their own render.php, produced a non-fragment row, earned a NOT-content veto and
+    were already seeded `technical`. Identical attribute, identical meaning, opposite
+    classification -- decided purely by whether the block inlines or delegates.
+
+    The two rows this must NOT change are real rows, not fixtures, and are the
+    built-in negative control (both resolve to CONTENT categories, so both stay
+    `value-fragment`): sgs/whatsapp-cta.phoneNumber (`esc_url` -> link-href, the
+    grounding case for the whole rule, and the row Task A5's `link-content` work
+    depends on) and sgs/counter.prefix (`esc_html` -> visible-text).
+    """
+    if func in FUNC_CATEGORY:
+        category = FUNC_CATEGORY[func]
+    elif func in ("esc_attr", "esc_attr_e", "esc_attr__"):
+        category = classify_esc_attr(row)
+    elif func in FUNC_WP_KSES_LIKE:
+        category = classify_wp_kses(row)
+    else:
+        category = "unclassified"
+
+    if row.get("fragment") and category not in FRAGMENT_EXEMPT_CATEGORIES:
+        # Reported as its own category rather than dropped: a dropped row is
+        # indistinguishable from an attribute no detector ever reached.
+        return "value-fragment"
+    return category
 
 
 def main() -> None:
@@ -403,25 +472,7 @@ def main() -> None:
         if not line:
             continue
         row = json.loads(line)
-        func = row["func"].lower()
-        # A value that only ever reached the escaping call as a CONCATENATED
-        # PIECE of a larger string is not that string. Every content-bearing
-        # role is a whole-value contract, so a fragment can never satisfy one
-        # -- decided before the func dispatch, because the FUNCTION is exactly
-        # what would otherwise mislabel it (esc_url on `'https://wa.me/' .
-        # $clean_phone` reads as link-href for all three of its pieces).
-        # Reported as its own category rather than dropped: a dropped row is
-        # indistinguishable from an attribute no detector ever reached.
-        if row.get("fragment"):
-            row["final_category"] = "value-fragment"
-        elif func in FUNC_CATEGORY:
-            row["final_category"] = FUNC_CATEGORY[func]
-        elif func in ("esc_attr", "esc_attr_e", "esc_attr__"):
-            row["final_category"] = classify_esc_attr(row)
-        elif func in FUNC_WP_KSES_LIKE:
-            row["final_category"] = classify_wp_kses(row)
-        else:
-            row["final_category"] = "unclassified"
+        row["final_category"] = resolve_final_category(row, row["func"].lower())
         print(json.dumps(row))
 
 

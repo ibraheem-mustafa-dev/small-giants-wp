@@ -61,3 +61,20 @@ if ( '' === $fx_nav_label ) {
 	$fx_nav_label = '' !== $fx_other ? $fx_other : 'Primary';
 }
 echo '<nav aria-label="' . esc_attr( $fx_nav_label ) . '">';
+
+// Shape E — FRAGMENT LANDING IN A TECHNICAL ATTRIBUTE. The value is concatenated
+// behind a literal prefix (so `fragment` is set, exactly like Shape C) but the
+// concatenation lands in `name="`, which classify_esc_attr() rules NOT-content.
+// Real instance: sgs/form-field-{date,email,number,phone,select,text,textarea}
+// .fieldName via includes/forms/field-render-helpers.php:166-175 — the submission
+// key is `'sgs-field-' . sanitize_key( $field_name )`.
+// Expect: NOT-content. Before the 2026-08-06 fix the fragment flag short-circuited
+// BEFORE the func dispatch, so this resolved value-fragment and the seven blocks
+// that delegate to the shared helper could never earn a D1 veto -> role `technical`.
+// This is the REGRESSION GUARD for that fix: it fails if the short-circuit returns.
+// Shape C above is its paired negative control — a fragment reaching a CONTENT
+// category must still be suppressed to value-fragment.
+$fx_field_name  = $attributes['fxFieldName'] ?? '';
+$fx_field_slug  = sanitize_key( $fx_field_name );
+$fx_submit_name = 'sgs-field-' . $fx_field_slug;
+echo '<input name="' . esc_attr( $fx_submit_name ) . '">';
