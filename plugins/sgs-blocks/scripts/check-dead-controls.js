@@ -921,6 +921,202 @@ function checkExtensionFile( filePath, sharedCorpus ) {
 }
 
 // ---------------------------------------------------------------------------
+// CHECK 5 — dead assignment (attribute read into a PHP variable that is then
+// never used), advisory (2026-08-06)
+// ---------------------------------------------------------------------------
+//
+// THE DEFECT THIS CLOSES (measured 2026-08-06): sgs/form's `formName` had a
+// live editor control (edit.js:97) and two block variations seeding
+// translatable copy ("Contact Us", "Newsletter Signup" —
+// includes/variations/sgs-form-variations.php) — and NOTHING rendered it.
+// render.php DID contain `$form_name = $attributes['formName'] ?? '';`, so
+// `isConsumed()` (CHECK 1/2/4's bare word-boundary regex on the attribute
+// name) counted `formName` as consumed the moment it saw that text — but the
+// assignment target, `$form_name`, was never read again. A client could type
+// a form name into the control and nothing happened. "Referenced in
+// render.php" is not "reaches output". Fixed live 2026-08-06 (render.php's
+// own ACCESSIBLE NAME comment — `formName` now renders as `aria-label`), so
+// it is a NEGATIVE control below, not a finding.
+//
+// THE RULE (all three must hold for an attribute to be flagged):
+//  1. At least one `$var = ... $attributes['attr'] ...` assignment exists in
+//     the block's OWN render.php.
+//  2. The quoted attribute name ('attr' or "attr") appears NOWHERE ELSE in
+//     render.php beyond those assignments — the count of quoted occurrences
+//     must not exceed the number of matching assignments. A second, direct
+//     `$attributes['attr']` read elsewhere (e.g. passed straight into a
+//     shared-include helper call) is real consumption and clears the finding
+//     via this rule alone.
+//  3. EVERY variable the attribute was assigned to is unused afterwards —
+//     its total `$var` occurrence count in the file does not exceed the
+//     number of times it was assigned.
+//
+// Comments are stripped before analysis so an attribute name surviving only
+// in a docblock/comment can't hide a real dead assignment or fake one.
+//
+// SCOPE: unlike CHECK 1/2/4, this does NOT consult sharedCorpus, the
+// wrapper-controlled set, or live context — it looks ONLY at the block's own
+// render.php, because the defect it targets is specifically "the variable
+// this file assigned is never read again inside this file". See BLIND SPOTS
+// below for what that narrower scope costs — and note it can flag a variable
+// as dead even when the underlying ATTRIBUTE is separately alive via a
+// helper that re-reads `$attributes[...]` directly elsewhere in the
+// codebase (e.g. sgs/gallery's `$trans_duration`/`$trans_easing`, dead as
+// variables even though `sgs_transition_vars( $attributes )` on the same
+// file reads the raw attributes again) — the finding is still real: those
+// specific lines are genuinely unreachable dead code and the editor control
+// for them is unverified to do anything without separately auditing the
+// helper.
+//
+// ADVISORY ONLY (CHECK_5_BLOCKS_BUILD = false, mirrors CHECK 4's flip-flag
+// pattern): 18 findings exist across the current block library on the day
+// this shipped (2026-08-06) — a real backlog to see, not to fail the build
+// over. Flip CHECK_5_BLOCKS_BUILD to true only after that backlog is fixed
+// or explicitly baselined.
+//
+// BLIND SPOTS (enumerated 2026-08-06 — read before trusting a "0 findings"
+// result for a specific block):
+//   1. Own render.php ONLY. CHECK 5 never reads a shared include
+//      (includes/*.php) or a required local partial directly, so it cannot
+//      see a consumer living there. In practice this is bounded by rule 2:
+//      to get the raw value into a shared-include consumer, render.php has
+//      to either (a) pass the LOCAL VARIABLE as an argument — which leaves a
+//      second `$var` occurrence in render.php's own text, satisfying rule
+//      3's "used again" check (real example: sgs/form's
+//      `$store_submissions`, assigned then passed into
+//      `SGS_Container_Wrapper::render()`'s `extra_attrs` array — a shared-
+//      include function — right there in render.php); or (b) re-read
+//      `$attributes['attr']` a second time at the call site — which leaves a
+//      second quoted occurrence of the attribute name, satisfying rule 2
+//      (real example: sgs/gallery's `transitionDuration`/`transitionEasing`
+//      — the variable IS flagged, correctly, per the note above). A shared
+//      include consuming the value with literally ZERO trace left in
+//      render.php's own text is not constructible in ordinary PHP (the
+//      value has to get there somehow), so this is a bounded gap, not an
+//      open one — but a genuinely dead LOCAL VARIABLE can still coexist with
+//      a genuinely alive ATTRIBUTE, as above.
+//   2. Cannot follow a variable into a helper's PARAMETER NAME. If render.php
+//      calls `some_helper( $form_name )` and `some_helper()`'s own body (in
+//      a shared include) never touches its parameter, CHECK 5 correctly
+//      raises nothing (the call-site reference satisfies rule 3) — but that
+//      would be a DIFFERENT kind of dead code (a dead parameter inside the
+//      callee), entirely outside this check's scope. CHECK 5 only proves the
+//      LOCAL variable in render.php is referenced again; it cannot prove
+//      that downstream reference does anything.
+//   3. Object/array destructuring and `extract()` are invisible. A value
+//      folded straight into an array literal (`$context['formName'] =
+//      $attributes['formName'] ?? ''`) is not matched by the plain
+//      `\$var\s*=` assignment shape at all — no finding either way. This
+//      check only recognises the scalar-variable assignment shape
+//      sgs/form's original `formName` bug used.
+//   4. Multiple assignments to the SAME variable name for DIFFERENT
+//      attributes in one file (not observed in this library) could
+//      undercount "assignedTimes" per attribute if `$var` is reused across
+//      two different `$attributes[...]` reads — unmeasured, low risk.
+//
+// BASELINE: findings flow through the SAME findingKey()/baseline mechanism
+// as CHECK 1-4 (`check:block:attr`, check = 'dead-assign'), suppressible via
+// scripts/dead-controls-baseline.json.
+
+/**
+ * Strip PHP `//`, `#` and `/* *​/` comments from a single render.php source
+ * so an attribute name surviving only in a comment can't be mistaken for a
+ * real assignment or a real "appears elsewhere" hit. Kept separate from the
+ * shared stripComments() (tuned for the mixed PHP/JS multi-file corpus used
+ * elsewhere in this script) — CHECK 5 always operates on one PHP file, so a
+ * simpler pass is sufficient and easier to reason about in isolation.
+ *
+ * @param {string} src Raw render.php source.
+ * @return {string} Comment-stripped source.
+ */
+function stripPhpCommentsForAssignmentCheck( src ) {
+	return src
+		.replace( /\/\*[\s\S]*?\*\//g, ' ' )
+		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' )
+		.replace( /^[ \t]*#[^\n]*/gm, ' ' );
+}
+
+/**
+ * Find every attribute in `attrs` whose ONLY appearance in `src` is a dead
+ * scalar-variable assignment — see the CHECK 5 rule above. Pure function,
+ * source in / findings out, so the self-test can exercise it directly
+ * against synthetic fixtures without touching disk beyond the fixture files
+ * it plants itself.
+ *
+ * @param {string}               src   Comment-stripped render.php source.
+ * @param {Array<string>}        attrs Candidate attribute names (already
+ *                                     filtered for system/editor-only/noise).
+ * @return {Array<{attr:string, vars:string[]}>} Dead-assignment findings.
+ */
+function findDeadAssignments( src, attrs ) {
+	const out = [];
+	for ( const attr of attrs ) {
+		const assignRe = new RegExp(
+			'\\$([A-Za-z_]\\w*)\\s*=[^;]*\\$attributes\\[\\s*[\'"]' + attr + '[\'"]\\s*\\]',
+			'g'
+		);
+		const vars = [];
+		let m;
+		while ( ( m = assignRe.exec( src ) ) !== null ) {
+			vars.push( m[ 1 ] );
+		}
+		if ( ! vars.length ) {
+			continue; // Rule 1 — no assignment shape found; not this check's concern.
+		}
+
+		// Rule 2 — the attribute name must not appear anywhere OTHER than
+		// those assignments (a direct re-read elsewhere is real consumption).
+		const quoted = ( src.match( new RegExp( '[\'"]' + attr + '[\'"]', 'g' ) ) || [] ).length;
+		if ( quoted > vars.length ) {
+			continue;
+		}
+
+		// Rule 3 — every variable it was assigned to must be unused after
+		// assignment.
+		const allDead = vars.every( ( v ) => {
+			const uses = ( src.match( new RegExp( '\\$' + v + '\\b', 'g' ) ) || [] ).length;
+			const assignedTimes = vars.filter( ( x ) => x === v ).length;
+			return uses <= assignedTimes;
+		} );
+		if ( allDead ) {
+			out.push( { attr, vars } );
+		}
+	}
+	return out;
+}
+
+/**
+ * CHECK 5 driver for one block: read its own render.php, strip comments, run
+ * findDeadAssignments() over its declared attributes (minus system/editor-
+ * only/noise attrs — the same exclusions every other check in this file
+ * applies).
+ *
+ * @param {Object} block Block descriptor from readBlock().
+ * @return {Array<Object>} Findings, same shape as CHECK 1/2/4.
+ */
+function checkDeadAssignments( block ) {
+	const renderPath = path.join( block.dir, 'render.php' );
+	if ( ! fs.existsSync( renderPath ) ) {
+		return [];
+	}
+	const src = stripPhpCommentsForAssignmentCheck( readIfExists( renderPath ) );
+
+	const candidateAttrs = Array.from( block.attrs ).filter(
+		( attr ) => ! isSystemAttr( attr ) && ! EDITOR_ONLY_ATTRS.has( attr ) && ! KEY_NOISE.has( attr )
+	);
+
+	return findDeadAssignments( src, candidateAttrs ).map( ( f ) => ( {
+		check: 'dead-assign',
+		block: block.name,
+		attr: f.attr,
+		reason:
+			`its ONLY appearance in render.php is the assignment $${ f.vars.join( ', $' ) } = ` +
+			`$attributes['${ f.attr }'] — the variable is never read afterwards, so nothing ` +
+			'reaches output even though the attribute text is textually present in the file',
+	} ) );
+}
+
+// ---------------------------------------------------------------------------
 // Baseline
 // ---------------------------------------------------------------------------
 
@@ -1039,11 +1235,23 @@ function main() {
 	// Subtract the baseline (accepted, with reasons). Baseline entries are keyed
 	// by `check:block:attr`, so `fully-dead` findings can be individually
 	// baselined the same way as CHECK 1-3 findings once triaged.
+	// CHECK 5 — dead assignments (attribute assigned into a PHP variable that
+	// is then never used). Own render.php only, per block — see the CHECK 5
+	// docblock above. Kept in its own array for the same reason CHECK 4's is:
+	// a brand-new gate closing a freshly-measured backlog must not fail the
+	// build on day one (ADVISORY-FIRST rule below).
+	let deadAssignFindings = [];
+	for ( const block of blocks ) {
+		deadAssignFindings = deadAssignFindings.concat( checkDeadAssignments( block ) );
+	}
+
 	const baseline = new Set( loadBaseline().map( findingKey ) );
 	const netNew = findings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
 	const accepted = findings.filter( ( f ) => baseline.has( findingKey( f ) ) );
 	const fullyDeadNetNew = fullyDeadFindings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
 	const fullyDeadAccepted = fullyDeadFindings.filter( ( f ) => baseline.has( findingKey( f ) ) );
+	const deadAssignNetNew = deadAssignFindings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
+	const deadAssignAccepted = deadAssignFindings.filter( ( f ) => baseline.has( findingKey( f ) ) );
 
 	// ADVISORY-FIRST FLAG (2026-08-05): CHECK 4 ships advisory-only — it reports
 	// but never fails the build — because its backlog has not yet been triaged
@@ -1054,6 +1262,13 @@ function main() {
 	// failing on day one of enforcement.
 	const CHECK_4_BLOCKS_BUILD = false;
 
+	// ADVISORY-FIRST FLAG (2026-08-06): CHECK 5 ships advisory-only for the
+	// same reason CHECK 4 did — 18 findings exist on the day this shipped
+	// (see the script's --self-test output / commit message for the measured
+	// count) and have not been triaged to zero. Flip to `true` only after
+	// baselining or fixing the then-current backlog.
+	const CHECK_5_BLOCKS_BUILD = false;
+
 	if ( asJson ) {
 		process.stdout.write(
 			JSON.stringify(
@@ -1062,6 +1277,7 @@ function main() {
 					accepted,
 					baselineSize: baseline.size,
 					fullyDead: { netNew: fullyDeadNetNew, accepted: fullyDeadAccepted, blocking: CHECK_4_BLOCKS_BUILD },
+					deadAssign: { netNew: deadAssignNetNew, accepted: deadAssignAccepted, blocking: CHECK_5_BLOCKS_BUILD },
 				},
 				null,
 				2
@@ -1119,9 +1335,45 @@ function main() {
 				'[check-dead-controls] CHECK 4 (advisory): OK — 0 net-new fully-dead attributes.\n'
 			);
 		}
+
+		// CHECK 5 report — always printed, ADVISORY (never affects exit code
+		// unless CHECK_5_BLOCKS_BUILD is flipped to true).
+		if ( deadAssignAccepted.length ) {
+			process.stdout.write(
+				`[check-dead-controls] CHECK 5 (advisory): ${ deadAssignAccepted.length } baselined ` +
+					'dead-assignment finding(s) (accepted with reason).\n'
+			);
+		}
+		if ( deadAssignNetNew.length ) {
+			process.stdout.write(
+				`[check-dead-controls] CHECK 5 (ADVISORY — does not fail the build): ` +
+					`${ deadAssignNetNew.length } dead-assignment attribute(s) — the attribute's ONLY ` +
+					'appearance in render.php is a PHP variable assignment that is never used afterwards:\n'
+			);
+			for ( const f of deadAssignNetNew ) {
+				process.stdout.write( `  - ${ f.block } :: ${ f.attr }\n` );
+			}
+			process.stdout.write(
+				'Fix: use the assigned variable in output, or REMOVE the dead assignment/control. ' +
+					'Or accept it in scripts/dead-controls-baseline.json with a reason.\n'
+			);
+		} else {
+			process.stdout.write(
+				'[check-dead-controls] CHECK 5 (advisory): OK — 0 net-new dead-assignment attributes.\n'
+			);
+		}
 	}
 
-	if ( shouldFailBuild( check, netNew.length, CHECK_4_BLOCKS_BUILD, fullyDeadNetNew.length ) ) {
+	if (
+		shouldFailBuild(
+			check,
+			netNew.length,
+			CHECK_4_BLOCKS_BUILD,
+			fullyDeadNetNew.length,
+			CHECK_5_BLOCKS_BUILD,
+			deadAssignNetNew.length
+		)
+	) {
 		process.exit( 1 );
 	}
 }
@@ -1135,10 +1387,27 @@ function main() {
  * @param {number}  netNewLen           CHECK 1-3 net-new finding count (always blocking).
  * @param {boolean} check4BlocksBuild   The CHECK_4_BLOCKS_BUILD flip flag.
  * @param {number}  fullyDeadNetNewLen  CHECK 4 net-new finding count.
+ * @param {boolean} [check5BlocksBuild] The CHECK_5_BLOCKS_BUILD flip flag. Defaults to
+ *                                      false so existing CHECK 4-only call sites (and the
+ *                                      original 4-arg self-test assertions) keep working
+ *                                      unchanged.
+ * @param {number}  [deadAssignNetNewLen] CHECK 5 net-new finding count. Defaults to 0.
  * @return {boolean} True if the process should exit(1).
  */
-function shouldFailBuild( checkFlag, netNewLen, check4BlocksBuild, fullyDeadNetNewLen ) {
-	return checkFlag && ( netNewLen > 0 || ( check4BlocksBuild && fullyDeadNetNewLen > 0 ) );
+function shouldFailBuild(
+	checkFlag,
+	netNewLen,
+	check4BlocksBuild,
+	fullyDeadNetNewLen,
+	check5BlocksBuild = false,
+	deadAssignNetNewLen = 0
+) {
+	return (
+		checkFlag &&
+		( netNewLen > 0 ||
+			( check4BlocksBuild && fullyDeadNetNewLen > 0 ) ||
+			( check5BlocksBuild && deadAssignNetNewLen > 0 ) )
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -1284,8 +1553,9 @@ function runSelfTest() {
 	);
 
 	const check4Pass = runCheck4SelfTest( log );
+	const check5Pass = runCheck5SelfTest( log );
 
-	if ( ! pass || ! check4Pass ) {
+	if ( ! pass || ! check4Pass || ! check5Pass ) {
 		process.exit( 1 );
 	}
 }
@@ -1416,6 +1686,190 @@ function runCheck4SelfTest( log ) {
 		pass
 			? '\n[check-dead-controls --self-test] CHECK 4 — ALL SYNTHETIC TESTS PASS.'
 			: '\n[check-dead-controls --self-test] CHECK 4 — FAIL.'
+	);
+	return pass;
+}
+
+// ---------------------------------------------------------------------------
+// CHECK 5 self-test (2026-08-06) — proves the dead-assignment gate can FAIL
+// (the KNOWN pre-fix sgs/form.formName shape), proves three distinct
+// negative-control shapes hold (assigned-then-reused-later, read-directly-
+// with-no-intermediate-variable, assigned-then-passed-into-a-shared-include
+// call), proves baseline suppression works, and proves the
+// CHECK_5_BLOCKS_BUILD advisory flag genuinely changes the exit code both
+// ways via the pure shouldFailBuild() function.
+// ---------------------------------------------------------------------------
+function runCheck5SelfTest( log ) {
+	const os = require( 'os' );
+	let pass = true;
+
+	log( '\n[check-dead-controls --self-test] CHECK 5 (dead assignment)\n' );
+
+	const tmpDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-dead-assign-self-test-' ) );
+
+	const blockJson = {
+		name: 'sgs/fixture-dead-assign',
+		attributes: {
+			// PLANTED DEFECT — mirrors the real pre-fix sgs/form.formName shape
+			// exactly: assigned into a variable, that variable never read again.
+			deadAttr: { type: 'string', default: '' },
+			// Negative control 1 — assigned, then genuinely reused later in the
+			// same file (mirrors sgs/form's `successRedirect`, which is
+			// reassigned via wp_validate_redirect() then placed into $context).
+			reuseAttr: { type: 'string', default: '' },
+			// Negative control 2 — read directly at its use site, no
+			// intermediate variable at all. Rule 1 never even matches this
+			// shape, so it must not be flagged.
+			directReadAttr: { type: 'string', default: '' },
+			// Negative control 3 — assigned, then the LOCAL VARIABLE is passed
+			// into a shared-include-style function call (mirrors sgs/form's
+			// `storeSubmissions`, assigned then passed into
+			// SGS_Container_Wrapper::render()'s extra_attrs array — a
+			// shared-include function — right there in render.php).
+			passedToHelperAttr: { type: 'string', default: '' },
+		},
+	};
+	fs.writeFileSync( path.join( tmpDir, 'block.json' ), JSON.stringify( blockJson, null, 2 ), 'utf8' );
+	fs.writeFileSync(
+		path.join( tmpDir, 'render.php' ),
+		[
+			'<?php',
+			"$dead_var = $attributes['deadAttr'] ?? '';",
+			'',
+			"$reuse_var = $attributes['reuseAttr'] ?? '';",
+			"$reuse_var = $reuse_var ? strtoupper( $reuse_var ) : '';",
+			'echo $reuse_var;',
+			'',
+			"echo esc_html( $attributes['directReadAttr'] ?? '' );",
+			'',
+			"$helper_var = $attributes['passedToHelperAttr'] ?? '';",
+			"sgs_some_shared_helper( array( 'x' => $helper_var ) );",
+			'',
+		].join( '\n' ),
+		'utf8'
+	);
+
+	// Confirm the plant actually landed on disk before trusting anything
+	// derived from it: the assignment line is present, AND `$dead_var`
+	// appears EXACTLY once in the whole file (the assignment itself) — proof
+	// it really is never referenced again, not just an assumption from the
+	// fixture's own authoring.
+	const readBackRender = fs.readFileSync( path.join( tmpDir, 'render.php' ), 'utf8' );
+	const deadVarOccurrences = ( readBackRender.match( /\$dead_var\b/g ) || [] ).length;
+	const planted =
+		readBackRender.includes( "$dead_var = $attributes['deadAttr'] ?? '';" ) && deadVarOccurrences === 1;
+	if ( ! planted ) {
+		log( 'FAIL — the planted defect ("deadAttr" / $dead_var) did not land correctly in the fixture on disk.' );
+		fs.rmSync( tmpDir, { recursive: true, force: true } );
+		return false;
+	}
+	log( 'CONFIRMED — planted defect ($dead_var, from "deadAttr") is present and never re-referenced.\n' );
+
+	const block = readBlock( tmpDir );
+	const findings = checkDeadAssignments( block );
+	const findingAttrs = new Set( findings.map( ( f ) => f.attr ) );
+
+	if ( findingAttrs.has( 'deadAttr' ) ) {
+		log( 'PASS — Test A: the KNOWN FAILURE ("deadAttr", the pre-fix sgs/form.formName shape) was flagged.' );
+	} else {
+		log( 'FAIL — Test A: the KNOWN FAILURE ("deadAttr") was NOT flagged. The guard cannot fail.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'reuseAttr' ) ) {
+		log(
+			'PASS — Test B (negative control, sgs/form.successRedirect shape): assigned-then-reused ' +
+				'"reuseAttr" was NOT flagged.'
+		);
+	} else {
+		log( 'FAIL — Test B: assigned-then-reused "reuseAttr" was flagged — false positive.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'directReadAttr' ) ) {
+		log(
+			'PASS — Test C (negative control): directly-read-with-no-intermediate-variable ' +
+				'"directReadAttr" was NOT flagged.'
+		);
+	} else {
+		log( 'FAIL — Test C: directly-read "directReadAttr" was flagged — false positive.' );
+		pass = false;
+	}
+
+	if ( ! findingAttrs.has( 'passedToHelperAttr' ) ) {
+		log(
+			'PASS — Test D (negative control, sgs/form.storeSubmissions shape): assigned-then-passed-' +
+				'into-a-shared-include-call "passedToHelperAttr" was NOT flagged.'
+		);
+	} else {
+		log( 'FAIL — Test D: "passedToHelperAttr" was flagged — would false-positive on real ' +
+			"shared-include-consumed attrs like sgs/form's storeSubmissions." );
+		pass = false;
+	}
+
+	// Test E — baseline suppression: a baselined finding key must move from
+	// netNew to accepted.
+	const baselineKey = 'dead-assign:sgs/fixture-dead-assign:deadAttr';
+	const baseline = new Set( [ baselineKey ] );
+	const netNewWithBaseline = findings.filter( ( f ) => ! baseline.has( findingKey( f ) ) );
+	const acceptedWithBaseline = findings.filter( ( f ) => baseline.has( findingKey( f ) ) );
+	if (
+		acceptedWithBaseline.some( ( f ) => f.attr === 'deadAttr' ) &&
+		! netNewWithBaseline.some( ( f ) => f.attr === 'deadAttr' )
+	) {
+		log( 'PASS — Test E: baselining "deadAttr" moves it from netNew to accepted (suppression proven).' );
+	} else {
+		log( 'FAIL — Test E: baseline entry did not suppress "deadAttr".' );
+		pass = false;
+	}
+
+	// Test F — the CHECK_5_BLOCKS_BUILD flip flag genuinely changes the exit
+	// code BOTH ways, using the real production shouldFailBuild() function.
+	const failsWhenAdvisory = shouldFailBuild( true, 0, false, 0, false, findings.length );
+	const failsWhenBlocking = shouldFailBuild( true, 0, false, 0, true, findings.length );
+	if ( ! failsWhenAdvisory && failsWhenBlocking ) {
+		log(
+			'PASS — Test F: CHECK_5_BLOCKS_BUILD=false does NOT fail the build; ' +
+				'CHECK_5_BLOCKS_BUILD=true DOES — the flip flag works both ways.'
+		);
+	} else {
+		log(
+			`FAIL — Test F: shouldFailBuild(advisory)=${ failsWhenAdvisory } (expected false), ` +
+				`shouldFailBuild(blocking)=${ failsWhenBlocking } (expected true).`
+		);
+		pass = false;
+	}
+
+	fs.rmSync( tmpDir, { recursive: true, force: true } );
+
+	// Live scan — same function, the real block library. Informational: a
+	// real finding here is a real finding to report (see the module docblock
+	// for the measured 2026-08-06 count), not a self-test failure.
+	log( '\n[check-dead-controls --self-test] Live scan of src/blocks/*/render.php:' );
+	const liveBlockDirs = fs
+		.readdirSync( BLOCKS_DIR, { withFileTypes: true } )
+		.filter( ( d ) => d.isDirectory() && d.name !== 'extensions' )
+		.map( ( d ) => path.join( BLOCKS_DIR, d.name ) );
+	let liveFindings = [];
+	for ( const dir of liveBlockDirs ) {
+		const liveBlock = readBlock( dir );
+		if ( liveBlock ) {
+			liveFindings = liveFindings.concat( checkDeadAssignments( liveBlock ) );
+		}
+	}
+	if ( liveFindings.length === 0 ) {
+		log( `OK — 0 findings across ${ liveBlockDirs.length } block(s).` );
+	} else {
+		log( `${ liveFindings.length } finding(s):` );
+		for ( const f of liveFindings ) {
+			log( `  - ${ f.block } :: ${ f.attr }` );
+		}
+	}
+
+	log(
+		pass
+			? '\n[check-dead-controls --self-test] CHECK 5 — ALL SYNTHETIC TESTS PASS.'
+			: '\n[check-dead-controls --self-test] CHECK 5 — FAIL.'
 	);
 	return pass;
 }
