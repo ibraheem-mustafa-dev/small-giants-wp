@@ -1,5 +1,42 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D509 — A8: the 28-attribute grid surface on site-header/site-footer deleted; it could never fire [ROUTINE]
+
+**2026-08-06.** Bean-approved. `site-header`/`site-footer` `block.json` only — no wrapper change, no
+other block touched.
+
+**Unreachable by construction, verified three ways.** Each block declared 14 grid attrs whose every
+emit is gated `'grid' === $layout` (`class-sgs-container-wrapper.php:671,704` among 10 such gates),
+while its own `layout` was `{"type":"string","default":""}` with NO enum, NO editor control and NO
+writer — checked across all 88 `wp:sgs/site-header|site-footer` instances in the theme, every
+`edit.js` reference, and the live canary's stored header CPT. 15 attrs removed per block (the 14 plus
+the dead `layout`): 87→72 and 82→67. 132 deletions, 0 insertions.
+
+**The word `layout` names two unrelated things here, which is what made this look risky.** The
+FR-37-28 "layout preset" in `site-header/edit.js` writes `contentWidth` + `style.spacing.padding` +
+the MIDDLE ROW's `justifyContent` — never `layout`, never a grid attr. And `site-footer/edit.js`
+writes `layout: 'flex'|'grid'` onto `sgs/site-footer-row` CHILDREN. Both confirm the rows own layout.
+
+**Not a shared-wrapper capability, which was Bean's question and the thing worth proving.** The grid
+attrs are declared LONGHAND in each block's own `block.json` — `container`/`hero` carry their own
+copies. The plugin's one shared attribute injector
+(`extension-attrs-rest-register.php`, 69 attrs) contains none of them, no `layout`, no `justifyItems`.
+The wrapper is PHP that READS whatever it is handed; it creates nothing. So deleting from two files
+removes from two blocks and nothing else.
+
+**Composite-mirror (R-31-9) considered, not breached.** The rule bans divergent per-block HACKS;
+D294 already established a block may decline machinery it never had a route into, and these had no
+route at all. Spec 37 §3.1-3.3 + Bean's own ruling put layout on the rows. Spec 37 §7 constraint 2's
+6/6 council REJECTION of block-private header/footer rendering is untouched — the wrapper STAYS.
+
+**No gate could see this, and still cannot see the class.** The orphan pass keys on
+`supports.sgs.elements`, absent from all four header/footer blocks;
+`check-dead-controls.js` CHECK 4 requires "no render consumption anywhere" and these ARE consumed —
+behind a gate that can never open. Both gates green after the change (0 net-new). Zero stored content
+affected: the one stored `"layout"` on canary post 1570 belongs to `sgs/container`.
+
+Feed forward to **FR-37-22** ("emittable by construction", NOT-BUILT) so Spec 33 Part 2 inherits it.
+
 ## D508 — A7: attrMap ARITY decides colour-vs-shorthand; 4 mis-roled colours healed; the 3-key shorthand stopped being flattened to 1 [ROUTINE]
 
 **2026-08-06.** Task A7 (Track 1b / Spec 35). `extract-signatures.py` only — the derived

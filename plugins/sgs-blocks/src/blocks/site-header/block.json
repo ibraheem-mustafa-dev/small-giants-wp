@@ -312,58 +312,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"gridAutoRows": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumns": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateRows": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateRowsMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateRowsTablet": {
-			"type": "string",
-			"default": ""
-		},
 		"justifyContent": {
 			"type": "string",
 			"default": "",
@@ -376,20 +324,6 @@
 				"space-around",
 				"space-evenly"
 			]
-		},
-		"justifyItems": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end"
-			]
-		},
-		"layout": {
-			"type": "string",
-			"default": ""
 		},
 		"minHeight": {
 			"type": "string"
