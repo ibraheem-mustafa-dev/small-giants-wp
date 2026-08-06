@@ -157,13 +157,62 @@ function usesSharedComponentJsx( src ) {
 }
 
 /**
+ * Remove the BODY of every `resetAll={...}` / `onDeselect={...}` handler.
+ *
+ * WHY. A ToolsPanel reset is REQUIRED to write every attribute the panel owns,
+ * including each responsive tier — that is what "reset" means. It is not a
+ * control, and it offers the operator no way to set a per-tier value. Counting
+ * its writes as controls made a single well-formed reset handler read as one
+ * unwrapped direct control PER TIER ATTR: `sgs/media` produced 12
+ * RESPONSIVE-FAMILY-WITHOUT-SWITCHER violations from one correct handler, while
+ * its actual controls were already routed through a ResponsiveControl-derived
+ * component. Verified 2026-08-06: `lint-responsive-controls.py` — the sibling
+ * gate that inspects the CONTROL rather than every setAttributes call — exits 0
+ * on the identical tree, so the two gates disagreed purely on this blind spot.
+ *
+ * Brace-matched rather than regex-terminated: a reset body legitimately contains
+ * nested object literals (`{ top: 0 }`), and a lazy `[^}]*` stops at the first
+ * inner `}` and leaks the remainder back into the scan.
+ */
+function stripResetHandlers( src ) {
+	let out = src;
+	for ( const handler of [ 'resetAll', 'onDeselect' ] ) {
+		const opener = new RegExp( `\\b${ handler }\\s*=\\s*\\{` );
+		let guard = 0;
+		let match = opener.exec( out );
+		while ( match && guard++ < 200 ) {
+			const start = match.index + match[ 0 ].length - 1; // at the '{'
+			let depth = 0;
+			let end = -1;
+			for ( let i = start; i < out.length; i++ ) {
+				if ( '{' === out[ i ] ) depth++;
+				else if ( '}' === out[ i ] ) {
+					depth--;
+					if ( 0 === depth ) {
+						end = i + 1;
+						break;
+					}
+				}
+			}
+			if ( end < 0 ) break; // unbalanced — leave the source alone
+			out = out.slice( 0, match.index ) + out.slice( end );
+			match = opener.exec( out );
+		}
+	}
+	return out;
+}
+
+/**
  * Collect all attribute names written via setAttributes in the source.
  * Mirrors the heuristics from check-dead-controls.js (direct literals +
  * attrMap string values + update() pattern).
+ *
+ * Reset handlers are stripped first — see stripResetHandlers().
  */
 function collectSetAttrsKeys( src ) {
 	const keys = new Set();
 	if ( ! src ) return keys;
+	src = stripResetHandlers( src );
 
 	// Literal object keys inside setAttributes({ ... }).
 	const setAttrRe = /setAttributes\(\s*\{\s*([^}]*)\}/g;
