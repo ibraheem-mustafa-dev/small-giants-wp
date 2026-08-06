@@ -104,3 +104,61 @@ $fx_order_by = sanitize_key( $attributes['fxOrderBy'] ?? 'date' );
 $fx_dual_use  = $attributes['fxDualUse'] ?? '';
 $fx_dual_slug = 'sgs-status--' . sanitize_html_class( $fx_dual_use );
 echo esc_html( $fx_dual_use );
+
+// Shape H — NESTED-ARGUMENT CAPTURE (2026-08-06, "Limitation A"). The
+// escaping call's argument is TWO levels deep: a token-normaliser wrapping a
+// call wrapping a cast. Real instance: sgs/option-picker.defaultSelected
+// (option-picker/render.php:175) —
+//   sanitize_html_class( trim( (string) $default_selected ) )
+// Before the fix, the argument-capture regex could see through at most one
+// unparenthesised level, so it matched the bare word "trim" — no `$`, no
+// resolvable key — and this row was silently absent (zero D1 rows, no
+// ::UNRESOLVED:: marker). Expect: NOT-content (sanitize_html_class stays a
+// token-normaliser veto, exactly like Shape G's OTHER branch), reached via
+// find_matching_close_paren()/split_top_level_args() rather than the old
+// fixed-depth regex.
+$fx_nested_src = $attributes['fxNestedCapture'] ?? '';
+$fx_nested_out = sanitize_html_class( trim( (string) $fx_nested_src ) );
+
+// Shape I — PHP CLOSE/REOPEN BOUNDARY GLUE (2026-08-06, diagnosed while
+// investigating what looked like a second "Limitation A" case). Real
+// instance: sgs/form.formName (form/render.php:292-294,311,313) — the
+// attribute's provenance chain crosses a close-tag/inline-HTML/reopen-tag
+// boundary between the `$attributes[...]` read and the assignment that
+// feeds `esc_attr()`. tokenize_to_statements() glues the close tag, the
+// HTML, and the reopen tag onto the FRONT of the next statement with no
+// ';' to split on, so match_assignment()'s `^\$var` anchor failed and the
+// binding was invisible — a statement-boundary miss, NOT a multi-hop-
+// provenance gap (the wrapping `trim()` call resolves fine once the glue is
+// stripped). Expect: a11y-metadata.
+?>
+<div class="fixture-shape-i-spacer">unrelated inline HTML between PHP islands</div>
+<?php
+$fx_glued_src   = $attributes['fxGluedBoundary'] ?? '';
+$fx_glued_label = trim( (string) $fx_glued_src );
+echo '<div aria-label="' . esc_attr( $fx_glued_label ) . '">';
+
+// Shape J — INTERPROCEDURAL PARAMETER BINDING (2026-08-06, "Limitation B").
+// The sanitiser fires on a HELPER FUNCTION's own parameter, never on
+// `$attributes[...]` directly — D1's symbol table is flat and file-scoped,
+// so without call-site-argument-to-parameter binding this attribute
+// produces zero rows no matter how the call-site argument is wrapped. Real
+// instance: sgs/site-header-row.rowShrinkHideTarget /
+// sgs/site-footer-row.rowShrinkHideTarget via
+// includes/helpers-row-behaviour.php:142-143 —
+//   function sgs_resolve_row_shrink_hide_target( $block, $raw_target ) {
+//       $target = is_string( $raw_target ) ? sanitize_html_class( $raw_target ) : '';
+// Expect: NOT-content, reached via collect_function_param_names() +
+// collect_call_site_param_bindings() seeding $varToAttr['fx_raw_target']
+// before the sequential scan of THIS file starts (both the declaration and
+// the call site live in the same fixture file here — the real pair spans
+// caller/callee files, but the binding mechanism is identical either way:
+// it is keyed on the FILE that DECLARES the function, not on same-file vs
+// cross-file).
+function fx_resolve_shrink_target( $fx_block, $fx_raw_target ) {
+	return is_string( $fx_raw_target ) ? sanitize_html_class( $fx_raw_target ) : '';
+}
+$fx_shrink_result = fx_resolve_shrink_target(
+	null,
+	isset( $attributes['fxRowTarget'] ) ? $attributes['fxRowTarget'] : ''
+);

@@ -172,6 +172,38 @@ function strip_statement_glue(string $stmt, ?bool &$strippedDeclaration = null):
             continue;
         }
 
+        // PHP close/reopen boundary glue (a close tag, then HTML, then a
+        // reopen tag), 2026-08-06. A
+        // render.php that interleaves inline HTML with PHP
+        // (open tag, `$x = 1;`, close tag, HTML, open tag, `$y = 2;`, close
+        // tag) has NO ';'
+        // between the close tag, the intervening HTML, and the reopen tag,
+        // so tokenize_to_statements() glues all three onto the FRONT of the
+        // next code statement. The `<?php`/`<?=` stripper immediately above
+        // only covers a leading OPEN tag (the file's very first statement)
+        // — it never matches here because the statement instead starts with
+        // a close tag.
+        //
+        // MEASURED ROOT CAUSE (2026-08-06): sgs/form.formName's provenance
+        // chain ($attributes['formName'] -> $form_name -> $sgs_form_label ->
+        // esc_attr()) crosses exactly this boundary — form/render.php:292-294
+        // (a PHP-close-tag'd "endif;" then blank HTML then a PHP reopen) sits
+        // directly before the `trim()` assignment at :311. With the glue
+        // left on, match_assignment()'s `^\$var` anchor failed, so
+        // `$sgs_form_label` was never bound and the whole chain produced
+        // ZERO D1 rows — not a multi-hop-provenance gap (that logic already
+        // handles the `trim( (string) $form_name )` wrapper fine once the
+        // statement is clean) but a plain statement-boundary miss.
+        //
+        // Non-greedy + DOTALL so only the FIRST reopen tag is consumed — a
+        // second HTML/PHP island further down is handled by this same
+        // branch re-firing on ITS own glued statement, not by this match.
+        if (preg_match('/^\?>.*?(?:<\?php|<\?=)\s*/s', $stmt, $m)) {
+            $stmt = ltrim(substr($stmt, strlen($m[0])));
+            $changed = true;
+            continue;
+        }
+
         // A lone closing brace from a previous block (e.g. the "}" in
         // "}     $allowed_svg_tags = ...").
         if (preg_match('/^\}\s*/', $stmt, $m)) {
@@ -526,6 +558,173 @@ function split_top_level_args(string $s, int $baseOffset): array {
 }
 
 /**
+ * Depth/quote-aware matching-close-paren finder — same rationale as
+ * split_top_level_args()'s quote-awareness (a `)` inside a string-literal
+ * argument must never end the scan early). Returns the index of the
+ * matching ')' or null when the parens never balance (defensive — callers
+ * skip rather than guess on null).
+ *
+ * Added 2026-08-06 for the LIMITATION A fix below (nested-argument
+ * capture): it replaces a fixed-depth regex that could see through at most
+ * one level of nesting.
+ */
+function find_matching_close_paren(string $text, int $openParenPos): ?int {
+    if (!isset($text[$openParenPos]) || '(' !== $text[$openParenPos]) {
+        return null;
+    }
+    $depth = 0;
+    $inStr = null;
+    $n = strlen($text);
+    for ($i = $openParenPos; $i < $n; $i++) {
+        $ch = $text[$i];
+        if (null !== $inStr) {
+            if ('\\' === $ch) {
+                $i++;
+                continue;
+            }
+            if ($ch === $inStr) {
+                $inStr = null;
+            }
+            continue;
+        }
+        if ("'" === $ch || '"' === $ch) {
+            $inStr = $ch;
+            continue;
+        }
+        if ('(' === $ch) {
+            $depth++;
+        } elseif (')' === $ch) {
+            $depth--;
+            if (0 === $depth) {
+                return $i;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * LIMITATION B — bounded interprocedural parameter binding (2026-08-06).
+ *
+ * D1's symbol table (`$varToAttr`) is flat and FILE-SCOPED (module docblock:
+ * "no function boundaries beyond the file") — it has never bound a
+ * CALL-SITE ARGUMENT to the PARAMETER NAME the callee actually reads.
+ * `sgs/site-header-row.rowShrinkHideTarget` / `sgs/site-footer-row.*` route
+ * through exactly that gap:
+ *   site-header-row/render.php:194 (footer twin at :191) call
+ *     sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' )
+ *   and the sanitiser fires on the HELPER's OWN parameter —
+ *     includes/helpers-row-behaviour.php:143
+ *     $target = is_string( $raw_target ) ? sanitize_html_class( $raw_target ) : '';
+ * — `$raw_target` never appears anywhere near an `$attributes[...]` literal,
+ * so no amount of same-file tracking can ever bind it.
+ *
+ * This is DELIBERATELY a bounded, single-hop extension — NOT a general
+ * interprocedural data-flow pass. It resolves ONLY a call-site argument
+ * that is ITSELF a direct/ternary-wrapped `$attributes['key']` literal
+ * (via the EXISTING, unchanged extract_attr_keys()), matched positionally
+ * against the callee's declared parameter names. It deliberately does NOT
+ * resolve a call-site argument that is a bare variable back through the
+ * CALLER's own varToAttr — that would need cross-file processing-order
+ * guarantees this single flat pass does not have, and no measured row in
+ * the eligible pool needs it. If a future row needs that, it is new scope,
+ * not a silent extension of this one.
+ *
+ * Two passes, wired into run(): collect_function_param_names() indexes
+ * every `function NAME( $p1, $p2 )` declaration in the walked file set;
+ * collect_call_site_param_bindings() then finds every call to one of those
+ * NAMEs and records paramName => attrKey (first call site wins — same
+ * "first resolved key" convention used everywhere else in D1). run() seeds
+ * each file's `$varToAttr` with the bindings for whichever functions THAT
+ * FILE declares, before walking its statements.
+ */
+function collect_function_param_names(array $files): array {
+    $out = []; // funcNameLower => ['file' => path, 'params' => [name|null, ...]]
+    foreach ($files as $file) {
+        if (!is_file($file)) {
+            continue;
+        }
+        $statements = tokenize_to_statements(file_get_contents($file));
+        foreach ($statements as $stmt) {
+            $text = $stmt['text'];
+            if (!preg_match_all(
+                '/(?:(?:final|abstract|public|protected|private|static)\s+)*function\s*&?\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(/',
+                $text,
+                $fm,
+                PREG_OFFSET_CAPTURE
+            )) {
+                continue;
+            }
+            foreach ($fm[0] as $i => $whole) {
+                $funcLower = strtolower($fm[1][$i][0]);
+                if (isset($out[$funcLower])) {
+                    continue; // first declaration wins
+                }
+                $openParenPos = $whole[1] + strlen($whole[0]) - 1;
+                $closeParenPos = find_matching_close_paren($text, $openParenPos);
+                if (null === $closeParenPos) {
+                    continue;
+                }
+                $paramsInner = substr($text, $openParenPos + 1, $closeParenPos - $openParenPos - 1);
+                $params = [];
+                foreach (split_top_level_args($paramsInner, 0) as $p) {
+                    $params[] = preg_match('/\$([A-Za-z_][A-Za-z0-9_]*)/', $p['text'], $pm) ? $pm[1] : null;
+                }
+                $out[$funcLower] = ['file' => $file, 'params' => $params];
+            }
+        }
+    }
+    return $out;
+}
+
+function collect_call_site_param_bindings(array $files, array $funcParams): array {
+    $bindings = []; // funcNameLower => [paramName => attrKey]
+    if (empty($funcParams)) {
+        return $bindings;
+    }
+    $callRegex = '/\b(' . implode('|', array_map('preg_quote', array_keys($funcParams))) . ')\s*\(/i';
+    foreach ($files as $file) {
+        if (!is_file($file)) {
+            continue;
+        }
+        $statements = tokenize_to_statements(file_get_contents($file));
+        foreach ($statements as $stmt) {
+            $text = $stmt['text'];
+            if (!preg_match_all($callRegex, $text, $cm, PREG_OFFSET_CAPTURE)) {
+                continue;
+            }
+            foreach ($cm[0] as $i => $whole) {
+                $funcLower = strtolower($cm[1][$i][0]);
+                if (!isset($funcParams[$funcLower])) {
+                    continue;
+                }
+                $openParenPos = $whole[1] + strlen($whole[0]) - 1;
+                $closeParenPos = find_matching_close_paren($text, $openParenPos);
+                if (null === $closeParenPos) {
+                    continue;
+                }
+                $argsInner = substr($text, $openParenPos + 1, $closeParenPos - $openParenPos - 1);
+                $params = $funcParams[$funcLower]['params'];
+                foreach (split_top_level_args($argsInner, 0) as $idx => $arg) {
+                    if (!isset($params[$idx]) || null === $params[$idx]) {
+                        continue;
+                    }
+                    $paramName = $params[$idx];
+                    if (isset($bindings[$funcLower][$paramName])) {
+                        continue; // first call site wins
+                    }
+                    $keys = extract_attr_keys($arg['text']);
+                    if (!empty($keys) && !str_starts_with((string) $keys[0], '::DYNAMIC')) {
+                        $bindings[$funcLower][$paramName] = $keys[0];
+                    }
+                }
+            }
+        }
+    }
+    return $bindings;
+}
+
+/**
  * Depth/quote-aware split on the top-level '.' concatenation operator —
  * used to read a printf()/sprintf() format-string expression built from
  * plain string-literal concatenation ('a' . 'b' . 'c'), the WPCS multi-line
@@ -835,6 +1034,12 @@ function collect_block_consumers(string $repoRoot, string $sharedFile): array {
 }
 
 function run(array $files, array $eligibleSet, array $attrIndex = [], string $repoRoot = ''): void {
+    // LIMITATION B seed maps (see the docblock above
+    // collect_function_param_names()) — computed ONCE across the whole
+    // walked file set, then consulted per-file below.
+    $funcParams = collect_function_param_names($files);
+    $paramBindings = collect_call_site_param_bindings($files, $funcParams);
+
     foreach ($files as $file) {
         if (!is_file($file)) {
             fwrite(STDERR, "WARN: file not found: $file\n");
@@ -844,6 +1049,21 @@ function run(array $files, array $eligibleSet, array $attrIndex = [], string $re
         $statements = tokenize_to_statements($code);
 
         $varToAttr = []; // varName => attrKey (or ::DYNAMIC...:: marker)
+        // INTERPROCEDURAL SEED (Limitation B). Bind THIS file's own
+        // declared functions' parameters to whatever call-site attribute
+        // key was found for them, before the sequential scan starts — so a
+        // sanitiser call on the bare parameter resolves exactly like a
+        // same-file direct `$attributes[...]` assignment would.
+        foreach ($funcParams as $funcLower => $decl) {
+            if ($decl['file'] !== $file || empty($paramBindings[$funcLower])) {
+                continue;
+            }
+            foreach ($paramBindings[$funcLower] as $paramName => $attrKey) {
+                if (!isset($varToAttr[$paramName])) {
+                    $varToAttr[$paramName] = $attrKey;
+                }
+            }
+        }
         // WEAK TIER (2026-08-06). Bindings recovered from a statement that was
         // GLUED to a class/function declaration header — i.e. the first
         // statement of a function body, which `match_assignment()` could not
@@ -1063,17 +1283,41 @@ function run(array $files, array $eligibleSet, array $attrIndex = [], string $re
             // with no ::UNRESOLVED:: marker and no error — see
             // classify_call()'s comment on these three for why they resolve
             // to NOT-content once captured.
+            //
+            // LIMITATION A fix (2026-08-06) — NESTED-ARGUMENT CAPTURE. The
+            // capture group used to be `([^,()]+(?:\([^()]*\))?[^,()]*)`: at
+            // most ONE level of nesting, and that one level could not itself
+            // contain a paren. `sanitize_html_class( trim( (string) $x ) )`
+            // (option-picker's `defaultSelected`) has TWO levels — the outer
+            // `trim(...)` and the `(string)` cast inside it — so the old
+            // group matched only the bare word "trim" (no `$`, nothing
+            // resolvable), and the row was silently dropped: zero rows, no
+            // ::UNRESOLVED:: marker, same allowlist-gap SHAPE as the
+            // wp_kses_post/sanitize_key misses above but on the ARGUMENT
+            // side instead of the function-name side. Fixed by matching only
+            // the function name + open paren here, then walking the FULL
+            // argument list with the depth/quote-aware
+            // find_matching_close_paren()/split_top_level_args() pair
+            // already proven for printf() parsing — arbitrary nesting is no
+            // longer a limit.
             if (preg_match_all(
-                '/\b(esc_html_e|esc_html__|esc_html|esc_textarea|esc_url_raw|esc_url|esc_attr_e|esc_attr__|esc_attr|wp_kses_post|wp_kses|sanitize_key|sanitize_html_class|wp_validate_redirect)\s*\(\s*([^,()]+(?:\([^()]*\))?[^,()]*)/',
+                '/\b(esc_html_e|esc_html__|esc_html|esc_textarea|esc_url_raw|esc_url|esc_attr_e|esc_attr__|esc_attr|wp_kses_post|wp_kses|sanitize_key|sanitize_html_class|wp_validate_redirect)\s*\(/',
                 $text,
                 $calls,
                 PREG_SET_ORDER | PREG_OFFSET_CAPTURE
             )) {
                 foreach ($calls as $c) {
                     $func = $c[1][0];
-                    $argRaw = trim($c[2][0]);
                     $matchStart = $c[0][1];
-                    $matchEnd = $matchStart + strlen($c[0][0]);
+                    $openParenPos = $matchStart + strlen($c[0][0]) - 1;
+                    $closeParenPos = find_matching_close_paren($text, $openParenPos);
+                    if (null === $closeParenPos) {
+                        continue; // unbalanced — defensively skip, never guess
+                    }
+                    $argsInner = substr($text, $openParenPos + 1, $closeParenPos - $openParenPos - 1);
+                    $topArgs = split_top_level_args($argsInner, $openParenPos + 1);
+                    $argRaw = $topArgs[0]['text'] ?? '';
+                    $matchEnd = $closeParenPos + 1;
                     $funcLower = strtolower($func);
                     $isEscAttrFamily = in_array($funcLower, ['esc_attr', 'esc_attr_e', 'esc_attr__'], true);
 
@@ -1454,6 +1698,48 @@ function d1_self_test(string $repoRoot): int {
         }
     }
 
+    // --- 7. LIMITATION A regression guard: nested-argument capture -----------
+    // Shape H in fixtures/multihop_provenance.php:
+    //   sanitize_html_class( trim( (string) $fx_nested_src ) )
+    // Before the fix this produced ZERO rows (the old fixed-depth regex
+    // matched only the bare word "trim"). Must now resolve NOT-content.
+    $fixture = __DIR__ . '/fixtures/multihop_provenance.php';
+    if (!is_file($fixture)) {
+        $failures[] = "CHECK 7: fixture not found at $fixture";
+    } else {
+        $fixtureRows = d1_collect([$fixture], [], $repoRoot);
+        $nested = array_values(array_filter($fixtureRows, fn ($r) => 'fxNestedCapture' === $r['attr_key']));
+        if ([] === $nested) {
+            $failures[] = 'CHECK 7: fxNestedCapture (Shape H) produced ZERO rows — Limitation A nested-argument capture has regressed.';
+        } elseif ('NOT-content' !== $nested[0]['category']) {
+            $failures[] = 'CHECK 7: fxNestedCapture (Shape H) resolved ' . $nested[0]['category'] . ', expected NOT-content.';
+        }
+
+        // --- 8. glue-boundary regression guard: close-tag/HTML/reopen-tag --
+        // Shape I. Before the fix, a leading close-tag/HTML/reopen-tag glue
+        // made match_assignment()'s `^\$var` anchor fail, so this attribute
+        // never entered the symbol table and produced ZERO rows.
+        $glued2 = array_values(array_filter($fixtureRows, fn ($r) => 'fxGluedBoundary' === $r['attr_key']));
+        if ([] === $glued2) {
+            $failures[] = 'CHECK 8: fxGluedBoundary (Shape I) produced ZERO rows — the "?> ... <?php" statement-glue strip has regressed.';
+        } elseif ('a11y-metadata' !== $glued2[0]['category']) {
+            $failures[] = 'CHECK 8: fxGluedBoundary (Shape I) resolved ' . $glued2[0]['category'] . ', expected a11y-metadata.';
+        }
+
+        // --- 9. LIMITATION B regression guard: interprocedural param bind --
+        // Shape J. The sanitiser fires on the HELPER's own parameter
+        // ($fx_raw_target), never on $attributes[...] directly. Without
+        // collect_function_param_names()/collect_call_site_param_bindings()
+        // seeding $varToAttr before the file is walked, this produces ZERO
+        // rows regardless of how the call-site argument is wrapped.
+        $bound = array_values(array_filter($fixtureRows, fn ($r) => 'fxRowTarget' === $r['attr_key']));
+        if ([] === $bound) {
+            $failures[] = 'CHECK 9: fxRowTarget (Shape J) produced ZERO rows — Limitation B interprocedural parameter binding has regressed.';
+        } elseif ('NOT-content' !== $bound[0]['category']) {
+            $failures[] = 'CHECK 9: fxRowTarget (Shape J) resolved ' . $bound[0]['category'] . ', expected NOT-content.';
+        }
+    }
+
     if ([] !== $failures) {
         foreach ($failures as $f) {
             fwrite(STDERR, "FAIL: $f\n");
@@ -1461,7 +1747,7 @@ function d1_self_test(string $repoRoot): int {
         fwrite(STDERR, 'SELF-TEST: ' . count($failures) . " failure(s).\n");
         return 1;
     }
-    fwrite(STDERR, "SELF-TEST: PASS (6 checks, 2 negative controls included).\n");
+    fwrite(STDERR, "SELF-TEST: PASS (9 checks, 2 negative controls included).\n");
     return 0;
 }
 
