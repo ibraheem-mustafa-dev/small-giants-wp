@@ -2468,6 +2468,21 @@ _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES: dict[tuple[str, str], str] = {
     # Advanced-panel inspector TextControl vs on-canvas RichText — RichText is a
     # canvas surface, not an inspector control (see module comment above).
     ("sgs/product-card", "productName"): "TextControl",
+    # --- 2026-08-06 addition: same primary/default-path rule as sgs/hero above. ---
+    # Both blocks post-date the 2026-07-21 audit, so neither was in its 93 rows; both
+    # were hand-traced against edit.js before being written here (never derived).
+    #
+    # nav-menu::collapsePoint — ToggleGroupControl "Show the burger on"
+    # (Always/Tablet/Mobile/Custom) is ALWAYS rendered; the UnitControl "Switch to
+    # burger below" renders only when the scope resolves to 'custom'. Structurally
+    # identical to sgs/hero::gridTemplateColumns, so it takes the same ruling.
+    ("sgs/nav-menu", "collapsePoint"): "ToggleGroupControl",
+    # mega-panel::asideSeparator — an OBJECT attr {style, colour, width} written by
+    # THREE controls. The detector offered UnitControl vs DesignTokenPicker and
+    # NEITHER is the client-facing answer: the ToggleGroupControl "Divider"
+    # (Line/None) is the always-visible control, and it GATES the other two, which
+    # render only while style === 'line'.
+    ("sgs/mega-panel", "asideSeparator"): "ToggleGroupControl",
 }
 
 

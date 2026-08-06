@@ -677,9 +677,20 @@ def step_verify(url: str) -> int:
     markers = ["wp-block-sgs", "sgs-", "wp-content"]
     found = [m for m in markers if m in body]
     if not found:
-        log(f"[verify] WARNING: none of {markers} found in response (cache?)")
-    else:
-        log(f"[verify] markers present: {found}")
+        # 2026-08-06: this branch used to log a WARNING and fall through to
+        # `return 0`, so the content leg of verify could not fail under any
+        # input - only HTTP status and the WP fatal string above were ever
+        # fail-closed. A verify leg that cannot fail reads green forever.
+        # NOTE this is still a GENERIC assertion (these markers match any
+        # working SGS page, including one running last week's build); it is
+        # not change-specific. The change-specific check (--assert-contains
+        # / per-file checksum) is tracked in parking as
+        # P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC and is NOT solved here.
+        err(f"[verify] none of {markers} found in {url} - "
+            "the deployed page is not rendering SGS markup")
+        err(f"[verify] {ROLLBACK_HINT}")
+        return 1
+    log(f"[verify] markers present: {found}")
     return 0
 
 
