@@ -5589,10 +5589,38 @@ def content_attr_for_element(
                attr_name=best[0], tier=best_tier)
         return best
 
-    # A device tier WAS requested — the base attr must have a declared
-    # `{base_attr}{Suffix}` sibling; no fallback to the base attr (the
-    # owner's ruling — a silent fallback here would hide the exact gap this
-    # mechanism exists to surface).
+    # A-COLLAPSE for Desktop: the SGS device system has no `...Desktop`
+    # attribute at all — the unsuffixed BASE attr IS the desktop value.
+    # Spec 31 §13.4 FR-31-5.2 states this for CSS routing ("Map Desktop ->
+    # the base attr — there is no ...Desktop attr"); FR-31-5.2 itself
+    # governs CSS routing only, so this is an EXTENSION BY ANALOGY to
+    # content routing, not a direct application. Verified empirically
+    # (2026-08-06): across all 23 content-bearing tier-sibling pairs on the
+    # 8 blocks that declare them, not one block declares a `...Desktop`
+    # sibling attr.
+    #
+    # WHICH tier is the base is decided by a stated RULE, never by position.
+    # `device_tier_ranges()` is the R-31-1 permitted-constant (Spec 31 §13.4:
+    # only the 768/1024 boundary widths and the ranges derived from them);
+    # the base tier is the one whose range has NO upper bound. Deriving it
+    # this way — rather than indexing the suffix vocabulary (`[-1]`) — keeps
+    # the answer correct if `modifier_suffixes` is ever reordered, whose row
+    # order is separately load-bearing. `styling_helpers.collect_css_decls_
+    # for_element` performs the SAME Desktop→base collapse on the CSS side;
+    # this is the content-side half of one rule, not a second mechanism.
+    _ranges = device_tier_ranges()
+    _desktop_suffix = max(_ranges, key=lambda r: r[2])[0] if _ranges else None
+    if _desktop_suffix is not None and tier == _desktop_suffix:
+        _trace("db_lookup_hit", lookup="content_attr_for_element",
+               block_slug=block_slug, element=bem_element,
+               attr_name=best[0], tier=best_tier, device_tier=tier,
+               base_attr=best[0], reason="desktop_collapse_to_base")
+        return best
+
+    # A Tablet/Mobile device tier WAS requested — the base attr must have a
+    # declared `{base_attr}{Suffix}` sibling; no fallback to the base attr
+    # (the owner's ruling — a silent fallback here would hide the exact gap
+    # this mechanism exists to surface).
     sibling_name = f"{best[0]}{tier}"
     sibling = _by_name.get(sibling_name)
     if sibling is None:

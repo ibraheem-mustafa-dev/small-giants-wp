@@ -24,12 +24,23 @@ from converter.db import db_lookup
 def _make_db(tmp_path, rows, slot_aliases, breakpoint_suffixes=None):
     """Build a throwaway SQLite file with the tables content_attr_for_element
     reads: block_attributes (attr_name, canonical_slot, emit_shape, role,
-    attr_type, block_slug), slots (slot_name, scope, aliases JSON), and —
-    only when ``breakpoint_suffixes`` is given — modifier_suffixes(suffix,
-    kind), so tests can exercise the tier axis. Deliberately omitting
-    modifier_suffixes (the default) proves the tier-vocabulary lookup
-    degrades to "no exclusion" rather than raising when the table is
-    unavailable — the pre-existing tests above rely on exactly that."""
+    attr_type, block_slug), slots (slot_name, scope, aliases JSON), roles
+    (role_name, classification — content_attr_for_element's FR-31-2.2
+    positive allowlist reads this via `_content_bearing_roles()`; every
+    `role` value used by a fixture's `rows` MUST be classified
+    'content-bearing' here or the function closes the allowlist and returns
+    None before it ever reaches block_attributes), and — only when
+    ``breakpoint_suffixes`` is given — modifier_suffixes(suffix, kind), so
+    tests can exercise the tier axis. Deliberately omitting modifier_suffixes
+    (the default) proves the tier-vocabulary lookup degrades to "no
+    exclusion" rather than raising when the table is unavailable — the
+    pre-existing tests above rely on exactly that.
+
+    Note: `_content_bearing_roles()` is process-wide `lru_cache`d in
+    db_lookup.py, so only the FIRST call within a pytest process actually
+    reads this table — seeding the full role vocabulary here (rather than
+    just the roles a single test happens to use) keeps every test in this
+    file correct regardless of run order."""
     db_path = tmp_path / "fixture.db"
     conn = sqlite3.connect(str(db_path))
     conn.execute(
@@ -38,6 +49,13 @@ def _make_db(tmp_path, rows, slot_aliases, breakpoint_suffixes=None):
     )
     conn.execute(
         "CREATE TABLE slots (slot_name TEXT, scope TEXT, aliases TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE roles (role_name TEXT, classification TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO roles (role_name, classification) VALUES (?, 'content-bearing')",
+        [("text-content",), ("content",), ("image-object",), ("identity",), ("rating",)],
     )
     conn.executemany(
         "INSERT INTO block_attributes (block_slug, attr_name, canonical_slot,"
@@ -251,3 +269,66 @@ def test_missing_modifier_suffixes_table_degrades_to_no_exclusion(tmp_path, monk
     assert result is not None
     attr_name, _emit_shape, _role, _attr_type = result
     assert attr_name == "priceMobile"
+
+
+# ----------------------------------------------------------------------------
+# Desktop A-collapse (Spec 31 §13.4 FR-31-5.2, extended by analogy from CSS
+# routing to content routing): the SGS device system has no `...Desktop`
+# attribute — tier='Desktop' must resolve to the BASE attr, never None.
+# ----------------------------------------------------------------------------
+
+def test_desktop_collapses_to_base_when_tier_siblings_exist(tmp_path, monkeypatch):
+    """tier='Desktop' returns the BASE attr even though Mobile/Tablet siblings
+    are declared — there is no `imageDesktop` attr to look up."""
+    rows = [
+        ("sgs/hero", "image", "media", "nested", "image-object", "object"),
+        ("sgs/hero", "imageMobile", "media", "nested", "image-object", "object"),
+        ("sgs/hero", "imageTablet", "media", "nested", "image-object", "object"),
+    ]
+    db_path = _make_db(tmp_path, rows, [], breakpoint_suffixes=("Mobile", "Tablet", "Desktop"))
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element("sgs/hero", "media", tier="Desktop")
+    assert result is not None
+    attr_name, _emit_shape, _role, _attr_type = result
+    assert attr_name == "image", (
+        f"Expected tier='Desktop' to collapse to the base attr 'image'; got {attr_name!r}"
+    )
+
+
+def test_desktop_collapses_to_base_when_no_tier_siblings_exist(tmp_path, monkeypatch):
+    """tier='Desktop' still returns the BASE attr when NO Mobile/Tablet
+    siblings are declared at all — the collapse does not depend on any
+    sibling existing (unlike Tablet/Mobile, which require one)."""
+    rows = [
+        ("sgs/quote", "attribution", "author", "nested", "text-content", "string"),
+    ]
+    db_path = _make_db(tmp_path, rows, [], breakpoint_suffixes=("Mobile", "Tablet", "Desktop"))
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element("sgs/quote", "author", tier="Desktop")
+    assert result is not None
+    attr_name, _emit_shape, _role, _attr_type = result
+    assert attr_name == "attribution", (
+        f"Expected tier='Desktop' to collapse to the base attr 'attribution'; got {attr_name!r}"
+    )
+
+
+def test_tablet_still_loud_gap_unaffected_by_desktop_collapse(tmp_path, monkeypatch):
+    """NEGATIVE CONTROL: tier='Tablet' with no declared sibling must still
+    return None. This must FAIL if the Desktop collapse is implemented as an
+    unconditional fallback (i.e. applied to every tier, not just Desktop) —
+    proving the collapse is scoped to Desktop only, per the owner's ruling
+    that Tablet/Mobile keep the loud no-fallback gap."""
+    rows = [
+        ("sgs/quote", "attribution", "author", "nested", "text-content", "string"),
+    ]
+    db_path = _make_db(tmp_path, rows, [], breakpoint_suffixes=("Mobile", "Tablet", "Desktop"))
+    monkeypatch.setattr(db_lookup, "SGS_DB", db_path)
+
+    result = db_lookup.content_attr_for_element("sgs/quote", "author", tier="Tablet")
+    assert result is None, (
+        f"Expected None (loud gap, no fallback) for tier='Tablet' with no"
+        f" declared sibling; got {result!r} — the Desktop collapse must not"
+        f" leak into Tablet/Mobile resolution"
+    )
