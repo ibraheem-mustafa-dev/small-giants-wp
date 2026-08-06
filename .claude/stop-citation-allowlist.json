@@ -74,6 +74,10 @@
     "P-UNIVERSAL-RESPONSIVE-ROUTING": {
       "reason": "Same STOP-A-A-CITED-SLUG-MAY-NOT-EXIST evidence citation, same incident.",
       "dated": "2026-07-31"
+    },
+    "P-MAMAS-PRIMARY-CONTRAST": {
+      "reason": "Cited by LEDGER.md as a latent non-blocker (Mamas #e68a95 text-contrast) but NEVER defined in parking.md or STOP-CATALOGUE.md — the token points at an entry that was never written. The LEDGER line now says so explicitly and keeps the issue as prose, so the information is not lost; the remaining match is that EXPLANATION naming the token, not a live citation. Allowlisted rather than parked because opening a parking entry is a commitment that is Beans call, not a gate-satisfying side effect. Remove this entry the moment the issue is either parked properly or fixed.",
+      "dated": "2026-08-06"
     }
   }
 }

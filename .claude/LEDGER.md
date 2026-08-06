@@ -107,7 +107,11 @@ SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pr
   Both WP 7.0.2 (verified 2026-07-20 over SSH on both).
 - **Fixtures on the canary (not assumed clean):** motion 2083/2086; mega page 1762, panel 1745,
   menu 100, item 1746; header CPT 1570, footer CPT 1654.
-- **Latent + open (not blockers):** Mama's `#e68a95` text-contrast (`P-MAMAS-PRIMARY-CONTRAST`) ·
+- **Latent + open (not blockers):** Mama's `#e68a95` text-contrast — ⚠ cited a
+  `P-MAMAS-PRIMARY-CONTRAST` parking entry that **has never existed** in `parking.md` or
+  `STOP-CATALOGUE.md` (the handoff citation gate caught the dangling token 2026-08-06). The issue is
+  real and stays recorded here; the pointer is removed rather than a parking entry invented, because
+  parking is a commitment and Bean opens those. Park it properly if it needs tracking ·
   two unnamed `<main>` landmarks · both sites GENERIC proof headers · FR-37-36.
 
 ---
@@ -213,6 +217,39 @@ CHECK 5 gate. All deployed to the canary and visual-diff evidenced.
   mobile crop in the desktop attr with no gap logged. Phase 2 fixes it; Phase 3 is gated on it.
 - ⛔ **A slot split alone cannot close a collision** — `assign-canonical.py:797-800` preserves
   `derived_selector` when populated, so the gate would read green while the defect persists.
+
+### ⭐ TASK B — NEXT SESSION STARTS HERE. Full task set, in order.
+
+**⛔ CONTENT COLLISIONS ARE 0** (from 9). Gate: `converter/gates/check_content_attr_collisions.py`.
+Commits: `15df8264` D505 · `7f460333` D506 · `b717717d` · `13a42d83` · `64aea72f` D507 · `e6556fb5`.
+
+**⛔ ~22 files are UNCOMMITTED in the shared worktree.** Build green, deployed to canary, DB reseeded.
+The ONLY blocker is the visual-diff gate. Plan: `~/.claude/plans/go-spec-35-task-concurrent-pancake.md`.
+
+| # | Task | Notes |
+|---|---|---|
+| **B1** | **Unblock the wave-2 commit.** `hero`+`media` are verified (JS-off capture); `team-member`+`before-after` have **no live instance** to observe. ⛔ Do NOT write a PASS for those two — the gate reads only `verdict:` + `first_paint_capture_passed:`, so a fabricated PASS sails through. | Bean's route: build a fresh canary page with team-member (photo tier set) + before-after + a media video (autoplay/muted tiers set), then capture + report honestly. Post content via the block editor in Playwright/chrome-devtools — `wp-content-guard.py` blocks WP-CLI post_content writes. |
+| **B2** | **Re-provision the F3 fixture I trashed.** Post **1605 "F3 Oracle sgs-team-member"** held a stored `memberMedia`; trashed (recoverable). It is an F3 render-oracle fixture, NOT scratch. `scripts/oracle/provision_fixture_canaries.py --only sgs-team-member` — needs a `--pages-map` I did not locate. Post **2114** (motion track's Step22 canary) also trashed, also recoverable. | Until re-provisioned the F3 oracle has no team-member canary. |
+| **B3** | **DELETE hero's `video` variant** (Bean 2026-08-06, explicitly NOT design-gated). It is incoherent: `render.php:763,767` render video on ANY variant, while `:291` suppresses the standard bg image only when `$is_video` — so a video on `standard` renders image AND video together. `sgs/container` already solves this with plain precedence and NO variant (`class-sgs-container-wrapper.php:578`), and hero is meant to mirror it. `split` STAYS — it is a layout, not a background layer. | Touches stored content (`variant="video"` instances). |
+| **B4** | **Retire `scalar-media`** — full delete list + sequence in the plan file. ⛔ Read D474 first: "redundant because emit_shape exists" was MEASURED FALSE. Proof = `test_art_direction_live_path.py` (4 tests) staying green, nothing else. | Unblocked by D506. |
+| **B5** | 9 video attrs still carry `role IS NULL`; `sgs/media.thumbnail` is `string` while `sgs/image-sequence.thumbnail` is `object` — same concept, two shapes. | |
+
+**Verified FALSE this session (do not re-investigate):** another agent claimed "the container lost its
+background and sgs/media lost both imageUrl and imageAlt". All four rows are intact with correct
+roles, slots and selectors; `imageAlt` still carries `alt_companion_attr='imageUrl'`; and the live
+JS-off capture rendered the media image with both `src` and `alt`. DB, routing probe and live DOM all
+agree.
+
+**`P-HERO-SUB-MAXWIDTH-NESTED-CHILD` is still OPEN** (parked 2026-07-06). Root cause already traced:
+a nested leaf is built `is_root=False`, so `layer_detect.py` cannot classify it OUTER; it lands
+CONTENT, routes `max-width` to `contentWidth`, and `sgs/text` has no such attr, so it is dropped.
+Two candidate fixes named in the entry.
+
+**Accessibility defect fixed in passing (uncommitted):** `before-after/view.js` read
+`matchMedia(...).matched` — not a real property — so the documented "always suppress autoplay under
+reduced motion" guarantee was a **silent no-op on every page load**. Now `.matches`; zero instances
+remain repo-wide. ⚠ It has NO regression guard — a test asserting reduced-motion actually suppresses
+autoplay would have caught it, and should be added.
 - **`--desktop` draft nodes: 1** (`index.html:780`); 2 image nodes total. D480's "7" counted CSS
   rules and fixture copies.
 
