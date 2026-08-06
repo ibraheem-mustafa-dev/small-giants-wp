@@ -92,9 +92,11 @@ SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pr
   `git branch --show-current` · D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (**heading-anchored on purpose** — the old unanchored form reported D5557 on 2026-08-01 by matching
   the hex colour `#0D5557`; true ceiling was D453)
-  (currently D498 as of 2026-08-06 — re-check live BEFORE writing any D reference; this line has
-  drifted before and will again) · framework
-  counts via `/sgs-db` or `/wp-blocks`, never cached in prose.
+  (**do NOT cache the number here — run the command.** This cell held a stale "D498" for the whole
+  of 2026-08-06 while the top of this same file already said 504, and an independent QC subagent
+  caught the self-contradiction that the file's own "never trust this line" caveat was written to
+  prevent. A caveat is not a mechanism; the command is.) · framework counts via `/sgs-db` or
+  `/wp-blocks`, never cached in prose.
 - **Canonical specs:** cloning = `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (read IN FULL each
   cloning session). Motion = `specs/38-SGS-MOTION-SYSTEM.md`. Nav = `specs/36-...`; header/footer
   = `specs/37-...`. Full roster: `specs/README.md`.
