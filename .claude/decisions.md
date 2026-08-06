@@ -1,5 +1,50 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D501 — Detectors 6 + 7 built and VERIFIED, deliberately NOT wired to seed yet [ROUTINE]
+
+**2026-08-06.** Task 2's 20 rows had verdicts but no mechanism. Two were built. Both are
+self-tested with proven-failing negative controls. **Neither writes a role yet** — the reason is
+the finding, not a caveat.
+
+**Detector 6 — `detector6_native_support_and_style_emission.py`** (delegated, then verified
+independently). Two mechanisms: (a) an attribute WordPress core injects because the block declares
+the matching `supports` key is `technical` by construction; (b) a value written into the contents of
+a `<style>` element is `styling` by construction. Closes 5 rows: `button.anchor`, `heading.anchor`,
+`button.className`, `nav-drawer.sgsCustomCss`, `nav-menu.sgsCustomCss`. **All 5 AGREE with the
+2026-08-05 hand investigation.** The `className` trap was caught in the brief before dispatch:
+`sgs/button` has NO `supports.className` key at all — the backing key is `customClassName`, so a
+detector keyed on `supports.className` would have been silently inert. Verified by re-running it
+against negative controls (`nav-drawer.anchor`, whose `supports.anchor` is genuinely `false`, and a
+row belonging to the other detector) and by reading each cited `block.json` line myself.
+
+**Detector 7 — `detector7_css_paint_flow.php`** (inline). Forward variable-flow to a PAINT site,
+answering the question D4's own comment names as its gap. It does NOT re-implement PHP statement
+splitting: it `require`s `detector1_render_escaping.php` and reuses its tokeniser. That file gained
+a CLI guard for this, whose behaviour-neutrality was PROVEN by diffing its full `--glob` output
+before and after (515 lines, md5 `4470199B…`, byte-identical). Two paint shapes, both derived from
+real code: CSS_VALUE (reaches a CSS helper / custom property) and CSS_CLASS (concatenated into a
+class list — a BEM modifier IS a paint instruction).
+
+**Its own negative control caught two defects in it, which is the point of having one.**
+(1) A generic "declaration shape" regex claimed `post-grid.orderBy` — a WP_Query key that paints
+nothing — because the pattern matched any quoted string containing `word:`. Removed; only precise
+signals remain. (2) Worse: naive transitive carrier tracking laundered DERIVED values back into
+evidence about their source. `option-picker.defaultSelected` chained through `is_checked`, a boolean
+COMPARING the default against an option, and then "landed in a class". Fixed with two structural
+guards — **combination dilutes** (an RHS mentioning more than one variable owns no single value) and
+**a predicate is not its subject** (a comparison yields a boolean ABOUT the value). That removed 3
+false claims; the survivors all sit at 1-2 hops.
+
+**Why nothing is seeded: D7 CONTRADICTS the hand investigation on 3 of its 7 rows.**
+Agrees on `mega-panel.viewAllPlacement`, `separator.gradientColourStart`/`End`, `timeline.orientation`.
+Disagrees on `separator.contentIconName` (report: CONTENT — a Lucide slug structurally identical to
+`sgs/icon.iconName`, which already carries `icon-lucide`) and `site-header-row`/`site-footer-row.rowSlot`
+(report: TECHNICAL, and one of only two MEDIUM-confidence calls it made, explicitly noting "it IS
+rendered into a class name, but the value is a fixed enum slot identifier"). On those the report saw
+exactly what the detector sees and drew the opposite conclusion — a genuine judgement disagreement,
+not a bug. Auto-seeding would silently overwrite a considered human verdict with a mechanical one,
+which is the failure this whole role vocabulary exists to prevent. Wiring awaits Bean's call.
+
 ## D500 — a RENDER-side read outranks an EDITOR-side one in Detector 4; pool 36 → 34 [ROUTINE]
 
 **2026-08-06.** `find_reference()` returned "the first structured read" in `_iter_sources`

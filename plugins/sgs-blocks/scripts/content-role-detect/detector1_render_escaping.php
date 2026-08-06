@@ -947,13 +947,26 @@ function infer_block_slug(string $file): ?string {
 }
 
 // --- entry point ---
-$args = array_slice($argv, 1);
-$repoRoot = 'c:/Users/Bean/Projects/small-giants-wp';
+//
+// GUARDED SO THIS FILE CAN BE `require`d (2026-08-06). Detector 7 reuses
+// `tokenize_to_statements()` / `match_assignment()` / `extract_attr_keys()` from here
+// rather than re-implementing PHP statement splitting in Python — this file's own
+// sibling (detector4) records why that matters: "Reimplementing it here, badly, under
+// time pressure, is how a confident wrong classifier gets shipped."
+//
+// Without the guard, `require`ing this file would run the WHOLE 84-block scan as a side
+// effect of importing one function. The guard changes NOTHING about CLI behaviour:
+// verified by diffing the full `--glob` output before and after (515 lines, md5
+// 4470199B3328377E39829BE4FDDAEE57, byte-identical).
+if (PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === realpath(__FILE__)) {
+    $args = array_slice($argv, 1);
+    $repoRoot = 'c:/Users/Bean/Projects/small-giants-wp';
 
-if (empty($args) || $args[0] === '--glob') {
-    $files = collect_default_files($repoRoot);
-} else {
-    $files = $args;
+    if (empty($args) || $args[0] === '--glob') {
+        $files = collect_default_files($repoRoot);
+    } else {
+        $files = $args;
+    }
+
+    run($files, []);
 }
-
-run($files, []);
