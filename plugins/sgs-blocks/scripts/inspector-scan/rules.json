@@ -27,8 +27,8 @@
 			"checklistItem": 1,
 			"file": "rules/01-tab-group.js",
 			"mode": "advisory",
-			"advisoryReason": "Measured live 2026-08-03: 65/84 blocks have 2+ inspector panels with no group prop (panel-counted, not InspectorControls-element-counted — see the rule file header for the false-green this replaced). Independently cross-checked with a second, differently-written script: 65/65 match, exact same population. This is a large real backlog, not close to promotable.",
-			"openBacklog": 65
+			"advisoryReason": "Measured live 2026-08-03: 65/84 blocks have 2+ inspector panels with no group prop (panel-counted, not InspectorControls-element-counted — see the rule file header for the false-green this replaced). Independently cross-checked with a second, differently-written script: 65/65 match, exact same population. This is a large real backlog, not close to promotable. RE-MEASURED 2026-08-06: a live `node run.js --json` run now reports 66/84 (one further block drifted into the backlog since 2026-08-03) — figure updated below, no rule logic changed.",
+			"openBacklog": 66
 		},
 		{
 			"id": "18-decorative-image-aria",

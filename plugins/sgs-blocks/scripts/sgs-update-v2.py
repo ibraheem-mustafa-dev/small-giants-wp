@@ -5253,7 +5253,9 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
       Single-purpose DB/source scanners:
       - check-fx-list-drift.py --check: fx_effects table currency
       - check-box-family-guard.py --report: box_family attribute constraints
-      - audit-inspector-conformance.js --json: inspector_control_type classification
+      - inspector-scan/run.js --json: inspector_control_type classification (retired
+        audit-inspector-conformance.js repointed here 2026-08-06, Spec 35 Task D —
+        same --json contract shape difference handled in the parsing branch below)
       - audit-feature-parity.py --check: feature parity against block roster
       - dbschema/check_row_floor.py --check: DB row-count regression vs the committed floor
       - dbschema/check_schema_drift.py --check: schema.sql vs live DB DDL drift
@@ -5319,8 +5321,15 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
       - consistency/check-box-flat.py — owned by another in-flight track
         this session (box-object migration); already invoked as a sub-gate
         of `run-consistency-gates.py`, not added standalone here.
-      - src/blocks/**, scripts/inspector-scan/ — out of scope for this
-        change (owned by other in-flight tracks this session).
+      - src/blocks/** — out of scope for this change (owned by other
+        in-flight tracks this session).
+      - scripts/inspector-scan/ — REPOINTED here 2026-08-06 (Spec 35 Task D):
+        this stage's "inspector-conformance" scanner entry above now runs
+        `inspector-scan/run.js --json` (the old audit-inspector-conformance.js
+        was deleted the same day, its --check gate replaced in prebuild).
+        Left listed here only as a historical note that inspector-scan/ was
+        the excluded thing this line used to point at — the entry is no
+        longer excluded.
 
     Idempotent: scanners use --report/--check/--json (never mutate state,
     except db-consistency/dbschema baselines which are read-only in --check
@@ -5344,7 +5353,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         ("db-consistency/run.py", "db-consistency", ["--report"]),
         ("check-fx-list-drift.py", "fx-list-drift", ["--check"]),
         ("check-box-family-guard.py", "box-family-guard", ["--report"]),
-        ("audit-inspector-conformance.js", "inspector-conformance", ["--json"]),  # Parse JSON for findings by severity
+        ("inspector-scan/run.js", "inspector-conformance", ["--json"]),  # Parse JSON for findings by severity (nested rules[].findings shape — see parsing branch below)
         ("audit-feature-parity.py", "feature-parity", ["--check"]),  # exit code signals but don't fail
         ("cheat-gate/run.py", "cheat-gate", ["--report"]),
         ("excluded-gate/run.py", "excluded-gate", ["--report"]),
@@ -5647,12 +5656,18 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                                 break
 
             elif label == "inspector-conformance":
-                # Parse audit-inspector-conformance.js --json output (CRITICAL FIX: parse JSON, not scrape text)
+                # Parse inspector-scan/run.js --json output (CRITICAL FIX: parse JSON, not scrape text)
                 # PROOF: coordinator found defect — output had 2 warn findings but stage reported "0 WARN-severity findings"
+                # REPOINTED 2026-08-06 (Spec 35 Task D): audit-inspector-conformance.js retired;
+                # its --json shape was a flat top-level `findings` array. The new scanner's --json
+                # shape nests findings per rule (`rules: [{id, mode, findings: [...]}]`) — flatten
+                # before counting, same severity/status fields per finding either way.
                 try:
                     import json as json_module
                     data = json_module.loads(stdout)
-                    findings_list = data.get("findings", [])
+                    findings_list = [
+                        f for rule in data.get("rules", []) for f in rule.get("findings", [])
+                    ]
 
                     # Count by severity
                     by_severity = {}
