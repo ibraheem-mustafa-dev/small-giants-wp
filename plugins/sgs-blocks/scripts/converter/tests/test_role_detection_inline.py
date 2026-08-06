@@ -47,7 +47,13 @@ def _make_db(rows):
         "CREATE TABLE block_attributes ("
         " id INTEGER PRIMARY KEY, block_slug TEXT, attr_name TEXT, role TEXT,"
         " attr_type TEXT, enum_values TEXT, description TEXT,"
-        " css_property TEXT, canonical_slot TEXT)"
+        " css_property TEXT, canonical_slot TEXT,"
+        # TIER 3.45 (link-fragment, 2026-08-06) reads output_signature to find the
+        # `link_template` render.php assembles around a URL fragment. Added here
+        # because the fixture must carry every column the real function READS --
+        # a missing column raised OperationalError rather than quietly skipping,
+        # which is the correct behaviour: swallowing it would hide schema drift.
+        " output_signature TEXT)"
     )
     conn.execute("CREATE TABLE roles (role_name TEXT, classification TEXT)")
     # TIER 3.4 (unit inheritance) reads the unit suffix from `modifier_suffixes` rather

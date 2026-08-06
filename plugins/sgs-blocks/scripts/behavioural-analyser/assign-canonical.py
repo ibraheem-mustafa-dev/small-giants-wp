@@ -896,6 +896,7 @@ def run() -> None:
         f"styling-wrapper={_rd['wrapper_styling_filled']} "
         f"styling-upgraded={_rd['styling_upgraded']} "
         f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
+        f"link-content={_rd['link_filled']} "
         f"boolean-swept={_rd['boolean_swept']} | "
         f"companion-image={_rd['companion_image_filled']} "
         f"companion-alt={_rd['companion_alt_filled']} "
@@ -2189,6 +2190,43 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
             )
             unit_inherited += 1
 
+    # TIER 3.45 -- LINK-FRAGMENT (2026-08-06, Task A5). A row whose output_signature
+    # carries a `link_template` is one the block assembles a URL AROUND: the operator
+    # supplies only the variable part. That template is positive, structural evidence
+    # written from render.php by extract-signatures._detect_link_template -- not an
+    # inference from the attribute's name -- and it is exactly the `link-content` role's
+    # contract ("a CONCATENATED FRAGMENT of a URL, not a whole href").
+    #
+    # WHY THIS TIER HAD TO EXIST. The role, its extractor
+    # (services/field_extractors.extract_link_fragment) and its reader
+    # (db_lookup.link_template_for) were all built and threaded on 2026-08-06 (d5766eff,
+    # 580f7885) -- and the whole chain was INERT, because nothing ever assigned the role.
+    # Measured before this tier: `link-content` on ZERO rows, and no row anywhere carried
+    # a link_template, because /sgs-update only ever runs extract-signatures with
+    # --task-b-only (sgs-update-v2.py:1178), which is the inspector_control_type branch.
+    # A built, tested, unreachable mechanism reads exactly like a missing one.
+    #
+    # ORDERED BEFORE TIER 3.5. Both whatsapp-cta rows would otherwise be eligible for the
+    # enum backstop's shape of generic fill; a specific CONTENT role must win over a
+    # generic mode key, which is the same precedence TIER 3 already encodes.
+    #
+    # THE GATE IS THE EXTRACTOR'S OWN CONTRACT, restated here rather than assumed:
+    # extract_link_fragment fails closed unless the template holds EXACTLY ONE {value}
+    # placeholder (field_extractors.py:263). Seeding a role the extractor would then
+    # refuse is how a row acquires a role that does nothing, so this tier applies the
+    # identical test before assigning -- the seeder and the consumer agree by construction.
+    link_filled = 0
+    for row_id, sig_json in conn.execute(
+        "SELECT id, output_signature FROM block_attributes "
+        "WHERE role IS NULL AND output_signature LIKE '%link_template%'"
+    ).fetchall():
+        if not link_template_is_seedable(sig_json):
+            continue
+        cur.execute(
+            "UPDATE block_attributes SET role = 'link-content' WHERE id = ?", (row_id,)
+        )
+        link_filled += 1
+
     # TIER 3.5 -- ENUM BACKSTOP (2026-08-05, Bean). A row that declares `enum` in its
     # block.json is a SELECT: the author picks one of a fixed list. That is a positive,
     # structural fact seeded by /sgs-update Stage 1 straight from block.json
@@ -2333,6 +2371,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         "styling_upgraded": styling_upgraded,
         "unit_inherited": unit_inherited,
         "enum_filled": enum_filled,
+        "link_filled": link_filled,
         # TIER 3.6 -- boolean attrs whose role was content-bearing, reclassified to
         # 'boolean-visibility'. A NON-ZERO count here on a steady-state reseed means a
         # writer upstream is still mapping a NAME to a content role without checking
@@ -3161,6 +3200,69 @@ def _self_test_unit_inheritance() -> int:
     return 0
 
 
+def link_template_is_seedable(sig_json: "str | None") -> bool:
+    """TIER 3.45's gate: may this output_signature earn role `link-content`?
+
+    THE RULE IS THE CONSUMER'S OWN CONTRACT, not a second opinion about it.
+    ``services/field_extractors.extract_link_fragment`` fails closed unless the
+    template holds EXACTLY ONE ``{value}`` placeholder (field_extractors.py:263).
+    Seeding a role the extractor would then refuse produces a row that carries a
+    role and does nothing -- the precise failure Task A5 existed to repair -- so
+    the seeder applies the identical test and the two agree by construction.
+
+    Module-level and shared with the tier itself so the self-test drives the REAL
+    gate rather than a paraphrase of it (this file's own standard, D499).
+    """
+    if not sig_json:
+        return False
+    try:
+        signature = json.loads(sig_json)
+    except (ValueError, TypeError):
+        return False
+    if not isinstance(signature, dict):
+        return False
+    template = signature.get("link_template")
+    return isinstance(template, str) and template.count("{value}") == 1
+
+
+def _self_test_link_fragment_tier() -> int:
+    """Prove TIER 3.45 can FAIL. Drives the real gate (link_template_is_seedable).
+
+    Planted shapes, each a real failure mode rather than a variation on the happy path:
+      1. one {value}                  -> seedable   (the sgs/whatsapp-cta shape)
+      2. ZERO {value}                 -> refused    (nothing to recover)
+      3. TWO {value}                  -> refused    (extract_link_fragment's own gate:
+                                                     the split is ambiguous)
+      4. no link_template key at all   -> refused
+      5. malformed JSON                -> refused, not raised (a crash here would abort
+                                          the whole reseed)
+      6. link_template present but NULL -> refused
+    Returns 0 on pass, 1 on fail.
+    """
+    cases = [
+        ('{"link_template":"https://wa.me/{value}"}', True, "single placeholder"),
+        ('{"link_template":"https://wa.me/"}', False, "zero placeholders"),
+        ('{"link_template":"https://x/{value}/{value}"}', False, "two placeholders"),
+        ('{"type":"php-render"}', False, "no link_template key"),
+        ("{not json", False, "malformed JSON must not raise"),
+        ('{"link_template":null}', False, "null template"),
+        (None, False, "no signature at all"),
+    ]
+    failures = []
+    for sig, want, why in cases:
+        got = link_template_is_seedable(sig)
+        if got is not want:
+            failures.append(f"{why}: got {got}, expected {want} (sig={sig!r})")
+
+    if failures:
+        print(f"SELF-TEST FAILED (link-fragment tier) — {len(failures)} of {len(cases)}")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"SELF-TEST PASSED (link-fragment tier) — {len(cases)} checks green.")
+    return 0
+
+
 def _self_test_enum_backstop() -> int:
     """Prove the TIER 3.5 enum backstop can FAIL, on a throwaway in-memory DB.
 
@@ -3905,5 +4007,6 @@ if __name__ == "__main__":
                  or _self_test_enum_backstop() or _self_test_companion_tier()
                  or _self_test_boolean_sweep() or _self_test_suffix_role_revive()
                  or _self_test_type_sweep() or _self_test_wrapper_styling_tier()
+                 or _self_test_link_fragment_tier()
                  or _self_test_styling_upgrade())
     main()
