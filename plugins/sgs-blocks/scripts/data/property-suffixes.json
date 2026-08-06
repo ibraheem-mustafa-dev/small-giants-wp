@@ -752,12 +752,12 @@
       null
     ],
     [
-      "Poster",
+      "Thumbnail",
       "image-object",
       null,
       0,
       null,
-      "Poster image sub-attribute (videoPosterUrl)",
+      "The still shown before playback and while paused. Renamed from the Poster suffix 2026-08-06 when sgs/media.videoPoster and sgs/image-sequence.posterMedia became thumbnail: \"poster\" is a print term and a poor client-facing label. Edited IN PLACE at this rowid because property_suffixes order is load-bearing (first row wins, STOP-CATALOGUE E1).",
       null
     ],
     [

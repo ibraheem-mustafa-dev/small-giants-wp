@@ -1,7 +1,7 @@
 {
-  "__doc": "Canonical slot vocabulary (element + section scope) with aliases and standalone-block routing. THE source of truth for the `slots` table (Spec 31 §13.5). db_lookup._migrate_slots() seeds it at module load.",
-  "__why": "Converter-load-bearing with NO writer anywhere: the walker resolves every BEM element name through `slots.aliases` and every section through `slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live 2026-08-02 (Phase 1).",
-  "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 one-off whose four alias additions are BAKED INTO this capture. It became redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; there is no script to re-run.",
+  "__doc": "Canonical slot vocabulary (element + section scope) with aliases and standalone-block routing. THE source of truth for the `slots` table (Spec 31 Â§13.5). db_lookup._migrate_slots() seeds it at module load.",
+  "__why": "Converter-load-bearing with NO writer anywhere: the walker resolves every BEM element name through `slots.aliases` and every section through `slots.standalone_block`. Empty â‡’ nothing resolves. Captured from live 2026-08-02 (Phase 1).",
+  "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py â€” a 2026-05-30 one-off whose four alias additions are BAKED INTO this capture. It became redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; there is no script to re-run.",
   "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
   "__columns": [
     "slot_name",
@@ -45,19 +45,51 @@
       null
     ],
     [
-      "media",
+      "background-image",
       "element",
-      "[\"badge-img\", \"bg-img\", \"decorMedia\", \"embed\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"memberMedia\", \"photo\", \"picture\", \"poster\", \"posterMedia\", \"side-image\", \"side-img\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"splitimage\", \"splitMedia\", \"thumb\", \"thumb-img\", \"video\"]",
+      "[\"background\", \"backgroundImage\", \"bg-image\", \"bg-img\", \"bg-media\", \"bgImage\", \"heroImage\"]",
       "sgs/media",
-      "Polymorphic image/video slot",
+      "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
       null
     ],
     [
-      "backgroundMedia",
+      "background-svg",
       "element",
-      "[\"background\", \"backgroundImage\", \"backgroundVideo\", \"bg-img\", \"bg-media\", \"bg-video\", \"bgColor\", \"bgColour\", \"bgImage\", \"bgVideo\", \"heroImage\", \"svg-bg\", \"video-bg\"]",
+      "[\"bgSvg\", \"svg-bg\"]",
       "sgs/media",
-      "Background polymorphic",
+      "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null
+    ],
+    [
+      "background-video",
+      "element",
+      "[\"backgroundVideo\", \"bg-video\", \"bgVideo\", \"video-bg\"]",
+      "sgs/media",
+      "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null
+    ],
+    [
+      "image",
+      "element",
+      "[\"badge-img\", \"decorMedia\", \"image\", \"image-wrap\", \"img\", \"img-wrap\", \"media\", \"memberMedia\", \"photo\", \"picture\", \"side-image\", \"side-img\", \"sideImage\", \"slot-img\", \"split-image\", \"split-image--bleed\", \"split-image--desktop\", \"split-image--mobile\", \"splitMedia\", \"splitimage\", \"thumb\", \"thumb-img\"]",
+      "sgs/media",
+      "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone. The bare token \"media\" is carried here from the retired polymorphic slot: it was the SLOT NAME, and the resolver matches canonical_slot == bem_element, so the token resolved via the slot name itself. Dropping it silently broke every draft authoring __media (caught by test_walk_leg2_image_with_alt_lifts_both_url_and_alt). It resolves to IMAGE because that is the dominant meaning of a bare media token; a video draft should author __video or __background-video.",
+      null
+    ],
+    [
+      "thumbnail",
+      "element",
+      "[\"poster\", \"posterMedia\", \"thumbnail\", \"videoPoster\"]",
+      "sgs/media",
+      "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
+      null
+    ],
+    [
+      "video",
+      "element",
+      "[\"embed\", \"video\", \"videoUrl\"]",
+      "sgs/media",
+      "Split from the polymorphic backgroundMedia/media slots (Task B). Each media kind needs its own generated derived_selector, because the selector is a pure function of the slot and the converter routes on it alone.",
       null
     ],
     [
@@ -457,7 +489,7 @@
       "element",
       "[]",
       null,
-      "Focus-ring outline (a11y) — width / colour / offset / opacity",
+      "Focus-ring outline (a11y) â€” width / colour / offset / opacity",
       null
     ],
     [
@@ -465,7 +497,7 @@
       "element",
       "[]",
       null,
-      "Backdrop / scrim — modal / popup / drawer overlay",
+      "Backdrop / scrim â€” modal / popup / drawer overlay",
       null
     ],
     [
@@ -601,7 +633,7 @@
       "element",
       "[]",
       null,
-      "Position slot — CSS position keyword or coordinate object",
+      "Position slot â€” CSS position keyword or coordinate object",
       null
     ],
     [
@@ -665,7 +697,7 @@
       "element",
       "[]",
       null,
-      "Per-instance form field content (fieldName, placeholder, helpText, required, conditional*). Not a designable visual slot — content lives on each form instance, not in the block-attribute design vocabulary.",
+      "Per-instance form field content (fieldName, placeholder, helpText, required, conditional*). Not a designable visual slot â€” content lives on each form instance, not in the block-attribute design vocabulary.",
       null
     ],
     [
@@ -697,7 +729,7 @@
       "element",
       "[\"progress-bar\", \"progressBar\", \"progress-fill\"]",
       null,
-      "Progress indicator — fill level or step tracker",
+      "Progress indicator â€” fill level or step tracker",
       null
     ],
     [
@@ -777,7 +809,7 @@
       "element",
       "[]",
       null,
-      "XS-3 2026-05-30: passthrough — walker folds CSS into parent block className; no separate emit",
+      "XS-3 2026-05-30: passthrough â€” walker folds CSS into parent block className; no separate emit",
       null
     ],
     [
@@ -785,7 +817,7 @@
       "element",
       null,
       "sgs/notice-banner",
-      "Disclaimer/legal callout text rendered as a notice box (bg+border+padding). Added fresh 2026-06-03 (Task 1 BEM routing fix) — Bean-directed -> sgs/notice-banner.",
+      "Disclaimer/legal callout text rendered as a notice box (bg+border+padding). Added fresh 2026-06-03 (Task 1 BEM routing fix) â€” Bean-directed -> sgs/notice-banner.",
       null
     ],
     [
@@ -817,7 +849,7 @@
       "element",
       "[\"pill-group\", \"pills\", \"option-group\", \"variant-group\", \"pack-group\", \"flavour-group\", \"size-group\"]",
       "sgs/option-picker",
-      "Exclusive radio-group pill chooser — emits sgs/option-picker with optionItems array (FR-24-15)",
+      "Exclusive radio-group pill chooser â€” emits sgs/option-picker with optionItems array (FR-24-15)",
       "{\"pillStyle\": \"filled\", \"typeKey\": \"\"}"
     ],
     [
@@ -825,7 +857,7 @@
       "element",
       "[]",
       null,
-      "Content-cap sub-area label — the constrained content-width box inside a block's outer box. canonical_slot value for contentWidth*/contentPadding* layout attrs (metadata only; EMPTY aliases by design — never matched against draft wrapper classes; see 2026-05-24 inner/body-row removal note).",
+      "Content-cap sub-area label â€” the constrained content-width box inside a block's outer box. canonical_slot value for contentWidth*/contentPadding* layout attrs (metadata only; EMPTY aliases by design â€” never matched against draft wrapper classes; see 2026-05-24 inner/body-row removal note).",
       null
     ],
     [
@@ -833,7 +865,7 @@
       "element",
       "[]",
       "sgs/accordion-item",
-      "Single expandable panel inside sgs/accordion — emits sgs/accordion-item with title attr from __heading child (Gate A 2026-06-10)",
+      "Single expandable panel inside sgs/accordion â€” emits sgs/accordion-item with title attr from __heading child (Gate A 2026-06-10)",
       null
     ],
     [
@@ -841,7 +873,7 @@
       "element",
       "[\"author\"]",
       null,
-      "Attribution/author scalar content slot — content_attr_for_element alias-tier ONLY (standalone_block intentionally NULL so resolve_slug_from_bem/_slot_alias_to_standalone never routes it to a standalone child block). Universal: any block's content-bearing attr may declare canonical_slot='attribution' to accept an 'author'-classed draft element as its own scalar value. Added 2026-07-25 fixing the sgs/quote 3-block cloning bug.",
+      "Attribution/author scalar content slot â€” content_attr_for_element alias-tier ONLY (standalone_block intentionally NULL so resolve_slug_from_bem/_slot_alias_to_standalone never routes it to a standalone child block). Universal: any block's content-bearing attr may declare canonical_slot='attribution' to accept an 'author'-classed draft element as its own scalar value. Added 2026-07-25 fixing the sgs/quote 3-block cloning bug.",
       null
     ]
   ]

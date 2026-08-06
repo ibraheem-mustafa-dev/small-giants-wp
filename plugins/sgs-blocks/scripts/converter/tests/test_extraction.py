@@ -1119,10 +1119,17 @@ def test_object_typed_image_attr_still_lifts_its_alt_companion():
     `if alt_value:` companion lift never fired. `image-alt` is a content-bearing role,
     so that was a real content drop.
 
-    sgs/image-sequence is the live instance: `posterMedia` is object-typed {url,id} and
-    declares `posterAlt` as a SEPARATE string companion. Spec 31's data map is explicit
-    that the companion DECLARATION is the gate ("declared per row, never a hardcoded attr
-    name") — never the attribute's type.
+    sgs/image-sequence is the live instance: the image attr is object-typed {url,id} and
+    declares a SEPARATE string alt companion. Spec 31's data map is explicit that the
+    companion DECLARATION is the gate ("declared per row, never a hardcoded attr name")
+    — never the attribute's type.
+
+    ⚠ RENAMED 2026-08-06, same day, by the Task B thumbnail work: `posterMedia`/
+    `posterAlt` are now `thumbnail`/`thumbnailAlt` ("poster" is a print term; the value
+    is the still shown before playback and while paused). Only the NAMES moved — the
+    behaviour this guards is unchanged, and the draft-side token `poster` still routes
+    here because it was kept as an alias of the new `thumbnail` slot. The assertions
+    below were updated in step with the rename, NOT relaxed.
     """
     node = _node(
         '<div class="sgs-image-sequence">'
@@ -1135,11 +1142,17 @@ def test_object_typed_image_attr_still_lifts_its_alt_companion():
         pytest.skip(f"recognition did not resolve sgs/image-sequence (got {rec and rec.slug})")
     results = extract_content(rec, node)
     lifted = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert "posterAlt" in lifted, (
+    assert "thumbnailAlt" in lifted, (
         "object-typed image attr dropped its alt — the companion lift did not fire. "
         f"lifted={lifted}"
     )
-    assert lifted["posterAlt"] == "Snooza chair rotating through 36 frames"
+    assert lifted["thumbnailAlt"] == "Snooza chair rotating through 36 frames"
+    # The image itself must still lift alongside its companion — the A6 defect was
+    # the object never reaching the scalar-lift leg AT ALL, so asserting only the
+    # alt would let that original failure return unnoticed.
+    assert lifted.get("thumbnail", {}).get("url") == "/frame-001.jpg", (
+        f"the object-typed image attr itself did not lift. lifted={lifted}"
+    )
 
 
 def test_walk_leg2_image_without_alt_emits_no_alt_key():
