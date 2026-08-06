@@ -109,10 +109,6 @@
     "styling-behaviour",
     "Stacking-context / positioning value (e.g. sgs/decorative-image.zIndex, css_property='z-index') -- a layout-positioning property, not content. Added 2026-07-15 (F6: enrichment derived the role before its roles row existed; the D128 scalar-media class of gap). CONSUMER NOTE (2026-08-04): no converter code branches on the literal 'position' anywhere -- zIndex's value transfers via the generic css_property join, not a role-specific check. Beyond zIndex, the wider position/inset/top/right/bottom/left family has property_suffixes rows seeded (D250) but 'NO block currently declares a matching attr for any of these six' (converter/resolvers/outer_box.py:43-46) -- a prepared-but-unused CSS destination family, honest NO_DESTINATION gap rather than a bug."
   ],
-  "query-descriptor": [
-    "styling-behaviour",
-    "Seeded in the role vocabulary but currently UNUSED -- zero block_attributes rows carry it (verified 2026-08-04: `SELECT COUNT(*) FROM block_attributes WHERE role='query-descriptor'` = 0) and no converter code reads the literal 'query-descriptor'. A role nothing reads: a genuine finding, not yet wired to any attr or resolver."
-  ],
   "rating": [
     "content-bearing",
     "Star/numeric rating value (e.g. sgs/testimonial.ratingStars) -- a content-bearing display value, not a styling property. Consumer: converter/resolvers/scalar_content.py:122,165 (is_rating: role == 'rating' and attr_type == 'number' -> star-count lift via aria-label/glyph count); converter/resolvers/array_content.py:168-169's _FLAT_SELF_ROLES also lets a flat array item self-extract a rating role (L1c)."
