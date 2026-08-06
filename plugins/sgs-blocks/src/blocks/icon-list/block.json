@@ -176,7 +176,7 @@
 		},
 		"textColour": {
 			"type": "string",
-			"default": "text"
+			"default": ""
 		},
 		"gap": {
 			"type": "string",

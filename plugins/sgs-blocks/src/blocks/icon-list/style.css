@@ -91,9 +91,21 @@
 	line-height: 1.5;
 }
 
-.sgs-icon-list__text:not([style*="color"]) {
-	color: var(--wp--preset--color--text);
-}
+/* NO rest-state colour fallback here — deliberately. A
+ * `.sgs-icon-list__text:not([style*="color"]) { color: var(--wp--preset--color--text) }`
+ * rule lived here until 2026-08-06 and was a measured a11y defect. The
+ * `:not([style*="color"])` guard only ever matched INLINE output; the 2026-07-10
+ * no-inline migration moved this block's colours into the scoped <style>, so no
+ * inline style is emitted any more, the guard always matched, and the dark text
+ * token was painted unconditionally. Inside a dark drawer that computed
+ * rgb(58,46,38) on rgb(58,46,38) — contrast 1:1, text invisible — measured on 6
+ * elements across the centred-statement and split-zone-serif POC variants.
+ * Letting it inherit is both the fix and the framework norm: sgs/nav-menu ships
+ * no such fallback, and sgs/nav-drawer computes a contrast-safe foreground via
+ * sgs_wcag_text_colour_for_bg() and emits it on the dialog root for descendants
+ * to inherit. On a normal page nothing changes — theme.json sets body colour to
+ * var:preset|color|text, the identical value this rule was forcing.
+ * A set textColour still wins: render.php emits it as a scoped `.{uid}` rule. */
 
 /* Per-item hover: text shifts to primary, icon scales up */
 .sgs-icon-list__item:hover .sgs-icon-list__text:not([style*="color"]) {
