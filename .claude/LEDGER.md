@@ -39,10 +39,9 @@ worth knowing before selling a plugin built on it · the Snooza job is 72 combin
 
 ### Track 3 — CLOSED (D479). Tier W admitted, physics-canvas shipped.
 
-`50c9122b` `19d4d33f` `09960945` `3a581721` `faa1652f`. Narrative + licence detail:
-`memory/session-2026-08-03-track3.md`. Binding facts: ⛔ **GSAP is NOT MIT** (Prohibited Uses bans
-visual-motion-authoring tools competing with Webflow — exposes the Configurator Pro, not client
-sites) · ⛔ **LYGIA is Prosperity-licensed** · ⚠ **Snooza = 72 SKUs**, two accessories not booleans.
+Narrative + licences: `memory/session-2026-08-03-track3.md`. Binding facts: ⛔ **GSAP is NOT MIT**
+(Prohibited Uses bans visual-motion-authoring tools competing with Webflow — exposes the Configurator
+Pro, not client sites) · ⛔ **LYGIA is Prosperity-licensed** · ⚠ **Snooza = 72 SKUs**.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
@@ -144,17 +143,11 @@ The canary is unblocked and current.
 
 ## NEXT SESSION (Track 1b / Spec 35) — orchestrate, don't do inline
 
-### ✅ 2026-08-06 — CLOSED. Payload landed + 4 residuals; full narrative in
-`memory/session-2026-08-06-spec35-payload-close.md`.
+### ✅ 2026-08-06 — CLOSED. Narrative: `memory/session-2026-08-06-spec35-payload-close.md`.
 
-`c9857923` `271d0ab9` `6ed15e11` (14 blocks, all with JS-disabled first-paint captures) · `60f7fbbb`
-(silently-dead code path restored) · `fc71ee16` (expectation re-declared) · `3cbdd89f` + `4e07ab6c`
-(Tasks C+D) · `96136e77` (multi-button Phase B) · `d6027ec9` (**D498** — site-footer emits `<footer>`;
-the page had ZERO contentinfo landmark) · `f1c3a9c7` `5f53fd25` (docs).
-
-⚠ **Two beliefs this section used to carry were FALSE — do not re-derive them:** there was no
-deploy↔commit circularity (`build-deploy.py --payload` exists for exactly it), and those files were
-not blocked by the visual gate — they did not BUILD.
+⚠ **Two beliefs this section used to carry were FALSE — do not re-derive:** there was no
+deploy↔commit circularity (`build-deploy.py --payload` exists for it), and those files were not
+blocked by the visual gate — they did not BUILD.
 
 ### THE GOAL — why this track exists (state it before picking up any task)
 
@@ -304,9 +297,22 @@ Task 4 (1) ── BLOCKED on STEP 0.2 #2 (link-content extractor)
 
 | Task | What / Why | Est. | Orchestration | Depends on | /qc gate | Acceptance |
 |---|---|---|---|---|---|---|
-| **B** | Hero-background design gate. Collision gate proved a FOUR-block class (hero/container/cta-section/trust-bar). Bean's identity-rename lead (D484): distinct DRAFT-side selectors per colliding attr (`__background-image`/`__background-video`/`__background-svg`; `__image` vs `__poster`). Data-only, no schema change. | 20 min | Inline, Opus — Rule 7 design-gate (shared-mechanism) + `/qc-council` BEFORE building. | Step 0 | `/qc-council` pre-build | `check_content_attr_collisions.py` reports 0 genuine groups |
-| ~~**C**~~ | ✅ **DONE `3cbdd89f`.** 6 rules ported; equivalence independently re-verified (16 FLAGGED + 2 BASELINED both sides, identical per rule). Only 4 of the 6 actually GATE — the other 2 were `informational` and ported as advisory rather than becoming new unreviewed gates. | — | Delegated, sonnet. Brief: run old + new rule sets side by side, diff finding sets, explain every delta in writing BEFORE deleting anything; delete old scripts in a separate later commit. | Step 0 | `/qc-inline` on the diff | Delta explained per-finding; old scripts deleted only after zero unexplained deltas |
-| ~~**D**~~ | ✅ **DONE `4e07ab6c`.** `inspector-scan/run.js --check` is now the prebuild gate, proven by NEGATIVE CONTROL (injection landed → build exit 1 → reverted green). Old script deleted, both live references repointed. Baseline keys made repo-relative (they embedded absolute paths, so suppressions only worked on one machine). | — | Inline — judgment call per rule, not mechanical. | C | n/a (self-test per rule) | Backlog=0 proven, not asserted; flip recorded in `decisions.md` |
+| **B** | Hero-background design gate. Collision gate proved a FOUR-block class (hero/container/cta-section/trust-bar). Bean's identity-rename lead (D484): distinct DRAFT-side selectors per colliding attr (`__background-image`/`__background-video`/`__background-svg`; `__image` vs `__poster`). **+ TIER 5 (Bean 2026-08-06): retire `scalar-media` AND reshape `splitImage`.** See the note below — B is no longer data-only. | 40 min | Inline, Opus — Rule 7 design-gate (shared-mechanism) + `/qc-council` BEFORE building. | Step 0 | `/qc-council` pre-build | `check_content_attr_collisions.py` 0 genuine groups **+ `splitImage` carries the standard responsive shape + `scalar-media` has 0 rows** |
+
+**Task B — TIER 5 addition (Bean's instruction 2026-08-06). Two coupled problems, ONE design.**
+`scalar-media` is a hyperspecific role (2 rows) invented to mark a composite's built-in media slot
+instead of fitting it to a general rule — and it is already the recorded blocker stopping the tier
+axis from reaching `splitImage`. **`splitImage`'s SHAPE is the deeper fault:** it exists as
+`splitImage` + `splitImageMobile` ONLY, which is not a standard responsive-override-capable content
+attribute (no tablet tier, prefix-not-suffix). It must be reworked to the standard shape — the
+`sgs/responsive-logo` precedent (D496) is the model: base + `Tablet` + `Mobile` SUFFIX convention,
+plus the `sgs/media` id+url pair so `image-alt` fires natively.
+⛔ **Do NOT reshape before settling B's collision answer** — same decision: B decides how a
+composite's interior media is IDENTIFIED draft-side, and that identity is what the reshaped attr's
+routing keys off. Order: settle B's selector identity → derive the shape → migrate `splitImage` →
+retire `scalar-media` → confirm the tier axis reaches it.
+| ~~**C**~~ | ✅ **DONE `3cbdd89f`** — 6 rules ported, equivalence re-verified; only 4 actually GATE (2 were informational, ported as advisory). | — | — | — | — | — |
+| ~~**D**~~ | ✅ **DONE `4e07ab6c`** — `inspector-scan/run.js --check` is the prebuild gate, proven by negative control; baseline keys made repo-relative. | — | — | — | — | — |
 | **F** | Build the remaining enforcement scripts — the track's actual deliverable. Scope: 19 remaining (items 2-17, 19, 21 + T1/T2/T3 minus C/D's 2); items 1/18/20 exist on `scripts/inspector-scan/`. | 30-60 min/rule | Delegated per rule, sonnet, `/subagent-driven-development` — each rule is independent once B settles. | A-D settled | `/qc-council` per rule before fail-closed flip | Each row meets `STOP-CATALOGUE.md` §E6, or a recorded exception naming a D-number |
 
 ⚠ **Why F is last (Bean's ruling):** A/B/E decide block structure; rules written before them get
@@ -336,8 +342,7 @@ gate. PROVEN not ours: identical failure with our converter change reverted. Con
 
 ## NEXT SESSION (other backlog) — Snooza pitch demo + Track 1 (routing)
 
-**SWEPT 2026-08-05 to `memory/session-2026-08-05-swept-narrative.md` (verbatim, byte-cap pressure,
-neither closed).** Snooza pitch-demo tasks 1-4 (AR `.glb`/`.usdz`, Tier W cursor-field, client-
-usability presets, 2 unproven-fix verifications) + TRACK 1 routing R1-R4 (R4/R1 SHIPPED 2026-08-04,
-R2/R3 still open, R3 blocked on Spec 35 `scalar-media`). Read the pointer file before picking either
-up — do not re-derive from memory.
+**SWEPT to `memory/session-2026-08-05-swept-narrative.md` (verbatim, neither closed).** Snooza
+pitch-demo tasks 1-4 + Track 1 routing R1-R4 (R4/R1 shipped 2026-08-04; R2/R3 open). ⚠ **R3 is
+blocked on `scalar-media` — the same role Task B tier 5 retires, so B unblocks R3.** Read the
+pointer file; do not re-derive from memory.

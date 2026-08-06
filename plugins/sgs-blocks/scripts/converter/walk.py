@@ -175,6 +175,13 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         attr seeded ``emit_shape='child'`` is NEVER scalar-lifted (the D212
         invariant re-homed per-attr: an attr cannot be both nested and child).
 
+    NESTED leg 1b — root-self link fragments (``role='link-content'``): an attr
+        whose value render.php CONCATENATES into a larger URL (whatsapp-cta's
+        phoneNumber inside ``https://wa.me/{value}``) is recovered from the
+        block root's own ``<a href>`` by subtracting the captured template
+        (``block_attributes.output_signature.link_template``). Additive + per-
+        attr, because ONE href carries SEVERAL attrs' disjoint fragments.
+
     NESTED leg 2 — element-driven (the D275 brick): every descendant whose
         BEM class belongs to THIS block's own family and carries an
         ``__element`` token resolves via ``db_lookup.content_attr_for_element``
@@ -222,9 +229,46 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
     if "scalar-content-lift" in caps:
         results.extend(ext.expected_content_gaps(rec.slug))
 
+    from converter.services.field_extractors import extract_field_value
+
+    # ---- NESTED leg 1b — ROOT-SELF link fragments (role='link-content') ----
+    #
+    # A link fragment is not addressable by a descendant selector: it lives in
+    # the href of the block's OWN root <a> (sgs/whatsapp-cta renders the <a> AS
+    # the block root — render.php's contract §B3 single-semantic-element), and
+    # ONE href carries SEVERAL attrs' fragments at once (phoneNumber in the
+    # path, message in the query). So this leg is:
+    #   - element-self (leg 2 walks descendants only; run_mechanism_leaf reaches
+    #     the root but is a FALLBACK that only fires when nothing else lifted,
+    #     which would drop the fragments on any variant that also has a label),
+    #   - additive and per-attr (not one-per-shape — the fragments are disjoint
+    #     parts of the same URL, not competing candidates for one slot),
+    #   - DB-driven on the attr's role + its CAPTURED template, never a slug.
+    #
+    # STRICTLY ADDITIVE (the D308 zero->one shape): an attr only reaches this leg
+    # when it declares role='link-content' AND carries a captured link_template,
+    # so no existing block's lift can change. First value per attr wins, and an
+    # attr already lifted by leg 1 is skipped.
+    for _attr_name, _attr_info in db_lookup.block_attrs(rec.slug).items():
+        if not isinstance(_attr_info, dict):
+            continue
+        if _attr_info.get("role") != "link-content" or _attr_name in lifted_attrs:
+            continue
+        if db_lookup.emit_shape_for(rec.slug, _attr_name) == "child":
+            continue  # D212 per-attr: a child-shaped attr is never scalar-lifted
+        _template = db_lookup.link_template_for(rec.slug, _attr_name)
+        if not _template:
+            continue  # no captured template -> strict no-op, never a guess
+        _fragment = extract_field_value(
+            node, "link-content", media_map or {}, link_template=_template
+        )
+        if _fragment is None or _fragment == "":
+            continue  # strict no-op (B1 contract) — A2 ledger owns completeness
+        results.append(ScalarLift(attr=_attr_name, value=_fragment))
+        lifted_attrs.add(_attr_name)
+
     # ---- NESTED leg 2 — element-driven per-attr walk (content_attr_for_element) ----
     own_block_name = (rec.slug or "").split("/", 1)[-1]
-    from converter.services.field_extractors import extract_field_value
 
     def _family_element(el) -> str | None:
         for cls in (el.get("class", []) or []):
@@ -259,7 +303,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         _breakpoint_suffixes = ()
     _tier_by_lower = {sfx.lower(): sfx for sfx in _breakpoint_suffixes}
 
-    def _typed_value_for_role(el, role, attr_type, media_map):
+    def _typed_value_for_role(el, role, attr_type, media_map, link_template=None):
         """Role-driven, type-guarded extraction shared by BOTH content-
         routing arms below (family-element leg 2 + the foreign-identity
         arm). Returns (value, alt_value) — alt_value carries the CG-8
@@ -289,6 +333,14 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
             return extract_field_value(el, "text-content", media_map), None
         if role in ("url-href", "link-href"):
             return extract_field_value(el, role, media_map), None
+        if role == "link-content" and attr_type == "string":
+            # The DESCENDANT-element sibling of leg 1b above: a block whose
+            # assembled link hangs off a BEM-tokened child rather than its own
+            # root. Same shared handler, same captured template — the caller
+            # supplies it because only the caller knows which attr matched.
+            return extract_field_value(
+                el, role, media_map, link_template=link_template
+            ), None
         if role in ("image-object", "rating"):
             value = extract_field_value(el, role, media_map)
             alt_value = None
@@ -382,7 +434,10 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
                 # attr leg 2 already filled).
                 if attr_emit_shape != "nested" or attr_name in lifted_attrs:
                     continue  # 'child' units route below via the CHILD leg
-                value, alt_value = _typed_value_for_role(el, attr_role, attr_type, media_map)
+                value, alt_value = _typed_value_for_role(
+                    el, attr_role, attr_type, media_map,
+                    link_template=db_lookup.link_template_for(rec.slug, attr_name),
+                )
                 if value is None or value == "":
                     continue  # strict no-op (B1 contract) — A2 ledger owns completeness
                 results.append(ScalarLift(attr=attr_name, value=value))
@@ -475,7 +530,10 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
             continue
         if emit_shape != "nested" or attr_name in lifted_attrs:
             continue  # 'child' units route below; first value per attr wins
-        value, alt_value = _typed_value_for_role(el, role, attr_type, media_map)
+        value, alt_value = _typed_value_for_role(
+            el, role, attr_type, media_map,
+            link_template=db_lookup.link_template_for(rec.slug, attr_name),
+        )
         if value is None or value == "":
             continue  # strict no-op (B1 contract) — A2 ledger owns completeness
         results.append(ScalarLift(attr=attr_name, value=value))

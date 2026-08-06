@@ -99,6 +99,7 @@ READ-ONLY. Proposes; never writes to sgs-framework.db, never edits
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import re
 import sys
@@ -107,8 +108,13 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLUGIN_ROOT = SCRIPT_DIR.parent.parent          # plugins/sgs-blocks
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
+INCLUDES_DIR = PLUGIN_ROOT / "includes"
 
-# The six pairs D497 asks this detector to re-derive from source alone.
+# The seven pairs this detector re-derives from source alone (six from D497 +
+# posterMedia/posterAlt added by the OBJECT-COMPANION extension below, which
+# closes the gap where a block's ONLY <img> emission for its image attribute
+# lives in a cross-file helper -- includes/helpers-media.php's
+# sgs_responsive_image() -- rather than in the block's own render.php).
 KNOWN_PAIRS = [
     ("sgs/before-after", "beforeImageUrl", "beforeImageAlt"),
     ("sgs/before-after", "afterImageUrl", "afterImageAlt"),
@@ -116,6 +122,7 @@ KNOWN_PAIRS = [
     ("sgs/media", "imageUrl", "imageAlt"),
     ("sgs/product-card", "image", "imageAlt"),
     ("sgs/responsive-logo", "logoUrl", "alt"),
+    ("sgs/image-sequence", "posterMedia", "posterAlt"),
 ]
 
 _DIRECT = re.compile(
@@ -133,12 +140,34 @@ _VAR_REF = re.compile(r"\$([A-Za-z_]\w*)")
 
 # ── Variable -> attribute resolution ────────────────────────────────────────────
 
-def _declared_string_attrs(block_dir: Path) -> set[str]:
-    """Attribute names this block declares with type 'string' in block.json.
+def _declared_media_attrs(block_dir: Path) -> set[str]:
+    """Attribute names this block declares with type 'string' OR 'object' in
+    block.json -- the two shapes that can ever carry an image into an <img>
+    src=/alt= slot.
 
-    Restricted to string-typed because that is the same precondition ``walk.py``
-    applies before it will treat a row as an alt companion at all (attr_type='string'
-    per the task brief) -- a non-string attr can never be the alt slot of an <img>.
+    WIDENED from string-only (OBJECT-COMPANION extension). A string-typed
+    attr reaches the slot directly (``$attributes['imageUrl']``). An
+    OBJECT-typed attr (``{url,id,alt}``, e.g. ``sgs/image-sequence``'s
+    ``posterMedia``) reaches it via a sub-key pull
+    (``$poster_url = (string) $poster_media['url'];``) -- the EXISTING 2-hop
+    alias resolver below already collapses that chain back to the object
+    attr's own name (the RHS references exactly one already-resolved var,
+    ``$poster_media``, so ``$poster_url`` inherits its resolution unchanged);
+    the only reason it never fired before is that the object attr itself
+    was excluded from ``declared``, so ``_DIRECT`` never seeded it in the
+    first place. The ``image-object`` role's own DB description already
+    covers both shapes ("an {url,id,alt} object, or ... the bare URL
+    string"), so this was a detector gap, not a modelling gap.
+
+    A block-private OBJECT attr whose alt is a LITERAL by design (e.g.
+    ``sgs/decorative-image``'s ``decorMedia``, always rendered with
+    ``alt=""``) still produces NO pair -- widening ``declared`` only feeds
+    the variable-resolution table; it does not touch the precision guard in
+    ``_first_var`` that requires an actual ``$var`` in the alt slot.
+
+    (``walk.py``'s own attr_type='string' gate on `alt_companion_attr` is a
+    SEPARATE downstream contract, out of this detector's scope -- see the
+    task brief.)
     """
     bj = block_dir / "block.json"
     if not bj.is_file():
@@ -150,7 +179,7 @@ def _declared_string_attrs(block_dir: Path) -> set[str]:
     attrs = data.get("attributes") or {}
     return {
         name for name, spec in attrs.items()
-        if isinstance(spec, dict) and spec.get("type") == "string"
+        if isinstance(spec, dict) and spec.get("type") in ("string", "object")
     }
 
 
@@ -398,9 +427,136 @@ def scan_inline_html(text: str) -> list[dict]:
     return out
 
 
+# ── Cross-file HELPER-CALL scanner (OBJECT-COMPANION extension) ─────────────────
+#
+# sgs/image-sequence's ONLY <img> emission for its poster is not in its own
+# render.php -- it is `sgs_responsive_image( $poster_id, $poster_url,
+# $poster_alt, 'large', array(...) )`, a call into
+# includes/helpers-media.php, whose OWN body is the sprintf('<img
+# src="%s" alt="%s"...') that actually satisfies src=/alt=. Without this,
+# no existing scanner (all of which read only the BLOCK's own *.php files)
+# ever sees a src=/alt= emission for this block at all.
+#
+# The mapping (which call ARGUMENT is url, which is alt) is derived from the
+# HELPER'S OWN CODE, never a hardcoded per-function name->slot dict: we run
+# the exact same printf/array-literal/inline-html scanners already used for
+# a block's own source against the helper's function BODY, treating its
+# parameter names as an identity carrier table (inside the function, `$url`
+# IS the url -- no $attributes[] indirection to resolve). Whichever
+# parameter POSITIONS come back as the url/alt vars become the positions we
+# read out of every CALL site's argument list.
+
+_FUNC_DEF_RE = re.compile(r"\bfunction\s+(\w+)\s*\(")
+_PARAM_NAME_RE = re.compile(r"\$(\w+)")
+
+
+def _extract_balanced_braces(text: str, open_idx: int) -> str:
+    """Content between the '{' at `open_idx` and its matching '}'. Quote-aware.
+    Mirrors `_extract_balanced` but for brace nesting (a function body)."""
+    depth = 0
+    i = open_idx
+    in_str: str | None = None
+    n = len(text)
+    while i < n:
+        c = text[i]
+        if in_str:
+            if c == "\\":
+                i += 2
+                continue
+            if c == in_str:
+                in_str = None
+        else:
+            if c in ("'", '"'):
+                in_str = c
+            elif c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[open_idx + 1:i]
+        i += 1
+    return text[open_idx + 1:]
+
+
+def _parse_param_names(params_str: str) -> list[str]:
+    """Ordered `$name` list from a function's balanced parameter-list text
+    (top-level commas only, so a default like `array $attrs = array()`
+    doesn't get split on its own inner comma-free `()`)."""
+    names = []
+    for piece in _split_top(params_str):
+        m = _PARAM_NAME_RE.search(piece)
+        if m:
+            names.append(m.group(1))
+    return names
+
+
+@functools.lru_cache(maxsize=None)
+def _discover_helper_signatures(includes_dir_str: str) -> tuple[tuple[str, int, int], ...]:
+    """Every function defined under `includes/*.php` whose OWN body proves a
+    src=/alt= <img> emission -- returned as (function_name, url_param_index,
+    alt_param_index) triples, cached (this directory doesn't change mid-run).
+    Read-only; never writes back to source."""
+    includes_dir = Path(includes_dir_str)
+    found: list[tuple[str, int, int]] = []
+    if not includes_dir.is_dir():
+        return tuple(found)
+    for php in sorted(includes_dir.rglob("*.php")):
+        try:
+            text = php.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for m in _FUNC_DEF_RE.finditer(text):
+            name = m.group(1)
+            try:
+                paren_open = text.index("(", m.end() - 1)
+            except ValueError:
+                continue
+            params_str = _extract_balanced(text, paren_open)
+            param_names = _parse_param_names(params_str)
+            if len(param_names) < 2:
+                continue
+            brace_open = text.find("{", paren_open)
+            if brace_open == -1:
+                continue
+            body = _extract_balanced_braces(text, brace_open)
+            carriers = {p: ("attr", p) for p in param_names}
+            sites = scan_printf(body) + scan_array_literal(body) + scan_inline_html(body)
+            for site in sites:
+                uv, av = site.get("url_var"), site.get("alt_var")
+                if not uv or not av or uv not in carriers or av not in carriers or uv == av:
+                    continue
+                found.append((name, param_names.index(uv), param_names.index(av)))
+                break  # first proven emission in the function body is enough
+    return tuple(found)
+
+
+def scan_helper_calls(text: str, helper_sigs: dict[str, tuple[int, int]]) -> list[dict]:
+    """Calls to a discovered cross-file media-render helper -- maps each
+    call's positional ARGUMENTS to the url/alt slots proven by
+    `_discover_helper_signatures` against the helper's own body."""
+    out = []
+    for name, (url_idx, alt_idx) in helper_sigs.items():
+        for m in re.finditer(r"\b" + re.escape(name) + r"\s*\(", text):
+            call_body = _extract_balanced(text, m.end() - 1)
+            args = _split_top(call_body)
+            if len(args) <= max(url_idx, alt_idx):
+                continue
+            out.append({
+                "shape": f"helper-call:{name}",
+                "url_var": _first_var(args[url_idx]),
+                "alt_var": _first_var(args[alt_idx]),
+            })
+    return out
+
+
 # ── Per-block driver ─────────────────────────────────────────────────────────────
 
-def analyse_source(block_slug: str, text: str, declared: set[str]) -> list[dict]:
+def analyse_source(
+    block_slug: str,
+    text: str,
+    declared: set[str],
+    helper_sigs: dict[str, tuple[int, int]] | None = None,
+) -> list[dict]:
     """Run every scanner over already-concatenated source text and return the
     derived (image_attr, alt_attr) pairs with the shape that proved each."""
     carriers = _resolve_carriers(text, declared)
@@ -408,6 +564,7 @@ def analyse_source(block_slug: str, text: str, declared: set[str]) -> list[dict]
     sites += scan_printf(text)
     sites += scan_array_literal(text)
     sites += scan_inline_html(text)
+    sites += scan_helper_calls(text, helper_sigs or {})
 
     pairs: dict[tuple[str, str], str] = {}
     for site in sites:
@@ -435,7 +592,7 @@ def analyse_source(block_slug: str, text: str, declared: set[str]) -> list[dict]
 
 
 def analyse_block(block_slug: str, block_dir: Path) -> list[dict]:
-    declared = _declared_string_attrs(block_dir)
+    declared = _declared_media_attrs(block_dir)
     if not declared:
         return []
     php_files = sorted(p for p in block_dir.rglob("*.php") if p.is_file())
@@ -448,7 +605,12 @@ def analyse_block(block_slug: str, block_dir: Path) -> list[dict]:
         except OSError:
             continue
     combined = "\n".join(texts)
-    return analyse_source(block_slug, combined, declared)
+
+    helper_sigs: dict[str, tuple[int, int]] = {}
+    for name, url_idx, alt_idx in _discover_helper_signatures(str(INCLUDES_DIR)):
+        helper_sigs.setdefault(name, (url_idx, alt_idx))
+
+    return analyse_source(block_slug, combined, declared, helper_sigs)
 
 
 def run_all(blocks_dir: Path | None = None) -> list[dict]:
@@ -568,14 +730,104 @@ def self_test() -> int:
     if got6:
         failures.append(f"an empty declared-attrs set still produced a pair: {got6}")
 
+    # ── OBJECT-COMPANION extension checks (real files, not synthetic fixtures) ──
+
+    # 7. POSITIVE -- the REAL sgs/image-sequence source. posterMedia is an
+    #    OBJECT-typed attribute (`{url,id}`, no embedded alt) whose ONLY <img>
+    #    emission is a cross-file call into includes/helpers-media.php's
+    #    sgs_responsive_image() -- render.php:47 reads posterAlt, :178-182
+    #    passes it alongside $poster_id/$poster_url into that helper, landing
+    #    on `.sgs-image-sequence__poster`. This is the exact defect measured
+    #    in the task brief: before this extension it derived NOTHING for this
+    #    block (declared excluded object types; no scanner crossed the file
+    #    boundary into helpers-media.php either).
+    image_seq_dir = BLOCKS_DIR / "image-sequence"
+    if image_seq_dir.is_dir():
+        got7 = analyse_block("sgs/image-sequence", image_seq_dir)
+        pairs7 = {(g["image_attr"], g["alt_attr"]) for g in got7}
+        if ("posterMedia", "posterAlt") not in pairs7:
+            failures.append(
+                f"REAL sgs/image-sequence source did NOT resolve posterMedia->posterAlt "
+                f"(object-typed companion via cross-file helper call), got {pairs7}")
+    else:
+        failures.append("sgs/image-sequence block directory not found -- cannot run the "
+                         "real-file positive check the object-companion extension exists for")
+
+    # 8. REGRESSION -- the REAL sgs/media source (existing STRING-companion shape,
+    #    entirely within the block's own render.php, no helper-call involved) must
+    #    still resolve after widening `declared` to include object types and adding
+    #    the helper-call scanner. Proves the extension is additive, not a narrowing.
+    media_dir = BLOCKS_DIR / "media"
+    if media_dir.is_dir():
+        got8 = analyse_block("sgs/media", media_dir)
+        pairs8 = {(g["image_attr"], g["alt_attr"]) for g in got8}
+        if ("imageUrl", "imageAlt") not in pairs8:
+            failures.append(
+                f"REGRESSION: REAL sgs/media source no longer resolves imageUrl->imageAlt, "
+                f"got {pairs8}")
+    else:
+        failures.append("sgs/media block directory not found -- cannot run the real-file "
+                         "regression check")
+
+    # 9. NEGATIVE CONTROL -- the REAL sgs/decorative-image source. Its `decorMedia`
+    #    OBJECT attr is genuinely image-shaped (feeds sgs_responsive_image's url slot
+    #    via the legacy imageUrl hydration) but its OWN image-render branch always
+    #    passes a LITERAL '' alt ("Empty alt for decorative." -- render.php), by
+    #    design (a decorative image has no accessible alt). Widening `declared` to
+    #    include object types must NOT invent a decorMedia->* pair here -- the
+    #    precision guard (no $var in a literal alt slot) must still hold. The
+    #    block's OTHER, legitimate pair (imageUrl->imageAlt, the array-literal
+    #    $decor_media synthesis) must still be found.
+    decor_dir = BLOCKS_DIR / "decorative-image"
+    if decor_dir.is_dir():
+        got9 = analyse_block("sgs/decorative-image", decor_dir)
+        pairs9 = {(g["image_attr"], g["alt_attr"]) for g in got9}
+        if ("imageUrl", "imageAlt") not in pairs9:
+            failures.append(
+                f"REGRESSION: REAL sgs/decorative-image lost its imageUrl->imageAlt pair, "
+                f"got {pairs9}")
+        if any(ia == "decorMedia" for ia, _aa in pairs9):
+            failures.append(
+                f"decorMedia (literal alt='' by design) was wrongly paired: {pairs9} -- "
+                f"object-companion extension over-fired")
+    else:
+        failures.append("sgs/decorative-image block directory not found -- cannot run the "
+                         "real-file negative-control check")
+
+    # 9b. NEGATIVE CONTROL (synthetic, mirrors decorMedia's real shape exactly) --
+    #     an OBJECT-typed attr reaching a cross-file helper call's url slot while a
+    #     LITERAL '' reaches its alt slot must produce no pair, using the ACTUAL
+    #     discovered signature for sgs_responsive_image() (not a hand-rolled one),
+    #     so this exercises the real helper_sigs path end to end.
+    real_helper_sigs: dict[str, tuple[int, int]] = {}
+    for _name, _u, _a in _discover_helper_signatures(str(INCLUDES_DIR)):
+        real_helper_sigs.setdefault(_name, (_u, _a))
+    if "sgs_responsive_image" not in real_helper_sigs:
+        failures.append("_discover_helper_signatures did NOT find sgs_responsive_image in "
+                         "includes/helpers-media.php -- cross-file helper discovery is broken")
+    else:
+        declared9b = {"heroMedia"}
+        text9b = (
+            "$hero_media = $attributes['heroMedia'] ?? null;\n"
+            "$hero_url = (string) ( $hero_media['url'] ?? '' );\n"
+            "echo sgs_responsive_image( 0, $hero_url, '', 'large', array() );\n"
+        )
+        got9b = analyse_source("sgs/plantobjliteral", text9b, declared9b, real_helper_sigs)
+        if got9b:
+            failures.append(
+                f"an OBJECT-typed carrier reaching a LITERAL '' alt via a helper call "
+                f"produced a pair: {got9b} -- precision guard failed under the extension")
+
     if failures:
         print(f"DETECTOR-5 SELF-TEST FAILED ({len(failures)} checks)")
         for f in failures:
             print(f"  - {f}")
         return 1
-    print("DETECTOR-5 SELF-TEST PASSED -- 6 checks green "
+    print("DETECTOR-5 SELF-TEST PASSED -- 9 checks green "
           "(plain-%s, numbered-%N$s+suffix-expansion, array-literal, inline-html, "
-          "2 negative controls).")
+          "2 negative controls, real image-sequence object-companion positive, "
+          "real sgs/media regression, real decorative-image negative control, "
+          "synthetic object+literal-alt negative control via the real helper signature).")
     return 0
 
 

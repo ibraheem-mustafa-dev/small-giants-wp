@@ -1021,6 +1021,44 @@ def block_attrs(block_slug: str) -> dict[str, dict]:
 
 
 @functools.lru_cache(maxsize=1024)
+def link_template_for(block_slug: str, attr_name: str) -> "str | None":
+    """Return the URL TEMPLATE the block's render.php assembles around this
+    attr's value (e.g. ``'https://wa.me/{value}'``), or None.
+
+    Stored on ``block_attributes.output_signature`` under the ``link_template``
+    key — NOT a column of its own (Bean, 2026-08-05): ``output_signature`` is
+    already the structured record of what render.php does with a value, and a
+    URL template is exactly that. Written by the behavioural analyser
+    (``scripts/behavioural-analyser/extract-signatures.py``
+    ``_detect_link_template``, commit ``580f7885``).
+
+    SOLE CONSUMER: the ``link-content`` role — ``field_extractors``
+    ``extract_link_fragment`` needs the template to subtract the block's own
+    literal from the draft's rendered href. Returns None for every attr with no
+    captured template, which makes the role a strict no-op rather than a guess.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT output_signature FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    if not row or not row[0]:
+        return None
+    try:
+        signature = json.loads(row[0])
+    except (ValueError, TypeError):
+        return None
+    if not isinstance(signature, dict):
+        return None
+    template = signature.get("link_template")
+    return template if isinstance(template, str) and template else None
+
+
+@functools.lru_cache(maxsize=1024)
 def box_family_for(block_slug: str, attr_name: str) -> "str | None":
     """Return the ``box_family`` (e.g. ``'padding'``, ``'contentBandPadding'``)
     for a merged box-object attr, or ``None`` when the attr has no box_family

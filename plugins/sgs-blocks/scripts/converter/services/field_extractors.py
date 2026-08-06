@@ -20,6 +20,8 @@ icon-slug        data-icon / data-lucide / inline <svg> str slug | None
                  / BEM --<modifier>
 url-href         <a href> (element or descendant)        str | None
 link-href        ALIAS of url-href (DB scalar-attr role)  str | None
+link-content     <a href> MINUS the block's own URL       str | None
+                 template (needs ``link_template``)
 plain-integer    element text verbatim                   str | None
 css-modifier     BEM --<modifier> suffix on element cls  str | None
 
@@ -39,6 +41,7 @@ in the resolvers that call us).
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
+from urllib.parse import unquote
 
 from bs4 import Tag
 
@@ -142,7 +145,148 @@ def resolve_icon_kind(element: "Tag | None") -> tuple[str | None, str | None]:
     return (None, None)
 
 
-def extract_field_value(element: Tag, role: str, media_map: dict | None = None) -> Any:
+LINK_TEMPLATE_PLACEHOLDER = "{value}"
+
+# RFC 3986 gen-delims that TERMINATE a fragment, by the URL component the
+# fragment occupies. A path segment ends at the query or the hash; a query
+# parameter value ends at the next parameter or the hash. This is the URL
+# grammar the assembling render.php already relies on when it concatenates
+# (`'?text=' . $encoded_message` only parses as a query parameter BECAUSE `?`
+# and `&` delimit) — it is not a bespoke grammar invented for this role.
+_FRAGMENT_TERMINATORS_PATH = ("?", "#")
+_FRAGMENT_TERMINATORS_QUERY = ("&", "#")
+
+
+def _resolve_href(element: "Tag") -> str | None:
+    """The element's own ``href`` (or its first descendant ``<a>``'s), scheme-
+    allowlisted through the SHARED ``_safe_href`` — the exact resolution the
+    ``url-href``/``link-href`` branch performs, reused so a fragment can never
+    be read off a URL those roles would have rejected."""
+    anchor = element if element.name == "a" else element.find("a")
+    if anchor is None or not isinstance(anchor, Tag):
+        return None
+    raw = anchor.get("href", "")
+    if not isinstance(raw, str):
+        return None
+    return _safe_href(raw)
+
+
+def _fragment_bounds(href: str, prefix: str, suffix: str) -> "tuple[int, int] | None":
+    """Locate ``[start, end)`` of the operator-supplied fragment inside ``href``.
+
+    ``prefix``/``suffix`` are the template's literal halves either side of the
+    placeholder. Returns None whenever the href does not carry the template's
+    literals — the caller then yields NO value, which is the whole point of the
+    role: a silently WRONG fragment (a phone number that is really half a URL)
+    is far worse than no value.
+    """
+    if prefix:
+        if "://" in prefix:
+            # An ABSOLUTE template describes the start of the whole URL, so it
+            # is anchored — never matched at some interior offset.
+            if not href.startswith(prefix):
+                return None
+            start = len(prefix)
+        else:
+            idx = href.find(prefix)
+            if idx < 0:
+                return None
+            start = idx + len(prefix)
+    else:
+        start = 0
+
+    rest = href[start:]
+    if suffix:
+        offset = rest.find(suffix)
+        if offset < 0:
+            return None
+        return (start, start + offset)
+
+    # No trailing literal: the fragment runs to the next delimiter of whichever
+    # URL component it sits in.
+    question = href.find("?")
+    terminators = (
+        _FRAGMENT_TERMINATORS_QUERY
+        if 0 <= question < start
+        else _FRAGMENT_TERMINATORS_PATH
+    )
+    cut = len(rest)
+    for delimiter in terminators:
+        found = rest.find(delimiter)
+        if 0 <= found < cut:
+            cut = found
+    return (start, start + cut)
+
+
+def extract_link_fragment(element: "Tag", link_template: str | None) -> str | None:
+    """``link-content`` handler — recover ONE operator-supplied fragment from a
+    URL the block assembles around it.
+
+    WHY THIS ROLE EXISTS. Every other content-bearing role extracts a WHOLE
+    value. ``sgs/whatsapp-cta.phoneNumber`` and ``.message`` never do: render.php
+    (``whatsapp-cta/render.php:54-58``) builds
+
+        $clean_phone     = preg_replace( '/[^0-9]/', '', $phone_number );
+        $wa_url          = 'https://wa.me/' . $clean_phone;
+        $wa_url         .= '?text=' . rawurlencode( $message );
+
+    so the draft's rendered ``<a href>`` is BLOCK LITERAL + OPERATOR VALUE
+    concatenated. Handing that whole href to ``link-href`` would store
+    ``https://wa.me/447700900123?text=Hi`` in ``phoneNumber``, which render.php
+    then re-prefixes into ``https://wa.me/httpswame447700900123texthi`` (its
+    digit-strip mangles it further) — a corrupted client phone number that still
+    LOOKS like a successful clone. The template is what makes the round trip
+    reversible.
+
+    THE TEMPLATE is recovered from render.php by the behavioural analyser and
+    stored on ``block_attributes.output_signature.link_template`` (capture half
+    shipped 2026-08-05, ``580f7885``); the converter reads it via
+    ``db_lookup.link_template_for``. It carries exactly one ``{value}``
+    placeholder marking where the operator's value lands, e.g.
+    ``https://wa.me/{value}`` (phoneNumber) and ``?text={value}`` (message).
+
+    FRAGMENT BOUNDARIES are the URL's own delimiters (see the module constants),
+    never a per-block rule: a path fragment ends at ``?``/``#``, a query fragment
+    at ``&``/``#``.
+
+    PERCENT-DECODING is applied to a QUERY fragment ONLY, because that is the
+    exact inverse of the ``rawurlencode()`` the assembling render applies to the
+    query half; a path fragment is returned verbatim rather than speculatively
+    decoded.
+
+    Returns None — never a guess — when there is no template, when the template
+    is not single-placeholder, when the element carries no allowlisted href, or
+    when the href does not contain the template's literals.
+    """
+    if not link_template or not isinstance(link_template, str):
+        return None
+    if link_template.count(LINK_TEMPLATE_PLACEHOLDER) != 1:
+        return None
+    href = _resolve_href(element)
+    if not href:
+        return None
+
+    prefix, suffix = link_template.split(LINK_TEMPLATE_PLACEHOLDER, 1)
+    bounds = _fragment_bounds(href, prefix, suffix)
+    if bounds is None:
+        return None
+    start, end = bounds
+    fragment = href[start:end]
+    if not fragment:
+        return None
+
+    question = href.find("?")
+    if 0 <= question < start:
+        fragment = unquote(fragment)
+    return fragment or None
+
+
+def extract_field_value(
+    element: Tag,
+    role: str,
+    media_map: dict | None = None,
+    link_template: str | None = None,
+) -> Any:
     """Dispatch a role to its canonical value handler for a single DOM element.
 
     Parameters
@@ -157,6 +301,15 @@ def extract_field_value(element: Tag, role: str, media_map: dict | None = None) 
     media_map:
         Optional basename→entry dict for media URL resolution.  Pass ``{}`` or
         omit when no media-map was loaded for this run.
+    link_template:
+        Optional URL template for the ``link-content`` role ONLY — the block's
+        own literal with a single ``{value}`` placeholder, read from
+        ``block_attributes.output_signature.link_template`` by the caller (via
+        ``db_lookup.link_template_for``).  Added as a KEYWORD-DEFAULTED
+        parameter precisely so this shared §3.B.0 entry point stays call-
+        compatible for BOTH existing paths: ``array_content`` and
+        ``scalar_content`` pass three positional arguments and are unaffected.
+        Every other role ignores it; ``link-content`` without it returns None.
 
     Returns
     -------
@@ -277,6 +430,17 @@ def extract_field_value(element: Tag, role: str, media_map: dict | None = None) 
             raw = anchor.get("href", "")
             return _safe_href(raw) if isinstance(raw, str) else None
         return None
+
+    # ------------------------------------------------------------------
+    # link-content — a CONCATENATED FRAGMENT of an assembled URL.
+    #
+    # Distinct from url-href/link-href above: those store the WHOLE href. This
+    # stores only the operator-supplied part, recovered by subtracting the
+    # block's own URL template. Full rationale + the whatsapp-cta ground truth
+    # in extract_link_fragment's docstring.
+    # ------------------------------------------------------------------
+    if role == "link-content":
+        return extract_link_fragment(element, link_template)
 
     # ------------------------------------------------------------------
     # plain-integer — verbatim text (preserves "500+" and "01")

@@ -25,6 +25,13 @@
  * Usage:
  *   php detector1_render_escaping.php <file1.php> [file2.php ...]
  *   php detector1_render_escaping.php --glob   (walks src/blocks/*\/render.php + includes/*.php)
+ *   php detector1_render_escaping.php --self-test
+ *
+ * A finding in a SHARED include (includes/**) is attributed to every block
+ * that BOTH declares the attribute name AND can reach that file — see
+ * collect_block_attr_index() + collect_block_consumers(). Those extra rows
+ * carry "shared_include": true; the original unattributed
+ * ("block_slug": null) row is always still emitted alongside them.
  */
 
 error_reporting(E_ALL & ~E_DEPRECATED);
@@ -152,7 +159,8 @@ function tokenize_to_statements(string $code): array {
  * rather than a recursive regex — simpler to audit and this codebase's
  * WPCS-formatted `if ( cond ) {` headers don't need PCRE recursion.
  */
-function strip_statement_glue(string $stmt): string {
+function strip_statement_glue(string $stmt, ?bool &$strippedDeclaration = null): string {
+    $strippedDeclaration = false;
     $stmt = ltrim($stmt);
     $changed = true;
     while ($changed) {
@@ -200,6 +208,68 @@ function strip_statement_glue(string $stmt): string {
             // `if ( $x ) $y = 1;`) — nothing safe to strip; stop.
         }
 
+        // Class-like declaration header: `[final|abstract|readonly]
+        // class|interface|trait|enum Name [extends X] [implements Y] {`.
+        //
+        // Needed because the tokenizer only breaks on `;`, so a class header
+        // and the first statement of its first method arrive glued together
+        // as ONE logical statement. Without this, every shared class file
+        // silently lost the FIRST `$var = $attributes['key']` binding inside
+        // it (see the function-header note below for the measured case).
+        if (preg_match('/^(?:(?:final|abstract|readonly)\s+)*(?:class|interface|trait|enum)\s+[A-Za-z_][A-Za-z0-9_]*\b[^{;]*\{\s*/i', $stmt, $m)) {
+            $stmt = ltrim(substr($stmt, strlen($m[0])));
+            $strippedDeclaration = true;
+            $changed = true;
+            continue;
+        }
+
+        // Function / method declaration header: `[modifiers] function name(
+        // ...args... ) [: ReturnType] {`.
+        //
+        // MEASURED ROOT CAUSE (2026-08-06). `includes/forms/field-render-
+        // helpers.php:157` is the first statement of `field_input_attrs()`:
+        //     } function field_input_attrs( string $field_id, array $attributes ): string { $field_name = $attributes['fieldName'] ?? '';
+        // arrives as a single logical statement. `match_assignment()` anchors
+        // on `^\$name =`, so the function header made the assignment invisible
+        // and `$field_name` was never tracked — which killed the whole
+        // fieldName -> field_slug -> submission_name chain and left EIGHT form
+        // blocks with no D1 verdict at all. The `}`/`{`/`if(...)` strippers
+        // above already existed for exactly this glue class; the declaration
+        // form was simply never covered.
+        //
+        // The argument list is walked with a paren-balancing scan rather than
+        // a regex because a default value can itself contain parentheses
+        // (`function f( $x = array( 1 ) )`). An abstract/interface method
+        // (`function f();`) has no `{` and is deliberately left alone.
+        if (preg_match('/^(?:(?:final|abstract|public|protected|private|static)\s+)*function\s*&?\s*[A-Za-z_][A-Za-z0-9_]*\s*\(/i', $stmt, $m)) {
+            $openParenPos = strlen($m[0]) - 1;
+            $depth = 0;
+            $n = strlen($stmt);
+            $i = $openParenPos;
+            for (; $i < $n; $i++) {
+                if ($stmt[$i] === '(') {
+                    $depth++;
+                } elseif ($stmt[$i] === ')') {
+                    $depth--;
+                    if ($depth === 0) {
+                        $i++;
+                        break;
+                    }
+                }
+            }
+            $rest = ltrim(substr($stmt, $i));
+            // Optional return type — `: string`, `: ?Foo`, `: A|B`, `: \NS\C`.
+            if ($rest !== '' && $rest[0] === ':' && preg_match('/^:\s*[?\\\\A-Za-z_][A-Za-z0-9_\\\\|&\s]*/', $rest, $rm)) {
+                $rest = ltrim(substr($rest, strlen($rm[0])));
+            }
+            if ($rest !== '' && $rest[0] === '{') {
+                $stmt = ltrim(substr($rest, 1));
+                $strippedDeclaration = true;
+                $changed = true;
+                continue;
+            }
+        }
+
         if (preg_match('/^else\s*\{\s*/', $stmt, $m)) {
             $stmt = ltrim(substr($stmt, strlen($m[0])));
             $changed = true;
@@ -220,8 +290,8 @@ function strip_statement_glue(string $stmt): string {
  *   $var = <expr>;
  * Returns [varName, exprText] or null.
  */
-function match_assignment(string $stmt): ?array {
-    $stmt = strip_statement_glue($stmt);
+function match_assignment(string $stmt, ?bool &$behindDeclaration = null): ?array {
+    $stmt = strip_statement_glue($stmt, $behindDeclaration);
     if (preg_match('/^\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+);$/s', $stmt, $m)) {
         // Exclude comparisons that regex might mis-catch (==, ===, =>) —
         // require the char right after the var+= is not '=' or '>' (already
@@ -629,8 +699,115 @@ function forward_variable_context(string $varName, array $statements): ?string {
     }
     return null;
 }
+/**
+ * Map every attribute NAME to the block slug(s) whose block.json declares it.
+ *
+ * This is what makes a finding in a SHARED include attributable. D1 walks
+ * `includes/` already (collect_default_files()), but `infer_block_slug()` can
+ * only name a block from a `src/blocks/<slug>/render.php` path, so every
+ * finding in a shared helper came out with `block_slug: null` and was
+ * unusable downstream — the FILE SCOPE was never the problem, the ATTRIBUTION
+ * was. Detector 4 already searches the shared trees per-block for exactly
+ * this reason (its own comment records that scoping a consumption search to a
+ * block's own directory produced a wrong "dead attribute" finding for
+ * `sgs/google-reviews.gap`).
+ *
+ * An attribute name declared by NO block maps to nothing and is therefore
+ * never attributed — that is the negative control the --self-test asserts.
+ */
+function collect_block_attr_index(string $repoRoot): array {
+    $index = [];
+    foreach (glob($repoRoot . '/plugins/sgs-blocks/src/blocks/*/block.json') as $bj) {
+        $json = json_decode((string) file_get_contents($bj), true);
+        if (!is_array($json)) {
+            continue;
+        }
+        $slug = isset($json['name']) && is_string($json['name']) && '' !== $json['name']
+            ? $json['name']
+            : 'sgs/' . basename(dirname(str_replace('\\', '/', $bj)));
+        if (!isset($json['attributes']) || !is_array($json['attributes'])) {
+            continue;
+        }
+        foreach (array_keys($json['attributes']) as $attr) {
+            $index[(string) $attr][$slug] = true;
+        }
+    }
+    foreach ($index as $attr => $slugs) {
+        $slugs = array_keys($slugs);
+        sort($slugs);
+        $index[$attr] = $slugs;
+    }
+    ksort($index);
+    return $index;
+}
 
-function run(array $files, array $eligibleSet): void {
+/**
+ * Which block slugs can actually REACH a given shared include.
+ *
+ * Attributing by declared attribute NAME alone over-attributes whenever two
+ * unrelated blocks happen to name an attribute the same way. Measured on the
+ * first cut (2026-08-06): `includes/product-card-builtin-render.php` escapes
+ * `imageAlt`, and `sgs/decorative-image` also declares an attribute called
+ * `imageAlt` — but that block never touches the product-card helper. Handing
+ * it a non-content verdict there would manufacture exactly the kind of veto
+ * that licenses the `technical` role, from evidence about a different block.
+ *
+ * Reachability is established from the shared file's own SYMBOLS: the
+ * functions and classes it defines. A block reaches the file when any PHP
+ * under `src/blocks/<slug>/` names one of them (or names the file itself, for
+ * a plain `require` of a file that defines nothing). This is the same shape
+ * Detector 4 uses — search the shared trees per block — just inverted for
+ * speed, and it is strictly NARROWER than name-only attribution, so it can
+ * only reduce what gets attributed, never add.
+ */
+function collect_block_consumers(string $repoRoot, string $sharedFile): array {
+    static $blockSources = null;
+    static $cache = [];
+
+    $key = str_replace('\\', '/', $sharedFile);
+    if (isset($cache[$key])) {
+        return $cache[$key];
+    }
+
+    if (null === $blockSources) {
+        $blockSources = [];
+        foreach (rglob_php($repoRoot . '/plugins/sgs-blocks/src/blocks') as $f) {
+            if (!preg_match('#/src/blocks/([a-z0-9-]+)/#', str_replace('\\', '/', $f), $m)) {
+                continue;
+            }
+            $slug = 'sgs/' . $m[1];
+            $blockSources[$slug] = ($blockSources[$slug] ?? '') . "\n" . (string) file_get_contents($f);
+        }
+    }
+
+    $code = (string) @file_get_contents($sharedFile);
+    $symbols = [];
+    if (preg_match_all('/(?:^|\s)function\s+&?\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(/m', $code, $m)) {
+        $symbols = array_merge($symbols, $m[1]);
+    }
+    if (preg_match_all('/(?:^|\s)(?:class|interface|trait)\s+([A-Za-z_][A-Za-z0-9_]*)/m', $code, $m)) {
+        $symbols = array_merge($symbols, $m[1]);
+    }
+    // A file that defines nothing is reached by name (`require ... /x.php`).
+    $symbols[] = basename($key);
+    $symbols = array_values(array_unique($symbols));
+
+    $consumers = [];
+    foreach ($blockSources as $slug => $src) {
+        foreach ($symbols as $sym) {
+            if (false !== strpos($src, $sym)) {
+                $consumers[$slug] = true;
+                break;
+            }
+        }
+    }
+    $consumers = array_keys($consumers);
+    sort($consumers);
+    $cache[$key] = $consumers;
+    return $consumers;
+}
+
+function run(array $files, array $eligibleSet, array $attrIndex = [], string $repoRoot = ''): void {
     foreach ($files as $file) {
         if (!is_file($file)) {
             fwrite(STDERR, "WARN: file not found: $file\n");
@@ -640,6 +817,25 @@ function run(array $files, array $eligibleSet): void {
         $statements = tokenize_to_statements($code);
 
         $varToAttr = []; // varName => attrKey (or ::DYNAMIC...:: marker)
+        // WEAK TIER (2026-08-06). Bindings recovered from a statement that was
+        // GLUED to a class/function declaration header — i.e. the first
+        // statement of a function body, which `match_assignment()` could not
+        // see at all until the declaration-header strip was added.
+        //
+        // They are kept in a SEPARATE map, consulted only when the strong map
+        // yields nothing, because recovering them makes variables trackable
+        // that were invisible when every existing verdict was measured, and
+        // multi-hop provenance credits the FIRST tracked variable it finds.
+        // Measured: `includes/product-card-builtin-render.php:106`
+        //     $sgs_pcard_feat_badge = ( 'featured' === $sgs_pcard_variant ) ? $sgs_pcard_feat : '';
+        // The newly-recovered `$sgs_pcard_variant` (bound at :47, the first
+        // statement inside `sgs_product_card_builtin_render()`) is textually
+        // first, so it displaced `$sgs_pcard_feat` and flipped two correct
+        // `featuredTag` rows to `variantStyle`. A newly-recovered binding is
+        // strictly NEW information; it must be able to ADD a verdict and never
+        // to overturn one measured without it. Same discipline as the existing
+        // "INHERITANCE NEVER OVERWRITES A DIRECT BINDING" rule below.
+        $varToAttrWeak = [];
         $blockSlugGuess = infer_block_slug($file);
         $forwardContextCache = []; // varName => string|false (false = "looked, found nothing")
 
@@ -648,7 +844,8 @@ function run(array $files, array $eligibleSet): void {
             $line = $stmt['line'];
 
             // 1) Track assignments: $var = <expr containing $attributes[...]>
-            $assign = match_assignment($text);
+            $behindDeclaration = false;
+            $assign = match_assignment($text, $behindDeclaration);
             $assignTargetVar = null;
             if ($assign !== null) {
                 [$varName, $exprText] = $assign;
@@ -656,7 +853,13 @@ function run(array $files, array $eligibleSet): void {
                 $keys = extract_attr_keys($exprText);
                 if (!empty($keys)) {
                     // Take the first resolved key as the var's provenance.
-                    $varToAttr[$varName] = $keys[0];
+                    if ($behindDeclaration) {
+                        if (!isset($varToAttr[$varName])) {
+                            $varToAttrWeak[$varName] = $keys[0];
+                        }
+                    } else {
+                        $varToAttr[$varName] = $keys[0];
+                    }
                 } else {
                     // MULTI-HOP PROVENANCE (2026-08-05). Previously this branch
                     // matched ONLY a bare alias (`$var2 = $var1;`), anchored
@@ -710,8 +913,31 @@ function run(array $files, array $eligibleSet): void {
                     // strongest evidence available and is never displaced here;
                     // a straight-line tracker cannot know which branch ran, so
                     // it keeps the binding it can prove.
-                    if (!isset($varToAttr[$varName])
+                    //
+                    // TWO-TIER SCAN (2026-08-06): the strong map first, the
+                    // weak (declaration-header-recovered) map only if the
+                    // strong map yields nothing — see $varToAttrWeak above.
+                    // The inherited binding takes on the tier of whichever
+                    // source won, so weakness propagates down a chain and a
+                    // newly-recovered binding can never displace a verdict
+                    // measured before it existed.
+                    if (!isset($varToAttr[$varName]) && !isset($varToAttrWeak[$varName])
                         && preg_match_all('/\$([A-Za-z_][A-Za-z0-9_]*)/', $exprText, $mm)) {
+                        $sourceTiers = [];
+                        foreach ($mm[1] as $srcVar) {
+                            if ($srcVar !== $varName && isset($varToAttr[$srcVar])) {
+                                $sourceTiers[] = $srcVar;
+                            }
+                        }
+                        $weakOnly = empty($sourceTiers);
+                        if ($weakOnly) {
+                            foreach ($mm[1] as $srcVar) {
+                                if ($srcVar !== $varName && isset($varToAttrWeak[$srcVar])) {
+                                    $sourceTiers[] = $srcVar;
+                                }
+                            }
+                        }
+                        $mm[1] = $sourceTiers;
                         foreach ($mm[1] as $src) {
                             // Never let a variable inherit from itself
                             // (`$x = trim( $x );` is a no-op for provenance,
@@ -720,7 +946,8 @@ function run(array $files, array $eligibleSet): void {
                             if ($src === $varName) {
                                 continue;
                             }
-                            if (isset($varToAttr[$src])) {
+                            $srcKey = $weakOnly ? ($varToAttrWeak[$src] ?? null) : ($varToAttr[$src] ?? null);
+                            if (null !== $srcKey) {
                                 // FRAGMENT vs WHOLE VALUE. Every content-bearing
                                 // role is a WHOLE-VALUE contract: `link-href`
                                 // extracts the nearest <a href> entire,
@@ -769,9 +996,12 @@ function run(array $files, array $eligibleSet): void {
                                     // ever reached; this one WAS reached and
                                     // deliberately rejected, and that must stay
                                     // visible in the output.
-                                    $varToAttr[$varName] = '::FRAGMENT::' . $varToAttr[$src];
+                                    $srcKey = '::FRAGMENT::' . $srcKey;
+                                }
+                                if ($weakOnly) {
+                                    $varToAttrWeak[$varName] = $srcKey;
                                 } else {
-                                    $varToAttr[$varName] = $varToAttr[$src];
+                                    $varToAttr[$varName] = $srcKey;
                                 }
                                 break;
                             }
@@ -836,9 +1066,15 @@ function run(array $files, array $eligibleSet): void {
                         // Under-reports silently on every multi-variable escaped concat.
                         $seenKeys = [];
                         foreach (array_unique($mm[1]) as $vn) {
-                            if (isset($varToAttr[$vn]) && !isset($seenKeys[$vn])) {
+                            // Strong tier first; the weak (declaration-header-
+                            // recovered) tier only for variables the strong
+                            // tier has never heard of, so a weak binding can
+                            // only ADD a row, never restate an existing one
+                            // with a different key.
+                            $vk = $varToAttr[$vn] ?? ($varToAttrWeak[$vn] ?? null);
+                            if (null !== $vk && !isset($seenKeys[$vn])) {
                                 $seenKeys[$vn] = true;
-                                $resolvedPairs[] = ['key' => $varToAttr[$vn], 'var' => $vn];
+                                $resolvedPairs[] = ['key' => $vk, 'var' => $vn];
                             }
                         }
                     }
@@ -931,6 +1167,53 @@ function run(array $files, array $eligibleSet): void {
                             'fragment' => $isFragmentKey,
                         ];
                         echo json_encode($row) . "\n";
+
+                        // SHARED-INCLUDE ATTRIBUTION (2026-08-06).
+                        //
+                        // The row above is emitted UNCHANGED — including its
+                        // `block_slug: null` — so nothing that already
+                        // consumed this output can shift. What follows are
+                        // ADDITIONAL rows: one per block whose block.json
+                        // declares this attribute name, so a finding made in
+                        // a helper shared by N blocks reaches all N.
+                        //
+                        // Eight form blocks needed this. `fieldName` becomes
+                        // the form's POST key inside the SHARED helper
+                        // `includes/forms/field-render-helpers.php` (the
+                        // `name="sgs-field-{slug}"` at :174), never inside any
+                        // one block's render.php, so no single block could be
+                        // named as its owner and the verdict was discarded.
+                        //
+                        // Same shape Detector 4 already uses (it searches the
+                        // shared trees per-block because scoping a
+                        // consumption search to a block's own directory
+                        // produced a wrong "dead attribute" finding for
+                        // `sgs/google-reviews.gap`).
+                        //
+                        // A DYNAMIC key (`$prefix . 'ImageAlt'`) is never a
+                        // real attribute name, so it can never match the
+                        // index and is skipped explicitly rather than left to
+                        // fail the lookup by luck.
+                        //
+                        // Two conditions, both required: the block must
+                        // DECLARE the attribute AND be able to REACH this
+                        // file (see collect_block_consumers()).
+                        if (null === $blockSlugGuess && !$isDynamic && isset($attrIndex[$key])) {
+                            $reachable = '' !== $repoRoot
+                                ? collect_block_consumers($repoRoot, $file)
+                                : [];
+                            $owners = array_values(array_intersect($attrIndex[$key], $reachable));
+                            foreach ($owners as $ownerSlug) {
+                                $shared = $row;
+                                $shared['block_slug'] = $ownerSlug;
+                                // Marks the row as attributed-by-declaration
+                                // rather than observed in the block's own
+                                // render.php, so a consumer can tell the two
+                                // apart. Present ONLY on these added rows.
+                                $shared['shared_include'] = true;
+                                echo json_encode($shared) . "\n";
+                            }
+                        }
                     }
                 }
             }
@@ -946,6 +1229,207 @@ function infer_block_slug(string $file): ?string {
     return null; // shared include file — not block-scoped.
 }
 
+/**
+ * Capture `run()`'s NDJSON output as decoded rows.
+ */
+function d1_collect(array $files, array $attrIndex, string $repoRoot): array {
+    ob_start();
+    run($files, [], $attrIndex, $repoRoot);
+    $out = (string) ob_get_clean();
+
+    $rows = [];
+    foreach (explode("\n", $out) as $line) {
+        $line = trim($line);
+        if ('' === $line) {
+            continue;
+        }
+        $row = json_decode($line, true);
+        if (is_array($row)) {
+            $rows[] = $row;
+        }
+    }
+    return $rows;
+}
+
+/**
+ * `--self-test` — proves the shared-include attribution can FAIL.
+ *
+ * Five checks, each with an explicit vacuity guard (a check that cannot fail
+ * when the thing it measures is absent reads green forever):
+ *
+ *   1  index is non-empty and `fieldName` resolves to the seven form-field
+ *      blocks that consume it through the shared helper;
+ *   2  NEGATIVE CONTROL — an attribute name declared by NO block is absent
+ *      from the index, and a synthetic shared-include file that escapes it
+ *      yields EXACTLY ONE row, `block_slug: null`, with zero attributed rows.
+ *      This is the check that fails if the attribution rule is ever loosened
+ *      to "attribute to every block" or to a fuzzy name match;
+ *   3  positive control on the REAL helper — `fieldName` reaches
+ *      `sgs/form-field-text` with `shared_include: true`;
+ *   4  glue control — an assignment behind a function-declaration header is
+ *      matched by match_assignment() (the root cause that hid `fieldName`);
+ *   5  block-scoped rows are NEVER given a `shared_include` marker, so a
+ *      consumer can trust the two row kinds apart.
+ */
+function d1_self_test(string $repoRoot): int {
+    $failures = [];
+    $index = collect_block_attr_index($repoRoot);
+
+    // --- 1. index sanity + fieldName ownership -------------------------------
+    if (count($index) < 50) {
+        $failures[] = 'CHECK 1: attribute index looks empty/degenerate (' . count($index) . ' names) — every check below would be vacuous.';
+    }
+    $expectedFieldNameOwners = [
+        'sgs/form-field-date',
+        'sgs/form-field-email',
+        'sgs/form-field-number',
+        'sgs/form-field-phone',
+        'sgs/form-field-select',
+        'sgs/form-field-text',
+        'sgs/form-field-textarea',
+    ];
+    $actualOwners = $index['fieldName'] ?? [];
+    foreach ($expectedFieldNameOwners as $slug) {
+        if (!in_array($slug, $actualOwners, true)) {
+            $failures[] = "CHECK 1: fieldName index is missing $slug (got: " . implode(',', $actualOwners) . ')';
+        }
+    }
+
+    // --- 2. NEGATIVE CONTROL -------------------------------------------------
+    $ghostAttr = 'zzzAttributeDeclaredByNoBlockWhatsoever';
+    if (isset($index[$ghostAttr])) {
+        $failures[] = "CHECK 2: negative control is void — '$ghostAttr' is actually declared by a block.";
+    }
+    // The fixture deliberately defines `field_input_attrs` — the SAME symbol
+    // the real shared helper defines — so the seven form-field blocks DO
+    // reach it and the reachability constraint is satisfied. Without that,
+    // the reachability check alone would reject the fixture and this negative
+    // control would pass for the wrong reason: measured 2026-08-06, a fixture
+    // defining a symbol nothing references stayed green even with the
+    // declared-attribute lookup deliberately removed. A control shielded by a
+    // second gate is not a control.
+    $tmp = rtrim(sys_get_temp_dir(), "/\\") . '/d1_selftest_shared_include.php';
+    file_put_contents($tmp, "<?php\nfunction field_input_attrs( array \$attributes ): string {\n\t\$ghost = \$attributes['$ghostAttr'] ?? '';\n\treturn 'x=\"' . esc_attr( \$ghost ) . '\"';\n}\n");
+    $ghostReach = collect_block_consumers($repoRoot, $tmp);
+    $ghostRows = d1_collect([$tmp], $index, $repoRoot);
+    @unlink($tmp);
+
+    // Vacuity guard 1: if the fixture produced NO rows at all, "zero
+    // attributed rows" would be trivially true and would prove nothing.
+    if (count($ghostRows) === 0) {
+        $failures[] = 'CHECK 2: fixture yielded no rows at all — the negative control is vacuous (is the function-header glue strip still in place?).';
+    }
+    // Vacuity guard 2: if no block can reach the fixture, reachability alone
+    // rejects it and the DECLARED-ATTRIBUTE rule is never exercised.
+    if (!in_array('sgs/form-field-text', $ghostReach, true)) {
+        $failures[] = 'CHECK 2: no block reaches the fixture — reachability would reject it regardless, so the declared-attribute rule is untested here.';
+    }
+    foreach ($ghostRows as $r) {
+        if (null !== $r['block_slug']) {
+            $failures[] = 'CHECK 2: undeclared attribute was attributed to ' . $r['block_slug'] . ' — negative control BROKEN.';
+        }
+        if (!empty($r['shared_include'])) {
+            $failures[] = 'CHECK 2: undeclared attribute produced a shared_include row — negative control BROKEN.';
+        }
+    }
+
+    // --- 3. positive control on the real shared helper ------------------------
+    $helper = $repoRoot . '/plugins/sgs-blocks/includes/forms/field-render-helpers.php';
+    if (!is_file($helper)) {
+        $failures[] = "CHECK 3: shared helper not found at $helper";
+    } else {
+        $helperRows = d1_collect([$helper], $index, $repoRoot);
+        $sawNullFieldName = false;
+        $sawAttributed = [];
+        foreach ($helperRows as $r) {
+            if ('fieldName' !== $r['attr_key']) {
+                continue;
+            }
+            if (null === $r['block_slug']) {
+                $sawNullFieldName = true;
+            } elseif (!empty($r['shared_include'])) {
+                $sawAttributed[$r['block_slug']] = true;
+            }
+        }
+        if (!$sawNullFieldName) {
+            $failures[] = 'CHECK 3: the original unattributed fieldName row is gone — the added rows must be ADDITIVE, never replacements.';
+        }
+        foreach ($expectedFieldNameOwners as $slug) {
+            if (!isset($sawAttributed[$slug])) {
+                $failures[] = "CHECK 3: fieldName never reached $slug from the shared helper.";
+            }
+        }
+    }
+
+    // --- 4. glue control -----------------------------------------------------
+    $glued = "} function field_input_attrs( string \$field_id, array \$attributes ): string { \$field_name = \$attributes['fieldName'] ?? '';";
+    $assign = match_assignment($glued);
+    if (null === $assign || 'field_name' !== $assign[0]) {
+        $failures[] = 'CHECK 4: an assignment behind a function-declaration header is still invisible to match_assignment() — this is the exact root cause that hid fieldName.';
+    } elseif ([] === extract_attr_keys($assign[1])) {
+        $failures[] = 'CHECK 4: the assignment matched but its $attributes[...] key did not resolve.';
+    }
+
+    // --- 5. block-scoped rows carry no shared_include marker -----------------
+    $blockRender = $repoRoot . '/plugins/sgs-blocks/src/blocks/form-field-consent/render.php';
+    if (!is_file($blockRender)) {
+        $failures[] = "CHECK 5: block render not found at $blockRender";
+    } else {
+        $blockRows = d1_collect([$blockRender], $index, $repoRoot);
+        if (count($blockRows) === 0) {
+            $failures[] = 'CHECK 5: block render yielded no rows — check is vacuous.';
+        }
+        foreach ($blockRows as $r) {
+            if (!empty($r['shared_include'])) {
+                $failures[] = 'CHECK 5: a block-scoped row was marked shared_include (' . $r['attr_key'] . ').';
+            }
+            if (null === $r['block_slug']) {
+                $failures[] = 'CHECK 5: a src/blocks/*/render.php row lost its block_slug (' . $r['attr_key'] . ').';
+            }
+        }
+    }
+
+    // --- 6. SECOND NEGATIVE CONTROL: name collision without reachability -----
+    //
+    // `includes/product-card-builtin-render.php` escapes `imageAlt`, and
+    // `sgs/decorative-image` ALSO declares an attribute called `imageAlt` —
+    // but never calls that helper. Declaring the name must not be enough.
+    $pcHelper = $repoRoot . '/plugins/sgs-blocks/includes/product-card-builtin-render.php';
+    if (!is_file($pcHelper)) {
+        $failures[] = "CHECK 6: helper not found at $pcHelper";
+    } elseif (!in_array('sgs/decorative-image', $index['imageAlt'] ?? [], true)) {
+        // Vacuity guard: with no collision there is nothing to reject.
+        $failures[] = 'CHECK 6: sgs/decorative-image no longer declares imageAlt — the collision this check rejects is gone, pick a live one.';
+    } else {
+        $pcRows = d1_collect([$pcHelper], $index, $repoRoot);
+        if (count($pcRows) === 0) {
+            $failures[] = 'CHECK 6: helper yielded no rows — check is vacuous.';
+        }
+        $sawReachable = false;
+        foreach ($pcRows as $r) {
+            if ('sgs/decorative-image' === $r['block_slug']) {
+                $failures[] = 'CHECK 6: imageAlt was attributed to sgs/decorative-image, which cannot reach this helper — reachability constraint BROKEN.';
+            }
+            if ('sgs/product-card' === $r['block_slug']) {
+                $sawReachable = true;
+            }
+        }
+        if (!$sawReachable) {
+            $failures[] = 'CHECK 6: the helper never attributed anything to sgs/product-card, which DOES call it — reachability is over-tight.';
+        }
+    }
+
+    if ([] !== $failures) {
+        foreach ($failures as $f) {
+            fwrite(STDERR, "FAIL: $f\n");
+        }
+        fwrite(STDERR, 'SELF-TEST: ' . count($failures) . " failure(s).\n");
+        return 1;
+    }
+    fwrite(STDERR, "SELF-TEST: PASS (6 checks, 2 negative controls included).\n");
+    return 0;
+}
+
 // --- entry point ---
 //
 // GUARDED SO THIS FILE CAN BE `require`d (2026-08-06). Detector 7 reuses
@@ -957,10 +1441,18 @@ function infer_block_slug(string $file): ?string {
 // Without the guard, `require`ing this file would run the WHOLE 84-block scan as a side
 // effect of importing one function. The guard changes NOTHING about CLI behaviour:
 // verified by diffing the full `--glob` output before and after (515 lines, md5
-// 4470199B3328377E39829BE4FDDAEE57, byte-identical).
+// 4470199B3328377E39829BE4FDDAEE57, byte-identical). That 515/md5 pair is the
+// HISTORICAL baseline for the guard change, not the current output: shared-
+// include attribution (2026-08-06) took `--glob` to 1061 lines as a strict
+// SUPERSET — all 515 baseline lines still present, verbatim and in order, with
+// 546 added.
 if (PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === realpath(__FILE__)) {
     $args = array_slice($argv, 1);
     $repoRoot = 'c:/Users/Bean/Projects/small-giants-wp';
+
+    if (!empty($args) && $args[0] === '--self-test') {
+        exit(d1_self_test($repoRoot));
+    }
 
     if (empty($args) || $args[0] === '--glob') {
         $files = collect_default_files($repoRoot);
@@ -968,5 +1460,5 @@ if (PHP_SAPI === 'cli' && isset($argv[0]) && realpath($argv[0]) === realpath(__F
         $files = $args;
     }
 
-    run($files, []);
+    run($files, [], collect_block_attr_index($repoRoot), $repoRoot);
 }
