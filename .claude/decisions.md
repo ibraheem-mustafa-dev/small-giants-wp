@@ -1,5 +1,43 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D505 — `--desktop` A-collapses to the BASE content attr (Task B Phase 1) [ROUTINE]
+
+**2026-08-06.** Commit `15df8264`. First phase of Spec 35 Task B, post-`/qc-council`.
+
+**The defect.** `content_attr_for_element` treated every device tier identically: append the suffix
+to the base attr name, return `None` when that sibling is absent. **There is no `…Desktop`
+attribute anywhere in the schema** — the unsuffixed base IS the desktop value — so a draft node
+carrying a `--desktop` modifier resolved to nothing, became a loud gap, and dropped its content.
+
+**Measured before the change, not asserted after:** across all 23 content-bearing tier-sibling
+pairs on the 8 blocks that declare them, **not one declares a `…Desktop` sibling**. So the collapse
+has no counter-example. Desktop now returns the base; Tablet/Mobile keep the loud no-fallback
+behaviour (D480's ruling) untouched — verified byte-identical across all 7 probe cases.
+
+**Position is not a rule — the catch that mattered.** The first cut identified the Desktop suffix as
+`_tier_suffixes[-1]`, i.e. by POSITION in the `modifier_suffixes` vocabulary. That table's row order
+is separately load-bearing (STOP §E1), so a reseed reordering it would have silently changed which
+tier collapses. Replaced with a stated RULE: the base tier is the entry in `device_tier_ranges()`
+(the R-31-1 permitted-constant) whose range has **no upper bound**. This is checklist item 22's
+ban on positional tie-breaks applied to a live case.
+
+**Not a second mechanism.** `styling_helpers.collect_css_decls_for_element` already performs this
+same Desktop→base collapse on the CSS side. This is the content-side half of one rule. ⚠ **Spec 31
+§13.4 FR-31-5.2 states the A-collapse for CSS routing specifically** — applying it to CONTENT
+routing is an extension by analogy, noted in the code comment so a later reader does not assume the
+spec already covered it.
+
+**Negative control:** making the collapse unconditional turned the Tablet loud-gap test red (3
+failures), then reverted green. The break was confirmed present on disk before the run, per this
+file's own standard.
+
+**Test-isolation defect found while measuring.** `test_content_attr_resolver.py`'s fixture built no
+`roles` table, which `_content_bearing_roles()` needs. Run standalone the file failed **8 of 9**; in
+a full-suite run it passed, because another test file seeded the table first. Those tests were green
+only through cross-test contamination. Fixed in the fixture. Suite accounting: **634 → 637**, exactly
+the 3 new tests, no other movement. (The "598 pass" figure carried in LEDGER/D500 is stale — the tree
+moved; re-measure rather than diffing against it.)
+
 ## D504 — Spec 35 pool 23 → 0; four detector defects and two inert mechanisms [ROUTINE]
 
 **2026-08-06.** Spec 35 "Track 1b" drove the unclassified attribute-role pool from 23 to 0. Every

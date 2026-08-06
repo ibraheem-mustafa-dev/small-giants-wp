@@ -48,8 +48,11 @@ Per-sub-track status (one line each) + the pointer that owns the full narrative 
 before acting, do not assume it is current from memory alone:
 
 - **Track 1 — routing audit COMPLETE + tier axis SHIPPED (D480); Phases 0-3 COMPLETE (D464, D470-D478),
-  Phase 4 PARTIAL, Phase 5 OPEN.** Tier axis does not yet reach `splitImage` (`scalar-media` blocks it
-  — Spec 35 prerequisite). Live parity: content 99%, CSS 83/84/89% (worst mobile). Registers:
+  Phase 4 PARTIAL, Phase 5 OPEN.** Tier axis does not yet reach `splitImage` — **TWO blockers, not
+  one: `scalar-media` AND `walk.py:281-292` `_family_modifier`, which returns on the first
+  family-matching class rather than the first class carrying a modifier (measured 2026-08-06, Task B
+  council). Fixing only the role reintroduces the D474 mobile-crop-in-desktop-attr bug.** Spec 35
+  prerequisite. Live parity: content 99%, CSS 83/84/89% (worst mobile). Registers:
   `reports/2026-08-02-pipeline-routing-review.md` + `reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
   Narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md`.
 - **⭐ Track 1b (Spec 35) — POOL 23 → 0, CLOSED 2026-08-06 (D504).** Every `sgs/%` string attribute
@@ -187,7 +190,22 @@ CHECK 5 gate. All deployed to the canary and visual-diff evidenced.
 | **A9** | **Rework the seeding setup** per the critique + context from the Spec 31 cloning-pipeline agent. ⏳ **Bean supplies that input once A7 and A8 are fully closed** — do not start A9 before it arrives |
 
 **Then → Task F** (build the remaining enforcement scripts; the track's actual deliverable).
-**Task B is being worked in a PARALLEL SESSION — do not touch it.**
+
+**Task B is being worked in a PARALLEL SESSION — do not touch it.** Status 2026-08-06, post-council
+(plan: `~/.claude/plans/go-spec-35-task-concurrent-pancake.md`):
+- **Phase 1 SHIPPED (D505, `15df8264`)** — `--desktop` A-collapses to the BASE content attr.
+- ⛔ **The collision class is 9 groups / 7 blocks, not the "FOUR-block" figure** — adds
+  `physics-canvas`, `site-header`, `site-footer`. Re-run the gate; do not cite 4.
+- ⛔ **`splitImage` is NOT "prefix-not-suffix"** (that was `responsive-logo`). Only the Tablet tier
+  is missing, and the model is `backgroundImage`/`Tablet`/`Mobile` on the same block.
+- ⛔ **`scalar-media` is NOT the only blocker.** `walk.py:281-292` `_family_modifier` returns on the
+  first family-matching class, not the first class carrying a modifier — so on hero's two-class
+  markup the device tier is ALWAYS `None`. Retiring `scalar-media` before fixing that puts the
+  mobile crop in the desktop attr with no gap logged. Phase 2 fixes it; Phase 3 is gated on it.
+- ⛔ **A slot split alone cannot close a collision** — `assign-canonical.py:797-800` preserves
+  `derived_selector` when populated, so the gate would read green while the defect persists.
+- **`--desktop` draft nodes: 1** (`index.html:780`); 2 image nodes total. D480's "7" counted CSS
+  rules and fixture copies.
 
 ### Methodology guardrails (do not skip — every one was earned this session)
 
