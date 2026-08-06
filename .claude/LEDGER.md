@@ -191,24 +191,15 @@ by name). Their ROLE is now right, but the converter still cannot route draft CS
 container's full `grid-item` element would fix 12 rows across the 2 blocks — wider than the scope
 approved on 2026-08-06, hence parked as a question rather than done silently.
 
-### STEP 0.2 — ONE residual left (2 of 3 shipped 2026-08-06)
+### STEP 0.2 — ✅ ALL THREE CLOSED (2026-08-06)
 
-1. ✅ **`sgs/multi-button` rename — PHASE B COMPLETE** (`96136e77`). Both posts migrated in ONE
-   Playwright session (the blocker was a per-run login against a rate-limited wp-login FORM, not a
-   lockout); six legacy declarations + the legacy fallback arm deleted. ⚠ **Two theme patterns were
-   missing from the recorded Phase B steps** — `footer-centred.php` / `footer-simple.php` still used
-   legacy `wrap`; deleting the declaration would have silently un-wrapped both footers (D338).
-2. ⬜ **`link-content` role + extractor — STILL OPEN.** Capture half shipped (`580f7885`); the
-   EXTRACTOR is NOT built and the role is deliberately NOT seeded. It was drafted against an assumed
-   `extra` parameter; the real signature is `extract_field_value(element, role, media_map=None)`, so
-   it would raise `NameError` on first use. Threading the template through changes a shared converter
-   entry point used by BOTH `array_content` and `scalar_content` — read Spec 31 §3.B.0 first. Covers
-   `whatsapp-cta.phoneNumber` AND `.message` (Bean's scope call). **This is what blocks 2 of the 69.**
-3. ✅ **Case mismatch in `extract-signatures.py` — FIXED** (`60f7fbbb`). `"" + "Gap"` could never
-   match a camelCase `gap`, silently disabling the prefix-convention path for every bare-prefix
-   element. 224 → 280 attr→element matches (+56) across 7 blocks.
+multi-button Phase B (`96136e77`) · `extract-signatures` case mismatch (`60f7fbbb`) · **`link-content`
+role + extractor SHIPPED (`d5766eff`)** — 35 tests, 14 negative controls asserting `None` rather than a
+wrong fragment. ⚠ The carried warning that it was "drafted against an assumed `extra` parameter" is
+RESOLVED, not outstanding: the real signature was verified and a 4th keyword-defaulted param used, so
+both existing call paths keep their 3 positional args (Spec 31 §3.B.0).
 
-**Only after Step 0.1/0.2** move to Tasks B-F below.
+**Only after Step 0.1** move to Tasks B-F below.
 
 
 ### ⭐ NEXT SESSION STARTS HERE — pool **23 → 0**. Every remaining task, in order.
@@ -290,8 +281,6 @@ plus the `sgs/media` id+url pair so `image-alt` fires natively.
 composite's interior media is IDENTIFIED draft-side, and that identity is what the reshaped attr's
 routing keys off. Order: settle B's selector identity → derive the shape → migrate `splitImage` →
 retire `scalar-media` → confirm the tier axis reaches it.
-| ~~**C**~~ | ✅ **DONE `3cbdd89f`** — 6 rules ported, equivalence re-verified; only 4 actually GATE (2 were informational, ported as advisory). | — | — | — | — | — |
-| ~~**D**~~ | ✅ **DONE `4e07ab6c`** — `inspector-scan/run.js --check` is the prebuild gate, proven by negative control; baseline keys made repo-relative. | — | — | — | — | — |
 | **F** | Build the remaining enforcement scripts — the track's actual deliverable. Scope: 19 remaining (items 2-17, 19, 21 + T1/T2/T3 minus C/D's 2); items 1/18/20 exist on `scripts/inspector-scan/`. | 30-60 min/rule | Delegated per rule, sonnet, `/subagent-driven-development` — each rule is independent once B settles. | A-D settled | `/qc-council` per rule before fail-closed flip | Each row meets `STOP-CATALOGUE.md` §E6, or a recorded exception naming a D-number |
 
 ⚠ **Why F is last (Bean's ruling):** A/B/E decide block structure; rules written before them get
