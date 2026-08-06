@@ -1,5 +1,76 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D507 — the polymorphic media slots are split; a live video→image mis-route closed; collisions 9 → 2 [INCIDENT]
+
+**2026-08-06.** Commits `b717717d` (blocks) + `13a42d83` (data). Task B phase 3.
+
+**The defect, and it was LIVE not latent.** `derived_selector` is generated as
+`.sgs-{block}__{canonical_slot}` — a pure function of the slot. Two content-bearing attrs sharing a
+slot on one block therefore CANNOT have distinct draft-side identities, and the converter (which
+routes on `derived_selector` alone) took whichever row had the lower id. Measured before the change:
+`content_attr_for_element('sgs/container','video-bg')` → **`backgroundImage`**. A draft authoring a
+background VIDEO had it routed into the background IMAGE attribute, on all 7 mirror blocks. After:
+→ `bgVideo`. This answers the open "live or latent?" question from the Task B council: **live**.
+
+`backgroundMedia` → `background-image`/`background-video`/`background-svg`; `media` →
+`image`/`thumbnail`/`video`. Every child carries `standalone_block='sgs/media'` — omitting it would
+make `equivalent_block_for()` return None and silently demote a child block to a scalar lift.
+
+**⚠ The reseed alone would have been INERT, and the gate would have gone GREEN anyway.**
+`assign-canonical.py:797-800` preserves `derived_selector` when populated, so the split had to clear
+slot+selector on the 106 affected rows first. Worse: the collision gate groups on a 4-tuple
+*including* `canonical_slot` while the converter reads `derived_selector` alone — so diverging the
+slot splits the report while the defect survives. **The proof of this change is the routing probe,
+not the gate count.** Both traps were called by the pre-build council; neither was discovered late.
+
+**Predicted 1 remaining group, measured 2 — the miss is mine.** I mapped both `backgroundVideo` and
+`bgVideo` to `background-video` in my own design table and did not notice they therefore still
+collide. Both survivors are same-kind duplicate PAIRS on one block, which a slot split structurally
+cannot fix: `sgs/hero`'s two video attrs (the 2026-08-03 report's Option A) and `sgs/team-member`'s
+`memberMedia`/`photo`. Neither is a split failure; both need a duplicate REMOVED and Bean's call.
+
+**Two regressions the suite caught, both mine:**
+1. The bare token `media` was the retired slot's NAME, and the resolver matches
+   `canonical_slot == bem_element`, so it resolved via the slot name itself. Dropping it broke every
+   draft authoring `__media`. Carried forward as an alias of `image`.
+2. My first cut **re-sorted every row in `slots.json`**. Gratuitous and unsafe: **19 aliases are
+   claimed by more than one slot** and row order decides the winner (first-writer-wins in
+   `assign-canonical.py:85-112` vs last-writer-wins in `db_lookup.py:840-852`, over an unordered
+   SELECT), so a global sort silently re-resolves them for slots this change never touched. It also
+   moved which slot the metamorphic test samples, surfacing an unrelated latent flaw (the test
+   assumes every alias is a valid DOM token; `authorImage` is camelCase and Spec 00 §3.1 requires
+   lowercase-hyphen BEM). Restored HEAD's ordering with the children in the parents' place.
+
+**`Poster` property suffix renamed to `Thumbnail`,** in place at its rowid because order is
+load-bearing (STOP §E1). The rename had otherwise LOST `sgs/media.thumbnail`'s role: `videoPoster`
+earned `image-object` from that suffix and a bare `thumbnail` matched nothing. Needed **two** reseed
+passes, exactly as D497 documents — pass 1 left it NULL, pass 2 assigned it. A live confirmation of
+that gotcha.
+
+**Also in the block half (`b717717d`):** `bgVideoTablet` on all 7 mirror blocks — background video
+was the framework's ONLY Mobile-without-Tablet content family. `sgs/hero` does not route video
+through `SGS_Container_Wrapper` (it carries a near-duplicate `$video_html`), so the shared control
+would have been DEAD on hero while the dead-control gate stayed green — **a per-block dead control
+hidden behind a shared consumer is a gate blind spot.** `container/view.js`'s `MOBILE_BREAKPOINT`
+600 → 768: it disagreed with hero's 768 for the identical swap, so the same video changed source at
+different widths depending on which block painted it (classified as device-tier before changing, per
+the discipline rule; same class as D228).
+
+**⚠ The rename nearly deleted client content, and a gate caught it, not me.** My "absent from stored
+content" check read the 2026-07-15 backup; I said I would confirm with a live scan and did not. The
+deploy's `oldshape-audit` found canary post 2114 storing `posterMedia`/`posterAlt` and refused to
+deploy — WordPress discards an undeclared attr, so the next editor save would have deleted them (the
+D496 multi-button failure). Per Bean's pre-production ruling (no migrations, no deprecations) that
+scratch page was TRASHED, not migrated, and is recoverable. **A6 was closed the same day by the
+OTHER track**, not by this work; my rename broke their new regression guard and it was repaired in
+step, with an added assertion that the image object itself lifts (asserting only the alt would let
+A6's original "lifts nothing" failure return unnoticed).
+
+**Verified:** routing probe on 3 blocks; 15/15 containers + 1/1 media image server-rendered and
+visible with JS DISABLED on the canary; suite 640 pass / 1 pre-existing failure. DB backed up
+hash-verified before the reseed. Visual-diff reports state plainly that the tablet video swap is
+shipped but NOT exercised — the canary carries zero `<video>` elements.
+
 ## D506 — the device tier was blind to a modifier on any but the first class — and it was never hero-only [INCIDENT]
 
 **2026-08-06.** Commit `7f460333`. Task B Phase 2.

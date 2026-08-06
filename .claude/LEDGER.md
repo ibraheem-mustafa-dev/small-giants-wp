@@ -193,7 +193,16 @@ CHECK 5 gate. All deployed to the canary and visual-diff evidenced.
 
 **Task B is being worked in a PARALLEL SESSION — do not touch it.** Status 2026-08-06, post-council
 (plan: `~/.claude/plans/go-spec-35-task-concurrent-pancake.md`):
-- **Phase 1 SHIPPED (D505, `15df8264`)** — `--desktop` A-collapses to the BASE content attr.
+- **Phases 1, 2 and 3 SHIPPED.** D505 `15df8264` (`--desktop` A-collapses to the BASE attr) ·
+  D506 `7f460333` (device tier reads a modifier on ANY own-family class) · D507 `b717717d` +
+  `13a42d83` (bgVideoTablet ×7, breakpoint 600→768, poster→thumbnail, polymorphic slot split).
+- **Content collisions 9 → 2.** A LIVE mis-route is closed: `sgs-container__video-bg` routed a
+  background VIDEO into the background IMAGE attr on all 7 mirror blocks. The 2 survivors are
+  same-kind duplicate PAIRS one block each — `hero` backgroundVideo/bgVideo and `team-member`
+  memberMedia/photo — which a slot split structurally cannot fix. **They need a duplicate REMOVED
+  and Bean's call**; hero's is the 2026-08-03 report's Option A.
+- **STILL OPEN:** `scalar-media` retirement + the `splitImage` trio reclassification (phase 3c),
+  and 9 video attrs carrying `role IS NULL` (phase 3d).
 - ⛔ **The collision class is 9 groups / 7 blocks, not the "FOUR-block" figure** — adds
   `physics-canvas`, `site-header`, `site-footer`. Re-run the gate; do not cite 4.
 - ⛔ **`splitImage` is NOT "prefix-not-suffix"** (that was `responsive-logo`). Only the Tablet tier
