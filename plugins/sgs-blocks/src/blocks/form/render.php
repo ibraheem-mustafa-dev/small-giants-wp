@@ -291,7 +291,29 @@ if ( $is_multi_step ) :
 	</div>
 <?php endif; ?>
 
-<form class="sgs-form__inner" method="post" novalidate data-wp-on-async--submit="actions.submitForm">
+<?php
+// ACCESSIBLE NAME (2026-08-06, Bean). `formName` had an editor control (edit.js:97)
+// and two variations seeding translatable copy ("Contact Us", "Newsletter Signup",
+// includes/variations/sgs-form-variations.php:79,114) — and NOTHING rendered it: it
+// was assigned to $form_name above and read by no one, so a client could type a form
+// name and nothing happened. That is the Spec 35 failure mode (a control that needs
+// code to mean anything is not done), and it left every SGS form without an
+// accessible name, which is a real WCAG 2.1 gap when a page carries more than one
+// form — a screen-reader user hears "form" twice with nothing to tell them apart.
+//
+// Rendered as aria-label rather than a visible heading DELIBERATELY: a visible title
+// is the operator's own sgs/heading block placed above the form, and emitting a
+// second one would duplicate it and fight their layout. The name is metadata about
+// the form, so it belongs in the accessible name.
+//
+// Emitted only when non-empty: an `aria-label=""` is worse than none (it can strip a
+// naming fallback), so the whole attribute is omitted rather than emitted blank.
+$sgs_form_label      = trim( (string) $form_name );
+$sgs_form_label_attr = '' !== $sgs_form_label
+	? ' aria-label="' . esc_attr( $sgs_form_label ) . '"'
+	: '';
+?>
+<form class="sgs-form__inner" method="post" novalidate<?php echo $sgs_form_label_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built immediately above from esc_attr(). ?> data-wp-on-async--submit="actions.submitForm">
 
 	<input type="hidden" name="_sgs_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 

@@ -94,8 +94,8 @@ $hover_img_zoom = (bool) ( $attributes['imageZoomHover'] ?? true );
 $hover_bg       = ! empty( $attributes['backgroundColourHover'] ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
 $hover_text     = ! empty( $attributes['textColourHover'] ) ? sgs_colour_value( $attributes['textColourHover'] ) : '';
 $hover_border   = ! empty( $attributes['borderColourHover'] ) ? sgs_colour_value( $attributes['borderColourHover'] ) : '';
-$trans_duration = absint( $attributes['transitionDuration'] ?? 300 );
-$trans_easing   = sanitize_text_field( $attributes['transitionEasing'] ?? 'ease' );
+// transitionDuration/transitionEasing are read directly by sgs_transition_vars()
+// below — no local variable needed here (dead-assignment cleanup).
 
 $carousel_autoplay    = (bool) ( $attributes['carouselAutoplay'] ?? false );
 $carousel_speed       = absint( $attributes['carouselSpeed'] ?? 5000 );

@@ -116,7 +116,9 @@ if ( '' !== $sgs_ft_preset_bg ) {
 $fid            = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $tiles          = $attributes['tiles'] ?? array();
 $multi          = $attributes['multiSelect'] ?? false;
-$columns        = absint( $attributes['columns'] ?? 3 );
+// columns is read directly by SGS_Container_Wrapper::render() from
+// $attributes['columns'] — no local variable needed here (dead-assignment
+// cleanup).
 $name           = esc_attr( $attributes['fieldName'] ?? '' );
 $required       = ! empty( $attributes['required'] );
 $help_text      = $attributes['helpText'] ?? '';

@@ -66,13 +66,15 @@ $slides_visible = $attributes['slidesVisible'] ?? 1;
 // (Bean-locked card-in-a-card de-style). It flows to child sgs/testimonial blocks
 // as `sgs/testimonialVariant` via block.json `providesContext`, resolved in
 // sgs/testimonial's own render.php ($block->context), not by this parent.
-$name_font_size      = $attributes['nameFontSize'] ?? '';
 $hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
 $hover_effect        = $attributes['effectHover'] ?? 'none';
-$transition_duration = $attributes['transitionDuration'] ?? '300';
-$transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
+// transitionDuration/transitionEasing are read directly by sgs_transition_vars()
+// below — no local variable needed here (dead-assignment cleanup).
+// nameFontSize had no editor control and no consumer anywhere in the repo
+// (D338 full-repo grep, 2026-08-06) — removed as an abandoned attribute,
+// see block.json for the matching removal.
 
 /*
  * Drag momentum — BLOCK-PRIVATE, deliberately NOT the shared Tier G roster.

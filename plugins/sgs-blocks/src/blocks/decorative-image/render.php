@@ -78,7 +78,12 @@ $z_index             = $attributes['zIndex'] ?? 1;
 $flip_x              = $attributes['flipX'] ?? false;
 $parallax_strength   = $attributes['parallaxStrength'] ?? 0;
 $fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
-$overflow            = $attributes['overflow'] ?? 'visible';
+// overflow is interpolated straight into the scoped <style> block below —
+// allow-list it against valid CSS `overflow` keywords (never trust it
+// unsanitised into a <style> element, contract §D CSS-injection guard).
+$allowed_overflows   = array( 'visible', 'hidden', 'clip', 'scroll', 'auto' );
+$overflow_raw        = $attributes['overflow'] ?? 'visible';
+$overflow            = in_array( $overflow_raw, $allowed_overflows, true ) ? $overflow_raw : 'visible';
 $path_draw           = (bool) ( $attributes['pathDrawOnScroll'] ?? false );
 $path_draw_duration  = absint( $attributes['pathDrawDurationMs'] ?? 1500 );
 $path_draw_offset    = absint( $attributes['pathDrawTriggerOffset'] ?? 20 );
@@ -144,6 +149,7 @@ $root_decls = array(
 	'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
 	'z-index:' . $z_index_css,
 	'transform:' . implode( ' ', $transform_parts ),
+	'overflow:' . $overflow,
 );
 
 $scoped_css   = array();

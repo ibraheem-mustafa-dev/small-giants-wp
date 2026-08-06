@@ -94,8 +94,8 @@ $hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
 $hover_effect        = $attributes['effectHover'] ?? 'none';
-$transition_duration = $attributes['transitionDuration'] ?? '300';
-$transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
+// transitionDuration/transitionEasing are read directly by sgs_transition_vars()
+// below — no local variable needed here (dead-assignment cleanup).
 
 // Map scroll speed to CSS animation duration.
 $speed_map       = array(

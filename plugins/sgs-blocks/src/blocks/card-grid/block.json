@@ -118,7 +118,7 @@
 					"label": "Card image",
 					"order": 3,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/overlayStyle, not the Text/Fill/Layout style clusters."
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.)"
 				},
 				"card-title": {
 					"label": "Card title",
@@ -211,10 +211,6 @@
 		"columnsTablet": {
 			"type": "number",
 			"default": 2
-		},
-		"overlayStyle": {
-			"type": "string",
-			"default": "gradient"
 		},
 		"titleColour": {
 			"type": "string",

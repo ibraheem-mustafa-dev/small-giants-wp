@@ -170,8 +170,8 @@ $split_image_mobile_height  = $attributes['splitImageMobileHeight'] ?? null;
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
 $hover_border_colour     = $attributes['borderColourHover'] ?? '';
-$transition_duration     = $attributes['transitionDuration'] ?? '300';
-$transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
+// transitionDuration/transitionEasing are read directly by sgs_transition_vars()
+// below — no local variable needed here (dead-assignment cleanup).
 
 // Background effect attributes.
 $bg_parallax     = ! empty( $attributes['bgParallax'] );

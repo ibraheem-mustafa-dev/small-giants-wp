@@ -51,7 +51,9 @@ $columns_tablet     = $attributes['columnsTablet'] ?? 2;
 $gap                = $attributes['gap'] ?? '30';
 $aspect_ratio       = $attributes['aspectRatio'] ?? '16/10';
 $hover_effect       = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
-$overlay_style      = $attributes['overlayStyle'] ?? 'gradient';
+// overlayStyle removed — no editor control, no consumer anywhere in the
+// repo (D338 full-repo grep, 2026-08-06); abandoned attribute, deleted from
+// block.json too.
 $title_colour       = $attributes['titleColour'] ?? '';
 $subtitle_colour    = $attributes['subtitleColour'] ?? '';
 $hover_bg           = $attributes['backgroundColourHover'] ?? '';

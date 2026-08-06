@@ -73,8 +73,8 @@ $hover_effect    = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 $hover_grayscale = (bool) ( $attributes['grayscaleHover'] ?? false );
 $hover_shadow    = sanitize_key( $attributes['shadowHover'] ?? '' );
 $stagger_delay   = absint( $attributes['staggerDelay'] ?? 0 );
-$trans_duration  = absint( $attributes['transitionDuration'] ?? 300 );
-$trans_easing    = sanitize_text_field( $attributes['transitionEasing'] ?? 'ease' );
+// transitionDuration/transitionEasing are read directly by sgs_transition_vars()
+// below — no local variable needed here (dead-assignment cleanup).
 
 $carousel_autoplay    = (bool) ( $attributes['carouselAutoplay'] ?? false );
 $carousel_speed       = absint( $attributes['carouselSpeed'] ?? 5000 );
@@ -287,6 +287,14 @@ $extra_attrs = array();
 if ( $enable_lightbox ) {
 	$extra_attrs['data-wp-interactive'] = 'sgs/gallery';
 	$extra_attrs['data-wp-context']     = $context_data;
+}
+// Carousel autoplay/speed — only the carousel layout has anything to
+// autoplay; other layouts never read these. view.js (initCarousel) reads
+// galleryEl.dataset.autoplay as the literal string 'true'/'false' and
+// dataset.speed as an integer-ms string, so match those shapes exactly.
+if ( 'carousel' === $layout ) {
+	$extra_attrs['data-autoplay'] = $carousel_autoplay ? 'true' : 'false';
+	$extra_attrs['data-speed']    = (string) $carousel_speed;
 }
 
 // Build interior HTML via output buffer.

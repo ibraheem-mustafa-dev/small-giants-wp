@@ -158,7 +158,9 @@
 		},
 		"defaultIconSource": {
 			"type": "string",
-			"default": "lucide"
+			"default": "lucide",
+			"enum": [ "lucide", "wp-icon", "dashicon", "emoji" ],
+			"_comment": "Declared 2026-08-06 (Spec 35 Task A2). Values are NOT invented and NOT inferred from the two local comparisons — they are the framework's icon-source vocabulary, enforced as a hard allow-list at icon/render.php:88 (`$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji' )`) and mirrored one-for-one by the four icon-* roles on sgs/icon (iconName/wpIconName/dashiconName/emojiChar — D503). EXACT PRECEDENT: sgs/icon.iconSource already declares this identical enum, so this is copying a settled declaration rather than authoring a new one. Feeds enum_values -> TIER 3.5 role `enum-mode`, and gives the client a real select control."
 		},
 		"iconColour": {
 			"type": "string",
@@ -241,7 +243,9 @@
 		},
 		"source": {
 			"type": "string",
-			"default": "typed"
+			"default": "typed",
+			"enum": [ "typed", "menu" ],
+			"_comment": "Declared 2026-08-06 (Spec 35 Task A2). Values are NOT invented — they are the allow-list render.php:158 already enforces: `in_array( $attributes['source'] ?? '', array( 'typed', 'menu' ), true ) ? ... : 'typed'`. Declaring it does three things at once with no new role logic: /sgs-update Stage 1 reads it into block_attributes.enum_values, TIER 3.5 then seeds role `enum-mode` from that column, and the client gets a real select control instead of a free-text box (Spec 35 Part B). WP coercing an out-of-enum stored value back to the default matches render.php's own fallback exactly, so the two layers agree rather than diverge (the D456 site-header-row.layout precedent)."
 		},
 		"menuRef": {
 			"type": "integer",

@@ -65,7 +65,7 @@
 							}
 						}
 					},
-					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` (render.php:68) is a legacy top-level attribute this manifest cannot place under any element prefix — flagged here as a likely dead/orphan control, not fixed (out of scope for this rollout)."
+					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared)."
 				},
 				"side-image": {
 					"label": "Side image (split layout)",
@@ -169,9 +169,6 @@
 		"cardStyle": {
 			"type": "string",
 			"default": ""
-		},
-		"nameFontSize": {
-			"type": "string"
 		},
 		"backgroundColourHover": {
 			"type": "string",
