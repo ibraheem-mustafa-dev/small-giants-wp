@@ -1110,7 +1110,8 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
 
 Binding: ToolsPanel once ~6+ controls (Part A5); never duplicate a native supports panel (A6);
 `hideExtensions` opt-out honoured (A7); 768/1024 tiers only where responsive (D2);
-reduced-motion gate day-one (E5/Part C/L); the FAIL-CLOSED `audit-inspector-conformance.js`
+reduced-motion gate day-one (E5/Part C/L); the FAIL-CLOSED gate — since 2026-08-06 this is
+`plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js`, which replaced `audit-inspector-conformance.js`
 prebuild gate covers every new panel automatically.
 
 - **Block-level fx panel ("Scroll & effects")** — ONE collapsed panel in the Styles tab,

@@ -23,7 +23,8 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
 - [ ] **1. Tab split via `group`.** Settings/Styles/Advanced controls are routed to the native
   tabs via the `group` prop (behaviour→Settings, appearance→Styles/sub-groups, CSS-class/anchor→
   Advanced). *(Spec 35 A3.)* **[enforced by]** UNENFORCED — no automated gate exists. (Verified
-  2026-07-30: `audit-inspector-conformance.js` contains the string `group` zero times; only 4 of
+  2026-07-30: `audit-inspector-conformance.js` (RETIRED 2026-08-06, Task D) contained the
+  string `group` zero times; only 4 of
   81 blocks emit any `group=` prop at all — brand-strip, nav-drawer, nav-menu, site-header — and
   `group="advanced"` appears nowhere. The claimed "group-prop presence" check does not exist.)
 - [ ] **2. Element-first panels.** Composite blocks group panels by block PART, not property type.
@@ -32,11 +33,11 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
   "consistency-scanner"` returns only two plan docs, zero code).
 - [ ] **3. ToolsPanel on dense panels.** Any inspector panel with ~6+ controls uses `ToolsPanel`/
   `ToolsPanelItem` progressive disclosure (1–3 `isShownByDefault`, `resetAll`). *(Spec 35 A5.)*
-  **[enforced by]** `audit-inspector-conformance.js` (control-count vs ToolsPanel).
+  **[enforced by]** `plugins/sgs-blocks/scripts/inspector-scan/rules/03-dense-panel-candidate.js` (control-count vs ToolsPanel; ADVISORY mode).
 - [ ] **4. Alpha + clearable colour.** Every colour control has `enableAlpha` + `clearable`
   (alpha-0 ≠ unset). Native `supports.color` alpha is a theme.json concern and is exempt — this
   targets `DesignTokenPicker`/`ColorPalette` COMPONENT pickers. *(Spec 35 B/H, I.)* **[enforced by]**
-  `audit-inspector-conformance.js`; exceptions → `inspector-conformance-baseline.json`. The
+  `plugins/sgs-blocks/scripts/inspector-scan/rules/04-colour-alpha.js` (GATE mode); exceptions → `plugins/sgs-blocks/scripts/inspector-scan/baselines/04-colour-alpha.json`. The
   `consistency-scanner dim 1` half of this claim is UNENFORCED — that tool does not exist.
 - [ ] **5. Real units / token scale.** Every CSS-length uses `UnitControl` (real `units`) or the
   spacing-token scale — never a raw-px RangeControl that breaks the token system. *(Spec 35 B, C spacing.)*
@@ -46,10 +47,10 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
   **Shared with** no-inline checklist item 3 — same object shape. **[enforced by]** `check-box-family-guard.py`.
 - [ ] **7. Real builders for compound values.** Shadow and border use real builders (shadow =
   X/Y/blur/spread/colour+alpha/inset; border = style + per-side + alpha + separate radius) — NOT
-  None/Small/Medium selects. *(Spec 35 B, F.)* **[enforced by]** `audit-inspector-conformance.js` (preset-only shadow flag).
+  None/Small/Medium selects. *(Spec 35 B, F.)* **[enforced by]** `plugins/sgs-blocks/scripts/inspector-scan/rules/07-preset-only-shadow.js` (preset-only shadow flag; ADVISORY mode).
 - [ ] **8. LinkControl for links.** Every link/CTA uses `LinkControl` (internal-content search +
   new-tab + rel nofollow/sponsored) via `SgsLinkControl` — never a raw URL `TextControl`. *(Spec 35 B, C, F.)*
-  **[enforced by]** `audit-inspector-conformance.js` (raw URL TextControl flag). The `consistency-scanner
+  **[enforced by]** `plugins/sgs-blocks/scripts/inspector-scan/rules/08-raw-url-link.js` (raw URL TextControl flag; GATE mode). The `consistency-scanner
   dim 1` half of this claim is UNENFORCED — that tool does not exist.
 - [ ] **9. Full image controls where relevant.** Image-rendering blocks expose size dropdown
   (attachment `sizes`) + aspect-ratio + object-fit + `FocalPointPicker` where relevant. *(Spec 35 B, C, I.)*
@@ -68,19 +69,25 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
   UNENFORCED — no automated gate exists (`consistency-scanner` does not exist).
 - [ ] **13. hideExtensions for irrelevant universals.** Irrelevant universal-extension panels are
   hidden via `supports.sgs.hideExtensions: [...]` (declarative). *(Spec 35 A7.)* **[enforced by]**
-  `audit-inspector-conformance.js` (manual review flag — informational).
+  UNENFORCED — no automated gate exists. (Corrected 2026-08-06: this row claimed
+  `audit-inspector-conformance.js` enforced it, but that script only ever carried SIX rules
+  — colour-alpha, raw-url-link, media-upload-check, reduced-motion, preset-only-shadow,
+  dense-panel — and hideExtensions was not among them. A phantom-tool claim, not drift
+  introduced by the retirement.)
 - [ ] **14. MediaUploadCheck on every MediaUpload.** Every `MediaUpload` is wrapped in
-  `MediaUploadCheck` (capability gate). *(Spec 35 B, L.)* **[enforced by]** `audit-inspector-conformance.js`.
+  `MediaUploadCheck` (capability gate). *(Spec 35 B, L.)* **[enforced by]** `plugins/sgs-blocks/scripts/inspector-scan/rules/14-media-upload-check.js` (GATE mode).
 - [ ] **15. No duplicated native-supports panel.** No bespoke panel re-implements a control a native
   `supports` panel already provides (inspector-UX form of R-31-9). *(Spec 35 A6, F.)* **[enforced by]**
-  `audit-inspector-conformance.js`. The `consistency-scanner dim 2` half of this claim is
+  UNENFORCED — no automated gate exists. (Corrected 2026-08-06: the retired
+  `audit-inspector-conformance.js` never carried a duplicate-native-panel rule; this was a
+  phantom-tool claim.) The `consistency-scanner dim 2` half of this claim is
   UNENFORCED — that tool does not exist.
 - [ ] **16. Native over hand-rolled.** Native supports are used over hand-rolled equivalents for
   aspect-ratio / duotone / sticky / lightbox (check native BEFORE building any of these). *(Spec 35 C, G.)*
   **[enforced by]** feature-parity audit + Wave-3 native-migration audit.
 - [ ] **17. Reduced-motion gate on all animation.** Every animation/transition is
   `prefers-reduced-motion`-gated (WCAG 2.3.3) — from day one, never bolted on. *(Spec 35 C, E5, F.)*
-  **[enforced by]** `audit-inspector-conformance.js` (animation-without-gate flag).
+  **[enforced by]** `plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js` (animation-without-gate flag; GATE mode).
 - [ ] **18. Decorative-image + ARIA-label where needed.** Decorative-image toggle (empty alt +
   `aria-hidden`) and general ARIA-label control are present where the markup needs them. *(Spec 35 C, E6.)*
   **[enforced by]** UNENFORCED — no automated gate exists (`consistency-scanner` does not exist).
@@ -114,7 +121,8 @@ proven LIVE on the pilot (`sgs/media`) at Gate 0 before any wave. Every block in
 - Copy this list into the block's rebuild ticket. Tick each box only when the named audit/gate is
   green OR the item has a recorded, spec-mapped exception (never silently skipped — STOP-29).
 - Deferrals map to a named Spec 35 Wave (Part J) or exception file — never "out of scope".
-- The two STATIC audits (`audit-inspector-conformance.js`, `audit-feature-parity.py`) ship WARN-only
+- The two STATIC audits (`plugins/sgs-blocks/scripts/inspector-scan/run.js` — which REPLACED audit-inspector-conformance.js on
+  2026-08-06, Task D — and `audit-feature-parity.py`) ship WARN-only
   first and promote to a hard prebuild gate at Spec close (plan Gate 3). The LIVE-DOM shrink-to-fit
   audit runs in CI / on-demand, gated at Phase 4 close.
 

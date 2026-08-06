@@ -162,7 +162,8 @@ of exactly three homes does it live in?**
 
 **A value with no home is a build defect** — the same class as a hardcoded wrapper default
 ("hardcode-is-override-not-literal"). The implementation plan must ship a per-property homes table
-for the first clone, reviewed at its gate; the audit-inspector-conformance prebuild gate already
+for the first clone, reviewed at its gate; the inspector prebuild gate (`plugins/sgs-blocks/scripts/inspector-scan/run.js` since
+2026-08-06; formerly audit-inspector-conformance) already
 fails on unmanifested controls, giving this mechanical teeth for home #2.
 
 ### DP6 — Clone-first sequencing: ONE reference site 100%, then the rest. B3 merges into this work.
