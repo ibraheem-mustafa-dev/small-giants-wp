@@ -77,6 +77,15 @@
 						"css:border-color": "colourBorder",
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:box-shadow": "boxShadow"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "colourTextHover",
+								"css:background-color": "colourBackgroundHover",
+								"css:border-color": "colourBorderHover"
+							}
+						}
 					}
 				},
 				"icon": {

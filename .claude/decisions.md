@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D510 — the `Shadow` suffix said a box-shadow is a colour; both cloning-side role defects reduced to their irreducible cores [INCIDENT]
+
+**2026-08-07.** Answers the Track 1 / cloning-pipeline correction that `role` is load-bearing for
+STYLING attrs too (`attr_is_colour_role` → `outer_box.py:362` / `content_band.py:223`;
+`styling_content.py:134,436`), not only for content-capable ones. Their two measured defects:
+
+**Defect A — `role='color'` on a non-colour property: 19 → 1.** ROOT CAUSE WAS ONE DATA ROW.
+`property_suffixes.Shadow` declared `role='color', css_property='box-shadow'` while its sibling
+`BoxShadow` declared `visual` — the table disagreed with itself about one property. 18 live attrs
+(`shadow`, `cardShadow`, `shadowHover`, `gridItemShadow`, `tileShadow`, `badgeImageShadow`, …)
+inherited `color`, so the converter's colour gate admitted a box-shadow as a colour. Corrected to
+`visual`; the 18 healed BY MECHANISM via `refresh_stale_suffix_roles` — zero hand overrides.
+**It also removes a row-order dependency the pipeline side flagged:** `property_suffixes` is read
+`ORDER BY rowid LIMIT 1` and `Shadow` precedes `BoxShadow`, so for `box-shadow` the wrong row won by
+FILE ORDER. Both rows now agree, so that tie-break is no longer decidable-by-accident.
+
+**Defect B — colour property with a non-`color` role: 10 → 1.** Nine closed by D508's reseed plus one
+declaration: `button`'s element manifest had no `states.hover` attrMap (its `icon` element did), so
+`colourTextHover`/`colourBackgroundHover`/`colourBorderHover` were invisible to the arity rule.
+Declared them after reading `style.css:70-72`, where the three vars they feed resolve to
+`color`/`background-color`/`border-color` on hover. They now also carry `css_state='hover'`.
+
+**BOTH REMAINING ROWS ARE CORRECT DISAGREEMENTS, NOT RESIDUAL DEFECTS — do not "fix" them.**
+`nav-drawer.surfaceOpacity` (`background-color`, `number`) is an opacity, and
+`trust-bar.backgroundOverlayColour` (`background-image`) is a colour DELIVERED through a gradient —
+the documented value-type-vs-delivery-property case that `attr-classification-overrides.json` already
+records for `tabs.tabIndicatorColour`.
+
+**⚠ THE COUNTS IN THE INCOMING BRIEF WERE BOTH WRONG, IN OPPOSITE DIRECTIONS.** Defect A was quoted
+as 21; a naive membership test measures 26; the honest figure is **19**, because a row whose
+`css_property` is a comma list of properties that are ALL colours (`post-grid.borderColourHover` =
+`border-color,border-top-color,color`) is not a defect — the TEST was wrong, not the row. The brief
+also listed `stroke` as a defect: an SVG `stroke` value IS a colour, and excluding it from Spec 39's
+`COLOUR_PROPERTIES` would break SVG colour routing. And it listed `surfaceOpacity` among the 10 while
+separately citing it as the correct disagreement. `gridItemBorder` ×3 left the set for a different
+reason: D508 stopped flattening its 3 css keys to 1, so it is no longer a colour property at all.
+
+**Also fixed, and it was NOT mine: `sgs/notice-banner`.** `block.json` declares
+`supports.sgs.is_section_root: true` (committed `af5f1f24`), which `sgs-update-v2.py:714-718` reflects
+onto `blocks.tier='class-section'` — but `composition_role` has no derive-from-code populator, so it
+stayed `leaf` and F6 FAILED on the next reseed. The declaration reached `main` with half its
+consequences seeded. Added to `seed-composition-roles.py` CORRECTIONS. ⚠ **Recurrence is not closed:**
+any future `is_section_root` block repeats this, because one half is derived and the other hand-seeded.
+Closing it needs a design gate (that file's docstring says the hand-seed is deliberate).
+
+**Two negative controls went vacuous and were rewritten** (`test_testimonial_scalar_lift_fields.py`).
+They expressed "no selector" and "the landmine selector" by riding the RAW DB rows, assuming the
+correction lived only in the overrides JSON. The reseed DERIVED those selectors into the rows — the
+correction graduated from hand-override to mechanism, which is the direction we want — so `unseeded`
+and `seeded` agreed and the controls asserted nothing. One even carried the message "if this fails the
+DB has already been reseeded and this control is vacuous", and that is precisely what happened. They
+now state the selector under test explicitly, so they test the resolver's CONTRACT and no reseed can void
+them. Proven by deliberately breaking both and watching them fail, then restoring. Converter suite
+**671 pass, 0 fail** — the previously-documented `test_content_gap_collector` failure also cleared,
+because the reseed fixed the underlying data.
+
+**A real live landmine closed in passing:** `testimonial.reviewDate`'s `derived_selector` was
+`.sgs-testimonial__card` — the whole card — so a clone lifted the card's entire concatenated text into
+the date field. Now `.sgs-testimonial__date`. That correction was committed but never seeded.
+
 ## D509 — A8: the 28-attribute grid surface on site-header/site-footer deleted; it could never fire [ROUTINE]
 
 **2026-08-06.** Bean-approved. Commit **`8cc4f543`** — `site-header`/`site-footer` `block.json` only,

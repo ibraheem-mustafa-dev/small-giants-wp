@@ -114,11 +114,11 @@
     ],
     [
       "Shadow",
-      "color",
+      "visual",
       "box-shadow",
       1,
       "shadow.presets",
-      null,
+      "role corrected 'color' -> 'visual' 2026-08-07. A box-shadow VALUE is not a colour (offset/blur/spread precede it), and the sibling 'BoxShadow' row below already said 'visual' — the table disagreed with itself about one property. That disagreement was load-bearing in two ways: (1) 18 live attrs (cardShadow/shadowHover/gridItemShadow/tileShadow/badgeImageShadow/...) carried role='color', so db_lookup.attr_is_colour_role admitted them and the converter's colour gate treated a shadow as a colour; (2) property_suffixes is read 'ORDER BY rowid LIMIT 1', and 'Shadow' precedes 'BoxShadow', so for css_property='box-shadow' the WRONG row won by file order alone. Both rows now agree, so the row-order tie-break for this property is no longer decidable-by-accident. Measured before/after: role='color' rows whose css_property contains no colour at all, 19 -> 1.",
       null
     ],
     [
@@ -1406,6 +1406,15 @@
       0,
       null,
       "2026-08-05 (Bean): text-wrap IS a typography CSS property, so the FAMILY must come from this suffix table, not from a generic enum backstop -- 'the enum is a shape fact, the family is the category fact'. Appended at the END: order is load-bearing only for a css_property with MORE THAN ONE suffix row (first-row-wins), and no other row maps text-wrap. Cannot collide with FlexWrap: the peel is a case-insensitive endswith, and 'flexwrap' does not end with 'textwrap'.",
+      null
+    ],
+    [
+      "Photo",
+      "image-object",
+      null,
+      0,
+      null,
+      "A person photo. Added 2026-08-06 when sgs/team-member.memberMedia was renamed to photo: its role came from neither a property suffix nor an override, so the new photoTablet/photoMobile tier siblings inherited NO role and the cloning pipeline could not route to them. APPENDED, not inserted — property_suffixes resolves first-row-wins with LIMIT 1, so appending cannot shadow an existing suffix (STOP-CATALOGUE E1).",
       null
     ]
   ]

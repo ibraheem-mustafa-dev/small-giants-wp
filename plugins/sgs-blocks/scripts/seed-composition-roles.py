@@ -52,6 +52,20 @@ sys.stdout.reconfigure(encoding="utf-8")
 DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 CORRECTIONS: dict[str, str] = {
+    # sgs/notice-banner (2026-08-07) — block.json declares `supports.sgs.is_section_root:
+    # true` (committed af5f1f24), which sgs-update-v2.py:714-718 reflects onto
+    # blocks.tier as 'class-section'. composition_role has no derive-from-code
+    # populator (see this module's docstring), so it stayed 'leaf' and F6 Check
+    # "tier='class-section' but composition_role='leaf'" FAILED on the next reseed —
+    # i.e. the declaration landed on main with only half its consequences seeded.
+    # 'section-root' mirrors site-header/site-footer in INSERTS below, which carry the
+    # same declaration. ⚠ RECURRENCE RISK, deliberately not fixed here: any future
+    # block declaring is_section_root will repeat this, because one half of the pair is
+    # derived from block.json and the other is hand-seeded. Making is_section_root drive
+    # composition_role too would close it, but that is a shared-mechanism change and
+    # this file's docstring states the hand-seed is by design — so it needs a design
+    # gate, not a drive-by.
+    "sgs/notice-banner": "section-root",
     "sgs/testimonial": "content-block",
     "sgs/testimonial-slider": "content-block",
     "sgs/label": "leaf",

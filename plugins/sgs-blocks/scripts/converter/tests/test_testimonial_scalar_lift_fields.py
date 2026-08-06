@@ -90,6 +90,36 @@ def unseeded(monkeypatch):
     monkeypatch.setattr(scalar_content.db_lookup, "block_attrs", _raw_catalogue)
 
 
+@pytest.fixture
+def patched_selectors(monkeypatch):
+    """Lift with `derived_selector` forced to an EXPLICIT value per attr.
+
+    Added 2026-08-07. The two negative controls below used to express "no selector"
+    and "the old landmine selector" by riding the RAW DB rows, which silently assumed
+    the DB still held the pre-correction values. A reseed derived the corrected
+    selectors into those very rows, so both controls stopped exercising anything —
+    the failure mode this project already has a name for (`negative-control-or-the-
+    test-is-vacuous`, and its sibling `a-negative-control-has-its-own-vacuity-mode`).
+
+    Stating the selector under test explicitly makes each control a statement about
+    the RESOLVER'S CONTRACT, which no reseed can void.
+    """
+    def _lift(html: str, selectors: dict) -> dict:
+        def _catalogue(slug: str) -> dict:
+            catalogue = _catalogue_with_overrides(slug)
+            for attr, selector in selectors.items():
+                if attr not in catalogue:
+                    raise AssertionError(
+                        f"{slug}.{attr} is not in block_attributes — this control "
+                        f"would be vacuous; fix the attr name, do not delete the test"
+                    )
+                catalogue[attr]["derived_selector"] = selector
+            return catalogue
+        monkeypatch.setattr(scalar_content.db_lookup, "block_attrs", _catalogue)
+        return lift_scalar_content(_node(html), _SLUG, {})
+    return _lift
+
+
 # A fully BEM-classed draft testimonial: every content element carries its class,
 # so nothing reaches the bare-tag fallback and each assertion is about selectors.
 _CLASSED_HTML = (
@@ -130,14 +160,25 @@ def test_summary_org_and_date_lift_from_their_own_elements(seeded):
     assert lifted.get("reviewerName") == "Jane Smith"
 
 
-def test_negative_control_without_overrides_the_fields_never_lift(unseeded):
+def test_negative_control_without_overrides_the_fields_never_lift(patched_selectors):
     """Proves the fields are blocked by the NULL selector, not by the fixture.
 
-    Against the raw DB rows (``derived_selector IS NULL``) the resolver skips both
-    attrs at ``scalar_content.py:158-160`` and emits no key — even though the draft
-    carries perfectly-named ``__summary`` / ``__org`` elements.
+    With ``derived_selector`` NULL the resolver skips both attrs at
+    ``scalar_content.py:158-160`` and emits no key — even though the draft carries
+    perfectly-named ``__summary`` / ``__org`` elements.
+
+    ⚠ REWRITTEN 2026-08-07. This control used to ride the ``unseeded`` fixture, i.e.
+    the RAW DB rows, on the assumption that the corrected selectors live ONLY in the
+    overrides JSON. A reseed derived them into the DB rows themselves — the correction
+    GRADUATED from a hand override to a mechanism-derived value, which is the direction
+    this project wants — and the control silently became vacuous: `unseeded` and
+    `seeded` now agree, so it was asserting nothing about selectors at all. It now
+    NULLs the selector explicitly, so it tests the resolver's contract rather than a
+    transient DB state, and cannot be voided by any future reseed.
     """
-    lifted = lift_scalar_content(_node(_CLASSED_HTML), _SLUG, {})
+    lifted = patched_selectors(
+        _CLASSED_HTML, {"summaryPhrase": None, "orgName": None}
+    )
     assert "summaryPhrase" not in lifted
     assert "orgName" not in lifted
     # Same fixture still lifts the attrs that DO have a selector — so the absence
@@ -148,14 +189,24 @@ def test_negative_control_without_overrides_the_fields_never_lift(unseeded):
 # -- the landmine: `.sgs-testimonial__card` swallowed the whole card ------------
 
 
-def test_landmine_negative_control_old_selector_lifts_the_entire_card(unseeded):
-    """The landmine was REAL: the raw DB's `.sgs-testimonial__card` selector lifts
-    the wrapper's full concatenated text into ``reviewDate``."""
-    lifted = lift_scalar_content(_node(_CARD_WRAPPER_HTML), _SLUG, {})
+def test_landmine_negative_control_old_selector_lifts_the_entire_card(patched_selectors):
+    """The landmine is REAL: a `.sgs-testimonial__card` selector on ``reviewDate``
+    lifts the wrapper's full concatenated text.
+
+    ⚠ REWRITTEN 2026-08-07, and its own warning is why. The assertion carried the
+    message "if this fails the DB has already been reseeded and this control is
+    vacuous" — and that is exactly what happened: a reseed corrected the DB row to
+    `.sgs-testimonial__date`, so the control began failing while the PRODUCT was
+    healthier than before. The landmine selector is now stated explicitly here rather
+    than borrowed from whatever the DB currently holds, so this proves the hazard is
+    real for as long as `find(class_=...)` walks descendants — independent of seeding.
+    """
+    lifted = patched_selectors(
+        _CARD_WRAPPER_HTML, {"reviewDate": ".sgs-testimonial__card"}
+    )
     review_date = lifted.get("reviewDate") or ""
     assert "Jane Smith" in review_date, (
-        "expected the pre-fix landmine to swallow the card's text; if this fails "
-        "the DB has already been reseeded and this control is vacuous"
+        "the card-wrapper selector should swallow the card's concatenated text"
     )
     assert review_date != "14 March 2026"
 
