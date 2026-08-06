@@ -161,7 +161,7 @@ not done. The 24 end conditions are only worth having if ENFORCED — measured 2
 251 rows classified by MECHANISM (tier inheritance 151, `styling` backstop 124, `technical` from a D1
 veto 59, Detector 4 42). Detail: `memory/session-2026-08-05-spec35-step0-close.md`.
 
-### STEP 0.1 — pool 69 → **34** (2026-08-06, D499+D500). Bucket 1 CLOSED; 20+13+1 left.
+### STEP 0.1 — pool 69 → **23** (2026-08-06). Route to 0 = the A1-A5 table below.
 
 **Bean's ruling that reshaped it:** a NULL role means the row is UNREACHED or UNSEEDABLE — never
 "reached, understood, and filed nowhere". Full narrative + all measurements: **D499 + D500**.
@@ -211,71 +211,50 @@ approved on 2026-08-06, hence parked as a question rather than done silently.
 **Only after Step 0.1/0.2** move to Tasks B-F below.
 
 
-### ⭐ NEXT SESSION STARTS HERE — STEP 0.1 Tasks 2 + 3 (36 rows left)
+### ⭐ NEXT SESSION STARTS HERE — pool **23 → 0**. Every remaining task, in order.
 
-**State recap, plain English.** The framework stores a "role" for every setting a block has — what
-the value IS (text, colour, image…). Task 1's 33 rows are DONE (D499): they were settings the shared
-wrapper paints, and they now carry the `styling` role instead of reading as unexamined work. 36 rows
-remain and they are NOT waiting on better tooling — every one already reaches a detector that
-DELIBERATELY declines to classify it. They need decisions.
+**State, plain English.** The framework stores a "role" for every block setting — what the value IS.
+Pool 69 → 23 today. **Most of what remains is WIRING WORK THAT IS ALREADY BUILT AND TESTED, not new
+investigation.** Three detectors landed unwired; wiring them is the bulk of the route to zero.
 
-⛔ **Do not re-investigate. Verdicts already exist** in the 2026-08-05/06 agent reports with per-row
-file:line. Re-deriving them is waste; APPLYING them is the work. Apply by MECHANISM, never hand
-overrides (D497); `technical` may be assigned ONLY from a D1 veto.
+⛔ **Do not re-investigate. Verdicts exist** in the 2026-08-05/06 agent reports with per-row
+file:line. Apply by MECHANISM, never hand overrides (D497).
 
-## ~~Task 1 — Wrapper-rendered styling~~ ✅ DONE 2026-08-06 (D499+D500)
+| # | Task | Rows | State |
+|---|---|---|---|
+| **A1** | **Reseed with D1 wired.** D1 gained shared-include attribution (D-pending, `d5766eff`): 546 new rows, 7 of the 9 named `fieldName`/`formName` rows now have verdicts. NEVER RESEEDED — deliberately kept separate so the role impact gets its own before/after diff. **Largest single gain available.** | ~7 | BUILT, unwired |
+| **A2** | **Declare the 3 enums D8 found** (`icon-list.source`, `mega-panel.viewAllPlacement`, `timeline.orientation`). Add `enum` to block.json; `/sgs-update` Stage 1 fills `enum_values` and TIER 3.5 seeds `enum-mode` — no new role logic. Also gives clients a real select control. | 3 | BUILT, unwired |
+| **A3** | **The `fieldName` decision — ONE call applied 9×.** Is a form submission key `technical`? Its definition names "a form-processing key" verbatim. Needs Bean, then A1's verdicts license it. | 9 | Bean's call |
+| **A4** | **Remaining D4-review rows** — `orderBy`, `defaultSelected`, `successRedirect`, `rowShrinkHideTarget`×2 (all match `technical`); `drawerRef` (`technical`); `schemaItemName` (`identity` — the `name` of a Schema.org Product); `excludeKeywords` (`behaviour`); `contentIconName` (`icon-lucide`); `responsive-logo.align` + `icon-list.defaultIconSource` (`enum-mode`, comparison-chain — D8 blind spot). | ~11 | mapped, needs A1's gate |
+| **A5** | **`whatsapp-cta.phoneNumber` + `.message`** — extractor SHIPPED (`d5766eff`), role seeded. Confirm they now leave the pool on reseed. | 2 | likely closed by A1 |
 
-Closed by MECHANISM (TIER 2.4 + the D500 render-over-editor tie-break), not attrMaps. Pool 69 → 34.
+⚠ **`posterAlt` is NOT in the pool any more** (D5 seeded it `image-alt`), but its clone path is
+BROKEN — see the open gap below. Seeded ≠ working.
 
-## Task 2 — D4 needs review (20 rows) — ⛔ NEEDS BEAN'S CALL FIRST, not effort
+### ALSO BUILT-BUT-UNWIRED / OPEN (not pool rows — do not lose these)
 
-**What:** the verdicts already exist (11 technical / 8 styling / 1 content, 2026-08-05 report with
-per-row file:line). **What does NOT exist is a mechanism to apply them**, and D497 bans hand
-overrides — so this cannot be ground out inline. 2026-08-06 fixed the 2 rows that DID have one
-(D500) and re-pointed 5 more onto their true render.php consumer; the residue is a design call.
-
-**The blocker, precisely:** `technical` may be assigned ONLY from a D1 veto (that role's own
-documented contract, and the reason it is trustworthy). D1 vetoes none of these 20. The 8 styling
-rows carry no `css_property` and their consumer is their own render.php, not the shared wrapper,
-so TIER 2.4 cannot reach them either.
-
-**Menu for Bean (ranked):**
-1. **Two narrow mechanisms, 5 rows** — (a) an attr that exists because the block declares the
-   WP-CORE native support of the same name is technical by construction (`button.anchor`,
-   `button.className`, `heading.anchor`); checkable against `block_supports`, no new evidence
-   class. (b) an attr whose value is emitted INSIDE a `<style>` element is styling by
-   construction (`nav-drawer`/`nav-menu.sgsCustomCss`). Leaves 15.
-2. **Build the flow-analysis detector** — D1-style, follows a value from read site to paint site.
-   Closes most of the 15 honestly. The largest build on this track.
-3. **Widen the `technical` evidence contract** — cheapest, and the one to be most careful with:
-   the role's trustworthiness comes from being veto-only.
-**Acceptance:** every row resolved WITH its evidence, by mechanism — never a hand override.
-
-## Task 3 — Report-only (13 rows) — needs a DECISION, not code
-
-**What:** 8× `fieldName`, `formName`, `excludeKeywords`, `posterAlt`, `drawerRef`, `schemaItemName`,
-`whatsapp-cta.message`. D2-only; `technical` needs a D1 veto to REACH them.
-**Why:** the script's own docstring says closing these "needs a new role with a real consumer — a
-decision, not a detector". Inventing a plausible-looking role is the exact "wrong document" failure
-this track exists to stop.
-**Estimated time:** 20 min + Bean's call
-
-**Orchestration:** inline, Opus. **ASK BEAN** before seeding any new role.
-**Depends on:** none. **/qc gate after:** n/a (a decision, not a build).
-**Acceptance:** either a new role with a NAMED consumer, or a recorded decision to leave NULL.
-
-## Task 4 — Content gap (1 row) — HARD-BLOCKED
-
-**What:** `whatsapp-cta.phoneNumber` waits on the `link-content` extractor (STEP 0.2 #2 above).
-**Acceptance:** 0.1 CANNOT close before 0.2 #2 ships. 67 of 69 are independent; 2 are blocked.
+- **D5 companion → `image-sequence` lifts NOTHING.** `walk.py` alt capture was fixed (`2ca99d6f`) but
+  proven INSUFFICIENT: the fixture lifts `{}`, so the poster never reaches the scalar-lift leg.
+  Committed as `xfail(strict=True)` in `test_extraction.py` — it FLIPS TO A FAILURE when fixed.
+  `image-alt` is content-bearing, so this is a real content drop on cloned image-sequence blocks.
+- **`product-card.ctaColourBorder`/`Hover`** still on generic `styling`; they ARE colours
+  (`helpers-button-style.php:129,178`) but reach it via a shared helper — D7's documented single-file
+  blind spot. Extending D7 across helper bodies would close them.
+- **DROPPED, do not revive:** widening `eligible_pool`'s `attr_type='string'` filter (Bean 2026-08-06).
+  The 255 non-string NULLs are NOT misreported (they are outside the pool, so never counted as
+  unreached), `boolean-visibility` has no converter consumer, and targeted detectors already seed
+  object rows when a real consumer needs one — as D5 did for `posterMedia` WITHOUT widening anything.
+  Blanket seeding would make "has a role" stop meaning "something consumes this".
+- **DROPPED, do not revive:** the role-vocabulary "bloat" cleanup. 3 of 4 proposals were WRONG —
+  `spacing-token`/`colour-text` are WP-native provisioned vocabulary and the four `icon-*` roles are
+  a ROUTING KEY (`extraction.py:1119` does `.get("icon-" + kind)`); merging breaks icon cloning. Full
+  reasoning in D503. Only `query-descriptor` was dead and is gone.
 
 ### Dependency graph
 
 ```
-Task 1 (33) ── ✅ DONE D499 (49aca606)
-Task 2 (22, inline Opus) ─┬─ independent, any order ─→ /qc-inline ─→ commit
-Task 3 (13, inline Opus + Bean's call) ─┘
-Task 4 (1) ── BLOCKED on STEP 0.2 #2 (link-content extractor)
+A1 (reseed, D1 wired) ─→ licenses A3 + A4 ─→ A5 confirms
+A2 (declare 3 enums) ── independent, any order
 ```
 
 ### Methodology guardrails (do not skip)
