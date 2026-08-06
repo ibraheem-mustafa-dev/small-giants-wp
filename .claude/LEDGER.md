@@ -185,7 +185,32 @@ Nine commits: `0ecdbbd2` `32b4fbd7` `e1402858` `8f533bd6` `03cb6a68` `cc74de57` 
 Plus: 3 genuinely dead controls wired, 2 abandoned attrs deleted, 13 dead locals removed, and a new
 CHECK 5 gate. All deployed to the canary and visual-diff evidenced.
 
-### ⭐ NEXT SESSION — A7, then A8, then A9
+### ⭐ NEXT SESSION — **A7 + A8 CLOSED 2026-08-06. A9 is the front, and it is BLOCKED on Bean.**
+
+- **A7 CLOSED — D508, commit `1a46d4c5`.** attrMap ARITY decides colour-vs-shorthand. 127 verdicts:
+  122 confirm, **5 change** (2 product-card border colours off a wrong `styling`; `button.colourText`
+  + 2 product-card text colours off `text-content`, which is CONTENT-BEARING — rich-text extraction
+  was aimed at a colour). The shorthand flattening is fixed (keys accumulate, comma-joined).
+  Colour-terminal is a DB **set-difference** over `property_suffixes`, not a dict — `box-shadow`
+  disagrees with itself and drops out, saving 8 `boxShadow` attrs from a wrong role.
+  ⚠ **Measuring BEFORE writing changed the rule:** an unconditional `>1 → styling` would have demoted
+  3 enum size-pickers. The leg never demotes a more specific role — so `gridItemBorder` holds by
+  ARITY but only CONDITIONALLY (it corrects a future wrong `color`; it does not re-assert each run).
+  ⛔ **NOT YET IN THE DB.** Applying needs a `/sgs-update` (cross-track), and the regenerated
+  `css-property-classifications.json` currently also picks up Task B's uncommitted `team-member`
+  edits. Proven on a DB **copy** via the real production loader. Land the reseed on a clean tree.
+- **A8 CLOSED — D509, commit `8cc4f543`** (⚠ that commit carries ANOTHER SESSION'S subject line — a
+  shared-worktree message race; content is correct, see D509). 15 attrs deleted per block (14 grid +
+  the dead `layout`): 87→72, 82→67. Proven NOT a shared-wrapper capability — the attrs are longhand
+  in each `block.json` and the one shared attr injector holds none of them, so the wrapper and every
+  other block are untouched. Gates green; zero stored content affected. → feed to **FR-37-22**.
+- **A9 — Bean supplies the seeding-setup critique/context. Do not start before it arrives.**
+  Then → **Task F** (the enforcement scripts; the track's actual deliverable).
+
+⛔ **Shared-worktree lesson banked this session:** staging by exact path is NOT enough — the index can
+already hold another track's staged files. **Diff your own commit's file list afterwards.**
+
+### Original brief (A7/A8 now historical; A9 still live)
 
 | # | Task | State |
 |---|---|---|
