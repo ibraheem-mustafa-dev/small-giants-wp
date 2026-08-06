@@ -7,54 +7,76 @@ first_paint_capture_passed: true
 
 **Block:** `sgs/multi-button`
 **Date:** 2026-08-06
-**Target:** sandybrown canary, deployed via
-`build-deploy.py --target sandybrown --blocks-only --payload …` (payload-scoped
-dirty gate, NOT `--allow-dirty` — see D336).
+**Change:** Spec 35 Step 0.2 #1 — **Phase B** of the attribute rename. Both canary posts migrated,
+then the six legacy declarations and the legacy fallback arm deleted.
 
 ## What changed
 
-14 container-mirror attrs declared.
+1. Posts **1596** and **2130** migrated off the legacy attribute names.
+2. Two THEME PATTERNS migrated: `footer-centred.php:23` and `footer-simple.php:21` both still used
+   the legacy `wrap`. **This was not in the recorded Phase B steps** and would have been a silent
+   regression — WordPress discards any attribute a block.json does not declare (D338), so those two
+   footers would have lost `flex-wrap: wrap` with no error anywhere.
+3. Six legacy declarations deleted from `block.json` (`direction`/`Tablet`/`Mobile`,
+   `wrap`/`Tablet`/`Mobile`), each only after asserting its modern twin exists.
+4. `$sgs_mb_attr` collapsed from `( $modern, $legacy, $fallback )` to `( $modern, $fallback )`; all
+   six call sites updated.
 
-**Root tag:** unchanged
+## How the login blocker was cleared
 
-## First-paint capture (the field above, actually measured)
+The driver logs in ONCE PER RUN, so a dry-run plus a live run meant two submissions against a
+rate-limited `wp-login.php` FORM — which is what failed twice previously, not the account or the
+credentials (the REST app-password path was working throughout). Fixed by doing both posts inside a
+SINGLE session with one login, using a persistent Playwright profile so a manual login could have
+been reused had the form still refused. It did not refuse; the window had cleared.
 
-Probe: `plugins/sgs-blocks/scripts/motion-qa/probe-first-paint.mjs`, run with
-**JavaScript disabled** — strictly harder than "before the module boots".
+`updateBlockAttributes` throughout, never `replaceBlock` — the latter rebuilds from `children`, which
+a rename does not carry, and would have deleted this block's `sgs/button` subtree.
+
+## Verification
+
+**Migration landed — checked via REST (`context=edit`), independently of the migrating script:**
+
+| post | attrs after | legacy present | `sgs/button` children |
+|---|---|---|---|
+| 1596 | `{"flexWrap":"wrap","className":"sgs-multi-button"}` | no | 2 |
+| 2130 | `{"gapMobile":"10px"}` | no | intact |
+
+⚠ **Attributes that "vanished" are value-equals-default omissions, NOT data loss.** WordPress omits
+an attribute from the serialised comment when its value equals the declared default, and fills it at
+render. Checked against `block.json`: `gap` default `'12px'`, `flexDirection` `'row'`,
+`flexDirectionMobile` `'column'` — every omitted value matches its default exactly. `flexWrap:"wrap"`
+(default `'nowrap'`) and `gapMobile:"10px"` (default `'8px'`) differ and are correctly written.
+Rendering is identical.
+
+**Live render, both pages, after deploy:**
 
 ```
-url      : https://sandybrown-nightingale-600381.hostingersite.com/
+/f3-oracle-sgs-multi-button/      root <div class="… sgs-multi-button …">  flex-wrap: wrap
+/routing-audit-clone-2026-08-02/  root <div class="… sgs-multi-button …">  flex-direction: row
+```
+
+**First-paint capture (JS DISABLED):**
+
+```
+url      : https://sandybrown-nightingale-600381.hostingersite.com/routing-audit-clone-2026-08-02/
 selector : .sgs-multi-button
-result   : [PASS] content server-rendered and VISIBLE with JS off — 1/1 items visible
+result   : [PASS] server-rendered and VISIBLE with JS off — 1/1 items visible
            [PASS] NO clones in server markup — 0 clones with JS off
 VERDICT  : PASS — 2/2 assertions held
 ```
 
-`--not-a-loop` was passed. Justified, not assumed: `data-sgs-loop` is emitted by
-exactly five blocks (`buybox`, `gallery`, `google-reviews`, `post-grid`,
-`trustpilot-reviews`) — `render.php` for this block has no such emit path, so the
-loop-marker assertion is inapplicable rather than failing. The flag is explicit by
-design (STOP: auto-detect was rejected, because a loop block that FORGOT its marker
-is the bug that assertion exists to catch).
+`--not-a-loop` justified: `data-sgs-loop` is emitted by exactly five blocks (buybox, gallery,
+google-reviews, post-grid, trustpilot-reviews); this block has no such emit path.
 
-## Render-risk analysis (pre-deploy, mechanical)
-
-All 266 newly-declared attributes across this payload were compared against the
-`??` fallback each consuming PHP file already used, scoped to the block's OWN
-`render.php` plus the shared `includes/` (the first pass matched attr names across
-ALL blocks and produced 111 false positives — e.g. `multi-button.columns` compared
-against `card-grid/render.php`, which never renders it).
-
-Result: **207 pairs provably neutral** (declared default identical to the fallback
-it replaces), 12 empty-vs-empty, 46 with no PHP consumer, and 13 differing — all 13
-in the shape-divider family, all matching `sgs/container` exactly. Those 13 are
-unreachable on existing content: they sit behind `if ( $shape_top )` guards, and
-because the attributes were previously UNDECLARED, WordPress would have discarded
-any stored value (D338). No stored instance can have a divider enabled.
+**Safe-to-delete evidence, gathered BEFORE deleting the declarations:** a site-wide DB query for
+`wp:sgs/multi-button` carrying `direction`/`directionMobile`/`wrap` returned only **revisions**
+(historical snapshots, never rendered) — zero live posts. The two theme patterns were the only other
+holders and were migrated first. `[dead-pattern-attrs] OK` post-change confirms every `sgs/*` attr in
+every pattern is declared.
 
 ## Not claimed
 
-- No screenshot pixel-diff was taken. This report attests first paint + rendered
-  tag + the mechanical default-vs-fallback analysis, nothing more.
-- Editor-canvas behaviour was not verified (the standing Spec 35 gap — everything
-  to date is frontend-render + REST-registration only).
+- No screenshot pixel-diff. This attests migration correctness, live flex values, root markup and
+  first paint.
+- Editor-canvas behaviour not verified (standing Spec 35 gap).

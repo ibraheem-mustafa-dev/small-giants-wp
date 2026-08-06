@@ -76,26 +76,14 @@
 		}
 	},
 	"attributes": {
-		"direction": {
-			"type": "string",
-			"default": "row"
-		},
 		"flexDirection": {
 			"type": "string",
 			"default": "row",
 			"_comment": "TRANSITIONAL DUAL-DECLARE (2026-08-05, phase A of 2). This block named its flex attrs `direction`/`wrap` while the whole framework — and the shared SGS_Container_Wrapper it renders through (class-sgs-container-wrapper.php:441-442) — uses `flexDirection`/`flexWrap`. The divergent name is invisible to every mechanism keyed on the convention. Both names are declared for exactly one deploy so no STORED value is ever undeclared: WordPress silently DISCARDS an undeclared attr and DELETES it on the next editor save, and the deploy's oldshape-audit found 3 such HIGH findings on canary posts 1596/2130 when the rename was attempted as a single step. Phase B removes the legacy names once that content is migrated."
 		},
-		"directionTablet": {
-			"type": "string",
-			"default": ""
-		},
 		"flexDirectionTablet": {
 			"type": "string",
 			"default": ""
-		},
-		"directionMobile": {
-			"type": "string",
-			"default": "column"
 		},
 		"flexDirectionMobile": {
 			"type": "string",
@@ -125,25 +113,13 @@
 			"type": "string",
 			"default": ""
 		},
-		"wrap": {
-			"type": "string",
-			"default": "nowrap"
-		},
 		"flexWrap": {
 			"type": "string",
 			"default": "nowrap"
 		},
-		"wrapTablet": {
-			"type": "string",
-			"default": ""
-		},
 		"flexWrapTablet": {
 			"type": "string",
 			"default": ""
-		},
-		"wrapMobile": {
-			"type": "string",
-			"default": "nowrap"
 		},
 		"flexWrapMobile": {
 			"type": "string",

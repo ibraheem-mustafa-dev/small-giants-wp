@@ -20,7 +20,7 @@
 
 <!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":"small"} /-->
 
-<!-- wp:sgs/multi-button {"justifyContent":"center","wrap":"wrap"} -->
+<!-- wp:sgs/multi-button {"justifyContent":"center","flexWrap":"wrap"} -->
 <!-- wp:sgs/button {"label":"Home","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":14} /-->
 
 <!-- wp:sgs/button {"label":"About","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":14} /-->

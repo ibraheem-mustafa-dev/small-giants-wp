@@ -33,19 +33,16 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
  * that bans a permanent server-side shim standing in for a real migration; this exists
  * to make the migration safe and is deleted by the commit that completes it.
  */
-$sgs_mb_attr = static function ( $modern, $legacy, $fallback ) use ( $attributes ) {
+$sgs_mb_attr = static function ( $modern, $fallback ) use ( $attributes ) {
 	if ( ! empty( $attributes[ $modern ] ) ) {
 		return esc_attr( $attributes[ $modern ] );
-	}
-	if ( ! empty( $attributes[ $legacy ] ) ) {
-		return esc_attr( $attributes[ $legacy ] );
 	}
 	return $fallback;
 };
 
-$direction        = $sgs_mb_attr( 'flexDirection', 'direction', 'row' );
-$direction_tablet = $sgs_mb_attr( 'flexDirectionTablet', 'directionTablet', $direction );
-$direction_mobile = $sgs_mb_attr( 'flexDirectionMobile', 'directionMobile', 'column' );
+$direction        = $sgs_mb_attr( 'flexDirection', 'row' );
+$direction_tablet = $sgs_mb_attr( 'flexDirectionTablet', $direction );
+$direction_mobile = $sgs_mb_attr( 'flexDirectionMobile', 'column' );
 
 // Gap: resolved via the shared helper (handles preset slugs + raw CSS lengths + back-compat).
 // Falls back to "12px" matching the block.json default.
@@ -95,9 +92,9 @@ $justify_content_mobile = ! empty( $attributes['justifyContentMobile'] ) ? esc_a
 // buttons stay in a ROW (shrinking to fit) until the device-tier `flex-direction`
 // switches to column at 767px. The old `wrap` default made two buttons spill onto a
 // second line at ~800px inside the narrow 2-column hero band (proven live 2026-07-11).
-$wrap        = $sgs_mb_attr( 'flexWrap', 'wrap', 'nowrap' );
-$wrap_tablet = $sgs_mb_attr( 'flexWrapTablet', 'wrapTablet', $wrap );
-$wrap_mobile = $sgs_mb_attr( 'flexWrapMobile', 'wrapMobile', 'nowrap' );
+$wrap        = $sgs_mb_attr( 'flexWrap', 'nowrap' );
+$wrap_tablet = $sgs_mb_attr( 'flexWrapTablet', $wrap );
+$wrap_mobile = $sgs_mb_attr( 'flexWrapMobile', 'nowrap' );
 
 $align_items = isset( $attributes['alignItems'] ) ? esc_attr( $attributes['alignItems'] ) : 'center';
 // Cross-axis alignment is responsive (D288). Mobile defaults to `stretch` — mobile
