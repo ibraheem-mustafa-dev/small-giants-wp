@@ -1453,3 +1453,44 @@ blind on first build, each caught only by a human challenging a low number):
 **Track acceptance:** every one of the 24 rows meets points 1-10 or carries a recorded exception
 naming a `decisions.md` D-number. "Has a script" is not the bar.
 
+
+### E7. Earned 2026-08-06 — Spec 35 pool 23 → 0 session (D504)
+
+Every entry below cost real time this session. Added, never replacing E1-E6.
+
+- **STOP-75 — A GATE CAN BE DATE-KEYED INSTEAD OF CHANGE-KEYED.** The pre-commit visual-diff gate
+  is satisfied by `reports/visual-diff/<block>-<DATE>.md` containing `verdict: PASS` and
+  `first_paint_capture_passed: true`. That binds evidence to a DATE, not to a DIFF — so a
+  concurrent track's same-day report, written for a completely different change to the same block,
+  satisfies the gate for yours. Found live: four blocks already had same-day reports from another
+  track. Evidence was APPENDED to those (clearly marked), never overwritten. **When a gate passes,
+  ask what it actually bound itself to.**
+- **STOP-76 — A DEAD ASSIGNMENT IS DEAD *CODE*, NOT AUTOMATICALLY A DEAD *CONTROL*.** CHECK 5
+  returned 18 findings; triage showed 13 were unused local variables whose FEATURE WORKS (a shared
+  helper reads the raw `$attributes`), 2 were abandoned attrs, and only 3 were genuine dead
+  controls. **The raw count was misread by the person who had just built the gate** — a severity
+  split is owed before that list is handed to anyone else.
+- **STOP-77 — DO NOT WEAKEN A GATE TO LAND YOUR OWN COMMIT.** `check-markup-neutral.py` refuses ANY
+  deletion of a non-comment line, so even a provably-dead variable deletion still demands real
+  visual verification. That is the gate being correct, not obstructive. Extending it to accept a
+  "provably safe" class is a legitimate change — but doing it in the same breath as needing it to
+  pass is not. Do the verification instead.
+- **A BUILT MECHANISM IS NOT A REACHED ONE.** Two mechanisms this session were fully built,
+  self-tested and COMPLETELY INERT: the `link-content` chain (nothing assigned the role, and the
+  writer ran only under `--task-b-only`), and D6's two new rules (fed only `d4_review` while both
+  their targets sat in `report_only`). A built mechanism never fed its candidates reads exactly
+  like a missing one. **Gate on the observed end state, never on the code existing.**
+- **A DETECTOR'S NEGATIVE RESULT DESCRIBES THE DETECTOR.** ONE gap — a detector that will not cross
+  a boundary — surfaced in FOUR separate tasks (A7's rejected fix-shape, D4's own documented gap,
+  nested-argument capture, interprocedural parameters). Before recording "no evidence", establish
+  whether the evidence is merely unreachable.
+- **A ZERO FROM A SEARCH YOU WROTE NEEDS A POSITIVE CONTROL.** A dead-assignment probe returned
+  "0 findings" and was wholly vacuous — a broken regex, not a clean codebase. It became trustworthy
+  only once proven to CATCH a known-bad row.
+- **CHECK WHAT A GLOB MATCHES BEFORE DELETING.** `rm -f reports/visual-diff/*-2026-08-06.md`
+  deleted a concurrent track's tracked reports along with my own mangled ones. Restored via
+  `git checkout --`, but `git status` was the only thing that revealed it. On a shared worktree a
+  delete is a cross-track action exactly as a DB write is.
+- **`value-fragment` NEVER DISQUALIFIED A `technical` VETO** — the role's own contract reads
+  "each verdict NOT-content **or value-fragment**". A whole task was planned against the opposite
+  reading. Read the contract in the DB, not the summary of it.

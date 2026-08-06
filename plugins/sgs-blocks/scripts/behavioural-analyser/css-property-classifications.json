@@ -833,7 +833,8 @@
       "attr": "fontSizeMobile",
       "fields": {
         "css_property": "font-size",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_element": "body"
       }
     },
     {
@@ -841,7 +842,8 @@
       "attr": "fontSizeTablet",
       "fields": {
         "css_property": "font-size",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_element": "body"
       }
     },
     {
@@ -1355,6 +1357,13 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap"
       }
     },
     {
@@ -2435,34 +2444,6 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "direction",
-      "fields": {
-        "css_property": "flex-direction",
-        "css_tier": "desktop",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "directionMobile",
-      "fields": {
-        "css_property": "flex-direction",
-        "css_tier": "mobile",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "directionTablet",
-      "fields": {
-        "css_property": "flex-direction",
-        "css_tier": "tablet",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "gap",
       "fields": {
         "css_property": "gap",
@@ -2504,34 +2485,6 @@
       "attr": "justifyContentTablet",
       "fields": {
         "css_property": "justify-content",
-        "css_tier": "tablet",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "wrap",
-      "fields": {
-        "css_property": "flex-wrap",
-        "css_tier": "desktop",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "wrapMobile",
-      "fields": {
-        "css_property": "flex-wrap",
-        "css_tier": "mobile",
-        "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "wrapTablet",
-      "fields": {
-        "css_property": "flex-wrap",
         "css_tier": "tablet",
         "css_layer": "GRID"
       }
@@ -4524,7 +4477,8 @@
       "fields": {
         "css_property": "flex,grid-template-columns",
         "css_tier": "desktop",
-        "css_layer": "GRID"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4533,7 +4487,8 @@
       "fields": {
         "css_property": "flex,grid-template-columns",
         "css_tier": "mobile",
-        "css_layer": "GRID"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4542,7 +4497,8 @@
       "fields": {
         "css_property": "flex,grid-template-columns",
         "css_tier": "tablet",
-        "css_layer": "GRID"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6328,6 +6284,24 @@
       "attr": "panelPadding",
       "fields": {
         "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -8420,12 +8394,72 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "flexDirectionMobile",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "flexDirectionTablet",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "flexWrapMobile",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "flexWrapTablet",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "gapTablet",
       "fields": {
         "css_property": "gap",
         "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "bar"
       }
     },
     {
