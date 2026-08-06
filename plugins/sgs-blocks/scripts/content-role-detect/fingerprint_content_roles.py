@@ -58,7 +58,7 @@ Why the original range no longer applies, measured not assumed: the eligible poo
 Step 0 classification programme. The detectors already assigned everything they can
 assign; ASSIGNABLE 0 is the CORRECT steady state, not a blind rule.
 
-POOL RE-BASED 2026-08-06 (Bean): 69 -> **36**. The 33 wrapper-styling rows are no longer
+POOL RE-BASED 2026-08-06 (Bean): 69 -> 36 -> **34**. The 33 wrapper-styling rows are no longer
 survivors — Bean's ruling is that a NULL role means the row is UNREACHED or UNSEEDABLE,
 never "reached, understood, and filed nowhere", and a wrapper-only read is positive
 evidence of styling (the shared container wrapper is a CSS-rendering engine, so
@@ -70,7 +70,14 @@ never carry a `css_property` — `sgs/container`, the block every composite mirr
 element, so the earlier "owes an attrMap declaration" reading would have REVERSED a
 standing architectural decision rather than completing one.
 
-The 36 survivors are not an unexplored space — `reached by any detector` is 36 and
+A further 2 landed 2026-08-06 when `find_reference()` learned that a RENDER-side read
+outranks an EDITOR-side one: `sgs/container.shapeDividerTop`/`Bottom` were resolving to a
+`SelectControl` binding in the block's own `components/` dir (which merely AUTHORS the
+value) instead of the wrapper that paints it, purely because `_iter_sources` yields the
+block's own directory first. Their six sibling blocks have no local control file, so the
+same attribute was auto-classified there and sent to human review here.
+
+The survivors are not an unexplored space — `reached by any detector` equals the pool and
 `unreached` is 0. Every one lands in a bucket that DELIBERATELY does not assign:
 needs-review is an explicit human call; report-only is D2-alone plus the a11y rows this
 docstring already explains are deliberately left NULL; the content gap has no fitting
@@ -801,8 +808,14 @@ def main() -> int:
     print(f"eligible pool            {result['eligible_pool']}")
     print(f"reached by any detector  {result['reached_by_any_detector']}")
     print(f"unreached (open space)   {result['unreached']}")
-    print(f"\nASSIGNABLE               {len(a)}   (expected 0 at pool=36; see EXPECTED POPULATION)")
-    print(f"REPORT-ONLY              {len(r)}   (expected ~13 at pool=36)")
+    # The POOL SIZE in these lines is read from the live result, never hardcoded. A
+    # hardcoded pool went stale three times (69 -> 36 -> 34 in two sessions) and each
+    # time the line cried wolf against a number that no longer described anything. The
+    # EXPECTATIONS themselves (0 and ~13) stay static on purpose -- those are real
+    # claims about the data, and auto-deriving them would delete the check entirely.
+    _pool = result["eligible_pool"]
+    print(f"\nASSIGNABLE               {len(a)}   (expected 0 at pool={_pool}; see EXPECTED POPULATION)")
+    print(f"REPORT-ONLY              {len(r)}   (expected ~13 at pool={_pool})")
     print(f"VETOED by D1             {len(result['vetoed'])}   (D2/D3 claimed, D1 rejected)")
     print(f"CONTENT GAPS             {len(result['content_gaps'])}   (content, but no whole-value role fits -> Task E)")
     print(f"D4 REFERENCED-NOT-OUTPUT {len(result['technical_refs'])}   (read by code, never escaped, never CSS -> technical)")

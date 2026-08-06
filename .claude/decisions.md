@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D500 — a RENDER-side read outranks an EDITOR-side one in Detector 4; pool 36 → 34 [ROUTINE]
+
+**2026-08-06.** `find_reference()` returned "the first structured read" in `_iter_sources`
+order, and that iterator yields the block's OWN directory before the shared trees. So the
+answer depended on directory layout rather than on which consumer decides the attribute's role.
+
+**The measured failure.** `sgs/container.shapeDividerTop`/`Bottom` resolved to
+`components/ContainerWrapperControls.js:1002`, a `SelectControl value={…}` binding, and were
+filed "needs human review". The SAME attribute on hero / cta-section / trust-bar / site-header /
+site-footer / physics-canvas resolved to `class-sgs-container-wrapper.php:961` and was correctly
+auto-classified wrapper-painted (D499). Those six have no block-local control file, so the
+iterator reached the wrapper first. One attribute, one shared paint site, two buckets.
+
+**The rule, stated once:** what RENDERS a value decides its role; an editor control merely
+AUTHORS it. `find_reference()` now collects both and prefers the render-side read, falling back
+to the editor-side hit only when nothing renders the value — so behaviour is unchanged for any
+attribute that has only one kind of reference. This is a tie-break, not a new classification.
+
+**Corroboration I did not expect and did not fish for.** The re-pointed evidence for the five
+rows that STAYED in the review bucket now matches, line for line, what the 2026-08-05 human
+investigation had reached by hand: `icon-list.defaultIconSource` → render.php:136 (report said
+136), `mega-panel.viewAllPlacement` → 531 (report: 531-533), `option-picker.defaultSelected` → 98
+(report: 98), `timeline.orientation` → 63 (report: 63,72,339-340). The detector now arrives
+automatically at the sites a person had to find manually.
+
+**Blast radius measured BEFORE the change, not asserted after.** `technical_refs` was 0 and
+stayed 0, so no row silently gained the auto-`technical` role. Exactly 2 rows moved bucket;
+7 had editor-side evidence, 5 kept their bucket with better evidence. Pool 36 → **34**,
+`role IS NULL` 291 → **289**, `styling` 79 → **81** — every figure declared before the run and
+hit exactly.
+
+**Also killed a drift class.** The fingerprint's printed expectation lines hardcoded the pool
+(`expected 0 at pool=69`), which went stale three times across two sessions and cried wolf
+against a number describing nothing. The POOL is now read from the live result; the
+EXPECTATIONS (0 and ~13) stay static, because those are the actual claims and auto-deriving
+them would delete the check.
+
+**Gate:** two new checks in `detector4 --self-test` (5 green), anchored on the real
+container/wrapper pair rather than a synthetic fixture. Negative control: forcing
+`_is_editor_side` to ignore `edit.js` turned it red, exit 1, then reverted green. Converter
+suite 598 pass; the one failure is the same pre-existing `test_content_gap_collector.py`.
+
 ## D499 — wrapper-painted attrs are SEEDED `styling`, not left NULL: Step 0.1 pool 69 → 36 [ROUTINE]
 
 **2026-08-06.** Bean's ruling, which reshaped the task: **a NULL role means the row is UNREACHED or

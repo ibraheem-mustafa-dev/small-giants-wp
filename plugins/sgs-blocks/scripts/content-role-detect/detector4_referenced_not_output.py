@@ -133,9 +133,41 @@ def _read(path: Path) -> str:
     return _source_cache[path]
 
 
+def _is_editor_side(path: Path) -> bool:
+    """True for a file that AUTHORS an attribute's value rather than RENDERS it.
+
+    An `edit.js` / `index.js` / anything under a `components/` directory is block-editor
+    UI: it binds the value to a control so an operator can set it. That is not a paint
+    site and it says nothing about what the value DOES at render time.
+    """
+    if path.name in ("edit.js", "index.js"):
+        return True
+    return "components" in path.parts
+
+
 def find_reference(block_slug: str, attr: str) -> tuple[str, int] | None:
-    """Return (file, line) of the first structured read, or None."""
+    """Return (file, line) of the DECISIVE structured read, or None.
+
+    RENDER-SIDE READS OUTRANK EDITOR-SIDE ONES (2026-08-06). Previously this returned the
+    first hit in `_iter_sources` order, which yields the block's OWN directory before the
+    shared trees -- so the answer depended on which file the iterator happened to reach
+    first, not on which consumer decides the attribute's role.
+
+    Measured failure that prompted this: `sgs/container.shapeDividerTop` resolved to
+    `components/ContainerWrapperControls.js:1002`, a `SelectControl value={...}` binding,
+    while the SAME attribute on hero / cta-section / trust-bar / site-header / site-footer
+    / physics-canvas resolved to the shared wrapper that actually paints it. Those six have
+    no block-local control file, so the iterator reached the wrapper first. One attribute,
+    one shared consumer, two different buckets -- decided by directory layout. The 2 odd
+    ones out were then filed "needs human review" while their 6 identical siblings were
+    correctly filed wrapper-painted (D499).
+
+    So: collect both, prefer the render-side read, fall back to the editor-side read only
+    when nothing renders the value. Behaviour is UNCHANGED for any attribute that has no
+    editor-side reference, or none on the render side -- this only breaks the tie.
+    """
     pats = _access_patterns(attr)
+    editor_hit: tuple[str, int] | None = None
     for path in _iter_sources(block_slug):
         text = _read(path)
         if attr not in text:          # cheap pre-filter before the regexes
@@ -167,8 +199,16 @@ def find_reference(block_slug: str, attr: str) -> tuple[str, int] | None:
                         rel = path.relative_to(PLUGIN_ROOT.parent.parent)
                     except ValueError:
                         rel = path
-                    return (str(rel).replace("\\", "/"), lineno)
-    return None
+                    hit = (str(rel).replace("\\", "/"), lineno)
+                    if _is_editor_side(path):
+                        # Remember the FIRST editor-side hit and keep looking for a
+                        # render-side one. Only the first is kept, so the fallback is
+                        # identical to the old return value when nothing renders it.
+                        if editor_hit is None:
+                            editor_hit = hit
+                        break
+                    return hit
+    return editor_hit
 
 
 def _styling_from_derived_layer() -> set[tuple[str, str]]:
@@ -307,13 +347,46 @@ def self_test() -> int:
         failures.append("a prose mention matched an access pattern — bare-word "
                         "matching would claim attributes nothing reads.")
 
+    # 4. RENDER-SIDE OUTRANKS EDITOR-SIDE (2026-08-06). `sgs/container.shapeDividerTop`
+    #    is read BOTH by components/ContainerWrapperControls.js (a SelectControl binding,
+    #    which merely authors the value) and by the shared wrapper (which paints it). The
+    #    wrapper must win. Before the tie-break this returned the control file, because
+    #    _iter_sources yields the block's own directory first -- so this attribute landed
+    #    in "needs human review" while the SAME attribute on its six sibling blocks was
+    #    correctly filed wrapper-painted. Anchored on a real pair, not a synthetic one.
+    div = find_reference("sgs/container", "shapeDividerTop")
+    if not div:
+        failures.append(
+            "shapeDividerTop on sgs/container produced NO reference at all — the "
+            "tie-break must never lose a hit it previously found."
+        )
+    elif not div[0].endswith("includes/class-sgs-container-wrapper.php"):
+        failures.append(
+            f"shapeDividerTop on sgs/container resolved to {div[0]}, expected the shared "
+            "wrapper. A render-side consumer must outrank an editor control; if the "
+            "control wins, this attribute gets filed for human review while its six "
+            "identical siblings are auto-classified."
+        )
+
+    # 5. The editor-side FALLBACK must still work. An attribute read ONLY by edit.js must
+    #    still resolve -- preferring render-side must never become "ignore editor-side",
+    #    which would silently drop every editor-only attribute out of the detector.
+    if not _is_editor_side(Path("src/blocks/x/render.php")):
+        pass
+    else:
+        failures.append("_is_editor_side called render.php an editor file — the "
+                        "classifier is inverted and every render read would be demoted.")
+    if not _is_editor_side(Path("src/blocks/x/edit.js")):
+        failures.append("_is_editor_side did not recognise edit.js — the tie-break is "
+                        "inert and the ordering bug it fixes would silently return.")
+
     if failures:
         print(f"DETECTOR-4 SELF-TEST FAILED ({len(failures)} checks)")
         for f in failures:
             print(f"  - {f}")
         return 1
-    print("DETECTOR-4 SELF-TEST PASSED — 3 checks green "
-          f"(conditionalField found at {hit[0]}:{hit[1]}).")
+    print("DETECTOR-4 SELF-TEST PASSED — 5 checks green "
+          f"(conditionalField at {hit[0]}:{hit[1]}; shapeDividerTop at {div[0].split('/')[-1]}:{div[1]}).")
     return 0
 
 
