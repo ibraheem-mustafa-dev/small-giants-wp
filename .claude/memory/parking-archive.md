@@ -2695,3 +2695,219 @@ Archived verbatim below.
 Residual scope: `update-db.py` still creates and seeds `slot_synonyms`, replaced by `slots`/`roles` in the current schema. Same open questions as before, now for `slot_synonyms` alone: confirm zero live readers, then strip that seeder, and decide whether the orchestrator should call the project's own `/sgs-update` instead of this skill-side legacy script at all (the two DB-reseed paths risk drifting apart).
 
 **Trigger:** next `/sgs-update` or converter-DB session.
+
+
+### P-INFOBOX-PRESET-ABSENCE-TRANSFER - RESOLVED 2026-08-06
+
+Bean's call 2026-08-06: done. The mechanism (Option B, converter/resolvers/preset_absence.py) is live and wired - imported at services/css_pass.py:42, invoked at :253, 17 test functions green, commit 5807205c an ancestor of main, plus a dedicated gate (converter/gates/check_preset_absence_no_slug_literal.py) guarding against slug-literal carve-outs. NOTE the entry's cited anchors were CORRECT; an earlier claim this session that they were stale was my own path error, not a defect in the entry.
+
+Archived verbatim below.
+
+### P-INFOBOX-PRESET-ABSENCE-TRANSFER — a shared-mechanism converter change shipped without its design gate
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-24
+
+A cloned `sgs/info-box` always inherited its block.json defaults `cardStyle=elevated` (injecting a box-shadow) and `effectHover=lift` regardless of the draft, because those preset selectors are deliberately un-routed. So the clone showed a shadow and hover the draft never had, and double-injected when a shadow WAS present. "Absence" is not representable in the Decl stream. The pattern spans ~8 blocks, so any fix must be universal (R-31-9). Three options went to a design gate, with **Option A recommended**.
+
+**⚠ The critical part, and it is a process question, not a doc-hygiene fix (verified 2026-07-27): a mechanism has already SHIPPED, and it is Option B, not the recommended Option A. The design gate this entry is waiting on appears never to have happened.** `converter/resolvers/preset_absence.py` exists, its own header names "Build #3 Option B: preset-absence transfer (AUTO-DERIVE)", it is wired live (`css_pass.py:42` import, called at `:253`), commit `5807205c` is an ancestor of `main`, and its 22 tests pass. A grep of `decisions.md` finds NO gate decision or sign-off recorded. This is a shared-mechanism converter change — exactly the class Rule 7 requires a pre-build design gate and Bean's approval for. Two things follow: (1) the process question is Bean's to settle; (2) the technical residual is no longer "build a mechanism" but "verify the shipped Option B on a live clone via computed-parity Stage 11.6", plus decide whether Option B is the shape Bean actually wants.
+
+**Trigger:** Bean reviews the shipped Option B. Do NOT rebuild.
+
+
+### P-INFOBOX-STAR-EMOJI-LANDED - RESOLVED 2026-08-06
+
+LANDED proof captured live on the canary 2026-08-06 (deployed build md5-matched against source first). Four info-boxes render emoji as real sgs/icon children with span.sgs-icon__emoji: U+1F33E, U+1F37A, U+1F33F, U+1F331 - read from textContent, no tofu, icon boxes 32x32 non-zero.
+
+Archived verbatim below.
+
+### P-INFOBOX-STAR-EMOJI-LANDED — info-box emoji + trust-bar star fill: LANDED proof owed
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-30
+
+Both the info-box emoji-icon lift and the trust-bar star-fill fix are built and merged into main; only the LANDED proof (rendered correctly on the live re-cloned page 8) remains outstanding.
+
+**Trigger:** the Task-4 re-clone.
+
+
+### P-MULTIBUTTON-768-WRAP - RESOLVED 2026-08-06
+
+Does not reproduce. Measured live 2026-08-06 at innerWidth 766/768/769/773: the container computes flex-wrap:nowrap in the row tier, so wrapping is structurally impossible at >=768. At 768 the two CTAs need 281.29px in a 281.28px shrink-wrapped container (0.01px sub-pixel) inside a 377.27px parent. Below 768 the block switches to flex-direction:column by design. CAVEAT: this disproves the parked SYMPTOM; the underlying 'buttons wider than the draft' claim was not tested (no draft comparison in scope).
+
+Archived verbatim below.
+
+### P-MULTIBUTTON-768-WRAP — hero CTAs still wrap onto separate lines at 768px
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-06
+
+At 768px the hero's two CTAs wrap because the rendered buttons are slightly wider than the draft's equivalents — a button-sizing issue, flex-direction itself is already correct. Needs a browser check (button was rebuilt since this was parked — may already be fixed, per the LIVE-BROWSER-GATED index).
+
+**Verify:** possibly already resolved — the button component has been rebuilt since this entry was written; needs a live measurement, not a static read.
+
+**Trigger:** button-sizing pass or the next visual QC batch.
+
+
+### P-FR32-WRAPPER-INNER-INLINE - RESOLVED 2026-08-06
+
+Closed by commit 16f87d12 (2026-08-01), verified an ancestor of HEAD. Both emissions now build a bare <div class="sgs-container__inner"> and the grid declarations go out as a scoped rule at class-sgs-container-wrapper.php:1263-1265; the cited :1800/:1828 are dead. The entry's DEFERRAL PREMISE was also wrong: --sgs-gi-* are inherited defaults set once on the parent and consumed by children via var(), and there is exactly one .sgs-container__inner per instance - so no positional/:nth-child shape was ever required.
+
+Archived verbatim below.
+
+### P-FR32-WRAPPER-INNER-INLINE — 2 dynamic inline builds on `.sgs-container__inner`
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30 (D425)
+
+`class-sgs-container-wrapper.php:1800` and `:1828` assemble a `style="…"` attribute at runtime
+(`' style="' . esc_attr( implode( ';', $decls ) ) . '"'`) on `.sgs-container__inner`, carrying base
+gap + `--sgs-gi-*` per-grid-item custom properties. Both comments declare the remaining decls
+"inline-safe" — reasoning under the PRE-D345 contract, which FR-32-4 as amended forbids.
+
+**Why not fixed with the other 14 (2026-07-30):** it is the SHARED wrapper — a Rule-7
+design-gate surface — and closing it needs the `--sgs-gi-*` values routed to the FR-32-4a
+positional shape (they vary per grid item, so one root-scoped rule cannot carry them), honouring
+FR-32-4a's positional-integrity requirement. That deserves its own verification pass, not the tail
+of a long session (STOP-19).
+
+**Measured mitigation, not proof of death:** both are conditional (`$grid_on_inner &&
+$inner_grid_decls` / `$inner_style_parts`) and did NOT fire on gate-canary 2064 — six inline
+`[style]` attributes were present and none was `.sgs-container__inner`. That is one page, not a
+proof they never fire.
+
+Full write-up + the detection lesson: `reports/2026-07-30-fr32-residual-inline-sites.md`.
+
+**Trigger:** next shared-wrapper / Spec-32 session, with a design gate.
+
+
+### P-RAWSVG-FILLED-VS-OUTLINE - RESOLVED 2026-08-06
+
+LANDED proof captured live 2026-08-06. The trust-bar star renders FILLED - computed fill rgb(197,106,122), stroke none, wrapper class sgs-trust-bar__circle--filled - while three sibling lucide icons in the same bar compute fill:none + 1.8px stroke. Two states coexisting in one component proves the per-icon control discriminates, rather than a global default coincidentally looking right.
+
+Archived verbatim below.
+
+### P-RAWSVG-FILLED-VS-OUTLINE — trust-bar per-icon fill-style control: LANDED verification owed
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-02
+
+The per-icon "outline vs filled" control (`fillStyle`/`fillColour` + `is_filled_glyph` converter auto-set) is built. What's left is confirming it renders correctly (star filled, not outline) on the live re-cloned page — this needs a browser pass, per the LIVE-BROWSER-GATED index.
+
+**Trigger:** the Task-4 re-clone verification pass.
+
+
+### P-S16-4 - RESOLVED 2026-08-06
+
+Safe by construction for all three named failure modes. All four emit sites serialise via json.dumps - orchestrator.py:339, db/db_lookup.py:4994, services/section_passes.py:134 and :139 - which escapes newlines, quotes and control characters (probed with hostile input). No pre-emit validator exists and none is needed for those modes. The original anchor convert.py is deleted. UNPROVEN RESIDUAL, a DIFFERENT failure mode that does not reopen this entry: json.dumps does not escape a literal --> inside an attribute string value; WP core's own serialize_block shares that property, so it may be a non-issue rather than an SGS defect. Test before treating it as real.
+
+Archived verbatim below.
+
+### P-S16-4 — Pre-emit JSON serialisation validation
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** unknown
+
+Source text with newlines/unescaped quotes/control chars could break JSON serialisation in block
+markup — no pre-emit validator exists. Original anchor (`convert.py`) is deleted; re-anchor the
+check to the current `converter/` tree rather than assuming it's still missing or already fixed.
+
+**Trigger:** Next converter pass touching text emission (batch with any Spec-16-descended work).
+
+
+### P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS - RESOLVED 2026-08-06
+
+The audit is finished, not outstanding. .claude/reports/inspector-control-type-audit-2026-07-21.md records all 93 unique rows (the 94th was a byte-identical duplicate): 88 DERIVED_CORRECT, 5 DUAL_BOUND, 0 STORED_CORRECT - and the result was encoded into extract-signatures.py as an explicit overwrite policy plus a dual-bound override pass. The '76 remaining' figure is dead. The 2 residual disagreements (sgs/nav-menu::collapsePoint, sgs/mega-panel::asideSeparator - both on blocks postdating the audit) were hand-traced against edit.js and added to _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES this session (c1377c2b); they land on the next /sgs-update.
+
+Archived verbatim below.
+
+### P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS — 94 attrs where the derived inspector-control-type disagrees with the stored value
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-21
+
+Of 18 hand-traced disagreements, 15 showed the pre-existing STORED value was wrong (e.g. a media-poster attr stored as `Button` when it actually binds to a `<MediaUpload>`); 3 are genuinely dual-bound. 76 remain unaudited. Bean's standing instruction: finish the audit before overwriting any of the 94 rows — `inspector_control_type` is what tells a non-coder client which control they get, so a wrong value is a wrong sidebar; this is closer to the actual end-goal than pure routing work.
+
+**Trigger:** a dedicated audit session — a strong candidate for the next framework-quality front.
+
+
+### P-S16-1 - RESOLVED 2026-08-06
+
+Premise refuted. sgs/label has NO source attribute of any kind (two grep shapes, both zero) and is a dynamic block - save.js returns null, block.json declares "render": "file:./render.php". With no source:"html" there is no HTML round-trip, so a wrapping child element in save.js cannot break serialisation; save.js emits nothing. sgs/heading is identical in shape, so the comparison the trigger wanted resolves to 'the problem class was removed for both, not solved by heading'.
+
+Archived verbatim below.
+
+### P-S16-1 — sgs/label selector breadth (trigger has fired)
+**Status:** OPEN · **Bucket:** framework · **Parked:** unknown
+
+`sgs/label`'s `source:"html"` binds both root and typography to `.wp-block-sgs-label`
+(`block.json:74-75`) — if `save.js` ever wraps content in a child element, the round-trip breaks.
+The original trigger ("revisit when adding sgs/heading") has fired: `sgs/heading` now exists and
+is deployed, so this is actionable now rather than waiting.
+
+**Trigger:** Next `sgs/label` or `sgs/heading` touch.
+
+
+### P-S17-FONT-COLLECTION-NOTICE - RESOLVED 2026-08-06
+
+Cause fixed, by a different route than the entry proposed. The notice fired because the JSON path was passed under an unrecognised key, leaving font_families genuinely missing and tripping WP_Font_Collection's validator. includes/class-font-collection.php:68 now passes font_families correctly, and a code comment there dates the fix 2026-05-20 - the same day this entry was parked, so the fix and the entry were written in parallel and the entry never got updated. Registration is still on init: the proposed hook move was never made and is no longer needed.
+
+Archived verbatim below.
+
+### P-S17-FONT-COLLECTION-NOTICE — Font-collection registration fires _doing_it_wrong on WP-CLI
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-20
+
+`wp_register_font_collection` triggers a `WP_Font_Collection` validator notice on every WP-CLI
+invocation (harmless — `WP_DEBUG_DISPLAY` is off on staging, fonts work fine in the editor). Fix:
+move registration from `init` to a block-editor-only hook (`enqueue_block_editor_assets` /
+`current_screen`) so it only fires in editor context.
+
+**Trigger:** Opportunistic, next touch of `includes/class-font-collection.php`.
+
+
+### P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING - RESOLVED 2026-08-06
+
+Fixed, and verified both ways. Source: the per-tier .is-header-scrolled background IS emitted (site-header/render.php:217-223) and now carries !important, added by 07c67642 (2026-07-28) - so the failure mode was 'emitted but LOSES', because the merged tri-state emitter gives Transparent's background:transparent !important, which beats a non-!important rule regardless of selector specificity. Live 2026-08-06 at 1440 on the Transparent+Sticky CPT header (id 1570, proof string confirmed in DOM): rest rgba(0,0,0,0) -> scrolled rgb(251,243,220).
+
+Archived verbatim below.
+
+### P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING — transparent header does not flip to a solid background on scroll
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-28
+
+With Transparent ON + Sticky ON at desktop, the `is-header-scrolled` class IS applied on scroll (the JS works) but the computed `background-color` stays transparent instead of flipping to the theme surface colour — the scrolled-state background rule is either not emitted by the merged tri-state CSS or loses to another rule. Cosmetic, not blocking. Evidence: the `t14fix-header-cascade-1440` screenshot + the T1.4 re-QC note.
+
+**Trigger:** next header/Spec-37 session — inspect the SCROLLED state in `sgs_merge_tri_state_declarations()` (`site-header/render.php`), confirm a per-tier `.is-header-scrolled` background declaration exists and wins, live-verify the flip at 1440. Same files as the Site Editor panel fix, so cheap to fold in.
+
+
+### P-WP-UNIQUE-ID-CACHE-COLLISION - RESOLVED 2026-08-06
+
+Precondition cannot occur. Neither live site has a fragment cache (no object-cache.php, no advanced-cache.php, no caching plugin); Hostinger's edge cache is full-page and cannot recombine fragments across requests. Separately, most blocks already derive their scoped-style uid from substr(md5(wp_json_encode($attributes)),0,8), which IS the fix this entry proposed. Bean's call 2026-08-06: remove, since it is not possible.
+
+Archived verbatim below.
+
+### P-WP-UNIQUE-ID-CACHE-COLLISION — Fragment-cache scoped-ID collision (theoretical)
+**Status:** DEFERRED · **Bucket:** framework · **Parked:** unknown
+
+`wp_unique_id()` is per-request sequential; fragment cache combining requests could mismatch a
+scoped `<style>` ID with its rendered element. Fix would be a content-derived hash (e.g. md5 of
+block JSON) instead of a sequential counter.
+
+**Trigger:** Only if a production collision is actually observed — currently theoretical.
+
+
+### P-6-LUCIDE-REST-ENTRY-POINT - RESOLVED 2026-08-06
+
+WP 7.0's icon registry (wp-includes/class-wp-icons-registry.php) is deliberately CLOSED to third parties - protected constructor, protected register(), hardcoded core-only manifest, no filter/action/global function. `wp_register_icon_collection` does not exist and will not; WP_REST_Icons_Controller only reads a registry it does not own. The dead bridge `includes/class-sgs-lucide-icons-rest.php` (a permanent no-op carrying an unactionable TODO) was DELETED this session. `sgs_get_lucide_icon()` is unaffected and remains the supported path - 17 block render.php files call it. Bean confirmed lucide icons work in the icon block; that is the shim, which was never the thing at issue.
+
+Archived verbatim below.
+
+### P-6-LUCIDE-REST-ENTRY-POINT — Find WP 7.0's real icon-collection registration API
+**Status:** BLOCKED · **Bucket:** tooling · **Parked:** unknown
+
+`class-sgs-lucide-icons-rest.php` checks for `wp_register_icon_collection`, which doesn't exist in
+WP 7.0 even though `WP_REST_Icons_Controller` does. Need to find the real registration entry point
+(candidate: a method on `WP_REST_Icons_Controller`) from WP 7.0 core source
+(`wp-includes/rest-api/endpoints/class-wp-rest-icons-controller.php`), wire the SGS Lucide
+collection through it, then retire the `sgs_get_lucide_icon()` shim.
+
+**Trigger:** Research WP 7.0's icon-collection registration API.
+
+
+### P-OLDSHAPE-AUDIT-EXTENSION-ATTRS - RESOLVED 2026-08-06
+
+Both halves now closed. The premise ('audit-post-content-blocks.py reads only block.json') stopped being true on 2026-07-29, when _load_extension_attrs() began parsing includes/extension-attributes.generated.php - the machine-generated mirror of all 11 src/blocks/extensions/*.js files, carrying 69 attrs including sgsBlockLink/-Label/-Target and sgsHoverScalePreset. The residual 3 dead baseline entries were deleted this session (c1377c2b, 195 -> 192), verified with a probe fixture: those three pass clean while a planted bogus attr still flags NEW HIGH.
+
+Archived verbatim below.
+
+### P-OLDSHAPE-AUDIT-EXTENSION-ATTRS — post-content audit doesn't know about universal-extension-registered attrs
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-28
+
+`audit-post-content-blocks.py` reads only block.json, so attributes registered by JS-side universal extensions (`sgsBlockLink*`, `sgsHoverScalePreset`, etc.) raise false "stranded content" findings and can abort deploys — this already happened once, blocking a real deploy. Fix: teach the audit the extension-registered attribute list (parse the extension source files, or maintain a declared allowlist with provenance), then remove the baseline entries this false positive forced in.
+
+**Trigger:** next audit/gate-hygiene session.
