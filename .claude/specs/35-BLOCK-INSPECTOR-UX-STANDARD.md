@@ -395,6 +395,77 @@ Spec 32 amendment below) · `sgs-758` lifted-CSS MIME error (one-off, unchased) 
 `HeaderBehavioursTest.php` needs a composer/PHPUnit env to execute · Shrink+Hide legacy-transition
 overlap on pre-animation-timeline browsers (documented, not speculatively fixed).
 
+## PART N — Role data layer + enforcement rules for Task F (added 2026-08-06)
+
+**Why this Part exists.** Parts A–L specify the CONTROL SURFACE. This Part specifies the DATA
+LAYER underneath it — the `role` on every `block_attributes` row, which says what the value IS.
+The two are perpendicular and both are needed: `role` (what the value is) + `css_property`/element/
+state/tier (how it is delivered). A control cannot be judged complete without both.
+
+⛔ **NO CACHED COUNTS IN THIS PART.** Every number below names the command that regenerates it.
+This is not pedantry: the live status doc carried "pool 69 / D4-review 20 / report-only 13" into a
+session where the true figures were 23 / 10 / 5, and four separate task descriptions were written
+against the stale ones. Read the number, do not quote this file's memory of it.
+
+```
+cd plugins/sgs-blocks/scripts/content-role-detect && python fingerprint_content_roles.py
+```
+
+### N.1 — The mechanism map (what may LEGALLY seed each role)
+
+Hand-assigning a role is BANNED (D497). A role may be written only by the mechanism that owns it:
+
+| Role | The ONLY legal route |
+|---|---|
+| `technical` | A Detector-1 VETO — D1 walked EVERY usage site and found none content-bearing. Qualifying verdicts are `NOT-content` **or `value-fragment`**; `value-fragment` has never been a disqualifier |
+| `styling` | A non-NULL `css_property`, OR a wrapper-only consumer (TIER 2.4) |
+| `color` | A proven paint site (D7 / TIER 3.15) |
+| `enum-mode` | TIER 3.5 reading `enum_values`, which `/sgs-update` Stage 1 fills from block.json `enum` |
+| `link-content` | TIER 3.45 reading `output_signature.link_template` with EXACTLY ONE `{value}` |
+| `layout` and other families | `property_suffixes` provisioning, or D6's per-key native-support map |
+| `image-alt` | `alt_companion_attr`, declared per row — never name-guessed |
+
+**Detector inventory** (`plugins/sgs-blocks/scripts/content-role-detect/`). D1/D3 are trusted alone;
+D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a role.
+
+### N.2 — Rules Task F must enforce (each earned by a live defect)
+
+- **N-1. "Referenced" is not "used".** An attribute read into a variable that is then never used
+  passes every consumption check that greps for the attribute NAME. `sgs/form.formName` shipped a
+  live editor control and two variations seeding translatable copy while rendering NOTHING, and
+  `check-dead-controls.js` reported `OK — 0 net-new dead controls`. **CHECK 5 (dead assignment)
+  now covers this; 18 findings on first run.** A control that needs code to mean anything is not
+  done (Part B).
+- **N-2. A built mechanism is not a reached one.** The `link-content` role, its extractor and its
+  reader were all built, tested and threaded — and the whole chain was INERT because nothing
+  assigned the role and the writer was never invoked (`/sgs-update` runs `extract-signatures
+  --task-b-only`). A built-but-unreachable mechanism reads exactly like a missing one. Gate on the
+  OBSERVED end state, never on the code existing.
+- **N-3. A detector's negative result describes the detector.** Three separate tasks were blocked
+  by one gap — a detector that will not cross a function boundary. D4's own comment names it; D7
+  is single-file; D1's symbol table is file-scoped. Before recording "no evidence", establish
+  whether the evidence is merely unreachable.
+- **N-4. Declare the expected population BEFORE the run.** A number below expectation is a claim
+  requiring evidence. A number ABOVE it needs per-row justification, not a silent accept.
+- **N-5. A zero from a search you wrote requires a positive control.** A dead-assignment probe
+  returned "0 findings" and was wholly vacuous — a broken regex, not a clean codebase. It became
+  trustworthy only once proven to CATCH a known-bad row.
+- **N-6. Negative controls should be REAL ROWS, not fixtures, wherever one exists.** The fragment
+  rule's controls are `sgs/whatsapp-cta.phoneNumber` and `sgs/counter.prefix`; the colour-upgrade
+  sweep's is `gridItemBorder`. A real row cannot drift away from the thing it guards.
+- **N-7. A guard whose safety is INCIDENTAL is not a guard.** `gridItemBorder` survives D7 only
+  because D7 cannot reach the file it is painted in — its documented "it is a shorthand" reasoning
+  has never actually been exercised. Prefer a shape where the guard holds BY CONSTRUCTION.
+- **N-8. The visual-diff gate applies to a block.json `enum` declaration.** Adding an `enum` can
+  change render: WP coerces an out-of-enum stored value back to the default. Never fabricate
+  `first_paint_capture_passed` to clear it.
+
+### N.3 — Enforcement status
+
+Per the DONE checklist (`.claude/plans/spec-35-inspector-DONE-checklist.md`), measured 2026-08-04:
+0 of 24 end conditions had a validated script. Task F completes the remainder. The bar for
+"enforced" is `STOP-CATALOGUE.md` §E6 (10 points) — "has a script" is not the bar.
+
 ## Sources
 
 developer.wordpress.org Block Editor Handbook (all component references + Block Design, Accessibility,

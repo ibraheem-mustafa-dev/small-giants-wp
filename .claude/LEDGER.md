@@ -172,11 +172,8 @@ restore it from an older revision.** Only `gridItemBorder` was a real attrMap ca
 decorative families `sgs/container` deliberately declines to map (R-31-9). Declaring them would have
 REVERSED that decision.
 
-⚠ **The remaining 34 are DECISIONS, not detector work.** `ASSIGNABLE` 0 is the CORRECT steady state;
-every row IS reached (`unreached` = 0) and lands in a bucket that deliberately declines to assign.
-Apply by MECHANISM, never hand overrides (D497).
-⚠ **0.1 CANNOT CLOSE BEFORE 0.2** — `whatsapp-cta.phoneNumber` + `.message` wait on 0.2's
-`link-content` extractor. 32 of 34 independent; those 2 hard-blocked.
+⚠ `ASSIGNABLE` 0 is the CORRECT steady state — every row IS reached and lands in a bucket that
+deliberately declines to assign. Apply by MECHANISM, never hand overrides (D497).
 
 | Bucket | Rows | What to do |
 |---|---|---|
@@ -211,13 +208,19 @@ investigation.** Three detectors landed unwired; wiring them is the bulk of the 
 ⛔ **Do not re-investigate. Verdicts exist** in the 2026-08-05/06 agent reports with per-row
 file:line. Apply by MECHANISM, never hand overrides (D497).
 
-| # | Task | Rows | State |
-|---|---|---|---|
-| **A1** | **Reseed with D1 wired.** D1 gained shared-include attribution (D-pending, `d5766eff`): 546 new rows, 7 of the 9 named `fieldName`/`formName` rows now have verdicts. NEVER RESEEDED — deliberately kept separate so the role impact gets its own before/after diff. **Largest single gain available.** | ~7 | BUILT, unwired |
-| **A2** | **Declare the 3 enums D8 found** (`icon-list.source`, `mega-panel.viewAllPlacement`, `timeline.orientation`). Add `enum` to block.json; `/sgs-update` Stage 1 fills `enum_values` and TIER 3.5 seeds `enum-mode` — no new role logic. Also gives clients a real select control. | 3 | BUILT, unwired |
-| **A3** | **The `fieldName` decision — ONE call applied 9×.** Is a form submission key `technical`? Its definition names "a form-processing key" verbatim. Needs Bean, then A1's verdicts license it. | 9 | Bean's call |
-| **A4** | **Remaining D4-review rows** — `orderBy`, `defaultSelected`, `successRedirect`, `rowShrinkHideTarget`×2 (all match `technical`); `drawerRef` (`technical`); `schemaItemName` (`identity` — the `name` of a Schema.org Product); `excludeKeywords` (`behaviour`); `contentIconName` (`icon-lucide`); `responsive-logo.align` + `icon-list.defaultIconSource` (`enum-mode`, comparison-chain — D8 blind spot). | ~11 | mapped, needs A1's gate |
-| **A5** | **`whatsapp-cta.phoneNumber` + `.message`** — extractor SHIPPED (`d5766eff`), role seeded. Confirm they now leave the pool on reseed. | 2 | likely closed by A1 |
+> **⚠ POOL IS 13 (2026-08-06 PM). Re-measure, never trust this line:**
+> `cd plugins/sgs-blocks/scripts/content-role-detect && python fingerprint_content_roles.py`.
+> Buckets: D4-review 7 · report-only 5 · content-gap 1. **D-ceiling 503**, not 498.
+> **Four ledger claims below were measured FALSE this session — the table is corrected in place.**
+
+**Full narrative + every measurement: `memory/session-2026-08-06-spec35-task-a.md`. Read it before re-deriving anything.**
+
+| # | Task | State |
+|---|---|---|
+| **A1+A3** | ✅ CLOSED `0ecdbbd2` — 7 rows. The premise was WRONG (a reseed alone changed nothing); the real blocker was `fragment` being tested BEFORE the func dispatch in `classify_detector1.py`, so a concatenated value could never reach the `NOT-content` rule. `value-fragment` NEVER disqualified a veto — the role contract says "NOT-content **or value-fragment**". |
+| **A2** | PARTIAL — 3 enums declared from PHP allow-lists, never invented (`icon-list.source`, `.defaultIconSource`, `mega-panel.viewAllPlacement`). ⛔ **All block.json edits are UNCOMMITTED: the visual-diff gate blocked them and is RIGHT to** (an `enum` changes render — WP coerces out-of-enum to default). Needs a real capture; NEVER fabricate `first_paint_capture_passed`. `timeline.orientation` is NOT a pool row (already `enum-class-probe`). |
+| **A4** | PARTIAL — `responsive-logo.align` → `layout` (`32b4fbd7`; D6's role map is now PER-KEY + matches the ARRAY form of `supports.align`, without which it was silently inert). |
+| **A5** | ✅ CLOSED `8f533bd6` — 2 rows. The ledger's "role seeded" was FALSE: the role, extractor and reader all existed and the whole chain was INERT. Two causes: `/sgs-update` only runs `extract-signatures --task-b-only` (`sgs-update-v2.py:1178`) so `link_template` was never written; and no tier assigned the role. TIER 3.45 added. Proven live: `447700900123` + `Hi there` recovered from a real `wa.me` href. |
 
 ⚠ **`posterAlt` is NOT in the pool any more** (D5 seeded it `image-alt`), but its clone path is
 BROKEN — see the open gap below. Seeded ≠ working.
@@ -230,8 +233,8 @@ broken. They are numbered deliberately: a task list you work top-to-bottom must 
 
 | # | Task | State |
 |---|---|---|
-| **A6** | **`sgs/image-sequence` clone lifts NOTHING** — a REAL CONTENT DROP, not cosmetic. `walk.py` alt capture was fixed (`2ca99d6f`) and PROVEN INSUFFICIENT: the fixture lifts `{}`, so the poster never reaches the scalar-lift leg and its alt therefore cannot follow. `image-alt` is content-bearing, so a cloned image-sequence loses its accessible name. Guarded by `xfail(strict=True)` in `test_extraction.py::test_object_typed_image_attr_still_lifts_its_alt_companion` — **it flips to a hard FAILURE the moment the remaining half lands**, so the suite tells you when it is fixed. Start there, not from scratch. | measured, unfixed |
-| **A7** | **`product-card.ctaColourBorder`/`Hover` stuck on generic `styling`** — they ARE colours (`helpers-button-style.php:129,178`, both via `sgs_colour_value()`), but reach it through a SHARED helper, which is D7's documented single-file blind spot ("does not cross into a helper's body"). Extending D7 across helper bodies closes these two and likely others. ⚠ Whatever does that must keep `gridItemBorder` on `styling` — it is a border SHORTHAND and `color` would be WRONG; it is the existing negative control. | mechanism known |
+| **A6** | ✅ CLOSED `e1402858`. **ROOT CAUSE WAS DATA, NOT CONVERTER CODE** — `posterMedia` had `canonical_slot` NULL and no `poster`/`posterMedia` alias on the `media` slot, so BOTH match tiers of `content_attr_for_element` were unreachable and the walker never reached the scalar-lift leg. Fixed in `data/slots.json`. ⚠ **3 SIBLINGS SHARE IT, deliberately NOT swept in:** `testimonial.orgLogo`, `.workMedia`, `before-after.before/afterImageUrl`. |
+| **A7** | ⛔ **MY FIX-SHAPE WAS REJECTED BY /qc-council — do NOT rebuild it.** Premise was FALSE: `sgs_button_element_style_css` is ALREADY in D7's `CSS_HELPERS` (`detector7_css_paint_flow.php:82`); D7 fails because product-card passes the whole `$attributes` bag so `carriers_for()` builds no carrier. The file's own comment (`:96-100`) models and DECLINES a prefixed-helper recogniser, pointing at `property_suffixes` (R-31-1). **BUILD INSTEAD (rater D):** count `css:*` keys in `block.json`'s `attrMap` — 1 + colour-terminal → `color`; >1 → shorthand → `styling`. `ctaColourBorder` 1, `gridItemBorder` **3**. Makes the gridItemBorder guard hold BY CONSTRUCTION (today it survives only because D7 cannot reach the file). ⚠ **SEPARATE REAL BUG:** `block_attributes.css_property` is LOSSY for shorthands. |
 - **DROPPED, do not revive:** widening `eligible_pool`'s `attr_type='string'` filter (Bean 2026-08-06).
   The 255 non-string NULLs are NOT misreported (they are outside the pool, so never counted as
   unreached), `boolean-visibility` has no converter consumer, and targeted detectors already seed

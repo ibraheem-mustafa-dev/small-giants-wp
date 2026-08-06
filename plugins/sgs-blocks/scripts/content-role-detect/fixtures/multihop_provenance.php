@@ -78,3 +78,29 @@ $fx_field_name  = $attributes['fxFieldName'] ?? '';
 $fx_field_slug  = sanitize_key( $fx_field_name );
 $fx_submit_name = 'sgs-field-' . $fx_field_slug;
 echo '<input name="' . esc_attr( $fx_submit_name ) . '">';
+
+// Shape F — a token-normalising function reached WHOLE-VALUE (no concatenation,
+// no fragment flag). Real instance: sgs/post-grid.orderBy, which reaches ONLY
+// `sanitize_key( $attributes['orderBy'] ?? 'date' )` before being handed to
+// WP_Query's 'orderby' argument (post-grid/render.php:55) — never rendered,
+// never escaped as content, so D1 previously emitted ZERO rows for it (the
+// tracked-function allowlist gap this task closes; see classify_detector1.py's
+// FUNC_CATEGORY comment). Expect: NOT-content.
+$fx_order_by = sanitize_key( $attributes['fxOrderBy'] ?? 'date' );
+
+// Shape G — NEGATIVE CONTROL for the token-sanitiser addition. The SAME
+// attribute reaches BOTH a token-normaliser (sanitize_html_class, feeding an
+// HTML class -- NOT-content) AND a genuine content escaper (esc_html, feeding
+// visible text) at two DIFFERENT usage sites. This is the guard the task brief
+// asked for: proves the NOT-content addition can only ADD evidence, never
+// silently reclassify a real content attribute as a backend token. Real-shape
+// precedent: several blocks build an `sgs-*` modifier class from a value that
+// is ALSO painted on the page (e.g. a status label used both as `.status--%s`
+// and as its own visible text). Expect: fxDualUse resolves to
+// {NOT-content, visible-text} as raw D1 facts, and — per
+// fingerprint_content_roles.py's `content_cats` filter (NON_CONTENT_CATEGORIES
+// excludes NOT-content before the winner is picked, :365) — visible-text must
+// be the one that survives into content_cats and wins the aggregation.
+$fx_dual_use  = $attributes['fxDualUse'] ?? '';
+$fx_dual_slug = 'sgs-status--' . sanitize_html_class( $fx_dual_use );
+echo esc_html( $fx_dual_use );

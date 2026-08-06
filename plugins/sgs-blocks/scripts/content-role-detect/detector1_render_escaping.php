@@ -358,6 +358,33 @@ function classify_call(string $func, string $stmt, ?string $printfContext = null
     if ($lower === 'esc_url' || $lower === 'esc_url_raw') {
         return 'link-href';
     }
+    if (in_array($lower, ['sanitize_key', 'sanitize_html_class', 'wp_validate_redirect'], true)) {
+        // NOT-content by construction, added 2026-08-06 (Task: D1 token-
+        // normaliser gap). These three functions are WordPress's
+        // TOKEN-NORMALISING layer, not its output-ESCAPING layer — the
+        // distinction this whole detector was built to track. A value
+        // reaching one of them is being coerced into a machine token:
+        //   sanitize_key()          -> lower-case [a-z0-9_-] slug, used as an
+        //                              array/option/query key (e.g. WP_Query
+        //                              'orderby'). Never rendered to a visitor.
+        //   sanitize_html_class()   -> a bare HTML class/id token. The
+        //                              content it's built FROM (if any) is
+        //                              never itself displayed — only the
+        //                              token is, as a machine-readable hook
+        //                              for CSS/JS.
+        //   wp_validate_redirect()  -> a URL checked against the allowed-host
+        //                              list and returned as a REDIRECT
+        //                              TARGET, not a link a visitor reads —
+        //                              contrast with esc_url()/esc_url_raw(),
+        //                              which mark a value as visible/followed
+        //                              link-href content.
+        // This is the same allowlist-gap shape as the wp_kses_post miss
+        // above: none of these three previously appeared in this function OR
+        // in the tracked-function call regex below, so six rows (see the
+        // task brief / classify_detector1.py's mirrored comment) produced
+        // ZERO D1 rows and therefore no veto could ever form for them.
+        return 'NOT-content';
+    }
     if ($lower === 'wp_kses' || $lower === 'wp_kses_post') {
         // SVG allow-list heuristic: nearby mention of 'svg' allow-list array
         // or the statement itself references svg tags.
@@ -1028,8 +1055,16 @@ function run(array $files, array $eligibleSet, array $attrIndex = [], string $re
             // PREG_OFFSET_CAPTURE added 2026-08-05 — the printf/sprintf
             // placeholder resolution (Blind Spot #3) needs each match's byte
             // offset in $text to identify WHICH positional argument it is.
+            //
+            // `sanitize_key|sanitize_html_class|wp_validate_redirect` added
+            // 2026-08-06 — the same allowlist-gap shape as the wp_kses_post
+            // miss above. This regex is the FIRST of D1's two stages; a
+            // function absent HERE produces literally zero rows, silently,
+            // with no ::UNRESOLVED:: marker and no error — see
+            // classify_call()'s comment on these three for why they resolve
+            // to NOT-content once captured.
             if (preg_match_all(
-                '/\b(esc_html_e|esc_html__|esc_html|esc_textarea|esc_url_raw|esc_url|esc_attr_e|esc_attr__|esc_attr|wp_kses_post|wp_kses)\s*\(\s*([^,()]+(?:\([^()]*\))?[^,()]*)/',
+                '/\b(esc_html_e|esc_html__|esc_html|esc_textarea|esc_url_raw|esc_url|esc_attr_e|esc_attr__|esc_attr|wp_kses_post|wp_kses|sanitize_key|sanitize_html_class|wp_validate_redirect)\s*\(\s*([^,()]+(?:\([^()]*\))?[^,()]*)/',
                 $text,
                 $calls,
                 PREG_SET_ORDER | PREG_OFFSET_CAPTURE

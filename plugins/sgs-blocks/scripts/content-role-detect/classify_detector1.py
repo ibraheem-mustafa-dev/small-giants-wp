@@ -24,6 +24,27 @@ FUNC_CATEGORY = {
     "esc_textarea": "visible-text",
     "esc_url": "link-href",
     "esc_url_raw": "link-href",
+    # NOT-content by construction, added 2026-08-06 (Task: D1 token-normaliser
+    # gap; mirrors the PHP stage's classify_call() comment verbatim). These
+    # are WordPress's TOKEN-NORMALISING functions, not its output-escaping
+    # functions -- D1 tracked the latter but not the former, so an attribute
+    # whose ONLY usage site reaches one of these three produced ZERO D1 rows
+    # (no ::UNRESOLVED::, no error, just silence) and no veto could ever form.
+    # Six rows measured stuck this way: sgs/post-grid.orderBy (sanitize_key
+    # into WP_Query 'orderby'), sgs/option-picker.defaultSelected,
+    # sgs/site-header-row.rowShrinkHideTarget, sgs/site-footer-row.
+    # rowShrinkHideTarget (all sanitize_html_class -> an HTML class token),
+    # sgs/nav-drawer.drawerRef (sanitize_html_class), sgs/form.successRedirect
+    # (wp_validate_redirect -> a redirect target, not a visitor-followed
+    # link). Proof this is the right shape, not a guess: sgs/nav-menu's
+    # identically-purposed `drawerRef` already carries role=technical, and
+    # differs from sgs/nav-drawer's ONLY in reaching esc_attr (2 D1 rows)
+    # rather than sanitize_html_class (0 D1 rows) -- same attribute, same
+    # meaning, opposite detectability, purely because of the escaping-vs-
+    # normalising function used at the one call site.
+    "sanitize_key": "NOT-content",
+    "sanitize_html_class": "NOT-content",
+    "wp_validate_redirect": "NOT-content",
 }
 
 # CONFIRMED LIVE BUG (2026-08-04, independent verification): `wp_kses_post`
@@ -348,6 +369,12 @@ def self_test() -> int:
          "If the fragment short-circuit is restored ahead of the func dispatch this "
          "goes back to 'value-fragment' and the seven delegating sgs/form-field-* "
          "blocks silently lose their D1 veto again."),
+        ("fxOrderBy", "NOT-content",
+         "a WHOLE-VALUE sanitize_key() call (sgs/post-grid.orderBy's real shape) — "
+         "the token-normaliser addition (2026-08-06). If FUNC_CATEGORY's "
+         "sanitize_key/sanitize_html_class/wp_validate_redirect entries are removed, "
+         "this row disappears entirely (falls to 'unclassified'), which is the "
+         "PLANTED-BREAK case this assertion exists to catch."),
     ]
 
     failures = []
@@ -391,14 +418,65 @@ def self_test() -> int:
             "fxNavLabel — inherited provenance clobbered a direct binding."
         )
 
+    # NEGATIVE CONTROL for the 2026-08-06 token-normaliser addition (Shape G).
+    # fxDualUse reaches BOTH sanitize_html_class() (NOT-content) and esc_html()
+    # (visible-text) at two different usage sites in the fixture. This is the
+    # guard the task brief demanded: adding sanitize_key/sanitize_html_class/
+    # wp_validate_redirect to D1 must only ever ADD evidence, never let a
+    # NOT-content verdict silently outrank a genuine content verdict for the
+    # same attribute.
+    #
+    # This detector stage produces raw PER-USAGE-SITE facts only — the actual
+    # "content wins" decision is made one stage downstream, in
+    # fingerprint_content_roles.py's `content_cats = [c for c in cats if c not
+    # in NON_CONTENT_CATEGORIES]` (line ~365) followed by `min(content_cats,
+    # key=_category_rank)` (line ~382). So the real proof imports and runs
+    # THAT logic against this fixture's actual raw output, rather than
+    # re-asserting an assumption about it here.
+    dual_cats = by_key.get("fxDualUse", set())
+    if not {"NOT-content", "visible-text"} <= dual_cats:
+        failures.append(
+            f"fxDualUse: got {sorted(dual_cats)}, expected raw facts to include "
+            f"BOTH 'NOT-content' (the sanitize_html_class site) and 'visible-text' "
+            f"(the esc_html site) — if either is missing this fixture no longer "
+            f"exercises the dual-reach shape the negative control depends on."
+        )
+    else:
+        try:
+            sys.path.insert(0, str(here))
+            from fingerprint_content_roles import NON_CONTENT_CATEGORIES, _category_rank  # noqa: E402
+        except ImportError as exc:
+            failures.append(f"fxDualUse: could not import the real aggregator to "
+                             f"verify the win — {exc}")
+        else:
+            survivors = [c for c in dual_cats if c not in NON_CONTENT_CATEGORIES]
+            if not survivors:
+                failures.append(
+                    "fxDualUse: fingerprint_content_roles.NON_CONTENT_CATEGORIES "
+                    "filtered out EVERY category, including 'visible-text' — the "
+                    "content verdict would be lost, not just outranked."
+                )
+            else:
+                winner = min(survivors, key=_category_rank)
+                if winner != "visible-text":
+                    failures.append(
+                        f"fxDualUse: the real aggregator's tie-break picked "
+                        f"{winner!r}, not 'visible-text' — the token-sanitiser "
+                        f"addition would let a NOT-content verdict beat real "
+                        f"visible content for the same attribute."
+                    )
+
+    # 4 non-`expected`-list checks: phone-fragment negative, field-name-fragment
+    # negative, fxOtherAttr cross-contamination guard, fxDualUse negative control.
+    total_checks = len(expected) + 4
     if failures:
-        print(f"SELF-TEST FAILED ({len(failures)} of {len(expected) + 3} checks)")
+        print(f"SELF-TEST FAILED ({len(failures)} of {total_checks} checks)")
         for f in failures:
             print(f"  - {f}")
         return 1
 
     print(f"SELF-TEST PASSED — {len(rows)} rows from the fixture; "
-          f"{len(expected) + 3} checks green.")
+          f"{total_checks} checks green.")
     return 0
 
 

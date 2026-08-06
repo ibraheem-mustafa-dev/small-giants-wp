@@ -600,12 +600,34 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     # and `color` each have a live converter consumer, and filing those rows as generic
     # `styling` would measure the right thing and then throw the consumer away.
     #
-    # Scoped to `d4_review` deliberately. These detectors must never get a chance to
-    # re-decide a row a trusted detector already assigned — the ordering guarantee is
-    # structural (this list is D4's leftovers), not a promise about precedence.
+    # CANDIDATE SET = `d4_review` + `report_only` (widened 2026-08-06).
+    #
+    # The original scoping comment read "scoped to d4_review deliberately — these
+    # detectors must never get a chance to re-decide a row a trusted detector already
+    # assigned". That rationale is HONOURED, not broken, by adding `report_only`:
+    # every row in that bucket has `role IS NULL` (it is drawn from eligible_pool), so
+    # there is no assignment to re-decide. A report-only row is one D2 claimed and no
+    # TRUSTED detector could assign — which is precisely a row that needs the positive,
+    # structural evidence D6/D7 provide.
+    #
+    # MEASURED CONSEQUENCE OF THE OLD SCOPE: D6 gained two new by-construction
+    # mechanisms on 2026-08-06 (JSON-LD `name` -> identity, filter-closure-only operand
+    # -> behaviour). Both were built, self-tested, and COMPLETELY UNREACHED, because
+    # their only two targets — sgs/star-rating.schemaItemName and
+    # sgs/google-reviews.excludeKeywords — sit in `report_only`, not `d4_review`. A
+    # built mechanism that is never fed its candidates reads exactly like a missing one
+    # (Spec 35 PART N rule N-2). The detectors were correct; the candidate set was too
+    # narrow.
+    #
+    # Still SAFE by construction rather than by ordering: D6 only ever returns a verdict
+    # backed by positive structural evidence (a declared native support, a value printed
+    # into a <style> element, an icon-source family, a JSON-LD `name` key, a
+    # filter-closure operand proven never to reach an escaping call anywhere in the
+    # file), and assign-canonical writes it only `WHERE role IS NULL`.
     specific_roles = []
-    if d4_review:
-        _pairs = [[x["block_slug"], x["attr_name"]] for x in d4_review]
+    _candidate_rows = list(d4_review) + list(report_only)
+    if _candidate_rows:
+        _pairs = [[x["block_slug"], x["attr_name"]] for x in _candidate_rows]
         for _script, _fn in (
             ("detector6_native_support_and_style_emission.py", "python"),
             ("detector7_css_paint_flow.php", "php"),
