@@ -1614,12 +1614,13 @@ def run_role_detection_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
     }
 
 
-def _structural_role_map() -> tuple[dict, str | None, set, set, dict]:
+def _structural_role_map() -> tuple[dict, str | None, set, set, dict, dict]:
     """Structural content-role proposals, computed ONCE per reseed.
 
     Track A / Spec 35 (2026-08-04). Returns
     ({(block_slug, attr_name): role}, error, {(block_slug, attr_name) vetoed by D1},
-     {(block_slug, attr_name) proven wrapper-painted by D4}).
+     {(block_slug, attr_name) proven wrapper-painted by D4}, {styling_upgrades},
+     {icon_family_corrections}).
 
     This is the FR-31-2.1a replacement for name-guessing. Roles come from what the
     block's own source actually DOES with a value -- which escaping function receives it
@@ -1640,19 +1641,19 @@ def _structural_role_map() -> tuple[dict, str | None, set, set, dict]:
     detect_dir = Path(__file__).resolve().parent.parent / "content-role-detect"
     module_path = detect_dir / "fingerprint_content_roles.py"
     if not module_path.is_file():
-        return {}, f"fingerprint module missing at {module_path}", set(), set(), {}
+        return {}, f"fingerprint module missing at {module_path}", set(), set(), {}, {}
 
     try:
         import importlib.util
 
         spec = importlib.util.spec_from_file_location("sgs_fingerprint", module_path)
         if spec is None or spec.loader is None:
-            return {}, f"could not load a module spec from {module_path}", set(), set(), {}
+            return {}, f"could not load a module spec from {module_path}", set(), set(), {}, {}
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         result = mod.compute()
     except Exception as exc:  # noqa: BLE001 - surfaced to the caller, never swallowed
-        return {}, f"{type(exc).__name__}: {exc}", set(), set(), {}
+        return {}, f"{type(exc).__name__}: {exc}", set(), set(), {}, {}
 
     # Two maps, deliberately kept apart.
     #
@@ -1721,6 +1722,15 @@ def _structural_role_map() -> tuple[dict, str | None, set, set, dict]:
         # NULL — the only pass in this file that does, and deliberately narrow for it.
         {(u["block_slug"], u["attr_name"]): u["role"]
          for u in result.get("styling_upgrades", [])},
+        # ICON-SOURCE-FAMILY CORRECTIONS (2026-08-06, D503). Rows holding a WRONG role
+        # within a resolved icon-source family (e.g. sgs/separator's contentIconWpIcon/
+        # contentIconDashicon/contentIconEmoji), keyed to the CORRECT icon-<kind> role.
+        # A second overwrite pass, deliberately separate from styling_upgrades above --
+        # that one is gated on the row currently holding the generic `styling` backstop;
+        # this one is gated on the row currently holding ANY non-icon-* role, which is a
+        # different guard for a different defect class (see TIER 3.16).
+        {(i["block_slug"], i["attr_name"]): i["role"]
+         for i in result.get("icon_family_corrections", [])},
     )
 
 
@@ -1949,7 +1959,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # how the value is spelled. This demotes _ATTR_NAME_RULES to a fallback, which is the
     # first step toward deleting it (FR-31-2.1a).
     (structural, structural_error, d1_vetoed, d4_wrapper_painted,
-     styling_upgrades) = _structural_role_map()
+     styling_upgrades, icon_family_corrections) = _structural_role_map()
     if structural_error:
         print(
             "\n!! STRUCTURAL ROLE TIER DID NOT RUN -- falling back to the name regex.\n"
@@ -2131,6 +2141,72 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
                 (u_role, u_slug, u_attr),
             )
             styling_upgraded += cur.rowcount
+
+    # TIER 3.16 -- ICON-SOURCE-FAMILY CORRECTION (2026-08-06, D503). Runs immediately
+    # after TIER 3.15 -- both are overwrite passes, so keeping them adjacent means the
+    # only two places in this file that touch an already-assigned role sit together.
+    #
+    # THE BUG (measured, real, not speculative): the four `icon-<kind>` roles are a
+    # ROUTING KEY, not decoration -- the converter's icon arm
+    # (converter/services/extraction.py ~1110-1121) builds `{role: attr_name}` for every
+    # role starting `icon-` and does `.get("icon-" + kind)`. A family member filed under
+    # any OTHER role is invisible to that lookup, so a draft's dashicon/wp-icon/emoji
+    # choice never routes for that block. `sgs/icon` (the reference block) holds all four
+    # correctly; `sgs/separator` does not -- contentIconWpIcon/contentIconDashicon sat on
+    # `enum-class-probe` and contentIconEmoji on `text-content`, so icon cloning is broken
+    # for sgs/separator today. `icon_family_corrections` comes from D6's
+    # icon-source-family mechanism (`fingerprint_content_roles._icon_family_corrections`),
+    # which is proven against ground truth FIRST: it reproduces all four of sgs/icon's own
+    # stored roles exactly (D6 self-test case 9) before it is ever trusted to overwrite
+    # anything, and is scoped to attr_type='string' so it cannot repeat the array-typed
+    # false positive measured on sgs/icon-list.items during this build (see that module's
+    # `all_sgs_rows()` docstring for the full root-cause).
+    #
+    # THE GUARD, and it is the whole safety argument for this tier, same shape as TIER
+    # 3.15's `role = 'styling'` pin but for a different defect class: TIER 3.15 can gate on
+    # an exact CURRENT role because every upgrade candidate starts from the one generic
+    # backstop. This tier cannot -- the wrong roles it repairs are various
+    # (`enum-class-probe`, `text-content`) -- so its guard is instead "the stored role is
+    # NOT ALREADY an icon-* role". Within a RESOLVED icon-source family, the icon-<kind>
+    # role for a value slot is the ONLY correct answer -- it IS the routing key the
+    # converter dispatches on -- so any non-icon-* role on a family member is wrong by
+    # construction. Refusing to touch a row that already holds SOME icon-* role prevents
+    # both churn (re-writing icon-lucide with icon-lucide) and any cross-family clobber
+    # (a row correctly resolved to one kind being overwritten by a stale verdict for
+    # another). The guard is in the SQL itself, not only in Python -- the SQL is the
+    # enforceable half.
+    #
+    # contentIconEmoji currently holds `text-content`, a CONTENT role -- normally
+    # untouchable (content tiers run first and are final, per every self-test in this
+    # file). Overwriting it is correct HERE, and only here, because the replacement
+    # (`icon-emoji`) is ALSO content-bearing and strictly MORE SPECIFIC -- a
+    # specific-over-generic upgrade, exactly the precedent `enum-mode`'s own roles.json
+    # entry sanctions for a generic role the moment a specific family becomes resolvable.
+    # This is not an oversight; the `role NOT LIKE 'icon-%'` guard is what makes it safe --
+    # `text-content` is not an icon-* role, so it is eligible, and the replacement is
+    # provably the more correct, more specific answer for a value D6 has proven feeds an
+    # icon-kind branch.
+    #
+    # EXPECTED POPULATION (declared before running, then measured): exactly 3 rows --
+    # sgs/separator.contentIconWpIcon -> icon-wp-icon, .contentIconDashicon ->
+    # icon-dashicon, .contentIconEmoji -> icon-emoji. sgs/icon's four rows are UNCHANGED
+    # (they already hold the right roles and are the live regression control).
+    # `role IS NULL OR role NOT LIKE 'icon-%'`, not a bare `role NOT LIKE 'icon-%'`.
+    # SQLite three-valued logic: `NULL LIKE 'icon-%'` evaluates to NULL, and `NOT NULL` is
+    # ALSO NULL, which a WHERE clause treats as false -- so the bare form would silently
+    # exclude a NULL row from a guard whose stated rule is "not already an icon-* role"
+    # (NULL is not an icon-* role, so it must be eligible). Measured population is
+    # unaffected either way (none of the 3 corrected rows are NULL), but the guard must
+    # match its OWN documented rule, not an SQL text that quietly narrows it.
+    icon_family_corrected = 0
+    if icon_family_corrections:
+        for (f_slug, f_attr), f_role in icon_family_corrections.items():
+            cur.execute(
+                "UPDATE block_attributes SET role = ? "
+                "WHERE block_slug = ? AND attr_name = ? AND (role IS NULL OR role NOT LIKE 'icon-%')",
+                (f_role, f_slug, f_attr),
+            )
+            icon_family_corrected += cur.rowcount
 
     # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
     # CSS unit for `<base>`; it is the same styling fact, split across two columns
@@ -2369,6 +2445,11 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # non-zero count on a steady-state reseed means a new row landed on `styling` that
         # a specific mechanism can now resolve — worth reading, not ignoring.
         "styling_upgraded": styling_upgraded,
+        # TIER 3.16 -- rows corrected onto the right icon-<kind> routing-key role within a
+        # resolved icon-source family. Expected steady-state count is 3 (sgs/separator's
+        # contentIconWpIcon/contentIconDashicon/contentIconEmoji); non-zero on a later
+        # reseed means a NEW icon-source-family block landed with mis-roled siblings.
+        "icon_family_corrected": icon_family_corrected,
         "unit_inherited": unit_inherited,
         "enum_filled": enum_filled,
         "link_filled": link_filled,
@@ -2844,6 +2925,143 @@ def _self_test_styling_upgrade() -> int:
             print(f"  - {f}")
         return 1
     print(f"STYLING-UPGRADE SELF-TEST PASSED -- {upgraded} row(s) upgraded, 6 checks green.")
+    return 0
+
+
+def _self_test_icon_family_correction(*, break_guard: bool = False) -> int:
+    """Prove the TIER 3.16 icon-source-family correction can FAIL, on a throwaway
+    in-memory DB.
+
+    Drives the REAL SQL the tier runs (verbatim, not a re-implementation), so
+    production/test drift is caught -- the pattern this file's docstrings repeatedly
+    warn is otherwise undetectable.
+
+    Cases planted, mirroring the three the task requires:
+      1. a family member holding a WRONG role                 -> corrected
+      2. a family member ALREADY holding the right icon-* role -> untouched (proves the
+         `role NOT LIKE 'icon-%'` guard, not merely the correction map's own filtering --
+         this row is planted in the correction map too, so only the SQL guard can save it)
+      3. a NON-family row (not in the correction map at all)   -> untouched
+
+    `break_guard=True` REMOVES the guard and re-runs the same plant, to prove the rule can
+    fail: with no guard, case 2's already-specific icon-* role is clobbered by whatever
+    verdict the map carries for it. This is the mechanism this task's HARD REQUIREMENT 4
+    calls for -- the guard must be shown able to fail, not merely asserted safe.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role) VALUES (?,?,?,?)",
+        [
+            (1, "sgs/separator", "contentIconWpIcon", "enum-class-probe"),  # wrong -> fix
+            (2, "sgs/icon", "wpIconName", "icon-wp-icon"),                  # already right
+            (3, "sgs/x", "unrelatedAttr", "styling"),                       # non-family
+        ],
+    )
+    conn.commit()
+    # Only the WRONG-role row and the already-correct row appear in the correction map.
+    # `sgs/x.unrelatedAttr` is deliberately ABSENT -- unlike TIER 3.15's styling-upgrade
+    # guard, the `role NOT LIKE 'icon-%'` SQL guard protects against a STALE/cross-family
+    # verdict on an already-correct icon-* row; it does NOT and cannot protect against a
+    # non-family row, because non-family exclusion happens upstream, in Python, inside
+    # `_icon_family_corrections()` (only a row D6's icon-source-family mechanism actually
+    # resolves ever enters the map at all — proven separately: the icon-list.items false
+    # positive measured during this build never reaches the map because it is
+    # attr_type='array', filtered out by `all_sgs_rows()` before D6 ever sees it). So the
+    # correct proof for the non-family case is that the row is simply never a key in this
+    # loop, and its role survives untouched — proving the loop claims ONLY its own map.
+    corrections = {
+        ("sgs/separator", "contentIconWpIcon"): "icon-wp-icon",
+        ("sgs/icon", "wpIconName"): "icon-dashicon",  # deliberately WRONG verdict for case 2
+    }
+
+    # break_guard=True drops the `role NOT LIKE 'icon-%'` clause ENTIRELY -- not just the
+    # `role IS NULL OR` widening -- because that clause alone would still (correctly)
+    # exclude wpIconName, since 'icon-wp-icon' LIKE 'icon-%' is true regardless of the
+    # NULL handling either side of it. Only removing the WHOLE guard reproduces the
+    # unguarded write this self-test exists to prove is dangerous.
+    guard_sql = (
+        "" if break_guard
+        else "AND (role IS NULL OR role NOT LIKE 'icon-%')"
+    )
+    cur = conn.cursor()
+    corrected = 0
+    for (f_slug, f_attr), f_role in corrections.items():
+        cur.execute(
+            "UPDATE block_attributes SET role = ? "
+            f"WHERE block_slug = ? AND attr_name = ? {guard_sql}",
+            (f_role, f_slug, f_attr),
+        )
+        corrected += cur.rowcount
+    conn.commit()
+
+    got = {
+        (s, a): r for s, a, r in
+        conn.execute("SELECT block_slug, attr_name, role FROM block_attributes").fetchall()
+    }
+    conn.close()
+
+    # Base checks -- true regardless of which guard variant ran: the wrong-role row must
+    # be corrected, and the non-family row (never a key in `corrections`) must be
+    # untouched. Neither of these depends on the guard, so both are asserted either way.
+    failures = []
+    if corrected == 0:
+        failures.append("claimed ZERO rows against a planted correction — cannot fail, proves nothing")
+    if got.get(("sgs/separator", "contentIconWpIcon")) != "icon-wp-icon":
+        failures.append(
+            f"contentIconWpIcon -> {got.get(('sgs/separator', 'contentIconWpIcon'))!r}, "
+            "expected 'icon-wp-icon'"
+        )
+    if got.get(("sgs/x", "unrelatedAttr")) != "styling":
+        failures.append(
+            f"unrelatedAttr -> {got.get(('sgs/x', 'unrelatedAttr'))!r}: a NON-family row "
+            "was claimed. This pass must only correct rows a resolved icon-source family "
+            "actually names."
+        )
+
+    # The one check that FLIPS between the two runs: whether the already-correct icon-*
+    # row (wpIconName) survived. Guarded -> it must survive. Guard removed -> it MUST be
+    # clobbered by the deliberately wrong planted verdict, because that clobbering IS the
+    # failure this probe exists to demonstrate.
+    wp_icon_survived = got.get(("sgs/icon", "wpIconName")) == "icon-wp-icon"
+
+    label = "ICON-FAMILY-CORRECTION GUARD-BROKEN" if break_guard else "ICON-FAMILY-CORRECTION"
+
+    if break_guard:
+        if wp_icon_survived:
+            print(f"{label} SELF-TEST: guard removal did NOT reproduce the failure mode "
+                  "(wpIconName survived even with no guard) -- treat as a self-test bug, "
+                  "not proof the guard is load-bearing.")
+            return 1
+        if failures:
+            # The base checks broke too -- something other than the intended guard
+            # removal went wrong; this is not the clean demonstration the probe wants.
+            print(f"{label} SELF-TEST: unexpected additional failures alongside the "
+                  "intended breakage:")
+            for f in failures:
+                print(f"  - {f}")
+            return 1
+        print(f"{label} SELF-TEST CONFIRMED THE FAILURE (as expected with no guard): "
+              f"wpIconName -> {got.get(('sgs/icon', 'wpIconName'))!r}, clobbered from "
+              "'icon-wp-icon' because the `role NOT LIKE 'icon-%'` guard was removed.")
+        return 0
+
+    if not wp_icon_survived:
+        failures.append(
+            f"wpIconName -> {got.get(('sgs/icon', 'wpIconName'))!r}: an already-correct "
+            "icon-* role was overwritten. The `role NOT LIKE 'icon-%'` guard exists "
+            "precisely to protect a row like this from a stale or cross-family verdict."
+        )
+    if failures:
+        print(f"{label} SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"{label} SELF-TEST PASSED -- {corrected} row(s) corrected, 4 checks green.")
     return 0
 
 
@@ -4008,5 +4226,6 @@ if __name__ == "__main__":
                  or _self_test_boolean_sweep() or _self_test_suffix_role_revive()
                  or _self_test_type_sweep() or _self_test_wrapper_styling_tier()
                  or _self_test_link_fragment_tier()
-                 or _self_test_styling_upgrade())
+                 or _self_test_styling_upgrade()
+                 or _self_test_icon_family_correction())
     main()

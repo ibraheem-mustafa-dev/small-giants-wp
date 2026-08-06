@@ -713,15 +713,128 @@ def generic_styling_rows(conn: sqlite3.Connection) -> list[tuple[str, str]]:
     ]
 
 
+def all_sgs_rows(conn: sqlite3.Connection) -> list[tuple[str, str, str | None]]:
+    """(block_slug, attr_name, role) for EVERY `sgs/%` STRING row, any role, any NULL.
+
+    Deliberately unfiltered by role -- unlike `eligible_pool()` (role IS NULL) and
+    `generic_styling_rows()` (role = 'styling'), the icon-family correction pass below
+    needs to see a row's CURRENT role regardless of what it is, because the defect it
+    repairs is a row already holding the WRONG specific role (`enum-class-probe`,
+    `text-content`), not a NULL or a generic backstop.
+
+    FILTERED TO attr_type='string' -- NOT unfiltered, and this was measured, not assumed.
+    A first pass over every `sgs/%` row (no type filter) surfaced a 4th "correction":
+    `sgs/icon-list.items` (attr_type='array', role='content') -> icon-dashicon. That is a
+    detector FALSE POSITIVE, root-caused by reading icon-list/render.php: `items` is an
+    ARRAY of per-item objects, each carrying its OWN nested `iconSource`/`iconName` keys
+    resolved inside a `foreach` (render.php ~591-603) -- there is no top-level
+    `dashiconName`/`wpIconName`/`emojiChar` sibling for this block at all. D6's
+    `_branch_windows`/`_first_attr_in_window` (built and self-tested only against the FLAT
+    single-value shape of sgs/icon and sgs/separator) matched the array-typed collection
+    attr inside a branch window keyed on `defaultIconSource` -- a real gap in the detector
+    for a DIFFERENT block shape, not evidence that `items` carries an icon-kind value.
+    Every genuine icon-<kind> value attr (sgs/icon's four, sgs/separator's three) is a
+    single icon-identifier STRING; the role's own contract has never covered a collection.
+    So `attr_type='string'` is not an arbitrary narrowing -- it is the exact boundary of
+    what this role means, and it is why the icon-list false positive cannot recur here.
+    Fixing icon-list's per-item icon-source detection (if it ever needs a role at all) is
+    a SEPARATE, later change -- out of scope for this narrow correction tier.
+    """
+    return [
+        (r[0], r[1], r[2])
+        for r in conn.execute(
+            "SELECT block_slug, attr_name, role FROM block_attributes "
+            "WHERE block_slug LIKE 'sgs/%' AND attr_type = 'string'"
+        ).fetchall()
+    ]
+
+
+def _icon_family_corrections(rows: list[tuple[str, str, str | None]]) -> list[dict]:
+    """Run D6's icon-source-family mechanism over EVERY `sgs/%` row and report the ones
+    whose STORED role disagrees with the resolved verdict.
+
+    THE BUG THIS REPAIRS (measured 2026-08-06, D503): the four `icon-<kind>` roles are a
+    ROUTING KEY, not decoration -- the converter's icon arm
+    (`converter/services/extraction.py` ~1110) builds `{role: attr_name}` for every role
+    starting `icon-` and looks up `icon-<resolved-kind>`. A family member filed under any
+    OTHER role is invisible to that lookup, so a draft's icon choice never routes for that
+    block. `sgs/icon` (the reference block) holds all four correctly; `sgs/separator`
+    does not -- `contentIconWpIcon`/`contentIconDashicon` sat on `enum-class-probe` and
+    `contentIconEmoji` on `text-content`, so icon cloning is broken for that block today.
+
+    WHY UNFILTERED BY ROLE, unlike every sibling pass in this module. `eligible_pool()` is
+    `role IS NULL` and `generic_styling_rows()` is `role = 'styling'` -- both filling a gap.
+    This pass CORRECTS a row that already holds a role, so it must be handed every row and
+    let D6's own resolution decide which ones are wrong, not pre-filter by the very column
+    it exists to fix.
+    D6's `icon_source_family_evidence()` is itself the guard against false positives: it
+    returns a verdict ONLY for a block whose block.json declares an icon-source selector
+    AND whose render.php's if/elseif/else (or switch/case) chain resolves that value attr
+    inside one of the selector's branch windows (`_icon_source_family`, mechanism C). A
+    block with no icon-source family at all (verified negative control: sgs/star-rating)
+    resolves to `{}` and every one of its rows is silently skipped -- exactly the STRUCTURAL
+    evidence bar every other tier in this file holds itself to (never a name guess).
+
+    PROVEN AGAINST GROUND TRUTH FIRST: this mechanism reproduces all four of `sgs/icon`'s
+    OWN stored roles exactly (self-test case 9, `detector6_native_support_and_style_emission
+    .py`), which is the strongest evidence available that its verdict is trustworthy before
+    it is ever used to overwrite anything.
+
+    EXPECTED POPULATION (declared before running): exactly 3 rows --
+    `sgs/separator.contentIconWpIcon` -> icon-wp-icon,
+    `sgs/separator.contentIconDashicon` -> icon-dashicon,
+    `sgs/separator.contentIconEmoji` -> icon-emoji.
+    `sgs/icon`'s four rows must NOT appear here (they already hold the correct verdict, so
+    `verdict == current_role` and the row is dropped) -- they are the live regression
+    control proving this pass only touches rows that are actually wrong.
+    """
+    if not rows:
+        return []
+    out = []
+    try:
+        if str(SCRIPT_DIR) not in sys.path:
+            sys.path.insert(0, str(SCRIPT_DIR))
+        import detector6_native_support_and_style_emission as _d6
+    except Exception as exc:  # surfaced, never swallowed
+        print(f"!! ICON-FAMILY CORRECTION PASS DID NOT RUN: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
+        return []
+
+    for block_slug, attr_name, current_role in rows:
+        try:
+            evidence = _d6.icon_source_family_evidence(block_slug, attr_name)
+        except Exception as exc:  # surfaced, never swallowed
+            print(f"!! icon_source_family_evidence failed for {block_slug}.{attr_name}: "
+                  f"{type(exc).__name__}: {exc}", file=sys.stderr)
+            continue
+        if not evidence:
+            continue
+        verdict_role = evidence["role"]
+        if verdict_role == current_role:
+            continue  # already correct -- e.g. every sgs/icon row -- not a correction.
+        out.append({
+            "block_slug": block_slug,
+            "attr_name": attr_name,
+            "role": verdict_role,
+            "previous_role": current_role,
+            "mechanism": "icon-source-family",
+            "evidence_file": evidence["evidence_file"],
+            "evidence_line": evidence["evidence_line"],
+        })
+    return sorted(out, key=lambda r: (r["block_slug"], r["attr_name"]))
+
+
 def compute(db_path: Path | None = None) -> dict:
     conn = sqlite3.connect(f"file:{db_path or resolve_db()}?mode=ro", uri=True)
     try:
         pool = eligible_pool(conn)
         styling_rows = generic_styling_rows(conn)
+        sgs_rows = all_sgs_rows(conn)
     finally:
         conn.close()
     result = fingerprint(run_detectors(), pool)
     result["styling_upgrades"] = _styling_upgrades(styling_rows)
+    result["icon_family_corrections"] = _icon_family_corrections(sgs_rows)
     return result
 
 
