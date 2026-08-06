@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/dense-panel-no-toolspanel",
+	"title": "Fixture: PanelBody with 7 controls, no ToolsPanel — must flag",
+	"category": "sgs",
+	"attributes": {}
+}

@@ -23,6 +23,12 @@ const components = require( './core/components' );
 const RULES_JSON_PATH = path.resolve( __dirname, 'rules.json' );
 const RULES_DIR = path.resolve( __dirname, 'rules' );
 const PATTERNS_DIR = path.resolve( __dirname, '..', '..', '..', '..', 'theme', 'sgs-theme', 'patterns' );
+// GROUND-TRUTH: spec=plugins/sgs-blocks/scripts/audit-inspector-conformance.js:75-77
+// source=file evidence=that script computes THEME_DIR as ROOT (sgs-blocks) ->
+// '..'/'..' -> theme/sgs-theme; from inspector-scan/run.js the equivalent
+// climb is 4 levels (inspector-scan -> scripts -> sgs-blocks -> plugins ->
+// repo root), matching PATTERNS_DIR's existing climb above.
+const THEME_DIR = path.resolve( __dirname, '..', '..', '..', '..', 'theme', 'sgs-theme' );
 
 function loadRulesTable() {
 	if ( ! fs.existsSync( RULES_JSON_PATH ) ) {
@@ -85,6 +91,7 @@ function buildCtx( cache, rosterInfo ) {
 		roster: rosterInfo,
 		blocksDir: BLOCKS_DIR,
 		patternsDir: PATTERNS_DIR,
+		themeDir: THEME_DIR,
 		components: components.discover( cache ), // resolved once per run, not per rule/block
 		ast: ( f ) => cache.parse( f ),
 		text: ( f ) => cache.text( f ),

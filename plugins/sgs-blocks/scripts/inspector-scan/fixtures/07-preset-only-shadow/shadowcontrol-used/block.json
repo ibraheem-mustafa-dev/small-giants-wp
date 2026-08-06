@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/shadowcontrol-used",
+	"title": "Fixture: shared ShadowControl used, no SelectControl — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

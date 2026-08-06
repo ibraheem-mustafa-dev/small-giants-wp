@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/sgslinkcontrol-used",
+	"title": "Fixture: SgsLinkControl used — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

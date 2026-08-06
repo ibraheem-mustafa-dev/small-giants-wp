@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/sparse-panel",
+	"title": "Fixture: PanelBody with 2 controls — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

@@ -82,6 +82,17 @@ function reconcile() {
 	const disk = scanDisk();
 	const diskSet = new Set( disk );
 
+	// Roster ENTRIES kept as full objects (not just slug strings) so DB-derived
+	// capability flags — e.g. `surfaces.animation`, consumed by rule
+	// 17-reduced-motion-gate — survive reconciliation. Ported behaviour from
+	// audit-inspector-conformance.js, which read `block.surfaces.animation`
+	// directly off its roster.json block objects; the original reconcile()
+	// dropped everything but the slug string, which would have silently
+	// starved that rule of its DB signal (H10-shaped bug: a generated input
+	// consumed by name only, with the rest of its payload discarded).
+	const rosterObjs = roster.ok
+		? roster.blocks.filter( ( b ) => b && typeof b === 'object' )
+		: [];
 	const rosterSlugs = roster.ok
 		? roster.blocks
 				.map( ( b ) => ( typeof b === 'string' ? b : b && ( b.slug || b.name ) ) )
@@ -89,23 +100,33 @@ function reconcile() {
 		: [];
 	const rosterTailMap = new Map( rosterSlugs.map( ( s ) => [ slugTail( s ), s ] ) );
 	const rosterTailSet = new Set( rosterTailMap.keys() );
+	const rosterTailToObj = new Map( rosterObjs.map( ( o ) => [ slugTail( o.slug || o.name ), o ] ) );
 
 	const onDiskNotInRoster = disk.filter( ( d ) => ! rosterTailSet.has( d ) );
 	const inRosterNotOnDisk = rosterSlugs.filter( ( s ) => ! diskSet.has( slugTail( s ) ) );
 
 	const union = new Map();
 	for ( const d of disk ) {
+		const robj = rosterTailToObj.get( d );
 		union.set( d, {
 			slug: rosterTailMap.get( d ) || `sgs/${ d }`,
 			tail: d,
 			inRoster: rosterTailSet.has( d ),
 			onDisk: true,
+			surfaces: robj ? robj.surfaces || null : null,
 		} );
 	}
 	for ( const s of rosterSlugs ) {
 		const tail = slugTail( s );
 		if ( ! union.has( tail ) ) {
-			union.set( tail, { slug: s, tail, inRoster: true, onDisk: diskSet.has( tail ) } );
+			const robj = rosterTailToObj.get( tail );
+			union.set( tail, {
+				slug: s,
+				tail,
+				inRoster: true,
+				onDisk: diskSet.has( tail ),
+				surfaces: robj ? robj.surfaces || null : null,
+			} );
 		}
 	}
 

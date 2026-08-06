@@ -2,7 +2,7 @@
 	"_meta": {
 		"spec": "35",
 		"checklist": ".claude/plans/spec-35-inspector-DONE-checklist.md",
-		"note": "This file is the ONLY mode table. Every rule starts advisory. Promotion to gate is a one-line edit here, per rule, once its openBacklog reaches 0 and every remaining baseline entry carries a real human reason (Bean-locked, 2026-08-03). No prose-cached backlog counts elsewhere — run `node run.js --json` for the live number.",
+		"note": "This file is the ONLY mode table. Every GENUINELY NEW rule starts advisory. Promotion to gate is a one-line edit here, per rule, once its openBacklog reaches 0 and every remaining baseline entry carries a real human reason (Bean-locked, 2026-08-03). No prose-cached backlog counts elsewhere — run `node run.js --json` for the live number. EXCEPTION (added 2026-08-05, Spec 35 Task C migration): rules 04/08/14/17 are a VERBATIM PORT of audit-inspector-conformance.js's four warn-severity rules, which is already wired into `prebuild` as a hard `--check` gate today — porting them straight to `mode:\"gate\"` PRESERVES current enforcement (0 net backlog, matching the OLD script's own live output the same day) rather than starting a new backlog count at advisory. Rules 03/07 are that same OLD script's two `informational`-severity rules, which NEVER contributed to its gate exit code by design (audit-inspector-conformance.js:591-596) — those port to `mode:\"advisory\"` for the identical reason: preserving current (non-)enforcement exactly, not silently adding a new gate that never existed. See each rule file's own header for the independent population cross-check.",
 		"zeroIsAClaim": "A rule returning ZERO findings on the live tree is a claim requiring evidence, not a pass (Bean-locked, 2026-08-03, after coordinator review caught rule 01 counting <InspectorControls> elements instead of panels and silently missing 42+ real unrouted blocks — including hero, the specific block flagged as unusable). Whoever adds a rule MUST: (1) state its expected population BEFORE trusting a live run, using a method independent of the rule's own code — a second script in a different style, a manual grep, or a hand count; (2) if the rule returns 0 or a suspiciously round/small number, treat that as a red flag and re-derive the condition from what the checklist item actually requires, not from what was easy to detect in one file; (3) record the comparison (expected vs actual) somewhere reviewable before setting the rule's advisoryReason. All three shipped rules here (01/18/20) were cross-checked this way on 2026-08-03: 01 measured 65 (was silently 0 under the first, wrong condition), 18 measured 15 (was 12 before a shared-component blind spot — MediaPicker.js — was found and fixed), 20 measured 23 (was 43 before a wrong exclusion mechanism — filename prefix instead of the pattern's own 'Post Types:' header — was found and fixed)."
 	},
 	"rules": [
@@ -45,6 +45,62 @@
 			"mode": "advisory",
 			"advisoryReason": "Measured live 2026-08-03: 23/23 genuine client page-content patterns (patterns with a blank 'Post Types:' header — about-*, hero-*, cta-*, testimonials-*, etc.) declare no templateLock. Chrome/component-builder patterns (header-*, footer-*, mega-*, drawer-scratch — 23 files, identified by their own non-blank 'Post Types:' header, not a filename guess) are excluded: two of the largest families (site-header/site-footer) are already structurally locked at the block level (templateLock:'all' hard-coded in src/blocks/site-header/edit.js:383 and site-footer/edit.js:232). Independently cross-checked with a second script: 23/23 match.",
 			"openBacklog": 23
+		},
+		{
+			"id": "03-dense-panel-candidate",
+			"checklistItem": 3,
+			"file": "rules/03-dense-panel-candidate.js",
+			"mode": "advisory",
+			"advisoryReason": "PORTED from audit-inspector-conformance.js's dense-panel-candidate rule (Spec 35 Task C migration, 2026-08-05) — that rule is `informational` severity in the OLD script and NEVER gated the build (audit-inspector-conformance.js:591-596 excludes INFO from --check). Ported straight to advisory to preserve that exact non-enforcement. Measured live 2026-08-05: 15/84 blocks have a PanelBody with >6 control-like descendants and no ToolsPanel. Independently cross-checked with a standalone Babel walk (different script, no shared code): 15/15 match. The architecture doc names check-simple-surface-cap.js as a STRICTLY BETTER implementation of this same checklist item (never wired anywhere today) — absorbing it, and any promotion to gate, is a later wave, out of scope for this verbatim port.",
+			"openBacklog": 15
+		},
+		{
+			"id": "04-colour-alpha",
+			"checklistItem": 4,
+			"file": "rules/04-colour-alpha.js",
+			"mode": "gate",
+			"promotedOn": "2026-08-05",
+			"advisoryReason": null,
+			"openBacklog": 0,
+			"promotionCondition": "PORTED already-gating (audit-inspector-conformance.js's colour-no-alpha rule is warn-severity and IS wired into prebuild's --check today). Measured live 2026-08-05: 0 raw <ColorPalette|ColorGradientControl|GradientPicker|PanelColorGradientSettings> tags found anywhere in src/blocks/**/edit.js (every colour control already routes through DesignTokenPicker, which is exempt). Independently cross-checked with a standalone Babel walk: 0/0 match, exact same population as the OLD script's live output the same day."
+		},
+		{
+			"id": "07-preset-only-shadow",
+			"checklistItem": 7,
+			"file": "rules/07-preset-only-shadow.js",
+			"mode": "advisory",
+			"advisoryReason": "PORTED from audit-inspector-conformance.js's preset-only-shadow rule — `informational` severity in the OLD script, NEVER gated the build. Ported straight to advisory to preserve that exact non-enforcement (see rules.json _meta.note EXCEPTION clause). Measured live 2026-08-05: 1/84 blocks (sgs/post-grid, edit.js:882, label=\"Hover shadow\") — a SelectControl labelled with the word 'shadow'. Independently cross-checked with a standalone Babel walk: 1/1 match. The architecture doc marks this rule 'fuzzy today: label regex' and keeps it advisory even in the target end-state until a ShadowControl-resolution detector replaces the label-text heuristic — not absorbed in this port.",
+			"openBacklog": 1
+		},
+		{
+			"id": "08-raw-url-link",
+			"checklistItem": 8,
+			"file": "rules/08-raw-url-link.js",
+			"mode": "gate",
+			"promotedOn": "2026-08-05",
+			"advisoryReason": null,
+			"openBacklog": 0,
+			"promotionCondition": "PORTED already-gating (audit-inspector-conformance.js's raw-url-link rule is warn-severity and IS wired into prebuild's --check today). Measured live 2026-08-05: exactly 2 raw <TextControl type=\"url\"> elements exist tree-wide (sgs/google-reviews:193, sgs/trustpilot-reviews:193), both carried forward into baselines/08-raw-url-link.json with their OLD, already-reviewed exemption reasons (external-service config URL, not a navigational anchor). Independently cross-checked with a standalone Babel walk: 2/2 match, exact same population and exact same 2 files as the OLD script's live output the same day. Net FLAGGED after baseline: 0."
+		},
+		{
+			"id": "14-media-upload-check",
+			"checklistItem": 14,
+			"file": "rules/14-media-upload-check.js",
+			"mode": "gate",
+			"promotedOn": "2026-08-05",
+			"advisoryReason": null,
+			"openBacklog": 0,
+			"promotionCondition": "PORTED already-gating (audit-inspector-conformance.js's media-upload-no-check rule is warn-severity and IS wired into prebuild's --check today). Measured live 2026-08-05: 10/84 blocks use <MediaUpload>, and of those 0 lack a <MediaUploadCheck> anywhere in the same file. Independently cross-checked with a standalone Babel walk: 10 users / 0 uncovered, exact same population as the OLD script's live output the same day."
+		},
+		{
+			"id": "17-reduced-motion-gate",
+			"checklistItem": 17,
+			"file": "rules/17-reduced-motion-gate.js",
+			"mode": "gate",
+			"promotedOn": "2026-08-05",
+			"advisoryReason": null,
+			"openBacklog": 0,
+			"promotionCondition": "PORTED already-gating (audit-inspector-conformance.js's animation-no-reduced-motion rule is warn-severity and IS wired into prebuild's --check today) — the theme-gate detector (extractBalancedBraceBlock / findUnconditionallyEnqueuedThemeCssPaths / cssHasUniversalReducedMotionGate) is ported WHOLE per the architecture doc's explicit instruction, not re-derived. Measured live 2026-08-05: 21/84 blocks have surfaces.animation=true (via roster.json); of those, 3 (sgs/responsive-logo, sgs/site-footer, sgs/site-header) have no own gate in style.css/view.js but correctly rely on the always-on framework-wide gate in theme/sgs-theme/assets/css/core-blocks-critical.css (confirmed unconditionally enqueued from functions.php and shaped as the universal `*, *::before, *::after` + !important gate). Independently cross-checked (Python read of roster.json + direct read of functions.php/the CSS file): population and skip-list match the OLD script's live output the same day exactly. Net FLAGGED: 0."
 		}
 	]
 }

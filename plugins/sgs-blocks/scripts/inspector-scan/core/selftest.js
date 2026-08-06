@@ -27,6 +27,18 @@ function buildTestCtx( cache, tmpBase ) {
 		cache,
 		blocksDir: tmpBase,
 		patternsDir: tmpBase,
+		// GROUND-TRUTH: spec=plugins/sgs-blocks/scripts/audit-inspector-conformance.js:466-478
+		// source=file evidence=rule 17 (animation-no-reduced-motion, ported to
+		// rules/17-reduced-motion-gate.js) reads
+		// theme/sgs-theme/functions.php + its enqueued CSS to detect the
+		// framework-wide gate. A rule reading a FIXED absolute real-repo path
+		// would be untestable in isolation (self-test could never simulate
+		// "gate absent" — H6, "a gate that cannot fail reads green forever").
+		// themeDir is therefore ctx-supplied: the real run (run.js buildCtx)
+		// points at the real theme; self-test points inside the copied fixture
+		// tmpBase, so a fixture with no `_theme/functions.php` genuinely
+		// exercises the "no framework gate found" path, sandboxed.
+		themeDir: path.join( tmpBase, '_theme' ),
 		roster: { entries: [] },
 		// Resolved against the REAL src/components/index.js, not the fixture
 		// temp dir — shared-component discovery is a property of the framework,
@@ -86,7 +98,29 @@ function runRuleAgainstFixture( mod, fixtureAbsPath ) {
 				const full = path.join( tmpBase, name );
 				if ( ! fs.statSync( full ).isDirectory() ) continue;
 				if ( ! fs.existsSync( path.join( full, 'block.json' ) ) ) continue;
-				const block = { slug: `sgs/${ name }`, tail: name, onDisk: true, inRoster: true };
+				// GROUND-TRUTH: spec=plugins/sgs-blocks/scripts/audit-inspector-conformance.js:466
+				// source=file evidence=rule 17 (ported) gates on `block.surfaces.animation`,
+				// a DB-derived roster.json field the OLD per-block synthetic fixture
+				// object never carried (it only had slug/tail/onDisk/inRoster) — so
+				// that rule could never be made to flag in self-test at all. A
+				// fixture may opt in by placing a `_surfaces.json` file inside its
+				// own per-block subdirectory; absent = `{}` (falsy on every surface),
+				// which is a no-op for every rule that doesn't ask for surfaces —
+				// existing fixtures for rules 01/18/20 are unaffected.
+				const surfacesFile = path.join( full, '_surfaces.json' );
+				let surfaces = {};
+				if ( fs.existsSync( surfacesFile ) ) {
+					try {
+						surfaces = JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) );
+					} catch ( e ) {
+						return {
+							pass: false,
+							reason: `fixture "${ name }" has a malformed _surfaces.json: ${ e.message }`,
+							findings: [],
+						};
+					}
+				}
+				const block = { slug: `sgs/${ name }`, tail: name, onDisk: true, inRoster: true, surfaces };
 				let f;
 				try {
 					f = mod.run( ctx, block ) || [];

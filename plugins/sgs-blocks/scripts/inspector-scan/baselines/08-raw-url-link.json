@@ -1,0 +1,21 @@
+{
+	"_meta": {
+		"rule": "08-raw-url-link",
+		"ruleVersion": 1,
+		"note": "2 of these entries are carried forward VERBATIM (reason text unchanged) from the OLD scripts/inspector-conformance-baseline.json (block+rule keyed, no locus) — Spec 35 Task C migration, 2026-08-05. A THIRD OLD entry, sgs/media, is deliberately NOT carried forward: it is dormant under both systems (src/blocks/media/edit.js has no TextControl type=\"url\" any more — migrated to SgsLinkControl) and the OLD block+rule-only key cannot be translated into this rule's full-tuple key without inventing a locus (line number) that was never observed. See rules/08-raw-url-link.js's header for the full reasoning. ⚠ PORTABILITY CAVEAT (found, not fixed, during this migration): `key` embeds an ABSOLUTE FILESYSTEM PATH (core/finding.js's key shape, shared by every rule in this scanner, not introduced here) — these two entries are only guaranteed to match on this machine at this repo checkout path. This is a pre-existing property of the shared Finding key design, not something this rule invented; flagged for awareness, not fixed in this task (out of scope — core/finding.js is shared infra used by rules 01/18/20 too)."
+	},
+	"entries": [
+		{
+			"key": "08-raw-url-link|sgs/google-reviews|C:\\Users\\Bean\\Projects\\small-giants-wp\\plugins\\sgs-blocks\\src\\blocks\\google-reviews\\edit.js|raw-url-textcontrol|193",
+			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable",
+			"seededAt": null,
+			"expires": null
+		},
+		{
+			"key": "08-raw-url-link|sgs/trustpilot-reviews|C:\\Users\\Bean\\Projects\\small-giants-wp\\plugins\\sgs-blocks\\src\\blocks\\trustpilot-reviews\\edit.js|raw-url-textcontrol|193",
+			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable; parsed for business ID",
+			"seededAt": null,
+			"expires": null
+		}
+	]
+}

@@ -1,0 +1,9 @@
+.sgs-animating-with-own-gate {
+	animation: fade-in 400ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-animating-with-own-gate {
+		animation: none;
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/colorpalette-with-alpha",
+	"title": "Fixture: raw ColorPalette WITH enableAlpha — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

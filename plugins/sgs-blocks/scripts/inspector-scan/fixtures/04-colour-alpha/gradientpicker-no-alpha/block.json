@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/gradientpicker-no-alpha",
+	"title": "Fixture: raw GradientPicker with no enableAlpha",
+	"category": "sgs",
+	"attributes": {}
+}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-mediaupload-at-all",
+	"title": "Fixture: no MediaUpload at all — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

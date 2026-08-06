@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/animating-no-own-gate-no-framework-gate",
+	"title": "Fixture: animating, no own gate, fixture set has no _theme — must flag",
+	"category": "sgs",
+	"attributes": {}
+}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/mediaupload-no-check",
+	"title": "Fixture: MediaUpload with no MediaUploadCheck — must flag",
+	"category": "sgs",
+	"attributes": {}
+}

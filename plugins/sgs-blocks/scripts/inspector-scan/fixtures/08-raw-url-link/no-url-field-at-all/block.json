@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-url-field-at-all",
+	"title": "Fixture: no URL-ish field at all — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

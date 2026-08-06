@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-colour-control",
+	"title": "Fixture: no colour control at all — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

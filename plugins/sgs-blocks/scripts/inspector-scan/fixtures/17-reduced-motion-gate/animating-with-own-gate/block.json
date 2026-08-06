@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/animating-with-own-gate",
+	"title": "Fixture: animating, own style.css gate present — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

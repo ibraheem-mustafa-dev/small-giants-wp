@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/unrelated-select-control",
+	"title": "Fixture: SelectControl with unrelated label — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

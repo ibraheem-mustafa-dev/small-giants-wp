@@ -1,0 +1,8 @@
+{
+	"_meta": {
+		"rule": "17-reduced-motion-gate",
+		"ruleVersion": 1,
+		"note": "The OLD scripts/inspector-conformance-baseline.json carried a sgs/responsive-logo exemption for this rule ('the guard MOVED, it did not vanish'). It is deliberately NOT carried forward here: on this run responsive-logo produces NO live finding under either system (it is one of the 3 blocks — with site-footer, site-header — that correctly relies on the always-on framework-wide gate and is skipped before a finding is ever generated), so the OLD entry is dormant and there is no observed locus to build a full-tuple key from. See rules/17-reduced-motion-gate.js's header for the full reasoning."
+	},
+	"entries": []
+}

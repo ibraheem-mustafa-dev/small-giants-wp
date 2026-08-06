@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/shadow-preset-select",
+	"title": "Fixture: SelectControl label contains shadow — must flag",
+	"category": "sgs",
+	"attributes": {}
+}
