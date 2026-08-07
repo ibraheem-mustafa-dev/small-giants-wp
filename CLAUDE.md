@@ -237,8 +237,24 @@ Four WordPress-native channels: (1) visual styling defaults → Site Editor Styl
 ### Block customisation standard (MANDATORY)
 Every block: (1) native `supports` for wrapper-level controls; (2) custom attrs + controls for each inner text element; (3) custom attrs + controls for CTAs; (4) CSS fallback colours use `:not([style*="color"])` so custom values win; (5) Block Selectors API in `block.json` targets native typography to primary text element.
 
-### Block styling contract — no inline styling (Spec 32, design-gate 2026-07-09)
-Every SGS block styles itself so NOTHING renders as an inline `style="…"` property declaration. Native WP styling supports (`color`/`spacing`/`__experimentalBorder`/`typography`/`shadow`) stay declared (client-facing editor controls) but MUST NOT auto-inline: flip to scoped serialisation via `__experimentalSkipSerialization` + `wp_style_engine_get_styles($style, ['selector'=>".{$uid}.{block-root-class}"])` (CLASS-level, never `#uid` — D303) appended to the block's own scoped `<style>` (Phase-0-proven live, matches how WP core outputs `layout` support). Per-side/per-corner box props (padding/margin/border-width/border-radius) merge into named object attrs (`{top,right,bottom,left}` / `{topLeft,topRight,bottomLeft,bottomRight}`) driven by WP's native `BoxControl`, gated by the DB `block_attributes.box_family` column — never a name-regex — enforced by a structural AST collision gate. Responsive tiers + `:hover` live in stylesheet rules, never inline; the only permitted non-attr output is a non-device-breakpoint rule routed to `sgsCustomCss`. Overrides = CSS custom-property VALUES, never inline declarations. **Also: a single-semantic-element block renders that element AS the root — NO useless wrapper div (button/heading/text/quote/label/media; the `<a>`/`<h2>`/`<p>` IS the block root, button D288 pattern).** **Which pattern each block uses (D294, qc-council-settled): single-element blocks + content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote — they never used the wrapper's grid/section machinery, and converter routing is indifferent to `wraps_block`); section/layout-KIND composites KEEP `SGS_Container_Wrapper` (genuine grid/section — like hero), which is now itself fully scoped (spacing/max-width/contentWidth/band/GRID — D292/D294/D296).** **No block version bumps + no deprecations pre-production (Bean D293 — overrides STOP-57).** **PROVEN LIVE: button + container + heading + text (D293) + quote + media (D294) + hero (D295); shared wrapper max-width/contentWidth/band (D294) + grid/flex (D296) all inline→scoped. Rollout COMPLETE (D346): both live sites render every `sgs/*` block with zero inline `style` attributes. Do not cache a roster count here — verify live via the prebuild gates (`audit-inline-styling.js`, `check-no-inline.py`) or `build-roster.py`/`/sgs-db`.** Canonical: **the per-block DONE checklist `.claude/plans/block-migration-DONE-checklist.md` (11 end conditions = definition of done for every block) + the HOW `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`**, `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`, `.claude/plans/2026-07-09-no-inline-styling-design-gate.md`, `.claude/plans/2026-07-09-box-object-interface-contract.md`. Visual-diff reports go at repo-ROOT `reports/visual-diff/` (STOP-67).
+### Block styling contract — no inline styling (Spec 32)
+**No SGS block may render an inline `style="…"` property declaration.** Native WP supports stay
+DECLARED (they are the client's editor controls) but must not auto-inline — scope them into the
+block's own `<style>` instead. Box props are named OBJECT attrs driven by `BoxControl`, gated by the
+DB `box_family` column, never a name-regex. Responsive tiers and `:hover` are stylesheet rules.
+Overrides are custom-property VALUES. A single-semantic-element block IS its element — no wrapper div.
+**Mechanism, selectors and rationale: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.**
+
+Only two things here get re-litigated; both are settled:
+- **Which pattern a block uses (D294, qc-council-settled):** single-element blocks + content-KIND
+  composites using only box+width render BLOCK-PRIVATE; section/layout-KIND composites KEEP
+  `SGS_Container_Wrapper` (genuine grid/section), itself fully scoped.
+- **No version bumps, no deprecations pre-production** (Bean D293 — overrides STOP-57).
+
+**Rollout COMPLETE (D346)** — zero inline `style` attributes on both live sites. ⛔ Never cache a
+roster or count here; verify via the prebuild gates (`audit-inline-styling.js`,
+`check-no-inline.py`). Per-block definition of done: `.claude/plans/block-migration-DONE-checklist.md`.
+Visual-diff reports: repo-ROOT `reports/visual-diff/` (STOP-67).
 
 ### Image controls discipline
 Every new block rendering `<img>` MUST declare `"imageControls": true` in `block.json` `supports.sgs` so the universal image-controls extension applies. Document deliberate opt-out in the block's own CLAUDE.md or block.json description.
