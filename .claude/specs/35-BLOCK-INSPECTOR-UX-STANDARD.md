@@ -160,6 +160,49 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     Group-B items cannot be built until this ships") is historical: the cascade shipped same-day
     (2026-07-28) and FR-37-14 now depends on it successfully, it is not still waiting on it.
 
+- **D5. Per-device MEDIA SOURCE (art direction) — the canonical pattern (added 2026-08-07, D521).**
+  A client must be able to choose a different CROP per device wherever media appears, not only where
+  the cloning pipeline wrote the values. Shipped across every media-bearing block; treat this as the
+  standard for any NEW block with a media source.
+
+  - **Attr shape:** `{base}` / `{base}Tablet` / `{base}Mobile`. An empty tier falls back UP
+    (mobile → tablet → desktop), per D3. **Match the base attr's TYPE** — an object-typed base
+    (`avatarMedia`, `thumbnail`) takes object-typed tiers, because WP silently coerces a flat value
+    on an object-typed attr to its default and drops the whole thing.
+  - **Control:** exactly ONE `<ResponsiveControl>`-wrapped picker, **gated on the base media
+    existing**. A per-device override for media that is not there is a dead control.
+  - **Alt text is NOT tiered.** A different crop of the same subject describes the same thing; a
+    per-device alt is a second place for the description to drift.
+
+  - **IMAGES tier by MARKUP.** Emit all tiers as sibling elements carrying a BEM tier modifier and
+    toggle them with breakpoint rules in the block's own scoped `<style>`. Three `<img>`s cost
+    nothing meaningful, it needs no JS, and the BEM modifier is the vocabulary the cloning pipeline
+    reads — one convention on both ends is what makes a clone round-trip.
+    - ⛔ Build tier selectors from the **BARE scope token**, never from a multi-member selector LIST:
+      a descendant appended to a list binds to its LAST member only (this hid every image at every
+      width on `sgs/media` before it was caught live).
+    - ⛔ **Naked-mode blocks** (the media element IS the block root, e.g. `sgs/decorative-image`)
+      have no ancestor to descend from: each tier sibling must carry the uid class ITSELF and the
+      toggles are COMPOUND selectors (`.{uid}.{block}--mobile`), not descendant.
+    - ⛔ Append tier CSS **before** the block assembles its `<style>` string. Appending it next to
+      the element emit compiles cleanly and emits nothing (hit on `sgs/image-sequence`).
+
+  - **VIDEO tiers by RUNTIME SWAP — deliberately NOT the markup pattern.** Three `<video>` elements
+    each begin fetching and three embeds each load a player, so siblings are not free here. Use
+    sgs/hero's established `data-src-desktop`/`-tablet`/`-mobile` contract and swap in `view.js`.
+    The DESKTOP source still renders as real server markup so a no-JS visitor gets a working video.
+    Bean accepted the cost for embeds (D521): crossing a breakpoint mid-watch rebuilds the iframe
+    and loses playback position, so the swap fires ONLY when the resolved source actually differs.
+    - ⛔ **Any node the swap REBUILDS must carry the tier `data-*` forward**, or the swap is
+      one-way and can never return — it will look correct in the one direction anyone tests first.
+
+  - **Verification bar:** computed visibility (or, for video, an ADVANCING `currentTime`) at FIRST
+    PAINT per width — viewport set, then a fresh navigation, never a resize-after-load. Markup
+    presence scores a false pass. Assert on the MEASURED `window.innerWidth`, not the requested
+    viewport size; a requested 800px measured 727px and would have tested mobile while labelled
+    tablet. Include a positive control: prove the effect CAN fire in that browser, or "nothing
+    happened" is indistinguishable from a dead feature.
+
 ## PART E — Accessibility (WCAG 2.1/2.2 AA)
 
 - **E1.** 4.5:1 contrast on the block's OWN control UI.
