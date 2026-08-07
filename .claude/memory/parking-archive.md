@@ -3073,3 +3073,227 @@ prose note, so that part of the original scope was wrong. The upstream artefacts
 to defer since the tripwire will catch a regeneration attempt.
 
 **Trigger:** Before anyone regenerates `setting-registry.json` from Phase-1 data.
+
+
+### P-CONTAINER-WRAPPER-STANDARDISATION - RESOLVED 2026-08-07
+
+DELETED on Bean's decision 2026-08-07 — the residual is fixed and the remaining scope moves to Spec 39. This entry was a BUNDLE, and the bundle shape is why its closed parts went unnoticed for months: of its eight sub-items, (a) named-section-before-container routing was true by construction at the D274 rewrite, (d) grid-lift and (e) image sideload were shipped and verified (media-sideload.py wired at stage-4i with a run manifest showing 12 real uploads), while (c) notice-banner and (f) slider were both stale-anchored onto a single unnamed root: only 3 blocks carried blocks.tier='class-section', so every other composite was demoted to sgs/container. notice-banner was declared a section root on 2026-08-06 (commit af5f1f24). Item (g) /sgs-update Stage-11 auto-apply remains report-only BY DESIGN and is out of scope here. LESSON: never park a bundle — each sub-item needs its own entry or its closure is invisible.
+
+Archived verbatim below.
+
+### P-CONTAINER-WRAPPER-STANDARDISATION — converter Method-2 residual: cross-node COLOUR fold + Stage-11 auto-apply
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-02 · **Re-scoped:** 2026-08-06
+
+**Re-scoped 2026-08-06 from a 8-item bundle to the 2 items that are actually open.** Five sub-items were
+verified CLOSED or resolved and have been struck, per "an entry holds RESIDUAL SCOPE only":
+named-section-before-container routing (true by construction — `recognition.py:181-266` returns a
+`blocks.tier='class-section'` match verbatim and only reaches `container_default_slug()` after every
+named branch fails), grid-lift (emits `gridTemplateColumns`/`*Mobile` matching the golden), image
+sideload (`scripts/orchestrator/media-sideload.py`, wired unconditionally at stage-4i; a real run
+manifest shows 12 uploads / 0 errors), plus notice-banner content-synthesis and the slider residual —
+both of which were never about synthesis at all: they were the *declaration* question below.
+
+**The declaration question is SETTLED for notice-banner (Bean, 2026-08-06).** Only 3 blocks declared
+`supports.sgs.is_section_root`, so every other composite was demoted to `sgs/container` by the
+capability gate. `sgs/notice-banner` now declares it (4 declarers: cta-section, hero, notice-banner,
+trust-bar) — this is a declaration responsibility, exactly as `recognition.py:269-282` states, and is
+independent of `containerKind`. Takes effect on the next `/sgs-update` (tier is derived at
+`sgs-update-v2.py:717-718`). `sgs/testimonial-slider` is still demoted and is NOT covered by that
+decision — raise it separately if a cloned slider should emit the slider block.
+
+**RESIDUAL — the two genuinely open items:**
+
+1. **Cross-node COLOUR fold (`no_area_attr`).** Box/grid/typography lift correctly; what fails is
+   per-element *colour* on cross-node children. Measured on the brand golden: `color` on
+   `.sgs-brand__headline` and `color`/`border-color`/`background` on `.sgs-brand__cta` are folded onto
+   the owning `sgs/container`, which has no area attr for them, and are dropped rather than routed to
+   the child `sgs/heading`/`sgs/button`. 30 `[fold-gap] cross_node_gap_candidate … reason='no_area_attr'`
+   warnings on that one section. Anchor: `converter/services/assembly.py:63` (`_fold_trace`) ←
+   `converter/services/fold_helpers.py` `route_area_css_to_block_attrs`.
+2. **`/sgs-update` Stage-11 auto-apply.** Still report-only by design — `sgs-update-v2.py:5049-5104`
+   runs `sync-container-wrapping-blocks.py --write-block-json` with no `--apply`, and the header
+   stage-map at `:29-32` repeats "report-only; NO --apply — operator-gated". Deciding whether it should
+   auto-apply is the open question, not a bug.
+
+**Trigger:** the next converter Method-2 session. Item 1 is the fidelity-blocking half.
+
+
+### P-DRAFT-CSSVAR-COLOUR-RESOLUTION - RESOLVED 2026-08-07
+
+RESOLVED. The button-colour seed is shipped and resolves live: sgs/button's colourText/colourBackground/colourBorder all carry css_property in block_attributes (sourced from behavioural-analyser/css-property-classifications.json), and attr_for_layer_property('sgs/button','OUTER','border-color') resolves to colourBorder. Note attr_for_property() returns None via the suffix-loop path — documented at db_lookup.py:1224-1235 — do NOT read that None as the seed missing. The entry's remaining clause asked the converter to consume theme-extractor/token_map.py instead of its own :root parser; that is REFUTED by the target file's own docstring, which states the converter's parser is left byte-identical precisely BECAUSE token_map depends on tinycss2 and the converter is import-banned from it (converter/gates/import_ban.py). Two parsers with different contracts either side of an enforced boundary is not duplication to eliminate.
+
+Archived verbatim below.
+
+### P-DRAFT-CSSVAR-COLOUR-RESOLUTION / P-DRAFT-CSSVAR-SEED-READD — draft CSS-variable colours resolve, but the button-colour seed re-add is unproven live
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-06
+**Also known as:** P-DRAFT-CSSVAR-SEED-READD
+
+The var-resolution fix (a draft `var(--X)` colour resolving against the draft `:root` map and snapping to the theme token) is done. What is NOT done: re-adding the button-colour SEED (lifting `border-color`/`background-color`/`color` onto `colourBorder`/`colourBackground`/`colourText` via `css_property` overrides) — this was trialled and reverted previously precisely because the var didn't resolve, and now that it does, the seed can go back in. On re-add, verify the value is actually lifted onto the attr, the render reads and paints it, and it lands on the live page (not just unit-verified). Consume the now-built `token_map.build_draft_root_token_map(css)` service rather than re-parsing `:root`.
+
+**Trigger:** button-colour seed re-add session — a converter colour-lift task, distinct from any button-structure work.
+
+
+### P-GATE-A-CARD-RESIDUALS - RESOLVED 2026-08-07
+
+DELETED on Bean's decision 2026-08-07: "There is no design discussion - we already rebuilt the product card." The entry's sole remaining item (the pack-size pills equivalent, now sgs/option-picker) was parked pending an option-picker design discussion that is not happening — the rebuild superseded it. Its other items (ctaText/ctaUrl, imageAlt) were already resolved and landed.
+
+Archived verbatim below.
+
+### P-GATE-A-CARD-RESIDUALS — product-card option-picker pills deferred to option-picker design discussion
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-04
+
+Of the original Gate-A residuals, `ctaText`/`ctaUrl` and `imageAlt` are resolved and landed. Only the pack-size "pills" equivalent (now `sgs/option-picker`) remains, deliberately deferred by Bean to the option-picker design discussion rather than fixed ad hoc.
+
+**Trigger:** option-picker design discussion.
+
+
+### P-HERO-SUB-MAXWIDTH-NESTED-CHILD - RESOLVED 2026-08-07
+
+ALREADY FIXED — Bean called this, and a live measurement confirms him. The homepage hero contains a nested `.wp-block-sgs-text` computing `max-width: 420px`, taken straight from the draft. The per-element max-width on a nested text child is NOT dropped. WHY TWO AGENTS GOT THIS WRONG, worth recording: both traced layer_detect -> attr_resolve and correctly showed that route returns None for a CONTENT-layer node (layer_detect.py:26 gates OUTER on ctx.is_root; attr_resolve.py:63-64 returns None for non-OUTER). That trace was accurate about that ONE path and was then mistaken for a complete answer — another path delivers the value. A correct negative about one route is not a proof of absence. Also note the entry proposed a fix (b) that attr_resolve.py's own docstring already models and REJECTS, so acting on this entry would have re-proposed a rejected option.
+
+Archived verbatim below.
+
+### P-HERO-SUB-MAXWIDTH-NESTED-CHILD — a per-element max-width on a nested text child inside a composite is dropped
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-06
+
+Root cause traced precisely: a nested leaf is built with `is_root=False`, so `layer_detect.py` can never classify it as OUTER (OUTER requires `ctx.is_root`); it lands as CONTENT, which routes `max-width` through the width-equivalence to `contentWidth` — but `sgs/text` has no `contentWidth`-family attr, so the lookup returns None and the value is silently dropped. Two candidate fixes: (a) reclassify CONTENT→OUTER for text-leaf children with no content-width attr, or (b) extend the attr-resolve fallback to CONTENT when the block lacks a `contentWidth` family but has `maxWidth`. Destination is confirmed live (`sgs/text.maxWidth`, `css_property=max-width`).
+
+**Trigger:** the container L1-L4 cascade session.
+
+
+### P-MEDIA-BRAND-GOLDEN-RESEED - RESOLVED 2026-08-07
+
+DELETED on Bean's decision 2026-08-07 — already fixed, and to be handled under Spec 39. Recording what was measured, since it cost real investigation: this entry and P-CONTAINER-WRAPPER-STANDARDISATION's colour item were ONE defect — a grid child that dissolves and is re-emitted as its own block takes the fold path, which routes its CSS but never runs its content extraction, so sgs/media lost both imageUrl and imageAlt while still receiving border-radius and object-fit. SEPARATELY, three of the four divergences blocking the re-seed were HARNESS artefacts, not regressions: seed_conformance_goldens.py called convert_section() with no client_slug, so the theme palette never loaded and every colour was silently dropped from both sides of the comparison. That harness bug is fixed (commit 2ca75a82).
+
+Archived verbatim below.
+
+### P-MEDIA-BRAND-GOLDEN-RESEED — brand golden fixture needs re-seeding, but the diff hides possible regressions
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-06
+
+The `mamas-munches-homepage__brand` conformance golden is stale from an intended media-attr rename, but the live diff is bigger than that alone: the heading has LOST its `style.color`, and the button now emits border attrs the golden has no trace of, accompanied by ~30 currently un-routed `[fold-gap]` warnings. Re-seeding now would silently bake a possible regression in as "correct".
+
+**Do not re-seed until the heading colour loss and the CTA border divergence are root-caused.**
+
+**Trigger:** a deliberate golden-reseed pass, gated on root-causing the two live divergences first.
+
+
+### P-NO-INLINE-GATE-COVERAGE-GAPS - RESOLVED 2026-08-07
+
+DELETED on Bean's decision 2026-08-07: delete the point and delete the pages — "We can make the pages again if we want. We're building enforcement scripts to deal with it via spec 35 anyway." State at deletion: item (2) was already closed (three non-injector writers fixed, commit 4d3b598e). Item (1)'s residual was that gate-canary pages 2064/2071 did not exercise the five EXTENSION-driven instances (hover scale, animation, parallax, image-controls, block-link) — confirmed live, with post_content on both pages containing zero occurrences of any of them. Also recorded, because it is the reason the pages were fragile: no seed script or fixture for them existed anywhere in the repo, so they lived only as WP posts on the server while the gate's own comment instructed re-seeding from an artefact that did not exist.
+
+Archived verbatim below.
+
+### P-NO-INLINE-GATE-COVERAGE-GAPS — the inline-zero gate can pass vacuously
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-28 · **Advanced:** 2026-07-30 (D425)
+
+**Item (2) CLOSED 2026-07-30** — all three non-injector writers were triaged AND fixed
+(`class-sgs-container-wrapper.php` SVG-background opacity, `class-post-grid-rest.php` card vars,
+`shape-dividers.php` inline `height`/`color` — the last being real PROPERTY declarations, the more
+serious breach). Commit `4d3b598e`.
+
+**Item (1) PARTIAL.** Two gate-canary pages are now seeded and wired into `CANARY_URLS`
+(`sgs-gate-canary` 2064, `sgs-gate-canary-2` 2071), which converted a genuinely vacuous pass into a
+real one: before them the deep scan reported *"PASS — 0 inline styles across 0 sgs block type(s)"* —
+it saw NO blocks at all.
+
+**RESIDUAL SCOPE — what those pages still do NOT carry.** They cover var-driven RENDER features
+(per-item stagger + fill, SVG opacity, shape dividers, post-grid card vars, countdown colours,
+gallery aspect, form progress, review breakdown, plan ribbon, badge fg). They do NOT carry the
+EXTENSION-driven instances this entry originally named: **hover scale, animation, parallax,
+image-controls, block-link** — which is the exact class that let the team-member inline-var pass
+vacuously for weeks. Until one instance of each is seeded, that class is still unexercised.
+
+**Trigger:** next Spec-32/gate session. ⚠ If the seeded pages are ever deleted the gate silently
+returns to proving nothing — re-seed rather than drop (a warning to that effect is in
+`check-no-inline.py`'s `CANARY_URLS` comment).
+
+
+### P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES - RESOLVED 2026-08-07
+
+DELETED on Bean's decision 2026-08-07: "No use, just get rid of it." Context that informed the call: the original silent-fail bug is long closed (push-theme-snapshot.py:790-810 writes BOTH theme.json and the live wp_global_styles post), and the overwrite guard also already ships (drift_warning() at :550-604, called unconditionally before the confirm prompt, reporting ORPHANED and CLOBBERED keys and failing loud when it cannot assess drift). The only genuine residual was a PULL round-trip — and the reason none exists is that the snapshots were never sourced from the live site: they are generated by the Spec 33 draft extractor (scripts/theme-extractor/extract.py) measuring the DRAFT's computed styles. The flow is draft -> repo -> site. A pull would be a NEW third direction, not a restoration.
+
+Archived verbatim below.
+
+### P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES — Snapshot pull round-trip + pre-deploy guard missing
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-03
+
+`push-theme-snapshot.py` now writes both `theme.json` and the live `wp_global_styles` post
+(shipped D161) — the original silent-fail bug is closed. Still missing: the pull round-trip
+(reading live edits back into the snapshot) and a pre-deploy guard that warns when a user has
+edited live styles that a push would overwrite.
+
+**Trigger:** Next theme-snapshot tooling session.
+
+
+### P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES - RESOLVED 2026-08-07
+
+MOVED, not lost — this was a standing FINDING, not deferred work, and parking is the wrong home for an architectural position. Verified already recorded in decisions.md (the value-type-vs-delivery-property case appears at lines 352, 370 and 729, including the `attr_is_colour_role()` discussion of two attrs identical by css_property but opposite by role). Nothing needed re-adding. The one actionable residual it carried — sgs/product-card's pickerPill*BorderRadius allegedly stuck on role='typography' — was measured and is already correct: both carry role='visual' in block_attributes and neither declares a role in attr-classification-overrides.json.
+
+Archived verbatim below.
+
+### P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES — `role` and `css_property` answer different questions; do not merge them
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-21
+
+**A standing finding that REVERSES an earlier assumption — read this before any proposal to "fix" or retire `role`.** `role` = what the value IS (a colour → the client needs a colour picker). `css_property` + element/state/tier = how it is DELIVERED. They are perpendicular, and neither replaces the other. Proof: `sgs/cta-section shadow`, `sgs/card-grid cardShadow` and `sgs/team-member cardShadow` all carry `role='color'` + `css_property='box-shadow'` — not disagreements but the same value-type-vs-delivery distinction. Measured on the 290 rows where both are populated: exactly 2 genuine disagreements (0.7%). Caveat that must travel with that number: 290 is only 30% of `role`'s 977 populated rows, so it is 99% on the measurable third, not a clean bill of health. `canonical_slot` / `derived_selector` are not replaceable at all — they answer recognition, a third axis. **Do NOT pursue replacement: it would delete a working semantic axis to install a mechanical one.**
+
+**⚠ The supporting numbers above are STALE — re-measured 2026-08-06: 1,053 rows have both `role` and
+`css_property` populated (not 290), against 2,728 `role`-populated rows (not 977). Re-derive the
+"30% of the population / 0.7% disagreement" framing before quoting it again.** The finding's thesis is
+unaffected and still holds: `role='color'` maps to 16 distinct `css_property` values including
+`box-shadow` and `stroke`, which is precisely the value-type-vs-delivery perpendicularity it defends.
+
+**Residual work: NONE — the pickerPill\* item is CLOSED (verified 2026-08-06).** There is nothing to
+edit: both `sgs/product-card` override entries in `attr-classification-overrides.json` declare only
+`derived_selector` and carry no `role` field at all, and the DB reports `role='visual'` for both —
+matching their `sgs/option-picker` siblings. The `pill*` name-collision producing `role: typography`
+is not reproducible in current data. (When it was fixed is untraced; no D-number found.)
+
+**This entry is now a STANDING GUARD with no work attached.** It is retained deliberately — not as a
+task, but so that any future proposal to "fix", merge or retire `role` meets the measured refutation
+first. Do not archive it as resolved; it has no residual scope BY DESIGN.
+
+**Trigger:** none. It fires defensively, when someone proposes replacing `role`.
+
+
+### P-SPEC35-STATE-RESPONSIVE - RESOLVED 2026-08-07
+
+DELETED on Bean's decision 2026-08-07: "don't think we need responsive hover values". The trigger was also independently proven unmet twice — a DB sweep for hoverColourTablet-shaped attrs (Hover/Focus/Active crossed with Tablet/Mobile/Desktop, plus the css_state x css_tier column pair) returns 0 rows, unchanged across two measurements months apart. No block ships the shape that would justify the axis, and now none is wanted.
+
+Archived verbatim below.
+
+### P-SPEC35-STATE-RESPONSIVE — responsive x state combinations in the inspector manifest
+**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-19
+
+FR-35-5 deliberately scopes the `states` axis to base-tier only. A third dimension (responsive x
+state x member) was considered and excluded as speculative. If it ever surfaces, extend `states`
+with the existing device-tier suffix convention rather than adding a new axis. ~30 min.
+
+**Verify:** trigger re-verified UNMET 2026-07-27 — a DB sweep for responsive-x-state attrs
+(`attr_name LIKE '%HoverTablet%' OR '%HoverMobile%' OR '%TabletHover%' OR '%MobileHover%'`) returns
+**0 rows**. No block ships the shape that would justify the axis. A proven negative, not an
+unchecked assumption.
+
+**Trigger:** only if a real block ships a `hoverColourTablet`-shaped attribute.
+
+### P-AUDIT-COLOUR-ROLE-KEYED — CLOSED 2026-08-07
+**Resolution:** Seeded the last 5 element manifests (image-sequence, site-header, site-footer,
+site-header-row, site-footer-row) — Spec 35 coverage is now 84 of 84 blocks, 0 skipped. Re-keyed
+`audit-block-uniformity.py`'s colour check onto `supports.sgs.elements`: it raises
+`supports_color_missing` only when a colour attribute is claimed by an `isWrapper: true` element as
+`css:color`/`css:background-color`, so a per-element colour is never flagged and a border colour is
+never flagged. All four exemptions (sgs/nav-menu, sgs/nav-drawer, sgs/mega-panel, sgs/mega-aside)
+became unnecessary and `SUPPORTS_COLOR_EXEMPT` is now empty. Added a fail-closed `unmanifested`
+category so an unmanifested block can never fail open, and a `--self-test` with a negative control.
+Residual raised separately: 3 root backgrounds named without the word 'colour' (mega-panel.panelBg,
+mega-aside.asideBg, nav-drawer.drawerBg) plus nav-menu.navColour diverge from the site-header/
+site-footer norm of native `supports.color` + `__experimentalSkipSerialization`; documented in the
+audit source, needs its own migration task.
+
+Original entry, verbatim:
+
+### P-AUDIT-COLOUR-ROLE-KEYED — block-uniformity audit's colour check is name-keyed, not manifest-keyed
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-20
+
+The audit flags any block whose attribute NAME contains "colour" and lacks `supports.color` — but WP's `supports.color` only ever styles the block ROOT, so a legitimate per-element colour (a featured nav item's fill, an inner link) can never satisfy it and gets permanently exempted, filling the exemption list until real violations are indistinguishable from legitimate exemptions. The exemption list has already grown from 2 to 3 entries since this was first flagged, confirming the predicted pattern. Fix: re-key the check on the Spec 35 element manifest (which already carries wrapper/non-wrapper classification) rather than the attribute name, falling back to the name test only for blocks not yet manifested.
+
+**Trigger:** the Spec 35 manifest rollout reaching meaningful coverage, or the next block that trips this check.

@@ -38,7 +38,55 @@
 		"sgs": {
 			"containerKind": "layout",
 			"intrinsicColumns": true,
-			"_intrinsicColumnsComment": "D456 — the column count becomes a CEILING that degrades with available width, instead of a fixed count that only changes at a viewport breakpoint. Measured live before this change: all three footer rows dropped 3 tracks to 1 between viewport 768px and 767px, while their content needed just 496px of the 767px available. A @media rule cannot read content size, so that collapse could never be organic. Opt-in per block type, read by sgs_block_wants_intrinsic_columns()."
+			"_intrinsicColumnsComment": "D456 — the column count becomes a CEILING that degrades with available width, instead of a fixed count that only changes at a viewport breakpoint. Measured live before this change: all three footer rows dropped 3 tracks to 1 between viewport 768px and 767px, while their content needed just 496px of the 767px available. A @media rule cannot read content size, so that collapse could never be organic. Opt-in per block type, read by sgs_block_wants_intrinsic_columns().",
+			"elements": {
+				"row": {
+					"label": "Row",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:max-width": "maxWidth",
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "verticalAlign",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "A horizontal row inside sgs/site-footer. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `verticalAlign` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties.",
+					"prefix": ""
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:width": "contentWidth"
+					}
+				}
+			}
 		}
 	},
 	"attributes": {
@@ -48,7 +96,10 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": [ "flex", "grid" ],
+			"enum": [
+				"flex",
+				"grid"
+			],
 			"default": "grid",
 			"_comment": "D456-follow-up (2026-08-02) — same shape + same latent exposure as sgs/site-header-row's `layout` enum (see that block.json for the full rationale): `class-sgs-container-wrapper.php:528` only routes the shared wrapper's gap onto the query-container-ancestor `.sgs-container__inner` when layout is 'flex' or 'grid'. This row's own gap defaults are plain px today (not cqi), so the landmine has no live symptom here yet — but the enum closes it universally rather than leaving a per-block carve-out (R-31-9), so a future cqi-based gap value on this block can never resolve against the wrong container either. Verified: edit.js LAYOUT_OPTIONS, render.php, and every theme pattern instantiating this block use only 'flex'/'grid'."
 		},
@@ -81,7 +132,10 @@
 		},
 		"gap": {
 			"type": "object",
-			"default": { "desktop": "48px", "mobile": "32px" }
+			"default": {
+				"desktop": "48px",
+				"mobile": "32px"
+			}
 		},
 		"maxWidth": {
 			"type": "object",
@@ -89,7 +143,9 @@
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": { "desktop": "full" }
+			"default": {
+				"desktop": "full"
+			}
 		},
 		"padding": {
 			"type": "object",

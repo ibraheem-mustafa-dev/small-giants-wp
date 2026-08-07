@@ -25,7 +25,43 @@
 		],
 		"inserter": false,
 		"sgs": {
-			"imageControls": true
+			"imageControls": true,
+			"elements": {
+				"wrapper": {
+					"label": "Block wrapper",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:aspect-ratio": "aspectRatio"
+					},
+					"_note": "The block root `.sgs-image-sequence` (render.php:172-176). `aspectRatio` is the ONLY per-instance style value and is emitted into the block's own scoped <style> (render.php:131), never inline. No `layer` is declared because the root arranges no children (the stage owns the layering), so the arrangement members are correctly never asked about. This block declares no colour/spacing/border/typography supports at all, so every other layout member is an honest GAP. `prefix: \"\"` is an explicit opt-out of orphan scanning: the remaining attributes are frame-source config and Spec 38 fx params, not style properties."
+				},
+				"stage": {
+					"label": "Stage",
+					"order": 2,
+					"clusters": [],
+					"prefix": "",
+					"_note": "`.sgs-image-sequence__stage` (render.php:173) — the positioning box that holds the thumbnail and the canvas in the same rect. Every property on it (position/width/overflow/aspect-ratio fallback, style.css:23-31) is a structural default with no attribute behind it, so it exposes no client-facing style controls."
+				},
+				"thumbnail": {
+					"label": "Thumbnail image",
+					"order": 3,
+					"clusters": [],
+					"prefix": "",
+					"_note": "`.sgs-image-sequence__thumbnail` (render.php:183) — the fail-open <img> shown with JS blocked or under reduced motion (FR-38-2). Its inset/size/object-fit are structural defaults (style.css:33-40); `thumbnail` and `thumbnailAlt` are media identity and alt TEXT, not style properties, so no cluster is declared. prefix: \"\" is an explicit opt-out of orphan scanning for that reason (thumbnailAlt is alt TEXT)."
+				},
+				"canvas": {
+					"label": "Frame canvas",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"_note": "`.sgs-image-sequence__canvas` (render.php:187) — the Tier G scrub surface. Its opacity/transition are the reveal contract (style.css:42-53), not client controls; the fx* attributes are Spec 38 §11.2 effect params, not CSS style properties. `prefix: \"\"` opts out of orphan scanning for that reason."
+				}
+			}
 		}
 	},
 	"attributes": {

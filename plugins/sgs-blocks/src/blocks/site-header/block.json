@@ -54,6 +54,78 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Section wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"animation"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:box-shadow": "shadow",
+						"css:background-attachment": "backgroundAttachment",
+						"css:background-position": "backgroundPosition",
+						"css:background-repeat": "backgroundRepeat",
+						"css:background-size": "backgroundSize",
+						"anim:parallax": "bgParallax",
+						"anim:duration": "bgAnimationDuration"
+					},
+					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour/spacing/border ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "columns",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "verticalAlign",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `verticalAlign` (class-sgs-container-wrapper.php:247 reads verticalAlign||alignItems). display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:background-color": "contentBandBackground",
+						"css:width": "contentWidth"
+					}
+				},
+				"decorative": {
+					"label": "Decorative background",
+					"order": 4,
+					"clusters": [],
+					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*/backgroundOverlay*), Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none. Mirrors sgs/container's `decorative` element."
+				}
 			}
 		}
 	},

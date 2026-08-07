@@ -36,7 +36,55 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"containerKind": "layout"
+			"containerKind": "layout",
+			"elements": {
+				"row": {
+					"label": "Row",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:max-width": "maxWidth",
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "verticalAlign",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "A horizontal row inside sgs/site-header. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `verticalAlign` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties.",
+					"prefix": ""
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:width": "contentWidth"
+					}
+				}
+			}
 		}
 	},
 	"attributes": {
@@ -46,7 +94,10 @@
 		},
 		"layout": {
 			"type": "string",
-			"enum": [ "flex", "grid" ],
+			"enum": [
+				"flex",
+				"grid"
+			],
 			"default": "flex",
 			"_comment": "D456-follow-up (2026-08-02) — enum closes the cqi landmine documented on the `gap` attribute's default comment below: `class-sgs-container-wrapper.php:528` only routes the gap onto `.sgs-container__inner` (the row's own query-container ancestor) when layout is 'flex' or 'grid'. Any OTHER stored value would silently fall through to `.uid` itself, where `cqi` cannot resolve. The enum makes a stored value outside {flex,grid} impossible — WP coerces an out-of-enum stored value back to the default at render (observed D291, sgs/button `inheritStyle`). Verified before adding: edit.js LAYOUT_OPTIONS, render.php, the converter (services/arrangement.py), and every theme pattern instantiating this block all use only 'flex'/'grid'."
 		},
@@ -77,7 +128,9 @@
 		},
 		"gap": {
 			"type": "object",
-			"default": { "desktop": "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)" },
+			"default": {
+				"desktop": "clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)"
+			},
 			"_comment": "D455 (2026-08-02) — the fluid gap curve. CORRECTION caught in review: this attribute does NOT depend on the sgs_css_length_value() validator shipped the same session. gap is an OBJECT here, so render.php passes responsive_model:object and the value is emitted by sgs_emit_responsive_css() then sgs_responsive_sanitise_css_value() (helpers-responsive.php) — a PRE-EXISTING character allowlist that already permitted parentheses and commas. Verified by running that exact allowlist over this exact string: unchanged. The clamp would have rendered before the validator existed. The validator is load-bearing for the ~19 FLAT-scalar gap callers (card-grid, hero, gallery and friends), not for this one. Curve: 16px ceiling from container width 800px up, 8.5px floor at 267px and below, fluid between — measured 16px at 1400 and 8.56px at 320 against a fixed control that did not move. cqi is safe HERE because grid_on_inner is forced true for layout flex or grid (class-sgs-container-wrapper.php:528), putting gap on .sgs-container__inner whose ancestor container IS the row; a stored layout outside flex/grid would land it on .uid itself, where cqi cannot query its own container. Do NOT copy cqi to a block without a guaranteed container ancestor."
 		},
 		"maxWidth": {
@@ -86,7 +139,9 @@
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": { "desktop": "full" }
+			"default": {
+				"desktop": "full"
+			}
 		},
 		"padding": {
 			"type": "object",
