@@ -226,6 +226,7 @@
       "margin": true,
       "padding": true,
       "customSpacingSize": true,
+      "defaultSpacingSizes": false,
       "spacingSizes": [
         {
           "slug": "10",

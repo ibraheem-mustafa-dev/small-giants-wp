@@ -14,6 +14,22 @@ theme.json for every property it already defines.  Post ID is discovered at
 push-time via `wp post list --post_type=wp_global_styles` over the existing SSH
 connection — deterministic and requires no hardcoded constant.
 
+2026-08-07: that user-layer write EXCLUDES the preset arrays the disk push already
+delivers (`spacing.spacingSizes`, `shadow.presets` — see `strip_user_layer_presets`).
+WP files a posted preset under the `custom` origin and keeps it ALONGSIDE the theme
+origin, so posting an identical ladder into both layers produced a genuine duplicate
+in the editor's spacing/shadow pickers. The two layers are NOT interchangeable:
+  - theme layer  = the snapshot itself, SCP'd over wp-content/themes/sgs-theme/
+                   theme.json WHOLESALE. A preset missing from a snapshot is DELETED
+                   for that client — it does NOT fall back to the framework file.
+                   This is why every snapshot carries its own `defaultSpacingSizes`/
+                   `defaultFontSizes: false`; the framework theme.json's copies never
+                   reach a client site.
+  - user layer   = operator overrides only.
+Stripping the ladder from the theme layer instead of the user layer is the failure
+this note exists to prevent: it removed `--wp--preset--spacing--*` outright and the
+canary silently fell back to WordPress's default ladder (40: 1.5rem → 1rem).
+
 Credential lookup order (for the REST write):
   1. Known target domain → named secrets file in `.claude/secrets/`
      (currently: sandybrown-* → sandybrown.env vars WP_USER_SANDYBROWN /
@@ -405,6 +421,57 @@ def discover_global_styles_post_id(target: str, port: int, wp_root: str) -> int 
     return post_id
 
 
+# Preset arrays the DISK push already delivers at the `theme` origin, so writing them
+# again into the user layer only ever produces a duplicate (2026-08-07).
+#
+# WordPress files anything posted here under the `custom` origin and keeps it ALONGSIDE
+# the theme origin rather than replacing it -- so an identical ladder in both layers is
+# a real second ladder, not a no-op. Proven on the sandybrown canary: the live
+# wp_global_styles held `spacing.spacingSizes.custom` byte-identical to the deployed
+# theme.json's 8 sizes, and `shadow.presets` likewise duplicated the framework's 4.
+#
+# Deliberately NOT stripped -- these are genuinely per-client and the user layer is the
+# only place a Site-Editor edit to them can live:
+#   color.palette / color.gradients   -- per-client brand colours (Spec 33 Pass A/B)
+#   typography.fontSizes              -- per-client scales really do differ (eye-care and
+#                                        the sgs-* templates use a 6-slug clamp() scale
+#                                        with an `xxx-large` the framework has no slug for)
+#   typography.fontFamilies           -- Font Library installs land here
+# `color.duotone` is absent from the framework theme.json AND every snapshot, so it is
+# omitted rather than listed inert -- add it here only once something actually emits one.
+_USER_LAYER_PRESET_STRIP = (
+    ("spacing", "spacingSizes"),
+    ("shadow", "presets"),
+)
+
+
+def strip_user_layer_presets(settings: dict) -> tuple[dict, list[str]]:
+    """Return (settings-copy-without-duplicated-presets, list-of-stripped-paths).
+
+    Applied ONLY to the wp_global_styles POST body -- never to the snapshot written to
+    disk. The snapshot IS the client's deployed `theme.json` (push_snapshot SCPs it over
+    the framework file wholesale), so the ladders MUST stay there; that is the layer they
+    belong to.
+
+    Safe because the REST controller REPLACES rather than merges: WP core's
+    class-wp-rest-global-styles-controller.php does `$config['settings'] =
+    $request['settings'];`, so omitting a key here also CLEARS any stale copy an earlier
+    push left in the user layer. No explicit null is needed.
+    """
+    import copy as _copy
+
+    out = _copy.deepcopy(settings)
+    stripped: list[str] = []
+    for group, key in _USER_LAYER_PRESET_STRIP:
+        node = out.get(group)
+        if isinstance(node, dict) and key in node:
+            del node[key]
+            stripped.append(f"settings.{group}.{key}")
+            if not node:
+                del out[group]
+    return out, stripped
+
+
 def post_global_styles(
     target_domain: str,
     post_id: int,
@@ -425,9 +492,17 @@ def post_global_styles(
     is always loud — never swallowed silently.
     """
     url = f"https://{target_domain}/wp-json/wp/v2/global-styles/{post_id}"
+    settings, stripped = strip_user_layer_presets(snapshot.get("settings") or {})
+    if stripped:
+        print(
+            "[push-theme-snapshot] user-layer preset strip: "
+            + ", ".join(stripped)
+            + " (already delivered by the disk theme.json at the `theme` origin — "
+            "posting them here would duplicate the ladder)"
+        )
     body: dict = {
         "styles": snapshot.get("styles") or {},
-        "settings": snapshot.get("settings") or {},
+        "settings": settings,
     }
     body_bytes = json.dumps(body).encode("utf-8")
     req = urllib.request.Request(

@@ -178,7 +178,8 @@
           "name": "Hero",
           "fluid": false
         }
-      ]
+      ],
+      "defaultFontSizes": false
     },
     "custom": {
       "sgs": {
