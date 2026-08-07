@@ -7,7 +7,20 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+// Composed named panels, NOT the <ContainerWrapperControls kind="layout"> aggregator.
+// The aggregator renders LayoutPanel's own Layout + Columns controls, which bind to
+// the SAME attributes this block already controls — and with an incompatible option
+// set: it offers Stack/Flex/Grid while this block's `layout` enum is
+// Grid/Masonry/Carousel. Measured 2026-08-07: writing "flex" is accepted, stored,
+// then SILENTLY reverted to "grid" on reload by WordPress's enum coercion. So we take
+// the wrapper's width/spacing/content-band panels and LayoutPanel's GAP only.
+// Precedent: sgs/hero and sgs/cta-section already skip the aggregator for this reason.
+import {
+	LayoutPanel,
+	WidthPanel,
+	ResponsiveSpacingPanel,
+	ContentBandPanel,
+} from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
 	SelectControl,
@@ -287,11 +300,18 @@ export default function Edit( { attributes, setAttributes } ) {
 			     Inspector panels
 			     ============================================================ */ }
 			<InspectorControls>
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="layout"
-				/>
+				<PanelBody title={ __( 'Container / Wrapper', 'sgs-blocks' ) }>
+					{ /* showLayout={false}: this block owns its own Layout and Columns
+					     controls below — see the import comment. Gap is still wanted. */ }
+					<LayoutPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						showLayout={ false }
+					/>
+					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+				<ResponsiveSpacingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<ContentBandPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* Panel 1: Images */ }
 				<PanelBody

@@ -198,6 +198,56 @@ $root_sel = '.' . $uid . '.wp-block-sgs-gallery';
 
 $gallery_responsive_css = '';
 
+// -------------------------------------------------------------------------
+// Responsive gap tiers (gapTablet / gapMobile).
+//
+// WHY this lives here and not in SGS_Container_Wrapper: the wrapper DOES read
+// gapTablet/gapMobile and emit `@media (max-width:1023px|767px){…{gap:…}}`,
+// but it scopes those rules to the wrapper's own element — `.sgs-container-<uid>`
+// (or its `>.sgs-container__inner` band). Neither is a grid in this block: the
+// gallery's grid is the CHILD `.sgs-gallery__grid`, and style.css drives its
+// gap off `var(--sgs-gap)` (style.css:40-42 grid/masonry, :94-98 carousel
+// track sizing, :60/:66 masonry column-gap + item margin). So the wrapper's
+// `gap:` declaration lands on a non-grid ancestor and is inert — which is why
+// a client setting tablet/mobile spacing saw no change.
+//
+// The fix overrides the SAME custom property the block already consumes,
+// rather than fighting for the `gap` declaration on the wrong element. One
+// property re-point covers all three layouts (grid, masonry, carousel) at
+// once, because every one of them reads `--sgs-gap`.
+//
+// Cascade: the wrapper emits the BASE `--sgs-gap` as a scoped
+// `.sgs-container-<uid>{--sgs-gap:…}` rule (specificity 0,1,0 — extra_styles
+// are scoped, never inlined, per Spec 32 FR-32-4 / D345 Facet B). $root_sel is
+// `.sgs-gallery-<uid>.wp-block-sgs-gallery` (specificity 0,2,0), so these tier
+// rules win on SPECIFICITY and are independent of stylesheet source order.
+// Breakpoints are the project device-tier standard 1024/768 — identical to
+// class-sgs-container-wrapper.php:1296-1301. These are stylesheet rules in the
+// block's own scoped <style>, never inline (Spec 32).
+$sgs_gallery_gap_tier = static function ( $value ) {
+	$value = (string) $value;
+	if ( '' === $value ) {
+		return '';
+	}
+	// Back-compat, mirroring the base gap above: a bare numeric string is the
+	// old own-RangeControl format and means pixels; a slug or raw CSS length
+	// passes straight through to sgs_container_gap_value().
+	if ( preg_match( '/^\d+$/', $value ) ) {
+		$value .= 'px';
+	}
+	return sgs_container_gap_value( $value );
+};
+
+$gap_tablet = $sgs_gallery_gap_tier( $attributes['gapTablet'] ?? '' );
+$gap_mobile = $sgs_gallery_gap_tier( $attributes['gapMobile'] ?? '' );
+
+if ( '' !== $gap_tablet ) {
+	$gallery_responsive_css .= '@media (max-width:1023px){' . $root_sel . '{--sgs-gap:' . $gap_tablet . '}}';
+}
+if ( '' !== $gap_mobile ) {
+	$gallery_responsive_css .= '@media (max-width:767px){' . $root_sel . '{--sgs-gap:' . $gap_mobile . '}}';
+}
+
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$gallery_style_engine_args = array();
 

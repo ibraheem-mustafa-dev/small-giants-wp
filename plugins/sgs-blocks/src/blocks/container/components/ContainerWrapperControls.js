@@ -407,7 +407,18 @@ export function WidthPanel( { attributes, setAttributes } ) {
  * Gap (responsive) + layout type + columns (grid) + vertical alignment.
  * Used by section and layout kinds.
  */
-export function LayoutPanel( { attributes, setAttributes } ) {
+/**
+ * Layout + Columns + Gap for a wrapper.
+ *
+ * `showLayout` (default true) exists because a block may own its OWN layout and
+ * columns controls while still wanting the shared responsive Gap. Rendering both
+ * is not merely redundant — it is silent DATA LOSS. Measured on sgs/gallery
+ * 2026-08-07: this panel offers Stack/Flex/Grid bound to `layout`, while gallery's
+ * block.json enum is Grid/Masonry/Carousel, so writing "flex" is accepted in the
+ * editor, stored, and then SILENTLY reverted to "grid" on reload by WordPress's
+ * enum coercion. Pass showLayout={false} when the consuming block renders its own.
+ */
+export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) {
 	const {
 		layout = 'stack',
 		verticalAlign = 'start',
@@ -425,15 +436,17 @@ export function LayoutPanel( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			<SelectControl
-				label={ __( 'Layout type', 'sgs-blocks' ) }
-				value={ layout }
-				options={ LAYOUT_OPTIONS }
-				onChange={ ( val ) => setAttributes( { layout: val } ) }
-				__nextHasNoMarginBottom
-			/>
+			{ showLayout && (
+				<SelectControl
+					label={ __( 'Layout type', 'sgs-blocks' ) }
+					value={ layout }
+					options={ LAYOUT_OPTIONS }
+					onChange={ ( val ) => setAttributes( { layout: val } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 
-			{ layout === 'grid' && (
+			{ showLayout && layout === 'grid' && (
 				<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
 					{ ( breakpoint ) => {
 						const attrMap = {
