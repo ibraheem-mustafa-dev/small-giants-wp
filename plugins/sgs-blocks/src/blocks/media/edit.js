@@ -25,12 +25,53 @@ import {
 	ResponsiveBorderRadiusControl,
 	SgsLinkControl,
 } from '../../components';
+import BooleanResponsiveControl from './BooleanResponsiveControl';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
  * server-side sgs_media_validate_unit() allowlist so the editor cannot emit a
  * unit render.php would reject.
  */
+/**
+ * The video playback booleans, each as a breakpoint map plus its desktop default.
+ *
+ * Shape is deliberate: `{ desktop, tablet, mobile }` is the canonical responsive
+ * idiom in this codebase (see any `<ResponsiveControl>` call site), and
+ * `check-control-ux.js` recognises a variant appearing as the VALUE of a
+ * `tablet:`/`mobile:` key as a compliant family. Listing the tier attrs any other
+ * way — e.g. spelled out one per line in a resetAll — reads to that gate as an
+ * unwrapped direct control, which is exactly what it flagged.
+ *
+ * Single source of truth for the panel's reset, so adding a seventh boolean
+ * cannot be silently forgotten by `resetAll`.
+ */
+const PLAYBACK_TIERS = [
+	{
+		map: { desktop: 'videoAutoplay', tablet: 'videoAutoplayTablet', mobile: 'videoAutoplayMobile' },
+		desktopDefault: false,
+	},
+	{
+		map: { desktop: 'videoLoop', tablet: 'videoLoopTablet', mobile: 'videoLoopMobile' },
+		desktopDefault: false,
+	},
+	{
+		map: { desktop: 'videoMuted', tablet: 'videoMutedTablet', mobile: 'videoMutedMobile' },
+		desktopDefault: true,
+	},
+	{
+		map: { desktop: 'videoControls', tablet: 'videoControlsTablet', mobile: 'videoControlsMobile' },
+		desktopDefault: true,
+	},
+	{
+		map: { desktop: 'videoPlaysInline', tablet: 'videoPlaysInlineTablet', mobile: 'videoPlaysInlineMobile' },
+		desktopDefault: true,
+	},
+	{
+		map: { desktop: 'videoLazyLoad', tablet: 'videoLazyLoadTablet', mobile: 'videoLazyLoadMobile' },
+		desktopDefault: true,
+	},
+];
+
 const SGS_MEDIA_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: '%', label: '%' },
@@ -250,6 +291,65 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						{ __( 'Remove Image', 'sgs-blocks' ) }
 					</Button>
+					{ /* Art direction (2026-08-07). Same device-switched shape as
+					     sgs/hero's split image, so a client meets ONE interaction for
+					     "a different crop on narrow screens" wherever images appear.
+					     Desktop is the image chosen above; tablet/mobile are optional
+					     overrides that fall back to it when left empty. */ }
+					<ResponsiveControl label={ __( 'Art direction (optional)', 'sgs-blocks' ) }>
+						{ ( bp ) => {
+							if ( 'desktop' === bp ) {
+								return (
+									<p style={ { margin: 0, fontStyle: 'italic' } }>
+										{ __(
+											'The image above is used on desktop. Switch to tablet or mobile to set a different crop.',
+											'sgs-blocks'
+										) }
+									</p>
+								);
+							}
+							const idKey = 'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
+							const urlKey = 'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
+							return (
+								<>
+									<MediaUploadCheck>
+										<MediaUpload
+											onSelect={ ( media ) =>
+												setAttributes( {
+													[ idKey ]: media.id || null,
+													[ urlKey ]: media.url || '',
+												} )
+											}
+											allowedTypes={ [ 'image' ] }
+											value={ attributes[ idKey ] }
+											render={ ( { open } ) => (
+												<Button variant="secondary" onClick={ open }>
+													{ attributes[ urlKey ]
+														? __( 'Replace image', 'sgs-blocks' )
+														: __( 'Set image', 'sgs-blocks' ) }
+												</Button>
+											) }
+										/>
+									</MediaUploadCheck>
+									{ attributes[ urlKey ] && (
+										<Button
+											variant="link"
+											isDestructive
+											onClick={ () =>
+												setAttributes( {
+													[ idKey ]: null,
+													[ urlKey ]: '',
+												} )
+											}
+											style={ { marginTop: '8px', display: 'block' } }
+										>
+											{ __( 'Use the main image here', 'sgs-blocks' ) }
+										</Button>
+									) }
+								</>
+							);
+						} }
+					</ResponsiveControl>
 					{ /* WCAG 2.1 AA 1.1.1 (Non-text Content): decorative toggle is the
 					     structural fix for "leave alt blank" — it makes the choice
 					     explicit and emits both alt="" AND aria-hidden="true", rather
@@ -886,99 +986,169 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanel
 						label={ __( 'Playback Options', 'sgs-blocks' ) }
 						resetAll={ () => {
-							setAttributes( {
-								videoAutoplay: false,
-								videoLoop: false,
-								videoMuted: true,
-								videoControls: true,
-								videoPlaysInline: true,
-								videoLazyLoad: true,
+							// Driven off PLAYBACK_TIER_MAP rather than a hand-listed
+							// wall of 18 keys, so a new playback boolean cannot be
+							// added to the panel and silently forgotten by reset.
+							// The map is also the canonical breakpoint-map idiom
+							// ({ desktop, tablet, mobile }) that check-control-ux.js
+							// recognises as a compliant responsive family — a
+							// hand-listed reset reads to that gate as 12 unwrapped
+							// direct controls, which is what it flagged before.
+							const reset = {};
+							PLAYBACK_TIERS.forEach( ( { map, desktopDefault } ) => {
+								reset[ map.desktop ] = desktopDefault;
+								reset[ map.tablet ] = null;
+								reset[ map.mobile ] = null;
 							} );
+							setAttributes( reset );
 						} }
 					>
+						{ /* Each item is a single BooleanResponsiveControl (Desktop
+						     toggle + Tablet/Mobile Inherit/On/Off) rather than 3
+						     loose ToggleControls per setting — 6 rows in the panel,
+						     not 18, per the design brief's inspector-usability
+						     requirement. "It's easy to mute something on a PC... but
+						     on mobile people often want mute by default" is exactly
+						     the per-device product decision these tiers exist for. */ }
 						<ToolsPanelItem
 							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							hasValue={ () => !! videoAutoplay }
+							hasValue={ () =>
+								!! videoAutoplay ||
+								null !==
+									( attributes.videoAutoplayTablet ??
+										null ) ||
+								null !==
+									( attributes.videoAutoplayMobile ?? null )
+							}
 							onDeselect={ () =>
-								setAttributes( { videoAutoplay: false } )
+								setAttributes( {
+									videoAutoplay: false,
+									videoAutoplayTablet: null,
+									videoAutoplayMobile: null,
+								} )
 							}
 							isShownByDefault
 						>
-							<ToggleControl
+							<BooleanResponsiveControl
 								label={ __( 'Autoplay', 'sgs-blocks' ) }
 								help={ __(
-									'Autoplay requires Muted to be enabled on most browsers.',
+									'Autoplay requires Muted to be enabled on most browsers — turning Autoplay on for a tier automatically mutes that tier too.',
 									'sgs-blocks'
 								) }
-								checked={ !! videoAutoplay }
-								onChange={ ( value ) =>
-									setAttributes( { videoAutoplay: value } )
-								}
+								attrBase="videoAutoplay"
+								attrTablet="videoAutoplayTablet"
+								attrMobile="videoAutoplayMobile"
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Loop', 'sgs-blocks' ) }
-							hasValue={ () => !! videoLoop }
+							hasValue={ () =>
+								!! videoLoop ||
+								null !==
+									( attributes.videoLoopTablet ?? null ) ||
+								null !== ( attributes.videoLoopMobile ?? null )
+							}
 							onDeselect={ () =>
-								setAttributes( { videoLoop: false } )
+								setAttributes( {
+									videoLoop: false,
+									videoLoopTablet: null,
+									videoLoopMobile: null,
+								} )
 							}
 						>
-							<ToggleControl
+							<BooleanResponsiveControl
 								label={ __( 'Loop', 'sgs-blocks' ) }
-								checked={ !! videoLoop }
-								onChange={ ( value ) =>
-									setAttributes( { videoLoop: value } )
-								}
+								attrBase="videoLoop"
+								attrTablet="videoLoopTablet"
+								attrMobile="videoLoopMobile"
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Muted', 'sgs-blocks' ) }
-							hasValue={ () => videoMuted === false }
+							hasValue={ () =>
+								videoMuted === false ||
+								null !==
+									( attributes.videoMutedTablet ?? null ) ||
+								null !== ( attributes.videoMutedMobile ?? null )
+							}
 							onDeselect={ () =>
-								setAttributes( { videoMuted: true } )
+								setAttributes( {
+									videoMuted: true,
+									videoMutedTablet: null,
+									videoMutedMobile: null,
+								} )
 							}
 							isShownByDefault
 						>
-							<ToggleControl
+							<BooleanResponsiveControl
 								label={ __( 'Muted', 'sgs-blocks' ) }
 								help={ __(
-									'Required for autoplay. Always on for background videos.',
+									'It’s easy to unmute on a PC — but on mobile, visitors often expect audio off by default, like social-media video. Set it per device here.',
 									'sgs-blocks'
 								) }
-								checked={ videoMuted !== false }
-								onChange={ ( value ) =>
-									setAttributes( { videoMuted: value } )
-								}
+								attrBase="videoMuted"
+								attrTablet="videoMutedTablet"
+								attrMobile="videoMutedMobile"
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Show Controls', 'sgs-blocks' ) }
-							hasValue={ () => videoControls === false }
+							hasValue={ () =>
+								videoControls === false ||
+								null !==
+									( attributes.videoControlsTablet ??
+										null ) ||
+								null !==
+									( attributes.videoControlsMobile ?? null )
+							}
 							onDeselect={ () =>
-								setAttributes( { videoControls: true } )
+								setAttributes( {
+									videoControls: true,
+									videoControlsTablet: null,
+									videoControlsMobile: null,
+								} )
 							}
 							isShownByDefault
 						>
-							<ToggleControl
+							<BooleanResponsiveControl
 								label={ __( 'Show Controls', 'sgs-blocks' ) }
-								checked={ videoControls !== false }
-								onChange={ ( value ) =>
-									setAttributes( { videoControls: value } )
-								}
+								attrBase="videoControls"
+								attrTablet="videoControlsTablet"
+								attrMobile="videoControlsMobile"
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Plays Inline (iOS)', 'sgs-blocks' ) }
-							hasValue={ () => videoPlaysInline === false }
+							hasValue={ () =>
+								videoPlaysInline === false ||
+								null !==
+									( attributes.videoPlaysInlineTablet ??
+										null ) ||
+								null !==
+									( attributes.videoPlaysInlineMobile ??
+										null )
+							}
 							onDeselect={ () =>
-								setAttributes( { videoPlaysInline: true } )
+								setAttributes( {
+									videoPlaysInline: true,
+									videoPlaysInlineTablet: null,
+									videoPlaysInlineMobile: null,
+								} )
 							}
 						>
-							<ToggleControl
+							<BooleanResponsiveControl
 								label={ __(
 									'Plays Inline (iOS)',
 									'sgs-blocks'
@@ -987,30 +1157,43 @@ export default function Edit( { attributes, setAttributes } ) {
 									'Prevents iOS from opening the video in full screen automatically.',
 									'sgs-blocks'
 								) }
-								checked={ videoPlaysInline !== false }
-								onChange={ ( value ) =>
-									setAttributes( { videoPlaysInline: value } )
-								}
+								attrBase="videoPlaysInline"
+								attrTablet="videoPlaysInlineTablet"
+								attrMobile="videoPlaysInlineMobile"
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Lazy Load', 'sgs-blocks' ) }
-							hasValue={ () => videoLazyLoad === false }
+							hasValue={ () =>
+								videoLazyLoad === false ||
+								null !==
+									( attributes.videoLazyLoadTablet ??
+										null ) ||
+								null !==
+									( attributes.videoLazyLoadMobile ?? null )
+							}
 							onDeselect={ () =>
-								setAttributes( { videoLazyLoad: true } )
+								setAttributes( {
+									videoLazyLoad: true,
+									videoLazyLoadTablet: null,
+									videoLazyLoadMobile: null,
+								} )
 							}
 						>
-							<ToggleControl
+							<BooleanResponsiveControl
 								label={ __( 'Lazy Load', 'sgs-blocks' ) }
 								help={ __(
 									'Load video only when scrolled into view.',
 									'sgs-blocks'
 								) }
-								checked={ videoLazyLoad !== false }
-								onChange={ ( value ) =>
-									setAttributes( { videoLazyLoad: value } )
-								}
+								attrBase="videoLazyLoad"
+								attrTablet="videoLazyLoadTablet"
+								attrMobile="videoLazyLoadMobile"
+								attributes={ attributes }
+								setAttributes={ setAttributes }
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

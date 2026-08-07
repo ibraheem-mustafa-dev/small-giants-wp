@@ -145,31 +145,98 @@
 			"type": "boolean",
 			"default": false
 		},
+		"videoAutoplayTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null,
+			"_comment": "Per-device playback-behaviour tiers (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — the framework's null-means-inherit convention, same as maxWidthTablet etc. Desktop has no *Desktop sibling; the unsuffixed attr above IS the desktop value."
+		},
+		"videoAutoplayMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
 		"videoLoop": {
 			"type": "boolean",
 			"default": false
+		},
+		"videoLoopTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
+		"videoLoopMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
 		},
 		"videoMuted": {
 			"type": "boolean",
 			"default": true
 		},
+		"videoMutedTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
+		"videoMutedMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
 		"videoControls": {
 			"type": "boolean",
 			"default": true
+		},
+		"videoControlsTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
+		"videoControlsMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
 		},
 		"videoPlaysInline": {
 			"type": "boolean",
 			"default": true
 		},
+		"videoPlaysInlineTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
+		"videoPlaysInlineMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
 		"videoLazyLoad": {
 			"type": "boolean",
 			"default": true
+		},
+		"videoLazyLoadTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
+		"videoLazyLoadMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
 		},
 		"imageId": {
 			"type": "integer",
 			"default": null
 		},
 		"imageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"imageIdTablet": {
+			"type": "integer",
+			"default": null
+		},
+		"imageUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"imageIdMobile": {
+			"type": "integer",
+			"default": null
+		},
+		"imageUrlMobile": {
 			"type": "string",
 			"default": "",
 			"role": "content"

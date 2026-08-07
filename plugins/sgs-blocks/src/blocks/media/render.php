@@ -140,6 +140,61 @@ if ( ! function_exists( 'sgs_media_validate_unit' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_resolve_tier_bool' ) ) {
+	/**
+	 * Resolve a boolean per-device playback attribute's tablet/mobile
+	 * EFFECTIVE values, falling back upward when a tier's own override is
+	 * unset (null): tablet inherits desktop, mobile inherits the resolved
+	 * tablet value. Same fallback shape as the container block's responsive
+	 * video-source swap (`src/blocks/container/view.js`).
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $base_key   Desktop/base attribute key (e.g. 'videoAutoplay').
+	 * @return array{desktop:bool,tablet:bool,mobile:bool} Effective per-tier values.
+	 */
+	function sgs_media_resolve_tier_bool( array $attributes, string $base_key ): array {
+		$desktop = ! empty( $attributes[ $base_key ] );
+
+		$tablet_raw = $attributes[ $base_key . 'Tablet' ] ?? null;
+		$tablet     = null !== $tablet_raw ? (bool) $tablet_raw : $desktop;
+
+		$mobile_raw = $attributes[ $base_key . 'Mobile' ] ?? null;
+		$mobile     = null !== $mobile_raw ? (bool) $mobile_raw : $tablet;
+
+		return array(
+			'desktop' => $desktop,
+			'tablet'  => $tablet,
+			'mobile'  => $mobile,
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_media_tier_data_attrs' ) ) {
+	/**
+	 * Build the `data-{name}-tablet` / `data-{name}-mobile` override attribute
+	 * fragment for one boolean per-device family — emitted ONLY when a tier's
+	 * effective value differs from the tier immediately above it, so a block
+	 * with no tier overrides renders byte-identical markup to before this
+	 * feature existed (the desktop value is always the block's real HTML
+	 * attribute/property, never a data-* — no-JS visitors get the correct
+	 * desktop behaviour with zero script involvement).
+	 *
+	 * @param string $data_name Kebab-case data-attribute base (e.g. 'autoplay', 'plays-inline').
+	 * @param array  $tiers     { desktop, tablet, mobile } from sgs_media_resolve_tier_bool().
+	 * @return string HTML attribute fragment with a leading space, or ''.
+	 */
+	function sgs_media_tier_data_attrs( string $data_name, array $tiers ): string {
+		$out = '';
+		if ( $tiers['tablet'] !== $tiers['desktop'] ) {
+			$out .= ' data-' . $data_name . '-tablet="' . ( $tiers['tablet'] ? '1' : '0' ) . '"';
+		}
+		if ( $tiers['mobile'] !== $tiers['tablet'] ) {
+			$out .= ' data-' . $data_name . '-mobile="' . ( $tiers['mobile'] ? '1' : '0' ) . '"';
+		}
+		return $out;
+	}
+}
+
 if ( ! function_exists( 'sgs_media_css_length' ) ) {
 	/**
 	 * Normalise a dimensional value to a validated CSS length string.
@@ -509,15 +564,79 @@ if ( 'image' === $media_type ) {
 	$img_height_part = $image_height ? ' height="' . esc_attr( $image_height ) . '"' : '';
 	$img_aria_hidden = $image_is_decorative ? ' aria-hidden="true"' : '';
 
-	$image_html = sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s%s class="sgs-media__img" loading="lazy" decoding="async" />',
+	// ART-DIRECTION TIERS (2026-08-07). Same shape as sgs/hero's split-image trio and
+	// the same ID-wins-URL-falls-back pairing as sgs/responsive-logo (D496), so ONE
+	// routing rule covers a nested composite element (hero) and a standalone block
+	// (this) rather than two per-block special cases.
+	//
+	// Emitted as sibling <img>s carrying BEM tier modifiers, toggled by breakpoint —
+	// deliberately matching hero rather than <picture>/<source>, because the draft
+	// vocabulary the cloning pipeline reads IS the BEM modifier. One convention on
+	// both ends means the clone round-trips.
+	//
+	// Device-tier breakpoints are the SGS standard 768/1024. Each tier's rules are
+	// emitted independently, so a tier left empty simply falls back to the base image
+	// at that width — degrade to MORE content, never less.
+	$tier_imgs = array();
+	foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
+		$tier_id  = isset( $attributes[ 'imageId' . $sgs_tier ] ) ? absint( $attributes[ 'imageId' . $sgs_tier ] ) : 0;
+		$tier_url = isset( $attributes[ 'imageUrl' . $sgs_tier ] ) ? (string) $attributes[ 'imageUrl' . $sgs_tier ] : '';
+		if ( $tier_id ) {
+			$tier_src = wp_get_attachment_image_src( $tier_id, 'full' );
+			if ( $tier_src ) {
+				$tier_url = $tier_src[0];
+			}
+		}
+		if ( '' === $tier_url ) {
+			continue;
+		}
+		$tier_imgs[ strtolower( $sgs_tier ) ] = $tier_url;
+	}
+
+	$base_class = 'sgs-media__img';
+	if ( ! empty( $tier_imgs ) ) {
+		$base_class .= ' sgs-media__img--desktop';
+	}
+
+	foreach ( $tier_imgs as $tier_key => $tier_url ) {
+		$image_html .= sprintf(
+			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media__img--%s" loading="lazy" decoding="async" />',
+			esc_url( $tier_url ),
+			esc_attr( $image_alt ),
+			$img_aria_hidden,
+			esc_attr( $tier_key )
+		);
+	}
+	// ⛔ Build the tier selector from $id_wrap (the BARE scope selector), never from
+	// $id_sel. $id_sel is a three-member selector LIST (:252), and a descendant
+	// appended to a list binds to the LAST member ONLY — so `$id_sel . ' .x--desktop'`
+	// left the first two members as an unqualified `.scope .sgs-media__img{display:none}`
+	// and hid EVERY image at EVERY width. Measured live before this fix: 3 imgs in the
+	// DOM, 0 visible, at all three breakpoints. Same shape as the recorded gotcha
+	// "a pseudo-element appended to a selector list attaches to the last selector only".
+	$sgs_tier_sel = static function ( $tier ) use ( $id_wrap ) {
+		return $id_wrap . ' .sgs-media__img--' . $tier;
+	};
+	if ( isset( $tier_imgs['mobile'] ) ) {
+		$responsive_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$responsive_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
+	}
+	if ( isset( $tier_imgs['tablet'] ) ) {
+		$responsive_css .= '@media(min-width:768px) and (max-width:1023px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$responsive_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$responsive_css .= '@media(min-width:1024px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+	}
+
+	$image_html .= sprintf(
+		'<img src="%s" alt="%s"%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
 		esc_url( $resolved_url ),
 		esc_attr( $image_alt ),
 		$img_width_part,
 		$img_height_part,
 		$img_srcset,
 		$img_sizes,
-		$img_aria_hidden
+		$img_aria_hidden,
+		esc_attr( $base_class )
 	);
 }
 
@@ -532,12 +651,28 @@ if ( 'video' === $media_type ) {
 	$video_mime     = isset( $attributes['videoMimeType'] ) ? (string) $attributes['videoMimeType'] : '';
 	$thumbnail      = isset( $attributes['thumbnail'] ) ? (string) $attributes['thumbnail'] : '';
 	$thumbnail_id   = isset( $attributes['thumbnailId'] ) ? absint( $attributes['thumbnailId'] ) : 0;
-	$video_autoplay = ! empty( $attributes['videoAutoplay'] );
-	$video_loop     = ! empty( $attributes['videoLoop'] );
-	$video_muted    = isset( $attributes['videoMuted'] ) ? (bool) $attributes['videoMuted'] : true;
-	$video_controls = isset( $attributes['videoControls'] ) ? (bool) $attributes['videoControls'] : true;
-	$video_inline   = isset( $attributes['videoPlaysInline'] ) ? (bool) $attributes['videoPlaysInline'] : true;
-	$video_lazy     = isset( $attributes['videoLazyLoad'] ) ? (bool) $attributes['videoLazyLoad'] : true;
+	// Per-device playback-behaviour tiers (D-pending). Desktop stays the real
+	// HTML attribute/property (progressive enhancement — correct with JS
+	// disabled); tablet/mobile overrides are carried as data-* below and
+	// applied by view.js only for the direct-file <video> path (a YouTube/
+	// Vimeo <iframe> embed's autoplay/loop/mute/controls are URL query
+	// params baked in once at render — reconstructing them per-tier would
+	// force an iframe reload on every resize, which is worse than the fixed
+	// desktop behaviour it would replace, so tiers are deliberately inert for
+	// the embed paths below and only wired for the direct-file branch).
+	$autoplay_tiers = sgs_media_resolve_tier_bool( $attributes, 'videoAutoplay' );
+	$loop_tiers     = sgs_media_resolve_tier_bool( $attributes, 'videoLoop' );
+	$muted_tiers    = sgs_media_resolve_tier_bool( $attributes, 'videoMuted' );
+	$controls_tiers = sgs_media_resolve_tier_bool( $attributes, 'videoControls' );
+	$inline_tiers   = sgs_media_resolve_tier_bool( $attributes, 'videoPlaysInline' );
+	$lazy_tiers     = sgs_media_resolve_tier_bool( $attributes, 'videoLazyLoad' );
+
+	$video_autoplay = $autoplay_tiers['desktop'];
+	$video_loop     = $loop_tiers['desktop'];
+	$video_muted    = $muted_tiers['desktop'];
+	$video_controls = $controls_tiers['desktop'];
+	$video_inline   = $inline_tiers['desktop'];
+	$video_lazy     = $lazy_tiers['desktop'];
 
 	// Resolve poster image URL: thumbnailId wins; fall back to thumbnail.
 	$poster_url = '';
@@ -656,8 +791,18 @@ if ( 'video' === $media_type ) {
 		$preload_attr  = $video_lazy ? ' preload="none"' : ' preload="metadata"';
 		$poster_attr   = '' !== $poster_url ? ' poster="' . esc_url( $poster_url ) . '"' : '';
 
+		// Tier overrides (data-*) — only present when a tier's effective value
+		// diverges from the tier above it (view.js resolves + applies these on
+		// load and on resize; see sgs_media_tier_data_attrs() docblock above).
+		$tier_data_attrs  = sgs_media_tier_data_attrs( 'autoplay', $autoplay_tiers );
+		$tier_data_attrs .= sgs_media_tier_data_attrs( 'loop', $loop_tiers );
+		$tier_data_attrs .= sgs_media_tier_data_attrs( 'muted', $muted_tiers );
+		$tier_data_attrs .= sgs_media_tier_data_attrs( 'controls', $controls_tiers );
+		$tier_data_attrs .= sgs_media_tier_data_attrs( 'plays-inline', $inline_tiers );
+		$tier_data_attrs .= sgs_media_tier_data_attrs( 'lazy', $lazy_tiers );
+
 		$video_html = sprintf(
-			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s>' .
+			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s>' .
 			'<source src="%s" type="%s">' .
 			'</video>',
 			$autoplay_attr,
@@ -667,6 +812,7 @@ if ( 'video' === $media_type ) {
 			$inline_attr,
 			$preload_attr,
 			$poster_attr,
+			$tier_data_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively from sgs_media_tier_data_attrs(), which only ever emits the fixed literal strings 'data-{name}-tablet="1"'/'"0"' — no attribute-derived text passes through unescaped.
 			' aria-label="' . esc_attr( '' !== $caption ? $caption : __( 'Video', 'sgs-blocks' ) ) . '"',
 			esc_url( $resolved_video_url ),
 			esc_attr( $resolved_video_mime )
@@ -824,7 +970,18 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // `.sgs-foo__image` so per-class CSS rules cascade to the right element.
 // Naked-mode is image-only; video always emits a <figure> wrapper.
 // ---------------------------------------------------------------------------
-$naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open );
+// ART-DIRECTION TIERS SUPPRESS NAKED MODE (2026-08-07). Naked mode makes the <img>
+// the block ROOT (Spec 32: no useless wrapper) by REBUILDING $image_html from scratch
+// below — which silently discarded the tier <img>s built in §11 and shipped a single
+// desktop image at every width. Caught on the live canary: 1 <img> in the DOM where 3
+// were expected, and 0 visible.
+//
+// A block root can only be ONE element, so the tier siblings need a wrapper — and with
+// two or three real images in it that wrapper is STRUCTURAL, not the useless one Spec
+// 32 bans. Falling back to the figure path also keeps ONE convention across sgs/hero
+// and sgs/media (sibling <img>s + BEM tier modifiers + breakpoint CSS), which is the
+// point of proving the routing on both a nested element and a standalone block.
+$naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open ) && empty( $tier_imgs );
 // SVG mode always uses the <figure> wrapper (needed for consistent sizing + caption support).
 
 if ( $naked_mode && '' !== $image_html ) {

@@ -238,6 +238,11 @@
 .sgs-video.is-playing .sgs-video__centre { opacity: 0; pointer-events: none; }
 .sgs-video__centre:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
+/* Per-device "Show Controls" tier resolved off (view.js) — chromeless playback,
+   e.g. a background-video use case that is only chromeless on mobile. */
+.sgs-video--no-controls .sgs-video__centre,
+.sgs-video--no-controls .sgs-video__bar { display: none; }
+
 /* Bottom bar — hover/focus reveal on desktop; always visible on touch. */
 .sgs-video__bar {
     position: absolute;

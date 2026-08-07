@@ -13,7 +13,7 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
- *   backgroundVideo, svgContent, minHeight*, badges, background/text/border colourHover,
+ *   svgContent, minHeight*, badges, background/text/border colourHover,
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
  *   splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
@@ -143,9 +143,14 @@ if ( empty( $split_image['url'] ) && ! empty( $split_media['url'] ) && 'image' =
 		'alt' => isset( $split_media['alt'] ) ? (string) $split_media['alt'] : '',
 	);
 }
+// splitImageTablet was DECLARED in block.json (b717717d) but read by nothing —
+// no render, no editor control — so the attribute existed and did nothing. The
+// dead-control gate did not catch it (it treats a responsive-family member as
+// consumed when the BASE is consumed, which is exactly wrong here: rendering the
+// base says nothing about whether the tablet tier renders). Wired 2026-08-07.
+$split_image_tablet  = $attributes['splitImageTablet'] ?? null;
 $split_image_mobile  = $attributes['splitImageMobile'] ?? null;
 $split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
-$bg_video            = $attributes['backgroundVideo'] ?? null;
 $svg_content         = $attributes['svgContent'] ?? '';
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
@@ -762,12 +767,11 @@ if ( ( '' !== $hero_custom_bg || '' !== $hero_gradient ) && ! in_array( 'has-bac
 // Build video background.
 // bgVideo / bgVideoMobile override the background image on their respective viewports.
 // These attributes work independently of the 'video' variant — any variant can have a video bg.
-$video_html        = '';
-$has_variant_video = $is_video && ! empty( $bg_video['url'] );
-$has_attr_video    = ! empty( $bg_video_attr['url'] );
+$video_html     = '';
+$has_attr_video = ! empty( $bg_video_attr['url'] );
 
-if ( $has_variant_video || $has_attr_video ) {
-	$desktop_src = ! empty( $bg_video_attr['url'] ) ? $bg_video_attr['url'] : ( $bg_video['url'] ?? '' );
+if ( $has_attr_video ) {
+	$desktop_src = $bg_video_attr['url'];
 	// Tiers fall back UPWARD (mobile -> tablet -> desktop), matching
 	// SGS_Container_Wrapper::render()'s three-tier resolution. Hero duplicates the
 	// wrapper's video path rather than calling it (a composite-mirror divergence
@@ -987,12 +991,51 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 			$mobile_img_attrs
 		);
 
-		// Mark the desktop image so CSS can hide it on mobile when both are present.
-		$img_attrs['class'] .= ' sgs-hero__split-image--desktop';
-
 		// Append the breakpoint-toggle CSS to the responsive_css output.
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image--desktop{display:none}}';
 		$responsive_css .= '@media (min-width:768px){.' . $uid . ' .sgs-hero__split-image--mobile{display:none}}';
+	}
+
+	// TABLET tier (2026-08-07). Mirrors the mobile arm above; the two compose because
+	// each tier's rules are emitted INDEPENDENTLY rather than as one 3-way switch:
+	// mobile only -> mobile <=767, base above.
+	// tablet only -> tablet 768-1023, base elsewhere (degrades UP to the base image,
+	// never to nothing — "degrade to more content, never less").
+	// both -> mobile <=767, tablet 768-1023, base >=1024.
+	// Device-tier breakpoints are the SGS standard 768/1024, not arbitrary visual ones.
+	if ( ! empty( $split_image_tablet['url'] ) ) {
+		$tablet_img_id    = ! empty( $split_image_tablet['id'] ) ? absint( $split_image_tablet['id'] ) : 0;
+		$tablet_img_attrs = array(
+			'class'         => 'sgs-hero__split-image sgs-hero__split-image--tablet',
+			'loading'       => 'eager',
+			'decoding'      => 'async',
+			'fetchpriority' => 'high',
+		);
+		if ( ! empty( $split_image_tablet['width'] ) ) {
+			$tablet_img_attrs['width'] = absint( $split_image_tablet['width'] );
+		}
+		if ( ! empty( $split_image_tablet['height'] ) ) {
+			$tablet_img_attrs['height'] = absint( $split_image_tablet['height'] );
+		}
+		$media_html .= sgs_responsive_image(
+			$tablet_img_id,
+			$split_image_tablet['url'],
+			$split_image_tablet['alt'] ?? '',
+			'large',
+			$tablet_img_attrs
+		);
+
+		$responsive_css .= '@media (min-width:768px) and (max-width:1023px){.' . $uid . ' .sgs-hero__split-image--desktop{display:none}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image--tablet{display:none}}';
+		$responsive_css .= '@media (min-width:1024px){.' . $uid . ' .sgs-hero__split-image--tablet{display:none}}';
+	}
+
+	// Mark the base image as the DESKTOP tier whenever ANY narrower tier exists.
+	// This was previously done INSIDE the mobile arm, so a tablet-only hero would have
+	// emitted tablet-tier CSS targeting a `--desktop` class that was never written —
+	// the rules would have matched nothing and both images would have shown at once.
+	if ( ! empty( $split_image_mobile['url'] ) || ! empty( $split_image_tablet['url'] ) ) {
+		$img_attrs['class'] .= ' sgs-hero__split-image--desktop';
 	}
 
 	$media_html .= sgs_responsive_image(
@@ -1033,7 +1076,6 @@ foreach ( array(
 	'backgroundImage',
 	'backgroundImageTablet',
 	'backgroundImageMobile',
-	'backgroundVideo',
 	'bgVideo',
 	'bgVideoMobile',
 	'bgSvgContent',

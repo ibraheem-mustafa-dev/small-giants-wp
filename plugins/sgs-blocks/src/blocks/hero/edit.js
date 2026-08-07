@@ -241,8 +241,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayColour,
 		overlayOpacity,
 		splitImage,
+		splitImageTablet,
+		splitImageMobile,
 		splitMedia,
-		backgroundVideo,
 		svgContent,
 		minHeight,
 		shadow,
@@ -872,6 +873,60 @@ export default function Edit( { attributes, setAttributes } ) {
 								label={ __( 'Select hero media', 'sgs-blocks' ) }
 								instructionsImage={ __( 'Choose an image or video for the hero', 'sgs-blocks' ) }
 							/>
+
+							{ /* Art direction. `splitImageMobile` was render-consumed and
+							     `splitImageTablet` was declared-but-dead, and NEITHER had an editor
+							     control — so only the cloning pipeline could set them and a client
+							     could not crop their own hero for narrow screens. One device-switched
+							     control rather than three stacked pickers: that is the SGS canonical
+							     shape, and `check-control-ux` enforces it (it flagged the stacked
+							     version as RESPONSIVE-FAMILY-WITHOUT-SWITCHER). The switcher also
+							     drives WP's native canvas preview, so the picker and the preview
+							     always agree about which tier you are editing. */ }
+							<ResponsiveControl label={ __( 'Split image', 'sgs-blocks' ) }>
+								{ ( bp ) => {
+									const key = {
+										desktop: 'splitImage',
+										tablet: 'splitImageTablet',
+										mobile: 'splitImageMobile',
+									}[ bp ];
+									const current = attributes[ key ];
+									return (
+										<MediaPicker
+											value={
+												current?.url
+													? { ...current, type: 'image' }
+													: null
+											}
+											onChange={ ( media ) =>
+												setAttributes( {
+													[ key ]:
+														media && media.url
+															? {
+																	id: media.id || 0,
+																	url: media.url,
+																	alt: media.alt || '',
+															  }
+															: undefined,
+												} )
+											}
+											onRemove={ () =>
+												setAttributes( { [ key ]: undefined } )
+											}
+											label={
+												'desktop' === bp
+													? __( 'Main image', 'sgs-blocks' )
+													: __( 'Override for this screen size', 'sgs-blocks' )
+											}
+											instructionsImage={
+												'desktop' === bp
+													? __( 'The image used unless a narrower size overrides it.', 'sgs-blocks' )
+													: __( 'Optional. Leave empty to use the main image at this size.', 'sgs-blocks' )
+											}
+										/>
+									);
+								} }
+							</ResponsiveControl>
 							<RangeControl
 								label={ __( 'Split image mobile height (px)', 'sgs-blocks' ) }
 								help={ __( 'Fixed height for the split image on mobile screens. 0 = auto.', 'sgs-blocks' ) }
@@ -1086,20 +1141,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							<MediaUpload
 								onSelect={ ( media ) =>
 									setAttributes( {
-										backgroundVideo: {
+										bgVideo: {
 											id: media.id,
 											url: media.url,
 										},
 									} )
 								}
 								allowedTypes={ [ 'video' ] }
-								value={ backgroundVideo?.id }
+								value={ bgVideo?.id }
 								render={ ( { open } ) => (
 									<div>
-										{ backgroundVideo?.url ? (
+										{ bgVideo?.url ? (
 											<>
 												<video
-													src={ backgroundVideo.url }
+													src={ bgVideo.url }
 													controls
 													style={ {
 														maxWidth: '100%',
@@ -1110,7 +1165,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													variant="secondary"
 													onClick={ () =>
 														setAttributes( {
-															backgroundVideo:
+															bgVideo:
 																undefined,
 														} )
 													}
@@ -1348,10 +1403,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ isVideo && backgroundVideo?.url && (
+				{ isVideo && bgVideo?.url && (
 					<video
 						className="sgs-hero__video-bg"
-						src={ backgroundVideo.url }
+						src={ bgVideo.url }
 						autoPlay
 						loop
 						muted

@@ -68,7 +68,6 @@
 					"splitImageMobile"
 				],
 				"video": [
-					"backgroundVideo",
 					"bgVideo"
 				],
 				"svg-animated": [
@@ -325,9 +324,6 @@
 			"type": "string",
 			"default": "",
 			"role": "content"
-		},
-		"backgroundVideo": {
-			"type": "object"
 		},
 		"svgContent": {
 			"type": "string"

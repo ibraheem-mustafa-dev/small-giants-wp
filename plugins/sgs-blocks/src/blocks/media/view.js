@@ -15,6 +15,61 @@
 
 const reduceMotion = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
+// The locked SGS device standard: mobile < 768, tablet 768-1023,
+// desktop >= 1024 (same constants as `src/blocks/container/view.js`).
+// Block-local copy — see BooleanResponsiveControl.js's docblock for why this
+// session keeps everything self-contained inside sgs/media's own directory
+// rather than reaching for a new shared module (identical copy lives at
+// `src/blocks/before-after/view.js`).
+const SGS_TIER_MOBILE_BREAKPOINT = 768;
+const SGS_TIER_TABLET_BREAKPOINT = 1024;
+
+/**
+ * The current device tier for the live viewport width.
+ *
+ * @return {'mobile'|'tablet'|'desktop'} Current tier.
+ */
+function getCurrentDeviceTier() {
+	const width = window.innerWidth;
+	if ( width < SGS_TIER_MOBILE_BREAKPOINT ) {
+		return 'mobile';
+	}
+	if ( width < SGS_TIER_TABLET_BREAKPOINT ) {
+		return 'tablet';
+	}
+	return 'desktop';
+}
+
+/**
+ * Resolve one boolean per-device attribute family for the CURRENT viewport,
+ * reading `data-{dataName}-tablet` / `data-{dataName}-mobile` overrides off
+ * `el.dataset` (camelCased by the browser, e.g. `data-plays-inline-tablet`
+ * -> `el.dataset.playsInlineTablet`). Falls back upward when a tier's own
+ * override is absent — tablet inherits desktop, mobile inherits the resolved
+ * tablet value — mirroring render.php's `sgs_media_resolve_tier_bool()`.
+ *
+ * @param {HTMLElement} node         Element carrying the data-* overrides.
+ * @param {string}      dataName     camelCase data-attribute base (e.g. 'autoplay', 'playsInline').
+ * @param {boolean}     desktopValue The SSR'd desktop value (read from the element's own real attribute/property by the caller).
+ * @return {{tier: 'mobile'|'tablet'|'desktop', value: boolean}} Current tier + its effective value.
+ */
+function resolveTierBool( node, dataName, desktopValue ) {
+	const tabletRaw = node.dataset[ `${ dataName }Tablet` ];
+	const mobileRaw = node.dataset[ `${ dataName }Mobile` ];
+
+	const tablet = tabletRaw !== undefined ? tabletRaw === '1' : desktopValue;
+	const mobile = mobileRaw !== undefined ? mobileRaw === '1' : tablet;
+
+	const tier = getCurrentDeviceTier();
+	if ( tier === 'mobile' ) {
+		return { tier, value: mobile };
+	}
+	if ( tier === 'tablet' ) {
+		return { tier, value: tablet };
+	}
+	return { tier, value: desktopValue };
+}
+
 const ICON = {
 	play: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>',
 	pause: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>',
@@ -42,13 +97,89 @@ function el( tag, cls, html ) {
 	return e;
 }
 
+/**
+ * Apply the CURRENT viewport's tier-resolved playback behaviour to one
+ * enhanced video: loop / muted / plays-inline / lazy-load(preload) are
+ * passive attribute/property writes; controls toggles the custom chrome's
+ * visibility; autoplay drives an actual play()/pause() call, but ONLY when
+ * the resolved tier has genuinely changed since the last call (mirrors
+ * `sgs-container__video-bg--responsive`'s src-swap guard) — so a resize that
+ * doesn't cross a breakpoint never fights a visitor's own play/pause click.
+ *
+ * MUTED + AUTOPLAY: browsers refuse to autoplay an unmuted video, so
+ * whenever the resolved tier wants autoplay this forces the DOM PROPERTY
+ * `video.muted = true` regardless of that tier's own muted setting — setting
+ * only the `muted` ATTRIBUTE is not enough once the element already exists
+ * in the DOM (the attribute merely seeds the initial property value; the
+ * live property is what the playback engine actually reads, and toggling it
+ * on an already-playing element behaves differently from toggling the
+ * attribute). When the tier does not want autoplay, muted follows that
+ * tier's own resolved value instead.
+ *
+ * @param {HTMLVideoElement} video The enhanced video element.
+ * @param {HTMLElement}      wrap  The `.sgs-video` wrapper (for the controls-hide class).
+ */
+function applyTierPlayback( video, wrap ) {
+	const baseLoop = video.hasAttribute( 'loop' );
+	const baseMuted = video.hasAttribute( 'muted' );
+	const baseControls = video._sgsControlsBase;
+	const baseInline = video.hasAttribute( 'playsinline' );
+	const baseLazy = 'none' === video.getAttribute( 'preload' );
+	const baseAutoplay = video._sgsAutoplayBase;
+
+	const loop = resolveTierBool( video, 'loop', baseLoop ).value;
+	const controls = resolveTierBool( video, 'controls', baseControls ).value;
+	const inline = resolveTierBool( video, 'playsInline', baseInline ).value;
+	const lazy = resolveTierBool( video, 'lazy', baseLazy ).value;
+	const { tier, value: autoplay } = resolveTierBool(
+		video,
+		'autoplay',
+		baseAutoplay
+	);
+
+	video.loop = loop;
+	video.toggleAttribute( 'playsinline', inline );
+	// preload only affects loading behaviour BEFORE the browser has started
+	// fetching — a best-effort hint on resize, not a guaranteed abort of
+	// already-buffered data.
+	video.preload = lazy ? 'none' : 'metadata';
+	wrap.classList.toggle( 'sgs-video--no-controls', ! controls );
+
+	if ( autoplay ) {
+		video.muted = true;
+	} else {
+		video.muted = resolveTierBool( video, 'muted', baseMuted ).value;
+	}
+
+	// Only act on autoplay when the resolved TIER changed since last time —
+	// avoids re-triggering play()/pause() on every resize event within the
+	// same tier, which would fight a visitor's manual play/pause click.
+	if ( video._sgsLastAutoplayTier !== tier ) {
+		video._sgsLastAutoplayTier = tier;
+		if ( autoplay ) {
+			video.play().catch( () => {
+				// Autoplay blocked by the browser (rare once muted, but
+				// possible e.g. data-saver mode) — the play button below
+				// remains fully functional.
+			} );
+		} else {
+			video.pause();
+		}
+	}
+}
+
 function enhance( video ) {
 	if ( video._sgsVideo || video.tagName !== 'VIDEO' ) {
 		return;
 	}
 	video._sgsVideo = true;
+	// Record the SSR'd desktop values BEFORE stripping them — the tier
+	// resolver's desktop fallback needs them, and `controls`/`autoplay` are
+	// about to be removed/never re-read as attributes below.
+	video._sgsControlsBase = video.hasAttribute( 'controls' );
+	video._sgsAutoplayBase = video.hasAttribute( 'autoplay' );
+	video._sgsLastAutoplayTier = null;
 	video.removeAttribute( 'controls' );
-	video.setAttribute( 'playsinline', '' );
 
 	// Wrap the video so the chrome can overlay it.
 	const wrap = el( 'div', 'sgs-video' );
@@ -229,7 +360,26 @@ function enhance( video ) {
 	if ( reduceMotion ) {
 		wrap.classList.add( 'is-reduced-motion' );
 	}
+
+	// Initial tier-resolved playback behaviour, then track this wrap for the
+	// shared resize listener below.
+	applyTierPlayback( video, wrap );
+	sgsEnhancedVideoWraps.push( { video, wrap } );
 }
+
+// One shared, debounced resize listener for every enhanced video on the page
+// (mirrors the container block's responsive video-src swap) rather than one
+// listener per instance.
+const sgsEnhancedVideoWraps = [];
+let sgsResizeTimer;
+window.addEventListener( 'resize', function () {
+	clearTimeout( sgsResizeTimer );
+	sgsResizeTimer = setTimeout( function () {
+		sgsEnhancedVideoWraps.forEach( ( { video, wrap } ) =>
+			applyTierPlayback( video, wrap )
+		);
+	}, 200 );
+} );
 
 function init() {
 	document.querySelectorAll( 'video.sgs-media__video' ).forEach( enhance );

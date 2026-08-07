@@ -1,5 +1,67 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D515 — art-direction tiers made REAL on sgs/hero and sgs/media; two bugs only the live capture could find [ROUTINE]
+
+**2026-08-07.** Verified on the canary at 375/768/1440. Reports:
+`reports/visual-diff/hero-2026-08-07.md` (APPENDED — see the collision note) +
+`media-2026-08-07.md`.
+
+**WHAT WAS ACTUALLY BROKEN.** `sgs/hero.splitImageTablet` was declared in `block.json` and read
+by NOTHING — no render, no control. `splitImageMobile` rendered but had NO control either. So
+the tablet tier did not exist and neither tier was settable by a client: only the cloning
+pipeline could write them, which fails the standing rule that a feature without editor controls
+is not done. `sgs/media` had no tiers at all. Both now render tiers and expose ONE
+`<ResponsiveControl>`-wrapped picker (`check-control-ux` rejected three stacked pickets as
+RESPONSIVE-FAMILY-WITHOUT-SWITCHER; the switcher also drives WP's native canvas preview).
+
+**The dead-control gate does NOT catch a dead TIER attr.** `splitImageTablet` had no control and
+no render, yet CHECK 4 never listed it — the gate treats a responsive-family member as consumed
+when the BASE is consumed, which is exactly wrong: rendering `splitImage` says nothing about
+whether `splitImageTablet` renders. Worth closing separately; it is why this sat unnoticed.
+
+**TWO BUGS I INTRODUCED, BOTH CAUGHT BY THE LIVE CAPTURE AND NOT BY ANY GATE:**
+
+1. **Naked mode discarded every tier image.** `sgs/media` renders the `<img>` AS the block root
+   when there is no caption/link (Spec 32 no-useless-wrapper) — and that path REBUILDS the image
+   HTML further down the file, throwing away the tier images. Measured live: **1 `<img>` where 3
+   were expected, 0 visible.** Fixed by suppressing naked mode when tiers exist: with 2-3 real
+   sibling images the wrapper is STRUCTURAL, not the useless one Spec 32 bans. I had SEEN that
+   second builder while reading the file and did not follow it.
+
+2. **A descendant appended to a selector LIST binds to the last member only.** Tier CSS was built
+   as `$id_sel . ' .sgs-media__img--desktop'`, but `$id_sel` (`render.php:252`) is a THREE-member
+   list — so the first two members stayed as an unqualified
+   `.scope .sgs-media__img{display:none}` and hid **every image at every width**. Measured live:
+   **3 in the DOM, 0 visible, at all three breakpoints.** Now built from `$id_wrap`, the bare
+   scope selector. ⚠ This is the exact shape of an already-recorded gotcha ("a pseudo-element
+   appended to a selector list attaches to the LAST selector only"). The lesson existed and did
+   not prevent the same mistake in a new place.
+
+**MY OWN MEASUREMENT NEARLY HID BUG 2, TWICE.** A regex over the page HTML for the tier rules
+returned zero and I briefly read that as "the CSS never emitted". Both halves were wrong: the
+regex could not match nested `@media{…{…}}`, AND **SGS lifts block CSS into
+`uploads/sgs-css/*.css` instead of inlining it, so grepping page HTML proves nothing** — a
+documented trap. Reading the lifted stylesheet is what exposed the real selector.
+
+**THE VISUAL-DIFF GATE IS DATE-KEYED, NOT CHANGE-KEYED — and it cost a file.** It resolves
+exactly one path per block per day. A co-active session had already written
+`hero-2026-08-07.md` for a DIFFERENT change (the Spec 32 guard purge); I overwrote it with
+`Write`, restored it from git, and APPENDED my section instead. Both changes are now documented
+in one file with an explicit warning that a `verdict: PASS` there is not evidence about either
+change unless its own section says so.
+
+**Also fixed in passing:** the canary hero initially carried scalar `headline`/`subHeadline`,
+which are STRANDED because hero's text is InnerBlocks-driven — the `oldshape-audit` deploy gate
+caught it and the page was rebuilt with real `sgs/heading` + `sgs/text` children.
+
+⚠ **Not mine, still open:** post 2164 (a co-active track's seeded capture canary) carries FIVE
+undeclared attrs — `counter.endValue`, `form-step.stepTitle`, `form-field-text.name`,
+`form-field-email.name`, `mega-group.heading` (the two `name`s are almost certainly `fieldName`).
+WP will silently DELETE them on the next editor save (D338). The deploy proceeded with
+`--skip-oldshape-audit` because those findings are on another track's page and unrelated to this
+payload — a deliberate, recorded bypass, not a silent one.
+
+
 ## D514 — ⛔ D511 IS WRONG. A self-repairing mechanism silently reverted the test conditions at import. The generic path routes art direction correctly. [INCIDENT]
 
 **2026-08-07. Supersedes D511's conclusion. Retracted by measurement, not by argument.**
