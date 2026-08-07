@@ -247,24 +247,26 @@ measured `innerWidth` 1364/818/364. Fixtures: `/art-direction-tier-probe/` (page
 runtime by `view.js` on sgs/hero's `data-src-*` contract. Bean chose to include YouTube/Vimeo
 knowing a mid-watch breakpoint crossing loses playback position.
 
-### Task 0 — the video gap that is STILL open (15 min)
+### ✅ Task 0 CLOSED (2026-08-07) — real video, both gaps measured
 
-**Narrowed, not closed.** 2026-08-07's second pass verified the video tier mechanism only on the
-EMBED (iframe) path, because **no video attachment exists on the canary** — the same blocker as
-before. What remains unproven:
+Bean uploaded two MP4s (attachments 2180/2181), which was the single blocker. Surface:
+`/real-video-tier-probe/` (page 2182). Evidence in `reports/visual-diff/before-after-2026-08-07.md`
+Part 3 and `media-2026-08-07.md` Part 3. No block source changed — evidence only, so both
+`source_sha` values still stand.
 
-1. `sgs/before-after` — real video autoplay + the runtime tier switch at tablet/mobile widths.
-   Written as unproven in `reports/visual-diff/before-after-2026-08-07.md` Part 1; **do not let it
-   silently become "verified"** — Part 2 (image tiers) deliberately does not re-certify it.
-2. `sgs/media` — the direct-file `<video>` swap path (in-place `source.src`, then `enhance()`
-   re-run after a kind change), and whether per-tier POSTERS actually paint (only a direct-file
-   `<video>` renders a poster).
+- **`sgs/before-after` playback + runtime switch: PROVEN.** Desktop both clips PLAYING
+  (`currentTime` 8.32/8.27 after 2.5s — an advancing clock, not merely `paused:false`); tablet and
+  mobile PAUSED at `0`. Desktop playing is the positive CONTROL: it proves autoplay is permitted in
+  that browser, so paused elsewhere is the tier acting, not the browser blocking. Three paused
+  videos without that control would have been indistinguishable from a dead feature.
+- **`sgs/media` direct-file swap + tier posters: PROVEN.** desktop `1.mp4`, tablet `1.mp4`
+  (INHERITED — no tablet override authored, so this tests upward fallback too), mobile `2.mp4`.
+  Posters tier with it, and the mobile poster was confirmed **fetched** by the browser, not just
+  present as an attribute. Exercised the `videoSource: internal` attachment-ID branch.
 
-**First action:** upload one real short MP4 to the canary media library. Both gaps then close in
-one pass.
-**Orchestration:** inline — needs the canary login + Playwright.
-**Acceptance:** a real `<video>` plays at desktop and does not at mobile width, captured at both;
-the direct-file source swaps tier and back; a tier poster is visibly painted.
+⚠ **One honest cost recorded, not hidden:** on non-desktop viewports the DESKTOP poster is fetched
+too, because the server renders it as real markup for no-JS and `view.js` swaps afterwards. One
+wasted image request; removable only by giving up the no-JS fallback.
 
 ### Task 2 — Task F: the enforcement scripts
 

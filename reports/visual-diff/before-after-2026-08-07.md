@@ -125,3 +125,37 @@ images per tier, so a swap on one side could not be mistaken for the other.
 
 - Image slots only. The video and SVG slot types were not re-captured.
 - The divider drag was not exercised at tier boundaries.
+
+---
+
+# Part 3 — the Part 1 gaps are now CLOSED (2026-08-07, real video)
+
+Bean uploaded two real MP4s to the canary (attachments 2180 `1.mp4`, 2181 `2.mp4`), which was the
+single blocker on Part 1's two "what is NOT proven" items. Both are now measured.
+
+Surface: `/real-video-tier-probe/` (page 2182), authored `videoAutoplay: true`,
+`videoAutoplayTablet: false`, `videoAutoplayMobile: false`. Fresh navigation per width.
+`source_sha` unchanged — no block source was edited for this pass, only the evidence.
+
+## PLAYBACK is proven, not just the attribute contract
+
+| measured innerWidth | before clip | after clip | paused | currentTime after 2.5s |
+|---|---|---|---|---|
+| 1364 (desktop) | `1.mp4` | `2.mp4` | **false** | **8.32 / 8.27** |
+| 818 (tablet) | `1.mp4` | `2.mp4` | true | 0 |
+| 364 (mobile) | `1.mp4` | `2.mp4` | true | 0 |
+
+`currentTime` ADVANCING past 8s is the assertion that matters — a `<video>` that exists, is
+`readyState: 4` and reports `paused: false` could still be a stalled element; a clock that has moved
+8 seconds cannot be. Both were `muted: true`, the precondition browsers require to permit autoplay.
+
+## The runtime tier switch is proven, with a control
+
+Tablet and mobile are PAUSED at first paint while desktop PLAYS — same two videos, same browser,
+same page, differing only in viewport width. Desktop playing is the positive control: it proves
+autoplay is permitted in this environment, so tablet/mobile being paused is the TIER acting, not the
+browser silently blocking autoplay. Without that control, three paused videos would have been
+indistinguishable from a feature that does nothing.
+
+**Part 1's two open limits are now closed.** The remaining Part 2 limits (video/SVG slot types in the
+image-tier work, divider drag at tier boundaries) are unaffected and still stand.
