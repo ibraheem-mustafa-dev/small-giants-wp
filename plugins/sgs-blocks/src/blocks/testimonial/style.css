@@ -21,9 +21,8 @@
 	quotes: none;
 }
 
-.sgs-testimonial__quote:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
+/* No rest-state colour fallback: <blockquote> inherits theme.json
+ * styles.color.text = var:preset|color|text — identical value. */
 
 .sgs-testimonial__summary {
 	font-size: var(--sgs-testimonial-summary-size, var(--wp--preset--font-size--x-large, 1.75rem));
@@ -32,9 +31,9 @@
 	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
 }
 
-.sgs-testimonial__summary:not([style*="color"]) {
-	color: var(--wp--preset--color--heading, var(--wp--preset--color--text, #1E1E1E));
-}
+/* No rest-state colour fallback: <p> inherits theme.json styles.color.text.
+ * (--wp--preset--color--heading, named first here, is not a palette slug, so
+ * this always fell through to the same text token.) */
 
 /* ===== Footer / attribution ===== */
 .sgs-testimonial__footer {
@@ -55,21 +54,30 @@
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 }
 
-.sgs-testimonial__name:not([style*="font-weight"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial__name) {
 	font-weight: 700;
 }
 
-.sgs-testimonial__name:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
+/* No rest-state colour fallback: <cite> inherits theme.json
+ * styles.color.text = var:preset|color|text — identical value. */
 
 .sgs-testimonial__role,
 .sgs-testimonial__org {
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 }
 
-.sgs-testimonial__role:not([style*="color"]),
-.sgs-testimonial__org:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial__role),
+:where(.sgs-testimonial__org) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
@@ -118,7 +126,12 @@
 	align-items: center;
 }
 
-.sgs-testimonial__stars:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial__stars) {
 	color: var(--wp--preset--color--accent, #F87A1F);
 }
 
@@ -142,7 +155,12 @@
 	font-weight: 700;
 }
 
-.sgs-testimonial__rating--scale:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial__rating--scale) {
 	color: var(--wp--preset--color--accent, #F87A1F);
 }
 
@@ -167,7 +185,12 @@
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 }
 
-.sgs-testimonial__rating-meta:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial__rating-meta) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
@@ -237,27 +260,50 @@
 /* Dark 'featured' colour treatment — absorbed old `featured` style.
    Apply by adding background:primary-dark via the block's own background
    colour control; these fallbacks flip text to inverse when the block has
-   a dark background custom property set. Operator sets background → text
-   tokens below win via :not([style*="color"]). */
-.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__summary:not([style*="color"]),
-.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__summary:not([style*="color"]) {
+   a dark background custom property set. The base colour rules for
+   summary/quote/name were DELETED (they only restated the inherited text
+   token), so these contextual rules apply straight over inheritance; the
+   role/org base rule is :where() (0,0,0) too, so source order puts these
+   later rules on top. An operator's scoped `.{uid}` rule outranks them all. */
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__summary),
+:where(.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__summary) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__quote:not([style*="color"]),
-.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__quote:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__quote),
+:where(.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__quote) {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
-.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__name:not([style*="color"]),
-.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__name:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__name),
+:where(.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__name) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__role:not([style*="color"]),
-.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__role:not([style*="color"]),
-.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__org:not([style*="color"]),
-.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__org:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__role),
+:where(.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__role),
+:where(.sgs-testimonial--pull-quote-editorial.has-primary-dark-background-color .sgs-testimonial__org),
+:where(.sgs-testimonial--pull-quote-editorial.has-text-background-color .sgs-testimonial__org) {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 

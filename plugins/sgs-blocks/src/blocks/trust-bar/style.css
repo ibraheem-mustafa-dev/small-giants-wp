@@ -18,7 +18,12 @@
 	margin: 0 0 var(--wp--preset--spacing--30) 0;
 }
 
-.sgs-trust-bar__title:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-trust-bar__title) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
@@ -177,10 +182,8 @@ a.sgs-trust-bar__badge:focus-visible {
 	font-weight: 500;
 }
 
-.sgs-trust-bar--text-only .sgs-trust-bar__badge-label:not([style*="color"]),
-.sgs-trust-bar--image-badge .sgs-trust-bar__badge-label:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
+/* No badge-label colour fallback: <span> inherits theme.json
+ * styles.color.text = var:preset|color|text — identical value. */
 
 /* ─── Auto-scroll ────────────────────────────────────────────────────────────── */
 /*

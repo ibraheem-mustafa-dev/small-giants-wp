@@ -58,9 +58,8 @@
 		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-.sgs-product-faq-item__question:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1e1e1e);
-}
+/* No rest-state colour fallback: the question is a <summary>, which inherits
+ * theme.json styles.color.text = var:preset|color|text — identical value. */
 
 .sgs-product-faq-item__question:hover,
 .sgs-product-faq-item[open] > .sgs-product-faq-item__question {
