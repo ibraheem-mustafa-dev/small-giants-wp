@@ -1327,13 +1327,27 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{positio
  * before this rule: the whole vertical list hugged to ~95px (the drawer body
  * is align-items:flex-start, and the nav root + bar + items all sized to
  * content), so the in-drawer mega panel inherited a 95px column and its text
- * clipped. Items stretch full-width (standard drawer pattern, bigger touch
- * targets); label alignment stays the natural reading edge (left) — a
- * left/centre/right alignment control is the drawer's own surface, not
- * per-instance CSS here.
+ * CLIPPED. The full width exists to stop child content — mega panels above
+ * all — being cut off, and to give items proper touch-target size. That is
+ * the whole of its rationale.
+ *
+ * It says NOTHING about where the LABEL should sit (corrected 2026-08-07: an
+ * earlier version of this comment claimed left was a decided "natural reading
+ * edge" — it was not; nothing had been decided). Where labels sit depends on
+ * the drawer's design and how much of the screen it covers, so it is the
+ * OPERATOR's pick, made once on the drawer (nav-drawer's "Content alignment"
+ * control) and inherited here. Because the box stays full-width by design,
+ * align-items can move nothing — only text-align moves the label, which is
+ * why the drawer publishes --sgs-drawer-text-align alongside the flex value.
+ * Both fall back to the previous behaviour (stretch / start) outside a drawer
+ * or if the drawer is an older render.
  */
 $css .= '.sgs-nav-drawer ' . $uid_sel . '{width:100%;}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar{width:100%;align-items:stretch;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar'
+	. '{width:100%;align-items:var(--sgs-drawer-align, stretch);}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link,'
+	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink'
+	. '{text-align:var(--sgs-drawer-text-align, start);}';
 
 /*
  * listColumns (design gate 2026-07-28) — in-drawer vertical list layout ONLY

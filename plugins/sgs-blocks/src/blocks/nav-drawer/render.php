@@ -160,6 +160,13 @@ $align_items_map = array(
 	'center' => 'center',
 	'right'  => 'flex-end',
 );
+// Logical text-align equivalents of the same pick, for descendants whose BOX is
+// full-width (so align-items can move nothing) and whose LABEL is what must move.
+$text_align_map  = array(
+	'left'   => 'start',
+	'center' => 'center',
+	'right'  => 'end',
+);
 
 // ── Background (drawerBg, slug, default 'primary') + WCAG-computed foreground
 // (D339): the background stays a theme-linked var() so a palette change recolours
@@ -196,8 +203,27 @@ if ( '' !== $drawer_bg_slug ) {
 	$css .= $root_sel . '{' . $decls . '}';
 }
 
-// Content alignment on the drawer body.
-$css .= $body_sel . '{align-items:' . $align_items_map[ $drawer_align ] . ';}';
+/*
+ * Content alignment on the drawer body, PLUS the same pick published as two
+ * inheritable custom properties so descendant blocks can honour it.
+ *
+ * Why custom properties and not WP block context: context reaches InnerBlocks
+ * descendants only, and the Active-CPT route renders drawer content through a
+ * separate do_blocks() call where that chain is broken — context would look
+ * correct on one route and silently do nothing on the other. A custom property
+ * inherits through the rendered DOM on BOTH routes, needs no JS, and extends
+ * for free if drawerAlign ever goes per-device (re-declare inside @media).
+ *
+ * --sgs-drawer-align      = the flexbox value, for a descendant that is itself
+ *                           a flex/grid container of its own children.
+ * --sgs-drawer-text-align = the logical text value, for a descendant whose BOX
+ *                           is deliberately full-width (sgs/nav-menu items are,
+ *                           for touch-target size) so only the LABEL can move.
+ * Consumer: nav-menu/render.php (search --sgs-drawer-align there before renaming).
+ */
+$css .= $body_sel . '{align-items:' . $align_items_map[ $drawer_align ] . ';'
+	. '--sgs-drawer-align:' . $align_items_map[ $drawer_align ] . ';'
+	. '--sgs-drawer-text-align:' . $text_align_map[ $drawer_align ] . ';}';
 
 // Inner element spacing (drawerGap — object model {desktop,tablet,mobile},
 // each a length string). Emitted via the shared object-model helper (device
