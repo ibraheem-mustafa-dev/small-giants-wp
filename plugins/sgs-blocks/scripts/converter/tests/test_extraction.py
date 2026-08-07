@@ -274,7 +274,7 @@ def test_mech_b_scalar_media_column_emits_scalar_lift(monkeypatch):
     # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
     # REPAIRS a reverted role before any assertion runs. A negative control (revert the
     # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
-    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
+    # The drift detector is dbschema/check_value_identity.py, which imports sqlite3 only.
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
                         lambda: [("Mobile", ["Mobile"]), ("Desktop", ["Desktop"])])
 
@@ -323,7 +323,7 @@ def test_mech_b_scalar_media_mobile_modifier_appends_Mobile(monkeypatch):
     # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
     # REPAIRS a reverted role before any assertion runs. A negative control (revert the
     # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
-    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
+    # The drift detector is dbschema/check_value_identity.py, which imports sqlite3 only.
     # REAL DB shape: (media_condition, [tier_markers]).
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
                         lambda: [("min-width: 768", ["Tablet", "Desktop"]),
@@ -367,7 +367,7 @@ def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
     # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
     # REPAIRS a reverted role before any assertion runs. A negative control (revert the
     # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
-    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
+    # The drift detector is dbschema/check_value_identity.py, which imports sqlite3 only.
     monkeypatch.setattr(db, "breakpoint_suffix_rules",
                         lambda: [("min-width: 768", ["Tablet", "Desktop"]),
                                  ("max-width: 767", ["Mobile"])])
@@ -408,7 +408,7 @@ def test_mech_b_scalar_media_no_img_emits_content_gap(monkeypatch):
     # importing db_lookup runs _migrate_scalar_media_roles() at module load, which
     # REPAIRS a reverted role before any assertion runs. A negative control (revert the
     # rows in a sandbox, run this file) passed, and the rows were back to 3 afterwards.
-    # The drift detector is dbschema/check_row_floor.py, which imports sqlite3 only.
+    # The drift detector is dbschema/check_value_identity.py, which imports sqlite3 only.
     monkeypatch.setattr(db, "breakpoint_suffix_rules", lambda: [("Mobile", ["Mobile"])])
 
     html = (

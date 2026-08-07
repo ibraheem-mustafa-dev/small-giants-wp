@@ -5277,7 +5277,9 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         audit-inspector-conformance.js repointed here 2026-08-06, Spec 35 Task D —
         same --json contract shape difference handled in the parsing branch below)
       - audit-feature-parity.py --check: feature parity against block roster
-      - dbschema/check_row_floor.py --check: DB row-count regression vs the committed floor
+      - dbschema/check_value_identity.py --check: named load-bearing rows still hold their
+        exact required value (the row-count FLOOR this file used to carry was deleted
+        2026-08-07; counts are now REPORTED by dbschema/seed_history.py, never gated)
       - dbschema/check_schema_drift.py --check: schema.sql vs live DB DDL drift
       - lints/lint-spec-drift.py --check: spec claims vs DB reality
       - lints/lint-theme-css-hardcodes.py --check: theme CSS hardcode literals vs baseline
@@ -5377,7 +5379,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         ("audit-feature-parity.py", "feature-parity", ["--check"]),  # exit code signals but don't fail
         ("cheat-gate/run.py", "cheat-gate", ["--report"]),
         ("excluded-gate/run.py", "excluded-gate", ["--report"]),
-        ("dbschema/check_row_floor.py", "row-floor", ["--check"]),
+        ("dbschema/check_value_identity.py", "value-identity", ["--check"]),
         ("dbschema/check_schema_drift.py", "schema-drift", ["--check"]),
         ("lints/lint-spec-drift.py", "spec-drift", ["--check"]),
         ("lints/lint-theme-css-hardcodes.py", "theme-css-hardcodes", ["--check"]),
@@ -5452,14 +5454,16 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
             # branches added above so a regression in the parsing (not the scanner) is
             # caught here rather than silently reading as "0 findings".
 
-            # (a) row-floor text extraction: "ROW-FLOOR REGRESSION DETECTED (N finding(s))"
-            row_floor_fixture = (
-                "ROW-FLOOR REGRESSION DETECTED (2 finding(s)):\n"
-                "  - TABLE `attribute_gap_candidates` DROPPED: floor=100 live=80 (-20)\n"
+            # (a) value-identity text extraction: "VALUE-IDENTITY VIOLATION (N finding(s))"
+            #     (was the row-floor extractor until 2026-08-07, when the floor was deleted
+            #     and its file reduced to value-identity assertions.)
+            value_identity_fixture = (
+                "VALUE-IDENTITY VIOLATION (2 finding(s)):\n"
+                "  - VALUE  roles.classification for (role_name='scalar-media') is 'content-bearing'\n"
             )
             rf_count = 0
-            for line in row_floor_fixture.splitlines():
-                if "REGRESSION DETECTED" in line:
+            for line in value_identity_fixture.splitlines():
+                if "VALUE-IDENTITY VIOLATION" in line:
                     for tok in line.replace("(", " ").split():
                         if tok.isdigit():
                             rf_count = int(tok)
@@ -5469,7 +5473,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                 return {
                     "status": "FAIL",
                     "self_test": True,
-                    "error": f"self-test failed: row-floor extractor expected 2, got {rf_count}",
+                    "error": f"self-test failed: value-identity extractor expected 2, got {rf_count}",
                 }
 
             # (b) cheat-gate composite summary line: "[cheat-gate] N violation(s) total — ..."
@@ -5522,7 +5526,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                 "self_test": True,
                 "test_result": (
                     "PASS — inspector-conformance fixture (3 findings: 2 warn, 1 informational), "
-                    "row-floor text (2), cheat-gate composite text (7), block-file-consistency "
+                    "value-identity text (2), cheat-gate composite text (7), block-file-consistency "
                     "net_new list (3), and shared netNew-int shape (5) all extracted correctly"
                 ),
             }
@@ -5752,14 +5756,16 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                                 break
                         break
 
-            elif label == "row-floor":
-                # dbschema/check_row_floor.py --check prints "ROW-FLOOR REGRESSION DETECTED (N finding(s))"
-                # or "CLEAN" (PROOF extraction). This is a real DATA-LOSS gate, not cosmetic — a nonzero
-                # count here means the reseed just dropped rows a previous reseed had.
+            elif label == "value-identity":
+                # dbschema/check_value_identity.py --check prints
+                # "VALUE-IDENTITY VIOLATION (N finding(s))" or "CLEAN" (PROOF extraction).
+                # A nonzero count means a named load-bearing row now holds the WRONG value —
+                # which no row count can see, because the count does not move when a value
+                # is merely reclassified.
                 findings_count = 0
                 summary_line = "clean"
                 for line in stdout.splitlines():
-                    if "REGRESSION DETECTED" in line:
+                    if "VALUE-IDENTITY VIOLATION" in line:
                         summary_line = line.strip()[:120]
                         for tok in line.replace("(", " ").split():
                             if tok.isdigit():
@@ -6287,6 +6293,48 @@ def main() -> None:
         elif result.get("error"):
             status = f"ERROR: {result['error'][:80]}"
         print(f"  Stage {stage_num}: {status} — {result}")
+
+    print()
+
+    # ------------------------------------------------------------------
+    # SEED HISTORY (2026-08-07) — record what this run actually left behind.
+    #
+    # Runs at the very END, after every stage has written, so it records the real
+    # post-run state rather than a mid-flight one. It APPENDS one entry (row count of
+    # every table + populated count of every seeded column) to
+    # dbschema/seed-history.json, keeps the last 5, and PRINTS what moved unexpectedly
+    # against that history.
+    #
+    # It is a REPORT, not a gate: it never changes this script's exit status, and a
+    # deliberate reduction produces a line to read rather than a blocked build. That
+    # is the whole reason it replaced dbschema/check_row_floor.py's absolute floor,
+    # which failed loudly on intended drops and silently on real ones.
+    #
+    # Full runs only. A single --stage N run is not a seeding run, and recording one
+    # would pollute the history's sense of what a normal run moves; --dry-run wrote
+    # nothing, so there is nothing to record.
+    if args.dry_run:
+        print("[seed history: skipped — dry run wrote nothing to record]")
+    elif args.stage:
+        print(f"[seed history: skipped — single-stage run (--stage {args.stage}), not a full "
+              "seeding run. Use `python dbschema/seed_history.py --report` to look without "
+              "recording.]")
+    else:
+        seed_history_script = Path(__file__).resolve().parent / "dbschema" / "seed_history.py"
+        try:
+            proc = subprocess.run(
+                [sys.executable, str(seed_history_script), "--record"],
+                capture_output=True, text=True, timeout=120,
+                encoding="utf-8", errors="replace",
+            )
+            print((proc.stdout or "").rstrip() or "[seed history: no output]")
+            if proc.returncode != 0:
+                # Reported, never fatal — a recorder that can break the run it observes
+                # would be switched off, which is how the floor it replaced died.
+                print(f"[seed history: recorder exited {proc.returncode} — "
+                      f"{(proc.stderr or '').strip()[:200]}]", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001 — never let the recorder break the run
+            print(f"[seed history: could not run the recorder — {exc}]", file=sys.stderr)
 
     print()
 

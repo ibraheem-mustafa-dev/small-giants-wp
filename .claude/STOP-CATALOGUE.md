@@ -1333,7 +1333,8 @@ one-line pointer to this section instead. Grouped by where each item lived in LE
   `db-consistency/check_tier_composition.py` (in `prebuild`) reads it. Do not drop the column.
 - ⛔ **A SELF-HEALING SEEDER BLINDS AN IN-PROCESS TEST.** Anything importing `db_lookup` repairs
   drift before an assertion can see it. The detector must be a separate process that never imports
-  it → value-identity assertions in `check_row_floor.py` (sqlite3 only — keep it that way).
+  it → value-identity assertions in `check_value_identity.py` (sqlite3 only — keep it that way;
+  renamed from `check_row_floor.py` 2026-08-07 when its row-count floor was deleted).
 - ⛔ **A population count cannot see a RECLASSIFICATION** (right row, wrong-but-plausible value;
   1012 → 1012).
 - ⛔ **A table with `CREATE TABLE IF NOT EXISTS` on a hot path cannot be retired by dropping it** —

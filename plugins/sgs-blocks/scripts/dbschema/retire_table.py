@@ -33,8 +33,12 @@ AFTER RUNNING THIS, TWO GATES NEED ATTENTION
   * ``dbschema/schema.sql`` must be regenerated — ``check_schema_drift.py``
     will (correctly) FAIL until it is. That failure is the gate doing its job;
     do not silence it, regenerate.
-  * ``dbschema/row-floor.json`` still lists the dropped table. Re-baseline with
-    ``check_row_floor.py --update`` as a deliberate, reviewed act.
+  * ``dbschema/seed-history.json`` still holds the dropped table in its recent
+    entries. Nothing to do: it is a rolling 5-run record, the next run reports the
+    table as GONE (correctly — it is) and it ages out on its own. It cannot block
+    anything. (The ``row-floor.json`` baseline this note used to name, and the
+    ``--update`` re-baseline it demanded, were DELETED on 2026-08-07 with the floor
+    gate itself.)
 
 USAGE
 -----
@@ -198,8 +202,8 @@ def retire(db: Path, table: str, reason: str, dry_run: bool) -> int:
         con.close()
     print(f"  [4/4] DROPPED `{table}`")
     print("\nNEXT: regenerate dbschema/schema.sql (check_schema_drift.py will fail "
-          "until you do — that is the gate working), then re-baseline with "
-          "check_row_floor.py --update.")
+          "until you do — that is the gate working). Nothing to re-baseline: "
+          "dbschema/seed_history.py reports the drop and ages it out by itself.")
     return 0
 
 

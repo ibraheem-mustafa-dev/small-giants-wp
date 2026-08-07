@@ -111,7 +111,7 @@ def test_the_drift_detector_itself_catches_a_reclassified_role():
     first; a negative control (revert the rows in a sandbox, run the test)
     showed it passing against a corrupted database. It could never fail.
 
-    So the real detector is ``dbschema/check_row_floor.py``, which runs as a
+    So the real detector is ``dbschema/check_value_identity.py``, which runs as a
     separate process importing sqlite3 only, never db_lookup, and therefore
     observes the true stored state. What IS testable here is that the detector
     works — so that is what this asserts, against a synthetic database.
@@ -119,8 +119,8 @@ def test_the_drift_detector_itself_catches_a_reclassified_role():
     import importlib.util
 
     spec = importlib.util.spec_from_file_location(
-        "_row_floor",
-        Path(db_lookup.__file__).resolve().parents[2] / "dbschema" / "check_row_floor.py",
+        "_value_identity",
+        Path(db_lookup.__file__).resolve().parents[2] / "dbschema" / "check_value_identity.py",
     )
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
