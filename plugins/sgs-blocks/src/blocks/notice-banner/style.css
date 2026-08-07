@@ -61,11 +61,8 @@
 	line-height: 1;
 }
 
-/* Preserve inherited colour when no iconColour override is set.
-   When render.php emits style="color:…" the inline style wins (1,0,0,0). */
-.sgs-notice-banner__icon:not([style*="color"]) {
-	color: inherit;
-}
+/* No icon colour fallback: it declared `color: inherit`, i.e. exactly what the
+ * element already does. A pure no-op sitting behind a dead guard. */
 
 /* ===== Text ===== */
 .sgs-notice-banner__text {
@@ -75,7 +72,12 @@
 	flex: 1;
 }
 
-.sgs-notice-banner__text:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-notice-banner__text) {
 	color: var(--wp--preset--color--text, #1E1E1E);
 }
 

@@ -355,7 +355,19 @@
 	text-transform: uppercase;
 }
 
-.sgs-timeline__date:not([style*='color']) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+/* Specificity target is (0,1,0) — a BARE class, NOT :where().
+ * :where() is (0,0,0), which LOSES to the theme's bare `h1,h2,h3…`
+ * rule at (0,0,1) and flipped this text from `text` to `primary`
+ * (measured 2026-08-07 on the canary: pink on cream, 2.25:1).
+ * A bare class beats the element selector AND still loses to the
+ * operator's own `.{uid} .sgs-…` rule at (0,2,0), which is the
+ * whole point of removing the old :not([style*=…]) guard. */
+.sgs-timeline__date {
 	color: var(--sgs-date-colour);
 }
 
@@ -374,7 +386,19 @@
 	line-height: 1.3;
 }
 
-.sgs-timeline__title:not([style*='color']) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+/* Specificity target is (0,1,0) — a BARE class, NOT :where().
+ * :where() is (0,0,0), which LOSES to the theme's bare `h1,h2,h3…`
+ * rule at (0,0,1) and flipped this text from `text` to `primary`
+ * (measured 2026-08-07 on the canary: pink on cream, 2.25:1).
+ * A bare class beats the element selector AND still loses to the
+ * operator's own `.{uid} .sgs-…` rule at (0,2,0), which is the
+ * whole point of removing the old :not([style*=…]) guard. */
+.sgs-timeline__title {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
@@ -386,7 +410,12 @@
 	margin: 0;
 }
 
-.sgs-timeline__description:not([style*='color']) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-timeline__description) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 

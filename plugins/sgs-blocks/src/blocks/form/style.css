@@ -625,17 +625,32 @@ select.sgs-form-field__input {
 	cursor: not-allowed;
 }
 
-.sgs-form__button--primary:not([style*="background-color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-form__button--primary) {
 	background-color: var(--wp--preset--color--primary, #0f7e80);
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
-.sgs-form__button--accent:not([style*="background-color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-form__button--accent) {
 	background-color: var(--wp--preset--color--accent, #f87a1f);
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
-.sgs-form__button--success:not([style*="background-color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-form__button--success) {
 	background-color: var(--wp--preset--color--success, #2e7d4f);
 	color: var(--wp--preset--color--text-inverse, #fff);
 }

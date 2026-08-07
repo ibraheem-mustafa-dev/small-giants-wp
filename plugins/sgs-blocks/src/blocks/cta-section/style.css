@@ -82,7 +82,12 @@
 	margin: 0 0 var(--wp--preset--spacing--20) 0;
 }
 
-.sgs-cta-section__headline:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__headline) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
@@ -94,7 +99,12 @@
 	margin: 0 0 var(--wp--preset--spacing--30) 0;
 }
 
-.sgs-cta-section__body:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__body) {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
@@ -119,7 +129,12 @@
 	gap: 8px;
 }
 
-.sgs-cta-section__stat:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__stat) {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
@@ -165,10 +180,20 @@
 /* ===== Button variants — block-level (#199) ===== */
 
 /* solid (default) */
-.sgs-cta-section__btn--solid:not([style*="background"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--solid) {
 	background-color: var(--wp--preset--color--accent);
 }
-.sgs-cta-section__btn--solid:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--solid) {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 .sgs-cta-section__btn--solid:hover {
@@ -183,7 +208,12 @@
 	background-color: transparent;
 	border: 2px solid currentColor;
 }
-.sgs-cta-section__btn--outline:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--outline) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 .sgs-cta-section__btn--outline:hover {
@@ -198,7 +228,12 @@
 	background-color: transparent;
 	border: 1px solid transparent;
 }
-.sgs-cta-section__btn--ghost:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--ghost) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 .sgs-cta-section__btn--ghost:hover {
@@ -207,14 +242,24 @@
 }
 
 /* gradient — background-image (not shorthand) so background-color is not reset */
-.sgs-cta-section__btn--gradient:not([style*="background"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--gradient) {
 	background-image: linear-gradient(
 		135deg,
 		var(--wp--preset--color--primary, #0F7E80) 0%,
 		var(--wp--preset--color--accent, #F87A1F) 100%
 	);
 }
-.sgs-cta-section__btn--gradient:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--gradient) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 .sgs-cta-section__btn--gradient:hover {
@@ -223,16 +268,36 @@
 }
 
 /* Legacy per-button style variants (kept for backward compat) */
-.sgs-cta-section__btn--accent:not([style*="background"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--accent) {
 	background-color: var(--wp--preset--color--accent);
 }
-.sgs-cta-section__btn--accent:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--accent) {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
-.sgs-cta-section__btn--primary:not([style*="background"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--primary) {
 	background-color: var(--wp--preset--color--primary);
 }
-.sgs-cta-section__btn--primary:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-cta-section__btn--primary) {
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 

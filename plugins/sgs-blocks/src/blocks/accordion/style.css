@@ -49,9 +49,17 @@
 		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-.sgs-accordion-item__header:not([style*="color"]) {
-	color: var(--wp--preset--color--text, #1e1e1e);
-}
+/* No rest-state colour fallback: the header is a <summary>, which inherits
+ * theme.json styles.color.text = var:preset|color|text — the identical value
+ * the old :not([style*=…]) guard forced. Deleting restores contextual
+ * inheritance on dark surfaces (icon-list precedent, 2026-08-06).
+ *
+ * DO NOT 'restore' this rule. I re-added it on 2026-08-07 after a sweep
+ * measured 2.38:1 here — but that sweep had FORCE-OPENED every <details>,
+ * and the pink is the deliberate `.sgs-accordion-item[open] >` brand
+ * highlight. At REST the header measures 11.86:1 by inheritance. Re-adding
+ * a painted colour would make this header invisible inside a dark drawer,
+ * which is precisely the icon-list defect. */
 
 .sgs-accordion-item__header:hover {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
@@ -90,8 +98,13 @@
 		color   var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-.sgs-accordion-item__icon-open:not([style*="color"]),
-.sgs-accordion-item__icon-close:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-accordion-item__icon-open),
+:where(.sgs-accordion-item__icon-close) {
 	color: var(--wp--preset--color--text-muted, #555555);
 }
 

@@ -429,8 +429,16 @@ if ( 'line' === $sep_style_val ) {
  * declared card role (§4), so the aside simply adopts it. Emitted as a
  * DEFAULT only: sgs/mega-aside's own `asideBg` is block-private and renders
  * at higher specificity, so an operator-set background still wins.
+ *
+ * 2026-08-06: the `:not([style*="background"])` guard this rule carried was
+ * STRANDED. Under Spec 32 no block emits an inline `style` property
+ * declaration, so the guard always matched and the default was unconditional
+ * — it could not detect an operator background, and it out-ranked the
+ * operator's own scoped rule. Replaced by :where(), which drops the selector
+ * to specificity (0,0,0) so ANY operator rule wins. That is what "DEFAULT
+ * only" was always trying to express.
  */
-$css .= $aside_sel . ':not([style*="background"]){background-color:var(--sgs-mm-card);border-radius:12px;}';
+$css .= ':where(' . $aside_sel . '){background-color:var(--sgs-mm-card);border-radius:12px;}';
 
 // ---------------------------------------------------------------------------
 // 6. Mobile-in-drawer stack (§3 — content-preserving; groups + aside all KEEP

@@ -127,7 +127,12 @@
 	transition: color 0.15s ease;
 }
 
-.sgs-toc__link:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-toc__link) {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
@@ -140,7 +145,12 @@
 	font-weight: 600;
 }
 
-.sgs-toc__link--active:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-toc__link--active) {
 	color: var(--wp--preset--color--primary, #0F7E80);
 }
 
