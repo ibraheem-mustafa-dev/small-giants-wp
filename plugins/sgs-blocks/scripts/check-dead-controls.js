@@ -631,13 +631,26 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 		// shared corpus: includes/ PHP contains @media everywhere, which would make
 		// the test globally true and clear genuinely-dead variants (adversarial-
 		// council Spec-Lawyer M3 / Guard-Skeptic S2, 2026-06-08).
+		//
+		// NARROWED AGAIN 2026-08-07 (D516) — now BREAKPOINT_DYNAMIC_RE, matching
+		// CHECK 4. Scoping to ownCorpus (above) removed the shared-corpus noise but
+		// left the block's OWN `@media` as sufficient evidence, which is still not a
+		// statement about THIS attr: hero.splitImageTablet was cleared purely because
+		// hero emits @media for a dozen unrelated properties. Only dynamic tier-key
+		// construction legitimately hides a tier attr's literal name.
+		//
+		// Sequenced deliberately: this check BLOCKS THE BUILD, so the strict rule
+		// shipped in advisory CHECK 4 first and `--tier-audit` measured this check's
+		// exposure at 0 (positive-controlled: 91 rows when the "own name consumed"
+		// skip is dropped, so the traversal provably reaches real attrs). Tightened
+		// while the exposure was nil rather than discovering it later on a red build.
 		const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
 		if ( suffix ) {
 			const base = attr.slice( 0, -suffix[ 1 ].length );
 			if (
 				base &&
 				isConsumed( base, corpus ) &&
-				BREAKPOINT_TOKEN_RE.test( block.ownCorpus )
+				BREAKPOINT_DYNAMIC_RE.test( block.ownCorpus )
 			) {
 				continue;
 			}

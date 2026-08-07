@@ -1,5 +1,28 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D517 — CHECK 1 tightened to match CHECK 4, while its measured exposure was still zero [ROUTINE]
+
+**2026-08-07. Supersedes D516's "CHECK 1 deliberately NOT changed" — same session, Bean's call.**
+The sequencing in D516 was the point, not a permanent position: ship the strict rule in advisory
+CHECK 4, measure the build-blocking check's exposure, then tighten it while that number is nil.
+It was nil, so it is tightened now. Doing it later would mean discovering the backlog on a red
+build instead.
+
+CHECK 1's rule (a) now uses `BREAKPOINT_DYNAMIC_RE`, so a `{base}Tablet/Mobile/Desktop` attr is
+cleared only by evidence of dynamic tier-key construction — never by the block merely containing
+`@media`.
+
+**Verified both directions, because a build-blocking gate that cannot fail is worse than none:**
+
+| state | result |
+|---|---|
+| tightened, tree as-is | `0 net-new`, **exit 0** — matches `--tier-audit`'s predicted 0 exposure |
+| `sgs/hero.imageWidthTablet` consumption broken (controlled attr, consumed base, hero has `@media` but no dynamic construction) | **1 NET-NEW**, **exit 1** — blocks the build, as intended |
+| break reverted | `0 net-new`, **exit 0** |
+
+The middle row is the one that matters: under the OLD rule that same break would have been
+cleared by hero's unrelated `@media` and the build would have stayed green.
+
 ## D516 — the dead-control gate could not see a dead TIER attr; and a canary's 5 undeclared attrs recovered, exposing a templateLock landmine [INCIDENT]
 
 **2026-08-07.** Closes both items left open by D515.
