@@ -196,7 +196,10 @@ def save_history(path: Path, runs: list[dict]) -> None:
         "keep": KEEP_RUNS,
         "runs": runs[-KEEP_RUNS:],
     }
-    path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+    # newline="\n" explicitly: on Windows the default would write CRLF, and since this
+    # file is REWRITTEN every run that would show up as a whole-file diff on every run.
+    with path.open("w", encoding="utf-8", newline="\n") as fh:
+        fh.write(json.dumps(payload, indent=2, sort_keys=False) + "\n")
 
 
 # --------------------------------------------------------------------------
