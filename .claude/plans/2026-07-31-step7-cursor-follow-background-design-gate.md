@@ -3,7 +3,7 @@ doc_type: design-gate
 project: small-giants-wp
 spec_ref: 38
 created: 2026-07-31
-status: AWAITING-BEAN-SIGNATURE
+status: SIGNED — Bean chose ROUTE B + all four looks, 2026-08-07. Build NOT started.
 ---
 
 # Design gate — pointer-reactive container backgrounds (Bean ask #4, Wave D Step 7)
@@ -91,18 +91,54 @@ in the fx picker would offer it on blocks that have no background to react with.
    parallaxes, a spotlight that reveals a second background image underneath?
 3. Whether the accent colour should default to your theme primary, as `mega-panel` does today.
 
-## Proposed spec text, if you sign Route A
+## SIGNED — Bean's decision, 2026-08-07
 
-Next free number is **FR-38-25** (FR-38-24 is currently the highest).
+**Route B**, with **all four looks**, client-configurable.
 
-> **FR-38-25 — Pointer-reactive container background (Tier V).** `sgs/container` MAY carry an
-> opt-in pointer-reactive background layer. The pointer position is exposed to CSS as the `--mx` /
-> `--my` custom properties by the shared `initSpotlight` module; the visual treatment is declared
-> entirely in the block's own scoped stylesheet, never inline (Spec 32). **Reduced motion =
-> SUPPRESS:** the layer renders at its static resting position and no pointer listener is attached,
-> so the treatment is visible but never moves. Coarse-pointer devices degrade to the same static
-> resting state — never a stuck hotspot. A container using this layer MUST have its text contrast
-> verified at the position the layer actually travels to, not only at rest.
+### Bean overruled the contrast risk, and gave a reason that holds
+
+I recommended Route A specifically to contain the contrast exposure. Bean rejected that reasoning
+directly, and it is recorded here because it changes what the build must optimise for:
+
+> "The contrast thing is a complete non-issue. Every website that has this effect has text on the
+> area, it's usually a hero that has it too, the effect doesn't need to have enough contrast with
+> text because the default is that the effect isn't on it and if it's hard to read, just move the
+> mouse. Also, people should be able to change the effect and its colours so they can decide on
+> what fits."
+
+The argument stands on its own terms: the effect is DECORATIVE and TRANSIENT, the resting state is
+the unaffected background, and the pointer is under the visitor's control — so it is not the same
+category as a static low-contrast background, which the visitor cannot escape. Bean has a documented
+prior on exactly this distinction (memory `a-contrast-ratio-is-not-a-legibility-verdict`).
+
+**What this means for the build:** contrast stops being a gate and becomes a CONTROL. The operator
+must be able to change the effect, its colours and its intensity, so a client who finds a
+combination unreadable can fix it themselves rather than being blocked by us. That is a stronger
+outcome than the containment Route A bought, and it is now a build requirement, not a nicety.
+
+⚠ **One thing I will still not silently skip:** `prefers-reduced-motion` = SUPPRESS (static resting
+position, no listener attached) and coarse-pointer devices degrade to the same static state. That is
+not a contrast judgement — it is a motion-sensitivity requirement Spec 38 §10 already binds, and the
+existing shared module already satisfies it.
+
+### Scope as signed
+
+- **Route B** — a first-class background mode in `SGS_Container_Wrapper`, inherited by every
+  wrapper-bearing composite (hero, cta-section, card-grid…). This is the Rule 7 shared-mechanism
+  change; this document plus Bean's approval above IS that gate.
+- **Four looks, all client-selectable:** (1) soft radial glow, (2) gradient that shifts hue with
+  pointer position, (3) subtle pattern that parallaxes, (4) spotlight revealing a second image.
+- **Client-configurable:** effect type, colours, and intensity. Accent defaults to theme primary
+  (as `mega-panel` does today) but must be overridable.
+- **FR number: `FR-38-28`.** ⚠ This gate originally said FR-38-25 "is next"; Spec 38 has since
+  reached FR-38-27, so that figure was stale on sight. Re-check before writing the spec text —
+  do not trust this line either.
+
+### Estimated build
+
+~2h for the wrapper capability, plus roughly 30 min per additional look beyond the existing glow.
+Not started. Needs its own session — it is a shared-wrapper change and wants live verification per
+look at three widths, plus a real coarse-pointer measurement (see limit 1 below, still open).
 
 ## Honest limits of this gate
 
