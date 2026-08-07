@@ -412,6 +412,36 @@ const BREAKPOINT_SUFFIX_RE = /(Tablet|Mobile|Desktop)$/;
 // still consumed via the same responsive mechanism as its (consumed) base.
 const BREAKPOINT_TOKEN_RE = /['"`](?:Tablet|Mobile|Desktop)['"`]|@media/;
 
+/**
+ * STRICTER breakpoint evidence, for the fully-dead check (2026-08-07).
+ *
+ * BREAKPOINT_TOKEN_RE accepts a bare `@media` anywhere in the block's own corpus
+ * as proof that a `{base}Tablet` attr is consumed. That is far too weak: a block
+ * emits @media for a dozen unrelated properties, so the test is effectively
+ * "does this block have ANY responsive CSS" — which says nothing about THIS attr.
+ *
+ * Measured: `sgs/hero.splitImageTablet` had NO editor control and NO render
+ * consumption — the exact shape CHECK 4 exists to catch — and CHECK 4 stayed
+ * silent for it, because `splitImage` is consumed and hero's render.php is full
+ * of @media. The attr shipped declared-and-inert; it was found by hand, not by
+ * the gate that owns this class.
+ *
+ * What legitimately hides a tier attr's literal name is DYNAMIC KEY CONSTRUCTION
+ * — `$attributes[ $base . 'Tablet' ]`, `"{$base}Mobile"`, `` `${base}Tablet` ``,
+ * or a suffix list the code loops over. Those all leave a tier word adjacent to
+ * a concatenation/interpolation boundary, which is what this matches. A plain
+ * `@media` does not, and no longer counts.
+ *
+ * Deliberately NOT swapped into CHECK 1 (line ~610): CHECK 1 BLOCKS THE BUILD,
+ * and tightening it could fail the build on blocks nobody has audited yet. CHECK
+ * 4 is advisory, so it is the safe place to raise the bar first. The same blind
+ * spot does exist in CHECK 1 for a CONTROLLED tier attr with no render — see the
+ * count reported by `--tier-audit`, which measures that exposure without
+ * changing CHECK 1's behaviour.
+ */
+const BREAKPOINT_DYNAMIC_RE =
+	/[.+]\s*['"`](?:Tablet|Mobile|Desktop)['"`]|\}(?:Tablet|Mobile|Desktop)|['"`](?:Tablet|Mobile|Desktop)['"`]\s*(?:,|\)|\]|=>)/;
+
 // Shared "prefixed attribute set" PHP helpers (Bean R-22-13 pattern): each
 // reads $attributes[ $prefix . 'Suffix' ] via string concatenation, so the
 // literal attribute name (e.g. "ctaBorderStyle") never appears anywhere in
@@ -729,10 +759,13 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 			const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
 			if ( suffix ) {
 				const base = attr.slice( 0, -suffix[ 1 ].length );
+				// STRICTER than CHECK 1's rule (a) on purpose — see
+				// BREAKPOINT_DYNAMIC_RE. A bare @media is not evidence about THIS
+				// attr; dynamic tier-key construction is.
 				if (
 					base &&
 					isConsumed( base, corpus ) &&
-					BREAKPOINT_TOKEN_RE.test( block.ownCorpus )
+					BREAKPOINT_DYNAMIC_RE.test( block.ownCorpus )
 				) {
 					consumed = true;
 				}
@@ -1140,9 +1173,61 @@ function findingKey( f ) {
 // Main
 // ---------------------------------------------------------------------------
 
+/**
+ * --tier-audit (2026-08-07): measure CHECK 1's exposure to the same blind spot
+ * CHECK 4 just closed, WITHOUT changing CHECK 1's behaviour.
+ *
+ * CHECK 1 clears a `{base}Tablet/Mobile/Desktop` attr whenever the base is
+ * consumed and the block's own corpus contains ANY breakpoint token — including
+ * a bare `@media`. This lists the CONTROLLED tier attrs that survive only
+ * because of that weak evidence: each has a control, its base is consumed, its
+ * own literal name is NOT consumed, and the block shows no dynamic tier-key
+ * construction. Every row is a candidate dead control the build currently
+ * passes.
+ *
+ * Reported, deliberately not enforced: CHECK 1 BLOCKS THE BUILD, so tightening
+ * it is a separate, deliberate decision that needs this number first.
+ */
+function tierAudit( blocks, sharedCorpus, wrapperControlled ) {
+	const rows = [];
+	for ( const block of blocks ) {
+		const editJs = readIfExists( path.join( block.dir, 'edit.js' ) );
+		const controlled = collectControlledAttrs( editJs );
+		const corpus = block.ownCorpus + '\n' + sharedCorpus;
+		for ( const attr of block.attrs ) {
+			const suffix = attr.match( BREAKPOINT_SUFFIX_RE );
+			if ( ! suffix || isSystemAttr( attr ) ) {
+				continue;
+			}
+			const hasControl =
+				controlled.has( attr ) ||
+				( block.usesWrapper && wrapperControlled.has( attr ) );
+			if ( ! hasControl ) {
+				continue; // no control -> CHECK 4's territory, already tightened
+			}
+			const base = attr.slice( 0, -suffix[ 1 ].length );
+			if ( ! base || isConsumed( attr, corpus ) ) {
+				continue; // its own name is consumed -> genuinely fine
+			}
+			if ( ! isConsumed( base, corpus ) ) {
+				continue; // base dead too -> CHECK 1 already reports it
+			}
+			// Survives ONLY on the weak @media evidence?
+			if (
+				BREAKPOINT_TOKEN_RE.test( block.ownCorpus ) &&
+				! BREAKPOINT_DYNAMIC_RE.test( block.ownCorpus )
+			) {
+				rows.push( `${ block.name } :: ${ attr }` );
+			}
+		}
+	}
+	return rows;
+}
+
 function main() {
 	const check = process.argv.includes( '--check' );
 	const asJson = process.argv.includes( '--json' );
+	const tierAuditOnly = process.argv.includes( '--tier-audit' );
 
 	EXTENSION_ATTRS = loadExtensionAttrs();
 	const sharedCorpus = stripComments( loadSharedCorpus() );
@@ -1164,6 +1249,20 @@ function main() {
 		}
 		blocks.push( block );
 		block.attrs.forEach( ( a ) => declaredAnywhere.add( a ) );
+	}
+
+	if ( tierAuditOnly ) {
+		const rows = tierAudit( blocks, sharedCorpus, wrapperControlled );
+		process.stdout.write(
+			`[check-dead-controls --tier-audit] ${ rows.length } CONTROLLED tier attr(s) ` +
+				'cleared by CHECK 1 on bare-@media evidence alone (candidate dead controls ' +
+				"the build currently passes; CHECK 1 is NOT changed by this flag):\n"
+		);
+		rows.forEach( ( r ) => process.stdout.write( `  - ${ r }\n` ) );
+		if ( ! rows.length ) {
+			process.stdout.write( '  (none — CHECK 1 has no exposure to this blind spot today)\n' );
+		}
+		process.exit( 0 );
 	}
 
 	// Rule (b) prep — LIVE context keys: a context-key is live only if some block

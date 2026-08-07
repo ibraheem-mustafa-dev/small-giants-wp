@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D516 — the dead-control gate could not see a dead TIER attr; and a canary's 5 undeclared attrs recovered, exposing a templateLock landmine [INCIDENT]
+
+**2026-08-07.** Closes both items left open by D515.
+
+### 1. CHECK 4 cleared any tier attr on bare-`@media` evidence
+
+`checkFullyDeadAttrs` cleared a `{base}Tablet/Mobile/Desktop` attr whenever the base was
+consumed AND `BREAKPOINT_TOKEN_RE` matched the block's own corpus — and that regex accepts a
+bare `@media`. So the test was effectively "does this block have ANY responsive CSS", which
+says nothing about the attr in question. **`sgs/hero.splitImageTablet` — no control, no render,
+the exact shape CHECK 4 exists to catch — was invisible to it, because `splitImage` is consumed
+and hero's render.php is full of `@media`.** It shipped declared-and-inert and was found by
+hand.
+
+**Fix:** a stricter `BREAKPOINT_DYNAMIC_RE` used by CHECK 4 only. What legitimately hides a tier
+attr's literal name is DYNAMIC KEY CONSTRUCTION (`$attributes[$base . 'Tablet']`,
+`"{$base}Mobile"`, a looped suffix list) — all of which leave a tier word against a
+concatenation/interpolation boundary. A plain `@media` no longer counts.
+
+**PROVEN BY A/B ON AN IDENTICAL TREE**, not by argument: hero's pre-fix `render.php` + `edit.js`
+were restored from `c2b7c235` and both rules run against them —
+
+| rule | findings | catches `splitImageTablet`? |
+|---|---|---|
+| old (`@media` allowed) | 3 | **NO** |
+| new (dynamic construction required) | **4** | **YES** |
+
+**CHECK 1 deliberately NOT changed — it BLOCKS THE BUILD.** Its exposure is measured instead by
+a new `--tier-audit` flag, which lists CONTROLLED tier attrs cleared on bare-`@media` evidence
+alone. It reports **0** today. That zero is positive-controlled: removing the
+"own name is consumed" skip yields **91** rows, so the traversal demonstrably reaches real
+attrs and the 0 is a real 0, not a broken query.
+
+### 2. Post 2164's five undeclared attrs — recovered, and a worse landmine found underneath
+
+A co-active track's "Spec 32 guard-purge capture canary" carried five attrs WP discards at
+parse and DELETES on the next editor save (D338). Each mapped to a declared name, verified
+against the target block's own schema/render rather than guessed:
+`counter.endValue 250`→`number` (`render.php:62` reads `number`) · `form-step.stepTitle`→`label`
+· `form-field-text/email.name`→`fieldName` · `mega-group.heading`→ a child `sgs/heading`
+(mega-group declares NO attrs; its render docblock says it carries "a heading + an icon-list").
+
+Migrated through the block editor's data layer (WP-CLI post_content writes are guard-banned),
+schema-validated against the DEPLOYED build first. **Values had to come from the RAW REST
+markup — the editor drops undeclared attrs at parse, so `wp.data` never sees them and reading
+there would have "migrated" nothing.** After: `"name":` as a key 0, `"fieldName":` 2, and the
+canary now RENDERS `250` and `Mega group heading` where it previously rendered neither — so
+their sweep was partly measuring blocks with missing text. (`form-step.label` correctly does not
+appear in a text sweep: it renders as `data-step-label`/`aria-label`, checked rather than
+flagged.)
+
+⛔ **`sgs/mega-group` sets `templateLock: 'all'` (edit.js:25).** Its children are locked to the
+template, so the stored `sgs/text` child ("…so the panel renders a measurable node") was
+dropped by the editor on load and could not be re-inserted — insertion is refused. That text is
+now gone from the page. **It was already doomed:** ANY editor save of that post would have
+dropped it, because the child was never template-permitted. The oldshape-audit gate does not
+cover this class — it checks attrs against block.json, not children against a templateLock.
+A canary that needs a measurable text node inside a locked composite must get it from a
+template-permitted child.
+
 ## D515 — art-direction tiers made REAL on sgs/hero and sgs/media; two bugs only the live capture could find [ROUTINE]
 
 **2026-08-07.** Verified on the canary at 375/768/1440. Reports:
