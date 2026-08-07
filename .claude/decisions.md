@@ -1,5 +1,55 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D514 — ⛔ D511 IS WRONG. A self-repairing mechanism silently reverted the test conditions at import. The generic path routes art direction correctly. [INCIDENT]
+
+**2026-08-07. Supersedes D511's conclusion. Retracted by measurement, not by argument.**
+
+**WHAT INVALIDATED IT.** `db_lookup._migrate_scalar_media_roles()` — the drift detector D474 shipped
+to protect this exact role — runs at MODULE IMPORT and re-asserts `role='scalar-media'`. Every D511
+probe set the trio to `image-object`, imported the converter, and had the roles silently reverted
+before the walk ran. It even says so, and I did not read it as being about my own test:
+
+    [db_lookup] RE-ASSERTED role='scalar-media' on sgs/hero.splitImage (found 'image-object').
+
+D511 concluded "the generic path still lifts NOTHING". It was measuring `scalar-media` both times.
+**The healer hid the thing it was healing** — the exact pattern already recorded in
+`feedback_a_self_repairing_mechanism_hides_the_failure_it_repairs`, and it still cost two wrong calls.
+A fixture-level monkeypatch does NOT fix this: the re-assertion fires at import, before any fixture.
+The data file has to be absent (which is what retirement does anyway).
+
+**THE HONEST MEASUREMENT.** Data file moved aside, Branch A disabled, trio given its own model's
+shape (`role='image-object'`, `emit_shape='nested'`, dedicated `canonical_slot='split-image'`):
+
+| | D511 claimed | actually |
+|---|---|---|
+| proof test | 3 of 4 FAIL | **3 of 4 PASS** |
+| `splitImage` | `{}` | **`/hero-desk.webp`** — the DESKTOP crop |
+| `splitImageMobile` | unset | **`/hero-mob.jpg`** — the MOBILE crop |
+
+**Bean's `--desktop` trap is handled**: `--desktop` collapses to the BASE attr (D505) rather than
+seeking a `splitImageDesktop` sibling, on the real two-class canary markup.
+
+**The tier primitive I said was missing in D513 ALREADY EXISTS and is well built.** `walk.py:526-536`
+derives the device tier from own-family modifiers by a stated rule and passes it to
+`content_attr_for_element(..., tier=)`, which has a full tier contract. D513's "resolution is
+modifier-blind" was measured on rows the healer had reverted to a non-content role, so nothing could
+resolve regardless of tier. **D513's naming of the missing primitive is therefore also wrong**; what
+was missing was the DATA SHAPE, not the mechanism.
+
+**ONE residual, precisely characterised:** an empty `sgs/media` ChildBlock still leaks
+(`<!-- wp:sgs/media /-->`), so `test_art_direction_leaves_no_stray_child_block` fails while the other
+three pass. Both images route correctly — this is a leftover node, not a routing error. Not yet traced
+to its emitter.
+
+**NOTHING IS RETIRED AND NOTHING WAS LEFT MUTATED.** DB restored from backup (`splitImage` reads
+`scalar-media`/`image` again), `scalar-media-roles.json` restored, converter 672 pass. The retirement
+still needs: the residual child traced, the data shape made durable through a reseed (STOP-71), and a
+non-hero fixture proving universality.
+
+⚠ **`slots` reseeds from `slots.json` at import and DELETES rows the file lacks** — a new slot added
+directly to the table vanished mid-session with only a warning. Any durable slot change must go
+through the seed file, not an UPDATE.
+
 ## D513 — STEP 1 answered: the split-image blocker is NOT routing precedence, and NOT only a tier problem. The missing primitive is named. [ROUTINE]
 
 **2026-08-07.** Measurement only — **nothing shipped, nothing retired**. Everything reverted
