@@ -508,6 +508,42 @@ function openDrawerFor( ctx, trigger ) {
 		drawer.style.removeProperty( '--sgs-drawer-header-offset' );
 	}
 
+	/*
+	 * The `trigger` anchor, measured for real. render.php's `trigger` case used
+	 * to return a literal `top:16px;right:16px`, so the panel flew to the
+	 * top-right corner no matter where the burger actually was (its own docblock
+	 * admitted the approximation). Same measure-and-write pattern as the header
+	 * offset directly above: `trigger` is already in scope here (it is this
+	 * function's second parameter) and is NOT reparented — only the drawer and
+	 * scrim are — so its rect is stable at this point, and lockScroll() has
+	 * already run so the scrollbar is settled.
+	 *
+	 * Two deliberate corrections to the naive reading of the rect:
+	 *  - top uses `bottom + 8`, because a panel anchored to a burger hangs BELOW
+	 *    it, not over it.
+	 *  - right uses `innerWidth - rect.right`, because a DOMRect's `.right` is a
+	 *    LEFT-origin coordinate; feeding it straight into the CSS `right`
+	 *    property would push the panel off the opposite edge.
+	 * Both properties are removed when there is no measurable trigger, so
+	 * render.php's `var(…, 16px)` fallbacks take over. No cleanup in runClose()
+	 * is needed (and none exists for the header offset either): every open
+	 * re-writes or re-removes both.
+	 */
+	const tRect = trigger ? trigger.getBoundingClientRect() : null;
+	if ( tRect && tRect.width > 0 ) {
+		drawer.style.setProperty(
+			'--sgs-drawer-trigger-top',
+			`${ Math.max( 0, Math.round( tRect.bottom + 8 ) ) }px`
+		);
+		drawer.style.setProperty(
+			'--sgs-drawer-trigger-right',
+			`${ Math.max( 0, Math.round( window.innerWidth - tRect.right ) ) }px`
+		);
+	} else {
+		drawer.style.removeProperty( '--sgs-drawer-trigger-top' );
+		drawer.style.removeProperty( '--sgs-drawer-trigger-right' );
+	}
+
 	if ( typeof drawer.showModal === 'function' ) {
 		// FR-36-6 default: full-screen modal in the top layer — survives a
 		// transformed header ancestor; native inert background + native ESC +
@@ -652,6 +688,44 @@ const { actions } = store( 'sgs/nav', {
 		 */
 		get isOpen() {
 			return !! getContext().isOpen;
+		},
+	},
+	callbacks: {
+		/**
+		 * Drop a dangling `aria-controls` from the burger.
+		 *
+		 * Measured live on /poc-drawer-multi-instance/: three burgers carried
+		 * the DEFAULT `aria-controls="sgs-nav-drawer"` while the drawers on that
+		 * page had explicit refs, so `getElementById()` returned null for all
+		 * three — a promise to assistive tech that resolves to nothing.
+		 *
+		 * Removing it is the honest repair rather than a loss of function: the
+		 * drawer needs JS to open at all, so a burger on a JS-off page is inert
+		 * regardless, and this callback only ever runs with JS on. A burger
+		 * whose drawer DOES resolve is left completely untouched — the working
+		 * pairing is the thing being protected.
+		 *
+		 * Deliberately NOT fixed by deriving a uid-based `drawerRef` default:
+		 * the burger and the drawer render in unpredictable order, are not
+		 * parent/child, and share no handle, so two independent derivations
+		 * would produce two DIFFERENT strings and break the pairing that
+		 * currently works.
+		 */
+		pruneDanglingAriaControls() {
+			const ctx = getContext();
+			if ( resolveDrawer( ctx ) ) {
+				return;
+			}
+			const { ref } = getElement();
+			if ( ! ref ) {
+				return;
+			}
+			const burger = ref.matches( '[aria-controls]' )
+				? ref
+				: ref.querySelector( '[aria-controls]' );
+			if ( burger ) {
+				burger.removeAttribute( 'aria-controls' );
+			}
 		},
 	},
 	actions: {

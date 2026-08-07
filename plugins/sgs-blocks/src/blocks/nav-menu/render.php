@@ -605,7 +605,7 @@ $burger_context_attr = function_exists( 'wp_interactivity_data_wp_context' )
 	: sprintf( "data-wp-context='%s'", esc_attr( $burger_context ) );
 
 $toggle_html = sprintf(
-	'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %s>' .
+	'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %s data-wp-init="callbacks.pruneDanglingAriaControls">' .
 	'<button type="button" class="sgs-nav-menu__burger" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%s" aria-label="%s">%s</button>' .
 	'</div>',
 	$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch above esc_attr()s the JSON.

@@ -51,7 +51,12 @@
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 }
 
-.sgs-icon-list__icon:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-icon-list__icon) {
 	color: var(--wp--preset--color--primary);
 }
 
@@ -108,7 +113,12 @@
  * A set textColour still wins: render.php emits it as a scoped `.{uid}` rule. */
 
 /* Per-item hover: text shifts to primary, icon scales up */
-.sgs-icon-list__item:hover .sgs-icon-list__text:not([style*="color"]) {
+/* Spec 32: no block emits an inline `style` property declaration any more,
+ * so a `:not([style*=…])` guard always matches and the fallback is
+ * unconditional. This value is PAINTED (not what the element inherits), so
+ * it is kept — but de-specified via :where() (0,0,0) so the operator's own
+ * scoped `.{uid}` rule always wins. */
+:where(.sgs-icon-list__item:hover .sgs-icon-list__text) {
 	color: var(--wp--preset--color--primary);
 }
 

@@ -102,10 +102,12 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
  * `display`, per STOP-DIALOG-DISPLAY-GATE/D338) for one resolved anchor value
  * at one tier. `header` derives its top offset from the published
  * `--sgs-header-height` custom property (never a hardcoded px) and spans full
- * width beneath it; `trigger` approximates a top-right corner-anchored panel
- * (the honest limitation: without JS-measuring the actual burger's position,
- * a CSS-only anchor cannot track an arbitrary trigger location — documented,
- * not silently assumed); `centred` is the modal-card geometry `sgs/modal`
+ * width beneath it; `trigger` anchors BELOW the actual burger, reading the
+ * `--sgs-drawer-trigger-top` / `--sgs-drawer-trigger-right` values store.js
+ * measures from the live trigger rect at open time (same measure-and-write
+ * pattern as the header offset) and falling back to the old 16px/16px corner
+ * only when JS has not run — the previous CSS-only literal could not track an
+ * arbitrary trigger location at all; `centred` is the modal-card geometry `sgs/modal`
  * already uses (margin:auto within a fixed inset).
  *
  * @param string $anchor_value Resolved anchor keyword for this tier.
@@ -127,7 +129,7 @@ $sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) {
 			return 'position:fixed;top:var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px));right:0;bottom:auto;left:0;margin:0;width:100%;height:auto;max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px)));';
 		case 'trigger':
 			$cap = '' !== $panel_size ? $panel_size : '360px';
-			return 'position:fixed;top:16px;right:16px;bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
+			return 'position:fixed;top:var(--sgs-drawer-trigger-top, 16px);right:var(--sgs-drawer-trigger-right, 16px);bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
 		case 'centred':
 			$cap = '' !== $panel_size ? $panel_size : '480px';
 			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
