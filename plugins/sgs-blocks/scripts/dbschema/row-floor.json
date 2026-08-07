@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-05T20:50:22Z",
+  "generated_at": "2026-08-06T20:06:11Z",
   "tables": {
     "animation_tokens": 8,
     "array_item_schema": 68,
-    "attribute_gap_candidates": 3111,
-    "block_attributes": 2943,
+    "attribute_gap_candidates": 3205,
+    "block_attributes": 3221,
     "block_capabilities": 96,
     "block_changes": 2735,
     "block_composition": 211,
@@ -28,25 +28,25 @@
     "pipeline_corrections": 4,
     "plugins": 3,
     "preset_implications": 23,
-    "property_suffixes": 154,
-    "roles": 33,
+    "property_suffixes": 156,
+    "roles": 35,
     "schema_metadata": 4,
     "schema_migrations": 29,
-    "slots": 104,
+    "slots": 108,
     "style_variations": 8,
     "theme_parts": 28,
-    "variant_slots": 27
+    "variant_slots": 26
   },
   "columns": {
     "block_attributes.box_family": 236,
-    "block_attributes.canonical_slot": 1313,
-    "block_attributes.css_property": 1050,
-    "block_attributes.emit_shape": 199,
-    "block_attributes.role": 2374,
+    "block_attributes.canonical_slot": 1359,
+    "block_attributes.css_property": 1053,
+    "block_attributes.emit_shape": 237,
+    "block_attributes.role": 2728,
     "block_composition.container_kind": 36,
     "block_composition.wraps_block": 37,
     "blocks.tier": 206,
     "blocks.variant_attr": 5,
-    "roles.classification": 33
+    "roles.classification": 35
   }
 }

@@ -40,7 +40,7 @@ import {
 	Button,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -206,8 +206,11 @@ function buildWrapperStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		style,
-		memberMedia,
 		photo,
+		// photoTablet / photoMobile are deliberately NOT destructured — the
+		// responsive family is read through `photoForTier()` off `attributes`
+		// so the tier map stays the single source of truth for which attr
+		// belongs to which device.
 		name,
 		role,
 		bio,
@@ -229,30 +232,27 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const isCompact = 'compact' === displayMode;
 
-	// Hydrate from new memberMedia first, fall back to legacy photo.
-	const activeMedia = ( memberMedia && memberMedia.url )
-		? memberMedia
-		: ( photo && photo.url
-			? {
-				url: photo.url,
-				type: 'image',
-				id: photo.id || 0,
-				alt: photo.alt || '',
-				mime: 'image/jpeg',
-			}
-			: null
-		);
+	const activeMedia = photo && photo.url ? photo : null;
 
 	const handleMediaChange = ( media ) => {
-		if ( ! media ) {
-			setAttributes( { memberMedia: null, photo: undefined } );
-			return;
-		}
-		setAttributes( {
-			memberMedia: media,
-			// Mirror to legacy attr so older render paths / schema markup keep working.
-			photo: { id: media.id, url: media.url, alt: media.alt },
-		} );
+		setAttributes( { photo: media || null } );
+	};
+
+	// Responsive photo family — one attr per device tier. The base (unsuffixed)
+	// attr IS the desktop value, matching the framework convention.
+	const photoTierAttr = {
+		desktop: 'photo',
+		tablet: 'photoTablet',
+		mobile: 'photoMobile',
+	};
+
+	const photoForTier = ( breakpoint ) => {
+		const value = attributes[ photoTierAttr[ breakpoint ] ];
+		return value && value.url ? value : null;
+	};
+
+	const setPhotoForTier = ( breakpoint, media ) => {
+		setAttributes( { [ photoTierAttr[ breakpoint ] ]: media || null } );
 	};
 
 	// Social links repeater helpers — mirror trust-bar pattern.
@@ -333,6 +333,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ cardShadow }
 						onChange={ ( val ) => setAttributes( { cardShadow: val } ) }
 					/>
+				</PanelBody>
+
+				{ /* Responsive photo family. Uses the SHARED <ResponsiveControl>
+				   rather than one loose picker per tier: the prebuild oldshape
+				   audit rejects a responsive family edited without it, and the
+				   shared switcher also drives WordPress's native device preview,
+				   so choosing a tablet photo resizes the canvas and shows it.
+				   Three stacked pickers cannot do that and give the client three
+				   things to understand instead of one. */ }
+				<PanelBody title={ __( 'Photo', 'sgs-blocks' ) } initialOpen={ false }>
+					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
+						{ __( 'Optional — set a different photo per device. Leave a tier blank to inherit the one above it.', 'sgs-blocks' ) }
+					</p>
+					<ResponsiveControl label={ __( 'Photo', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<MediaPicker
+								value={ photoForTier( breakpoint ) }
+								onChange={ ( media ) => setPhotoForTier( breakpoint, media ) }
+								onRemove={ () => setPhotoForTier( breakpoint, null ) }
+								allowedTypes={ [ 'image' ] }
+								label={ __( 'Select photo', 'sgs-blocks' ) }
+								instructionsImage={ __( 'Choose a photo for this device size', 'sgs-blocks' ) }
+							/>
+						) }
+					</ResponsiveControl>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
@@ -437,7 +462,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					<MediaPicker
 						value={ activeMedia }
 						onChange={ handleMediaChange }
-						onRemove={ () => setAttributes( { memberMedia: null, photo: undefined } ) }
+						onRemove={ () => setAttributes( { photo: null } ) }
 						allowedTypes={ [ 'image' ] }
 						label={ __( 'Select photo', 'sgs-blocks' ) }
 						instructionsImage={ __( 'Choose a headshot photo for this team member', 'sgs-blocks' ) }

@@ -820,7 +820,7 @@
       "slug": "sgs/notice-banner",
       "title": "SGS Notice Banner",
       "category": "sgs-content",
-      "tier": "block",
+      "tier": "class-section",
       "replaces": null,
       "has_render_php": true,
       "surfaces": {

@@ -7,6 +7,7 @@
       "attr": "accentColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "accent"
       }
     },
@@ -208,6 +209,7 @@
       "attr": "nameColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "caption"
       }
     },
@@ -354,6 +356,7 @@
       "attr": "tileBackgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "tile"
       }
     },
@@ -362,6 +365,7 @@
       "attr": "tileBorderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "tile"
       }
     },
@@ -418,6 +422,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -459,6 +464,7 @@
       "attr": "colourBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -467,6 +473,8 @@
       "attr": "colourBackgroundHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -475,6 +483,7 @@
       "attr": "colourBorder",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -483,6 +492,8 @@
       "attr": "colourBorderHover",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -491,6 +502,7 @@
       "attr": "colourText",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -499,6 +511,8 @@
       "attr": "colourTextHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -523,6 +537,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -531,6 +546,7 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon",
         "css_state": "hover"
       }
@@ -564,6 +580,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "card-tile",
         "css_state": "hover"
       }
@@ -573,6 +590,7 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "card-tile",
         "css_state": "hover"
       }
@@ -582,6 +600,7 @@
       "attr": "cardBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "card-tile"
       }
     },
@@ -590,6 +609,7 @@
       "attr": "cardBorderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "card-tile"
       }
     },
@@ -768,6 +788,7 @@
       "attr": "badgeColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -776,6 +797,7 @@
       "attr": "badgeTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -784,6 +806,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -800,6 +823,7 @@
       "attr": "panelBg",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "panel"
       }
     },
@@ -808,6 +832,7 @@
       "attr": "panelTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "panel"
       }
     },
@@ -1028,6 +1053,14 @@
     },
     {
       "slug": "sgs/decorative-image",
+      "attr": "overflow",
+      "fields": {
+        "css_property": "overflow",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
       "attr": "positionX",
       "fields": {
         "css_property": "left",
@@ -1064,6 +1097,7 @@
       "attr": "formFocusRingColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "focus-ring"
       }
     },
@@ -1096,6 +1130,7 @@
       "attr": "progressBarColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "progress-bar"
       }
     },
@@ -1128,6 +1163,7 @@
       "attr": "captionBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "caption"
       }
     },
@@ -1223,6 +1259,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -1231,6 +1268,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -1240,6 +1278,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -1331,6 +1370,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -1339,6 +1379,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -1681,6 +1722,7 @@
       "attr": "mediaBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "media"
       }
@@ -1836,6 +1878,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -1851,6 +1894,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -1859,6 +1903,7 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -1883,6 +1928,7 @@
       "attr": "shapeColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -1892,6 +1938,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -2018,6 +2065,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "item-text"
       }
     },
@@ -2033,6 +2081,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -2042,6 +2091,7 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -2068,6 +2118,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -2125,6 +2176,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -2299,6 +2351,7 @@
       "attr": "asideBg",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
@@ -2308,6 +2361,7 @@
       "attr": "asideBorderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
@@ -2352,6 +2406,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2370,6 +2425,7 @@
       "attr": "panelBg",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2379,6 +2435,7 @@
       "attr": "modalBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "dialog"
       }
     },
@@ -2387,6 +2444,7 @@
       "attr": "overlayColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "backdrop"
       }
     },
@@ -2511,6 +2569,7 @@
       "attr": "drawerBg",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2551,6 +2610,7 @@
       "attr": "burgerHoverColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "burger",
         "css_state": "hover"
       }
@@ -2559,7 +2619,7 @@
       "slug": "sgs/nav-menu",
       "attr": "burgerSize",
       "fields": {
-        "css_property": "height",
+        "css_property": "height,width",
         "css_element": "burger"
       }
     },
@@ -2584,6 +2644,7 @@
       "attr": "featuredBgHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "featured",
         "css_state": "hover"
       }
@@ -2601,6 +2662,7 @@
       "attr": "featuredColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "featured",
         "css_state": "hover"
       }
@@ -2669,6 +2731,7 @@
       "attr": "itemBgHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "item",
         "css_state": "selected"
       }
@@ -2686,6 +2749,7 @@
       "attr": "itemColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "item",
         "css_state": "selected"
       }
@@ -2785,6 +2849,7 @@
       "attr": "underlineColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "underline"
       }
     },
@@ -2793,6 +2858,7 @@
       "attr": "underlineColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "underline",
         "css_state": "hover"
       }
@@ -2911,6 +2977,7 @@
       "attr": "pillBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "hover"
       }
@@ -2972,6 +3039,7 @@
       "attr": "pillSelectedBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "selected"
       }
@@ -2981,6 +3049,7 @@
       "attr": "pillSelectedBorderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "selected"
       }
@@ -2999,6 +3068,7 @@
       "attr": "pillSelectedTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "pill",
         "css_state": "selected"
       }
@@ -3034,6 +3104,7 @@
       "attr": "cardBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID",
         "css_element": "card"
       }
@@ -3108,6 +3179,7 @@
       "attr": "ctaBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "cta"
       }
     },
@@ -3116,6 +3188,7 @@
       "attr": "ctaColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "cta"
       }
     },
@@ -3124,6 +3197,7 @@
       "attr": "featureColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "feature"
       }
     },
@@ -3132,6 +3206,7 @@
       "attr": "popularBadgeBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -3140,6 +3215,7 @@
       "attr": "popularBadgeColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "badge"
       }
     },
@@ -3148,6 +3224,7 @@
       "attr": "priceColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "price"
       }
     },
@@ -3156,6 +3233,7 @@
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -3164,6 +3242,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -3173,6 +3252,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -3181,6 +3261,7 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -3198,6 +3279,7 @@
       "attr": "descriptionColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "description"
       }
     },
@@ -3206,6 +3288,7 @@
       "attr": "numberBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "number"
       }
     },
@@ -3214,6 +3297,7 @@
       "attr": "numberColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "number"
       }
     },
@@ -3222,6 +3306,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -3231,6 +3316,7 @@
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -3296,6 +3382,7 @@
       "attr": "ctaColourBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "cta"
       }
     },
@@ -3304,6 +3391,7 @@
       "attr": "ctaColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "cta",
         "css_state": "hover"
       }
@@ -3313,6 +3401,7 @@
       "attr": "ctaColourBorder",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "cta"
       }
     },
@@ -3321,6 +3410,7 @@
       "attr": "ctaColourBorderHover",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "cta",
         "css_state": "hover"
       }
@@ -3330,6 +3420,7 @@
       "attr": "ctaColourText",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "cta"
       }
     },
@@ -3338,6 +3429,7 @@
       "attr": "ctaColourTextHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "cta",
         "css_state": "hover"
       }
@@ -3655,6 +3747,7 @@
       "attr": "attributionColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "attribution"
       }
     },
@@ -3703,6 +3796,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -3718,6 +3812,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -3776,6 +3871,7 @@
       "attr": "contentColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "content"
       }
     },
@@ -3868,6 +3964,7 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon",
         "css_state": "hover"
       }
@@ -3877,6 +3974,7 @@
       "attr": "activeLinkColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "link",
         "css_state": "selected"
       }
@@ -3886,6 +3984,7 @@
       "attr": "linkColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "link"
       }
     },
@@ -3894,6 +3993,7 @@
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -3902,6 +4002,7 @@
       "attr": "panelBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "panel",
         "css_state": "selected"
       }
@@ -3911,6 +4012,7 @@
       "attr": "panelBorderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "panel",
         "css_state": "selected"
       }
@@ -3920,6 +4022,7 @@
       "attr": "tabActiveBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "tab",
         "css_state": "selected"
       }
@@ -3929,6 +4032,7 @@
       "attr": "tabActiveIndicatorColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "tab",
         "css_state": "selected"
       }
@@ -3938,6 +4042,7 @@
       "attr": "tabActiveTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "tab",
         "css_state": "selected"
       }
@@ -3947,6 +4052,7 @@
       "attr": "tabBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "tab"
       }
     },
@@ -3955,6 +4061,7 @@
       "attr": "tabIndicatorColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "tab"
       }
     },
@@ -3963,6 +4070,7 @@
       "attr": "tabTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "tab"
       }
     },
@@ -3981,6 +4089,24 @@
       "fields": {
         "css_property": "color",
         "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "photoMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "photoTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -4081,6 +4207,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
@@ -4091,6 +4218,7 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
@@ -4109,6 +4237,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
@@ -4119,6 +4248,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -4127,6 +4257,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -4136,6 +4267,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -4179,6 +4311,7 @@
       "attr": "firstLetterColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "first-letter"
       }
     },
@@ -4253,6 +4386,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -4261,6 +4395,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -4309,7 +4444,7 @@
       "slug": "sgs/trust-bar",
       "attr": "badgeImageSize",
       "fields": {
-        "css_property": "height",
+        "css_property": "height,width",
         "css_element": "badge-img"
       }
     },
@@ -4318,6 +4453,7 @@
       "attr": "iconCircleBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "icon-badge"
       }
     },
@@ -4341,7 +4477,7 @@
       "slug": "sgs/trust-bar",
       "attr": "iconCircleSize",
       "fields": {
-        "css_property": "height",
+        "css_property": "height,width",
         "css_element": "icon-badge"
       }
     },
@@ -4350,6 +4486,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon-badge"
       }
     },
@@ -4506,6 +4643,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -4637,6 +4775,7 @@
       "attr": "headerBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "header"
       }
     },
@@ -4645,6 +4784,7 @@
       "attr": "headerColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "header"
       }
     },
@@ -4653,6 +4793,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -4924,6 +5065,7 @@
       "attr": "contentBandBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -4978,6 +5120,7 @@
       "attr": "gridItemBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -4986,7 +5129,7 @@
       "slug": "sgs/container",
       "attr": "gridItemBorder",
       "fields": {
-        "css_property": "border-color",
+        "css_property": "border-color,border-style,border-width",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -5023,6 +5166,7 @@
       "attr": "gridItemTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -5221,6 +5365,7 @@
       "attr": "contentBandBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -5275,6 +5420,7 @@
       "attr": "gridItemBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -5283,7 +5429,7 @@
       "slug": "sgs/cta-section",
       "attr": "gridItemBorder",
       "fields": {
-        "css_property": "border-color",
+        "css_property": "border-color,border-style,border-width",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -5320,6 +5466,7 @@
       "attr": "gridItemTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -6023,6 +6170,7 @@
       "attr": "contentBandBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -6068,6 +6216,7 @@
       "attr": "gridItemBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -6076,7 +6225,7 @@
       "slug": "sgs/hero",
       "attr": "gridItemBorder",
       "fields": {
-        "css_property": "border-color",
+        "css_property": "border-color,border-style,border-width",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -6113,6 +6262,7 @@
       "attr": "gridItemTextColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "grid-item"
       }
@@ -6225,6 +6375,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -6374,6 +6525,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -6390,6 +6542,7 @@
       "attr": "contentBandBackground",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "content-band"
       }
@@ -6435,6 +6588,7 @@
       "attr": "categoryBadgeBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "category-badge"
       }
     },
@@ -6713,6 +6867,7 @@
       "attr": "colour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -6844,6 +6999,7 @@
       "attr": "tabHoverBgColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "tab",
         "css_state": "hover"
       }
@@ -7091,6 +7247,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -7115,6 +7272,7 @@
       "attr": "connectorColour",
       "fields": {
         "css_property": "background-color",
+        "role": "color",
         "css_element": "connector"
       }
     },
@@ -7123,6 +7281,7 @@
       "attr": "dateColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "date"
       }
     },
