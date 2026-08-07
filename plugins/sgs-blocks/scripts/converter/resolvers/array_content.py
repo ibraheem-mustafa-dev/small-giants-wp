@@ -117,12 +117,26 @@ def _item_field_schema(slug: str, array_attr: str) -> list[tuple[str, str | None
     return schema
 
 
-def _find_item_nodes(node: Tag) -> list[Tag]:
+def _find_item_nodes(node: Tag) -> tuple[list[Tag], list[Tag]]:
     """Structural item detection (§2.4 sibling-class traversal): the LARGEST group
     of ≥2 direct-sibling elements that share the same BEM element token, anywhere
     in the subtree. That repeating group is the array's items (e.g. the 4
-    ``__badge`` siblings under ``__inner``). No hand-declared item selector."""
+    ``__badge`` siblings under ``__inner``). No hand-declared item selector.
+
+    Returns ``(items, below_threshold)``. ``below_threshold`` holds every LONE
+    BEM-classed child that a sibling-group scan saw but rejected purely for being
+    a group of one — the raw material for the dropped-single-item warning in
+    ``lift_array_content``. It is empty whenever a real repeater WAS found (in
+    that case nothing was dropped for this subtree).
+
+    The ``>= 2`` threshold is deliberately UNCHANGED. It is false-positive
+    protection: at ``>= 1`` any lone BEM-classed child would be lifted as a
+    one-item array the draft never had, and on a fidelity pipeline an invented
+    array is worse than an omission. This function now merely REPORTS what the
+    threshold rejected; it never lowers it.
+    """
     best: list[Tag] = []
+    below: list[Tag] = []
     # Include `node` itself: items can be DIRECT children of the root (icon-list
     # <ul> → <li> items, card-grid/social-icons), not only under a nested wrapper
     # (trust-bar __inner). find_all(True) excludes the root, so probe it too.
@@ -135,9 +149,12 @@ def _find_item_nodes(node: Tag) -> list[Tag]:
             if tok:
                 groups.setdefault(tok, []).append(kid)
         for group in groups.values():
-            if len(group) >= 2 and len(group) > len(best):
-                best = group
-    return best
+            if len(group) >= 2:
+                if len(group) > len(best):
+                    best = group
+            else:
+                below.append(group[0])
+    return (best, []) if best else ([], below)
 
 
 def _kebab_to_camel(token: str) -> str:
@@ -337,6 +354,57 @@ def _lift_item(
     return item
 
 
+def _warn_items_below_threshold(
+    slug: str,
+    attr_name: str,
+    candidates: list[Tag],
+) -> None:
+    """Report an array attr that lifted NOTHING because no sibling group reached 2.
+
+    Routed through ``services/assembly._fold_trace`` — the same ``[fold-gap]``
+    WARNING logger the band-fold and per-area-fold gaps already use — so the drop
+    lands in the run log operators ALREADY read, rather than inventing a second
+    channel nobody watches. Imported lazily inside the call because ``assembly``
+    sits above the resolvers in the import order (``extraction`` imports both);
+    a module-level import here would invert that layering for no gain.
+
+    Bean's scope narrowing (2026-08-07) is applied at the BLOCK level, exactly as
+    he specified: this only ever runs past ``lift_array_content``'s
+    ``array-content-lift`` capability gate and a populated
+    ``array_item_field_schema`` with at least one content-bearing field — i.e.
+    only for a block that DECLARES it holds a repeater. A block that legitimately
+    stands alone (a single ``sgs/quote``, a lone badge block) returns at the
+    capability gate and never reaches here. Both conditions are read from the
+    block's own declaration — no slug list, no carve-out (R-31-1 / R-31-9).
+
+    It deliberately does NOT name WHICH child was the lost item. That is not
+    knowable: with one member there is no repetition to detect, which is the very
+    reason the ``>= 2`` threshold exists. Measured on the live DB — a lone
+    trust-bar ``__badge``, its ``__inner`` wrapper and its ``__label`` child ALL
+    lift ``{'label': 'Handmade'}`` under the item schema, because ``text-content``
+    matches any text-bearing node. Any per-candidate claim would therefore be a
+    guess dressed as a finding. The warning states only what is true: this array
+    lifted zero items while BEM-classed children were present.
+    """
+    from converter.services.assembly import _fold_trace
+
+    _fold_trace(
+        "array_items_below_threshold",
+        owning_block=slug,
+        array_attr=attr_name,
+        candidate_elements=sorted(
+            {_bem_token(c) for c in candidates if _bem_token(c)}
+        ),
+        reason=(
+            "no sibling group reached the >= 2 repeat threshold, so this array"
+            " lifted ZERO items — a draft carrying exactly one of them drops it"
+            " entirely. The threshold is retained deliberately (lowering it would"
+            " invent an array from any lone child). Check the draft against the"
+            " clone for a missing single item."
+        ),
+    )
+
+
 def lift_array_content(
     node: Tag,
     slug: str,
@@ -357,7 +425,7 @@ def lift_array_content(
     if not attrs:
         return {}, []
 
-    item_nodes = _find_item_nodes(node)
+    item_nodes, below_threshold = _find_item_nodes(node)
 
     result_attrs: dict = {}
     all_gaps: list = []
@@ -371,6 +439,19 @@ def lift_array_content(
             # resolver's concern (e.g. a config array). Skip, not a gap.
             continue
         if not item_nodes:
+            # SILENT-LOSS SURFACE (2026-08-07). Conservation above is
+            # items_seen == filled + item_gaps, which is trivially 0 == 0 + 0 when
+            # the threshold saw no group — so a draft carrying exactly ONE
+            # testimonial / badge / pill dropped it with nothing in the run log.
+            #
+            # Warn only for a candidate that WOULD have filled this array's fields:
+            # a composite's ordinary singleton wrapper (hero's __content / __media)
+            # lifts nothing under the item schema and must not generate noise, or
+            # the warning becomes something operators learn to ignore. The lift is
+            # a dry run — its result is DISCARDED, so no item is invented and the
+            # emitted attrs are byte-identical to before this block existed.
+            if below_threshold:
+                _warn_items_below_threshold(slug, attr_name, below_threshold)
             continue
 
         filled: list[dict] = []
