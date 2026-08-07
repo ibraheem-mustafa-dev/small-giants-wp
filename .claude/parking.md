@@ -41,10 +41,10 @@ TRUTH-SPEC.md. Relevant to the Phase-5 section-annihilation bug, which fires on 
 
 *52 open entries (re-derived 2026-07-31 from a `**Bucket:** pipeline` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
-### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 3,604 lines against a 600 cap
+### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 7,263 lines against a 600 cap
 **Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
 
-`docscore` grades `decisions.md` at 67.3% (C), and the only genuine failure is length: 3,604 lines
+`docscore` grades `decisions.md` at 67.3% (C), and the only genuine failure is length: 7,263 lines
 against the 600-line cap for the doc type (2,634 when parked 2026-07-30; 3,097 after D424; 3,604
 after D432 — it is still growing, ~1 doc-grade point lost per session). The project already has the remedy — archive-on-resolve
 into `memory/decisions-archive.md` for retired/superseded/non-load-bearing entries — it just has
@@ -436,7 +436,7 @@ The 3 real clients use one naming vocabulary (`text`, `text-muted`, `text-invers
 ### P-PATTERNS-USE-CORE-BLOCKS — SGS theme patterns/parts use core WP blocks instead of SGS blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-10
 
-The no-inline block contract is fully met at the block level, but the footer (and ~40+ other pattern/part files) use core `wp:heading`/`wp:paragraph`/`wp:list` blocks, which WordPress core inlines its own styling supports onto — leaking inline styling into SGS pages even though no SGS block is at fault. Bean's directive: SGS patterns must be built from SGS blocks. Each core heading/paragraph must be mapped onto the equivalent SGS block's attribute schema (not a find-replace), then each pattern re-verified live at three breakpoints.
+The no-inline block contract is fully met at the block level, but **4 pattern files** still use core `wp:heading`/`wp:paragraph`/`wp:list` blocks (MEASURED 2026-08-07: `footer-columns.php`, `footer-informational.php`, `framework-footer-default.php`, `pricing-columns.php` — this entry previously said "the footer and ~40+ other pattern/part files", which was ~10x the real remaining scope). WordPress core inlines its own styling supports onto those blocks — leaking inline styling into SGS pages even though no SGS block is at fault. Bean's directive: SGS patterns must be built from SGS blocks. Each core heading/paragraph must be mapped onto the equivalent SGS block's attribute schema (not a find-replace), then each pattern re-verified live at three breakpoints.
 
 **Trigger:** a dedicated SGS-pattern-modernisation session — deliberately kept separate from other no-inline work to avoid scope-creeping that session.
 

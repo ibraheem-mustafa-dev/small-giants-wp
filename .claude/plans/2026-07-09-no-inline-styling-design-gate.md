@@ -1,7 +1,7 @@
 ---
 doc_type: design-gate
 title: Universal no-inline styling — build design for Rule-7 approval
-status: APPROVED (Bean 2026-07-09) — pilot pending
+status: SUPERSEDED-BY-COMPLETION (corrected 2026-08-07) — the rollout this gate approved is DONE (D346); this file is now the DESIGN RATIONALE, not an active plan. It still said 'pilot pending' ~4 months after the pilot shipped. Kept in plans/ (not archived) because CLAUDE.md cites it as canonical; verify current state via the prebuild gates, never from this file.
 created: 2026-07-09
 references:
   - .claude/plans/go-golden-gosling.md
