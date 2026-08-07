@@ -74,7 +74,6 @@
 					"svgContent"
 				]
 			},
-			"arrayContentLift": true,
 			"boxFamilies": {
 				"contentPadding": [
 					"contentPadding",
@@ -339,31 +338,6 @@
 		"minHeightMobile": {
 			"type": "string",
 			"default": "360px"
-		},
-		"badges": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "object",
-				"properties": {
-					"number": {
-						"type": "string"
-					},
-					"suffix": {
-						"type": "string",
-						"role": "text-content"
-					},
-					"label": {
-						"type": "string"
-					},
-					"position": {
-						"type": "string"
-					},
-					"style": {
-						"type": "string"
-					}
-				}
-			}
 		},
 		"backgroundColourHover": {
 			"type": "string",

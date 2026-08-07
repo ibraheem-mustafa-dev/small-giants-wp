@@ -13,7 +13,7 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
- *   svgContent, minHeight*, badges, background/text/border colourHover,
+ *   svgContent, minHeight*, background/text/border colourHover,
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
  *   splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
@@ -158,7 +158,6 @@ $svg_content         = $attributes['svgContent'] ?? '';
 $min_height          = $sgs_css_length( $attributes['minHeight'] ?? '' );
 $min_height_tablet   = $sgs_css_length( $attributes['minHeightTablet'] ?? '' );
 $min_height_mobile   = $sgs_css_length( $attributes['minHeightMobile'] ?? '360px' );
-$badges              = $attributes['badges'] ?? array();
 
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
@@ -862,33 +861,6 @@ if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_anim
 // FR-22-6: all content (label, headline, sub-headline, CTAs) is rendered via
 // InnerBlocks. $content is the full serialised child-block output.
 
-// Build badges.
-$badges_html = '';
-if ( ! empty( $badges ) ) {
-	foreach ( $badges as $badge ) {
-		$position = esc_attr( $badge['position'] ?? 'bottom-left' );
-		$style    = esc_attr( $badge['style'] ?? 'light' );
-		$number   = esc_html( $badge['number'] ?? '' );
-		$suffix   = esc_html( $badge['suffix'] ?? '' );
-		$label    = esc_html( $badge['label'] ?? '' );
-
-		$badges_html .= sprintf(
-			'<div class="sgs-hero__badge sgs-hero__badge--%s sgs-hero__badge--%s">' .
-			'<span class="sgs-hero__badge-number">%s%s</span>' .
-			'<span class="sgs-hero__badge-label">%s</span>' .
-			'</div>',
-			$position,
-			$style,
-			$number,
-			$suffix,
-			$label
-		);
-	}
-	if ( $badges_html ) {
-		$badges_html = '<div class="sgs-hero__badges">' . $badges_html . '</div>';
-	}
-}
-
 // ── Build content column wrapper ───────────────────────────────────────────
 // FR-22-6: content column wraps InnerBlocks ($content) directly. No-inline
 // contract (§A): display/flex-direction/justify-content/background-color are
@@ -911,7 +883,6 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 	}
 	$media_html  = '<div class="' . esc_attr( $media_class ) . '">';
 	$media_html .= sgs_render_media( $split_media, 'sgs/hero' );
-	$media_html .= $badges_html;
 	$media_html .= '</div>';
 } elseif ( $is_split && ! empty( $split_image['url'] ) ) {
 	// H13/H14: use responsive image helper for srcset + explicit dimensions.
@@ -1045,7 +1016,6 @@ if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'v
 		'large',
 		$img_attrs
 	);
-	$media_html .= $badges_html;
 	$media_html .= '</div>';
 }
 
@@ -1069,7 +1039,7 @@ if ( $responsive_css ) {
 // is false so a stray contentWidth can never inject an __inner div that would sit
 // between the section grid and its __content/__media grid items.
 $hero_inner_html = $bg_img_html . $video_html . $svg_html . $overlay_html
-	. $content_html . $media_html . ( ! $is_split ? $badges_html : '' );
+	. $content_html . $media_html;
 
 $hero_helper_attrs = $attributes;
 foreach ( array(

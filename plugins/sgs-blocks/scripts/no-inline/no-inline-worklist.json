@@ -204,10 +204,38 @@
     "class": "judgment"
   },
   {
-    "block": "icon-list",
+    "block": "icon",
     "static": {
       "render_php": true,
-      "passes_style_key": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "media",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
       "emits_literal_style_attr": false,
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
@@ -217,17 +245,13 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "__experimentalBorder"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": false,
+        "__experimentalBorder": true
       },
-      "all_present_skipped": true,
+      "all_present_skipped": false,
       "parse_error": null
     },
     "live": null,
@@ -286,7 +310,7 @@
     "class": "judgment"
   },
   {
-    "block": "product-card",
+    "block": "multi-button",
     "static": {
       "render_php": true,
       "passes_style_key": false,
@@ -294,8 +318,100 @@
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
       "var_emit_shapes": [
-        "inline_styles"
+        "css"
       ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "separator",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "spacing": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "testimonial",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": [
+        "--sgs-hover-*"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "text",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
       "presence_selectors": []
     },
     "block_json": {
@@ -305,11 +421,11 @@
         "__experimentalBorder"
       ],
       "skip_serialization": {
-        "color": true,
+        "color": false,
         "spacing": true,
         "__experimentalBorder": true
       },
-      "all_present_skipped": true,
+      "all_present_skipped": false,
       "parse_error": null
     },
     "live": null,
@@ -376,6 +492,34 @@
     "class": "done"
   },
   {
+    "block": "before-after",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
     "block": "brand-strip",
     "static": {
       "render_php": true,
@@ -405,11 +549,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -468,11 +609,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -503,11 +641,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -538,11 +673,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1235,11 +1367,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1274,20 +1403,17 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
   {
-    "block": "icon",
+    "block": "icon-list",
     "static": {
       "render_php": true,
       "passes_style_key": false,
-      "emits_literal_style_attr": true,
+      "emits_literal_style_attr": false,
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
       "var_emit_shapes": [],
@@ -1296,20 +1422,43 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing"
+        "spacing",
+        "__experimentalBorder",
+        "typography"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
       },
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "image-sequence",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
     },
-    "live_seen": true,
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1346,11 +1495,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1379,37 +1525,6 @@
     },
     "live": null,
     "live_seen": false,
-    "case": "done",
-    "class": "done"
-  },
-  {
-    "block": "media",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "__experimentalBorder"
-      ],
-      "skip_serialization": {
-        "color": false,
-        "__experimentalBorder": true
-      },
-      "all_present_skipped": false,
-      "parse_error": null
-    },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
     "case": "done",
     "class": "done"
   },
@@ -1460,39 +1575,6 @@
     "class": "done"
   },
   {
-    "block": "multi-button",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": true,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [
-        "css"
-      ],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "__experimentalBorder"
-      ],
-      "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
-    "case": "done",
-    "class": "done"
-  },
-  {
     "block": "nav-drawer",
     "static": {
       "render_php": true,
@@ -1515,11 +1597,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1546,11 +1625,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1588,6 +1664,36 @@
   },
   {
     "block": "option-picker",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "physics-canvas",
     "static": {
       "render_php": true,
       "passes_style_key": false,
@@ -1717,6 +1823,38 @@
     "class": "done"
   },
   {
+    "block": "product-card",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "inline_styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
     "block": "product-faq",
     "static": {
       "render_php": true,
@@ -1835,37 +1973,6 @@
     "class": "done"
   },
   {
-    "block": "separator",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": false,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing"
-      ],
-      "skip_serialization": {
-        "color": false,
-        "spacing": true
-      },
-      "all_present_skipped": false,
-      "parse_error": null
-    },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
-    "case": "done",
-    "class": "done"
-  },
-  {
     "block": "site-footer",
     "static": {
       "render_php": true,
@@ -1892,11 +1999,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1925,11 +2029,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1960,11 +2061,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -1993,11 +2091,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },
@@ -2191,45 +2286,6 @@
     "class": "done"
   },
   {
-    "block": "testimonial",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": true,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": [
-        "--sgs-hover-*"
-      ]
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography",
-        "shadow"
-      ],
-      "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
-        "shadow": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
-    "case": "done",
-    "class": "done"
-  },
-  {
     "block": "testimonial-slider",
     "static": {
       "render_php": true,
@@ -2260,44 +2316,8 @@
       "all_present_skipped": true,
       "parse_error": null
     },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
-    "case": "done",
-    "class": "done"
-  },
-  {
-    "block": "text",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": false,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
-      ],
-      "skip_serialization": {
-        "color": false,
-        "spacing": true,
-        "__experimentalBorder": true
-      },
-      "all_present_skipped": false,
-      "parse_error": null
-    },
-    "live": {
-      "style_var": 0,
-      "style_empty": 0
-    },
-    "live_seen": true,
+    "live": null,
+    "live_seen": false,
     "case": "done",
     "class": "done"
   },

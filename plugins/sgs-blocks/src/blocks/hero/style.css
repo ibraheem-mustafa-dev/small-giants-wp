@@ -318,78 +318,6 @@ section.sgs-hero {
 	aspect-ratio: auto;
 }
 
-/* Badges — container */
-.sgs-hero__badges {
-	position: absolute;
-	bottom: var(--wp--preset--spacing--40);
-	left: var(--wp--preset--spacing--30);
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: var(--wp--preset--spacing--30);
-	z-index: 2;
-}
-
-/* Individual badges — relative within the flex container */
-.sgs-hero__badge {
-	position: relative;
-	inset: auto;
-	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--30);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	/* KEEP: a self-contained badge chip centres its own label; not a content
-	   textAlign target — hero's contentAlign controls the surrounding content. */
-	text-align: center;
-	min-width: 80px;
-	box-shadow: var(--wp--preset--shadow--md);
-}
-
-/* Split variant: dissolve the container so each badge positions itself
-   independently using its position modifier class. */
-.sgs-hero--split .sgs-hero__badges {
-	position: static;
-	display: contents;
-}
-
-.sgs-hero--split .sgs-hero__badge {
-	position: absolute;
-}
-
-.sgs-hero--split .sgs-hero__badge--bottom-left  { bottom: var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
-.sgs-hero--split .sgs-hero__badge--bottom-right { bottom: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
-.sgs-hero--split .sgs-hero__badge--top-left     { top:    var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
-.sgs-hero--split .sgs-hero__badge--top-right    { top:    var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
-
-/* "default" is an alias for "light" — white badge, dark text. */
-.sgs-hero__badge--default,
-.sgs-hero__badge--light {
-	background-color: var(--wp--preset--color--surface-alt);
-	color: var(--wp--preset--color--text);
-}
-
-.sgs-hero__badge--accent {
-	background-color: var(--wp--preset--color--accent);
-	color: var(--wp--preset--color--text);
-}
-
-.sgs-hero__badge--success {
-	background-color: var(--wp--preset--color--success);
-	color: var(--wp--preset--color--text-inverse);
-}
-
-.sgs-hero__badge-number {
-	display: block;
-	font-size: var(--wp--preset--font-size--xx-large);
-	font-weight: 700;
-	line-height: 1.1;
-}
-
-.sgs-hero__badge-label {
-	display: block;
-	font-size: var(--wp--preset--font-size--small);
-	line-height: 1.3;
-	margin-top: var(--wp--preset--spacing--10);
-}
-
 /* ===== Custom Hover States (editor-configurable) — GOTCHA F rewrite =====
  * Same fix as the per-CTA overrides above: the `--sgs-hover-bg` /
  * `--sgs-hover-text` / `--sgs-hover-border` vars now emit as a scoped
@@ -449,28 +377,6 @@ section.sgs-hero {
 		font-size: clamp(1.5rem, 6vw, 2rem);
 	}
 
-	/* Standard variant — stack badges below content on mobile. */
-	.sgs-hero__badges {
-		position: static;
-		display: flex;
-		margin-top: var(--wp--preset--spacing--30);
-	}
-
-	.sgs-hero__badge {
-		position: relative;
-		inset: auto;
-	}
-
-	/* Split variant — keep badges absolutely placed on mobile too
-	   (they sit within the media column which retains its height). */
-	.sgs-hero--split .sgs-hero__badges {
-		position: static;
-		display: contents;
-	}
-
-	.sgs-hero--split .sgs-hero__badge {
-		position: absolute;
-	}
 }
 
 /* ===== Parallax Background ===== */
@@ -527,8 +433,7 @@ section.sgs-hero {
 /* Content must remain above the ken-burns pseudo-element. */
 .sgs-hero--ken-burns .sgs-hero__overlay,
 .sgs-hero--ken-burns .sgs-hero__content,
-.sgs-hero--ken-burns .sgs-hero__media,
-.sgs-hero--ken-burns .sgs-hero__badges {
+.sgs-hero--ken-burns .sgs-hero__media {
 	position: relative;
 	z-index: 1;
 }

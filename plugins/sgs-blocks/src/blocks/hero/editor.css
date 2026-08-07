@@ -18,14 +18,6 @@
 	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
 }
 
-/* Badge editor in sidebar */
-.sgs-hero-badge-editor {
-	padding: 12px;
-	border: 1px solid var(--wp--preset--color--border-subtle, #ddd);
-	border-radius: 4px;
-	margin-bottom: 12px;
-}
-
 /* FR-22-6: the hero's CTA preview rules were removed 2026-07-21 alongside the
    dead .sgs-hero__cta class family and the ctaGap* attributes (commit 03096e97).
    CTAs are InnerBlocks children (sgs/multi-button > sgs/button) and bring their
@@ -36,16 +28,3 @@
    sgs/multi-button (converter/recognition.py:83). Do not reintroduce it here as
    rendered-output styling, but do not purge the name from the converter either. */
 
-/* ── Badge layout preview — matches frontend flex behaviour ────────────────── */
-.sgs-hero__badges {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: var(--wp--preset--spacing--30, 0.75rem);
-	position: static;
-}
-
-.sgs-hero__badge {
-	position: relative;
-	inset: auto;
-}

@@ -143,29 +143,31 @@ def test_single_item_under_non_array_block_is_silent(caplog):
 
 
 def test_array_bearing_block_with_no_repeater_also_warns(caplog):
-    """An array-bearing block whose draft simply has NO items warns as well.
+    """An array-bearing block whose draft has NO items warns as well.
 
     Not an accident — the direct consequence of gating at the BLOCK level
-    (capability + item schema), which is the discriminator Bean specified. sgs/hero
-    declares ``array-content-lift`` and a ``badges`` array, so a hero draft with no
-    badges at all reports its empty ``badges`` array.
+    (capability + item schema), which is the discriminator Bean specified.
 
-    ⚠ MEASURED, FLAGGED, NOT SILENTLY ENGINEERED AROUND. This is a real noise
-    source: every hero clone emits it. An attempt to suppress it per-candidate was
-    built and then REVERTED, because no honest per-candidate signal exists — see
-    ``_warn_items_below_threshold``'s docstring for the measurement (a lone
-    ``__badge``, its ``__inner`` wrapper and its ``__label`` child are
-    indistinguishable under the item schema). Narrowing this further is a design
-    decision for Bean, not something to guess at; the test exists so the behaviour
-    is reviewable rather than a surprise in a run log.
+    RE-POINTED 2026-08-07. This test used to assert that ``sgs/hero`` warned about
+    its ``badges`` array, and documented that as accepted noise on every hero
+    clone. Bean's answer was better than narrowing the gate: ``badges`` was
+    VESTIGIAL — replaced by nesting ``sgs/label`` children — so it was removed
+    outright, along with hero's now-untrue ``array-content-lift`` support. The
+    noise is gone at source rather than suppressed.
+
+    The behaviour itself still needs cover, so this now uses ``sgs/trust-bar``,
+    which genuinely declares ``array-content-lift`` and an ``items`` array. Keep
+    it pointed at a block that REALLY holds a repeater: pointing it back at a
+    block without one is what made the original test document a defect instead of
+    a contract.
     """
     with caplog.at_level(logging.WARNING):
         _convert(
-            '<section class="sgs-hero">'
-            '<div class="sgs-hero__content"><h1 class="sgs-hero__heading">Big</h1></div>'
+            '<section class="sgs-trust-bar">'
+            '<div class="sgs-trust-bar__inner"><h2 class="sgs-trust-bar__title">Trusted</h2></div>'
             "</section>"
         )
 
     warnings = _drop_warnings(caplog)
-    assert len(warnings) == 1
-    assert "sgs/hero" in warnings[0] and "badges" in warnings[0]
+    assert len(warnings) == 1, f"expected exactly one drop warning, got {warnings}"
+    assert "sgs/trust-bar" in warnings[0] and "items" in warnings[0]

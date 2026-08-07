@@ -167,71 +167,6 @@ const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
 ];
 
-const BADGE_STYLE_OPTIONS = [
-	{ label: __( 'Light', 'sgs-blocks' ), value: 'light' },
-	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
-	{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
-];
-
-const BADGE_POSITION_OPTIONS = [
-	{ label: __( 'Bottom left', 'sgs-blocks' ), value: 'bottom-left' },
-	{ label: __( 'Bottom right', 'sgs-blocks' ), value: 'bottom-right' },
-	{ label: __( 'Top left', 'sgs-blocks' ), value: 'top-left' },
-	{ label: __( 'Top right', 'sgs-blocks' ), value: 'top-right' },
-];
-
-function BadgeEditor( { badge, index, onChange, onRemove } ) {
-	const update = ( key, value ) => {
-		onChange( { ...badge, [ key ]: value } );
-	};
-
-	return (
-		<div className="sgs-hero-badge-editor">
-			<TextControl
-				label={ __( 'Number / value', 'sgs-blocks' ) }
-				value={ badge.number || '' }
-				onChange={ ( val ) => update( 'number', val ) }
-				__nextHasNoMarginBottom
-			/>
-			<TextControl
-				label={ __( 'Suffix', 'sgs-blocks' ) }
-				value={ badge.suffix || '' }
-				onChange={ ( val ) => update( 'suffix', val ) }
-				placeholder="+"
-				__nextHasNoMarginBottom
-			/>
-			<TextControl
-				label={ __( 'Label', 'sgs-blocks' ) }
-				value={ badge.label || '' }
-				onChange={ ( val ) => update( 'label', val ) }
-				__nextHasNoMarginBottom
-			/>
-			<SelectControl
-				label={ __( 'Position', 'sgs-blocks' ) }
-				value={ badge.position || 'bottom-left' }
-				options={ BADGE_POSITION_OPTIONS }
-				onChange={ ( val ) => update( 'position', val ) }
-				__nextHasNoMarginBottom
-			/>
-			<SelectControl
-				label={ __( 'Style', 'sgs-blocks' ) }
-				value={ badge.style || 'light' }
-				options={ BADGE_STYLE_OPTIONS }
-				onChange={ ( val ) => update( 'style', val ) }
-				__nextHasNoMarginBottom
-			/>
-			<Button
-				variant="secondary"
-				isDestructive
-				onClick={ onRemove }
-				size="small"
-			>
-				{ __( 'Remove badge', 'sgs-blocks' ) }
-			</Button>
-		</div>
-	);
-}
-
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
@@ -247,7 +182,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		svgContent,
 		minHeight,
 		shadow,
-		badges,
 		headlineMarginBottom,
 		headlineMarginBottomMobile,
 		subHeadlineMaxWidth,
@@ -348,30 +282,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	);
 
-	const updateBadge = ( index, updatedBadge ) => {
-		const updated = [ ...badges ];
-		updated[ index ] = updatedBadge;
-		setAttributes( { badges: updated } );
-	};
-
-	const removeBadge = ( index ) => {
-		setAttributes( { badges: badges.filter( ( _, i ) => i !== index ) } );
-	};
-
-	const addBadge = () => {
-		setAttributes( {
-			badges: [
-				...badges,
-				{
-					number: '',
-					suffix: '',
-					label: '',
-					position: 'bottom-left',
-					style: 'light',
-				},
-			],
-		} );
-	};
 
 	return (
 		<>
@@ -1261,27 +1171,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Notice>
 				</PanelBody>
 
-				{/* ── 8. Badges ── */}
-				<PanelBody
-					title={ __( 'Badges', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ badges.map( ( badge, index ) => (
-						<BadgeEditor
-							key={ index }
-							badge={ badge }
-							index={ index }
-							onChange={ ( updated ) =>
-								updateBadge( index, updated )
-							}
-							onRemove={ () => removeBadge( index ) }
-						/>
-					) ) }
-					<Button variant="secondary" onClick={ addBadge }>
-						{ __( 'Add badge', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
-
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
 				   Legacy "Overlay colour" control above writes overlayColour; this
 				   panel writes backgroundOverlayColour, which render.php prefers
@@ -1466,40 +1355,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								className="sgs-hero__split-image"
 							/>
 						) }
-						{ badges.length > 0 &&
-							badges.map( ( badge, index ) => (
-								<div
-									key={ index }
-									className={ `sgs-hero__badge sgs-hero__badge--${ badge.position || 'bottom-left' } sgs-hero__badge--${ badge.style || 'light' }` }
-								>
-									<span className="sgs-hero__badge-number">
-										{ badge.number }
-										{ badge.suffix }
-									</span>
-									<span className="sgs-hero__badge-label">
-										{ badge.label }
-									</span>
-								</div>
-							) ) }
 					</div>
 				) }
-
-				{ ! isSplit &&
-					badges.length > 0 &&
-					badges.map( ( badge, index ) => (
-						<div
-							key={ index }
-							className={ `sgs-hero__badge sgs-hero__badge--${ badge.position || 'bottom-left' } sgs-hero__badge--${ badge.style || 'light' }` }
-						>
-							<span className="sgs-hero__badge-number">
-								{ badge.number }
-								{ badge.suffix }
-							</span>
-							<span className="sgs-hero__badge-label">
-								{ badge.label }
-							</span>
-						</div>
-					) ) }
 			</div>
 		</>
 	);

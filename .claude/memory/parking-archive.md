@@ -3297,3 +3297,363 @@ Original entry, verbatim:
 The audit flags any block whose attribute NAME contains "colour" and lacks `supports.color` — but WP's `supports.color` only ever styles the block ROOT, so a legitimate per-element colour (a featured nav item's fill, an inner link) can never satisfy it and gets permanently exempted, filling the exemption list until real violations are indistinguishable from legitimate exemptions. The exemption list has already grown from 2 to 3 entries since this was first flagged, confirming the predicted pattern. Fix: re-key the check on the Spec 35 element manifest (which already carries wrapper/non-wrapper classification) rather than the attribute name, falling back to the name test only for blocks not yet manifested.
 
 **Trigger:** the Spec 35 manifest rollout reaching meaningful coverage, or the next block that trips this check.
+
+
+### P-CSSLAYER-DROPPED-ON-AN-UNASKED-QUESTION - RESOLVED 2026-08-07
+
+RE-SCOPED by Bean's correction and archived. Bean, 2026-08-07: 'CSS Layer should not be on every css row, the layer is only for container-equivalent block's CSS. So that the CSS L1-L4 cascade knows what layer each attribute is aligned with.' That shrinks the job by an order of magnitude and invalidates every number the entry (and my own first re-measurement) carried. Measured against the correct denominator: 36 container-equivalent blocks (block_composition.container_kind IS NOT NULL) hold 653 CSS-routed rows, of which 419 already carry a layer — a gap of 234, not 543 and certainly not the 2,697 the entry implies. Nothing is currently broken by the gap. One constraint for whoever seeds it: sgs/hero has 10 padding attrs across only 4 distinct css_element values, so any routing must key on the PAIR (css_element, css_tier), never css_element alone.
+
+Archived verbatim below.
+
+### P-CSSLAYER-DROPPED-ON-AN-UNASKED-QUESTION — `css_layer` was descoped on a number nobody interrogated
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-21
+
+`css_layer` was descoped on the basis that it was populated on only 6 of 2,817 rows, all with the same value — i.e. that it distinguished nothing. **That reasoning was wrong in the same way the tier bug was wrong: the number was accepted without asking what it SHOULD be.** The L1–L4 OUTER/CONTENT-WIDTH/PER-GRID-ITEM cascade is exactly what separates container attrs that legitimately share a property. The axis question is now settled (Front 1, `7a6a7586`): layer stays on its own axis, and `css_element`/`css_state`/`css_tier` are the separate declarative routing keys — not folded into one element key. Residual = seed `css_layer` more fully.
+
+**⚠ Its own numbers are materially stale (re-measured 2026-07-27):** `css_layer` is now populated on **323 rows across 4 distinct values** (`OUTER`/`GRID`/`GRID_AREA`/`CONTENT`), not "6 of 2,817, all one value". The cited example is also resolved — `sgs/hero`'s 9 `padding` attrs each carry a distinct `css_element`, so that collision group is closed. **RE-MEASURE before treating the "small tail" framing as current.**
+
+**Trigger:** a converter session that needs the layer tail (padding-family collisions).
+
+
+### P-GAP-CONSOLIDATION-FOLLOWUPS - RESOLVED 2026-08-07
+
+ARCHIVED with its three items resolved or re-scoped. Item 3 (container blockGap migration) is MOOT: the attribute was removed by commit 668e26ad — the very D184 consolidation this entry came from — no deprecated.js exists plugin-wide under the no-deprecations policy, and only inert legacy data remains in old posts. Item 2 (card-grid/gallery tier gaps unconsumed) was HALF FALSE: both blocks DO call SGS_Container_Wrapper and it DOES emit the 1023/767 tier rules, so card-grid was never broken — its wrapper root IS display:grid. Only sgs/gallery was broken, because its grid is the CHILD .sgs-gallery__grid reading var(--sgs-gap), so a gap on the wrapper ancestor is inert. Fixed by re-pointing --sgs-gap per tier at the block's own scoped rule (0,2,0), covering grid, masonry and carousel at once; verified by executing the real code path (77px -> correct max-width:767px rule, unset -> no CSS emitted, hostile input stripped). Item 1 (kind='layout' collision) is REAL, PROVED, and needs a design gate — see P-NAV-DRAWER / gallery notes: LayoutPanel renders Layout and Columns controls bound to the SAME attributes as gallery's own, with incompatible option sets, and a measured round-trip showed writing 'flex' is accepted then SILENTLY reverted to 'grid' by WP's enum coercion on reload. Fix shape: drop the kind='layout' aggregator and compose the named panels, the precedent sgs/hero and sgs/cta-section already follow for this exact reason.
+
+Archived verbatim below.
+
+### P-GAP-CONSOLIDATION-FOLLOWUPS — Container-wrapper gap-control residuals
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-06-07 (D184)
+
+Five residuals from the D184 gap-consolidation council. (1) `kind="layout"`
+`ContainerWrapperControls` still collides with post-grid/gallery/feature-grid's own layout+columns
+attrs — needs a gap-only control variant or a namespaced wrapper attr. (2) card-grid/gallery DO
+declare `gapTablet`/`gapMobile` (corrected from the original claim) — the real gap is that
+`render.php` doesn't consume them responsively yet. (3) container `blockGap` value migration for
+pre-existing pages is still open (low-risk). (4) MOOT — `BlockDeprecationsTest.php` doesn't exist
+and won't return under the no-deprecations policy. (5) RESOLVED 2026-08-02 (D461/D462) — the
+`calc()`/`clamp()` whitelist is BUILT. `sgs_css_length_value()`
+(`includes/helpers-css-safety.php`) accepts `var|calc|min|max|minmax|clamp|repeat` via WordPress
+core's own recursive balanced-paren grammar, checks the raw input for breakout characters BEFORE
+consuming functions, and fails CLOSED. BOTH length paths delegate to it —
+`sgs_container_gap_value()` (flat scalar) and `sgs_responsive_sanitise_css_value()` (object model,
+which was the more exposed of the two: it permitted `/` and `*` so never blocked the `/*` comment
+opener, and stripped rather than rejecting). Live-verified.
+
+**Trigger:** Framework/shop-layer session touching container-wrapper controls.
+
+
+### P-NO-INLINE-LAND-ROSTER - RESOLVED 2026-08-07
+
+CLOSED. The no-inline rollout's per-block LANDED accounting is done: 82 of 84 blocks now carry a visual-diff report with verdict PASS and first_paint_capture_passed true, all captured live against the canary on 2026-08-06/07 with real measurements rather than assertions. The entry's '~35 blocks' and later '26 unproven' are both superseded. Two caveats recorded rather than hidden: 14 of the older reports (13 form-field blocks + form-review, all dated 2026-05-21) assert first_paint_capture_passed alongside pixel_diff_skipped and verified_by: phase-6-self-verify — they pre-date the 2026-07-09 gate and ran no capture, so they are assertions about a capture that could not have happened; and audio + notice-banner declare first_paint_applicable: false honestly, which Bean ruled insufficient (both are visual and testable). Neither blocks the roster claim but both should be re-captured opportunistically.
+
+Archived verbatim below.
+
+### P-NO-INLINE-LAND-ROSTER — no-inline rollout: full-roster per-block LANDED accounting still owed
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-10
+
+The split-edit/serial-land integration merged ~35 blocks' no-inline work (code-complete, build-green, DB reseeded) but only spot-verified a subset. The prebuild gates (`audit-inline-styling.js --check`, `check-box-family-guard.py --check`) are already wired into `package.json` (confirmed done — do not re-add). What remains: run the full-roster verify script across the remaining blocks and write a `reports/visual-diff/<block>-<date>.md` per block with `verdict: PASS` + `first_paint_capture_passed: true` for every block, not just the ones already spot-checked.
+
+**ADVANCED 2026-07-30 (D425), NOT closed.** Ten blocks gained genuine reports with real Playwright
+captures against canary pages 2064/2071 — `card-grid`, `countdown-timer`, `cta-section`, `form`,
+`gallery`, `google-reviews`, `post-grid`, `pricing-table`, `product-card`, `trust-bar` (commit
+`4d3b598e`). Six of those needed canary content authored before they could be evidenced at all —
+the conditional markup each fix touches (background overlay, multi-step progress, gallery items,
+rating breakdown, plan ribbon, discount badge) existed on no page. Residual = the rest of the
+roster; also still owed are `product-faq` and `product-faq-item` (audit finding 1a-7).
+
+**Trigger:** the LAND-completion session — the main remaining work of the no-inline rollout.
+
+
+### P-SINGLE-ITEM-ARRAYS - RESOLVED 2026-08-07
+
+CLOSED by commit cdf3b277, built to Bean's refinement. A 1-item repeater lifted nothing AND logged nothing — the conservation contract is trivially satisfied when zero items are seen, so the loss was silent. The >= 2 threshold is UNCHANGED (it is load-bearing false-positive protection; lowering it risks inventing an array the draft never had, which on a fidelity pipeline is worse than an omission). Instead _find_item_nodes now also returns what it REJECTED and a warning goes out on the existing [fold-gap] channel naming the block and array attr. Bean's refinement — warn only for genuinely array-bearing blocks, never a block that legitimately stands alone — is enforced via the declared array-content-lift capability plus the item schema, with a negative control proving a lone sgs/quote stays silent. ONE THING THE AUTHOR COULD NOT PROVE AND DID NOT FAKE: it tried to identify WHICH child was the lost item to suppress a measured false positive, found no honest signal (a lone __badge, its __inner wrapper and its __label child all lift the same value because text-content matches any text-bearing node), built a suppressor, measured it still firing, and REVERTED it rather than ship an unfalsifiable half-gate.
+
+Archived verbatim below.
+
+### P-SINGLE-ITEM-ARRAYS — a single-item array never triggers the array lift
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-06-30
+
+Structural item detection needs ≥2 repeating siblings; a 1-item "array" (e.g. one testimonial where the block supports many) won't lift at all. Needs a decision: accept the gap, or add a schema-signature single-item fallback.
+
+**Trigger:** next array-handling design decision.
+
+
+### P-SUBHEADING-ROUTING-TO-SGS-HEADING - RESOLVED 2026-08-07
+
+CLOSED by commit f0d5d305, per Bean's decision to route subheadings to the heading block. Bean was half right that it was 'already set up': the BLOCK was ready (sgs/heading accepts headingRole 'subheading' at render.php:94) but the ROUTING never set it — the slots row said sgs/text with NULL default attrs, and the only mention of headingRole in the entire converter was a docstring. Three coordinated changes were needed, not one: seed the slot, RESTORE the element-keyed reader slot_default_attrs_for (deleted 2026-08-02 as having 'zero callers'), and wire it into assembly step 5a with setdefault so a draft-declared value always wins. Extending the surviving modifier-keyed route was explicitly NOT done — it hard-reads inheritStyle only, and a subheading is an element, not a modifier. A FINDING BEYOND THE BRIEF: nobody ever authored sgs/text for this slot — sgs-update-v2.py's heuristic auto-seed fires only WHERE standalone_block IS NULL and guessed from the slot name, then skipped the row forever, and NEW_STANDALONE_ROWS is INSERT OR IGNORE so no seeder could correct it. A STANDALONE_ROUTE_OVERRIDES channel (idempotent UPDATE) was added as the authored-routing path. The DB row moves on the next /sgs-update, which was deliberately not run.
+
+Archived verbatim below.
+
+### P-SUBHEADING-ROUTING-TO-SGS-HEADING — Walker needs to set headingRole on subheading emit
+**Status:** BLOCKED · **Bucket:** pipeline · **Parked:** 2026-05-28/29 (D99)
+
+Routing mockup subheadings to `sgs/heading{headingRole:'subheading'}` instead of `sgs/text` needs
+the walker to set `headingRole` at emission time — confirmed still missing (only a docstring note
+exists at `db_lookup.py:3026`, no code sets it). Flipping the `slots` row alone (still `sgs/text`)
+would mis-render subheadings as headings. Options: (a) a walker derive rule from canonical_slot
+identity, or (b) a new `slots.standalone_block_default_attrs` JSON column.
+
+**Trigger:** Phase 1.4 walker rewrite — pick mechanism (a) or (b) at that point.
+
+
+### P-PACKSIZE-ACTIVE-DEFAULT - RESOLVED 2026-08-07
+
+DELETED as not worth building, per the cost measured 2026-08-07. A cloned sgs/option-picker has no pre-selected pill because array_content.py's _BEM_ELEMENT_RE deliberately strips modifiers (`(?:--[a-z0-9-]+)*`), so `--active` is invisible to item detection — and that stripping is CORRECT, it is what lets `__pill` and `__pill--active` group as siblings. The real cost is four parts, not one: expose the modifier, give defaultSelected a new ROLE (it is `technical`, which is in no lift allowlist), add a field extractor whose 'which modifier means active' lookup must itself be DB-driven (a literal would be rejected by gates/no_slug_literal.py), and teach the resolver an array-scoped SCALAR output shape it does not currently have. ~90 min introducing a new role into the framework vocabulary that every future agent must learn — against an entry that rates its own value 'Low (selectable-only)'. The visitor can still click the pill; only the initial state differs, and an operator fixes it with one click in the editor. Note the OLD frozen engine could do this (a 2026-06-04 pipeline artefact carries defaultSelected: '12-pack') via an extract-level value-matcher, not the array resolver — that capability was lost with the frozen tree at D276.
+
+Archived verbatim below.
+
+### P-PACKSIZE-ACTIVE-DEFAULT — cloned option-picker has no pre-selected pill
+**Status:** DEFERRED · **Bucket:** pipeline · **Parked:** 2026-07-08
+
+A cloned `sgs/option-picker` renders with NO pre-selected pill: the draft's `--active` pill (e.g.
+12-pack) is not lifted as `defaultSelected`. The array lifter (`array_content.py`) lifts only the
+pill's text (`label`); marking the active default means reading the `--active` CSS **modifier** — a
+boolean-from-modifier mechanism the array resolver does not have. Low value (selectable-only).
+
+**Trigger:** fold into the named-pickers work.
+
+---
+
+
+### P-19 - RESOLVED 2026-08-07
+
+ARCHIVED with Bean's decision recorded and one blocking fact the entry got wrong. Bean, 2026-08-07: build the replacement first, then delete — 'why get rid of something that is helpful, and each site's blocks should have defaults in the Site Editor, so this is a feature that exists for WP users, we're just making it easier to use.' THE FACT THE ENTRY MISSED: its stated replacement, the useLastUsedAttributes sessionStorage hook, DOES NOT EXIST anywhere in the codebase — verified with two differently-shaped searches; the only sessionStorage hits are form progress and notice-banner dismissal, both frontend runtime state. So channel 3 of the canonical four-channel model is unbuilt, and deleting withSaveAsDefault today would remove a working capability and replace it with nothing. Anchors still exact: block-defaults.js defines withSaveAsDefault at :51 and applies a BLANKET addFilter at :108-112 (no opt-in list to enumerate — the entry's original audit premise was wrong and says so), BlockDefaultsPanel usage is 0, and it is live in the shipped bundle. Server side is real too (class-block-defaults.php, OPTION_KEY sgs_block_defaults, REST routes), and a second apparently-duplicate implementation exists at includes/block-defaults.php.
+
+Archived verbatim below.
+
+### P-19 — Migrate remaining blocks off the saved-defaults system
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-08
+
+The audit step as originally written presumes per-block opt-in consumers of `withSaveAsDefault` —
+in live code it's a single blanket filter (`block-defaults.js:108-112`) applied to every block, so
+there's nothing to enumerate; re-scope the audit before running. Remaining goal stands: migrate
+every block toward native WP mechanisms (visual styling → Global Styles, structural
+starting-state → block patterns, per-operator memory → sessionStorage, per-instance → inspector).
+`sgs/icon-list` already migrated as the pilot; `<BlockDefaultsPanel>` direct usage is already 0.
+
+**Trigger:** Framework polish pass; not blocking active work.
+
+
+### P-FP-COUNCIL - RESOLVED 2026-08-07
+
+CLOSED — every item resolved, and most were already done. (iii) out-of-stock button was PURCHASE-CRITICAL and is FIXED: buybox bound only context.pending, so an out-of-stock variation rendered the 'Out of stock' notice, a notify-me form AND a live Add to Cart together. Proven on the canary by flipping variation 541 to outofstock and selecting it — cart form gains `hidden`, offsetParent null, notify-me offered; variation restored immediately (verified). (v) option-picker keyboard focus was ALREADY DONE — it emits same-name native radios, which give roving tabindex for free, so Tab reaches the CTA after ONE stop, not N; the finding predates the radio implementation. (i) namespacing was ALREADY DONE — all six files declare namespace SGS\Blocks and all 10 hook registrations use __NAMESPACE__; the entry's '14 global functions' came from a grep for '^function sgs_', which matches column 0 and says nothing about the enclosing namespace. (ii) the duplication DOES NOT EXIST — visibleAxes and ctaLabel have zero occurrences in buybox, and the 'mirrors product-card' comment refers to the add-to-cart proxy form markup, a different and deliberate concern. A REAL LATENT FATAL was found and fixed instead (commit 0f87e217): sgs_pack_pricing_preview_js was declared twice in the same namespace, surviving only because the second file was required by nothing — both dead files deleted. (iv) editor go-live checklist and (vi) widthMode precedence remain genuinely open and are design work, not housekeeping.
+
+Archived verbatim below.
+
+### P-FP-COUNCIL — non-blocking residuals from the FP-H/FP-E commerce-layer adversarial council
+**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-10
+
+The security leak, customer-facing deleted-product message, double-query, and doc-staleness this council found were all fixed at the time. Residuals: namespace two global product-card helper functions into `SGS\Blocks` (collision risk); extract duplicated CTA-label/visibleAxes-sanitise logic into shared helpers; the non-variable product branch has no disabled/"out of stock" button state; no editor-side go-live checklist or draft/unavailable notice for non-coders; option-picker keyboard focus passes through every pill before reaching the CTA (own gated round, purchase-critical); a widthMode wide/full precedence question shared with another block is BLOCKED on a Rule-7 design gate (shared-wrapper change).
+
+**Trigger:** each item is its own small deferred round; the widthMode item specifically needs a Bean design-gate before any work.
+
+
+### P-NO-GLOBAL-BUTTON-COMPONENT - RESOLVED 2026-08-07
+
+RE-SCOPED to Bean's actual intent and archived. The entry framed this as 'no global .btn component' and recommended deleting dead classes. Bean rejected that framing 2026-08-07: 'these are supposed to be saved as real style variations, so they can be changed in the website and also be picked in the editor so that it auto-applies the settings across the controls to that preset — either making it a one-click set or getting a client a huge headstart.' He also reported the live symptom: sgs/button's 'Transform to variation' offered primary/secondary/outline and clicking did nothing. ROOT-CAUSED and FIXED (commit b7d3f817): the variations were never inert — inheritStyle cycled correctly — they were INVISIBLE, via two independent editor-side writers, either of which alone reproduces 'nothing happened'. edit.js:259 built the preview classes and never emitted sgs-button--{inheritStyle} (which render.php:614 DOES emit on the frontend, and which is the preset mechanism — it sets the six --sgs-btn-* properties from client tokens), and editor.css:15 pinned border to transparent at (0,2,0), so fixing only the first would have left Secondary and Outline still identical to Primary. State on archive: the false woocommerce.css comment is corrected; the shop-filter toggle should consume sgs-button sgs-button--primary instead of the dead btn classes (recommended, not built, needs a check that its icon+label layout survives); and Customiser exposure of the preset tokens is in progress per Bean's decision that they must be live-previewable rather than in a settings page.
+
+Archived verbatim below.
+
+### P-NO-GLOBAL-BUTTON-COMPONENT — no global .btn component; button styling only lives scoped to product-card
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-06-11
+
+Surfaced when a shop-filter toggle was given `btn btn-primary` classes that matched nothing outside a product card, worked around with raw design tokens instead. True fix needs the button definitions extracted to an unscoped theme utility (or a genuine global `.btn` component) so any element can reuse the primary button look. Low priority — token-level reuse already gives an accessible result today.
+
+**Trigger:** a framework button-componentisation pass.
+
+
+### P-THEME-SCROLL-PADDING-SECOND-INSTANCE - RESOLVED 2026-08-07
+
+ARCHIVED with Bean's decision recorded. Two findings, both confirmed. (a) utilities.css:22 declares :root { --sgs-header-height: 80px }, which makes the plugin's var() fallback of 0px UNREACHABLE (a fallback fires only when the property is undefined) — so with JavaScript off every page reserves 80px whether or not the header is pinned. (b) utilities.css:29 and its 782px twin at :34 use `body.admin-bar html`, which can NEVER match, because <html> is the ancestor of <body> and not its descendant — those rules have never applied on any page in the site's history. That half is a pure CSS fact needing no measurement. Bean chose to fix both: 'no idea regarding the measurement tbh but the 80px is probably reliable and was set by an agent that tested it before setting it, and it's low stakes since we can rely on the js.' IMPLEMENTATION NOTE for whoever builds it: the entry's own proposed fix is DEAD ON ARRIVAL — it keys on a sticky-behaviour class D386 retired (only the contrastSafe trio survives), and a class on <body> cannot condition a rule on <html> anyway, which is finding (b) again. The shape that works uses the data-sgs-header-sticky="1" attribute the header already emits at site-header/render.php:312, via html:has(...), with :root defaulting to 0px. :has() is already load-bearing in 7 shipped SGS files.
+
+Archived verbatim below.
+
+### P-THEME-SCROLL-PADDING-SECOND-INSTANCE — the theme carries its own copy of the scroll-padding defect the plugin already fixed
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
+
+Two findings in `theme/sgs-theme/assets/css/utilities.css`: (1) `:root { --sgs-header-height: 80px }` makes the plugin's `0px` fallback unreachable — with JavaScript disabled, every page reserves 80px regardless of whether the header is actually pinned; (2) an admin-bar-aware selector (`body.admin-bar html`) can never match, since `html` is not a descendant of `body` — that rule has never applied on any page. Do not blind-fix (1) to `0px`: there's a genuine trade-off between a crude-but-working no-JS guard and correctness on non-sticky pages. A cause-agnostic fix is a CSS-only conditional default (0 at root, fallback height only under the sticky-behaviour class).
+
+**Trigger:** any theme-side scroll/anchor work, or the next behaviour-layer doc-audit.
+
+
+### P-WRAPPER-BORDER-EMIT - RESOLVED 2026-08-07
+
+ARCHIVED with the mechanism settled and the scope explicitly UNPROVEN. The mechanism question Bean asked is answered: adding a border emitter to SGS_Container_Wrapper cannot fight blocks that already draw their own, because the shared wrapper emits at `.{uid}` (0,1,0) while a block's own border rule is at `.{uid}.{block-root-class}` (0,2,0) — the block's wins, and the shared emitter only fills gaps. Cost is a few duplicate CSS bytes. THE SCOPE IS NOT ESTABLISHED and both recorded figures are unreliable: the entry says '~30 blocks', a later pass said 'exactly 6', and a third grep said 11 — that last was mine and it was wrong, because it classified blocks by grepping render.php for border-reading code while `form` mentions border 19 times, `info-box` 15 and `nav-menu` 16. Two greps of different shapes gave two different answers, which means neither is evidence. The only honest way to get the list is to set a border in the editor on each of the 49 blocks declaring __experimentalBorder with skip-serialization and observe whether it paints. Do that before scoping any build. Also recorded: the 7 blocks that do NOT use the shared wrapper are text, label, timeline, brand-strip, product-search, countdown-timer, table-of-contents.
+
+Archived verbatim below.
+
+### P-WRAPPER-BORDER-EMIT — SGS_Container_Wrapper has no style.border emission
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-14
+
+Blocks declaring `__experimentalBorder` with skip-serialization (site-header-row, site-footer-row, and ~30 others) never render their border, because the shared wrapper has zero `style.border` emission code — WP populates `style.border` internally but does not auto-inline it, and the wrapper doesn't pick it up the way it does for colour/padding. Re-verified 2026-07-27: the wrapper's only border-related code is the unrelated per-grid-item custom-property path; there is still no actual `style.border` emitter. Fix: add a scoped border emitter mirroring the padding/colour path, or drop skip-serialization on border for blocks that don't need scoped border.
+
+**Trigger:** a block-quality pass, or when a client build needs a visible header/footer divider.
+
+
+### P-DRAWER-TRIGGER-ANCHOR-JS - RESOLVED 2026-08-07
+
+CODE SHIPPED (commit 5b24833a), LIVE PROOF OWED. The `trigger` drawer anchor was a fixed top-right corner literal, so the panel flew to the corner regardless of where the burger actually sat; the docblock admitted the limitation. Now reads var(--sgs-drawer-trigger-top/-right), written from the burger's measured rect at open time using the D404 measure-and-write pattern (measure after reparentToBody, write a custom-property VALUE on the dialog — permitted under Spec 32 as a value, not a declaration). Two deliberate corrections to the naive version were kept: `bottom + 8` for top (a panel anchored to a burger hangs BELOW it) and `innerWidth - rect.right` for right (a rect's .right is a left-origin coordinate; using it raw pushes the panel off-screen). Verified present in the DEPLOYED render.php over SSH. NOT PROVEN BEHAVIOURALLY: `anchor` is a per-instance block attribute (typed object, per-device, set in the inspector) and NO canary page currently uses 'trigger', so the panel-follows-burger behaviour has never been observed. Closing needs one page with anchor set to trigger, then: with the burger placed bottom-left, assert |(innerWidth-drawer.right) - (innerWidth-trigger.right)| <= 2 and drawer.top - trigger.bottom ~= 8. NEGATIVE CONTROL — move the burger to a second position and re-open; identical coordinates mean the property is not being read and the first pass was luck.
+
+Archived verbatim below.
+
+### P-DRAWER-TRIGGER-ANCHOR-JS — trigger anchor is a CSS approximation, not a measured position
+**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-28
+
+The `trigger` anchor is a CSS top-right-corner approximation. The proper version measures the
+burger's real rect at open time and pins the panel to it — the `--sgs-drawer-header-offset`
+measure-and-write pattern shipped at D404 is the template. Pure geometry, no animation.
+
+**Trigger:** next nav-drawer session working on the `trigger` variant specifically, or when a
+client build surfaces a visible misalignment on a real header layout.
+
+
+### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU - RESOLVED 2026-08-07
+
+CLOSED by commit 90f8a62b, and Bean corrected the record on WHY the blocking rule existed. The drawer's drawerAlign setting worked — it centred the drawer's direct children as boxes — but sgs/nav-menu never read it and its drawer-context CSS set width:100% plus align-items:stretch, so the nav filled the body and there was nothing narrower to centre: links sat at x=32 while sibling blocks centred on the 647px axis. The docblock justified the full-width rule as keeping labels at 'the natural reading edge (left)'. BEAN: that was never the reason — the full width exists so child content like mega panels is not CUT OFF (measured: the mega panel's text clipped at 95px), and nothing was ever decided about label position, which depends on the drawer's design and how much of the screen it covers. The comment mis-stated its own rationale and was corrected in place. Fix: nav-drawer emits --sgs-drawer-align and --sgs-drawer-text-align on the body; nav-menu consumes them on the bar and on __link/__sublink; width:100% KEPT. A CSS custom property was chosen over WP block context deliberately — context reaches only InnerBlocks descendants, and the Active-CPT route renders drawer content through a separate do_blocks() call, so context would silently half-fail there. The operator control already existed (a Left/Centre/Right ToggleGroupControl on every variant); propagation was the entire gap.
+
+Archived verbatim below.
+
+### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU — the centred drawerAlign value leaves nav links flush left
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+The drawer emits no align class (`drawerAlignAttrPresent: false` on the live element).
+`drawerAlign` centres the drawer's direct children as BOXES; the nav-menu then stretches to full
+width (1376px at 1440) with `text-align: start`, so its links stay at x=32 while the narrower
+secondary blocks do centre — the panel reads half-centred. Affects `centred-statement`, the variant
+whose name IS its alignment.
+
+Fix shape: propagate `drawerAlign` into the nav-menu's own item alignment (bar `align-items` +
+link `text-align`), not just the drawer body's box alignment. Shared-block change → design gate.
+
+**Trigger:** the block-vs-CPT architecture decision; do not patch before that lands.
+
+
+### P-NAV-DRAWER-DUPLICATE-DEFAULT-REF - RESOLVED 2026-08-07
+
+DELETED as not worth a session, with one half fixed. Both sgs/nav-drawer and sgs/nav-menu still default drawerRef to the literal 'sgs-nav-drawer', so two drawers left on defaults WOULD render duplicate DOM ids. Measured live: NOT reproducible — the only multi-instance fixture authors explicit refs, querySelectorAll('#sgs-nav-drawer').length === 0, two distinct dialogs resolve correctly, and a whole-page axe 4.11 run reported 0 violations. A uid-derived default is NOT a cheap fix: the burger and drawer render in unpredictable order, are not parent/child and share no handle, so deriving independently would produce two DIFFERENT strings and break the pairing that currently works. The incidental half — three burgers carrying a dangling aria-controls resolving to no element — was fixed by a data-wp-init callback that strips aria-controls when the drawer cannot be resolved (commit 5b24833a). Honest note recorded there: that defect did not reproduce before the deploy either, so the guard is correct but its fault is not currently observable.
+
+Archived verbatim below.
+
+### P-NAV-DRAWER-DUPLICATE-DEFAULT-REF — two default drawers on one page share a DOM id
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+`sgs/nav-drawer` and `sgs/nav-menu` both default `drawerRef` to `sgs-nav-drawer`, so two drawers
+left on defaults render duplicate element ids and two burgers whose `aria-controls` point at the
+same id. Measured 2026-07-29: behaviour is NOT broken — each burger still opened its own panel
+(proven by their differing link sets) — and a whole-page axe 4.11 run at 1440 reported 0
+violations. So this is an HTML-validity wrinkle that no current gate flags, not a live defect.
+
+Candidate fix: derive the default ref from the block's uid when more than one drawer is present,
+or surface an editor notice. Low severity; do not spend a session on it alone.
+
+**Trigger:** next nav-drawer session, or the first time a real client build puts two drawers on one
+page.
+
+
+### P-DB-SEED-REGRESSION-GUARD - RESOLVED 2026-08-07
+
+CLOSED by commits c8e41bd9 + 5fe47306, built to Bean's design rather than the entry's. Bean's verdict on the old gate: 'The regression guard is weird though, I don't like it. We dropped a bunch of gaps and the floor got triggered because of that when it was intended.' He was right, and it failed in BOTH directions: a deliberate reduction tripped it, while the emit_shape floor sat at 199 against 237 live (losing all 38 `child` rows would have landed exactly on the floor and PASSED) and `role` was tracked only in aggregate (losing both tag-identity rows moved 2728->2726, invisible). Replaced with dbschema/seed_history.py: a 5-run ring buffer (~1.8KB/entry, ~9KB full) auto-appended at the end of every /sgs-update, judging 'unexpected' against THIS DB's own recent behaviour rather than a constant. It REPORTS, never blocks. The floor was DELETED rather than demoted, because two mechanisms reporting the same counts is the unfalsifiable overlap the project rule forbids; its value-identity assertions (not counts) survive as check_value_identity.py and still block. Both keep the sqlite3-only constraint — importing db_lookup would repair the drift before it could be observed.
+
+Archived verbatim below.
+
+### P-DB-SEED-REGRESSION-GUARD — no structural gate catches a silent DB-seed regression (cause-agnostic mitigation for P-DB-PARTIAL-RESEED-RESIDUE)
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-16
+
+`_apply_attr_classification_overrides`'s docstring claims the overrides survive every `/sgs-update` — empirically they did not, and nothing failed loudly. One of the three planned tests is now done: `test_tag_identity_attrs.py` carries 13 real assertions including a wiring check that reads `assembly.py` source, no longer the vacuous `assert == {}` shape.
+
+**Still to build:** (1) a `/sgs-update` post-condition gate that hard-fails the build if any `ATTR_CLASSIFICATION_OVERRIDES` pair is missing from `block_attributes`, or `emit_shape` non-NULL count / icon-role count / tag-identity-role count fall below their expected floors; (2) a duplicate-key check on `ATTR_CLASSIFICATION_OVERRIDES` — needs re-scoping since it now loads from an external JSON truth file, not a Python dict.
+
+**Trigger:** pairs with `P-DB-PARTIAL-RESEED-RESIDUE`.
+
+
+### P-DECISIONS-BACKTAG - RESOLVED 2026-08-07
+
+ARCHIVED as tracked-elsewhere, not done. 128 old decisions.md headings still need an [INCIDENT]/[ROUTINE] label. Re-measured 2026-08-07: 299 `## ` entry headings, 170 tagged, 129 untagged of which 128 are real entries (the 129th is a navigation index heading that should never be tagged). D-ceiling D507 via the ANCHORED command. The entry itself shipped a subtly WRONG command (`grep -c '\[INCIDENT\]\|\[ROUTINE\]'` returns 175 because it counts body prose, not headings) — corrected here. Classification is NOT mechanical: the untagged set is the older date-form headings, which are multi-topic run-ons needing the body read. Bean's standing position is that parking is the wrong home for this; it is doc hygiene with no trigger, and it will be picked up in a doc session.
+
+Archived verbatim below.
+
+### P-DECISIONS-BACKTAG — back-tag historical decisions.md headings with [INCIDENT]/[ROUTINE]
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-17
+
+The `[INCIDENT]`/`[ROUTINE]` tagging convention was established and applied to recent entries; older headings remain untagged and need a read-to-classify judgement. New entries get tagged going forward via handoff, so the untagged set only shrinks.
+
+**⚠ This entry previously claimed "only 10 headings — D216, D229-D237 — remain untagged out of 54". That is WRONG and was corrected 2026-07-29** (the same false figure also appeared in `P-DOC-SIZE-AND-DOCSCORE-RESIDUALS`; both fixed). The old count measured a nested `### D…` subset, not the `## ` entry headings. Measured 2026-07-29: roughly **200 `## ` headings with only ~75 tagged, so ~125+ untagged** — an order of magnitude more work than recorded. **The exact figure drifts as entries are added: re-count before scoping, do not trust this line.**
+
+```bash
+grep -c '^## ' .claude/decisions.md          # total entry headings
+grep -c '\[INCIDENT\]\|\[ROUTINE\]' .claude/decisions.md   # tagged
+```
+
+**Trigger:** a doc-hygiene session — but re-scope first; this is not the small bounded task it was recorded as.
+
+
+### P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC - RESOLVED 2026-08-07
+
+PARTIALLY FIXED (commit c1377c2b), remainder specified. The content leg of build-deploy.py's verify ended in `return 0` — it logged a WARNING and returned success either way, so 'default-ON fail-closed verify' was true only for HTTP status and the WP fatal string. Fixed with a two-sided control. STILL OPEN and now fully specified for whoever picks it up: (a) the assertion is GENERIC — markers ['wp-block-sgs','sgs-','wp-content'] match ANY working SGS page including one running last week's build. Fix: hash a few payload files before upload, md5sum the same paths over the SSH connection the script already opens, compare, fail on mismatch naming the file and both hashes (~25 lines, needs no per-deploy input so it can be default-on). Word the pass as 'deployed bytes match the local payload' — a matching hash proves agreement, not correctness. (b) No ownership marker: write .sgs-deploy-marker.json with deployer + commit SHA + branch + timestamp, and abort (unless --takeover) when the recorded commit is not an ancestor of HEAD. That converts the silent clobber that hit a verified deploy this session into a named, deliberate one. (b) changes cross-session behaviour and needs Bean's sign-off on the takeover semantics.
+
+Archived verbatim below.
+
+### P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC / P-CANARY-SHARED-DEPLOY-RACE — deploy verify can pass on a deploy that never persisted
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-20
+
+Two related gaps proven live via a real incident: a deploy that was correctly verified and reported PASS was silently overwritten minutes later by a co-active session's deploy on the shared canary, and the deploy tool's own verify leg could not have caught it — it only asserts generic markers (HTTP 200 + a couple of block-class strings) that pass on ANY working SGS page, including one running last week's code. Fixes: (1) have the deploy script checksum a few deployed files against their local counterparts post-extract, and/or support an `--assert-contains <file>:<needle>` check; (2) some form of deploy-ownership marker on the shared canary naming the last deployer + commit SHA, so a stale deploy is visible, or re-assert the key measurement at handoff time.
+
+**Trigger:** next canary deploy, or any session where two tracks are co-active on the shared worktree.
+
+
+### P-DOC-SIZE-AND-DOCSCORE-RESIDUALS - RESOLVED 2026-08-07
+
+MOSTLY CLOSED by commit a42cc0f8. THE FINDING was that the entry credited handoff-preflight.py with 'mechanically enforcing the size discipline' — and it did not: the CHECKS tuple had seven entries and NONE read decisions.md or MEMORY.md; CAP_BYTES applied only to LEDGER.md. Meanwhile decisions.md had grown from a claimed 714KB to 1.03MB entirely unobserved. Not a gate that could not fail — a gate recorded as built that was never built, and from the entry the two read identically. Added check_decisions_size (gated on GROWTH against .claude/hooks/doc-size-baseline.json so it does not block co-active handoffs, with an absolute fallback the file already exceeds 4x so it fails closed) and check_memory_size, both as two-sided (bad, good) pairs in self_test(). TWO THINGS STILL TRUE and printed on every --check run: decisions.md PASSES but a sweep is OWED (the growth gate only stops it getting worse), and MEMORY.md sits at 24,039 of 24,576 bytes — it trips on the next lesson written. The accepted deferrals must NOT be 'fixed': decisions.md's 600-line structural fail does not apply to an append-only log, parking.md's `**Verify:**` markers are deliberate uncertainty signalling, decisions.md's `Organization` hits are the Schema.org type inside emitted JSON-LD (breaking them breaks live client JSON-LD), and its TODO/TBD hit is historical narrative.
+
+Archived verbatim below.
+
+### P-DOC-SIZE-AND-DOCSCORE-RESIDUALS — doc-hygiene: LEDGER/decisions size caps + memory compaction + the 12-canonical-doc drift audit
+**Status:** PARTIAL · **Bucket:** tooling · **Parked:** 2026-07-20
+**Also known as:** P-DECISIONS-ROTATION, P-MEMORY-MD-COMPACT, P-DOC-ALIGNMENT-12-DOCS
+
+Four merged doc-hygiene threads, most of their original scope now substantially discharged:
+
+- **LEDGER.md size cap** — repeatedly swept back under the 24,576-byte cap across multiple sessions; this is now a recurring maintenance action (re-sweep whenever it grows again), not a one-off task.
+- **decisions.md rotation** — the archive-to-`memory/decisions-archive.md` remedy has been RUN: the file was swept 877KB→714KB and a `handoff-preflight.py` gate now mechanically enforces the size discipline going forward. The back-tagging of historical `[INCIDENT]`/`[ROUTINE]` headings is tracked separately (see `P-DECISIONS-BACKTAG`). **⚠ This entry previously claimed that back-tag was "much smaller than originally scoped — only 10 headings out of 54"; that is FALSE and was corrected 2026-07-29 in both places it appeared. Measured: 201 `## ` headings, 77 tagged, so ~124 untagged.**
+- **MEMORY.md compaction** — recurring trim-when-near-cap maintenance; last measured well under the cap with headroom.
+- **12-canonical-doc drift audit** — the original 2026-06-14 audit register is stale; the doc landscape has changed significantly since (specs renumbered, several docs archived). A fresh drift check would need to be re-run against the current doc set rather than the original register.
+
+**Note on docscore results that must NOT be "fixed":** decisions.md's `Organization` hits are the Schema.org type identifier (breaking it would break emitted JSON-LD), and its TODO/TBD hits are historical narrative inside an append-only log, not stub markers. Multiple independent checks have confirmed both are correctly flagged as false positives — do not let a future pass "fix" them.
+
+**Recorded deferral (Gate 4.6, 2026-07-29) — two docs sit below the A- threshold for reasons that are correct, not defects:**
+- `decisions.md` **67.3% (C)** — the sole structural fail is "2,421 lines exceeds cap of 600". It is an append-only architectural log of 200+ entries; the generic 600-line cap does not apply to that doc type. It was already swept 877KB→714KB this session, and cutting further would mean archiving load-bearing `[INCIDENT]` entries, which the convention explicitly forbids ("NEVER truncate an INCIDENT to a stub").
+- `parking.md` **80% (B)** — the sole fail is "4 hedging phrases (soft fail)". Those are the deliberate `**Verify:**` uncertainty markers added by the 2026-07-29 cull to flag entries that may already be complete. Removing the hedging would remove honest uncertainty signalling and make the register *less* true.
+Both are accepted as-is rather than fixed. Re-raise only if the doc-type caps themselves are revised.
+
+**Trigger:** LEDGER/MEMORY — recurring, re-trim when either approaches its cap. decisions.md back-tagging — a low-priority doc-hygiene session (10 headings). Doc-drift audit — a fresh `/doc-audit` run, not a re-read of the 2026-06-14 register.
+
+
+### P-TOKEN-LINT-INERT - RESOLVED 2026-08-07
+
+DELETED as not worth building. The tool's root defect is long fixed — it never parsed inline <style> blocks (only style="" attributes) so it passed every draft vacuously; _isolate_style_blocks now parses them and an unresolved var() is a hard fail in strict mode, proven by executing a scratch fixture (strict exit 1, draft exit 0) and by a 24-case --self-test with labelled negative controls. What remained was unused-token weighting, and it should NOT be built: it can never be a gate (an unused token is a smell, not an error), the per-client snapshot deliberately declares a full palette a given draft may only partly use so the false-positive rate is structurally high, and the linter's default path is draft/advisory anyway — a warning inside a warning-only run has near-zero enforcement value. ONE THING WORTH KNOWING that this entry never recorded: the hard fail is STRICT-MODE-ONLY (token-lint.py:1399), and .git/hooks/pre-commit sets LINT_MODE=draft unless SGS_LINT_STRICT=1 — so a green draft run does NOT prove token resolution.
+
+Archived verbatim below.
+
+### P-TOKEN-LINT-INERT — token-lint gate: unused-token weighting still not built
+**Status:** PARTIAL · **Bucket:** tooling · **Parked:** 2026-07-21
+
+The tool's root defect (it never parsed inline `<style>` blocks, only `style=""` attributes, so it passed every draft vacuously) is fixed, and unresolved `var()` references are now a hard fail. What remains genuinely open is unused-token weighting (flagging a declared-but-unused brand token, weighted louder than spacing tokens) — deliberately descoped from the original fix pass. Cross-palette contrast checking was deliberately rehomed to a separate tool (`palette-contrast-sweep.mjs`) rather than added here.
+
+**Trigger:** when unused-token detection is actually wanted; the inert-gate defect that made this urgent is already closed.
+
+
+### P-VISUAL-GATE-ORDERING - RESOLVED 2026-08-07
+
+RE-SCOPED, and the deadlock it describes is already broken — by a mechanism the entry never mentions. build-deploy.py's --payload (split_dirty_by_payload, with a self-test carrying a real negative control) lets you declare exactly what ships uncommitted while everything else dirty still blocks per D336. Its own docstring names the deadlock. So it does NOT force a dishonest PASS. TWO REAL RESIDUALS the entry never captured, both hit repeatedly this session: (1) the gate lives in .git/hooks/pre-commit, which is UNTRACKED — its own comment admits 'LOCAL ONLY and will not reach other clones', so it protects exactly one machine; (2) it is DATE-keyed, not CHANGE-keyed (`${block_name}-${TODAY}.md`), so any same-day report for that block satisfies it — including another track's, for a different change, which reports/visual-diff/card-grid-2026-08-06.md documents happening to itself. A third defect found 2026-08-07: check-markup-neutral.py can NEVER pass an attribute removal, because any attr removal must touch block.json and the checker refuses JSON outright — a structurally unpassable class. Fix shape: track the hook (.githooks + an installer + a prebuild 'is it installed' check), and key on a content hash of the block's STAGED source rather than the date.
+
+Archived verbatim below.
+
+### P-VISUAL-GATE-ORDERING — the visual-diff commit gate has a circular ordering problem for live-verified changes
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-20
+
+The pre-commit visual-diff gate requires a PASS report before a visual change can commit, but proving PASS for a live-canary change requires a deploy, and deploying requires a commit first (the deploy tool correctly hard-blocks on an uncommitted tree) — so commit needs proof, proof needs deploy, deploy needs commit. Today's only exits are both bad: skip the gate with a truthful "pending" verdict, or write PASS before it's actually true. Strongest proposed fix: split the gate into a pre-commit check (report exists + BEFORE captured) and a separate post-deploy check wired into the deploy tool's own verify leg, since that's where the AFTER evidence naturally exists.
+
+**Trigger:** next visual block change, or a dedicated gates-hygiene session.
+
+
+---
