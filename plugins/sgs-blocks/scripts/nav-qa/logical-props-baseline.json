@@ -1,0 +1,10 @@
+{
+  "_comment": "Frozen physical-property debt for logical-props-lint.py --check. Each key is 'file|property|normalised declaration' and each value is the number of times it occurs. --check fails on anything NOT here, or on more occurrences than recorded. Re-seed only deliberately (--seed) and review the diff.",
+  "entries": {
+    "src/blocks/nav-drawer/editor.css|left|left: 12px;": 1,
+    "src/blocks/nav-drawer/editor.css|right|right: 12px;": 1,
+    "src/blocks/nav-drawer/style.css|left|left: 0;": 1,
+    "src/blocks/nav-drawer/style.css|right|right: 12px;": 1,
+    "src/blocks/nav-menu/style.css|left|left: 0;": 1
+  }
+}

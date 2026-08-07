@@ -315,17 +315,36 @@ node scripts/nav-qa/crawl-assert.mjs https://palestine-lives.org/
 
 # Custom nav-root selector (update once the real block root classes are known)
 node scripts/nav-qa/crawl-assert.mjs <url> --nav-selector ".sgs-nav-menu, .sgs-nav-drawer"
+
+# Pin the JS-off anchor count for CI
+node scripts/nav-qa/crawl-assert.mjs <url> --expect-count 11
+
+# Prove the superset gate can still fail (no browser, no network)
+node scripts/nav-qa/crawl-assert.mjs --self-test
 ```
 
+### Auto mode is a SUPERSET gate, not a "≥1 anchor" gate
+
+`≥1 anchor` was far too weak — a nav that server-rendered ONE link and
+injected the other nine passed the crawlability assertion. Auto mode now
+loads the **same URL twice**, once JS-off and once JS-on, and requires the
+JS-off nav-href set to be a **superset** of the JS-on set. The page is its
+own oracle: there is no roster to maintain and nothing to drift, and the
+property under test ("the nav is server-rendered") means any nav link that
+appears only with JS on IS the defect. Superset rather than exact match,
+because JS legitimately *moves* links out of the containers (the D323
+drawer body-reparent) — that subtracts from the JS-on set and must not read
+as a failure.
+
 **Pass (explicit mode):** every `--want-href`/`--want-text` item found,
-exit `0`. **Pass (auto mode):** ≥1 anchor found inside `--nav-selector`,
-exit `0`.
-**Fail:** missing items printed per-item (`MISSING href containing "..."`)
-or, in auto mode, a loud `0 anchors found` message plus a hint that this
-usually means client-side-only rendering — exit `1`.
+exit `0`. **Pass (auto mode):** ≥1 anchor found, the JS-off set is a
+superset of the JS-on set, and `--expect-count` (if given) matched — exit `0`.
+**Fail:** missing items printed per-item (`MISSING href containing "..."`);
+or, in auto mode, `0 anchors found`, or each JS-only href named under
+`SUPERSET FAIL`, or a `COUNT FAIL` line — exit `1`.
 **Bad args / navigation failure:** exit `2`.
 
-## 4. `logical-props-lint.py` — RTL-readiness lint (WARN-only)
+## 4. `logical-props-lint.py` — RTL-readiness lint (WARN by default, `--check` gates)
 
 **Covers:** FR-36-16 *"RTL/logical properties"*.
 
@@ -333,16 +352,49 @@ Grep-scans CSS/SCSS for physical box-model + positioning properties that
 have a logical equivalent (`margin-left`/`right`, `padding-left`/`right`,
 bare `left:`/`right:`) and suggests the `-inline-start`/`-inline-end`
 replacement (LTR-document assumption, since that's SGS's default — the
-suggestion flips if the target is ever RTL). **Always exits `0`** — this
-is a nudge for the Step-11 human reviewer, not a build gate (a physical
-property is not always wrong, e.g. a direction-agnostic icon nudge).
+suggestion flips if the target is ever RTL). **Default mode always exits
+`0`** — a nudge for the Step-11 human reviewer, because a physical property
+is not always wrong (e.g. a direction-agnostic icon nudge).
+
+**`--check` is the gate mode.** This script is the ONLY detector for a real
+Spec 36 §8 requirement, and until now it was referenced from nothing but
+this README — so the risk was never that it read green forever, it was that
+nobody ran it. `--check` exits `1` on any hit NOT recorded in
+`logical-props-baseline.json`: existing debt is frozen and visible in that
+file, new debt fails. Entries are keyed by *file + property + normalised
+declaration* with an occurrence count — never by line number, which would
+go stale on the first re-indent. Runs the nav surface in ~0.15s, so it is
+cheap enough for a per-build gate.
 
 ```bash
-# Default target dirs: the two nav blocks + the shared utils module
+# WARN only (unchanged): default target dirs — the two nav blocks + shared utils
 python scripts/nav-qa/logical-props-lint.py
+
+# Gate: exit 1 on NEW physical properties
+python scripts/nav-qa/logical-props-lint.py --check
+
+# Re-freeze the current debt (review the baseline diff!)
+python scripts/nav-qa/logical-props-lint.py --seed
+
+# Prove the gate can still fail
+python scripts/nav-qa/logical-props-lint.py --self-test
 
 # Explicit dirs
 python scripts/nav-qa/logical-props-lint.py src/blocks/nav-menu src/blocks/nav-drawer src/utils
+```
+
+`package.json` wiring (NOT applied here — another track owns that file).
+Append to the existing `"prebuild"` `&&` chain, alongside the other
+`--check` gates:
+
+```
+ && python scripts/nav-qa/logical-props-lint.py --check
+```
+
+and add the standalone alias next to `check:inline-styling`:
+
+```
+"check:logical-props": "python scripts/nav-qa/logical-props-lint.py --check"
 ```
 
 A missing target directory prints a `WARN: target directory not found`

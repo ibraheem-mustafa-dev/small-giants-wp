@@ -39,6 +39,20 @@
  *      this assertion exists to catch) — it does not silently pass on an
  *      empty result.
  *
+ *      SUPERSET GATE (the real assertion). "≥1 anchor" was far too weak: a
+ *      nav that server-rendered ONE link and injected the other nine passed.
+ *      There is no roster to compare against and inventing one would just
+ *      drift, so THE PAGE IS ITS OWN ORACLE — the same URL is loaded twice,
+ *      once with JS disabled and once with JS enabled, and the JS-off href
+ *      set must be a SUPERSET of the JS-on set. The property under test is
+ *      "the nav is server-rendered", so any nav link that appears only when
+ *      JS runs IS the defect, by definition. (A superset rather than an exact
+ *      match because JS legitimately MOVES links — the D323 body-reparent
+ *      takes the drawer out of the nav containers — which subtracts from the
+ *      JS-on set and must not read as a failure.)
+ *
+ *      --expect-count N additionally pins the JS-off anchor count for CI.
+ *
  * Examples
  * --------
  *   # Explicit: prove these 7 bar links + 1 mega link survive with JS off
@@ -51,8 +65,11 @@
  *
  * Exit codes
  * ----------
- *   0 — every --want-href/--want-text item found (explicit mode), or ≥1 anchor found (auto mode)
- *   1 — one or more --want items missing, or 0 anchors found in auto mode
+ *   0 — every --want-href/--want-text item found (explicit mode); or, in auto
+ *       mode, ≥1 anchor found AND the JS-off set is a superset of the JS-on set
+ *       AND (if given) --expect-count matched
+ *   1 — one or more --want items missing; or 0 anchors found in auto mode; or a
+ *       JS-on-only nav link was found; or --expect-count mismatched
  *   2 — bad/missing arguments or navigation failure
  *
  * Spec 36 coverage: FR-36-16 crawl assertion (bar+dropdown+mega link + mega content pre-JS presence).
@@ -66,17 +83,73 @@ import { chromium } from 'playwright';
 // names differ from the spec's working names.
 const DEFAULT_NAV_SELECTOR = '.sgs-nav-menu, .sgs-nav-drawer, .sgs-nav-menu__mega-panel';
 
+/**
+ * Scope a comma-separated container selector list down to the anchors inside
+ * each part. A descendant combinator does NOT distribute across a selector
+ * list, so every part needs its own " a[href]" suffix before rejoining.
+ *
+ * @param {string} navSelector Comma-separated container selector list.
+ * @return {string} The scoped anchor selector.
+ */
+function scopeToAnchors( navSelector ) {
+	return navSelector
+		.split( ',' )
+		.map( ( part ) => `${ part.trim() } a[href]` )
+		.join( ', ' );
+}
+
+/**
+ * Normalise an href for set comparison, so `/about`, `/about/` and the
+ * absolute form of the same link compare equal across the two page loads.
+ *
+ * @param {string} href    The raw href attribute value.
+ * @param {string} baseUrl The page URL, for resolving relative hrefs.
+ * @return {string} The normalised href.
+ */
+function normaliseHref( href, baseUrl ) {
+	let out = href;
+	try {
+		const u = new URL( href, baseUrl );
+		u.hash = '';
+		out = u.href;
+	} catch ( e ) {
+		out = href.trim();
+	}
+	return out.replace( /\/$/, '' );
+}
+
+/**
+ * THE assertion, as a pure function so it can be unit-tested without a browser
+ * (see --self-test). Returns every href that the JS-ON load produced inside the
+ * nav containers but the JS-OFF load did not — i.e. every nav link that only
+ * exists once JavaScript has run, which is exactly the crawlability defect.
+ *
+ * @param {string[]} jsOffHrefs Normalised hrefs found with JS disabled.
+ * @param {string[]} jsOnHrefs  Normalised hrefs found with JS enabled.
+ * @return {string[]} Hrefs present only with JS on (empty = PASS).
+ */
+function jsOnlyHrefs( jsOffHrefs, jsOnHrefs ) {
+	const offSet = new Set( jsOffHrefs );
+	return [ ...new Set( jsOnHrefs.filter( ( h ) => ! offSet.has( h ) ) ) ];
+}
+
 function parseArgs( argv ) {
-	const args = { url: null, wantHref: [], wantText: [], navSelector: DEFAULT_NAV_SELECTOR, raw: false, json: false };
+	const args = { url: null, wantHref: [], wantText: [], navSelector: DEFAULT_NAV_SELECTOR, raw: false, json: false, expectCount: null, selfTest: false };
 	const rest = [ ...argv ];
+	if ( rest[ 0 ] === '--self-test' ) {
+		args.selfTest = true;
+		return args;
+	}
 	args.url = rest.shift();
 	while ( rest.length ) {
 		const flag = rest.shift();
 		if ( flag === '--want-href' ) args.wantHref = rest.shift().split( ',' ).map( ( s ) => s.trim() ).filter( Boolean );
 		else if ( flag === '--want-text' ) args.wantText = rest.shift().split( ',' ).map( ( s ) => s.trim() ).filter( Boolean );
 		else if ( flag === '--nav-selector' ) args.navSelector = rest.shift();
+		else if ( flag === '--expect-count' ) args.expectCount = Number.parseInt( rest.shift(), 10 );
 		else if ( flag === '--raw' ) args.raw = true;
 		else if ( flag === '--json' ) args.json = true;
+		else if ( flag === '--self-test' ) args.selfTest = true;
 		else {
 			process.stderr.write( `crawl-assert: unrecognised argument "${ flag }"\n` );
 			process.exit( 2 );
@@ -88,14 +161,75 @@ function parseArgs( argv ) {
 function usageAndExit( message ) {
 	process.stderr.write(
 		`crawl-assert: ${ message }\n\n` +
-		'Usage: node crawl-assert.mjs <url> [--want-href "a,b"] [--want-text "A,B"] [--nav-selector "<css>"] [--raw] [--json]\n'
+		'Usage: node crawl-assert.mjs <url> [--want-href "a,b"] [--want-text "A,B"] [--nav-selector "<css>"] [--expect-count N] [--raw] [--json]\n' +
+		'       node crawl-assert.mjs --self-test\n'
 	);
 	process.exit( 2 );
 }
 
+/**
+ * Prove the superset gate can actually FAIL. A gate that cannot fail reads
+ * green forever, so this exercises jsOnlyHrefs() against a synthetic JS-off
+ * set with entries deliberately missing, asserts the missing hrefs come back
+ * NAMED, and asserts the clean and the legitimately-moved-link cases stay
+ * green. Runs with no browser and no network.
+ *
+ * @return {number} 0 if the logic behaves, 1 if the gate itself is broken.
+ */
+function selfTest() {
+	const failures = [];
+	const check = ( name, ok, detail ) => {
+		process.stdout.write( `  ${ ok ? 'ok  ' : 'FAIL' }  ${ name }${ detail ? ` — ${ detail }` : '' }\n` );
+		if ( ! ok ) failures.push( name );
+	};
+
+	// 1. The defect this gate exists to catch: 1 of 10 links server-rendered.
+	const jsOn = Array.from( { length: 10 }, ( _, i ) => `https://x.test/link-${ i }` );
+	const jsOffCrippled = [ 'https://x.test/link-0' ];
+	const missing = jsOnlyHrefs( jsOffCrippled, jsOn );
+	check( 'detects 9 JS-only nav links', missing.length === 9, `got ${ missing.length }` );
+	check(
+		'names the missing hrefs',
+		missing.includes( 'https://x.test/link-5' ) && missing.includes( 'https://x.test/link-9' ),
+		missing.join( ', ' )
+	);
+
+	// 2. Fully server-rendered nav — must be green.
+	check( 'clean superset passes', jsOnlyHrefs( jsOn, jsOn ).length === 0 );
+
+	// 3. JS legitimately REMOVES links from the containers (the D323 drawer
+	//    reparent). JS-off is a strict superset — must still be green.
+	check( 'JS-off superset (JS moved links out) passes', jsOnlyHrefs( jsOn, jsOn.slice( 0, 4 ) ).length === 0 );
+
+	// 4. Normalisation: trailing slash / relative vs absolute must not
+	//    manufacture a false failure.
+	const base = 'https://x.test/page';
+	check(
+		'normalisation collapses /about, /about/ and the absolute form',
+		jsOnlyHrefs(
+			[ normaliseHref( '/about', base ) ],
+			[ normaliseHref( '/about/', base ), normaliseHref( 'https://x.test/about', base ) ]
+		).length === 0
+	);
+
+	// 5. The one-anchor case the OLD gate passed.
+	check( 'the old ">=1 anchor" pass case now fails', jsOnlyHrefs( [ 'https://x.test/a' ], [ 'https://x.test/a', 'https://x.test/b' ] ).length === 1 );
+
+	process.stdout.write(
+		failures.length === 0
+			? 'crawl-assert --self-test: PASS (the superset gate can fail)\n'
+			: `crawl-assert --self-test: FAIL — ${ failures.join( '; ' ) }\n`
+	);
+	return failures.length === 0 ? 0 : 1;
+}
+
 async function main() {
 	const args = parseArgs( process.argv.slice( 2 ) );
+	if ( args.selfTest ) process.exit( selfTest() );
 	if ( ! args.url ) usageAndExit( 'missing required <url> argument.' );
+	if ( args.expectCount !== null && ! Number.isInteger( args.expectCount ) ) {
+		usageAndExit( '--expect-count needs an integer.' );
+	}
 
 	// SECURITY NOTE: every `$$eval()` call below is Playwright's own DOM-query
 	// API (`page.$$eval(selector, fn)` — evaluates `fn` against the ALREADY
@@ -136,14 +270,7 @@ async function main() {
 
 		if ( args.wantHref.length === 0 && args.wantText.length === 0 ) {
 			// Auto-detect mode.
-			// NOTE: a descendant combinator does NOT distribute across a
-			// comma-separated selector list — `".a, .b a[href]"` only scopes
-			// `a[href]` to `.b`, not `.a`. Each part of --nav-selector must get
-			// its own " a[href]" suffix before rejoining with commas.
-			const scopedSelector = args.navSelector
-				.split( ',' )
-				.map( ( part ) => `${ part.trim() } a[href]` )
-				.join( ', ' );
+			const scopedSelector = scopeToAnchors( args.navSelector );
 			let navAnchors;
 			try {
 				navAnchors = await page.$$eval( scopedSelector, ( els ) =>
@@ -167,11 +294,56 @@ async function main() {
 					process.stdout.write( '  or the --nav-selector does not match the blocks\' actual root classes.\n' );
 					process.stdout.write( `  (${ allAnchors.length } anchor(s) found elsewhere on the page — JS-off page load did work.)\n` );
 				}
-			} else if ( ! args.json ) {
-				process.stdout.write( `crawl-assert: ${ args.url } — AUTO-DETECT PASS\n` );
-				process.stdout.write( `  ${ navAnchors.length } anchor(s) found inside "${ args.navSelector }" with JS disabled:\n` );
-				for ( const a of navAnchors ) {
-					process.stdout.write( `    - "${ a.text }" -> ${ a.href }\n` );
+			} else {
+				/*
+				 * THE SUPERSET GATE. Load the SAME url again with JS ENABLED
+				 * and require every nav href it produces to already be in the
+				 * JS-off set. The page is its own oracle — no roster to build,
+				 * nothing to drift. A separate context (not just a reload) is
+				 * required because javaScriptEnabled is a context-level option.
+				 */
+				const jsCtx = await browser.newContext( { javaScriptEnabled: true } );
+				let jsOnAnchors = [];
+				try {
+					const jsPage = await jsCtx.newPage();
+					await jsPage.goto( args.url, { waitUntil: 'networkidle', timeout: 30000 } );
+					jsOnAnchors = await jsPage.$$eval( scopedSelector, ( els ) =>
+						els.map( ( el ) => ( { href: el.getAttribute( 'href' ) || '', text: ( el.textContent || '' ).trim() } ) )
+					);
+				} catch ( e ) {
+					process.stderr.write( `crawl-assert: JS-enabled comparison load failed — ${ e.message }\n` );
+					await jsCtx.close();
+					process.exit( 2 );
+				}
+				await jsCtx.close();
+
+				const offHrefs = navAnchors.map( ( a ) => normaliseHref( a.href, args.url ) );
+				const onHrefs = jsOnAnchors.map( ( a ) => normaliseHref( a.href, args.url ) );
+				const jsOnly = jsOnlyHrefs( offHrefs, onHrefs );
+
+				report.jsOnAnchorCount = jsOnAnchors.length;
+				report.jsOnlyHrefs = jsOnly;
+				report.expectCount = args.expectCount;
+
+				const countMismatch =
+					args.expectCount !== null && navAnchors.length !== args.expectCount;
+				if ( jsOnly.length || countMismatch ) exitCode = 1;
+
+				if ( ! args.json ) {
+					process.stdout.write(
+						`crawl-assert: ${ args.url } — AUTO-DETECT ${ exitCode === 0 ? 'PASS' : 'FAIL' }\n`
+					);
+					process.stdout.write( `  ${ navAnchors.length } anchor(s) inside "${ args.navSelector }" with JS disabled; ${ jsOnAnchors.length } with JS enabled.\n` );
+					for ( const a of navAnchors ) {
+						process.stdout.write( `    - "${ a.text }" -> ${ a.href }\n` );
+					}
+					if ( jsOnly.length ) {
+						process.stdout.write( `  SUPERSET FAIL — ${ jsOnly.length } nav link(s) exist ONLY with JS on (not server-rendered):\n` );
+						for ( const h of jsOnly ) process.stdout.write( `    MISSING from the pre-JS HTML: ${ h }\n` );
+					}
+					if ( countMismatch ) {
+						process.stdout.write( `  COUNT FAIL — --expect-count ${ args.expectCount }, found ${ navAnchors.length }.\n` );
+					}
 				}
 			}
 		} else {
