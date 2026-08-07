@@ -2911,3 +2911,165 @@ Archived verbatim below.
 `audit-post-content-blocks.py` reads only block.json, so attributes registered by JS-side universal extensions (`sgsBlockLink*`, `sgsHoverScalePreset`, etc.) raise false "stranded content" findings and can abort deploys — this already happened once, blocking a real deploy. Fix: teach the audit the extension-registered attribute list (parse the extension source files, or maintain a declared allowlist with provenance), then remove the baseline entries this false positive forced in.
 
 **Trigger:** next audit/gate-hygiene session.
+
+
+### P-DB-PARTIAL-RESEED-RESIDUE - RESOLVED 2026-08-07
+
+RESOLVED - every number in the entry was wrong, and the one real item is fixed (commit 2ca75a82). (a) '26 converter tests red' was FALSE: exactly ONE failed, and it was a test outliving a deliberate behaviour change, not a regression - the FR-31-16 section-root gate (commit 2b5a6b64, 2026-08-04) demotes sgs/tabs, so it is never emitted and its G3 check never reached; the test was committed 989b761d on 2026-08-01, THREE DAYS BEFORE the gate. Rewritten to assert current truth, with the gap-surfacing assertions moved to the sgs-feature-grid fixture (the only one still producing both kinds), and proven by forcing the capability gate off so it goes red. (b) 'emit_shape 121 vs ~139 expected' was FALSE: 237 populated, and the '139' was never an expectation - it was PROSE in a walk.py comment claiming '139/139 seeded' to justify a guard being unreachable. That comment was false and the guard IS reachable (12 form-field rows unseeded); corrected in the same commit. Seeding those 12 was deliberately NOT done - it is a converter-behaviour change on live form blocks. (c) The hero __content claim could not be corroborated statically and needs a real clone run; hero's text attrs correctly carry emit_shape='child', and hero has no cta/button rows at all, so 'CTAs absent' cannot be an emit_shape fault. Suite now 0 failed / 671 passed.
+
+Archived verbatim below.
+
+### P-DB-PARTIAL-RESEED-RESIDUE — sgs-framework.db partial-reseed regression; 26 converter tests still red
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-16
+
+A prior partial `/sgs-update` run left the DB starved of tag-identity/icon-source/emit_shape rows, causing silent content drops (zero-h1 clones, dropped emoji). The immediate cause was repaired (overrides re-applied, emit_shape reseeded, a genuine duplicate-key bug in `ATTR_CLASSIFICATION_OVERRIDES` fixed) and verified against the real Mama's draft.
+
+**Residue still open:** (a) 26 converter tests remain red, including `test_variant_detect.py` and the hero child-block content-attr test; (b) `sgs/hero` still drops its whole `__content` column on the real draft (h1/label/sub-headline/CTAs absent) even after the seed fix — `emit_shape` for those attrs is correctly `child` now, so the break is downstream in the variant/grid-item path, not the seed; (c) `emit_shape` populated count (121) is still short of the ~139 walk.py expects.
+
+**Trigger:** next converter session — this blocks clone fidelity on every client until closed. Run a full `/sgs-update` (all 10 stages) and re-measure.
+
+
+### P-RESPONSIVE-ROUTER-ROBUSTNESS - RESOLVED 2026-08-07
+
+FIXED. Both legs closed in commit 2ca75a82. A no-width media condition (@media print, prefers-color-scheme, orientation, prefers-reduced-motion) was swallowed twice: `_media_condition_applies_at` tested all() over an EMPTY finditer, and all() over an empty iterable is vacuously True, so it reported as matching at every width and folded into the screen base for all three tiers; and the residual-capture guard tested any() over an empty threshold list, which is False, so the residual block was skipped entirely and the correct no-width passthrough was never reached. Fixed with an explicit _has_width_constraint() predicate on both legs, and the docstring rewritten so the INTENT moved with the code (declarations are preserved via the residual channel, not by folding). 25 new tests, all seen RED before the fix at all six sampled widths. Conformance corpus byte-identical either side (md5 f09a1e87), proving no width-bearing path was touched.
+
+Archived verbatim below.
+
+### P-RESPONSIVE-ROUTER-ROBUSTNESS — a no-width media condition is silently folded into the screen base
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-10
+
+A media condition with NO width component (`@media print`, `prefers-color-scheme`, `orientation`, `prefers-reduced-motion`) whose selector matches a converted element folds into the SCREEN base for all tiers and is never captured as a residual. It should be a passthrough residual — the router needs media-type awareness. The sibling item (inverted-threshold `min-width` pairs resolving by threshold rather than source order) is largely subsumed by the D303 tier-confinement bounding; only two residuals landing in the SAME tier can still collide, resolved by ascending emission order.
+
+**⚠ Root cause CONFIRMED by full code trace (2026-07-27), and it is subtler than "not handled" — it is swallowed twice over.** (a) `_media_condition_applies_at` (`styling_helpers.py:48-64`) tests `all(...)` over an empty match iterator, and **`all()` over an empty iterable is vacuously True** — so a no-width condition reads as matching at EVERY sampled width and folds into `tier_effective` for all three tiers. (b) The residual-capture guard (`:817`) builds `thresholds` from a width regex then tests `any(t not in device_thresholds ...)`; with `thresholds == []` that is False, so the residual block is skipped entirely. `bound_residual_media_conds` DOES have a documented no-width passthrough (`:94-95`) but is never reached, because the caller filters the condition out first.
+
+**Trigger:** a router-hardening pass. Low priority — no current mockup triggers either item.
+
+
+### P-SCALAR-LIFT-RESIDUAL-DRIFT - RESOLVED 2026-08-07
+
+PREMISE REFUTED - nothing to do. The entry claims product-card's pill*/pickerLabel* attrs are legacy-dead. Verified across four independent sources: render.php:65-100 reads pickerLabel* and all eight pickerPill* values; :1022-1024 and :1444-1446 forward them into the embedded sgs/option-picker; render.php:186-189 explicitly RETARGETED the `pill` typography prefix at '.sgs-option-picker__pill' when the legacy markup was removed; and edit.js carries 60 references exposing them as client controls. cta* likewise resolves live via sgs_product_card_resolve_element. The entry's own trigger ('the product-card/option-picker area settling') was MET on 2026-07-10, four days after it was parked - nobody went back to check.
+
+Archived verbatim below.
+
+### P-SCALAR-LIFT-RESIDUAL-DRIFT — scalar-styling-lift residual: product-card pill/CTA styling ownership needs settling
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-06
+
+Most render-verified selector-drift fixes shipped (card-grid, quote, product-card, option-picker). Remaining, deliberately not guessed: product-card's `pill*`/`pickerLabel*` attrs are legacy-dead (the pills are now the embedded child `sgs/option-picker`) while `cta*` styling is owned by a different mechanism — leave until the product-card/option-picker area settles, then retire or re-home. (The mobile-nav half of this entry is moot — that block was deleted.)
+
+**Trigger:** the product-card/option-picker area settling.
+
+
+### P-TESTIMONIAL-CONVERTER-FR2220 - RESOLVED 2026-08-07
+
+FIXED, and the entry's recorded CAUSE was wrong. It said summaryPhrase and orgName have role=NULL; both actually carry role='text-content'. The real blocker was a NULL derived_selector, which resolvers/scalar_content.py:158-160 skips on BEFORE role is ever consulted. Three derived_selector entries added to the reseed-durable attr-classification-overrides.json (commit 89e329a8) and confirmed live in block_attributes after a stage-1 run: summaryPhrase -> .sgs-testimonial__summary, orgName -> .sgs-testimonial__org, reviewDate -> .sgs-testimonial__date. ALSO FIXED, a landmine no entry described: reviewDate pointed at '.sgs-testimonial__card' - the card ROOT. It could not fire (no draft carries that class; the bare-tag fallback resolves to an empty candidate set) but node.find() searches DESCENDANTS, so the first draft to name a wrapper sgs-testimonial__card would have lifted the entire card's text into the date field. Demonstrated, not theorised: against pre-fix rows the fixture returned reviewDate = 'The team rebuilt our whole ordering flow.Jane Smith14 March 2026'. RESIDUAL, not blocking: reviewerRole and sourcePlatform have the identical NULL-selector defect and are a one-line-each fix when next touched.
+
+Archived verbatim below.
+
+### P-TESTIMONIAL-CONVERTER-FR2220 — testimonial content-lift: only quote/name/stars routed, other typed fields aren't
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-11
+
+The core empty-slide bug (a stale composition flag causing the converter to emit child blocks the typed render.php ignores) is fixed and live-verified; quote/author/star-rating now lift correctly via a universal scalar-lift mechanism. Re-scoped 2026-07-27: of the remaining unrouted typed fields, only `__summary`/`__org`/`__date` are genuinely unwired for content-lift (styling-role only); the avatar/logo/work-image fields already carry a live generic image-content-lift role, so they may not need separate work — pending a live render check.
+
+
+**⚠ Residual is NARROWER than stated (re-measured 2026-07-29):** `reviewDate` is now wired (`role='text-content'` in `block_attributes`). Only `summaryPhrase` and `orgName` remain unwired (both `role=NULL`).
+**Trigger:** the cloning Stage-2 routing wave; also the broader FR-22-20 variant-detection generalisation past hero+testimonial.
+
+
+### P-SPEC35-PARTIAL-BOX-MEMBERS - RESOLVED 2026-08-07
+
+DELETED as a non-problem, not built. The observation is accurate - attrs like headlineMarginBottom are one side of a box where layout.css:margin expects {top,right,bottom,left}, box_family is NULL on all of them, and no partial flag exists. But the entry's OWN trigger is 'if partial-box attrs proliferate beyond the current handful', and the count has not moved: 9 rows across 5 base names (sgs/hero headlineMarginBottom + subHeadlineMarginBottom, sgs/option-picker labelMarginBottom, sgs/quote attributionMarginTop, sgs/testimonial quoteMarginBottom, plus 4 device-tier variants), unchanged since 2026-07-27. Building a box_family vocabulary for 9 static rows would add schema surface every future agent must learn and honour, to serve nothing that is currently breaking. Re-open if the count moves.
+
+Archived verbatim below.
+
+### P-SPEC35-PARTIAL-BOX-MEMBERS — No vocabulary for a partially-modelled box member
+**Status:** OPEN · **Bucket:** framework · **Parked:** unknown
+
+Attributes like `headlineMarginBottom` are one side of a box member, not the full
+`{top,right,bottom,left}` object `layout.css:margin` expects. Confirmed still true 2026-07-27 —
+`box_family` is NULL on all 5 named attrs, no partial flag exists anywhere.
+
+**Trigger:** If partial-box attrs proliferate beyond the current handful.
+
+
+### P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER - RESOLVED 2026-08-07
+
+FIXED AND PROVEN LIVE. The cause was a `:not([style*="color"])` fallback guard that Spec 32's no-inline migration silently disarmed: the guard could only ever match INLINE output, the block stopped emitting inline styles, so the guard always matched and the dark `text` token was painted unconditionally - severing the contrast-safe foreground the drawer computes via sgs_wcag_text_colour_for_bg(). Fixed by deleting the rest-state rule (theme.json sets body colour to the identical token, so a normal page is unchanged) and setting textColour's default to ''. Live on the canary 2026-08-07, deployed files md5-verified: all SIX affected elements across the centred-statement and split-zone-serif variants read rgb(255,255,255) on rgb(58,46,38) = 13.14:1, up from 1:1. Commits 44e96157 + 5b24833a; report reports/visual-diff/icon-list-2026-08-07.md.
+
+Archived verbatim below.
+
+### P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER — icon-list text renders 1:1 against a dark drawer
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+`sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` —
+identical, contrast **1:1**, text completely invisible. Measured across all 7 POC fixtures: it hits
+exactly the two variants whose drawer uses the dark `footer-bg` (`centred-statement`
+Contact/Latest/Careers, `split-zone-serif` Team/Careers/Press = 6 elements); the other five are
+clean. So `sgs/icon-list` does not resolve a contrast-safe colour against its drawer background the
+way nav links do.
+
+⚠ **This passed the Task-5 sweep** because the sweep's contrast check only measured
+`.sgs-nav-menu__link-text`. Any contrast gate must walk EVERY text element in the surface.
+
+**NOW DETECTABLE, still unfixed (2026-07-30, D418).** `checkRestContrast()` in
+`sweep-drawer-variants.mjs` walks every text element against its own effective background and
+catches all 6 (3 + 3), with the two light variants clean — so the defect can no longer hide. The
+FIX is still owed: scheduled **W2-g**. Also learned here: **axe can never catch this** — every text
+element in an open `<dialog>` lands in axe's INCOMPLETE bucket (top-layer `::backdrop` defeats its
+background resolution), so do not "just add an axe gate" for drawer contrast.
+
+**Trigger:** next nav-drawer or icon-list session; blocks any "drawer variants are visually done"
+claim.
+
+
+### P-NAV-QA-RESIDUAL-WEAK-CHECKS - RESOLVED 2026-08-07
+
+BOTH HARDENED (commit 56edcd0c). (a) crawl-assert.mjs passed on >=1 anchor, so a nav rendering ONE link and dropping nine passed the JS-off crawlability assertion. Hardened without inventing a roster: the page is its own oracle - load twice (JS off/on) and require JS-off to be a SUPERSET of JS-on, since a link appearing only with JS IS the defect. (b) THE ENTRY MIS-DIAGNOSED THIS ONE, and the two diagnoses imply opposite fixes. It recorded 'WARN-only by construction, so it can never fail a build'. True but irrelevant: it is wired into NOTHING - a repo-wide search finds it only in its own README - so the real risk was that nobody ever ran it, not a false green. Fixed by WIRING rather than deleting (it is the only detector for a real Spec 36 §8 RTL requirement): --check exits 1 on any hit outside a new baseline, keys on file|property|declaration with counts rather than line numbers, default stays WARN-only. Both ship --self-test and both are proven able to fail, including 'the old >=1-anchor pass case now FAILS'.
+
+Archived verbatim below.
+
+### P-NAV-QA-RESIDUAL-WEAK-CHECKS — two nav-qa checks deliberately not hardened in W2-i
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
+
+Named rather than silently left, when the W2-i harness pass (D418) hardened the openness/contrast
+checks. Neither is one of DP7's three clauses, so both were out of that unit's scope:
+
+1. **`crawl-assert.mjs:161` auto-mode passes on ≥1 anchor anywhere** in the nav roots. A nav that
+   renders one working link and drops the other nine passes the JS-off crawlability assertion.
+2. **`logical-props-lint.py` always exits 0** (WARN-only by construction). It can therefore never
+   fail a build, so its findings depend on a human reading stdout.
+
+**Trigger:** next nav-qa harness session, or the first time either check is cited as evidence.
+
+
+### P-JSONLD-HEX-FLAG-GUARD - RESOLVED 2026-08-07
+
+BUILT (commit a42cc0f8, wired into prebuild). All emitters were already safe; only the structural gate was missing. The rule is encoded exactly as measured - fail iff JSON_UNESCAPED_SLASHES is present AND JSON_HEX_TAG is not - because zero flags is INCIDENTALLY safe (PHP escapes the slash in </script> by default), so a naive 'missing HEX_TAG' check would have raised ~120 false positives. It resolves one level of constant indirection so the shared Sgs_Schema encoder needs no hardcoded allowlist (R-31-1). CORRECTION to the entry: it says 'one emitter inlines its own flag set' - it is EIGHT sites (audio, accordion, buybox, product-faq-schema, class-block-defaults and three in configurator-variation-fields), all currently safe but all invisible to a 'calls-the-shared-encoder?' check. Note the authoring agent caught a vacuity bug in its own gate: a startswith('JSON_') skip swallowed the shared constant, which is literally named JSON_FLAGS, so its indirection fixture passed for the WRONG reason; the vacuity guard now asserts on the RESOLVED expression. Live: 289 files, 120 calls, 0 failures. Negative control: removing JSON_HEX_TAG from audio/render.php:118 -> exit 1 naming that file:line.
+
+Archived verbatim below.
+
+### P-JSONLD-HEX-FLAG-GUARD — structural prebuild gate for JSON-LD script-tag breakout still unbuilt (emitters already fixed)
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-06-12
+
+All 8 emitters that were bypassing the project's safe JSON-LD encoder have since been fixed and proven safe against 5 hostile payloads — only the structural prebuild gate itself remains to be built. The gate must encode the precise rule (measured, not assumed): the actual defect class is `JSON_UNESCAPED_SLASHES` WITHOUT `JSON_HEX_TAG` — zero flags is incidentally safe, so a naive "missing HEX_TAG" check would false-positive. It should also catch inline flag-set copies (one emitter inlines its own flag set with a different order rather than calling the shared encoder) as well as literally-missing flags.
+
+**Trigger:** next security/gates-hygiene session — this is the one remaining piece of an otherwise-closed vulnerability class.
+
+
+### P-SPEC35-UPSTREAM-REGISTRY-DRIFT - RESOLVED 2026-08-07
+
+RESOLVED via the gate it depended on. This entry's whole deferral rationale was 'safe to defer since the tripwire will catch a regeneration attempt' - and that assurance was FALSE. check-reclassified-keys.py could fail and was wired first in prebuild, but run-consistency-gates.py:145-148 invoked it WITHOUT --check and printed 'exit code: 1 (informational - not propagated)'. It had been printing the same drift into every green build for weeks. Fixed in commit a42cc0f8: a baseline keyed on (file, key, COUNT) - count, not presence, so a regeneration adding a third css:stroke row trips it even though the pair was already accepted - plus an obsolete-baseline-line check so the baseline cannot rot into blindness, an absent-baseline = empty-accepted-set rule so it fails LOUD not open, promotion to BLOCKING, and a 3-case --self-test. Negative control on the real suite: injected row -> exit 1 naming it; restored -> exit 0. The 4 rulings across 8 (file,key) pairs remain deliberately un-reclassified upstream - that is now RECORDED in the baseline rather than resting on a gate that could not fire.
+
+Archived verbatim below.
+
+### P-SPEC35-UPSTREAM-REGISTRY-DRIFT — Upstream Phase-1 artefacts still un-reclassified
+**Status:** PARTIAL · **Bucket:** tooling · **Parked:** unknown
+
+A regeneration guard (`check-reclassified-keys.py`) now exists and is wired into
+`run-consistency-gates.py` (informational), protecting the golden master's reclassified keys.
+Actually affects 4 rulings across 8 references (`css:stroke`, `css:background-image`,
+`css:background-position`, `css:font-family`) — `css:percentage` was never a Bean ruling, only a
+prose note, so that part of the original scope was wrong. The upstream artefacts
+(`setting-types.json`, `setting-registry-css.json`) are still un-reclassified, but it's now safe
+to defer since the tripwire will catch a regeneration attempt.
+
+**Trigger:** Before anyone regenerates `setting-registry.json` from Phase-1 data.

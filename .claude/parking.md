@@ -301,15 +301,6 @@ decision — raise it separately if a cloned slider should emit the slider block
 
 **Trigger:** a converter session that needs the layer tail (padding-family collisions).
 
-### P-DB-PARTIAL-RESEED-RESIDUE — sgs-framework.db partial-reseed regression; 26 converter tests still red
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-16
-
-A prior partial `/sgs-update` run left the DB starved of tag-identity/icon-source/emit_shape rows, causing silent content drops (zero-h1 clones, dropped emoji). The immediate cause was repaired (overrides re-applied, emit_shape reseeded, a genuine duplicate-key bug in `ATTR_CLASSIFICATION_OVERRIDES` fixed) and verified against the real Mama's draft.
-
-**Residue still open:** (a) 26 converter tests remain red, including `test_variant_detect.py` and the hero child-block content-attr test; (b) `sgs/hero` still drops its whole `__content` column on the real draft (h1/label/sub-headline/CTAs absent) even after the seed fix — `emit_shape` for those attrs is correctly `child` now, so the break is downstream in the variant/grid-item path, not the seed; (c) `emit_shape` populated count (121) is still short of the ~139 walk.py expects.
-
-**Trigger:** next converter session — this blocks clone fidelity on every client until closed. Run a full `/sgs-update` (all 10 stages) and re-measure.
-
 ### P-DRAFT-CSSVAR-COLOUR-RESOLUTION / P-DRAFT-CSSVAR-SEED-READD — draft CSS-variable colours resolve, but the button-colour seed re-add is unproven live
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-06
 **Also known as:** P-DRAFT-CSSVAR-SEED-READD
@@ -489,15 +480,6 @@ edited live styles that a push would overwrite.
 
 **Trigger:** Next theme-snapshot tooling session.
 
-### P-RESPONSIVE-ROUTER-ROBUSTNESS — a no-width media condition is silently folded into the screen base
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-10
-
-A media condition with NO width component (`@media print`, `prefers-color-scheme`, `orientation`, `prefers-reduced-motion`) whose selector matches a converted element folds into the SCREEN base for all tiers and is never captured as a residual. It should be a passthrough residual — the router needs media-type awareness. The sibling item (inverted-threshold `min-width` pairs resolving by threshold rather than source order) is largely subsumed by the D303 tier-confinement bounding; only two residuals landing in the SAME tier can still collide, resolved by ascending emission order.
-
-**⚠ Root cause CONFIRMED by full code trace (2026-07-27), and it is subtler than "not handled" — it is swallowed twice over.** (a) `_media_condition_applies_at` (`styling_helpers.py:48-64`) tests `all(...)` over an empty match iterator, and **`all()` over an empty iterable is vacuously True** — so a no-width condition reads as matching at EVERY sampled width and folds into `tier_effective` for all three tiers. (b) The residual-capture guard (`:817`) builds `thresholds` from a width regex then tests `any(t not in device_thresholds ...)`; with `thresholds == []` that is False, so the residual block is skipped entirely. `bound_residual_media_conds` DOES have a documented no-width passthrough (`:94-95`) but is never reached, because the caller filters the condition out first.
-
-**Trigger:** a router-hardening pass. Low priority — no current mockup triggers either item.
-
 ### P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES — `role` and `css_property` answer different questions; do not merge them
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-21
 
@@ -521,13 +503,6 @@ first. Do not archive it as resolved; it has no residual scope BY DESIGN.
 
 **Trigger:** none. It fires defensively, when someone proposes replacing `role`.
 
-### P-SCALAR-LIFT-RESIDUAL-DRIFT — scalar-styling-lift residual: product-card pill/CTA styling ownership needs settling
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-06
-
-Most render-verified selector-drift fixes shipped (card-grid, quote, product-card, option-picker). Remaining, deliberately not guessed: product-card's `pill*`/`pickerLabel*` attrs are legacy-dead (the pills are now the embedded child `sgs/option-picker`) while `cta*` styling is owned by a different mechanism — leave until the product-card/option-picker area settles, then retire or re-home. (The mobile-nav half of this entry is moot — that block was deleted.)
-
-**Trigger:** the product-card/option-picker area settling.
-
 ### P-SINGLE-ITEM-ARRAYS — a single-item array never triggers the array lift
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-06-30
 
@@ -545,15 +520,6 @@ would mis-render subheadings as headings. Options: (a) a walker derive rule from
 identity, or (b) a new `slots.standalone_block_default_attrs` JSON column.
 
 **Trigger:** Phase 1.4 walker rewrite — pick mechanism (a) or (b) at that point.
-
-### P-TESTIMONIAL-CONVERTER-FR2220 — testimonial content-lift: only quote/name/stars routed, other typed fields aren't
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-11
-
-The core empty-slide bug (a stale composition flag causing the converter to emit child blocks the typed render.php ignores) is fixed and live-verified; quote/author/star-rating now lift correctly via a universal scalar-lift mechanism. Re-scoped 2026-07-27: of the remaining unrouted typed fields, only `__summary`/`__org`/`__date` are genuinely unwired for content-lift (styling-role only); the avatar/logo/work-image fields already carry a live generic image-content-lift role, so they may not need separate work — pending a live render check.
-
-
-**⚠ Residual is NARROWER than stated (re-measured 2026-07-29):** `reviewDate` is now wired (`role='text-content'` in `block_attributes`). Only `summaryPhrase` and `orgName` remain unwired (both `role=NULL`).
-**Trigger:** the cloning Stage-2 routing wave; also the broader FR-22-20 variant-detection generalisation past hero+testimonial.
 
 ### P-PACKSIZE-ACTIVE-DEFAULT — cloned option-picker has no pre-selected pill
 **Status:** DEFERRED · **Bucket:** pipeline · **Parked:** 2026-07-08
@@ -740,15 +706,6 @@ notice/dismiss-handling logic to bring it closer.
 
 **Trigger:** Next time anything is added to this file, or Wave 3 starts.
 
-### P-SPEC35-PARTIAL-BOX-MEMBERS — No vocabulary for a partially-modelled box member
-**Status:** OPEN · **Bucket:** framework · **Parked:** unknown
-
-Attributes like `headlineMarginBottom` are one side of a box member, not the full
-`{top,right,bottom,left}` object `layout.css:margin` expects. Confirmed still true 2026-07-27 —
-`box_family` is NULL on all 5 named attrs, no partial flag exists anywhere.
-
-**Trigger:** If partial-box attrs proliferate beyond the current handful.
-
 ### P-SPEC37-OPEN-RESIDUALS — Spec 37 coverage-matrix residuals
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-21
 
@@ -879,42 +836,6 @@ measure-and-write pattern shipped at D404 is the template. Pure geometry, no ani
 
 **Trigger:** next nav-drawer session working on the `trigger` variant specifically, or when a
 client build surfaces a visible misalignment on a real header layout.
-
-### P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER — icon-list text renders 1:1 against a dark drawer
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
-
-`sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` —
-identical, contrast **1:1**, text completely invisible. Measured across all 7 POC fixtures: it hits
-exactly the two variants whose drawer uses the dark `footer-bg` (`centred-statement`
-Contact/Latest/Careers, `split-zone-serif` Team/Careers/Press = 6 elements); the other five are
-clean. So `sgs/icon-list` does not resolve a contrast-safe colour against its drawer background the
-way nav links do.
-
-⚠ **This passed the Task-5 sweep** because the sweep's contrast check only measured
-`.sgs-nav-menu__link-text`. Any contrast gate must walk EVERY text element in the surface.
-
-**NOW DETECTABLE, still unfixed (2026-07-30, D418).** `checkRestContrast()` in
-`sweep-drawer-variants.mjs` walks every text element against its own effective background and
-catches all 6 (3 + 3), with the two light variants clean — so the defect can no longer hide. The
-FIX is still owed: scheduled **W2-g**. Also learned here: **axe can never catch this** — every text
-element in an open `<dialog>` lands in axe's INCOMPLETE bucket (top-layer `::backdrop` defeats its
-background resolution), so do not "just add an axe gate" for drawer contrast.
-
-**Trigger:** next nav-drawer or icon-list session; blocks any "drawer variants are visually done"
-claim.
-
-### P-NAV-QA-RESIDUAL-WEAK-CHECKS — two nav-qa checks deliberately not hardened in W2-i
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
-
-Named rather than silently left, when the W2-i harness pass (D418) hardened the openness/contrast
-checks. Neither is one of DP7's three clauses, so both were out of that unit's scope:
-
-1. **`crawl-assert.mjs:161` auto-mode passes on ≥1 anchor anywhere** in the nav roots. A nav that
-   renders one working link and drops the other nine passes the JS-off crawlability assertion.
-2. **`logical-props-lint.py` always exits 0** (WARN-only by construction). It can therefore never
-   fail a build, so its findings depend on a human reading stdout.
-
-**Trigger:** next nav-qa harness session, or the first time either check is cited as evidence.
 
 ### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU — the centred drawerAlign value leaves nav links flush left
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
@@ -1068,13 +989,6 @@ Both are accepted as-is rather than fixed. Re-raise only if the doc-type caps th
 
 **Trigger:** LEDGER/MEMORY — recurring, re-trim when either approaches its cap. decisions.md back-tagging — a low-priority doc-hygiene session (10 headings). Doc-drift audit — a fresh `/doc-audit` run, not a re-read of the 2026-06-14 register.
 
-### P-JSONLD-HEX-FLAG-GUARD — structural prebuild gate for JSON-LD script-tag breakout still unbuilt (emitters already fixed)
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-06-12
-
-All 8 emitters that were bypassing the project's safe JSON-LD encoder have since been fixed and proven safe against 5 hostile payloads — only the structural prebuild gate itself remains to be built. The gate must encode the precise rule (measured, not assumed): the actual defect class is `JSON_UNESCAPED_SLASHES` WITHOUT `JSON_HEX_TAG` — zero flags is incidentally safe, so a naive "missing HEX_TAG" check would false-positive. It should also catch inline flag-set copies (one emitter inlines its own flag set with a different order rather than calling the shared encoder) as well as literally-missing flags.
-
-**Trigger:** next security/gates-hygiene session — this is the one remaining piece of an otherwise-closed vulnerability class.
-
 ## content
 
 ### P-SGS-ENGINE-ENFORCE-GATE — sgs-wp-engine skill's ground-truth enforcement is advisory, not a real gate
@@ -1097,19 +1011,6 @@ nowhere near the scale that would justify this.
 
 **⚠ Its own count is WRONG (re-measured 2026-07-29): 16 block.json files carry a `states` key, not one.** Whether those 16 are the same mechanism this entry means (vs FR-35-5's suffix-shaped attrs) needs disambiguating — but on the entry's own stated terms the at-scale trigger has likely fired.
 **Trigger:** After FR-35-5 ships and the roster starts declaring `states` at scale.
-
-### P-SPEC35-UPSTREAM-REGISTRY-DRIFT — Upstream Phase-1 artefacts still un-reclassified
-**Status:** PARTIAL · **Bucket:** tooling · **Parked:** unknown
-
-A regeneration guard (`check-reclassified-keys.py`) now exists and is wired into
-`run-consistency-gates.py` (informational), protecting the golden master's reclassified keys.
-Actually affects 4 rulings across 8 references (`css:stroke`, `css:background-image`,
-`css:background-position`, `css:font-family`) — `css:percentage` was never a Bean ruling, only a
-prose note, so that part of the original scope was wrong. The upstream artefacts
-(`setting-types.json`, `setting-registry-css.json`) are still un-reclassified, but it's now safe
-to defer since the tripwire will catch a regeneration attempt.
-
-**Trigger:** Before anyone regenerates `setting-registry.json` from Phase-1 data.
 
 ### P-TOKEN-LINT-INERT — token-lint gate: unused-token weighting still not built
 **Status:** PARTIAL · **Bucket:** tooling · **Parked:** 2026-07-21
