@@ -1,5 +1,55 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D513 — STEP 1 answered: the split-image blocker is NOT routing precedence, and NOT only a tier problem. The missing primitive is named. [ROUTINE]
+
+**2026-08-07.** Measurement only — **nothing shipped, nothing retired**. Everything reverted
+byte-exactly (`extraction.py` restored via `git checkout`, DB md5 `9147e7dc…` before and after,
+converter 672 pass, proof test 4 pass).
+
+**THE HYPOTHESIS UNDER TEST** (from the concurrent session's brief): D511's two symptoms appearing
+together — `splitImage` lifts `{}` AND a stray `ChildBlock` leaks — suggest the CHILD-BLOCK leg
+(§3.B B3) claims the `<img>` before the scalar lift, making this a routing-PRECEDENCE problem and the
+plan's sibling-set rule the wrong fix. **REFUTED.** Neither competing leg has any claim at all:
+
+    scalar_media_attr_for('sgs/hero','split-image')    -> 'splitImage'      (Branch A: has a target)
+    content_attr_for_element('sgs/hero','split-image') -> None              (generic route: no target)
+    resolve_slug_from_bem('sgs-hero__split-image')     -> None              (child-block leg: no claim)
+    equivalent_block_for('sgs/hero','split-image')     -> None              (         "        no claim)
+
+Nothing races Branch A. The stray `ChildBlock` is a CONSEQUENCE, not a cause: with no attr claiming
+the `<img>`, the walker's atomic-tag swap turns it into an `sgs/media` child. One cause, two symptoms.
+
+**WHY THE GENERIC ROUTE HAD NO TARGET — a data-shape defect, confirmed and then fixed live:**
+`splitImage`/`Mobile` carried `role='scalar-media'` (not a content role, so excluded from the content
+route) on the SHARED `image` slot, while `splitImageTablet` sat on a different slot (`split`) with
+`emit_shape='child'` — a trio split across two slots and two shapes. The model on the same block,
+`backgroundImage`/`Tablet`/`Mobile`, shares ONE dedicated slot with `role='image-object'`,
+`emit_shape='nested'`. Giving the trio that shape made resolution work:
+`content_attr_for_element('sgs/hero','split-image')` went `None` → `('splitImage','nested',
+'image-object','object')`.
+
+**⛔ AND THAT WAS STILL NOT ENOUGH — the gate stayed at 3 FAILED with Branch A disabled.** `lifts`
+remained `{}`. **A component probe passing is not the pipeline working**, which is the same trap that
+produced D474's and D511's wrong calls, so it is recorded rather than glossed.
+
+**THE MISSING PRIMITIVE, now named precisely.** The images are not the element node — they are
+`<img>` children carrying the element token PLUS a tier modifier
+(`sgs-hero__split-image--mobile` / `--desktop`). Resolution is per-TOKEN and modifier-blind:
+`content_attr_for_element('sgs/hero','split-image--mobile')` → `None`. **What is needed is
+tier-aware resolution of a MODIFIED element token → the tiered attr** (`--mobile` → `splitImageMobile`,
+and per D505 `--desktop` collapses to the BASE `splitImage`). That is Branch A's second job stated in
+generic terms, and it genuinely does not exist yet.
+
+So the plan's sibling-set rule is aimed at roughly the right layer; the precedence theory is not.
+**The data-shape fix above is a real prerequisite and should land on its own merits** — the trio
+matching its own model is correct regardless of retirement — but it must not be mistaken for the
+retirement being unblocked. **D511 stands.**
+
+⚠ **Bean's `--desktop` trap is confirmed live and must be honoured by whatever gets built:** the
+Mama's draft carries `sgs-hero__split-image--desktop` ×3, and the `image` slot's alias list literally
+contains `split-image--desktop`. If the new resolution looks for a `splitImageDesktop` sibling instead
+of collapsing to base, every `--desktop` node becomes a loud gap and the hero drops its images.
+
 ## D512 — a variant a draft NAMES outright was unmatchable; 9 variants across 4 blocks cloned as something else, silently [INCIDENT]
 
 **2026-08-07.** Bean asked for the `trust-bar text-only` fix. The cause turned out to be universal,
