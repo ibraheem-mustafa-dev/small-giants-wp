@@ -97,6 +97,15 @@
 			"default": false,
 			"_comment": "Gated behind prefers-reduced-motion at render time in view.js — reduced motion always starts both videos paused regardless of this attribute; the shared play/pause toggle remains available either way (explicit user action, never suppressed)."
 		},
+		"videoAutoplayTablet": {
+			"type": [ "boolean", "null" ],
+			"default": null,
+			"_comment": "Per-device playback tier (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — same convention as sgs/media's videoAutoplayTablet/Mobile and every other *Tablet/*Mobile attr in this framework. Still gated behind prefers-reduced-motion at whichever tier is effective."
+		},
+		"videoAutoplayMobile": {
+			"type": [ "boolean", "null" ],
+			"default": null
+		},
 		"showLabels": { "type": "boolean", "default": true },
 		"beforeLabel": { "type": "string", "default": "Before", "role": "content" },
 		"afterLabel": { "type": "string", "default": "After", "role": "content" },

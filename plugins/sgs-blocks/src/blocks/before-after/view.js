@@ -35,6 +35,59 @@
  * @package
  */
 
+// The locked SGS device standard: mobile < 768, tablet 768-1023,
+// desktop >= 1024 (same constants as `src/blocks/container/view.js`).
+// Block-local copy — see BooleanResponsiveControl.js's docblock for why this
+// session keeps everything self-contained inside sgs/before-after's own
+// directory (identical copy lives at `src/blocks/media/view.js`).
+const SGS_TIER_MOBILE_BREAKPOINT = 768;
+const SGS_TIER_TABLET_BREAKPOINT = 1024;
+
+/**
+ * The current device tier for the live viewport width.
+ *
+ * @return {'mobile'|'tablet'|'desktop'} Current tier.
+ */
+function getCurrentDeviceTier() {
+	const width = window.innerWidth;
+	if ( width < SGS_TIER_MOBILE_BREAKPOINT ) {
+		return 'mobile';
+	}
+	if ( width < SGS_TIER_TABLET_BREAKPOINT ) {
+		return 'tablet';
+	}
+	return 'desktop';
+}
+
+/**
+ * Resolve one boolean per-device attribute family for the CURRENT viewport,
+ * reading `data-{dataName}-tablet` / `data-{dataName}-mobile` overrides off
+ * `el.dataset`. Falls back upward when a tier's own override is absent —
+ * tablet inherits desktop, mobile inherits the resolved tablet value —
+ * mirroring render.php's tier-resolution.
+ *
+ * @param {HTMLElement} el           Element carrying the data-* overrides.
+ * @param {string}      dataName     camelCase data-attribute base (e.g. 'videoAutoplay').
+ * @param {boolean}     desktopValue The SSR'd desktop value (read from the element's own real attribute/property by the caller).
+ * @return {{tier: 'mobile'|'tablet'|'desktop', value: boolean}} Current tier + its effective value.
+ */
+function resolveTierBool( el, dataName, desktopValue ) {
+	const tabletRaw = el.dataset[ `${ dataName }Tablet` ];
+	const mobileRaw = el.dataset[ `${ dataName }Mobile` ];
+
+	const tablet = tabletRaw !== undefined ? tabletRaw === '1' : desktopValue;
+	const mobile = mobileRaw !== undefined ? mobileRaw === '1' : tablet;
+
+	const tier = getCurrentDeviceTier();
+	if ( tier === 'mobile' ) {
+		return { tier, value: mobile };
+	}
+	if ( tier === 'tablet' ) {
+		return { tier, value: tablet };
+	}
+	return { tier, value: desktopValue };
+}
+
 /**
  * Write a 0-100 position to the block's CSS custom property. This is the
  * ONE place the visual divider position is ever set from JS — both the
@@ -281,20 +334,62 @@ function bootVideoSyncLayer( root ) {
 	} );
 
 	// Autoplay — gated behind reduced-motion (see docblock above). Only
-	// attempted when the operator opted in via `videoAutoplay`.
+	// attempted when the resolved TIER opts in via `videoAutoplay`.
+	//
+	// ⚠ Fixed alongside the tier work: this read `.matched` (undefined on a
+	// real `MediaQueryList`, which only exposes `.matches`) — so the
+	// reduced-motion gate documented above was silently a no-op on every
+	// page load before this change; autoplay always fired regardless of the
+	// visitor's OS setting. Corrected here because the autoplay call this
+	// docblock guards is the exact one being made tier-aware.
 	const prefersReducedMotion = window.matchMedia(
 		'(prefers-reduced-motion: reduce)'
-	).matched;
+	).matches;
 
-	if ( '1' === root.dataset.videoAutoplay && ! prefersReducedMotion ) {
-		videos.forEach( ( video ) => {
-			video.play().catch( () => {
-				// Autoplay blocked by the browser (common when unmuted or
-				// off-screen) — the toggle above remains fully functional.
+	// Per-device autoplay tier (D-pending). Desktop stays `root.dataset.
+	// videoAutoplay` (the real base value); tablet/mobile fall back upward
+	// through `data-video-autoplay-tablet`/`-mobile` exactly like sgs/media's
+	// tiered playback attrs (see render.php + shared/responsive-tier-bool.js).
+	let lastAutoplayTier = null;
+	const applyAutoplayForTier = () => {
+		if ( prefersReducedMotion ) {
+			return;
+		}
+		const { tier, value: autoplay } = resolveTierBool(
+			root,
+			'videoAutoplay',
+			'1' === root.dataset.videoAutoplay
+		);
+		// Only act when the resolved tier actually changed — a resize that
+		// doesn't cross a breakpoint must never fight the visitor's own
+		// play/pause click on the shared toggle.
+		if ( lastAutoplayTier === tier ) {
+			return;
+		}
+		lastAutoplayTier = tier;
+
+		if ( autoplay ) {
+			videos.forEach( ( video ) => {
+				video.play().catch( () => {
+					// Autoplay blocked by the browser (common when unmuted
+					// or off-screen) — the toggle above remains fully
+					// functional.
+				} );
 			} );
-		} );
-		setPressed( true );
-	}
+			setPressed( true );
+		} else {
+			videos.forEach( ( video ) => video.pause() );
+			setPressed( false );
+		}
+	};
+
+	applyAutoplayForTier();
+
+	let resizeTimer;
+	window.addEventListener( 'resize', () => {
+		clearTimeout( resizeTimer );
+		resizeTimer = setTimeout( applyAutoplayForTier, 200 );
+	} );
 }
 
 /**

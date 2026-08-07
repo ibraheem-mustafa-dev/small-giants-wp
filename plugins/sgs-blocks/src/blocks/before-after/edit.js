@@ -42,6 +42,7 @@ import {
 	ResponsiveControl,
 	ResponsiveBorderRadiusControl,
 } from '../../components';
+import BooleanResponsiveControl from './BooleanResponsiveControl';
 
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -327,7 +328,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		borderRadiusTablet,
 		borderRadiusMobile,
-		videoAutoplay,
 	} = attributes;
 
 	const hasBothImages =
@@ -352,17 +352,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ ( 'video' === attributes.beforeMediaType ||
 						'video' === attributes.afterMediaType ) && (
-						<ToggleControl
+						<BooleanResponsiveControl
 							label={ __( 'Autoplay videos', 'sgs-blocks' ) }
 							help={ __(
 								'Both videos start playing together on load. Always suppressed when the visitor has reduced motion enabled — the play/pause control stays available either way.',
 								'sgs-blocks'
 							) }
-							checked={ !! videoAutoplay }
-							onChange={ ( val ) =>
-								setAttributes( { videoAutoplay: val } )
-							}
-							__nextHasNoMarginBottom
+							attrBase="videoAutoplay"
+							attrTablet="videoAutoplayTablet"
+							attrMobile="videoAutoplayMobile"
+							attributes={ attributes }
+							setAttributes={ setAttributes }
 						/>
 					) }
 				</PanelBody>

@@ -52,7 +52,23 @@ if ( ! $before_media['has_content'] || ! $after_media['has_content'] ) {
 }
 
 $has_video_slot = 'video' === $before_media['media_type'] || 'video' === $after_media['media_type'];
+
+// Per-device autoplay tier (D-pending). Desktop stays the real attribute the
+// no-JS/reduced-motion path already relies on; tablet/mobile overrides ride
+// as data-* on the root and are resolved + applied by view.js
+// (bootVideoSyncLayer), reusing the same fallback-upward shape as sgs/media's
+// tiered playback attrs (null = inherit the tier above).
+$video_autoplay_tablet_raw = $attributes['videoAutoplayTablet'] ?? null;
+$video_autoplay_mobile_raw = $attributes['videoAutoplayMobile'] ?? null;
+
 $video_autoplay = ! empty( $attributes['videoAutoplay'] );
+
+$video_autoplay_tablet_effective = null !== $video_autoplay_tablet_raw
+	? (bool) $video_autoplay_tablet_raw
+	: $video_autoplay;
+$video_autoplay_mobile_effective = null !== $video_autoplay_mobile_raw
+	? (bool) $video_autoplay_mobile_raw
+	: $video_autoplay_tablet_effective;
 
 $show_labels  = ! empty( $attributes['showLabels'] ) || ! isset( $attributes['showLabels'] );
 $before_label = isset( $attributes['beforeLabel'] ) ? (string) $attributes['beforeLabel'] : '';
@@ -349,6 +365,15 @@ $root_attr_args = array(
 	'data-has-video'      => $has_video_slot ? '1' : '0',
 	'data-video-autoplay' => $video_autoplay ? '1' : '0',
 );
+// Tier overrides — only present when a tier's effective value diverges from
+// the tier above it (view.js resolves + applies these on load and resize;
+// mirrors sgs/media's sgs_media_tier_data_attrs() shape).
+if ( $video_autoplay_tablet_effective !== $video_autoplay ) {
+	$root_attr_args['data-video-autoplay-tablet'] = $video_autoplay_tablet_effective ? '1' : '0';
+}
+if ( $video_autoplay_mobile_effective !== $video_autoplay_tablet_effective ) {
+	$root_attr_args['data-video-autoplay-mobile'] = $video_autoplay_mobile_effective ? '1' : '0';
+}
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
 }
