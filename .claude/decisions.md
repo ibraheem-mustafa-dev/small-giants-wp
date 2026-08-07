@@ -1,5 +1,53 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D512 — a variant a draft NAMES outright was unmatchable; 9 variants across 4 blocks cloned as something else, silently [INCIDENT]
+
+**2026-08-07.** Bean asked for the `trust-bar text-only` fix. The cause turned out to be universal,
+so the fix is too — a per-block discriminator would have been a carve-out (rule 3).
+
+**THE BUG.** `variant_detect._variant_values` read the block's variant value set from `variant_slots`.
+That table stores which slots DISCRIMINATE a variant, derived by set-difference — so a variant whose
+character is the ABSENCE of attrs has no rows there at all, correctly. Using it as an INVENTORY meant
+those variants were not in the matchable set, so an explicit BEM modifier naming one could never
+match, the block kept its default, and nothing was logged. Measured on the real function before
+touching anything:
+
+    detect_variant_for_node(<div class="sgs-trust-bar sgs-trust-bar--text-only">) -> ('badgeStyle', None)
+    detect_variant_for_node(<div class="sgs-trust-bar sgs-trust-bar--image-badge">) -> ('badgeStyle', 'image-badge')
+
+The second line is the positive control: detection worked, and failed ONLY for the undiscriminable
+variant. A `text-only` trust bar in a draft cloned as `icon-circle`.
+
+**9 variants, 4 blocks:** `nav-drawer` ×6, `trust-bar text-only`, `testimonial minimal-quote`,
+`product-card standard`.
+
+**THE FIX — the two questions were being answered by one table.** "Which slots discriminate variant
+X?" (inference) and "what variants does this block have?" (inventory) are different, and only the
+first belongs to `variant_slots`. New `db_lookup.declared_variant_values()` reads the enum on
+`blocks.variant_attr` — the block's OWN declaration of its legal values, already populated for all 5
+variant-bearing blocks, so DB-first with no new seeding (R-31-1). Unioned with `variant_slots` so a
+block with a missing/unparsable enum keeps its previous behaviour exactly.
+
+**Only the MODIFIER path widened.** `detect_variant`'s attribute-inference path still reads
+`variant_slots`, because inference genuinely needs discriminating slots — a variant without them
+cannot be inferred, only NAMED. An explicit modifier is direct evidence and outranks inference, which
+is precisely why it must not be gated on the inference table.
+
+**Not permissive:** a bogus modifier (`--not-a-variant`) and a bare class both still return None,
+asserted in the new regression test alongside the discriminable positive control.
+
+**A test was pinned to the old source and is REPOINTED, not deleted.**
+`test_db_coupling_value_comes_from_variant_slots` mocked `_variant_slots_map` to prove the value was
+DB-read rather than hardcoded. That intent is still load-bearing, so it now mocks
+`declared_variant_values`; mocking the old function would have proven nothing (the enum would still
+supply the value, so it would fail for an unrelated reason). Renamed to match what it now pins.
+Converter suite **672 pass, 0 fail**.
+
+**⚠ What this does NOT fix.** `nav-drawer`'s 6 remain undiscriminable by ATTRIBUTES — a draft that
+names one now clones correctly, but one that merely *looks* like one still cannot be inferred. F6
+Check #3 stays baselined and stays true. Giving those 6 real discriminators is a design question about
+what actually distinguishes those looks, and it is Bean's call, not a mechanical fix.
+
 ## D511 — `scalar-media` is NOT retirable: phase 3c's premise measured FALSE, the same inference that D474 already recorded as false [INCIDENT]
 
 **2026-08-07. B4 / phase 3c is BLOCKED. No code was deleted.** Nothing shipped from this — the value

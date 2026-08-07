@@ -3117,6 +3117,61 @@ def _variant_slots_map(block_slug: str) -> tuple:
 
 
 @functools.lru_cache(maxsize=256)
+def declared_variant_values(block_slug: str) -> frozenset:
+    """Every variant value the block DECLARES, from the enum on `blocks.variant_attr`.
+
+    THE DISTINCTION THIS EXISTS TO MAKE (2026-08-07). `variant_slots` answers "which
+    slots DISCRIMINATE variant X?" — so a variant with no uniquely-its-own attr has no
+    rows there at all. That is correct for attribute-based INFERENCE and wrong as an
+    inventory of what variants exist: `sgs/trust-bar.text-only` is a real, selectable
+    variant whose whole character is the ABSENCE of the icon/image attrs, so the
+    set-difference can never give it a row.
+
+    Using `variant_slots` as the value set made an explicit BEM modifier unmatchable
+    for exactly those variants: a draft saying `sgs-trust-bar--text-only` fell through
+    to the block default and cloned as `icon-circle`, SILENTLY. Measured on the real
+    function before the fix: `detect_variant_for_node` returned `('badgeStyle', None)`
+    for `--text-only` while correctly returning `image-badge` for a discriminable
+    sibling. 9 variants across 4 blocks were in this state (nav-drawer 6, trust-bar
+    text-only, testimonial minimal-quote, product-card standard).
+
+    The enum on the variant-selector attr is the block's OWN declaration of its legal
+    values — already populated for every variant-bearing block, so this is DB-first
+    (R-31-1) with no new seeding. Empty-string members are dropped: the modifier regex
+    requires at least one character, so `''` can never be matched by a class anyway.
+
+    ⚠ This is the value set for MODIFIER matching only. `detect_variant`'s
+    attribute-inference path still reads `variant_slots`, because inference genuinely
+    needs discriminating slots and a variant without them cannot be inferred — only
+    NAMED. An explicit modifier is direct evidence and outranks inference; that is why
+    it should not be gated on the inference table.
+    """
+    variant_attr = variant_attr_for(block_slug)
+    if variant_attr is None:
+        return frozenset()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT enum_values FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, variant_attr),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        row = None
+    finally:
+        conn.close()
+    declared: set = set()
+    if row and row[0]:
+        try:
+            declared = {v for v in json.loads(row[0]) if isinstance(v, str) and v}
+        except (ValueError, TypeError):
+            declared = set()
+    # Union with variant_slots so a block whose enum is missing/unparsable keeps
+    # exactly its previous behaviour rather than losing detection entirely.
+    return frozenset(declared | {v for v, _slots in _variant_slots_map(block_slug)})
+
+
+@functools.lru_cache(maxsize=256)
 def preset_implications_for(block_slug: str) -> tuple:
     """Return ((preset_attr, enum_value, frozenset(implied_props), is_neutral), ...)
     for a block, from the `preset_implications` table (Build #3 Option B,

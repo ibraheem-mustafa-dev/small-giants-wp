@@ -48,14 +48,50 @@ def test_non_variant_block_returns_none_none():
     assert detect_variant_for_node(node, "sgs/heading") == (None, None)
 
 
-def test_db_coupling_value_comes_from_variant_slots(monkeypatch):
-    """The matched value MUST come from variant_slots, not a literal. Point the slot map
-    at a DIFFERENT variant_value set and the same draft modifier no longer matches."""
+def test_db_coupling_value_comes_from_the_declared_value_set(monkeypatch):
+    """The matched value MUST come from the DB, not a literal. Point the declared-value
+    set at a DIFFERENT set and the same draft modifier no longer matches.
+
+    REPOINTED 2026-08-07: the source moved from `_variant_slots_map` to
+    `declared_variant_values`. The test's INTENT is unchanged and still load-bearing —
+    prove the value is read from the database rather than hardcoded — so it is aimed at
+    the new source rather than deleted or loosened. (Mocking the old function would now
+    prove nothing: the enum would still supply 'split', so the assertion would fail for
+    a reason that has nothing to do with hardcoding.)
+    """
     node = _node('<section class="sgs-hero sgs-hero--split"></section>')
-    # Real DB: 'split' is a variant_value -> matches.
+    # Real DB: 'split' is a declared variant value -> matches.
     assert detect_variant_for_node(node, "sgs/hero")[1] == "split"
-    # Mock the DB to NOT contain 'split' -> the modifier no longer matches (proves the
-    # value is read from the table, not hardcoded).
-    monkeypatch.setattr(variant_detect.db_lookup, "_variant_slots_map",
-                        lambda slug: (("standard", "backgroundImage"),))
+    # Mock the DB to NOT contain 'split' -> the modifier no longer matches.
+    monkeypatch.setattr(variant_detect.db_lookup, "declared_variant_values",
+                        lambda slug: frozenset({"standard"}))
     assert detect_variant_for_node(node, "sgs/hero") == ("variant", None)
+
+
+def test_variant_with_no_discriminating_slots_still_matches_its_modifier():
+    """REGRESSION (2026-08-07). A variant defined by the ABSENCE of attrs has no
+    `variant_slots` rows, and the value set used to be read from that table — so a draft
+    that NAMED the variant outright fell through to the block default and cloned as
+    something else, silently.
+
+    `sgs/trust-bar.text-only` is the live case: it declares an empty discriminator set
+    (its character IS the absence of the icon/image attrs), so before this fix
+    `--text-only` returned None and the clone rendered as `icon-circle`. The
+    discriminable sibling below is the positive control — it passed before AND after, so
+    a failure here is about undiscriminable variants specifically, not about detection
+    generally.
+    """
+    assert "text-only" not in {
+        v for v, _s in variant_detect.db_lookup._variant_slots_map("sgs/trust-bar")
+    }, "premise gone: text-only now HAS discriminating slots, so this no longer tests it"
+
+    node = _node('<div class="sgs-trust-bar sgs-trust-bar--text-only"></div>')
+    assert detect_variant_for_node(node, "sgs/trust-bar") == ("badgeStyle", "text-only")
+
+    control = _node('<div class="sgs-trust-bar sgs-trust-bar--image-badge"></div>')
+    assert detect_variant_for_node(control, "sgs/trust-bar") == ("badgeStyle", "image-badge")
+
+    # Widening the value set must not make matching permissive: a modifier that names
+    # no declared variant still yields None.
+    bogus = _node('<div class="sgs-trust-bar sgs-trust-bar--not-a-variant"></div>')
+    assert detect_variant_for_node(bogus, "sgs/trust-bar") == ("badgeStyle", None)

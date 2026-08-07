@@ -35,8 +35,20 @@ def _bem_prefix(slug: str) -> str:
 
 
 def _variant_values(slug: str) -> frozenset[str]:
-    """The block's DISTINCT variant_value set from variant_slots (DB, FR-31-20)."""
-    return frozenset(vv for vv, _slots in db_lookup._variant_slots_map(slug))
+    """Every variant value the block DECLARES — the set a BEM modifier may name.
+
+    CHANGED 2026-08-07 from `variant_slots` to `declared_variant_values`. The old
+    source lists only variants with a DISCRIMINATING slot, so a variant defined by the
+    ABSENCE of attrs (trust-bar `text-only`, testimonial `minimal-quote`, nav-drawer's
+    six) had no rows and could never be matched — a draft that NAMED it outright fell
+    through to the block default and cloned as something else, silently. See
+    `db_lookup.declared_variant_values` for the measurement and the reasoning.
+
+    Inference still uses `variant_slots` (in `db_lookup.detect_variant`); only this
+    modifier path widened, because an explicit modifier is direct evidence rather than
+    an inference and must not be gated on the inference table.
+    """
+    return db_lookup.declared_variant_values(slug)
 
 
 def detect_variant_for_node(node: Any, slug: str) -> tuple[str | None, str | None]:
