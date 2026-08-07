@@ -152,6 +152,10 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
     ]),
 
     # ----- subheading slot aliases -------------------------------------
+    # NOTE: this slot's converter ROUTING (which block it emits, and with which
+    # default attrs) is NOT set here — ALIAS_EXTENSIONS only ever widens the alias
+    # vocabulary of an existing row. See STANDALONE_ROUTE_OVERRIDES below, where
+    # `subheading` is routed to sgs/heading with headingRole='subheading'.
     ("subheading", [
         "subheadline",        # explicit subheadline element (hero, feature-grid)
     ]),
@@ -474,6 +478,45 @@ NEW_STANDALONE_ROWS: list[tuple[str, list[str], str, dict, str]] = [
 ]
 
 # ---------------------------------------------------------------------------
+# STANDALONE ROUTE OVERRIDES — correct the converter routing of an EXISTING slot.
+#
+# NEW_STANDALONE_ROWS above is INSERT OR IGNORE: it can only introduce a slot that
+# does not exist yet, so it is powerless to CORRECT a row already present. That gap
+# is how `subheading` ended up wrong. Its standalone_block was never authored at
+# all — it was filled in by sgs-update-v2.py's heuristic auto-seed, which fires
+# only on rows WHERE standalone_block IS NULL and guesses from the slot name. It
+# guessed sgs/text, and because the auto-seed skips non-NULL rows thereafter, the
+# guess became permanent and no seeder ever restated it.
+#
+# Rows here are AUTHORED routing and win over that heuristic: an UPDATE, applied
+# every run, idempotent. Use this list when a slot's emitted block or default
+# attrs are a deliberate decision rather than a name-guess.
+#
+# Format:
+#   (slot_name, standalone_block, standalone_block_default_attrs_dict, why)
+# ---------------------------------------------------------------------------
+STANDALONE_ROUTE_OVERRIDES: list[tuple[str, str, dict, str]] = [
+    # A draft subheading is a HEADING that renders in a supporting role — not body
+    # copy. sgs/heading has carried a `headingRole` attr accepting 'heading' or
+    # 'subheading' (render.php:94) the whole time; only this routing row was
+    # missing, so every cloned subheading landed as sgs/text and lost its semantic
+    # + typographic identity. Bean's decision, 2026-08-07.
+    #
+    # The default_attrs travel via the ELEMENT-keyed reader
+    # db_lookup.slot_default_attrs_for() (a `__subheading` is an element, not a
+    # --modifier). The modifier-keyed sibling channel, inherit_style_for_modifier,
+    # reads only `inheritStyle` and cannot carry this.
+    (
+        "subheading",
+        "sgs/heading",
+        {"headingRole": "subheading"},
+        "A draft __subheading is a supporting HEADING, not body text — emits "
+        "sgs/heading with headingRole='subheading' (render.php:94 accepts it). "
+        "Corrects the sgs-update auto-seed's sgs/text name-guess.",
+    ),
+]
+
+# ---------------------------------------------------------------------------
 # AMBIGUOUS mappings — surfaced for operator review, NOT auto-inserted.
 # Rule: if a BEM element could plausibly belong to 2+ different canonical
 # slots with equal evidence, it goes here instead of ALIAS_EXTENSIONS.
@@ -621,14 +664,52 @@ def _insert_standalone_row(
     return inserted, skipped
 
 
+def _apply_route_override(
+    conn: sqlite3.Connection,
+    slot_name: str,
+    standalone_block: str,
+    default_attrs: dict,
+    dry_run: bool,
+) -> int:
+    """UPDATE an EXISTING element-scope slot's converter routing. Returns 1 if changed.
+
+    Unlike `_insert_standalone_row` (INSERT OR IGNORE — powerless once the row
+    exists) this restates the routing every run, so an authored decision cannot be
+    silently overwritten by, or lost behind, the sgs-update heuristic auto-seed.
+    Idempotent: reports 0 when the row already holds these values.
+    """
+    default_attrs_json = json.dumps(default_attrs, ensure_ascii=False) if default_attrs else None
+    row = conn.execute(
+        "SELECT standalone_block, standalone_block_default_attrs FROM slots "
+        "WHERE slot_name = ? AND scope = 'element'",
+        (slot_name,),
+    ).fetchone()
+    if row is None:
+        print(
+            f"  WARNING: slot '{slot_name}' (element scope) not found — "
+            f"skipping route override to {standalone_block}"
+        )
+        return 0
+    if (row[0], row[1]) == (standalone_block, default_attrs_json):
+        return 0
+    if not dry_run:
+        conn.execute(
+            "UPDATE slots SET standalone_block = ?, standalone_block_default_attrs = ? "
+            "WHERE slot_name = ? AND scope = 'element'",
+            (standalone_block, default_attrs_json, slot_name),
+        )
+        conn.commit()
+    return 1
+
+
 def seed_db(db_path: Path, dry_run: bool) -> dict:
     """Seed one DB. Returns stats dict."""
     if not db_path.exists():
         print(f"  SKIP: DB not found at {db_path}", file=sys.stderr)
-        return {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0}
+        return {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0, "route_overridden": 0}
 
     conn = sqlite3.connect(str(db_path))
-    stats = {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0}
+    stats = {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0, "route_overridden": 0}
 
     try:
         # Pass 1: extend aliases on existing element-scope slot rows
@@ -669,6 +750,20 @@ def seed_db(db_path: Path, dry_run: bool) -> dict:
             if inserted:
                 verb = "[DRY-RUN] would insert" if dry_run else "inserted"
                 print(f"  NEW standalone-block slot: {slot_name} → {standalone_block} ({verb})")
+
+        # Pass 3b: restate AUTHORED routing over existing rows (see
+        # STANDALONE_ROUTE_OVERRIDES — Pass 3 cannot correct a row that exists).
+        for slot_name, standalone_block, default_attrs, description in STANDALONE_ROUTE_OVERRIDES:
+            changed = _apply_route_override(
+                conn, slot_name, standalone_block, default_attrs, dry_run
+            )
+            stats["route_overridden"] += changed
+            if changed:
+                verb = "[DRY-RUN] would route" if dry_run else "routed"
+                print(
+                    f"  ROUTE OVERRIDE: {slot_name} → {standalone_block} "
+                    f"{default_attrs or ''} ({verb}) — {description}"
+                )
 
         # GUARD (D194, adversarial-council 2026-06-09): the `content` element-slot is a
         # metadata-only area label (canonical_slot value for contentWidth*/contentPadding*).

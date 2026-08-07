@@ -3565,17 +3565,50 @@ def _slot_alias_to_default_attrs() -> dict[str, dict]:
     return out
 
 
-# slot_default_attrs_for() DELETED 2026-08-02 (Phase 1b). Zero callers anywhere. It was
-# an ELEMENT-keyed duplicate of a working MODIFIER-keyed path: the same
-# `slots.standalone_block_default_attrs` data IS reached in production, via
-# `preset_style_for_element()` -> `inherit_style_for_modifier()`, called live from
-# `services/assembly.py` step 5 and `walk.py`'s foreign-identity arm.
-#
-# ⚠ The data is NOT lost by this deletion — only the unused second route to it. The
-# investigation that found this initially mis-flagged `inherit_style_for_modifier` as
-# dead too, because the grep excluded db_lookup.py itself, where its real caller lives.
-# A second, unfiltered search corrected it. Check the call graph from inside the module
-# before declaring any accessor here dead.
+def slot_default_attrs_for(sgs_classes: list[str]) -> dict:
+    """Per-slot default attrs for the first sgs BEM ELEMENT resolving to a slot that
+    carries defaults (mirrors resolve_slug_from_bem Path 2 element matching, incl.
+    the compound-element prefix-strip). E.g. `__subheading` →
+    {'headingRole':'subheading'}, `__buttonSecondary` → {'inheritStyle':'secondary'}.
+    Empty dict when none. Callers apply these via setdefault so any draft-extracted
+    value wins (R-31-1 DB-driven, R-31-9 universal).
+
+    ⚠ RESTORED 2026-08-07, having been deleted 2026-08-02 (Phase 1b) as an
+    "ELEMENT-keyed duplicate of a working MODIFIER-keyed path". It was genuinely
+    callerless at that moment, but it was not a duplicate — the two lookups are
+    keyed on different things and are not interchangeable:
+
+      * MODIFIER-keyed (`preset_style_for_element` -> `inherit_style_for_modifier`)
+        reads a `--modifier` segment, and hard-reads ONLY `hit.get("inheritStyle")`.
+        It cannot return any other attr, whatever the row holds.
+      * ELEMENT-keyed (here) reads the `__element` segment and returns the WHOLE
+        default_attrs dict.
+
+    A subheading is an ELEMENT, not a modifier, so routing `__subheading` to
+    sgs/heading with `headingRole` needs this reader; widening the modifier one
+    would give a single function two keying models. The deletion note's own closing
+    advice — check the call graph before declaring an accessor here dead — is worth
+    extending: an accessor with zero callers may be a route that was never FINISHED
+    rather than one that was abandoned. This one's data (four populated slots rows,
+    the column, the seeder support) was all in place; only the caller was missing.
+    """
+    dmap = _slot_alias_to_default_attrs()
+    if not dmap:
+        return {}
+    for cls in sorted(c for c in sgs_classes if c.startswith("sgs-")):
+        bem = parse_sgs_bem(cls)
+        if bem is None or not bem.element:
+            continue
+        hit = dmap.get(bem.element.lower())
+        if hit:
+            return dict(hit)
+        if "-" in bem.element:  # compound element → try each segment (mirror Path 2b)
+            for seg in bem.element.lower().split("-"):
+                hit = dmap.get(seg)
+                if hit:
+                    return dict(hit)
+    return {}
+
 
 def inherit_style_presets() -> frozenset:
     """The set of `inheritStyle` preset values defined by the button-preset slots

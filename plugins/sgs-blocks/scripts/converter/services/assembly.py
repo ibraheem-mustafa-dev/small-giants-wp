@@ -354,6 +354,30 @@ def build_block_markup(
             if not _has_own_family_class:
                 attrs["inheritStyle"] = "custom"
 
+    # step 5a: ELEMENT-keyed slot default attrs (2026-08-07). The sibling of step 5's
+    # modifier route, on the same DB column (slots.standalone_block_default_attrs) but
+    # keyed on the node's `__element` segment rather than its `--modifier`:
+    # `__subheading` -> sgs/heading {"headingRole":"subheading"}. Step 5's channel
+    # cannot serve this — inherit_style_for_modifier hard-reads only `inheritStyle`,
+    # and a subheading is an element, not a modifier — so widening it would give one
+    # function two keying models. db_lookup.slot_default_attrs_for returns the WHOLE
+    # default_attrs dict for the first element that carries one.
+    #
+    # setdefault: the defaults merge UNDERNEATH everything already assembled
+    # (variant, CSS pass, content lifts, and step 5's own inheritStyle), so a value
+    # the draft actually declared always wins over the slot's default — the same
+    # precedence every other DB-gated step here uses.
+    #
+    # Universal + inert by construction (R-31-1 / R-31-9): a node whose element
+    # resolves to no defaults-carrying slot gets {} and nothing happens, so this is a
+    # no-op for the overwhelming majority of blocks. No slug literal, no attr-name
+    # literal — the attr NAMES are whatever the DB row holds.
+    if rec.slug is not None and hasattr(section_root, "get"):
+        for _dk, _dv in db_lookup.slot_default_attrs_for(
+            section_root.get("class", []) or []
+        ).items():
+            attrs.setdefault(_dk, _dv)
+
     # step 5b: preset colour is CLASS-driven (Spec 32 FR-32-2/8). A recognised
     # preset renders via the `.sgs-button--{preset}` class, which consumes the
     # per-client `--wp--custom--button-presets--{preset}--{role}` tokens (base +
