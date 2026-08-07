@@ -1,0 +1,100 @@
+/**
+ * SGS Button Presets — Customiser control styling (admin only).
+ *
+ * Loaded in the Customiser control pane only. Nothing here reaches the frontend, so
+ * it is outside the Spec 32 block styling contract — but it still honours the project
+ * a11y baseline: 44px minimum target, visible focus ring, and a visible text label on
+ * every swatch (colour is never the only way to tell two options apart).
+ */
+
+.sgs-btn-preset-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 8px 0 0;
+}
+
+.sgs-btn-preset-swatch {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 4px;
+	width: 68px;
+	min-height: 44px;
+	padding: 4px;
+	border: 2px solid transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	text-align: center;
+}
+
+/* The radio stays in the accessibility tree and keeps keyboard/arrow-key group
+   semantics — it is visually hidden, never `display:none`. */
+.sgs-btn-preset-swatch input[type="radio"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+.sgs-btn-preset-swatch:hover {
+	border-color: #c3c4c7;
+}
+
+.sgs-btn-preset-swatch:has( input[type="radio"]:checked ) {
+	border-color: #2271b1;
+	background: #f0f6fc;
+}
+
+.sgs-btn-preset-swatch:has( input[type="radio"]:focus-visible ) {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.sgs-btn-preset-chip {
+	display: block;
+	width: 100%;
+	height: 28px;
+	border: 1px solid rgba( 0, 0, 0, 0.2 );
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+/* "Theme default" has no colour of its own — a diagonal slash reads as "unset"
+   without needing a colour to represent the absence of one. */
+.sgs-btn-preset-chip.is-empty,
+.sgs-btn-preset-chip--custom {
+	background-image: linear-gradient(
+		45deg,
+		#f6f7f7 45%,
+		#c3c4c7 45%,
+		#c3c4c7 55%,
+		#f6f7f7 55%
+	);
+}
+
+.sgs-btn-preset-name {
+	font-size: 10px;
+	line-height: 1.2;
+	color: #50575e;
+	overflow-wrap: anywhere;
+}
+
+.sgs-btn-preset-custom-input {
+	display: none;
+	width: 100%;
+	height: 36px;
+	margin-top: 8px;
+	padding: 2px;
+}
+
+.sgs-btn-preset-custom-input.is-visible {
+	display: block;
+}
