@@ -39,7 +39,7 @@
 	background: var(--wp--preset--color--surface);
 	border: 1px solid var(--wp--preset--color--surface-alt);
 	border-radius: var(--wp--custom--border-radius--medium);
-	box-shadow: var(--wp--preset--shadow--lg);
+	box-shadow: var(--wp--preset--shadow--floating);
 	padding: var(--wp--preset--spacing--30);
 	min-width: 220px;
 }

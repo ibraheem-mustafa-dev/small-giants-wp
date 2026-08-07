@@ -169,10 +169,10 @@ export const MIN_HEIGHT_OPTIONS = [
 
 export const SHADOW_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: 'Small', value: 'sm' },
-	{ label: 'Medium', value: 'md' },
-	{ label: 'Large', value: 'lg' },
-	{ label: 'Glow', value: 'glow' },
+	{ label: __( 'Subtle', 'sgs-blocks' ), value: 'subtle' },
+	{ label: __( 'Raised', 'sgs-blocks' ), value: 'raised' },
+	{ label: __( 'Floating', 'sgs-blocks' ), value: 'floating' },
+	{ label: __( 'Brand glow', 'sgs-blocks' ), value: 'glow' },
 ];
 
 // ---------------------------------------------------------------------------

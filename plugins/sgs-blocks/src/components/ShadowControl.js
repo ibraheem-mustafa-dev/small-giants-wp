@@ -4,7 +4,7 @@
  * Replaces the old None/Small/Medium 3-option select pattern with genuine
  * X/Y offset, blur, spread, colour+alpha, and inset controls, PLUS a small
  * preset menu that SEEDS the builder from the theme's `theme.json`
- * `settings.shadow.presets` (Small/Medium/Large/Glow) — presets are a
+ * `settings.shadow.presets` (Subtle/Raised/Floating/Brand glow) — presets are a
  * starting point, not a ceiling.
  *
  * The stored attribute is a single CSS `box-shadow` VALUE STRING (matches
@@ -15,7 +15,7 @@
  * colour token through `sgs_normalise_css_functional_colours()`, so an
  * `rgba()` colour picked here still survives WordPress's
  * `safecss_filter_attr()` strip of functional notation (D302). A bare theme
- * shadow SLUG (e.g. `"sm"`) is also accepted unchanged — picking a preset
+ * shadow SLUG (e.g. `"subtle"`) is also accepted unchanged — picking a preset
  * without editing it keeps the value linked to the theme token.
  *
  * WCAG 2.1 AA: every field is a labelled native control (`UnitControl`,
@@ -39,7 +39,7 @@ import DesignTokenPicker from './DesignTokenPicker';
  * Parse a raw CSS box-shadow string into its builder parts. Best-effort —
  * only handles a single shadow layer (the builder's own output shape).
  * Returns null when the string doesn't parse as a longhand shadow (e.g. a
- * theme slug like "sm", or an empty string) — the builder then falls back to
+ * theme slug like "subtle", or an empty string) — the builder then falls back to
  * its defaults rather than fighting the stored value.
  *
  * @param {string} value Raw box-shadow CSS string.

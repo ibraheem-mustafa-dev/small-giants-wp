@@ -53,7 +53,7 @@ $icon_circle_bg            = $attributes['iconCircleBackground'] ?? 'surface';
 $icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
-$icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'sm';
+$icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
 
 // --- image-badge attributes (mirrors icon-circle's own control set) -----------
 $badge_image_border_radius = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';

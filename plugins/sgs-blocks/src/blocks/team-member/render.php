@@ -53,28 +53,20 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
-// 1. Media / photo — prefer memberMedia, fall back to legacy photo.
+// 1. Media / photo — single `photo` attr (the former duplicate-attribute
+// collision on this slot was resolved by deleting the old declaration and
+// renaming the newer one to this name) plus responsive tiers photoTablet/
+// photoMobile. PHP renders once for every device, so the tablet/mobile
+// overrides are expressed as <picture><source media> alternates below
+// (step 7) — the exact pattern already proven live on sgs/responsive-logo —
+// rather than picked server-side.
 // ---------------------------------------------------------------------------
-$member_media = $attributes['memberMedia'] ?? null;
 $photo        = $attributes['photo'] ?? null;
+$photo_tablet = $attributes['photoTablet'] ?? null;
+$photo_mobile = $attributes['photoMobile'] ?? null;
 
-if ( empty( $member_media['url'] ) && ! empty( $photo['url'] ) ) {
-	$member_media = array(
-		'url'  => $photo['url'],
-		'type' => 'image',
-		'id'   => ! empty( $photo['id'] ) ? absint( $photo['id'] ) : 0,
-		'alt'  => $photo['alt'] ?? '',
-		'mime' => 'image/jpeg',
-	);
-}
-
-// Schema.org needs a plain image URL.
-$schema_image_url = '';
-if ( ! empty( $member_media['url'] ) ) {
-	$schema_image_url = $member_media['url'];
-} elseif ( ! empty( $photo['url'] ) ) {
-	$schema_image_url = $photo['url'];
-}
+// Schema.org needs a plain image URL (desktop tier only).
+$schema_image_url = ! empty( $photo['url'] ) ? $photo['url'] : '';
 
 // ---------------------------------------------------------------------------
 // 2. Box-object interface contract §1 + security §D sanitisers (copied from
@@ -238,7 +230,7 @@ if ( $hover_scale && in_array( $hover_scale, $allowed_scales, true ) ) {
 	$sgs_classes[]        = 'sgs-has-hover-scale';
 }
 
-$allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
+$allowed_shadows = array( 'subtle', 'raised', 'floating', 'glow' );
 if ( $hover_shadow && in_array( $hover_shadow, $allowed_shadows, true ) ) {
 	$sgs_wrapper_styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
 	$sgs_classes[]        = 'sgs-has-hover';
@@ -261,12 +253,33 @@ if ( '' !== $card_shadow ) {
 // ---------------------------------------------------------------------------
 $photo_html = '';
 $photo_img  = '';
-if ( ! empty( $member_media['url'] ) ) {
-	$media_for_render = $member_media;
+if ( ! empty( $photo['url'] ) ) {
+	$media_for_render = $photo;
 	if ( empty( $media_for_render['alt'] ) ) {
 		$media_for_render['alt'] = $name;
 	}
-	$photo_img = sgs_render_media( $media_for_render, 'sgs/team-member' );
+	$photo_base_img = sgs_render_media( $media_for_render, 'sgs/team-member' );
+
+	// Responsive tiers — PHP renders once for every device, so tablet/mobile
+	// overrides are expressed as <picture><source media> alternates (same
+	// pattern as sgs/responsive-logo render.php): the browser picks the first
+	// matching <source>, falling through to the base desktop <img> when no
+	// tier override is set. Order matters — narrowest breakpoint first.
+	$photo_tablet_url = ! empty( $photo_tablet['url'] ) ? $photo_tablet['url'] : '';
+	$photo_mobile_url = ! empty( $photo_mobile['url'] ) ? $photo_mobile['url'] : '';
+
+	if ( '' !== $photo_tablet_url || '' !== $photo_mobile_url ) {
+		$photo_sources = '';
+		if ( '' !== $photo_mobile_url ) {
+			$photo_sources .= sprintf( '<source media="(max-width:767px)" srcset="%s">', esc_url( $photo_mobile_url ) );
+		}
+		if ( '' !== $photo_tablet_url ) {
+			$photo_sources .= sprintf( '<source media="(max-width:1023px)" srcset="%s">', esc_url( $photo_tablet_url ) );
+		}
+		$photo_img = '<picture class="sgs-team-member__photo-picture">' . $photo_sources . $photo_base_img . '</picture>';
+	} else {
+		$photo_img = $photo_base_img;
+	}
 }
 
 if ( '' !== $photo_img ) {

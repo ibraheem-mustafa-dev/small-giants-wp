@@ -73,12 +73,31 @@ def check_wp_blocks_health() -> tuple[bool, str]:
     return False, f"FAIL: {detail}"
 
 
+# Hook namespaces owned by a THIRD-PARTY plugin we deliberately integrate with.
+# The wp-docs database covers WordPress core (and WooCommerce, whose 15 consumed
+# hooks resolve cleanly) — it does NOT know every vendor's hooks, so a real,
+# vendor-documented hook reads as NOT_FOUND and trips the typo check below.
+#
+# This does not weaken the gate: its purpose is catching a MISSPELLED core hook,
+# and a misspelling inside one of these namespaces was never something the docs
+# database could catch either way. Keep this list to namespaces the framework
+# actually integrates with, and name the integration point for each.
+#   litespeed_  -> includes/class-litespeed-compat.php + class-cart-cache-purge.php
+#                  (LiteSpeed Cache; purge/no-cache control for personalised REST
+#                   routes and cart fragments — e2d4f101)
+THIRD_PARTY_HOOK_PREFIXES = (
+    "litespeed_",
+)
+
+
 def check_wp_hooks_validate(hook_names: list[str]) -> tuple[bool, str]:
     """Validate each hook name via wp-docs.py validate-hook.
 
-    sgs_-prefixed hooks will correctly return NOT_FOUND (they're custom; that's expected).
-    We only FAIL if a hook the plugin CONSUMES (add_action/add_filter) is unrecognised
-    and does NOT start with sgs_ (meaning it may be a WP core hook that's misspelled).
+    sgs_-prefixed hooks will correctly return NOT_FOUND (they're custom; that's expected),
+    as will hooks in a THIRD_PARTY_HOOK_PREFIXES namespace (real vendor hooks the WP-core
+    docs database does not carry). We only FAIL if a hook the plugin CONSUMES
+    (add_action/add_filter) is unrecognised and belongs to neither group — meaning it may
+    be a WP core hook that's misspelled.
     """
     if not WP_DOCS_CLI.exists():
         return True, "SKIP: wp-docs.py not found"
@@ -89,6 +108,9 @@ def check_wp_hooks_validate(hook_names: list[str]) -> tuple[bool, str]:
     for hook in hook_names:
         # sgs_-prefixed hooks are custom — NOT_FOUND is always expected and acceptable.
         if hook.startswith("sgs_"):
+            continue
+        # Third-party vendor hooks the WP-core docs database does not carry.
+        if hook.startswith(THIRD_PARTY_HOOK_PREFIXES):
             continue
         code, out, _ = _run([sys.executable, str(WP_DOCS_CLI), "validate-hook", hook])
         if code < 0:

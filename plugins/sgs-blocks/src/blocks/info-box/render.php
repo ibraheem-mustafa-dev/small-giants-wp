@@ -180,7 +180,7 @@ if ( $sgs_hover_border ) {
 }
 
 $sgs_allowed_scales  = array( '1.02', '1.05', '1.1' );
-$sgs_allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
+$sgs_allowed_shadows = array( 'subtle', 'raised', 'floating', 'glow' );
 
 // ---------------------------------------------------------------------------
 // 6. uid + root selector. uid is a CLASS (contract §B3 — this block declares

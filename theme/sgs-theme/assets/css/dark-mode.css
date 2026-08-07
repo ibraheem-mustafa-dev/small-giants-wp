@@ -27,9 +27,9 @@
 	--wp--preset--color--footer-bg: #0A3B3D;
 
 	/* Shadow adjustments for dark backgrounds */
-	--wp--preset--shadow--sm: 0 1px 3px rgba(0,0,0,0.3);
-	--wp--preset--shadow--md: 0 4px 12px rgba(0,0,0,0.4);
-	--wp--preset--shadow--lg: 0 8px 30px rgba(0,0,0,0.5);
+	--wp--preset--shadow--subtle: 0 1px 3px rgba(0,0,0,0.3);
+	--wp--preset--shadow--raised: 0 4px 12px rgba(0,0,0,0.4);
+	--wp--preset--shadow--floating: 0 8px 30px rgba(0,0,0,0.5);
 	--wp--preset--shadow--glow: 0 0 20px rgba(255,160,77,0.3);
 
 	color-scheme: dark;
@@ -50,9 +50,9 @@
 		--wp--preset--color--border-subtle: #2A4A4B;
 		--wp--preset--color--footer-bg: #0A3B3D;
 
-		--wp--preset--shadow--sm: 0 1px 3px rgba(0,0,0,0.3);
-		--wp--preset--shadow--md: 0 4px 12px rgba(0,0,0,0.4);
-		--wp--preset--shadow--lg: 0 8px 30px rgba(0,0,0,0.5);
+		--wp--preset--shadow--subtle: 0 1px 3px rgba(0,0,0,0.3);
+		--wp--preset--shadow--raised: 0 4px 12px rgba(0,0,0,0.4);
+		--wp--preset--shadow--floating: 0 8px 30px rgba(0,0,0,0.5);
 		--wp--preset--shadow--glow: 0 0 20px rgba(255,160,77,0.3);
 
 		color-scheme: dark;

@@ -89,10 +89,10 @@ function resolveBlockDefaults( blockName ) {
 		return { scalePreset: '', shadow: '', imageZoom: true, focusRing: true };
 	}
 	if ( isNoZoom ) {
-		return { scalePreset: '1.02', shadow: 'md', imageZoom: false, focusRing: true };
+		return { scalePreset: '1.02', shadow: 'raised', imageZoom: false, focusRing: true };
 	}
 	if ( isOptIn ) {
-		return { scalePreset: '1.02', shadow: 'md', imageZoom: true, focusRing: true };
+		return { scalePreset: '1.02', shadow: 'raised', imageZoom: true, focusRing: true };
 	}
 	// All other blocks: default OFF.
 	return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
@@ -100,10 +100,10 @@ function resolveBlockDefaults( blockName ) {
 
 const SHADOW_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'sm' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'lg' },
-	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
+	{ label: __( 'Subtle', 'sgs-blocks' ), value: 'subtle' },
+	{ label: __( 'Raised', 'sgs-blocks' ), value: 'raised' },
+	{ label: __( 'Floating', 'sgs-blocks' ), value: 'floating' },
+	{ label: __( 'Brand glow', 'sgs-blocks' ), value: 'glow' },
 ];
 
 const SCALE_PRESET_OPTIONS = [

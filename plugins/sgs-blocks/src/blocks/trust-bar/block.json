@@ -351,7 +351,7 @@
 		},
 		"iconCircleShadow": {
 			"type": "string",
-			"default": "sm"
+			"default": "subtle"
 		},
 		"badgeImageBorderRadius": {
 			"type": "string",

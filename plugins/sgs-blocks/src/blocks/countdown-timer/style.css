@@ -17,7 +17,7 @@
 .sgs-countdown--elevated {
 	background: var(--wp--preset--color--surface-alt, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--md);
+	box-shadow: var(--wp--preset--shadow--raised);
 }
 
 .sgs-countdown--filled {

@@ -232,7 +232,7 @@
 /* Lift — card lifts */
 .sgs-gallery--hover-lift .sgs-gallery__item:hover {
 	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--lg);
+	box-shadow: var(--wp--preset--shadow--floating);
 }
 
 /* Overlay Slide — slides up from bottom */

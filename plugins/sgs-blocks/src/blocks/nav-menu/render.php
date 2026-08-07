@@ -1170,7 +1170,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:var
 	. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 	. 'border:1px solid var(--wp--preset--color--border-subtle, transparent);'
 	. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
-	. 'box-shadow:var(--wp--preset--shadow--md, 0 4px 12px rgba(0,0,0,.1));}';
+	. 'box-shadow:var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1));}';
 $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
 
 /*

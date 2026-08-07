@@ -37,7 +37,7 @@
 	border-style: solid;
 	border-color: var(--sgs-card-border-color, transparent);
 	border-width: var(--sgs-card-border-width, 0);
-	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--md));
+	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--raised));
 }
 
 /* Image wrapper */
@@ -189,7 +189,7 @@
 /* Lift — card lifts */
 .sgs-card-grid--hover-lift .sgs-card-grid__item:hover {
 	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--lg);
+	box-shadow: var(--wp--preset--shadow--floating);
 }
 
 /* Overlay Slide — slides up from bottom */

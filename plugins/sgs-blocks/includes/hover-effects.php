@@ -12,7 +12,7 @@
  * Handles:
  * - sgsHoverBgColour / sgsHoverTextColour / sgsHoverBorderColour
  * - sgsHoverScale (fine-grained %) + sgsHoverScalePreset (named preset)
- * - sgsHoverShadow (sm/md/lg/glow)
+ * - sgsHoverShadow (subtle/raised/floating/glow)
  * - sgsHoverDuration (string slug — instant/fast/medium/slow/extra-slow)
  * - sgsHoverEasing (string slug — default/ease-out/ease-in/spring/linear)
  * - sgsHoverImageZoom (boolean)
@@ -81,7 +81,7 @@ function resolve_hover_defaults( string $block_name ): array {
 	if ( in_array( $block_name, $no_zoom, true ) ) {
 		return array(
 			'scale_preset' => '1.02',
-			'shadow'       => 'md',
+			'shadow'       => 'raised',
 			'image_zoom'   => false,
 			'focus_ring'   => true,
 		);
@@ -90,7 +90,7 @@ function resolve_hover_defaults( string $block_name ): array {
 	if ( in_array( $block_name, $opt_in, true ) ) {
 		return array(
 			'scale_preset' => '1.02',
-			'shadow'       => 'md',
+			'shadow'       => 'raised',
 			'image_zoom'   => true,
 			'focus_ring'   => true,
 		);
@@ -214,7 +214,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	}
 
 	if ( $hover_shadow ) {
-		$allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
+		$allowed_shadows = array( 'subtle', 'raised', 'floating', 'glow' );
 		if ( in_array( $hover_shadow, $allowed_shadows, true ) ) {
 			$css_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
 		}

@@ -221,7 +221,7 @@
 }
 
 .sgs-testimonial--classic-card {
-	box-shadow: var(--wp--preset--shadow--md);
+	box-shadow: var(--wp--preset--shadow--raised);
 }
 
 /* ============================================================ */
@@ -356,7 +356,7 @@
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: var(--wp--preset--spacing--30, 1rem);
-	box-shadow: var(--wp--preset--shadow--sm, var(--wp--preset--shadow--md));
+	box-shadow: var(--wp--preset--shadow--subtle, var(--wp--preset--shadow--raised));
 }
 
 :where(.sgs-testimonial--corporate-logo) {
@@ -376,7 +376,7 @@
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: var(--wp--preset--spacing--30, 1rem);
-	box-shadow: var(--wp--preset--shadow--md);
+	box-shadow: var(--wp--preset--shadow--raised);
 }
 
 :where(.sgs-testimonial--case-study-media) {
