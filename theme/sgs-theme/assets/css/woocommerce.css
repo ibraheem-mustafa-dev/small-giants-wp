@@ -512,11 +512,24 @@ h2.wc-block-mini-cart__title {
  * changes) and guaranteed accessible (the primary button default is the
  * axe-passing dark-text-on-pink combination).
  *
- * SCOPE BRIDGE (important): the canonical `.btn` / `.btn-primary` rules live in
- * the product-card block's style.css and are scoped to `.product-card .btn[...]`,
- * so a bare `.btn.btn-primary` on the toggle (which is NOT inside a product-card)
- * would match NOTHING and render an unstyled button. The block plugin file is not
- * editable from the theme, so we re-apply the SAME design TOKENS the primary
+ * CORRECTION (2026-08-07) — the paragraph that used to sit here said the canonical
+ * `.btn` / `.btn-primary` rules "live in the product-card block's style.css, scoped
+ * to `.product-card .btn[...]`". That was FALSE and would send the next reader
+ * hunting an empty file. Verified with two selector shapes across all of theme/ and
+ * plugins/: there is NO `.btn` or `.btn-primary` rule ANYWHERE in this codebase.
+ * `product-card/style.css` contains no `.btn` selector at all.
+ *
+ * So the `btn btn-primary` classes that `templates/archive-product.html` puts on
+ * this toggle currently match ZERO rules and contribute ZERO styling. The toggle
+ * only looks like a primary button because the block below hand-duplicates that
+ * look from the design tokens. Those two classes are dead today — but they are
+ * deliberately NOT deleted: `.btn`-family is intended to become the real
+ * style-variation surface (see `sgs/button`'s primary/secondary/outline block
+ * variations, which paint via `.sgs-button--{preset}` consuming the
+ * `--wp--custom--button-presets--*` tokens). The intended end state is that this
+ * toggle consumes that same mechanism and this hand-duplicated block disappears.
+ *
+ * Until then the duplication below re-applies the SAME design TOKENS the primary
  * button uses (`--wp--preset--color--primary`, `--sgs-product-card-btn-text`,
  * `--sgs-product-card-btn-hover-bg`/`--…--primary-dark`) here — a palette/token
  * change still propagates to both surfaces. Only the visual properties owned by

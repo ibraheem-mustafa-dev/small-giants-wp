@@ -158,6 +158,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		download,
 		isSubmit,
 		ariaLabel,
+		inheritStyle,
 		widthType,
 		customWidth,
 		customWidthUnit,
@@ -250,13 +251,25 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( widthType === 'custom' && customWidth ) previewStyle.width = `${ customWidth }${ customWidthUnit }`;
 	if ( minHeight ) previewStyle.minHeight = `${ minHeight }px`;
 
-	// No `.is-style-*` class any more — colour/border/typography are always
-	// attribute-driven inline styles (preset-as-seed model).
 	// Editor-frontend parity (D288): the button element IS the block root (no
 	// wrapper div), matching render.php. Full-width is the `sgs-button--full`
 	// modifier on the button itself, so a full-width button inside a flex row
 	// (e.g. sgs/multi-button) previews with the identical flex/width CSS.
+	//
+	// The style preset renders via the SAME semantic BEM modifier the server
+	// emits (render.php step 5, `.sgs-button--{inheritStyle}`), which SETS the
+	// six `--sgs-btn-*` custom properties from that client's
+	// `--wp--custom--button-presets--{preset}--*` tokens (style.css). Emitting
+	// it here is what makes WordPress's native "Transform to variation" control
+	// (the primary/secondary/outline block variations declared in block.json)
+	// visibly apply in the editor: the variation writes `inheritStyle`, and this
+	// class is how that attribute paints. Without it the editor preview silently
+	// ignored every preset while the frontend honoured it. A 'custom'/unknown
+	// value emits NO modifier, exactly as render.php does.
 	const blockClasses = [ 'sgs-button' ];
+	if ( [ 'primary', 'secondary', 'outline' ].includes( inheritStyle ) ) {
+		blockClasses.push( `sgs-button--${ inheritStyle }` );
+	}
 	if ( widthType === 'full' ) blockClasses.push( 'sgs-button--full' );
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),

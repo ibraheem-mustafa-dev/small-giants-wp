@@ -1,7 +1,20 @@
 /**
  * Editor-only styles for SGS Button — mirrors style.css so the editor
- * preview matches the frontend. Colour/border are attribute-driven inline
- * styles (preset-as-seed model) — no `.is-style-*` variant classes any more.
+ * preview matches the frontend.
+ *
+ * The preset colours are NOT set here and must not be: they come from the
+ * `.sgs-button--{primary|secondary|outline}` modifier in style.css (which the
+ * editor canvas also loads), where each preset SETS the six `--sgs-btn-*`
+ * custom properties from that client's `--wp--custom--button-presets--*`
+ * tokens, and the base `.sgs-button` rule consumes them.
+ *
+ * This selector's specificity is (0,2,0) against style.css's (0,1,0), so ANY
+ * colour declaration added below silently overrides the preset. That is not
+ * hypothetical: this rule previously carried `border: 2px solid transparent`,
+ * which pinned every preset's border colour to transparent in the editor and
+ * made the Secondary and Outline presets (both border-led) render identically
+ * to Primary — measured live on the canary, 2026-08-07. Border width, style
+ * and colour all come from style.css; declare neither here.
  */
 
 .editor-styles-wrapper .sgs-button {
@@ -12,7 +25,6 @@
 	font-weight: 600;
 	font-size: 15px;
 	padding: 14px 24px;
-	border: 2px solid transparent;
 	border-radius: 10px;
 	min-height: 48px;
 	text-decoration: none;
