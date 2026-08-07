@@ -15,6 +15,7 @@ import {
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import MediaPicker from '../../components/MediaPicker';
+import { ResponsiveControl } from '../../components';
 
 /**
  * Hard cap on frames per tier (Step 16, Motion Wave D, Route B). Must stay
@@ -273,6 +274,57 @@ export default function Edit( { attributes, setAttributes } ) {
 						allowedTypes={ [ 'image' ] }
 						label={ __( 'Select thumbnail image', 'sgs-blocks' ) }
 					/>
+					{ /* Art direction (2026-08-07). The canvas sequence already
+					     art-directs itself per device (the three frame pipelines
+					     below); this gives the SAME per-device choice to the
+					     fail-open thumbnail, which is what a no-JS or
+					     reduced-motion visitor actually sees. Same
+					     device-switched shape as sgs/media and sgs/hero. */ }
+					<ResponsiveControl
+						label={ __( 'Thumbnail for this screen size', 'sgs-blocks' ) }
+					>
+						{ ( bp ) => {
+							if ( 'desktop' === bp ) {
+								return (
+									<p style={ { margin: 0, fontStyle: 'italic' } }>
+										{ __(
+											'The thumbnail above is used on desktop. Switch to tablet or mobile to set a different crop.',
+											'sgs-blocks'
+										) }
+									</p>
+								);
+							}
+							const key =
+								'tablet' === bp
+									? 'thumbnailTablet'
+									: 'thumbnailMobile';
+							return (
+								<MediaPicker
+									value={ attributes[ key ] }
+									allowedTypes={ [ 'image' ] }
+									onChange={ ( media ) =>
+										setAttributes( {
+											[ key ]: media
+												? {
+														id: media.id,
+														url: media.url,
+														alt: media.alt || '',
+												  }
+												: null,
+										} )
+									}
+									onRemove={ () =>
+										setAttributes( { [ key ]: null } )
+									}
+									label={ __( 'Set thumbnail', 'sgs-blocks' ) }
+									instructionsImage={ __(
+										'Optional. Leave empty to reuse the desktop thumbnail at this width.',
+										'sgs-blocks'
+									) }
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<TextControl
 						label={ __( 'Thumbnail alt text', 'sgs-blocks' ) }
 						help={ __(

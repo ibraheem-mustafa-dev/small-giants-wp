@@ -709,6 +709,185 @@ if ( 'video' === $media_type ) {
 	$is_youtube = (bool) preg_match( '/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_\-]{11})/', $resolved_video_url, $yt_matches );
 	$is_vimeo   = (bool) preg_match( '/(?:vimeo\.com\/)(\d+)/', $resolved_video_url, $vm_matches );
 
+	// -----------------------------------------------------------------------
+	// VIDEO-SOURCE ART-DIRECTION TIERS (2026-08-07, Bean-decided).
+	//
+	// Images tier by rendering siblings and letting CSS hide all but one. A
+	// video CANNOT: three <video> elements each begin fetching and three embeds
+	// each load a player. So the source is swapped by view.js, reusing
+	// sgs/hero's established data-src-desktop/tablet/mobile contract (same
+	// upward fallback: mobile → tablet → desktop).
+	//
+	// The DESKTOP source is still rendered as real markup below, so a visitor
+	// with JS disabled gets a working video rather than an empty box.
+	//
+	// Each tier resolves through the SAME closure as the desktop source, so the
+	// two cannot drift apart, and each tier's embed URL is built from THAT
+	// tier's own playback flags.
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Resolve one tier's raw source attrs to a final, playable spec.
+	 *
+	 * @param string $raw_url    Raw URL attribute for this tier.
+	 * @param int    $attach_id  Attachment ID (0 when none/external).
+	 * @param bool   $autoplay   This tier's resolved autoplay flag.
+	 * @param bool   $loop       This tier's resolved loop flag.
+	 * @param bool   $controls   This tier's resolved controls flag.
+	 * @param bool   $muted      This tier's resolved muted flag.
+	 * @return array{kind:string,src:string,type:string}|null Null when this tier sets no source.
+	 */
+	$sgs_resolve_video_spec = static function ( string $raw_url, int $attach_id, bool $autoplay, bool $loop, bool $controls, bool $muted ) use ( $video_source ) {
+		$url = $raw_url;
+		if ( 'internal' === $video_source && $attach_id ) {
+			$attach_url = wp_get_attachment_url( $attach_id );
+			if ( $attach_url ) {
+				$url = $attach_url;
+			}
+		}
+		if ( '' === $url ) {
+			return null;
+		}
+
+		if ( preg_match( '/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_\-]{11})/', $url, $yt ) ) {
+			$embed = 'https://www.youtube-nocookie.com/embed/' . $yt[1];
+			$query = array();
+			if ( $autoplay ) {
+				$query['autoplay'] = '1';
+			}
+			if ( $loop ) {
+				$query['loop']     = '1';
+				$query['playlist'] = $yt[1];
+			}
+			if ( ! $controls ) {
+				$query['controls'] = '0';
+			}
+			if ( $muted ) {
+				$query['mute'] = '1';
+			}
+			return array(
+				'kind' => 'youtube',
+				'src'  => $query ? $embed . '?' . http_build_query( $query ) : $embed,
+				'type' => '',
+			);
+		}
+
+		if ( preg_match( '/(?:vimeo\.com\/)(\d+)/', $url, $vm ) ) {
+			$embed = 'https://player.vimeo.com/video/' . $vm[1];
+			$query = array();
+			if ( $autoplay ) {
+				$query['autoplay'] = '1';
+			}
+			if ( $loop ) {
+				$query['loop'] = '1';
+			}
+			if ( ! $controls ) {
+				$query['controls'] = '0';
+			}
+			if ( $muted ) {
+				$query['muted'] = '1';
+			}
+			return array(
+				'kind' => 'vimeo',
+				'src'  => $query ? $embed . '?' . http_build_query( $query ) : $embed,
+				'type' => '',
+			);
+		}
+
+		$ext = strtolower( (string) pathinfo( (string) wp_parse_url( $url, PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+		return array(
+			'kind' => 'file',
+			'src'  => $url,
+			'type' => match ( $ext ) {
+				'mp4'   => 'video/mp4',
+				'webm'  => 'video/webm',
+				'ogg'   => 'video/ogg',
+				'ogv'   => 'video/ogg',
+				'mov'   => 'video/quicktime',
+				default => 'video/mp4',
+			},
+		);
+	};
+
+	$sgs_video_tier_specs = array();
+	foreach ( array( 'Tablet', 'Mobile' ) as $sgs_v_tier ) {
+		$tier_key      = strtolower( $sgs_v_tier );
+		$tier_raw_url  = isset( $attributes[ 'videoUrl' . $sgs_v_tier ] ) ? (string) $attributes[ 'videoUrl' . $sgs_v_tier ] : '';
+		$tier_attach   = isset( $attributes[ 'videoId' . $sgs_v_tier ] ) ? absint( $attributes[ 'videoId' . $sgs_v_tier ] ) : 0;
+		$tier_spec     = $sgs_resolve_video_spec(
+			$tier_raw_url,
+			$tier_attach,
+			$autoplay_tiers[ $tier_key ],
+			$loop_tiers[ $tier_key ],
+			$controls_tiers[ $tier_key ],
+			$muted_tiers[ $tier_key ]
+		);
+		if ( null === $tier_spec ) {
+			continue;
+		}
+		$sgs_video_tier_specs[ $tier_key ] = $tier_spec;
+	}
+
+	// Per-tier POSTER. Cheap and independent of the source — a tier may override
+	// only the still frame and keep the desktop clip.
+	$sgs_poster_tiers = array();
+	foreach ( array( 'Tablet', 'Mobile' ) as $sgs_v_tier ) {
+		$tier_poster    = isset( $attributes[ 'thumbnail' . $sgs_v_tier ] ) ? (string) $attributes[ 'thumbnail' . $sgs_v_tier ] : '';
+		$tier_poster_id = isset( $attributes[ 'thumbnailId' . $sgs_v_tier ] ) ? absint( $attributes[ 'thumbnailId' . $sgs_v_tier ] ) : 0;
+		if ( $tier_poster_id ) {
+			$tier_poster_src = wp_get_attachment_image_url( $tier_poster_id, 'full' );
+			if ( $tier_poster_src ) {
+				$tier_poster = $tier_poster_src;
+			}
+		}
+		if ( '' === $tier_poster ) {
+			continue;
+		}
+		$sgs_poster_tiers[ strtolower( $sgs_v_tier ) ] = $tier_poster;
+	}
+
+	/**
+	 * Build the data-* attribute string carrying every tier's resolved spec.
+	 * Emitted ONLY for tiers that actually set something, so a block with no
+	 * tier overrides renders byte-identically to before this feature.
+	 *
+	 * The DESKTOP spec is always emitted when any tier exists — view.js needs
+	 * something to fall back UP to when returning to a wide viewport.
+	 *
+	 * The desktop kind/src are PARAMETERS, not captured: each branch below
+	 * builds its own embed URL after this point, so a `use` here would close
+	 * over a value that does not exist yet.
+	 *
+	 * @param string $desktop_kind 'youtube' | 'vimeo' | 'file'.
+	 * @param string $desktop_src  Final desktop URL (embed URL, or file URL).
+	 * @return string Attribute fragment, leading space included, or ''.
+	 */
+	$sgs_video_tier_attrs = static function ( string $desktop_kind, string $desktop_src ) use ( $sgs_video_tier_specs, $sgs_poster_tiers, $resolved_video_mime, $poster_url ) {
+		if ( empty( $sgs_video_tier_specs ) && empty( $sgs_poster_tiers ) ) {
+			return '';
+		}
+
+		$out  = ' data-src-desktop="' . esc_url( $desktop_src ) . '"';
+		$out .= ' data-src-kind-desktop="' . esc_attr( $desktop_kind ) . '"';
+		if ( 'file' === $desktop_kind ) {
+			$out .= ' data-src-type-desktop="' . esc_attr( $resolved_video_mime ) . '"';
+		}
+		if ( '' !== $poster_url ) {
+			$out .= ' data-poster-desktop="' . esc_url( $poster_url ) . '"';
+		}
+		foreach ( $sgs_video_tier_specs as $tier_key => $spec ) {
+			$out .= ' data-src-' . $tier_key . '="' . esc_url( $spec['src'] ) . '"';
+			$out .= ' data-src-kind-' . $tier_key . '="' . esc_attr( $spec['kind'] ) . '"';
+			if ( 'file' === $spec['kind'] ) {
+				$out .= ' data-src-type-' . $tier_key . '="' . esc_attr( $spec['type'] ) . '"';
+			}
+		}
+		foreach ( $sgs_poster_tiers as $tier_key => $tier_poster ) {
+			$out .= ' data-poster-' . $tier_key . '="' . esc_url( $tier_poster ) . '"';
+		}
+		return $out;
+	};
+
 	if ( $is_youtube ) {
 		// Convert any YouTube watch URL to embed URL.
 		$video_id_yt = $yt_matches[1];
@@ -733,10 +912,11 @@ if ( 'video' === $media_type ) {
 		$poster_attr  = '' !== $poster_url ? ' data-poster="' . esc_url( $poster_url ) . '"' : '';
 		$loading_attr = $video_lazy ? ' loading="lazy"' : '';
 		$video_html   = sprintf(
-			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen%s%s></iframe>',
+			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen%s%s%s></iframe>',
 			esc_url( $embed_url ),
 			$poster_attr,
-			$loading_attr
+			$loading_attr,
+			$sgs_video_tier_attrs( 'youtube', $embed_url ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is passed through esc_url()/esc_attr() by the closure.
 		);
 
 	} elseif ( $is_vimeo ) {
@@ -762,10 +942,11 @@ if ( 'video' === $media_type ) {
 		$poster_attr  = '' !== $poster_url ? ' data-poster="' . esc_url( $poster_url ) . '"' : '';
 		$loading_attr = $video_lazy ? ' loading="lazy"' : '';
 		$video_html   = sprintf(
-			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen%s%s></iframe>',
+			'<iframe class="sgs-media__video" src="%s" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen%s%s%s></iframe>',
 			esc_url( $embed_url ),
 			$poster_attr,
-			$loading_attr
+			$loading_attr,
+			$sgs_video_tier_attrs( 'vimeo', $embed_url ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is passed through esc_url()/esc_attr() by the closure.
 		);
 
 	} else {
@@ -802,7 +983,7 @@ if ( 'video' === $media_type ) {
 		$tier_data_attrs .= sgs_media_tier_data_attrs( 'lazy', $lazy_tiers );
 
 		$video_html = sprintf(
-			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s>' .
+			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s%s>' .
 			'<source src="%s" type="%s">' .
 			'</video>',
 			$autoplay_attr,
@@ -813,6 +994,7 @@ if ( 'video' === $media_type ) {
 			$preload_attr,
 			$poster_attr,
 			$tier_data_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively from sgs_media_tier_data_attrs(), which only ever emits the fixed literal strings 'data-{name}-tablet="1"'/'"0"' — no attribute-derived text passes through unescaped.
+			$sgs_video_tier_attrs( 'file', $resolved_video_url ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is passed through esc_url()/esc_attr() by the closure.
 			' aria-label="' . esc_attr( '' !== $caption ? $caption : __( 'Video', 'sgs-blocks' ) ) . '"',
 			esc_url( $resolved_video_url ),
 			esc_attr( $resolved_video_mime )

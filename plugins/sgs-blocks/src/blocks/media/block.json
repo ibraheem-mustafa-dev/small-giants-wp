@@ -141,6 +141,41 @@
 			"type": "integer",
 			"default": null
 		},
+		"_comment_videoArtDirection": "Video-source art-direction tiers (2026-08-07, Bean-decided). Completes the VIDEO half: the image half already ships imageId/imageUrl tiers, and the playback-behaviour tiers (videoAutoplay* etc.) already exist. Unlike images, tiers here CANNOT be sibling elements toggled by CSS — three <video>s each begin fetching and three embeds each load a player — so the source is swapped by view.js, reusing sgs/hero's established data-src-desktop/tablet/mobile contract with the same upward fallback. The server still renders the DESKTOP source as real markup, so a no-JS visitor gets a working video. Bean chose to include YouTube/Vimeo (2026-08-07) with the trade-off stated: crossing a breakpoint mid-watch rebuilds the iframe and loses playback position. Each tier's embed URL is built from THAT tier's own playback flags, so a mobile tier that wants muted autoplay gets it.",
+		"videoUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"videoIdTablet": {
+			"type": "integer",
+			"default": null
+		},
+		"videoUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"videoIdMobile": {
+			"type": "integer",
+			"default": null
+		},
+		"thumbnailTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"thumbnailIdTablet": {
+			"type": "integer",
+			"default": null
+		},
+		"thumbnailMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"thumbnailIdMobile": {
+			"type": "integer",
+			"default": null
+		},
 		"videoAutoplay": {
 			"type": "boolean",
 			"default": false

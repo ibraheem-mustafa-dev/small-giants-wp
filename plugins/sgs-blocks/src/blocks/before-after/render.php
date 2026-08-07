@@ -380,6 +380,41 @@ if ( $anchor ) {
 $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 
 // ---------------------------------------------------------------------------
+// 6b. ART-DIRECTION TIER TOGGLES (2026-08-07) — the IMAGE pair.
+//
+// The resolver emitted the tier siblings and reported which tiers it actually
+// produced; scoping their breakpoint toggles has to happen HERE because $uid
+// exists only in this file. An unscoped `.wp-block-sgs-before-after__img--…`
+// rule would hide images in every other instance on the page.
+//
+// ⛔ Selectors descend from $root_sel — a single compound token
+// (`.{uid}.wp-block-sgs-before-after`), never a multi-member selector LIST: a
+// descendant appended to a list binds to its last member only, which on
+// sgs/media hid every image at every width before it was caught live.
+// ---------------------------------------------------------------------------
+foreach ( array(
+	'before' => $before_media,
+	'after'  => $after_media,
+) as $sgs_slot => $sgs_slot_media ) {
+	$sgs_slot_tiers = $sgs_slot_media['tiers'] ?? array();
+	if ( empty( $sgs_slot_tiers ) ) {
+		continue;
+	}
+	$sgs_ba_tier_sel = static function ( $tier ) use ( $root_sel, $sgs_slot ) {
+		return $root_sel . ' .wp-block-sgs-before-after__img--' . $sgs_slot . '-' . $tier;
+	};
+	if ( in_array( 'mobile', $sgs_slot_tiers, true ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
+		$scoped_css[] = '@media(min-width:768px){' . $sgs_ba_tier_sel( 'mobile' ) . '{display:none}}';
+	}
+	if ( in_array( 'tablet', $sgs_slot_tiers, true ) ) {
+		$scoped_css[] = '@media(min-width:768px) and (max-width:1023px){' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
+		$scoped_css[] = '@media(max-width:767px){' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
+		$scoped_css[] = '@media(min-width:1024px){' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
+	}
+}
+
+// ---------------------------------------------------------------------------
 // 7. Enqueue the Draggable enhancement's script modules — gated on the
 // block actually rendering (proxy-enqueue, same sanctioned pattern as
 // sgs/buybox's view_script_module_ids proxy). @sgs/motion-provider and

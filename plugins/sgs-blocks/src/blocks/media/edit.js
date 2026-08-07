@@ -909,6 +909,89 @@ export default function Edit( { attributes, setAttributes } ) {
 						</MediaUploadCheck>
 					) }
 
+					{ /* Video art direction (2026-08-07, Bean-decided). Unlike the
+					     image tiers, this is swapped at runtime by view.js — three
+					     videos cannot all be rendered and hidden, because each one
+					     would start downloading. Gated on a desktop video existing:
+					     an override for a video that is not there is a dead control. */ }
+					{ ( videoUrl || attributes.videoId ) && (
+						<ResponsiveControl
+							label={ __(
+								'Video for this screen size',
+								'sgs-blocks'
+							) }
+						>
+							{ ( bp ) => {
+								if ( 'desktop' === bp ) {
+									return (
+										<p
+											style={ {
+												margin: 0,
+												fontStyle: 'italic',
+											} }
+										>
+											{ __(
+												'The video above is used on desktop. Switch to tablet or mobile to use a different clip there. Note: someone who resizes across a breakpoint mid-watch will have the player restart.',
+												'sgs-blocks'
+											) }
+										</p>
+									);
+								}
+								const tier =
+									'tablet' === bp ? 'Tablet' : 'Mobile';
+								const urlKey = `videoUrl${ tier }`;
+								const idKey = `videoId${ tier }`;
+								return 'internal' === videoSource ? (
+									<MediaUploadCheck>
+										<MediaUpload
+											onSelect={ ( media ) =>
+												setAttributes( {
+													[ idKey ]: media.id || null,
+													[ urlKey ]: media.url || '',
+												} )
+											}
+											allowedTypes={ [ 'video' ] }
+											value={ attributes[ idKey ] }
+											render={ ( { open } ) => (
+												<Button
+													variant="secondary"
+													onClick={ open }
+												>
+													{ attributes[ idKey ]
+														? __(
+																'Replace video',
+																'sgs-blocks'
+														  )
+														: __(
+																'Set video',
+																'sgs-blocks'
+														  ) }
+												</Button>
+											) }
+										/>
+									</MediaUploadCheck>
+								) : (
+									<TextControl
+										label={ __(
+											'Video URL for this screen size',
+											'sgs-blocks'
+										) }
+										help={ __(
+											'Optional. Leave empty to reuse the desktop video here. YouTube, Vimeo, or a direct MP4/WebM URL.',
+											'sgs-blocks'
+										) }
+										value={ attributes[ urlKey ] || '' }
+										onChange={ ( value ) =>
+											setAttributes( {
+												[ urlKey ]: value,
+											} )
+										}
+									/>
+								);
+							} }
+						</ResponsiveControl>
+					) }
+
 					{ /* Thumbnail image */ }
 					<PanelBody
 						title={ __( 'Thumbnail', 'sgs-blocks' ) }
@@ -974,6 +1057,123 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 							/>
 						</MediaUploadCheck>
+						{ /* Poster art direction (2026-08-07). Independent of the
+						     video source — a tier may override only the still frame
+						     and keep the desktop clip. Gated on a desktop poster
+						     existing, so it is never a control over nothing. */ }
+						{ thumbnail && (
+							<ResponsiveControl
+								label={ __(
+									'Thumbnail for this screen size',
+									'sgs-blocks'
+								) }
+							>
+								{ ( bp ) => {
+									if ( 'desktop' === bp ) {
+										return (
+											<p
+												style={ {
+													margin: 0,
+													fontStyle: 'italic',
+												} }
+											>
+												{ __(
+													'The thumbnail above is used on desktop. Switch to tablet or mobile to set a different crop.',
+													'sgs-blocks'
+												) }
+											</p>
+										);
+									}
+									const tier =
+										'tablet' === bp ? 'Tablet' : 'Mobile';
+									const urlKey = `thumbnail${ tier }`;
+									const idKey = `thumbnailId${ tier }`;
+									return (
+										<MediaUploadCheck>
+											<MediaUpload
+												onSelect={ ( media ) =>
+													setAttributes( {
+														[ idKey ]:
+															media.id || null,
+														[ urlKey ]:
+															media.url || '',
+													} )
+												}
+												allowedTypes={ [ 'image' ] }
+												value={ attributes[ idKey ] }
+												render={ ( { open } ) => (
+													<>
+														{ attributes[
+															urlKey
+														] && (
+															<img
+																src={
+																	attributes[
+																		urlKey
+																	]
+																}
+																alt=""
+																style={ {
+																	maxWidth:
+																		'100%',
+																	marginBottom:
+																		'8px',
+																	display:
+																		'block',
+																} }
+															/>
+														) }
+														<Button
+															variant="secondary"
+															onClick={ open }
+														>
+															{ attributes[
+																urlKey
+															]
+																? __(
+																		'Replace thumbnail',
+																		'sgs-blocks'
+																  )
+																: __(
+																		'Set thumbnail',
+																		'sgs-blocks'
+																  ) }
+														</Button>
+														{ attributes[
+															urlKey
+														] && (
+															<Button
+																variant="link"
+																isDestructive
+																onClick={ () =>
+																	setAttributes(
+																		{
+																			[ idKey ]:
+																				null,
+																			[ urlKey ]:
+																				'',
+																		}
+																	)
+																}
+																style={ {
+																	marginLeft:
+																		'8px',
+																} }
+															>
+																{ __(
+																	'Use the desktop thumbnail here',
+																	'sgs-blocks'
+																) }
+															</Button>
+														) }
+													</>
+												) }
+											/>
+										</MediaUploadCheck>
+									);
+								} }
+							</ResponsiveControl>
+						) }
 					</PanelBody>
 
 					{ /* Playback options — ToolsPanel (dense-panel-candidate, Spec 35

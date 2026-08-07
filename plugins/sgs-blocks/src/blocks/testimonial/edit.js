@@ -27,7 +27,12 @@ import {
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl } from '../../components';
+import {
+	DesignTokenPicker,
+	ResponsiveBoxControl,
+	ResponsiveControl,
+	ShadowControl,
+} from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
@@ -527,6 +532,53 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { avatarMedia: media } )
 								}
 							/>
+						) }
+						{ /* Art direction (2026-08-07). Same device-switched shape as
+						     sgs/media and sgs/hero. Gated on an author photo existing —
+						     a per-device override for a photo that is not there would
+						     be a dead control. */ }
+						{ showAvatar && avatarMedia?.url && (
+							<ResponsiveControl
+								label={ __(
+									'Author photo for this screen size',
+									'sgs-blocks'
+								) }
+							>
+								{ ( bp ) => {
+									if ( 'desktop' === bp ) {
+										return (
+											<p
+												style={ {
+													margin: 0,
+													fontStyle: 'italic',
+												} }
+											>
+												{ __(
+													'The photo above is used on desktop. Switch to tablet or mobile to set a different crop.',
+													'sgs-blocks'
+												) }
+											</p>
+										);
+									}
+									const key =
+										'tablet' === bp
+											? 'avatarMediaTablet'
+											: 'avatarMediaMobile';
+									return (
+										<MediaPanel
+											label={ __(
+												'Optional — leave empty to reuse the desktop photo here',
+												'sgs-blocks'
+											) }
+											value={ attributes[ key ] }
+											allowedTypes={ [ 'image' ] }
+											onChange={ ( media ) =>
+												setAttributes( { [ key ]: media } )
+											}
+										/>
+									);
+								} }
+							</ResponsiveControl>
 						) }
 						{ showLogo && (
 							<MediaPanel

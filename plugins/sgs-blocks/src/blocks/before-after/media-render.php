@@ -76,41 +76,120 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 			);
 		}
 
-		if ( $id > 0 ) {
-			$markup = wp_get_attachment_image(
-				$id,
-				'full',
-				false,
-				array(
-					'class'    => $classes,
-					'alt'      => $alt,
-					'loading'  => 'lazy',
-					'decoding' => 'async',
-				)
-			);
-			if ( '' !== $markup ) {
-				return array(
-					'html'        => $markup,
-					'has_content' => true,
-				);
+		// ART-DIRECTION TIERS (2026-08-07) — the IMAGE pair. The VIDEO half of
+		// this block already carries per-device playback tiers (d8cdcf8b); this
+		// closes the source side, in the same {base}/{base}Tablet/{base}Mobile
+		// shape sgs/media and sgs/hero use.
+		//
+		// The tier siblings are emitted HERE, next to the base image, because
+		// both must live inside the same comparison slot — the divider clips one
+		// wrap against the other, so a tier image rendered outside its wrap
+		// would not be clipped and would break the comparison.
+		// ⚠ The tier keys are spelled as WHOLE literal suffixes concatenated onto
+		// $prefix (`$prefix . 'ImageIdTablet'`), NOT built in three parts
+		// (`$prefix . 'ImageId' . $tier`). Both work at runtime; only this shape
+		// is legible to `check-dead-controls.js`, whose dynamic-prefix resolver
+		// reads `$attributes[ $var . 'Literal' ]` and cannot follow a key whose
+		// tail is another variable. Written the first way, all 8 of these attrs
+		// were reported as fully dead — a false positive, but one that would have
+		// had to be argued away in a baseline file forever. Keeping the code
+		// gate-legible is cheaper than annotating why the gate is wrong.
+		$tier_candidates = array(
+			'tablet' => array(
+				'id'  => $attributes[ $prefix . 'ImageIdTablet' ] ?? null,
+				'url' => $attributes[ $prefix . 'ImageUrlTablet' ] ?? '',
+			),
+			'mobile' => array(
+				'id'  => $attributes[ $prefix . 'ImageIdMobile' ] ?? null,
+				'url' => $attributes[ $prefix . 'ImageUrlMobile' ] ?? '',
+			),
+		);
+
+		$tiers = array();
+		foreach ( $tier_candidates as $tier_key => $candidate ) {
+			$tier_id  = (int) ( $candidate['id'] ?? 0 );
+			$tier_url = (string) ( $candidate['url'] ?? '' );
+			if ( '' === trim( $tier_url ) && $tier_id <= 0 ) {
+				continue;
 			}
+			$tiers[ $tier_key ] = array(
+				'id'  => $tier_id,
+				'url' => $tier_url,
+			);
 		}
 
-		if ( '' === trim( $url ) ) {
+		/**
+		 * Emit one <img> for a slot, by attachment ID when available and by raw
+		 * URL otherwise — the same ID-wins-URL-falls-back rule the base image
+		 * uses, kept in one place so base and tiers cannot drift apart.
+		 *
+		 * @param int    $img_id  Attachment ID (0 = external/unknown).
+		 * @param string $img_url Raw URL fallback.
+		 * @param string $img_cls Full class attribute for this <img>.
+		 * @return string HTML, or '' when neither source resolves.
+		 */
+		$emit_img = static function ( int $img_id, string $img_url, string $img_cls ) use ( $alt ): string {
+			if ( $img_id > 0 ) {
+				$markup = wp_get_attachment_image(
+					$img_id,
+					'full',
+					false,
+					array(
+						'class'    => $img_cls,
+						'alt'      => $alt,
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+					)
+				);
+				if ( '' !== $markup ) {
+					return $markup;
+				}
+			}
+			if ( '' === trim( $img_url ) ) {
+				return '';
+			}
+			return sprintf(
+				'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async" />',
+				esc_attr( $img_cls ),
+				esc_url( $img_url ),
+				esc_attr( $alt )
+			);
+		};
+
+		$base_cls  = empty( $tiers )
+			? $classes
+			: $classes . ' wp-block-sgs-before-after__img--' . $modifier . '-desktop';
+		$base_html = $emit_img( $id, $url, $base_cls );
+
+		if ( '' === $base_html ) {
 			return array(
 				'html'        => '',
 				'has_content' => false,
 			);
 		}
 
+		$html          = $base_html;
+		$emitted_tiers = array();
+		foreach ( $tiers as $tier_key => $tier_media ) {
+			$tier_html = $emit_img(
+				$tier_media['id'],
+				$tier_media['url'],
+				$classes . ' wp-block-sgs-before-after__img--' . $modifier . '-' . $tier_key
+			);
+			if ( '' === $tier_html ) {
+				continue;
+			}
+			$html           .= $tier_html;
+			$emitted_tiers[] = $tier_key;
+		}
+
 		return array(
-			'html'        => sprintf(
-				'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async" />',
-				esc_attr( $classes ),
-				esc_url( $url ),
-				esc_attr( $alt )
-			),
+			'html'        => $html,
 			'has_content' => true,
+			// Reported back so render.php can scope the breakpoint toggles to
+			// its own $uid — the resolver has no access to that scope token, and
+			// an unscoped rule would hide images in every other instance.
+			'tiers'       => $emitted_tiers,
 		);
 	}
 }

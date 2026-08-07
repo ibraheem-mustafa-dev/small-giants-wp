@@ -69,6 +69,15 @@
 			"type": "object",
 			"default": null
 		},
+		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the {base}/{base}Tablet/{base}Mobile shape sgs/media and sgs/hero use. Object-typed to MATCH `thumbnail` itself: a flat string here would be silently coerced to the default by WP's object-typed-attr handling, dropping the whole value. A tier left empty falls back to the desktop thumbnail at that width. Tiers apply to the fail-open <img> only — the canvas frame sequence is a separate per-tier pipeline (`tierDesktop`/`tierTablet`/`tierMobile`) that already art-directs itself.",
+		"thumbnailTablet": {
+			"type": "object",
+			"default": null
+		},
+		"thumbnailMobile": {
+			"type": "object",
+			"default": null
+		},
 		"thumbnailAlt": {
 			"type": "string",
 			"default": ""

@@ -117,6 +117,68 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{ /* Art direction (2026-08-07). Same device-switched shape as sgs/media
+				     and sgs/hero, so a client meets ONE interaction for "a different crop
+				     on narrow screens" wherever images appear. Rendered ONLY for image
+				     media: the render.php video branch returns before the tier siblings
+				     are built, so showing this for a video would be a dead control. */ }
+				{ effectiveMedia && 'image' === effectiveMedia.type && (
+					<PanelBody title={ __( 'Art direction', 'sgs-blocks' ) }>
+						<ResponsiveControl
+							label={ __( 'Image for this screen size', 'sgs-blocks' ) }
+						>
+							{ ( bp ) => {
+								if ( 'desktop' === bp ) {
+									return (
+										<p style={ { margin: 0, fontStyle: 'italic' } }>
+											{ __(
+												'The image chosen for this block is used on desktop. Switch to tablet or mobile to set a different crop.',
+												'sgs-blocks'
+											) }
+										</p>
+									);
+								}
+								const idKey =
+									'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
+								const urlKey =
+									'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
+								const tierValue = attributes[ urlKey ]
+									? {
+											url: attributes[ urlKey ],
+											type: 'image',
+											id: attributes[ idKey ] || 0,
+											alt: '',
+											mime: 'image/jpeg',
+									  }
+									: null;
+								return (
+									<MediaPicker
+										value={ tierValue }
+										allowedTypes={ [ 'image' ] }
+										onChange={ ( media ) =>
+											setAttributes( {
+												[ idKey ]: media ? media.id : undefined,
+												[ urlKey ]: media ? media.url : '',
+											} )
+										}
+										onRemove={ () =>
+											setAttributes( {
+												[ idKey ]: undefined,
+												[ urlKey ]: '',
+											} )
+										}
+										label={ __( 'Set image', 'sgs-blocks' ) }
+										instructionsImage={ __(
+											'Optional. Leave empty to reuse the desktop image at this width.',
+											'sgs-blocks'
+										) }
+									/>
+								);
+							} }
+						</ResponsiveControl>
+					</PanelBody>
+				) }
+
 				<PanelBody title={ __( 'Position', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Position X (%)', 'sgs-blocks' ) }

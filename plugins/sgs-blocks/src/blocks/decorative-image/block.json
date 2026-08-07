@@ -60,6 +60,21 @@
             "type": "string",
             "role": "content"
         },
+        "_comment_artDirection": "Art-direction tiers (2026-08-07) — same {base}/{base}Tablet/{base}Mobile shape and ID-wins-URL-falls-back pairing as sgs/media and sgs/hero, so a client meets ONE interaction for 'a different crop on narrow screens' wherever images appear. A tier left empty falls back to the desktop image at that width (degrade to MORE content, never less). Image-only: the decorMedia video branch returns before the tier siblings are built.",
+        "imageIdTablet": {
+            "type": "number"
+        },
+        "imageUrlTablet": {
+            "type": "string",
+            "role": "content"
+        },
+        "imageIdMobile": {
+            "type": "number"
+        },
+        "imageUrlMobile": {
+            "type": "string",
+            "role": "content"
+        },
         "imageAlt": {
             "type": "string",
             "default": "",

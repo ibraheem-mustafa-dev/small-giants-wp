@@ -129,7 +129,54 @@ $root_sel = '.' . $uid;
 
 $scoped_css   = array();
 $scoped_css[] = "{$root_sel}{aspect-ratio:" . $aspect_ratio . ';}';
-$style_tag    = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+
+// ART-DIRECTION TIERS (2026-08-07) — the fail-open <img> only. The canvas frame
+// sequence already art-directs itself through its own per-tier pipelines
+// (tierDesktop/tierTablet/tierMobile), so this closes the one surface that could
+// not: the frame a visitor sees with JS blocked or under reduced motion.
+//
+// Tier attrs are OBJECT-typed to match `thumbnail`; a flat string would be
+// silently coerced to the default by WP and drop the whole value.
+//
+// ⚠ This block builds $style_tag ONCE, here, and prints it inside the opening
+// printf() further down — so the tier rules must be appended to $scoped_css
+// BEFORE that string is assembled. Appending them next to the <img> echo (which
+// runs after the printf) compiles fine and emits nothing.
+$sgs_tier_thumbs = array();
+foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
+	$sgs_tier_media = $attributes[ 'thumbnail' . $sgs_tier ] ?? null;
+	if ( empty( $sgs_tier_media['url'] ) ) {
+		continue;
+	}
+	$sgs_tier_thumbs[ strtolower( $sgs_tier ) ] = array(
+		'id'  => isset( $sgs_tier_media['id'] ) ? absint( $sgs_tier_media['id'] ) : 0,
+		'url' => (string) $sgs_tier_media['url'],
+	);
+}
+
+$thumb_class = 'sgs-image-sequence__thumbnail';
+if ( ! empty( $sgs_tier_thumbs ) ) {
+	// ⛔ Build tier selectors from $root_sel — a BARE single-class token
+	// ('.' . $uid, above), never a multi-member selector list: a descendant
+	// appended to a list binds to its last member only.
+	$sgs_tier_sel = static function ( $tier ) use ( $root_sel ) {
+		return $root_sel . ' .sgs-image-sequence__thumbnail--' . $tier;
+	};
+	$tier_css = '';
+	if ( isset( $sgs_tier_thumbs['mobile'] ) ) {
+		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
+	}
+	if ( isset( $sgs_tier_thumbs['tablet'] ) ) {
+		$tier_css .= '@media(min-width:768px) and (max-width:1023px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$tier_css .= '@media(min-width:1024px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+	}
+	$scoped_css[] = $tier_css;
+	$thumb_class .= ' sgs-image-sequence__thumbnail--desktop';
+}
+
+$style_tag = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 
 $block_props = get_block_wrapper_attributes(
 	array( 'class' => 'sgs-image-sequence ' . $uid )
@@ -180,8 +227,18 @@ echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.Outpu
 	$thumbnail_url,
 	$thumbnail_alt,
 	'large',
-	array( 'class' => 'sgs-image-sequence__thumbnail' )
+	array( 'class' => $thumb_class )
 );
+
+foreach ( $sgs_tier_thumbs as $sgs_tier_key => $sgs_tier_media ) {
+	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes internally.
+		$sgs_tier_media['id'],
+		$sgs_tier_media['url'],
+		$thumbnail_alt,
+		'large',
+		array( 'class' => 'sgs-image-sequence__thumbnail sgs-image-sequence__thumbnail--' . $sgs_tier_key )
+	);
+}
 
 printf(
 	'<canvas %s></canvas>',

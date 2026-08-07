@@ -224,6 +224,15 @@
 			"type": "object",
 			"default": null
 		},
+		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the {base}/{base}Tablet/{base}Mobile shape sgs/media and sgs/hero use, object-typed to MATCH avatarMedia (a flat value on an object-typed attr is silently coerced to the default, dropping the whole thing). A tier left empty falls back to the desktop avatar at that width. Deliberately NOT sgs_render_media()'s existing `mobile_url` <picture> path: that is mobile-only, has no tablet step, and is not the BEM tier modifier the cloning pipeline's draft vocabulary reads — one convention on both ends is what makes a clone round-trip.",
+		"avatarMediaTablet": {
+			"type": "object",
+			"default": null
+		},
+		"avatarMediaMobile": {
+			"type": "object",
+			"default": null
+		},
 		"orgLogo": {
 			"type": "object",
 			"default": null

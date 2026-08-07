@@ -69,8 +69,23 @@ const WIDTH_UNITS = [
  * @param {Function} root0.onSelect
  * @param {Function} root0.onAltChange
  * @param {Function} root0.onClear
+ * @param {boolean}  [root0.showAlt] Render the alt-text field. Defaults to true.
+ *                                   Passed false by the art-direction tier
+ *                                   pickers: alt is NOT tiered (a different crop
+ *                                   of the same subject describes the same
+ *                                   thing), and rendering the field without an
+ *                                   `alt`/`onAltChange` pair would put an
+ *                                   uncontrolled, untypeable input on screen.
  */
-function ImagePickerRow( { label, url, alt, onSelect, onAltChange, onClear } ) {
+function ImagePickerRow( {
+	label,
+	url,
+	alt,
+	onSelect,
+	onAltChange,
+	onClear,
+	showAlt = true,
+} ) {
 	return (
 		<div style={ { marginBottom: '16px' } }>
 			<p style={ { marginBottom: '4px', fontWeight: 500 } }>{ label }</p>
@@ -106,16 +121,18 @@ function ImagePickerRow( { label, url, alt, onSelect, onAltChange, onClear } ) {
 							marginBottom: '8px',
 						} }
 					/>
-					<TextControl
-						label={ __( 'Alt text', 'sgs-blocks' ) }
-						help={ __(
-							'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
-							'sgs-blocks'
-						) }
-						value={ alt }
-						onChange={ onAltChange }
-						__nextHasNoMarginBottom
-					/>
+					{ showAlt && (
+						<TextControl
+							label={ __( 'Alt text', 'sgs-blocks' ) }
+							help={ __(
+								'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
+								'sgs-blocks'
+							) }
+							value={ alt }
+							onChange={ onAltChange }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					<Button
 						variant="tertiary"
 						isDestructive
@@ -197,6 +214,57 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 						} )
 					}
 				/>
+			) }
+
+			{ /* Art direction (2026-08-07) — the IMAGE pair, completing the half
+			     this block was missing (its video playback tiers landed earlier).
+			     Same device-switched shape as sgs/media and sgs/hero. Gated on a
+			     desktop image existing: a per-device override for an image that is
+			     not there would be a dead control. Alt text is deliberately not
+			     tiered — a different crop of the same subject describes the same
+			     thing. */ }
+			{ 'image' === mediaType && attributes[ imageUrlKey ] && (
+				<ResponsiveControl
+					label={ __( 'Image for this screen size', 'sgs-blocks' ) }
+				>
+					{ ( bp ) => {
+						if ( 'desktop' === bp ) {
+							return (
+								<p style={ { margin: 0, fontStyle: 'italic' } }>
+									{ __(
+										'The image above is used on desktop. Switch to tablet or mobile to set a different crop.',
+										'sgs-blocks'
+									) }
+								</p>
+							);
+						}
+						const tier = 'tablet' === bp ? 'Tablet' : 'Mobile';
+						const tierIdKey = `${ side }ImageId${ tier }`;
+						const tierUrlKey = `${ side }ImageUrl${ tier }`;
+						return (
+							<ImagePickerRow
+								label={ __(
+									'Optional — leave empty to reuse the desktop image here',
+									'sgs-blocks'
+								) }
+								url={ attributes[ tierUrlKey ] }
+								showAlt={ false }
+								onSelect={ ( media ) =>
+									setAttributes( {
+										[ tierIdKey ]: media.id,
+										[ tierUrlKey ]: media.url,
+									} )
+								}
+								onClear={ () =>
+									setAttributes( {
+										[ tierIdKey ]: null,
+										[ tierUrlKey ]: '',
+									} )
+								}
+							/>
+						);
+					} }
+				</ResponsiveControl>
 			) }
 
 			{ 'video' === mediaType && (

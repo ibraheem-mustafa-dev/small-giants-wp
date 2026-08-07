@@ -256,6 +256,58 @@ if ( $is_video ) {
 	return;
 }
 
+// ART-DIRECTION TIERS (2026-08-07). Image branch only — the video branch above
+// has already returned. Same {base}/{base}Tablet/{base}Mobile shape as
+// sgs/media and sgs/hero, so one client interaction covers "a different crop on
+// narrow screens" wherever images appear.
+//
+// ⚠ NAKED MODE. This block has NO wrapper element — sgs_responsive_image()
+// emits the <img> AS the block root. So each tier is a SIBLING <img> that must
+// itself carry the $uid class (the positioning/opacity/transform rule is scoped
+// to `.{uid}.sgs-decorative-image` and would not reach a tier img without it),
+// and the toggle selectors are COMPOUND (`.{uid}.sgs-decorative-image--mobile`),
+// never descendant — there is no ancestor to descend from.
+//
+// ⛔ Tier selectors are built from `'.' . $uid` (a bare single-class token),
+// never from $root_sel or any multi-member selector list: a descendant or
+// modifier appended to a LIST binds to the last member only, which on
+// sgs/media hid every image at every width before it was caught live.
+$tier_imgs = array();
+foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
+	$tier_id  = isset( $attributes[ 'imageId' . $sgs_tier ] ) ? absint( $attributes[ 'imageId' . $sgs_tier ] ) : 0;
+	$tier_url = isset( $attributes[ 'imageUrl' . $sgs_tier ] ) ? (string) $attributes[ 'imageUrl' . $sgs_tier ] : '';
+	if ( '' === $tier_url && 0 === $tier_id ) {
+		continue;
+	}
+	$tier_imgs[ strtolower( $sgs_tier ) ] = array(
+		'id'  => $tier_id,
+		'url' => $tier_url,
+	);
+}
+
+$base_class = $img_attrs['class'];
+if ( ! empty( $tier_imgs ) ) {
+	$img_attrs['class'] = $base_class . ' sgs-decorative-image--desktop';
+
+	$sgs_tier_sel  = static function ( $tier ) use ( $uid ) {
+		return '.' . $uid . '.sgs-decorative-image--' . $tier;
+	};
+	$tier_css = '';
+	if ( isset( $tier_imgs['mobile'] ) ) {
+		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
+	}
+	if ( isset( $tier_imgs['tablet'] ) ) {
+		$tier_css .= '@media(min-width:768px) and (max-width:1023px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$tier_css .= '@media(min-width:1024px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+	}
+	// Re-assemble the <style> tag with the tier rules appended, through the same
+	// wp_strip_all_tags </style>-breakout guard the base rule uses (contract §D).
+	$scoped_css[]   = $tier_css;
+	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+}
+
 // Image branch: render using sgs_responsive_image helper — all attributes
 // escaped via $img_attrs. NO 'style' key on $img_attrs — the scoped
 // $style_tag_html (echoed first) carries the positioning/transform/opacity
@@ -268,3 +320,15 @@ echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.Outpu
 	'large',
 	$img_attrs
 );
+
+foreach ( $tier_imgs as $tier_key => $tier_media ) {
+	$tier_attrs          = $img_attrs;
+	$tier_attrs['class'] = $base_class . ' sgs-decorative-image--' . $tier_key;
+	echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
+		$tier_media['id'],
+		$tier_media['url'],
+		'', // Empty alt for decorative.
+		'large',
+		$tier_attrs
+	);
+}

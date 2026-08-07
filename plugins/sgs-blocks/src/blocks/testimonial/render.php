@@ -533,11 +533,55 @@ if ( ! empty( $meta_parts ) ) {
 }
 
 // ── Media nodes (gated) ─────────────────────────────────────────────────────
-$avatar_html = '';
+// ART-DIRECTION TIERS (2026-08-07). sgs_render_media() takes no class argument,
+// so each tier gets its OWN `.sgs-testimonial__avatar--{tier}` wrapper rather
+// than a modifier on the <img> — same visible result, and the toggle lands on an
+// element this block already owns.
+$avatar_html  = '';
+$avatar_tiers = array();
+foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
+	$sgs_tier_media = $attributes[ 'avatarMedia' . $sgs_tier ] ?? null;
+	if ( empty( $sgs_tier_media['url'] ) ) {
+		continue;
+	}
+	$sgs_tier_inner = sgs_render_media( $sgs_tier_media, 'sgs/testimonial' );
+	if ( '' === $sgs_tier_inner ) {
+		continue;
+	}
+	$avatar_tiers[ strtolower( $sgs_tier ) ] = $sgs_tier_inner;
+}
+
 if ( ! empty( $avatar_media['url'] ) ) {
 	$avatar_inner = sgs_render_media( $avatar_media, 'sgs/testimonial' );
 	if ( '' !== $avatar_inner ) {
-		$avatar_html = '<div class="sgs-testimonial__avatar">' . $avatar_inner . '</div>';
+		$avatar_base_cls = 'sgs-testimonial__avatar';
+		if ( ! empty( $avatar_tiers ) ) {
+			$avatar_base_cls .= ' sgs-testimonial__avatar--desktop';
+		}
+		$avatar_html = '<div class="' . esc_attr( $avatar_base_cls ) . '">' . $avatar_inner . '</div>';
+		foreach ( $avatar_tiers as $sgs_tier_key => $sgs_tier_inner ) {
+			$avatar_html .= '<div class="sgs-testimonial__avatar sgs-testimonial__avatar--'
+				. esc_attr( $sgs_tier_key ) . '">' . $sgs_tier_inner . '</div>';
+		}
+	}
+}
+
+// ⛔ Tier selectors descend from $root_sel — a single compound token
+// (`.{uid}.wp-block-sgs-testimonial`), never a multi-member selector LIST: a
+// descendant appended to a list binds to its last member only, which on
+// sgs/media hid every image at every width before it was caught live.
+if ( '' !== $avatar_html && ! empty( $avatar_tiers ) ) {
+	$sgs_avatar_tier_sel = static function ( $tier ) use ( $root_sel ) {
+		return $root_sel . ' .sgs-testimonial__avatar--' . $tier;
+	};
+	if ( isset( $avatar_tiers['mobile'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $sgs_avatar_tier_sel( 'desktop' ) . '{display:none}}';
+		$scoped_css[] = '@media(min-width:768px){' . $sgs_avatar_tier_sel( 'mobile' ) . '{display:none}}';
+	}
+	if ( isset( $avatar_tiers['tablet'] ) ) {
+		$scoped_css[] = '@media(min-width:768px) and (max-width:1023px){' . $sgs_avatar_tier_sel( 'desktop' ) . '{display:none}}';
+		$scoped_css[] = '@media(max-width:767px){' . $sgs_avatar_tier_sel( 'tablet' ) . '{display:none}}';
+		$scoped_css[] = '@media(min-width:1024px){' . $sgs_avatar_tier_sel( 'tablet' ) . '{display:none}}';
 	}
 }
 

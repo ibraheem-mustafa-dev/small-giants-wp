@@ -378,11 +378,191 @@ window.addEventListener( 'resize', function () {
 		sgsEnhancedVideoWraps.forEach( ( { video, wrap } ) =>
 			applyTierPlayback( video, wrap )
 		);
+		// Source tiers ride the SAME debounced listener — a rebuild is the most
+		// expensive thing this file does, so it must never run per resize event.
+		sgsTieredVideoNodes.forEach( applyTierSource );
 	}, 200 );
 } );
 
+/**
+ * Read the per-tier source spec off an element's dataset, with the same upward
+ * fallback every other tier family in this codebase uses: mobile falls back to
+ * tablet, tablet falls back to desktop.
+ *
+ * @param {HTMLElement} node Element carrying the data-src-* contract.
+ * @param {'mobile'|'tablet'|'desktop'} tier Tier to resolve.
+ * @return {{src: string, kind: string, type: string, poster: string}|null} Spec, or null when this block has no tiers.
+ */
+function resolveTierSource( node, tier ) {
+	const d = node.dataset;
+	if ( ! d.srcDesktop ) {
+		return null;
+	}
+	const pick = ( base ) => {
+		if ( tier === 'mobile' ) {
+			return d[ `${ base }Mobile` ] || d[ `${ base }Tablet` ] || d[ `${ base }Desktop` ];
+		}
+		if ( tier === 'tablet' ) {
+			return d[ `${ base }Tablet` ] || d[ `${ base }Desktop` ];
+		}
+		return d[ `${ base }Desktop` ];
+	};
+	return {
+		src: pick( 'src' ) || '',
+		kind: pick( 'srcKind' ) || 'file',
+		type: pick( 'srcType' ) || '',
+		poster: pick( 'poster' ) || '',
+	};
+}
+
+/**
+ * Build the element a tier's spec calls for — a <video> for a direct file, an
+ * <iframe> for a YouTube/Vimeo embed.
+ *
+ * A tier may change the KIND as well as the URL (desktop MP4, mobile YouTube),
+ * so the swap has to be able to replace the element, not just its src.
+ *
+ * @param {{src: string, kind: string, type: string, poster: string}} spec Resolved tier spec.
+ * @param {HTMLElement} prev Element being replaced — its class/aria are carried over.
+ * @return {HTMLElement} Freshly built node.
+ */
+function buildVideoNode( spec, prev ) {
+	// The tier contract lives in data-* on the node itself, so EVERY rebuilt
+	// node must carry it forward or the swap becomes one-way.
+	//
+	// ⚠ Found live, 2026-08-07: the iframe branch originally set only
+	// `data-poster`, so the first desktop→mobile swap produced an iframe with no
+	// data-src-* at all. resolveTierSource() then returned null forever and the
+	// block was stuck on the mobile source even back at 1364px — a swap that
+	// visibly "worked" once and was permanently broken after. Copying the
+	// dataset is what makes it reversible.
+	const carryDataset = ( node ) => {
+		Object.keys( prev.dataset ).forEach( ( key ) => {
+			node.dataset[ key ] = prev.dataset[ key ];
+		} );
+	};
+
+	if ( spec.kind === 'youtube' || spec.kind === 'vimeo' ) {
+		const frame = document.createElement( 'iframe' );
+		frame.className = 'sgs-media__video';
+		carryDataset( frame );
+		frame.src = spec.src;
+		frame.setAttribute( 'frameborder', '0' );
+		frame.setAttribute( 'allowfullscreen', '' );
+		frame.setAttribute(
+			'allow',
+			spec.kind === 'youtube'
+				? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+				: 'autoplay; fullscreen; picture-in-picture'
+		);
+		if ( spec.poster ) {
+			frame.dataset.poster = spec.poster;
+		}
+		return frame;
+	}
+
+	const video = document.createElement( 'video' );
+	video.className = 'sgs-media__video';
+	// Carries the playback tier data-* too, so applyTierPlayback() still has its
+	// contract on the new node.
+	carryDataset( video );
+	if ( spec.poster ) {
+		video.poster = spec.poster;
+	}
+	const ariaLabel = prev.getAttribute( 'aria-label' );
+	if ( ariaLabel ) {
+		video.setAttribute( 'aria-label', ariaLabel );
+	}
+	const source = document.createElement( 'source' );
+	source.src = spec.src;
+	if ( spec.type ) {
+		source.type = spec.type;
+	}
+	video.appendChild( source );
+	return video;
+}
+
+// Every media block whose video carries tier sources, plus the tier its DOM is
+// currently built for. Kept separate from sgsEnhancedVideoWraps because an
+// embed <iframe> is never "enhanced" (the branded player only wraps a real
+// <video>) yet still needs the source swap.
+const sgsTieredVideoNodes = [];
+
+/**
+ * Swap one block's video to the source its current viewport tier asks for.
+ *
+ * ⚠ Bean-decided 2026-08-07, with the cost stated and accepted: for a
+ * YouTube/Vimeo embed this REBUILDS the iframe, so a visitor who crosses a
+ * breakpoint mid-watch loses their playback position. That is why the swap only
+ * fires when the resolved tier's SOURCE genuinely differs from what is on
+ * screen — a resize within one tier, or across tiers that resolve to the same
+ * URL, must not tear the player down.
+ *
+ * @param {Object} entry Tracked entry { node, tier }.
+ */
+function applyTierSource( entry ) {
+	const tier = getCurrentDeviceTier();
+	const spec = resolveTierSource( entry.node, tier );
+	if ( ! spec || ! spec.src ) {
+		return;
+	}
+
+	const isFrame = entry.node.tagName === 'IFRAME';
+	const currentSrc = isFrame
+		? entry.node.getAttribute( 'src' )
+		: entry.node.querySelector( 'source' )?.getAttribute( 'src' );
+	const currentKind = isFrame ? 'embed' : 'file';
+	const nextKind = spec.kind === 'file' ? 'file' : 'embed';
+
+	if ( currentSrc === spec.src && currentKind === nextKind ) {
+		entry.tier = tier;
+		return;
+	}
+
+	// Same element kind and a direct file — swap in place, which preserves the
+	// element (and the branded player wrapped around it).
+	if ( currentKind === 'file' && nextKind === 'file' ) {
+		const source = entry.node.querySelector( 'source' );
+		if ( source ) {
+			source.src = spec.src;
+			if ( spec.type ) {
+				source.type = spec.type;
+			}
+			if ( spec.poster ) {
+				entry.node.poster = spec.poster;
+			}
+			entry.node.load();
+			entry.tier = tier;
+		}
+		return;
+	}
+
+	// Kind changed, or an embed URL changed — replace the node outright.
+	const next = buildVideoNode( spec, entry.node );
+	entry.node.replaceWith( next );
+	entry.node = next;
+	entry.tier = tier;
+
+	// A rebuilt direct-file <video> has lost the branded player that wrapped the
+	// old node; re-enhance it so controls come back.
+	if ( next.tagName === 'VIDEO' ) {
+		enhance( next );
+	}
+}
+
 function init() {
 	document.querySelectorAll( 'video.sgs-media__video' ).forEach( enhance );
+
+	// Tier sources apply to both <video> and embed <iframe>.
+	document
+		.querySelectorAll(
+			'video.sgs-media__video[data-src-desktop], iframe.sgs-media__video[data-src-desktop]'
+		)
+		.forEach( ( node ) => {
+			const entry = { node, tier: 'desktop' };
+			sgsTieredVideoNodes.push( entry );
+			applyTierSource( entry );
+		} );
 }
 
 if ( document.readyState === 'loading' ) {
