@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-06
+last_updated: 2026-08-07
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -14,27 +14,33 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where 2026-08-06 left things, in a sentence each:**
-- **The 14 half-finished blocks are finished and live.** They were described as waiting on a
-  screenshot check; they actually did not build at all. Two settings were wired to nothing — a client
-  could pick an option and nothing would happen. Both fixed.
-- **Your footer spot was a real bug.** Screen readers had no way to jump to the footer on any page,
-  because nothing marked it as one. Now there is exactly one, checked on the live site.
-- **A piece of the framework had been switched off without anyone noticing** — a spelling mismatch
-  meant 56 settings across 7 blocks were being skipped. Working again.
-- **A warning that cried wolf on every run now only fires when something is genuinely wrong.**
-- **69 settings still need a human decision — and they need YOUR decisions, not more code.** No
-  amount of clever detection closes them; that is the honest shape of the remaining work.
+**Where 2026-08-07 left things, in a sentence each:**
+- **Clients can now set a different image for phone, tablet and desktop** on the hero and media
+  blocks. The tablet option was written into the code months ago but connected to nothing, and
+  neither option had a control — so only the cloning robot could use them, never a person.
+- **Checked on the real site at three screen sizes, and the right photo appears at each.** Two bugs
+  turned up only because it was checked live; both are fixed.
+- **The alarm that was meant to catch exactly this kind of dead setting was asleep.** It cleared any
+  phone/tablet setting as long as the block had *any* responsive styling anywhere. Now fixed, and
+  proved by deliberately breaking it and watching it fire.
+- **A colour rule was wrong at the source.** One row said a shadow counts as a colour; 18 settings
+  inherited it. One correction fixed all 18 automatically.
+- **A conclusion I reached yesterday was wrong and has been retracted** — a self-repairing piece of
+  the system had quietly undone my test conditions, so I measured the same thing twice and thought
+  it proved something.
 
 **Older, still true:** WebGL is in the framework (Tier W, budgeted) · ⛔ GSAP's licence has a clause
 worth knowing before selling a plugin built on it · the Snooza job is 72 combinations, not 24.
 
 ## CURRENT FRONTS
 
-> **D-ceiling 504** — re-measure before writing any D reference, never trust this line:
+> **D-ceiling: RUN THE COMMAND — this line no longer caches the number.** The cache is what went
+> stale as "D498" on 2026-08-06 while the same file said 504 four sections later; a QC subagent
+> caught the self-contradiction. A caveat is not a mechanism, so the number is gone:
 > `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-> **D504 (2026-08-06) = Spec 35 pool 23 → 0**: four detector defects and two built-but-inert
-> mechanisms. D499-D503 = the Step 0.1 close.
+> **D515-D517 (2026-08-07)** = art-direction tiers live on hero+media, and the dead-control gate's
+> tier blind spot closed in both CHECK 4 and CHECK 1. **D514 RETRACTS D511** — a self-repairing
+> mechanism had reverted the test conditions at import, so D511's and D513's conclusions are void.
 
 ### Track 3 — CLOSED (D479). Tier W admitted, physics-canvas shipped.
 
@@ -48,18 +54,20 @@ Per-sub-track status (one line each) + the pointer that owns the full narrative 
 before acting, do not assume it is current from memory alone:
 
 - **Track 1 — routing audit COMPLETE + tier axis SHIPPED (D480); Phases 0-3 COMPLETE (D464, D470-D478),
-  Phase 4 PARTIAL, Phase 5 OPEN.** Tier axis does not yet reach `splitImage` — **TWO blockers, not
-  one: `scalar-media` AND `walk.py:281-292` `_family_modifier`, which returns on the first
-  family-matching class rather than the first class carrying a modifier (measured 2026-08-06, Task B
-  council). Fixing only the role reintroduces the D474 mobile-crop-in-desktop-attr bug.** Spec 35
+  Phase 4 PARTIAL, Phase 5 OPEN.** ⚠ **The "`_family_modifier` is a second blocker" line here was
+  based on D511/D513 and is SUPERSEDED by D514** — D506 fixed `_family_modifier`, and the tier
+  primitive turned out to already exist; what was missing was the DATA SHAPE. `scalar-media` is still
+  NOT retirable, but for a different, narrower reason (a residual child block). Spec 35
   prerequisite. Live parity: content 99%, CSS 83/84/89% (worst mobile). Registers:
   `reports/2026-08-02-pipeline-routing-review.md` + `reports/2026-08-03-handover-to-spec35-block-attribute-defects.md`.
   Narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md`.
 - **⭐ Track 1b (Spec 35) — POOL 23 → 0, CLOSED 2026-08-06 (D504).** Every `sgs/%` string attribute
   carries a role, all by MECHANISM, zero hand overrides. Four REAL bugs fixed en route
   (image-sequence content drop · inert `link-content` chain · `sgs/separator` icon routing ·
-  `form.formName` dead control → the form's accessible name). Next = **A7, A8, A9** under NEXT
-  SESSION. **Task B is running in a PARALLEL session — do not touch it.** Then Task F.
+  `form.formName` dead control → the form's accessible name). **A7, A8 and A9 are now all CLOSED
+  (D508/D509/D510), and the A7 reseed IS landed.** Next = the art-direction rollout across 5 more
+  blocks (4 untouched + the VIDEO half of `sgs/media`), then **Task F**. The parallel Task-B
+  session has finished and committed.
 - **Track 1b enforcement baseline (2026-08-04, D481-D484):** 0 of 24 end conditions had a validated
   script (1 enforced/8 partial/4 vacuous/2 unwired/9 absent). Tasks C+D closed 2 of those 2026-08-06;
   CHECK 5 (dead assignment) added 2026-08-06. **Task F closes the rest — bar = `STOP-CATALOGUE.md`
@@ -106,7 +114,9 @@ SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pr
 - **Sites:** staging/dev = palestine-lives.org. staging/canary = sandybrown-nightingale-600381.hostingersite.com.
   Both WP 7.0.2 (verified 2026-07-20 over SSH on both).
 - **Fixtures on the canary (not assumed clean):** motion 2083/2086; mega page 1762, panel 1745,
-  menu 100, item 1746; header CPT 1570, footer CPT 1654.
+  menu 100, item 1746; header CPT 1570, footer CPT 1654; **art-direction 2161**
+  (`/art-direction-tiers-canary-hero-media/`, hero + media with 3 distinct crops each — reuse it for
+  the Task-1 rollout); Spec 32 guard-purge canary 2164 (Track 2's).
 - **Latent + open (not blockers):** Mama's `#e68a95` text-contrast — ⚠ cited a
   `P-MAMAS-PRIMARY-CONTRAST` parking entry that **has never existed** in `parking.md` or
   `STOP-CATALOGUE.md` (the handoff citation gate caught the dangling token 2026-08-06). The issue is
@@ -151,162 +161,179 @@ The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION (Track 1b / Spec 35)
+## NEXT SESSION (Track 1b / Spec 35) — art-direction rollout, then Task F
 
 ### THE GOAL — state it before picking up any task
 
 **Bean's clients are tech-illiterate and live in the block editor.** Spec 35 exists so every SGS
 block's inspector is genuinely usable by them: a control for everything the block can do, none for
-what it cannot, nothing that crashes, one consistent shape across every block. **A setting that
-needs code to mean anything is not done.** The 24 end conditions are only worth having if ENFORCED —
-measured 2026-08-04 at 0 of 24, which is what Task F exists to fix.
+what it cannot, one consistent shape across every block. **A setting that needs code to mean anything
+is not done.** The 24 end conditions are only worth having if ENFORCED — measured 2026-08-04 at
+0 of 24, which is what Task F exists to fix.
 
-### ✅ STEP 0 + 0.1 + 0.2 CLOSED. **POOL 23 → 0 on 2026-08-06.**
+### ✅ CLOSED — Step 0/0.1/0.2, A7, A8, A9, and the gate blind spot
 
-Every `sgs/%` string attribute now carries a role, assigned BY MECHANISM — **zero hand overrides**
-(D497). Every bucket reads 0: assignable, report-only, vetoed, content-gaps, D4-review.
+- **Pool 23 → 0** (D504) — every `sgs/%` string attr carries a role BY MECHANISM, zero hand
+  overrides. ⛔ Re-measure, don't trust this line:
+  `cd plugins/sgs-blocks/scripts/content-role-detect && python fingerprint_content_roles.py`
+- **A7 (D508) + A8 (D509)** — attrMap ARITY decides colour-vs-shorthand; the dead header/footer grid
+  surface deleted. **The A7 reseed IS NOW LANDED** — earlier ledger text saying "NOT YET IN THE DB"
+  was superseded 2026-08-07.
+- **A9 = the Track 1 critique, and it is worked through** (D510). Its two measured defects are now at
+  their irreducible cores: `role='color'` on a non-colour property **19 → 1**; a colour property with
+  a non-`color` role **10 → 1**. Both survivors are CORRECT disagreements —
+  `nav-drawer.surfaceOpacity` (a number) and `trust-bar.backgroundOverlayColour` (a colour delivered
+  through a gradient). **Do not "fix" them.** Root cause of the 19 was ONE row:
+  `property_suffixes.Shadow` said a box-shadow is a colour while its sibling `BoxShadow` said `visual`.
+- **Variant matching (D512)** — 9 variants across 4 blocks were unmatchable even when a draft NAMED
+  them, because the value set came from `variant_slots` (which stores DISCRIMINATING slots) instead of
+  the block's own declared enum. `trust-bar--text-only` no longer clones as `icon-circle`.
+- **Art-direction tiers (D515)** — `sgs/hero` + `sgs/media` verified live at 375/768/1440.
+- **Dead-control gate (D516/D517)** — CHECK 4 **and** CHECK 1 now require dynamic tier-key
+  construction, not a bare `@media`. A/B proven on an identical tree; `--tier-audit` reports 0.
 
-⛔ **Do NOT trust that number from this file. Re-measure:**
-`cd plugins/sgs-blocks/scripts/content-role-detect && python fingerprint_content_roles.py`
+⛔ **The Spec 39 reply is DRAFTED, NOT SENT.** Three corrections the pipeline side needs before they
+freeze it: **`stroke` IS a colour** (excluding it breaks SVG routing); **`css_property` alone is
+insufficient** — their own `surfaceOpacity` example would route a number as a colour, so it needs a
+value-shape guard; and **the DB-derived set already exists** (`_load_colour_terminal_props`) — import
+it rather than restate a list. Their defect-A count of 21 is also wrong; the honest figure is 19.
 
-Nine commits: `0ecdbbd2` `32b4fbd7` `e1402858` `8f533bd6` `03cb6a68` `cc74de57` `ca5a336c`
-`628936d0` `50c93837`. **Full narrative + every measurement:
-`memory/session-2026-08-06-spec35-task-a.md`.** Decisions log has the compressed record.
+---
 
-**Four REAL bugs were fixed along the way — this was never only classification:**
-1. `sgs/image-sequence` dropped its poster image AND alt text on clone (root cause was DATA — a
-   missing `media`-slot alias — not converter code).
-2. The `link-content` chain (role + extractor + reader) was fully built and **completely inert**.
-3. `sgs/separator` icon cloning was BROKEN — 3 of its 4 icon kinds were mis-roled on what is a
-   converter ROUTING KEY.
-4. `sgs/form.formName` had a live editor control and rendered NOTHING; now the form's `aria-label`,
-   which also closes a real WCAG gap (an SGS form had no accessible name at all).
+## ⭐ NEXT SESSION — orchestration plan
 
-Plus: 3 genuinely dead controls wired, 2 abandoned attrs deleted, 13 dead locals removed, and a new
-CHECK 5 gate. All deployed to the canary and visual-diff evidenced.
+**Identity.** You are the SGS framework engineer closing Spec 35. Two fronts: finish rolling the
+art-direction tier pattern across the remaining media-bearing blocks, then start Task F — the
+enforcement scripts that are the track's actual deliverable.
 
-### ⭐ NEXT SESSION — **A7 + A8 CLOSED 2026-08-06. A9 is the front, and it is BLOCKED on Bean.**
+**State recap.** `sgs/hero` and `sgs/media` now render device-specific image tiers with a
+device-switched editor control, verified on the canary at three widths. The same shape is missing on
+five more blocks. Separately, Spec 35's 24 end conditions were measured at 0-of-24 enforced on
+2026-08-04; Tasks C+D closed two, CHECK 5 added one, and the gate hardening above put real teeth in
+two more. Task F closes the rest.
 
-- **A7 CLOSED — D508, commit `1a46d4c5`.** attrMap ARITY decides colour-vs-shorthand. 127 verdicts:
-  122 confirm, **5 change** (2 product-card border colours off a wrong `styling`; `button.colourText`
-  + 2 product-card text colours off `text-content`, which is CONTENT-BEARING — rich-text extraction
-  was aimed at a colour). The shorthand flattening is fixed (keys accumulate, comma-joined).
-  Colour-terminal is a DB **set-difference** over `property_suffixes`, not a dict — `box-shadow`
-  disagrees with itself and drops out, saving 8 `boxShadow` attrs from a wrong role.
-  ⚠ **Measuring BEFORE writing changed the rule:** an unconditional `>1 → styling` would have demoted
-  3 enum size-pickers. The leg never demotes a more specific role — so `gridItemBorder` holds by
-  ARITY but only CONDITIONALLY (it corrects a future wrong `color`; it does not re-assert each run).
-  ⛔ **NOT YET IN THE DB.** Applying needs a `/sgs-update` (cross-track), and the regenerated
-  `css-property-classifications.json` currently also picks up Task B's uncommitted `team-member`
-  edits. Proven on a DB **copy** via the real production loader. Land the reseed on a clean tree.
-- **A8 CLOSED — D509, commit `8cc4f543`** (⚠ that commit carries ANOTHER SESSION'S subject line — a
-  shared-worktree message race; content is correct, see D509). 15 attrs deleted per block (14 grid +
-  the dead `layout`): 87→72, 82→67. Proven NOT a shared-wrapper capability — the attrs are longhand
-  in each `block.json` and the one shared attr injector holds none of them, so the wrapper and every
-  other block are untouched. Gates green; zero stored content affected. → feed to **FR-37-22**.
-- **A9 — Bean supplies the seeding-setup critique/context. Do not start before it arrives.**
-  Then → **Task F** (the enforcement scripts; the track's actual deliverable).
+### Task 1 — roll art-direction tiers across the remaining media blocks
 
-⛔ **Shared-worktree lesson banked this session:** staging by exact path is NOT enough — the index can
-already hold another track's staged files. **Diff your own commit's file list afterwards.**
+**What:** give each remaining media SOURCE attr the `{base}` / `{base}Tablet` / `{base}Mobile` shape
+that hero and media now use, with ONE `<ResponsiveControl>`-wrapped picker.
+**Scope note:** 4 blocks are untouched; `sgs/media` needs only its VIDEO half (the image half
+shipped this session).
+**Why:** a client cannot art-direct their own images on these blocks today — only the cloning pipeline
+can write those values, which is precisely what Spec 35 exists to stop.
+**Estimated time:** 25 min for the five blocks.
 
-### Original brief (A7/A8 rows removed 2026-08-06 — both CLOSED above; full reasoning in D508/D509)
+**Scope — measured 2026-08-07, already filtered:**
 
-| # | Task | State |
-|---|---|---|
-| **A9** | **Rework the seeding setup** per the critique + context from the Spec 31 cloning-pipeline agent. ⏳ **Bean supplies that input once A7 and A8 are fully closed** — do not start A9 before it arrives |
+| block | attrs needing tiers |
+|---|---|
+| `sgs/before-after` | `beforeImageId/Url`, `afterImageId/Url` (+ the video pair) |
+| `sgs/decorative-image` | `imageId`, `imageUrl` |
+| `sgs/image-sequence` | `thumbnail` (the poster) |
+| `sgs/media` | `videoUrl`/`videoId` + `thumbnail` — the VIDEO half; the image half shipped |
+| `sgs/testimonial` | `avatarMedia` |
 
-**Then → Task F** (build the remaining enforcement scripts; the track's actual deliverable).
+⛔ **NOT tier candidates — do not touch:** `showAvatar`, `photoShape`, `backgroundImageOpacity`,
+`splitImageBleed`, `splitImageMobileObjectPosition`, `splitImageMobileHeight`. They are settings, not
+media sources; a naive name-grep sweeps them in.
 
-**Task B is being worked in a PARALLEL SESSION — do not touch it.** Status 2026-08-06, post-council
-(plan: `~/.claude/plans/go-spec-35-task-concurrent-pancake.md`):
-- **Phases 1, 2 and 3 SHIPPED.** D505 `15df8264` (`--desktop` A-collapses to the BASE attr) ·
-  D506 `7f460333` (device tier reads a modifier on ANY own-family class) · D507 `b717717d` +
-  `13a42d83` (bgVideoTablet ×7, breakpoint 600→768, poster→thumbnail, polymorphic slot split).
-- **Content collisions 9 → 2.** A LIVE mis-route is closed: `sgs-container__video-bg` routed a
-  background VIDEO into the background IMAGE attr on all 7 mirror blocks. The 2 survivors are
-  same-kind duplicate PAIRS one block each — `hero` backgroundVideo/bgVideo and `team-member`
-  memberMedia/photo — which a slot split structurally cannot fix. **They need a duplicate REMOVED
-  and Bean's call**; hero's is the 2026-08-03 report's Option A.
-- **STILL OPEN:** `scalar-media` retirement + the `splitImage` trio reclassification (phase 3c),
-  and 9 video attrs carrying `role IS NULL` (phase 3d).
-- ⛔ **The collision class is 9 groups / 7 blocks, not the "FOUR-block" figure** — adds
-  `physics-canvas`, `site-header`, `site-footer`. Re-run the gate; do not cite 4.
-- ⛔ **`splitImage` is NOT "prefix-not-suffix"** (that was `responsive-logo`). Only the Tablet tier
-  is missing, and the model is `backgroundImage`/`Tablet`/`Mobile` on the same block.
-- ⛔ **`scalar-media` is NOT the only blocker.** `walk.py:281-292` `_family_modifier` returns on the
-  first family-matching class, not the first class carrying a modifier — so on hero's two-class
-  markup the device tier is ALWAYS `None`. Retiring `scalar-media` before fixing that puts the
-  mobile crop in the desktop attr with no gap logged. Phase 2 fixes it; Phase 3 is gated on it.
-- ⛔ **A slot split alone cannot close a collision** — `assign-canonical.py:797-800` preserves
-  `derived_selector` when populated, so the gate would read green while the defect persists.
+⛔ **`sgs/before-after` IS THE ONE UNSAFE ROW — and the risk is DUPLICATION, not just a dirty file.**
+At handoff time `before-after/{block.json,edit.js,render.php,view.js}` were MODIFIED AND UNCOMMITTED
+by the co-active track, plus an untracked `before-after/BooleanResponsiveControl.js` — and their diff
+shows them **adding `videoAutoplayTablet`/`videoAutoplayMobile` per-device tiers to that very block
+right now.** So Task 1 would land adjacent responsive-tier work on a block someone else is already
+tiering. **Do `before-after` LAST, only once its tree is clean, and read their diff first** — you may
+find the work already done.
+**Safe to start immediately (all clean):** `decorative-image`, `image-sequence`, `testimonial`, and
+`sgs/media` (its files were committed in `ec71fd76`). `team-member` is also dirty but is NOT in this
+task's scope.
 
-### ⭐ TASK B — NEXT SESSION STARTS HERE. Full task set, in order.
+**Orchestration:** inline (main thread). It is one repeated pattern across five blocks, and BOTH bugs
+it produced on hero/media were caught only by a LIVE capture — a subagent working from a pattern
+description would repeat them.
+**Depends on:** none. **Parallel with:** none. **/qc gate after:** yes — live capture per block, then
+`/qc-inline`.
+**Acceptance:** for each block, all tiers in the DOM and exactly ONE visible at 375/768/1440, asserted
+on COMPUTED VISIBILITY. Markup presence scores a false pass.
 
-**⛔ CONTENT COLLISIONS ARE 0** (from 9). Gate: `converter/gates/check_content_attr_collisions.py`.
-Commits: `15df8264` D505 · `7f460333` D506 · `b717717d` · `13a42d83` · `64aea72f` D507 · `e6556fb5`.
+⚠ **The two traps hero/media hit — both will recur:**
+1. **Naked mode.** A block that renders its media element AS the block root REBUILDS the markup
+   further down `render.php` and discards the tier siblings. Look for a second builder before
+   assuming one code path.
+2. **Selector lists.** Appending a descendant to a multi-member selector variable binds it to the LAST
+   member only, leaving the rest unqualified — this hid every image at every width on `sgs/media`.
+   Build tier selectors from the BARE scope selector.
 
-**⛔ ~22 files are UNCOMMITTED in the shared worktree.** Build green, deployed to canary, DB reseeded.
-The ONLY blocker is the visual-diff gate. Plan: `~/.claude/plans/go-spec-35-task-concurrent-pancake.md`.
+### Task 2 — Task F: the enforcement scripts
 
-| # | Task | Notes |
-|---|---|---|
-| **B1** | **Unblock the wave-2 commit.** `hero`+`media` are verified (JS-off capture); `team-member`+`before-after` have **no live instance** to observe. ⛔ Do NOT write a PASS for those two — the gate reads only `verdict:` + `first_paint_capture_passed:`, so a fabricated PASS sails through. | Bean's route: build a fresh canary page with team-member (photo tier set) + before-after + a media video (autoplay/muted tiers set), then capture + report honestly. Post content via the block editor in Playwright/chrome-devtools — `wp-content-guard.py` blocks WP-CLI post_content writes. |
-| **B2** | **Re-provision the F3 fixture I trashed.** Post **1605 "F3 Oracle sgs-team-member"** held a stored `memberMedia`; trashed (recoverable). It is an F3 render-oracle fixture, NOT scratch. `scripts/oracle/provision_fixture_canaries.py --only sgs-team-member` — needs a `--pages-map` I did not locate. Post **2114** (motion track's Step22 canary) also trashed, also recoverable. | Until re-provisioned the F3 oracle has no team-member canary. |
-| **B3** | **DELETE hero's `video` variant** (Bean 2026-08-06, explicitly NOT design-gated). It is incoherent: `render.php:763,767` render video on ANY variant, while `:291` suppresses the standard bg image only when `$is_video` — so a video on `standard` renders image AND video together. `sgs/container` already solves this with plain precedence and NO variant (`class-sgs-container-wrapper.php:578`), and hero is meant to mirror it. `split` STAYS — it is a layout, not a background layer. | Touches stored content (`variant="video"` instances). |
-| **B4** | **Retire `scalar-media`** — full delete list + sequence in the plan file. ⛔ Read D474 first: "redundant because emit_shape exists" was MEASURED FALSE. Proof = `test_art_direction_live_path.py` (4 tests) staying green, nothing else. | Unblocked by D506. |
-| **B5** | 9 video attrs still carry `role IS NULL`; `sgs/media.thumbnail` is `string` while `sgs/image-sequence.thumbnail` is `object` — same concept, two shapes. | |
+**What:** build validated scripts for the Spec 35 end conditions that still have none.
+**Why:** it is the track's actual deliverable; 24 end conditions with no enforcement are prose.
+**Estimated time:** 40 min for a first tranche.
+**Bar:** `STOP-CATALOGUE.md` §E6 — **"has a script" is NOT the bar.** Every script ships with a
+`--self-test` proving it can FAIL, or it reads green forever.
+**Re-measure the baseline FIRST (do not trust it):** 2026-08-04 recorded 1 enforced / 8 partial /
+4 vacuous / 2 unwired / 9 absent. Narrative: `memory/session-2026-08-04-spec35-enforcement.md`.
+**Orchestration:** delegated — pick per-script models with `/delegate`, dispatch in parallel via
+`/dispatching-parallel-agents` once the roster is re-measured (the scripts are disjoint files).
+**Depends on:** the re-measure. **/qc gate after:** yes — `/qc-council` (multi-rater, blub.db 255).
+**Acceptance:** each end condition either has a script whose `--self-test` demonstrably fails on a
+seeded break, or is explicitly recorded as unenforceable with a stated reason.
 
-**Verified FALSE this session (do not re-investigate):** another agent claimed "the container lost its
-background and sgs/media lost both imageUrl and imageAlt". All four rows are intact with correct
-roles, slots and selectors; `imageAlt` still carries `alt_companion_attr='imageUrl'`; and the live
-JS-off capture rendered the media image with both `src` and `alt`. DB, routing probe and live DOM all
-agree.
+### Task 3 — send the Spec 39 reply (5 min, inline)
 
-**`P-HERO-SUB-MAXWIDTH-NESTED-CHILD` is still OPEN** (parked 2026-07-06). Root cause already traced:
-a nested leaf is built `is_root=False`, so `layer_detect.py` cannot classify it OUTER; it lands
-CONTENT, routes `max-width` to `contentWidth`, and `sgs/text` has no such attr, so it is dropped.
-Two candidate fixes named in the entry.
+The three corrections above. Time-sensitive: they are about to freeze `COLOUR_PROPERTIES`, and
+shipping it with `stroke` excluded breaks SVG colour routing.
 
-**Accessibility defect fixed in passing (uncommitted):** `before-after/view.js` read
-`matchMedia(...).matched` — not a real property — so the documented "always suppress autoplay under
-reduced motion" guarantee was a **silent no-op on every page load**. Now `.matches`; zero instances
-remain repo-wide. ⚠ It has NO regression guard — a test asserting reduced-motion actually suppresses
-autoplay would have caught it, and should be added.
-- **`--desktop` draft nodes: 1** (`index.html:780`); 2 image nodes total. D480's "7" counted CSS
-  rules and fixture copies.
+### Dependency graph
 
-### Methodology guardrails (do not skip — every one was earned this session)
+```
+Task 3 (inline, 5 min — send first; it unblocks another track)
+Task 1 (inline; live capture + /qc-inline per block)
+  ↓
+Task 2 re-measure (inline) → Task 2 scripts (parallel subagents) → /qc-council
+```
 
-- **Declare the expected population BEFORE the run.** A number below expectation is a claim needing
-  evidence; a number ABOVE it needs per-row justification, never a silent accept.
-- **A zero from a search you wrote requires a POSITIVE CONTROL.** A dead-assignment probe returned
-  "0 findings" and was wholly vacuous — a broken regex, not a clean codebase.
-- **The ONLY valid proof a role is mechanism-derivable: clear the row, reseed, read it back**
-  (STOP-71). A probe calling the function directly proves nothing.
-- **A built mechanism is not a REACHED one.** Two mechanisms were fully built, self-tested and inert
-  because nothing fed them their candidates. Gate on the observed end state, never on code existing.
-- **A detector's negative result describes the DETECTOR.** One gap — a detector that will not cross
-  a boundary — surfaced in four separate tasks this session.
-- **Verify a subagent's ABSENCE claim before acting on it** (STOP-73). Twice today an unverified
-  "these rows are broken" would have sent me into needless surgery; measuring first avoided both.
-- **`/sgs-update` is a CROSS-TRACK action on a shared DB** — announce, back up, hash-verify, then
-  diff PER ROW against the backup. A population count cannot see a reclassification (§E1).
-- **Shared worktree:** commit BY EXACT PATH, never `git add -A`. ⚠ I deleted a concurrent track's
-  visual-diff reports today with a careless `rm` and had to `git checkout` them back — check what a
-  glob actually matches before deleting.
+### Methodology guardrails (do not skip — every one was earned)
+
+- **A component probe passing is NOT the pipeline working.** `content_attr_for_element` resolving said
+  nothing about what the walk emitted; the gate still failed 3 of 4.
+- **A change that produces IDENTICAL output did not land.** D511's "compensating step" failed the same
+  3 tests before and after, because a self-repairing mechanism reverted it at import (D514).
+- **Grepping page HTML for block CSS proves nothing** — SGS lifts it into `uploads/sgs-css/*.css`.
+  Read the lifted stylesheet.
+- **A regex returning 0 is a claim about the regex.** Mine could not match nested `@media{…{…}}`.
+- **Declare the expected population BEFORE the run;** a number above it needs per-row justification.
+- **Shared worktree:** commit by EXACT PATH, then **diff your own commit's file list** — the index can
+  already hold another track's staged files. Never `git stash`.
+- **The visual-diff gate is DATE-keyed, not change-keyed** — one path per block per day. A second
+  same-day change to the same block must APPEND, not overwrite. Check before you `Write`.
 - **Re-check the D-ceiling immediately before writing any D reference**, heading-anchored:
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 
 ### Known non-blocker
 
-`npm run build` and the converter suite both pass. ONE pre-existing failure —
-`test_content_gap_collector.py::test_sgs_tabs_fixture` — is PROVEN not ours: it fails identically
-when re-run against the restored pre-session DB. Converter suite 634 pass.
+`npm run build` and the db-consistency gates are green as of this session. The converter suite
+last measured **672 pass** when this session touched it — the gate work after that did not run it,
+so re-run before relying on the number.
+
+### Open — one caused BY this session, one genuinely not ours
+
+- ⚠ **OURS, AND DESTRUCTIVE: THIS SESSION WROTE TO TRACK 2's CANARY (post 2164) AND IT LOST A TEXT
+  NODE.** Their Spec 32
+  guard-purge canary carried 5 undeclared attrs that WP discards at parse and deletes on the next
+  save (`counter.endValue`→`number`, `form-step.stepTitle`→`label`, two `name`→`fieldName`,
+  `mega-group.heading`→ a child `sgs/heading`). All 5 migrated via the editor data layer (D516 §2),
+  and the page now renders `250` + `Mega group heading` where it rendered neither — so their sweep
+  had been measuring blocks with missing text. **BUT** `sgs/mega-group` sets `templateLock: 'all'`,
+  so its stored `sgs/text` child ("…renders a measurable node") was dropped by the editor on load
+  and could NOT be re-inserted. That text is gone from the page. It was already doomed — ANY editor
+  save would have dropped it — but Track 2 should re-count their text-owning nodes. No gate covers
+  "children vs templateLock"; the oldshape audit checks attrs only. Track 2's call.
+- **NOT ours — residual empty `sgs/media` ChildBlock** in the art-direction walk (D514) — not yet traced to its
+  emitter. It blocks the `scalar-media` retirement alongside a durable data shape and a non-hero
+  fixture.
 
 ## NEXT SESSION (other backlog) — Snooza pitch demo + Track 1 (routing)
 
 **SWEPT to `memory/session-2026-08-05-swept-narrative.md` (verbatim, neither closed).** Snooza
 pitch-demo tasks 1-4 + Track 1 routing R1-R4 (R4/R1 shipped 2026-08-04; R2/R3 open). ⚠ **R3 is
-blocked on `scalar-media` — the same role Task B tier 5 retires, so B unblocks R3.** Read the
-pointer file; do not re-derive from memory.
+blocked on `scalar-media`** — see "Open, not ours" above; it is NOT retirable yet (D511 → D514).

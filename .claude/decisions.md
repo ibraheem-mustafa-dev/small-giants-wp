@@ -133,6 +133,14 @@ exactly one path per block per day. A co-active session had already written
 in one file with an explicit warning that a `verdict: PASS` there is not evidence about either
 change unless its own section says so.
 
+⚠ **`ec71fd76` CARRIES MORE THAN THIS ENTRY DESCRIBES.** The commit necessarily included the
+co-active track's media video-tier work — a new 170-line `media/BooleanResponsiveControl.js`,
+`media/view.js` (+152), `media/style.css` (+5) — because `media/edit.js` imports that component and
+committing my edit.js without it leaves the tree unbuildable. It also carries **their deletion of
+`sgs/hero`'s `backgroundVideo` attr and its `video` variant-slot entry** via `hero/block.json`. The
+commit message says so; this entry did not, and a reader of the decisions log would otherwise not
+know a hero attribute was deleted in an "art-direction images" commit.
+
 **Also fixed in passing:** the canary hero initially carried scalar `headline`/`subHeadline`,
 which are STRANDED because hero's text is InnerBlocks-driven — the `oldshape-audit` deploy gate
 caught it and the page was rebuilt with real `sgs/heading` + `sgs/text` children.
