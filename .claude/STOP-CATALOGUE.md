@@ -668,6 +668,35 @@ points here. Neither ever silently drops a STOP.
   broken code while looking green. Sibling of STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT (the
   git-side twin: a green local step is not proof of the remote state either).
 
+- **`git add -A` IS NEVER A FALLBACK ON A SHARED WORKTREE — AND NEVER BEHIND `||`.** (2026-08-07,
+  D520-adjacent.) I caught a co-active track's work in my index, did careful surgery to excise it,
+  verified the staged diff was one line — then wrote
+  `git apply --cached x.patch 2>/dev/null || git add -A <dirs>` while testing something unrelated.
+  The apply failed silently, the fallback re-staged everything, and the excised work landed in my
+  commit under my message. The point of index surgery is that index and worktree disagree ON
+  PURPOSE; `git add -A` exists to end that disagreement. **Worse: it landed HALF a feature** —
+  `render.php` read `$attributes['photoTablet']` while its `block.json` stayed uncommitted, and WP
+  SILENTLY DISCARDS undeclared attributes, so the feature was dead on main with no error and no
+  failing gate. Stage explicit paths; never put a staging command behind `||`; never pair
+  `2>/dev/null` with a command whose failure changes what gets committed; re-run
+  `git diff --cached --stat` immediately BEFORE `git commit`, not once at the point of surgery.
+  Attribute-DECLARING and attribute-READING files must land together or the feature is silently inert.
+
+- **A GATE KEYED ON THE DATE VERIFIES NOTHING ON A SHARED REPO.** (2026-08-07, D520.) The
+  visual-diff gate accepted any `<block>-<TODAY>.md` with `verdict: PASS` — so six blocks passed on
+  reports ANOTHER track wrote hours earlier for its own edits to those same blocks. Two tracks on
+  `main` is this repo's normal state. Before trusting any gate, ask what it is keyed on: if the key
+  is not derived from the CHANGE ITSELF, it will read green for the wrong reason. Fixed via
+  `source_sha` over staged bytes (`visual-report-sha.py`).
+
+- **A PRESET WRITTEN TO TWO LAYERS DUPLICATES; IT DOES NOT OVERRIDE.** (2026-08-07, D518.) WP keys
+  presets by ORIGIN (`default`/`theme`/`custom`); the user layer sits ALONGSIDE the theme layer, so
+  same slug = later wins, DIFFERENT slug = both survive. Equally: a per-client
+  `theme-snapshot.json` is SCP'd over `theme.json` WHOLESALE, so a preset missing from a snapshot is
+  DELETED for that client — it does NOT fall back to the framework file. Stripping a ladder from the
+  wrong layer took the canary's whole spacing scale down to WP defaults. Verify which LAYER a value
+  must live in before adding or removing it, and read the LIVE CSS to confirm.
+
 ---
 
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
@@ -1056,6 +1085,8 @@ for real before claiming done?
 ---
 
 ## D. D101 count-check receipt
+
+- **2026-08-07 (handoff):** bullet defences 212 -> 216 via `grep -cE '^- \*\*'` (+3 defences: `git add -A` fallback / date-keyed gate / preset-layer duplication; +1 = this receipt line, which is itself a bullet — count the command's output, not the defences you added). Sections 5 -> 5. Ritual questions 21 -> 21. `stop-floor.json` bumped 144 -> 161 ids. Nothing SUBTRACTED.
 
 - **Baseline (2026-07-17):** 38 unique `STOP-*` tokens across the collapsed
   next-session-prompt.md (30) + state.md (9) + handoff.md (3), de-duplicated to 38.

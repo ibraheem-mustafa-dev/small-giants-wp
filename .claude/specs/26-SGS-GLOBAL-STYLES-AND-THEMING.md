@@ -161,7 +161,51 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 **FR-26-D2 — REST-write extension to `push-theme-snapshot.py`.** The FR-26-A3 push half (write the live `wp_global_styles` post). Closes parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`.
 - *Done when:* a `push-theme-snapshot` run changes a live style on the canary via the post, verified live.
-- *Model:* sonnet.
+- *Model:* sonnet. **SHIPPED.**
+
+**FR-26-D3 — PRESET ARRAYS are theme-layer only; never written to the user layer. SHIPPED 2026-08-07 (D518).**
+
+This spec's model — *"`theme.json` = factory-default seed; the `wp_global_styles` post = the live
+house style"* — holds for **scalar style values**. It does **NOT** hold for **preset ARRAYS**
+(`spacing.spacingSizes`, `shadow.presets`, `typography.fontSizes`, `color.palette`…), and FR-26-D2
+posting the snapshot's ENTIRE `settings` object was writing them to both layers.
+
+**Why that is not an override but a duplicate.** WordPress stores presets keyed by ORIGIN
+(`default` / `theme` / `custom`) and, in `WP_Theme_JSON::get_settings_values_by_slug`, folds them
+into one slug-keyed map. A preset posted to the user layer lands under `custom` and sits
+**alongside** the `theme` copy rather than replacing it. Same slug → later origin wins (harmless);
+**different slug → both survive**, and editor pickers that concatenate origins show the ladder
+twice. Measured on the canary: `wp_global_styles` held `spacing.spacingSizes.custom` byte-identical
+to the deployed `theme.json`'s 8 sizes, and `shadow.presets` duplicating the framework's 4.
+
+**Rule.** `push-theme-snapshot.py` strips `spacing.spacingSizes` + `shadow.presets` from the
+global-styles POST body only (`strip_user_layer_presets`). The disk push already delivers them at
+the `theme` origin. Omitting rather than nulling is sufficient and correct: the REST controller does
+`$config['settings'] = $request['settings']` in WP core's `class-wp-rest-global-styles-controller.php`
+(**replace, not merge** — read on the canary's own WP 7.0.2 core via `ssh … grep -n 'settings' wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php`, 2026-08-07; cite the assignment, not the line number — it moves between releases), so omission also CLEARS a stale user-layer copy.
+
+- **NOT stripped, deliberately:** `color.palette` / `color.gradients` / `typography.fontSizes` /
+  `typography.fontFamilies` — these genuinely differ per client (eye-care and the four `sgs-*`
+  template snapshots carry a 6-slug `clamp()` scale whose largest step the framework has no slug
+  for), and the user layer is the only place a Site-Editor edit to them can live. `color.duotone`
+  exists in neither the framework theme.json nor any snapshot, so it is omitted from the strip list
+  rather than listed inert.
+- **The snapshot IS the deployed `theme.json`** (`push_snapshot` SCPs it over
+  `wp-content/themes/sgs-theme/theme.json` **wholesale**, not as a patch). A preset missing from a
+  snapshot is therefore DELETED for that client and does **not** fall back to the framework file.
+  This is why every snapshot must carry its own `defaultSpacingSizes` / `defaultFontSizes: false` —
+  the framework theme.json's copies never reach a client site.
+- **Those `default*Sizes` flags do not delete WP's defaults.** Per core's `PRESETS_METADATA`
+  `prevent_override`, the flag stops core's `filter_slugs()` discarding a THEME preset that collides
+  with a default slug — i.e. it lets the theme WIN a collision. A default with no colliding theme
+  slug survives regardless. That is why SGS's spacing ladder (slugs `10`-`80`) fully displaces WP's
+  (`20`-`80`) while SGS's shadows (`subtle`/`raised`/`floating`/`glow`) coexist with WP's
+  (`natural`/`deep`/`sharp`/`outlined`/`crisp`) — zero slug overlap, nothing to displace. Bean
+  ruled 2026-08-07 that both shadow sets stay: they are different design languages (SGS soft +
+  centred; WP diagonal, three with zero blur), so none is redundant.
+
+*Done when:* a push leaves `wp_global_styles` with no `spacingSizes`/`shadow.presets` while the live
+page still resolves the SGS ladder. **Verified live on the canary 2026-08-07.**
 
 ---
 

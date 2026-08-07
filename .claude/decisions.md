@@ -1,5 +1,71 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D520 — the visual-diff gate was date-keyed, so it green-lit changes it never saw [INCIDENT]
+
+**2026-08-07.** The gate accepted any `reports/visual-diff/<block>-<TODAY>.md` carrying
+`verdict: PASS`. Keyed on the DATE, not the change. Measured: six blocks in the D519 rename commit
+passed on reports a DIFFERENT track had generated hours earlier for its own edits to those same
+blocks. Two tracks sharing `main` is this repo's normal state, so a same-day report for the same
+block by another author is the expected case, not an edge case — and the gate was blind to exactly it.
+
+`visual-report-sha.py` hashes the STAGED bytes of a block's src dir; a report declares `source_sha:`
+and the gate recomputes + refuses a mismatch. Reads the index (`:<path>`), not the worktree, so a
+later unrelated edit cannot silently change the answer. Ships with `--self-test`.
+
+Also added `check-token-rename-neutral.py` — the gate's 4th deterministic N/A classifier. A preset
+token RENAME whose definition moved with the reference and whose resolved value is byte-identical
+cannot change first paint. Deliberately narrow: refuses any line differing beyond the token name, any
+group change, and — load-bearing — any rename where old and new resolved VALUES differ. The rule was
+MEASURED before being encoded (canary `sgs/info-box` painted `rgba(0,0,0,0.1) 0px 4px 12px 0px`
+post-rename, byte-identical to pre-rename; retired slugs resolved to nothing), not assumed.
+
+Both gates proved themselves immediately by BLOCKING this session's own `team-member` and
+`before-after` commits until real captures existed (probe pages 2175/2176/2177, since deleted).
+
+Third fix: `wp-pre-merge-gate.py` treated LiteSpeed's vendor hooks as misspelled core hooks, failing
+EVERY PHP commit. `THIRD_PARTY_HOOK_PREFIXES` added; negative-control tested (`wp_enqueu_scripts`
+still fails).
+
+## D519 — SGS shadow presets renamed by effect; both SGS and WP default sets kept [ROUTINE]
+
+**2026-08-07. Bean's call on both halves.** `sm`->`subtle`, `md`->`raised`, `lg`->`floating`;
+`glow` keeps its slug, label becomes "Brand glow". Size words read badly beside WordPress's own
+Natural/Deep/Sharp/Outlined/Crisp in the same picker — a client comparing "Large" to "Deep" cannot
+tell which is bigger.
+
+**Both sets kept:** zero slug overlap and genuinely different design languages (SGS soft + centred,
+alpha 0.08-0.12; WP diagonal 6px/6px, three of five with ZERO blur). Nothing is redundant, so
+renaming SGS's slugs to displace WP's would delete five distinct options to solve a non-problem.
+
+Slugs renamed alongside labels because the framework is pre-production (D270) — cheapest it will ever
+be, and slug `sm` behind label "Subtle" is a trap for the next session. Both token helpers
+interpolate the slug, so `shadowVar()` / `sgs_shadow_value()` needed no change. Every STORED-VALUE
+site renamed too, not just CSS var references — a missed one fails its allowlist silently and renders
+NO shadow: 3 preset allowlists, 2 client-facing pickers, per-block hover defaults in the PHP AND JS
+halves, `trust-bar.iconCircleShadow` default, and `dark-mode.css`'s per-slug overrides.
+
+## D518 — preset ARRAYS are theme-layer only; the user layer duplicates rather than overrides [INCIDENT]
+
+**2026-08-07.** Spec 26's model (`theme.json` = seed, `wp_global_styles` = live house style) holds
+for scalar values but NOT for preset arrays. WP stores presets by ORIGIN; one posted to the user
+layer lands under `custom` and sits ALONGSIDE the `theme` copy. Measured on the canary: the user
+layer held `spacing.spacingSizes.custom` byte-identical to the deployed theme.json's 8 sizes, plus
+`shadow.presets` duplicating the framework's 4.
+
+Fix = `strip_user_layer_presets()` in `push-theme-snapshot.py`, applied to the POST body only.
+Omitting is sufficient and also CLEARS stale copies — the REST controller does
+`$config['settings'] = $request['settings']` in WP core's
+`class-wp-rest-global-styles-controller.php` (**replace, not merge** — read on the canary's own WP 7.0.2 core via `ssh … grep -n 'settings' wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php`, 2026-08-07; cite the assignment, not the line number — it moves between releases). Palette/gradients/fontSizes/fontFamilies are NOT
+stripped — genuinely per-client.
+
+**The trap this session nearly shipped:** the in-flight fix had stripped the ladders from the
+SNAPSHOTS instead. A snapshot is SCP'd over `theme.json` WHOLESALE, so that deleted
+`--wp--preset--spacing--*` outright and the canary silently fell back to WP's default ladder
+(`40`: 1.5rem -> 1rem, `80`: 8rem -> 5.06rem, `10` gone). Caught by reading the live CSS, not the diff.
+Every snapshot now carries its own `defaultSpacingSizes`/`defaultFontSizes: false` — the framework
+theme.json's copies never reach a client site. Full mechanism + the `prevent_override` nuance:
+Spec 26 FR-26-D3.
+
 ## D517 — CHECK 1 tightened to match CHECK 4, while its measured exposure was still zero [ROUTINE]
 
 **2026-08-07. Supersedes D516's "CHECK 1 deliberately NOT changed" — same session, Bean's call.**

@@ -15,19 +15,22 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 gets ONE true answer instead of three drifting ones.
 
 **Where 2026-08-07 left things, in a sentence each:**
-- **Clients can now set a different image for phone, tablet and desktop** on the hero and media
-  blocks. The tablet option was written into the code months ago but connected to nothing, and
-  neither option had a control — so only the cloning robot could use them, never a person.
-- **Checked on the real site at three screen sizes, and the right photo appears at each.** Two bugs
-  turned up only because it was checked live; both are fixed.
-- **The alarm that was meant to catch exactly this kind of dead setting was asleep.** It cleared any
-  phone/tablet setting as long as the block had *any* responsive styling anywhere. Now fixed, and
-  proved by deliberately breaking it and watching it fire.
-- **A colour rule was wrong at the source.** One row said a shadow counts as a colour; 18 settings
-  inherited it. One correction fixed all 18 automatically.
-- **A conclusion I reached yesterday was wrong and has been retracted** — a self-repairing piece of
-  the system had quietly undone my test conditions, so I measured the same thing twice and thought
-  it proved something.
+- **Your spacing sizes were listed twice, and the fix in progress was pointing the wrong way.**
+  Each site got its size list saved in two places at once. The half-finished repair had deleted the
+  list from the place it belongs, so the canary had quietly fallen back to WordPress's own sizes —
+  everything spaced slightly wrong. Fixed the right way round and checked on the live page.
+- **Shadows are now named for what they look like, not their size** — Subtle, Raised, Floating,
+  Brand glow. "Large" sitting next to WordPress's "Deep" told a client nothing. WordPress's own five
+  shadows stay alongside yours: they're a completely different look, so none is redundant.
+- **A safety check was passing my work using someone else's homework.** It only asked "is there a
+  report dated today?", so on a repo where two jobs run at once it approved six blocks on reports
+  written hours earlier for different changes. It now checks the report actually describes the change
+  in front of it — and it immediately blocked two of my own commits until I did the real checks.
+- **I made a mistake and it's worth you knowing.** A shortcut in one of my commands swept a paused
+  piece of work into my commit — and landed only half of it, which WordPress ignores silently, so
+  nothing looked broken. I finished the other half, checked it live, and wrote the lesson down.
+- **The canary password has been changed** (the old one got printed into a log by a formatting fault
+  in the file that stores it). The new one is in that same file, and the fault is fixed.
 
 **Older, still true:** WebGL is in the framework (Tier W, budgeted) · ⛔ GSAP's licence has a clause
 worth knowing before selling a plugin built on it · the Snooza job is 72 combinations, not 24.
@@ -38,15 +41,16 @@ worth knowing before selling a plugin built on it · the Snooza job is 72 combin
 > stale as "D498" on 2026-08-06 while the same file said 504 four sections later; a QC subagent
 > caught the self-contradiction. A caveat is not a mechanism, so the number is gone:
 > `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-> **D515-D517 (2026-08-07)** = art-direction tiers live on hero+media, and the dead-control gate's
-> tier blind spot closed in both CHECK 4 and CHECK 1. **D514 RETRACTS D511** — a self-repairing
+> **D515-D517** = art-direction tiers on hero+media; dead-control gate's tier blind spot closed. **D514 RETRACTS D511** — a self-repairing
 > mechanism had reverted the test conditions at import, so D511's and D513's conclusions are void.
+> **D518-D520 (2026-08-07)** = preset arrays are theme-layer only; shadows renamed by effect; the
+> visual-diff gate is change-keyed, not date-keyed.
 
 ### Track 3 — CLOSED (D479). Tier W admitted, physics-canvas shipped.
 
-Narrative + licences: `memory/session-2026-08-03-track3.md`. Binding facts: ⛔ **GSAP is NOT MIT**
-(Prohibited Uses bans visual-motion-authoring tools competing with Webflow — exposes the Configurator
-Pro, not client sites) · ⛔ **LYGIA is Prosperity-licensed** · ⚠ **Snooza = 72 SKUs**.
+Narrative + licences: `memory/session-2026-08-03-track3.md`. Binding: ⛔ **GSAP is NOT MIT** (bans
+motion-authoring tools competing with Webflow — exposes the Configurator Pro, not client sites) ·
+⛔ **LYGIA is Prosperity-licensed** · ⚠ **Snooza = 72 SKUs**.
 
 ### Tracks 1b / 1c / 2 / 2+2b — stable · **Track 1 MOVED 2026-08-01 (D437–D439)**
 
@@ -206,18 +210,46 @@ it rather than restate a list. Their defect-A count of 21 is also wrong; the hon
 art-direction tier pattern across the remaining media-bearing blocks, then start Task F — the
 enforcement scripts that are the track's actual deliverable.
 
-**State recap.** `sgs/hero` and `sgs/media` now render device-specific image tiers with a
-device-switched editor control, verified on the canary at three widths. The same shape is missing on
-five more blocks. Separately, Spec 35's 24 end conditions were measured at 0-of-24 enforced on
-2026-08-04; Tasks C+D closed two, CHECK 5 added one, and the gate hardening above put real teeth in
-two more. Task F closes the rest.
+**State recap.** `sgs/hero` and `sgs/media` render device-specific image tiers with a
+device-switched editor control, verified on the canary at three widths. `sgs/team-member`'s photo
+tiers and `sgs/before-after`'s video-autoplay tiers were LANDED 2026-08-07 (both had been sitting
+uncommitted). `team-member` verified live; `before-after`'s tier CONTRACT + cascade verified, but
+playback and the runtime tier switch remain UNPROVEN — see Task 0 and the report's own limits section. Image tiers are still missing on the blocks in Task 1's table — note
+`before-after` still needs its IMAGE pair even though its VIDEO-autoplay half is done. Spec 35's 24
+end conditions were measured 0-of-24 enforced on 2026-08-04; Tasks C+D closed two, CHECK 5 one, the
+gate hardening two more. Task F closes the rest.
+
+**Carried in from 2026-08-07 (D518-D520) — read before touching a gate or a preset:**
+- Gate is **change-keyed**: a report declares `source_sha:` (`visual-report-sha.py <block>`) matching
+  STAGED bytes or the commit is refused. **Cross-track:** pre-gate reports lack the field, so the next
+  commit touching ANY block needs its report regenerated — intended; they describe other changes.
+- A 4th N/A classifier exists (`check-token-rename-neutral.py`): preset-token renames whose resolved
+  value is unchanged. It refuses anything else.
+- Preset ARRAYS live in the theme layer ONLY (Spec 26 FR-26-D3). A snapshot is SCP'd over
+  `theme.json` wholesale — a preset missing from it is DELETED for that client, not inherited.
+
+### Task 0 — close the two gaps 2026-08-07 left open (15 min)
+
+**What:** (a) upload a real video to the canary and re-verify `sgs/before-after` autoplay tiers —
+2026-08-07 proved the `data-*` tier CONTRACT and cascade but NOT playback or the runtime switch at
+tablet/mobile widths (no video attachment existed; the probe URL 404'd). (b) Regenerate a
+`source_sha` for whichever block the next commit touches first. **Name `info-box` explicitly:** its
+report predates the gate, carries no `source_sha`, and is the artefact the whole shadow-rename
+evidence rests on — it WILL be refused the moment that block is touched again.
+**Why:** (a) is the only unproven claim left from that session and it is written as unproven in
+`reports/visual-diff/before-after-2026-08-07.md` — do not let it silently become "verified".
+**Orchestration:** inline (main thread), no subagent — needs the canary login + Playwright.
+**Depends on:** none. **Parallel with:** Task 1.
+**/qc gate after:** no — the report IS the verification artefact.
+**Acceptance:** a real `<video>` plays at desktop and does NOT at mobile width, captured at both;
+`before-after-<date>.md` updated with a `source_sha` and the two "NOT proven" limits removed.
 
 ### Task 1 — roll art-direction tiers across the remaining media blocks
 
 **What:** give each remaining media SOURCE attr the `{base}` / `{base}Tablet` / `{base}Mobile` shape
 that hero and media now use, with ONE `<ResponsiveControl>`-wrapped picker.
-**Scope note:** 4 blocks are untouched; `sgs/media` needs only its VIDEO half (the image half
-shipped this session).
+**Scope note:** 3 blocks untouched; `sgs/media` needs only its VIDEO half and `sgs/before-after`
+only its IMAGE pair — both those blocks' other halves already shipped.
 **Why:** a client cannot art-direct their own images on these blocks today — only the cloning pipeline
 can write those values, which is precisely what Spec 35 exists to stop.
 **Estimated time:** 25 min for the five blocks.
@@ -226,7 +258,7 @@ can write those values, which is precisely what Spec 35 exists to stop.
 
 | block | attrs needing tiers |
 |---|---|
-| `sgs/before-after` | `beforeImageId/Url`, `afterImageId/Url` (+ the video pair) |
+| `sgs/before-after` | `beforeImageId/Url`, `afterImageId/Url` (video pair DONE, `d8cdcf8b`) |
 | `sgs/decorative-image` | `imageId`, `imageUrl` |
 | `sgs/image-sequence` | `thumbnail` (the poster) |
 | `sgs/media` | `videoUrl`/`videoId` + `thumbnail` — the VIDEO half; the image half shipped |
@@ -236,16 +268,10 @@ can write those values, which is precisely what Spec 35 exists to stop.
 `splitImageBleed`, `splitImageMobileObjectPosition`, `splitImageMobileHeight`. They are settings, not
 media sources; a naive name-grep sweeps them in.
 
-⛔ **`sgs/before-after` IS THE ONE UNSAFE ROW — and the risk is DUPLICATION, not just a dirty file.**
-At handoff time `before-after/{block.json,edit.js,render.php,view.js}` were MODIFIED AND UNCOMMITTED
-by the co-active track, plus an untracked `before-after/BooleanResponsiveControl.js` — and their diff
-shows them **adding `videoAutoplayTablet`/`videoAutoplayMobile` per-device tiers to that very block
-right now.** So Task 1 would land adjacent responsive-tier work on a block someone else is already
-tiering. **Do `before-after` LAST, only once its tree is clean, and read their diff first** — you may
-find the work already done.
-**Safe to start immediately (all clean):** `decorative-image`, `image-sequence`, `testimonial`, and
-`sgs/media` (its files were committed in `ec71fd76`). `team-member` is also dirty but is NOT in this
-task's scope.
+**`before-after`'s VIDEO half is done** (`d8cdcf8b`, with `BooleanResponsiveControl.js`); only its
+IMAGE pair remains. `team-member` landed at `7187e75d`. Trees are clean — the earlier
+co-active-track warning here is discharged. **Safe to start now:** `decorative-image`,
+`image-sequence`, `testimonial`, `media` (VIDEO half), `before-after` (IMAGE pair).
 
 **Orchestration:** inline (main thread). It is one repeated pattern across five blocks, and BOTH bugs
 it produced on hero/media were caught only by a LIVE capture — a subagent working from a pattern
@@ -304,8 +330,9 @@ Task 2 re-measure (inline) → Task 2 scripts (parallel subagents) → /qc-counc
 - **Declare the expected population BEFORE the run;** a number above it needs per-row justification.
 - **Shared worktree:** commit by EXACT PATH, then **diff your own commit's file list** — the index can
   already hold another track's staged files. Never `git stash`.
-- **The visual-diff gate is DATE-keyed, not change-keyed** — one path per block per day. A second
-  same-day change to the same block must APPEND, not overwrite. Check before you `Write`.
+- **The visual-diff gate is CHANGE-keyed (D520, 2026-08-07).** A report must declare `source_sha:`
+  from `python plugins/sgs-blocks/scripts/visual-report-sha.py <block>` matching the STAGED bytes, or
+  the commit is refused. It is no longer enough for a report to carry today's date.
 - **Re-check the D-ceiling immediately before writing any D reference**, heading-anchored:
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 
