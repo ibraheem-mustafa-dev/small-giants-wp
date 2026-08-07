@@ -39,7 +39,7 @@ draft meant to convert yet, or is it pre-SGS-BEM by design? Unlike the homepage 
 TRUTH-SPEC.md. Relevant to the Phase-5 section-annihilation bug, which fires on non-BEM markup.
 
 
-*52 open entries (re-derived 2026-07-31 from a `**Bucket:** pipeline` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
+*61 entries total (measured 2026-08-07 via `grep -c "^### P-"`). The previous "52 open entries" was a `**Bucket:** pipeline` count, which is 19 — it never counted the file. Re-measure, do not trust this line.*
 
 ### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 7,263 lines against a 600 cap
 **Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30

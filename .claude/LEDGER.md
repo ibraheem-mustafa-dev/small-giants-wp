@@ -14,23 +14,25 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where 2026-08-07 left things, in a sentence each:**
-- **Your spacing sizes were listed twice, and the fix in progress was pointing the wrong way.**
-  Each site got its size list saved in two places at once. The half-finished repair had deleted the
-  list from the place it belongs, so the canary had quietly fallen back to WordPress's own sizes —
-  everything spaced slightly wrong. Fixed the right way round and checked on the live page.
-- **Shadows are now named for what they look like, not their size** — Subtle, Raised, Floating,
-  Brand glow. "Large" sitting next to WordPress's "Deep" told a client nothing. WordPress's own five
-  shadows stay alongside yours: they're a completely different look, so none is redundant.
-- **A safety check was passing my work using someone else's homework.** It only asked "is there a
-  report dated today?", so on a repo where two jobs run at once it approved six blocks on reports
-  written hours earlier for different changes. It now checks the report actually describes the change
-  in front of it — and it immediately blocked two of my own commits until I did the real checks.
-- **I made a mistake and it's worth you knowing.** A shortcut in one of my commands swept a paused
-  piece of work into my commit — and landed only half of it, which WordPress ignores silently, so
-  nothing looked broken. I finished the other half, checked it live, and wrote the lesson down.
-- **The canary password has been changed** (the old one got printed into a log by a formatting fault
-  in the file that stores it). The new one is in that same file, and the fault is fixed.
+**Where 2026-08-07 (late session) left things, in a sentence each:**
+- **Your clients can now pick a different image for phone, tablet and desktop on every block that
+  shows media.** Before, only the automatic website-cloner could set those — a client couldn't.
+  That was the whole point of this piece of work.
+- **Video can do it too, including YouTube and Vimeo** — your call, knowing the cost: someone who
+  resizes the window mid-video will have it restart.
+- **Two bugs that only a real check would have caught.** The video swap worked one way and then
+  stuck forever — it looked perfect in the direction anyone would test first. And one block's
+  styling was written after the page had already been sent, so it did nothing at all.
+- **A safety check said 8 of my settings were dead code. It was wrong — but for a fair reason:**
+  I'd written them in a way it couldn't read. I rewrote the code to be readable rather than adding
+  a permanent note arguing the check is wrong.
+- **Your settings weren't in the framework's database**, so the website-cloner couldn't have used
+  them. Now seeded. The reseed reported an alarming drop; I checked every removed row and they were
+  all leftovers for things deleted months ago.
+- **Docs trimmed where they'd gone stale or doubled up.** The biggest was a long passage describing
+  a job that finished months ago, sitting in a file I read at the start of every session — halved.
+- **You signed off the mouse-following background** (every section, all four looks, client-editable).
+  Not built yet; it's queued behind Task F.
 
 **Older, still true:** WebGL is in the framework (Tier W, budgeted) · ⛔ GSAP's licence has a clause
 worth knowing before selling a plugin built on it · the Snooza job is 72 combinations, not 24.
@@ -44,7 +46,8 @@ worth knowing before selling a plugin built on it · the Snooza job is 72 combin
 > **D515-D517** = art-direction tiers on hero+media; dead-control gate's tier blind spot closed. **D514 RETRACTS D511** — a self-repairing
 > mechanism had reverted the test conditions at import, so D511's and D513's conclusions are void.
 > **D518-D520 (2026-08-07)** = preset arrays are theme-layer only; shadows renamed by effect; the
-> visual-diff gate is change-keyed, not date-keyed.
+> visual-diff gate is change-keyed, not date-keyed. **D521 (2026-08-07, late)** = art-direction tiers
+> reach every media block; video needed a RUNTIME-SWAP mechanism, not the image sibling-markup one.
 
 ### Track 3 — CLOSED (D479). Tier W admitted, physics-canvas shipped.
 
@@ -72,10 +75,12 @@ before acting, do not assume it is current from memory alone:
   (D508/D509/D510), and the A7 reseed IS landed.** **The art-direction rollout is COMPLETE too
   (D521, 2026-08-07) — every media-bearing block, verified at first paint.** Next = **Task F**. The
   parallel Task-B session has finished and committed.
-- **Track 1b enforcement baseline (2026-08-04, D481-D484):** 0 of 24 end conditions had a validated
-  script (1 enforced/8 partial/4 vacuous/2 unwired/9 absent). Tasks C+D closed 2 of those 2026-08-06;
-  CHECK 5 (dead assignment) added 2026-08-06. **Task F closes the rest — bar = `STOP-CATALOGUE.md`
-  §E6, and "has a script" is not the bar.** Narrative: `memory/session-2026-08-04-spec35-enforcement.md`.
+- **Track 1b enforcement baseline — ⛔ the "0 of 24 / 1 enforced / 8 partial…" figure is DEAD.** It
+  was stale AND miscounted (there are 27 conditions, not 24). RE-MEASURED 2026-08-07: **27 conditions,
+  11 UNENFORCED, 7 with a real script, ~6 prose-only, 9 inspector-scan rules (4 GATE / 5 ADVISORY,
+  all self-tested).** Commands to reproduce are in the Task F section below — run them, do not quote
+  this line. **Bar = `STOP-CATALOGUE.md` §E6; "has a script" is not the bar.**
+  Narrative: `memory/session-2026-08-04-spec35-enforcement.md`.
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
 - **Tracks 2+2b (nav/header/footer merge):** 5-wave plan landed (D413), Wave 1 CLOSED, Wave 2 in
@@ -118,9 +123,10 @@ SAFE"** (100% routing accuracy target) · no block version bumps/deprecations pr
 - **Sites:** staging/dev = palestine-lives.org. staging/canary = sandybrown-nightingale-600381.hostingersite.com.
   Both WP 7.0.2 (verified 2026-07-20 over SSH on both).
 - **Fixtures on the canary (not assumed clean):** motion 2083/2086; mega page 1762, panel 1745,
-  menu 100, item 1746; header CPT 1570, footer CPT 1654; **art-direction 2161**
-  (`/art-direction-tiers-canary-hero-media/`, hero + media with 3 distinct crops each — reuse it for
-  the Task-1 rollout); Spec 32 guard-purge canary 2164 (Track 2's).
+  menu 100, item 1746; header CPT 1570, footer CPT 1654; **art-direction 2161** (hero+media, superseded);
+  **2178** `/art-direction-tier-probe/` (4 image blocks, 3 crops each), **2179** `/video-tier-probe/`
+  (embed tiers), **2182** `/real-video-tier-probe/` (REAL video, attachments 2180/2181) — the D521
+  evidence base; Spec 32 guard-purge canary 2164 (Track 2's).
 - **Latent + open (not blockers):** Mama's `#e68a95` text-contrast — ⚠ cited a
   `P-MAMAS-PRIMARY-CONTRAST` parking entry that **has never existed** in `parking.md` or
   `STOP-CATALOGUE.md` (the handoff citation gate caught the dangling token 2026-08-06). The issue is
@@ -165,161 +171,153 @@ The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION (Track 1b / Spec 35) — Task F (the rollout is DONE, D521)
+## NEXT SESSION (Track 1b / Spec 35) — TASK F, and only Task F (Bean, 2026-08-07)
 
 ### THE GOAL — state it before picking up any task
 
 **Bean's clients are tech-illiterate and live in the block editor.** Spec 35 exists so every SGS
 block's inspector is genuinely usable by them: a control for everything the block can do, none for
-what it cannot, one consistent shape across every block. **A setting that needs code to mean anything
-is not done.** The 24 end conditions are only worth having if ENFORCED — measured 2026-08-04 at
-0 of 24, which is what Task F exists to fix.
+what it cannot, one consistent shape across every block. **A setting that needs code to mean
+anything is not done.** The **27** end conditions are only worth having if ENFORCED — that is Task F,
+and it is now the ONLY open front on this track.
 
-### ✅ CLOSED — Step 0/0.1/0.2, A7, A8, A9, and the gate blind spot
+### ✅ CLOSED this track — do not re-open
 
-- **Pool 23 → 0** (D504) — every `sgs/%` string attr carries a role BY MECHANISM, zero hand
-  overrides. ⛔ Re-measure, don't trust this line:
-  `cd plugins/sgs-blocks/scripts/content-role-detect && python fingerprint_content_roles.py`
-- **A7 (D508) + A8 (D509)** — attrMap ARITY decides colour-vs-shorthand; the dead header/footer grid
-  surface deleted. **The A7 reseed IS NOW LANDED** — earlier ledger text saying "NOT YET IN THE DB"
-  was superseded 2026-08-07.
-- **A9 = the Track 1 critique, and it is worked through** (D510). Its two measured defects are now at
-  their irreducible cores: `role='color'` on a non-colour property **19 → 1**; a colour property with
-  a non-`color` role **10 → 1**. Both survivors are CORRECT disagreements —
-  `nav-drawer.surfaceOpacity` (a number) and `trust-bar.backgroundOverlayColour` (a colour delivered
-  through a gradient). **Do not "fix" them.** Root cause of the 19 was ONE row:
-  `property_suffixes.Shadow` said a box-shadow is a colour while its sibling `BoxShadow` said `visual`.
-- **Variant matching (D512)** — 9 variants across 4 blocks were unmatchable even when a draft NAMED
-  them, because the value set came from `variant_slots` (which stores DISCRIMINATING slots) instead of
-  the block's own declared enum. `trust-bar--text-only` no longer clones as `icon-circle`.
-- **Art-direction tiers (D515)** — `sgs/hero` + `sgs/media` verified live at 375/768/1440.
-- **Dead-control gate (D516/D517)** — CHECK 4 **and** CHECK 1 now require dynamic tier-key
-  construction, not a bare `@media`. A/B proven on an identical tree; `--tier-audit` reports 0.
-
-✅ **The Spec 39 reply IS SENT** (2026-08-07, `22436d19`) —
-`reports/2026-08-07-spec39-colour-properties-reply-track1b.md`. Filed under `reports/` NOT `scratch/`
-on purpose: scratch is gitignored, so the owning track could not have found it after a session
-boundary. Three corrections, each with its verifying query: **`stroke` IS a colour** (single
-`property_suffixes` row, `role=color` — excluding it breaks SVG routing); **`css_property` alone is
-insufficient** (`nav-drawer.surfaceOpacity` is `attr_type=number` on `background-color`, so the bare
-predicate routes a number through the colour snapper — needs a value-shape guard); **the DB-derived
-set already exists** at `extract-signatures.py:1861` `_load_colour_terminal_props` — import it rather
-than restate a list. Their defect-A count of 21 is wrong; the honest figure is 19.
-⏳ No reply back from that track yet.
+Pool 23→0 (D504) · A7/A8/A9 (D508/D509/D510) · variant matching (D512) · **art-direction tiers
+across EVERY media-bearing block (D521, `e5f85753`)** · **Task 0 — real video proved playback, the
+runtime tier switch and tier posters (`6777f8d0`)** · **the Spec 39 reply IS SENT** (`22436d19`,
+`reports/2026-08-07-spec39-colour-properties-reply-track1b.md`; filed under `reports/` not
+`scratch/` because scratch is gitignored). ⏳ No reply back from that track yet.
 
 ---
 
 ## ⭐ NEXT SESSION — orchestration plan
 
-**Identity.** You are the SGS framework engineer closing Spec 35. **One front now: Task F** — the
-enforcement scripts that are the track's actual deliverable. The art-direction rollout is COMPLETE
-(D521); only the video-attachment gap in Task 0 remains beside it.
+**Identity.** You are the SGS framework engineer closing Spec 35. One front: **Task F** — build the
+enforcement scripts that make the **27** end conditions real. Everything else on this track is done.
 
-**State recap.** EVERY media-bearing block now renders device-specific tiers with a device-switched
-editor control (D521, `e5f85753`), verified at first paint at three measured widths. Earlier that day
-`sgs/hero`, `sgs/media` (image half), `sgs/team-member` and `sgs/before-after`'s video-autoplay tiers
-had landed (some had been sitting
-uncommitted). `team-member` verified live; `before-after`'s tier CONTRACT + cascade verified, but
-playback and the runtime tier switch remain UNPROVEN — see Task 0 and the report's own limits section. Image tiers are still missing on the blocks in Task 1's table — note
-`before-after` still needs its IMAGE pair even though its VIDEO-autoplay half is done. Spec 35's 24
-end conditions were measured 0-of-24 enforced on 2026-08-04; Tasks C+D closed two, CHECK 5 one, the
-gate hardening two more. Task F closes the rest.
+**State recap.** Spec 35 lists **27** conditions that define "this block's inspector is finished". A
+condition with no script is prose: nothing stops the next block breaking it. The long-quoted "0 of 24" is stale AND
+miscounted. **Do not quote it.** Re-measured
+2026-08-07 (below): real enforcement now exists. Task F is finishing the remainder, to a bar where
+"has a script" is explicitly NOT enough.
 
-**Carried in from 2026-08-07 (D518-D520) — read before touching a gate or a preset:**
-- Gate is **change-keyed**: a report declares `source_sha:` (`visual-report-sha.py <block>`) matching
-  STAGED bytes or the commit is refused. **Cross-track:** pre-gate reports lack the field, so the next
-  commit touching ANY block needs its report regenerated — intended; they describe other changes.
-- A 4th N/A classifier exists (`check-token-rename-neutral.py`): preset-token renames whose resolved
-  value is unchanged. It refuses anything else.
-- Preset ARRAYS live in the theme layer ONLY (Spec 26 FR-26-D3). A snapshot is SCP'd over
-  `theme.json` wholesale — a preset missing from it is DELETED for that client, not inherited.
+### ⛔ The baseline — RE-MEASURED, and my first attempt at it was WRONG (2026-08-07)
 
-### ✅ Task 1 CLOSED (D521, `e5f85753`) — art-direction tiers reach every media block
+This slot used to say "1 enforced / 8 partial / 4 vacuous / 2 unwired / 9 absent, 0-of-24". That was
+stale. My first re-measure was ALSO wrong — a naive `grep` missed matches split across a line break,
+and the "24 conditions" figure was inherited, never counted. Caught by the handoff QC subagent.
+**Every figure below is line-wrap-safe. Reproduce them, do not trust them.**
 
-All five landed and are verified live: `decorative-image`, `image-sequence`, `testimonial`,
-`before-after` (image pair) and `sgs/media`'s VIDEO half. Verified at FIRST PAINT per width
-(viewport set, then a fresh navigation — never a resize-after-load), computed visibility at
-measured `innerWidth` 1364/818/364. Fixtures: `/art-direction-tier-probe/` (page 2178) and
-`/video-tier-probe/` (page 2179).
+```bash
+F=.claude/plans/spec-35-inspector-DONE-checklist.md
+# end conditions (NOT 24 — that number was never true)
+grep -cE '^- \[[ x]\] \*\*[0-9]+\.' $F                       # 27
+# UNENFORCED — MUST collapse whitespace first; 3 items wrap mid-tag
+python -c "import re,io;t=re.sub(r'\s+',' ',io.open('$F',encoding='utf-8').read());print(len(re.findall(r'\[enforced by\]\*\* UNENFORCED',t)))"   # 11
+# conditions naming a REAL script file (not a prose 'audit')
+python -c "import re,io;t=re.sub(r'\s+',' ',io.open('$F',encoding='utf-8').read());print(len(re.findall(r'\[enforced by\]\*\* \`?[\w/.\-]+\.(?:js|py)',t)))"   # 7
+ls plugins/sgs-blocks/scripts/inspector-scan/rules/*.js | wc -l   # 9
+node plugins/sgs-blocks/scripts/inspector-scan/run.js --check      # 4 GATE · 5 ADVISORY · 0 off
+```
 
-⚠ **The video half is a DIFFERENT mechanism — do not "unify" it with the image one.** Three
-`<video>`s each begin fetching and three embeds each load a player, so the source is swapped at
-runtime by `view.js` on sgs/hero's `data-src-*` contract. Bean chose to include YouTube/Vimeo
-knowing a mid-watch breakpoint crossing loses playback position.
+| measurement | result |
+|---|---|
+| end conditions in the checklist | **27** (the long-quoted "24" was never counted) |
+| conditions whose `[enforced by]` says UNENFORCED | **11** (naive grep says 8 — 3 wrap mid-tag) |
+| conditions naming a REAL script file | **7** |
+| conditions "enforced" by a PROSE process only | **~6** — "feature-parity audit" ×3, "pattern audit", "manual a11y pass", "the audits above collectively". ⚠ These are exactly the unscripted state Task F exists to remove. Do NOT count them as enforcement. |
+| inspector-scan rules that exist | **9** (4 GATE · 5 ADVISORY · 0 off) |
+| of those, shipping a `--self-test` | **9 of 9** — `run.js` hard-fails a rule without one |
 
-### ✅ Task 0 CLOSED (2026-08-07) — real video, both gaps measured
+⚠ **Two different 11s — do not conflate.** `run.js` prints "11 rule(s) declared in rules.json" (9 real rules + 2 built-in meta checks with `file: null`). That 11 is UNRELATED to the 11 UNENFORCED conditions above. Quote the SUMMARY block (`gate rules: N · advisory rules: N`), never the header line.
 
-Bean uploaded two MP4s (attachments 2180/2181), which was the single blocker. Surface:
-`/real-video-tier-probe/` (page 2182). Evidence in `reports/visual-diff/before-after-2026-08-07.md`
-Part 3 and `media-2026-08-07.md` Part 3. No block source changed — evidence only, so both
-`source_sha` values still stand.
+**So the honest scope is ~11 unenforced + ~6 prose-only, across 27 conditions — not "8 of 24".**
+`inspector-scan/run.js` REPLACED `audit-inspector-conformance.js`.
 
-- **`sgs/before-after` playback + runtime switch: PROVEN.** Desktop both clips PLAYING
-  (`currentTime` 8.32/8.27 after 2.5s — an advancing clock, not merely `paused:false`); tablet and
-  mobile PAUSED at `0`. Desktop playing is the positive CONTROL: it proves autoplay is permitted in
-  that browser, so paused elsewhere is the tier acting, not the browser blocking. Three paused
-  videos without that control would have been indistinguishable from a dead feature.
-- **`sgs/media` direct-file swap + tier posters: PROVEN.** desktop `1.mp4`, tablet `1.mp4`
-  (INHERITED — no tablet override authored, so this tests upward fallback too), mobile `2.mp4`.
-  Posters tier with it, and the mobile poster was confirmed **fetched** by the browser, not just
-  present as an attribute. Exercised the `videoSource: internal` attachment-ID branch.
+### Task F — the enforcement scripts
 
-⚠ **One honest cost recorded, not hidden:** on non-desktop viewports the DESKTOP poster is fetched
-too, because the server renders it as real markup for no-JS and `view.js` swaps afterwards. One
-wasted image request; removable only by giving up the no-JS fallback.
+**What:** give every Spec 35 end condition that still lacks one a validated script, and promote the
+advisory rules that genuinely should gate.
+**Why:** it is the track's deliverable. **27** conditions with no enforcement are a wish, not a standard.
+**Estimated time:** ~55 min for a first tranche (the 11 UNENFORCED), longer if the ~6 prose-only
+conditions and any advisory→gate promotions are included.
 
-### Task 2 — Task F: the enforcement scripts
+**⛔ The bar — `STOP-CATALOGUE.md` §E6. "Has a script" is NOT the bar.**
 
-**What:** build validated scripts for the Spec 35 end conditions that still have none.
-**Why:** it is the track's actual deliverable; 24 end conditions with no enforcement are prose.
-**Estimated time:** 40 min for a first tranche.
-**Bar:** `STOP-CATALOGUE.md` §E6 — **"has a script" is NOT the bar.** Every script ships with a
-`--self-test` proving it can FAIL, or it reads green forever.
-**Re-measure the baseline FIRST (do not trust it):** 2026-08-04 recorded 1 enforced / 8 partial /
-4 vacuous / 2 unwired / 9 absent. Narrative: `memory/session-2026-08-04-spec35-enforcement.md`.
-**Orchestration:** delegated — pick per-script models with `/delegate`, dispatch in parallel via
-`/dispatching-parallel-agents` once the roster is re-measured (the scripts are disjoint files).
-**Depends on:** the re-measure. **/qc gate after:** yes — `/qc-council` (multi-rater, blub.db 255).
-**Acceptance:** each end condition either has a script whose `--self-test` demonstrably fails on a
-seeded break, or is explicitly recorded as unenforceable with a stated reason.
+- Every script ships a `--self-test` PROVING it can FAIL on a seeded break. All 9 existing rules
+  already do; match that, never regress it.
+- ADVISORY mode does not gate the build, and advisory is a legitimate END STATE for a fuzzy
+  heuristic — `07-preset-only-shadow` is advisory ON PURPOSE (its label-regex is documented as fuzzy
+  and its advisory reason is written into the rule). Do NOT bulk-promote advisory→gate to inflate a
+  count; promote only where the detector is precise, and justify per rule.
+- A condition that genuinely cannot be scripted is recorded as unenforceable WITH A STATED REASON.
+  That is an acceptable outcome; silence is not.
 
-### Task 3 — send the Spec 39 reply (5 min, inline)
-
-The three corrections above. Time-sensitive: they are about to freeze `COLOUR_PROPERTIES`, and
-shipping it with `stroke` excluded breaks SVG colour routing.
+**Orchestration:** the 11 unenforced conditions are disjoint files — the parallel-subagent shape. Pick
+per-script models with `/delegate`, dispatch via `/dispatching-parallel-agents`. **Do the re-measure
+INLINE first**; never delegate the measurement that scopes the work.
+**Depends on:** the re-measure. **Parallel with:** none.
+**/qc gate after:** yes — `/qc-council` (multi-rater, blub.db 255). These are gates, and a wrong gate
+reads green forever.
+**Acceptance:** each of the **27** conditions either (a) has a script whose `--self-test` demonstrably
+fails on a seeded break, or (b) is explicitly recorded as unenforceable with a reason. A count of
+scripts written is NOT acceptance.
 
 ### Dependency graph
 
 ```
-Task 3 (inline, 5 min — send first; it unblocks another track)
-Task 1 (inline; live capture + /qc-inline per block)
+Re-measure the baseline (INLINE — never delegated; it scopes everything)
   ↓
-Task 2 re-measure (inline) → Task 2 scripts (parallel subagents) → /qc-council
+Task F scripts (parallel subagents, disjoint files, /delegate per script)
+  ↓
+/qc-council  →  commit + push
 ```
+
+### Also queued (NOT next session unless Bean redirects)
+
+- **Pointer-reactive container backgrounds — GATE SIGNED 2026-08-07, build NOT started.** Bean chose
+  **Route B** (a background mode in `SGS_Container_Wrapper`, inherited by every wrapper-bearing
+  composite — this IS the Rule 7 shared-mechanism change) with **all four looks**, client-selectable,
+  colours + intensity operator-editable. Bean explicitly overruled the contrast risk with reasoning
+  recorded in the gate: **contrast is a CONTROL, not a gate.** Reduced-motion SUPPRESS and
+  coarse-pointer degradation stay mandatory. **FR number = `FR-38-28`** — the gate's own "FR-38-25 is
+  next" was stale (Spec 38 already reached FR-38-27); re-check before writing spec text.
+  Plan: `.claude/plans/2026-07-31-step7-cursor-follow-background-design-gate.md`. ~2h + ~30 min/look.
+- **Parking: 61 entries total; the 10 with machine-checkable claims were verified 2026-08-07 and ALL 10 are genuinely OPEN — none closable.** The other 51 were not individually re-tested. The backlog is accurate
+  work, not stale bookkeeping. Two had drifted FIGURES, now corrected
+  (`P-DECISIONS-MD-OVER-LINE-CAP` 3,604→7,263 lines; `P-PATTERNS-USE-CORE-BLOCKS` "~40+"→4 measured).
 
 ### Methodology guardrails (do not skip — every one was earned)
 
-- **A component probe passing is NOT the pipeline working.** `content_attr_for_element` resolving said
-  nothing about what the walk emitted; the gate still failed 3 of 4.
-- **A change that produces IDENTICAL output did not land.** D511's "compensating step" failed the same
-  3 tests before and after, because a self-repairing mechanism reverted it at import (D514).
-- **Grepping page HTML for block CSS proves nothing** — SGS lifts it into `uploads/sgs-css/*.css`.
-  Read the lifted stylesheet.
-- **A regex returning 0 is a claim about the regex.** Mine could not match nested `@media{…{…}}`.
-- **Declare the expected population BEFORE the run;** a number above it needs per-row justification.
-- **Shared worktree:** commit by EXACT PATH, then **diff your own commit's file list** — the index can
-  already hold another track's staged files. Never `git stash`.
-- **The visual-diff gate is CHANGE-keyed (D520, 2026-08-07).** A report must declare `source_sha:`
-  from `python plugins/sgs-blocks/scripts/visual-report-sha.py <block>` matching the STAGED bytes, or
-  the commit is refused. It is no longer enough for a report to carry today's date.
+- **A gate reading green is not the claim you are making.** `check-no-core-blocks` passes clean while
+  4 pattern files still use core blocks — its ban-list does not cover heading/paragraph/list. Read a
+  gate's PREDICATE before citing it as evidence for a different proposition.
+- **A gate's false positive can be a legibility signal.** CHECK 4 called 8 live attrs dead because its
+  resolver cannot follow a key whose tail is a second variable. Rewriting the code into the shape the
+  gate reads beat arguing 8 findings into a baseline forever.
+- **Test the RETURN path.** The video tier swap worked desktop→mobile then stuck permanently — the
+  rebuilt node dropped its own `data-*`. Assert A→B→A, never just A→B.
+- **Measure the LIVE tree, not a worktree copy.** `.claude/worktrees/` holds stale duplicates with
+  identical filenames and plausible-looking numbers.
+- **Assert on measured `window.innerWidth`, not the requested viewport.** A requested 800px measured
+  727px and would have tested mobile while labelled tablet.
+- **Verify at FIRST PAINT** — set viewport, then navigate fresh. Never resize-after-load.
+- **Include a positive control** — prove the effect CAN fire, or "nothing happened" is
+  indistinguishable from a dead feature.
+- **`git status` the artefact dir BEFORE writing**, not before committing. `M` where you expect `A`
+  means you are about to destroy another session's file. Recovered two reports this way.
+- **A shared-DB reseed is a cross-track action.** Back up first, diff the result, and check every
+  pruned row against its source before calling a drop "damage" — 33 pruned rows this session were all
+  legitimate catch-up on attrs deleted months ago.
+- **Shared worktree:** commit by EXACT PATH, then diff your own commit's file list. Never `git stash`.
 - **Re-check the D-ceiling immediately before writing any D reference**, heading-anchored:
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 
 ### Known non-blocker
 
-`npm run build` and the db-consistency gates are green as of this session. The converter suite
-last measured **672 pass** when this session touched it — the gate work after that did not run it,
-so re-run before relying on the number.
+`npm run build` is green as of this session — **927 pass, 2 skipped**, every prebuild gate passing,
+measured after the `/sgs-update` reseed. (The older "672 pass" figure in this slot was stale.)
 
 ### Open — one caused BY this session, one genuinely not ours
 
