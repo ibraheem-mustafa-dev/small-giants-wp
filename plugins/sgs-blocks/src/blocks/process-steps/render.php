@@ -21,7 +21,7 @@
  * never auto-inlines it. Everything is emitted into the block's OWN scoped
  * `.{uid}` <style> tag via `wp_style_engine_get_styles()` (exactly how WP
  * core outputs `layout` support) or hand-built shorthand for the SGS box
- * objects. The root's `style="--sgs-hover-bg:…"` custom-property VALUES stay
+ * objects. The root's `--sgs-hover-bg:…` custom-property VALUES are SCOPED
  * inline — a `--var: value` is a value, not a declaration (contract §A).
  *
  * BLOCK-PRIVATE, COMPOSITE-KEEPS-WRAPPER (contract §B3): this block never used
@@ -197,14 +197,14 @@ if ( '' !== $transition_duration && null !== $transition_duration ) {
 if ( $transition_easing ) {
 	$wrapper_style_parts[] = '--sgs-transition-easing:' . esc_attr( $transition_easing );
 }
-$wrapper_style = $wrapper_style_parts ? implode( ';', $wrapper_style_parts ) : '';
-
+// NO-INLINE (Spec 32 FR-32-4 as amended 2026-07-18 / D345): $wrapper_style_parts
+// holds custom-property VALUES, and inline `style="--sgs-…"` is FORBIDDEN on the
+// frontend exactly as an inline property declaration is — FR-32-1's done-when is
+// "no `style` attribute at all", explicitly including a custom-property value.
+// They are emitted into the block's scoped rule below instead (see section 4).
 $wrapper_args = array(
 	'class' => implode( ' ', $wrapper_classes ),
 );
-if ( $wrapper_style ) {
-	$wrapper_args['style'] = $wrapper_style;
-}
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 // ---------------------------------------------------------------------------
@@ -213,6 +213,12 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 // ---------------------------------------------------------------------------
 
 $scoped_css = array();
+
+// Per-instance custom-property VALUES (hover colours, transition duration and
+// easing), scoped rather than inline — see the FR-32-4/D345 note above.
+if ( $wrapper_style_parts ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_style_parts ) . ';}';
+}
 
 // --- Root border-style / border-colour / border-width (SGS custom, scoped). ---
 $root_border_decls = array();

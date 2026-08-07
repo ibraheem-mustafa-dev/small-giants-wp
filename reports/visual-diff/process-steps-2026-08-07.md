@@ -4,28 +4,32 @@ date: 2026-08-07
 verdict: PASS
 first_paint_capture_passed: true
 first_paint_capture_run: true
-capture_method: chrome-devtools-mcp against the live canary page /spec32-guard-capture-canary/ (page 2164, seeded 2026-08-07 for this purpose)
-deployed_build: deploy 2026-08-07
-change: Spec 32 stranded ':not([style*=…])' fallback-guard purge
+capture_method: chrome-devtools-mcp against the live canary /spec32-guard-capture-canary/ (page 2164), post-deploy
+change: Spec 32 FR-32-4 — inline custom-property VALUES routed to the block's scoped rule
 ---
 
-## Live measurement (REST state — <details> left closed)
-3 pass / 3 fail. The three step numbers are near-white on brand pink at 2.40:1. Unchanged by this work.
+## What was wrong
+The block root emitted its per-instance custom properties as an inline
+`style="--sgs-…"` attribute. FR-32-4 as amended 2026-07-18 (D345) FORBIDS this:
+an inline `--var` is a violation exactly as an inline property declaration is,
+and FR-32-1's done-when is "no `style` attribute at all", explicitly including a
+custom-property value. Both blocks carried a docblock asserting the opposite
+("a --var:value is not a property declaration, so it stays") — written BEFORE the
+amendment. Dated opinions, corrected in place.
 
-## How "PASS" is justified when failures are listed
-The verdict is about THIS CHANGE, not about the brand palette. Every failing
-element above was measured at an IDENTICAL ratio before and after the guard
-purge, so none is a regression introduced here. They are pre-existing
-brand-colour choices (pink #E68A95 / yellow #F5D050 on cream), the same pairing
-already ruled AA-inapplicable for this client.
+## Live measurement (post-deploy)
+Block root `style` attribute: **(none)**.
+The values MOVED rather than vanished — a scoped rule is present and they still
+resolve on the element:
+  `.sgs-proc-cbb104c4.sgs-process-steps { --sgs-transition-duration: 300ms; --sgs-transition-easing: ease-in-out }`; both resolve on the element
 
-## Anti-vacuity
-The canary page was verified to render real text for every block before any
-contrast was measured (33 text-owning nodes across the ten blocks) — an absent
-or empty block scores a false PASS on any sweep. The sweep walks EVERY element
-owning its own text nodes, not a single class.
+## Negative control
+Checking only "no inline style" would also pass if the fix had simply DELETED the
+values. The resolved-value read above is the control that distinguishes moved
+from lost.
 
-## Trap recorded
-A sweep that force-opens <details> measures accordion and product-faq at ~2.38:1.
-That is a deliberate '[open]' brand highlight, not a defect. Measure the rest
-state, or measure both and say which is which.
+## How this was found
+Only because a canary page was seeded that renders these blocks with real
+content. Spec 32 line 148 records the inline-zero rollout as COMPLETE (D346),
+"verified live — page-wide style="--"=0" — but that verification ran on pages
+containing neither block. The completeness claim was vacuously verified.

@@ -89,13 +89,19 @@ except Exception:
 # The seeded pages carry one instance of each var-driven feature (per-item stagger
 # and fill, SVG background opacity, shape dividers, post-grid card vars, countdown
 # colours, gallery aspect, form progress, review breakdown, plan ribbon, badge fg),
-# so the gate now has real subjects. If these pages are ever deleted the gate
-# silently returns to proving nothing - re-seed them rather than dropping them.
+# so the gate has real subjects.
+#
+# UPDATED 2026-08-07: pages 2064 + 2071 were DELETED on Bean's instruction
+# (enforcement moves to Spec 35 scripts). They are replaced here by page 2164,
+# /spec32-guard-capture-canary/, which renders 10 sgs blocks with real text.
+# THE HAZARD IS UNCHANGED AND IS THE POINT OF THIS COMMENT: if a listed page
+# 404s or is emptied, this gate sees zero blocks and passes VACUOUSLY. It does
+# not distinguish 'clean' from 'saw nothing'. Either re-seed, or make the gate
+# fail when a canary URL yields zero sgs blocks - do not simply drop the URL.
 CANARY_URLS = [
     "https://palestine-lives.org/",                                            # Indus (page 13 front)
     "https://sandybrown-nightingale-600381.hostingersite.com/",                # Mama's (staging canary)
-    "https://sandybrown-nightingale-600381.hostingersite.com/sgs-gate-canary/",   # seeded, page 2064
-    "https://sandybrown-nightingale-600381.hostingersite.com/sgs-gate-canary-2/", # seeded, page 2071
+    "https://sandybrown-nightingale-600381.hostingersite.com/spec32-guard-capture-canary/",  # seeded 2026-08-07, page 2164
 ]
 
 
@@ -167,6 +173,15 @@ def scan_html_deep(html: str) -> dict[str, dict]:
             sgs_hit = sgs_block.search(cls)
             if sgs_hit:
                 owner: str | None = sgs_hit.group(1)
+                # COVERAGE (2026-08-07): record every SGS block root we SEE,
+                # even when it carries no style attribute. Without this,
+                # per_block held only blocks WITH inline styles, so a clean run
+                # printed "0 sgs block type(s)" — byte-identical to the vacuous
+                # -pass signature this file's own header warns about, making a
+                # CLEAN scan indistinguishable from a BLIND one. Zero-count rows
+                # never create violations (run_live only reports non-zero counts),
+                # they just make the coverage number truthful.
+                per_block.setdefault(owner, {"style_var": 0, "style_empty": 0})
             elif any_block.search(cls):
                 owner = None  # a CORE block root shadows any SGS ancestor
             else:

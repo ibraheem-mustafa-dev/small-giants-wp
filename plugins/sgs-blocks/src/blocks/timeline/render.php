@@ -14,8 +14,10 @@
  * `__experimentalBorder` WP supports all declare `__experimentalSkipSerialization`
  * in block.json so get_block_wrapper_attributes() never auto-inlines them.
  * The `--sgs-connector-colour` / `--sgs-date-colour` / `--sgs-reveal-stagger`
- * custom-property VALUES on the wrapper stay — a `--var:value` is not a
- * property declaration (contract §A) and is untouched by this migration.
+ * custom-property VALUES route to the scoped `.{uid}` rule like everything
+ * else — inline `--var` was FORBIDDEN by the FR-32-4 amendment (2026-07-18,
+ * D345). The older "a --var:value is not a property declaration" reading is
+ * superseded.
  *
  * BOX-GROUP (contract §B): `padding`/`margin` are WP-native
  * style.spacing.* objects (base) + SGS object tiers (paddingTablet/Mobile,
@@ -362,14 +364,21 @@ if ( $date_colour ) {
 if ( $reveal_stagger > 0 ) {
 	$wrapper_style_parts[] = '--sgs-reveal-stagger:' . $reveal_stagger . 'ms';
 }
-$wrapper_style = $wrapper_style_parts ? implode( ';', $wrapper_style_parts ) : '';
+// NO-INLINE (Spec 32 FR-32-4 as amended 2026-07-18 / D345): these are
+// custom-property VALUES, and an inline `style="--sgs-…"` is FORBIDDEN on the
+// frontend just as much as an inline property declaration — FR-32-1's done-when
+// is "no `style` attribute at all", explicitly including a custom-property
+// value. They route to the block's own scoped `.{uid}.sgs-timeline` rule
+// instead. (An earlier docblock here claimed a `--var:value` "stays" because it
+// is not a property declaration; that was written BEFORE the D345 amendment and
+// is superseded — a dated opinion, not a live exemption.)
+if ( $wrapper_style_parts ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_style_parts ) . ';}';
+}
 
 $wrapper_args = array(
 	'class' => implode( ' ', $wrapper_classes ),
 );
-if ( $wrapper_style ) {
-	$wrapper_args['style'] = $wrapper_style;
-}
 
 // Pass scroll-reveal config to view.js via data attributes.
 if ( $reveal_on_scroll ) {
