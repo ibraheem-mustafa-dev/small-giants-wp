@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D521 — art-direction tiers reach every media block; video needed a different mechanism [ROUTINE]
+
+**2026-08-07.** Closed the LEDGER's Task 1. `sgs/decorative-image`, `sgs/image-sequence`,
+`sgs/testimonial` and `sgs/before-after`'s image pair now carry the
+`{base}`/`{base}Tablet`/`{base}Mobile` shape hero and media already used, behind one
+`<ResponsiveControl>`-wrapped picker each, every one gated so it cannot appear for media that is not
+there. Commit `e5f85753`.
+
+**The video half is NOT the same mechanism, and cannot be.** Images tier by rendering all three and
+letting CSS hide two — free. Three `<video>` elements each begin fetching and three embeds each load
+a player, so `sgs/media`'s video source is swapped at runtime by `view.js`, reusing sgs/hero's
+existing `data-src-desktop/tablet/mobile` contract with the same upward fallback. The DESKTOP source
+is still rendered as real server markup, so a no-JS visitor gets a working video. **Bean chose to
+include YouTube/Vimeo** after being shown the cost: crossing a breakpoint mid-watch rebuilds the
+iframe and loses playback position. The swap therefore fires only when the resolved source genuinely
+differs from what is on screen, and each tier's embed URL is built from THAT tier's playback flags.
+
+**Three defects, none caught by a gate; all three by the live capture.** (1) The video swap was
+ONE-WAY — `buildVideoNode()`'s iframe branch set only `data-poster`, so the rebuilt node carried no
+`data-src-*`, `resolveTierSource()` returned null forever, and the block stuck on the mobile source at
+every width. It passed in the one direction anyone checks first. (2) `image-sequence` appended its
+tier CSS AFTER the `printf` that had already emitted `$style_tag` — correct-looking code emitting
+nothing. (3) `before-after`'s `ImagePickerRow` always rendered its alt field, so a tier picker would
+have shown an uncontrolled, untypeable input; alt is deliberately not tiered.
+
+**A gate being wrong is still information.** `check-dead-controls` CHECK 4 called all 8 before-after
+tier attrs fully dead. Its dynamic-prefix resolver reads `$attributes[$var . 'Literal']` and cannot
+follow a key whose tail is a second variable (`$prefix . 'ImageId' . $tier`). The code was rewritten
+to concatenate WHOLE literal suffixes rather than argue 8 findings into a baseline — keeping code
+gate-legible is cheaper than annotating why the gate is wrong. CHECK 4 net-new: 11 → 3, all
+pre-existing.
+
+**Verification standard applied:** FIRST PAINT per width — viewport set, then a fresh navigation,
+never a resize-after-load — asserting computed visibility at measured `innerWidth` 1364/818/364.
+Markup presence scores a false pass. A requested 800px viewport measured 727px, which would have
+tested mobile while labelled tablet; every width in the reports is the measured one.
+
+**D520's own lesson nearly repeated.** The `media` and `testimonial` reports ALREADY existed for
+other changes the same day and were nearly overwritten wholesale. Both are preserved with this work
+appended as Part 2, and `before-after`'s report keeps its still-unproven video limits rather than
+letting them read as certified by the new sha.
+
 ## D520 — the visual-diff gate was date-keyed, so it green-lit changes it never saw [INCIDENT]
 
 **2026-08-07.** The gate accepted any `reports/visual-diff/<block>-<TODAY>.md` carrying

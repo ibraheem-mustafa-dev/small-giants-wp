@@ -69,9 +69,9 @@ before acting, do not assume it is current from memory alone:
   carries a role, all by MECHANISM, zero hand overrides. Four REAL bugs fixed en route
   (image-sequence content drop · inert `link-content` chain · `sgs/separator` icon routing ·
   `form.formName` dead control → the form's accessible name). **A7, A8 and A9 are now all CLOSED
-  (D508/D509/D510), and the A7 reseed IS landed.** Next = the art-direction rollout across 5 more
-  blocks (4 untouched + the VIDEO half of `sgs/media`), then **Task F**. The parallel Task-B
-  session has finished and committed.
+  (D508/D509/D510), and the A7 reseed IS landed.** **The art-direction rollout is COMPLETE too
+  (D521, 2026-08-07) — every media-bearing block, verified at first paint.** Next = **Task F**. The
+  parallel Task-B session has finished and committed.
 - **Track 1b enforcement baseline (2026-08-04, D481-D484):** 0 of 24 end conditions had a validated
   script (1 enforced/8 partial/4 vacuous/2 unwired/9 absent). Tasks C+D closed 2 of those 2026-08-06;
   CHECK 5 (dead assignment) added 2026-08-06. **Task F closes the rest — bar = `STOP-CATALOGUE.md`
@@ -165,7 +165,7 @@ The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION (Track 1b / Spec 35) — art-direction rollout, then Task F
+## NEXT SESSION (Track 1b / Spec 35) — Task F (the rollout is DONE, D521)
 
 ### THE GOAL — state it before picking up any task
 
@@ -196,23 +196,29 @@ is not done.** The 24 end conditions are only worth having if ENFORCED — measu
 - **Dead-control gate (D516/D517)** — CHECK 4 **and** CHECK 1 now require dynamic tier-key
   construction, not a bare `@media`. A/B proven on an identical tree; `--tier-audit` reports 0.
 
-⛔ **The Spec 39 reply is DRAFTED, NOT SENT.** Three corrections the pipeline side needs before they
-freeze it: **`stroke` IS a colour** (excluding it breaks SVG routing); **`css_property` alone is
-insufficient** — their own `surfaceOpacity` example would route a number as a colour, so it needs a
-value-shape guard; and **the DB-derived set already exists** (`_load_colour_terminal_props`) — import
-it rather than restate a list. Their defect-A count of 21 is also wrong; the honest figure is 19.
+✅ **The Spec 39 reply IS SENT** (2026-08-07, `22436d19`) —
+`reports/2026-08-07-spec39-colour-properties-reply-track1b.md`. Filed under `reports/` NOT `scratch/`
+on purpose: scratch is gitignored, so the owning track could not have found it after a session
+boundary. Three corrections, each with its verifying query: **`stroke` IS a colour** (single
+`property_suffixes` row, `role=color` — excluding it breaks SVG routing); **`css_property` alone is
+insufficient** (`nav-drawer.surfaceOpacity` is `attr_type=number` on `background-color`, so the bare
+predicate routes a number through the colour snapper — needs a value-shape guard); **the DB-derived
+set already exists** at `extract-signatures.py:1861` `_load_colour_terminal_props` — import it rather
+than restate a list. Their defect-A count of 21 is wrong; the honest figure is 19.
+⏳ No reply back from that track yet.
 
 ---
 
 ## ⭐ NEXT SESSION — orchestration plan
 
-**Identity.** You are the SGS framework engineer closing Spec 35. Two fronts: finish rolling the
-art-direction tier pattern across the remaining media-bearing blocks, then start Task F — the
-enforcement scripts that are the track's actual deliverable.
+**Identity.** You are the SGS framework engineer closing Spec 35. **One front now: Task F** — the
+enforcement scripts that are the track's actual deliverable. The art-direction rollout is COMPLETE
+(D521); only the video-attachment gap in Task 0 remains beside it.
 
-**State recap.** `sgs/hero` and `sgs/media` render device-specific image tiers with a
-device-switched editor control, verified on the canary at three widths. `sgs/team-member`'s photo
-tiers and `sgs/before-after`'s video-autoplay tiers were LANDED 2026-08-07 (both had been sitting
+**State recap.** EVERY media-bearing block now renders device-specific tiers with a device-switched
+editor control (D521, `e5f85753`), verified at first paint at three measured widths. Earlier that day
+`sgs/hero`, `sgs/media` (image half), `sgs/team-member` and `sgs/before-after`'s video-autoplay tiers
+had landed (some had been sitting
 uncommitted). `team-member` verified live; `before-after`'s tier CONTRACT + cascade verified, but
 playback and the runtime tier switch remain UNPROVEN — see Task 0 and the report's own limits section. Image tiers are still missing on the blocks in Task 1's table — note
 `before-after` still needs its IMAGE pair even though its VIDEO-autoplay half is done. Spec 35's 24
@@ -228,66 +234,37 @@ gate hardening two more. Task F closes the rest.
 - Preset ARRAYS live in the theme layer ONLY (Spec 26 FR-26-D3). A snapshot is SCP'd over
   `theme.json` wholesale — a preset missing from it is DELETED for that client, not inherited.
 
-### Task 0 — close the two gaps 2026-08-07 left open (15 min)
+### ✅ Task 1 CLOSED (D521, `e5f85753`) — art-direction tiers reach every media block
 
-**What:** (a) upload a real video to the canary and re-verify `sgs/before-after` autoplay tiers —
-2026-08-07 proved the `data-*` tier CONTRACT and cascade but NOT playback or the runtime switch at
-tablet/mobile widths (no video attachment existed; the probe URL 404'd). (b) Regenerate a
-`source_sha` for whichever block the next commit touches first. **Name `info-box` explicitly:** its
-report predates the gate, carries no `source_sha`, and is the artefact the whole shadow-rename
-evidence rests on — it WILL be refused the moment that block is touched again.
-**Why:** (a) is the only unproven claim left from that session and it is written as unproven in
-`reports/visual-diff/before-after-2026-08-07.md` — do not let it silently become "verified".
-**Orchestration:** inline (main thread), no subagent — needs the canary login + Playwright.
-**Depends on:** none. **Parallel with:** Task 1.
-**/qc gate after:** no — the report IS the verification artefact.
-**Acceptance:** a real `<video>` plays at desktop and does NOT at mobile width, captured at both;
-`before-after-<date>.md` updated with a `source_sha` and the two "NOT proven" limits removed.
+All five landed and are verified live: `decorative-image`, `image-sequence`, `testimonial`,
+`before-after` (image pair) and `sgs/media`'s VIDEO half. Verified at FIRST PAINT per width
+(viewport set, then a fresh navigation — never a resize-after-load), computed visibility at
+measured `innerWidth` 1364/818/364. Fixtures: `/art-direction-tier-probe/` (page 2178) and
+`/video-tier-probe/` (page 2179).
 
-### Task 1 — roll art-direction tiers across the remaining media blocks
+⚠ **The video half is a DIFFERENT mechanism — do not "unify" it with the image one.** Three
+`<video>`s each begin fetching and three embeds each load a player, so the source is swapped at
+runtime by `view.js` on sgs/hero's `data-src-*` contract. Bean chose to include YouTube/Vimeo
+knowing a mid-watch breakpoint crossing loses playback position.
 
-**What:** give each remaining media SOURCE attr the `{base}` / `{base}Tablet` / `{base}Mobile` shape
-that hero and media now use, with ONE `<ResponsiveControl>`-wrapped picker.
-**Scope note:** 3 blocks untouched; `sgs/media` needs only its VIDEO half and `sgs/before-after`
-only its IMAGE pair — both those blocks' other halves already shipped.
-**Why:** a client cannot art-direct their own images on these blocks today — only the cloning pipeline
-can write those values, which is precisely what Spec 35 exists to stop.
-**Estimated time:** 25 min for the five blocks.
+### Task 0 — the video gap that is STILL open (15 min)
 
-**Scope — measured 2026-08-07, already filtered:**
+**Narrowed, not closed.** 2026-08-07's second pass verified the video tier mechanism only on the
+EMBED (iframe) path, because **no video attachment exists on the canary** — the same blocker as
+before. What remains unproven:
 
-| block | attrs needing tiers |
-|---|---|
-| `sgs/before-after` | `beforeImageId/Url`, `afterImageId/Url` (video pair DONE, `d8cdcf8b`) |
-| `sgs/decorative-image` | `imageId`, `imageUrl` |
-| `sgs/image-sequence` | `thumbnail` (the poster) |
-| `sgs/media` | `videoUrl`/`videoId` + `thumbnail` — the VIDEO half; the image half shipped |
-| `sgs/testimonial` | `avatarMedia` |
+1. `sgs/before-after` — real video autoplay + the runtime tier switch at tablet/mobile widths.
+   Written as unproven in `reports/visual-diff/before-after-2026-08-07.md` Part 1; **do not let it
+   silently become "verified"** — Part 2 (image tiers) deliberately does not re-certify it.
+2. `sgs/media` — the direct-file `<video>` swap path (in-place `source.src`, then `enhance()`
+   re-run after a kind change), and whether per-tier POSTERS actually paint (only a direct-file
+   `<video>` renders a poster).
 
-⛔ **NOT tier candidates — do not touch:** `showAvatar`, `photoShape`, `backgroundImageOpacity`,
-`splitImageBleed`, `splitImageMobileObjectPosition`, `splitImageMobileHeight`. They are settings, not
-media sources; a naive name-grep sweeps them in.
-
-**`before-after`'s VIDEO half is done** (`d8cdcf8b`, with `BooleanResponsiveControl.js`); only its
-IMAGE pair remains. `team-member` landed at `7187e75d`. Trees are clean — the earlier
-co-active-track warning here is discharged. **Safe to start now:** `decorative-image`,
-`image-sequence`, `testimonial`, `media` (VIDEO half), `before-after` (IMAGE pair).
-
-**Orchestration:** inline (main thread). It is one repeated pattern across five blocks, and BOTH bugs
-it produced on hero/media were caught only by a LIVE capture — a subagent working from a pattern
-description would repeat them.
-**Depends on:** none. **Parallel with:** none. **/qc gate after:** yes — live capture per block, then
-`/qc-inline`.
-**Acceptance:** for each block, all tiers in the DOM and exactly ONE visible at 375/768/1440, asserted
-on COMPUTED VISIBILITY. Markup presence scores a false pass.
-
-⚠ **The two traps hero/media hit — both will recur:**
-1. **Naked mode.** A block that renders its media element AS the block root REBUILDS the markup
-   further down `render.php` and discards the tier siblings. Look for a second builder before
-   assuming one code path.
-2. **Selector lists.** Appending a descendant to a multi-member selector variable binds it to the LAST
-   member only, leaving the rest unqualified — this hid every image at every width on `sgs/media`.
-   Build tier selectors from the BARE scope selector.
+**First action:** upload one real short MP4 to the canary media library. Both gaps then close in
+one pass.
+**Orchestration:** inline — needs the canary login + Playwright.
+**Acceptance:** a real `<video>` plays at desktop and does not at mobile width, captured at both;
+the direct-file source swaps tier and back; a tier poster is visibly painted.
 
 ### Task 2 — Task F: the enforcement scripts
 
