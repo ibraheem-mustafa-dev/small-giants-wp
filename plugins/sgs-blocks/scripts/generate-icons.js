@@ -100,10 +100,19 @@ if ( ! fs.existsSync( includesDir ) ) {
 	fs.mkdirSync( includesDir, { recursive: true } );
 }
 
-fs.writeFileSync( OUTPUT_FILE, phpLines.join( '\n' ), 'utf8' );
-console.log(
-	`Generated ${ OUTPUT_FILE } with ${ Object.keys( icons ).length } icons.`
-);
+// Skip the write when only the `Last generated` timestamp would change. This
+// file is TRACKED, and stamping a new timestamp on every prebuild left it
+// permanently dirty for identical icon content — noise that made the working
+// tree never clean (2026-08-08). Compare everything except the timestamp line.
+const nextPhp = phpLines.join( '\n' );
+const stripStamp = ( s ) => s.replace( /^ \* Last generated: .*$/m, '' );
+const prevPhp = fs.existsSync( OUTPUT_FILE ) ? fs.readFileSync( OUTPUT_FILE, 'utf8' ) : '';
+if ( stripStamp( prevPhp ) === stripStamp( nextPhp ) ) {
+	console.log( `Unchanged ${ OUTPUT_FILE } (${ Object.keys( icons ).length } icons) — timestamp-only diff skipped.` );
+} else {
+	fs.writeFileSync( OUTPUT_FILE, nextPhp, 'utf8' );
+	console.log( `Generated ${ OUTPUT_FILE } with ${ Object.keys( icons ).length } icons.` );
+}
 
 // ── Editor-side assets for the in-editor IconPicker ─────────────────────────────
 // These are static JSON assets fetched on-demand by the IconPicker modal (editor

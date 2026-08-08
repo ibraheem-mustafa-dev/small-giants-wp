@@ -1039,10 +1039,17 @@ function main() {
 		if ( r ) results.push( r );
 	}
 
-	fs.writeFileSync( OUT_JSON, JSON.stringify( { generatedAt: new Date().toISOString(), totalBlocks: results.length, blocks: results }, null, '\t' ) + '\n', 'utf8' );
-
 	const md = buildMarkdownReport( results );
-	fs.writeFileSync( OUT_MD, md, 'utf8' );
+
+	// A --check run VERIFIES; it must not mutate tracked files. Writing here
+	// unconditionally stamped a fresh `generatedAt` on every prebuild, so these
+	// two tracked reports were permanently dirty and the working tree was never
+	// clean — which is how they came to be mistaken for another session's work
+	// (2026-08-08). Verify-only runs now leave them alone.
+	if ( ! process.argv.includes( '--check' ) ) {
+		fs.writeFileSync( OUT_JSON, JSON.stringify( { generatedAt: new Date().toISOString(), totalBlocks: results.length, blocks: results }, null, '\t' ) + '\n', 'utf8' );
+		fs.writeFileSync( OUT_MD, md, 'utf8' );
+	}
 
 	// Console summary.
 	const totalInlineRenderSites = results.reduce( ( sum, r ) => sum + r.inlineViaRender.length, 0 );
