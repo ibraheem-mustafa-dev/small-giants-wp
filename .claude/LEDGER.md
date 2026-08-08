@@ -188,6 +188,8 @@ Everything is corrected and committed (`5a48acfd`), but **do not trust a figure 
 written that session without checking D527.** The corrections that change what you do:
 
 - **`box_family` was 7; the real population was 13.** Now zero object-typed box attrs read NULL.
+- **`sgs/content-collection` is DELETED (D529)** — block count 84 → **83**. Its deletion broke the
+  build until `card-grid`'s imports were relocated; see D529 before quoting any 84-based figure.
 - **The Tier 0 fix MOVED A SCOPING AXIS.** `build-roster.py:91` derives `surfaces.*` from a haystack
   that includes `inspector_control_type` — so writing that column restages `roster.json`.
 - **"Fossils had no reader" was FALSE** — `mcp/server.py` `search_blocks()`/`match()` read the full
@@ -221,7 +223,10 @@ blocks and fired 18 false-positive WARNs on a fail-closed gate.
 **Estimated time:** ~10 min.
 **Command:** `python plugins/sgs-blocks/scripts/consistency/build-roster.py` then
 `git diff -- plugins/sgs-blocks/scripts/consistency/roster.json`.
-**Baseline (verified 2026-08-08, post-fix):** `styling=65 colour=64 link=17 media=30 animation=21`.
+**Baseline (verified 2026-08-08, post-`content-collection` deletion):**
+`styling=64 colour=63 link=17 media=30 animation=20` over **83** blocks.
+⚠ `animation` moved 21→20 and `styling`/`colour` each -1 — ALL caused by deleting
+`sgs/content-collection` (D529), NOT by a spurious axis flip. Explained, not merely noted.
 **Orchestration:** inline, Opus. Do NOT delegate — this is the measurement everything else rests on.
 **Depends on:** none. **Parallel with:** none.
 **/qc gate after:** no — it is itself a verification step.

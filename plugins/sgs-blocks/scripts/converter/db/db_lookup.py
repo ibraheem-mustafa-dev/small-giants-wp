@@ -1739,13 +1739,33 @@ def capabilities_for(block_slug: str) -> frozenset[str]:
     """
     conn = sqlite3.connect(SGS_DB)
     try:
+        # kind='functional' is LOAD-BEARING (D528). block_capabilities also holds
+        # kind='discovery' rows — each block's own block.json `keywords`, seeded so
+        # the out-of-repo block-discovery tooling can score against them. Without
+        # this filter a block would acquire a FUNCTIONAL capability merely by using
+        # the word as a search term — e.g. a block keyworded "collection" would
+        # read as declaring the capability `isCollectionKind()` tests.
+        # ⚠ The hazard is STRUCTURAL, not dependent on any current example: the one
+        # live collision measured 2026-08-08 was `sgs/content-collection`, which is
+        # itself queued for deletion (absorbed into `sgs/card-grid`). Zero live
+        # collisions after that is luck, not safety — keep the filter regardless.
+        # Discovery readers deliberately do NOT filter; they want both kinds.
         rows = conn.execute(
-            "SELECT capability FROM block_capabilities WHERE block_slug = ?",
+            "SELECT capability FROM block_capabilities "
+            "WHERE block_slug = ? AND kind = 'functional'",
             (block_slug,),
         ).fetchall()
     except sqlite3.OperationalError:
-        # Table absent (first-run before populate-db.py) — soft-fail to empty.
-        rows = []
+        # Either the table is absent (first run) or the `kind` column predates
+        # D528. Retry unfiltered so an un-migrated DB still returns the functional
+        # rows it has, rather than silently reporting a block as capability-less.
+        try:
+            rows = conn.execute(
+                "SELECT capability FROM block_capabilities WHERE block_slug = ?",
+                (block_slug,),
+            ).fetchall()
+        except sqlite3.OperationalError:
+            rows = []
     finally:
         conn.close()
     return frozenset(r[0] for r in rows)

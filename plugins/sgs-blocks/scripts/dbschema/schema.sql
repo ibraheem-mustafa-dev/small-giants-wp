@@ -1,5 +1,5 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-05
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-08
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
@@ -59,7 +59,7 @@ CREATE TABLE block_attributes (
 CREATE TABLE block_capabilities (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         block_slug TEXT NOT NULL,
-        capability TEXT NOT NULL,
+        capability TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'functional',
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, capability)
     );

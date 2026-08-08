@@ -25,8 +25,15 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import HandpickedPanel from '../../content-collection/components/handpicked-panel';
-import CategoryPanel from '../../content-collection/components/category-panel';
+// Relocated into card-grid 2026-08-08 when sgs/content-collection was deleted.
+// The fold (2026-08-01) left these two panels living inside the block being
+// retired, so card-grid — the block that ABSORBED the functionality — imported
+// across a directory that was about to vanish. Deleting the block broke the
+// build: webpack resolved nothing, postbuild never ran, and the block count
+// silently fell 84 -> 83. An absorption is not complete while the surviving
+// block still reaches into the corpse.
+import HandpickedPanel from './handpicked-panel';
+import CategoryPanel from './category-panel';
 
 /** Maximum result count enforced server-side (CPT_Collection_Query::MAX_COUNT). */
 const MAX_COUNT = 24;

@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 84,
+    "count": 83,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -198,21 +198,6 @@
         "colour": true,
         "link": false,
         "media": true,
-        "animation": true
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "title": "Content Collection",
-      "category": "sgs-content",
-      "tier": "block",
-      "replaces": null,
-      "has_render_php": true,
-      "surfaces": {
-        "styling": true,
-        "colour": true,
-        "link": false,
-        "media": false,
         "animation": true
       }
     },

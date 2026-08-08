@@ -24,7 +24,7 @@ related:
   - specs/02-SGS-BLOCKS.md
   - plugins/sgs-blocks/src/blocks/product-card/
   - plugins/sgs-blocks/src/blocks/option-picker/
-  - plugins/sgs-blocks/src/blocks/content-collection/
+  - plugins/sgs-blocks/src/blocks/card-grid/  (absorbed sgs/content-collection, D529)
   - plugins/sgs-blocks/src/blocks/cart/
   - plugins/sgs-blocks/includes/class-product-bindings.php
   - plugins/sgs-blocks/includes/content-types/class-product-cpt.php
@@ -39,7 +39,8 @@ This is the single authoritative spec for the SGS product and WooCommerce layer.
 - The `sgs-product/field` Block Bindings source (Spec 25)
 - The `sgs/option-picker` atomic block (FR-24-15)
 - Variation-sets and the `_sgs_variation_sets` meta (FR-24-11 to FR-24-14)
-- The `sgs/content-collection` query block and its 7 selection rules (FR-24-4 to FR-24-6)
+- The collection query surface and its 7 selection rules (FR-24-4 to FR-24-6) — now `sgs/card-grid`
+  collection mode; the standalone `sgs/content-collection` block was DELETED 2026-08-08 (D529)
 - The `sgs/cart` WooCommerce mini-cart badge (Spec 25)
 - The variable-product configurator: live WC read-through, accessible pill swaps, secure add-to-cart, SEO schema, and the Phase-R authoring + AI-builder roadmap (FR-27-A1 onwards)
 
@@ -116,11 +117,11 @@ Merged from Spec 25's feature-map table and the configurator's phasing. Rows sup
 | `_sgs_variation_sets` meta + Gutenberg editor panel | SHIPPED (commit `7115a60d`) | `includes/content-types/class-product-cpt.php`, `product-card/edit.js` | D148 | FR-24-11 |
 | `sgs/option-picker` atomic block (pill radio-group) | SHIPPED (commit `ee6807d3`) | `src/blocks/option-picker/` | D144, D148 | FR-24-15 |
 | Converter emits `sgs/option-picker` for draft pill groups | SHIPPED (commit `c68b8cb6`, Phase D) | `scripts/orchestrator/converter_v2/convert.py`, `seed-slot-synonyms.py` | - | FR-24-15 |
-| `sgs/content-collection` block (own WP_Query, selection rules) | SHIPPED (commit `c68b8cb6`, Phase E) | `src/blocks/content-collection/` (block.json v1.1.0, render.php) | - | FR-24-4/5/6 |
+| Collection query surface (own WP_Query, selection rules) | SHIPPED, then FOLDED into `sgs/card-grid` (2026-08-01) and the standalone block DELETED (2026-08-08, D529) | `src/blocks/card-grid/` + `includes/class-cpt-collection-query.php` | D529 | FR-24-4/5/6 |
 | Pill-to-price/image swap via WP Interactivity API (full live read) | **SHIPPED** (live: 0-XHR multi-axis swap of price/sale/stock/image from the seeded manifest; FR-27-A1/A2 D164/D165) | `src/blocks/product-card/view.js`, `includes/class-product-manifest.php` | D164, D165 | FR-27-A1/A2 |
 | `_sgs_sku_matrix` (multi-SKU variable pricing) | SUPERSEDED - dropped; WC variations are the matrix; see principle 6 above | - | D144 (superseded) | FR-24-14, superseded by FR-27 |
 | WC variable-product per-variant pricing/stock via WC-native variations | SUPERSEDED - this is now the primary path (FR-27-A1); the DEFERRED label is retired | - | D151 | FR-27-A1 |
-| WC adapter for `sgs/content-collection` | PLANNED - triggers when a real shop client lands | Separate spec when in scope | D149 | FR-24 out-of-scope |
+| WC adapter for the collection surface (now `sgs/card-grid`) | PLANNED - triggers when a real shop client lands | Separate spec when in scope | D149 | FR-24 out-of-scope |
 | `sgs/trust-bar` dual-mode (Typed repeater + Bound InnerBlocks) | **SHIPPED (commit `d6358f32`, 2026-06-01 — FR-24-10; render.php branches on `sourceMode` typed/bound)** | `src/blocks/trust-bar/` | D123 | FR-24-10 |
 | Variable-product configurator Phase 1 — **SHIPPED** (Bean R-31-13 sign-off 2026-06-04). Sell-loop (U0/U6/U3/U4/U7/U5) + all 6 hardening units (U9 a11y+evidence/U10 perf INP152ms/U8 cache M-C1-staleness-fix/U11 WC<9.8 degradation/U1 capability-flag/U12 cloning+schema-compat tests) + 7 ship-gate UX fixes (width/pills/hover/product-page-links/near-black-desc/header-cart+feedback/no-image-placeholder). Acceptance 1-6 met. | SHIPPED (D165) | `src/blocks/product-card/`, `includes/class-product-manifest.php`, `class-product-bindings.php`, `class-cart-proxy.php`, `class-sgs-configurator-compat.php`, `class-sgs-content-types-settings.php`, `content-types/class-product-cpt.php`, `theme/sgs-theme/parts/header.html`, `scripts/seed-48-sku-fixture.php`, `tests/js/configurator-schema-compat.test.js`, `tests/php/ConfiguratorCompatTest.php`, `.claude/reports/sgs-configurator-moat-evidence.md` | D162, D164, D165 | FR-27-A/B/C/G/H/I-MVP |
 | Variable-product configurator Phase 2 — **COMPLETE** (Cluster A D171 + Cluster B SEO D173 + Cluster C authoring/go-live 2026-06-05); Bean R-31-13 sign-off granted on each cluster. **Cluster A** (display, live-verified on canary 540): Step 0 foundations; B2 swatches + I2 build-time WCAG auto-contrast (6cdff8d0); TAX-UI (FR-27-H3, 9e26de74); B3 per-unit "£x/bar" derived live + cosmetic badge reusing `sgs/label` + on-sale "Sale" badge + WC variation-editor authoring (ceb4e04a/5fe7cfd5); A4 per-variation gallery + thumbnail strip + prefetch + editable `imageHeight` + media-picker authoring (77dccc9f/48fc54b7); C2 3-state sold-out-vs-unavailable SR text; Step-7 demand analytics privacy-safe REST (`/sgs/v1/demand/attempt`, SHA-256, ZERO PII) + admin (771f43ad); ESCAPE-AUDIT + QA-VIS(axe-0) gates passed (28607ac4). **Cluster B** (SEO, live-verified): E1 ProductGroup+hasVariant JSON-LD (6ef7e7c6, Rich Results 0 errors); E2 canonical escape-hatch (ba96a4ff); E3 OG + sitemap-lastmod + breadcrumb-block-placement (325b521f) — image-sitemap clause DESCOPED (53b85d7c); F1 SSR no-JS audit passed; manifest context-cap regression self-caught + fixed (3a1e95df). **Cluster C** (authoring + go-live) — see the Phase-R rows below, all SHIPPED. | COMPLETE | `includes/{class-configurator-meta,configurator-head,configurator-term-fields,configurator-variation-fields,render-helpers,class-product-manifest,class-product-bindings,class-demand-analytics,demand-analytics-admin,class-product-schema,class-product-canonical,class-product-sitemap}.php`, `src/blocks/{option-picker,product-card}/`, `scripts/seed-48-sku-fixture-v2.php` | D171, D173 | Cluster A + B + C all done |
@@ -157,7 +158,7 @@ sgs/content-collection  ---loop template---->  dual-mode card (sgs/product-card)
 ```
 
 - **Data source:** custom CPT, registered per-site. No WooCommerce required for the base layer.
-- **Query engine:** dedicated `sgs/content-collection` block with its own `WP_Query`. Named selection presets are resolved via `WP_Query` args in `render.php`. The `query_loop_block_query_vars` PHP filter is not needed (Open Question FR-24 #1 resolved, Phase E 2026-06-03).
+- **Query engine:** `sgs/card-grid` collection mode with its own `WP_Query` (was the dedicated `sgs/content-collection` block until D529). Named selection presets are resolved via `WP_Query` args in `render.php`. The `query_loop_block_query_vars` PHP filter is not needed (Open Question FR-24 #1 resolved, Phase E 2026-06-03).
 - **Field surfacing:** Block Bindings API (`register_meta(show_in_rest:true)` + `register_block_bindings_source()` for computed/derived fields such as formatted price).
 - **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode equals the FR-31-6 InnerBlocks shape (Spec 22), so the clone pipeline is unaffected.
 - **D149 / D151 dual-source Bound mode (decided 2026-06-02, refined 2026-06-03).** The card's Bound-mode data source is dual-source: when WooCommerce is present, the card binds to WooCommerce-native product data (price/image/stock/variations via WC's own meta and REST endpoints); when WooCommerce is absent, it falls back to the `sgs_product` CPT meta. The source is auto-detected from the product picker (no client-facing WC/CPT toggle). `custom-fields` CPT support is a REST-exposure flag, not a storage choice.
@@ -285,7 +286,7 @@ In Bound mode, an inspector control lets the operator pick a specific CPT entry 
 
 ### FR-24-4 -- Query/collection block (SHIPPED Phase E, uncommitted, 2026-06-03)
 
-A dedicated `sgs/content-collection` block (block.json v1.1.0, own `WP_Query`) iterates a chosen CPT and renders each result through the dual-mode card in Bound mode. Inspector controls: source content type, count/limit, and selection rule. Decision: dedicated block over core Query Loop (Open Question FR-24 #1 resolved).
+`sgs/card-grid` in collection mode (own `WP_Query`; was a dedicated `sgs/content-collection` block until D529) iterates a chosen CPT and renders each result through the dual-mode card in Bound mode. Inspector controls: source content type, count/limit, and selection rule. Decision: dedicated block over core Query Loop (Open Question FR-24 #1 resolved).
 
 ### FR-24-5 -- Named-condition selection (SHIPPED Phase E, uncommitted, 2026-06-03)
 
@@ -408,7 +409,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 
 1. With the product content-type enabled, a client can add a Product (CPT entry) and see it in the item picker. No code.
 2. A `sgs/product-card` set to Bound mode + a picked product renders that product's live data; editing the product updates the card.
-3. A `sgs/content-collection` with "Featured" preset shows only featured products; "Most-expensive" sorts by price desc. Both from inspector toggles, no code.
+3. A `sgs/card-grid` in collection mode with "Featured" preset shows only featured products; "Most-expensive" sorts by price desc. Both from inspector toggles, no code.
 4. An empty query renders the designed placeholder, not a blank region.
 5. A marketing site with the product type DISABLED ships no product CPT, no extra weight.
 6. The same collection block, pointed at `sgs_testimonial`, works with zero new block code.
@@ -628,4 +629,4 @@ Not a plugin for sale. This is the commerce engine of the SGS AI website builder
 - **Absorbs (retired):** Spec 24 (query-driven content cards), Spec 25 (WooCommerce experience layer). Do not edit those files.
 - **Aligns with:** Spec 22 (cloning pipeline, option-picker emit unchanged), Spec 26 (global styles / auto-contrast, pending decision), Spec 11 (button presets).
 - **Key decisions:** D144 (option-picker ratification), D148 (CPT + cart + option-picker ships), D149 (dual-source architecture), D151 (wrapper+bridge model, add-to-cart in Phase C), D-pending (Option A ratified; WC source of truth; no mirror; clean-slate; MVP-first re-scope; closed-loop moat; AI-builder = roadmap).
-- **Primary files:** `includes/class-product-bindings.php`, `includes/content-types/class-product-cpt.php`, `src/blocks/product-card/`, `src/blocks/option-picker/`, `src/blocks/content-collection/`, `src/blocks/cart/`, `/sgs/v1/cart/add-item` (proxy endpoint).
+- **Primary files:** `includes/class-product-bindings.php`, `includes/content-types/class-product-cpt.php`, `src/blocks/product-card/`, `src/blocks/option-picker/`, `src/blocks/card-grid/`, `src/blocks/cart/`, `/sgs/v1/cart/add-item` (proxy endpoint).

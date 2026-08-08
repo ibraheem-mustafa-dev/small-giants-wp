@@ -121,6 +121,14 @@ _DECLARATIVE_CAPABILITIES = {
     "iconPicker": "icon-picker",
 }
 
+# The FUNCTIONAL capability namespace — the 3 converter-read lift flags plus the 2
+# declarative facts above. A discovery keyword must never enter this set (D528): a
+# block would gain a functional capability by using the word as a search term.
+_FUNCTIONAL_CAPABILITY_NAMES = frozenset(
+    {"scalar-content-lift", "scalar-styling-lift", "array-content-lift"}
+    | set(_DECLARATIVE_CAPABILITIES.values())
+)
+
 # Capability names with NO in-repo writer and NO live reader, seeded historically by
 # populate-db.py's CAPABILITY_RULES. Their only consumer — the capability-aware
 # tiebreaker — was RETIRED at D278, and every live `capabilities_for()` call site
@@ -598,6 +606,17 @@ def _index_sgs_block_files(
     # 0 rows, no callers. Live mechanism is the sibling `array_item_schema`.
     # Archived reversibly to scripts/data/retired/array_item_fields.json.gz.
 
+    # Idempotent column-add for block_capabilities.kind (D528; mirrors the
+    # block_attributes column-add pattern). Existing rows default to 'functional',
+    # so the change is backwards-compatible: the out-of-repo discovery readers
+    # (`mcp/server.py`) do a bare `SELECT capability` and keep working unchanged,
+    # gaining the discovery rows. Only the in-repo functional reader filters.
+    if "kind" not in {r[1] for r in c.execute("PRAGMA table_info(block_capabilities)")}:
+        c.execute(
+            "ALTER TABLE block_capabilities ADD COLUMN kind TEXT NOT NULL DEFAULT 'functional'"
+        )
+        print("Stage 1: block_capabilities.kind column added (existing rows -> 'functional')")
+
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
             continue
@@ -886,6 +905,49 @@ def _index_sgs_block_files(
                 (slug,),
             )
 
+        # --- DISCOVERY keywords (D528, 2026-08-08) ---
+        # A block's OWN `keywords` array in block.json, written as
+        # kind='discovery' rows so the block-discovery tooling can score against
+        # them. This REPLACES the 36 semantic capability tags D525 pruned.
+        #
+        # WHY THE EXISTING FIELD, not a new one. D525 removed 36 hand-seeded tags
+        # on the finding that nothing in the pipeline read them — but a QC council
+        # (D527) proved two live readers DO exist outside the pipeline:
+        # `mcp/server.py`'s `search_blocks()` and `match()` score blocks by keyword
+        # overlap over the whole table, and CLAUDE.md tells sessions to use them.
+        # The pruning degraded them. Measured before choosing a fix: every one of
+        # the 84 blocks already declares `keywords` (442 entries, avg 5.3, corpus
+        # 331 distinct terms) versus the fossils' 73 rows over ~50 blocks with 34
+        # blocks carrying NONE. The existing field is ~9x richer, 100% covered,
+        # and — being what powers the block inserter's search — is CLIENT-FACING,
+        # so it cannot silently rot the way a hand-seeded dict did. No new
+        # authoring burden, and a live in-repo writer: the failure D525 fixed
+        # cannot recur here.
+        #
+        # ⛔ kind='discovery' is NOT optional. `sgs/content-collection` declares
+        # the keyword "collection", which is also a FUNCTIONAL capability name.
+        # Sharing one namespace would let any future block gain a functional
+        # capability by using it as a search word — `isCollectionKind()` firing on
+        # a block that merely mentions the concept. `capabilities_for()` filters
+        # to kind='functional' for exactly this reason; the discovery readers
+        # deliberately do not filter, so they see both.
+        _kw = data.get("keywords")
+        _kw = [k.strip().lower() for k in _kw if isinstance(k, str) and k.strip()] if isinstance(_kw, list) else []
+        c.execute(
+            "DELETE FROM block_capabilities WHERE block_slug = ? AND kind = 'discovery'"
+            + ("" if not _kw else " AND capability NOT IN (" + ",".join("?" * len(_kw)) + ")"),
+            (slug, *_kw),
+        )
+        for _k in _kw:
+            # Never shadow a functional capability name (see the ⛔ note above).
+            if _k in _FUNCTIONAL_CAPABILITY_NAMES:
+                continue
+            c.execute(
+                "INSERT OR IGNORE INTO block_capabilities "
+                "(block_slug, capability, kind) VALUES (?, ?, 'discovery')",
+                (slug, _k),
+            )
+
         # --- DECLARATIVE capabilities (D525, 2026-08-08) ---
         # Same presence/absence contract as the three lift flags above, but
         # table-driven so a new one costs a row here plus a block.json key —
@@ -1155,8 +1217,15 @@ def _index_sgs_block_files(
     # fossils silently coming back and a future rule scoping against them.
     pruned_fossil_caps = 0
     if not dry_run:
+        # ⛔ kind='functional' is LOAD-BEARING here too (D528). Eleven fossil NAMES
+        # are also legitimate block.json keywords — `carousel` (4 blocks),
+        # `navigation` (7), `cta` (5), `faq` (3), `rating`, `pricing`, `steps`,
+        # `alert`, `countdown`, `decorative`, `expandable`. Unscoped, this prune
+        # destroyed 29 real discovery rows on its first run after the keyword
+        # seeder landed — the same namespace collision as the functional side,
+        # arriving from the opposite direction. Prune fossils ONLY.
         c.execute(
-            "DELETE FROM block_capabilities WHERE capability IN "
+            "DELETE FROM block_capabilities WHERE kind = 'functional' AND capability IN "
             f"({','.join('?' * len(_FOSSIL_CAPABILITIES))})",
             tuple(sorted(_FOSSIL_CAPABILITIES)),
         )

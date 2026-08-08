@@ -1,5 +1,69 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D528 — the pruned discovery keywords are RESTORED from each block's own `keywords` field [ROUTINE]
+
+**2026-08-08. Bean-ruled** (chose to reinstate after D527 proved the D525 purge degraded two live
+block-discovery tools). **Restored better than it was, from data that already existed.**
+
+**Measured before choosing:** every one of the 84 blocks already declares a top-level `keywords`
+array — **442 entries, avg 5.3, corpus 331 distinct terms** — versus the 36 hand-seeded fossil tags'
+73 rows over ~50 blocks, with **34 blocks carrying none at all**. The existing field is ~9× richer,
+100% covered, and — being what powers the block inserter's search — is **client-facing, so it cannot
+silently rot** the way a hand-seeded dict outside the repo did. 23 of the 36 fossil concepts are
+already present in it. No new authoring burden, and a live in-repo writer: D525's failure mode
+cannot recur.
+
+**A `kind` column keeps the two namespaces apart, and that is LOAD-BEARING.** `block_capabilities`
+now carries `kind` (`functional` | `discovery`, existing rows defaulted to `functional`). Without it
+a block would gain a FUNCTIONAL capability by using the word as a search term — measured: 1 live
+collision, `sgs/content-collection` keyworded "collection", which is the capability
+`isCollectionKind()` tests. `capabilities_for()` filters `kind='functional'`; the out-of-repo
+discovery readers do a bare `SELECT capability` and therefore see BOTH — **so they improved with
+zero out-of-repo change.**
+
+**The same collision bit from the opposite direction, and the counts caught it.** On first run the
+fossil prune reported 29 rows deleted when fossils were already zero: it was eating legitimate
+KEYWORDS whose text matches a fossil name — `navigation` (7 blocks), `cta` (5), `carousel` (4),
+`faq` (3), `rating`, `pricing`, `steps`, `alert`, `countdown`, `decorative`, `expandable`. The prune
+is now scoped `kind='functional'`. **A number that should have been zero was the only thing that
+surfaced it.**
+
+**Proven, not asserted:** discovery search went from **NO MATCHES** to correct top hits on every
+probe ("carousel of client logos" → `brand-strip`; "faq accordion" → `accordion`; "pricing table
+plans" → `pricing-table`; "image gallery lightbox" → `gallery`). Converter unaffected —
+`capabilities_for()` returns functional-only, suite at baseline. `schema.sql` regenerated (the drift
+gate caught the un-tracked column and blocked the build until it was).
+
+## D529 — `sgs/content-collection` DELETED; its deletion broke the build, because the absorption was never finished [INCIDENT]
+
+**2026-08-08. Bean-initiated** (*"its functionality is getting absorbed by card grid and then getting
+deleted"* / *"should actually already be gone"*). Block count **84 → 83**.
+
+**It was NOT already gone.** Measured when Bean said it should be: 6 source files, built output, a DB
+row at version 1.2.0 — and `inserter` unset, so **clients could still insert a superseded block**.
+What HAD happened was the absorption (2026-08-01): `card-grid/render.php:438` calls it *"the former
+content-collection"*, and `includes/class-cpt-collection-query.php` records the fold. The deletion
+step was simply never taken.
+
+**Deleting it broke the build, and the block that broke was the one that absorbed it.**
+`card-grid/components/collection-panel.js:28-29` imported `HandpickedPanel` and `CategoryPanel` from
+`../../content-collection/components/` — the surviving block reached into the directory being
+retired. Consequences, all silent: `wp-scripts` exited non-zero *after* printing "compiled
+successfully", so **postbuild never ran**, and the gates' block count fell 84 → 83 with no error
+naming the cause. Fixed by relocating both components into `card-grid/components/` and re-pointing
+the imports.
+
+**Rule:** an absorption is not complete while the surviving block still reaches into the corpse.
+Before deleting a block, grep for imports of its path from OTHER blocks — a fold that leaves shared
+components inside the retired block has only moved the dependency, not removed it.
+
+**DB + artefacts reconciled:** Stage 10 prune removed 1 block row, 32 attributes, 7 capabilities,
+6 supports — dry-run first, scope confirmed to that block alone. Roster regenerated:
+`styling=64 colour=63 link=17 media=30 animation=20` (was 65/64/17/30/21). ⚠ **`animation` moved,
+and it scopes `17-reduced-motion-gate` (GATE-mode, WCAG 2.3.3)** — caused by the deletion, not a
+spurious flip, and verified as such rather than assumed. `collection` 17 → 16. Build EXIT=0, all
+gates pass, converter suite 38 failed / 773 passed (baseline).
+
 ## D527 — a 4-rater QC council falsified SIX claims from this session's own work [INCIDENT]
 
 **2026-08-08.** Bean asked for `/qc-council` over D523–D526 **and** over the closing claim that Spec 35
