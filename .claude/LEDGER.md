@@ -15,34 +15,27 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 gets ONE true answer instead of three drifting ones.
 
 **Where 2026-08-08 left things, in a sentence each:**
-- **You were right that the 27-item checklist was the wrong shape. It has now been replaced** by a
-  **contract per control type** — for colour, links, sizes, hover, media and so on, one fixed way of
-  doing it, with a written list of the wrong-but-similar ways to catch. The old checklist is retired.
-- **Why the old shape kept failing:** each rule was written against the one component its author had
-  in mind, so anything doing the same job under a different name walked past. A gate went "40 → 0",
-  someone wrote "DONE — all raw URL fields migrated", and the two biggest offenders had never been in
-  that gate's field of view at all.
-- **Five safety checks exist and are plugged into nothing** — including the linter you already pay
-  for, which reports 11,932 problems the moment it's run. That's most of Task F's work: wiring, not
-  writing.
-- **53 settings your framework renders that no client can reach.** Declared, painted on the page, no
-  control anywhere. Proven by running the check that's supposed to catch them — it sees none of them.
-- **Two blocks ask a non-technical client to type raw CSS by hand.** One's help text literally says
-  "a raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)".
-- **I had the whole thing torn apart by four independent reviewers first, and they were right to.**
-  It would have deleted an accessibility requirement, wiped the only written record of your
-  phone/tablet sizes, and reverted a fix you diagnosed yourself. Eleven of my numbers were wrong.
-  **All of that is now fixed and the replacement is signed off** — every one of the 30 old items is
-  either folded into a control contract or carried over word-for-word, with a table proving it.
-- **Your instinct about the database was correct.** The categorisation every new rule gets aimed with
-  was wrong in four places, and the cause was the *same* bug as the gates: a hardcoded list of
-  component names. **All four are now fixed.** 41 settings were filed under the wrong kind of control
-  (a border width filed as a colour picker); and 36 categories turned out to be **dead labels — no
-  code wrote them, no code read them, for months**. The plan wanted to revive them; instead each
-  block now states the one fact that was actually needed about itself.
+- **Enforcement has started.** The five safety checks that were plugged into nothing are now **wired
+  and running on every build** — advisory, so they report without blocking, and each one has been
+  proven able to fail.
+- **The "53 settings no client can reach" was never the real number.** It counted four hand-audited
+  groups only. Measured properly it is **280 across 35 of your 83 blocks** — the 53 sits inside it.
+  One block alone (`physics-canvas`) paints 79 settings while offering three controls.
+- **Nobody can act on 280 yet** — it has not been separated into genuinely-unreachable vs
+  false-alarm. That triage is the next job, and a smaller number is explicitly not the goal.
+- **You asked whether the sidepanel tabs should be standardised. Yes — and before ordering.**
+  65 of 83 blocks never split into Settings/Styles at all, so there is no order to fix yet.
+- **Two blocks still ask a non-technical client to type raw CSS by hand.** One's help text literally
+  says "a raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)".
+- **The four reviewers were right to tear the contract apart, and something they raised got lost** —
+  the ordering point, which you remembered and I had not captured. Their raw output was never saved,
+  which is exactly how it went missing. That is now a standing rule.
 
 **Older, still true:** WebGL is in the framework (Tier W, budgeted) · ⛔ GSAP's licence has a clause
 worth knowing before selling a plugin built on it · the Snooza job is 72 combinations, not 24.
+
+**Full narrative + the superseded version of this summary:**
+`memory/session-2026-08-08-track1b-enforcement.md`.
 
 ## CURRENT FRONTS
 

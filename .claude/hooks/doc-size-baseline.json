@@ -17,9 +17,24 @@
       "gate: it records a size that was ACCEPTED after a sweep, not merely the current one."
     ],
     "seeded": "2026-08-06, measured from this tree.",
-    "sweep_owed": "decisions.md is ~1.03MB, roughly 4x the 262,144-byte fallback cap. A sweep to .claude/memory/decisions-archive.md is owed; the growth budget only stops it getting WORSE."
+    "last_sweep": [
+      "2026-08-08: decisions.md 1,129,290 -> 1,047,198. 22 legacy-format entries moved VERBATIM to",
+      "memory/decisions-archive.md. This number is LOWER than the previous baseline (1,053,789), so it",
+      "is a recorded GAIN, not a silenced gate — the budget now measures growth from the smaller size.",
+      "",
+      "SELECTION RULE, worth reusing: entries were chosen by CITATION, not by age. An entry qualified",
+      "only if it sat in the legacy '## <date> — [TAG] D<N>:' heading region AND no live doc cited its",
+      "D-number (CLAUDE.md, LEDGER, STOP-CATALOGUE, parking, goals, specs/, plans/, scripts/). 116",
+      "legacy entries were KEPT because they ARE cited live — D293, D294, D276, D336, D220 among them.",
+      "'Old' is NOT 'non-load-bearing': a blanket age sweep would have archived live binding rules.",
+      "",
+      "⚠ Preserve CRLF when rewriting this file's targets. Python's default text mode converts every",
+      "CRLF to LF, which would have produced a 7,679-line spurious diff. Caught only because the",
+      "script's byte count disagreed with the gate's by exactly the line count."
+    ],
+    "sweep_owed": "STILL OWED even after the 2026-08-08 sweep: decisions.md remains ~1.05MB, roughly 4x the 262,144-byte fallback cap. Closing that gap means triaging the 116 legacy entries that live docs cite — retarget or retire each citation first. The growth budget only stops it getting WORSE."
   },
   "sizes": {
-    "decisions.md": 1053789
+    "decisions.md": 1047198
   }
 }
