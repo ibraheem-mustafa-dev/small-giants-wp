@@ -1,8 +1,8 @@
-# Stage 4 Style Variation Sync — 2026-07-30 11:16:25 UTC
+# Stage 4 Style Variation Sync — 2026-08-07 20:57:15 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 126 | Conflicts: 115
+Snapshots found: 8 | Missing: 5 | Inserted: 3 | Skipped: 123 | Conflicts: 115
 
 ## Per-client results
 
@@ -63,7 +63,7 @@ Inserted: 0 | Skipped: 12 | Conflicts: 13
 
 ### mamas-munches
 
-Inserted: 0 | Skipped: 20 | Conflicts: 22
+Inserted: 3 | Skipped: 17 | Conflicts: 22
 
 - CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border-subtle
@@ -104,7 +104,7 @@ Inserted: 0 | Skipped: 15 | Conflicts: 16
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-footer-bg
 - CONFLICT: color-text-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-text-primary
 - CONFLICT: color-text-secondary (framework='#4A4A4A', client='#5A5A5A') → inserted as sgs-construction-color-text-secondary
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A7A7A') → inserted as sgs-construction-color-text-muted
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#6F6F6F') → inserted as sgs-construction-color-text-muted
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#E8700A') → inserted as sgs-construction-color-border-subtle
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-construction-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-construction-font-size-medium
@@ -125,7 +125,7 @@ Inserted: 0 | Skipped: 16 | Conflicts: 15
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-footer-bg
 - CONFLICT: color-text-primary (framework='#0D1B2A', client='#1A2E35') → inserted as sgs-healthcare-color-text-primary
 - CONFLICT: color-text-secondary (framework='#4A4A4A', client='#4A6670') → inserted as sgs-healthcare-color-text-secondary
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A9BA6') → inserted as sgs-healthcare-color-text-muted
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#517782') → inserted as sgs-healthcare-color-text-muted
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#4CAF88') → inserted as sgs-healthcare-color-border-subtle
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-healthcare-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-healthcare-font-size-medium
@@ -145,7 +145,7 @@ Inserted: 0 | Skipped: 16 | Conflicts: 15
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-footer-bg
 - CONFLICT: color-text-primary (framework='#0D1B2A', client='#1A2E22') → inserted as sgs-mosque-color-text-primary
 - CONFLICT: color-text-secondary (framework='#4A4A4A', client='#4A6055') → inserted as sgs-mosque-color-text-secondary
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A9A88') → inserted as sgs-mosque-color-text-muted
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#547A6A') → inserted as sgs-mosque-color-text-muted
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#C9A035') → inserted as sgs-mosque-color-border-subtle
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-mosque-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-mosque-font-size-medium
@@ -165,7 +165,7 @@ Inserted: 0 | Skipped: 16 | Conflicts: 15
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-footer-bg
 - CONFLICT: color-text-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-text-primary
 - CONFLICT: color-text-secondary (framework='#4A4A4A', client='#4A4A6A') → inserted as sgs-professional-color-text-secondary
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A7A9A') → inserted as sgs-professional-color-text-muted
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#6F6F8C') → inserted as sgs-professional-color-text-muted
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#8B4A6B') → inserted as sgs-professional-color-border-subtle
 - CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-professional-font-size-small
 - CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-professional-font-size-medium

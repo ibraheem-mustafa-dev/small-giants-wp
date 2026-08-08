@@ -1,6 +1,6 @@
 {
-	"generatedAt": "2026-07-30T22:01:24.778Z",
-	"totalBlocks": 81,
+	"generatedAt": "2026-08-08T19:18:51.783Z",
+	"totalBlocks": 83,
 	"blocks": [
 		{
 			"block": "sgs/accordion",
@@ -314,6 +314,347 @@
 			},
 			"helperCounts": {},
 			"dominantHelper": "none",
+			"scalarStylingLift": false
+		},
+		{
+			"block": "sgs/before-after",
+			"dir": "src\\blocks\\before-after",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"background",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"style",
+					"color",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": false,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"_comment_ssr_nullable",
+				"beforeMediaType",
+				"afterMediaType",
+				"beforeImageId",
+				"beforeImageUrl",
+				"beforeImageAlt",
+				"afterImageId",
+				"afterImageUrl",
+				"afterImageAlt",
+				"_comment_artDirection",
+				"beforeImageIdTablet",
+				"beforeImageUrlTablet",
+				"beforeImageIdMobile",
+				"beforeImageUrlMobile",
+				"afterImageIdTablet",
+				"afterImageUrlTablet",
+				"afterImageIdMobile",
+				"afterImageUrlMobile",
+				"beforeVideoId",
+				"beforeVideoUrl",
+				"beforeVideoAlt",
+				"afterVideoId",
+				"afterVideoUrl",
+				"afterVideoAlt",
+				"beforeSvgContent",
+				"afterSvgContent",
+				"videoAutoplay",
+				"videoAutoplayTablet",
+				"videoAutoplayMobile",
+				"showLabels",
+				"beforeLabel",
+				"afterLabel",
+				"labelColour",
+				"labelBackgroundColour",
+				"labelFontSize",
+				"labelFontSizeTablet",
+				"labelFontSizeMobile",
+				"labelFontWeight",
+				"labelFontStyle",
+				"labelLineHeight",
+				"orientation",
+				"reverseDirection",
+				"startPosition",
+				"fxDraggable",
+				"dividerColour",
+				"dividerWidth",
+				"handleColour",
+				"handleIconColour",
+				"height",
+				"heightUnit",
+				"heightTablet",
+				"heightMobile",
+				"maxWidth",
+				"maxWidthUnit",
+				"maxWidthTablet",
+				"maxWidthMobile",
+				"boxShadow",
+				"borderRadiusTablet",
+				"borderRadiusMobile"
+			],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
+			"attrRouting": {
+				"_comment_ssr_nullable": {
+					"routed": false,
+					"via": null
+				},
+				"beforeMediaType": {
+					"routed": false,
+					"via": null
+				},
+				"afterMediaType": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageId": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageUrl": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageAlt": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageId": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageUrl": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageAlt": {
+					"routed": false,
+					"via": null
+				},
+				"_comment_artDirection": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageUrlTablet": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageIdMobile": {
+					"routed": false,
+					"via": null
+				},
+				"beforeImageUrlMobile": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageUrlTablet": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageIdMobile": {
+					"routed": false,
+					"via": null
+				},
+				"afterImageUrlMobile": {
+					"routed": false,
+					"via": null
+				},
+				"beforeVideoId": {
+					"routed": false,
+					"via": null
+				},
+				"beforeVideoUrl": {
+					"routed": false,
+					"via": null
+				},
+				"beforeVideoAlt": {
+					"routed": false,
+					"via": null
+				},
+				"afterVideoId": {
+					"routed": false,
+					"via": null
+				},
+				"afterVideoUrl": {
+					"routed": false,
+					"via": null
+				},
+				"afterVideoAlt": {
+					"routed": false,
+					"via": null
+				},
+				"beforeSvgContent": {
+					"routed": false,
+					"via": null
+				},
+				"afterSvgContent": {
+					"routed": false,
+					"via": null
+				},
+				"videoAutoplay": {
+					"routed": false,
+					"via": null
+				},
+				"videoAutoplayTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoAutoplayMobile": {
+					"routed": false,
+					"via": null
+				},
+				"showLabels": {
+					"routed": false,
+					"via": null
+				},
+				"beforeLabel": {
+					"routed": false,
+					"via": null
+				},
+				"afterLabel": {
+					"routed": false,
+					"via": null
+				},
+				"labelColour": {
+					"routed": false,
+					"via": null
+				},
+				"labelBackgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"labelFontSize": {
+					"routed": false,
+					"via": null
+				},
+				"labelFontSizeUnit": {
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
+				},
+				"labelFontSizeTablet": {
+					"routed": false,
+					"via": null
+				},
+				"labelFontSizeMobile": {
+					"routed": false,
+					"via": null
+				},
+				"labelFontWeight": {
+					"routed": false,
+					"via": null
+				},
+				"labelFontStyle": {
+					"routed": false,
+					"via": null
+				},
+				"labelLineHeight": {
+					"routed": false,
+					"via": null
+				},
+				"labelLineHeightUnit": {
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
+				},
+				"orientation": {
+					"routed": false,
+					"via": null
+				},
+				"reverseDirection": {
+					"routed": false,
+					"via": null
+				},
+				"startPosition": {
+					"routed": false,
+					"via": null
+				},
+				"fxDraggable": {
+					"routed": false,
+					"via": null
+				},
+				"dividerColour": {
+					"routed": false,
+					"via": null
+				},
+				"dividerWidth": {
+					"routed": false,
+					"via": null
+				},
+				"handleColour": {
+					"routed": false,
+					"via": null
+				},
+				"handleIconColour": {
+					"routed": false,
+					"via": null
+				},
+				"height": {
+					"routed": false,
+					"via": null
+				},
+				"heightUnit": {
+					"routed": false,
+					"via": null
+				},
+				"heightTablet": {
+					"routed": false,
+					"via": null
+				},
+				"heightMobile": {
+					"routed": false,
+					"via": null
+				},
+				"maxWidth": {
+					"routed": false,
+					"via": null
+				},
+				"maxWidthUnit": {
+					"routed": false,
+					"via": null
+				},
+				"maxWidthTablet": {
+					"routed": false,
+					"via": null
+				},
+				"maxWidthMobile": {
+					"routed": false,
+					"via": null
+				},
+				"boxShadow": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
+				}
+			},
+			"helperCounts": {
+				"sgs_responsive_css_rule": 2
+			},
+			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": false
 		},
 		{
@@ -1222,7 +1563,10 @@
 				"perUnitDenomination",
 				"showLadder",
 				"framingMode",
-				"decoyEnabled"
+				"decoyEnabled",
+				"dragToScroll",
+				"dragMomentum",
+				"loopCarousel"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -1267,6 +1611,18 @@
 					"via": null
 				},
 				"decoyEnabled": {
+					"routed": false,
+					"via": null
+				},
+				"dragToScroll": {
+					"routed": false,
+					"via": null
+				},
+				"dragMomentum": {
+					"routed": false,
+					"via": null
+				},
+				"loopCarousel": {
 					"routed": false,
 					"via": null
 				}
@@ -1345,7 +1701,6 @@
 				"_comment_items_media",
 				"items",
 				"effectHover",
-				"overlayStyle",
 				"titleColour",
 				"subtitleColour",
 				"cardBackground",
@@ -1359,6 +1714,17 @@
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
 				"source",
+				"_comment_cpt_collection",
+				"contentType",
+				"selectionRule",
+				"count",
+				"handpickedIds",
+				"categoryTerm",
+				"emptyMessage",
+				"showPickers",
+				"ctaBehaviour",
+				"showLadder",
+				"pagination",
 				"productSource",
 				"productCollection",
 				"productCategories",
@@ -1373,8 +1739,6 @@
 				"queryPostType",
 				"queryPostsPerPage",
 				"queryCategory",
-				"direction",
-				"wrap",
 				"templateMode"
 			],
 			"tierWithoutBase": [],
@@ -1396,10 +1760,6 @@
 					"via": "render.php (block-private)"
 				},
 				"effectHover": {
-					"routed": false,
-					"via": null
-				},
-				"overlayStyle": {
 					"routed": false,
 					"via": null
 				},
@@ -1519,6 +1879,50 @@
 					"routed": false,
 					"via": null
 				},
+				"_comment_cpt_collection": {
+					"routed": false,
+					"via": null
+				},
+				"contentType": {
+					"routed": false,
+					"via": null
+				},
+				"selectionRule": {
+					"routed": false,
+					"via": null
+				},
+				"count": {
+					"routed": false,
+					"via": null
+				},
+				"handpickedIds": {
+					"routed": false,
+					"via": null
+				},
+				"categoryTerm": {
+					"routed": false,
+					"via": null
+				},
+				"emptyMessage": {
+					"routed": false,
+					"via": null
+				},
+				"showPickers": {
+					"routed": false,
+					"via": null
+				},
+				"ctaBehaviour": {
+					"routed": false,
+					"via": null
+				},
+				"showLadder": {
+					"routed": false,
+					"via": null
+				},
+				"pagination": {
+					"routed": false,
+					"via": null
+				},
 				"productSource": {
 					"routed": false,
 					"via": null
@@ -1586,14 +1990,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"direction": {
-					"routed": false,
-					"via": null
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
 				},
 				"templateMode": {
 					"routed": false,
@@ -1981,6 +2377,10 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"bgVideoTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"bgVideoMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -2147,141 +2547,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 55
-			},
-			"dominantHelper": "SGS_Container_Wrapper",
-			"scalarStylingLift": false
-		},
-		{
-			"block": "sgs/content-collection",
-			"dir": "src\\blocks\\content-collection",
-			"hasRenderPhp": true,
-			"hasStyleCss": true,
-			"inlineViaSupports": {
-				"color": [
-					"background",
-					"gradients",
-					"text",
-					"__experimentalSkipSerialization"
-				],
-				"spacing": [
-					"margin",
-					"__experimentalSkipSerialization"
-				],
-				"__experimentalBorder": [
-					"radius",
-					"width",
-					"color",
-					"style",
-					"__experimentalSkipSerialization"
-				]
-			},
-			"inlineViaRender": [],
-			"inlineViaWrapper": {
-				"usesWrapper": true,
-				"noOverlayOptOut": false,
-				"nulledAttrs": []
-			},
-			"dropConditionalInert": [
-				"columns",
-				"gridTemplateColumns",
-				"gridTemplateColumnsTablet",
-				"gridTemplateColumnsMobile",
-				"gridTemplateRows",
-				"gridTemplateRowsTablet",
-				"gridTemplateRowsMobile",
-				"gridAutoRows",
-				"flexDirection",
-				"flexWrap",
-				"justifyContent",
-				"justifyItems",
-				"alignContent",
-				"alignItems",
-				"gap",
-				"gapTablet",
-				"gapMobile",
-				"columnsMobile",
-				"columnsTablet"
-			],
-			"dropUnrouted": [
-				"contentType",
-				"selectionRule",
-				"count",
-				"handpickedIds",
-				"categoryTerm",
-				"emptyMessage",
-				"direction",
-				"wrap",
-				"templateMode",
-				"showPickers",
-				"ctaBehaviour",
-				"showLadder"
-			],
-			"tierWithoutBase": [],
-			"attrRouting": {
-				"contentType": {
-					"routed": false,
-					"via": null
-				},
-				"selectionRule": {
-					"routed": false,
-					"via": null
-				},
-				"count": {
-					"routed": false,
-					"via": null
-				},
-				"handpickedIds": {
-					"routed": false,
-					"via": null
-				},
-				"categoryTerm": {
-					"routed": false,
-					"via": null
-				},
-				"emptyMessage": {
-					"routed": false,
-					"via": null
-				},
-				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"layout": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"direction": {
-					"routed": false,
-					"via": null
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
-				},
-				"templateMode": {
-					"routed": false,
-					"via": null
-				},
-				"showPickers": {
-					"routed": false,
-					"via": null
-				},
-				"ctaBehaviour": {
-					"routed": false,
-					"via": null
-				},
-				"showLadder": {
-					"routed": false,
-					"via": null
-				}
-			},
-			"helperCounts": {
-				"SGS_Container_Wrapper": 3
+				"SGS_Container_Wrapper": 56
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -2709,7 +2975,8 @@
 				"overlayGradientFrom",
 				"overlayGradientTo",
 				"shadow",
-				"templateMode"
+				"templateMode",
+				"tagName"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -2842,6 +3109,10 @@
 					"via": null
 				},
 				"bgVideo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -3008,10 +3279,14 @@
 				"maxWidthTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"tagName": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 42,
+				"SGS_Container_Wrapper": 43,
 				"render.php (block-private)": 3
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
@@ -3035,6 +3310,11 @@
 				"decorMedia",
 				"imageId",
 				"imageUrl",
+				"_comment_artDirection",
+				"imageIdTablet",
+				"imageUrlTablet",
+				"imageIdMobile",
+				"imageUrlMobile",
 				"imageAlt",
 				"positionX",
 				"positionY",
@@ -3077,6 +3357,26 @@
 					"via": null
 				},
 				"imageUrl": {
+					"routed": false,
+					"via": null
+				},
+				"_comment_artDirection": {
+					"routed": false,
+					"via": null
+				},
+				"imageIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"imageUrlTablet": {
+					"routed": false,
+					"via": null
+				},
+				"imageIdMobile": {
+					"routed": false,
+					"via": null
+				},
+				"imageUrlMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -3247,8 +3547,6 @@
 				"minItemWidth",
 				"minItemWidthUnit",
 				"_comment_gap_unit",
-				"direction",
-				"wrap",
 				"templateMode"
 			],
 			"tierWithoutBase": [],
@@ -3280,14 +3578,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"direction": {
-					"routed": false,
-					"via": null
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
 				},
 				"templateMode": {
 					"routed": false,
@@ -4705,7 +4995,6 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"mediaItems",
-				"images",
 				"effectHover",
 				"enableLightbox",
 				"showCaptions",
@@ -4722,17 +5011,14 @@
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"direction",
-				"wrap",
-				"templateMode"
+				"templateMode",
+				"dragToScroll",
+				"dragMomentum",
+				"loopCarousel"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"mediaItems": {
-					"routed": false,
-					"via": null
-				},
-				"images": {
 					"routed": false,
 					"via": null
 				},
@@ -4884,10 +5170,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"direction": {
-					"routed": false,
-					"via": null
-				},
 				"flexDirection": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -4895,10 +5177,6 @@
 				"flexWrap": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
 				},
 				"justifyContent": {
 					"routed": true,
@@ -4927,6 +5205,18 @@
 				"gapTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"dragToScroll": {
+					"routed": false,
+					"via": null
+				},
+				"dragMomentum": {
+					"routed": false,
+					"via": null
+				},
+				"loopCarousel": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -5004,11 +5294,12 @@
 				"autoplaySpeed",
 				"showDots",
 				"showArrows",
+				"dragToScroll",
+				"dragMomentum",
+				"loopCarousel",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"direction",
-				"wrap",
 				"templateMode"
 			],
 			"tierWithoutBase": [],
@@ -5093,6 +5384,18 @@
 					"routed": false,
 					"via": null
 				},
+				"dragToScroll": {
+					"routed": false,
+					"via": null
+				},
+				"dragMomentum": {
+					"routed": false,
+					"via": null
+				},
+				"loopCarousel": {
+					"routed": false,
+					"via": null
+				},
 				"sgsAnimation": {
 					"routed": false,
 					"via": null
@@ -5116,14 +5419,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"direction": {
-					"routed": false,
-					"via": null
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
 				},
 				"templateMode": {
 					"routed": false,
@@ -5446,8 +5741,9 @@
 					"url",
 					"<video class=\"sgs-hero__video-bg\" autoplay loop muted playsinline aria-hidden=\"true\">",
 					"<source src=\"%s\" type=\"video/mp4\"></video>",
+					" data-src-tablet=\"%s\"",
 					"<video class=\"sgs-hero__video-bg sgs-hero__video-bg--responsive\" autoplay loop muted playsinline aria-hidden=\"true\"",
-					" data-src-desktop=\"%s\" data-src-mobile=\"%s\">",
+					" data-src-desktop=\"%s\"%s data-src-mobile=\"%s\">",
 					"id",
 					"high",
 					"auto",
@@ -5472,16 +5768,6 @@
 					".",
 					" .sgs-hero__overlay{background-color:",
 					";opacity:",
-					"position",
-					"bottom-left",
-					"light",
-					"number",
-					"suffix",
-					"label",
-					"<div class=\"sgs-hero__badge sgs-hero__badge--%s sgs-hero__badge--%s\">",
-					"<span class=\"sgs-hero__badge-number\">%s%s</span>",
-					"<span class=\"sgs-hero__badge-label\">%s</span>",
-					"<div class=\"sgs-hero__badges\">",
 					"<div class=\"sgs-hero__content\">",
 					"type",
 					"video",
@@ -5497,16 +5783,19 @@
 					" sgs-hero__split-image--bleed",
 					"sgs-hero__split-image sgs-hero__split-image--mobile",
 					" .sgs-hero__split-image--mobile{object-position:",
-					" sgs-hero__split-image--desktop",
 					"@media (max-width:767px){.",
 					" .sgs-hero__split-image--desktop{display:none}}",
 					"@media (min-width:768px){.",
 					" .sgs-hero__split-image--mobile{display:none}}",
+					"sgs-hero__split-image sgs-hero__split-image--tablet",
+					"@media (min-width:768px) and (max-width:1023px){.",
+					" .sgs-hero__split-image--tablet{display:none}}",
+					"@media (min-width:1024px){.",
+					" sgs-hero__split-image--desktop",
 					"<style id=\"%s\">%s</style>",
 					"backgroundImage",
 					"backgroundImageTablet",
 					"backgroundImageMobile",
-					"backgroundVideo",
 					"bgVideo",
 					"bgVideoMobile",
 					"bgSvgContent",
@@ -5520,6 +5809,7 @@
 					"backgroundPosition",
 					"backgroundRepeat",
 					"backgroundSize",
+					"bgVideoTablet",
 					"bgSvgAnimation",
 					"bgSvgAnimationSpeed",
 					"bgSvgMinHeight",
@@ -5567,23 +5857,23 @@
 				"overlayColour",
 				"overlayOpacity",
 				"splitImage",
+				"splitImageTablet",
 				"_comment_splitMedia",
 				"splitMedia",
 				"splitImageMobile",
 				"splitImageMobileObjectPosition",
 				"label",
-				"backgroundVideo",
 				"svgContent",
 				"minHeight",
 				"minHeightTablet",
 				"minHeightMobile",
-				"badges",
 				"transitionDuration",
 				"transitionEasing",
 				"textAlignMobile",
 				"textAlignTablet",
 				"textAlignDesktop",
 				"bgVideo",
+				"bgVideoTablet",
 				"bgVideoMobile",
 				"splitImageBleed",
 				"subHeadlineMaxWidth",
@@ -5676,6 +5966,10 @@
 					"routed": false,
 					"via": null
 				},
+				"splitImageTablet": {
+					"routed": false,
+					"via": null
+				},
 				"_comment_splitMedia": {
 					"routed": false,
 					"via": null
@@ -5696,10 +5990,6 @@
 					"routed": false,
 					"via": null
 				},
-				"backgroundVideo": {
-					"routed": false,
-					"via": null
-				},
 				"svgContent": {
 					"routed": false,
 					"via": null
@@ -5713,10 +6003,6 @@
 					"via": null
 				},
 				"minHeightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"badges": {
 					"routed": false,
 					"via": null
 				},
@@ -5761,6 +6047,10 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"bgVideo": {
+					"routed": false,
+					"via": null
+				},
+				"bgVideoTablet": {
 					"routed": false,
 					"via": null
 				},
@@ -6103,11 +6393,15 @@
 				"marginMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"tagName": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
 				"render.php (block-private)": 3,
-				"SGS_Container_Wrapper": 30
+				"SGS_Container_Wrapper": 31
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -6483,6 +6777,138 @@
 			"scalarStylingLift": false
 		},
 		{
+			"block": "sgs/image-sequence",
+			"dir": "src\\blocks\\image-sequence",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": false,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"thumbnail",
+				"_comment_artDirection",
+				"thumbnailTablet",
+				"thumbnailMobile",
+				"thumbnailAlt",
+				"aspectRatio",
+				"desktopFramesUrl",
+				"desktopFrameCount",
+				"desktopFramePad",
+				"desktopFrameExt",
+				"tabletFramesUrl",
+				"tabletFrameCount",
+				"tabletFramePad",
+				"tabletFrameExt",
+				"mobileFramesUrl",
+				"mobileFrameCount",
+				"mobileFramePad",
+				"mobileFrameExt",
+				"fxStart",
+				"fxEnd",
+				"fxScrub",
+				"fxPin"
+			],
+			"tierWithoutBase": [],
+			"attrRouting": {
+				"thumbnail": {
+					"routed": false,
+					"via": null
+				},
+				"_comment_artDirection": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailTablet": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailMobile": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailAlt": {
+					"routed": false,
+					"via": null
+				},
+				"aspectRatio": {
+					"routed": false,
+					"via": null
+				},
+				"desktopFramesUrl": {
+					"routed": false,
+					"via": null
+				},
+				"desktopFrameCount": {
+					"routed": false,
+					"via": null
+				},
+				"desktopFramePad": {
+					"routed": false,
+					"via": null
+				},
+				"desktopFrameExt": {
+					"routed": false,
+					"via": null
+				},
+				"tabletFramesUrl": {
+					"routed": false,
+					"via": null
+				},
+				"tabletFrameCount": {
+					"routed": false,
+					"via": null
+				},
+				"tabletFramePad": {
+					"routed": false,
+					"via": null
+				},
+				"tabletFrameExt": {
+					"routed": false,
+					"via": null
+				},
+				"mobileFramesUrl": {
+					"routed": false,
+					"via": null
+				},
+				"mobileFrameCount": {
+					"routed": false,
+					"via": null
+				},
+				"mobileFramePad": {
+					"routed": false,
+					"via": null
+				},
+				"mobileFrameExt": {
+					"routed": false,
+					"via": null
+				},
+				"fxStart": {
+					"routed": false,
+					"via": null
+				},
+				"fxEnd": {
+					"routed": false,
+					"via": null
+				},
+				"fxScrub": {
+					"routed": false,
+					"via": null
+				},
+				"fxPin": {
+					"routed": false,
+					"via": null
+				}
+			},
+			"helperCounts": {},
+			"dominantHelper": "none",
+			"scalarStylingLift": false
+		},
+		{
 			"block": "sgs/info-box",
 			"dir": "src\\blocks\\info-box",
 			"hasRenderPhp": true,
@@ -6845,16 +7271,41 @@
 				"videoSource",
 				"videoId",
 				"videoMimeType",
-				"videoPoster",
-				"videoPosterId",
+				"thumbnail",
+				"thumbnailId",
+				"_comment_videoArtDirection",
+				"videoUrlTablet",
+				"videoIdTablet",
+				"videoUrlMobile",
+				"videoIdMobile",
+				"thumbnailTablet",
+				"thumbnailIdTablet",
+				"thumbnailMobile",
+				"thumbnailIdMobile",
 				"videoAutoplay",
+				"videoAutoplayTablet",
+				"videoAutoplayMobile",
 				"videoLoop",
+				"videoLoopTablet",
+				"videoLoopMobile",
 				"videoMuted",
+				"videoMutedTablet",
+				"videoMutedMobile",
 				"videoControls",
+				"videoControlsTablet",
+				"videoControlsMobile",
 				"videoPlaysInline",
+				"videoPlaysInlineTablet",
+				"videoPlaysInlineMobile",
 				"videoLazyLoad",
+				"videoLazyLoadTablet",
+				"videoLazyLoadMobile",
 				"imageId",
 				"imageUrl",
+				"imageIdTablet",
+				"imageUrlTablet",
+				"imageIdMobile",
+				"imageUrlMobile",
 				"imageAlt",
 				"imageIsDecorative",
 				"imageWidth",
@@ -6926,11 +7377,47 @@
 					"routed": false,
 					"via": null
 				},
-				"videoPoster": {
+				"thumbnail": {
 					"routed": false,
 					"via": null
 				},
-				"videoPosterId": {
+				"thumbnailId": {
+					"routed": false,
+					"via": null
+				},
+				"_comment_videoArtDirection": {
+					"routed": false,
+					"via": null
+				},
+				"videoUrlTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoUrlMobile": {
+					"routed": false,
+					"via": null
+				},
+				"videoIdMobile": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailTablet": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailMobile": {
+					"routed": false,
+					"via": null
+				},
+				"thumbnailIdMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6938,7 +7425,23 @@
 					"routed": false,
 					"via": null
 				},
+				"videoAutoplayTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoAutoplayMobile": {
+					"routed": false,
+					"via": null
+				},
 				"videoLoop": {
+					"routed": false,
+					"via": null
+				},
+				"videoLoopTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoLoopMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6946,7 +7449,23 @@
 					"routed": false,
 					"via": null
 				},
+				"videoMutedTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoMutedMobile": {
+					"routed": false,
+					"via": null
+				},
 				"videoControls": {
+					"routed": false,
+					"via": null
+				},
+				"videoControlsTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoControlsMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6954,7 +7473,23 @@
 					"routed": false,
 					"via": null
 				},
+				"videoPlaysInlineTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoPlaysInlineMobile": {
+					"routed": false,
+					"via": null
+				},
 				"videoLazyLoad": {
+					"routed": false,
+					"via": null
+				},
+				"videoLazyLoadTablet": {
+					"routed": false,
+					"via": null
+				},
+				"videoLazyLoadMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6963,6 +7498,22 @@
 					"via": null
 				},
 				"imageUrl": {
+					"routed": false,
+					"via": null
+				},
+				"imageIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"imageUrlTablet": {
+					"routed": false,
+					"via": null
+				},
+				"imageIdMobile": {
+					"routed": false,
+					"via": null
+				},
+				"imageUrlMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -7381,81 +7932,40 @@
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
-			"dropConditionalInert": [],
-			"dropUnrouted": [
-				"direction",
-				"directionTablet",
-				"directionMobile",
+			"dropConditionalInert": [
+				"flexDirection",
+				"flexDirectionTablet",
+				"flexDirectionMobile",
+				"gap",
+				"gapTablet",
+				"gapMobile",
+				"justifyContent",
 				"justifyContentTablet",
 				"justifyContentMobile",
-				"wrap",
-				"wrapTablet",
-				"wrapMobile",
+				"flexWrap",
+				"flexWrapTablet",
+				"flexWrapMobile",
+				"alignItems",
 				"alignItemsTablet",
-				"alignItemsMobile"
+				"alignItemsMobile",
+				"alignContent",
+				"columns",
+				"columnsMobile",
+				"columnsTablet",
+				"gridAutoRows",
+				"gridTemplateColumns",
+				"gridTemplateColumnsMobile",
+				"gridTemplateColumnsTablet",
+				"gridTemplateRows",
+				"gridTemplateRowsMobile",
+				"gridTemplateRowsTablet",
+				"justifyItems"
+			],
+			"dropUnrouted": [
+				"templateMode"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
-				"direction": {
-					"routed": false,
-					"via": null
-				},
-				"directionTablet": {
-					"routed": false,
-					"via": null
-				},
-				"directionMobile": {
-					"routed": false,
-					"via": null
-				},
-				"gap": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"justifyContent": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"justifyContentTablet": {
-					"routed": false,
-					"via": null
-				},
-				"justifyContentMobile": {
-					"routed": false,
-					"via": null
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
-				},
-				"wrapTablet": {
-					"routed": false,
-					"via": null
-				},
-				"wrapMobile": {
-					"routed": false,
-					"via": null
-				},
-				"alignItems": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"alignItemsTablet": {
-					"routed": false,
-					"via": null
-				},
-				"alignItemsMobile": {
-					"routed": false,
-					"via": null
-				},
 				"contentWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -7463,10 +7973,18 @@
 				"maxWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"layout": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"templateMode": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 7
+				"SGS_Container_Wrapper": 3
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -7631,7 +8149,16 @@
 				"indicatorStyle",
 				"indicatorColour",
 				"itemMagnetEnabled",
-				"sgsCustomCss"
+				"sgsCustomCss",
+				"submenuAlign",
+				"submenuCaret",
+				"submenuCloseGrace",
+				"submenuBg",
+				"submenuColour",
+				"submenuMinWidth",
+				"submenuRadius",
+				"submenuPadding",
+				"templateMode"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -7834,13 +8361,121 @@
 				"sgsCustomCss": {
 					"routed": false,
 					"via": null
+				},
+				"submenuAlign": {
+					"routed": false,
+					"via": null
+				},
+				"submenuCaret": {
+					"routed": false,
+					"via": null
+				},
+				"submenuCloseGrace": {
+					"routed": false,
+					"via": null
+				},
+				"submenuBg": {
+					"routed": false,
+					"via": null
+				},
+				"submenuColour": {
+					"routed": false,
+					"via": null
+				},
+				"submenuMinWidth": {
+					"routed": false,
+					"via": null
+				},
+				"submenuRadius": {
+					"routed": false,
+					"via": null
+				},
+				"submenuPadding": {
+					"routed": false,
+					"via": null
+				},
+				"alignContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columnsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columnsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexDirection": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexWrap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridAutoRows": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumnsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumnsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRows": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRowsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRowsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyItems": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"templateMode": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 6,
+				"SGS_Container_Wrapper": 24,
 				"sgs_typography_css_rule": 8
 			},
-			"dominantHelper": "sgs_typography_css_rule",
+			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
 		},
 		{
@@ -8234,6 +8869,321 @@
 			"scalarStylingLift": true
 		},
 		{
+			"block": "sgs/physics-canvas",
+			"dir": "src\\blocks\\physics-canvas",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"background",
+					"text",
+					"gradients",
+					"__experimentalSkipSerialization"
+				],
+				"spacing": [
+					"margin",
+					"padding",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": true,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [
+				"alignContent",
+				"columns",
+				"columnsMobile",
+				"columnsTablet",
+				"flexDirection",
+				"flexWrap",
+				"gap",
+				"gapMobile",
+				"gapTablet",
+				"gridAutoRows",
+				"gridItemBackground",
+				"gridItemBorderRadius",
+				"gridItemPadding",
+				"gridItemShadow",
+				"gridItemTextColour",
+				"gridTemplateColumns",
+				"gridTemplateColumnsMobile",
+				"gridTemplateColumnsTablet",
+				"gridTemplateRows",
+				"gridTemplateRowsMobile",
+				"gridTemplateRowsTablet",
+				"justifyContent",
+				"justifyItems"
+			],
+			"dropUnrouted": [
+				"physicsGravity",
+				"physicsBounce",
+				"physicsEdgeResistance",
+				"templateMode"
+			],
+			"tierWithoutBase": [],
+			"attrRouting": {
+				"maxWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidthTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidthMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeightTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeightMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidthTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidthMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandBackground": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPadding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPaddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPaddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"physicsGravity": {
+					"routed": false,
+					"via": null
+				},
+				"physicsBounce": {
+					"routed": false,
+					"via": null
+				},
+				"physicsEdgeResistance": {
+					"routed": false,
+					"via": null
+				},
+				"backgroundAttachment": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImage": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundRepeat": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundSize": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgAnimationDuration": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgKenBurns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgParallax": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimation": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimationSpeed": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgMinHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgTextShadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"layout": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientAngle": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientFrom": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientTo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottom": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomFlip": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomInvert": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTop": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopFlip": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopInvert": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"tagName": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"templateMode": {
+					"routed": false,
+					"via": null
+				},
+				"verticalAlign": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				}
+			},
+			"helperCounts": {
+				"SGS_Container_Wrapper": 57
+			},
+			"dominantHelper": "SGS_Container_Wrapper",
+			"scalarStylingLift": false
+		},
+		{
 			"block": "sgs/post-grid",
 			"dir": "src\\blocks\\post-grid",
 			"hasRenderPhp": true,
@@ -8313,6 +9263,9 @@
 				"carouselSpeed",
 				"carouselShowDots",
 				"carouselShowArrows",
+				"dragToScroll",
+				"dragMomentum",
+				"loopCarousel",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
@@ -8505,6 +9458,18 @@
 					"via": null
 				},
 				"carouselShowArrows": {
+					"routed": false,
+					"via": null
+				},
+				"dragToScroll": {
+					"routed": false,
+					"via": null
+				},
+				"dragMomentum": {
+					"routed": false,
+					"via": null
+				},
+				"loopCarousel": {
 					"routed": false,
 					"via": null
 				},
@@ -9888,9 +10853,12 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"align",
-				"desktopLogoId",
-				"tabletLogoId",
-				"mobileLogoId",
+				"logoId",
+				"logoUrl",
+				"logoIdTablet",
+				"logoUrlTablet",
+				"logoIdMobile",
+				"logoUrlMobile",
 				"logoSwitchMode",
 				"logoSwitchCustomPx",
 				"svgAnimationSource",
@@ -9917,15 +10885,27 @@
 					"routed": false,
 					"via": null
 				},
-				"desktopLogoId": {
+				"logoId": {
 					"routed": false,
 					"via": null
 				},
-				"tabletLogoId": {
+				"logoUrl": {
 					"routed": false,
 					"via": null
 				},
-				"mobileLogoId": {
+				"logoIdTablet": {
+					"routed": false,
+					"via": null
+				},
+				"logoUrlTablet": {
+					"routed": false,
+					"via": null
+				},
+				"logoIdMobile": {
+					"routed": false,
+					"via": null
+				},
+				"logoUrlMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -10250,33 +11230,10 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
-				"paddingTopTablet",
-				"paddingRightTablet",
-				"paddingBottomTablet",
-				"paddingLeftTablet",
-				"paddingTopMobile",
-				"paddingRightMobile",
-				"paddingBottomMobile",
-				"paddingLeftMobile",
-				"marginTopTablet",
-				"marginRightTablet",
-				"marginBottomTablet",
-				"marginLeftTablet",
-				"marginTopMobile",
-				"marginRightMobile",
-				"marginBottomMobile",
-				"marginLeftMobile"
+				"tagName",
+				"templateMode"
 			],
-			"tierWithoutBase": [
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft"
-			],
+			"tierWithoutBase": [],
 			"attrRouting": {
 				"maxWidth": {
 					"routed": true,
@@ -10302,73 +11259,253 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopTablet": {
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"alignContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundAttachment": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImage": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundRepeat": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundSize": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgAnimationDuration": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgKenBurns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgParallax": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimation": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimationSpeed": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgMinHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgTextShadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columnsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columnsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandBackground": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPadding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPaddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPaddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexDirection": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexWrap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeightMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeightTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientAngle": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientFrom": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientTo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottom": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomFlip": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomInvert": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTop": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopFlip": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopInvert": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"tagName": {
 					"routed": false,
 					"via": null
 				},
-				"paddingRightTablet": {
+				"templateMode": {
 					"routed": false,
 					"via": null
 				},
-				"paddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftMobile": {
-					"routed": false,
-					"via": null
+				"verticalAlign": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 6
+				"SGS_Container_Wrapper": 65
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -10405,7 +11542,8 @@
 				"rowTransparent",
 				"rowHideOnScroll",
 				"rowShrink",
-				"rowShrinkHideTarget"
+				"rowShrinkHideTarget",
+				"templateMode"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10480,10 +11618,58 @@
 				"rowShrinkHideTarget": {
 					"routed": false,
 					"via": null
+				},
+				"alignContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexDirection": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridAutoRows": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumnsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumnsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRows": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRowsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRowsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyItems": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"templateMode": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 13
+				"SGS_Container_Wrapper": 24
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -10521,38 +11707,15 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
-				"paddingTopTablet",
-				"paddingRightTablet",
-				"paddingBottomTablet",
-				"paddingLeftTablet",
-				"paddingTopMobile",
-				"paddingRightMobile",
-				"paddingBottomMobile",
-				"paddingLeftMobile",
-				"marginTopTablet",
-				"marginRightTablet",
-				"marginBottomTablet",
-				"marginLeftTablet",
-				"marginTopMobile",
-				"marginRightMobile",
-				"marginBottomMobile",
-				"marginLeftMobile",
 				"headerSticky",
 				"headerTransparent",
 				"headerShrink",
 				"headerHideOnScroll",
-				"contrastSafe"
+				"contrastSafe",
+				"tagName",
+				"templateMode"
 			],
-			"tierWithoutBase": [
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft"
-			],
+			"tierWithoutBase": [],
 			"attrRouting": {
 				"maxWidth": {
 					"routed": true,
@@ -10578,69 +11741,21 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopTablet": {
-					"routed": false,
-					"via": null
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
-				"paddingRightTablet": {
-					"routed": false,
-					"via": null
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
-				"paddingBottomTablet": {
-					"routed": false,
-					"via": null
+				"marginTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
-				"paddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftMobile": {
-					"routed": false,
-					"via": null
+				"marginMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				},
 				"headerSticky": {
 					"routed": false,
@@ -10661,10 +11776,238 @@
 				"contrastSafe": {
 					"routed": false,
 					"via": null
+				},
+				"alignContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundAttachment": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImage": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundImageTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundOverlayOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundRepeat": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"backgroundSize": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgAnimationDuration": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgKenBurns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgParallax": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimation": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgAnimationSpeed": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgMinHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgOpacity": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgPosition": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgSvgTextShadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"bgVideoMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columnsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"columnsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandBackground": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPadding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPaddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentBandPaddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexDirection": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexWrap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeightMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"minHeightTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradient": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientAngle": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientFrom": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"overlayGradientTo": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shadow": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottom": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomFlip": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerBottomInvert": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTop": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopColour": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopFlip": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopHeight": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"shapeDividerTopInvert": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"tagName": {
+					"routed": false,
+					"via": null
+				},
+				"templateMode": {
+					"routed": false,
+					"via": null
+				},
+				"verticalAlign": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 6
+				"SGS_Container_Wrapper": 65
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -10701,7 +12044,8 @@
 				"rowTransparent",
 				"rowHideOnScroll",
 				"rowShrink",
-				"rowShrinkHideTarget"
+				"rowShrinkHideTarget",
+				"templateMode"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10772,10 +12116,62 @@
 				"rowShrinkHideTarget": {
 					"routed": false,
 					"via": null
+				},
+				"alignContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexDirection": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gapTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridAutoRows": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumnsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumnsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRows": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRowsMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateRowsTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyItems": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"templateMode": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 12
+				"SGS_Container_Wrapper": 24
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -11361,8 +12757,9 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
-				"memberMedia",
 				"photo",
+				"photoTablet",
+				"photoMobile",
 				"name",
 				"role",
 				"bio",
@@ -11391,11 +12788,15 @@
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
-				"memberMedia": {
+				"photo": {
 					"routed": false,
 					"via": null
 				},
-				"photo": {
+				"photoTablet": {
+					"routed": false,
+					"via": null
+				},
+				"photoMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -11572,6 +12973,9 @@
 				"reviewerRole",
 				"orgName",
 				"avatarMedia",
+				"_comment_artDirection",
+				"avatarMediaTablet",
+				"avatarMediaMobile",
 				"orgLogo",
 				"workMedia",
 				"showRating",
@@ -11596,8 +13000,6 @@
 				"orgColour",
 				"ratingSize",
 				"ratingColour",
-				"_comment_legacyAvatar",
-				"avatar",
 				"backgroundColourHover",
 				"textColourHover",
 				"borderColourHover",
@@ -11646,6 +13048,18 @@
 					"via": null
 				},
 				"avatarMedia": {
+					"routed": false,
+					"via": null
+				},
+				"_comment_artDirection": {
+					"routed": false,
+					"via": null
+				},
+				"avatarMediaTablet": {
+					"routed": false,
+					"via": null
+				},
+				"avatarMediaMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -11742,14 +13156,6 @@
 					"via": null
 				},
 				"ratingColour": {
-					"routed": false,
-					"via": null
-				},
-				"_comment_legacyAvatar": {
-					"routed": false,
-					"via": null
-				},
-				"avatar": {
 					"routed": false,
 					"via": null
 				},
@@ -11908,14 +13314,14 @@
 				"showArrows",
 				"slidesVisible",
 				"cardStyle",
-				"nameFontSize",
 				"backgroundColourHover",
 				"textColourHover",
 				"borderColourHover",
 				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
-				"templateMode"
+				"templateMode",
+				"dragToScroll"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -11955,10 +13361,6 @@
 					"routed": false,
 					"via": null
 				},
-				"nameFontSize": {
-					"routed": false,
-					"via": null
-				},
 				"backgroundColourHover": {
 					"routed": false,
 					"via": null
@@ -11994,6 +13396,10 @@
 				"contentWidth": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"dragToScroll": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -12686,6 +14092,10 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"bgVideoTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"bgVideoMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -12806,10 +14216,6 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"gridItemBorder": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"gridItemShadow": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
@@ -12909,12 +14315,16 @@
 				"maxWidthTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"tagName": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
 				"sgs_typography_css_rule": 14,
 				"render.php (block-private)": 1,
-				"SGS_Container_Wrapper": 75
+				"SGS_Container_Wrapper": 76
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": true
@@ -12990,11 +14400,12 @@
 				"autoplaySpeed",
 				"showDots",
 				"showArrows",
+				"dragToScroll",
+				"dragMomentum",
+				"loopCarousel",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"direction",
-				"wrap",
 				"templateMode"
 			],
 			"tierWithoutBase": [],
@@ -13091,6 +14502,18 @@
 					"routed": false,
 					"via": null
 				},
+				"dragToScroll": {
+					"routed": false,
+					"via": null
+				},
+				"dragMomentum": {
+					"routed": false,
+					"via": null
+				},
+				"loopCarousel": {
+					"routed": false,
+					"via": null
+				},
 				"sgsAnimation": {
 					"routed": false,
 					"via": null
@@ -13114,14 +14537,6 @@
 				"layout": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
-				},
-				"direction": {
-					"routed": false,
-					"via": null
-				},
-				"wrap": {
-					"routed": false,
-					"via": null
 				},
 				"templateMode": {
 					"routed": false,

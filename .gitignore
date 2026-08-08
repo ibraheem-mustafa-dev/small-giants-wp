@@ -138,3 +138,8 @@ sites/*/theme-snapshot.pre-*.json
 
 # Claude Design mega-menu draft ZIPs — extracted folders are committed; the zips stay local (Bean 2026-07-24)
 sites/*.zip
+
+# Scratch / tool artefacts (2026-08-08 cleanup)
+.superpowers/
+plugins/sgs-blocks/scripts/.coverage
+plugins/sgs-blocks/scripts/parity/__fluid_selftest_fixtures__/
