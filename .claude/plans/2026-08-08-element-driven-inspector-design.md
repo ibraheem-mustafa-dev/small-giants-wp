@@ -319,5 +319,22 @@ existing machinery, and generated-then-reviewed is how `attrMap`'s own 403 `nati
 there. **Until an element declares `contentAttrs`, its content controls stay where they are** — the
 model degrades to "no worse than today" rather than guessing and moving a client's controls wrongly.
 
-⚠ Still needs Bean: **is (b) acceptable**, given a generator pass will need his eye on the output for
-at least the POC block before it is trusted across the library?
+✅ **DECIDED 2026-08-08 — Bean: "Generate and review." Option (b).**
+
+Binding conditions on that, so "generated" never quietly becomes "assumed":
+
+1. **The generator's output is a PROPOSAL until reviewed.** It writes `contentAttrs` for the POC
+   block (`sgs/hero`) first and Bean reads it before a single further block is touched.
+2. **It must report what it could NOT determine**, per element, rather than emitting a confident
+   guess. An element whose content fields cannot be resolved gets NO `contentAttrs` and says why —
+   the model then leaves that element's controls where they are (the no-worse-than-today floor).
+3. **It ships with a `--check` mode** so drift is caught by the build rather than by someone
+   noticing, matching how every other generated artefact in this repo is gated.
+4. **Re-runnable and idempotent**, like `attrMap`'s own generator — a block changing shape must not
+   require hand-repair.
+
+⚠ The honest risk, named up front: a generator that reads `render.php` infers content ownership from
+how markup is assembled, and blocks whose render is heavily conditional (variant-driven ones like
+`hero`, `testimonial`, `product-card`) are exactly where inference is weakest. Condition 2 is what
+keeps that from becoming silent damage — those elements surface as "unresolved", not as a wrong
+answer that moves a client's controls into the wrong panel.
