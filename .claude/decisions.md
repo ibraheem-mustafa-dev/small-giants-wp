@@ -1,5 +1,69 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D531 — CO-28 added: consistent ORDER of panels, clusters and controls is an obligation [ROUTINE]
+
+**2026-08-08. Bean-raised.** The control-type contract bound *which* component, *which* props,
+*which* tab, and (via CO-2) *grouping* by block part — but nothing anywhere bound **order**.
+Verified before adding, not assumed: grepping every `.js`/`.py` under `plugins/sgs-blocks/scripts/`
+for `panel.?order` / `control.?order` / `canonical.?order` / `expectedOrder` returns **zero hits** —
+every "ordering" match in the codebase is converter *execution* order, not inspector layout.
+
+**Distinct from CO-2, deliberately numbered above the carried set.** CO-2 says panels are grouped by
+block PART; it is silent on sequence, so a block can satisfy CO-2 in full and still order its parts
+unlike every other block. Grouping says what goes together, CO-28 says where it goes. CO-2…CO-21
+mirror the old 27-condition numbering; **CO-28 is NEW and is NOT part of the ABSORPTION MAP**, which
+stays 30/30.
+
+**Three binding levels:** panel/tab order across blocks · cluster order within a panel · control
+order within a cluster.
+
+**Client rationale, not tidiness.** Spec 35 exists because the clients are tech-illiterate and live
+in the block editor. Inconsistent order destroys transfer of learning between blocks — the setting
+stays reachable but stops being *findable*, which is the same class of harm as a missing control.
+
+⛔ **Shipped UNENFORCED and explicitly not buildable yet.** Two prerequisites, in order: (a) Bean
+picks the canonical order — a **Rule 7 design gate**, since it binds every block; (b) a census of
+current per-block order, because `rules.json._meta.zeroIsAClaim` forbids trusting a live run with no
+independently-derived expected population. A rule written before (a) would enforce an order nobody
+chose. No count is stated here for exactly that reason.
+
+## D530 — rule 21 `render-without-control` ships advisory; the contract's "53" is a FLOOR, not a census [ROUTINE]
+
+**2026-08-08.** The fourth quadrant (declared + rendered + NO control) had no enforcement:
+`check-dead-controls.js` CHECK 4 fires only when an attr has no control **and no render**, so
+anything actually being painted is skipped by construction. `inspector-scan/rules/21-render-without-control.js`
+closes exactly that gap. Advisory; `--check` exits 0; `run.js --self-test` passes 10/10 + harness
+meta-check.
+
+**The headline correction: 53 was never the population.** It is the SUM OF FOUR AUDITED FAMILIES,
+and for `sgs/physics-canvas` it counts only the BOX subset (contract §5 field 6) — not that block's
+**79** unreachable container attrs. Hand-confirmed by reading `physics-canvas/edit.js` IN FULL: it
+exposes exactly three controls (`physicsGravity`, `physicsBounce`, `physicsEdgeResistance`) while
+declaring eighty-odd attrs the shared wrapper paints. **Live measurement: 280 across 35 of 83
+blocks**, with the 53 contained inside it. Acceptance was therefore CONTAINMENT, not equality:
+typography tiers **10/10 exact**, heading/text boxShadow **4/4 exact**, `*Hover`-with-no-control
+**8 blocks exact** against §6 field 3's per-attribute audit (line 116 instructs using that audit, not
+the "9 blocks" summary row).
+
+**Both documented traps closed by ONE mechanism** — a literal PascalCase fragment against a
+concatenation boundary, applied symmetrically to render and control corpora. TRAP A: `brand-strip`
+yields exactly its 4 tier attrs, names present literally in no file. TRAP B: `fontSizeTablet` does
+not false-positive.
+
+**Three corrections forced by measurement, each recorded in the rule header — 826 → 611 → 284 → 280.**
+(1) shared components ALSO live in block-local dirs (`src/blocks/container/components/ContainerWrapperControls.js`);
+(2) that 57KB file also EXPORTS the individual panels (`LayoutPanel`, `WidthPanel`, …) and blocks
+render those, never the façade; (3) a class file must be invoked as a class — a bare `render(`
+predicate matched 34 of 84 blocks and meant nothing.
+
+**Blast radius contained deliberately:** the widened component discovery lives INSIDE rule 21, not in
+`core/components.js`, which rules 01 and 18 read — widening that would have silently restaged their
+populations. Verified unchanged: 01=65, 18=15, 20=23, 03=15.
+
+⛔ **Do NOT quote 280 as "the fourth quadrant"** until per-block triage separates genuinely-unreachable
+attrs from residual false positives (one already known: `team-member.overlayHover`, which §6 field 5
+names a behavioural flag, not a state pair).
+
 ## D528 — the pruned discovery keywords are RESTORED from each block's own `keywords` field [ROUTINE]
 
 **2026-08-08. Bean-ruled** (chose to reinstate after D527 proved the D525 purge degraded two live

@@ -747,6 +747,43 @@ Composite blocks group inspector panels by block PART, not by property type. **E
 UNENFORCED — the `consistency-scanner` this was once attributed to does not exist anywhere in the
 codebase.
 
+### CO-28. Consistent ORDER of panels, clusters and controls *(NEW — Bean-raised 2026-08-08, not a carried item)*
+*(Numbered 28, above the 27-condition space, precisely BECAUSE CO-numbers mirror old condition
+numbers. It was first drafted as "CO-22" — which would have collided with condition 22, "silence is
+not rejection", a live map row still awaiting a proper destination. A new obligation must never
+squat on a carried item's number.)*
+The same thing sits in the same place in every block. Three levels, all binding:
+1. **Panel / tab order** — the sequence of inspector panels follows one canonical order across every
+   block that has those panels. A client who learns one block has learned the shelf layout of all of
+   them.
+2. **Cluster order within a panel** — related controls form the same cluster in the same position
+   (e.g. colour before spacing before border, base value immediately before its state value per
+   CO-2's sibling rule in §6 field 4).
+3. **Control order within a cluster** — a fixed sequence per control TYPE, not per author.
+
+**Enforced by** UNENFORCED — no rule, gate or linter in the tree checks order at any of the three
+levels (verified 2026-08-08 by grepping every `.js`/`.py` under `plugins/sgs-blocks/scripts/` for
+`panel.?order` / `control.?order` / `canonical.?order` / `expectedOrder`: **zero hits** — every
+"ordering" match in the codebase is converter *execution* order, not inspector layout).
+
+**Distinct from CO-2, which it sits next to.** CO-2 binds *grouping* — "panels grouped by block PART,
+not by property type". It is silent on sequence: a block can satisfy CO-2 completely and still present
+its parts in a different order from every other block. Grouping says what goes together; this says
+where it goes.
+
+**Why it belongs to the client, not to tidiness.** Spec 35 exists because Bean's clients are
+tech-illiterate and live in the block editor. Inconsistent order costs them the one thing that makes
+an unfamiliar block usable — transfer of learning from the block they already know. It is the same
+class of harm as a missing control (the setting is reachable, but not *findable*), which is why it is
+an obligation and not a style note.
+
+⛔ **Do NOT build a rule from this entry yet.** No canonical order has been *decided*, and
+`rules.json._meta.zeroIsAClaim` forbids trusting a live run before an independently-derived expected
+population exists. Two prerequisites, in order: (a) Bean picks the canonical panel order — a **Rule 7
+design gate**, since it binds every block; (b) the current per-block order is censused so the backlog
+is known before anything is scoped against it. A rule written before (a) would be enforcing an order
+nobody chose.
+
 ### CO-3. ToolsPanel on dense panels *(was condition 3 — downgraded to a bare remediation count)*
 Any panel with ~6+ controls uses `ToolsPanel`/`ToolsPanelItem` progressive disclosure (1–3
 `isShownByDefault`, `resetAll`). **Enforced by** `inspector-scan/rules/03-dense-panel-candidate.js`,
@@ -878,12 +915,26 @@ losses.** This table is the check.
 | 19 | A11y pass E1–E4 | **CARRIED** — CO-19 |
 | 20 | Client patterns use templateLock | **CARRIED** — CO-20, in the D402-correct per-client form |
 | 21 | No Part-F anti-patterns | **CARRIED** — CO-21 |
-| 22 | Silence is not rejection | **CARRIED** — rule-authoring discipline |
+| 22 | Silence is not rejection | **CARRIED** — rule-authoring discipline ⚠ **NO DESTINATION NAMED** (see note below) |
 | 23 | Recall measured against the eligible POOL | **ABSORBED** — every contract's `Scope` field states its denominator; §13 exists so nothing is measured against a self-referential union |
-| 24 | Named artefacts must exist on disk | **CARRIED** |
-| 25 | Name the CONSUMER before measuring | **CARRIED** |
-| 26 | A zero needs a positive control | **CARRIED** |
+| 24 | Named artefacts must exist on disk | **CARRIED** ⚠ **NO DESTINATION NAMED** |
+| 25 | Name the CONSUMER before measuring | **CARRIED** ⚠ **NO DESTINATION NAMED** |
+| 26 | A zero needs a positive control | **CARRIED** ⚠ **NO DESTINATION NAMED** — the nearest live home is `rules.json._meta.zeroIsAClaim`, which states it; confirm and cite, or give it a CO |
 | 27 | DB statistics declare their denominator + scope to `sgs/%` | **ABSORBED** — the scoping table's denominator is stated as 84 = `WHERE slug LIKE 'sgs/%'`, and every contract's `Scope` field carries its own |
+
+⚠ **FOUR ROWS SAY "CARRIED" AND NAME NOWHERE (22, 24, 25, 26 — flagged 2026-08-08).** Every other
+row names a checkable destination (a CO number or a §section+field). These four do not, so **"30/30"
+is not verifiable for them** — a reader cannot confirm the requirement still exists anywhere. This is
+the same failure mode the QC council caught twice in this very table (15 mis-mapped to Cross-cutting
+B, 18 mis-mapped to §7 + CO-19): *the map cited a target that did not contain the rule.* It is
+recorded here rather than quietly fixed, because the fix requires knowing where each one actually
+went, and guessing a destination would recreate the defect.
+
+All four are **rule-authoring / measurement discipline**, not control contracts, so a CO entry may
+genuinely be the wrong home — but "wrong home" and "no home" are different, and only one of them is
+acceptable. Resolve by either citing the live artefact that carries each (26's likely home is
+`rules.json._meta.zeroIsAClaim`) or giving each its own CO. Until then, treat these four as
+**UNVERIFIED, not discharged**.
 | T1 | Feature-parity | **CARRIED** — governs the live `audit-feature-parity.py` |
 | T2 | Shrink-to-fit | **CARRIED** |
 | T3 | Media-controls competitor comparison | **CARRIED** |

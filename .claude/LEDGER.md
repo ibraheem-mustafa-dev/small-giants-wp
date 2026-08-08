@@ -50,7 +50,9 @@ worth knowing before selling a plugin built on it · the Snooza job is 72 combin
 > D511** (a self-repairing mechanism reverted the test conditions at import — D511/D513 void) ·
 > **D515-D517** art-direction tiers, dead-control tier blind spot closed · **D518-D520** preset arrays
 > are theme-layer only, shadows renamed by effect, visual-diff gate change-keyed not date-keyed ·
-> **D521** art-direction reaches every media block; video needed a RUNTIME SWAP, not sibling markup.
+> **D521** art-direction reaches every media block; video needed a RUNTIME SWAP, not sibling markup ·
+> **D530** rule 21 ships advisory and the contract's "53" is a FLOOR not a census (live 280) ·
+> **D531** CO-28 — consistent ORDER of panels/clusters/controls is an obligation, UNENFORCED by design.
 
 ### Track 3 — CLOSED (D479). Tier W admitted, physics-canvas shipped.
 
@@ -179,7 +181,9 @@ anything is not done.**
 
 Pool 23→0 (D504) · A7/A8/A9 (D508-D510) · art-direction tiers (D521) · **Tier 0 data layer, all four
 columns (D523 + D525 + D527)** · **the 27-condition checklist → control-type contract (D524)** ·
-**`sgsCustomCss` stays (D526)**.
+**`sgsCustomCss` stays (D526)** · **2026-08-08 enforcement session: Task 1 roster re-measure (EMPTY
+DIFF — the DB writes did NOT restage `surfaces.*`), Task 2 rule 21 (D530, `76f44a1d`), Task 3 five
+dead gates wired advisory (`071b7915`), CO-28 recorded (D531).**
 
 ### ⛔ READ FIRST — D527 corrected SIX of the previous session's own seven claims
 
@@ -199,75 +203,70 @@ written that session without checking D527.** The corrections that change what y
   shadowing local. A rule scoping arrays needs its own AST cross-check.
 - **"Tiers 1–4 unblocked" was an overclaim** — honest per-tier scope below.
 
-### The contract GOVERNS; enforcement is unbuilt
+### The contract GOVERNS; enforcement has STARTED
 
 `.claude/plans/spec-35-control-type-contract.md` is AUTHORITATIVE. 14 control contracts + §CARRIED
-OBLIGATIONS (CO-2…CO-21, incl. **CO-15/CO-18 restored by D527**) + ABSORPTION MAP (30/30 after
-correction) + §13 (shapes with no contract yet). The 27-condition checklist is a tombstone.
+OBLIGATIONS (13 carried, CO-2…CO-21, incl. **CO-15/CO-18 restored by D527**, plus **CO-28 NEW,
+Bean-raised 2026-08-08 — numbered above the 27-condition space so it cannot squat on a carried
+item's number; NOT in the ABSORPTION MAP**) + §13. The 27-condition checklist is a tombstone.
+
+⚠ **ABSORPTION MAP "30/30" is NOT fully verifiable (2026-08-08).** Rows **22, 24, 25, 26** say
+`CARRIED` and name **no destination**; every other row cites a CO or §field. Same defect the council
+caught twice in that table (15→Cross-cutting B, 18→§7+CO-19). **UNVERIFIED, not discharged** — note
+in place at the map. Cite each one's live artefact (26 → `rules.json._meta.zeroIsAClaim`) or give it
+a CO; never guess a destination.
+
+⚠ **The council's raw output was never preserved** — no report file for 2026-08-07/08 in `reports/`
+or `memory/`; only summaries (findings A–I, D527, the map) survive. That is why the ordering point
+was lost until Bean recalled it. **Future councils: commit verbatim per-rater output before acting.**
 
 ---
 
 ## ⭐ NEXT SESSION — orchestration plan
 
-**Identity.** You are the SGS framework engineer. Tier 0 is done. This session **starts enforcement**
-— but the first action is re-measuring the denominator every rule will be scoped against.
+**Identity.** You are the SGS framework engineer. Tier 0 is done and **enforcement has started** —
+one Tier 3 rule shipped and five dead gates wired, all advisory. This session's job is to make the
+280 findings MEAN something, and to settle the one design question that is now blocking CO-28.
 
-### Task 1 — Regenerate `roster.json` and diff all five `surfaces.*` axes
+⛔ **READ D530 BEFORE QUOTING ANY FOURTH-QUADRANT NUMBER.** "53" is not the population — it is the
+sum of four audited families, and it counts only `physics-canvas`'s BOX subset, not that block's 79
+unreachable container attrs. Live is **280 across 35 of 83 blocks**, containing the 53. Equally,
+**280 is not yet a backlog figure** — it has not been triaged.
 
-**What:** re-derive the axis artefact and prove it matches the corrected DB.
-**Why:** D523/D525 wrote `inspector_control_type`, and `build-roster.py:91` derives `surfaces.*` from
-a haystack including that column. `sgs/form` already flipped `link` false→true once and the committed
-file went stale unnoticed. **`surfaces.animation` scopes `17-reduced-motion-gate`, a live GATE-mode
-WCAG 2.3.3 rule**, and `build-roster.py:71-76` records a 2026-07-30 precedent where a regen flipped 18
-blocks and fired 18 false-positive WARNs on a fail-closed gate.
-**Estimated time:** ~10 min.
-**Command:** `python plugins/sgs-blocks/scripts/consistency/build-roster.py` then
-`git diff -- plugins/sgs-blocks/scripts/consistency/roster.json`.
-**Baseline (verified 2026-08-08, post-`content-collection` deletion):**
-`styling=64 colour=63 link=17 media=30 animation=20` over **83** blocks.
-⚠ `animation` moved 21→20 and `styling`/`colour` each -1 — ALL caused by deleting
-`sgs/content-collection` (D529), NOT by a spurious axis flip. Explained, not merely noted.
-**Orchestration:** inline, Opus. Do NOT delegate — this is the measurement everything else rests on.
-**Depends on:** none. **Parallel with:** none.
-**/qc gate after:** no — it is itself a verification step.
-**Acceptance:** the diff is empty OR every changed line is explained and committed. If `animation`
-moved, STOP and re-check the reduced-motion gate's population before writing any rule.
+### Task 1 — Triage rule 21's 280 into REAL vs FALSE POSITIVE
 
-### Task 2 — Build ONE Tier 3 advisory rule: render-without-control
+**What:** per-block triage, then baseline the false positives with reasons.
+**Why:** without this, 280 is a number nobody can act on and the rule can never be promoted. The
+audited 53 is contained and verified family-by-family; the residual ~227 is a MIX, not a backlog.
+**Known real (hand-confirmed):** `physics-canvas`'s 79 — its `edit.js` was read IN FULL and exposes
+exactly three controls (`physicsGravity`, `physicsBounce`, `physicsEdgeResistance`).
+**Known false positive:** `team-member.overlayHover` — contract §6 field 5 names it a behavioural
+flag, not a state pair. Expect siblings of this shape.
+**Method:** work down `node run.js --json` by block, largest first. For each, open the block's
+`edit.js` and decide. Baseline a false positive in `inspector-scan/baselines/21-render-without-control.json`
+with a REAL human reason — never to make a number smaller.
+**Estimated time:** ~40 min for the top 6 blocks (that is ~200 of the 280).
+**Orchestration:** inline, Opus. Judgement per block; do NOT delegate mechanically.
+**Acceptance:** every baselined entry carries a reason a reader can check; the surviving count is
+stated with its denominator. **A smaller number is not the goal.**
 
-**What:** the fourth quadrant — attributes the framework renders that no client can set.
-**Why:** largest client-visible payload (**expected population 53**), needs no extension plumbing and
-no Rule 7 gate. `check-dead-controls.js` CHECK 4 sees **none** of them by construction.
-**Estimated time:** ~45 min.
-**Orchestration:** inline, Opus (rule design); a Haiku subagent via `/delegate` may harvest fixtures.
-**Composition (council-verified, do not re-derive):** hover **31 across 9 blocks** (⚠ incl.
-`sgs/gallery` — `grayscaleHover`, `shadowHover`) · typography tiers **10** (⚠ NOT 12 — `sgs/text`'s
-line-height tiers already work) · `physics-canvas` **8** · `heading`/`text` boxShadow **4**.
-⚠ **Two traps, both walked into before:** literal-name matching MISSES `brand-strip` (tier keys built
-dynamically in PHP at `helpers-typography.php:90,98`) and FALSE-POSITIVES on `fontSizeTablet` (built
-by computed key in JS) — nearly 54 false findings between them.
-**Depends on:** Task 1. **Parallel with:** Task 3.
-**/qc gate after:** `/qc-inline`, plus the rule's own `--self-test`.
-**Acceptance:** `run.js --self-test` passes AND the new rule fails on a seeded break AND its live
-count is reconciled against the 53 with every difference explained. **A count alone is not
-acceptance** (`rules.json._meta.zeroIsAClaim`).
+### Task 2 — Design gate with Bean: the canonical control ORDER (CO-28)
 
-### Task 3 — Wire the dead gates, ADVISORY only
+**What:** decide the one canonical order of panels, then clusters, then controls.
+**Why:** CO-28 (D531) is recorded and deliberately UNENFORCED — no order has been *chosen*, so any
+rule would enforce an order nobody picked. This is a **Rule 7 design gate**: it binds every block.
+**Method:** `/brainstorming` design mode. Bring a MENU of 2-3 candidate orders with reasoning, not a
+single proposal (ADHD Rule 9). Ground it in what a client transfers between blocks, and in CO-2
+(grouping by block PART) which it must not contradict.
+**Blocked on:** Bean. Do not build past the decision.
+**Acceptance:** a written canonical order in the contract's CO-28, plus a census plan for Task 3.
 
-**What:** wire the gates that exist with zero `package.json` references.
-**Why:** `check-universal-fit.js`, `check-duplicate-controls.js`, `check-simple-surface-cap.js`,
-`audit-block-file-consistency.py`, `audit-block-uniformity.py` are all built and enforce nothing.
-⛔ **NOT `lint:js`** — E6 point 9 forbids fail-closed against a nonzero backlog (the 11,932 figure is
-itself UNVERIFIED; re-run before quoting it).
-⚠ `check-universal-fit.js` and `check-control-ux.js` have **no `--self-test`** — and the latter is
-already in `prebuild`. A wired gate with no proof it can fail.
-**Estimated time:** ~30 min.
-**Orchestration:** delegated — Sonnet via `/delegate`, single agent.
-**Brief:** wire each named gate into `prebuild` in ADVISORY mode, confirm each RUNS and can FAIL, and
-add a `--self-test` where missing. Do not promote anything to gating.
-**Depends on:** none. **Parallel with:** Task 2.
-**/qc gate after:** `/qc-inline`.
-**Acceptance:** each wired gate runs during `npm run build` AND has a demonstrated failing case.
+### Task 3 — Census current per-block order (only AFTER Task 2)
+
+**What:** measure how far the tree is from the chosen order.
+**Why:** `rules.json._meta.zeroIsAClaim` forbids trusting a live run with no independently-derived
+expected population. The census IS that independent derivation.
+**Blocked on:** Task 2. **Acceptance:** expected population recorded BEFORE any rule 22 runs.
 
 ### ⛔ Do NOT start these — blocked, with the reason
 
