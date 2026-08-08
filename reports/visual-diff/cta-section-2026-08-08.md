@@ -45,16 +45,29 @@ source and cannot distinguish editor code from render code. For this change:
 - `npm run build` exits 0 with every prebuild gate passing.
 - The scanner rule `01-tab-group` no longer flags this block (backlog 65 → 57 across batch A).
 
-## ⚠ LIMITATION — what was NOT verified
+## ✅ LIVE EDITOR VERIFICATION — run on the canary, 2026-08-08
 
-**The editor surface has not been visually verified on the canary.** This change IS visual *in the
-block editor*, and no screenshot or live-DOM check of the editor sidebar was taken. What is proven
-here is narrower and is stated plainly rather than dressed up:
+The earlier version of this report said the editor surface was unverified. It has since been
+verified directly, so that text is replaced rather than left standing.
 
-1. the frontend cannot have regressed, because its source did not change; and
-2. the JSX is structurally valid and compiles (build exit 0).
+**Method.** Deployed to the sandybrown canary via `build-deploy.py --target sandybrown`
+(oldshape gate PASS, post-deploy verify HTTP 200), logged into wp-admin, inserted this block into a
+scratch page via `wp.data`, and read the rendered inspector.
 
-What remains unproven is whether each panel LANDS in the intended tab in a running editor, and
-whether any panel now reads oddly in its new home. That needs a Playwright pass against the
-sandybrown canary editor (R-31-11: the live DOM is canonical, the emit is not the proof). It is
-recorded as outstanding rather than quietly treated as done.
+**Result: 10 of this block's OWN panels now appear in the Styles tab**, with the behaviour and
+content panels remaining in Settings, and at most one panel open per tab.
+
+⛔ **The first measurement taken was VACUOUS and is recorded here rather than hidden.** It counted
+whether the inspector showed two tabs. It always does — WordPress renders a Styles tab for any block
+with native `supports` (Color, Typography, Dimensions), and the six universal extensions add four
+more panels there regardless of per-block work. Tab-count therefore could not distinguish a fixed
+block from an unfixed one.
+
+**The corrected measurement subtracts that ambient set and counts only the block's own panels**, and
+was run with three NEGATIVE CONTROLS — `sgs/accordion`, `sgs/breadcrumbs` and `sgs/audio`, all
+still in the `01-tab-group` backlog. Those score **0, 0 and 0** own panels in Styles against
+5–14 for every batch-A block. That separation is what makes this result mean something.
+
+**Unrelated pre-existing bug observed during the pass** (not caused by this change, not fixed here):
+the editor throws a 404 on every load for `/wp-json/sgs/v1/motion-budget`, called from
+`extensions/fx.js:1062`. No `register_rest_route` for that path exists in the plugin or theme.
