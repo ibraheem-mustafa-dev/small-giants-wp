@@ -76,7 +76,8 @@ Bean rejected the result. **The doc was the defect, not only the pass that follo
 
 A 4-rater qc-council then found the amendment had fixed the rule's STATEMENT and left its
 DISTRIBUTION: 9 of 12 `Tab` fields still stated the flat rule, and `01-tab-group.js`'s fix message
-still instructed it to developers. All 13 `Tab` fields are now guarded; the scanner message and four
+still instructed it to developers. All 13 placement-bearing fields are now guarded (12 `Tab` + §6's
+`Placement`); the scanner message and four
 extension comments were corrected (routing verified unchanged).
 
 **Order stays OPEN (Bean).** CO-28's design gate stands and spec 35 A8 is marked open beside it —

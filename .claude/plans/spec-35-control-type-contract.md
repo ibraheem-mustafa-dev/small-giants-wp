@@ -245,8 +245,9 @@ Stackable, Otter and Essential Blocks alike it is authoring order. Do NOT build 
 this line. Spec 35 **A8** ("panel order = frequency-first") is the other side of the same open
 question.
 
-**Derived, never hand-sorted.** The source is `supports.sgs.elements` in each `block.json` (83 blocks,
-283 elements). Where an element cannot be resolved, the control **stays exactly where it is today**
+**Derived, never hand-sorted.** The source is `supports.sgs.elements` in each `block.json` (**82 of
+83** files declare it; 283 elements — 83 is the FILE count, not the declaring count).
+Where an element cannot be resolved, the control **stays exactly where it is today**
 and the ambiguity is reported — no-worse-than-today is the floor.
 
 **Applies to every state, not just hover.** `states.hover` and `states.selected` both render inline
@@ -305,7 +306,9 @@ schema is normative and lives in a **living** doc. It previously lived only in
 Archive is git-blame-only by project convention; a load-bearing schema cannot live there. That
 document remains the historical derivation; **this section is the schema.**
 
-**Measured against the tree, 2026-08-08** (not transcribed): **83 blocks · 283 elements**. Key
+**Measured against the tree, 2026-08-08** (not transcribed): **82 of 83 `block.json` files declare
+`supports.sgs.elements`; 283 elements.** ⚠ Not "83 of 83" — that figure was inherited from the
+design doc and is wrong; 83 is the FILE count, 82 the DECLARING count. Quote the predicate. Key
 frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 · `prefix` 102 ·
 `isWrapper` 69 · `layer` 57 · `states` 20 (18 `hover`, 4 `selected`, 2 elements carry both).
 

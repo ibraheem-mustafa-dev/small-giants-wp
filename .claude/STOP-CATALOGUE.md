@@ -1086,6 +1086,8 @@ for real before claiming done?
 
 ## D. D101 count-check receipt
 
+- **2026-08-08 (handoff, Spec 35 placement + Phase 1):** bullet defences 222 -> 232 via `grep -cE '^- \*\*'` (+9 defences in new section E9, +1 = this receipt line, itself a bullet). Sections 5 -> 5 (E9 is a sub-section of E). Ritual questions 11 -> 11. Unique `STOP-*` tokens 191 -> 200 (9 new E9 tokens). Nothing SUBTRACTED. ⚠ **UNIT NOTE (added after handoff QC flagged it):** "bullet defences" counts EVERY `- **` rule bullet, only some of which carry a `STOP-*` token — the two metrics are different units and must not be compared to each other. The token count also includes CITATIONS of a STOP elsewhere in the prose, not only its definition; `stop-floor.json` is the authoritative list of DEFINED defences (170), and it is bumped only with tokens verified present in this file.
+
 - **2026-08-07 (handoff):** bullet defences 212 -> 216 via `grep -cE '^- \*\*'` (+3 defences: `git add -A` fallback / date-keyed gate / preset-layer duplication; +1 = this receipt line, which is itself a bullet — count the command's output, not the defences you added). Sections 5 -> 5. Ritual questions 21 -> 21. `stop-floor.json` bumped 144 -> 161 ids. Nothing SUBTRACTED.
 
 - **Baseline (2026-07-17):** 38 unique `STOP-*` tokens across the collapsed
@@ -1582,3 +1584,57 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
 - **DERIVED "THEREFORE" CLAIMS NEED THEIR OWN GATE.** "All four columns fixed, THEREFORE Tiers 1-4
   unblocked" was false: the extension surface is unbuilt plumbing, BORDER has no census, and Tier 1
   needs nine Rule 7 gates. **Fixing a precondition does not discharge everything that cited it.**
+
+### E9. Earned 2026-08-08 — Spec 35 placement + Phase 1 background session (D533-D536)
+
+- **STOP-A-BLOCKER-YOU-ASSERT-WITHOUT-READING-IS-NOT-A-BLOCKER.** Twice in one session I reported
+  work as blocked without checking. `wp-content-guard.py` was named as preventing a probe page — it
+  blocks `wp post update`/`wp eval` and has NEVER blocked `wp post create`. And canary credentials
+  sit in `.claude/secrets/sandybrown.env`, which CLAUDE.md says are always available and to use
+  directly; Bean had to point at them. **Open the hook / read the file before declaring the path
+  closed. "I can't" is a claim requiring the same evidence as "it works".**
+- **STOP-A-SURFACE-YOUR-CHANGE-TOUCHES-IS-NOT-OUT-OF-SCOPE.** The Phase 1 report listed tier images,
+  `background-attachment: fixed`, video and the editor canvas as "not covered" — while that very
+  change had RETARGETED the responsive tier rules and MOVED the paint site. Bean rejected the
+  framing. Testing them then found a real defect (the editor ignored the new control entirely).
+  **A "not covered" list is only legitimate for surfaces the change does not touch; anything it
+  touches is unverified work, not a footnote.**
+- **STOP-TEST-THE-COMBINATION-NOT-ONLY-THE-FEATURES.** Tier images and media opacity each passed
+  alone. Had the `@media` tier rule also reset `opacity`, mobile would have silently lost its
+  dimming while desktop kept it — and BOTH single-feature tests would still have passed. Only the
+  combined case (tier image + 40% opacity, measured per breakpoint) can see that class of bug.
+  **When two features write the same property, the combination is its own test.**
+- **STOP-THE-EDITOR-IS-WHERE-THE-CLIENT-LIVES.** `edit.js` painted the background on the element
+  while the frontend painted a `::before` layer, so `backgroundMediaOpacity` had NO visible effect
+  in the editor: set 35%, see nothing, get a dimmed image on the published page. A frontend-only
+  verification called this feature complete. **Any render change must be verified on BOTH surfaces;
+  the editor is the one non-technical clients actually use.**
+- **STOP-CHECK-WHAT-A-RECURSIVE-DELETE-ACTUALLY-MATCHES.** `rm -rf plugins/sgs-blocks/reports` was
+  aimed at a stray directory a screenshot script had just created; it is a REAL TRACKED directory
+  and took out three committed reports. Caught only by reading `git status` afterwards. **Before any
+  `rm -rf`, list the path's contents and check `git ls-files` on it.**
+- **STOP-A-GENERATOR-THAT-STAMPS-A-TIMESTAMP-DIRTIES-A-TRACKED-FILE-FOREVER.** Two prebuild
+  generators rewrote tracked files on EVERY build with only a `generatedAt` / `Last generated` line
+  changing (one of them a `--check` run, which must verify and never mutate). The tree was therefore
+  never clean — which is precisely why genuinely orphaned files sat for weeks being described as
+  "another track's uncommitted work". **A permanently dirty tree destroys the signal that tells you
+  what is actually outstanding. Skip the write when only the stamp would change.**
+- **STOP-AMENDING-A-RULES-STATEMENT-IS-NOT-AMENDING-ITS-DISTRIBUTION.** The placement rule was
+  corrected in its canonical section while 9 of 12 per-control-type `Tab` fields still stated the
+  retired version, and the wired `01-tab-group` scanner still printed it as its fix instruction to
+  every developer who hit a finding. A 4-rater `/qc-council` found it. **A rule that lives in N
+  places plus a tool's output is not amended until all N+1 agree — grep for its RESTATEMENTS and its
+  ENFORCERS, not just its definition.**
+- **STOP-CHECK-PRIOR-ART-BEFORE-DERIVING-A-RULE-AND-CHECK-THE-STANDARD-IS-ONE.** A two-step
+  placement rule was derived from first principles and taken to a council before anyone asked what
+  WordPress core and the market do. Core has **no** semantic Settings/Styles rule at all (the Styles
+  tab is a hard-coded list of native support categories; Settings is the `default` group) — so every
+  attempt to apply "the standard" produced a different answer because there was no standard. Three
+  competitors had already converged on an answer. **Read the SOURCE, not the docs, and ask whether
+  the standard you are amending exists.**
+- **STOP-DYNAMIC-DOES-NOT-MEAN-UNCORRUPTIBLE.** The `wp-content-guard` downgrade rests on "every SGS
+  block is dynamic, so there is no saved HTML to invalidate". True for LEAF dynamic blocks. A
+  slot-bearing composite still stores its CHILDREN: a hand-written
+  `<div class="wp-block-sgs-container">` wrapper made every probe container INVALID in the editor
+  while rendering perfectly on the frontend (render.php ignores stored markup). **`save()` decides
+  what may be hand-written — read it before authoring block markup.**

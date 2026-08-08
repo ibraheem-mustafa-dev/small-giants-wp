@@ -7,7 +7,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 # small-giants-wp — LEDGER (the one living status)
 
-## FOR BEAN — plain English (read this first)
+## Human Summary — FOR BEAN, plain English (read this first)
 
 **Where 2026-08-08 (late) left things:**
 
@@ -58,7 +58,8 @@ which Phase 1 has now delivered.
 
 #### ⛔ Phase 2 is ON HOLD — the model places under half the controls
 
-A QC pass implemented the placement rule and ran it over all 83 blocks' real data: **46% of declared
+A QC pass implemented the placement rule and ran it over every block's real data (script committed at
+`plugins/sgs-blocks/scripts/placement-reach.py`, re-runnable): **46% of declared
 attributes resolve to an element; 54% fall to a "block-level panel" the rule describes in ONE line
 and never designs.** For `sgs/hero` that is **76 controls in one undefined panel** — the crammed tab
 Bean rejected, relocated. Design the block-level panel BEFORE the hero POC, or the POC demonstrates
@@ -75,7 +76,8 @@ of the model resolves for nothing yet.
   video excluded correctly, and **tier + opacity together** (the tier override does not reset
   opacity — testing them separately would both have passed while the combination was broken).
   Evidence: `reports/visual-diff/container-2026-08-08.md`.
-- **Phase 0 (D533)** — contract + spec 35 A3/A4 amended; all 13 `Tab` fields guarded; the
+- **Phase 0 (D533)** — contract + spec 35 A3/A4 amended; all 13 placement-bearing fields guarded
+  (12 `Tab` + §6 `Placement`); the
   `01-tab-group` scanner message and 4 extension comments no longer teach the retired rule.
   A 4-rater qc-council caught that the first pass fixed the rule's STATEMENT and left its
   DISTRIBUTION.
@@ -93,14 +95,113 @@ of the model resolves for nothing yet.
 - **Deleting the universal hover extension** — 48 blocks rely on it solely; capability first.
 - **Re-sorting the 8 batch-A blocks by hand** — re-derived by the model or not at all.
 
-#### Next actions, in order
+## ⭐ NEXT SESSION — orchestration plan
 
-1. **Design the block-level panel** (what it is called, how many, what order). Unblocks Phase 2.
-2. **Strip native colour supports** (27 blocks) — now unblocked by Phase 1. Per-block live verify.
-3. **Generate `contentAttrs` for `sgs/hero`**, review it, then the POC.
-4. Residual Phase 1: parallax MOTION unverified (the layer renders with `bgParallax` set; that is
-   not the effect animating), Ken Burns, and cta-section's 4 fixed gradients + hardcoded scrim.
+**Identity.** SGS framework engineer on Track 1b (Spec 35 inspector). Phase 1 shipped; you are
+designing the one thing that blocks Phase 2, then using the capability Phase 1 unlocked.
 
+**State recap.** The inspector is hand-written per block. The plan is to render it FROM each block's
+own `supports.sgs.elements` map (82 of 83 blocks declare it; 283 elements). Phase 0 fixed the rule;
+Phase 1 built the
+background capability the rest depends on. Phase 2 (prove it on `sgs/hero`) is held because the rule
+only decides where 46% of controls go.
+
+### Task 1 — Design the block-level panel (INLINE, Opus)
+
+**What:** decide what happens to the 54% of controls that belong to no single element.
+**Why:** without it the hero POC puts 76 controls in one unnamed panel — the crammed tab Bean
+rejected, relocated. This is the only thing blocking Phase 2.
+**Estimated time:** ~45 min including the design gate.
+**Orchestration:** inline, Opus. Load `/brainstorming` (design mode) FIRST. Research prior art
+before deriving anything (E9 STOP): Kadence/Stackable/GenerateBlocks all solve this — GenerateBlocks
+is the interesting one, it has NO composites and gives every atomic block a full property-panel set.
+**Depends on:** none. **Parallel with:** Task 2.
+**/qc gate after:** yes — re-run the placement resolver (the QC script pattern from 2026-08-08) and
+show the block-level count DROPS, per block. A design that does not move that number failed.
+**Acceptance:** for `sgs/hero`, every one of its ~76 block-level controls has a named home, and Bean
+signs off on the model BEFORE it is applied to any block (Rule 9 — this scopes all 83).
+
+### Task 2 — Strip native colour supports (DELEGATED, Sonnet; parallel with Task 1)
+
+**What:** remove `supports.color.background|.text` from the 27 blocks that also own a custom colour
+attr for the same property, now that Phase 1 provides flat colour in the SGS panel.
+**Why:** it is the duplicate-Colour-panel Bean keeps seeing, and it is the precondition for the
+three-tab bar (D535).
+**Estimated time:** ~30 min for the first block + live verify, then mechanical.
+**Orchestration:** delegated, Sonnet via `/delegate`. Brief: strip from ONE block, verify in the live
+editor AND frontend, then roll. Context the subagent will not have: the governing predicate is
+*declares `supports.color.background|.text` AND maps `css:color`/`css:background-color` to a
+non-`native:` attr in its element map* — 27 blocks, and three other plausible predicates give 55, 30
+and 2, so state the predicate with any count.
+**Depends on:** Phase 1 (done). **Parallel with:** Task 1.
+**/qc gate after:** yes — `/qc-inline` per block; a block losing its background is a hard fail.
+**Acceptance:** native Color panel gone, SGS colour still works on both surfaces, count re-derived
+under the stated predicate.
+
+### Task 3 — Generate `contentAttrs` for `sgs/hero` (INLINE, Opus; after Task 1)
+
+**What:** build the generator that reads `render.php` to name each element's content attributes,
+run it on hero only, and review the output.
+**Why:** `contentAttrs` is declared by ZERO blocks, so the content half of the model resolves for
+nothing. Bean decided "generate and review".
+**Estimated time:** ~1h.
+**Orchestration:** inline, Opus. Four binding conditions are already recorded in the contract
+(§THE ELEMENT MANIFEST) and must hold: proposal-until-reviewed, hero first, REPORT what it cannot
+determine rather than guessing, ships with `--check`, idempotent.
+**Depends on:** Task 1. **Parallel with:** none.
+**/qc gate after:** yes — an unresolved element must surface as unresolved, not as a wrong answer.
+**Acceptance:** Bean reads hero's `contentAttrs` before a second block is touched.
+
+### Task 4 — Hero POC (INLINE, Opus — Bean's eye is the gate)
+
+**What:** hero's inspector rendered from its element map.
+**Why:** proves the model on a real block before any roll-out.
+**Orchestration:** inline, Opus. ⚠ `sub-headline` and `cta` have EMPTY `clusters` — enrich them.
+**Depends on:** Tasks 1 + 3. **/qc gate after:** Bean's eye. A green scanner does NOT close it
+(R-31-13).
+**Acceptance:** Bean looks at it and says yes.
+
+### Dependency graph
+
+```
+Task 1 (block-level panel, Opus)  ║ parallel ║  Task 2 (native colour strip, Sonnet)
+        ↓ Bean sign-off (Rule 9)                        ↓ /qc-inline per block
+Task 3 (contentAttrs generator, Opus)
+        ↓
+Task 4 (hero POC) ──► Bean's eye
+        ↓
+commit by exact path, main
+```
+
+### Residual Phase 1 (small, do when convenient)
+
+Parallax MOTION is unverified (the media layer renders with `bgParallax` set — that is not the effect
+animating); Ken Burns against the new layer; cta-section's 4 fixed gradients + its hardcoded
+`primary-dark` scrim still to delete.
+
+### Methodology guardrails (every one was earned — do not skip)
+
+- **A surface your change TOUCHES is not "out of scope".** Listing it as not-covered is deferral
+  wearing scope's clothes. Bean rejected exactly this on 2026-08-08 and the test then found a real
+  editor defect.
+- **Verify BOTH surfaces — frontend and editor.** The editor is where non-technical clients live.
+- **Test the COMBINATION when two features write the same property.** Tier + opacity each passed
+  alone; only the combined case could see the failure mode.
+- **A blocker you assert without reading is not a blocker.** Open the hook, read the file.
+- **Use the canary credentials** — `.claude/secrets/sandybrown.env`, always available, no need to ask.
+- **Check prior art before deriving a rule, and check the standard exists.** WP core has no
+  Settings/Styles rule; three competitors had already converged.
+- **Amending a rule's statement is not amending its distribution.** Grep its restatements AND its
+  enforcers.
+- **State the predicate with any derived count.** "27 blocks" is meaningless without it; three other
+  predicates give 55, 30 and 2.
+- **Before `rm -rf`, list the path and check `git ls-files`.** A stray-dir cleanup deleted 3 tracked
+  reports this session.
+- **A commit that "succeeds" in terminal output can be silently BLOCKED** — verify HEAD via
+  `git log -1`, never the reported hash. The visual-diff gate needs `verdict: PASS` +
+  `first_paint_capture_passed: true` + a `source_sha:` bound to the STAGED bytes.
+- **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped, §E9 is this
+  session's).
 ### Other tracks — stable
 
 - **Track 1** — routing audit + tier axis COMPLETE (D480); Phases 0-3 done, Phase 4 PARTIAL, 5 OPEN.
@@ -161,7 +262,7 @@ converge on the same shape independently. Hover-inline-beside-base is unanimous 
 **A8** marked OPEN as its sibling.
 
 **Shipped:** contract §THE PLACEMENT RULE + §THE ELEMENT MANIFEST (schema of record, adds
-`contentAttrs` + 5 binding conditions) · CO-2 rewritten · all 13 `Tab` fields now guarded · spec 35
+`contentAttrs` + 5 binding conditions) · CO-2 rewritten · all 13 placement-bearing fields guarded · spec 35
 A3/A4/A8 · `01-tab-group.js` fix-message (it was still instructing the retired rule) · 4 extension
 comments that cited it as justification (routing unchanged — verified) ·
 `check-element-manifest-conformance.js` docblock off the ARCHIVED schema doc.
