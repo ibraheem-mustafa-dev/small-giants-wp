@@ -46,13 +46,31 @@
  * future editor-side authoring-time warning — fx.js, owned separately —
  * should read rather than inventing its own threshold).
  *
- * ADMIN ONLY (hard constraint)
+ * ADMIN ONLY (hard constraint) — AMENDED 2026-08-08, see below
  * This class is wired to `admin_menu` only. It is never loaded on the
  * frontend request path, never enqueues anything there, and its render
  * method additionally gates on `current_user_can()` before printing
- * anything. The one network call it makes (`wp_remote_get()` against the
- * page's own permalink) is triggered ONLY from inside `render_page()`, i.e.
- * only when an administrator is looking at this exact wp-admin screen.
+ * anything.
+ *
+ * ⚠ THE "ONLY FROM render_page()" CLAUSE IS NO LONGER TRUE and is corrected
+ * rather than left standing. It used to say the one network call
+ * (`wp_remote_get()` against the page's own permalink) fired only from inside
+ * `render_page()`. Since 2026-08-08 `measure_post()` can also trigger it, from
+ * `includes/rest-motion-budget.php`, which serves the block editor the route
+ * `extensions/fx.js` had been requesting (and 404ing on) since it was written.
+ *
+ * What is unchanged, and what the constraint now means precisely:
+ *   · the admin PAGE is still `admin_menu` only;
+ *   · nothing here is ever loaded or enqueued on the FRONTEND request path;
+ *   · every entry point is capability-gated — `render_page()` on
+ *     `current_user_can( self::CAP )`, the REST route on a per-post
+ *     `current_user_can( 'edit_post', $id )`;
+ *   · the outbound fetch is now transient-cached (`CACHE_TTL`, keyed on the
+ *     post's modified time), so an editor session cannot turn one authenticated
+ *     request into a stream of outbound ones.
+ * A doc that silently stops matching the code is the failure this project
+ * treats as a defect in its own right, so the claim was narrowed to what is
+ * actually true instead of being quietly outgrown.
  *
  * @package SGS\Blocks
  */
@@ -98,9 +116,138 @@ final class Sgs_Motion_Diagnostics {
 		'shared/effects/',
 	);
 
+	/**
+	 * Transient prefix for a measured result. Keyed by post ID AND the post's
+	 * own modified-time, so an edit invalidates the reading by construction
+	 * rather than by remembering to purge it — a stale motion cost is a wrong
+	 * number presented confidently, which is worse than no number.
+	 */
+	const CACHE_PREFIX = 'sgs_motion_budget_';
+
+	/** How long a measurement stays warm. */
+	const CACHE_TTL = 300;
+
 	/** Wire WP hooks. Safe to call multiple times (add_action de-duplicates). */
 	public static function register(): void {
 		\add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
+	}
+
+	/**
+	 * Measure one post's motion cost, for callers OUTSIDE this admin page.
+	 *
+	 * Added 2026-08-08 so `rest-motion-budget.php` can serve the editor the
+	 * SAME measurement this page shows, rather than a second implementation.
+	 * `extensions/fx.js:1015-1038` documented the interface it wanted and
+	 * explicitly refused to compute a cost itself, on the grounds that two
+	 * independently-derived numbers can silently disagree. That reasoning binds
+	 * here too: this returns the measured figure or nothing at all.
+	 *
+	 * ⚠ SCOPE NOTE — this class's header calls it "admin only ... never loaded
+	 * on the frontend request path". That remains true of the PAGE (still
+	 * `admin_menu` only) but is no longer true of the CLASS, which a REST
+	 * request now loads. The header has been amended rather than left to become
+	 * a false statement. The REST surface carries its own capability check.
+	 *
+	 * @param int $post_id Post to measure.
+	 * @return array|null Analyse() output plus 'budget_bytes_gzip', or null when
+	 *                    the post cannot be measured (missing, unpublished, no
+	 *                    permalink, or the fetch failed). Null means "no data",
+	 *                    never "zero cost" — the caller must not render a 0.
+	 */
+	public static function measure_post( int $post_id ): ?array {
+		$post = \get_post( $post_id );
+		if ( ! $post || ! \is_a( $post, '\\WP_Post' ) || 'publish' !== $post->post_status ) {
+			return null;
+		}
+
+		$url = \get_permalink( $post );
+		if ( ! $url ) {
+			return null;
+		}
+
+		$key    = self::CACHE_PREFIX . $post_id . '_' . \md5( (string) $post->post_modified_gmt );
+		$cached = \get_transient( $key );
+		if ( \is_array( $cached ) ) {
+			return $cached;
+		}
+
+		// Same cache-bust discipline as render_report(): LiteSpeed sits in front
+		// of both live sites and a stale copy would report an old build as today.
+		$response = \wp_remote_get(
+			\add_query_arg( 'sgsmotiondiag', (string) \time(), $url ),
+			array(
+				'timeout'   => 20,
+				'sslverify' => true,
+			)
+		);
+
+		if ( \is_wp_error( $response ) ) {
+			return null;
+		}
+		if ( 200 !== (int) \wp_remote_retrieve_response_code( $response ) ) {
+			return null;
+		}
+		$body = \wp_remote_retrieve_body( $response );
+		if ( '' === $body ) {
+			return null;
+		}
+
+		$result                        = self::analyse( $post, $body );
+		$result['budget_bytes_gzip']   = self::BUDGET_BYTES_GZIP;
+		\set_transient( $key, $result, self::CACHE_TTL );
+
+		return $result;
+	}
+
+	/**
+	 * Per-effect byte attribution, derived ONLY from what was measured.
+	 *
+	 * ⚠ There is deliberately no effect→module lookup here. A first version of
+	 * this method read a `path` key off `known_effects()` — a shape that DOES
+	 * NOT EXIST (`generated-fx-effects.php` entries carry `plugin_set`,
+	 * `owns_scroll_transform`, `pins`, `triggers` and nothing else), so it would
+	 * have returned an empty map forever while looking correct. The real
+	 * effect→module map is `SGS_Motion_Registry`'s private one, which this
+	 * class's header is explicit about NOT depending on.
+	 *
+	 * So attribution comes from the measurement itself: a module this page
+	 * actually loaded, whose filename is `fx-<effect>.js`, is that effect's
+	 * cost. Nothing is apportioned and nothing is guessed.
+	 *
+	 * ⚠ These figures do NOT sum to the page total, and must never be presented
+	 * as if they do. The shared GSAP core and any module serving several
+	 * effects are real page cost with no single owner; dividing them up would
+	 * invent a number nobody measured. The total is the authoritative figure.
+	 *
+	 * @param array $result Output of analyse().
+	 * @return array<int,array{effect:string,bytes_gzip:int}> Only effects whose
+	 *         own module was measured; effects without one are omitted rather
+	 *         than reported as costing zero.
+	 */
+	public static function attribute_effect_bytes( array $result ): array {
+		$by_basename = array();
+		foreach ( (array) ( $result['modules'] ?? array() ) as $module ) {
+			$path = (string) ( $module['path'] ?? '' );
+			if ( '' === $path ) {
+				continue;
+			}
+			$base = \basename( $path, '.js' );
+			if ( 0 === \strpos( $base, 'fx-' ) ) {
+				$by_basename[ \substr( $base, 3 ) ] = (int) ( $module['bytes_gzip'] ?? 0 );
+			}
+		}
+
+		$out = array();
+		foreach ( \array_keys( (array) ( $result['effects_in_markup'] ?? array() ) ) as $effect ) {
+			$effect = (string) $effect;
+			if ( isset( $by_basename[ $effect ] ) ) {
+				$out[] = array(
+					'effect'     => $effect,
+					'bytes_gzip' => $by_basename[ $effect ],
+				);
+			}
+		}
+		return $out;
 	}
 
 	/** Register the submenu under the SGS top-level entry. */

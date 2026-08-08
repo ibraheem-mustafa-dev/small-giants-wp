@@ -329,6 +329,10 @@ Sgs_Footer_Rules_Admin::register();
 // Spec 02 per-page budget, and which effects were skipped (and why) —
 // without SSH or WP_DEBUG. Never loaded on the frontend request path.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-diagnostics.php';
+// Serves the measurement above to the editor. `extensions/fx.js` has requested
+// this route since it was written; nothing registered it, so every editor load
+// 404'd. Must load AFTER the diagnostics class it calls.
+require_once SGS_BLOCKS_PATH . 'includes/rest-motion-budget.php';
 Sgs_Motion_Diagnostics::register();
 
 // SGS style variation picker DELETED 2026-05-22 (Phase 5a Decision 18).
