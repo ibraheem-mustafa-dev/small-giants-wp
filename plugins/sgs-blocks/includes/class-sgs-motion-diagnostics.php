@@ -556,10 +556,43 @@ final class Sgs_Motion_Diagnostics {
 	 * @return string[]
 	 */
 	private static function extract_module_srcs( string $html ): array {
-		if ( ! \preg_match_all( '/<script[^>]+type=["\']module["\'][^>]+src=["\']([^"\']+)["\']/i', $html, $matches ) ) {
+		/*
+		 * ⛔ ATTRIBUTE ORDER IS NOT GUARANTEED, and assuming it was made this
+		 * whole report read ZERO for every page since it was built.
+		 *
+		 * The previous pattern was:
+		 *   /<script[^>]+type=["\']module["\'][^>]+src=["\']([^"\']+)["\']/i
+		 * which requires `type="module"` to appear BEFORE `src=`. WordPress
+		 * emits the opposite order — measured on the canary 2026-08-08:
+		 *   <script id="@sgs/fx-scrub-js-module" src="…/fx-scrub.js?ver=…" type="module">
+		 * so the pattern never matched, `modules` was always empty, and the
+		 * page total was always 0 KB. A page carrying a real `scrub` effect and
+		 * loading three motion modules reported "0 KB of a 50 KB budget".
+		 *
+		 * That is the "gate that cannot fail reads green forever" shape: the
+		 * number was not merely wrong, it was UNFALSIFIABLE by inspection —
+		 * 0 KB looks like a healthy result. It only surfaced because a positive
+		 * control was built (a page authored WITH an effect) rather than
+		 * trusting a zero from pages that happened to have no motion.
+		 *
+		 * Now: find every <script> tag, then require BOTH markers within it, in
+		 * either order.
+		 */
+		if ( ! \preg_match_all( '/<script\b([^>]*)>/i', $html, $matches ) ) {
 			return array();
 		}
-		return \array_values( \array_unique( $matches[1] ) );
+
+		$srcs = array();
+		foreach ( $matches[1] as $attrs ) {
+			if ( ! \preg_match( '/\btype=["\']module["\']/i', $attrs ) ) {
+				continue;
+			}
+			if ( \preg_match( '/\bsrc=["\']([^"\']+)["\']/i', $attrs, $found ) ) {
+				$srcs[] = $found[1];
+			}
+		}
+
+		return \array_values( \array_unique( $srcs ) );
 	}
 
 	/**
