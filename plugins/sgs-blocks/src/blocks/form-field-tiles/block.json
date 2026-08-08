@@ -23,6 +23,7 @@
 	],
 	"supports": {
 		"sgs": {
+			"iconPicker": true,
 			"imageControls": false,
 			"hideExtensions": [
 				"animation"

@@ -92,6 +92,51 @@ WP_VERSION_DEFAULT = "7.0"
 # Files excluded from indexed_files scan
 EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
 
+# --- Declarative block capabilities (D525, 2026-08-08) -----------------------
+# `supports.sgs.<key>: true` in a block's own block.json → a block_capabilities
+# row (slug, <capability>). Absent or false → the row is DELETED. Idempotent, and
+# NOT a slug list: adding a capability costs one entry here plus a block.json key,
+# so the fact always travels with the block (R-31-1).
+#
+# ⛔ This map is the ONLY sanctioned writer of a non-lift capability. Do not run
+# `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py` to add capabilities: its
+# hardcoded CAPABILITY_RULES dict is the fossil source this replaced, and it shares
+# a last-one-wins conflict with the partially-ported `block_selectors` writer, so
+# running it would silently clobber selectors as well.
+_DECLARATIVE_CAPABILITIES = {
+    # Renders a repeated set of items as its PRIMARY content, whose children carry
+    # their own interactive elements. Consumed by the universal-extension fit test
+    # (`isCollectionKind`): a block-link cannot wrap one of these, because HTML
+    # forbids nesting interactive elements — that is an ARCHITECTURAL fact about
+    # the rendered output, not the product-taxonomy question
+    # (`category === 'sgs-forms' && !surfaces.styling`) the old heuristic asked,
+    # which is why sgs/gallery was never flagged.
+    "collection": "collection",
+    # Offers the client an icon chooser via the shared `IconPicker`. This is the
+    # CONTROL-SURFACE fact, deliberately kept SEPARATE from `role LIKE 'icon-%'`:
+    # that role family is the cloning converter's icon-SOURCE discriminator
+    # (lucide / emoji / dashicon / wp-icon) and answers a different question, which
+    # is why it tags 2 blocks where the picker is mounted by 13. Widening the role
+    # to cover control-surface scope would have broken the converter's arm.
+    "iconPicker": "icon-picker",
+}
+
+# Capability names with NO in-repo writer and NO live reader, seeded historically by
+# populate-db.py's CAPABILITY_RULES. Their only consumer — the capability-aware
+# tiebreaker — was RETIRED at D278, and every live `capabilities_for()` call site
+# reads only the three lift flags (measured 2026-08-08). Pruned on every Stage 1 so
+# the table means exactly one thing: capabilities a block DECLARES about itself.
+# ⚠ Removing a name from this set does NOT resurrect it — there is no writer.
+_FOSSIL_CAPABILITIES = frozenset({
+    "action-button", "alert", "animated-numbers", "call-to-action", "carousel",
+    "conversion", "countdown", "cta", "decorative", "dismissible", "expandable",
+    "faq", "floating-element", "form-input", "full-width-banner", "grid-layout",
+    "horizontal-strip", "icon-text", "image-overlay", "logo-strip", "modal-popup",
+    "navigation", "notification", "partner-logos", "pricing", "process-display",
+    "question-answer", "rating", "schema-faq", "social-links", "social-proof",
+    "steps", "tabbed-content", "team-display", "time-limited", "trust-indicators",
+})
+
 # Re-used SQL literals (kept as constants so they stay in sync across call sites)
 _SELECT_BLOCK_EXISTS_NATIVE_WP = "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'"
 _SELECT_DOC_EXISTS_NATIVE_WP = "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'"
@@ -841,6 +886,39 @@ def _index_sgs_block_files(
                 (slug,),
             )
 
+        # --- DECLARATIVE capabilities (D525, 2026-08-08) ---
+        # Same presence/absence contract as the three lift flags above, but
+        # table-driven so a new one costs a row here plus a block.json key —
+        # never a hardcoded slug list.
+        #
+        # WHY THIS EXISTS. `block_capabilities` held two unrelated things under one
+        # name. The three lift flags are declarative, written here, and read by the
+        # converter. The other ~36 semantic tags ('carousel', 'grid-layout',
+        # 'logo-strip', 'icon-text' …) had NO live-path writer — their only writer is
+        # a hardcoded CAPABILITY_RULES dict in
+        # `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py`, outside this repo —
+        # AND no live reader, since the capability-aware tiebreaker that consumed them
+        # was retired at D278. Measured 2026-08-08: every live `capabilities_for()`
+        # call site reads only the three lift flags. They were fossils, and building
+        # `isCollectionKind()` on 'carousel'/'grid-layout'/'logo-strip' (as first
+        # proposed) would have built a new rule on three dead values.
+        # Bean chose the declarative route 2026-08-08: delete the fossils, and let a
+        # block state the fact about ITSELF.
+        for _sgs_key, _capability in _DECLARATIVE_CAPABILITIES.items():
+            _wants = bool(sgs_supports.get(_sgs_key, False)) if isinstance(sgs_supports, dict) else False
+            if _wants:
+                c.execute(
+                    "INSERT OR IGNORE INTO block_capabilities "
+                    "(block_slug, capability) VALUES (?, ?)",
+                    (slug, _capability),
+                )
+            else:
+                c.execute(
+                    "DELETE FROM block_capabilities "
+                    "WHERE block_slug = ? AND capability = ?",
+                    (slug, _capability),
+                )
+
         scanned += 1
 
         # --- array_item_schema seeder (2026-07-02) ---
@@ -1069,7 +1147,23 @@ def _index_sgs_block_files(
         )
     pruned_selectors = len(_stale_selector_slugs)
 
+    # --- Prune fossil capabilities (D525, 2026-08-08) ---
+    # See _FOSSIL_CAPABILITIES: writer-less, reader-less rows left behind by
+    # populate-db.py's hardcoded CAPABILITY_RULES. Pruning here (not once, by hand)
+    # is what makes the table's meaning STABLE — if that out-of-repo script is ever
+    # run again, the next /sgs-update removes what it reintroduced, instead of the
+    # fossils silently coming back and a future rule scoping against them.
+    pruned_fossil_caps = 0
+    if not dry_run:
+        c.execute(
+            "DELETE FROM block_capabilities WHERE capability IN "
+            f"({','.join('?' * len(_FOSSIL_CAPABILITIES))})",
+            tuple(sorted(_FOSSIL_CAPABILITIES)),
+        )
+        pruned_fossil_caps = c.rowcount
+
     return {
+        "pruned_fossil_caps": pruned_fossil_caps,
         "scanned": scanned,
         "new_blocks": new_blocks,
         "new_attrs": new_attrs,
@@ -2520,6 +2614,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         print(
             f"Stage 1 (block_selectors): new_selectors={new_selectors}, "
             f"pruned_stale_slugs={pruned_selectors}."
+        )
+        print(
+            "Stage 1 (declarative capabilities): "
+            f"pruned_fossil_rows={counts.get('pruned_fossil_caps', 0)}."
         )
     else:
         print(

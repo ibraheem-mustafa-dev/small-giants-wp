@@ -36,6 +36,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"iconPicker": true,
 			"imageControls": false,
 			"boxFamilies": {
 				"padding": [

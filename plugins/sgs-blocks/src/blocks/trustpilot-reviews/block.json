@@ -31,6 +31,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"collection": true,
 			"imageControls": false,
 			"elements": {
 				"wrapper": {

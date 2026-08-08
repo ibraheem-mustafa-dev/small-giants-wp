@@ -55,6 +55,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"collection": true,
 			"scalarStylingLift": true,
 			"imageControls": true,
 			"arrayContentLift": true,

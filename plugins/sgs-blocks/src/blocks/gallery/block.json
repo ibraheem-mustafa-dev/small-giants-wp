@@ -47,6 +47,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"collection": true,
 			"imageControls": true,
 			"fx": {
 				"draggable": true,

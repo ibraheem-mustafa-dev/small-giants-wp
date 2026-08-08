@@ -42,6 +42,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"collection": true,
 			"elements": {
 				"grid": {
 					"label": "Grid",

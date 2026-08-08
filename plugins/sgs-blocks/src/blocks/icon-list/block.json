@@ -42,6 +42,8 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"collection": true,
+			"iconPicker": true,
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [

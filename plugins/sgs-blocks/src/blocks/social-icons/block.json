@@ -35,6 +35,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"collection": true,
 			"imageControls": false,
 			"_imageControlsNote": "Deliberate opt-out (FR-36-21). The universal image-controls extension (object-position/max-width/height) targets ONE block-level image; this block's optional custom-SVG upload is a PER-ITEM glyph inside a repeater (mirrors sgs/icon's own imageControls:false). Size is governed by the existing iconSize control instead.",
 			"arrayContentLift": true,

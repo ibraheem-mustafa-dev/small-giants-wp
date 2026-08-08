@@ -17,6 +17,7 @@
 	"icon": "slides",
 	"supports": {
 		"sgs": {
+			"collection": true,
 			"imageControls": true,
 			"containerKind": "layout",
 			"elements": {

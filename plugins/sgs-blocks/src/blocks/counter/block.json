@@ -17,6 +17,7 @@
 	"icon": "chart-bar",
 	"supports": {
 		"sgs": {
+			"iconPicker": true,
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [

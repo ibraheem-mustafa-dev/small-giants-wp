@@ -34,6 +34,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

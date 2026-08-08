@@ -19,6 +19,7 @@
 	"icon": "images-alt2",
 	"supports": {
 		"sgs": {
+			"collection": true,
 			"imageControls": true,
 			"arrayContentLift": true,
 			"containerMirror": false,

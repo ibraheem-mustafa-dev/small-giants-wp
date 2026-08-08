@@ -17,6 +17,7 @@
 	"textdomain": "sgs-blocks",
 	"supports": {
 		"sgs": {
+			"collection": true,
 			"imageControls": false,
 			"presetSelectors": [
 				"cardStyle"

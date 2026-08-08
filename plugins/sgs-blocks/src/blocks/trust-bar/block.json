@@ -20,6 +20,8 @@
 	"icon": "awards",
 	"supports": {
 		"sgs": {
+			"collection": true,
+			"iconPicker": true,
 			"imageControls": true,
 			"is_section_root": true,
 			"containerKind": "section",

@@ -22,6 +22,7 @@
     "html": false,
     "reusable": false,
     "sgs": {
+      "collection": true,
       "headerEssential": true,
       "containerKind": "layout",
       "hideExtensions": [
