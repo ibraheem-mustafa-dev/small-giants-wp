@@ -1,5 +1,94 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D536 — Phase 1 background capability: media on a ::before layer, flat colour ungated [ROUTINE]
+
+**2026-08-08.** Three gaps closed in `SGS_Container_Wrapper`, Rule-7 design-gated and Bean-approved
+(option A of three).
+
+1. **Flat background colour.** The overlay was gated `$has_any_bg && $has_overlay_colour` — a colour
+   or gradient set with NO media rendered nothing at all. That gate is why flat colour was reachable
+   ONLY through WordPress's native Color panel, and therefore why no native colour support could be
+   stripped. Ungated: the colour layer is now the one background-colour concept — over media a
+   lowered opacity reads as an overlay, with no media it simply IS the background.
+2. **`backgroundMediaOpacity`** (new, default 100). Did not exist anywhere. `cta-section`'s
+   `backgroundImageOpacity` LOOKS like it but dims a hardcoded `primary-dark` scrim, not the image.
+3. **Media moved to `.{uid}::before`.** `opacity` applies to a whole element, so while the image was
+   a background of `.{uid}` there was no way to dim media without dimming the section's content with
+   it. `z-index:-1` paints above the container's own colour, below the overlay span (0) and content
+   (1). Paint order itself needed NO change — it was already correct.
+
+The layer's box properties are emitted in the scoped rule, not as a blanket `.sgs-container::before`
+in style.css, so only containers with a background image gain a pseudo-element.
+
+**Two traps, both of the same shape — code that reads correctly and cannot fire.** The declarations
+were first appended to `$responsive_css` where the `$bg_*` vars are in scope; neither `$uid` nor
+`$responsive_css` exists there, and `$responsive_css` is initialised to `''` sixty lines later, which
+would have silently discarded every emission. And `content:""` is mandatory — without it `::before`
+generates no box and the whole rule is inert.
+
+**Unblocks:** native colour supports (27 blocks) can now be stripped, which the three-tab bar (D535)
+waits on. Evidence: `reports/visual-diff/container-2026-08-08.md`.
+
+## D535 — SGS owns a three-tab inspector bar; core has NO Settings/Styles rule [ROUTINE]
+
+**2026-08-08, Bean-decided after research into prior art.** Verified in the Gutenberg source, not the
+docs: **WordPress core has no semantic Settings-vs-Styles rule.** The Styles tab is a hard-coded list
+of native block-support categories (`typography`/`color`/`background`/`border`/`dimensions`/`layout`/
+`position`/`filter`/`elements`); the Settings tab is simply the `default` group. There was never a
+standard to apply — which is why every attempt to apply one produced a different answer.
+
+Kadence, Spectra and Stackable each ship their OWN tab bar instead. SGS follows: **Content · Style ·
+Advanced**.
+
+⛔ **Sequencing is load-bearing: the tab bar ships AFTER native-supports retirement.** While 27 blocks
+declare native `color` and 48 declare `__experimentalBorder`, core renders its own Styles tab
+regardless, so shipping our bar first gives the client THREE SGS tabs PLUS core's — strictly worse
+than today. Native retirement is itself blocked on the background capability (D536).
+
+## D534 — `wp-content-guard` downgraded to advisory; the premise did not hold [ROUTINE]
+
+**2026-08-08, Bean-directed.** The hard block on writing `post_content` existed to protect STATIC
+blocks, whose `save.js` HTML is stored in post_content and breaks when hand-edited markup stops
+matching. **Every SGS block is dynamic (84/0)**, so that failure cannot occur for an sgs/* block.
+
+Checking the hook found it wrong in BOTH directions: **over-broad** (it matched any command
+containing `str_replace`, including ordinary PHP edits, and blocked writing the probe content needed
+to verify a render change live) and **under-broad** (it never matched `wp db query` with an `UPDATE`
+— raw SQL straight at post_content, the most destructive path). It also never blocked `wp post
+create`, so it was not even the obstacle it was believed to be.
+
+⚠ **QUALIFIED THE SAME DAY by measurement.** A slot-bearing composite DOES store markup — its
+CHILDREN. `sgs/container`'s `save()` emits `<InnerBlocks.Content />`, and a hand-written
+`<div class="wp-block-sgs-container">` wrapper made every probe container INVALID in the editor
+while rendering perfectly on the frontend (render.php ignores stored markup). So "dynamic blocks
+cannot be corrupted" is true for LEAF dynamic blocks and false for slot-bearing ones.
+
+## D533 — Inspector placement is ELEMENT-SCOPED; the retired rule was the defect [ROUTINE]
+
+**2026-08-08.** Spec 35's placement rule replaced with: **one panel per element, holding that
+element's content, styling and hover together**, titled and ordered by its own declaration in
+`supports.sgs.elements`. No behaviour-vs-appearance question anywhere.
+
+The retired rule — *"behaviour → Settings; appearance → Styles. This discriminator is the contract"*
+(**§8 BOOLEAN field 4**; CO-28 and Cross-cutting A both mis-cited it as "§6 field 4") — sorts by what
+a control DOES and says nothing about what it BELONGS TO. Eight blocks were hand-sorted on it and
+Bean rejected the result. **The doc was the defect, not only the pass that followed it.**
+
+A 4-rater qc-council then found the amendment had fixed the rule's STATEMENT and left its
+DISTRIBUTION: 9 of 12 `Tab` fields still stated the flat rule, and `01-tab-group.js`'s fix message
+still instructed it to developers. All 13 `Tab` fields are now guarded; the scanner message and four
+extension comments were corrected (routing verified unchanged).
+
+**Order stays OPEN (Bean).** CO-28's design gate stands and spec 35 A8 is marked open beside it —
+research found NO competitor centralises panel order.
+
+⚠ **A QC pass measured the model's reach: it places 46% of declared attributes on an element; 54%
+fall to a block-level panel the rule describes in one line.** For `sgs/hero` that is 76 controls in
+one undefined panel. **Phase 2 (hero POC) is on hold** until that panel is designed; Phase 1 is
+unaffected. `contentAttrs` is declared by ZERO blocks, so the content half of the model resolves for
+nothing yet.
+
+
 ## D532 — Rule 21's 280 triaged to 262 real; WordPress CORE is a second invisible control surface [ROUTINE]
 
 **2026-08-08.** Rule `21-render-without-control` measured 280 findings across 35 of 83 blocks (D530).

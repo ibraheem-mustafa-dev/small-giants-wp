@@ -9,61 +9,97 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## FOR BEAN — plain English (read this first)
 
-**Where 2026-08-08 (evening) left things:**
+**Where 2026-08-08 (late) left things:**
 
-- **The inspector work has a DESIGN now, and you approved every decision in it.** Nothing is built.
-  The next session's first job is amending the contract that caused the mistake below.
-- **I sorted 8 blocks' panels into Settings/Styles on the wrong model and you rejected it.** The
-  Styles tab ended up crammed. Your model: only root styles that touch no single element go in
-  Styles; element styles group with that element's content in Settings. The 8 blocks are
-  **superseded, not reverted** — reverting would restore the worse single-tab problem.
-- **The cause was a DOC, not just me.** The control-type contract literally says "behaviour →
-  Settings, appearance → Styles". That is the rule I followed and it is wrong. Amending it is
-  Phase 0, or the next session repeats the mistake from the same source.
-- **Your blocks already describe themselves properly** — all 83 declare an element map (283 elements)
-  with names, order, which CSS each part owns, and hover *inside* the element. The inspector ignores
-  all of it and gets hand-written. Building it FROM that map is the whole design.
-- **Two measurement bugs found, both the same shape** — something that always returned the same
-  answer and therefore looked healthy. Your Motion Diagnostics page has reported "0 KB" for every
-  page since it was built. And my own first editor check would have passed a block I never touched.
-- **A 4-rater council corrected my own figures** — the fourth-quadrant count is **243**, not the 262
-  I reported earlier in the session.
-
+- **The background work is BUILT, live on the canary, and pushed.** You can set a flat background
+  colour, and dim a background image without dimming the text on top of it. Both work on the
+  published page AND in the editor.
+- **You made the big call: SGS gets its own three tabs** (Content · Style · Advanced), like Kadence,
+  Spectra and Stackable. It can't ship until we remove WordPress's own colour controls from 27
+  blocks first, or you'd see our three tabs plus theirs. Removing those was blocked on the flat
+  colour — which now exists, so that's unblocked.
+- **WordPress core has NO rule for which tab a control goes in.** I read the Gutenberg source. That
+  is why every attempt to apply "the rule" gave a different answer — there was never a rule. The
+  competitors all built their own, which is why yours does too.
+- **I've paused the next step on purpose.** The new model only decides where 46% of controls go; the
+  other 54% land in a "block-level panel" I described in one line and never designed. On hero that's
+  76 controls in one panel — the crammed tab you rejected, just moved. Designing that panel is the
+  next job.
+- **You caught me deferring verification instead of doing it.** I'd listed tier images, fixed
+  backgrounds, video and the editor as "not covered". Testing them found a real bug: the editor
+  ignored the new opacity control entirely, so a client would set 35%, see nothing, and get a dimmed
+  image on the live page. Fixed.
+- **The repo is clean for the first time in weeks** — nothing uncommitted, no stashes, no leftover
+  worktrees. Two build scripts were rewriting tracked files on every single build, which is why
+  genuinely abandoned files were indistinguishable from noise.
 **Full narrative:** `memory/session-2026-08-08*.md`.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D532** (rule 21
-> triaged 280→243; WordPress core is a second structurally-invisible control surface).
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D536** (Phase 1
+> background capability shipped + verified live).
 
-### ⭐ Track 1b (Spec 35) — DESIGN APPROVED, build not started
+### ⭐ Track 1b (Spec 35) — Phase 0 + Phase 1 SHIPPED. Phase 2 ON HOLD.
 
-**`.claude/plans/2026-08-08-element-driven-inspector-design.md` is the live front.** All three open
-questions answered by Bean 2026-08-08. Phase 0 (contract amendment) is the next action.
+**Phase 1 (background capability) is DONE, verified live on the canary, pushed.** Phase 2 (hero POC)
+is deliberately held — see the blocker below. Design doc:
+`plans/2026-08-08-element-driven-inspector-design.md`.
 
-The design in one line: **render the inspector FROM `supports.sgs.elements` instead of hand-writing
-it per block.** Element → one panel in Settings holding its content + styles + hover, named and
-ordered by the declared `label`/`order`. No element → Styles tab.
+**The placement rule, in one line (D533):** one panel per element, holding that element's content,
+styling and hover together, titled and ordered by its own `supports.sgs.elements` declaration. **No
+behaviour-vs-appearance question anywhere** — WP core has no such rule (verified in the Gutenberg
+source: the Styles tab is a hard-coded list of native support categories, Settings is the `default`
+group).
 
-Bean's decisions, all recorded in the design doc:
-1. **Background** — flat colour with alpha + gradient, colour layer painting ABOVE media so opacity
-   IS the overlay. One concept. cta-section's 4 fixed gradients deleted.
-2. **Universal hover system goes** ("worse than useless"). ⛔ **48 blocks rely on it SOLELY** —
-   capability lands before removal, per block, never a silent loss.
-3. **POC = `sgs/hero`** (9 elements, genuine root/element mix), not button.
-4. **`contentAttrs` = generate and review**, hero first, unresolved elements reported not guessed.
+**⭐ Bean decision D535 — SGS owns a three-tab bar (Content · Style · Advanced)**, as Kadence,
+Spectra and Stackable all do. ⛔ **It ships AFTER native-supports retirement**, or the client sees
+three SGS tabs PLUS core's Styles tab. That retirement was blocked on the background capability,
+which Phase 1 has now delivered.
 
-### Track 1b enforcement — shipped this session
+#### ⛔ Phase 2 is ON HOLD — the model places under half the controls
 
-- **D532: rule 21 triaged 280 → 243 real** across 32 of 83 blocks. Four false-positive classes; one
-  fixed in the rule (WordPress core's own controls, a second invisible surface sibling to the
-  extension axis), three baselined with checkable reasons. ⚠ **A 4-rater council then falsified two
-  of my own claims** — read D532's CORRECTED section, not the paragraphs above it.
-- **Extension tab placement fixed** (`9169d546`) — 3 files fix placement on all 83 blocks at once.
-  Verified live. ⚠ This part survives Bean's rejection; it is root-level, not per-element.
-- **Scanner can now see `src/blocks/extensions/`** — the unbuilt prerequisite the contract named.
-  Plumbing only; every rule's count identical before/after.
-- **Batch A tab split (`dfba396b`) — SUPERSEDED.** Re-derived by the design, not reverted.
+A QC pass implemented the placement rule and ran it over all 83 blocks' real data: **46% of declared
+attributes resolve to an element; 54% fall to a "block-level panel" the rule describes in ONE line
+and never designs.** For `sgs/hero` that is **76 controls in one undefined panel** — the crammed tab
+Bean rejected, relocated. Design the block-level panel BEFORE the hero POC, or the POC demonstrates
+the problem rather than the fix. **`contentAttrs` is declared by ZERO blocks**, so the content half
+of the model resolves for nothing yet.
+
+#### Shipped this session
+
+- **Phase 1 (D536)** — flat colour ungated (the overlay required media to exist, which is why flat
+  colour lived only in core's Color panel); new `backgroundMediaOpacity`; media moved to a
+  `.{uid}::before` layer so it can be dimmed without dimming content. **Editor fixed to match** —
+  `edit.js` painted on the element, so the opacity control did nothing in the surface clients
+  actually use. Verified live at 1440/768/375: tier swap (3 distinct images), `attachment:fixed`,
+  video excluded correctly, and **tier + opacity together** (the tier override does not reset
+  opacity — testing them separately would both have passed while the combination was broken).
+  Evidence: `reports/visual-diff/container-2026-08-08.md`.
+- **Phase 0 (D533)** — contract + spec 35 A3/A4 amended; all 13 `Tab` fields guarded; the
+  `01-tab-group` scanner message and 4 extension comments no longer teach the retired rule.
+  A 4-rater qc-council caught that the first pass fixed the rule's STATEMENT and left its
+  DISTRIBUTION.
+- **`wp-content-guard` is ADVISORY (D534)** — the ban protected static blocks; every SGS block is
+  dynamic. ⚠ Qualified same-day: a slot-bearing composite DOES store its children, and a
+  hand-written wrapper div made probe containers invalid in the editor while rendering fine on the
+  frontend.
+- **Repo cleared** — 0 dirty, 0 untracked, 0 stashes, 0 orphan worktrees. Both stashes were proven
+  superseded before dropping. Two generators that dirtied tracked files on EVERY build were fixed;
+  that churn is why orphaned files could not be told from build noise.
+
+#### ⛔ Do NOT start these
+
+- **Hero POC / rolling the model across blocks** — blocked on the block-level panel design above.
+- **Deleting the universal hover extension** — 48 blocks rely on it solely; capability first.
+- **Re-sorting the 8 batch-A blocks by hand** — re-derived by the model or not at all.
+
+#### Next actions, in order
+
+1. **Design the block-level panel** (what it is called, how many, what order). Unblocks Phase 2.
+2. **Strip native colour supports** (27 blocks) — now unblocked by Phase 1. Per-block live verify.
+3. **Generate `contentAttrs` for `sgs/hero`**, review it, then the POC.
+4. Residual Phase 1: parallax MOTION unverified (the layer renders with `bgParallax` set; that is
+   not the effect animating), Ken Burns, and cta-section's 4 fixed gradients + hardcoded scrim.
 
 ### Other tracks — stable
 
@@ -80,8 +116,11 @@ Bean's decisions, all recorded in the design doc:
 
 ## State Snapshot
 
-- **Branch:** `main` at `d69130fc`. **Shared worktree** — another track holds uncommitted files
-  (`includes/lucide-icons.php`, `reports/phase4-*`). Commit by EXACT PATH, never `git add -A`.
+- **Branch:** `main` at `53f84d5c`. **Tree CLEAN** — 0 dirty, 0 untracked, 0 stashes, 0 orphan
+  worktrees (cleared 2026-08-08). ⚠ The long-standing "shared worktree, another track holds
+  uncommitted files" line was RETIRED: Bean confirmed this is the only active session, and every
+  outstanding file was this track's own leftovers. Still commit by EXACT PATH — a pre-commit gate
+  requires a pathspec — but the co-active-track premise is gone.
 - **Build:** `npm run build` exit 0, all prebuild gates passing.
 - **Scanner:** self-test passes. `01-tab-group` 57 · `21-render-without-control` 243 FLAGGED + 12
   BASELINED.
