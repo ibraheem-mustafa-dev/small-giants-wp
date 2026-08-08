@@ -1,5 +1,5 @@
 ---
-doc_type: design
+doc_type: strategic-plan
 title: "Element-driven inspector — one model for panels, colour, background and hover"
 spec_ref: .claude/specs/35 (control-type contract) — CO-2, CO-28, COLOUR, STATE, BORDER
 date: 2026-08-08
@@ -245,6 +245,33 @@ is **wrong** — it must be amended to §2.1 as part of this work, or the next s
 mistake from the same source.
 
 ---
+
+## Out of scope
+
+Named explicitly so none of it is silently absorbed, and so a later session does not assume it was
+covered here:
+
+- **The remaining 57 blocks in the `01-tab-group` backlog.** This design defines the model and proves
+  it on one block. Rolling it across the library is Phase 6 and is not specified here.
+- **`sgsHoverScale` / `Shadow` / `ImageZoom` / `Grayscale` placement mechanics.** §10.1 decides WHERE
+  they belong; the build is not scoped.
+- **Native `spacing` / `typography` / `shadow` supports.** Only `color` and `__experimentalBorder`
+  are addressed. The same duplication question applies to the others and is deliberately not opened
+  in this plan.
+- **The `sgs/media` residual ChildBlock and the `scalar-media` retirement** — a different track's
+  blocker, unaffected by this work.
+- **Any change to `SGS_Motion_Registry`'s private module map.** Out of bounds by that file's own
+  ownership note.
+
+## Phase overview
+
+Six phases, each gated. Nothing after Phase 0 starts until Bean signs off on the contract amendment,
+because Phase 0 corrects the sentence that caused the rejected split in the first place. Phases 1
+and 2 are the proof (capability, then one block end-to-end). Phase 3 makes the model enforceable.
+Phases 4 and 5 remove the duplicated systems — both strictly capability-first, because 48 blocks
+depend on the hover extension and every block depends on the native colour panel for flat
+backgrounds. Phase 6 is the library-wide roll-out, which only begins once the gates in Phase 3 read
+zero.
 
 ## 9. Phasing
 
