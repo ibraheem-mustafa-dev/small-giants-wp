@@ -77,7 +77,8 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "colourBorder",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:box-shadow": "boxShadow"
+						"css:box-shadow": "boxShadow",
+						"css:font-family": "fontFamily"
 					},
 					"states": {
 						"hover": {

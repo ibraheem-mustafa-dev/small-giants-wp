@@ -157,13 +157,43 @@ def resolve_block_detailed(block_json, clusters=None):
     # These ties are NOT resolved by a manufactured rule. They are reported: an
     # attribute two elements can both claim means the manifest is underspecified, and
     # the fix is an explicit `attrMap` entry on the element that owns it.
+    # An explicit attrMap / states / contentAttrs entry is AUTHORITATIVE — the element
+    # has declared it owns that attribute, so another element's cluster merely being
+    # able to reach the same name is not ambiguity. Without this, `sgs/container`
+    # reported 13 contested when `grid` explicitly maps all but one of them; the true
+    # figure there is 1 (`columns`). Library-wide the omission over-reported 25 as 175
+    # — a 7x inflation that was quoted as a finding before it was validated against a
+    # block whose answer was already known.
+    authoritative = set(claimed)
+
+    # An element that EXPLICITLY claims a member key owns that member's whole suffix
+    # family. `sgs/container`'s `grid` maps `css:grid-template-columns` to
+    # `gridTemplateColumns`; the same member also lists the `Columns` suffix, so the
+    # block's separate `columns` attribute is the same member reached by its other
+    # name — it belongs to `grid` too, not to whichever element sorts first.
+    # This is derived from the explicit declaration, NOT a manufactured tie-break.
+    member_owner = {}
+    for key, element in elements.items():
+        for member_key in (element.get('attrMap') or {}):
+            member_owner.setdefault(member_key, key)
+    for cluster_name, cluster in clusters.items():
+        for member in (cluster.get('members') or []):
+            owner = member_owner.get(member.get('key'))
+            if not owner:
+                continue
+            prefix = elements[owner].get('prefix') or ''
+            for suffix in (member.get('suffixes') or []):
+                name = _lcfirst(prefix + suffix) if prefix else _lcfirst(suffix)
+                claimed.setdefault(name, owner)
+                authoritative.add(name)
+
     ordered = sorted(
         elements.items(),
         key=lambda kv: (-len(kv[1].get('prefix') or ''), kv[1].get('order') or 0, kv[0]))
     ambiguous = {}
     for key, element in ordered:
         for name in cluster_member_names(element, clusters):
-            if name in claimed and claimed[name] != key:
+            if name in claimed and claimed[name] != key and name not in authoritative:
                 ambiguous.setdefault(name, {claimed[name]}).add(key)
             claimed.setdefault(name, key)
 
@@ -268,6 +298,14 @@ def _self_test():
     _, _, contested = resolve_block_detailed(contested_fixture, clusters)
     assert 'padding' in contested and contested['padding'] == {'wrapper', 'band'}, \
         'contested detection broken — an ambiguous attribute was resolved in silence: %r' % contested
+
+    # An explicit attrMap claim is authoritative — never reported as contested, even
+    # though the other element's cluster can reach the same name.
+    declared_owner = json.loads(json.dumps(contested_fixture))
+    declared_owner['supports']['sgs']['elements']['band']['attrMap'] = {'css:padding': 'padding'}
+    _, _, contested = resolve_block_detailed(declared_owner, clusters)
+    assert not contested, \
+        'an explicitly mapped attribute was reported contested: %r' % contested
 
     # NEGATIVE CONTROL — give the second element its own prefix and the tie vanishes.
     uncontested = json.loads(json.dumps(contested_fixture))
