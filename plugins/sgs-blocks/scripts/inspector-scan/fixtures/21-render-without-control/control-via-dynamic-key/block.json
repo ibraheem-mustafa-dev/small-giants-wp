@@ -1,0 +1,7 @@
+{
+	"name": "sgs/control-via-dynamic-key",
+	"title": "Fixture — TRAP B: control exists but its attr name is assembled dynamically",
+	"attributes": {
+		"titleFontSizeTablet": { "type": "number" }
+	}
+}

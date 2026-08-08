@@ -1,0 +1,7 @@
+{
+	"name": "sgs/declared-but-not-rendered",
+	"title": "Fixture — declared, no control, and NOT rendered (CHECK 4's territory)",
+	"attributes": {
+		"orphanAttr": { "type": "string", "default": "" }
+	}
+}

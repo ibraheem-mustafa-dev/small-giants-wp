@@ -1,0 +1,8 @@
+{
+	"name": "sgs/rendered-via-shared-include-no-control",
+	"title": "Fixture — TRAP A: rendered only through a shared include's dynamic key",
+	"attributes": {
+		"titleText": { "type": "string", "default": "" },
+		"titleLineHeightTablet": { "type": "number" }
+	}
+}

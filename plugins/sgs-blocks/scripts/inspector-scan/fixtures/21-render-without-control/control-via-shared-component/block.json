@@ -1,0 +1,7 @@
+{
+	"name": "sgs/control-via-shared-component",
+	"title": "Fixture — control lives in a shared component, not in edit.js",
+	"attributes": {
+		"titleFontSizeMobile": { "type": "number" }
+	}
+}

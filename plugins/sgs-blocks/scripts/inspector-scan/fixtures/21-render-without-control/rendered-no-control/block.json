@@ -1,0 +1,9 @@
+{
+	"name": "sgs/rendered-no-control",
+	"title": "Fixture — rendered, no control",
+	"attributes": {
+		"headingText": { "type": "string", "default": "" },
+		"shadowHover": { "type": "string", "default": "" },
+		"_comment_shape": { "type": "string", "default": "documentation key, must be ignored" }
+	}
+}

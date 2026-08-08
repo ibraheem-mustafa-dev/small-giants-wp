@@ -1,0 +1,7 @@
+{
+	"name": "sgs/rendered-with-control",
+	"title": "Fixture — rendered AND controlled (negative control)",
+	"attributes": {
+		"shadowHover": { "type": "string", "default": "" }
+	}
+}
