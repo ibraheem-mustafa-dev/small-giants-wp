@@ -3,7 +3,7 @@
 ```
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: b639a4a9a0d736e3
+source_sha: dbf27b3c3bba4507
 ```
 
 **Block:** `sgs/container` (and every composite rendering through `SGS_Container_Wrapper`)
@@ -67,18 +67,65 @@ something: same image, same block, only the attribute differs.
 
 Screenshot: `reports/visual-diff/phase1-background-probe-1440-2026-08-08.png` (full page, 1440).
 
-## What is NOT covered by this report
+## Edge surfaces — VERIFIED, not deferred
 
-Stated so nobody reads it as broader than it is:
+The first draft of this report listed these as "not covered". Bean pushed back: the change
+RETARGETED the responsive tier rules and moved the paint site, so these are surfaces this change
+touches, not inherited gaps. They were then measured. Probe page 2190
+(`/phase-1-edge-probe/`), Playwright at 1440 / 768 / 375, asserting on measured `window.innerWidth`.
 
-- **Tablet/mobile tiers.** The `@media` overrides were retargeted to `::before` in the same change
-  but the probe sets no tier images, so they are unexercised here.
-- **Video backgrounds.** The media layer is gated `$has_bg_image && ! $has_bg_video`; the video path
-  is unchanged and untested by this probe.
-- **`background-attachment: fixed` and parallax** against the new layer.
-- **The editor canvas.** Frontend only — the editor is a separate surface no gate here covers.
-- **cta-section's four fixed gradients and its hardcoded `primary-dark` scrim**, which the design
-  says to delete. Not touched in this change.
+| Case | 1440 | 768 | 375 | Verdict |
+|---|---|---|---|---|
+| A — tier swap (3 distinct images) | cookies-stacked | cookies-on-bun | aesthetic-pic | PASS — the `::before` retarget swaps correctly per tier |
+| B — `background-attachment: fixed` @ 60% | fixed, 0.6 | fixed, 0.6 | fixed, 0.6 | PASS — survives on the layer |
+| C — video background + colour layer | no `::before` image, `<video>` present | same | same | PASS — video correctly excluded from the media layer; overlay coexists |
+| D — parallax (`bgParallax`) @ 80% | image, 0.8 | image, 0.8 | image, 0.8 | PASS for the LAYER only — see limit below |
+| E — tier image + 40% opacity | stacked @ 0.4 | — | aesthetic @ 0.4 | PASS — **the tier override does NOT reset opacity** |
+
+**Case E is the one that mattered.** The `@media` tier rules set only image/size/position. Had they
+also reset `opacity`, mobile would have silently lost its dimming while desktop kept it. Testing
+tiers and opacity separately would BOTH have passed while the combination was broken.
+
+## EDITOR CANVAS — a real gap this change created, now fixed
+
+`edit.js` painted the background on the ELEMENT via an inline style, so `backgroundMediaOpacity` was
+invisible in the editor: a client could set 35%, see no change, and get a dimmed image on the
+published page. The editor is the surface clients actually work in, so this was a defect, not a
+footnote.
+
+Fixed by mirroring the frontend — media handed to a `::before` layer through custom properties,
+gated on `.sgs-container--has-bg-media` so no other container in the canvas gains a pseudo-element.
+
+Measured in the real editor (Playwright, logged in as `Claude` on the canary, post 2188):
+
+| container | has media class | `::before` image | `::before` opacity | image on element |
+|---|---|---|---|---|
+| control (100%) | yes | cookies-stacked-1.jpeg | `1` | **no** |
+| media 35% + colour | yes | cookies-stacked-1.jpeg | **`0.35`** | **no** |
+| flat colour, no media | no | none | `1` | no |
+
+Editor and frontend now agree. Screenshot:
+`reports/visual-diff/phase1-editor-canvas-2026-08-08.png`.
+
+## Remaining limits, stated precisely
+
+- **Parallax MOTION is unverified.** Case D proves the media layer renders correctly with
+  `bgParallax` set; it does NOT prove the parallax effect still animates. An effect that engages is
+  not an effect that works.
+- **cta-section's four fixed gradients and its hardcoded `primary-dark` scrim** — the design says to
+  delete them. Not touched here.
+- **Ken Burns** against the new layer.
+
+## Probe-content defects found (mine, not the framework's)
+
+Three D338 instances in my own probe markup, each silently discarded by WordPress with no error:
+`content` vs `text` on `sgs/text`; `text` vs `content` on `sgs/heading`; `backgroundMedia` (a
+cta-section attribute) vs `bgVideo` on `sgs/container`. A fourth was structural: `containerKind` is
+not a declared attribute, which the deploy's `oldshape-audit` caught as 11 NEW HIGH findings before
+anything could be stranded. And the probe's hand-written `<div class="wp-block-sgs-container">`
+wrapper made every container INVALID in the editor — `save()` emits only `<InnerBlocks.Content />`,
+no wrapper. **That last one qualifies the "dynamic blocks cannot be corrupted" premise: a
+slot-bearing composite DOES store markup (its children), and hand-written markup can invalidate it.**
 
 ## Two traps hit during the build, recorded so they are not repeated
 

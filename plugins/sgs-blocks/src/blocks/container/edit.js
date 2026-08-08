@@ -89,12 +89,23 @@ export default function Edit({ attributes, setAttributes }) {
     gap: gapCssValue( gap ),
     minHeight: minHeight || undefined,
     ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
+    // Media is handed to a ::before layer via custom properties rather than
+    // painted on the element, MIRRORING the frontend (Phase 1, 2026-08-08).
+    // Painting it on the element here made `backgroundMediaOpacity` invisible in
+    // the editor — a client could set 35% and still see the image at full
+    // strength, because `opacity` on the element would dim their content too.
+    // The editor is the surface clients actually work in, so it has to agree.
     ...(hasBgImage && !hasBgVideo && {
-      backgroundImage: `url(${backgroundImage.url})`,
-      backgroundSize: attributes.backgroundSize || "cover",
-      backgroundPosition: attributes.backgroundPosition || "center center",
-      backgroundRepeat: attributes.backgroundRepeat || "no-repeat",
-      ...(attributes.backgroundAttachment === "fixed" && { backgroundAttachment: "fixed" }),
+      "--sgs-ed-bg-image": `url(${backgroundImage.url})`,
+      "--sgs-ed-bg-size": attributes.backgroundSize || "cover",
+      "--sgs-ed-bg-position": attributes.backgroundPosition || "center center",
+      "--sgs-ed-bg-repeat": attributes.backgroundRepeat || "no-repeat",
+      "--sgs-ed-bg-attachment":
+        attributes.backgroundAttachment === "fixed" ? "fixed" : "scroll",
+      "--sgs-ed-bg-opacity":
+        typeof attributes.backgroundMediaOpacity === "number"
+          ? Math.max( 0, Math.min( 100, attributes.backgroundMediaOpacity ) ) / 100
+          : 1,
     }),
     ...(hasBgVideo && {
       // Show a teal placeholder in editor when video is set
@@ -158,7 +169,15 @@ export default function Edit({ attributes, setAttributes }) {
     ? TEMPLATE_MODE_ALLOWED[templateMode] ?? undefined
     : undefined;
 
-  const blockProps = useBlockProps({ className, style });
+  // Gate the editor's ::before media layer on a class so the pseudo-element
+  // exists ONLY on containers that actually have a background image — every
+  // other container in the canvas is untouched (mirrors the frontend, where the
+  // layer's box properties are only emitted when there is media to paint).
+  const editorClassName = [ className, hasBgImage && !hasBgVideo ? "sgs-container--has-bg-media" : "" ]
+    .filter( Boolean )
+    .join( " " );
+
+  const blockProps = useBlockProps({ className: editorClassName, style });
   const innerBlocksProps = useInnerBlocksProps(blockProps, {
     orientation: layout === "stack" ? "vertical" : undefined,
     allowedBlocks,
