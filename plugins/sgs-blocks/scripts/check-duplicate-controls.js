@@ -68,6 +68,7 @@
  *   node scripts/check-duplicate-controls.js          # report
  *   node scripts/check-duplicate-controls.js --json    # machine-readable
  *   node scripts/check-duplicate-controls.js --check   # same, exit 0 always
+ *   node scripts/check-duplicate-controls.js --self-test  # in-memory fixture assertions, no disk access
  *
  * @package SGS\Blocks
  */
@@ -826,4 +827,108 @@ function main() {
 	process.exit( 0 );
 }
 
-main();
+// ---------------------------------------------------------------------------
+// SELF-TEST (--self-test) — no disk access, in-memory fixtures only.
+// Exercises checkSameFileDuplicateAst(), the CHECK 2 same-file AST detector,
+// directly against synthetic edit.js source strings.
+// ---------------------------------------------------------------------------
+
+// Two <TextControl> elements in the same edit.js both writing `ctaText` via
+// setAttributes with no shared conditional ancestor — the exact live shape
+// found at sgs/product-card (ctaText, ctaUrl). MUST be flagged.
+const SELF_TEST_FAIL_FIXTURE = `
+import { TextControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<div>
+			<TextControl label="CTA text" value={ attributes.ctaText } onChange={ ( v ) => setAttributes( { ctaText: v } ) } />
+			<TextControl label="CTA text (duplicate)" value={ attributes.ctaText } onChange={ ( v ) => setAttributes( { ctaText: v } ) } />
+		</div>
+	);
+}
+`;
+
+// Same shape, but only ONE control writes ctaText — no duplication.
+const SELF_TEST_PASS_FIXTURE = `
+import { TextControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<div>
+			<TextControl label="CTA text" value={ attributes.ctaText } onChange={ ( v ) => setAttributes( { ctaText: v } ) } />
+		</div>
+	);
+}
+`;
+
+// Two controls writing the same attr, but in exclusive branches of a
+// ternary (feature-detection fallback idiom) — must NOT be flagged.
+const SELF_TEST_TERNARY_FIXTURE = `
+import { TextControl, NumberControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<div>
+			{ attributes.useNumber
+				? <NumberControl label="Qty" value={ attributes.qty } onChange={ ( v ) => setAttributes( { qty: v } ) } />
+				: <TextControl label="Qty" value={ attributes.qty } onChange={ ( v ) => setAttributes( { qty: v } ) } /> }
+		</div>
+	);
+}
+`;
+
+function runSelfTest() {
+	const cases = [
+		{
+			name: 'two TextControls write ctaText with no shared conditional -> FLAGGED (negative control)',
+			src: SELF_TEST_FAIL_FIXTURE,
+			expectAttrs: [ 'ctaText' ],
+		},
+		{
+			name: 'single TextControl writes ctaText -> pass',
+			src: SELF_TEST_PASS_FIXTURE,
+			expectAttrs: [],
+		},
+		{
+			name: 'ternary-exclusive controls writing the same attr -> pass',
+			src: SELF_TEST_TERNARY_FIXTURE,
+			expectAttrs: [],
+		},
+	];
+
+	let allOk = true;
+	process.stdout.write( '[check-duplicate-controls] --self-test\n\n' );
+
+	for ( const c of cases ) {
+		let findings;
+		let error = null;
+		try {
+			findings = checkSameFileDuplicateAst( 'sgs/self-test', c.src );
+		} catch ( e ) {
+			error = e;
+		}
+
+		if ( error ) {
+			allOk = false;
+			process.stdout.write( `  [ERROR] ${ c.name }: ${ error.message }\n` );
+			continue;
+		}
+
+		const gotAttrs = findings.map( ( f ) => f.attr ).sort();
+		const expectAttrs = [ ...c.expectAttrs ].sort();
+		const ok = JSON.stringify( gotAttrs ) === JSON.stringify( expectAttrs );
+		allOk = allOk && ok;
+
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+				`         found=[${ gotAttrs.join( ', ' ) }] (expected [${ expectAttrs.join( ', ' ) }])\n`
+		);
+	}
+
+	process.stdout.write( `\n[check-duplicate-controls] self-test ${ allOk ? 'PASSED' : 'FAILED' }.\n` );
+	process.exit( allOk ? 0 : 1 );
+}
+
+if ( process.argv.includes( '--self-test' ) ) {
+	runSelfTest();
+} else {
+	main();
+}

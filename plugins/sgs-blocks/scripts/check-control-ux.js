@@ -74,6 +74,7 @@
  *   node scripts/check-control-ux.js          # report (exit 0 unless net-new)
  *   node scripts/check-control-ux.js --check   # same, for prebuild/CI (exit 1 on net-new)
  *   node scripts/check-control-ux.js --json     # machine-readable findings
+ *   node scripts/check-control-ux.js --self-test  # fixture assertions in a temp dir, no repo writes
  *
  * Wired into `prebuild` / `prestart` in package.json alongside check-dead-controls.js.
  */
@@ -82,6 +83,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const os = require( 'os' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -586,4 +588,132 @@ function main() {
 	}
 }
 
-main();
+// ---------------------------------------------------------------------------
+// SELF-TEST (--self-test) — fixture files written to a temp directory (not
+// the real block tree), since checkResponsiveSwitcher()/checkUnitSelectControl()
+// read a block's edit.js off disk by design. Cleaned up on exit.
+// ---------------------------------------------------------------------------
+
+function writeTempBlockDir( editJsSrc ) {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-control-ux-selftest-' ) );
+	fs.writeFileSync( path.join( dir, 'edit.js' ), editJsSrc, 'utf8' );
+	return dir;
+}
+
+const RESPONSIVE_FAIL_FIXTURE = `
+import { TextControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<TextControl value={ attributes.paddingTablet } onChange={ ( v ) => setAttributes( { paddingTablet: v } ) } />
+	);
+}
+`;
+
+const RESPONSIVE_PASS_FIXTURE = `
+import { ResponsiveControl } from '../../components/ResponsiveControl';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<ResponsiveControl
+			attr="padding"
+			render={ ( bp ) => (
+				<TextControl value={ attributes[ bp === 'tablet' ? 'paddingTablet' : 'padding' ] } onChange={ () => {} } />
+			) }
+		/>
+	);
+}
+`;
+
+const UNIT_FAIL_FIXTURE = `
+import { SelectControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<SelectControl
+			options={ [ { label: 'px', value: 'px' }, { label: '%', value: '%' } ] }
+			onChange={ ( v ) => setAttributes( { fontSizeUnit: v } ) }
+		/>
+	);
+}
+`;
+
+const UNIT_PASS_FIXTURE = `
+import { TextControl } from '@wordpress/components';
+export default function Edit( { attributes, setAttributes } ) {
+	return (
+		<TextControl value={ attributes.fontSizeUnit } onChange={ ( v ) => setAttributes( { fontSizeUnit: v } ) } />
+	);
+}
+`;
+
+function runSelfTest() {
+	const cases = [
+		{
+			name: 'responsive family written directly via setAttributes, no shared component -> FLAGGED (negative control)',
+			fixture: RESPONSIVE_FAIL_FIXTURE,
+			attrs: { padding: { type: 'string' }, paddingTablet: { type: 'string' } },
+			fn: checkResponsiveSwitcher,
+			expectViolations: [ 'RESPONSIVE-FAMILY-WITHOUT-SWITCHER' ],
+		},
+		{
+			name: 'responsive family routed through the ResponsiveControl idiom -> pass',
+			fixture: RESPONSIVE_PASS_FIXTURE,
+			attrs: { padding: { type: 'string' }, paddingTablet: { type: 'string' } },
+			fn: checkResponsiveSwitcher,
+			expectViolations: [],
+		},
+		{
+			name: 'SelectControl writes a Unit attr -> FLAGGED (negative control)',
+			fixture: UNIT_FAIL_FIXTURE,
+			attrs: { fontSizeUnit: { type: 'string' } },
+			fn: checkUnitSelectControl,
+			expectViolations: [ 'UNIT-VIA-SELECTCONTROL' ],
+		},
+		{
+			name: 'TextControl (not SelectControl) writes a Unit attr -> pass',
+			fixture: UNIT_PASS_FIXTURE,
+			attrs: { fontSizeUnit: { type: 'string' } },
+			fn: checkUnitSelectControl,
+			expectViolations: [],
+		},
+	];
+
+	let allOk = true;
+	process.stdout.write( '[check-control-ux] --self-test\n\n' );
+
+	for ( const c of cases ) {
+		const dir = writeTempBlockDir( c.fixture );
+		let findings;
+		let error = null;
+		try {
+			findings = c.fn( 'sgs/self-test', dir, c.attrs );
+		} catch ( e ) {
+			error = e;
+		} finally {
+			fs.rmSync( dir, { recursive: true, force: true } );
+		}
+
+		if ( error ) {
+			allOk = false;
+			process.stdout.write( `  [ERROR] ${ c.name }: ${ error.message }\n` );
+			continue;
+		}
+
+		const gotViolations = findings.map( ( f ) => f.violation ).sort();
+		const expectViolations = [ ...c.expectViolations ].sort();
+		const ok = JSON.stringify( gotViolations ) === JSON.stringify( expectViolations );
+		allOk = allOk && ok;
+
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+				`         found=[${ gotViolations.join( ', ' ) }] (expected [${ expectViolations.join( ', ' ) }])\n`
+		);
+	}
+
+	process.stdout.write( `\n[check-control-ux] self-test ${ allOk ? 'PASSED' : 'FAILED' }.\n` );
+	process.exit( allOk ? 0 : 1 );
+}
+
+if ( process.argv.includes( '--self-test' ) ) {
+	runSelfTest();
+} else {
+	main();
+}

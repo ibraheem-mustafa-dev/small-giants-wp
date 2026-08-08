@@ -1024,6 +1024,83 @@ def finding_key(f):
 
 
 # ---------------------------------------------------------------------------
+# SELF-TEST — a gate that cannot fail reads green forever. In-memory fixtures
+# only, no disk access: check_orphan_attrs() only reads plain fields off its
+# `block` argument, so a minimal stand-in object (not a real BlockFiles
+# instance backed by a directory) is enough to drive it.
+# ---------------------------------------------------------------------------
+
+
+class _FakeBlock:
+    """Minimal stand-in for BlockFiles carrying only the fields
+    check_orphan_attrs() reads."""
+
+    def __init__(self, slug, attrs, edit_js='', own_corpus=None, provides_context=None):
+        self.slug = slug
+        self.attrs = set(attrs)
+        self.edit_js = edit_js
+        self.own_corpus = own_corpus if own_corpus is not None else edit_js
+        self.provides_context = provides_context or {}
+
+
+def self_test():
+    """Two cases against check_orphan_attrs(): a negative control (an attr
+    declared in block.json and never referenced anywhere MUST be flagged
+    orphan_attr) and a positive control (the same shape, but the attr is
+    written via setAttributes in edit.js, so it MUST NOT be flagged)."""
+    cases = []
+
+    # Negative control: `orphanAttr` is declared but appears in no source —
+    # not in edit.js, not in the shared corpora, not in a pattern. MUST FAIL
+    # (be flagged) — this is the exact defect class the check exists to catch.
+    fail_block = _FakeBlock(
+        slug='sgs/self-test-orphan',
+        attrs={'orphanAttr'},
+        edit_js='export default function Edit() { return null; }',
+    )
+    cases.append((
+        'declared attr never referenced anywhere -> FAIL (negative control)',
+        fail_block,
+        {'orphanAttr'},
+    ))
+
+    # Positive control: identical shape, but `usedAttr` is written via a
+    # <TextControl> onChange -> setAttributes() in edit.js, so it is
+    # legitimately controlled and must NOT be flagged.
+    pass_block = _FakeBlock(
+        slug='sgs/self-test-used',
+        attrs={'usedAttr'},
+        edit_js=(
+            "<TextControl value={ attributes.usedAttr } "
+            "onChange={ ( v ) => setAttributes( { usedAttr: v } ) } />"
+        ),
+    )
+    cases.append((
+        'declared attr written via setAttributes in edit.js -> pass',
+        pass_block,
+        set(),
+    ))
+
+    failures = 0
+    print('[audit-block-file-consistency] --self-test\n')
+    for label, block, expected_attrs in cases:
+        findings = check_orphan_attrs(block, '', '', set(), {})
+        got_attrs = {f['attr'] for f in findings if f['type'] == 'orphan_attr'}
+        ok = got_attrs == expected_attrs
+        failures += 0 if ok else 1
+        print(f"  [{'PASS' if ok else 'FAIL'}] {label}")
+        print(f"         expected orphan_attr={sorted(expected_attrs) or '(none)'} "
+              f"got={sorted(got_attrs) or '(none)'}")
+
+    print()
+    if failures:
+        print(f'SELF-TEST FAILED: {failures} of {len(cases)} case(s).', file=sys.stderr)
+        return 1
+    print(f'SELF-TEST: {len(cases)} of {len(cases)} case(s) PASS')
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -1042,6 +1119,9 @@ def load_roster():
 
 
 def main():
+    if '--self-test' in sys.argv:
+        sys.exit(self_test())
+
     as_json = '--json' in sys.argv
     # --check is accepted for CLI-shape consistency with sibling gates, but per
     # this script's WARN-ONLY design it never changes the exit code (see module

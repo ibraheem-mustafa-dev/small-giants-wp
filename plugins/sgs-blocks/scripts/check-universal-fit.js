@@ -70,6 +70,7 @@
  *   node scripts/check-universal-fit.js            # full report (load ranking + inappropriate-fit + no-opt-out + supporting detail)
  *   node scripts/check-universal-fit.js --check     # concise headline summary (still exit 0)
  *   node scripts/check-universal-fit.js --json      # machine-readable findings, including the raw matrix
+ *   node scripts/check-universal-fit.js --self-test  # in-memory fixture assertions, no disk access
  *
  * WARN-ONLY (Spec 35 a11y-validation-informational-not-gate policy, extended
  * here to editor-extension fit): this script ALWAYS exits 0. It is NOT wired
@@ -783,4 +784,108 @@ function main() {
 	process.exit( 0 ); // WARN-ONLY — never fail a build.
 }
 
-main();
+// ---------------------------------------------------------------------------
+// SELF-TEST (--self-test) — no disk access, in-memory fixtures only. Exercises
+// evaluate() (the per-extension/per-block flagging decision) and
+// isInappropriateFitKind() directly against synthetic block/extension
+// objects — both are pure functions, so no roster.json / block.json reads
+// are needed.
+// ---------------------------------------------------------------------------
+
+function makeFakeBlock( overrides ) {
+	return Object.assign(
+		{
+			slug: 'sgs/self-test',
+			name: 'sgs/self-test',
+			supportsClassName: true,
+			hasNativeSpacingSupport: false,
+			imageControlsEnabled: false,
+			hideExtensions: [],
+			ownCorpus: '',
+			category: null,
+			tier: null,
+			surfaces: {},
+		},
+		overrides
+	);
+}
+
+// Reuse the real 'hover' extension definition — always-applicable
+// (appliesTo: supportsClassName), has an opt-out slug, and a known attrs list.
+const SELF_TEST_EXTENSION = EXTENSIONS.find( ( e ) => e.id === 'hover' );
+
+function runSelfTest() {
+	const cases = [
+		{
+			name: 'block never references any hover attr -> FLAGGED (negative control)',
+			block: makeFakeBlock( { ownCorpus: '' } ),
+			expectStatus: 'flagged',
+		},
+		{
+			name: 'block references sgsHoverScale in its own corpus -> bespoke (pass)',
+			block: makeFakeBlock( { ownCorpus: 'style.css uses .self-test { transform: var(--sgsHoverScale); }' } ),
+			expectStatus: 'bespoke',
+		},
+		{
+			name: 'block opts out via hideExtensions -> opted-out (pass)',
+			block: makeFakeBlock( { ownCorpus: '', hideExtensions: [ 'hover' ] } ),
+			expectStatus: 'opted-out',
+		},
+		{
+			name: 'block does not support className -> not-applicable (pass)',
+			block: makeFakeBlock( { ownCorpus: '', supportsClassName: false } ),
+			expectStatus: 'not-applicable',
+		},
+	];
+
+	let allOk = true;
+	process.stdout.write( '[check-universal-fit] --self-test\n\n' );
+
+	for ( const c of cases ) {
+		const result = evaluate( SELF_TEST_EXTENSION, c.block );
+		const ok = result.status === c.expectStatus;
+		allOk = allOk && ok;
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+				`         status=${ result.status } (expected ${ c.expectStatus })\n`
+		);
+	}
+
+	// isInappropriateFitKind() — role-derived, no disk access.
+	const kindCases = [
+		{
+			name: 'sgs-forms category + no styling surface -> inappropriate-fit kind (negative control)',
+			block: makeFakeBlock( { category: 'sgs-forms', surfaces: { styling: false } } ),
+			expect: true,
+		},
+		{
+			name: 'sgs-forms category WITH a styling surface -> not an inappropriate-fit kind (pass)',
+			block: makeFakeBlock( { category: 'sgs-forms', surfaces: { styling: true } } ),
+			expect: false,
+		},
+		{
+			name: 'non-form category -> not an inappropriate-fit kind (pass)',
+			block: makeFakeBlock( { category: 'sgs-content', surfaces: { styling: false } } ),
+			expect: false,
+		},
+	];
+
+	for ( const c of kindCases ) {
+		const result = isInappropriateFitKind( c.block );
+		const ok = result === c.expect;
+		allOk = allOk && ok;
+		process.stdout.write(
+			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
+				`         isInappropriateFitKind=${ result } (expected ${ c.expect })\n`
+		);
+	}
+
+	process.stdout.write( `\n[check-universal-fit] self-test ${ allOk ? 'PASSED' : 'FAILED' }.\n` );
+	process.exit( allOk ? 0 : 1 );
+}
+
+if ( process.argv.includes( '--self-test' ) ) {
+	runSelfTest();
+} else {
+	main();
+}
