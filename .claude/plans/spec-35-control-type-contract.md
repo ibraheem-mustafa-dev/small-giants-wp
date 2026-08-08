@@ -794,6 +794,41 @@ design gate**, since it binds every block; (b) the current per-block order is ce
 is known before anything is scoped against it. A rule written before (a) would be enforcing an order
 nobody chose.
 
+#### ⛔ HARD DEPENDENCY — PLACEMENT before ORDER *(Bean-approved sequencing, 2026-08-08)*
+
+**CO-28 does not start until Cross-cutting A's placement backlog is worked.** This is a dependency,
+not a preference, and the measurement is what makes it one: **65 of 83 blocks have 2+ inspector
+panels and no `group` prop at all** (`inspector-scan` rule `01-tab-group`, the single largest backlog
+in the scanner). No group prop means every panel lands in Settings. **You cannot standardise the
+order of panels across Settings and Styles while most blocks never split into two tabs.** Ordering an
+unsorted pile is not a smaller version of this job — it is a different job that cannot begin yet.
+
+Placement, unlike order, needs **no design gate**: it is already decided. 12 of the 14 control
+contracts carry an explicit `Tab` field, §6 field 4 supplies the discriminator — **"behaviour →
+Settings; appearance → Styles. This discriminator is the contract."** — and Cross-cutting A states
+"the definitive tab assignment is the `Tab` field of each contract above". Nothing to choose; only
+to apply.
+
+**The agreed sequence (Cross-cutting A's own recommendation, endorsed unchanged):**
+1. **Fix the 6 extension files.** They inject panels into **all 84 blocks**, mostly via a bare
+   `<InspectorControls>` — `animation.js:138` (motion is Styles), `hover-effects.js:279`,
+   `image-controls.js:157` (sizing/position is Styles) are WRONG; `fx.js`, `custom-css.js`,
+   `block-defaults.js` are already correct. Three files correct placement on every block at once.
+   Also `parallax.js` splits ONE feature across two tabs **by accident** (background → `group="color"`
+   at :144, element → bare at :182).
+2. **Work the 65 down** by hand.
+3. **Promote `01-tab-group` to gate** once that backlog is zero — never before (advisory-first rule).
+4. **THEN CO-28**, whose own two prerequisites above still apply on top.
+
+⚠ **The step-1 fix is currently UNGUARDED.** No rule scans `src/blocks/extensions/` — rule 01 only
+ever reads per-block `edit.js`, and `inspector-scan` has no `extensionsDir` at all (the documented
+BLOCKED extension surface). The 6 files can be fixed and then silently regress. Wiring that
+visibility belongs with step 1, not after it.
+
+**Fold in with step 2 — default-open discipline.** Only the first panel per tab defaults open;
+**23 blocks violate** (`decorative-image` opens 5 of 7). Same findability harm as order, same files,
+same pass — doing it separately means touching all of them twice.
+
 ### CO-3. ToolsPanel on dense panels *(was condition 3 — downgraded to a bare remediation count)*
 Any panel with ~6+ controls uses `ToolsPanel`/`ToolsPanelItem` progressive disclosure (1–3
 `isShownByDefault`, `resetAll`). **Enforced by** `inspector-scan/rules/03-dense-panel-candidate.js`,

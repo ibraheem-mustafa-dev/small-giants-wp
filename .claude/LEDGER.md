@@ -51,8 +51,8 @@ worth knowing before selling a plugin built on it · the Snooza job is 72 combin
 > **D515-D517** art-direction tiers, dead-control tier blind spot closed · **D518-D520** preset arrays
 > are theme-layer only, shadows renamed by effect, visual-diff gate change-keyed not date-keyed ·
 > **D521** art-direction reaches every media block; video needed a RUNTIME SWAP, not sibling markup ·
-> **D530** rule 21 ships advisory and the contract's "53" is a FLOOR not a census (live 280) ·
-> **D531** CO-28 — consistent ORDER of panels/clusters/controls is an obligation, UNENFORCED by design.
+> **D530** rule 21 advisory; "53" is a FLOOR not a census (live 280) · **D531** CO-28 control ORDER
+> is an obligation, UNENFORCED — and PLACEMENT gates it.
 
 ### Track 3 — CLOSED (D479). Tier W admitted, physics-canvas shipped.
 
@@ -210,63 +210,64 @@ OBLIGATIONS (13 carried, CO-2…CO-21, incl. **CO-15/CO-18 restored by D527**, p
 Bean-raised 2026-08-08 — numbered above the 27-condition space so it cannot squat on a carried
 item's number; NOT in the ABSORPTION MAP**) + §13. The 27-condition checklist is a tombstone.
 
-⚠ **ABSORPTION MAP "30/30" is NOT fully verifiable (2026-08-08).** Rows **22, 24, 25, 26** say
-`CARRIED` and name **no destination**; every other row cites a CO or §field. Same defect the council
-caught twice in that table (15→Cross-cutting B, 18→§7+CO-19). **UNVERIFIED, not discharged** — note
-in place at the map. Cite each one's live artefact (26 → `rules.json._meta.zeroIsAClaim`) or give it
-a CO; never guess a destination.
+⚠ **ABSORPTION MAP "30/30" NOT fully verifiable (2026-08-08).** Rows **22, 24, 25, 26** say `CARRIED`
+and name **no destination**; every other row cites a CO or §field — the defect the council caught
+twice in that table (15→X-cutting B, 18→§7+CO-19). **UNVERIFIED, not discharged**; note at the map.
+Cite each one's live artefact (26 → `zeroIsAClaim`) or give it a CO; never guess.
 
-⚠ **The council's raw output was never preserved** — no report file for 2026-08-07/08 in `reports/`
-or `memory/`; only summaries (findings A–I, D527, the map) survive. That is why the ordering point
-was lost until Bean recalled it. **Future councils: commit verbatim per-rater output before acting.**
+⚠ **The council's raw output was never preserved** — no 2026-08-07/08 report in `reports/`/`memory/`,
+only summaries (A–I, D527, the map). Hence the ordering point was lost until Bean recalled it.
+**Future councils: commit verbatim per-rater output before acting.**
 
 ---
 
 ## ⭐ NEXT SESSION — orchestration plan
 
-**Identity.** You are the SGS framework engineer. Tier 0 is done and **enforcement has started** —
-one Tier 3 rule shipped and five dead gates wired, all advisory. This session's job is to make the
-280 findings MEAN something, and to settle the one design question that is now blocking CO-28.
+**Identity.** SGS framework engineer. Tier 0 done, **enforcement started** — one Tier 3 rule shipped,
+five dead gates wired, all advisory. Job: make the 280 MEAN something, then fix PLACEMENT (which
+gates CO-28).
 
-⛔ **READ D530 BEFORE QUOTING ANY FOURTH-QUADRANT NUMBER.** "53" is not the population — it is the
-sum of four audited families, and it counts only `physics-canvas`'s BOX subset, not that block's 79
-unreachable container attrs. Live is **280 across 35 of 83 blocks**, containing the 53. Equally,
-**280 is not yet a backlog figure** — it has not been triaged.
+⛔ **READ D530 BEFORE QUOTING ANY FOURTH-QUADRANT NUMBER.** "53" is not the population — it sums four
+audited families and counts only `physics-canvas`'s BOX subset, not that block's 79 unreachable
+container attrs. Live is **280 across 35 of 83 blocks**, containing the 53. **280 is not yet a
+backlog figure** — untriaged.
 
 ### Task 1 — Triage rule 21's 280 into REAL vs FALSE POSITIVE
 
-**What:** per-block triage, then baseline the false positives with reasons.
-**Why:** without this, 280 is a number nobody can act on and the rule can never be promoted. The
-audited 53 is contained and verified family-by-family; the residual ~227 is a MIX, not a backlog.
-**Known real (hand-confirmed):** `physics-canvas`'s 79 — its `edit.js` was read IN FULL and exposes
-exactly three controls (`physicsGravity`, `physicsBounce`, `physicsEdgeResistance`).
-**Known false positive:** `team-member.overlayHover` — contract §6 field 5 names it a behavioural
-flag, not a state pair. Expect siblings of this shape.
-**Method:** work down `node run.js --json` by block, largest first. For each, open the block's
-`edit.js` and decide. Baseline a false positive in `inspector-scan/baselines/21-render-without-control.json`
-with a REAL human reason — never to make a number smaller.
-**Estimated time:** ~40 min for the top 6 blocks (that is ~200 of the 280).
-**Orchestration:** inline, Opus. Judgement per block; do NOT delegate mechanically.
-**Acceptance:** every baselined entry carries a reason a reader can check; the surviving count is
-stated with its denominator. **A smaller number is not the goal.**
+**What/Why:** per-block triage + baseline false positives WITH reasons. Until then 280 is unusable
+and the rule can never be promoted; the audited 53 is verified family-by-family, the residual ~227 is
+a MIX, not a backlog.
+**Known real:** `physics-canvas`'s 79 — `edit.js` read IN FULL, exposes exactly 3 controls
+(`physicsGravity`/`Bounce`/`EdgeResistance`). **Known FP:** `team-member.overlayHover` (§6 field 5:
+behavioural flag, not a state pair) — expect siblings.
+**Method:** `node run.js --json`, largest block first; open each `edit.js` and decide. Baseline in
+`inspector-scan/baselines/21-render-without-control.json` with a REAL reason — never to shrink a
+number. ~40 min for the top 6 blocks (~200 of the 280). Inline, Opus; judgement per block.
+**Acceptance:** every baselined entry carries a checkable reason; surviving count stated with its
+denominator. **A smaller number is not the goal.**
 
-### Task 2 — Design gate with Bean: the canonical control ORDER (CO-28)
+### Task 2 — PLACEMENT: fix the 6 extension files (+ wire extensions visibility)
 
-**What:** decide the one canonical order of panels, then clusters, then controls.
-**Why:** CO-28 (D531) is recorded and deliberately UNENFORCED — no order has been *chosen*, so any
-rule would enforce an order nobody picked. This is a **Rule 7 design gate**: it binds every block.
-**Method:** `/brainstorming` design mode. Bring a MENU of 2-3 candidate orders with reasoning, not a
-single proposal (ADHD Rule 9). Ground it in what a client transfers between blocks, and in CO-2
-(grouping by block PART) which it must not contradict.
-**Blocked on:** Bean. Do not build past the decision.
-**Acceptance:** a written canonical order in the contract's CO-28, plus a census plan for Task 3.
+⛔ **PLACEMENT BEFORE ORDER (Bean-approved 2026-08-08, D531).** **65 of 83 blocks have 2+ panels and
+no `group` prop** (`01-tab-group`, the scanner's largest backlog) → everything lands in Settings.
+**Order cannot be standardised across Settings/Styles while most blocks never split into two tabs.**
+Placement needs NO design gate — 12 of 14 contracts carry a `Tab` field; §6 field 4 is the
+discriminator: **behaviour → Settings, appearance → Styles.**
+**What:** the 6 universal extensions inject into ALL 84 blocks via a bare `<InspectorControls>`.
+WRONG: `animation.js:138` (motion=Styles), `hover-effects.js:279`, `image-controls.js:157`
+(sizing=Styles). Correct already: `fx.js`, `custom-css.js`, `block-defaults.js`. Also `parallax.js`
+splits ONE feature across two tabs by accident (:144 `group="color"` vs :182 bare).
+**Why here:** 3 files fix placement on every block at once — above the 65-block grind.
+⚠ **UNGUARDED:** nothing scans `src/blocks/extensions/` (no `extensionsDir`; rule 01 reads per-block
+`edit.js`), so this can silently regress. **Wire that visibility WITH this task.**
+**Acceptance:** live editor check on the canary (R-31-11), not the emit.
 
-### Task 3 — Census current per-block order (only AFTER Task 2)
+### Task 3 — Work the 65 down + default-open, then gate
 
-**What:** measure how far the tree is from the chosen order.
-**Why:** `rules.json._meta.zeroIsAClaim` forbids trusting a live run with no independently-derived
-expected population. The census IS that independent derivation.
-**Blocked on:** Task 2. **Acceptance:** expected population recorded BEFORE any rule 22 runs.
+Per-block `group` props; fold in **default-open discipline (23 blocks violate**, `decorative-image`
+opens 5 of 7) — same files, same pass, or you touch them twice. Then promote `01-tab-group` to gate
+ONLY at zero backlog. **CO-28 (order) starts after that**, still needing its own two prerequisites:
+Bean picks the canonical order (Rule 7 gate), then a census (`zeroIsAClaim`).
 
 ### ⛔ Do NOT start these — blocked, with the reason
 

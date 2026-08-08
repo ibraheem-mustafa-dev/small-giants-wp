@@ -27,6 +27,24 @@ current per-block order, because `rules.json._meta.zeroIsAClaim` forbids trustin
 independently-derived expected population. A rule written before (a) would enforce an order nobody
 chose. No count is stated here for exactly that reason.
 
+**⛔ PLACEMENT BEFORE ORDER — Bean-approved sequencing, added 2026-08-08.** CO-28 does not start
+until Cross-cutting A's placement backlog is worked. A dependency, not a preference, and the
+measurement makes it one: **65 of 83 blocks have 2+ inspector panels and no `group` prop**
+(`01-tab-group`, the scanner's largest backlog), so every panel lands in Settings — **you cannot
+standardise order across Settings and Styles while most blocks never split into two tabs.**
+Placement needs NO design gate: 12 of 14 contracts carry a `Tab` field and §6 field 4 gives the
+discriminator ("behaviour → Settings; appearance → Styles"). Agreed sequence: **(1) fix the 6
+extension files** — they inject into all 84 blocks, `animation.js`/`hover-effects.js`/
+`image-controls.js` wrong, plus `parallax.js` splitting one feature across two tabs by accident;
+**(2) work the 65 down, folding in default-open discipline (23 blocks violate);
+(3) promote `01-tab-group` to gate; (4) THEN CO-28.** ⚠ Step 1 is UNGUARDED — nothing scans
+`src/blocks/extensions/` (no `extensionsDir`; rule 01 reads per-block `edit.js` only), so the fix can
+silently regress. Wire that visibility WITH step 1.
+
+**Correction recorded in place (see CO-28):** this entry first claimed panel order "existed nowhere".
+Wrong — Cross-cutting A already carried it as competitor research; a truncated grep (first 20 hits,
+line ~980) produced the false absence. CO-28 is a PROMOTION of that research to an obligation.
+
 ## D530 — rule 21 `render-without-control` ships advisory; the contract's "53" is a FLOOR, not a census [ROUTINE]
 
 **2026-08-08.** The fourth quadrant (declared + rendered + NO control) had no enforcement:
