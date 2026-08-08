@@ -29,12 +29,16 @@ CARRIED verbatim into its §CARRIED OBLIGATIONS, with zero dropped. A 4-rater `/
 including condition 17, a live WCAG 2.3.3 gate, and condition 11, the only written record of the
 locked 768/1024 device tiers. Those were restored before this tombstone was written (D523 session).
 
+⚠ **A further QC council on 2026-08-08 re-traced all 30 and caught TWO MORE mis-mappings** — 15 and
+18 were marked ABSORBED into sections that did not contain their requirement. Both are now CARRIED as
+CO-15 / CO-18. The table below reflects the corrected dispositions. Verified 30/30 after correction.
+
 Where the originals now live:
 
 | Was | Now |
 |---|---|
-| Conditions 1, 4, 5, 6, 7, 8, 12, 14, 15, 18, 23, 27 | ABSORBED into contracts §1–§14 |
-| Conditions 2, 3, 9, 10, 11, 13, 16, 17, 19, 20, 21, 22, 24, 25, 26 | CARRIED into §CARRIED OBLIGATIONS (CO-*) |
+| Conditions 1, 4, 5, 6, 7, 8, 12, 14, 23, 27 | ABSORBED into contracts §1–§14 |
+| Conditions 2, 3, 9, 10, 11, 13, **15**, 16, 17, **18**, 19, 20, 21, 22, 24, 25, 26 | CARRIED into §CARRIED OBLIGATIONS (CO-*) |
 | T1 / T2 / T3 | CARRIED — T1 governs the live `audit-feature-parity.py` gate |
 
 Full text of the originals: git history for this path, and `decisions.md` D522/D523.

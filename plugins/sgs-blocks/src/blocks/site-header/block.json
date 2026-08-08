@@ -46,6 +46,7 @@
 				"fx"
 			],
 			"boxFamilies": {
+				"contentBandPadding": [ "contentBandPadding", "contentBandPaddingTablet", "contentBandPaddingMobile" ],
 				"padding": [
 					"paddingTablet",
 					"paddingMobile"

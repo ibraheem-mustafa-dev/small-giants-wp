@@ -1,5 +1,60 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D527 — a 4-rater QC council falsified SIX claims from this session's own work [INCIDENT]
+
+**2026-08-08.** Bean asked for `/qc-council` over D523–D526 **and** over the closing claim that Spec 35
+enforcement was unblocked. Four raters (DB / docs / code-path / adversarial-challenger), each told to
+REFUTE. **Every finding below was re-verified by me before acting — none taken on the rater's word.**
+
+**1. `box_family` was fixed for 7 attrs; the true population was 13.** Rater A found 4 more
+(`product-card.tagPadding`, `mega-aside.asidePadding`, `physics-canvas.gridItemPadding`/
+`gridItemBorderRadius` — the last two carrying `box_family` on all four sibling blocks and NULL only
+here). My own widened census then found 2 MORE (`site-{header,footer}.contentBandPadding`). **Root
+cause: I scoped to the LEDGER's inherited list of 5 blocks instead of censusing the population** —
+the "establish the denominator" rule, broken in the very fix meant to make scoping trustworthy. Now
+**zero** object-typed box attrs read NULL.
+
+**2. ⛔ The Tier 0 fix MOVED A SCOPING AXIS and left the committed artefact stale.**
+`build-roster.py:91` derives `surfaces.*` from a haystack that **includes `inspector_control_type`**.
+D523 wrote `SgsLinkControl` into `sgs/form.successRedirect`, so `surfaces.link` flipped false→true
+and `roster.json` sat **uncommitted and stale** — the exact failure class Tier 0 existed to end,
+committed by the Tier 0 fix. Regenerated + verified: `styling=65 colour=64 link=17 media=30
+animation=21`. **`animation` UNMOVED** — which matters, because it scopes `17-reduced-motion-gate`, a
+live GATE-mode WCAG rule, and `build-roster.py:71-76` records a 2026-07-30 precedent where a roster
+regen flipped 18 blocks and fired 18 false-positive WARNs on a fail-closed gate. Contract corrected
+16→17. **Rule: regenerate the roster after ANY write to `inspector_control_type`.**
+
+**3. "The 36 fossil capabilities had no reader" was FALSE.** Two live readers of the FULL table exist
+outside the pipeline — `mcp/server.py` `search_blocks()` and `match()` both score blocks by keyword
+overlap over **every** capability tag, and that is the tooling CLAUDE.md tells sessions to query. My
+grep DID surface those lines; I dismissed them as "informational". The DECISION stands (no writer →
+frozen, already absent from 34 blocks) but it was a **trade-off, not a free removal**, and
+block-discovery quality degraded. **OPEN for Bean: reinstate discovery keywords declaratively?**
+
+**4. The `collection` roster missed 2 of 17.** `sgs/breadcrumbs` and `sgs/table-of-contents` both
+render repeated `<li><a href>` items — textbook collections — and carried no capability row. Now
+declared. (The `timeline`/`process-steps` exclusion was independently confirmed correct: zero
+interactive children.)
+
+**5. The absorption map cited two targets that did not contain their rule.** Conditions **15** and
+**18** were marked ABSORBED into sections about a different subject. Restored as **CO-15 / CO-18**.
+⚠ **My own cross-check missed this because it compared the two documents' TABLES to each other, and
+both carried the identical error.** Two wrong things agreeing looks exactly like verification.
+
+**6. "Tiers 1–4 UNBLOCKED" was an overclaim.** Honest scope now in the contract: Tier 3 unblocked for
+DB-scoped rules; **BLOCKED** for anything crossing the extension surface (`inspector-scan` has no
+`extensionsDir` and `roster.js` admits only dirs with a `block.json` — an unbuilt prerequisite);
+§14 BORDER blocked on a census per `zeroIsAClaim`; Tier 1 blocked on nine Rule 7 gates (Bean);
+Tier 2 half-blocked. Also corrected: `inspector_control_type` is **65% NULL** — a rule may trust a
+non-NULL value but must NOT read NULL as "no control". And the D523 repeater guard is **fragile**:
+`pricing-table::plans` fires only by name coincidence with a shadowing local, `gallery::mediaItems`
+is preserved by upstream resolution failure rather than the guard, and `.forEach`/cross-file
+repeaters are blind by construction.
+
+**Verdict tally:** C1 REFUTED · C2 PARTIALLY REFUTED · C3 PARTIALLY REFUTED · C4 REFUTED ·
+C5 REFUTED · C6 CONFIRMED (both in-repo premises independently verified) · C7 PARTIALLY REFUTED.
+**Six of seven claims needed correction. The council paid for itself several times over.**
+
 ## D526 — `sgsCustomCss` STAYS; WP 7.0's native per-block CSS cannot replace it [ROUTINE]
 
 **2026-08-08. Bean-ruled.** Closes council finding G and satisfies CO-16 ("check native BEFORE

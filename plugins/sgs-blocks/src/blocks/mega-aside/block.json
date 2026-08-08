@@ -17,6 +17,9 @@
 		"anchor": false,
 		"align": false,
 		"sgs": {
+			"boxFamilies": {
+				"asidePadding": [ "asidePadding" ]
+			},
 			"elements": {
 				"aside": {
 					"label": "Aside",

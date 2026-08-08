@@ -34,6 +34,9 @@
 				],
 				"ctaBorderRadius": [
 					"ctaBorderRadius"
+				],
+				"tagPadding": [
+					"tagPadding"
 				]
 			},
 			"variantAttr": "variantStyle",

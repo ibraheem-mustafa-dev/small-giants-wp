@@ -44,9 +44,25 @@
 		"sgs": {
 			"containerKind": "section",
 			"boxFamilies": {
-				"padding": [ "paddingTablet", "paddingMobile" ],
-				"margin": [ "marginTablet", "marginMobile" ],
-				"contentBandPadding": [ "contentBandPadding", "contentBandPaddingTablet", "contentBandPaddingMobile" ]
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				],
+				"contentBandPadding": [
+					"contentBandPadding",
+					"contentBandPaddingTablet",
+					"contentBandPaddingMobile"
+				],
+				"gridItemPadding": [
+					"gridItemPadding"
+				],
+				"gridItemBorderRadius": [
+					"gridItemBorderRadius"
+				]
 			},
 			"elements": {
 				"wrapper": {

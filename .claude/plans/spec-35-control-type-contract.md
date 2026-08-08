@@ -91,7 +91,7 @@ obligation · 19's E1–E4 a11y content · T1/T2/T3 (the Bean-locked threaded st
 
 ### D. Scope errors
 - **S1 (worst): no scoping axis can select the universal-extension surface, and FOUR contracts need
-  one.** `hover-effects.js` registers **13 `sgsHover*` attrs onto 67 blocks** via a filter —
+  one.** `hover-effects.js` registers **11 literal `sgsHover*` attrs (19 `sgs*` attrs in total) onto 67 blocks** via a filter —
   invisible to `block_attributes` by construction. STATE's "23 blocks, 3 conform" is therefore a
   ~12× undercount of the very shape it bans. The contract makes this argument for LINK and fails
   to generalise it. Same file, four contracts.
@@ -232,7 +232,7 @@ Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/
 | `surfaces.styling` | roster.json | 65 |
 | `surfaces.media` | roster.json | 30 |
 | `surfaces.animation` | roster.json | 21 — **the proven precedent**, used by rule 17 |
-| `surfaces.link` | roster.json | 16 (over- AND under-inclusive — see LINK §5) |
+| `surfaces.link` | roster.json | **17** (over- AND under-inclusive — see LINK §5). ⚠ Was 16; D523 flipped `sgs/form` when `successRedirect` became `SgsLinkControl`, because `build-roster.py:91` derives this axis from a haystack INCLUDING `inspector_control_type`. Regenerate `roster.json` after ANY DB write to that column. |
 | `category` | roster.json | content 46 · forms 17 · interactive 13 · layout 8 |
 | `blocks.tier` | DB | block 80 · class-section 4 |
 | `block_composition.container_kind` | DB | content 12 · layout 16 · section 6 (scoped to built SGS blocks) |
@@ -249,13 +249,24 @@ Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/
 
 **No block-scoped axis above can select a control injected by a universal extension**, because a
 `blocks.registerBlockType` filter writes attributes at runtime and `block_attributes` only ever sees
-what a `block.json` declares. `extensions/hover-effects.js` registers **13 `sgsHover*` attrs onto 67
-blocks** this way — invisible to every DB column by construction. STATE's "23 blocks, 3 conform" is
-therefore a ~12× undercount **of the very shape STATE bans**.
+what a `block.json` declares. `extensions/hover-effects.js` registers **11 literal `sgsHover*` attrs
+(19 `sgs*` attrs in total) onto 67 blocks** this way — invisible to every DB column by construction.
+STATE's "23 blocks, 3 conform" is therefore a large undercount **of the very shape STATE bans**.
+*(The "13" first written here was corrected by QC council 2026-08-08 — count the literals before
+quoting a reach figure.)*
+
+⛔ **THIS AXIS IS AN UNBUILT PREREQUISITE, not just a rule to remember.** Measured 2026-08-08: the
+existing engine **cannot see** `src/blocks/extensions/` at all. `inspector-scan/core/roster.js:58-70`
+only admits directories under `src/blocks/` that contain a `block.json`, and `extensions/` has none;
+`run.js`'s `buildCtx` supplies `blocksDir` / `patternsDir` / `themeDir` and **no `extensionsDir`**;
+`core/components.js:34` discovers only `src/components/`, so the proposed transitive
+`writesColour`/`writesIcon` resolution will not reach the extension HOCs either. **Any rule whose
+scope includes the extension surface is blocked until that plumbing lands.** Per-block reach is NOT
+available from `generate-extension-attributes.js` (names only) — derive it from `hideExtensions`.
 
 The contract originally made this argument for LINK alone and failed to generalise it. It binds on
-**four** contracts, all reached through the same file: **LINK** (raw URL field), **STATE** (13
-`sgsHover*` attrs), **SHADOW** (a preset `SelectControl` on a shadow attr), **COLOUR** (hover colour
+**four** contracts, all reached through the same file: **LINK** (raw URL field), **STATE** (11 literal
+`sgsHover*` attrs, 19 `sgs*` total), **SHADOW** (a preset `SelectControl` on a shadow attr), **COLOUR** (hover colour
 fields). Therefore:
 
 > **Every contract's `Scope` field must state its extension reach explicitly, and every detection
@@ -276,8 +287,10 @@ Reach is derived, not hardcoded: a block is in an extension's surface when it do
 
 ### ⛔ DB columns that are NOT trustworthy as gate inputs (all four measured 2026-08-07)
 
-> ✅ **1 and 2 were FIXED 2026-08-08 — D523, commit `e73bacde`.** Both are now trustworthy as gate
-> inputs; the analysis below is retained because it names the defect CLASS every remaining rule must
+> ✅ **1 and 2 were FIXED 2026-08-08 — D523 `e73bacde`, extended after QC council.** Both are now
+> usable as gate inputs — ⚠ **but `inspector_control_type` is 65% NULL (1,753 of 2,712 `sgs/%` rows).**
+> A rule may TRUST a non-NULL value; it must NOT read NULL as "no control". "Trustworthy" was an
+> overclaim in the first draft of this box; the analysis below is retained because it names the defect CLASS every remaining rule must
 > avoid. **3 and 4 remain OPEN.** What actually landed: 7 `box_family` values declared in block.json
 > (⛔ not `mega-panel.borderRadius` — scalar, NULL is correct); `_KNOWN_CONTROLS` widened with this
 > framework's own single-attribute components, correcting **41** `inspector_control_type` rows (10
@@ -658,7 +671,23 @@ them here is what stops the next enforcement pass repeating the 27's blind spot.
 | `ComboboxControl` | 2 sites | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
 | `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |
 | `FocalPointPicker` | 1 site | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
-| repeater item editors | `plans`, `icons`, `tiles` | — | **Needs a contract.** ⚠ D523 proved a per-item control must never be recorded as the array's control |
+| repeater item editors | `plans`, `icons`, `tiles` | — | **Needs a contract.** ⚠ D523 proved a per-item control must never be recorded as the array's control. ⛔ **The D523 guard is FRAGILE — see below.** |
+
+⛔ **Known fragility in the D523 repeater guard (QC council, 2026-08-08).** `_repeater_item_spans()`
+matches `<attr>.map(` where the identifier resolves to the attribute being written. Three limits,
+all confirmed against live code:
+1. **`pricing-table::plans` fires by NAME COINCIDENCE, not by design.** `edit.js:97` destructures
+   `plans: plansRaw`, then `:116` creates a **shadowing local** `const plans = (plansRaw||[]).map(…)`.
+   The span matches only because that local happens to be spelled like the DB attr. **Rename it and
+   the guard silently stops firing**, reintroducing the exact bug it was built to fix.
+2. **`gallery::mediaItems` is preserved by upstream failure, not by the guard.** `edit.js:202` does
+   `const items = mediaItems || [];` — a plain assignment `_build_js_destructure_map` cannot see — so
+   candidate resolution yields nothing and the row is simply left alone. Harmless here, but it means
+   the guard's real coverage is narrower than "3 tags" implies.
+3. **Blind by construction to** `.forEach(` / `for…of` iteration, and to any repeater whose items are
+   rendered by a component in another file (the scan is single-file per block's `edit.js`).
+A rule scoped on `inspector_control_type` for an ARRAY attr must therefore carry its own AST
+cross-check — do not treat this guard as complete.
 
 ## 14. BORDER (restores condition 7's dropped half)
 
@@ -741,6 +770,27 @@ Irrelevant universal-extension panels are hidden per block via `supports.sgs.hid
 the part that makes it anyone's job. **Enforced by** UNENFORCED. (Corrected 2026-08-06: the retired
 `audit-inspector-conformance.js` never carried a hideExtensions rule — a phantom-tool claim.)
 
+### CO-15. No duplicated native-supports panel *(was condition 15 — RESTORED 2026-08-08)*
+No bespoke panel re-implements a control a native `supports` panel already provides. This is the
+inspector-UX form of **R-31-9**. **Enforced by** UNENFORCED — `check-duplicate-controls.js` exists
+and is **wired to nothing** (0 refs in `package.json`).
+⛔ **Restored after a QC-council audit, 2026-08-08.** This document's own ABSORPTION MAP claimed it
+was absorbed into Cross-cutting B. It was not: Cross-cutting B is about universal-EXTENSION opt-out
+fit, a different question, and the requirement appeared nowhere in this file. The map cited a target
+that did not contain the rule — the exact failure mode this contract exists to end, committed by the
+contract about itself. (Corrected 2026-08-06: the retired `audit-inspector-conformance.js` never
+carried a duplicate-native-panel rule either — that was a phantom-tool claim.)
+
+### CO-18. Decorative-image toggle + ARIA-label *(was condition 18 — RESTORED 2026-08-08)*
+A decorative-image toggle (**empty alt + `aria-hidden`**) and a general **ARIA-label** control are
+present wherever the block's rendered markup needs them. *(Spec 35 C, E6.)* **Enforced by**
+UNENFORCED — no automated gate exists.
+⛔ **Restored after the same audit.** The map claimed §7 MEDIA field 2 + CO-19. Neither holds: §7
+field 2 says only "alt text", and CO-19 governs the accessibility of the **editor control UI itself**
+(keyboard, contrast, `aria-describedby`) — a different target from the **rendered output's**
+accessibility, which is what this condition is about. ⚠ Do not re-merge these two: an accessible
+control that writes an inaccessible output satisfies CO-19 and fails CO-18.
+
 ### CO-16. Native over hand-rolled *(was condition 16)*
 Native `supports` are used over hand-rolled equivalents for aspect-ratio / duotone / sticky /
 lightbox — **check native BEFORE building any of these.** Points at a Bean-approved D402 verdict
@@ -820,10 +870,10 @@ losses.** This table is the check.
 | 12 | StateToggleControl for states | **ABSORBED** — §6 STATE / HOVER |
 | 13 | hideExtensions | **CARRIED** — CO-13 (per-block obligation restored) |
 | 14 | MediaUploadCheck on every MediaUpload | **ABSORBED** — §7 MEDIA field 2 (0 violations; keep the gate) |
-| 15 | No duplicated native-supports panel | **ABSORBED** — Cross-cutting B |
+| 15 | No duplicated native-supports panel | **CARRIED** — CO-15 ⚠ was mis-mapped to Cross-cutting B; corrected 2026-08-08 by QC council |
 | 16 | Native over hand-rolled | **CARRIED** — CO-16 (raises §G) |
 | 17 | Reduced-motion gate | **CARRIED** — CO-17 ⚠ WCAG, GATE mode |
-| 18 | Decorative-image + ARIA-label | **ABSORBED** — §7 MEDIA field 2 + CO-19 |
+| 18 | Decorative-image + ARIA-label | **CARRIED** — CO-18 ⚠ was mis-mapped to §7 + CO-19; corrected 2026-08-08 by QC council |
 | 19 | A11y pass E1–E4 | **CARRIED** — CO-19 |
 | 20 | Client patterns use templateLock | **CARRIED** — CO-20, in the D402-correct per-client form |
 | 21 | No Part-F anti-patterns | **CARRIED** — CO-21 |
@@ -837,7 +887,12 @@ losses.** This table is the check.
 | T2 | Shrink-to-fit | **CARRIED** |
 | T3 | Media-controls competitor comparison | **CARRIED** |
 
-**DROPPED: none.** Every one of the 30 is accounted for above.
+**DROPPED: none — but this map was WRONG for two items until 2026-08-08.** A 4-rater QC council
+re-traced all 30 against their claimed targets and found **15** and **18** marked ABSORBED into
+sections that did not contain their requirement. Both are now CARRIED as CO-15 / CO-18.
+**Verified count: 28/30 held on first pass, 30/30 after correction.**
+⚠ The lesson is about THIS TABLE: a disposition is only true if the named target actually states
+the requirement. Citing a section is not absorbing a rule. Re-read the target before trusting a row.
 
 ---
 
@@ -1027,9 +1082,17 @@ different fixes, and they were four different fixes.
   its own declaration: **`supports.sgs.iconPicker` → capability `icon-picker`, 13 blocks**.
 - ✅ **`block_capabilities` — DONE (D525, `dd946aa9`), and the premise was wrong.** The table held
   TWO unrelated things: 3 declarative lift flags (healthy, converter-read) and ~36 semantic tags with
-  **no in-repo writer AND no reader** — the capability-aware tiebreaker that consumed them was
-  RETIRED at D278, and every live `capabilities_for()` call site reads only the lift flags. They were
-  fossils. **The proposed `isCollectionKind()` scoped to `carousel`/`grid-layout`/`logo-strip` would
+  **no in-repo writer, and no reader IN THE PIPELINE** — the capability-aware tiebreaker that consumed
+  them was RETIRED at D278, and every live `capabilities_for()` call site reads only the lift flags.
+  ⚠ **CORRECTED 2026-08-08 by QC council: "no reader" full stop was FALSE.** Two live readers of the
+  FULL capability table exist outside the pipeline, in
+  `~/.claude/skills/sgs-wp-engine/mcp/server.py`: `search_blocks()` (line ~90) and `match()`
+  (line ~580) both score blocks by keyword overlap against **every** capability tag. That is the
+  tooling CLAUDE.md tells sessions to query before claiming "missing X". Pruning the 36 semantic tags
+  therefore **degraded block-discovery/semantic-match quality** — a real consequence that the D525
+  reasoning missed. The DECISION still stands (the tags had no writer, so they were frozen and
+  already absent from 34 blocks), but it was a trade-off, not a free removal. **OPEN: whether to
+  reinstate discovery keywords as a declarative `supports.sgs` field. Bean's call.** **The proposed `isCollectionKind()` scoped to `carousel`/`grid-layout`/`logo-strip` would
   have built a new rule on three dead values** — the Tier 0 failure mode arriving inside the fix for
   it. 73 fossil rows pruned, and the prune re-runs every Stage 1 so `populate-db.py` cannot silently
   reintroduce them.
@@ -1057,7 +1120,31 @@ content. ⚠ verify `gallery.mediaItems` is authored content before declaring it
 ⚠ `block_selectors` still has the fossil disease, PARTIALLY ported — two writers, last-one-wins.
 **Do not run `populate-db.py`**: it would clobber selectors and reintroduce pruned capabilities.
 
-**All four Tier 0 columns are now correct. Tiers 1–4 are UNBLOCKED.**
+### All four Tier 0 columns are correct. "Tiers 1–4 UNBLOCKED" was an OVERCLAIM — the honest scope
+
+⛔ **Corrected 2026-08-08 by QC council (rater D).** The columns are fixed and independently
+re-measured, but that does not unblock every tier. Per tier:
+
+| Tier | Status | Why |
+|---|---|---|
+| **Tier 3 (new rules)** | ✅ **UNBLOCKED** — for rules scoping on the verified DB axes | Engine, fixtures, baselines and a real `--self-test` harness all exist (`run.js --self-test` passes 9/9 **plus** a meta-check that deliberately breaks a rule and confirms it fails). It IS wired into `prebuild` — the `run.js:6-10` header saying otherwise is stale. |
+| **Tier 3 crossing the EXTENSION SURFACE** | ⛔ **BLOCKED** | `inspector-scan` cannot see `src/blocks/extensions/` at all — no `extensionsDir`, and `roster.js` admits only dirs containing a `block.json`. Plumbing must land first. |
+| **§14 BORDER** | ⛔ **BLOCKED on a census** | Its own field 6 says "not yet measured", and `rules.json._meta.zeroIsAClaim` (Bean-locked) requires an independently-derived expected population before a live run is trusted. Blocked on measurement, not data. |
+| **Tier 1 (shared-file fixes)** | ⛔ **BLOCKED on Bean** | Every item is a shared-mechanism change needing a **Rule 7 design gate** — §H lists nine. A fixed database does not unblock a design gate. |
+| **Tier 2 (wire what exists)** | ⚠ **HALF** | The 4–5 dead gates can be wired ADVISORY today (all confirmed 0 refs in `package.json`). `lint:js` cannot, per E6 point 9 — advisory first, fail-closed only at zero backlog. ⚠ the 11,932 figure is UNVERIFIED; nobody has re-run the linter. |
+| **Tier 4** | ✅ unblocked, but it is hand remediation, not enforcement | |
+
+⛔ **DO THIS FIRST, before writing any rule: regenerate `roster.json` and diff all five `surfaces.*`
+axes.** D523 wrote `SgsLinkControl` into `inspector_control_type`, and `build-roster.py:91` derives
+`surfaces.*` from a haystack that includes that column — so `sgs/form` flipped `link` false→true and
+the committed artefact went stale **with nobody noticing**. Verified 2026-08-08 after the fix:
+`styling=65 colour=64 link=17 media=30 animation=21`. **`animation` is UNMOVED**, which matters
+because it scopes `17-reduced-motion-gate`, a live GATE-mode WCAG rule — and `build-roster.py:71-76`
+records a 2026-07-30 precedent where a roster regeneration flipped 18 blocks and fired 18
+false-positive WARNs on a fail-closed gate. That reassurance is now MEASURED, not assumed.
+
+⚠ Two wired gates have **no `--self-test`**: `check-universal-fit.js` and `check-control-ux.js` — and
+the latter is in `prebuild`. A wired gate with no proof it can fail.
 
 ⚠ **A shared-DB reseed is a cross-track action.** Back up first, diff the result, and check every
 pruned row against its source before calling a drop damage — 33 pruned rows in a past session were

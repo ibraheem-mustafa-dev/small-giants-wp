@@ -77,7 +77,9 @@ before acting, do not assume it is current from memory alone:
   `.claude/plans/spec-35-control-type-contract.md` now governs; the 27-condition checklist is a
   TOMBSTONE. Superseding was gated on its **ABSORPTION MAP** proving all 30 items absorbed or
   carried — the 2026-08-07 council caught the first draft losing ten, incl. a live WCAG gate.
-  Council findings A/B/C/D/F/G **discharged** (G = D526: keep `sgsCustomCss`); H stays OPEN by design.
+  Council findings A/B/C/D/F/G **discharged**; H OPEN by design. ⚠ **A second 4-rater council
+  (D527) falsified SIX of this session's own seven claims** — all corrected, but read D527 before
+  trusting any figure or scope statement written this session.
   **Read the contract's DISCHARGE RECORD before trusting any body figure.**
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
@@ -194,7 +196,12 @@ could see; the doc turned it into a claim about the world. **The generalised fix
 SURFACE axis** — no DB column can see a filter-registered attr, so every rule must also read
 `src/blocks/extensions/*.js`.
 
-✅ **ALL FOUR Tier 0 columns are now correct (D523 + D525). Tiers 1–4 are UNBLOCKED.**
+✅ **All four Tier 0 columns correct (D523 + D525 + D527).** ⛔ **"Tiers 1–4 unblocked" was an
+OVERCLAIM — see D527.** Honest scope: Tier 3 unblocked for DB-scoped rules ONLY; BLOCKED for
+anything crossing the extension surface (`inspector-scan` has no `extensionsDir`); §14 BORDER
+blocked on a census; Tier 1 blocked on 9 Rule 7 gates (Bean); Tier 2 half.
+⛔ **FIRST ACTION NEXT SESSION: regenerate `roster.json` + diff all five `surfaces.*` axes** — D523
+moved one and left the artefact stale.
 `isCollectionKind()` = a `collection` capability row, declared via `supports.sgs.collection`
 (15 blocks). ⛔ **Do not run `populate-db.py`** — it reintroduces pruned fossils and clobbers
 `block_selectors`. ⚠ Still open: `arrayContentLift` for `testimonial-slider`/`content-collection`
