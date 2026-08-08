@@ -2,7 +2,7 @@
 doc_type: strategic-plan
 title: "The block-level panel — tier 1 element, tier 2 property-family"
 spec_ref: .claude/plans/spec-35-control-type-contract.md §THE PLACEMENT RULE · §CO-28
-date: 2026-08-09
+date: 2026-08-08
 status: DESIGN — awaiting Bean sign-off; resolver upgraded, no block touched
 supersedes: "the Task 1 framing in LEDGER.md (2026-08-08) — 'design the block-level panel'"
 ---
@@ -60,7 +60,7 @@ conditional-logic rules.
 Step 4 is new. It is tier 2, and it is what the conformance checker has always used —
 `placement-reach.py` simply never consulted the same file.
 
-## 2. Evidence (measured 2026-08-09, re-derivable)
+## 2. Evidence (measured 2026-08-08, re-derivable)
 
 `python plugins/sgs-blocks/scripts/placement-reach.py`
 

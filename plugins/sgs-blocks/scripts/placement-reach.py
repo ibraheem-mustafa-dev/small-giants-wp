@@ -33,12 +33,23 @@ RESOLUTION ORDER — mirrors the contract + check-element-manifest-conformance.j
 block-level. Ignoring the suffix family misattributes 186 tier attributes as
 unplaced. A resolver that skips it overstates the gap by ~7 points.
 
-⚠ Step 4 is TIER 2 of the placement model (Bean, 2026-08-09: "tier 1 is per element
-and then tier 2 is per property-family"). It was missing until 2026-08-09, which is
+⚠ Step 4 is TIER 2 of the placement model (Bean, 2026-08-08: "tier 1 is per element
+and then tier 2 is per property-family"). It was missing until 2026-08-08, which is
 why declared Fill members such as `backgroundPosition` / `objectFit` were reported as
-unplaced even though the element declared the `fill` cluster that owns them. Members
-carrying `appliesToLayers` are honoured, matching the conformance checker — an
-un-layered element is never asked about arrangement members.
+unplaced even though the element declared the `fill` cluster that owns them.
+
+⚠ This step READS the same file as check-element-manifest-conformance.js and applies
+the same `appliesToLayers` predicate, but it does NOT reproduce that checker exactly.
+Two deliberate divergences, neither reached by current block data (both resolvers
+return the same 58.6% / hero 61) — do not restate this as "mirrors":
+  - the checker treats an explicit `attrMap` entry as authoritative and returns early
+    even when it fails to resolve; here the cluster loop can still claim a
+    suffix-derived name for the same member;
+  - the checker tries a member's `suffixes` IN ORDER and stops at the first match,
+    leaving an attribute matching an alternate suffix unclaimed (an ORPHAN candidate);
+    here every suffix candidate is claimed.
+Flagged by an independent conformance review 2026-08-08. If this script is ever
+promoted from diagnostic to gate, close both divergences first.
 """
 import argparse
 import glob
@@ -53,9 +64,22 @@ _CLUSTER_SETS_PATH = os.path.join(
 
 
 def _load_clusters(path=None):
-    """The tier-2 property-family definitions. Same file the conformance checker reads."""
-    with open(path or _CLUSTER_SETS_PATH, encoding='utf-8') as handle:
-        return json.load(handle).get('clusters') or {}
+    """The tier-2 property-family definitions. Same file the conformance checker reads.
+
+    FAILS LOUD on an empty set. A file that parses but carries no `clusters` key
+    silently disables tier 2, and the script then reports the exact pre-tier-2
+    figure (hero: 76) with no error — a measurement that has stopped measuring but
+    still looks plausible. Proven 2026-08-08: `resolve_block(hero, {})` returns 76
+    against the real 61.
+    """
+    path = path or _CLUSTER_SETS_PATH
+    with open(path, encoding='utf-8') as handle:
+        clusters = json.load(handle).get('clusters') or {}
+    if not clusters:
+        raise ValueError(
+            'no cluster definitions in %s — tier-2 resolution would silently no-op '
+            'and this script would report the pre-tier-2 figure as if it were current' % path)
+    return clusters
 
 
 def _lcfirst(value):
@@ -92,10 +116,16 @@ def _base_of(attr):
 
 def resolve_block(block_json, clusters=None):
     """Return (element_scoped, block_level) attribute-name lists for one block."""
+    scoped, block_level, _ = resolve_block_detailed(block_json, clusters)
+    return scoped, block_level
+
+
+def resolve_block_detailed(block_json, clusters=None):
+    """As resolve_block, plus {attr: {element, ...}} for attrs two elements can claim."""
     elements = (block_json.get('supports', {}).get('sgs', {}).get('elements') or {})
     attrs = [a for a in (block_json.get('attributes') or {}) if not a.startswith('_')]
     if not elements or not attrs:
-        return [], attrs
+        return [], attrs, {}
 
     if clusters is None:
         clusters = _load_clusters()
@@ -112,10 +142,29 @@ def resolve_block(block_json, clusters=None):
         for attr in (element.get('contentAttrs') or []):
             claimed.setdefault(attr, key)
 
-    # TIER 2 — cluster members. Longest prefix first so a prefixed element wins the
-    # name over the bare wrapper, whose empty prefix would otherwise claim everything.
-    for key, element in sorted(elements.items(), key=lambda kv: -len(kv[1].get('prefix') or '')):
+    # TIER 2 — cluster members.
+    # Longest prefix first, so a prefixed element wins a name over the bare wrapper
+    # whose empty prefix would otherwise claim everything. Ties break on the declared
+    # `order` then the element key — NEVER on dict insertion order.
+    #
+    # ⚠ The insertion-order fallback was a real defect (found by adversarial review
+    # 2026-08-08): two bare-prefix elements declaring the same cluster were separated
+    # only by their position in block.json, so REORDERING THE JSON — a content-free
+    # change — silently moved controls between panels. 13 blocks were affected;
+    # `sgs/nav-menu` had 9 attributes hanging on it. A model that claims to be derived
+    # rather than hand-sorted cannot carry a hidden hand-sort.
+    #
+    # These ties are NOT resolved by a manufactured rule. They are reported: an
+    # attribute two elements can both claim means the manifest is underspecified, and
+    # the fix is an explicit `attrMap` entry on the element that owns it.
+    ordered = sorted(
+        elements.items(),
+        key=lambda kv: (-len(kv[1].get('prefix') or ''), kv[1].get('order') or 0, kv[0]))
+    ambiguous = {}
+    for key, element in ordered:
         for name in cluster_member_names(element, clusters):
+            if name in claimed and claimed[name] != key:
+                ambiguous.setdefault(name, {claimed[name]}).add(key)
             claimed.setdefault(name, key)
 
     prefixes = {k: (v.get('prefix') or k) for k, v in elements.items()}
@@ -139,7 +188,14 @@ def resolve_block(block_json, clusters=None):
     # A member satisfied NATIVELY owns no attribute of its own, so `claimed` never
     # holds its base name from the block's own attribute list. Its responsive
     # siblings still belong to the element that declares the member.
-    return [a for a in attrs if a in claimed], [a for a in attrs if a not in claimed]
+    #
+    # Ambiguity is reported only for names the block actually DECLARES — a contested
+    # virtual member nothing implements is not a data gap worth anyone's time.
+    declared = set(attrs)
+    contested = {name: owners for name, owners in ambiguous.items() if name in declared}
+    return ([a for a in attrs if a in claimed],
+            [a for a in attrs if a not in claimed],
+            contested)
 
 
 def _self_test():
@@ -200,8 +256,56 @@ def _self_test():
     assert 'gridTemplateColumns' in scoped, \
         'appliesToLayers positive control failed — a GRID element must claim arrangement members'
 
+    # CONTESTED detection — two bare-prefix elements declaring the same cluster both
+    # reach `padding`. Which one wins must never be decided by block.json key order.
+    contested_fixture = {
+        'supports': {'sgs': {'elements': {
+            'wrapper': {'clusters': ['layout'], 'order': 1},
+            'band': {'clusters': ['layout'], 'order': 2},
+        }}},
+        'attributes': {'padding': {}},
+    }
+    _, _, contested = resolve_block_detailed(contested_fixture, clusters)
+    assert 'padding' in contested and contested['padding'] == {'wrapper', 'band'}, \
+        'contested detection broken — an ambiguous attribute was resolved in silence: %r' % contested
+
+    # NEGATIVE CONTROL — give the second element its own prefix and the tie vanishes.
+    uncontested = json.loads(json.dumps(contested_fixture))
+    uncontested['supports']['sgs']['elements']['band']['prefix'] = 'band'
+    _, _, contested = resolve_block_detailed(uncontested, clusters)
+    assert not contested, \
+        'negative control failed — contested fires without an actual tie: %r' % contested
+
+    # Order must decide ties, not dict insertion order: reversing the JSON key order
+    # must not change which element wins.
+    reordered = {
+        'supports': {'sgs': {'elements': {
+            'band': {'clusters': ['layout'], 'order': 2},
+            'wrapper': {'clusters': ['layout'], 'order': 1},
+        }}},
+        'attributes': {'padding': {}},
+    }
+    assert resolve_block_detailed(reordered, clusters)[2] == \
+        resolve_block_detailed(contested_fixture, clusters)[2], \
+        'tie-break depends on block.json key order — the hidden hand-sort is back'
+
+    # The loader must FAIL rather than silently disable tier 2. Without this, a
+    # cluster file that parses but carries no `clusters` key makes the script report
+    # the pre-tier-2 figure with no error — measuring nothing, plausibly.
+    import tempfile
+    broken = os.path.join(tempfile.mkdtemp(), 'no-clusters.json')
+    with open(broken, 'w', encoding='utf-8') as handle:
+        handle.write('{"_meta": {"purpose": "clusters key absent"}}')
+    try:
+        _load_clusters(broken)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('loader accepted an empty cluster set — tier 2 can no-op in silence')
+
     print('self-test: PASS (attrMap, suffix family, fall-through, no-manifest, '
-          'tier-2 members + negative control, appliesToLayers gate)')
+          'tier-2 members + negative control, appliesToLayers gate, contested detection '
+          '+ negative control + key-order independence, empty-cluster guard)')
     return 0
 
 
@@ -223,6 +327,8 @@ def main():
     files = len(paths)
     declaring = total_attrs = total_scoped = 0
     rows = []
+    contested_rows = []
+    clusters = _load_clusters()  # once for the run, not once per block
     for path in paths:
         slug = os.path.basename(os.path.dirname(path))
         if args.block and slug != args.block:
@@ -231,12 +337,14 @@ def main():
             data = json.load(handle)
         if (data.get('supports', {}).get('sgs', {}).get('elements') or {}):
             declaring += 1
-        scoped, block_level = resolve_block(data)
+        scoped, block_level, contested = resolve_block_detailed(data, clusters)
         if not scoped and not block_level:
             continue
         total_attrs += len(scoped) + len(block_level)
         total_scoped += len(scoped)
         rows.append((slug, len(scoped), len(block_level)))
+        if contested:
+            contested_rows.append((slug, contested))
 
     block_level_total = total_attrs - total_scoped
     print('block.json files            : %d' % files)
@@ -249,6 +357,21 @@ def main():
     print('most block-level (the panel the rule does not yet design):')
     for slug, scoped, block_level in sorted(rows, key=lambda r: -r[2])[:8]:
         print('  %-22s element=%-4d block-level=%-4d' % (slug, scoped, block_level))
+
+    # CONTESTED — two elements can both claim the attribute, so which panel it lands
+    # in is not determined by the manifest. Reported, never silently tie-broken: the
+    # fix is an explicit `attrMap` entry on the element that owns it.
+    if contested_rows:
+        total = sum(len(c) for _, c in contested_rows)
+        print()
+        print('CONTESTED — %d attribute(s) across %d block(s) claimable by 2+ elements.'
+              % (total, len(contested_rows)))
+        print('These are manifest gaps, not placements. Add an explicit attrMap entry:')
+        for slug, contested in sorted(contested_rows, key=lambda r: -len(r[1]))[:8]:
+            names = ', '.join(sorted(contested)[:4])
+            more = '' if len(contested) <= 4 else ' (+%d more)' % (len(contested) - 4)
+            owners = sorted({o for owners in contested.values() for o in owners})
+            print('  %-22s %d: %s%s  [%s]' % (slug, len(contested), names, more, '/'.join(owners)))
     return 0
 
 
