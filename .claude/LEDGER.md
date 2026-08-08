@@ -15,9 +15,9 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 gets ONE true answer instead of three drifting ones.
 
 **Where 2026-08-08 left things, in a sentence each:**
-- **You were right that the 27-item checklist was the wrong shape.** It's been replaced in draft by
-  a **contract per control type** — for colour, links, sizes, hover, media and so on, one fixed way
-  of doing it, with a written list of the wrong-but-similar ways to catch. Committed `8d1d7c01`.
+- **You were right that the 27-item checklist was the wrong shape. It has now been replaced** by a
+  **contract per control type** — for colour, links, sizes, hover, media and so on, one fixed way of
+  doing it, with a written list of the wrong-but-similar ways to catch. The old checklist is retired.
 - **Why the old shape kept failing:** each rule was written against the one component its author had
   in mind, so anything doing the same job under a different name walked past. A gate went "40 → 0",
   someone wrote "DONE — all raw URL fields migrated", and the two biggest offenders had never been in
@@ -29,13 +29,16 @@ gets ONE true answer instead of three drifting ones.
   control anywhere. Proven by running the check that's supposed to catch them — it sees none of them.
 - **Two blocks ask a non-technical client to type raw CSS by hand.** One's help text literally says
   "a raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)".
-- **I then had the whole thing torn apart by four independent reviewers, and they were right to.**
+- **I had the whole thing torn apart by four independent reviewers first, and they were right to.**
   It would have deleted an accessibility requirement, wiped the only written record of your
   phone/tablet sizes, and reverted a fix you diagnosed yourself. Eleven of my numbers were wrong.
-  **Nothing was tombstoned, nothing was built** — the old checklist is still in charge.
-- **Your instinct about the database was correct and is now the priority.** The categorisation that
-  every new rule would be scoped against is wrong in four places, and the root cause turned out to
-  be the *same* bug as the gates: a hardcoded list of component names.
+  **All of that is now fixed and the replacement is signed off** — every one of the 30 old items is
+  either folded into a control contract or carried over word-for-word, with a table proving it.
+- **Your instinct about the database was correct.** The categorisation every new rule gets aimed with
+  was wrong in four places, and the cause was the *same* bug as the gates: a hardcoded list of
+  component names. **Two of the four are fixed** — 41 settings were filed under the wrong kind of
+  control, including a border width filed as a colour picker. **Two are left and both need a
+  decision from you, not typing from me.**
 
 **Older, still true:** WebGL is in the framework (Tier W, budgeted) · ⛔ GSAP's licence has a clause
 worth knowing before selling a plugin built on it · the Snooza job is 72 combinations, not 24.
@@ -69,13 +72,12 @@ before acting, do not assume it is current from memory alone:
   Narrative: `memory/session-2026-08-02-track1-phase1.md` + `-phase0.md`.
 - **⭐ Track 1b (Spec 35) — POOL 23 → 0, CLOSED (D504);** A7/A8/A9 CLOSED (D508/D509/D510), reseed
   landed; art-direction rollout COMPLETE (D521), verified at first paint.
-- **Track 1b enforcement — TASK F RESHAPED 2026-08-07 by Bean: one contract per CONTROL TYPE, not 27
-  flat conditions.** Draft at `.claude/plans/spec-35-control-type-contract.md` (`8d1d7c01`) —
-  **NOT authoritative; the 27-condition checklist still governs.** A 4-rater `/qc-council` found 10
-  silently dropped conditions (incl. reduced-motion, a WCAG gate), 3 proposals contradicting the
-  record, and 11 wrong figures. **Read the contract's own COUNCIL VERDICT section before trusting any
-  body figure.** ⛔ Blocked on the Tier 0 data-layer fix — four DB scoping columns are wrong.
-  Baseline commands live in that contract, not here.
+- **Track 1b enforcement — the control-type contract is AUTHORITATIVE (2026-08-08).**
+  `.claude/plans/spec-35-control-type-contract.md` now governs; the 27-condition checklist is a
+  TOMBSTONE. Superseding was gated on its **ABSORPTION MAP** proving all 30 items absorbed or
+  carried — the 2026-08-07 council caught the first draft losing ten, incl. a live WCAG gate.
+  Council findings A/B/C/D/F **discharged**; G/H stay OPEN by design (Rule 7 gates).
+  **Read the contract's DISCHARGE RECORD before trusting any body figure.**
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
 - **Tracks 2+2b (nav/header/footer merge):** 5-wave plan landed (D413), Wave 1 CLOSED, Wave 2 in
@@ -176,18 +178,23 @@ Pool 23→0 (D504) · A7/A8/A9 (D508/D509/D510) · variant matching (D512) · ar
 every media-bearing block (D521, `e5f85753`) · Task 0 real-video proof (`6777f8d0`) · the Spec 39
 reply IS SENT (`22436d19`). ⏳ No reply back from that track yet.
 
-### ⛔ TASK F IS RESHAPED, NOT CLOSED — read `.claude/plans/spec-35-control-type-contract.md` FIRST
+### TASK F — the contract now GOVERNS; enforcement is still unbuilt
 
-Bean ruled 2026-08-07 that the 27 flat end conditions are the wrong shape: **one fixed shape per
-CONTROL TYPE**, each naming its canonical component, required props, **banned lookalikes**, correct
-tab and scoping axis. The contract exists (`8d1d7c01`, 689 lines) and **opens with its own council
-verdict — read that section before believing any figure in the body.**
+`.claude/plans/spec-35-control-type-contract.md` is AUTHORITATIVE (2026-08-08). **One fixed shape per
+CONTROL TYPE** — canonical component, required props, **banned lookalikes**, tab, scoping axis.
+14 contracts + §CARRIED OBLIGATIONS + the ABSORPTION MAP + §13 (every shape with no contract yet,
+enumerated so none is homeless).
 
 **Why the old shape failed, in one example:** rule 08 matches `<TextControl type="url">`. It went
 40→0, and Spec 35 Part M recorded *"Wave 1 DONE — migrated across all raw-URL fields"* — while
 `sgs/button`'s `<URLInput>` and a raw URL field injected into **67** blocks from
 `extensions/hover-effects.js` had never been in the gate's scope. The zero was true of what the gate
-could see; the doc turned it into a claim about the world.
+could see; the doc turned it into a claim about the world. **The generalised fix is the EXTENSION
+SURFACE axis** — no DB column can see a filter-registered attr, so every rule must also read
+`src/blocks/extensions/*.js`.
+
+⛔ **Build no rule scoped against `block_capabilities` or icon `role`** — both Tier 0 columns are
+still wrong. `box_family` + `inspector_control_type` are FIXED (D523) and may be scoped against.
 
 ---
 
@@ -220,21 +227,8 @@ Bean's own gallery example proves it: the fix depends on `isCollectionKind()` re
 > a multi-attr façade that names no single attr; needs a design call, not a name in a list.
 > **(c) and (d) below remain OPEN.** Original analysis kept for the (c)/(d) work:
 
-Order — cheapest and safest first, root causes already established by council:
-- **(a) `box_family`** — the mechanism is CORRECT (`_collect_boxfamily_overrides()` reads
-  `supports.sgs.boxFamilies` from block.json, idempotent). **VERIFIED: none of the 5 blocks declares
-  that key.** Fix = block.json edits, no script change. 7 genuine object-typed attrs:
-  `card-grid.cardBorderWidth`, `mega-panel.panelPadding`, `nav-drawer.drawerPadding`,
-  `site-{header,footer}-row.padding`/`margin`. ⛔ **NOT `mega-panel.borderRadius`** — it is
-  `attr_type='string'`, a scalar radius; NULL is correct.
-  ⚠ `box_family` feeds the cloning converter's box-merge — verify a clone after, not just a build.
-- **(b) `inspector_control_type`** — root cause found: `_KNOWN_CONTROLS` at
-  `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py:2436-2441` is a hardcoded
-  16-name tuple with **zero** custom SGS components. An unrecognised tag yields no candidate → no
-  write → the stale value (a fossil of `enrich-db.py`, deleted 2026-07-21) survives forever. Add
-  `SgsLinkControl`, `URLInput`, `IconPicker`, `ShadowControl`, `StateToggleControl`,
-  `TypographyControls`, `ResponsiveBoxControl`, `ResponsiveOverride`. No converter consumer → safest
-  of the two cheap fixes. ⚠ **Measure on the LIVE tree — `.claude/worktrees/` holds 10 stale copies.**
+Order — (a)+(b) DONE (D523); (c)+(d) are design work. Root causes established by council:
+- **(a) `box_family` + (b) `inspector_control_type` — SHIPPED, see the box above.**
 - **(c) `block_capabilities`** — TWO problems. The 3 lift flags are declarative and healthy (add
   `arrayContentLift` to `testimonial-slider` + `content-collection`; ⛔ **NOT `post-grid`** — its
   arrays are config filters, `WP_Query` owns its content; ⚠ verify `gallery.mediaItems` is authored
@@ -259,28 +253,14 @@ skipped, so it previews nothing of the control-type regen.
 **Acceptance:** each of the four columns either reads correctly against a live spot-check, or is
 recorded as needing a design decision with the decision named. Not "the script ran".
 
-### Task 2 — restore the 10 dropped conditions, then tombstone
+### ✅ Task 2 — CLOSED 2026-08-08 (D524). Do not re-open.
 
-**What:** put back what the contract silently dropped, then retire the 27-condition checklist.
-**Why:** tombstoning first would delete live requirements. The contract's frontmatter already says
-`supersedes: NOTHING YET` — honour it.
-**Estimated time:** ~40 min.
-
-Restore: **17** (reduced-motion — WCAG 2.3.3 AA, one of only four gate-mode rules) · **11** (the
-768/1024 lock — the values exist ONLY as per-file constants in 3 `view.js` files, so the written rule
-was the sole thing holding it) · **2** (element-first panels) · **3** (ToolsPanel — currently
-downgraded to a remediation count) · **9** (image controls / FocalPointPicker) · **10** (array/repeater
-— 25 blocks, 34 array attrs) · **7's BORDER half** · **16** (native over hand-rolled) · **13's
-per-BLOCK obligation** · **19's E1–E4** · **T1/T2/T3** (⚠ `audit-feature-parity.py` is a LIVE wired
-gate that would have had no governing doc) · **22/24/25/26**.
-
-Also fix in the contract body: the 11 corrected figures, the 3 withdrawn proposals, the 7 scope
-errors, and §10's missing eight-field structure (ICON 3/8, SHADOW 3/8, RESPONSIVE **0/8** — and those
-are exactly where lookalikes went unenumerated).
-**Depends on:** none (doc-only). **Parallel with:** Task 1.
-**/qc gate after:** `/qc` subagent — independent, not `/qc-inline`.
-**Acceptance:** every one of the 27 is absorbed, carried, or dropped-with-a-recorded-reason. Only
-then tombstone `.claude/plans/spec-35-inspector-DONE-checklist.md`.
+All 10 dropped conditions + T1/T2/T3 restored into §CARRIED OBLIGATIONS; §14 BORDER created for
+condition 7's dropped half; 11 figures corrected at their body sites (not just in the verdict table);
+3 contradicted proposals withdrawn in-body; scope errors S1–S6 fixed, S1 generalised into a new
+EXTENSION SURFACE axis; §10 split into §10/§11/§12 at 8/8 fields each, plus §13 enumerating every
+control shape that still has no contract. ABSORPTION MAP proves 30/30 accounted, 0 dropped.
+Checklist tombstoned; Spec 35 N.3's dead "0 of 24" figure removed; brand-strip note re-pointed.
 
 ### Task 3 — Bean's open question (design gate, do not build)
 

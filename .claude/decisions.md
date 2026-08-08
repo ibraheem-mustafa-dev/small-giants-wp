@@ -1,5 +1,42 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D524 — the control-type contract SUPERSEDES the 27 conditions, gated on proving nothing was lost [ROUTINE]
+
+**2026-08-08. Task 2 of the Tier 0 session.** `.claude/plans/spec-35-control-type-contract.md` is now
+AUTHORITATIVE; `.claude/plans/spec-35-inspector-DONE-checklist.md` is a tombstone.
+
+**The gate on superseding was an ABSORPTION MAP, not a claim.** The 2026-08-07 council caught the
+first draft trying to supersede while having silently dropped ten conditions — including **17**, a
+LIVE WCAG 2.3.3 gate in GATE mode, and **11**, whose values (768/1024) exist only as per-file
+constants in 3 `view.js` files, so the written rule was the *sole* thing holding the standard. The
+map now accounts for all 30 items (27 + T1/T2/T3) as ABSORBED into a contract or CARRIED verbatim
+into §CARRIED OBLIGATIONS. **Dropped: none.** A doc may not supersede another by assertion.
+
+**What changed beyond restoration:**
+- **§14 BORDER created** — condition 7's border half had no contract at all, so a None/Thin/Thick
+  preset picker (the exact shape banned for shadow) was unbanned for border. Conformance recorded as
+  **unmeasured**, not assumed.
+- **§10 split into §10 ICON / §11 SHADOW / §12 RESPONSIVE at 8/8 fields each.** The council's finding
+  F was that the types skipping the eight-field shape are *exactly* where lookalikes went
+  unenumerated — SHADOW's banned list now carries all five shapes, including the two rule 07 cannot
+  see by construction (raw-CSS `TextControl`, and no-control-at-all).
+- **§13 added: every control shape with no contract yet, enumerated.** `SpacingControl`,
+  `FormTokenField`, repeater editors, preset `SelectControl` on `minHeight`, and six more. Listing
+  them is what stops the next pass repeating the 27's blind spot.
+- **EXTENSION SURFACE axis added (council S1, generalised).** No DB column can see a
+  filter-registered attr; `hover-effects.js` puts 13 attrs onto 67 blocks invisibly. Every rule must
+  now read `src/blocks/extensions/*.js`. The draft made this argument for LINK alone; it binds on
+  four contracts.
+- **11 figures corrected AT THEIR BODY SITES**, not only in the verdict table — a corrected figure
+  that lives only in an errata list is still wrong where anyone will read it.
+- **CO-20 carries condition 20 in the D402-correct per-client form**; the draft's Tier 4 "23 pattern
+  templateLock" reinstated a framework-wide backlog the spec had closed, and is removed.
+
+**Also swept:** Spec 35 N.3's dead *"0 of 24 end conditions"* figure removed (a council-flagged
+doc-asserts-more-than-the-gates-proved case); `spec-35-brand-strip-exemplar-note.md` re-pointed. The
+COUNCIL VERDICT section is **kept unedited** with a discharge record above it — a corrected figure
+with its correction deleted is just another unsourced number.
+
 ## D523 — Tier 0 (a)+(b) landed: the DB's two cheap scoping columns were wrong for the SAME reason the gates were [INCIDENT]
 
 **2026-08-08. Commit `e73bacde`.** Task 1(a)+(b) of the Spec 35 Tier 0 data layer, the prerequisite

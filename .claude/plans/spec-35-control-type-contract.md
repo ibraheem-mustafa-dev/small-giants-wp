@@ -1,19 +1,45 @@
 ---
 doc_type: reference
-title: Spec 35 — the CONTROL-TYPE CONTRACT (intended to replace the 27 end conditions)
-status: DRAFT — COUNCIL-CORRECTED, NOT YET AUTHORITATIVE
+title: Spec 35 — the CONTROL-TYPE CONTRACT (replaces the 27 end conditions)
+status: AUTHORITATIVE (2026-08-08) — council findings A/B/C/D/F discharged; G/H open by design
 created: 2026-08-07
+updated: 2026-08-08
 governs: the universal block-inspector control surface (Spec 35)
 spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
-supersedes: NOTHING YET — see §COUNCIL VERDICT. The 27-condition checklist
-  (.claude/plans/spec-35-inspector-DONE-checklist.md) REMAINS AUTHORITATIVE until the dropped
-  conditions listed below are restored here.
+supersedes: .claude/plans/spec-35-inspector-DONE-checklist.md (the 27 end conditions + T1/T2/T3) —
+  superseded 2026-08-08 once every one of the 30 was ABSORBED into a control-type contract or
+  CARRIED verbatim into §CARRIED OBLIGATIONS. The ABSORPTION MAP is the proof; nothing was dropped.
 ---
 
 ## ⛔ COUNCIL VERDICT (qc-council, 4 raters, 2026-08-07) — READ BEFORE ACTING
 
-**This document is NOT yet a replacement for the 27-condition checklist. Do not tombstone that
-file. Do not build from this document's figures without checking the corrections below.**
+> ### ✅ DISCHARGE RECORD — 2026-08-08
+> The verdict below is **kept in full and unedited**. It is the record of what this document got
+> wrong and must not be tidied away; a corrected figure with its correction deleted is just another
+> unsourced number. What has since been done:
+>
+> | Finding | Status |
+> |---|---|
+> | **A** — 10 conditions + T1/T2/T3 silently dropped | ✅ **DISCHARGED** — restored in §CARRIED OBLIGATIONS; §14 BORDER created for condition 7's dropped half; the ABSORPTION MAP accounts for all 30 |
+> | **B** — 3 proposals contradict the record | ✅ **DISCHARGED** — all three withdrawn in the body (`customCss`, `feature-grid`/D270, the 17-stylesheet claim) |
+> | **C** — 11 figures wrong | ✅ **DISCHARGED** — corrected at each body site, not only in this table |
+> | **D/S1** — no axis sees the universal-extension surface | ✅ **DISCHARGED** — EXTENSION SURFACE axis added and generalised to all four contracts that need it |
+> | **D/S2, S3, S4** — undercounted scopes | ✅ **DISCHARGED** in body (17 LayoutPanel · 13 IconPicker · 8 files/9 mounts) |
+> | **D/S5** — 4 clauses depend on an untrustworthy column | ✅ **DISCHARGED** by **D523** — `inspector_control_type` is now trustworthy; the façade residual is stated |
+> | **D/S6** — reshape would invalidate a wired gate | ✅ **DISCHARGED** — §12 field 1 names `lint-responsive-controls.py` as binding |
+> | **D** — condition 20 carried in a form the spec forbids | ✅ **DISCHARGED** — CO-20 carries the D402 per-client form; Tier 4 entry removed |
+> | **E** — fourth quadrant is 53, not ~45 | ✅ Figures already correct in body; the two matching traps are recorded in §12 field 5 |
+> | **F** — types skipping the eight-field shape | ✅ **DISCHARGED** — ICON/SHADOW/RESPONSIVE now carry 8/8 as §10/§11/§12; §13 enumerates every remaining homeless shape |
+> | **G** — Bean's `sgsCustomCss` question | ⏳ **OPEN by design** — a Rule 7 design gate, and CO-16 is what keeps raising it |
+> | **H** — proposals needing a design gate | ⏳ **OPEN** — marked in place; none may be built from this document |
+> | **I** — refuted claims | ✅ Recorded in the affected contracts |
+>
+> ⛔ **Still true and still binding: NOTHING in Tiers 1–4 may be built for a rule scoped against
+> `block_capabilities` or icon `role`.** Those two Tier 0 columns remain wrong. See §Tier 0.
+
+~~**This document is NOT yet a replacement for the 27-condition checklist. Do not tombstone that
+file.**~~ **Superseded 2026-08-08 — see the discharge record above.** *Do not build from this
+document's figures without checking the corrections below.*
 
 A structural pre-gate verified all 24 `file:line` citations (24/24, zero phantoms), and the
 council confirmed every STRUCTURAL finding: the 84-block denominator, all fifteen scoping axes,
@@ -147,7 +173,7 @@ defect that arrived under a different component name walked straight past it. Pr
 | Gate | Matches | Walked past it |
 |---|---|---|
 | `04-colour-alpha` | `ColorPalette`/`ColorGradientControl`/`GradientPicker`/`PanelColorGradientSettings` | `sgs/star-rating`'s `<TextControl type="color">`; `GradientOverlayControl`'s raw `GradientPicker` reaching 4 blocks indirectly |
-| `08-raw-url-link` | `<TextControl type="url">` | `sgs/button`'s `<URLInput>`; `extensions/hover-effects.js`'s raw URL field on ~82 blocks |
+| `08-raw-url-link` | `<TextControl type="url">` | `sgs/button`'s `<URLInput>`; `extensions/hover-effects.js`'s raw URL field on **67** blocks |
 | `07-preset-only-shadow` | `SelectControl` with a shadow-ish label | `sgs/quote` + `sgs/media` asking clients to hand-type raw CSS |
 | `20-pattern-template-lock` | theme pattern files | the BLOCK-side `templateLock` that silently deleted a stored child |
 
@@ -187,6 +213,28 @@ Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/
 | `block_attributes.is_responsive` | DB | 45 blocks |
 | `block_attributes.box_family` | DB | 46 blocks |
 | `block_attributes.css_state` | DB | 23 blocks (after excluding one mistag) |
+| **`extensions/*` REACH** | **the extension source itself** | **NOT a DB axis — see below** |
+
+### ⛔ The EXTENSION SURFACE axis (council S1 — added 2026-08-08, restores the generalisation)
+
+**No block-scoped axis above can select a control injected by a universal extension**, because a
+`blocks.registerBlockType` filter writes attributes at runtime and `block_attributes` only ever sees
+what a `block.json` declares. `extensions/hover-effects.js` registers **13 `sgsHover*` attrs onto 67
+blocks** this way — invisible to every DB column by construction. STATE's "23 blocks, 3 conform" is
+therefore a ~12× undercount **of the very shape STATE bans**.
+
+The contract originally made this argument for LINK alone and failed to generalise it. It binds on
+**four** contracts, all reached through the same file: **LINK** (raw URL field), **STATE** (13
+`sgsHover*` attrs), **SHADOW** (a preset `SelectControl` on a shadow attr), **COLOUR** (hover colour
+fields). Therefore:
+
+> **Every contract's `Scope` field must state its extension reach explicitly, and every detection
+> rule must read `src/blocks/extensions/*.js` as well as per-block `edit.js`.** A rule scanning only
+> per-block `edit.js` has a blind spot the exact size of the extension roster, and that blind spot is
+> where the largest single violation set in this document lives.
+
+Reach is derived, not hardcoded: a block is in an extension's surface when it does not opt out via
+`supports.sgs.hideExtensions`. `noOptOutExtensions` is `[]` today.
 
 **Bean's own suggested categories all map to real axes.** Three corrections:
 - **"Section" is three distinct axes**, not one — `tier='class-section'` (4), `container_kind='section'`
@@ -198,7 +246,23 @@ Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/
 
 ### ⛔ DB columns that are NOT trustworthy as gate inputs (all four measured 2026-08-07)
 
-1. **`inspector_control_type`** — says `TextControl` for `sgs/icon.linkUrl` and `sgs/media.linkUrl`;
+> ✅ **1 and 2 were FIXED 2026-08-08 — D523, commit `e73bacde`.** Both are now trustworthy as gate
+> inputs; the analysis below is retained because it names the defect CLASS every remaining rule must
+> avoid. **3 and 4 remain OPEN.** What actually landed: 7 `box_family` values declared in block.json
+> (⛔ not `mega-panel.borderRadius` — scalar, NULL is correct); `_KNOWN_CONTROLS` widened with this
+> framework's own single-attribute components, correcting **41** `inspector_control_type` rows (10
+> previously NULL, 31 previously wrong), measured on a sandbox DB copy first and idempotent on
+> re-run. A **repeater guard** was added in the same pass: a control inside an iteration over the
+> attribute's OWN value is a per-item control and must not be credited to the array attr — otherwise
+> widening the roster would have made `sgs/pricing-table::plans` read `SgsLinkControl`.
+> ⚠ **Council S5 is therefore DISCHARGED**: the four clauses depending on `inspector_control_type`
+> (BOOLEAN §1/§6, FREE-TEXT §2/§6) may now rely on it — but only for attrs whose control is a single
+> named component. **Residual: `site-{header,footer}-row` `padding`/`margin` still read NULL**, being
+> edited through `ContainerWrapperControls`, a multi-attribute façade that names no single attr. A
+> multi-attribute façade cannot be recorded in a single-value column; **that is a contract question,
+> not a data bug**, and no rule may treat those NULLs as "no control".
+
+1. ~~**`inspector_control_type`**~~ **— FIXED (D523).** Was: says `TextControl` for `sgs/icon.linkUrl` and `sgs/media.linkUrl`;
    both use `SgsLinkControl` (icon/edit.js:231, media/edit.js:734). Missed `sgs/button`'s `URLInput`
    entirely.
    **ROOT CAUSE (council, 2026-08-07): `_KNOWN_CONTROLS` at
@@ -213,7 +277,7 @@ Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/
    data layer. Fix: extend the tuple, re-run Stage 1.
    ⚠ Measure this on the LIVE tree: `.claude/worktrees/` holds **10** stale copies of this file with
    identical paths and plausible contents.
-2. **`box_family`** — **7** genuinely NULL *object*-typed attrs with live BoxControls:
+2. ~~**`box_family`**~~ **— FIXED (D523).** Was: **7** genuinely NULL *object*-typed attrs with live BoxControls:
    `card-grid.cardBorderWidth`, `mega-panel.panelPadding`, `nav-drawer.drawerPadding`,
    `site-header-row.padding`/`margin`, `site-footer-row.padding`/`margin`.
    ⛔ **`mega-panel.borderRadius` was a FALSE POSITIVE in the first draft of this contract** — it is
@@ -224,7 +288,10 @@ Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/
    **Cause is class (d), not a broken mechanism** — `_collect_boxfamily_overrides()` reads
    `supports.sgs.boxFamilies` from block.json and is idempotent; VERIFIED that none of the 5 blocks
    declares that key. Fix is block.json edits, not a script change.
-3. **`role LIKE 'icon-%'`** — tags 2 blocks; `IconPicker` is used by 9. A 78% under-count.
+3. **`role LIKE 'icon-%'`** — tags 2 blocks; `IconPicker` is used by **13** (15 sites). An **85%**
+   under-count, not 78%. ⚠ The `icon-*` family is the converter's SOURCE-disambiguation key, not a
+   "uses IconPicker" tag, so the promotion pass is self-limiting and never admits a new member —
+   widening it is a design choice, not a backfill. **OPEN.**
 4. **`block_capabilities`** — TWO different problems under one table name (council, 2026-08-07):
    - **The 3 "lift" capabilities** (`scalar-content-lift`, `scalar-styling-lift`,
      `array-content-lift`) are class (d) — read declaratively from `supports.sgs.*` in block.json,
@@ -279,22 +346,24 @@ Regenerate before building any gate on them.
    missing** (line 153).
 3. **Banned lookalikes** — `<TextControl type="url">`; **`<URLInput>`** (`button/edit.js:311`, plus
    a separate `SelectControl` for target and `TextControl` for rel — three raw controls doing one
-   component's job); **`extensions/hover-effects.js:388` raw URL field injected into ~82 blocks**.
+   component's job); **`extensions/hover-effects.js:388` raw URL field injected into 67 blocks**
+   (84 − 17 opt-outs; the "~82" this doc first carried is the `customCss` figure, transposed).
 4. **Tab** — `settings`. Placement is already consistent; **component choice is the live problem.**
 5. **Scope** — `surfaces.link` (16) is both over- and under-inclusive: 9 of the 16 match on a media
    URL or a colour token; 6 blocks with genuine repeater-item links are invisible because
    `build-roster.py` only scans top-level attr names. **True denominator: 14 blocks with a
-   navigational link field, plus the ~82-block extension surface which no block-scoped axis can see.**
-6. **Conformance** — 10 conform. Violators: `sgs/button`, ~82 via the extension, 2 baselined.
+   navigational link field, plus the 67-block extension surface which no block-scoped axis can see
+   — see the EXTENSION SURFACE axis added to the scoping table above (council S1).**
+6. **Conformance** — 10 conform. Violators: `sgs/button`, 67 via the extension, 2 baselined.
 7. **Detection** — add `<URLInput>` to the matcher (one line), and **extend rule 08's file set beyond
-   per-block `edit.js` to `src/blocks/extensions/*.js`**. That alone would have caught the 82.
+   per-block `edit.js` to `src/blocks/extensions/*.js`**. That alone would have caught the 67.
 8. **Open** — is `google-reviews.reviewRequestUrl` genuinely config, or a link a visitor follows?
    Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract?
 
 ## 3. ENUM / MODE
 
 1. **Canonical** — no shared component. `SelectControl` over a **declared `block.json` enum** is the
-   de facto standard (68 files); `ToggleGroupControl` for short option sets (14 files) — **the
+   de facto standard (**82** files); `ToggleGroupControl` for short option sets (14 files) — **the
    threshold is nowhere written down, so it cannot yet be gated.**
 2. **Required props** — `value` bound to the attr; `options` matching the declared `enum` **exactly**.
 3. **Banned lookalikes** — (a) a shared aggregator offering options outside the consuming block's
@@ -411,10 +480,10 @@ Regenerate before building any gate on them.
    `ToggleGroupControl` when the states are **named alternatives** (`overlayGradient` → "Solid /
    Gradient" is CORRECT, not a violation); `CheckboxControl` **only** for a boolean scoped to one
    item in a repeated list (all 8 uses verified correct).
-2. **Required props** — `label`; `__nextHasNoMarginBottom` on only **79/162** instances.
+2. **Required props** — `label`; `__nextHasNoMarginBottom` on **133/162** instances.
 3. **Banned lookalikes** — a 2-option `SelectControl` driving a boolean (3 DB rows); a
-   `RadioControl` with two options (**checked — ZERO live instances**); literal "On/Off" toggle
-   groups (**none found**).
+   `RadioControl` with two options (**1 live instance — `heading/edit.js:281`**; the earlier "ZERO"
+   was false, the judgement it supported survives); literal "On/Off" toggle groups (**none found**).
 4. **Tab** — behaviour → Settings; appearance → Styles. This discriminator is the contract.
 5. **Scope** — 252 boolean rows.
 6. **Conformance** — 89 boolean rows have no recorded control. **Not asserted as defects** — needs
@@ -429,7 +498,7 @@ Regenerate before building any gate on them.
 1. **Canonical** — `TextControl` for short single-line config; `TextareaControl` for long-form;
    `NumberControl` for unbounded or precision-typed numbers; `RangeControl` for coarse bounded
    values. **A number with a CSS unit is a LENGTH, not a bare number.**
-2. **Required props** — `__next40pxDefaultSize` is on **1 of 162** `TextControl`s and **0 of 8**
+2. **Required props** — `__next40pxDefaultSize` is on **2 of 199** `TextControl`s and **1 of 8**
    `NumberControl`s.
 3. **Banned lookalikes** — free text where a closed set exists (→ ENUM); free text driving a colour
    (`star-rating`) or typography (7 rows); `product-card.ctaFontSize` as a bare unitless
@@ -442,48 +511,299 @@ Regenerate before building any gate on them.
 7. **Detection** — cross-reference each control's target attr against `role`/`css_property`.
 8. **Open** — retype the string-typed font sizes to number?
 
-## 10. ICON · SHADOW · THE RESPONSIVE WRAPPER FAMILY
+## 10. ICON
 
-**ICON** — canonical `IconPicker`; 9/9 live callers conform (no bespoke pickers). `id` REQUIRED and
-missing (line 335). Scope by **live JSX usage, not the DB role** (2 tagged vs 9 real).
+1. **Canonical** — `src/components/IconPicker.js`. No competitor exists.
+2. **Required props** — `label`, `value`, `onChange`. **`id` REQUIRED and missing** (line 335) —
+   the same `BaseControl`-without-`id` defect as COLOUR and LINK.
+3. **Banned lookalikes** — a `SelectControl` over a hardcoded icon-name list; a `TextControl` taking
+   a raw icon slug; an emoji/character field standing in for an icon; a per-item icon picker inside a
+   repeater that is not this component (`form-field-tiles`, `pricing-table` both mount the real one —
+   listed so a future repeater cannot claim novelty).
+4. **Tab** — `settings` when the icon carries meaning (a list marker, a nav affordance);
+   `styles` when it is decoration on an already-labelled control.
+5. **Scope** — **live JSX usage, NOT the DB role: 13 blocks / 15 sites.** `role LIKE 'icon-%'` tags
+   only 2 — an 85% under-count, and it is not a bug in the data so much as a different question:
+   `icon-*` is the converter's source-disambiguation key. **Until that is resolved (§Tier 0 (d)), the
+   scope for THIS contract is a JSX census, and any rule that scopes it by `role` is wrong.**
+6. **Conformance** — 13/13 mount the canonical component; **0/13 pass the `id` requirement**, so the
+   real conformance figure is 0, not the "9/9" this doc first carried over a set four blocks short.
+7. **Detection** — census `<IconPicker` across `src/blocks/**/edit.js` **and `src/blocks/extensions/*.js`**;
+   assert every mount passes `id`. Lookalike detection via a `writesIcon` flag on
+   `inspector-scan/core/components.js`, derived from the component's own source (the `writesColour`
+   pattern), so an indirect mount through a shared wrapper resolves transitively.
+8. **Open** — does the `icon-*` role widen, or does a new declarative flag carry "uses IconPicker"?
+   **This is Tier 0 (d) and it is a design gate, not a backfill.**
 
-**SHADOW** — canonical `ShadowControl` (CSS-string shape). **Real footprint is 17 blocks; rule 07
-reports 1.** Violations:
-- **`sgs/quote:699` and `sgs/media:685` render a bare `TextControl` asking the client to hand-type
-  raw CSS** — media's help text literally says *"A raw CSS box-shadow value, e.g. 0 6px 24px
-  rgba(0,0,0,0.15)"*. Direct breach of the framework's own non-negotiable that no setting may
-  require touching code. Rule 07 cannot see it — it only inspects `SelectControl`.
-- `sgs/button` hand-rolls a genuine builder storing an **object** where the shared component stores
-  a string — ~80 duplicated lines, incompatible shape.
-- **`sgs/heading` and `sgs/text` declare `boxShadow`/`boxShadowHover`, render them, and have no
-  control of any kind** — clone-pipeline-only attrs.
-- 6 secondary shadow attrs unverified.
-Detection: census `css_property LIKE '%shadow%'` from the DB, then classify each attr's control in
-`edit.js` as compliant / raw-text / duplicate-builder / **no-control**. The fourth class is what
-rule 07 cannot see by construction.
+## 11. SHADOW
 
-**RESPONSIVE WRAPPERS — the real finding is three incompatible STORAGE SHAPES, not seven components:**
-1. flat per-tier attributes (`{prop}`/`{prop}Tablet`/`{prop}Mobile`) — dominant;
-2. one nested `{desktop,tablet,mobile}` object (FR-37-16) — read by
-   `sgs_responsive_normalise_object()`, which **has no concept of the `base` key** that
-   `ResponsiveBoxControl` uses internally. No live call site crosses them; the landmine is unarmed,
-   not disarmed;
-3. flat boolean-or-null tiers.
-The cascade resolver underneath is genuinely unified (`resolveTier()`, client + PHP). **Do not "fix"
-that.** Real issues:
-- `ResponsiveControl` ships a complete `isInherited`/`resolvedValue`/`onReset` API with **zero
-  callers**, while `ResponsiveOverride` was built separately to solve the same problem and has 8.
-- `ResponsiveTriStateControl` and `BooleanResponsiveControl` are the **same capability built twice**
-  on incompatible shapes.
-- **`ResponsiveOverride.js:78-83` has the same unassociated-label defect as `ResponsiveControl`** —
-  previously unflagged. Both need the same fix: a `useInstanceId()` id on the label span plus
-  `role="group" aria-labelledby` around the render-prop output (a group association, because the
-  child control is caller-supplied and cannot be trusted to label itself).
-- `ResponsiveBoxControl` vs `ResponsiveBoxControls` — one letter apart, zero shared code. **Rename
-  the plural one.**
-- **Sharpen the promotion trigger.** `BooleanResponsiveControl`'s header says "if a THIRD block needs
-  this, promote the duplicate." It should say: *check whether an existing component already covers
-  this need before promoting a third copy* — otherwise the trigger ships a permanent fork.
+1. **Canonical** — `src/components/ShadowControl.js`, storing a **CSS string**
+   (X/Y/blur/spread/colour+alpha/inset).
+2. **Required props** — `label`, `value`, `onChange`. **`id` REQUIRED and missing** (line 126).
+3. **Banned lookalikes — this type's list is the whole point, because rule 07 sees exactly one of
+   them:**
+   - a **preset `SelectControl`** (None/Small/Medium) writing a shadow attr — *the only shape rule 07
+     inspects*;
+   - **a preset `SelectControl` on a shadow attr reaching 67 blocks through
+     `extensions/hover-effects.js`** — same shape, invisible to every per-block scan (see the
+     EXTENSION SURFACE axis);
+   - **a bare `TextControl` asking for raw CSS** — `sgs/quote:699` and `sgs/media:685`; media's help
+     text literally reads *"A raw CSS box-shadow value, e.g. 0 6px 24px rgba(0,0,0,0.15)"*. A direct
+     breach of the framework's own non-negotiable that no setting may require touching code;
+   - **a hand-rolled builder storing an object** where the shared component stores a string —
+     `sgs/button`, ~80 duplicated lines, incompatible shape;
+   - **no control at all** — `sgs/heading` and `sgs/text` declare `boxShadow`/`boxShadowHover`,
+     render them, and expose nothing. Rule 07 cannot see this class by construction.
+4. **Tab** — `styles` (it is appearance), inside the border/effects grouping.
+5. **Scope** — `css_property LIKE '%shadow%'` across `block_attributes`, **plus** the extension
+   surface. Real footprint **17 blocks**; rule 07 reports 1.
+6. **Conformance** — 4 exact defects confirmed (`heading`/`text` × `boxShadow`/`boxShadowHover`),
+   2 raw-CSS text fields, 1 duplicate builder, 6 secondary shadow attrs unverified.
+7. **Detection** — census from the DB, then classify each attr's control in `edit.js` as
+   *compliant / preset-select / raw-text / duplicate-builder / **no-control***. Five buckets, not a
+   boolean. The fifth is the fourth quadrant and needs the render-without-control rule.
+8. **Open** — does `sgs/button`'s object shape migrate to the string shape, or does `ShadowControl`
+   gain an object mode? Either is a shared-mechanism change → **Rule 7 design gate.**
+
+## 12. THE RESPONSIVE WRAPPER FAMILY
+
+1. **Canonical** — **`ResponsiveControl`** (flat per-tier attrs) and **`ResponsiveOverride`**
+   (object-cascade rows). ⛔ These two are the **only** sanctioned primitives, and that is not this
+   document's opinion — **`lint-responsive-controls.py` is a WIRED prebuild gate naming exactly these
+   two** (council S6). Any reshape proposal that renames or removes either must change that gate in
+   the same commit or it will fail the build.
+2. **Required props** — a per-tier `value`/`onChange(tier, next)` pair; the wrapped control supplies
+   its own `units`. **Label association REQUIRED and missing on BOTH** — `ResponsiveControl:150-170`
+   and `ResponsiveOverride:78-83` render an unassociated label span. The fix is the same for each: a
+   `useInstanceId()` id on the span plus `role="group" aria-labelledby` around the render-prop output
+   — a GROUP association, because the child control is caller-supplied and cannot be trusted to label
+   itself. These two account for **30 of the 42** unnamed controls.
+3. **Banned lookalikes** — per-tier duplicate controls rendered side by side instead of one wrapped
+   control (`responsive-logo/edit.js:281-305` renders three always-visible logo slots); a bespoke
+   `DeviceTabs`; a third breakpoint of any value (**the 768/1024 lock — carried obligation 11**);
+   blending `ResponsiveControl` with `ResponsiveOverride` on one attr family.
+4. **Tab** — inherits the tab of whatever it wraps. The wrapper never changes placement.
+5. **Scope** — `block_attributes.is_responsive=1` → 45 blocks, **plus** any attr family declaring
+   `Tablet`/`Mobile` siblings that the column has not caught.
+   ⚠ **Two traps, both walked into during the audit:** literal-name matching MISSES `brand-strip`
+   (tier keys built dynamically in PHP at `helpers-typography.php:90,98`) and FALSE-POSITIVES on
+   `fontSizeTablet` (built by computed key in JS) — nearly 54 false findings between them.
+6. **Conformance** — the cascade resolver underneath is genuinely unified (`resolveTier()`, client +
+   PHP). **Do not "fix" that.** What is real: three incompatible STORAGE shapes (flat per-tier attrs,
+   dominant; one nested `{desktop,tablet,mobile}` object per FR-37-16, read by
+   `sgs_responsive_normalise_object()` which **has no concept of the `base` key** `ResponsiveBoxControl`
+   uses internally — no live call site crosses them, so the landmine is unarmed, not disarmed; and
+   flat boolean-or-null tiers).
+7. **Detection** — assert every attr family with `Tablet`/`Mobile` siblings mounts one of the two
+   canonical wrappers; assert no third breakpoint constant appears. ⚠ Must tolerate computed keys in
+   both directions — see the two traps in field 5.
+8. **Open (all Rule 7 design gates, none to be built from this document):**
+   - `ResponsiveControl` ships a complete `isInherited`/`resolvedValue`/`onReset` API with **zero
+     callers**, while `ResponsiveOverride` solves the same problem with 8. ⛔ **That API is a Spec 35
+     T1.2 deliverable, shipped intentionally — it is NOT dead code, and deleting it needs a gate.**
+   - `ResponsiveTriStateControl` vs `BooleanResponsiveControl` are **not** an accidental fork —
+     the latter's header states the shape incompatibility IS the reason both exist, and the promotion
+     check this document proposed "sharpening" was already performed and documented.
+   - `ResponsiveBoxControl` vs `ResponsiveBoxControls` — one letter apart, zero shared code.
+     ⛔ Renaming the plural severs `check-dead-controls`' prop-name bindings.
+
+## 13. CONTROLS WITH NO CONTRACT YET (council F — enumerated so none is "homeless")
+
+Every shape below is live and fits none of contracts 1–12. **A rule may not silently ignore these;
+each is either given a contract or recorded as deliberately uncontracted with a reason.** Listing
+them here is what stops the next enforcement pass repeating the 27's blind spot.
+
+| Shape | Live footprint | Nearest contract | Verdict |
+|---|---|---|---|
+| preset `SelectControl` on `minHeight` | 5 sites | LENGTH (§4) | **Needs a contract** — a length behind a preset picker breaks the token system |
+| raw `BoxControl` (not the Responsive wrapper) | 5 sites | 4-VALUE BOX (§5) | **Needs a contract** — bypasses the tier wrapper |
+| `BorderRadiusControl` (singular, non-responsive) | live | BORDER (§14) | **Absorbed by §14** |
+| `SpacingControl` | 9 sites | LENGTH (§4) | **Needs a contract** — is it a length, or its own token-scale type? |
+| `DeviceTabs` | live | RESPONSIVE (§12) | **Banned lookalike** — recorded in §12 field 3 |
+| `AnimationControl` | 1 site | — | **Needs a contract**, and it is where carried obligation 17 (reduced-motion) binds |
+| `ComboboxControl` | 2 sites | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
+| `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |
+| `FocalPointPicker` | 1 site | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
+| repeater item editors | `plans`, `icons`, `tiles` | — | **Needs a contract.** ⚠ D523 proved a per-item control must never be recorded as the array's control |
+
+## 14. BORDER (restores condition 7's dropped half)
+
+1. **Canonical** — `BorderBoxControl` for style + per-side width + colour + alpha;
+   `ResponsiveBorderRadiusControl` for the 4 corners. Radius is a **separate** control from width and
+   style — that separation is the condition, not an implementation detail.
+2. **Required props** — per-side values, a real `units` array, alpha on the colour, and a `label`.
+3. **Banned lookalikes** — a None/Thin/Thick **preset `SelectControl`** standing in for a real
+   builder (the exact shape condition 7 banned for shadow, and it was dropped for border); per-side
+   scalar attrs instead of an object (**migration COMPLETE — 0 remaining**, keep the gate);
+   a `TextControl` taking a raw CSS `border` shorthand; radius folded into the width control.
+4. **Tab** — `border`. Styles.
+5. **Scope** — `box_family IN ('borderWidth', …)` ∪ `css_property LIKE 'border%'`. ⚠ `box_family` is
+   now trustworthy (D523) but still scopes only to 4-side/4-corner OBJECT attrs — a scalar radius
+   (`card-grid.cardRadius`, `nav-menu.itemRadius`, `mega-aside.asideRadius`) is correctly NULL there
+   and must be picked up by the `css_property` leg, or the rule will miss every one of them.
+6. **Conformance** — **not yet measured.** This contract was absent from the draft, so no census
+   exists. ⛔ Recorded as unmeasured rather than assumed conformant.
+7. **Detection** — as §11 SHADOW: classify each border attr's control into compliant / preset-select
+   / raw-text / no-control. `sgs/card-grid.cardRadius` is a known raw-text violation (help text
+   *"e.g. 8px"*, accepts invalid CSS) — already named under LENGTH §4, and it belongs to both.
+8. **Open** — does `BorderBoxControl` need a responsive wrapper, or is border width a desktop-only
+   property in practice? Measure before deciding.
+
+---
+
+---
+
+## CARRIED OBLIGATIONS — the conditions no single control type owns
+
+**These are RESTORED verbatim in force from the 27-condition checklist (council finding A).** A
+control-type contract answers *"which component, which props, which tab"*. It cannot answer *"is
+this panel grouped by block part"* or *"is this animation reduced-motion gated"* — those bind across
+every type or across none. **Dropping them was the draft's most serious failure**, because two are
+accessibility requirements and one was the only written record of a locked standard.
+
+Each carries the same eight-field discipline where it can, and states its enforcement honestly.
+
+### CO-17. Reduced-motion gate on all animation *(was condition 17 — WCAG 2.3.3 AA)*
+Every animation and transition is `prefers-reduced-motion`-gated, from day one, never bolted on.
+**Enforced by** `inspector-scan/rules/17-reduced-motion-gate.js` — **GATE mode, one of only four**.
+⚠ **This is a WCAG conformance requirement, not a preference.** It binds on §13's `AnimationControl`,
+on `extensions/animation.js` (84 blocks), and on `fx.js`. Losing it would have silently dropped an
+accessibility gate that is currently live and passing.
+
+### CO-11. The 768/1024 device-tier lock *(was condition 11)*
+Responsive props expose the locked 768/1024 tiers via `ResponsiveControl`; **no bespoke third
+breakpoint.** ⚠ **Measured: these values exist ONLY as per-file constants in 3 `view.js` files** —
+there is no shared constant, no schema, no gate. **The written rule was the sole thing holding the
+standard**, so deleting it would have left 768/1024 enforced by nothing at all. Binds with §12 field 3
+and with the device-tier-vs-visual-breakpoint distinction (a design-driven `min-width:600px` is
+legitimate and must NOT be swept). **Enforced by** UNENFORCED — and now visibly so.
+
+### CO-2. Element-first panels *(was condition 2)*
+Composite blocks group inspector panels by block PART, not by property type. **Enforced by**
+UNENFORCED — the `consistency-scanner` this was once attributed to does not exist anywhere in the
+codebase.
+
+### CO-3. ToolsPanel on dense panels *(was condition 3 — downgraded to a bare remediation count)*
+Any panel with ~6+ controls uses `ToolsPanel`/`ToolsPanelItem` progressive disclosure (1–3
+`isShownByDefault`, `resetAll`). **Enforced by** `inspector-scan/rules/03-dense-panel-candidate.js`,
+ADVISORY. ⚠ A remediation count ("15 dense panels") is a backlog, not a rule — the obligation is
+restored here so the backlog has something to be a backlog *of*.
+
+### CO-9. Full image controls *(was condition 9)*
+Image-rendering blocks expose size dropdown (attachment `sizes`) + aspect-ratio + object-fit +
+`FocalPointPicker` where relevant. **Enforced by** `audit-feature-parity.py` (vs `core/image`).
+Binds with §7 MEDIA and gives §13's lone `FocalPointPicker` its home.
+
+### CO-10. Multi-item data is array-shaped *(was condition 10)*
+Any repeated/multi-item media or content uses an array attr with `gallery`/`multiple="add"`
+(`MediaGalleryPicker`) or a repeater — never a scalar attr added one at a time. **Scope: 25 blocks
+declare 34 array attrs.** **Enforced by** `audit-feature-parity.py`. ⚠ **D523 clarifies the control
+question this raises:** the control for an array attr is the REPEATER UI, never the per-item control
+inside it — a rule reading `inspector_control_type` for an array attr is asking the wrong question.
+
+### CO-13. hideExtensions is a per-BLOCK obligation *(was condition 13)*
+Irrelevant universal-extension panels are hidden per block via `supports.sgs.hideExtensions`
+(declarative). ⚠ The draft kept the mechanism and dropped the **per-block obligation** — which is
+the part that makes it anyone's job. **Enforced by** UNENFORCED. (Corrected 2026-08-06: the retired
+`audit-inspector-conformance.js` never carried a hideExtensions rule — a phantom-tool claim.)
+
+### CO-16. Native over hand-rolled *(was condition 16)*
+Native `supports` are used over hand-rolled equivalents for aspect-ratio / duotone / sticky /
+lightbox — **check native BEFORE building any of these.** Points at a Bean-approved D402 verdict
+table. **Enforced by** feature-parity + Wave-3 native-migration audit. ⚠ This is the condition that
+**prompts §G's open question** (retire `sgsCustomCss` for WP 7.0 native per-block CSS) — dropping it
+would have removed the standing instruction that raises that question at all.
+
+### CO-19. Accessibility pass, E1–E4 *(was condition 19)*
+Keyboard-operable · 4.5:1 contrast on the block's own control UI · `help` linked via
+`aria-describedby` · every control has an accessible name. **Enforced by** manual pass —
+**informational, never a gate** (`a11y-validation-feedback-informational-not-gate`). ⚠ The missing
+`id` on `DesignTokenPicker`, `SgsLinkControl`, `IconPicker`, `ShadowControl`, `ResponsiveControl` and
+`ResponsiveOverride` is an E1–E4 failure, which is why those clauses appear in six contracts above.
+
+### CO-20. Client patterns use templateLock *(was condition 20 — carried in a form the spec FORBIDS)*
+⛔ **`templateLock:"contentOnly"` is per-client opt-in — "never framework patterns" (D402,
+Bean-approved).** The draft's Tier 4 "23 pattern templateLock" reinstated a framework-wide backlog
+D402 had closed; that entry is REMOVED. The obligation as it correctly stands: a **client-facing**
+pattern using a block sets `templateLock:"contentOnly"`. **Enforced by** pattern audit; `rules.json`
+correctly keeps rule 20 ADVISORY.
+
+### CO-21. No Part-F anti-patterns *(was condition 21)*
+None of the Spec 35 Part F fail-list is present: essential control sidebar-only · incomplete option
+sets · no reset · colour-only focus · bespoke Custom-CSS field · raw-px spacing. **Enforced by** the
+contracts above, collectively.
+
+### T1 / T2 / T3 — the Bean-locked threaded standards *(dropped entirely)*
+⚠ **`audit-feature-parity.py` is a LIVE WIRED GATE. Dropping these left a running gate with no
+governing document** — the precise inversion of the failure this contract exists to end.
+- **T1. Feature-parity** — the block exposes AT LEAST the full capability of the core block(s) it
+  replaces (`block-replacements.json`), unless a named exception in `feature-parity-exceptions.json`
+  mapped to a Wave. *(memory `sgs-block-feature-parity-with-replaced-core`.)*
+- **T2. Shrink-to-fit** — intrinsically responsive: root/section min-content ≤ resolved container
+  width at every tier, 0 forced horizontal overflow, **measured with the UNIT-C `min-width:0`
+  backstop DISABLED** (proves intrinsic, not backstop-rescued). *(memory
+  `blocks-must-shrink-to-fit-container`.)*
+- **T3. Media-controls** — for media blocks, the control SET was decided against a competitor
+  comparison (Kadence / Spectra / GenerateBlocks + core) and every candidate is built or Wave-mapped.
+
+### Rule-authoring discipline 22 / 24 / 25 / 26 *(dropped; these govern how every rule above is WRITTEN)*
+- **22. Silence is not rejection — and never resolve a conflict by POSITION.** A detector's absence
+  from a supporting list and its presence-with-a-negative-verdict are different facts. Generalised
+  after three independent recurrences: whenever a script merges evidence from more than one source,
+  **the tie-break must be STATED in the script's own logic or comments** — never left to whatever the
+  data structure's default ordering produces. Correctness by accident of iteration order breaks the
+  moment input order changes.
+- **24. A report's named artefact must exist on disk** — mechanically checkable, not asserted. (Two
+  claimed "durable regression fixtures" were transient and gone.)
+- **25. Name the CONSUMER before measuring a value, then prove it by reading that consumer.**
+  `derived_selector` was measured against what a block RENDERS and 593 of 889 reported as phantom —
+  it is a DRAFT-side matcher. Reading the prior decision did not prevent the repeat; only reading the
+  consuming code would have.
+- **26. A zero from a search you wrote requires a positive control.** Find something you KNOW is
+  present first. Three zero results in one session were broken searches, not empty worlds.
+- *(23 and 27 are absorbed, not carried — see the absorption map.)*
+
+---
+
+## ABSORPTION MAP — where each of the 27 + T1–T3 now lives
+
+**Acceptance for Task 2: every condition is ABSORBED, CARRIED, or DROPPED-WITH-A-REASON. No silent
+losses.** This table is the check.
+
+| # | Condition | Disposition |
+|---|---|---|
+| 1 | Tab split via `group` | **ABSORBED** — the `Tab` field of every contract + Cross-cutting A |
+| 2 | Element-first panels | **CARRIED** — CO-2 |
+| 3 | ToolsPanel on dense panels | **CARRIED** — CO-3 |
+| 4 | Alpha + clearable colour | **ABSORBED** — §1 COLOUR fields 2–3 |
+| 5 | Real units / token scale | **ABSORBED** — §4 LENGTH fields 2–3 |
+| 6 | 4-value props are box-families | **ABSORBED** — §5 4-VALUE BOX (+ §14 for the border half) |
+| 7 | Real builders for compound values | **ABSORBED** — shadow half → §11; **BORDER half → §14 (restored)** |
+| 8 | LinkControl for links | **ABSORBED** — §2 LINK + the EXTENSION SURFACE axis |
+| 9 | Full image controls | **CARRIED** — CO-9 (binds §7) |
+| 10 | Multi-item data is array-shaped | **CARRIED** — CO-10 |
+| 11 | 768/1024 device switcher | **CARRIED** — CO-11 (binds §12) |
+| 12 | StateToggleControl for states | **ABSORBED** — §6 STATE / HOVER |
+| 13 | hideExtensions | **CARRIED** — CO-13 (per-block obligation restored) |
+| 14 | MediaUploadCheck on every MediaUpload | **ABSORBED** — §7 MEDIA field 2 (0 violations; keep the gate) |
+| 15 | No duplicated native-supports panel | **ABSORBED** — Cross-cutting B |
+| 16 | Native over hand-rolled | **CARRIED** — CO-16 (raises §G) |
+| 17 | Reduced-motion gate | **CARRIED** — CO-17 ⚠ WCAG, GATE mode |
+| 18 | Decorative-image + ARIA-label | **ABSORBED** — §7 MEDIA field 2 + CO-19 |
+| 19 | A11y pass E1–E4 | **CARRIED** — CO-19 |
+| 20 | Client patterns use templateLock | **CARRIED** — CO-20, in the D402-correct per-client form |
+| 21 | No Part-F anti-patterns | **CARRIED** — CO-21 |
+| 22 | Silence is not rejection | **CARRIED** — rule-authoring discipline |
+| 23 | Recall measured against the eligible POOL | **ABSORBED** — every contract's `Scope` field states its denominator; §13 exists so nothing is measured against a self-referential union |
+| 24 | Named artefacts must exist on disk | **CARRIED** |
+| 25 | Name the CONSUMER before measuring | **CARRIED** |
+| 26 | A zero needs a positive control | **CARRIED** |
+| 27 | DB statistics declare their denominator + scope to `sgs/%` | **ABSORBED** — the scoping table's denominator is stated as 84 = `WHERE slug LIKE 'sgs/%'`, and every contract's `Scope` field carries its own |
+| T1 | Feature-parity | **CARRIED** — governs the live `audit-feature-parity.py` |
+| T2 | Shrink-to-fit | **CARRIED** |
+| T3 | Media-controls competitor comparison | **CARRIED** |
+
+**DROPPED: none.** Every one of the 30 is accounted for above.
 
 ---
 
@@ -623,7 +943,11 @@ bug. Bumping 22.22.0 → 24.4.0 is a drop-in (do NOT go to 25.x — needs ESLint
   in the gate's scope.
 - Spec 35 Part N.3 — still carries the dead *"0 of 24 end conditions"* figure.
 - Root `CLAUDE.md:238` **mandates** `:not([style*="color"])`; `plugins/sgs-blocks/CLAUDE.md:218`
-  **forbids** it with measured evidence of invisible text at 1:1 contrast. 17 stylesheets carry it.
+  **forbids** it with measured evidence of invisible text at 1:1 contrast. **The doc conflict is
+  real and confirmed. The live-debt count was NOT** — `check-stranded-guards.py` is wired into
+  `prebuild` and passes: **0 stranded guards across 85 blocks.** The "17 stylesheets" figure counted
+  **removal comments** documenting the guard's deletion; the true figure is 16 files, 0 live. A grep
+  count is not a measurement.
 - `inspector-scan/run.js:6-10` says "NOT wired into prebuild yet" — it IS wired, non-gating.
 - `check-universal-fit.js:35-52` describes four extensions as lacking opt-outs — no longer true.
 
@@ -648,10 +972,28 @@ The clearest case is Bean's own worked example. The fix for a gallery being offe
 `block_capabilities`. `sgs/gallery` carries **zero** capability rows. Build the rule first and it
 passes gallery in silence — the exact failure this whole contract exists to end.
 
-Work: repair the `/sgs-update` derivations for `inspector_control_type` (stale — never recomputed
-after Wave 1), `box_family` (6 orphans), icon `role` (2 tagged vs 9 real), `block_capabilities`
-(collections untagged). Each needs its root cause established first — wrong derivation vs
-never-runs vs insert-only-never-updates vs missing source data are four different fixes.
+Work: repair the `/sgs-update` derivations for four columns. Each needed its root cause established
+first — wrong derivation vs never-runs vs insert-only-never-updates vs missing source data are four
+different fixes, and they were four different fixes.
+
+- ✅ **`inspector_control_type` — DONE (D523, `e73bacde`).** Root cause was a hardcoded 16-name
+  tuple with zero SGS components; widened, **41 rows corrected**, repeater guard added.
+- ✅ **`box_family` — DONE (D523, `e73bacde`).** Mechanism was healthy; the five blocks simply never
+  declared `supports.sgs.boxFamilies`. **7 values**, block.json edits only.
+- ⏳ **icon `role` — OPEN, design gate.** Declarative flag vs widened JSX-scan eligibility. The
+  `icon-*` family is the converter's SOURCE-disambiguation key, so widening it is not free.
+- ⏳ **`block_capabilities` — OPEN, design job, and the largest of the four.** The 3 lift flags are
+  declarative and healthy (add `arrayContentLift` to `testimonial-slider` + `content-collection`;
+  ⛔ **NOT `post-grid`** — its arrays are config filters, `WP_Query` owns its content; ⚠ verify
+  `gallery.mediaItems` is authored content first). The other ~35 values have **no live-path writer at
+  all** — a hardcoded `CAPABILITY_RULES` dict in `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py`,
+  outside this repo. **`isCollectionKind()` cannot be delivered by a backfill**; it needs a
+  declarative source designed and ported into Stage 1. ⚠ `block_selectors` has the same disease,
+  PARTIALLY ported — two writers, last-one-wins. Running `populate-db.py` to patch capabilities would
+  clobber selectors. **One job, not two.**
+
+**Tiers 1–4 remain blocked on the two OPEN columns**, but only for rules that scope against them.
+A rule scoping on `box_family` or `inspector_control_type` may now be built.
 
 ⚠ **A shared-DB reseed is a cross-track action.** Back up first, diff the result, and check every
 pruned row against its source before calling a drop damage — 33 pruned rows in a past session were

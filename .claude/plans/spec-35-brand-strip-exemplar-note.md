@@ -5,7 +5,8 @@ status: ACTIVE
 created: 2026-07-19
 governs: what "good" looks like for the sgs/media pilot inspector rebuild
 source: plugins/sgs-blocks/src/blocks/brand-strip/* (QC'd 2026-07-19)
-sibling: .claude/plans/spec-35-inspector-DONE-checklist.md (the rubric this passes against)
+sibling: .claude/plans/spec-35-control-type-contract.md (the rubric this passes against — replaced
+  spec-35-inspector-DONE-checklist.md, now a tombstone, on 2026-08-08 per D522/D523)
 ---
 
 # Why brand-strip is the reference

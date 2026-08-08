@@ -532,9 +532,18 @@ D2 reports and never assigns (66% precise); D8 reports a SCHEMA gap, never a rol
 
 ### N.3 — Enforcement status
 
-Per the DONE checklist (`.claude/plans/spec-35-inspector-DONE-checklist.md`), measured 2026-08-04:
-0 of 24 end conditions had a validated script. Task F completes the remainder. The bar for
-"enforced" is `STOP-CATALOGUE.md` §E6 (10 points) — "has a script" is not the bar.
+**Governed by the CONTROL-TYPE CONTRACT (`.claude/plans/spec-35-control-type-contract.md`) since
+2026-08-08, D522/D523.** The 27-condition DONE checklist it replaced is a tombstone; every one of its
+30 items is ABSORBED into a control-type contract or CARRIED into that document's §CARRIED
+OBLIGATIONS, proven by its ABSORPTION MAP. ⚠ **The former "0 of 24 end conditions" figure carried
+here was dead and has been removed** — it was one of the doc claims the 2026-08-07 council flagged as
+asserting more than the gates proved.
+
+The bar for "enforced" is `STOP-CATALOGUE.md` §E6 (10 points) — **"has a script" is not the bar**,
+and neither is "the gate reads green": a gate keyed to a component NAME has a blind spot by
+construction, which is why the contract requires each rule to enumerate its banned lookalikes.
+⛔ Task F builds no enforcement for a rule scoped against `block_capabilities` or icon `role` until
+those two Tier 0 columns are corrected.
 
 ## Sources
 
