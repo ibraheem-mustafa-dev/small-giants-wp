@@ -766,6 +766,16 @@ levels (verified 2026-08-08 by grepping every `.js`/`.py` under `plugins/sgs-blo
 `panel.?order` / `control.?order` / `canonical.?order` / `expectedOrder`: **zero hits** — every
 "ordering" match in the codebase is converter *execution* order, not inspector layout).
 
+⚠ **CORRECTION — this entry is a PROMOTION, not a discovery.** It was first written here claiming
+panel order "existed nowhere in the contract". That was **wrong**, and wrong by the classic
+truncated-grep failure: the search that produced the claim was capped at its first 20 hits and the
+relevant line sits at ~980. **Cross-cutting A already carried it**: *"Panel order — three competitors
+converged on ordering being deliberate. Stackable achieves it by convention repeated per block, not a
+shared assembler; GenerateBlocks centralises the Styles tab only — Advanced stays per-block even
+there."* What was genuinely missing is that this sat as a **competitor-research note with no
+obligation, no canonical order and no enforcement**. CO-28 promotes it to a binding obligation and
+inherits that research as its starting evidence — it does not replace or re-derive it.
+
 **Distinct from CO-2, which it sits next to.** CO-2 binds *grouping* — "panels grouped by block PART,
 not by property type". It is silent on sequence: a block can satisfy CO-2 completely and still present
 its parts in a different order from every other block. Grouping says what goes together; this says
