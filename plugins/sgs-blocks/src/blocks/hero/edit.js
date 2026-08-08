@@ -620,8 +620,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				     splitContentOrderMobile='media-first', splitImageBleed=false. Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
 				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) }>
+					{ /* The ToolsPanel label deliberately does NOT repeat the
+					     PanelBody title above it. It did until 2026-08-08, which
+					     rendered the same words twice in a row in the sidebar and
+					     read to a client as two panels rather than one. A nested
+					     ToolsPanel names the CLUSTER it resets, not its parent. */ }
 					<ToolsPanel
-						label={ __( 'Container / Entire Block', 'sgs-blocks' ) }
+						label={ __( 'Alignment & split layout', 'sgs-blocks' ) }
 						resetAll={ () => {
 							setAttributes( {
 								alignment: 'left',

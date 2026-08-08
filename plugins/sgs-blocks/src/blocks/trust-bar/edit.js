@@ -651,9 +651,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Layout (icon-circle only) ─────────────────────────────── */ }
+				{ /* ── Badges (icon-circle only) ──────────────────────────────
+				     Named for the ELEMENT it controls, not the property cluster
+				     (CO-2, element-first panel naming). It was "Layout" until
+				     2026-08-08, which collided verbatim with the SECTION's own
+				     "Layout" panel higher up the same tab: two panels, same word,
+				     different scopes. A cluster name is only correct when the
+				     controls apply to no single element — this one is badge-scoped
+				     (`columns` drives the badge grid), so it takes the element's
+				     name, exactly as sgs/button names its icon panel "Icon". */ }
 				{ badgeStyle === 'icon-circle' && (
-					<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody title={ __( 'Badges', 'sgs-blocks' ) } initialOpen={ false }>
 						<RangeControl
 							label={ __( 'Columns (at 600px+)', 'sgs-blocks' ) }
 							value={ columns }
