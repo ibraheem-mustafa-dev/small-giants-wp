@@ -5,12 +5,15 @@
  * Gutenberg blocks that support className. The CSS and JS runtime handle the
  * actual parallax effect; this extension provides the editor controls only.
  *
- * The two effects are surfaced as two purpose-built controls:
- *   1. Background parallax — a toggle in the native Colour panel (group="color"),
+ * The two effects are surfaced as two purpose-built controls, BOTH living in
+ * the Styles tab (motion is appearance, not behaviour):
+ *   1. Background parallax — a toggle in the native Colour panel
+ *      (group="color", which WordPress renders inside the Styles tab),
  *      shown only on blocks that support a background colour. The block's
  *      background moves at a different speed to its content on scroll.
- *   2. Element parallax — a toggle in its own panel, available on any block. The
- *      whole block drifts as the visitor scrolls, for a subtle sense of depth.
+ *   2. Element parallax — a toggle in its own panel (group="styles"),
+ *      available on any block. The whole block drifts as the visitor
+ *      scrolls, for a subtle sense of depth.
  *
  * Both write to the single sgsParallax enum ('none' | 'background' | 'element'),
  * so the two effects are mutually exclusive and the server render is unchanged.
@@ -179,7 +182,23 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 					</InspectorControls>
 				) }
 
-				<InspectorControls>
+				{ /*
+				 * FIX (inspector tab placement): this used to be a bare
+				 * <InspectorControls> (no group), which WordPress renders in
+				 * the SETTINGS tab — splitting the one parallax feature
+				 * across both tabs, since the background-parallax toggle
+				 * above is already correctly in the Styles tab via the
+				 * native group="color" (WordPress's named colour/typography/
+				 * border/dimensions groups all render inside the Styles tab,
+				 * not Settings — this is not the same thing as the generic
+				 * "Colour" panel living in Settings). Parallax is a motion/
+				 * appearance effect — the same "behaviour → Settings;
+				 * appearance → Styles" rule that puts animation.js's panel
+				 * in Styles — so Element parallax joins Background parallax
+				 * in the Styles tab via group="styles", giving the whole
+				 * feature one consistent home instead of two.
+				 */ }
+				<InspectorControls group="styles">
 					<PanelBody
 						title={ __( 'Element parallax', 'sgs-blocks' ) }
 						initialOpen={ false }

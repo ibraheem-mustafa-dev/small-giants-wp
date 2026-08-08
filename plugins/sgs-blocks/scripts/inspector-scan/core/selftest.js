@@ -39,6 +39,15 @@ function buildTestCtx( cache, tmpBase ) {
 		// tmpBase, so a fixture with no `_theme/functions.php` genuinely
 		// exercises the "no framework gate found" path, sandboxed.
 		themeDir: path.join( tmpBase, '_theme' ),
+		// GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) —
+		// same reasoning as themeDir immediately above: run.js's real buildCtx
+		// points extensionsDir at the real src/blocks/extensions; a rule built
+		// on it must be exercisable in isolation, so self-test points it inside
+		// the copied fixture instead. A fixture with no `_extensions/` dir
+		// genuinely and safely exercises "extension surface absent" — a
+		// hardcoded real-repo path here would make any such rule untestable
+		// (a gate that cannot fail reads green forever).
+		extensionsDir: path.join( tmpBase, '_extensions' ),
 		roster: { entries: [] },
 		// Resolved against the REAL src/components/index.js, not the fixture
 		// temp dir — shared-component discovery is a property of the framework,

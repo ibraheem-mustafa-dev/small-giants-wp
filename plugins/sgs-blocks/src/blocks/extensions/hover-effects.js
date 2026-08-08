@@ -276,7 +276,19 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		return (
 			<>
 				<BlockEdit { ...props } />
-				<InspectorControls>
+				{ /*
+				 * Split across the two native tabs by CONTROL TYPE
+				 * (behaviour → Settings; appearance → Styles), not left as
+				 * one bare InspectorControls the way it was before. Hover
+				 * Effects (colour/scale/shadow/zoom/grayscale/duration/
+				 * easing) and Click Effects (ripple) both change how the
+				 * block LOOKS/feels on interaction — appearance, so they
+				 * render in the Styles tab. Block Link changes what the
+				 * block DOES (turns the whole card into a link) —
+				 * behaviour, so it stays in the default (Settings) tab
+				 * below.
+				 */ }
+				<InspectorControls group="styles">
 					{ ! hideHover && (
 					<PanelBody
 						title={ __( 'Hover Effects', 'sgs-blocks' ) }
@@ -380,6 +392,14 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						/>
 					</PanelBody>
 					) }
+					</InspectorControls>
+					{ /*
+					 * Block Link is BEHAVIOUR (turns the block into a link) —
+					 * it belongs in the default (Settings) tab, not Styles.
+					 * Rendered as its own bare InspectorControls so it does
+					 * not inherit the group="styles" placement above.
+					 */ }
+					<InspectorControls>
 					{ ! hideBlockLink && (
 					<PanelBody
 						title={ __( 'Block Link', 'sgs-blocks' ) }
@@ -412,6 +432,13 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						) }
 					</PanelBody>
 					) }
+					</InspectorControls>
+					{ /*
+					 * Click Effects (ripple) is appearance/feedback on
+					 * interaction — back in the Styles tab alongside Hover
+					 * Effects above.
+					 */ }
+					<InspectorControls group="styles">
 					{ ! hideClick && (
 					<PanelBody
 						title={ __( 'Click Effects', 'sgs-blocks' ) }

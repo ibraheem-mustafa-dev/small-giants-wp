@@ -154,7 +154,12 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 		return (
 			<>
 				<BlockEdit { ...props } />
-				<InspectorControls>
+				{ /*
+				 * Object position / fit / max-width / height are all
+				 * APPEARANCE controls (behaviour → Settings; appearance →
+				 * Styles), so this panel renders in the Styles tab.
+				 */ }
+				<InspectorControls group="styles">
 					<PanelBody
 						title={ __( 'Image Controls', 'sgs-blocks' ) }
 						initialOpen={ false }

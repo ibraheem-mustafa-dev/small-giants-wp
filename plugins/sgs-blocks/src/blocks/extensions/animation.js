@@ -135,7 +135,13 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 		return (
 			<>
 				<BlockEdit { ...props } />
-				<InspectorControls>
+				{ /*
+				 * Motion is APPEARANCE (behaviour → Settings; appearance →
+				 * Styles), so this panel renders in the Styles tab — matching
+				 * fx.js's "Scroll & effects" panel, the other motion-control
+				 * surface in this codebase.
+				 */ }
+				<InspectorControls group="styles">
 					<PanelBody
 						title={ __( 'Animation', 'sgs-blocks' ) }
 						initialOpen={ false }

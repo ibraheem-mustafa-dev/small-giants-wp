@@ -29,6 +29,18 @@ const PATTERNS_DIR = path.resolve( __dirname, '..', '..', '..', '..', 'theme', '
 // climb is 4 levels (inspector-scan -> scripts -> sgs-blocks -> plugins ->
 // repo root), matching PATTERNS_DIR's existing climb above.
 const THEME_DIR = path.resolve( __dirname, '..', '..', '..', '..', 'theme', 'sgs-theme' );
+// GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) —
+// src/blocks/extensions/ holds the six "universal extension" files that
+// inject inspector controls into all blocks at runtime (see
+// plugins/sgs-blocks/CLAUDE.md "Extensions" table: animation, responsive
+// visibility, hover state, custom CSS, conditional visibility, image
+// controls). core/roster.js only admits directories containing a
+// block.json (~line 65 of core/roster.js), so extensions/ — which has none
+// — is never in the roster and is structurally BLIND to every roster-keyed
+// rule. This constant makes the surface reachable via ctx.extensionsDir;
+// it does NOT add extensions to the roster denominator (they are a
+// separate surface, not pseudo-blocks).
+const EXTENSIONS_DIR = path.resolve( __dirname, '..', '..', 'src', 'blocks', 'extensions' );
 
 function loadRulesTable() {
 	if ( ! fs.existsSync( RULES_JSON_PATH ) ) {
@@ -92,6 +104,7 @@ function buildCtx( cache, rosterInfo ) {
 		blocksDir: BLOCKS_DIR,
 		patternsDir: PATTERNS_DIR,
 		themeDir: THEME_DIR,
+		extensionsDir: EXTENSIONS_DIR,
 		components: components.discover( cache ), // resolved once per run, not per rule/block
 		ast: ( f ) => cache.parse( f ),
 		text: ( f ) => cache.text( f ),
