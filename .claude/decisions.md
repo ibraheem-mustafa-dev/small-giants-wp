@@ -1,5 +1,51 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D525 — 36 capabilities had no writer and no reader; a block now DECLARES what it is [INCIDENT]
+
+**2026-08-08. Bean-ruled (route 1 of 3). Commit `dd946aa9`.** Tier 0 (c)+(d) — the last two wrong
+scoping columns. **All four are now correct; Spec 35 Tiers 1–4 are unblocked.**
+
+**The plan's premise was refuted by measurement.** `block_capabilities` held TWO unrelated things
+under one name: the **3 lift flags** (declarative, written by `/sgs-update`, read by the converter at
+3 live call sites — healthy) and **~36 semantic tags** (`carousel`, `grid-layout`, `logo-strip`,
+`icon-text`…) with **no in-repo writer** — their only writer is a hardcoded `CAPABILITY_RULES` dict
+in `populate-db.py`, outside this repo — **and no reader at all**, because the capability-aware
+tiebreaker that consumed them was RETIRED at D278. Every live `capabilities_for()` call site reads
+only the lift flags. **They were fossils**, and the proposed
+`isCollectionKind() = capability IN ('array-content-lift','carousel','grid-layout','logo-strip')`
+would have built the new rule on **three dead values** — the Tier 0 failure mode arriving inside the
+fix for it. The array-attr fallback leg was measured too: 10 blocks, and it **misses `sgs/gallery`**,
+the block the worked example is about.
+
+**Shipped.** 73 fossil rows pruned — **on every Stage 1, not once by hand**, so if `populate-db.py`
+is ever run the next `/sgs-update` removes what it reintroduced. A table-driven declarative map
+(`supports.sgs.<key>` → capability row): **`collection` on 15 blocks**, **`icon-picker` on 13**.
+
+**`collection` is ARCHITECTURAL, not taxonomic** — the block renders a repeated set whose children
+are interactive, so a block-link cannot wrap it (HTML forbids nesting interactive elements). That is
+why `category === 'sgs-forms' && !surfaces.styling` could never flag gallery. Roster derived per
+block from `render.php`: `accordion` via its item's `<summary>`, `card-grid`/`content-collection` via
+`render_block()` children. ⛔ `timeline`/`process-steps` repeat but their children are inert — a
+block-link there is valid, excluded deliberately.
+
+**(d) was solved by SEPARATION, not widening.** `role LIKE 'icon-%'` stays untouched: it is the
+converter's icon-SOURCE discriminator (lucide/emoji/dashicon/wp-icon) and answers a different
+question. Widening it to cover control-surface scope would have broken the converter's arm.
+
+**Verification.** DB backed up; all 73 removed rows checked against the declared fossil set — 0
+unexpected; 28 added, exactly 15+13; second run prunes 0, writes 0; lift flags untouched at 10/9/3.
+**Positive control on the delete-on-absence branch** (which the main run never exercises): removing
+the key from gallery on a SANDBOX copy deletes the row; block.json restored byte-identical.
+Converter suite 38 failed / 773 passed — identical to baseline. `npm run build` exits 0.
+
+⚠ **Two things deliberately NOT folded in:** adding `arrayContentLift` to `testimonial-slider` +
+`content-collection` is converter-read → **Rule 7 change**, still open. And `block_selectors` has the
+same fossil disease, PARTIALLY ported (two writers, last-one-wins) — **do not run `populate-db.py`**.
+
+**Lesson.** Dead data does not complain. 36 rows survived for months with no writer and no reader
+because nothing ever failed — and the plan proposed reviving them. Measure who WRITES and who READS
+before designing on a column. Sibling of `a-read-with-no-writer-fails-silently`.
+
 ## D524 — the control-type contract SUPERSEDES the 27 conditions, gated on proving nothing was lost [ROUTINE]
 
 **2026-08-08. Task 2 of the Tier 0 session.** `.claude/plans/spec-35-control-type-contract.md` is now

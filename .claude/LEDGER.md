@@ -36,9 +36,10 @@ gets ONE true answer instead of three drifting ones.
   either folded into a control contract or carried over word-for-word, with a table proving it.
 - **Your instinct about the database was correct.** The categorisation every new rule gets aimed with
   was wrong in four places, and the cause was the *same* bug as the gates: a hardcoded list of
-  component names. **Two of the four are fixed** — 41 settings were filed under the wrong kind of
-  control, including a border width filed as a colour picker. **Two are left and both need a
-  decision from you, not typing from me.**
+  component names. **All four are now fixed.** 41 settings were filed under the wrong kind of control
+  (a border width filed as a colour picker); and 36 categories turned out to be **dead labels — no
+  code wrote them, no code read them, for months**. The plan wanted to revive them; instead each
+  block now states the one fact that was actually needed about itself.
 
 **Older, still true:** WebGL is in the framework (Tier W, budgeted) · ⛔ GSAP's licence has a clause
 worth knowing before selling a plugin built on it · the Snooza job is 72 combinations, not 24.
@@ -193,8 +194,11 @@ could see; the doc turned it into a claim about the world. **The generalised fix
 SURFACE axis** — no DB column can see a filter-registered attr, so every rule must also read
 `src/blocks/extensions/*.js`.
 
-⛔ **Build no rule scoped against `block_capabilities` or icon `role`** — both Tier 0 columns are
-still wrong. `box_family` + `inspector_control_type` are FIXED (D523) and may be scoped against.
+✅ **ALL FOUR Tier 0 columns are now correct (D523 + D525). Tiers 1–4 are UNBLOCKED.**
+`isCollectionKind()` = a `collection` capability row, declared via `supports.sgs.collection`
+(15 blocks). ⛔ **Do not run `populate-db.py`** — it reintroduces pruned fossils and clobbers
+`block_selectors`. ⚠ Still open: `arrayContentLift` for `testimonial-slider`/`content-collection`
+is converter-read → a Rule 7 change, not done.
 
 ---
 
@@ -227,20 +231,8 @@ Bean's own gallery example proves it: the fix depends on `isCollectionKind()` re
 > a multi-attr façade that names no single attr; needs a design call, not a name in a list.
 > **(c) and (d) below remain OPEN.** Original analysis kept for the (c)/(d) work:
 
-Order — (a)+(b) DONE (D523); (c)+(d) are design work. Root causes established by council:
-- **(a) `box_family` + (b) `inspector_control_type` — SHIPPED, see the box above.**
-- **(c) `block_capabilities`** — TWO problems. The 3 lift flags are declarative and healthy (add
-  `arrayContentLift` to `testimonial-slider` + `content-collection`; ⛔ **NOT `post-grid`** — its
-  arrays are config filters, `WP_Query` owns its content; ⚠ verify `gallery.mediaItems` is authored
-  content first). The other ~35 values have **no live-path writer at all** — a hardcoded
-  `CAPABILITY_RULES` dict in `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py`, outside the
-  repo. `isCollectionKind()` therefore **cannot be delivered by a backfill**; it needs a declarative
-  source designed + ported into Stage 1. ⚠ `block_selectors` has the same disease, PARTIALLY ported
-  — two writers now, last-one-wins. Running `populate-db.py` to patch capabilities would clobber
-  selectors. **One job, not two.**
-- **(d) icon `role`** — needs a design choice first (declarative flag vs widened JSX-scan
-  eligibility). The `icon-*` family is the converter's SOURCE-disambiguation key, not a "uses
-  IconPicker" tag — the promotion pass is self-limiting and never admits a new member.
+All four columns DONE — (a)+(b) D523, (c)+(d) D525. Detail: `decisions.md` + the contract's
+§Tier 0. Nothing further is owed here.
 
 **Orchestration:** (a) and (b) inline — small, mechanical, and (b) is the one measurement that must
 not be delegated. (c) and (d) are design work → `/brainstorming` before any build.

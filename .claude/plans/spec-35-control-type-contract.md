@@ -522,10 +522,14 @@ Regenerate before building any gate on them.
    listed so a future repeater cannot claim novelty).
 4. **Tab** — `settings` when the icon carries meaning (a list marker, a nav affordance);
    `styles` when it is decoration on an already-labelled control.
-5. **Scope** — **live JSX usage, NOT the DB role: 13 blocks / 15 sites.** `role LIKE 'icon-%'` tags
-   only 2 — an 85% under-count, and it is not a bug in the data so much as a different question:
-   `icon-*` is the converter's source-disambiguation key. **Until that is resolved (§Tier 0 (d)), the
-   scope for THIS contract is a JSX census, and any rule that scopes it by `role` is wrong.**
+5. **Scope — `block_capabilities` capability `icon-picker` (13 blocks / 15 sites), declared via
+   `supports.sgs.iconPicker`.** ⛔ **Never scope this contract by `role LIKE 'icon-%'`** — that role
+   family is the converter's icon-SOURCE discriminator and tags 2 blocks, an 85% under-count of a
+   different question (D525 separated the two rather than widening the role, which would have broken
+   the converter's arm).
+   ⚠ The census is 13 blocks only because it scanned **past `edit.js`** — `sgs/cart` mounts the
+   picker from `TriggerSettingsControls.js`. A per-block `edit.js` scan reports 12 and looks
+   complete. See the EXTENSION SURFACE axis.
 6. **Conformance** — 13/13 mount the canonical component; **0/13 pass the `id` requirement**, so the
    real conformance figure is 0, not the "9/9" this doc first carried over a set four blocks short.
 7. **Detection** — census `<IconPicker` across `src/blocks/**/edit.js` **and `src/blocks/extensions/*.js`**;
@@ -877,14 +881,20 @@ Gallery is `sgs-content` with `styling: true`. It fails both, always.
 Wrapping a gallery in one link is broken because HTML forbids nesting interactive elements — the
 gallery's own images are interactive. Nothing to do with styling or category.
 
-**Proposed fit rule (DB-derived, R-31-1 compliant):**
+⛔ **SUPERSEDED 2026-08-08 (D525).** The rule first proposed here —
+`capability IN ('array-content-lift','carousel','grid-layout','logo-strip') OR attr_type='array' AND
+role='content'` — **cannot be built as written.** Three of those four capabilities are FOSSILS with
+no writer and no reader (see §Tier 0). And the array-attr fallback leg was measured: it selects 10
+blocks and **misses `sgs/gallery`**, the very block this section is about, because `mediaItems`
+carries no role.
+
+**The shipped rule is a DECLARATION:**
 ```
-isCollectionKind(block) =
-  capability IN ('array-content-lift','carousel','grid-layout','logo-strip')
-  OR has a block_attributes row with attr_type='array' AND role='content'
+isCollectionKind(block) = block_capabilities row (slug, 'collection')
+                          ← supports.sgs.collection in the block's own block.json
 ```
-Fire it for **Block Link** specifically. ⚠ **Prerequisite:** re-derive `block_capabilities` first —
-`sgs/gallery` carries zero tags today, as do `testimonial-slider`, `post-grid`, `content-collection`.
+15 blocks declare it. Fire it for **Block Link** specifically. No prerequisite remains — the data
+exists, has a live writer, and a block states the fact about itself.
 
 ⛔ **CORRECTED:** the hardcoded 14-slug denylist is **not** in `animation.js` — it is at
 **`scripts/check-universal-fit.js:146`**, i.e. inside the AUDIT GATE, not the extension.
@@ -980,20 +990,44 @@ different fixes, and they were four different fixes.
   tuple with zero SGS components; widened, **41 rows corrected**, repeater guard added.
 - ✅ **`box_family` — DONE (D523, `e73bacde`).** Mechanism was healthy; the five blocks simply never
   declared `supports.sgs.boxFamilies`. **7 values**, block.json edits only.
-- ⏳ **icon `role` — OPEN, design gate.** Declarative flag vs widened JSX-scan eligibility. The
-  `icon-*` family is the converter's SOURCE-disambiguation key, so widening it is not free.
-- ⏳ **`block_capabilities` — OPEN, design job, and the largest of the four.** The 3 lift flags are
-  declarative and healthy (add `arrayContentLift` to `testimonial-slider` + `content-collection`;
-  ⛔ **NOT `post-grid`** — its arrays are config filters, `WP_Query` owns its content; ⚠ verify
-  `gallery.mediaItems` is authored content first). The other ~35 values have **no live-path writer at
-  all** — a hardcoded `CAPABILITY_RULES` dict in `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py`,
-  outside this repo. **`isCollectionKind()` cannot be delivered by a backfill**; it needs a
-  declarative source designed and ported into Stage 1. ⚠ `block_selectors` has the same disease,
-  PARTIALLY ported — two writers, last-one-wins. Running `populate-db.py` to patch capabilities would
-  clobber selectors. **One job, not two.**
+- ✅ **icon `role` — DONE (D525, `dd946aa9`), by SEPARATION not widening.** The `icon-*` role stays
+  exactly as it is: it is the converter's icon-SOURCE discriminator (lucide / emoji / dashicon /
+  wp-icon) and answers a different question, which is why it tags 2 blocks where the picker is
+  mounted by 13. Widening it would have broken the converter's arm. The control-surface fact is now
+  its own declaration: **`supports.sgs.iconPicker` → capability `icon-picker`, 13 blocks**.
+- ✅ **`block_capabilities` — DONE (D525, `dd946aa9`), and the premise was wrong.** The table held
+  TWO unrelated things: 3 declarative lift flags (healthy, converter-read) and ~36 semantic tags with
+  **no in-repo writer AND no reader** — the capability-aware tiebreaker that consumed them was
+  RETIRED at D278, and every live `capabilities_for()` call site reads only the lift flags. They were
+  fossils. **The proposed `isCollectionKind()` scoped to `carousel`/`grid-layout`/`logo-strip` would
+  have built a new rule on three dead values** — the Tier 0 failure mode arriving inside the fix for
+  it. 73 fossil rows pruned, and the prune re-runs every Stage 1 so `populate-db.py` cannot silently
+  reintroduce them.
 
-**Tiers 1–4 remain blocked on the two OPEN columns**, but only for rules that scope against them.
-A rule scoping on `box_family` or `inspector_control_type` may now be built.
+**`isCollectionKind()` is now buildable and its definition changed.** Do NOT use the capability list
+in Cross-cutting B below. Use the declaration:
+
+```
+isCollectionKind(block) = block_capabilities row (slug, 'collection')
+                          ← supports.sgs.collection in the block's own block.json
+```
+
+15 blocks declare it. The fact is **architectural, not taxonomic**: the block renders a repeated set
+whose children are interactive, so a block-link cannot wrap it (HTML forbids nesting interactive
+elements). That is precisely why the old `category === 'sgs-forms' && !surfaces.styling` heuristic
+could never flag `sgs/gallery`. Roster derived per block from `render.php`: `accordion` qualifies
+through its item's `<summary>`, `card-grid` and `content-collection` through `render_block()`
+children. ⛔ `timeline` and `process-steps` repeat but their children are **inert** — a block-link
+there is valid, and they are deliberately excluded.
+
+⚠ **Still open, and NOT part of this:** whether `arrayContentLift` should be added to
+`testimonial-slider` + `content-collection`. That flag is converter-read, so it is a **Rule 7 change**
+— not folded in here. (⛔ NOT `post-grid`: its arrays are config filters, `WP_Query` owns its
+content. ⚠ verify `gallery.mediaItems` is authored content before declaring it.)
+⚠ `block_selectors` still has the fossil disease, PARTIALLY ported — two writers, last-one-wins.
+**Do not run `populate-db.py`**: it would clobber selectors and reintroduce pruned capabilities.
+
+**All four Tier 0 columns are now correct. Tiers 1–4 are UNBLOCKED.**
 
 ⚠ **A shared-DB reseed is a cross-track action.** Back up first, diff the result, and check every
 pruned row against its source before calling a drop damage — 33 pruned rows in a past session were
