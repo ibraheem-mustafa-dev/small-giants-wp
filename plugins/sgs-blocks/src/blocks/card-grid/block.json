@@ -59,6 +59,9 @@
 			"imageControls": true,
 			"arrayContentLift": true,
 			"presetSelectors": [ "effectHover" ],
+			"boxFamilies": {
+				"cardBorderWidth": [ "cardBorderWidth" ]
+			},
 			"elements": {
 				"grid": {
 					"label": "Grid",

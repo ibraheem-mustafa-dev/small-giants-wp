@@ -21,6 +21,9 @@
 		"sgs": {
 			"containerKind": "content",
 			"containerMirror": false,
+			"boxFamilies": {
+				"drawerPadding": [ "drawerPadding" ]
+			},
 			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax" ],
 			"variantAttr": "variantPreset",
 			"variants": {

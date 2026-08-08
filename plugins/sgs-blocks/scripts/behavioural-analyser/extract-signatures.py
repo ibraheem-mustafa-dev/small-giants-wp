@@ -2433,11 +2433,39 @@ def extract_css_property_and_layer() -> dict:
 # Only writes when the association is UNAMBIGUOUS — leaves NULL rather than guessing.
 ########################################################################################
 
+# A tag NOT in this tuple yields no candidate, so no write happens and whatever
+# stale value the row already holds survives forever — silently, and looking
+# derived. Until 2026-08-08 the tuple held sixteen CORE WordPress components and
+# ZERO of this framework's own, so every attribute edited by an SGS component was
+# frozen at whatever the long-deleted `enrich-db.py` last wrote: `sgs/heading`'s
+# box-shaped `borderWidth` read `DesignTokenPicker`, `sgs/counter`'s `icon` read
+# `RangeControl`, `sgs/button`'s `url` read `TextControl`. Measured on a sandbox
+# copy of the live DB: widening the roster corrected 44 rows (13 previously NULL,
+# 31 previously wrong) and changed nothing else.
+#
+# ⚠ Membership is what the component DOES, not what it is called: every entry
+# here is a control that edits ONE attribute through its own
+# `value`/`checked`/`values`/`onChange` props. A PANEL that merely groups other
+# controls (`ToolsPanel`, `WidthPanel`, `LayoutPanel`, `BackgroundPanel`…) does
+# not belong — it never names an attribute in its own props, so listing it buys
+# nothing and invites a wrong association. Likewise a multi-attribute façade
+# (`TypographyControls`, `ContainerWrapperControls`) takes `attributes` +
+# `setAttributes` wholesale and can name no single attr.
 _KNOWN_CONTROLS = (
+    # Core WordPress components.
     "SelectControl", "TextControl", "ToggleControl", "RangeControl", "UnitControl",
     "NumberControl", "TextareaControl", "CheckboxControl", "RadioControl", "BoxControl",
+    "ComboboxControl", "SearchControl", "GradientPicker", "FocalPointPicker",
+    "LinkControl", "URLInput",
     "DesignTokenPicker", "MediaUpload", "MediaPicker", "ResponsiveControl",
     "ToggleGroupControl", "Button",
+    # This framework's own single-attribute controls (src/components/).
+    "ResponsiveBoxControl", "ResponsiveBorderRadiusControl", "BorderRadiusControl",
+    "SpacingControl", "ShadowControl", "GradientOverlayControl", "AnimationControl",
+    "IconPicker", "SgsLinkControl", "StateToggleControl",
+    "ResponsiveTriStateControl", "BooleanResponsiveControl",
+    "RRangeControl", "RUnitControl",
+    "MediaSlotPicker", "MediaGalleryPicker", "ContentImpactPicker",
 )
 
 
@@ -2468,6 +2496,37 @@ def _build_js_destructure_map(js_src: str) -> dict[str, str]:
             if re.fullmatch(r"[A-Za-z_$][\w$]*", local_name):
                 out[local_name] = attr_key
     return out
+
+
+def _repeater_item_spans(js_src: str, destructure_map: dict, valid_attrs: "set[str]") -> "dict[str, list[tuple[int, int]]]":
+    """Character spans of every `someAttr.map( … )` iteration over an attribute's OWN
+    value, keyed by that attribute.
+
+    A control rendered INSIDE such an iteration edits one FIELD of one ITEM — its
+    `onChange` rebuilds and writes the whole array, so the naive derivation credits
+    the array attr to the item control. That answer is wrong in the way that matters:
+    `sgs/pricing-table::plans` is edited by a repeater UI, not by the `SgsLinkControl`
+    that happens to sit in the last row of it, and a Spec 35 rule scoped on
+    `inspector_control_type` would then check the wrong contract.
+
+    The discriminator is what the code DOES, not what anything is named: iterating
+    the attribute itself means per-item editing. A `.map()` over a CONSTANT list
+    (`ADDRESS_FIELDS.map`, `HEADING_LEVELS.map`) is the opposite case — N controls
+    that between them edit the one array as a whole — and is deliberately not matched,
+    which is why `sgs/form-field-address::fields` keeps its `CheckboxControl`.
+    """
+    spans: dict[str, list[tuple[int, int]]] = {}
+    for m in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\.map\s*\(", js_src):
+        ident = m.group(1)
+        attr = ident if ident in valid_attrs else destructure_map.get(ident)
+        if attr not in valid_attrs:
+            continue
+        open_paren = js_src.index("(", m.end() - 1)
+        extracted = _extract_balanced(js_src, open_paren, "(", ")")
+        if extracted is None:
+            continue  # unbalanced — no span rather than a guessed one
+        spans.setdefault(attr, []).append((open_paren, extracted[1]))
+    return spans
 
 
 def _extract_balanced(src: str, start: int, open_ch: str, close_ch: str) -> "tuple[str, int] | None":
@@ -2645,6 +2704,7 @@ def extract_inspector_control_types() -> dict:
         if not valid_attrs:
             continue
         destructure_map = _build_js_destructure_map(js_src)
+        repeater_spans = _repeater_item_spans(js_src, destructure_map, valid_attrs)
 
         for m in tag_re.finditer(js_src):
             control = m.group(1)
@@ -2687,6 +2747,13 @@ def extract_inspector_control_types() -> dict:
                 continue
 
             attr = next(iter(candidates))
+            if any(lo <= m.start() < hi for lo, hi in repeater_spans.get(attr, ())):
+                unresolved.append({
+                    "block": slug, "control": control, "attr": attr,
+                    "reason": "per-item control inside a repeater over its own attribute "
+                              "— the array's control is the repeater UI, not this",
+                })
+                continue
             if (slug, attr) in _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES:
                 # Handled entirely by the explicit override pass after this loop —
                 # skip here so the loop's "whichever tag is encountered" order can

@@ -37,6 +37,10 @@
 		},
 		"sgs": {
 			"containerKind": "layout",
+			"boxFamilies": {
+				"padding": [ "padding" ],
+				"margin": [ "margin" ]
+			},
 			"elements": {
 				"row": {
 					"label": "Row",

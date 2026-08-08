@@ -22,6 +22,9 @@
 		"sgs": {
 			"containerKind": "section",
 			"containerMirror": false,
+			"boxFamilies": {
+				"panelPadding": [ "panelPadding" ]
+			},
 			"elements": {
 				"panel": {
 					"label": "Panel",
