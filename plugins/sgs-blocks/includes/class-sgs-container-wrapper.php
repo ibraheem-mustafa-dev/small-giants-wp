@@ -575,15 +575,52 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
-			// Background image — section kind only. The base tier scopes to .$uid;
-			// the responsive tablet/mobile overrides emit as @media rules further below.
+			// Background image — section kind only, painted on the .$uid::before
+			// MEDIA LAYER rather than on .$uid itself (Phase 1, 2026-08-08).
+			//
+			// Why a layer: `opacity` applies to a whole element, so while the image
+			// was a background of .$uid there was no way to dim the media without
+			// dimming the section's own content with it. The pseudo-element carries
+			// the image and its own `backgroundMediaOpacity`; the colour/gradient
+			// overlay span already paints ABOVE it (z-index 0 vs -1) and content
+			// above both, so lowering a colour's alpha lets the media through —
+			// one mental model instead of a separate "overlay" concept.
+			//
+			// ::before was verified unused on .sgs-container before taking it.
+			// The responsive tablet/mobile overrides target the same layer below.
+			// NOTE: the declarations are BUILT here (where $bg_* are in scope) but
+			// EMITTED with the other scoped rules further down — $uid and
+			// $responsive_css do not exist yet at this point, and $responsive_css
+			// is initialised to '' below, which would silently discard anything
+			// appended here.
+			$sgs_media_layer_decls = array();
 			if ( $is_section && $has_bg_image && ! $has_bg_video ) {
-				$base_outer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
-				$base_outer_decls[] = 'background-size:' . esc_attr( $bg_size );
-				$base_outer_decls[] = 'background-position:' . esc_attr( $bg_position );
-				$base_outer_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
+				// The layer's own box properties are emitted HERE rather than as a
+				// blanket `.sgs-container::before` rule in style.css, so the
+				// pseudo-element only becomes a box on containers that actually have
+				// a background image — every other container is untouched.
+				// `content` is mandatory: without it ::before generates no box and
+				// the background-image below would never paint.
+				// z-index -1 paints ABOVE the container's own background-colour and
+				// BELOW both the overlay span (z-index 0) and content (z-index 1),
+				// which is the media < colour < content order the model requires.
+				$sgs_media_layer_decls[] = 'content:""';
+				$sgs_media_layer_decls[] = 'position:absolute';
+				$sgs_media_layer_decls[] = 'inset:0';
+				$sgs_media_layer_decls[] = 'z-index:-1';
+				$sgs_media_layer_decls[] = 'pointer-events:none';
+				$sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
+				$sgs_media_layer_decls[] = 'background-size:' . esc_attr( $bg_size );
+				$sgs_media_layer_decls[] = 'background-position:' . esc_attr( $bg_position );
+				$sgs_media_layer_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
 				if ( 'fixed' === $bg_attachment ) {
-					$base_outer_decls[] = 'background-attachment:fixed';
+					$sgs_media_layer_decls[] = 'background-attachment:fixed';
+				}
+				$sgs_media_opacity = isset( $attributes['backgroundMediaOpacity'] )
+					? max( 0, min( 100, (int) $attributes['backgroundMediaOpacity'] ) )
+					: 100;
+				if ( 100 !== $sgs_media_opacity ) {
+					$sgs_media_layer_decls[] = 'opacity:' . esc_attr( $sgs_media_opacity / 100 );
 				}
 			}
 
@@ -930,10 +967,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$overlay_html  = '';
 			$overlay_decls = ''; // Emitted scoped on .{uid} .sgs-container__overlay below (no-inline).
 			if ( $is_section && ! $opt_no_overlay ) {
-				$has_any_bg         = $has_bg_image || $has_bg_video;
 				$has_overlay_colour = $overlay_colour || ( $overlay_gradient && $overlay_gradient_from );
 
-				if ( $has_any_bg && $has_overlay_colour ) {
+				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
+				// — a colour or gradient set with NO media rendered nothing at all,
+				// which is why a flat background colour was only reachable through
+				// WordPress's native Color panel. The colour layer is now the ONE
+				// background-colour concept: with media beneath it, a lowered alpha
+				// lets the image through and it reads as an overlay; with no media it
+				// simply IS the background. Same control, same attribute, one model.
+				if ( $has_overlay_colour ) {
 					if ( $overlay_gradient && $overlay_gradient_from ) {
 						$grad_from     = sgs_colour_value( $overlay_gradient_from );
 						$grad_to       = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
@@ -1189,6 +1232,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $base_outer_decls ) . '}';
 			}
 
+			// MEDIA LAYER scoped rule (Phase 1, 2026-08-08) — the background image
+			// paints on .{uid}::before, not on .{uid}, so `backgroundMediaOpacity`
+			// can dim the media WITHOUT dimming the section's own content. Built
+			// further up where $bg_* are in scope; emitted here because $uid and
+			// $responsive_css only exist from this point on. Must come BEFORE the
+			// @media tier overrides below so a narrower viewport still wins.
+			if ( $sgs_media_layer_decls && $uid ) {
+				$responsive_css .= '.' . $uid . '::before{' . implode( ';', $sgs_media_layer_decls ) . '}';
+			}
+
 			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
 			// span's background/opacity, emitted on `.{uid} .sgs-container__overlay`
 			// instead of inline on the span. $overlay_decls is pre-sanitised
@@ -1416,13 +1469,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 				}
 
-				// Responsive bg image overrides — section kind only.
+				// Responsive bg image overrides — section kind only. These target the
+				// SAME ::before media layer as the base tier (Phase 1, 2026-08-08);
+				// targeting .$uid here while the base painted ::before would leave the
+				// desktop image showing through underneath on tablet/mobile.
 				if ( $is_section ) {
 					if ( ! empty( $bg_image_tablet['url'] ) ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+						$responsive_css .= '@media (max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 					}
 					if ( ! empty( $bg_image_mobile['url'] ) ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+						$responsive_css .= '@media (max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 					}
 				}
 

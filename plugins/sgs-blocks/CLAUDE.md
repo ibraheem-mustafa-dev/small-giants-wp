@@ -258,7 +258,23 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
 - **Core block attribute mismatches** — when `core/heading`, `core/button`, etc. show "unexpected content", the cause is a JSON attribute that doesn't match stored HTML. Fix via the Site Editor: open the template/page, click "Attempt Block Recovery" on each invalid block, then save. NEVER fix via WP-CLI `str_replace` on `post_content` — this breaks block validation and creates cascading failures.
 - **Never use `source: html` on dynamic blocks** — if a block's `save()` returns `null` (dynamic render via render.php), attributes with `"source": "html"` can never be read from storage because there is no inner HTML. Use plain `"type": "string", "default": ""` instead. This caused the hero headline bug on 2026-03-22.
 - **Dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />`** — `save: () => null` causes WordPress to drop InnerBlocks from `post_content` during save. Editor shows the right structure in memory, save round-trip emits only the parent. Render.php still drives 100% of frontend output; save's only job is to emit the InnerBlocks marker. Pattern: `import { InnerBlocks } from '@wordpress/block-editor'; export default function Save() { return <InnerBlocks.Content />; }`. Caught 2026-05-04 in product-card / cta-section / info-box. Hero already had it. (NOTE: product-card no longer has an InnerBlocks slot — legacy machinery purged D275, its save is now `null`; the rule still binds every block that DOES have a slot.) Full detail in `.claude/specs/common-wp-styling-errors.md` row B4.
-- **Never modify `post_content` via WP-CLI or PHP scripts** — use the Site Editor or `wp.data.dispatch('core/block-editor')` via Playwright. A PreToolUse hook (`wp-content-guard.py`) enforces this.
+- **Writing `post_content` via WP-CLI / REST is ALLOWED for sgs/* blocks (Bean, 2026-08-08).** The old
+  blanket ban existed to protect STATIC blocks: they store `save.js` output as HTML inside
+  post_content, so hand-edited markup that no longer matches `save.js` triggers "this block contains
+  unexpected content". **Every SGS block is dynamic (84/0)** — only a block comment plus an
+  attributes JSON blob is stored, with no saved HTML to mismatch, so that failure cannot occur for an
+  sgs/* block. `wp-content-guard.py` is now ADVISORY (it notes, never blocks); its blocking form was
+  simultaneously over-broad (matched any command containing `str_replace`, and blocked writing the
+  probe content needed to verify a render change live) and under-broad (never matched `wp db query`
+  with an `UPDATE`, the most destructive path).
+  ⚠ **Still take care with:** CORE blocks (static — hand-edited markup DOES break their validation),
+  slot-bearing composites whose serialised CHILDREN may be core blocks, and hand-written attributes
+  (WP silently DISCARDS any attr the block.json doesn't declare — D338). Verify the rendered result.
+  For editor-state work (`wp.data.dispatch`) Playwright is still the route.
+- **Canary credentials are ALWAYS available — use them, don't ask and don't work around them.**
+  `.claude/secrets/sandybrown.env` (gitignored) carries `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` for
+  browser login and `WP_APP_PWD_SANDYBROWN` for REST/Store-API Basic auth. Creating a probe page to
+  verify a render change live is a REST call, not a blocker.
 - **`style.css` vs `editor.css` are independent** — `style.css` compiles to the frontend-only `style-index.css`. `editor.css` compiles to the editor-only `index.css`. A layout fix in one does not affect the other. When fixing a visual issue in `style.css`, add matching rules to `editor.css` separately if the editor preview should match.
 - **`viewScriptModule` vs `viewScript`** — use `viewScriptModule` (ES modules, deferred). Don't use `viewScript` (classic scripts).
 - **CSS `color` fallback pattern** — do NOT use `:not([style*="…"])` fallback guards. Under Spec 32 no block emits an inline `style` property declaration, so the guard always matches and the fallback becomes unconditional — it blocks contextual inheritance and can out-rank the operator's own scoped rule. Instead: let the value inherit (no rule), or emit the fallback inside `:where()` so any `.{uid}` scoped rule wins. (Measured 2026-08-06: `sgs/icon-list` painted dark text on a dark drawer at contrast 1:1; `sgs/card-grid`'s guard at (0,3,0) out-ranked its own `.{uid}` title-colour rule at (0,2,0).)
