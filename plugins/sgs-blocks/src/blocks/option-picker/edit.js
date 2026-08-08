@@ -307,11 +307,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* ── Inspector ────────────────────────────────────────── */ }
+			{ /* ── Inspector — Settings tab (default InspectorControls group,
+			   behaviour/content: label text, options data, default selection,
+			   converter metadata) ─────────────────────────────────────── */ }
 			<InspectorControls>
 
-				{ /* Label panel */ }
-				<PanelBody title={ __( 'Label', 'sgs-blocks' ) }>
+				{ /* Label panel — text content + visibility toggle only; the
+				   typography/margin/colour looks live in the Styles tab below. */ }
+				<PanelBody title={ __( 'Label', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Label text', 'sgs-blocks' ) }
 						value={ label }
@@ -328,35 +331,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ showLabel && (
-						<>
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="label"
-								showLineHeight={ false }
-							/>
-							<TextControl
-								label={ __( 'Label margin bottom', 'sgs-blocks' ) }
-								help={ __(
-									'CSS value, e.g. 8px or 0.5rem. Empty = default.',
-									'sgs-blocks'
-								) }
-								value={ labelMarginBottom }
-								onChange={ ( val ) =>
-									setAttributes( { labelMarginBottom: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<DesignTokenPicker
-								label={ __( 'Label colour', 'sgs-blocks' ) }
-								value={ labelColour }
-								onChange={ ( val ) =>
-									setAttributes( { labelColour: val } )
-								}
-							/>
-						</>
-					) }
 				</PanelBody>
 
 				{ /* Options repeater */ }
@@ -491,10 +465,94 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				{ /* Converter metadata — machine-readable identifiers consumed by
+				   the event payload / parent blocks, not a visual concern. */ }
+				<PanelBody
+					title={ __( 'Converter metadata', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Type key', 'sgs-blocks' ) }
+						help={ __(
+							'Machine-readable identifier for the picker type (e.g. pack-size, flavour, colour). Included in the sgs:option-selected event detail.',
+							'sgs-blocks'
+						) }
+						value={ attributes.typeKey }
+						onChange={ ( val ) =>
+							setAttributes( { typeKey: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Content-impact slots', 'sgs-blocks' ) }
+						help={ __(
+							'Comma-separated card slot names this picker controls (e.g. price,description). Included in the event detail for parent blocks.',
+							'sgs-blocks'
+						) }
+						value={ ( attributes.contentImpact || [] ).join( ', ' ) }
+						onChange={ ( val ) =>
+							setAttributes( {
+								contentImpact: val
+									.split( ',' )
+									.map( ( s ) => s.trim() )
+									.filter( Boolean ),
+							} )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Inspector — Styles tab (appearance: label look, pill style,
+			   colours, width/spacing, border) ────────────────────────────── */ }
+			<InspectorControls group="styles">
+
+				{ /* Label style — typography/margin/colour only surface when the
+				   label is actually shown (showLabel lives in the Settings tab). */ }
+				<PanelBody title={ __( 'Label', 'sgs-blocks' ) } initialOpen={ false }>
+					{ showLabel && (
+						<>
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="label"
+								showLineHeight={ false }
+							/>
+							<TextControl
+								label={ __( 'Label margin bottom', 'sgs-blocks' ) }
+								help={ __(
+									'CSS value, e.g. 8px or 0.5rem. Empty = default.',
+									'sgs-blocks'
+								) }
+								value={ labelMarginBottom }
+								onChange={ ( val ) =>
+									setAttributes( { labelMarginBottom: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<DesignTokenPicker
+								label={ __( 'Label colour', 'sgs-blocks' ) }
+								value={ labelColour }
+								onChange={ ( val ) =>
+									setAttributes( { labelColour: val } )
+								}
+							/>
+						</>
+					) }
+					{ ! showLabel && (
+						<p className="sgs-option-picker-editor__hint">
+							{ __(
+								'Turn on "Show label" in the Settings tab to reveal label styling controls.',
+								'sgs-blocks'
+							) }
+						</p>
+					) }
+				</PanelBody>
+
 				{ /* Appearance */ }
 				<PanelBody
 					title={ __( 'Appearance', 'sgs-blocks' ) }
-					initialOpen={ false }
+					initialOpen={ true }
 				>
 					<SelectControl
 						label={ __( 'Pill style', 'sgs-blocks' ) }
@@ -802,42 +860,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						values={ { base: style?.border?.radius ?? {} } }
 						showResponsive={ false }
 						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
-					/>
-				</PanelBody>
-
-				{ /* Converter metadata */ }
-				<PanelBody
-					title={ __( 'Converter metadata', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						label={ __( 'Type key', 'sgs-blocks' ) }
-						help={ __(
-							'Machine-readable identifier for the picker type (e.g. pack-size, flavour, colour). Included in the sgs:option-selected event detail.',
-							'sgs-blocks'
-						) }
-						value={ attributes.typeKey }
-						onChange={ ( val ) =>
-							setAttributes( { typeKey: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Content-impact slots', 'sgs-blocks' ) }
-						help={ __(
-							'Comma-separated card slot names this picker controls (e.g. price,description). Included in the event detail for parent blocks.',
-							'sgs-blocks'
-						) }
-						value={ ( attributes.contentImpact || [] ).join( ', ' ) }
-						onChange={ ( val ) =>
-							setAttributes( {
-								contentImpact: val
-									.split( ',' )
-									.map( ( s ) => s.trim() )
-									.filter( Boolean ),
-							} )
-						}
-						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>

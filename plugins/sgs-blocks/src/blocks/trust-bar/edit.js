@@ -303,6 +303,84 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 
+				{ /* ── Variant (behaviour: which badge mode renders) ─────────── */ }
+				<PanelBody title={ __( 'Style', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Badge style', 'sgs-blocks' ) }
+						value={ badgeStyle }
+						options={ BADGE_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { badgeStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Auto-scroll (behaviour) ───────────────────────────────── */ }
+				<PanelBody title={ __( 'Auto-scroll', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Enable auto-scroll', 'sgs-blocks' ) }
+						help={ __( 'When the number of badges exceeds what fits on screen, the row scrolls automatically like a marquee.', 'sgs-blocks' ) }
+						checked={ !! autoScroll }
+						onChange={ ( val ) => setAttributes( { autoScroll: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ autoScroll && (
+						<>
+							<SelectControl
+								label={ __( 'Scroll speed', 'sgs-blocks' ) }
+								value={ autoScrollSpeed }
+								options={ AUTO_SCROLL_SPEED_OPTIONS }
+								onChange={ ( val ) => setAttributes( { autoScrollSpeed: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Pause on hover', 'sgs-blocks' ) }
+								checked={ !! autoScrollPauseOnHover }
+								onChange={ ( val ) => setAttributes( { autoScrollPauseOnHover: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+				</PanelBody>
+
+				{ /* ── Badge items repeater (content) ─────────────────────────── */ }
+				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
+					{ badgeStyle === 'icon-circle' && (
+						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
+							{ __( 'Badges marked "Pending" are hidden on the frontend but remain editable.', 'sgs-blocks' ) }
+						</p>
+					) }
+					{ items.map( ( item, index ) => (
+						badgeStyle === 'icon-circle' ? (
+							<IconCircleItemEditor
+								key={ index }
+								item={ item }
+								onChange={ ( updated ) => updateItem( index, updated ) }
+								onRemove={ () => removeItem( index ) }
+							/>
+						) : (
+							<GenericBadgeItemEditor
+								key={ index }
+								item={ item }
+								index={ index }
+								badgeStyle={ badgeStyle }
+								onChange={ ( updated ) => updateItem( index, updated ) }
+								onRemove={ () => removeItem( index ) }
+							/>
+						)
+					) ) }
+					<Button
+						variant="secondary"
+						onClick={ addItem }
+						style={ { width: '100%', justifyContent: 'center' } }
+					>
+						{ __( 'Add badge', 'sgs-blocks' ) }
+					</Button>
+				</PanelBody>
+
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+
 				{ /* ── Section (outer): width + min-height ──────────────────── */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
@@ -435,20 +513,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* ── Shape dividers ─────────────────────────────────────────── */ }
 				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				{ /* ── Variant + size ────────────────────────────────────────── */ }
-				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Badge style', 'sgs-blocks' ) }
-						value={ badgeStyle }
-						options={ BADGE_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { badgeStyle: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ /* Badge size only applies to text-only and image-badge variants.
-					     In icon-circle mode, sizing is controlled by the Icon circle size
-					     range control in the Appearance panel — showing this control there
-					     would create a dead second size control with no visible effect. */ }
-					{ badgeStyle !== 'icon-circle' && (
+				{ /* ── Badge size + label typography (appearance; badgeStyle mode
+				     itself moved to the Settings tab's "Style" panel above) ──── */ }
+				{ badgeStyle !== 'icon-circle' && (
+					<PanelBody title={ __( 'Badge size & typography', 'sgs-blocks' ) } initialOpen={ false }>
+						{ /* Badge size only applies to text-only and image-badge variants.
+						     In icon-circle mode, sizing is controlled by the Icon circle size
+						     range control in the Appearance panel — showing this control there
+						     would create a dead second size control with no visible effect. */ }
 						<SelectControl
 							label={ __( 'Badge size', 'sgs-blocks' ) }
 							value={ badgeSize }
@@ -456,17 +528,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
 							__nextHasNoMarginBottom
 						/>
-					) }
-					<p style={ { fontSize: '12px', fontWeight: 600, marginBottom: '4px' } }>
-						{ __( 'Label typography', 'sgs-blocks' ) }
-					</p>
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="label"
-						showLineHeight={ false }
-					/>
-				</PanelBody>
+						<p style={ { fontSize: '12px', fontWeight: 600, marginBottom: '4px' } }>
+							{ __( 'Label typography', 'sgs-blocks' ) }
+						</p>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="label"
+							showLineHeight={ false }
+						/>
+					</PanelBody>
+				) }
 
 				{ /* ── Optional title (text-only + image-badge) ─────────────── */ }
 				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
@@ -596,69 +668,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						     helper). Removed here to eliminate UI duplication. */ }
 					</PanelBody>
 				) }
-
-				{ /* ── Auto-scroll ───────────────────────────────────────────── */ }
-				<PanelBody title={ __( 'Auto-scroll', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleControl
-						label={ __( 'Enable auto-scroll', 'sgs-blocks' ) }
-						help={ __( 'When the number of badges exceeds what fits on screen, the row scrolls automatically like a marquee.', 'sgs-blocks' ) }
-						checked={ !! autoScroll }
-						onChange={ ( val ) => setAttributes( { autoScroll: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ autoScroll && (
-						<>
-							<SelectControl
-								label={ __( 'Scroll speed', 'sgs-blocks' ) }
-								value={ autoScrollSpeed }
-								options={ AUTO_SCROLL_SPEED_OPTIONS }
-								onChange={ ( val ) => setAttributes( { autoScrollSpeed: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __( 'Pause on hover', 'sgs-blocks' ) }
-								checked={ !! autoScrollPauseOnHover }
-								onChange={ ( val ) => setAttributes( { autoScrollPauseOnHover: val } ) }
-								__nextHasNoMarginBottom
-							/>
-						</>
-					) }
-				</PanelBody>
-
-				{ /* ── Badge items repeater ───────────────────────────────────── */ }
-				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
-					{ badgeStyle === 'icon-circle' && (
-						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-							{ __( 'Badges marked "Pending" are hidden on the frontend but remain editable.', 'sgs-blocks' ) }
-						</p>
-					) }
-					{ items.map( ( item, index ) => (
-						badgeStyle === 'icon-circle' ? (
-							<IconCircleItemEditor
-								key={ index }
-								item={ item }
-								onChange={ ( updated ) => updateItem( index, updated ) }
-								onRemove={ () => removeItem( index ) }
-							/>
-						) : (
-							<GenericBadgeItemEditor
-								key={ index }
-								item={ item }
-								index={ index }
-								badgeStyle={ badgeStyle }
-								onChange={ ( updated ) => updateItem( index, updated ) }
-								onRemove={ () => removeItem( index ) }
-							/>
-						)
-					) ) }
-					<Button
-						variant="secondary"
-						onClick={ addItem }
-						style={ { width: '100%', justifyContent: 'center' } }
-					>
-						{ __( 'Add badge', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
 
 			</InspectorControls>
 

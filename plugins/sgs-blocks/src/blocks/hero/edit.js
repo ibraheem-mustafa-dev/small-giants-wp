@@ -285,6 +285,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{/* ── Settings tab (default InspectorControls group) — behaviour: variant,
+			   media selection/data-source, content. ── */}
 			<InspectorControls>
 				{/* ── 1. Hero Settings (variant only) ── */}
 				<PanelBody title={ __( 'Hero Settings', 'sgs-blocks' ) }>
@@ -299,6 +301,316 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				{/* ── Image (media selection only — appearance/styling controls for
+				   the same image live in the "Image" panel on the Styles tab). ── */}
+				<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
+					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
+						<>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Background image', 'sgs-blocks' ) }</p>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
+										setAttributes( {
+											backgroundImage: {
+												id: media.id,
+												url: media.url,
+												alt: media.alt,
+											},
+										} )
+									}
+									allowedTypes={ [ 'image' ] }
+									value={ backgroundImage?.id }
+									render={ ( { open } ) => (
+										<div>
+											{ backgroundImage?.url ? (
+												<>
+													<img
+														src={ backgroundImage.url }
+														alt=""
+														style={ {
+															maxWidth: '100%',
+															marginBottom: '8px',
+														} }
+													/>
+													<Button
+														variant="secondary"
+														onClick={ () =>
+															setAttributes( {
+																backgroundImage:
+																	undefined,
+															} )
+														}
+														isDestructive
+													>
+														{ __(
+															'Remove image',
+															'sgs-blocks'
+														) }
+													</Button>
+												</>
+											) : (
+												<Button
+													variant="secondary"
+													onClick={ open }
+												>
+													{ __(
+														'Select background image',
+														'sgs-blocks'
+													) }
+												</Button>
+											) }
+										</div>
+									) }
+								/>
+							</MediaUploadCheck>
+						</>
+					) }
+
+					{ isSplit && (
+						<>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split media source', 'sgs-blocks' ) }</p>
+							<MediaPicker
+								value={
+									splitMedia ||
+									( splitImage?.url
+										? {
+												url: splitImage.url,
+												type: 'image',
+												id: splitImage.id || 0,
+												alt: splitImage.alt || '',
+												mime: '',
+										  }
+										: null )
+								}
+								onChange={ ( media ) =>
+									setAttributes( {
+										splitMedia: media,
+										splitImage:
+											media && media.type === 'image'
+												? {
+														id: media.id,
+														url: media.url,
+														alt: media.alt,
+												  }
+												: undefined,
+									} )
+								}
+								onRemove={ () =>
+									setAttributes( {
+										splitMedia: null,
+										splitImage: undefined,
+									} )
+								}
+								label={ __( 'Select hero media', 'sgs-blocks' ) }
+								instructionsImage={ __( 'Choose an image or video for the hero', 'sgs-blocks' ) }
+							/>
+
+							{ /* Art direction. `splitImageMobile` was render-consumed and
+							     `splitImageTablet` was declared-but-dead, and NEITHER had an editor
+							     control — so only the cloning pipeline could set them and a client
+							     could not crop their own hero for narrow screens. One device-switched
+							     control rather than three stacked pickers: that is the SGS canonical
+							     shape, and `check-control-ux` enforces it (it flagged the stacked
+							     version as RESPONSIVE-FAMILY-WITHOUT-SWITCHER). The switcher also
+							     drives WP's native canvas preview, so the picker and the preview
+							     always agree about which tier you are editing. */ }
+							<ResponsiveControl label={ __( 'Split image', 'sgs-blocks' ) }>
+								{ ( bp ) => {
+									const key = {
+										desktop: 'splitImage',
+										tablet: 'splitImageTablet',
+										mobile: 'splitImageMobile',
+									}[ bp ];
+									const current = attributes[ key ];
+									return (
+										<MediaPicker
+											value={
+												current?.url
+													? { ...current, type: 'image' }
+													: null
+											}
+											onChange={ ( media ) =>
+												setAttributes( {
+													[ key ]:
+														media && media.url
+															? {
+																	id: media.id || 0,
+																	url: media.url,
+																	alt: media.alt || '',
+															  }
+															: undefined,
+												} )
+											}
+											onRemove={ () =>
+												setAttributes( { [ key ]: undefined } )
+											}
+											label={
+												'desktop' === bp
+													? __( 'Main image', 'sgs-blocks' )
+													: __( 'Override for this screen size', 'sgs-blocks' )
+											}
+											instructionsImage={
+												'desktop' === bp
+													? __( 'The image used unless a narrower size overrides it.', 'sgs-blocks' )
+													: __( 'Optional. Leave empty to use the main image at this size.', 'sgs-blocks' )
+											}
+										/>
+									);
+								} }
+							</ResponsiveControl>
+						</>
+					) }
+
+					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
+						<ResponsiveControl label={ __( 'Background video', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => {
+								const isDesktop = breakpoint !== 'mobile';
+								const videoAttr   = isDesktop ? bgVideo   : bgVideoMobile;
+								const attrKey     = isDesktop ? 'bgVideo' : 'bgVideoMobile';
+								return (
+									<MediaUploadCheck>
+										<MediaUpload
+											onSelect={ ( media ) =>
+												setAttributes( {
+													[ attrKey ]: { id: media.id, url: media.url },
+												} )
+											}
+											allowedTypes={ [ 'video' ] }
+											value={ videoAttr?.id }
+											render={ ( { open } ) => (
+												<div>
+													{ videoAttr?.url ? (
+														<>
+															<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
+																{ videoAttr.url.split( '/' ).pop() }
+															</p>
+															<Button
+																variant="secondary"
+																isDestructive
+																onClick={ () =>
+																	setAttributes( { [ attrKey ]: undefined } )
+																}
+															>
+																{ __( 'Remove', 'sgs-blocks' ) }
+															</Button>
+														</>
+													) : (
+														<Button variant="secondary" onClick={ open }>
+															{ isDesktop
+																? __( 'Select video', 'sgs-blocks' )
+																: __( 'Select mobile video', 'sgs-blocks' ) }
+														</Button>
+													) }
+												</div>
+											) }
+										/>
+									</MediaUploadCheck>
+								);
+							} }
+						</ResponsiveControl>
+					) }
+				</PanelBody>
+
+				{/* ── Video Background (video variant only — media selection) ── */}
+				{ isVideo && (
+					<PanelBody
+						title={ __( 'Background Video', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( media ) =>
+									setAttributes( {
+										bgVideo: {
+											id: media.id,
+											url: media.url,
+										},
+									} )
+								}
+								allowedTypes={ [ 'video' ] }
+								value={ bgVideo?.id }
+								render={ ( { open } ) => (
+									<div>
+										{ bgVideo?.url ? (
+											<>
+												<video
+													src={ bgVideo.url }
+													controls
+													style={ {
+														maxWidth: '100%',
+														marginBottom: '8px',
+													} }
+												/>
+												<Button
+													variant="secondary"
+													onClick={ () =>
+														setAttributes( {
+															bgVideo:
+																undefined,
+														} )
+													}
+													isDestructive
+												>
+													{ __(
+														'Remove video',
+														'sgs-blocks'
+													) }
+												</Button>
+											</>
+										) : (
+											<Button
+												variant="secondary"
+												onClick={ open }
+											>
+												{ __(
+													'Select background video (MP4/WebM)',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									</div>
+								) }
+							/>
+						</MediaUploadCheck>
+					</PanelBody>
+				) }
+
+				{/* ── SVG Background (svg-animated variant only — content markup) ── */}
+				{ isSvgAnimated && (
+					<PanelBody
+						title={ __( 'SVG Background', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TextareaControl
+							label={ __( 'SVG markup', 'sgs-blocks' ) }
+							value={ svgContent || '' }
+							onChange={ ( val ) =>
+								setAttributes( { svgContent: val } )
+							}
+							rows={ 10 }
+							help={ __(
+								'Paste your SVG code here. Animation will be handled by the SVG itself.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{/* ── Buttons ── */}
+				<PanelBody
+					title={ __( 'Buttons', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<Notice status="info" isDismissible={ false }>
+						{ __( 'Buttons are now managed using the SGS Button Group block inside the hero. Click on a button in the editor to configure its style, colour, and link.', 'sgs-blocks' ) }
+					</Notice>
+				</PanelBody>
+			</InspectorControls>
+
+			{/* ── Styles tab — appearance: colour, spacing, borders, shadows,
+			   layout/grid geometry, hover/effects. ── */}
+			<InspectorControls group="styles">
 				{/* ── 2. Container / Entire Block ── */}
 				{ /* Converted to ToolsPanel/ToolsPanelItem (Spec 35 T4.1 tail, audit-inspector-conformance
 				     dense-panel-candidate — 14 control-like elements). hasValue/onDeselect check against
@@ -307,7 +619,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				     contentBackground='', contentPadding{,Tablet,Mobile}={}, gridTemplateColumns{,Tablet,Mobile}='',
 				     splitContentOrderMobile='media-first', splitImageBleed=false. Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
-				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) }>
 					<ToolsPanel
 						label={ __( 'Container / Entire Block', 'sgs-blocks' ) }
 						resetAll={ () => {
@@ -651,80 +963,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					</p>
 				</PanelBody>
 
-				{/* ── 6. Image (background + split) ── */}
+				{/* ── 6. Image styling (appearance only — media SELECTION for this
+				   image lives in the "Image" panel on the Settings tab). ── */}
 				{ /* SKIP-REASON (Spec 35 T4.1 tail, audit-inspector-conformance dense-panel-candidate):
 				     this panel is a MODE-WIZARD, not a flat control set. Its content branches on
 				     three mutually-exclusive variant states (!isSplit&&!isVideo&&!isSvgAnimated /
 				     isSplit / the shared "Background effects" tail) into entirely different control
-				     groups (MediaUpload pickers with custom render props, a MediaPicker, conditional
-				     custom-dimension sub-forms). ToolsPanelItem's contract (one hasValue/onDeselect per
-				     independently-resettable "property") doesn't fit a set of controls that only exist
-				     under a specific variant and whose "reset" would mean discarding a media selection —
-				     that's a Remove-image button, not a ToolsPanel reset. Converting would either lie
-				     about resettability or force fake per-control granularity onto conditional groups
-				     that are already gated by variant. Left as PanelBody per the task's mode-wizard
-				     escape hatch. */ }
-				<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
+				     groups. ToolsPanelItem's contract (one hasValue/onDeselect per independently-
+				     resettable "property") doesn't fit a set of controls that only exist under a
+				     specific variant. Left as PanelBody per the task's mode-wizard escape hatch —
+				     see the original (fuller) rationale preserved on the Settings-tab "Image" panel. */ }
+				<PanelBody title={ __( 'Image styling', 'sgs-blocks' ) } initialOpen={ false }>
 					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
 						<>
-							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Background image', 'sgs-blocks' ) }</p>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											backgroundImage: {
-												id: media.id,
-												url: media.url,
-												alt: media.alt,
-											},
-										} )
-									}
-									allowedTypes={ [ 'image' ] }
-									value={ backgroundImage?.id }
-									render={ ( { open } ) => (
-										<div>
-											{ backgroundImage?.url ? (
-												<>
-													<img
-														src={ backgroundImage.url }
-														alt=""
-														style={ {
-															maxWidth: '100%',
-															marginBottom: '8px',
-														} }
-													/>
-													<Button
-														variant="secondary"
-														onClick={ () =>
-															setAttributes( {
-																backgroundImage:
-																	undefined,
-															} )
-														}
-														isDestructive
-													>
-														{ __(
-															'Remove image',
-															'sgs-blocks'
-														) }
-													</Button>
-												</>
-											) : (
-												<Button
-													variant="secondary"
-													onClick={ open }
-												>
-													{ __(
-														'Select background image',
-														'sgs-blocks'
-													) }
-												</Button>
-											) }
-										</div>
-									) }
-								/>
-							</MediaUploadCheck>
-
 							<DesignTokenPicker
 								label={ __( 'Overlay colour', 'sgs-blocks' ) }
 								value={ overlayColour }
@@ -747,96 +998,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ isSplit && (
 						<>
-							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split media source', 'sgs-blocks' ) }</p>
-							<MediaPicker
-								value={
-									splitMedia ||
-									( splitImage?.url
-										? {
-												url: splitImage.url,
-												type: 'image',
-												id: splitImage.id || 0,
-												alt: splitImage.alt || '',
-												mime: '',
-										  }
-										: null )
-								}
-								onChange={ ( media ) =>
-									setAttributes( {
-										splitMedia: media,
-										splitImage:
-											media && media.type === 'image'
-												? {
-														id: media.id,
-														url: media.url,
-														alt: media.alt,
-												  }
-												: undefined,
-									} )
-								}
-								onRemove={ () =>
-									setAttributes( {
-										splitMedia: null,
-										splitImage: undefined,
-									} )
-								}
-								label={ __( 'Select hero media', 'sgs-blocks' ) }
-								instructionsImage={ __( 'Choose an image or video for the hero', 'sgs-blocks' ) }
-							/>
-
-							{ /* Art direction. `splitImageMobile` was render-consumed and
-							     `splitImageTablet` was declared-but-dead, and NEITHER had an editor
-							     control — so only the cloning pipeline could set them and a client
-							     could not crop their own hero for narrow screens. One device-switched
-							     control rather than three stacked pickers: that is the SGS canonical
-							     shape, and `check-control-ux` enforces it (it flagged the stacked
-							     version as RESPONSIVE-FAMILY-WITHOUT-SWITCHER). The switcher also
-							     drives WP's native canvas preview, so the picker and the preview
-							     always agree about which tier you are editing. */ }
-							<ResponsiveControl label={ __( 'Split image', 'sgs-blocks' ) }>
-								{ ( bp ) => {
-									const key = {
-										desktop: 'splitImage',
-										tablet: 'splitImageTablet',
-										mobile: 'splitImageMobile',
-									}[ bp ];
-									const current = attributes[ key ];
-									return (
-										<MediaPicker
-											value={
-												current?.url
-													? { ...current, type: 'image' }
-													: null
-											}
-											onChange={ ( media ) =>
-												setAttributes( {
-													[ key ]:
-														media && media.url
-															? {
-																	id: media.id || 0,
-																	url: media.url,
-																	alt: media.alt || '',
-															  }
-															: undefined,
-												} )
-											}
-											onRemove={ () =>
-												setAttributes( { [ key ]: undefined } )
-											}
-											label={
-												'desktop' === bp
-													? __( 'Main image', 'sgs-blocks' )
-													: __( 'Override for this screen size', 'sgs-blocks' )
-											}
-											instructionsImage={
-												'desktop' === bp
-													? __( 'The image used unless a narrower size overrides it.', 'sgs-blocks' )
-													: __( 'Optional. Leave empty to use the main image at this size.', 'sgs-blocks' )
-											}
-										/>
-									);
-								} }
-							</ResponsiveControl>
 							<RangeControl
 								label={ __( 'Split image mobile height (px)', 'sgs-blocks' ) }
 								help={ __( 'Fixed height for the split image on mobile screens. 0 = auto.', 'sgs-blocks' ) }
@@ -991,117 +1152,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								__nextHasNoMarginBottom
 							/>
-							<ResponsiveControl label={ __( 'Background video', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const isDesktop = breakpoint !== 'mobile';
-									const videoAttr   = isDesktop ? bgVideo   : bgVideoMobile;
-									const attrKey     = isDesktop ? 'bgVideo' : 'bgVideoMobile';
-									return (
-										<MediaUploadCheck>
-											<MediaUpload
-												onSelect={ ( media ) =>
-													setAttributes( {
-														[ attrKey ]: { id: media.id, url: media.url },
-													} )
-												}
-												allowedTypes={ [ 'video' ] }
-												value={ videoAttr?.id }
-												render={ ( { open } ) => (
-													<div>
-														{ videoAttr?.url ? (
-															<>
-																<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
-																	{ videoAttr.url.split( '/' ).pop() }
-																</p>
-																<Button
-																	variant="secondary"
-																	isDestructive
-																	onClick={ () =>
-																		setAttributes( { [ attrKey ]: undefined } )
-																	}
-																>
-																	{ __( 'Remove', 'sgs-blocks' ) }
-																</Button>
-															</>
-														) : (
-															<Button variant="secondary" onClick={ open }>
-																{ isDesktop
-																	? __( 'Select video', 'sgs-blocks' )
-																	: __( 'Select mobile video', 'sgs-blocks' ) }
-															</Button>
-														) }
-													</div>
-												) }
-											/>
-										</MediaUploadCheck>
-									);
-								} }
-							</ResponsiveControl>
 						</>
 					) }
 				</PanelBody>
 
-				{/* ── Video Background (video variant only) ── */}
+				{/* ── Video Background styling (video variant only — overlay
+				   appearance; the video FILE selection lives on the Settings tab). ── */}
 				{ isVideo && (
 					<PanelBody
 						title={ __( 'Background Video', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										bgVideo: {
-											id: media.id,
-											url: media.url,
-										},
-									} )
-								}
-								allowedTypes={ [ 'video' ] }
-								value={ bgVideo?.id }
-								render={ ( { open } ) => (
-									<div>
-										{ bgVideo?.url ? (
-											<>
-												<video
-													src={ bgVideo.url }
-													controls
-													style={ {
-														maxWidth: '100%',
-														marginBottom: '8px',
-													} }
-												/>
-												<Button
-													variant="secondary"
-													onClick={ () =>
-														setAttributes( {
-															bgVideo:
-																undefined,
-														} )
-													}
-													isDestructive
-												>
-													{ __(
-														'Remove video',
-														'sgs-blocks'
-													) }
-												</Button>
-											</>
-										) : (
-											<Button
-												variant="secondary"
-												onClick={ open }
-											>
-												{ __(
-													'Select background video (MP4/WebM)',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
 						<DesignTokenPicker
 							label={ __( 'Overlay colour', 'sgs-blocks' ) }
 							value={ overlayColour }
@@ -1122,25 +1183,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{/* ── SVG Background (svg-animated variant only) ── */}
+				{/* ── SVG Background styling (svg-animated variant only — overlay
+				   appearance; the SVG markup itself lives on the Settings tab). ── */}
 				{ isSvgAnimated && (
 					<PanelBody
 						title={ __( 'SVG Background', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<TextareaControl
-							label={ __( 'SVG markup', 'sgs-blocks' ) }
-							value={ svgContent || '' }
-							onChange={ ( val ) =>
-								setAttributes( { svgContent: val } )
-							}
-							rows={ 10 }
-							help={ __(
-								'Paste your SVG code here. Animation will be handled by the SVG itself.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
 						<DesignTokenPicker
 							label={ __( 'Overlay colour', 'sgs-blocks' ) }
 							value={ overlayColour }
@@ -1160,16 +1209,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 				) }
-
-				{/* ── 7. Buttons ── */}
-				<PanelBody
-					title={ __( 'Buttons', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<Notice status="info" isDismissible={ false }>
-						{ __( 'Buttons are now managed using the SGS Button Group block inside the hero. Click on a button in the editor to configure its style, colour, and link.', 'sgs-blocks' ) }
-					</Notice>
-				</PanelBody>
 
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
 				   Legacy "Overlay colour" control above writes overlayColour; this

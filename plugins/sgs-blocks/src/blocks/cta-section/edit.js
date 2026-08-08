@@ -158,11 +158,72 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* Settings tab — behaviour: content-authoring choices (content-column
+				arrangement, ribbon text) and the stats/social-proof text repeater. */ }
 			<InspectorControls>
-				{ /* WS-4: mirrored sgs/container wrapper controls (section kind) — individual
-					panels rather than the <ContainerWrapperControls> aggregator (its
-					ResponsiveSpacingPanel / ContentBandPanel sub-panels still write LEGACY
-					FLAT attrs; see the top-of-file import comment). */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Content layout', 'sgs-blocks' ) }
+						value={ ctaLayout }
+						options={ LAYOUT_OPTIONS }
+						onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Ribbon label', 'sgs-blocks' ) }
+						help={ __(
+							'Optional floating badge shown top-right of the CTA box. Leave blank to hide.',
+							'sgs-blocks'
+						) }
+						value={ ribbon || '' }
+						onChange={ ( val ) => setAttributes( { ribbon: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Stats / Social Proof', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ stats.map( ( stat, index ) => (
+						<div
+							key={ index }
+							style={ {
+								display: 'flex',
+								gap: '8px',
+								marginBottom: '8px',
+							} }
+						>
+							<TextControl
+								value={ stat.text || '' }
+								onChange={ ( val ) => updateStat( index, val ) }
+								placeholder={ __(
+									'e.g., Trusted by 5,000+ businesses',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+							<Button
+								icon="trash"
+								isDestructive
+								onClick={ () => removeStat( index ) }
+								size="small"
+							/>
+						</div>
+					) ) }
+					<Button variant="secondary" onClick={ addStat }>
+						{ __( 'Add stat', 'sgs-blocks' ) }
+					</Button>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* Styles tab — appearance: section width/spacing, content band look, grid/flex
+				geometry, background, shadow and shape dividers. WS-4: mirrored sgs/container
+				wrapper controls (section kind) — individual panels rather than the
+				<ContainerWrapperControls> aggregator (its ResponsiveSpacingPanel /
+				ContentBandPanel sub-panels still write LEGACY FLAT attrs; see the
+				top-of-file import comment). */ }
+			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
@@ -275,26 +336,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Content layout', 'sgs-blocks' ) }
-						value={ ctaLayout }
-						options={ LAYOUT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Ribbon label', 'sgs-blocks' ) }
-						help={ __(
-							'Optional floating badge shown top-right of the CTA box. Leave blank to hide.',
-							'sgs-blocks'
-						) }
-						value={ ribbon || '' }
-						onChange={ ( val ) => setAttributes( { ribbon: val } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
 				<PanelBody
 					title={ __( 'Background', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -378,41 +419,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Stats / Social Proof', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ stats.map( ( stat, index ) => (
-						<div
-							key={ index }
-							style={ {
-								display: 'flex',
-								gap: '8px',
-								marginBottom: '8px',
-							} }
-						>
-							<TextControl
-								value={ stat.text || '' }
-								onChange={ ( val ) => updateStat( index, val ) }
-								placeholder={ __(
-									'e.g., Trusted by 5,000+ businesses',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-							/>
-							<Button
-								icon="trash"
-								isDestructive
-								onClick={ () => removeStat( index ) }
-								size="small"
-							/>
-						</div>
-					) ) }
-					<Button variant="secondary" onClick={ addStat }>
-						{ __( 'Add stat', 'sgs-blocks' ) }
-					</Button>
 				</PanelBody>
 			</InspectorControls>
 

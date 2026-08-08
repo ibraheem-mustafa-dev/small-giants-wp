@@ -121,7 +121,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				     and sgs/hero, so a client meets ONE interaction for "a different crop
 				     on narrow screens" wherever images appear. Rendered ONLY for image
 				     media: the render.php video branch returns before the tier siblings
-				     are built, so showing this for a video would be a dead control. */ }
+				     are built, so showing this for a video would be a dead control.
+				     This is the block's ONLY Settings-tab panel (content/media selection
+				     is behaviour, not appearance), so it is left open by default — it is
+				     the sole panel in this tab and there is nothing else to compete with. */ }
 				{ effectiveMedia && 'image' === effectiveMedia.type && (
 					<PanelBody title={ __( 'Art direction', 'sgs-blocks' ) }>
 						<ResponsiveControl
@@ -178,8 +181,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveControl>
 					</PanelBody>
 				) }
+			</InspectorControls>
 
-				<PanelBody title={ __( 'Position', 'sgs-blocks' ) }>
+			<InspectorControls group="styles">
+				<PanelBody
+					title={ __( 'Position', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<RangeControl
 						label={ __( 'Position X (%)', 'sgs-blocks' ) }
 						help={ __( 'Horizontal position from left edge', 'sgs-blocks' ) }
@@ -202,7 +210,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Size', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Size', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<RangeControl
 						label={ __( 'Width (px)', 'sgs-blocks' ) }
 						value={ width }
@@ -223,7 +234,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Transform', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Transform', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<RangeControl
 						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
 						value={ rotation }
@@ -260,7 +274,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) }>
+				<PanelBody
+					title={ __( 'Effects', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<RangeControl
 						label={ __( 'Parallax Strength', 'sgs-blocks' ) }
 						help={ __( '0 = disabled, 100 = strong scroll effect', 'sgs-blocks' ) }

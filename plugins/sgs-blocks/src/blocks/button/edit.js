@@ -294,6 +294,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
 
 				{ /* Content */ }
@@ -365,10 +366,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( {
 									iconPosition: 'after',
 									labelCollapse: 'none',
-									iconSize: null,
-									iconGap: 8,
-									iconColour: '',
-									iconColourHover: '',
 									iconTitle: '',
 								} )
 							}
@@ -409,9 +406,53 @@ export default function Edit( { attributes, setAttributes } ) {
 								</ToolsPanelItem>
 							) }
 							<ToolsPanelItem
+								label={ __( 'Icon title', 'sgs-blocks' ) }
+								hasValue={ () => !! iconTitle }
+								onDeselect={ () => setAttributes( { iconTitle: '' } ) }
+							>
+								<TextControl
+									label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
+									value={ iconTitle }
+									onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
+									help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+						</ToolsPanel>
+					) }
+				</PanelBody>
+
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+
+				{ /* Icon appearance — size/gap/colour. Spec 35 keeps every control
+				   for an element INSIDE that element's own panel — the icon's
+				   hover colour is a STATE of the icon's colour, not a separate
+				   hover concept elsewhere in the sidebar, so it stays grouped
+				   with the icon's own panel (here, under Styles) rather than a
+				   generic Colours panel. WHICH icon + its structural position
+				   live in Settings → Icon; this panel only covers how the
+				   chosen icon looks. */ }
+				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
+					{ hasIcon && (
+						<ToolsPanel
+							label={ __( 'Icon appearance', 'sgs-blocks' ) }
+							resetAll={ () =>
+								setAttributes( {
+									iconSize: null,
+									iconGap: 8,
+									iconColour: '',
+									iconColourHover: '',
+								} )
+							}
+						>
+							<ToolsPanelItem
 								label={ __( 'Icon size', 'sgs-blocks' ) }
 								hasValue={ () => !! iconSize && iconSize !== 16 }
 								onDeselect={ () => setAttributes( { iconSize: null } ) }
+								isShownByDefault
 							>
 								<RangeControl
 									label={ __( 'Icon size (px)', 'sgs-blocks' ) }
@@ -478,19 +519,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										)
 									}
 								</StateToggleControl>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Icon title', 'sgs-blocks' ) }
-								hasValue={ () => !! iconTitle }
-								onDeselect={ () => setAttributes( { iconTitle: '' } ) }
-							>
-								<TextControl
-									label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
-									value={ iconTitle }
-									onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
-									help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-								/>
 							</ToolsPanelItem>
 						</ToolsPanel>
 					) }
@@ -610,7 +638,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   in `linked` mode — pick a global-palette swatch (stores the token
 				   slug so a brand/palette change recolours the button) OR a custom
 				   colour (full picker: spectrum + hex + opacity). */ }
-				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ true }>
 					<ToolsPanel
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						resetAll={ () =>

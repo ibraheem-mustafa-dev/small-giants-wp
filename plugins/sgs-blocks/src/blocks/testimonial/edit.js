@@ -292,6 +292,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	return (
 		<>
+			{ /* ── Settings tab (behaviour, content, structural choices) ── */ }
 			<InspectorControls>
 				{ /* ── Variant picker (visual thumbnail grid) ── */ }
 				<PanelBody title={ __( 'Layout variant', 'sgs-blocks' ) }>
@@ -369,9 +370,10 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					</BaseControl>
 				</PanelBody>
 
-				{ /* ── Rating (gated by showRating) ── */ }
+				{ /* ── Rating — visibility + content (behaviour). Appearance
+				     [colour, size] moved to the Styles tab below. ── */ }
 				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
-					<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
+					<PanelBody title={ __( 'Rating', 'sgs-blocks' ) } initialOpen={ false }>
 						<ToggleControl
 							label={ __( 'Show a rating', 'sgs-blocks' ) }
 							help={ __(
@@ -492,28 +494,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								/>
 							</>
 						) }
-						{ showRating && (
-							<DesignTokenPicker
-								label={ __( 'Rating colour', 'sgs-blocks' ) }
-								value={ ratingColour }
-								onChange={ ( val ) =>
-									setAttributes( { ratingColour: val } )
-								}
-							/>
-						) }
-						{ showRating && (
-							<RangeControl
-								label={ __( 'Star size (px)', 'sgs-blocks' ) }
-								value={ ratingSize }
-								onChange={ ( val ) =>
-									setAttributes( { ratingSize: val } )
-								}
-								min={ 10 }
-								max={ 32 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-							/>
-						) }
 					</PanelBody>
 				) }
 
@@ -598,6 +578,66 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange={ ( media ) =>
 									setAttributes( { workMedia: media } )
 								}
+							/>
+						) }
+					</PanelBody>
+				) }
+
+				{ /* ── SEO schema (behaviour — enables/disables structured-data
+				     output; moved here from after Width & spacing so all
+				     Settings panels sit together before the Styles group). ── */ }
+				<PanelBody
+					title={ __( 'SEO schema markup', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __(
+							'Output schema.org/Review JSON-LD',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Adds structured data. Enable only when the reviewer has consented to their name appearing in search results.',
+							'sgs-blocks'
+						) }
+						checked={ schemaEnabled }
+						onChange={ ( val ) =>
+							setAttributes( { schemaEnabled: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab (appearance — colour, typography, hover
+			     appearance, layout geometry) ── */ }
+			<InspectorControls group="styles">
+				{ /* ── Rating appearance (colour + star size), split out of
+				     the Settings-tab Rating panel above. ── */ }
+				{ ( effectiveVariant === 'rating-led' || effectiveVariant === 'classic-card' ) && (
+					<PanelBody
+						title={ __( 'Rating appearance', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						{ showRating && (
+							<DesignTokenPicker
+								label={ __( 'Rating colour', 'sgs-blocks' ) }
+								value={ ratingColour }
+								onChange={ ( val ) =>
+									setAttributes( { ratingColour: val } )
+								}
+							/>
+						) }
+						{ showRating && (
+							<RangeControl
+								label={ __( 'Star size (px)', 'sgs-blocks' ) }
+								value={ ratingSize }
+								onChange={ ( val ) =>
+									setAttributes( { ratingSize: val } )
+								}
+								min={ 10 }
+								max={ 32 }
+								step={ 1 }
+								__nextHasNoMarginBottom
 							/>
 						) }
 					</PanelBody>
@@ -1079,28 +1119,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				{ /* ── SEO schema ── */ }
-				<PanelBody
-					title={ __( 'SEO schema markup', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __(
-							'Output schema.org/Review JSON-LD',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'Adds structured data. Enable only when the reviewer has consented to their name appearing in search results.',
-							'sgs-blocks'
-						) }
-						checked={ schemaEnabled }
-						onChange={ ( val ) =>
-							setAttributes( { schemaEnabled: val } )
-						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

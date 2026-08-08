@@ -916,26 +916,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="content"
-				/>
-				<PanelBody
-					title={ __( 'Card padding', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<BoxControl
-						label={ __( 'Card padding', 'sgs-blocks' ) }
-						values={ cardPadding ?? {} }
-						onChange={ ( next ) =>
-							setAttributes( { cardPadding: next } )
-						}
-					/>
-				</PanelBody>
 
-				{ /* ── Card panel ── */ }
-				<PanelBody title={ __( 'Card', 'sgs-blocks' ) }>
+				{ /* ── Card panel (behaviour: variant + heading level + tag text) ── */ }
+				<PanelBody title={ __( 'Card', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
 						label={ __( 'Variant style', 'sgs-blocks' ) }
 						value={ variantStyle }
@@ -982,42 +965,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								__nextHasNoMarginBottom
 							/>
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="title"
-							/>
-							<DesignTokenPicker
-								label={ __( 'Title colour', 'sgs-blocks' ) }
-								value={ titleColour }
-								onChange={ ( v ) =>
-									setAttributes( { titleColour: v } )
-								}
-							/>
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="desc"
-								showWeight={ false }
-								showStyle={ false }
-							/>
-							<DesignTokenPicker
-								label={ __( 'Description colour', 'sgs-blocks' ) }
-								value={ descColour }
-								onChange={ ( v ) =>
-									setAttributes( { descColour: v } )
-								}
-							/>
-							{ ( isTrial || isFeatured ) && (
-								<TypographyControls
-									attributes={ attributes }
-									setAttributes={ setAttributes }
-									prefix="tag"
-									showWeight={ false }
-									showStyle={ false }
-									showLineHeight={ false }
-								/>
-							) }
 							{ isTrial && (
 								<TextControl
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
@@ -1027,54 +974,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									}
 									__nextHasNoMarginBottom
 								/>
-							) }
-							{ isTrial && (
-								<>
-									<ToggleControl
-										label={ __( 'Tag full width', 'sgs-blocks' ) }
-										help={ __(
-											'Stretch the trial tag to the full width of the card body (matches the draft) instead of hugging its text.',
-											'sgs-blocks'
-										) }
-										checked={ !! attributes.tagFullWidth }
-										onChange={ ( v ) =>
-											setAttributes( { tagFullWidth: v } )
-										}
-										__nextHasNoMarginBottom
-									/>
-									<DesignTokenPicker
-										label={ __( 'Tag background colour', 'sgs-blocks' ) }
-										value={ attributes.tagBackgroundColour || '' }
-										onChange={ ( v ) =>
-											setAttributes( { tagBackgroundColour: v } )
-										}
-									/>
-									<DesignTokenPicker
-										label={ __( 'Tag text colour', 'sgs-blocks' ) }
-										value={ attributes.tagTextColour || '' }
-										onChange={ ( v ) =>
-											setAttributes( { tagTextColour: v } )
-										}
-									/>
-									<RangeControl
-										label={ __( 'Tag border radius (px)', 'sgs-blocks' ) }
-										value={ attributes.tagBorderRadius }
-										onChange={ ( v ) =>
-											setAttributes( { tagBorderRadius: v } )
-										}
-										min={ 0 }
-										max={ 50 }
-										step={ 1 }
-										__nextHasNoMarginBottom
-									/>
-									<BoxControl
-										label={ __( 'Tag padding', 'sgs-blocks' ) }
-										values={ attributes.tagPadding ?? {} }
-										onChange={ ( next ) =>
-											setAttributes( { tagPadding: next } )
-										}
-									/>
-								</>
 							) }
 							{ isFeatured && (
 								<TextControl
@@ -1090,7 +989,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── Price panel (typed built-in only) ── */ }
+				{ /* ── Price panel (typed built-in only) — content fields; typography +
+				     colour live in the Styles tab's "Price style" panel ── */ }
 				{ isBuiltIn && (
 					<PanelBody
 						title={ __( 'Price', 'sgs-blocks' ) }
@@ -1130,6 +1030,330 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ onPackSizesChange }
 							__nextHasNoMarginBottom
 						/>
+					</PanelBody>
+				) }
+
+				{ /* ── Buttons panel — content + behaviour; style presets live in the
+				     Styles tab's "Button style" panel ── */ }
+				<PanelBody
+					title={ __( 'Buttons', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ /* Primary CTA text + URL — typed mode only (B5, 2026-06-10).
+					     In bound mode the CTA text/url are set via the Content
+					     overrides panel ("Override button"), so duplicating them
+					     here is redundant. Behaviour stays below (both modes). */ }
+					{ ! isBound && (
+						<>
+							<TextControl
+								label={ __( 'Primary button text', 'sgs-blocks' ) }
+								value={ ctaText || '' }
+								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
+								__nextHasNoMarginBottom
+							/>
+							<SgsLinkControl
+								label={ __( 'Primary button URL', 'sgs-blocks' ) }
+								value={ { url: ctaUrl || '' } }
+								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
+								searchOnly
+							/>
+						</>
+					) }
+					{ isBound ? (
+						<SelectControl
+							label={ __( 'Primary button behaviour', 'sgs-blocks' ) }
+							help={ __(
+								'What happens when the button is clicked in the live product card.',
+								'sgs-blocks'
+							) }
+							value={ ctaBehaviour || 'learn-more' }
+							options={ CTA_BEHAVIOUR_OPTIONS }
+							onChange={ ( v ) =>
+								setAttributes( { ctaBehaviour: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) : (
+						<Notice
+							status="info"
+							isDismissible={ false }
+							style={ { marginTop: 8 } }
+						>
+							{ __(
+								'Buttons render as plain links until a product is connected. Behaviour options apply to a connected product.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+
+					{ /* Secondary CTA */ }
+					<hr style={ { margin: '12px 0' } } />
+					<TextControl
+						label={ __( 'Secondary button text', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty to hide the secondary button.',
+							'sgs-blocks'
+						) }
+						value={ cta2Text || '' }
+						onChange={ ( v ) =>
+							setAttributes( { cta2Text: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ ( cta2Text || '' ) !== '' && (
+						<SgsLinkControl
+							label={ __(
+								'Secondary button URL',
+								'sgs-blocks'
+							) }
+							value={ { url: cta2Url || '' } }
+							onChange={ ( url ) =>
+								setAttributes( { cta2Url: url } )
+							}
+							searchOnly
+						/>
+					) }
+					{ /* v1: the secondary button is always a plain learn-more link (one canonical cart form per card) — no behaviour dropdown until a real second behaviour exists (dead-control rule). */ }
+				</PanelBody>
+
+				{ /* ── Advanced SEO panel (WC bound only) ── */ }
+				{ 'wc-product' === sourceMode && (
+					<PanelBody
+						title={ __( 'Advanced SEO', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<NumberControl
+							label={ __(
+								'Index a specific variation (advanced)',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Optional. Enter a variation ID to let search engines index that one variation\'s URL instead of only the main product. Leave at 0 for the default (recommended).',
+								'sgs-blocks'
+							) }
+							value={ indexVariationUrl }
+							min={ 0 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									indexVariationUrl:
+										parseInt( v, 10 ) || 0,
+								} )
+							}
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{ /* ── Value ladder panel (bound only) ── */ }
+				{ isBound && (
+					<PanelBody
+						title={ __( 'Value ladder', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<ToggleControl
+							label={ __( 'Show price ladder', 'sgs-blocks' ) }
+							help={ __(
+								'Off shows just the price and per-item note — suited to browsing grids.',
+								'sgs-blocks'
+							) }
+							checked={ false !== attributes.showLadder }
+							onChange={ ( v ) =>
+								setAttributes( { showLadder: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Savings framing', 'sgs-blocks' ) }
+							help={ __(
+								'How per-unit savings are worded on the price-per-unit ladder. Savings only show when a single-unit reference price is set + confirmed on the product editor.',
+								'sgs-blocks'
+							) }
+							value={ framingMode || 'loss-aversion' }
+							options={ [
+								{
+									value: 'loss-aversion',
+									label: __(
+										'Loss aversion ("save 8p each vs buying singly")',
+										'sgs-blocks'
+									),
+								},
+								{
+									value: 'savings',
+									label: __(
+										'Savings ("save 8p each")',
+										'sgs-blocks'
+									),
+								},
+								{
+									value: 'neutral',
+									label: __(
+										'Neutral (no saving text)',
+										'sgs-blocks'
+									),
+								},
+							] }
+							onChange={ ( v ) =>
+								setAttributes( { framingMode: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<ToggleControl
+							label={ __(
+								'Promote the second-largest pack',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Places a "Most popular" badge on the second-largest pack (decoy pricing). A per-product setting on the product editor overrides this for that product.',
+								'sgs-blocks'
+							) }
+							checked={ !! decoyEnabled }
+							onChange={ ( v ) =>
+								setAttributes( { decoyEnabled: v } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{ /* ── Content overrides panel (connected products only) ── */ }
+				{ isBound && (
+					<ContentOverridesPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						wcProduct={ wcProduct }
+					/>
+				) }
+
+				{ /* ── Product options panel (connected WC products only) ── */ }
+				{ isBound && (
+					<ProductOptionsPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						wcProduct={ wcProduct }
+						loading={ wcProductLoading }
+					/>
+				) }
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="content"
+				/>
+				<PanelBody
+					title={ __( 'Card padding', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<BoxControl
+						label={ __( 'Card padding', 'sgs-blocks' ) }
+						values={ cardPadding ?? {} }
+						onChange={ ( next ) =>
+							setAttributes( { cardPadding: next } )
+						}
+					/>
+				</PanelBody>
+
+				{ /* ── Card style panel (appearance: typography + tag colours;
+				     variant + heading level + tag text live in the Settings
+				     tab's "Card" panel) ── */ }
+				{ isBuiltIn && (
+					<PanelBody title={ __( 'Card style', 'sgs-blocks' ) } initialOpen={ false }>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="title"
+						/>
+						<DesignTokenPicker
+							label={ __( 'Title colour', 'sgs-blocks' ) }
+							value={ titleColour }
+							onChange={ ( v ) =>
+								setAttributes( { titleColour: v } )
+							}
+						/>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="desc"
+							showWeight={ false }
+							showStyle={ false }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Description colour', 'sgs-blocks' ) }
+							value={ descColour }
+							onChange={ ( v ) =>
+								setAttributes( { descColour: v } )
+							}
+						/>
+						{ ( isTrial || isFeatured ) && (
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="tag"
+								showWeight={ false }
+								showStyle={ false }
+								showLineHeight={ false }
+							/>
+						) }
+						{ isTrial && (
+							<>
+								<ToggleControl
+									label={ __( 'Tag full width', 'sgs-blocks' ) }
+									help={ __(
+										'Stretch the trial tag to the full width of the card body (matches the draft) instead of hugging its text.',
+										'sgs-blocks'
+									) }
+									checked={ !! attributes.tagFullWidth }
+									onChange={ ( v ) =>
+										setAttributes( { tagFullWidth: v } )
+									}
+									__nextHasNoMarginBottom
+								/>
+								<DesignTokenPicker
+									label={ __( 'Tag background colour', 'sgs-blocks' ) }
+									value={ attributes.tagBackgroundColour || '' }
+									onChange={ ( v ) =>
+										setAttributes( { tagBackgroundColour: v } )
+									}
+								/>
+								<DesignTokenPicker
+									label={ __( 'Tag text colour', 'sgs-blocks' ) }
+									value={ attributes.tagTextColour || '' }
+									onChange={ ( v ) =>
+										setAttributes( { tagTextColour: v } )
+									}
+								/>
+								<RangeControl
+									label={ __( 'Tag border radius (px)', 'sgs-blocks' ) }
+									value={ attributes.tagBorderRadius }
+									onChange={ ( v ) =>
+										setAttributes( { tagBorderRadius: v } )
+									}
+									min={ 0 }
+									max={ 50 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+								/>
+								<BoxControl
+									label={ __( 'Tag padding', 'sgs-blocks' ) }
+									values={ attributes.tagPadding ?? {} }
+									onChange={ ( next ) =>
+										setAttributes( { tagPadding: next } )
+									}
+								/>
+							</>
+						) }
+					</PanelBody>
+				) }
+
+				{ /* ── Price style panel (typed built-in only) — content fields
+				     live in the Settings tab's "Price" panel ── */ }
+				{ isBuiltIn && (
+					<PanelBody
+						title={ __( 'Price style', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1191,31 +1415,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Buttons panel ── */ }
+				{ /* ── Button style panel (appearance: primary/secondary style
+				     presets; text/URL/behaviour live in the Settings tab's
+				     "Buttons" panel) ── */ }
 				<PanelBody
-					title={ __( 'Buttons', 'sgs-blocks' ) }
+					title={ __( 'Button style', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Primary CTA text + URL — typed mode only (B5, 2026-06-10).
-					     In bound mode the CTA text/url are set via the Content
-					     overrides panel ("Override button"), so duplicating them
-					     here is redundant. Style + behaviour stay below (both modes). */ }
-					{ ! isBound && (
-						<>
-							<TextControl
-								label={ __( 'Primary button text', 'sgs-blocks' ) }
-								value={ ctaText || '' }
-								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
-								__nextHasNoMarginBottom
-							/>
-							<SgsLinkControl
-								label={ __( 'Primary button URL', 'sgs-blocks' ) }
-								value={ { url: ctaUrl || '' } }
-								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
-								searchOnly
-							/>
-						</>
-					) }
 					<SelectControl
 						label={ __( 'Primary button style', 'sgs-blocks' ) }
 						value={ ctaStyle || 'primary' }
@@ -1270,74 +1476,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 						__nextHasNoMarginBottom
 					/>
-					{ isBound ? (
+					{ ( cta2Text || '' ) !== '' && (
 						<SelectControl
-							label={ __( 'Primary button behaviour', 'sgs-blocks' ) }
-							help={ __(
-								'What happens when the button is clicked in the live product card.',
+							label={ __(
+								'Secondary button style',
 								'sgs-blocks'
 							) }
-							value={ ctaBehaviour || 'learn-more' }
-							options={ CTA_BEHAVIOUR_OPTIONS }
+							value={ cta2Style || 'secondary' }
+							options={ CTA_STYLE_OPTIONS }
 							onChange={ ( v ) =>
-								setAttributes( { ctaBehaviour: v } )
+								setAttributes( { cta2Style: v } )
 							}
 							__nextHasNoMarginBottom
 						/>
-					) : (
-						<Notice
-							status="info"
-							isDismissible={ false }
-							style={ { marginTop: 8 } }
-						>
-							{ __(
-								'Buttons render as plain links until a product is connected. Behaviour options apply to a connected product.',
-								'sgs-blocks'
-							) }
-						</Notice>
-					) }
-
-					{ /* Secondary CTA */ }
-					<hr style={ { margin: '12px 0' } } />
-					<TextControl
-						label={ __( 'Secondary button text', 'sgs-blocks' ) }
-						help={ __(
-							'Leave empty to hide the secondary button.',
-							'sgs-blocks'
-						) }
-						value={ cta2Text || '' }
-						onChange={ ( v ) =>
-							setAttributes( { cta2Text: v } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ ( cta2Text || '' ) !== '' && (
-						<>
-							<SgsLinkControl
-								label={ __(
-									'Secondary button URL',
-									'sgs-blocks'
-								) }
-								value={ { url: cta2Url || '' } }
-								onChange={ ( url ) =>
-									setAttributes( { cta2Url: url } )
-								}
-								searchOnly
-							/>
-							<SelectControl
-								label={ __(
-									'Secondary button style',
-									'sgs-blocks'
-								) }
-								value={ cta2Style || 'secondary' }
-								options={ CTA_STYLE_OPTIONS }
-								onChange={ ( v ) =>
-									setAttributes( { cta2Style: v } )
-								}
-								__nextHasNoMarginBottom
-							/>
-								{ /* v1: the secondary button is always a plain learn-more link (one canonical cart form per card) — no behaviour dropdown until a real second behaviour exists (dead-control rule). */ }
-						</>
 					) }
 				</PanelBody>
 
@@ -1648,106 +1799,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Advanced SEO panel (WC bound only) ── */ }
-				{ 'wc-product' === sourceMode && (
-					<PanelBody
-						title={ __( 'Advanced SEO', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<NumberControl
-							label={ __(
-								'Index a specific variation (advanced)',
-								'sgs-blocks'
-							) }
-							help={ __(
-								'Optional. Enter a variation ID to let search engines index that one variation\'s URL instead of only the main product. Leave at 0 for the default (recommended).',
-								'sgs-blocks'
-							) }
-							value={ indexVariationUrl }
-							min={ 0 }
-							onChange={ ( v ) =>
-								setAttributes( {
-									indexVariationUrl:
-										parseInt( v, 10 ) || 0,
-								} )
-							}
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
-				) }
-
-				{ /* ── Value ladder panel (bound only) ── */ }
-				{ isBound && (
-					<PanelBody
-						title={ __( 'Value ladder', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<ToggleControl
-							label={ __( 'Show price ladder', 'sgs-blocks' ) }
-							help={ __(
-								'Off shows just the price and per-item note — suited to browsing grids.',
-								'sgs-blocks'
-							) }
-							checked={ false !== attributes.showLadder }
-							onChange={ ( v ) =>
-								setAttributes( { showLadder: v } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						<SelectControl
-							label={ __( 'Savings framing', 'sgs-blocks' ) }
-							help={ __(
-								'How per-unit savings are worded on the price-per-unit ladder. Savings only show when a single-unit reference price is set + confirmed on the product editor.',
-								'sgs-blocks'
-							) }
-							value={ framingMode || 'loss-aversion' }
-							options={ [
-								{
-									value: 'loss-aversion',
-									label: __(
-										'Loss aversion ("save 8p each vs buying singly")',
-										'sgs-blocks'
-									),
-								},
-								{
-									value: 'savings',
-									label: __(
-										'Savings ("save 8p each")',
-										'sgs-blocks'
-									),
-								},
-								{
-									value: 'neutral',
-									label: __(
-										'Neutral (no saving text)',
-										'sgs-blocks'
-									),
-								},
-							] }
-							onChange={ ( v ) =>
-								setAttributes( { framingMode: v } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __(
-								'Promote the second-largest pack',
-								'sgs-blocks'
-							) }
-							help={ __(
-								'Places a "Most popular" badge on the second-largest pack (decoy pricing). A per-product setting on the product editor overrides this for that product.',
-								'sgs-blocks'
-							) }
-							checked={ !! decoyEnabled }
-							onChange={ ( v ) =>
-								setAttributes( { decoyEnabled: v } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
-				) }
-
 				{ /* ── Picker style panel (R4 — pill-style forwarding to every
 				   in-card sgs/option-picker: typed pack-size pills AND
 				   bound/connected axis pickers, all 3 render_block call
@@ -1979,25 +2030,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</ToolsPanelItem>
 						</ToolsPanel>
 					</PanelBody>
-
-				{ /* ── Content overrides panel (connected products only) ── */ }
-				{ isBound && (
-					<ContentOverridesPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						wcProduct={ wcProduct }
-					/>
-				) }
-
-				{ /* ── Product options panel (connected WC products only) ── */ }
-				{ isBound && (
-					<ProductOptionsPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						wcProduct={ wcProduct }
-						loading={ wcProductLoading }
-					/>
-				) }
 			</InspectorControls>
 
 			{ isBound ? (
