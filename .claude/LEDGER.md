@@ -323,6 +323,15 @@ Task 2 (inline, Opus)      Task 3 (delegated, Sonnet — parallel)
 
 ### Methodology guardrails (do not skip — every one was earned)
 
+- **A capped search proves presence, NEVER absence.** 2026-08-08: `-First 20` hid the hit at line
+  ~980 and I told Bean control-ORDER "existed nowhere" — it was already in Cross-cutting A. Re-run
+  unbounded, or count matches, before writing "X does not exist".
+- **Rewriting a repo file? `newline=""` on read AND write.** Python's default text mode turns CRLF
+  into LF — a 22-entry sweep would have shipped as a 7,679-line diff. Two byte counts differing by
+  exactly the line count IS a line-ending conversion, not a measurement error.
+- **Commit a council's VERBATIM per-rater output before acting on it.** A synthesis is lossy exactly
+  where your blind spots are; the ordering finding was lost that way and only Bean recovered it.
+
 - **A grep count is not a measurement — and provenance is not derivation.** 2026-08-08: block-link
   reach was measured correctly at 67 early in the session, then overwritten with an agent's "~82"
   without checking it against my own output. Separately, "17 stylesheets carry the guard" counted
