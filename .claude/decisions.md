@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D522 — Spec 35's 27 flat conditions are the WRONG SHAPE; one contract per CONTROL TYPE replaces them [INCIDENT]
+
+**2026-08-08. Bean-ruled.** *"Those bugs are exactly the things that need rules to protect against,
+we should have a fixed shape for each control type… as long as the rule is very clear which category
+it applies to."* Draft contract committed `8d1d7c01` (689 lines),
+`.claude/plans/spec-35-control-type-contract.md`. **It supersedes NOTHING yet** — see the council
+verdict below.
+
+**Why the flat shape failed, structurally.** Each of the 27 conditions described one desired property
+of one control, so each enforcing rule got written against **the one component its author had in
+mind** — and every defect arriving under a different component name walked past it. Measured, not
+theorised: rule 04 (`ColorPalette`…) missed `sgs/star-rating`'s `<TextControl type="color">`; rule 08
+(`<TextControl type="url">`) missed `sgs/button`'s `<URLInput>` and a raw URL field injected into
+**67** blocks from `extensions/hover-effects.js`; rule 07 (`SelectControl` + shadow-ish label) missed
+`sgs/quote` and `sgs/media` asking clients to hand-type raw CSS; rule 20 (pattern files) missed the
+BLOCK-side `templateLock` that silently deleted a stored child.
+
+**The consequence that names the whole problem:** rule 08 went 40→0, and Spec 35 Part M recorded
+*"Wave 1 — DONE. `SgsLinkControl` migrated across all raw-URL fields."* The zero was true of what the
+gate could see. The doc turned it into a claim about the world. **A contract fixes this by making
+banned lookalikes an ENUMERATED FIELD** — you cannot write one without answering "what else in this
+tree does this same job under another name?"
+
+**The same disease is in the data layer.** `_KNOWN_CONTROLS`
+(`plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py:2436-2441`) is a hardcoded
+16-name tuple with ZERO custom SGS components. An unrecognised tag yields no candidate → no write →
+the stale `inspector_control_type` (a fossil of `enrich-db.py`, deleted 2026-07-21) survives forever.
+One root cause, two symptoms: the gates, and the data that scopes them. R-31-1 breach in both.
+
+**Bean promoted the data layer to TIER 0, ahead of all enforcement.** Four DB scoping columns are
+wrong (`inspector_control_type`, `box_family`, icon `role`, `block_capabilities`). A rule scoped to a
+wrong axis reads green while passing the blocks it exists to catch — proven by Bean's own example:
+the gallery block-link fix depends on `isCollectionKind()` reading `block_capabilities`, and
+`sgs/gallery` carries zero capability rows.
+
+**COUNCIL VERDICT (`/qc-council`, 4 raters + structural pre-gate).** Pre-gate: 24/24 `file:line`
+citations verified, zero phantoms. Every STRUCTURAL finding confirmed independently — the 84-block
+denominator, all 15 scoping axes, every gate output, the ESLint total, all four a11y citations.
+**Derived arithmetic and completeness failed, and the council blocked supersession:**
+- **10 conditions silently dropped**, incl. **17** (reduced-motion, WCAG 2.3.3 AA, one of only four
+  gate-mode rules) and **11** (the 768/1024 lock — measured to exist ONLY as per-file constants in 3
+  `view.js` files, so the written rule was the sole thing holding it). Tombstoning the checklist
+  would have DELETED live requirements.
+- **3 proposals contradict the record.** `feature-grid`'s "leftover hardcode" is **D270**, a
+  Bean-diagnosed composite-mirror fix inside `elseif ( $has_explicit_grid )`, live-verified — acting
+  on it would have reverted it. `sgsCustomCss` is load-bearing for clone fidelity (Spec 31
+  FR-31-5.2). The "17 stylesheets carry the guard" debt is **zero** — `check-stranded-guards.py` is
+  wired and passes; the grep hits were REMOVAL COMMENTS.
+- **11 figures corrected**, incl. block-link 82→**67** (a figure this session measured correctly and
+  then overwrote with an agent's) and "5 shared-file fixes clear the a11y lot" → **false**, 12 of 42
+  unlabelled controls sit outside any wrapper.
+
+**The one finding that got STRONGER: the fourth quadrant.** `check-dead-controls.js` covers
+control-without-render and neither-nor. **Render-without-control is unguarded** — **53** attributes
+(not ~45) are declared, painted, and unreachable by any client. Proven by RUNNING CHECK 4: it reports
+3 dead attrs and sees none of the 53.
+
+**Locked:** revision precedes supersession. The 27-condition checklist REMAINS authoritative until
+the 10 dropped conditions are restored. Nothing tombstoned, nothing built.
+
 ## D521 — art-direction tiers reach every media block; video needed a different mechanism [ROUTINE]
 
 **2026-08-07.** Closed the LEDGER's Task 1. `sgs/decorative-image`, `sgs/image-sequence`,
