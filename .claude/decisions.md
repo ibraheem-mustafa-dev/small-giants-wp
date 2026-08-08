@@ -1,5 +1,42 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D523 — Tier 0 (a)+(b) landed: the DB's two cheap scoping columns were wrong for the SAME reason the gates were [INCIDENT]
+
+**2026-08-08. Commit `e73bacde`.** Task 1(a)+(b) of the Spec 35 Tier 0 data layer, the prerequisite
+Bean ruled ahead of any enforcement build (D522). Both columns were wrong because a lookup was keyed
+on **component NAMES** — the identical structural bug the control-type contract exists to end.
+
+**(a) `box_family` — the mechanism was never broken.** `_collect_boxfamily_overrides()` reads
+`supports.sgs.boxFamilies` from block.json and is idempotent; none of the five blocks declared the
+key, so seven genuine box-object attrs carried NULL and the converter's box-merge had no gate to
+read. Declared: `card-grid.cardBorderWidth`, `mega-panel.panelPadding`, `nav-drawer.drawerPadding`,
+`site-{header,footer}-row.padding`/`margin`. ⛔ NOT `mega-panel.borderRadius` — `attr_type='string'`,
+a scalar radius; NULL is correct for it.
+
+**(b) `inspector_control_type` — `_KNOWN_CONTROLS` held 16 core WP components and ZERO of this
+framework's own.** An unrecognised tag yields no candidate → no write → whatever the long-deleted
+`enrich-db.py` last wrote survives forever, *looking derived*: `sgs/heading`'s box-shaped
+`borderWidth` read `DesignTokenPicker`, `sgs/counter`'s `icon` read `RangeControl`, `sgs/button`'s
+`url` read `TextControl`. Measured on a **sandbox copy** of the live DB before touching it: **41 rows
+corrected (10 previously NULL, 31 previously wrong)**, idempotent on a second run.
+
+**Widening the roster surfaced a second defect it would otherwise have INTRODUCED.** A control inside
+a repeater rebuilds and writes the whole array, so the naive derivation credited the array attr to
+whichever item control came last — `sgs/pricing-table::plans` would have read `SgsLinkControl`.
+Guarded by **what the code DOES**: a control inside an iteration over the attribute's OWN value is a
+per-item control. A `.map()` over a CONSTANT list is the opposite case and is deliberately not
+matched — which is why `sgs/form-field-address::fields` keeps its `CheckboxControl`. Guard fires on
+exactly 3 tags; all 6 legitimate array associations survive.
+
+**Baselining, not assuming.** The 37 converter-conformance failures + the hero spec-15 failure are
+PRE-EXISTING: proven by restoring the pre-change DB and re-running (37 before, 37 after), and
+`inspector_control_type` has **zero** converter consumers.
+
+**Residual, recorded not hidden:** `site-{header,footer}-row` `padding`/`margin` still read NULL —
+they are edited through `ContainerWrapperControls`, a multi-attribute façade that names no single
+attr. An honest NULL, needing a design decision rather than a name added to a list. **(c)
+`block_capabilities` and (d) icon `role` remain OPEN design work.**
+
 ## D522 — Spec 35's 27 flat conditions are the WRONG SHAPE; one contract per CONTROL TYPE replaces them [INCIDENT]
 
 **2026-08-08. Bean-ruled.** *"Those bugs are exactly the things that need rules to protect against,

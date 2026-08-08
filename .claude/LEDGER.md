@@ -211,6 +211,15 @@ Bean's own gallery example proves it: the fix depends on `isCollectionKind()` re
 `block_capabilities`, and `sgs/gallery` carries **zero** capability rows.
 **Estimated time:** ~15 min for steps a+b; c is a design job.
 
+> ✅ **(a) + (b) LANDED 2026-08-08 — D523, commit `e73bacde`, pushed.** 7 `box_family` values
+> declared in block.json; 41 `inspector_control_type` rows corrected (10 NULL, 31 wrong), measured on
+> a sandbox DB copy first, idempotent on re-run. A repeater guard was added in the same pass to stop
+> the widened roster crediting an array attr to its per-item control. The 37 conformance failures are
+> PRE-EXISTING (baselined by restoring the pre-change DB: 37 before, 37 after). **Residual:**
+> `site-{header,footer}-row` `padding`/`margin` still read NULL — edited via `ContainerWrapperControls`,
+> a multi-attr façade that names no single attr; needs a design call, not a name in a list.
+> **(c) and (d) below remain OPEN.** Original analysis kept for the (c)/(d) work:
+
 Order — cheapest and safest first, root causes already established by council:
 - **(a) `box_family`** — the mechanism is CORRECT (`_collect_boxfamily_overrides()` reads
   `supports.sgs.boxFamilies` from block.json, idempotent). **VERIFIED: none of the 5 blocks declares
