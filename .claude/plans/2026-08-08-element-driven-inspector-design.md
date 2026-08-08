@@ -40,21 +40,43 @@ controls for one thing. That becomes a build check, so this class of mess cannot
 | Elements described | **283** | same |
 | `attrMap` entries already tagged `native:` | **403** | same |
 | Elements declaring a hover state | **18 of 283** | same |
-| Blocks with native colour support AND custom colour controls | **38** | supports vs `edit.js` |
+| Blocks with native colour support AND a CUSTOM colour attr for the same property | **27** | see derivation below |
 | Blocks declaring `__experimentalBorder` | **48** | supports scan |
 | Blocks running TWO hover systems (own `*Hover` + universal `sgsHover*`) | **16** | attrs vs extension reach |
 | Blocks relying SOLELY on the universal hover extension | **48** | same |
 | Blocks already opted out of it | **17** | `supports.sgs.hideExtensions` |
 
+⛔ **The colour-duplication figure was WRONG in the first draft (38) and is corrected to 27.**
+Caught by the handoff QC subagent, which could not reproduce 38 by any derivation. 38 came from a
+loose regex (`/DesignTokenPicker|Colour\b/` against `edit.js`) that matched almost any mention of
+colour, not actual duplication. **The reproducible derivation, and the one that governs:**
+
+> a block declares `supports.color.background` or `.text`, AND at least one of its
+> `sgs.elements[].attrMap` entries maps `css:color` or `css:background-color` to an attribute NOT
+> prefixed `native:`.
+
+That is genuine duplication — WordPress renders a panel for the property while the block also owns a
+custom attribute for it. **27 of 83.** Anyone re-deriving this must state their predicate; three
+different plausible predicates gave 55, 30 and 2.
+
 ⚠ **Two claims were checked and did NOT hold** — recorded so nobody designs around them:
 - *"Border colour control is missing completely."* `sgs/button` has `colourBorder` and
   `colourBorderHover` controls, and renders both. The failure is that they cannot be FOUND, which is
   a placement problem, not a missing feature. Other blocks still need auditing individually.
-- *"The universal background panel only allows media."* It already offers media opacity, overlay
+- *"The universal background panel only allows media."* Overstated — it already offers overlay
   opacity, gradient overlay with from/to colour pickers, parallax scroll, Ken Burns, position,
-  repeat, size, attachment and SVG. **The one real gap is a flat background colour** — which today
-  exists only in the native WP Color panel. That single gap is what makes deleting the native panel
-  dangerous, and is why §3 is sequenced first.
+  repeat, size, attachment and SVG.
+
+  ⛔ **BUT MY OWN CORRECTION TO IT WAS ALSO WRONG.** The first draft said "media opacity" exists and
+  that flat colour was "the one real gap". Both parts are wrong, caught by the handoff QC:
+  `sgs/container` declares exactly **two** opacity attributes — `backgroundOverlayOpacity` and
+  `bgSvgOpacity`. There is **no media/image opacity anywhere**. The `Opacity (%)` label I read in a
+  grep sits directly after `bgSvgPosition` (`ContainerWrapperControls.js:978`) — it is the **SVG**
+  opacity control, and I attributed it to media without checking what it was bound to.
+
+  **THE REAL GAPS ARE TWO: flat background colour AND media opacity.** Both must be built before any
+  native colour support is stripped (§5), and Bean's §3 model needs media opacity anyway — a colour
+  layer painting over media is only useful if the media beneath can also be dimmed independently.
 
 ---
 
@@ -102,10 +124,11 @@ element declares `contentAttrs`, its content controls stay where they are** — 
 
 **Target capability**, all in the SGS background panel, for any block using the shared wrapper:
 
-1. **Flat colour with alpha**
+1. **Flat colour with alpha** — MISSING today, build it
 2. **Gradient** — from/to colour pickers + angle (the existing `GradientOverlayControl` shape,
    already correct)
-3. **Media** — image/video/SVG, with the existing opacity/position/repeat/size/parallax/Ken Burns
+3. **Media** — image/video/SVG, with the existing position/repeat/size/parallax/Ken Burns, **plus a
+   media opacity control, which is also MISSING today** (only overlay and SVG opacity exist)
 4. **Automatic overlay.** When a colour or gradient is set *and* media is present, the colour layer
    paints ABOVE the media. No separate "overlay" concept, no extra toggle — the client lowers the
    colour's alpha to let the image through. One mental model instead of two.
