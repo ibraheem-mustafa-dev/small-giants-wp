@@ -1,0 +1,81 @@
+{
+	"_meta": {
+		"rule": "21-render-without-control",
+		"ruleVersion": 1,
+		"note": "TRIAGE PASS 2026-08-08. The rule's live population was 280 across 35 of 83 blocks. It is NOT a backlog figure until every entry is either a verified defect or a baselined false positive with a checkable reason — that is what this pass produced, and a SMALLER NUMBER WAS NOT THE GOAL. Four false-positive CLASSES were found by building a per-finding evidence table (which render file matched, and by what mechanism: literal name / dynamic suffix / dynamic prefix / comment-only). ONE class was fixed in the rule rather than baselined, because it recurs on every block and is a WordPress contract, not a per-case exception: six findings whose control is rendered by WORDPRESS CORE from the block's own `supports` (anchor / align / color.background / color.text / typography.textAlign) — core's controls live in neither edit.js nor any SGS shared component, so the rule's two corpora could never see them. That is a SECOND structurally-invisible control surface, sibling to the extension surface the contract names at §'The EXTENSION SURFACE axis', and not covered by it. Fixed in rules/21-render-without-control.js (`coreSupportedAttrs`) with a fixture PAIR — `core-supports-provided-control` (mustNotFlag) and its positive twin `core-supports-absent-still-flags` (mustFlag, same defect shape with `supports` removed) — so the exclusion is provably able to fail rather than being an unconditional name skip. Measured: 280 -> 274, exactly the six identified. The remaining THREE classes are baselined below (12 entries) because each fix would touch machinery shared by other rules, whose committed backlogs would silently restage — the same 'a write with an untraced reader propagates silently' hazard the rule header cites for not widening core/components.js. SURVIVING REAL POPULATION: 262 of 280, denominator 83 blocks. The dominant real family is not in the original 53: blocks that pass $attributes wholesale to SGS_Container_Wrapper::render() inherit the wrapper's entire attribute vocabulary as 'rendered', so every container/grid/background attr they declare without a control is genuinely frozen at its block.json default forever (physics-canvas 79, nav-menu 17, site-header-row 12, site-footer-row 12). VERIFIED, not assumed: nav-menu/render.php:1436 passes $attributes wholesale and nav-menu/edit.js mentions none of the 17. ⚠ The expected false positive named in the handoff, `team-member.overlayHover`, DID NOT MATERIALISE — team-member's four findings are all hover values (scaleHover/shadowHover/imageZoomHover/grayscaleHover) and overlayHover is not among them."
+	},
+	"entries": [
+		{
+			"key": "21-render-without-control|sgs/cta-section|plugins/sgs-blocks/src/blocks/cta-section/block.json|headline",
+			"reason": "COMMENT-ONLY MATCH. core/sources.js:151-156 strips only /* */ from PHP and CSS — a `//` line comment survives into the render corpus. The only occurrences of `headline` in this block's render surface are comments that say the OPPOSITE of what the finding claims: render.php:66 'FR-22-6: scalar content attrs (headline, body) are intentionally NOT read here' and :363 'R-22-14: no scalar headline/body fallback'. Nothing paints it. Check by re-reading those lines, or by grepping for a non-comment occurrence — there is none. (This attr IS dead, but as CHECK 4's declared-and-unrendered shape, not this rule's.)",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/cta-section|plugins/sgs-blocks/src/blocks/cta-section/block.json|body",
+			"reason": "COMMENT-ONLY MATCH, same mechanism and same comments as `headline` above (render.php:5-6, :66, :363 plus a `body` mention in a style.css comment). FR-22-6 moved the content column to InnerBlocks; no code reads this attribute. Check by grepping for a non-comment occurrence in render.php/style.css.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/hero|plugins/sgs-blocks/src/blocks/hero/block.json|subHeadline",
+			"reason": "COMMENT-ONLY MATCH. The sole render-surface occurrence is render.php:107, a comment reading 'FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*, ...)' recording that they are no longer read. The word-boundary match cannot reach `subHeadlineMaxWidth`/`subHeadlineMarginBottom` (both real, both controlled at edit.js:629-642). Check by grepping `\\bsubHeadline\\b` outside comments in hero/render.php — no hit.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|beforeImageIdTablet",
+			"reason": "VARIABLE-TAIL KEY. The control EXISTS — before-after/edit.js:241-245 builds `const tier = 'tablet' === bp ? 'Tablet' : 'Mobile'` then `${ side }ImageId${ tier }` and feeds it to <ImagePickerRow>. All four of the rule's SUFFIX_SHAPES require a LITERAL PascalCase fragment at the END of the expression; here the literal `ImageId` sits BETWEEN two interpolations and the tail is a variable, so `resolves()` cannot join it. Deliberately not fixed by adding an infix shape: an infix matcher is looser than the four existing shapes and would mask real findings elsewhere — the 'evidence predicate too broad to mean anything' hazard this rule's own header records. Check by opening edit.js:241 and confirming the picker renders.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|beforeImageUrlTablet",
+			"reason": "VARIABLE-TAIL KEY — same control and same mechanism as beforeImageIdTablet. edit.js:243 builds the sibling key `${ side }ImageUrl${ tier }` and passes it to the same <ImagePickerRow> at :245. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|beforeImageIdMobile",
+			"reason": "VARIABLE-TAIL KEY — same control as beforeImageIdTablet; the `tier` ternary at edit.js:241 yields 'Mobile' on the second breakpoint pass, so one picker serves both tiers. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|beforeImageUrlMobile",
+			"reason": "VARIABLE-TAIL KEY — same control and mechanism as beforeImageUrlTablet, Mobile branch of the edit.js:241 tier ternary. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|afterImageIdTablet",
+			"reason": "VARIABLE-TAIL KEY — same control as beforeImageIdTablet; `side` is the other half of the edit.js:241-245 loop, so the before/after pair share one picker component. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|afterImageUrlTablet",
+			"reason": "VARIABLE-TAIL KEY — after-side sibling of beforeImageUrlTablet, same <ImagePickerRow> at edit.js:245. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|afterImageIdMobile",
+			"reason": "VARIABLE-TAIL KEY — after-side, Mobile branch of the edit.js:241 tier ternary; same picker. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/before-after|plugins/sgs-blocks/src/blocks/before-after/block.json|afterImageUrlMobile",
+			"reason": "VARIABLE-TAIL KEY — after-side, Mobile branch; same picker at edit.js:245. Check at edit.js:241-250.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		},
+		{
+			"key": "21-render-without-control|sgs/testimonial-slider|plugins/sgs-blocks/src/blocks/testimonial-slider/block.json|testimonials",
+			"reason": "PROSE COLLISION. The render-corpus match is the ENGLISH WORD, not the attribute: view.js:519/531/576 set aria-labels 'Play testimonials' / 'Pause testimonials'. No code reads attributes.testimonials — edit.js:5 records that the custom repeater (testimonials array + TextareaControl rows) was replaced by InnerBlocks. Check by grepping `testimonials` in view.js and confirming every hit is inside an aria-label string.",
+			"seededAt": "2026-08-08",
+			"expires": null
+		}
+	]
+}

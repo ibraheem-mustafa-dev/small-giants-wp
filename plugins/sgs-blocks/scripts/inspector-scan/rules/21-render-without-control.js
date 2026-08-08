@@ -80,6 +80,67 @@ const DOC_ATTR_RE = /^(_comment|_note)/;
 // the run summary rather than being silent.
 const SYSTEM_ATTR_RE = /^sgs[A-Z_]/;
 
+// ── The WORDPRESS-CORE control surface ──────────────────────────────────────
+// A SECOND structurally-invisible control surface, sibling to the extension
+// surface above and NOT covered by it (the contract's §"EXTENSION SURFACE axis"
+// names only src/blocks/extensions/). When a block.json opts into a core
+// `supports` flag, WordPress itself REGISTERS the named attribute and RENDERS
+// its control — the anchor field in the Advanced panel, the alignment toolbar,
+// the Colour panel, the text-align toolbar. None of that lives in the block's
+// edit.js or in any SGS shared component, so a corpus built from those two
+// sources can never see it, and every such attribute false-positives.
+//
+// MEASURED 2026-08-08 against a live `node run.js --json` (280 findings): six
+// findings were this shape and every one had a working core control —
+//   sgs/heading.anchor + sgs/button.anchor            (supports.anchor)
+//   sgs/responsive-logo.align                         (supports.align)
+//   sgs/cta-section.textAlign                         (supports.typography.textAlign)
+//   sgs/cta-section.backgroundColor + .textColor      (supports.color.background/text)
+// Verified by reading each block.json's supports AND confirming edit.js has no
+// mention of the attribute — i.e. the control is core's, not a missed local one.
+//
+// This is NOT a name-keyed allowlist of attributes (the failure mode the rule
+// header warns about, and the bug in `_KNOWN_CONTROLS`). The predicate is the
+// BLOCK'S OWN DECLARED `supports` — a per-block opt-in read from its block.json
+// — and the names below are the fixed attribute keys the WordPress block API
+// registers for those flags. A block that does not declare the support gets no
+// exclusion, so the axis stays machine-readable per R-31-1.
+//
+// Deliberately NOT included: spacing / border / dimensions / shadow supports.
+// Those serialise into the single `style` object attribute rather than
+// registering a named attribute, so they can never produce a finding here and
+// listing them would be inert code pretending to be a guard.
+function coreSupportedAttrs( supports ) {
+	const out = new Set();
+	if ( ! supports || typeof supports !== 'object' ) return out;
+
+	if ( supports.anchor ) out.add( 'anchor' );
+	// `align` may be `true` or an array of permitted alignments; both register
+	// the attribute and both render the toolbar control.
+	if ( supports.align ) out.add( 'align' );
+	if ( supports.className !== false && supports.customClassName !== false ) {
+		out.add( 'className' );
+	}
+	// `layout` registers a named `layout` attribute plus core's Layout panel.
+	if ( supports.layout ) out.add( 'layout' );
+
+	const colour = supports.color;
+	if ( colour && typeof colour === 'object' ) {
+		if ( colour.background ) out.add( 'backgroundColor' );
+		if ( colour.text ) out.add( 'textColor' );
+		if ( colour.gradients ) out.add( 'gradient' );
+	}
+
+	const type = supports.typography;
+	if ( type && typeof type === 'object' ) {
+		if ( type.fontSize ) out.add( 'fontSize' );
+		if ( type.fontFamily ) out.add( 'fontFamily' );
+		if ( type.textAlign ) out.add( 'textAlign' );
+	}
+
+	return out;
+}
+
 // Files that constitute a block's own RENDER surface — what the framework paints.
 const OWN_RENDER_FILES = [ 'render.php', 'view.js', 'save.js', 'style.css' ];
 
@@ -370,10 +431,15 @@ module.exports = {
 		const controlParts = dynamicPartsOf( control.text );
 		const renderParts = dynamicPartsOf( render );
 
+		// Read from the block's OWN declared supports, so the exclusion is a
+		// per-block opt-in rather than a global attribute-name allowlist.
+		const coreControlled = coreSupportedAttrs( blockJson.data.supports );
+
 		const findings = [];
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
 			if ( DOC_ATTR_RE.test( attr ) ) continue;
 			if ( SYSTEM_ATTR_RE.test( attr ) ) continue; // extension surface — structurally invisible here
+			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
 			if ( resolves( attr, control.text, controlParts ) ) continue; // reachable by the client
 			if ( ! resolves( attr, render, renderParts ) ) continue; // not rendered -> CHECK 4's territory
 
@@ -400,12 +466,21 @@ module.exports = {
 	},
 	selfTest: {
 		fixture: 'fixtures/21-render-without-control',
-		mustFlag: [ 'rendered-no-control', 'rendered-via-shared-include-no-control' ],
+		mustFlag: [
+			'rendered-no-control',
+			'rendered-via-shared-include-no-control',
+			// Positive twin of `core-supports-provided-control` — same defect
+			// shape, no `supports` declared. Proves the core-supports exclusion
+			// reads the block's own opt-in rather than skipping the attribute
+			// names unconditionally (H6: a gate that cannot fail reads green).
+			'core-supports-absent-still-flags',
+		],
 		mustNotFlag: [
 			'rendered-with-control',
 			'control-via-dynamic-key',
 			'declared-but-not-rendered',
 			'control-via-shared-component',
+			'core-supports-provided-control',
 		],
 	},
 };

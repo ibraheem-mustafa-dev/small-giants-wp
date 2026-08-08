@@ -1,0 +1,13 @@
+{
+	"name": "sgs/core-supports-provided-control",
+	"title": "Fixture — control provided by a WordPress core support",
+	"supports": {
+		"anchor": true,
+		"color": { "background": true, "text": true }
+	},
+	"attributes": {
+		"anchor": { "type": "string", "default": "" },
+		"backgroundColor": { "type": "string", "default": "" },
+		"textColor": { "type": "string", "default": "" }
+	}
+}

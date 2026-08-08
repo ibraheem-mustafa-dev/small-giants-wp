@@ -1,5 +1,52 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D532 — Rule 21's 280 triaged to 262 real; WordPress CORE is a second invisible control surface [ROUTINE]
+
+**2026-08-08.** Rule `21-render-without-control` measured 280 findings across 35 of 83 blocks (D530).
+That was never a backlog figure — untriaged, it mixed real defects with false positives. Every one is
+now classified from a **per-finding evidence table** (which render file matched, and by what
+mechanism: literal name / dynamic suffix / dynamic prefix / comment-only), not by eyeballing.
+
+**Four false-positive classes. One was a RULE BUG, three are baselined.**
+
+**Fixed in the rule — the WordPress-core control surface.** Six findings had a working control all
+along, rendered by **WordPress core** from the block's own `supports`: `anchor` (heading, button),
+`align` (responsive-logo), `textAlign` + `backgroundColor` + `textColor` (cta-section). Core paints
+those in the Advanced panel, the alignment toolbar and the Colour panel — **none of which lives in
+`edit.js` or any SGS shared component**, so a corpus built from those two sources can never see them.
+This is a **second structurally-invisible control surface, sibling to the EXTENSION SURFACE axis the
+contract documents at §248 and NOT covered by it** — that axis names `src/blocks/extensions/` only.
+Fixed universally rather than per-case because it recurs on every block and is a WP contract:
+`coreSupportedAttrs()` reads the **block's own declared `supports`**, so it stays a machine-readable
+per-block opt-in (R-31-1), not a name allowlist — the `_KNOWN_CONTROLS` bug. Shipped with a fixture
+**PAIR**: `core-supports-provided-control` (mustNotFlag) and its positive twin
+`core-supports-absent-still-flags` (mustFlag — identical defect shape, `supports` removed), so the
+exclusion is **provably able to fail** instead of being an unconditional skip. Measured 280 → 274,
+exactly the six identified.
+
+**Baselined with per-entry checkable reasons (12), each left unfixed deliberately** because the fix
+would touch machinery shared with other rules and silently restage their committed backlogs — the
+"write with an untraced reader" hazard the rule header already cites for `core/components.js`:
+- **Comment-only (3)** — `core/sources.js:151-156` strips only `/* */` from PHP/CSS, so a `//`
+  comment survives into the render corpus. All three matched comments saying the attribute is
+  deliberately NOT read (`cta-section.headline`/`.body`, `hero.subHeadline`, all FR-22-6 leftovers).
+- **Variable-tail key (8)** — `before-after/edit.js:241-245` builds tier keys with the literal
+  fragment BETWEEN two interpolations; all four `SUFFIX_SHAPES` require a literal TAIL. The control
+  exists. An infix matcher was rejected: looser than the existing shapes, it would mask real findings.
+- **Prose collision (1)** — `testimonial-slider.testimonials` matches the English word in aria-labels.
+
+**SURVIVING: 262 FLAGGED across 32 of 83 blocks.** Still advisory, still **not promotable**, and **a
+smaller number was never the goal**. The dominant real family **was not in the audited 53**: a block
+passing `$attributes` wholesale to `SGS_Container_Wrapper::render()` inherits the wrapper's entire
+attribute vocabulary as "rendered", so every container/grid/background attr it declares without a
+control is **frozen at its block.json default forever** — physics-canvas 79, nav-menu 17,
+site-header-row 12, site-footer-row 12. Verified not assumed: `nav-menu/render.php:1436` passes the
+attributes wholesale while `nav-menu/edit.js` mentions none of the 17.
+
+⚠ **The handoff-predicted false positive `team-member.overlayHover` did not materialise** — that
+block's four findings are all hover values and `overlayHover` is not among them. A prediction written
+into a handoff is a hypothesis, not a finding.
+
 ## D531 — CO-28 added: consistent ORDER of panels, clusters and controls is an obligation [ROUTINE]
 
 **2026-08-08. Bean-raised.** The control-type contract bound *which* component, *which* props,
