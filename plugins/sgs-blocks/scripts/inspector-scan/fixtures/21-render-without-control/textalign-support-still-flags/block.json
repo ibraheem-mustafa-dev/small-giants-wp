@@ -1,0 +1,11 @@
+{
+	"name": "sgs/textalign-support-still-flags",
+	"title": "Fixture — typography.textAlign is a real support that registers NO named attribute",
+	"supports": {
+		"typography": { "fontSize": true, "textAlign": true }
+	},
+	"attributes": {
+		"fontSize": { "type": "string", "default": "" },
+		"textAlign": { "type": "string", "default": "" }
+	}
+}

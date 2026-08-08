@@ -1,9 +1,18 @@
 {
 	"name": "sgs/core-supports-absent-still-flags",
 	"title": "Fixture — same attribute names, NO supports declared",
+	"supports": {
+		"customClassName": false
+	},
 	"attributes": {
 		"anchor": { "type": "string", "default": "" },
+		"align": { "type": "string", "default": "" },
+		"layout": { "type": "object", "default": {} },
+		"className": { "type": "string", "default": "" },
 		"backgroundColor": { "type": "string", "default": "" },
-		"textColor": { "type": "string", "default": "" }
+		"textColor": { "type": "string", "default": "" },
+		"gradient": { "type": "string", "default": "" },
+		"fontSize": { "type": "string", "default": "" },
+		"fontFamily": { "type": "string", "default": "" }
 	}
 }

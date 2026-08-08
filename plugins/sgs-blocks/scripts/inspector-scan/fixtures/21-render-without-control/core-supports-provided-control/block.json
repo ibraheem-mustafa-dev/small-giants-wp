@@ -1,13 +1,22 @@
 {
 	"name": "sgs/core-supports-provided-control",
-	"title": "Fixture — control provided by a WordPress core support",
+	"title": "Fixture — every attribute a WordPress core support registers",
 	"supports": {
 		"anchor": true,
-		"color": { "background": true, "text": true }
+		"align": [ "wide", "full" ],
+		"layout": true,
+		"color": { "background": true, "text": true, "gradients": true },
+		"typography": { "fontSize": true, "fontFamily": true }
 	},
 	"attributes": {
 		"anchor": { "type": "string", "default": "" },
+		"align": { "type": "string", "default": "" },
+		"layout": { "type": "object", "default": {} },
+		"className": { "type": "string", "default": "" },
 		"backgroundColor": { "type": "string", "default": "" },
-		"textColor": { "type": "string", "default": "" }
+		"textColor": { "type": "string", "default": "" },
+		"gradient": { "type": "string", "default": "" },
+		"fontSize": { "type": "string", "default": "" },
+		"fontFamily": { "type": "string", "default": "" }
 	}
 }

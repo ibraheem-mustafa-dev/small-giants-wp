@@ -90,14 +90,39 @@ const SYSTEM_ATTR_RE = /^sgs[A-Z_]/;
 // edit.js or in any SGS shared component, so a corpus built from those two
 // sources can never see it, and every such attribute false-positives.
 //
-// MEASURED 2026-08-08 against a live `node run.js --json` (280 findings): six
-// findings were this shape and every one had a working core control —
-//   sgs/heading.anchor + sgs/button.anchor            (supports.anchor)
-//   sgs/responsive-logo.align                         (supports.align)
-//   sgs/cta-section.textAlign                         (supports.typography.textAlign)
-//   sgs/cta-section.backgroundColor + .textColor      (supports.color.background/text)
-// Verified by reading each block.json's supports AND confirming edit.js has no
-// mention of the attribute — i.e. the control is core's, not a missed local one.
+// ⛔ EVERY MAPPING BELOW IS VERIFIED AGAINST WORDPRESS CORE SOURCE, not recalled.
+// Read 2026-08-08 over SSH from the canary's own wp-includes/block-supports/ on
+// WP 7.0.3 — the ONLY acceptable evidence class here, because a mapping that is
+// merely plausible creates a permanent, silent blind spot. The test each one had
+// to pass: does core REGISTER A NAMED ATTRIBUTE of this exact name? Citations:
+//   anchor          anchor.php:26-27           registers attributes['anchor']
+//   align           align.php:25               registers attributes['align']
+//   backgroundColor colors.php:50-51           registers attributes['backgroundColor']
+//   textColor       colors.php:56-57           registers attributes['textColor']
+//   gradient        colors.php:62-63           registers attributes['gradient']
+//   className       custom-classname.php:25-26 registers attributes['className']
+//   layout          layout.php:244             registers attributes['layout']
+//   fontSize        typography.php:137         reads block_attributes['fontSize']
+//   fontFamily      typography.php:149         reads block_attributes['fontFamily']
+//
+// ⛔ `typography.textAlign` IS A REAL SUPPORT KEY AND IS DELIBERATELY ABSENT.
+// It was in the first version of this map and was WRONG. Core reads the value
+// from `$block_attributes['style']['typography']['textAlign']`
+// (typography.php:184,246-247) — the `style` object, NOT a named `textAlign`
+// attribute. So a block declaring its own top-level `textAlign` attribute has a
+// DIFFERENT thing from what core's control writes, and flagging it is correct.
+// sgs/cta-section is exactly that case: render.php:278-279 reads
+// $attributes['textAlign'] while core's control writes style.typography.textAlign,
+// so no control reaches the value the block actually paints. A 4-rater council
+// challenged this entry and BOTH the council's reason ("not a real support key")
+// and the original mapping were wrong; core source settled it. Do not re-add it
+// without re-reading typography.php.
+//
+// MEASURED: five findings are the core-control shape — sgs/heading.anchor,
+// sgs/button.anchor, sgs/responsive-logo.align, sgs/cta-section.backgroundColor
+// and .textColor. Verified by reading each block.json's supports AND confirming
+// edit.js never mentions the attribute — i.e. the control is core's, not a
+// missed local one.
 //
 // This is NOT a name-keyed allowlist of attributes (the failure mode the rule
 // header warns about, and the bug in `_KNOWN_CONTROLS`). The predicate is the
@@ -118,9 +143,13 @@ function coreSupportedAttrs( supports ) {
 	// `align` may be `true` or an array of permitted alignments; both register
 	// the attribute and both render the toolbar control.
 	if ( supports.align ) out.add( 'align' );
-	if ( supports.className !== false && supports.customClassName !== false ) {
-		out.add( 'className' );
-	}
+	// custom-classname.php:18 gates SOLELY on `customClassName`, defaulting to
+	// TRUE when the key is absent (`block_has_support( $block_type,
+	// 'customClassName', true )`). `supports.className` is a DIFFERENT key
+	// governing the automatic `wp-block-<name>` class and has no bearing on the
+	// `className` attribute — an earlier version of this line ANDed the two,
+	// which a QC council correctly flagged as conflating them.
+	if ( supports.customClassName !== false ) out.add( 'className' );
 	// `layout` registers a named `layout` attribute plus core's Layout panel.
 	if ( supports.layout ) out.add( 'layout' );
 
@@ -135,7 +164,9 @@ function coreSupportedAttrs( supports ) {
 	if ( type && typeof type === 'object' ) {
 		if ( type.fontSize ) out.add( 'fontSize' );
 		if ( type.fontFamily ) out.add( 'fontFamily' );
-		if ( type.textAlign ) out.add( 'textAlign' );
+		// NO textAlign — see the block comment above. Core keeps that value in
+		// style.typography.textAlign, so a named `textAlign` attribute is the
+		// block's own and genuinely uncontrolled.
 	}
 
 	return out;
@@ -326,16 +357,163 @@ function allControlComponentFiles() {
  * established technique, widened here from "does it render an <img>" to "what
  * attribute keys does it build").
  */
+/**
+ * Isolates ONE named export's own body from a component file, by finding its
+ * declaration and brace-matching to the end of it.
+ *
+ * Returns null when the declaration cannot be found or the braces do not
+ * balance. Callers MUST treat null as "do not recurse" rather than "recurse on
+ * everything" — an unscoped fallback here would reintroduce the per-file
+ * over-reach this function exists to prevent, and would do so silently.
+ *
+ * Brace-matching is string-aware only to the extent of skipping line and block
+ * comments and the three quote kinds; a brace inside a regex literal would
+ * defeat it, which is precisely why the failure mode is "return null" and not
+ * "return a best guess".
+ */
+function exportBody( source, name ) {
+	const decl = new RegExp(
+		`(?:export\\s+(?:default\\s+)?)?(?:function|const|let|class)\\s+${ name }\\b`
+	);
+	const start = source.search( decl );
+	if ( start === -1 ) return null;
+
+	// Find the BODY brace, not the parameter list's. Every panel in this
+	// codebase is declared as `export function X( { attributes, setAttributes } )
+	// {` (ContainerWrapperControls.js:254,421,641), so a naive indexOf('{')
+	// lands on the DESTRUCTURING brace and brace-matching then closes on the
+	// parameter list — yielding a body with no JSX in it and silently disabling
+	// recursion. Measured: that bug made this whole function inert. So skip any
+	// brace that sits inside an open parameter list.
+	let open = -1;
+	let parens = 0;
+	for ( let i = start; i < source.length; i++ ) {
+		const ch = source[ i ];
+		if ( ch === '(' ) parens++;
+		else if ( ch === ')' ) parens--;
+		else if ( ch === '{' && parens === 0 ) {
+			open = i;
+			break;
+		}
+	}
+	if ( open === -1 ) return null;
+
+	let depth = 0;
+	for ( let i = open; i < source.length; i++ ) {
+		const ch = source[ i ];
+
+		if ( ch === '/' && source[ i + 1 ] === '/' ) {
+			const nl = source.indexOf( '\n', i );
+			if ( nl === -1 ) return null;
+			i = nl;
+			continue;
+		}
+		if ( ch === '/' && source[ i + 1 ] === '*' ) {
+			const end = source.indexOf( '*/', i + 2 );
+			if ( end === -1 ) return null;
+			i = end + 1;
+			continue;
+		}
+		if ( ch === '"' || ch === "'" || ch === '`' ) {
+			for ( let j = i + 1; j < source.length; j++ ) {
+				if ( source[ j ] === '\\' ) {
+					j++;
+					continue;
+				}
+				if ( source[ j ] === ch ) {
+					i = j;
+					break;
+				}
+				if ( j === source.length - 1 ) return null;
+			}
+			continue;
+		}
+
+		if ( ch === '{' ) depth++;
+		else if ( ch === '}' ) {
+			depth--;
+			if ( depth === 0 ) return source.slice( open, i + 1 );
+		}
+	}
+	return null;
+}
+
 function controlCorpus( ctx, block ) {
 	const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 	const own = readIfExists( ctx, editFile );
 	if ( ! own ) return { text: '', editFile, ok: false };
 
+	// TRANSITIVE, not one level. MEASURED 2026-08-08 (QC council rater C): a
+	// single level of expansion produced 20 false positives across the 4 blocks
+	// that render <BackgroundPanel> (container, cta-section, hero, trust-bar).
+	// Cause: ContainerWrapperControls.js:935 renders <GradientOverlayControl>,
+	// and THAT file is where backgroundOverlayColour / overlayGradient /
+	// overlayGradientAngle / overlayGradientFrom / overlayGradientTo are
+	// actually wired (src/components/GradientOverlayControl.js:15-17,156-159).
+	// The names never appear in ContainerWrapperControls.js at all — the whole
+	// `attributes`/`setAttributes` pair is forwarded as objects — so one level
+	// of expansion reaches a file that mentions none of them and the block
+	// scores "no control" for five controls a client can genuinely reach.
+	//
+	// A component rendering a sub-component is the normal shape of a control
+	// panel, so this was never a one-off: any future panel built the same way
+	// would reproduce the class. Hence a fix in the resolver rather than 20
+	// baseline entries.
+	//
+	// Bounded by a visited-set (a component pair that renders each other cannot
+	// loop) and by the component map itself, which is finite. Blast radius stays
+	// inside this rule — rules 01 and 18 use core/components.js, untouched here.
+	// ⛔ RECURSION IS SCOPED TO THE SPECIFIC EXPORT, NOT THE WHOLE FILE — and
+	// that distinction is the whole correctness argument. The component map is
+	// file-keyed by EVERY name a file exports, because a 57KB file like
+	// ContainerWrapperControls.js exports LayoutPanel, WidthPanel,
+	// BackgroundPanel, GradientOverlayControl's host and more. Recursing on the
+	// whole FILE would credit a block that renders only <WidthPanel> with
+	// everything any OTHER export of that file renders.
+	//
+	// MEASURED 2026-08-08, and it is not hypothetical: a first version recursed
+	// per-file and silently cleared sgs/site-header's and sgs/site-footer's five
+	// overlay findings each. Those are REAL — those blocks render <WidthPanel>
+	// (edit.js:29 imports from ContainerWrapperControls) and never
+	// <BackgroundPanel>, so their client genuinely cannot reach the gradient
+	// overlay. Per-file recursion turned 10 true findings into false negatives
+	// while fixing 20 false positives — a strictly worse trade, because a
+	// suppressed real defect is invisible forever whereas a false positive is
+	// merely noisy.
+	//
+	// So: expand a component by isolating THAT export's own body, and recurse
+	// only on the components rendered inside it. If the body cannot be isolated,
+	// DO NOT recurse — the rule fails toward a false positive, never a false
+	// negative.
+	const components = allControlComponentFiles();
+	const seenExports = new Set();
 	let text = own;
-	for ( const [ name, file ] of allControlComponentFiles() ) {
-		if ( ! new RegExp( `<${ name }\\b` ).test( own ) ) continue;
-		text += '\n' + readIfExists( ctx, file );
+	let frontier = [ own ];
+
+	while ( frontier.length ) {
+		const next = [];
+		for ( const source of frontier ) {
+			for ( const [ name, file ] of components ) {
+				const id = `${ file }#${ name }`;
+				if ( seenExports.has( id ) ) continue;
+				if ( ! new RegExp( `<${ name }\\b` ).test( source ) ) continue;
+				seenExports.add( id );
+
+				const body = readIfExists( ctx, file );
+				if ( ! body ) continue;
+				// The file's full vocabulary still joins the corpus — unchanged
+				// behaviour, and correct: a block rendering any export of a file
+				// can be styled by the attribute keys that file builds.
+				text += '\n' + body;
+
+				// But only THIS export's own body decides what recurses.
+				const scoped = exportBody( body, name );
+				if ( scoped ) next.push( scoped );
+			}
+		}
+		frontier = next;
 	}
+
 	return { text, editFile, ok: true };
 }
 
@@ -469,11 +647,17 @@ module.exports = {
 		mustFlag: [
 			'rendered-no-control',
 			'rendered-via-shared-include-no-control',
-			// Positive twin of `core-supports-provided-control` — same defect
-			// shape, no `supports` declared. Proves the core-supports exclusion
-			// reads the block's own opt-in rather than skipping the attribute
-			// names unconditionally (H6: a gate that cannot fail reads green).
+			// Positive twin of `core-supports-provided-control` — same nine
+			// attribute names, same defect shape, `supports` absent (and
+			// `customClassName: false`, the only way to exercise the negative
+			// side of that branch). Proves the core-supports exclusion reads the
+			// block's own opt-in rather than skipping the names unconditionally
+			// (H6: a gate that cannot fail reads green forever).
 			'core-supports-absent-still-flags',
+			// Regression guard on the one mapping that was WRONG: typography's
+			// textAlign is a real support key that registers NO named attribute,
+			// so it must still flag while its sibling fontSize is excluded.
+			'textalign-support-still-flags',
 		],
 		mustNotFlag: [
 			'rendered-with-control',
@@ -481,6 +665,10 @@ module.exports = {
 			'declared-but-not-rendered',
 			'control-via-shared-component',
 			'core-supports-provided-control',
+			// Guards TRANSITIVE component resolution: the controls live two
+			// levels down (<BackgroundPanel> -> <GradientOverlayControl>) and a
+			// one-level resolver reports five false defects here.
+			'control-via-nested-shared-component',
 		],
 	},
 };

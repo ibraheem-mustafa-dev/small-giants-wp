@@ -47,6 +47,48 @@ attributes wholesale while `nav-menu/edit.js` mentions none of the 17.
 block's four findings are all hover values and `overlayHover` is not among them. A prediction written
 into a handoff is a hypothesis, not a finding.
 
+### ⛔ CORRECTED SAME DAY BY A 4-RATER `/qc-council` — final figure is **243**, not 262
+
+The council was run on this entry's own claims. It falsified two and found a fifth FP class. **Read
+this section, not the paragraphs above, for any figure.**
+
+1. **`typography.textAlign` was WRONG in the core-supports map.** It IS a real support key — but core
+   reads the value from `style.typography.textAlign` (`wp-includes/block-supports/typography.php:184,246-247`,
+   read over SSH from the canary's own WP **7.0.3**) and registers **no named `textAlign` attribute**.
+   A block declaring its own top-level `textAlign` therefore holds something core's control never
+   writes. `sgs/cta-section.textAlign` is a **REAL defect** (`render.php:278-279` paints it, no control
+   anywhere) and is flagged again. ⚠ **The council's stated reason was ALSO wrong** ("not a real
+   support key"). Neither party's recollection settled it — reading core source did. Fixture
+   `textalign-support-still-flags` pins it.
+2. **The `className` branch conflated two supports keys.** `custom-classname.php:18` gates solely on
+   `customClassName` (defaulting TRUE when absent); `supports.className` governs the automatic
+   `wp-block-<name>` class and is unrelated. Fixed. Zero live findings changed.
+3. **NEW FP class, 20 findings — one-level component resolution.** `controlCorpus` expanded a block's
+   `edit.js` by one level, so the four blocks rendering `<BackgroundPanel>` (container, cta-section,
+   hero, trust-bar) scored "no control" for five overlay attrs each, whose controls actually live TWO
+   levels down in `GradientOverlayControl` (`ContainerWrapperControls.js:935` renders it; the names
+   never appear in that file at all because `attributes`/`setAttributes` are forwarded as objects).
+
+**The fix for (3) is scoped PER EXPORT, and that distinction is load-bearing.** A first attempt
+recursed per FILE and silently cleared `site-header`'s and `site-footer`'s five overlay findings
+each — which are **genuinely real**: those blocks render `<WidthPanel>`, another export of the same
+57KB file, and never `<BackgroundPanel>`. That would have traded 20 false positives for **10 false
+NEGATIVES** — strictly worse, because a suppressed real defect is invisible forever while a false
+positive is merely noisy. `exportBody()` isolates the named export's own body and **returns null
+rather than guessing**, so the rule fails toward a false positive and never toward silent
+suppression. (Its first version was itself inert: it grabbed the destructuring parameter's brace
+instead of the body's — caught because the measured numbers did not move.)
+
+**All nine surviving mappings are now cited to WP 7.0.3 core source file:line in the rule header, and
+every branch has fixture coverage** — answering the council's "6 of 9 mappings are unevidenced"
+finding with evidence rather than by deleting the mappings.
+
+**FINAL: 243 FLAGGED + 12 BASELINED across 32 of 83 blocks.** Arithmetic: 262 − 20 + 1 = 243.
+Also fixed: `rules.json` carried a stale dead `openBacklog: 280` beside text saying 262.
+
+⚠ **Doc drift spotted in passing:** the LEDGER records both sites as **WP 7.0.2**; the canary reports
+**7.0.3** (`wp-includes/version.php`). Not load-bearing here, but the LEDGER line is stale.
+
 ## D531 — CO-28 added: consistent ORDER of panels, clusters and controls is an obligation [ROUTINE]
 
 **2026-08-08. Bean-raised.** The control-type contract bound *which* component, *which* props,
