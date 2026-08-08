@@ -128,7 +128,37 @@ preset `SelectControl` on `minHeight` (5 sites) fits no contract; raw `BoxContro
 `BorderRadiusControl`, `SpacingControl` (9 sites), `DeviceTabs`, `AnimationControl`,
 `ComboboxControl`, `FormTokenField`, `FocalPointPicker` and the repeater editors have no home.
 
-### G. Open question raised by Bean, 2026-08-07 — NOT yet assessed
+### G. ✅ ANSWERED 2026-08-08 (D526) — NO. Keep `sgsCustomCss`. Do not re-open.
+
+**WP 7.0's native per-block CSS cannot do this job. Two independent blockers, both read from
+`wp-includes/` on the live canary — not inferred:**
+
+1. **Specificity.** `WP_Theme_JSON::process_blocks_custom_css()` wraps EVERY branch — root-level and
+   nested — as `:root :where(<selector>)`. `:where()` contributes zero, so every native rule lands at
+   **0,1,0**. An SGS block paints its own per-instance styling at **0,2,0**
+   (`.uid.block-class`), and the residual band exists precisely to OVERRIDE that. 0,1,0 can never
+   beat 0,2,0, and there is no branch in that function that escapes the `:where()` wrapper.
+   Weakness is the design intent of the native feature.
+2. **No `@media` support at all.** The processor splits on `&` and emits flat `selector{decls}`
+   rules; there is no media-query branch. The residual band is BY DEFINITION `@media`-bounded — that
+   is its whole purpose. A residual like
+   `@media (min-width: 600px){&selector .sgs-trust-bar__inner{…}}` cannot survive
+   `explode('{', str_replace('}','',$part))`, and is dropped **silently**.
+
+⚠ Evidence class: a **source read** of WP 7.0 on the canary, NOT an execution — the `wp eval` guard
+blocks read-only evals on the command name alone. The function is short and every branch was read.
+
+**Also measured live (348 registered block types, canary editor, 2026-08-08):** the native control is
+already disabled everywhere (`supports.customCSS: false`, **0/348** with it enabled) and
+`sgsCustomCss` is present on **348/348** — SGS and core alike. There is no block that "lost" the
+control, and no per-block opt-out for it exists. `ece1487b` (2026-08-03) **only ADDED** the native
+disable; it deleted nothing. The one thing ever written to the native field is `color: red;` on
+untitled draft page **2145** — the throwaway proof from that same session. No client work stranded.
+
+⛔ Condition **CO-16** ("check native BEFORE building your own") is therefore SATISFIED for this
+control, with the answer recorded. Bean 2026-08-08: keep the box, leave its placement as-is.
+
+### G-original. The question as first raised, 2026-08-07
 **Should `sgsCustomCss` be retired in favour of WP 7.0's native per-block Additional CSS?** The
 two write to DIFFERENT attributes (`attributes.style.css` vs `attributes.sgsCustomCss`, proven
 live 2026-08-03), which is why the native support is currently DISABLED rather than adopted. A

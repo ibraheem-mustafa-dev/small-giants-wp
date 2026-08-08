@@ -1,5 +1,38 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D526 — `sgsCustomCss` STAYS; WP 7.0's native per-block CSS cannot replace it [ROUTINE]
+
+**2026-08-08. Bean-ruled.** Closes council finding G and satisfies CO-16 ("check native BEFORE
+building your own") for this control. **Do not re-open.**
+
+**Two independent blockers, both read from `wp-includes/` on the live canary:**
+1. `WP_Theme_JSON::process_blocks_custom_css()` wraps every branch as `:root :where(<sel>)` → **0,1,0**
+   for every native rule. SGS blocks paint per-instance at **0,2,0**, and the residual band exists to
+   OVERRIDE that. No branch escapes the `:where()`. Deliberate weakness, not a bug.
+2. **No `@media` branch exists** in that processor — it splits on `&` and emits flat rules. The
+   residual band is by definition `@media`-bounded, so it is mangled and dropped **silently**.
+
+⚠ Evidence class: a **source read**, not an execution — the `wp eval` guard blocks read-only evals by
+command name. Recorded as the weaker class it is.
+
+**A premise check that mattered more than the answer.** Bean reported the WP box showing and his own
+box missing from some blocks. **Neither reproduced.** Measured in the live canary editor across all
+**348** registered block types: `supports.customCSS: false` on **348/348** (native disabled
+everywhere) and `sgsCustomCss` present on **348/348** — SGS and core alike; no per-block opt-out for
+it exists. `ece1487b` (2026-08-03) **only ADDED** the disable — additions only, nothing of ours
+deleted. What actually vanished that day was the WORDPRESS box, which is why it felt like removal.
+The only content ever written to the native field is `color: red;` on untitled draft page **2145**,
+the throwaway proof from that same session. **No client work stranded; nothing to fix.**
+
+**Bean's ruling:** keep the box, leave its placement (last item under Advanced) as-is.
+
+**Method note — four probes measured the probe, not the page.** The editor loop kept reporting "no
+Advanced panel" because `selectBlock` flips the sidebar back to the *Page* tab, so every fixed-sleep
+read landed mid-switch; single-block calls worked and the loop never did. Separately a check matched
+`ADDITIONAL CSS` against WordPress's **"Additional CSS class(es)"** field — the ordinary class box,
+not the code box — a false positive that would have "confirmed" the reported symptom. A zero from the
+stranded-CSS DB search was only trusted after a positive control returned 494.
+
 ## D525 — 36 capabilities had no writer and no reader; a block now DECLARES what it is [INCIDENT]
 
 **2026-08-08. Bean-ruled (route 1 of 3). Commit `dd946aa9`.** Tier 0 (c)+(d) — the last two wrong

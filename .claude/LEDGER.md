@@ -77,7 +77,7 @@ before acting, do not assume it is current from memory alone:
   `.claude/plans/spec-35-control-type-contract.md` now governs; the 27-condition checklist is a
   TOMBSTONE. Superseding was gated on its **ABSORPTION MAP** proving all 30 items absorbed or
   carried — the 2026-08-07 council caught the first draft losing ten, incl. a live WCAG gate.
-  Council findings A/B/C/D/F **discharged**; G/H stay OPEN by design (Rule 7 gates).
+  Council findings A/B/C/D/F/G **discharged** (G = D526: keep `sgsCustomCss`); H stays OPEN by design.
   **Read the contract's DISCHARGE RECORD before trusting any body figure.**
 - **Track 1c (Spec 31 converter completion):** build shipped; open item is PROOF not build —
   `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
@@ -254,16 +254,19 @@ EXTENSION SURFACE axis; §10 split into §10/§11/§12 at 8/8 fields each, plus 
 control shape that still has no contract. ABSORPTION MAP proves 30/30 accounted, 0 dropped.
 Checklist tombstoned; Spec 35 N.3's dead "0 of 24" figure removed; brand-strip note re-pointed.
 
-### Task 3 — Bean's open question (design gate, do not build)
+### ✅ Task 3 — CLOSED 2026-08-08 (D526). Do not re-open.
 
-**What:** should `sgsCustomCss` be retired in favour of WP 7.0's native per-block Additional CSS?
-**Why:** Bean spotted they look identical. They write to DIFFERENT attributes
-(`attributes.style.css` vs `attributes.sgsCustomCss`, proven live 2026-08-03), which is why the
-native support is currently DISABLED rather than adopted. Retargeting `includes/custom-css.php` +
-the converter's residual-band passthrough to `style.css` would let the extension be deleted outright
-— which is exactly what dropped **condition 16** exists to prompt.
-⚠ Touches the cloning pipeline → **Rule 7 design gate, Bean's approval before any build.**
-**Depends on:** Task 2 (condition 16 must exist again first). **/qc gate after:** n/a — design only.
+**Answer: NO — keep `sgsCustomCss`.** WP 7.0's native per-block CSS wraps every rule as
+`:root :where(...)` = **0,1,0**, and SGS blocks paint at **0,2,0**, so a native rule can never
+override the block it is meant to correct. It also has **no `@media` branch at all**, while the
+residual band is by definition `@media`-bounded — it would be dropped silently. Both read from
+`wp-includes/` on the canary (source read, not an execution — the `wp eval` guard blocks read-only
+evals by name). Satisfies CO-16 for this control.
+
+**Premise check:** the reported symptoms did NOT reproduce. Live canary editor, all **348** block
+types: native disabled on 348/348, `sgsCustomCss` present on 348/348. `ece1487b` only ADDED the
+disable. Only native content anywhere is `color: red;` on untitled draft 2145 — the 2026-08-03
+proof value. Nothing lost, nothing to fix. Bean: leave placement as-is.
 
 ### Dependency graph
 
