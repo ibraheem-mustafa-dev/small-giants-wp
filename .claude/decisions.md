@@ -45,7 +45,9 @@ both carried the identical error.** Two wrong things agreeing looks exactly like
 DB-scoped rules; **BLOCKED** for anything crossing the extension surface (`inspector-scan` has no
 `extensionsDir` and `roster.js` admits only dirs with a `block.json` — an unbuilt prerequisite);
 §14 BORDER blocked on a census per `zeroIsAClaim`; Tier 1 blocked on nine Rule 7 gates (Bean);
-Tier 2 half-blocked. Also corrected: `inspector_control_type` is **65% NULL** — a rule may trust a
+Tier 2 half-blocked. Also corrected: `inspector_control_type` is **64.6% NULL — 1,753 of 2,712 rows
+scoped `WHERE block_slug LIKE 'sgs/%'`** (unscoped it reads 70.2%; denominator stated per carried
+condition 27, flagged by the handoff QC gate) — a rule may trust a
 non-NULL value but must NOT read NULL as "no control". And the D523 repeater guard is **fragile**:
 `pricing-table::plans` fires only by name coincidence with a shadowing local, `gallery::mediaItems`
 is preserved by upstream resolution failure rather than the guard, and `.forEach`/cross-file

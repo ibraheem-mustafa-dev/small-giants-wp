@@ -288,7 +288,8 @@ Reach is derived, not hardcoded: a block is in an extension's surface when it do
 ### ⛔ DB columns that are NOT trustworthy as gate inputs (all four measured 2026-08-07)
 
 > ✅ **1 and 2 were FIXED 2026-08-08 — D523 `e73bacde`, extended after QC council.** Both are now
-> usable as gate inputs — ⚠ **but `inspector_control_type` is 65% NULL (1,753 of 2,712 `sgs/%` rows).**
+> usable as gate inputs — ⚠ **but `inspector_control_type` is 64.6% NULL — 1,753 of 2,712 rows `WHERE block_slug LIKE 'sgs/%'`.**
+> (Scope stated per carried condition 27: the unscoped all-blocks figure is 70.2% and is NOT the one that governs.)
 > A rule may TRUST a non-NULL value; it must NOT read NULL as "no control". "Trustworthy" was an
 > overclaim in the first draft of this box; the analysis below is retained because it names the defect CLASS every remaining rule must
 > avoid. **3 and 4 remain OPEN.** What actually landed: 7 `box_family` values declared in block.json

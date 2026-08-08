@@ -1548,3 +1548,37 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
 - **`value-fragment` NEVER DISQUALIFIED A `technical` VETO** — the role's own contract reads
   "each verdict NOT-content **or value-fragment**". A whole task was planned against the opposite
   reading. Read the contract in the DB, not the summary of it.
+
+### E8. Earned 2026-08-08 — Tier 0 data-layer session, corrected by a 4-rater `/qc-council` (D523-D527)
+
+- **A WRITE HAS DERIVED READERS, NOT JUST DIRECT ONES.** Correcting 41 `inspector_control_type`
+  rows silently restaged `roster.json`, because `build-roster.py:91` derives every `surfaces.*` axis
+  from a haystack that INCLUDES that column. The committed artefact went stale with no error — and
+  it is the denominator every Spec 35 rule scopes against, while the same derivation feeds
+  `surfaces.animation`, the scope of `17-reduced-motion-gate` (GATE-mode, WCAG 2.3.3). A 2026-07-30
+  precedent at `build-roster.py:71-76` records a regen flipping 18 blocks and firing 18
+  false-positive WARNs on that fail-closed gate. **"What reads this?" and "what is DERIVED from
+  this?" are two different greps. After writing a shared column, regenerate the derived artefacts
+  and DIFF them — a regeneration you do not diff tells you nothing.**
+- **TWO ARTEFACTS AGREEING IS NOT VERIFICATION IF THEY SHARE A SOURCE.** A doc supersession was
+  gated on an ABSORPTION MAP and "verified" by mechanically comparing two tables — both written
+  from the same belief. Clean 30/30 MATCH. A rater then traced each item to its CITED TARGET and
+  found two marked ABSORBED into sections that did not contain the requirement. **A cross-check
+  verifies only when the two artefacts came from INDEPENDENT routes. Check a claim against the
+  target it cites, never against another copy of the claim.**
+- **SCOPE A FIX TO THE POPULATION, NOT TO THE LIST YOU INHERITED.** The handoff named 5 blocks with
+  box-object attrs; the fix corrected 7 attrs and was reported as complete. The real population was
+  **13** — a rater found 4 more (including `physics-canvas.gridItemPadding`, which four sibling
+  blocks already declared) and a widened census found 2 more. The inherited list was a starting
+  point that read like a specification.
+- **"NO READER" MUST NAME ITS SEARCH SCOPE.** 36 capability values were pruned as fossils on the
+  finding that nothing read them. Two live readers existed in `mcp/server.py`
+  (`search_blocks()`, `match()`) — surfaced by the original grep and dismissed as "informational".
+  The decision survived; the justification did not. **Say "no reader IN X", and name X.**
+- **A GUARD CAN FIRE BY COINCIDENCE.** The repeater guard appears to protect
+  `pricing-table::plans`, but only because a shadowing local happens to share the attribute's name;
+  rename it and the guard silently stops. `gallery::mediaItems` is spared by an upstream resolution
+  failure, not by the guard at all. **Verify WHY a guard fires, not just THAT it fires.**
+- **DERIVED "THEREFORE" CLAIMS NEED THEIR OWN GATE.** "All four columns fixed, THEREFORE Tiers 1-4
+  unblocked" was false: the extension surface is unbuilt plumbing, BORDER has no census, and Tier 1
+  needs nine Rule 7 gates. **Fixing a precondition does not discharge everything that cited it.**

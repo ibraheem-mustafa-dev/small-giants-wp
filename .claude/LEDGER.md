@@ -166,7 +166,7 @@ The canary is unblocked and current.
 
 ---
 
-## NEXT SESSION (Track 1b / Spec 35) — TIER 0 DATA LAYER, then restore the dropped conditions
+## NEXT SESSION (Track 1b / Spec 35) — START ENFORCEMENT, but fix the denominator first
 
 ### THE GOAL — state it before picking up any task
 
@@ -175,131 +175,153 @@ block's inspector is genuinely usable by them: a control for everything the bloc
 what it cannot, one consistent shape across every block. **A setting that needs code to mean
 anything is not done.**
 
-### ✅ CLOSED this track — do not re-open
+### ✅ CLOSED — do not re-open
 
-Pool 23→0 (D504) · A7/A8/A9 (D508/D509/D510) · variant matching (D512) · art-direction tiers across
-every media-bearing block (D521, `e5f85753`) · Task 0 real-video proof (`6777f8d0`) · the Spec 39
-reply IS SENT (`22436d19`). ⏳ No reply back from that track yet.
+Pool 23→0 (D504) · A7/A8/A9 (D508-D510) · art-direction tiers (D521) · **Tier 0 data layer, all four
+columns (D523 + D525 + D527)** · **the 27-condition checklist → control-type contract (D524)** ·
+**`sgsCustomCss` stays (D526)**.
 
-### TASK F — the contract now GOVERNS; enforcement is still unbuilt
+### ⛔ READ FIRST — D527 corrected SIX of the previous session's own seven claims
 
-`.claude/plans/spec-35-control-type-contract.md` is AUTHORITATIVE (2026-08-08). **One fixed shape per
-CONTROL TYPE** — canonical component, required props, **banned lookalikes**, tab, scoping axis.
-14 contracts + §CARRIED OBLIGATIONS + the ABSORPTION MAP + §13 (every shape with no contract yet,
-enumerated so none is homeless).
+A 4-rater `/qc-council` falsified most of what the 2026-08-08 session asserted about its own work.
+Everything is corrected and committed (`5a48acfd`), but **do not trust a figure or a scope statement
+written that session without checking D527.** The corrections that change what you do:
 
-**Why the old shape failed, in one example:** rule 08 matches `<TextControl type="url">`. It went
-40→0, and Spec 35 Part M recorded *"Wave 1 DONE — migrated across all raw-URL fields"* — while
-`sgs/button`'s `<URLInput>` and a raw URL field injected into **67** blocks from
-`extensions/hover-effects.js` had never been in the gate's scope. The zero was true of what the gate
-could see; the doc turned it into a claim about the world. **The generalised fix is the EXTENSION
-SURFACE axis** — no DB column can see a filter-registered attr, so every rule must also read
-`src/blocks/extensions/*.js`.
+- **`box_family` was 7; the real population was 13.** Now zero object-typed box attrs read NULL.
+- **The Tier 0 fix MOVED A SCOPING AXIS.** `build-roster.py:91` derives `surfaces.*` from a haystack
+  that includes `inspector_control_type` — so writing that column restages `roster.json`.
+- **"Fossils had no reader" was FALSE** — `mcp/server.py` `search_blocks()`/`match()` read the full
+  capability table. Pruning was a trade-off, not free. **OPEN for Bean.**
+- **`inspector_control_type` is 64.6% NULL** (1,753/2,712 `sgs/%` rows; unscoped reads 70.2%). Trust a non-NULL value; NEVER read NULL as "no control".
+- **The D523 repeater guard is fragile** — `pricing-table::plans` fires only by coincidence with a
+  shadowing local. A rule scoping arrays needs its own AST cross-check.
+- **"Tiers 1–4 unblocked" was an overclaim** — honest per-tier scope below.
 
-✅ **All four Tier 0 columns correct (D523 + D525 + D527).** ⛔ **"Tiers 1–4 unblocked" was an
-OVERCLAIM — see D527.** Honest scope: Tier 3 unblocked for DB-scoped rules ONLY; BLOCKED for
-anything crossing the extension surface (`inspector-scan` has no `extensionsDir`); §14 BORDER
-blocked on a census; Tier 1 blocked on 9 Rule 7 gates (Bean); Tier 2 half.
-⛔ **FIRST ACTION NEXT SESSION: regenerate `roster.json` + diff all five `surfaces.*` axes** — D523
-moved one and left the artefact stale.
-`isCollectionKind()` = a `collection` capability row, declared via `supports.sgs.collection`
-(15 blocks). ⛔ **Do not run `populate-db.py`** — it reintroduces pruned fossils and clobbers
-`block_selectors`. ⚠ Still open: `arrayContentLift` for `testimonial-slider`/`content-collection`
-is converter-read → a Rule 7 change, not done.
+### The contract GOVERNS; enforcement is unbuilt
+
+`.claude/plans/spec-35-control-type-contract.md` is AUTHORITATIVE. 14 control contracts + §CARRIED
+OBLIGATIONS (CO-2…CO-21, incl. **CO-15/CO-18 restored by D527**) + ABSORPTION MAP (30/30 after
+correction) + §13 (shapes with no contract yet). The 27-condition checklist is a tombstone.
 
 ---
 
 ## ⭐ NEXT SESSION — orchestration plan
 
-**Identity.** You are the SGS framework engineer. Two fronts, strictly ordered: **fix the
-categorisation data**, then **restore what the contract dropped**. Build no enforcement until both
-are done.
+**Identity.** You are the SGS framework engineer. Tier 0 is done. This session **starts enforcement**
+— but the first action is re-measuring the denominator every rule will be scoped against.
 
-**State recap.** A control-type contract now exists in draft but is **NOT authoritative** — a
-4-rater `/qc-council` found it would have dropped 10 conditions (including a WCAG gate), contradicted
-3 recorded decisions, and carried 11 wrong figures. The 27-condition checklist REMAINS in charge.
-Separately, the DB columns every future rule would scope against are wrong in four places — and the
-root cause of the worst one is the same hardcoded-name bug the contract exists to end.
+### Task 1 — Regenerate `roster.json` and diff all five `surfaces.*` axes
 
-### Task 1 — Tier 0: the `sgs-update` data layer (Bean-ruled priority)
+**What:** re-derive the axis artefact and prove it matches the corrected DB.
+**Why:** D523/D525 wrote `inspector_control_type`, and `build-roster.py:91` derives `surfaces.*` from
+a haystack including that column. `sgs/form` already flipped `link` false→true once and the committed
+file went stale unnoticed. **`surfaces.animation` scopes `17-reduced-motion-gate`, a live GATE-mode
+WCAG 2.3.3 rule**, and `build-roster.py:71-76` records a 2026-07-30 precedent where a regen flipped 18
+blocks and fired 18 false-positive WARNs on a fail-closed gate.
+**Estimated time:** ~10 min.
+**Command:** `python plugins/sgs-blocks/scripts/consistency/build-roster.py` then
+`git diff -- plugins/sgs-blocks/scripts/consistency/roster.json`.
+**Baseline (verified 2026-08-08, post-fix):** `styling=65 colour=64 link=17 media=30 animation=21`.
+**Orchestration:** inline, Opus. Do NOT delegate — this is the measurement everything else rests on.
+**Depends on:** none. **Parallel with:** none.
+**/qc gate after:** no — it is itself a verification step.
+**Acceptance:** the diff is empty OR every changed line is explained and committed. If `animation`
+moved, STOP and re-check the reduced-motion gate's population before writing any rule.
 
-**What:** make the block categorisation accurate, so scoped rules can be trusted.
-**Why:** a rule scoped to a wrong axis reads green while passing the blocks it exists to catch.
-Bean's own gallery example proves it: the fix depends on `isCollectionKind()` reading
-`block_capabilities`, and `sgs/gallery` carries **zero** capability rows.
-**Estimated time:** ~15 min for steps a+b; c is a design job.
+### Task 2 — Build ONE Tier 3 advisory rule: render-without-control
 
-> ✅ **(a) + (b) LANDED 2026-08-08 — D523, commit `e73bacde`, pushed.** 7 `box_family` values
-> declared in block.json; 41 `inspector_control_type` rows corrected (10 NULL, 31 wrong), measured on
-> a sandbox DB copy first, idempotent on re-run. A repeater guard was added in the same pass to stop
-> the widened roster crediting an array attr to its per-item control. The 37 conformance failures are
-> PRE-EXISTING (baselined by restoring the pre-change DB: 37 before, 37 after). **Residual:**
-> `site-{header,footer}-row` `padding`/`margin` still read NULL — edited via `ContainerWrapperControls`,
-> a multi-attr façade that names no single attr; needs a design call, not a name in a list.
-> **(c) and (d) below remain OPEN.** Original analysis kept for the (c)/(d) work:
+**What:** the fourth quadrant — attributes the framework renders that no client can set.
+**Why:** largest client-visible payload (**expected population 53**), needs no extension plumbing and
+no Rule 7 gate. `check-dead-controls.js` CHECK 4 sees **none** of them by construction.
+**Estimated time:** ~45 min.
+**Orchestration:** inline, Opus (rule design); a Haiku subagent via `/delegate` may harvest fixtures.
+**Composition (council-verified, do not re-derive):** hover **31 across 9 blocks** (⚠ incl.
+`sgs/gallery` — `grayscaleHover`, `shadowHover`) · typography tiers **10** (⚠ NOT 12 — `sgs/text`'s
+line-height tiers already work) · `physics-canvas` **8** · `heading`/`text` boxShadow **4**.
+⚠ **Two traps, both walked into before:** literal-name matching MISSES `brand-strip` (tier keys built
+dynamically in PHP at `helpers-typography.php:90,98`) and FALSE-POSITIVES on `fontSizeTablet` (built
+by computed key in JS) — nearly 54 false findings between them.
+**Depends on:** Task 1. **Parallel with:** Task 3.
+**/qc gate after:** `/qc-inline`, plus the rule's own `--self-test`.
+**Acceptance:** `run.js --self-test` passes AND the new rule fails on a seeded break AND its live
+count is reconciled against the 53 with every difference explained. **A count alone is not
+acceptance** (`rules.json._meta.zeroIsAClaim`).
 
-All four columns DONE — (a)+(b) D523, (c)+(d) D525. Detail: `decisions.md` + the contract's
-§Tier 0. Nothing further is owed here.
+### Task 3 — Wire the dead gates, ADVISORY only
 
-**Orchestration:** (a) and (b) inline — small, mechanical, and (b) is the one measurement that must
-not be delegated. (c) and (d) are design work → `/brainstorming` before any build.
-**Rehearsal, safe:** `python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1 --dry-run`.
-⚠ `--dry-run` genuinely does not write, **but UNDER-REPORTS** — the Stage-1 tail subprocesses are
-skipped, so it previews nothing of the control-type regen.
-⚠ **A shared-DB reseed is a cross-track action.** Back up, diff, check every pruned row.
-**Depends on:** none. **Parallel with:** none — everything else is scoped against this.
-**/qc gate after:** `/qc-inline` for (a)+(b); `/qc-council` before any (c) build.
-**Acceptance:** each of the four columns either reads correctly against a live spot-check, or is
-recorded as needing a design decision with the decision named. Not "the script ran".
+**What:** wire the gates that exist with zero `package.json` references.
+**Why:** `check-universal-fit.js`, `check-duplicate-controls.js`, `check-simple-surface-cap.js`,
+`audit-block-file-consistency.py`, `audit-block-uniformity.py` are all built and enforce nothing.
+⛔ **NOT `lint:js`** — E6 point 9 forbids fail-closed against a nonzero backlog (the 11,932 figure is
+itself UNVERIFIED; re-run before quoting it).
+⚠ `check-universal-fit.js` and `check-control-ux.js` have **no `--self-test`** — and the latter is
+already in `prebuild`. A wired gate with no proof it can fail.
+**Estimated time:** ~30 min.
+**Orchestration:** delegated — Sonnet via `/delegate`, single agent.
+**Brief:** wire each named gate into `prebuild` in ADVISORY mode, confirm each RUNS and can FAIL, and
+add a `--self-test` where missing. Do not promote anything to gating.
+**Depends on:** none. **Parallel with:** Task 2.
+**/qc gate after:** `/qc-inline`.
+**Acceptance:** each wired gate runs during `npm run build` AND has a demonstrated failing case.
 
-### ✅ Task 2 — CLOSED 2026-08-08 (D524). Do not re-open.
+### ⛔ Do NOT start these — blocked, with the reason
 
-All 10 dropped conditions + T1/T2/T3 restored into §CARRIED OBLIGATIONS; §14 BORDER created for
-condition 7's dropped half; 11 figures corrected at their body sites (not just in the verdict table);
-3 contradicted proposals withdrawn in-body; scope errors S1–S6 fixed, S1 generalised into a new
-EXTENSION SURFACE axis; §10 split into §10/§11/§12 at 8/8 fields each, plus §13 enumerating every
-control shape that still has no contract. ABSORPTION MAP proves 30/30 accounted, 0 dropped.
-Checklist tombstoned; Spec 35 N.3's dead "0 of 24" figure removed; brand-strip note re-pointed.
-
-### ✅ Task 3 — CLOSED 2026-08-08 (D526). Do not re-open.
-
-**Answer: NO — keep `sgsCustomCss`.** WP 7.0's native per-block CSS wraps every rule as
-`:root :where(...)` = **0,1,0**, and SGS blocks paint at **0,2,0**, so a native rule can never
-override the block it is meant to correct. It also has **no `@media` branch at all**, while the
-residual band is by definition `@media`-bounded — it would be dropped silently. Both read from
-`wp-includes/` on the canary (source read, not an execution — the `wp eval` guard blocks read-only
-evals by name). Satisfies CO-16 for this control.
-
-**Premise check:** the reported symptoms did NOT reproduce. Live canary editor, all **348** block
-types: native disabled on 348/348, `sgsCustomCss` present on 348/348. `ece1487b` only ADDED the
-disable. Only native content anywhere is `color: red;` on untitled draft 2145 — the 2026-08-03
-proof value. Nothing lost, nothing to fix. Bean: leave placement as-is.
+- **Any rule crossing the EXTENSION SURFACE.** `inspector-scan` cannot see `src/blocks/extensions/`:
+  no `extensionsDir` in `run.js` `buildCtx`, and `core/roster.js:58-70` admits only directories
+  containing a `block.json`. Unbuilt plumbing, not a rule to remember.
+- **§14 BORDER.** Its own conformance field says "not yet measured"; `zeroIsAClaim` requires an
+  independent census first.
+- **Tier 1 (shared-file fixes).** Nine Rule 7 design gates — needs Bean, not a database.
 
 ### Dependency graph
 
 ```
-Task 1a + 1b (inline, Opus — data layer, cheap + mechanical)
-  ↓                                    Task 2 (doc-only, parallel)
-Task 1c + 1d (/brainstorming — design)   ↓
-  ↓                                    /qc subagent → tombstone
-/qc-council  →  commit + push
-                     ↓
-              Task 3 (design gate with Bean)
+Task 1 (inline, Opus — regenerate + diff the roster)
+  ↓
+Task 2 (inline, Opus)      Task 3 (delegated, Sonnet — parallel)
+  ↓ /qc-inline + --self-test      ↓ /qc-inline
+              commit + push (exact paths, main)
 ```
 
-⛔ **Build NO enforcement scripts until Task 1 lands.** Every contract scopes to an axis; four of
-those axes are currently wrong.
+### Tooling for next session (WordPress project — Gate 5)
+
+| Skill | When |
+|---|---|
+| `/brainstorming` | Before any design choice (the two open questions below) |
+| `/strategic-plan` | If Task 2 grows past one rule |
+| `/research` | Auto-routes tier; use before recommending anything unfamiliar |
+| `/gap-analysis` | Grade the new rule before calling it done |
+| `/lifecycle` | ANY skill/agent/pipeline edit — start the pipeline first |
+| `/sgs-wp-engine` + `/wp-blocks` + `/sgs-db` | SGS ground truth — query, never guess |
+| `/qc-inline` · `/qc-council` | Per-task gate · before any converter/pipeline commit |
+| `/systematic-debugging` | Root-cause gate if a rule misfires |
+
+| MCP / tool | For |
+|---|---|
+| Playwright or chrome-devtools | Live editor/DOM verification (R-31-11). ⚠ `selectBlock` flips the sidebar to the Page tab — poll for the inspector, and one block per call; long loops do not yield to React |
+| `sgs-db.py` / `wp-blocks.py dump` | Schema + counts before any "missing X" claim |
+
+| Agent | When |
+|---|---|
+| `wp-sgs-developer` | Heavy SGS build work |
+| `code-reviewer` | Before committing the new rule |
+| `general-purpose` (Sonnet) | Task 3's gate-wiring |
+
+### Open questions for Bean
+
+1. **Reinstate capability discovery keywords?** D525 pruned 36 tags; two MCP discovery tools read
+   them. Restore declaratively, or accept the degradation?
+2. **Multi-attribute façades** (`ContainerWrapperControls`) cannot be recorded in a single-value
+   `inspector_control_type`. Contract question, still unanswered.
 
 ### Also queued (NOT next session unless Bean redirects)
 
-- **Pointer-reactive container backgrounds — GATE SIGNED 2026-08-07, build NOT started.** Route B (a
-  background mode in `SGS_Container_Wrapper`, inherited by every wrapper-bearing composite — a Rule 7
-  shared-mechanism change), all four looks, client-selectable, colours + intensity operator-editable.
-  Bean overruled the contrast risk: **contrast is a CONTROL, not a gate.** Reduced-motion SUPPRESS +
-  coarse-pointer degradation stay mandatory. **FR = `FR-38-28`** (re-check — Spec 38 moves).
+- **Pointer-reactive container backgrounds — GATE SIGNED 2026-08-07, build NOT started.** Route B, all
+  four looks, client-selectable. Contrast is a CONTROL not a gate (Bean). Reduced-motion SUPPRESS +
+  coarse-pointer degradation mandatory. `FR-38-28`.
   Plan: `.claude/plans/2026-07-31-step7-cursor-follow-background-design-gate.md`. ~2h + ~30 min/look.
-- **Parking: 61 entries; the 10 machine-checkable ones verified 2026-08-07, all genuinely OPEN.** The
-  other 51 not individually re-tested. Accurate backlog, not stale bookkeeping.
+- **Parking: 61 entries**, the 10 machine-checkable ones verified 2026-08-07, all genuinely OPEN.
+- **MEMORY.md is 235 bytes from its cap** — a compaction is owed.
 
 ### Methodology guardrails (do not skip — every one was earned)
 
