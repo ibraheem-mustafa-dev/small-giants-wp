@@ -135,8 +135,15 @@ that extension. Deleting first removes a capability from 48 blocks. Order:
    they are not meant to have it. **Never a silent capability loss.**
 5. Delete the extension's colour controls, and gate against reintroduction (§6).
 
-`sgsHoverScale` / `Shadow` / `ImageZoom` / `Grayscale` are a separate question — they are effects,
-not element colours. **Not in scope here; decide separately.**
+`sgsHoverScale` / `Shadow` / `ImageZoom` / `Grayscale` are effects, not element colours. **Answered
+2026-08-08 — see §10.1:** they survive the extension's deletion as a capability, but are placed by
+block scale (leaf → one block-level section; composite → attached to the element they target), and
+only where §10.2's binding rule is satisfied.
+
+**§10.2 changes step 4 above.** "Give them element hover, or record that they should not have it" is
+replaced by a derivation: a block gets hover where it has an element whose CSS the hover would
+actually change, and none where it does not. No per-block opinion, no silent loss — the absence is
+explainable.
 
 ---
 
@@ -228,10 +235,89 @@ mistake from the same source.
 | 5 | Native retirement (§5), capability-first | Per-block live verify |
 | 6 | Roll the model across the remaining blocks | Gates promote when backlog = 0 |
 
-## 10. Open questions
+## 10. Answered by Bean, 2026-08-08
 
-1. **Non-colour hover effects** (`sgsHoverScale`/`Shadow`/`ImageZoom`/`Grayscale`) — keep as a
-   universal extension, or move into the element model too?
-2. **The 48 extension-only blocks** — do they all *want* element hover, or is the honest answer that
-   many should simply not have it?
-3. **`contentAttrs`** — hand-authored per block, or generated from render.php usage and reviewed?
+### 10.1 Hover effects — scale with the block, and the axis already exists
+
+**Bean:** *"For something like button, since it's a single element, all of the colours should be
+together — bg, border and text — and then it should have a section for hover effects. For a larger
+composite like hero it needs to be separated per nested element."*
+
+Two different things were tangled in the original question, and they resolve differently:
+
+| | Where it goes |
+|---|---|
+| **Hover COLOURS** (`css:color`, `background-color`, `border-color` under `states.hover`) | **Always** inline beside the base value, inside the element panel. Never a separate section. Unchanged from §2.2. |
+| **Hover EFFECTS** (`sgsHoverScale` / `Shadow` / `ImageZoom` / `Grayscale`) | **Leaf block** → ONE block-level "Hover effects" section. **Composite** → attached to the element it actually targets. |
+
+⚠ **Worth noting: the per-element model already delivers what Bean wants for button**, without a
+special case. Button's `attrMap` puts `css:color`, `css:background-color` and `css:border-color` all
+on the SAME `button` element — so one element panel naturally holds bg + border + text together. Its
+`icon` element separately owns `css:color`. The "single element feels unified, composite feels
+separated" difference is an emergent property of the data, not a rule anyone has to apply. **Only the
+hover-EFFECTS placement genuinely needs the leaf/composite split.**
+
+**The discriminator is `block_composition.composition_role`** — measured live, scoped to the roster
+and summing exactly to 83:
+
+| role | blocks | hover-effects placement |
+|---|---|---|
+| `leaf` | **10** | one block-level section |
+| `content-block` | **64** | per element where it has >1 element with a hover target; otherwise block-level |
+| `section-root` | **8** | per element |
+| `wrapper-shell` | **1** | per element |
+
+Verified: `sgs/button`, `sgs/heading`, `sgs/text`, `sgs/icon` = `leaf`; `sgs/hero`,
+`sgs/cta-section` = `section-root`. R-31-1 satisfied — a DB column, not a hardcoded list.
+
+### 10.2 Hover must be BOUND to something, never floating
+
+**Bean:** *"Most or maybe all of the blocks could have something that is hover-effect friendly. But
+it needs to actually be applied to something and not just randomly exist."*
+
+This is the binding rule, and it settles §4 step 4:
+
+> **A block gets a hover control only where a concrete element/target exists for it to apply to.
+> A hover attribute with no target is a defect, not a feature.**
+
+That is precisely the dead-control shape the framework already fails builds over
+(`check-dead-controls.js`) and the fourth quadrant rule 21 measures. So the answer to "do all 48
+extension-only blocks want hover?" is neither yes nor no per block — it is **derived**: a block gets
+element hover where it has an element whose CSS the hover would actually change, and gets none where
+it does not. No per-block opinion required, and no silent capability loss either, because the
+absence is then explainable rather than arbitrary.
+
+The universal extension is exactly what this rule condemns: it attached 11 hover attributes to **67
+blocks** wholesale, with no check that any of them targeted anything real. That is why it goes.
+
+### 10.3 What `contentAttrs` means (jargon in the first draft — my fault)
+
+**Plain English.** The element map records, per element, which **styling** properties it owns —
+"the headline owns its font size and its colour". It records nothing about which **content** field
+belongs to that element — "the headline's actual words live in the attribute called `headline`".
+
+**Why that matters here.** Your model says an element's panel holds its content *and* its styling
+together. To build the Headline panel I need both halves. I have the styling half in data. The
+content half is currently only knowable by reading each block's editor code by hand — which is
+exactly the hand-authoring this whole design removes.
+
+`contentAttrs` is just a short list, per element, naming its content fields:
+
+```
+"headline": { "label": "Headline", "contentAttrs": [ "headline", "headlineTag" ] }
+```
+
+**Two ways to get it:**
+
+| | Effort | Risk |
+|---|---|---|
+| **(a) Hand-written** per element across 83 blocks | high — 283 elements | drifts the moment a block changes |
+| **(b) Generated** from what `render.php` actually prints inside each element, then reviewed | low | a generator guess needs a human pass |
+
+**Recommendation: (b), with review.** The same generator already maintains `attrMap`, so this rides
+existing machinery, and generated-then-reviewed is how `attrMap`'s own 403 `native:` entries got
+there. **Until an element declares `contentAttrs`, its content controls stay where they are** — the
+model degrades to "no worse than today" rather than guessing and moving a client's controls wrongly.
+
+⚠ Still needs Bean: **is (b) acceptable**, given a generator pass will need his eye on the output for
+at least the POC block before it is trusted across the library?
