@@ -155,9 +155,13 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				{ /*
-				 * Object position / fit / max-width / height are all
-				 * APPEARANCE controls (behaviour → Settings; appearance →
-				 * Styles), so this panel renders in the Styles tab.
+				 * An extension-injected control belongs to NO declared element
+				 * (written at runtime by a registerBlockType filter, so it is
+				 * in no block's supports.sgs.elements). Per THE PLACEMENT RULE
+				 * it takes a block-level panel, and the MEDIA contract's Tab
+				 * field puts sizing/position in Styles.
+				 * ⛔ NOT justified by "behaviour → Settings; appearance →
+				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason only.
 				 */ }
 				<InspectorControls group="styles">
 					<PanelBody

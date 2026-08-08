@@ -95,7 +95,7 @@ module.exports = {
 					( hasAdvancedRouting
 						? ' (Advanced is already routed via InspectorAdvancedControls, not counted above.)'
 						: '' ),
-				fix: 'Split the panels across group="settings" and group="styles" InspectorControls wrappers (behaviour panels → settings, appearance panels → styles).',
+				fix: 'Give each declared element in supports.sgs.elements ONE panel holding its content, its styling and its hover together (THE PLACEMENT RULE, .claude/plans/spec-35-control-type-contract.md). Controls belonging to no element take a block-level panel, grouped per that control type\'s Tab field. Do NOT sort by behaviour-vs-appearance — that rule was retired 2026-08-08.',
 				keyParts: [ 'no-group-routing' ],
 			} ),
 		];

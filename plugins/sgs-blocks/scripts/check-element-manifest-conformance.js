@@ -3,9 +3,12 @@
  *
  * Spec 35 Task 2 — the CLUSTER-COHERENCE rule, made computable.
  *
- * Reads each block's `block.json` `supports.sgs.elements` manifest (the
- * schema defined in .claude/plans/spec-35-compound-control-sets-design.md
- * §"The element manifest") and, for every element × declared cluster, checks
+ * Reads each block's `block.json` `supports.sgs.elements` manifest (schema of
+ * record: .claude/plans/spec-35-control-type-contract.md §"THE ELEMENT
+ * MANIFEST" — rehomed there 2026-08-08 from
+ * .claude/plans/archive/spec-35-compound-control-sets-design.md, which is
+ * archived and must not be cited as live) and, for every element × declared
+ * cluster, checks
  * the block exposes EVERY member of that cluster's member set (from
  * scripts/consistency/cluster-member-sets.json — itself derived from the
  * setting-registry.json golden master) through either:

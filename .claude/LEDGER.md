@@ -101,16 +101,39 @@ Bean's decisions, all recorded in the design doc:
 **Identity.** SGS framework engineer. The inspector design is approved; you are building it,
 starting with the doc that caused the last mistake.
 
-### Task 1 — Phase 0: amend the contract (INLINE, Opus)
+### Task 1 — Phase 0: amend the contract — ✅ DONE 2026-08-08, Bean-signed-off
 
-**What:** `.claude/plans/spec-35-control-type-contract.md` §6 field 4 says "behaviour → Settings;
-appearance → Styles". Replace it with the design's §2.1 model. Update CO-2 to match. Add
-`contentAttrs` to the element schema.
-**Why:** this exact sentence is what produced the rejected split. Until it changes, the next session
-reads it and repeats the mistake.
-**Acceptance:** contract §6 + CO-2 state the element-scoped model; a fresh reader could not derive
-the old rule from the doc. ~20 min.
-**Gate:** Bean sign-off before Task 2.
+**The rule is now ONE sentence:** *one panel per element, holding its content, styling and hover
+together; panel title = `label`, order = `order`; hover inline beside the value it modifies.* No
+behaviour-vs-appearance question anywhere. First draft was a 2-step scope test — **Bean: "you're
+overcomplicating; there's precedent to model from"**, and he was right.
+
+**⭐ Bean decision A1 — SGS owns a three-tab bar (Content · Style · Advanced)**, as Kadence, Spectra
+and Stackable all do. ⛔ **It ships AFTER native-supports retirement** (27 blocks declare native
+`color`, 48 `__experimentalBorder`) or the client sees our 3 tabs PLUS core's Styles tab. **Phase 1
+(background capability) is still the first build.** Interim: element panels in Settings, native
+supports in core's Styles tab.
+
+**Research that settled it (primary sources, 2026-08-08):** WP core has **NO** semantic Settings/
+Styles rule — the Styles tab is a hard-coded list of native support categories, Settings is the
+`default` group. Kadence/Spectra/Stackable group composites by PART; Otter + Essential Blocks
+converge on the same shape independently. Hover-inline-beside-base is unanimous incl. core's
+`state-control.js`. **Nobody centralises panel order** → CO-28 stays open (Bean decision 2b); spec 35
+**A8** marked OPEN as its sibling.
+
+**Shipped:** contract §THE PLACEMENT RULE + §THE ELEMENT MANIFEST (schema of record, adds
+`contentAttrs` + 5 binding conditions) · CO-2 rewritten · all 13 `Tab` fields now guarded · spec 35
+A3/A4/A8 · `01-tab-group.js` fix-message (it was still instructing the retired rule) · 4 extension
+comments that cited it as justification (routing unchanged — verified) ·
+`check-element-manifest-conformance.js` docblock off the ARCHIVED schema doc.
+
+**Verified:** `npm run build` exit 0, all prebuild gates incl. `inspector-scan --check` ·
+manifest-gate output byte-identical to HEAD (1,214,034 B, same md5; broken-copy control → 0 B, so the
+check can fail) · handoff-preflight 9/9 · every schema figure independently re-derived by a 4th rater.
+
+**qc-council: 4 raters, verdict OK, 12 findings — all fixed or Bean-decided.** Two were the same
+defect one level up: I amended the rule's *statement* and left its *distribution* (9 of 12 `Tab`
+fields + the scanner's fix message still taught the old rule).
 
 ### Task 2 — Phase 1: background capability (INLINE, Opus)
 
@@ -205,7 +228,7 @@ Task 2 (background)  ──►  Task 3 (hero POC) ──► Bean's eye
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | The live design | `plans/2026-08-08-element-driven-inspector-design.md` |
-| Control-type contract (⚠ §6 field 4 is WRONG until Task 1) | `plans/spec-35-control-type-contract.md` |
+| Control-type contract (✅ placement AMENDED 2026-08-08 — see §"THE PLACEMENT RULE") | `plans/spec-35-control-type-contract.md` |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Decisions (D-numbered) | `decisions.md` (+ `memory/decisions-archive.md`) |
 | Parked work (OPEN/PARTIAL/BLOCKED/DEFERRED only) | `parking.md` (+ `memory/parking-archive.md`) |

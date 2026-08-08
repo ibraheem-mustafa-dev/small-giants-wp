@@ -277,16 +277,19 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				{ /*
-				 * Split across the two native tabs by CONTROL TYPE
-				 * (behaviour → Settings; appearance → Styles), not left as
-				 * one bare InspectorControls the way it was before. Hover
-				 * Effects (colour/scale/shadow/zoom/grayscale/duration/
-				 * easing) and Click Effects (ripple) both change how the
-				 * block LOOKS/feels on interaction — appearance, so they
-				 * render in the Styles tab. Block Link changes what the
-				 * block DOES (turns the whole card into a link) —
-				 * behaviour, so it stays in the default (Settings) tab
-				 * below.
+				 * These controls are injected at runtime by a
+				 * registerBlockType filter, so they belong to NO declared
+				 * element in any block's supports.sgs.elements. Per THE
+				 * PLACEMENT RULE they take block-level panels, and each
+				 * control type's Tab field picks the native group: the
+				 * effects panels go to Styles, Block Link to Settings.
+				 * ⛔ NOT justified by "behaviour → Settings; appearance →
+				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
+				 * only.
+				 * ⛔ This whole extension is SCHEDULED FOR REMOVAL (design
+				 * §4, Bean 2026-08-08): hover belongs to the element, not to
+				 * a universal filter. 48 blocks rely on it SOLELY, so the
+				 * element-hover capability lands BEFORE any deletion.
 				 */ }
 				<InspectorControls group="styles">
 					{ ! hideHover && (

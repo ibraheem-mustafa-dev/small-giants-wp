@@ -191,12 +191,16 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * native group="color" (WordPress's named colour/typography/
 				 * border/dimensions groups all render inside the Styles tab,
 				 * not Settings — this is not the same thing as the generic
-				 * "Colour" panel living in Settings). Parallax is a motion/
-				 * appearance effect — the same "behaviour → Settings;
-				 * appearance → Styles" rule that puts animation.js's panel
-				 * in Styles — so Element parallax joins Background parallax
-				 * in the Styles tab via group="styles", giving the whole
-				 * feature one consistent home instead of two.
+				 * "Colour" panel living in Settings). Parallax is injected by
+				 * a runtime filter, so it belongs to no declared element; per
+				 * THE PLACEMENT RULE it takes a block-level panel and its
+				 * control type's Tab field puts motion in Styles — the same
+				 * reasoning that places animation.js's panel. Element
+				 * parallax therefore joins Background parallax in the Styles
+				 * tab via group="styles", giving the whole feature one home.
+				 * ⛔ NOT justified by "behaviour → Settings; appearance →
+				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
+				 * only.
 				 */ }
 				<InspectorControls group="styles">
 					<PanelBody

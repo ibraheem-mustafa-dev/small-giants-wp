@@ -34,16 +34,34 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 - **A1. Placement hierarchy:** on-canvas → Block Toolbar (frequent/primary) → Inspector (secondary).
   Never put a control the block can't function without ONLY in the sidebar. [WP Block Design]
 - **A2.** Sidebar is not the home for every option — every attribute has a sensible default. [10up]
-- **A3. Native Settings/Styles/Advanced tabs via the `group` prop.** Behaviour/content → Settings;
-  appearance → Styles (or sub-groups `color`/`typography`/`dimensions`/`border` to slot INTO the
-  native panel); CSS-class/anchor → Advanced (`group="advanced"`/`InspectorAdvancedControls`).
-- **A4. Element-first grouping** for composite blocks (panels by block PART, not property type).
+- **A3. TARGET — SGS owns a three-tab bar (Content · Style · Advanced)** *(Bean-decided 2026-08-08)*.
+  Kadence, Spectra and Stackable each ship their own tab bar rather than the native Settings/Styles
+  split, and core has **no** semantic rule for that split anyway — verified in the Gutenberg source,
+  the Styles tab is a hard-coded list of native block-support categories and Settings is simply the
+  `default` group.
+  ⛔ **Sequencing: the tab bar lands AFTER native-supports retirement**, or the client sees our three
+  tabs plus core's Styles tab. **Interim state** (not the target, do not extend it): element panels in
+  Settings, native supports in core's Styles tab, CSS-class/anchor in Advanced.
+  ⛔ **A3 previously read "Behaviour/content → Settings; appearance → Styles".** That rule splits an
+  element's appearance from the content it modifies; 8 blocks were sorted on it on 2026-08-08 and
+  rejected. Full rule: `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
+- **A4. Element-first grouping** for composite blocks (panels by block PART, not property type) —
+  **derived from `supports.sgs.elements`, never hand-sorted.** One element = one panel titled by its
+  `label`, holding that element's content (`contentAttrs`) + style clusters + its states **inline
+  beside each base value**. Hover is never its own panel. Unresolved element → the control does not
+  move. Kadence, Spectra, Stackable, Otter and Essential Blocks all converge on this grouping
+  independently. Canonical statement: contract §CO-2 + §"THE ELEMENT MANIFEST".
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls:
   optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
 - **A6. Never duplicate a native `supports` panel** (inspector-UX form of R-31-9).
 - **A7. Per-block universal-extension opt-out** via `supports.sgs.hideExtensions: [...]`
   (`hide-extensions.js`). Declarative + universal.
-- **A8. Panel order = frequency-first;** escape-hatches last + collapsed.
+- **A8. Panel order — OPEN, do not build a rule from this line** *(Bean, 2026-08-08)*. "Frequency-first,
+  escape-hatches last + collapsed" is one candidate; "the element's declared `order`" (contract §THE
+  PLACEMENT RULE) is another, and they do not agree. **CO-28's design gate still stands: Bean picks
+  the canonical order.** Research 2026-08-08 found NO competitor centralises panel order — Kadence,
+  Spectra, Stackable, Otter and Essential Blocks all use authoring order — so this is genuinely new
+  ground rather than a solved problem to copy.
 - **A9. In-row layout primitives** (`HStack`/`VStack`/`Flex`/`Grid`/`Spacer`/`Divider`) — lay related
   controls in a row, not one full-width field per line (density for non-technical clients).
 

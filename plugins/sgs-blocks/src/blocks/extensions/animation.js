@@ -136,10 +136,16 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				{ /*
-				 * Motion is APPEARANCE (behaviour → Settings; appearance →
-				 * Styles), so this panel renders in the Styles tab — matching
-				 * fx.js's "Scroll & effects" panel, the other motion-control
-				 * surface in this codebase.
+				 * An extension-injected control belongs to NO declared element
+				 * (it is written at runtime by a registerBlockType filter, so
+				 * it appears in no block's supports.sgs.elements). Per THE
+				 * PLACEMENT RULE it therefore takes a block-level panel, and
+				 * this control type's Tab field puts motion in Styles —
+				 * matching fx.js's "Scroll & effects" panel, the other
+				 * motion-control surface in this codebase.
+				 * ⛔ NOT justified by "behaviour → Settings; appearance →
+				 * Styles" — that rule was RETIRED 2026-08-08. The routing
+				 * below is unchanged; only its reason is.
 				 */ }
 				<InspectorControls group="styles">
 					<PanelBody
