@@ -11,109 +11,632 @@
 	},
 	"states": {
 		"_note": "Spec 35 FR-35-5 — the STATES axis. A state is a COMPONENT concept (hover/focus/selected/pressed/disabled); its CSS realisation is declared ONCE here, centrally, so no block re-derives it. States are DECLARED on a manifest element (never parsed from attribute names — see FR-35-5 'Why states are DECLARED, never parsed from names': tabActiveTextColour renders as [aria-selected=\"true\"], NOT CSS :active, and pauseOnHover/effectHover/imageZoomHover/grayscaleHover contain 'Hover' but are booleans/preset selectors, not state-variant style properties).",
-		"order": [ "hover", "focus", "selected", "pressed", "disabled" ],
+		"order": [
+			"hover",
+			"focus",
+			"selected",
+			"pressed",
+			"disabled"
+		],
 		"definitions": {
-			"hover": { "label": "Hover", "cssRealisation": ":hover", "note": "Also emit :focus-visible where the control is focusable (a11y parity)." },
-			"focus": { "label": "Focus", "cssRealisation": ":focus-visible", "note": "NOT bare :focus — avoids the mouse-click focus ring." },
-			"selected": { "label": "Selected", "cssRealisation": "[aria-selected=\"true\"], [aria-current], .is-active", "note": "The tabs/nav case. NOT :active." },
-			"pressed": { "label": "Pressed", "cssRealisation": ":active", "note": "Genuine mouse-down. Rare; distinct from selected." },
-			"disabled": { "label": "Disabled", "cssRealisation": ":disabled, [aria-disabled=\"true\"]" }
+			"hover": {
+				"label": "Hover",
+				"cssRealisation": ":hover",
+				"note": "Also emit :focus-visible where the control is focusable (a11y parity)."
+			},
+			"focus": {
+				"label": "Focus",
+				"cssRealisation": ":focus-visible",
+				"note": "NOT bare :focus — avoids the mouse-click focus ring."
+			},
+			"selected": {
+				"label": "Selected",
+				"cssRealisation": "[aria-selected=\"true\"], [aria-current], .is-active",
+				"note": "The tabs/nav case. NOT :active."
+			},
+			"pressed": {
+				"label": "Pressed",
+				"cssRealisation": ":active",
+				"note": "Genuine mouse-down. Rare; distinct from selected."
+			},
+			"disabled": {
+				"label": "Disabled",
+				"cssRealisation": ":disabled, [aria-disabled=\"true\"]"
+			}
 		}
 	},
-	"order": [ "text", "fill", "layout", "position", "motion", "animation" ],
+	"order": [
+		"text",
+		"fill",
+		"layout",
+		"position",
+		"motion",
+		"animation"
+	],
 	"clusters": {
 		"text": {
 			"label": "Text",
 			"owningComponent": "TypographyControls + DesignTokenPicker",
 			"members": [
-				{ "key": "css:font-size", "label": "Font size", "suffixes": ["FontSize"], "nativeSupportsPath": "typography.fontSize" },
-				{ "key": "css:font-weight", "label": "Font weight", "suffixes": ["FontWeight"], "nativeSupportsPath": "typography.fontWeight" },
-				{ "key": "css:line-height", "label": "Line height", "suffixes": ["LineHeight"], "nativeSupportsPath": "typography.lineHeight" },
-				{ "key": "css:letter-spacing", "label": "Letter spacing", "suffixes": ["LetterSpacing"], "nativeSupportsPath": "typography.letterSpacing" },
-				{ "key": "css:font-style", "label": "Font style", "suffixes": ["FontStyle"], "nativeSupportsPath": "typography.fontStyle" },
-				{ "key": "css:text-transform", "label": "Text transform", "suffixes": ["TextTransform"], "nativeSupportsPath": "typography.textTransform" },
-				{ "key": "css:text-decoration", "label": "Text decoration", "suffixes": ["TextDecoration"], "nativeSupportsPath": "typography.textDecoration" },
-				{ "key": "css:color", "label": "Text colour", "suffixes": ["Colour", "TextColour", "Color"], "nativeSupportsPath": "color.text" },
-				{ "key": "css:text-align", "label": "Text align", "suffixes": ["TextAlign", "Align"], "nativeSupportsPath": "typography.textAlign" },
-				{ "key": "css:font-family", "label": "Font family", "suffixes": ["FontFamily"], "nativeSupportsPath": "typography.fontFamily" }
+				{
+					"key": "css:font-size",
+					"label": "Font size",
+					"suffixes": [
+						"FontSize"
+					],
+					"nativeSupportsPath": "typography.fontSize"
+				},
+				{
+					"key": "css:font-weight",
+					"label": "Font weight",
+					"suffixes": [
+						"FontWeight"
+					],
+					"nativeSupportsPath": "typography.fontWeight"
+				},
+				{
+					"key": "css:line-height",
+					"label": "Line height",
+					"suffixes": [
+						"LineHeight"
+					],
+					"nativeSupportsPath": "typography.lineHeight"
+				},
+				{
+					"key": "css:letter-spacing",
+					"label": "Letter spacing",
+					"suffixes": [
+						"LetterSpacing"
+					],
+					"nativeSupportsPath": "typography.letterSpacing"
+				},
+				{
+					"key": "css:font-style",
+					"label": "Font style",
+					"suffixes": [
+						"FontStyle"
+					],
+					"nativeSupportsPath": "typography.fontStyle"
+				},
+				{
+					"key": "css:text-transform",
+					"label": "Text transform",
+					"suffixes": [
+						"TextTransform"
+					],
+					"nativeSupportsPath": "typography.textTransform"
+				},
+				{
+					"key": "css:text-decoration",
+					"label": "Text decoration",
+					"suffixes": [
+						"TextDecoration"
+					],
+					"nativeSupportsPath": "typography.textDecoration"
+				},
+				{
+					"key": "css:color",
+					"label": "Text colour",
+					"suffixes": [
+						"Colour",
+						"TextColour",
+						"Color"
+					],
+					"nativeSupportsPath": "color.text"
+				},
+				{
+					"key": "css:text-align",
+					"label": "Text align",
+					"suffixes": [
+						"TextAlign",
+						"Align"
+					],
+					"nativeSupportsPath": "typography.textAlign"
+				},
+				{
+					"key": "css:font-family",
+					"label": "Font family",
+					"suffixes": [
+						"FontFamily"
+					],
+					"nativeSupportsPath": "typography.fontFamily"
+				}
 			]
 		},
 		"fill": {
 			"label": "Fill",
 			"owningComponent": "ColorGradientControl + RangeControl + GradientPicker",
 			"members": [
-				{ "key": "css:background-color", "label": "Background (solid + gradient)", "suffixes": ["BackgroundColour", "Bg", "Background"], "nativeSupportsPath": "color.background" },
-				{ "key": "css:opacity", "label": "Opacity", "suffixes": ["Opacity"] },
-				{ "key": "css:background-image", "label": "Overlay (gradient + angle)", "suffixes": ["Overlay", "OverlayColour", "OverlayGradient"] },
-				{ "key": "css:background-attachment", "label": "Background attachment", "suffixes": ["BackgroundAttachment"] },
-				{ "key": "css:background-position", "label": "Background position", "suffixes": ["BackgroundPosition"] },
-				{ "key": "css:background-repeat", "label": "Background repeat", "suffixes": ["BackgroundRepeat"] },
-				{ "key": "css:background-size", "label": "Background size", "suffixes": ["BackgroundSize"] },
-				{ "key": "css:object-fit", "label": "Image object-fit", "suffixes": ["ObjectFit"] },
-				{ "key": "css:object-position", "label": "Image object-position", "suffixes": ["ObjectPosition"] }
+				{
+					"key": "css:background-color",
+					"label": "Background (solid + gradient)",
+					"suffixes": [
+						"BackgroundColour",
+						"Bg",
+						"Background"
+					],
+					"nativeSupportsPath": "color.background"
+				},
+				{
+					"key": "css:opacity",
+					"label": "Opacity",
+					"suffixes": [
+						"Opacity",
+						"OverlayOpacity",
+						"BackgroundOverlayOpacity",
+						"BgSvgOpacity"
+					]
+				},
+				{
+					"key": "css:background-image",
+					"label": "Overlay (gradient + angle)",
+					"suffixes": [
+						"Overlay",
+						"OverlayColour",
+						"OverlayGradient",
+						"BackgroundImage",
+						"BackgroundOverlayColour",
+						"OverlayGradientAngle",
+						"OverlayGradientFrom",
+						"OverlayGradientTo"
+					]
+				},
+				{
+					"key": "css:background-attachment",
+					"label": "Background attachment",
+					"suffixes": [
+						"BackgroundAttachment"
+					]
+				},
+				{
+					"key": "css:background-position",
+					"label": "Background position",
+					"suffixes": [
+						"BackgroundPosition",
+						"BgSvgPosition"
+					]
+				},
+				{
+					"key": "css:background-repeat",
+					"label": "Background repeat",
+					"suffixes": [
+						"BackgroundRepeat"
+					]
+				},
+				{
+					"key": "css:background-size",
+					"label": "Background size",
+					"suffixes": [
+						"BackgroundSize"
+					]
+				},
+				{
+					"key": "css:object-fit",
+					"label": "Image object-fit",
+					"suffixes": [
+						"ObjectFit"
+					]
+				},
+				{
+					"key": "css:object-position",
+					"label": "Image object-position",
+					"suffixes": [
+						"ObjectPosition"
+					]
+				},
+				{
+					"key": "css:text-shadow",
+					"label": "Text shadow",
+					"suffixes": [
+						"BgSvgTextShadow"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					]
+				}
 			]
 		},
 		"layout": {
 			"label": "Layout",
 			"owningComponent": "BoxControl + UnitControl + BorderBoxControl + ShadowControl",
 			"members": [
-				{ "key": "css:padding", "label": "Padding", "suffixes": ["Padding"], "nativeSupportsPath": "spacing.padding", "absorbs": ["css:padding-top", "css:padding-right", "css:padding-bottom", "css:padding-left"] },
-				{ "key": "css:margin", "label": "Margin", "suffixes": ["Margin"], "nativeSupportsPath": "spacing.margin", "absorbs": ["css:margin-right", "css:margin-left"] },
-				{ "key": "css:margin-top", "label": "Margin (top only)", "suffixes": ["MarginTop"], "nativeSupportsPath": "spacing.margin" },
-				{ "key": "css:margin-bottom", "label": "Margin (bottom only)", "suffixes": ["MarginBottom"], "nativeSupportsPath": "spacing.margin" },
-				{ "key": "css:gap", "label": "Gap", "suffixes": ["Gap"] },
-				{ "key": "css:width", "label": "Width", "suffixes": ["Width"] },
-				{ "key": "css:height", "label": "Height", "suffixes": ["Height"] },
-				{ "key": "css:max-width", "label": "Max width", "suffixes": ["MaxWidth"] },
-				{ "key": "css:max-height", "label": "Max height", "suffixes": ["MaxHeight"] },
-				{ "key": "css:min-height", "label": "Min height", "suffixes": ["MinHeight"], "nativeSupportsPath": "dimensions.minHeight" },
-				{ "key": "css:border-width", "label": "Border width", "suffixes": ["BorderWidth"], "nativeSupportsPath": "__experimentalBorder.width" },
-				{ "key": "css:border-style", "label": "Border style", "suffixes": ["BorderStyle"], "nativeSupportsPath": "__experimentalBorder.style" },
-				{ "key": "css:border-color", "label": "Border colour", "suffixes": ["BorderColour", "BorderColor"], "nativeSupportsPath": "__experimentalBorder.color" },
-				{ "key": "css:border-radius", "label": "Border radius", "suffixes": ["BorderRadius", "Radius"], "nativeSupportsPath": "__experimentalBorder.radius" },
-				{ "key": "css:box-shadow", "label": "Box shadow", "suffixes": ["Shadow", "BoxShadow"], "nativeSupportsPath": "shadow" },
-				{ "key": "css:aspect-ratio", "label": "Aspect ratio", "suffixes": ["AspectRatio"], "nativeSupportsPath": "dimensions.aspectRatio" },
-				{ "key": "css:display", "label": "Display type", "suffixes": ["Display"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:flex-direction", "label": "Flex direction", "suffixes": ["FlexDirection", "Direction"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:flex-wrap", "label": "Flex wrap", "suffixes": ["FlexWrap", "Wrap"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:align-items", "label": "Align items", "suffixes": ["AlignItems"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:align-content", "label": "Align content", "suffixes": ["AlignContent"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:justify-content", "label": "Justify content", "suffixes": ["JustifyContent", "Justify"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:justify-items", "label": "Justify items", "suffixes": ["JustifyItems"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:order", "label": "Item order", "suffixes": ["Order"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:grid-template-columns", "label": "Grid columns", "suffixes": ["GridTemplateColumns", "Columns"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:grid-template-rows", "label": "Grid rows", "suffixes": ["GridTemplateRows", "Rows"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:grid-auto-rows", "label": "Grid auto row height", "suffixes": ["GridAutoRows"], "appliesToLayers": ["OUTER","GRID"] },
-				{ "key": "css:overflow", "label": "Overflow behaviour", "suffixes": ["Overflow"], "appliesToLayers": ["OUTER","GRID"] }
+				{
+					"key": "css:padding",
+					"label": "Padding",
+					"suffixes": [
+						"Padding"
+					],
+					"nativeSupportsPath": "spacing.padding",
+					"absorbs": [
+						"css:padding-top",
+						"css:padding-right",
+						"css:padding-bottom",
+						"css:padding-left"
+					]
+				},
+				{
+					"key": "css:margin",
+					"label": "Margin",
+					"suffixes": [
+						"Margin"
+					],
+					"nativeSupportsPath": "spacing.margin",
+					"absorbs": [
+						"css:margin-right",
+						"css:margin-left"
+					]
+				},
+				{
+					"key": "css:margin-top",
+					"label": "Margin (top only)",
+					"suffixes": [
+						"MarginTop"
+					],
+					"nativeSupportsPath": "spacing.margin"
+				},
+				{
+					"key": "css:margin-bottom",
+					"label": "Margin (bottom only)",
+					"suffixes": [
+						"MarginBottom"
+					],
+					"nativeSupportsPath": "spacing.margin"
+				},
+				{
+					"key": "css:gap",
+					"label": "Gap",
+					"suffixes": [
+						"Gap"
+					]
+				},
+				{
+					"key": "css:width",
+					"label": "Width",
+					"suffixes": [
+						"Width"
+					]
+				},
+				{
+					"key": "css:height",
+					"label": "Height",
+					"suffixes": [
+						"Height"
+					]
+				},
+				{
+					"key": "css:max-width",
+					"label": "Max width",
+					"suffixes": [
+						"MaxWidth"
+					]
+				},
+				{
+					"key": "css:max-height",
+					"label": "Max height",
+					"suffixes": [
+						"MaxHeight"
+					]
+				},
+				{
+					"key": "css:min-height",
+					"label": "Min height",
+					"suffixes": [
+						"MinHeight",
+						"BgSvgMinHeight"
+					],
+					"nativeSupportsPath": "dimensions.minHeight"
+				},
+				{
+					"key": "css:border-width",
+					"label": "Border width",
+					"suffixes": [
+						"BorderWidth"
+					],
+					"nativeSupportsPath": "__experimentalBorder.width"
+				},
+				{
+					"key": "css:border-style",
+					"label": "Border style",
+					"suffixes": [
+						"BorderStyle"
+					],
+					"nativeSupportsPath": "__experimentalBorder.style"
+				},
+				{
+					"key": "css:border-color",
+					"label": "Border colour",
+					"suffixes": [
+						"BorderColour",
+						"BorderColor"
+					],
+					"nativeSupportsPath": "__experimentalBorder.color"
+				},
+				{
+					"key": "css:border-radius",
+					"label": "Border radius",
+					"suffixes": [
+						"BorderRadius",
+						"Radius"
+					],
+					"nativeSupportsPath": "__experimentalBorder.radius"
+				},
+				{
+					"key": "css:box-shadow",
+					"label": "Box shadow",
+					"suffixes": [
+						"Shadow",
+						"BoxShadow"
+					],
+					"nativeSupportsPath": "shadow"
+				},
+				{
+					"key": "css:aspect-ratio",
+					"label": "Aspect ratio",
+					"suffixes": [
+						"AspectRatio"
+					],
+					"nativeSupportsPath": "dimensions.aspectRatio"
+				},
+				{
+					"key": "css:display",
+					"label": "Display type",
+					"suffixes": [
+						"Display"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:flex-direction",
+					"label": "Flex direction",
+					"suffixes": [
+						"FlexDirection",
+						"Direction"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:flex-wrap",
+					"label": "Flex wrap",
+					"suffixes": [
+						"FlexWrap",
+						"Wrap"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:align-items",
+					"label": "Align items",
+					"suffixes": [
+						"AlignItems"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:align-content",
+					"label": "Align content",
+					"suffixes": [
+						"AlignContent"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:justify-content",
+					"label": "Justify content",
+					"suffixes": [
+						"JustifyContent",
+						"Justify"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:justify-items",
+					"label": "Justify items",
+					"suffixes": [
+						"JustifyItems"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:order",
+					"label": "Item order",
+					"suffixes": [
+						"Order"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:grid-template-columns",
+					"label": "Grid columns",
+					"suffixes": [
+						"GridTemplateColumns",
+						"Columns"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:grid-template-rows",
+					"label": "Grid rows",
+					"suffixes": [
+						"GridTemplateRows",
+						"Rows"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:grid-auto-rows",
+					"label": "Grid auto row height",
+					"suffixes": [
+						"GridAutoRows"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:overflow",
+					"label": "Overflow behaviour",
+					"suffixes": [
+						"Overflow"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				}
 			]
 		},
 		"position": {
 			"label": "Position",
 			"owningComponent": "UnitControl + RangeControl",
 			"members": [
-				{ "key": "css:top", "label": "Position offset — top", "suffixes": ["Top"] },
-				{ "key": "css:bottom", "label": "Position offset — bottom", "suffixes": ["Bottom"] },
-				{ "key": "css:z-index", "label": "Stack order (z-index)", "suffixes": ["ZIndex"] }
+				{
+					"key": "css:top",
+					"label": "Position offset — top",
+					"suffixes": [
+						"Top"
+					]
+				},
+				{
+					"key": "css:bottom",
+					"label": "Position offset — bottom",
+					"suffixes": [
+						"Bottom"
+					]
+				},
+				{
+					"key": "css:z-index",
+					"label": "Stack order (z-index)",
+					"suffixes": [
+						"ZIndex"
+					]
+				}
 			]
 		},
 		"motion": {
 			"label": "Motion",
 			"owningComponent": "RangeControl (ms unit) + ToggleGroupControl (easing presets)",
 			"members": [
-				{ "key": "css:transition-duration", "label": "Transition duration", "suffixes": ["TransitionDuration", "Duration"] },
-				{ "key": "css:transition-timing-function", "label": "Transition easing", "suffixes": ["TransitionTimingFunction", "Easing"] }
+				{
+					"key": "css:transition-duration",
+					"label": "Transition duration",
+					"suffixes": [
+						"TransitionDuration",
+						"Duration"
+					]
+				},
+				{
+					"key": "css:transition-timing-function",
+					"label": "Transition easing",
+					"suffixes": [
+						"TransitionTimingFunction",
+						"Easing"
+					]
+				}
 			]
 		},
 		"animation": {
 			"label": "Animation",
 			"owningComponent": "ToggleGroupControl (preset picker) + RangeControl (ms unit) + ToggleGroupControl (easing presets)",
 			"members": [
-				{ "key": "anim:preset", "label": "Animation preset", "suffixes": ["Animation"] },
-				{ "key": "anim:duration", "label": "Animation duration", "suffixes": ["AnimationDuration", "DurationMs"] },
-				{ "key": "anim:easing", "label": "Animation easing", "suffixes": ["AnimationEasing", "Easing"] },
-				{ "key": "anim:stagger", "label": "Stagger delay", "suffixes": ["StaggerDelay", "Stagger"] },
-				{ "key": "anim:parallax", "label": "Parallax", "suffixes": ["Parallax", "ParallaxStrength"] },
-				{ "key": "anim:trigger", "label": "Scroll trigger", "suffixes": ["OnScroll", "TriggerOffset"] }
+				{
+					"key": "anim:preset",
+					"label": "Animation preset",
+					"suffixes": [
+						"Animation"
+					]
+				},
+				{
+					"key": "anim:duration",
+					"label": "Animation duration",
+					"suffixes": [
+						"AnimationDuration",
+						"DurationMs"
+					]
+				},
+				{
+					"key": "anim:easing",
+					"label": "Animation easing",
+					"suffixes": [
+						"AnimationEasing",
+						"Easing"
+					]
+				},
+				{
+					"key": "anim:stagger",
+					"label": "Stagger delay",
+					"suffixes": [
+						"StaggerDelay",
+						"Stagger"
+					]
+				},
+				{
+					"key": "anim:parallax",
+					"label": "Parallax",
+					"suffixes": [
+						"Parallax",
+						"ParallaxStrength"
+					]
+				},
+				{
+					"key": "anim:trigger",
+					"label": "Scroll trigger",
+					"suffixes": [
+						"OnScroll",
+						"TriggerOffset"
+					]
+				},
+				{
+					"key": "anim:ken-burns",
+					"label": "Ken Burns",
+					"suffixes": [
+						"BgKenBurns"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					]
+				},
+				{
+					"key": "anim:svg-animation",
+					"label": "SVG animation",
+					"suffixes": [
+						"BgSvgAnimation",
+						"BgSvgAnimationSpeed"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					]
+				}
 			]
 		}
 	}
