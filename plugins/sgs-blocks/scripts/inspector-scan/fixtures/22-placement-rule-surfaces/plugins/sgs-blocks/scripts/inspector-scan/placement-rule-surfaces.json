@@ -1,0 +1,11 @@
+{
+	"_meta": {
+		"purpose": "FIXTURE manifest for rule 22's self-test. Names fixture-local files so the harness (which matches a finding to a case by file basename) can bind each case. This is why the real surface list is a manifest and not a constant: a hardcoded list could only ever be exercised against the real tree, i.e. could never be made to fail."
+	},
+	"surfaces": [
+		"surface-states-current-rule.md",
+		"surface-negates-retired-phrase.js",
+		"surface-states-retired-rule.md",
+		"surface-lost-the-rule.md"
+	]
+}

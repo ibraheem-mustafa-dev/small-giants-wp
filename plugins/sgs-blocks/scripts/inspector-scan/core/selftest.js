@@ -48,6 +48,12 @@ function buildTestCtx( cache, tmpBase ) {
 		// hardcoded real-repo path here would make any such rule untestable
 		// (a gate that cannot fail reads green forever).
 		extensionsDir: path.join( tmpBase, '_extensions' ),
+		// Same reasoning again for repoRoot: rule 22 asserts that every surface
+		// STATING the placement rule still states the current one. Pointed at the
+		// real repo it could only ever confirm today's tree; pointed inside the
+		// fixture, a fixture can genuinely carry a surface that has drifted back
+		// to the retired wording, so the rule is provably able to FAIL.
+		repoRoot: tmpBase,
 		roster: { entries: [] },
 		// Resolved against the REAL src/components/index.js, not the fixture
 		// temp dir — shared-component discovery is a property of the framework,

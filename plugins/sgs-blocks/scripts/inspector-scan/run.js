@@ -42,6 +42,14 @@ const THEME_DIR = path.resolve( __dirname, '..', '..', '..', '..', 'theme', 'sgs
 // separate surface, not pseudo-blocks).
 const EXTENSIONS_DIR = path.resolve( __dirname, '..', '..', 'src', 'blocks', 'extensions' );
 
+// Repo root — reachable so a rule can assert on surfaces OUTSIDE the plugin
+// (`.claude/specs`, `.claude/plans`) as well as inside it. Same ctx-supplied
+// reasoning as themeDir and extensionsDir above: a rule that hardcoded an
+// absolute real-repo path could never be exercised in isolation, and a gate
+// that cannot fail reads green forever. Self-test points this inside its
+// fixture temp dir instead (core/selftest.js).
+const REPO_ROOT = path.resolve( __dirname, '..', '..', '..', '..' );
+
 function loadRulesTable() {
 	if ( ! fs.existsSync( RULES_JSON_PATH ) ) {
 		throw new Error(
@@ -105,6 +113,7 @@ function buildCtx( cache, rosterInfo ) {
 		patternsDir: PATTERNS_DIR,
 		themeDir: THEME_DIR,
 		extensionsDir: EXTENSIONS_DIR,
+		repoRoot: REPO_ROOT,
 		components: components.discover( cache ), // resolved once per run, not per rule/block
 		ast: ( f ) => cache.parse( f ),
 		text: ( f ) => cache.text( f ),
