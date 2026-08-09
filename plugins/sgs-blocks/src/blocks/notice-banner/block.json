@@ -81,8 +81,7 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth",
-						"css:width": "contentWidth"
+						"css:max-width": "maxWidth"
 					},
 					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer)."
 				},
@@ -125,10 +124,6 @@
 		"variant": {
 			"type": "string",
 			"default": "info"
-		},
-		"contentWidth": {
-			"type": "string",
-			"default": ""
 		},
 		"maxWidth": {
 			"type": "string",

@@ -159,8 +159,7 @@ $hover_shadow            = $attributes['shadowHover'] ?? '';
 $stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
 
 // ── Width (WS-4 container-mirror, content kind: kept-scalar, no tiers) ─────
-$content_width = $attributes['contentWidth'] ?? '';
-$max_width     = $attributes['maxWidth'] ?? '';
+$max_width = $attributes['maxWidth'] ?? '';
 
 // ── Anchor + scope id (contract §B3: uid is a CLASS, not an id, so the anchor
 // element `id` stays free for ToC targets). ─────────────────────────────────
@@ -323,12 +322,6 @@ if ( $max_width ) {
 	if ( '' !== $mw_safe ) {
 		$width_decls[] = 'max-width:' . $mw_safe;
 		$width_decls[] = 'margin-inline:auto';
-	}
-}
-if ( $content_width ) {
-	$cw_safe = $sgs_css_length( $content_width );
-	if ( '' !== $cw_safe ) {
-		$width_decls[] = 'width:' . $cw_safe;
 	}
 }
 if ( $width_decls ) {

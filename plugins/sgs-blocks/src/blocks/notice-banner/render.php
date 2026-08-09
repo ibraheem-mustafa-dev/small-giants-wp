@@ -191,8 +191,7 @@ if ( ! in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
 
 // Width (SGS custom scalars, base only — matches the pre-existing attribute
 // set; no tiers were requested for this pass).
-$content_width = $attributes['contentWidth'] ?? '';
-$max_width     = $attributes['maxWidth'] ?? '';
+$max_width = $attributes['maxWidth'] ?? '';
 
 // -------------------------------------------------------------------------
 // Build the scoped CSS.
@@ -213,13 +212,6 @@ if ( $max_width ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};}";
 	}
 }
-if ( $content_width ) {
-	$cw_safe = $sgs_css_length( $content_width );
-	if ( '' !== $cw_safe ) {
-		$scoped_css[] = "{$root_sel}{width:{$cw_safe};}";
-	}
-}
-
 // --- Base spacing (padding/margin), border (color/width/style/radius), WP
 // colour + typography supports — skip-serialised, emitted scoped via the
 // stable core style engine (exactly how WP core outputs `layout` support). ---

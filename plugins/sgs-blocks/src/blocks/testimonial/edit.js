@@ -167,7 +167,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		contentWidth,
 		maxWidth,
 		variant,
 		quote,
@@ -1111,14 +1110,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<UnitControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						value={ contentWidth || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

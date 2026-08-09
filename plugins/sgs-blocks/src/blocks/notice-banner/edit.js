@@ -21,8 +21,10 @@ import {
 } from '../../components';
 import { colourVar } from '../../utils';
 
-// Box-object interface contract — length units for the kept-scalar maxWidth /
-// contentWidth attrs (base only, matches the pre-existing attribute set).
+// Box-object interface contract — length units for the kept-scalar maxWidth
+// attr (base only, matches the pre-existing attribute set). contentWidth was
+// removed (it only ever set a second `width:` on this same root — dead promise
+// of an inner band this block never rendered).
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: 'rem', label: 'rem' },
@@ -114,7 +116,7 @@ function boxShorthand( box, keys ) {
 // and carries zero inline declarations — this inline style exists only for
 // the live editor preview, same exception documented in sgs/quote's edit.js.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth, contentWidth } = attributes;
+	const { style, maxWidth } = attributes;
 	const wrapperStyle = {};
 
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
@@ -127,9 +129,6 @@ function buildWrapperStyle( attributes ) {
 	}
 	if ( maxWidth ) {
 		wrapperStyle.maxWidth = maxWidth;
-	}
-	if ( contentWidth ) {
-		wrapperStyle.width = contentWidth;
 	}
 
 	return wrapperStyle;
@@ -151,7 +150,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		maxWidth,
-		contentWidth,
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
@@ -192,14 +190,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							units={ LENGTH_UNITS }
 							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						<UnitControl
-							label={ __( 'Content width', 'sgs-blocks' ) }
-							value={ contentWidth || '' }
-							units={ LENGTH_UNITS }
-							onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-							help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
 						/>
 						<ResponsiveBoxControl

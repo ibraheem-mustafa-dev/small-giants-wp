@@ -1424,17 +1424,24 @@ if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
 // Measured before the exit: nav-menu declared 24 of the wrapper's ~107
 // attribute keys and only THREE were reachable by a client — maxWidth and the
 // two padding tiers. The other 21 had no control anywhere and were frozen at
-// their block.json defaults forever. They are deleted, not reproduced.
+// their block.json defaults forever. They were deleted, not reproduced.
+//
+// maxWidth then went too (D540) — the parent owns this block's width, see the
+// note at the removed emission below. So the wrapper vocabulary this block still
+// carries is TWO keys: the padding tiers. `gap` survives as its own control but
+// was never part of the reachable-wrapper count above.
 //
 // ⛔ Native `spacing` is declared with __experimentalSkipSerialization, so
 // WordPress does NOT inline padding/margin — whoever renders the root MUST emit
 // it scoped or both controls are silently dead. The wrapper used to do this.
+// ⛔ No `max-width` here, deliberately (D540, Bean). This block is ALWAYS a
+// child — of a site-header-row or of sgs/nav-drawer — and the PARENT owns width.
+// The nav's own width is intrinsic to its items, and collapsed to a burger it
+// wraps its content. A max-width on this element was a second, competing place
+// to control the same thing; the row's own width controls were wired at D539.
+// Evidence at removal: no theme pattern set it, and the live canary computed
+// `max-width: none`. Do not reintroduce it — add it to the PARENT row instead.
 $root_box_css = '';
-
-$nav_max_width = isset( $attributes['maxWidth'] ) ? sgs_css_length_sanitise( (string) $attributes['maxWidth'] ) : '';
-if ( '' !== $nav_max_width ) {
-	$root_box_css .= $uid_sel . '{max-width:' . $nav_max_width . ';}';
-}
 
 $nav_base_spacing = array();
 foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {

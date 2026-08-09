@@ -3,7 +3,7 @@
  *
  * NO-INLINE + NO-WRAPPER (per-block no-inline migration contract §A/§B/§B3,
  * 2026-07-10): dropped ContainerWrapperControls (the shared wrapper's
- * kind="content" panel drove maxWidth/contentWidth + a FLAT-attr responsive
+ * kind="content" panel drove maxWidth + a FLAT-attr responsive
  * spacing panel and never drove gap for content kind at all — confirmed dead
  * in class-sgs-container-wrapper.php). Wrapper controls are now local + bind
  * to the OBJECT-shaped box families (paddingTablet/paddingMobile/
@@ -71,7 +71,7 @@ function boxShorthand( box, keys ) {
 // (radius/width/style/colour — all skip-serialised so useBlockProps() no
 // longer auto-applies them) + the SGS kept-scalar width family.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth, contentWidth } = attributes;
+	const { style, maxWidth } = attributes;
 	const wrapperStyle = {};
 
 	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
@@ -101,9 +101,6 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle.maxWidth = maxWidth;
 		wrapperStyle.marginInline = 'auto';
 	}
-	if ( contentWidth ) {
-		wrapperStyle.width = contentWidth;
-	}
 
 	return wrapperStyle;
 }
@@ -119,7 +116,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		maxWidth,
-		contentWidth,
 	} = attributes;
 
 	const HeadingTag = `h${ headingLevel }`;
@@ -218,14 +214,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 1200px. Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<UnitControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						value={ contentWidth || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

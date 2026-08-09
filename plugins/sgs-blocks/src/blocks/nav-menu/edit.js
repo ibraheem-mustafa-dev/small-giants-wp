@@ -159,7 +159,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		navLabel,
 		featuredItemIds,
 		gap,
-		maxWidth,
 		listColumns,
 		navBg,
 		navColour,
@@ -846,7 +845,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					resetAll={ () =>
 						setAttributes( {
 							gap: '8px',
-							maxWidth: '',
 							paddingTablet: {},
 							paddingMobile: {},
 						} )
@@ -866,20 +864,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 						/>
 					</ToolsPanelItem>
-					<ToolsPanelItem
-						hasValue={ () => !! maxWidth }
-						label={ __( 'Max width', 'sgs-blocks' ) }
-						onDeselect={ () => setAttributes( { maxWidth: '' } ) }
-						isShownByDefault
-					>
-						<UnitControl
-							label={ __( 'Max width', 'sgs-blocks' ) }
-							value={ maxWidth }
-							onChange={ ( val ) =>
-								setAttributes( { maxWidth: val || '' } )
-							}
-						/>
-					</ToolsPanelItem>
+					{ /*
+					 * No Max width control here, deliberately (D540, Bean).
+					 * sgs/nav-menu is ALWAYS a child — of a site-header-row or of
+					 * sgs/nav-drawer — and the parent owns width. Its own width is
+					 * intrinsic to its items, and collapsed to a burger it wraps its
+					 * content. A max-width here was a second, competing place to
+					 * control the same thing, and the row's own width controls were
+					 * wired at D539. Evidence at removal: no theme pattern set it and
+					 * the live canary computed `max-width: none`.
+					 */ }
 					<ToolsPanelItem
 						hasValue={ () =>
 							Object.keys( attributes.paddingTablet || {} )

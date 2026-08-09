@@ -1,5 +1,59 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D540 — `contentWidth` means an INNER BAND, or it does not exist; nav-menu loses `maxWidth` [ROUTINE]
+
+**2026-08-09, Bean.** Two rulings from one observation — *"Why does nav need both content and
+outer max width?"* — followed by the principle: *"content width is an inner width inside the block
+that wraps the content — specialised for composites or container equivalents and I don't want the
+usage to lose its meaning/purpose."*
+
+### The rule
+
+> **`contentWidth` may exist ONLY on a block that actually renders an inner band.** It names the
+> width of the element WRAPPING the content — a genuine second layer beneath the outer box. A block
+> with one width layer uses `maxWidth`. A block that genuinely wants a fixed width says `width`.
+> Never `contentWidth`.
+
+### The drift this corrects, measured before acting
+
+33 blocks declared `contentWidth`, and **all 33 also declared `maxWidth`**. They split cleanly:
+
+- **28 render through `SGS_Container_Wrapper`** — `contentWidth` drives the real
+  `.uid>.sgs-container__inner` band. Meaning intact. Untouched.
+- **5 render BLOCK-PRIVATE with no inner band at all** — `quote`, `testimonial`, `notice-banner`,
+  `team-member`, `product-faq`. Traced in their `render.php`: `maxWidth` emits `max-width:` on the
+  root selector and `contentWidth` emits **`width:` on that SAME root selector**. Two width values
+  on one element, the second under a name promising an inner band that does not exist. All five
+  exposed it as a live client control. **Deleted from those five** (Bean: option 1).
+
+The name had already lost its meaning on those five; this restores it rather than inventing a rule.
+
+### nav-menu also loses `maxWidth`
+
+`sgs/nav-menu` is ALWAYS a child — of a `site-header-row` or of `sgs/nav-drawer` (it appears in
+both header AND drawer patterns; drawer-scoped CSS for it was observed live). The parent owns
+width; the nav's own width is intrinsic to its items, and collapsed to a burger it wraps its
+content. Its `maxWidth` was a second, competing place to control the same thing — and D539 had
+just wired the parent rows' own width controls, making it redundant in the same breath.
+
+Bean's framing of the distinction, recorded because it is the useful test: **`sgs/nav-drawer` is
+the free-floating one** (it opens like a modal, so it owns its own box) **and `sgs/nav-menu` always
+sits inside a header row.** ⚠ One correction to that framing: nav-drawer declares
+`containerKind: "content"`, not section — the substance holds, the label differs.
+
+Evidence at removal: **no theme pattern set it, and the live canary computed `max-width: none`.**
+Zero instances across theme patterns/parts AND live canary content (posts, pages, sgs_header,
+sgs_footer) set either `contentWidth` on the five or `maxWidth` on nav-menu — so both deletions are
+render-neutral for all existing content. nav-menu's wrapper vocabulary is now TWO keys (the padding
+tiers); `contentWidth` had already gone at D539 as one of its 19 unreachable attributes.
+
+⛔ Do not reintroduce a width control on nav-menu. Add it to the PARENT row instead.
+
+### Open
+
+A gate asserting the rule (`contentWidth` present ⟹ block renders an inner band) is NOT built. Same
+shape as rule 22 and worth having, since this is exactly the kind of meaning that drifts silently.
+
 ## D539 — nav-menu's wrapper exit BUILT; D538's "specialised" carve-out narrowed to a measured test [INCIDENT]
 
 **2026-08-09, Bean-approved after a 3-agent investigation.** Builds D538 and **corrects its

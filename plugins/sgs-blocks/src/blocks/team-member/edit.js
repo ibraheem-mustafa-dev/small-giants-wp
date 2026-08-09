@@ -150,7 +150,7 @@ function boxShorthand( box, keys ) {
 // Editor preview style builder — desktop styles only; responsive tiers +
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
-	const { style, textColor, backgroundColor, contentWidth, maxWidth } = attributes;
+	const { style, textColor, backgroundColor, maxWidth } = attributes;
 	const wrapperStyle = {};
 
 	const textPreview = style?.color?.text || ( textColor ? colourVar( textColor ) : '' );
@@ -196,9 +196,6 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle.maxWidth = maxWidth;
 		wrapperStyle.marginInline = 'auto';
 	}
-	if ( contentWidth ) {
-		wrapperStyle.width = contentWidth;
-	}
 
 	return wrapperStyle;
 }
@@ -226,7 +223,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		contentWidth,
 		maxWidth,
 	} = attributes;
 
@@ -411,8 +407,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* Width — outer maxWidth + content band width (kept-scalar,
-				   base only — matches the pre-existing contract for this block). */ }
+				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
+				   pre-existing contract for this block). */ }
 				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
 					<UnitControl
 						label={ __( 'Max-width', 'sgs-blocks' ) }
@@ -420,14 +416,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						units={ LENGTH_UNITS }
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<UnitControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						value={ contentWidth || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 300px. Leave blank for auto.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

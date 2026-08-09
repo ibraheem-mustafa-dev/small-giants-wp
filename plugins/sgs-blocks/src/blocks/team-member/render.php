@@ -14,7 +14,7 @@
  * The root <div> IS the block root, built via get_block_wrapper_attributes().
  * The rendered subtree carries ZERO inline CSS property declarations —
  * every declaration (base padding/margin/border/radius, the WP color/
- * typography supports, tablet/mobile box tiers, contentWidth/maxWidth, and
+ * typography supports, tablet/mobile box tiers, maxWidth, and
  * the per-element nameColour/roleColour) is emitted into the block's OWN
  * scoped `.{uid}` <style> tag. WP styling supports (color/typography/
  * spacing/__experimentalBorder) all declare `__experimentalSkipSerialization`
@@ -121,8 +121,7 @@ $social_links      = is_array( $attributes['socialLinks'] ?? null ) ? $attribute
 // inline). Width family stays KEPT-SCALAR (contract §C: single-value
 // families stay scalar); box families (padding/margin) are objects.
 // ---------------------------------------------------------------------------
-$content_width = $attributes['contentWidth'] ?? '';
-$max_width     = $attributes['maxWidth'] ?? '';
+$max_width = $attributes['maxWidth'] ?? '';
 
 $padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
 $padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
@@ -517,17 +516,11 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// --- contentWidth / maxWidth (kept-scalar family, contract §C). ---
+// --- maxWidth (kept-scalar family, contract §C). ---
 if ( $max_width ) {
 	$mw_safe = $sgs_css_length( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
-	}
-}
-if ( $content_width ) {
-	$cw_safe = $sgs_css_length( $content_width );
-	if ( '' !== $cw_safe ) {
-		$scoped_css[] = "{$root_sel}{width:{$cw_safe};}";
 	}
 }
 

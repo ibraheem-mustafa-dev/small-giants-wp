@@ -56,7 +56,6 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
@@ -229,10 +228,6 @@
 		"overlayHover": {
 			"type": "boolean",
 			"default": false
-		},
-		"contentWidth": {
-			"type": "string",
-			"default": ""
 		},
 		"maxWidth": {
 			"type": "string",

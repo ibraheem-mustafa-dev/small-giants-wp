@@ -42,8 +42,7 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:max-width": "maxWidth"
+						"css:margin": "native:spacing.margin"
 					},
 					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
 				},
@@ -197,10 +196,6 @@
 		"gap": {
 			"type": "string",
 			"default": "8px"
-		},
-		"maxWidth": {
-			"type": "string",
-			"default": ""
 		},
 		"listColumns": {
 			"type": "object",

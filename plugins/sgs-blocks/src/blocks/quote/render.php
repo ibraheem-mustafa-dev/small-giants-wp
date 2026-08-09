@@ -164,7 +164,6 @@ $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, t
 
 // Width (SGS custom scalars — kept per contract §C: single-value families stay
 // scalar). Emitted scoped block-private (base + tablet/mobile tiers).
-$content_width    = $attributes['contentWidth'] ?? '';
 $max_width        = $attributes['maxWidth'] ?? '';
 $max_width_tablet = $attributes['maxWidthTablet'] ?? '';
 $max_width_mobile = $attributes['maxWidthMobile'] ?? '';
@@ -375,12 +374,6 @@ if ( ! $inherit_style ) {
 		if ( '' !== $mw_safe ) {
 			$wrapper_decls[] = 'max-width:' . $mw_safe;
 			$wrapper_decls[] = 'margin-inline:auto';
-		}
-	}
-	if ( $content_width ) {
-		$cw_safe = $sgs_css_length( $content_width );
-		if ( '' !== $cw_safe ) {
-			$wrapper_decls[] = 'width:' . $cw_safe;
 		}
 	}
 }

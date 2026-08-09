@@ -32,14 +32,13 @@
  * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs, scoped
  * at 1023px/767px breakpoints).
  *
- * maxWidth/contentWidth (kept-scalar width family, base only — no tiers,
- * matches the pre-existing attrs) are reproduced scoped on the root: maxWidth
- * → max-width + margin-inline:auto; contentWidth → width. This is a
- * simplification of the old wrapper's two-layer (outer/band __inner) model —
- * the wrapper only emitted a separate __inner band div when contentWidth (or
- * band padding/background, never used by this block) was set; with no grid
- * and no band padding/background on this block, folding both onto the single
- * root selector produces the same effective width cap.
+ * maxWidth (kept-scalar width family, base only — no tiers, matches the
+ * pre-existing attr) is reproduced scoped on the root: max-width +
+ * margin-inline:auto. contentWidth was REMOVED (this block never rendered an
+ * inner band — the old wrapper only emitted a separate __inner band div when
+ * contentWidth or band padding/background were set, neither ever used by this
+ * block, so contentWidth was a second `width:` on this same root under a name
+ * that promised a layer that didn't exist).
  *
  * gap/gapTablet/gapMobile were REMOVED (D-migration, 2026-07-10): the shared
  * wrapper gates gap CSS to section/layout kinds only (never content kind — see
@@ -196,8 +195,7 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 
 // Width (SGS custom scalars — kept per contract §C: single-value families stay
 // scalar, no tiers on this block). Emitted scoped block-private.
-$max_width     = $attributes['maxWidth'] ?? '';
-$content_width = $attributes['contentWidth'] ?? '';
+$max_width = $attributes['maxWidth'] ?? '';
 
 // ---------------------------------------------------------------------------
 // 5. Resolve scope id. Uid is a CLASS (contract §B3) — this block declares
@@ -268,17 +266,11 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
-// --- Width (base only — outer maxWidth, content band width). ---
+// --- Width (base only — outer maxWidth). ---
 if ( $max_width ) {
 	$mw_safe = $sgs_css_length( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};margin-inline:auto;}";
-	}
-}
-if ( $content_width ) {
-	$cw_safe = $sgs_css_length( $content_width );
-	if ( '' !== $cw_safe ) {
-		$scoped_css[] = "{$root_sel}{width:{$cw_safe};}";
 	}
 }
 

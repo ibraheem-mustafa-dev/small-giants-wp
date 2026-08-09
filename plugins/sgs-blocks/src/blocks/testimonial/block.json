@@ -385,10 +385,6 @@
 			"default": "default"
 		},
 		"_comment_wrapperAttrs": "WS-4 container-mirror (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
-		"contentWidth": {
-			"type": "string",
-			"default": ""
-		},
 		"maxWidth": {
 			"type": "string",
 			"default": ""

@@ -195,7 +195,6 @@ function buildWrapperStyle( attributes ) {
 		borderStyle,
 		borderColour,
 		maxWidth,
-		contentWidth,
 	} = attributes;
 
 	if ( inheritStyle ) {
@@ -239,9 +238,6 @@ function buildWrapperStyle( attributes ) {
 
 	if ( maxWidth ) {
 		wrapperStyle.maxWidth = maxWidth;
-	}
-	if ( contentWidth ) {
-		wrapperStyle.width = contentWidth;
 	}
 
 	return wrapperStyle;
@@ -311,7 +307,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		contentWidth,
 		maxWidth,
 		maxWidthTablet,
 		maxWidthMobile,
@@ -672,7 +667,6 @@ export default function Edit( { attributes, setAttributes } ) {
 									maxWidth: '',
 									maxWidthTablet: '',
 									maxWidthMobile: '',
-									contentWidth: '',
 								} )
 							}
 						>
@@ -804,20 +798,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										);
 									} }
 								</ResponsiveControl>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Content width', 'sgs-blocks' ) }
-								hasValue={ () => !! contentWidth }
-								onDeselect={ () => setAttributes( { contentWidth: '' } ) }
-							>
-								<UnitControl
-									label={ __( 'Content width', 'sgs-blocks' ) }
-									value={ contentWidth || '' }
-									units={ LENGTH_UNITS }
-									onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-									help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-								/>
 							</ToolsPanelItem>
 						</ToolsPanel>
 					</PanelBody>
