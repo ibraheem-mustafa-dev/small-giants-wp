@@ -204,7 +204,7 @@ Task 4 ──► Bean design-gate ──► multi-rater
 - **Verify every session, no cached line is authoritative:** `git log -1 --stat` · `git status` ·
   `git branch --show-current` · D-ceiling
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Sites:** dev = palestine-lives.org · canary = sandybrown-nightingale-600381.hostingersite.com
+- **Sites:** canary = sandybrown-nightingale-600381.hostingersite.com (the ONLY site; palestine-lives.org is gone, removed from deploy TARGETS 2026-08-10)
 - **Canary credentials:** `.claude/secrets/sandybrown.env` (gitignored, always available).
 
 ---

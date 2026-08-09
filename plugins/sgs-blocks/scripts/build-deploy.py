@@ -12,9 +12,6 @@ Usage examples:
     # Deploy theme only
     python plugins/sgs-blocks/scripts/build-deploy.py --theme-only
 
-    # Deploy to palestine-lives (requires explicit opt-in)
-    python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
-
     # Dry run — print commands but do not execute
     python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
 
@@ -28,7 +25,8 @@ Guards (per spec):
       nothing)
     - Post-deploy smoke test runs BY DEFAULT and ABORTS on a 5xx or a WordPress
       fatal (opt out with --skip-verify)
-    - palestine-lives.org requires explicit --target palestine-lives (sandybrown is the safe canary)
+    - sandybrown is currently the ONLY target; a target flagged
+      explicit_opt_in_required must be named with --target before it will deploy
     - Refuses to deploy if plugins/sgs-blocks/build/ is missing after build step
 
 Both guards were hardened on 2026-07-14 after an unfinished, uncommitted edit was
@@ -57,16 +55,18 @@ sys.stdout.reconfigure(encoding="utf-8")
 # ---------------------------------------------------------------------------
 # Targets — extend here to add a new client deploy destination.
 # ---------------------------------------------------------------------------
+# palestine-lives.org was REMOVED 2026-08-10: the site no longer exists (Bean).
+# It is deliberately not kept "just in case" — this script's remote step does
+# `rm -rf $WP/plugins/sgs-blocks.bak` and moves directories around inside
+# `wp_content`, so a target pointing at a host that is gone (or, worse, at a
+# hostname someone else later owns) is a live hazard, and D336 is this project's
+# own record of deploy tooling taking two client sites down for ~2.5h.
+# Adding a real client back is one dict entry, per R-22-9 above.
 TARGETS = {
     "sandybrown": {
         "host": "sandybrown-nightingale-600381.hostingersite.com",
         "wp_content": "domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": False,
-    },
-    "palestine-lives": {
-        "host": "palestine-lives.org",
-        "wp_content": "domains/palestine-lives.org/public_html/wp-content",
-        "explicit_opt_in_required": True,
     },
 }
 

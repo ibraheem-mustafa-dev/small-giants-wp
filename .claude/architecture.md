@@ -79,7 +79,7 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  WordPress 7.0 (Hostinger — sandybrown / palestine-lives) │
+│  WordPress 7.0 (Hostinger — sandybrown canary only)      │
 │                                                            │
 │  ┌─────────────────────┐   ┌──────────────────────────┐  │
 │  │  sgs-theme           │   │  sgs-blocks plugin        │  │

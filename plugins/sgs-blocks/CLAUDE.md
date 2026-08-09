@@ -74,21 +74,21 @@ The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — 
 
 ## Deploy
 
-Use the tar method from the framework CLAUDE.md — `scp -r` creates nested directories on Hostinger.
-
 ```bash
-# Build first
-npm run build
-
-# Deploy via tar (from repo root — see framework CLAUDE.md for full sequence)
-cd /path/to/small-giants-wp
-tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='src' plugins/sgs-blocks
-scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
-ssh -p 65002 u945238940@141.136.39.73 "WP=domains/palestine-lives.org/public_html/wp-content && rm -rf \$WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv plugins/sgs-blocks \$WP/plugins/ && rm -rf plugins sgs-deploy.tar"
-rm sgs-deploy.tar
-
-# Then clear caches — see framework CLAUDE.md for OPcache + LiteSpeed commands
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 ```
+
+⛔ **NEVER hand-roll tar/scp/ssh.** The recipe that used to sit here did
+`rm -rf $WP/plugins/sgs-blocks` **before** extracting the new copy — it deleted the live directory
+first, and on 2026-07-14 (D336) that took two client sites down for ~2.5h. It also targeted
+`palestine-lives.org`, which no longer exists (removed from `TARGETS` 2026-08-10). Deleted here
+2026-08-10 so nobody copies it back.
+
+`build-deploy.py` is the ONE path: dirty-tree gate, `--payload` deadlock-breaker, pre-deploy
+stored-content audit, default-ON fail-closed smoke test, `.bak` rollback rotation, OPcache reset.
+Scope with `--blocks-only` / `--theme-only`; `--skip-build` reuses `build/`. Do not reach for
+`--allow-dirty` (an uncommitted edit was D336's trigger) or `--skip-verify` (it removes the check
+that catches a broken deploy).
 
 ## Block Build Status
 

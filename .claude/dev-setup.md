@@ -438,8 +438,7 @@ extensions/
 
 ## Deployment process
 
-**Dev site:** `https://palestine-lives.org`
-**Staging/client canary:** `https://sandybrown-nightingale-600381.hostingersite.com` (WP 7.0 as of 2026-05-22)
+**Canary — the ONLY deploy target:** `https://sandybrown-nightingale-600381.hostingersite.com` (WP 7.0 as of 2026-05-22)
 **Reference site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
 
 **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
@@ -452,7 +451,7 @@ Gitignored; never committed. (Rehomed verbatim from the dissolved `docs-registry
 |---|---|---|
 | `.claude/secrets/sandybrown.env` | Staging/canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
 | `.claude/secrets/credentials.yml` | General project credentials (YAML) | `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))` |
-| `A:/.openclaw/.secrets/wp-app-passwords.env` | Cloning dev-site (palestine-lives.org) WP app passwords | env-file format |
+| `A:/.openclaw/.secrets/wp-app-passwords.env` | Cloning WP app passwords (legacy — the dev site they belonged to is gone) | env-file format |
 
 > **LiteSpeed note (updated 2026-07-13, D322):** LiteSpeed Cache **IS active on sandybrown** (v7.8.1 — re-installed at D312, re-confirmed live D322; the old "deleted 2026-05-05" claim is STALE). ALWAYS `wp litespeed-purge all` on sandybrown after a CSS/render deploy, in addition to OPcache reset + the Hostinger CDN clear (`hosting_clearWebsiteCacheV1`). Check `wp plugin list --status=active | grep -i litespeed` on any target before deciding.
 
@@ -472,8 +471,8 @@ Gitignored; never committed. (Rehomed verbatim from the dissolved `docs-registry
 # Canary (safe default — sandybrown)
 python plugins/sgs-blocks/scripts/build-deploy.py
 
-# Real client site (explicit opt-in required)
-python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
+# sandybrown is the ONLY target. palestine-lives.org no longer exists and was
+# removed from TARGETS 2026-08-10; adding a real client back is one dict entry.
 ```
 
 The script builds, tars (same excludes as before), scps, extracts, rotates the
@@ -490,7 +489,7 @@ if it is broken**. Deploy to the canary first; only then the client site.
 **Rollback (if a deploy breaks the site):**
 
 ```bash
-ssh hd 'WP=domains/palestine-lives.org/public_html/wp-content && \
+ssh hd 'WP=domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content && \
   mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.broken && \
   mv $WP/plugins/sgs-blocks.bak $WP/plugins/sgs-blocks'
 # then reset OPcache (below) — the .bak is the copy from the PREVIOUS deploy
@@ -499,9 +498,9 @@ ssh hd 'WP=domains/palestine-lives.org/public_html/wp-content && \
 OPcache reset is handled per the snippet below (CLI and web are separate pools):
 
 ```bash
-ssh -p 65002 u945238940@141.136.39.73 "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && \
-  curl -s https://palestine-lives.org/op-reset-tmp.php && \
-  ssh -p 65002 u945238940@141.136.39.73 "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
+ssh -p 65002 u945238940@141.136.39.73 "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/op-reset-tmp.php" && \
+  curl -s https://sandybrown-nightingale-600381.hostingersite.com/op-reset-tmp.php && \
+  ssh -p 65002 u945238940@141.136.39.73 "rm ~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/op-reset-tmp.php"
 ```
 
 ### Single-file patch — ⛔ don't
@@ -519,8 +518,8 @@ first and verify the site afterwards:
 # emergency only; back up, then verify
 ssh hd 'cp $WP/path/to/file $WP/path/to/file.bak'
 scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file \
-  u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/path/to/file
-curl -s -o /dev/null -w '%{http_code}\n' "https://palestine-lives.org/?cachebust=$RANDOM"   # expect 200
+  u945238940@141.136.39.73:domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content/path/to/file
+curl -s -o /dev/null -w '%{http_code}\n' "https://sandybrown-nightingale-600381.hostingersite.com/?cachebust=$RANDOM"   # expect 200
 ```
 
 ### Per-client theme snapshot deploy
@@ -547,9 +546,9 @@ script** ("sandybrown canary → `build-deploy.py`; palestine-lives + production
 raw, ungated tar deploy. `build-deploy.py` is now the deploy path for **every**
 target — the difference is only the flag:
 
-- sandybrown canary → `build-deploy.py` (default target)
-- palestine-lives / production → `build-deploy.py --target palestine-lives`
-  (explicit opt-in enforced in code), preceded by the `/wp-sgs-deploy` ceremony
+- sandybrown canary → `build-deploy.py` (default and, since 2026-08-10, the only target)
+- a future client target → add one `TARGETS` entry with `explicit_opt_in_required: True`
+  (enforced in code), preceded by the `/wp-sgs-deploy` ceremony
   (QC gates, doc walk) where that ceremony applies. `/wp-sgs-deploy` governs
   *what must pass before* a production deploy; it does not replace the script
   that performs it.
@@ -574,7 +573,6 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 # and resets OPcache itself. Run from the project root.
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only   # or --theme-only
-python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives            # production, explicit
 
 # Build alone (rarely needed separately — the script builds unless you pass --skip-build)
 cd plugins/sgs-blocks ; npm run build ; cd ..\..

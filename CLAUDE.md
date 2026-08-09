@@ -122,7 +122,7 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 |---|---|
 | Heavy WP build (pages, templates, blocks, plugins, migrations, fidelity) | `wp-sgs-developer` agent |
 | SGS block / theme / client-site build or fix (the framework skill) | `/sgs-wp-engine` (+ `/wp-block-development` for core-WP block-API questions) |
-| **Deploy theme/plugin** | **`build-deploy.py --target sandybrown\|palestine-lives` (the ONE path) — ceremony + gates via `/wp-sgs-deploy`. NEVER hand-roll tar/scp (D336: 2 client sites, ~2.5h down).** |
+| **Deploy theme/plugin** | **`build-deploy.py --target sandybrown` (the ONE path) — ceremony + gates via `/wp-sgs-deploy`. NEVER hand-roll tar/scp (D336: 2 client sites, ~2.5h down).** |
 | Per-client tokens / brand colours | `sites/<client>/theme-snapshot.json` (Spec 33) → `push-theme-snapshot.py` |
 | Visual / a11y verification of a built page | `/visual-qa` (9-layer SGS pipeline) + `/a11y-audit`; Playwright MCP for bespoke probes |
 | Clone fidelity — is it faithful? | Spec 20 computed-parity (Stage 11.6, auto) **+ Bean's eye (R-31-13)**. Never close on a number alone |
@@ -170,7 +170,7 @@ cd plugins/sgs-blocks && npm run build
 
 # Deploy — THE ONE PATH (D336-hardened). Defaults to the sandybrown canary.
 python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
-python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives   # production — explicit opt-in
+# sandybrown is the ONLY target (palestine-lives.org is gone — removed from TARGETS 2026-08-10).
 # Scope: --blocks-only | --theme-only. It runs the build itself unless --skip-build.
 # It carries the dirty-tree gate + default-ON fail-closed verify + .bak rollback rotation, and
 # resets OPcache via HTTP (the CLI pool is separate). Full sequence in dev-setup.md.
@@ -184,7 +184,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives   # p
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- **Dev site:** palestine-lives.org. **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com. Both on **WP 7.0.2** (verified 2026-07-20 via `wp core version` over SSH on BOTH sites — the more direct check; WP 7.1 lands 19 Aug 2026 — re-check rather than trusting this line). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
+- **Canary (the ONLY site — palestine-lives.org is GONE, removed from TARGETS 2026-08-10):** sandybrown-nightingale-600381.hostingersite.com, on **WP 7.0.2** (verified 2026-07-20 via `wp core version` over SSH; WP 7.1 lands 19 Aug 2026 — re-check rather than trusting this line). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
 - **Canary credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/sandybrown.env` holds the test-site logins — `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification. (Cloning dev-site app passwords: `A:/.openclaw/.secrets/wp-app-passwords.env`.)
 - **No Node.js on server** — build locally, deploy compiled `build/`.
