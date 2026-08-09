@@ -1,7 +1,13 @@
 'use strict';
 
 // GROUND-TRUTH: spec=.claude/decisions.md D540 (read verbatim 2026-08-10) +
-// .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md:503-509.
+// .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md, the bullet beginning
+// "`contentWidth` is now a NAMED contract (D540)".
+// ^ CITED BY HEADING TEXT, NOT LINE NUMBER (repaired 2026-08-09). It previously
+// read ":503-509"; a 22-line insertion into that spec's PART H moved the bullet
+// to ~:538 and left the range pointing at an unrelated paragraph — a reflow can
+// sever a line-number binding with no diff to this file, which is exactly the
+// failure this project records as "a gate can be blind to the file it protects".
 // source=file evidence=every mechanism claim below was read out of
 // includes/class-sgs-container-wrapper.php and the three overriding call sites
 // (physics-canvas/render.php:97, product-card/render.php:313,

@@ -1,5 +1,129 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D543 — The library-wide inspector census was measured, reviewed and REJECTED as a baseline [INCIDENT]
+
+**2026-08-09, Bean-decided.** Track 1b's first action was to take the BEFORE numbers. Two were taken.
+One holds, one does not, and **both are recorded** — a baseline quietly swapped for a better one is
+how `LEDGER.md` came to carry a "363 advisory backlog" figure that was never measured at all.
+
+### The baseline that HOLDS
+
+**`inspector-scan` rule `21-render-without-control` = 129 FLAGGED** (`node run.js --json`, `a09226e8`).
+Total advisory backlog **242**, not the 363 the LEDGER carried — 363 was the sum of the *cached*
+`openBacklog` column.
+
+**Rule 21's cached 243 → live 129 is a real reduction, proven by re-running the engine against the
+extracted historical tree** (QC, not asserted): the current engine against the tree at `7861d651`
+returns 243/12 identically, so the change is in the tree, not the engine. ⚠ The first draft of this
+entry argued it from "the rule file is untouched since the commit that wrote 243" — **a non-sequitur**,
+since rule 21 depends on `core/`, and `core/extensions.js` was added after that commit. The
+conclusion survived; the reasoning did not.
+
+Per-block, and nothing else moved: physics-canvas 79→0, nav-menu 17→0, site-header-row 12→2,
+site-footer-row 12→4 = −114; 243−129 = 114. **Attribution: `4d501a16` (D539) + `282a06ee` (D540)
+earn −113; the last physics-canvas finding was cleared by `0fb1507d`.**
+
+⚠ **Counting trap, now recorded in `rules.json`:** `core/report.js:96-101` serialises BASELINED
+findings into `--json`, while `printHuman` and `computeExit` filter to FLAGGED. **Count
+`status:"FLAGGED"`.** Raw array lengths: 141 for rule 21, **254 advisory / 256 tree-wide** — the
+tree-wide figure includes rule `08-raw-url-link`'s 2 baselined entries, so 14 are baselined in total,
+not 12.
+
+### The baseline that does NOT hold — and why it must not be rebuilt
+
+`check-simple-surface-cap.js` run across all 83 blocks gives median 12 rows / max 49 / total 1121.
+Arithmetically correct, independently reproduced, and **unusable as a progress metric.** Three
+structural reasons, each verified directly against the tree before being accepted from the reviewer:
+
+1. **Gameable in the wrong direction.** Any capitalised component outside a 5-name passthrough set
+   scores ONE row and is never descended into (`:266-283`). `card-grid/edit.js:259`'s
+   `<ContainerWrapperControls kind="layout" />` = **1 row** against ~21 real ones (`kind="section"`
+   ≈42); **29 blocks** route through that module. Wrapping card-grid's remaining 30 controls in one
+   component would take it 31 → ~2 (**predicted, not run**) with zero client benefit. **A fall in
+   this number is therefore not evidence of improvement** — it can be produced by hiding controls
+   rather than removing them. ⚠ Earlier wording here said "unfalsifiable" and "it falls fastest when
+   nothing is fixed"; both were rhetoric. The manoeuvre IS visible in a diff, and no comparative rate
+   was ever measured.
+2. **Blind to the majority control surface.** The walk only enters `<InspectorControls>` subtrees, so
+   native `supports` panels — rendered by core from `block.json`, no JSX at all — are invisible.
+   **64 of 83 blocks declare at least one** (`color` 55, `spacing` 51, `__experimentalBorder` 48,
+   `typography` 25, `shadow` 6, `dimensions` 1). Keeping those declared is Spec 32's locked rule and
+   D542 ruling 2 — they *are* the client's controls. `src/blocks/extensions/*.js` (~67 rows via
+   `addFilter('editor.BlockEdit')`) is excluded by the glob as well, and `InspectorAdvancedControls`
+   is a component name nothing looks for.
+3. **Its error has two signs.** Opaque composites undercount; mutually-exclusive conditional branches
+   overcount — `card-grid`'s `{ isQueryMode && … }` contributes three rows a client on
+   `source="manual"` never sees. ⚠ **The "~37% composites vs ~24% conditional" split reported by the
+   reviewer is NOT re-derived here and carries no command** — quoting it as a bound would be the very
+   unmeasured relay this entry condemns. What is established is the *existence* of both signs, which
+   is enough to disqualify the metric: no single correction factor can be applied. An earlier draft
+   said "the bias cannot even be given a direction" while quoting percentages that imply one — that
+   sentence contradicted its own evidence and is withdrawn.
+
+**The script is NOT at fault and must be left exactly as it is.** It is correct for its own job — the
+FR-37-27 two-block Simple-surface cap, warn-only in `prebuild`. The defect was repurposing a
+2-block instrument, whose counting rules were true *by construction* against a hand-written roster
+table, as an 83-block metric where no such table exists. Its own self-test **certifies** the
+composite undercount as the expected answer (`:553-588`), so it could never have caught this.
+
+### Bean's ruling — the replacement is HYBRID, not a widening
+
+A **new** detector (`scripts/surveys/survey-inspector-surface`, the `survey-length-controls.py` triad
+shape) that descends into composites, reads native `supports` from `block.json`, includes extension
+reach via `hideExtensions`, and treats conditional branches as **max, not sum** — **calibrated against
+5 blocks measured in the live canary editor**, one per band, re-calibrated at each phase close.
+Static alone is what failed; static-plus-calibration is the standard. It ships with a negative
+control per capability, because the instrument it replaces had a self-test that certified its worst
+defect.
+
+### Also corrected in the same change
+
+- **The denominator is 83, not 84 — because `sgs/content-collection` was DELETED, which D529 already
+  records.** `SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'` returns **83**; `block.json` and
+  `edit.js` counts agree; `_meta.denominator` reports 83/83/83. The deletion is `37ad3bb8`
+  (2026-08-08), and **D529 states "Block count 84 → 83" in plain text two entries above this one**.
+  ⚠ **My first draft blamed `extensions/` and called that "the whole of the discrepancy" — wrong on
+  both counts, and QC-refuted twice independently.** `extensions/` explains only the constant
+  dirs-vs-`block.json` off-by-one (`ls -d src/blocks/*/` = 84 because it holds no `block.json`); it
+  was present on both sides of the deletion and never moved the DB count. The contract's
+  `Denominator is always 84` was **true when written**; its later "83 vs 84 — both figures are
+  correct" reconciliation paragraph was written *nine hours after* the deletion and its stated
+  distinction distinguishes nothing (84 of 84 declared `supports.sgs.elements` before, 83 of 83
+  after) — a paragraph invented to rescue a stale number. **Consequence for the sweep: every
+  downstream "84"-derived figure is stale by one specific, named block, which makes re-derivation
+  cheap.** Still re-derive by re-running the query — never decrement.
+- **Spec 35 PART H contradicted the governing contract** on colour (`ColorPalette`) and links
+  (`LinkControl`) — both are **banned lookalikes** under contract §1/§2, with `DesignTokenPicker` and
+  `SgsLinkControl` canonical. Part H is item 2 of the session reading gate. PART I of the same spec
+  already recorded both SGS components as BUILT + ROLLED OUT, so the spec contradicted itself.
+  ⚠ **My first correction to Part H claimed rules `04`/`08` gate the raw components out — FALSE, and
+  verified false by reading both rule bodies.** `04-colour-alpha.js:92` returns early when
+  `enableAlpha` is present, so `<ColorPalette enableAlpha>` passes; `08-raw-url-link.js:99-101`
+  matches `<TextControl type="url">` and has no knowledge of `LinkControl` at all. **Neither raw
+  component is gated out of a block's `edit.js`.** The ban is a contract, not an enforced one —
+  closing that gap is real outstanding work. This was the single most dangerous sentence in the
+  change, because it is the one an operator would act on.
+
+### Sweep still owed (named, not hand-waved)
+
+Recorded so the next session inherits a list rather than a hunt. `decisions.md` is append-only, so
+the stale carriers below are **superseded by this entry, not edited**:
+
+- `decisions.md:139` (**D542**) — "10 advisory carrying **363 backlog**" → 242. Same file, previous
+  entry, same figure this entry calls unmeasured.
+- `decisions.md` D542 rulings 1–2 — "all 84 blocks" ×3 → 83 (historical-at-time; do not decrement
+  derived counts).
+- `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md:393-394` (363) and **`:380`
+  ("distribution across all 84 blocks")** — the only stale figure that will be *acted on* rather than
+  read, since it specifies work not yet done.
+- `scripts/inspector-scan/core/roster.js:5-8` — header asserts 84 twice **and** claims the 83-vs-84
+  drift is closed, in the module that computes the denominator. No behavioural effect.
+- `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` `:90, :101, :102, :249, :283, :356, :376, :384` —
+  still name raw `LinkControl` as canonical. Correcting Part H alone relocated the contradiction.
+- `.claude/dev-setup.md` — documents `DesignTokenPicker` but has **no `SgsLinkControl` entry**.
+- The LEDGER's new "cached `openBacklog`" column annotates 243/66/15 as stale — and this same commit
+  rewrites them to 129/58/16, so those cells describe a file state that no longer exists.
+
 ## D542 — The inspector standardisation programme: opt-in extensions, core primitives, keep native supports [INCIDENT]
 
 **2026-08-10, Bean.** Opening `sgs/hero`'s inspector produced a 16-point defect list from Bean. The

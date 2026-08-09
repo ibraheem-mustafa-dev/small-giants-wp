@@ -292,12 +292,44 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 
 ## PART H — Component quick-reference (which component for which job)
 
+> ⛔ **THIS LIST IS THE CORE-COMPONENT REFERENCE, NOT THE CANONICAL CONTROL SET. Where it names a raw
+> core component that SGS has since wrapped, the wrapper wins — and two of them are enforced by live
+> build gates.** Corrected 2026-08-09 after the conflict was measured.
+>
+> | Job | Part H named | **Canonical (governing)** | What the gate ACTUALLY catches |
+> |---|---|---|---|
+> | colour | `ColorPalette` / `ColorGradientControl` | **`DesignTokenPicker`** (contract §1) | rule `04-colour-alpha` (`gate`) flags a raw colour picker **only when `enableAlpha` is absent** (`rules/04-colour-alpha.js:92`). `<ColorPalette enableAlpha>` passes clean |
+> | link / CTA | `LinkControl` | **`SgsLinkControl`** (contract §2) | **nothing.** Rule `08-raw-url-link` matches `<TextControl type="url">` only (`rules/08-raw-url-link.js:99-101`) — it has no knowledge of `LinkControl` |
+>
+> ⛔ **Neither raw component is gated out of a block's `edit.js`.** An earlier draft of this box
+> claimed "writing either raw component fails `prebuild`" — **false, and verified false by reading
+> both rule bodies**. The contract's ban is a *contract*, not an enforced one; closing that gap is
+> real outstanding work, not a documentation fix. Do not treat a green build as evidence of
+> conformance here.
+>
+> Governing document: `.claude/plans/spec-35-control-type-contract.md` (AUTHORITATIVE 2026-08-08),
+> which lists both raw components as **banned lookalikes**. **PART I of this same spec already
+> records `DesignTokenPicker` and `SgsLinkControl` as BUILT + ROLLED OUT** — Part H was simply never
+> swept when they landed, so the spec contradicted itself. Measured in `src/` at `a09226e8`: raw
+> `<ColorPalette>` and `<LinkControl>` are rendered in exactly two files,
+> `src/components/DesignTokenPicker.js:87` and `src/components/SgsLinkControl.js:154` — i.e. only
+> *inside* the canonical wrappers. (Repo-wide they also appear in `scripts/inspector-scan/fixtures/**`
+> and in `rules/04-colour-alpha.js`'s own matcher list, which is expected.)
+>
+> ⚠ **Part H is not the only place in this spec naming the raw components** — `:90`, `:101`, `:102`,
+> `:249`, `:283`, `:356`, `:376`, `:384` still list `LinkControl`. The sweep is owed; correcting Part
+> H alone relocated the contradiction rather than removing it.
+>
+> ⚠ The other ~23 assignments below are **not yet reconciled against the contract**. `BorderBoxControl`
+> agrees with contract §14. Treat the rest as indicative until swept.
+
 Numeric+unit → `UnitControl` · bounded numeric → `RangeControl` (+input+reset) · 4-side box →
-`BoxControl` · colour → `ColorPalette`/`ColorGradientControl` (**`enableAlpha`**) · gradient →
-`GradientPicker` · angle/direction → `AnglePickerControl` · border → `BorderBoxControl` · radius →
+`BoxControl` · colour → **`DesignTokenPicker`** (wraps `ColorPalette`; `enableAlpha`+`clearable`
+default true) · gradient → `GradientPicker` · angle/direction → `AnglePickerControl` · border →
+`BorderBoxControl` · radius →
 `__experimentalBorderRadiusControl` · spacing token → `__experimentalSpacingSizesControl` · segmented
 choice → `ToggleGroupControl` · long/searchable list → `ComboboxControl` · multi-value tags →
-`FormTokenField` · link/CTA → `LinkControl` · font size → `FontSizePicker` · weight+style →
+`FormTokenField` · link/CTA → **`SgsLinkControl`** (wraps `LinkControl`) · font size → `FontSizePicker` · weight+style →
 `FontAppearanceControl` · line-height → `LineHeightControl` · focal point → `FocalPointPicker` ·
 date → `DateTimePicker` · optional-controls group → `ToolsPanel`/`ToolsPanelItem` · in-row layout →
 `HStack`/`VStack`/`Flex`/`Spacer`/`Divider` · swatch preview → `ColorIndicator` · inline hint →
@@ -483,8 +515,11 @@ above + `.claude/plans/spec-35-control-type-contract.md` §THE PLACEMENT RULE.
   count closed 61 → 30. Contested placements (the tie-break-instead-of-report defect the earlier
   46.1% figure hid) are **0 library-wide** — the last 9 were all `sgs/nav-menu`, resolved by its
   wrapper exit below. `inspector-scan` rule 21 (`render-without-control`) fell 243 → 130 in the
-  same work (re-derived: `node plugins/sgs-blocks/scripts/inspector-scan/run.js`, currently
-  **130 flagged, 12 baselined**).
+  same work (re-derived: `node plugins/sgs-blocks/scripts/inspector-scan/run.js`, at the time
+  **130 flagged, 12 baselined**). ⛔ **RE-MEASURED 2026-08-09 at `a09226e8`: 129 flagged, 12
+  baselined.** 130 was correct when written; `0fb1507d` (the `sgs/physics-canvas` `tagName` wiring)
+  cleared its last finding. ⚠ Count `status:"FLAGGED"` — `core/report.js:96-101` puts BASELINED
+  entries in the `--json` array too, so a raw array length reads 141.
 - **The composite-mirror rule (root `CLAUDE.md` §"Composite-mirror rule") gained a fourth,
   measured exit condition (D538/D539): a block whose wrapper contributes ZERO live arrangement CSS
   to its own children may exit `SGS_Container_Wrapper` and render block-private — this is

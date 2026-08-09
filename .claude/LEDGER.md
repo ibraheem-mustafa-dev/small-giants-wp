@@ -84,9 +84,48 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
   ⚠ **Attribution is a static nearest-preceding-JSX heuristic, not an AST parse** — one real false
   positive is documented in the script's own docstring. Spot-check file:line before building a `--fix`
   on any divergent row. 26 NULL (all `*Unit` companions, kept as their own bucket) · 295 no-control-found.
-- **29** blocks use `ContainerWrapperControls` (not 18). **363** advisory backlog across 10 rules, only
-  **4** gates, **none ever promoted**. `setting-registry.json` live severity 28/40/20/4 (its own `_meta`
-  cache says 25/35/17 — drifted).
+- **29** blocks use `ContainerWrapperControls` (not 18). **4** gates, **none ever promoted**.
+  `setting-registry.json` live severity 28/40/20/4 (its own `_meta` cache says 25/35/17 — drifted).
+  ⚠ **The "363 advisory backlog" this line used to carry was never a measurement** — it was the sum
+  of the *cached* `openBacklog` column in `rules.json`. Live, measured 2026-08-09 at `a09226e8` via
+  `node scripts/inspector-scan/run.js --json`, counting `status:"FLAGGED"` only: **242**. See the
+  BEFORE-baseline block below. Same trap as `setting-registry.json`'s `_meta` cache; second
+  occurrence in two sessions.
+
+#### ⭐ BEFORE baseline — measured 2026-08-09 at `a09226e8`, tree clean
+
+**The number the programme reports against: `inspector-scan` rule `21-render-without-control` =
+129 FLAGGED.** Command: `node scripts/inspector-scan/run.js --json` from `plugins/sgs-blocks`.
+
+⚠ **Count `status:"FLAGGED"`, never the raw findings array.** `core/report.js:96-101` serialises
+BASELINED entries too, while `printHuman` and `computeExit` both filter to FLAGGED. Reading the raw
+array gives 141 for rule 21 and 254 overall — both wrong by exactly the baselined entries.
+
+| Rule | Mode | FLAGGED | Baselined | `openBacklog` **before** this session |
+|---|---|---|---|---|
+| `21-render-without-control` | advisory | **129** | 12 | 243 |
+| `01-tab-group` | advisory | 58 | 0 | 66 |
+| `20-pattern-template-lock` | advisory | 23 | 0 | 23 |
+| `03-dense-panel-candidate` | advisory | 16 | 0 | 15 |
+| `18-decorative-image-aria` | advisory | 15 | 0 | 15 |
+| `07-preset-only-shadow` | advisory | 1 | 0 | 1 |
+| `22` / `23` | advisory | 0 | 0 | — / 0 |
+| `04` / `08` / `14` / `17` | **gate** | **0** | 2 (rule 08) | 0 |
+
+⚠ The right-hand column is **history, not the current file** — `rules.json` was rewritten to
+129/58/16 in this same change, each with its cause recorded in the rule's `advisoryReason`. Total
+baselined tree-wide is **14** (12 advisory + rule 08's 2); raw `--json` array totals are 254 advisory
+/ 256 tree-wide.
+
+**Rule 21's 243 → 129 is a REAL win and the arithmetic closes exactly.** The rule file is untouched
+since the commit that wrote 243, so it cannot be a logic change: against its own cached per-block
+census, physics-canvas 79→0, nav-menu 17→0, site-header-row 12→2, site-footer-row 12→4 = **−114**,
+and 243−129 = **114**. Earned by `4d501a16` (D539) + `282a06ee` (D540).
+
+**A library-wide panel/control census was ALSO measured and then REJECTED as a baseline — see D543.**
+Do not rebuild it: `check-simple-surface-cap.js` run across all 83 blocks gives median 12 / max 49 /
+total 1121, and every one of those figures is untrustworthy in *both* directions. Replacement
+instrument (Bean-decided): a new calibrated detector, plan Step 2.
 
 #### ⛔ Do NOT start these
 

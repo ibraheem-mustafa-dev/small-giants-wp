@@ -426,16 +426,38 @@ cluster member that resolves to nothing is *reported* as a GAP (the conformance 
 `attrMap`. No block uses it today. It is live and reachable — document it before relying on the
 `attrMap` form being the only one.
 
-⚠ **83 vs 84 — both figures are correct and they count different things.** The scoping axes above use
+⛔ **CORRECTED 2026-08-09 — the 83-vs-84 distinction below was REAL when written and is now GONE.
+There is one denominator: 83.**
+
+~~⚠ **83 vs 84 — both figures are correct and they count different things.** The scoping axes above use
 **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'`). This section uses **83**: the blocks
-with a `src/blocks/*/block.json` on disk declaring `supports.sgs.elements`. Quote the denominator with
-any figure derived from either.
+with a `src/blocks/*/block.json` on disk declaring `supports.sgs.elements`.~~ Measured at `a09226e8`,
+all three sources now agree:
+
+| Source | Count |
+|---|---|
+| `SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'` | **83** |
+| `ls src/blocks/*/block.json` | **83** |
+| `ls src/blocks/*/edit.js` | **83** |
+| `inspector-scan` `_meta.denominator` (roster / disk / union) | **83 / 83 / 83** |
+
+`ls -d src/blocks/*/` returns 84 — the extra directory is `extensions/`, which holds no `block.json`
+and is not a block. That is the whole of the old discrepancy.
+
+⚠ **Do NOT mechanically rewrite every "84" in this document to 83.** Most downstream 84s are inputs
+to a *derived* figure measured at the time (e.g. LINK §3's "67 = 84 − 17 opt-outs"). Each such figure
+must be **re-derived by running its own query**, not decremented — silently shifting a derived number
+by one is exactly the unmeasured-relay trap this document exists to prevent. Quote the denominator,
+and its measurement date, with any figure derived from it.
 
 ---
 
 ## The scoping axes (machine-readable — never a hardcoded block list, per R-31-1)
 
-Denominator is always **84** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'`).
+Denominator is always **83** (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'`) — ⛔ **corrected
+2026-08-09 from 84; that query returns 83 today.** The per-axis splits in the table below were
+measured against the older roster and are NOT re-derived here: re-run each axis before quoting it.
+Full reconciliation in the ELEMENT MANIFEST section's denominator box.
 
 | Axis | Source | Split |
 |---|---|---|
