@@ -3,7 +3,10 @@ doc_type: strategic-plan
 title: "The block-level panel — tier 1 element, tier 2 property-family"
 spec_ref: .claude/plans/spec-35-control-type-contract.md §THE PLACEMENT RULE · §CO-28
 date: 2026-08-08
-status: DESIGN — awaiting Bean sign-off; resolver upgraded, no block touched
+status: "MODEL APPROVED (D537, Bean, 2026-08-09) — tier 1 element / tier 2 property-family is
+        locked and propagated (f5a31435, d4d6d687). §4 VOCABULARY GATE ALSO APPROVED (Bean,
+        2026-08-09, after a /qc pass on the propagation work) — the cluster-member additions
+        may proceed. Resolver upgraded; no block touched yet."
 supersedes: "the Task 1 framing in LEDGER.md (2026-08-08) — 'design the block-level panel'"
 ---
 
