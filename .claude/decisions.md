@@ -1,5 +1,114 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D542 — The inspector standardisation programme: opt-in extensions, core primitives, keep native supports [INCIDENT]
+
+**2026-08-10, Bean.** Opening `sgs/hero`'s inspector produced a 16-point defect list from Bean. The
+programme that answers it is planned at `.claude/plans/go-track-1b-playful-hamster.md`; the rulings
+that outlive the plan are recorded here.
+
+### Bean's rulings
+
+1. **Universal extensions INVERT to opt-in.** `hideExtensions` is a denylist today — every extension
+   attaches to all 84 blocks unless a block opts out, and only 26 do. The failure mode is *silent
+   bloat*, which nobody notices. Opt-in makes the default clean, flips the failure mode to *missing
+   feature* (visible immediately), and makes the declaration itself the enforcement roster.
+   ⛔ **Derive the initial per-block list by measuring actual usage — never hand-author 84 lists.**
+   48 blocks rely on the hover extension SOLELY; a hand-authored miss deletes their hover silently.
+2. **Compose WordPress core primitives, no SGS skin layer.** The control Bean named as ideal is
+   core's own `BorderBoxControl` (the saved reference markup's root class is
+   `border-block-support-panel`). Amendment agreed after the council: a thin *compat boundary*
+   (`src/components/primitives/index.js` re-exporting the primitives, zero styling) is NOT a skin
+   layer, and is required — **every** primitive in the tree today is `__experimental*`
+   (`__experimentalUnitControl` ×27, `__experimentalToolsPanel` ×24, `ToolsPanelItem` ×24,
+   `BorderRadiusControl` ×3), so an upstream rename would otherwise break 84 blocks at once.
+3. **Global sticky device toggle IS built** (not "rely on core's top-bar switcher"), driving the
+   canvas preview and persisting across block selection.
+4. **Hero keeps `SGS_Container_Wrapper`**, conditional on being able to unwire + hide the wrapper
+   attributes that do not apply — which generalises to variant-aware capability scoping across the
+   **29** blocks that use `ContainerWrapperControls` (not 18, as first counted).
+5. **Delete the child-block leftovers** on hero (`headlineMarginBottom(Mobile)`,
+   `subHeadlineMaxWidth`, `subHeadlineMarginBottom(Mobile)`) even though they still render — they are
+   remnants of elements that are now child blocks. ⚠ **13 canary posts set `headlineMarginBottom`
+   and 9 set `subHeadlineMaxWidth`** — this is a live content change needing the census→migrate
+   protocol, not a tidy-up.
+6. **Clean up orphaned code as part of the change**, not as a follow-up.
+
+### Reversed by evidence: do NOT strip the native WP supports
+
+An earlier draft proposed killing the "Color"/"Dimensions"/"Border" panels with a
+`blocks.registerBlockType` filter setting each support `false`. **That contradicts ruling 2** — those
+panels are rendered *by* those supports — and severs the block from theme.json/Global Styles. The
+correct route is the project's already-locked rule (`wp-native-supports-serialise-inline`, Spec 32):
+keep the supports DECLARED, use `skipSerialization` to own the CSS.
+
+### Method: the script triad — one detector, three modes
+
+Bean's directive. The thing that finds every instance, the thing that fixes them, and the thing that
+keeps them fixed are the **same detector**: `--survey` (exhaustive census run BEFORE the design, so a
+good existing shape is adopted rather than a new one invented) → `--fix` (parameterised codemod) →
+`--check` (the gate). Precedent already in the repo: `scripts/migrate-core-blocks/` and
+`scripts/wp-migrate-oldshape-blocks.js`. **No phase does by hand what its own detector could do.**
+
+### Measured facts established this session
+
+- **`core/editor.getDeviceType()` answers in BOTH the post editor AND the site editor** (WP 7.0.2,
+  canary). The comment at `ResponsiveControl.js:107-113` claiming it is null in the site editor is
+  **STALE** — core unified the store. The `localKey`/`usingNative` fallback is therefore dead code,
+  and deleting the per-control device tabs cannot silently kill site-editor responsive editing.
+- **`.claude/plans/spec-35-control-type-contract.md` is AUTHORITATIVE (2026-08-08) and already
+  specifies the canonical control set** — §14 BORDER names `BorderBoxControl`, §4 LENGTH/UNIT and §12
+  THE RESPONSIVE WRAPPER FAMILY cover the rest. A plan was written that commissioned research to
+  re-derive it. **That is the load-bearing lesson: there are enough truth docs that a careful reader
+  with full repo access missed the governing one.** It is now the first line of the plan.
+- **`setting-registry.json` is read by two BLOCKING prebuild gates** (`check-cluster-coverage.py:222`,
+  `check-reclassified-keys.py:69` inside `run-consistency-gates.py`) — editing it is a gated change,
+  not a free edit to an advisory input.
+- **The enforcement ladder has never been climbed:** 14 inspector-scan rules, **4 gates**, 10 advisory
+  carrying **363 backlog**, and all four gates are ports of rules that already gated. Every new rule
+  must therefore ship with a *named promotion trigger*, not "after a clean cycle".
+
+## D541 — Rule 23 gates D540 — and finds 3 blocks D540's own census missed [ROUTINE]
+
+**2026-08-10.** D540 recorded that a gate asserting its rule was owed. `inspector-scan` rule
+**23-content-width-needs-inner-band** (ADVISORY, `mode:"gate"` deferred per E6 point 9) is that gate.
+Committed `0fb1507d`.
+
+**D540's census was wrong, twice over, and building the detector is what found it.** That census
+grouped 33 blocks on one cheap property — "routes through `SGS_Container_Wrapper`" — without reading
+a render path:
+
+1. **Wrapper-routing does not imply a band.** Three call sites override the guard via
+   `$opts['wrap_inner']` (`class-sgs-container-wrapper.php:81,112`).
+2. **Two blocks were never wrapper-routed at all.** `sgs/info-box` and `sgs/option-picker` dropped the
+   wrapper under D294 and mention it only in prose *saying so* — the census grepped the class NAME and
+   matched those COMMENTS. **A grep for a class name answers "is this identifier present", never "is
+   this mechanism used"** — the same trap rule 23's own header warns about for the render side.
+
+**Measured 3, not 0. Remedies differ by evidence (Bean-ruled):**
+
+| Block | Remedy | Why |
+|---|---|---|
+| `product-card` | `contentWidth` **DELETED** | `wrap_inner => false` unconditionally + attr read nowhere → band CSS written to a selector that never renders. Inert. 0 patterns, 0 canary posts |
+| `info-box` | **RENAMED** → `width` | Live on 2 published canary pages at 900px/480px. Deleting would have changed real pages; D540 itself says a block wanting a fixed width says `width` |
+| `option-picker` | **RENAMED** → `width` | Same shape, unused anywhere, kept consistent |
+
+**`sgs/hero` split deliberately does NOT flag** — it suppresses the `__inner` div but bands the
+content with centred `padding-inline` on the grid, which is a real band and the correct mechanism for
+a grid item (a grid item is sized by its track, so a `max-width` on the column is an inert lever).
+Bean's correction; an earlier draft of the rule would have flagged it.
+
+**Proven able to fail, not just to pass.** The first draft returned 0 for every block in the tree (it
+read `.attributes` off `SourceCache`'s `{ok,error,data}` envelope); the fixture self-test caught it.
+The second scored the D540 shape itself as clean by accepting any bare `width:`; a fixture caught that
+too. Real-tree positive control: `contentWidth` restored to `sgs/quote` → 1 finding naming it;
+reverted → confirmed 0 occurrences on disk before the zero was trusted. Live: **0 flagged**.
+
+**Stored content migrated before deploy** — 6 canary rows, scoped to `wp:sgs/info-box` comments so
+`sgs/container`'s 140 legitimate instances were untouched. Verified after: info-box+contentWidth 0,
+container+contentWidth 140 unchanged, both pages still computing `width: 900px` / `480px` live. The
+pre-deploy stored-content audit flagged the same two pages independently before the migration and
+passed after it.
+
 ## D540 — `contentWidth` means an INNER BAND, or it does not exist; nav-menu loses `maxWidth` [ROUTINE]
 
 **2026-08-09, Bean.** Two rulings from one observation — *"Why does nav need both content and
