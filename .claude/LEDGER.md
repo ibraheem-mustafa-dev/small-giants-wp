@@ -125,7 +125,45 @@ and 243−129 = **114**. Earned by `4d501a16` (D539) + `282a06ee` (D540).
 **A library-wide panel/control census was ALSO measured and then REJECTED as a baseline — see D543.**
 Do not rebuild it: `check-simple-surface-cap.js` run across all 83 blocks gives median 12 / max 49 /
 total 1121, and every one of those figures is untrustworthy in *both* directions. Replacement
-instrument (Bean-decided): a new calibrated detector, plan Step 2.
+instrument (Bean-decided): a new calibrated detector, plan Step 2 — **not yet built.**
+
+#### Shipped AFTER the baseline (same session)
+
+- **`inspector-scan` rule 24 `raw-canonical-component`** (ADVISORY, `a29e37b5`) — closes the gap D543
+  found: the contract BANS raw `ColorPalette`/`GradientPicker`/`URLInput`/`LinkControl`, and
+  **nothing enforced it**. Proven, not argued: injecting `<ColorPalette enableAlpha>` into a real
+  block gives rule 04 **0 FLAGGED** and rule 24 a hit — rule 04 returns early when `enableAlpha` is
+  present (`:92`), rule 08 matches `<TextControl type="url">` only (`:99-101`). NEW rule at advisory,
+  deliberately NOT a widening of either gate (both sit at 0 backlog; widening in place fails the
+  build on the first finding). Live: **1 FLAGGED** — `sgs/button/edit.js:312`, a raw `<URLInput>`,
+  agreeing with a pre-registered grep AND the contract's own §2.6. 9 fixtures incl. a substring
+  negative control. ⛔ **Stated blind spot:** `src/blocks/extensions/` is out of scope —
+  `core/roster.js:58-70` admits only directories with a `block.json`. The contract records a raw URL
+  field reaching 67 blocks through there. Unbuilt plumbing, separate job.
+- **Three survey detectors** (`b6ca16a8`) — `survey-{colour,typography,box}-controls.py`, joining
+  `survey-length-controls.py`. All `--survey` only. Each proven able to FAIL by sabotage-and-restore
+  (colour 7/7→6/1, typography 9/9→7/2, box 5/5→5/1); each expected population derived independently
+  BEFORE the live run per `zeroIsAClaim`.
+  - **COLOUR** 263 instances — `color` diverges: `DesignTokenPicker` 99 vs `TextControl type="color"`
+    2 (`sgs/star-rating`, verified at `edit.js:155,162`).
+  - **TYPOGRAPHY** 181 — `font-size` diverges: `TypographyControls` 78 vs TextControl 3 /
+    RangeControl 2 / NumberControl 1 (`product-card.ctaFontSize`, `edit.js:1687`) / UnitControl 1.
+    ⚠ **A literal-name scan would have MISSED most of this**: `grep -c nameFontSizeTablet
+    brand-strip/edit.js` = **0** while the DB carries it — `TypographyControls` builds attr names at
+    runtime from `prefix`. The survey parses call sites and ports the component's own naming logic.
+    **Genuine gap found:** `nameLineHeight*`/`nameLetterSpacing*` tiers have NO editor control at all
+    (`showResponsive` covers font-size only) though PHP renders them.
+  - **BOX** — §5's *"per-side scalar migration COMPLETE, 0 remaining"* now **PROVEN** (0 four-sibling
+    groups; independently re-derived — no block has more than 2 per-side scalars). **§14 BORDER
+    conformance measured for the FIRST time** (field 6 read "not yet measured"): 31 four-corner
+    object attrs → 24 canonical, 5 on the wrong component, 7 no control; 222 four-side → 210
+    canonical, 4 raw `BoxControl` bypasses.
+  - ⛔ **Disclosed blind spot:** colour + typography scan `edit.js` + `src/components/` only, so
+    per-block local component dirs are missed — that is where `GradientOverlayControl` lives for
+    container/hero/trust-bar/cta-section. **The absence of `GradientPicker` findings is NOT a clean
+    bill.**
+
+**Advisory backlog now 243** (242 + rule 24's 1). Gates still 4, still none promoted.
 
 #### ⛔ Do NOT start these
 
