@@ -1,5 +1,95 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D545 — Phase 1 is a judgement problem, not a volume problem; and the ecosystem already agrees with us [ROUTINE]
+
+**2026-08-09.** Three parallel research branches (GitHub prior art · Phase 1 delegability · future-phase
+automation leverage), every load-bearing claim re-verified locally before being recorded.
+
+### The ecosystem has converged on our approach — this is now evidence, not hope
+
+`gh` CLI, verified authenticated first (a memory rule records that an unauthenticated fetch returns a
+clean-looking zero). Five independently-built competitors all read/write device type through
+**`core/editor`'s `getDeviceType`/`setDeviceType`**: Kadence (`src/extension/stores/index.js:153-176`),
+Otter (`src/blocks/components/responsive-control/index.js`), Spectra
+(`blocks-config/uagb-controls/getPreviewType.js`), Stackable, GenerateBlocks (`src/hooks/useDeviceType.js`).
+
+1. **`getDeviceType`/`setDeviceType` are STABLE, not experimental** — `packages/editor/src/store/`
+   {`selectors.js:1346`, `actions.js:808-819`}, no `__experimental` prefix, no `@experimental` tag.
+   The OLD APIs are formally deprecated *to ours*: `deprecated(…__experimentalGetPreviewDeviceType,
+   { since: '6.5', alternative: "select('core/editor').getDeviceType" })`. **No rename in flight** —
+   which matters, because a rename would break a 32-file change.
+2. **GenerateBlocks already ships the exact UX we planned** — ONE tab strip portalled into the
+   inspector (`document.querySelector('.block-editor-block-inspector')`, guarded against a second
+   copy), plus `localStorage` persistence. A working reference to copy, not a shape to invent.
+3. **No reusable component exists** — every plugin bundles its own thin `ButtonGroup` wrapper. Build
+   ours; there is nothing to adopt.
+4. **Codemod tooling, licences read from the API not recalled:** `ast-grep` (MIT, pushed today, 15.4k),
+   `jscodeshift` (MIT, 10k), `ts-morph` (MIT), `putout` (MIT). **All four MIT** — none carries the
+   licence problem this project records for GSAP (not MIT) or LYGIA (Prosperity). Gutenberg itself
+   ships **no** codemod package, so there is no WP-specific collection to inherit.
+5. **Two "nothing exists" answers that VALIDATE work already done:** no open-source Gutenberg
+   inspector-surface auditor exists (so `survey-inspector-surface.js` had to be hand-built), and
+   `@wordpress/e2e-test-utils-playwright` has **no device-preview or inspector-enumeration helper**
+   (so D544's hand-rolled calibration stands as the right method — adopt only its
+   `insert-block`/`open-document-settings-sidebar` scaffolding later).
+
+### Phase 1's real shape — measured, and the plan was wrong twice
+
+- **Blast radius:** **73** `<ResponsiveControl>` call sites across **32** files. `<DeviceTabs>` is
+  rendered directly in only **4** files (`DeviceTabs.js`, `ResponsiveControl.js`, `ResponsiveOverride.js`,
+  `ResponsiveTriStateControl.js`). ⚠ The plan's "~192 switchers / 33 files" is a **runtime** count and
+  mine is a **source** count — they are different metrics and cannot be reconciled by grep (one source
+  site inside a repeated panel renders N times). Quote the unit.
+- ⛔ **Item 1.4 names 4 sibling-merge sites; only 2 ARE that shape.** `hero/edit.js:906`
+  (`splitContentOrderMobile`, a `SelectControl`) and `:1006-1017` (`splitImageMobileHeight`, a
+  `RangeControl`) are **standalone mobile-only settings with no desktop/tablet counterpart** — verified
+  by reading the surrounding code. There is nothing to merge them *with*; a "3 siblings → 1" codemod
+  would no-op or invent a tier pair that never existed. **Split 1.4 into 1.4a/1.4b (SCRIPT) and 1.4c
+  (SENIOR design call).**
+
+### The delegation map
+
+| Item | Verdict | Why |
+|---|---|---|
+| 1.2 delete `<DeviceTabs>` + the dead `localKey` fallback | **DELEGATE** (behind the flag) | One file; 73 call sites follow. Must NOT also touch a consumer file in the same commit |
+| 1.3 two components off local state | **DELEGATE** | Same shape, disjoint files |
+| 1.4a `image-controls.js` · 1.4b `ContainerWrapperControls.js` | **SCRIPT** | True 3-sibling shape — but each is a value-DOMAIN change (`RangeControl`→`UnitControl`; closed enum→open value), so the codemod PROPOSES and a human signs off. D521-class silent-coercion risk |
+| 1.1 the toggle · 1.5 gate rewrites · 1.4c hero orphans | **SENIOR** | New UI + a11y; gates encode judgement (one was already mis-read once); 1.4c needs a design decision |
+
+**~25-30% of Phase 1's edit sites are scriptable. The rest is judgement wrapped around a small number
+of edits** — Phase 1 is not a volume problem, and delegating it as though it were is the trap.
+
+**Parallelism:** 1.2/1.3/1.5/1.6 share a file cluster and must be ONE sequential branch. 1.4a and
+1.4b are file-disjoint from that cluster and from each other — genuinely safe to parallelise.
+
+### Automation leverage for later phases
+
+1. **Phase 3.2a (length migration) — highest.** Its survey is *finished*; it needs only `--fix`. No
+   open design decision. The cheapest next step in the programme.
+2. **Phase 2.1 (opt-in inversion) — bigger payoff (59% of the library's inspector surface), gated on a
+   derivation.** ⛔ **`hideExtensions` is NOT a sound basis for the new opt-in list** — it is the
+   denylist being replaced, and already undercounts (26 of 83 opt out, while 48 blocks rely on hover
+   solely). `generated-fx-qualifying-blocks.json` is also unsound as a hover proxy (different roster,
+   no declared relationship). The sound signal is **actual usage in stored `post_content`**, measured
+   with `audit-post-content-blocks.py`'s method, intersected with attachment from
+   `check-universal-fit.js`.
+3. Phase 4, 1.5 and 3.2b are blocked on decisions, not scripts.
+
+### Two citation defects found and fixed
+
+- **`scripts/wp-migrate-oldshape-blocks.js` DOES NOT EXIST**, though the plan cites it as a codemod
+  precedent. The plan's own corrections table already records the same phantom under another name
+  (`oldshape-audit`) — cited twice in one document. `migrate-core-blocks/` is the only real precedent.
+- **All five survey detectors built this session had ZERO `package.json` references.** This repo's own
+  recorded failure mode (`a-gate-can-be-built-and-never-wired`; D493 records the same thing running
+  three weeks). **Fixed** — named `survey:*` commands + `survey:selftest` running all five (40
+  assertions). ⛔ Deliberately NOT added to `prebuild`: they are censuses in `--survey` mode with no
+  `--check` yet, and adding a non-gating script to a gate chain is enforcement theatre.
+  Also wired: `audit:post-content`, `audit:element-manifest`, `audit:placement-reach` — the three
+  on-demand tools the next phases actually need. ⚠ **The rest of `scripts/` being absent from
+  `package.json` is NOT evidence of orphaning** — all sampled were referenced from docs or sibling
+  scripts, i.e. on-demand by design. Separate by mechanism, never by count.
+
 ## D544 — The live editor says the dominant term is the EXTENSION LOAD, not the block [INCIDENT]
 
 **2026-08-09.** D543 rejected the static census and Bean chose a *calibrated* replacement. The

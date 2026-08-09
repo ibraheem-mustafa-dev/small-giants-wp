@@ -9,32 +9,26 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Where 2026-08-10 left things:**
+**Where 2026-08-09 left things** *(previous session's narrative: `memory/session-2026-08-10*.md`)*:
 
-- **The rule you locked on Saturday now has a gate — and it immediately caught three blocks the
-  original count had missed.** Two of them had quietly dropped the shared wrapper and mentioned it
-  only in comments *explaining that they'd dropped it*, so a name-search counted them as fine. A
-  third had a control doing literally nothing. Fixed three different ways, by evidence, not one
-  blanket remedy.
-- **You opened the hero's inspector and found sixteen things wrong.** Instead of reacting to each, a
-  six-member adversarial council pressure-tested the plan. It found **four errors in my own plan** —
-  the worst being that I'd commissioned research to design a "canonical control set" that **already
-  exists**, written down and locked, two days earlier. That document is now the first thing the next
-  session is told to read.
-- **Your opt-in idea was the best structural fix of the day.** Extensions attach to every block
-  unless a block opts out, so a panel that shouldn't be there is invisible. Inverting it makes the
-  mistake loud instead of silent.
-- **We now have hard numbers on the control mess.** A survey script measured it: **every one of the
-  17 length-type properties is edited by more than one kind of control.** Border-radius alone has
-  seven different controls across the library.
-- **A dangerous deploy recipe was still in an always-loaded instruction file.** It deleted the live
-  plugin directory *before* copying the new one in — the exact shape of July's incident that took two
-  sites down for 2.5 hours — pointed at a domain that no longer exists. Gone.
-- **I got the hero image fix wrong and measured my way out of it.** Built it, tested it on a real
-  probe page, the numbers disproved my own reasoning, reverted. You'd already said object-fit covers
-  it, and you were right.
-
-**Full narrative:** `memory/session-2026-08-10*.md`.
+- **We finally have a baseline — and we threw one of the two candidates away on purpose.** The count
+  that flattered us (median 12 controls a block) turned out to *mis-rank* the library: the block that
+  scored near-best actually shows a client ~50 controls. It was rejected with the reasons recorded, so
+  nobody rebuilds it. The number that survives is **129** — settings that render with no way to change
+  them, down from 243, and I proved the drop is real by running today's scanner against the old code.
+- **The live editor told us where the real mess is.** A plain text label block offers the client
+  *"Zoom image on hover"* and *"Grayscale to colour"*. There is no image. Library-wide, **59% of every
+  control a client meets comes from universal extensions, not from the block** — which is exactly the
+  opt-in inversion you called for. You chose to keep the planned order anyway; that's recorded.
+- **A rule the contract claimed was enforced, wasn't.** Writing a banned colour or link control into a
+  block passed the build cleanly. Now caught — proven by planting one and watching the old gate report
+  zero while the new one flagged it.
+- **Five detectors were built, tested — and unreachable.** No command referenced them. That is this
+  project's own recorded failure mode, twice over. Fixed.
+- **Four of my own claims were wrong and are corrected in place, not quietly dropped** — including one
+  that would have sent someone to write code the build rejects.
+- **The competition already solved the next build the way we planned it.** Five rival plugins use the
+  same WordPress API, and one already ships the exact toggle we're about to build. Nothing to invent.
 
 ## CURRENT FRONTS
 
@@ -211,52 +205,50 @@ without these): 1. `.claude/plans/spec-35-control-type-contract.md` (governing) 
 > **No phase does by hand what its own detector could do.** If an item touches >3 blocks, the first
 > deliverable is the detector, not the edit.
 
-### Task 1 — Measure the BEFORE numbers (INLINE, ~15 min) ⭐ START HERE
+✅ **Tasks 1 + 2 of the previous plan are DONE** — baseline measured (rule 21 = **129**), five survey
+detectors built AND wired. Do not redo them.
 
-**What:** hero's inspector panel count (live editor, panels expanded, tabs selected by `aria-label`)
-and rule 21's current finding count. The divergence count is already measured (above).
-**Why:** the deliverable is a *change* in these numbers. Unmeasured now = baseline lost forever.
-`P-HEADER-SIMPLICITY-FINDINGS` is parked OPEN precisely because its baseline was never taken.
-**Acceptance:** numbers written into the plan as measured facts, with the commands that produced them.
-**Depends on:** none.
+### ⭐ START HERE — Phase 1.1, the sticky device toggle (SENIOR, design gate FIRST)
 
-### Task 2 — Extend the survey detectors to the other families (DELEGATED fan-out, Sonnet)
+**What:** one global device toggle in its **own** `src/blocks/extensions/responsive-device-toggle.js`
+— NOT inside `conditional-visibility.js`, which is wrapped end-to-end in a
+`window.__sgsConditionalVisibilityRegistered` guard, and duplicate-bundle double-registration is a
+*recorded* occurrence.
+⭐ **Copy GenerateBlocks' shape** (D545): ONE tab strip portalled into `.block-editor-block-inspector`,
+guarded against a duplicate, `localStorage` persistence. Don't invent it — five competitors converged
+here and the API is stable, not `__experimental`.
+**Guardrails:** needs a NEW editor stylesheet (no `sgs-responsive-*` class has any CSS today) proven
+to load by a deliberately-red positive control; plus a persistent cue so a client doesn't edit in
+Tablet unaware. **Design gate + multi-rater before build.**
 
-**What:** the length family is done (`scripts/surveys/survey-length-controls.py`, 5/5 self-test with
-positive + negative controls). Build the same shape for colour, typography and box families.
-**Why:** makes every later "find all the instances" step free, and stops us designing a shape worse
-than one already in the tree.
-**Acceptance:** each detector carries a `--self-test` proving it can FAIL, and its live output is
-reconciled against an independently-derived expected population before being trusted.
-**Parallel with:** Task 1. **/qc gate after:** yes.
+### Then 1.2 (DELEGATE) — delete `<DeviceTabs>` from `ResponsiveControl.js:152-169` + the dead
+`localKey` fallback (`:115-129`), behind a `sgsGlobalDeviceToggle` flag for one canary cycle.
+**73 call sites across 32 files follow from ONE file** (`<DeviceTabs>` renders in only 4 files).
+⛔ The agent must NOT also touch a consumer file in the same commit.
 
-### Task 3 — Phase 1.1/1.2, the responsive model (INLINE, Opus)
+### Same change, sequential — 1.3 (DELEGATE) · 1.5 + 1.6 (SENIOR)
+1.3 = `ResponsiveOverride.js:49` + `ResponsiveTriStateControl.js:82` off local state.
+1.5 = rewrite `check-control-ux.js` + `lint-responsive-controls.py` (the latter goes **vacuous**).
+1.6 = the no-own-switcher rule, `mode:gate` in the same commit as 1.2.
 
-**What:** build the sticky device toggle in **its own** `extensions/responsive-device-toggle.js` — NOT
-inside `conditional-visibility.js`, which is wrapped end-to-end in a `window.__sgs…Registered` guard,
-and double-registration from duplicate bundles is a *recorded* occurrence. Then delete `<DeviceTabs>`
-from `ResponsiveControl.js:152-169` plus the now-proven-dead `localKey` fallback.
-**Why:** ~192 of ~215 on-screen switchers are redundant copies of one global state. One edit.
-**Guardrails:** behind a `sgsGlobalDeviceToggle` compile-time flag for one canary cycle; needs a NEW
-editor stylesheet (no `sgs-responsive-*` class has any CSS today) proven to load by a
-deliberately-red positive control.
-**Depends on:** Task 1. **/qc gate after:** yes — multi-rater.
-
-### Task 4 — Rewrite the two gates Phase 1 breaks (INLINE, Opus, SAME change as Task 3)
-
-`check-control-ux.js` will false-fire tree-wide, and its `:586` bug (`seedMode === false`) makes it a
-hard gate even in report mode — there is currently **no way to inspect its output without failing**.
-`lint-responsive-controls.py` goes **vacuous** (a green proving nothing) and its self-test breaks.
+### Parallel, file-disjoint — 1.4a + 1.4b (SCRIPT), 1.4c (SENIOR)
+1.4a `image-controls.js:225-281` · 1.4b `ContainerWrapperControls.js:1483-1511` — genuine 3-sibling
+merges. ⚠ **Both are value-DOMAIN changes** (`RangeControl`→`UnitControl`; closed enum→open value) —
+D521-class silent-coercion risk, so the codemod PROPOSES and a human signs off, with a stored-content
+migration. **1.4c (`hero/edit.js:906`, `:1006-1017`) is NOT a merge** — mobile-only orphans with no
+tier counterpart; needs Bean's design call first (D545).
 
 ### Dependency graph
 
 ```
-Task 1 (measure, inline)  ║ parallel ║  Task 2 (survey detectors, Sonnet fan-out)
-                    ↓ baseline recorded
-Task 3 (toggle + tab deletion)  +  Task 4 (gate rewrites)   ← same change
+1.1 toggle (SENIOR, design gate) ──> 1.2 (DELEGATE, flagged)
+                                      ├─> 1.3 (DELEGATE)
+                                      ├─> 1.5 gate rewrites  ┐ same commit as 1.2
+                                      └─> 1.6 rule           ┘ (shared file cluster — SEQUENTIAL)
+1.4a ─┐ file-disjoint from that cluster and from each other — safe to PARALLELISE
+1.4b ─┘        1.4c ── blocked on Bean's design call, not on 1.4a/b
                     ↓ multi-rater /qc · canary verify BOTH editors
-                    ↓ commit by exact path, main
-Then: Phase 2.1 opt-in inversion (script-derived; Bean reviews the diff)
+Then: Phase 3.2a's `--fix` (highest leverage left) · Phase 2.1 opt-in inversion
 ```
 
 ### Methodology guardrails (earned this session; do not skip)

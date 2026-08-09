@@ -60,6 +60,35 @@ npm run lint:js       # ESLint
 npm run lint:css      # Stylelint
 ```
 
+### Survey detectors — the census half of the script triad (Spec 35 / D542)
+
+```bash
+npm run survey:inspector-surface   # OWN vs EXTENSION vs CORE control split, all 83 blocks
+npm run survey:length              # length/unit control divergence
+npm run survey:colour              # colour control divergence
+npm run survey:typography          # typography control divergence
+npm run survey:box                 # 4-side box + border conformance
+npm run survey:selftest            # all five self-tests (40 assertions) in one chain
+npm run audit:post-content -- <path>   # stored post_content vs current block schemas
+npm run audit:element-manifest         # Spec 35 element-manifest conformance
+npm run audit:placement-reach          # D537 placement-rule reach
+```
+
+**The triad (D542, Bean-locked):** the thing that finds every instance, the thing that fixes them and
+the thing that keeps them fixed are the SAME detector — `--survey` (census, run BEFORE the design) →
+`--fix` (parameterised codemod) → `--check` (the gate). **If an item touches more than ~3 blocks, the
+first deliverable is the detector, not the edit.** Only `--survey` exists today; each phase builds its
+own `--fix` when it reaches its migration.
+
+⛔ **These are NOT in `prebuild` and must not be added to it** — they are censuses with no `--check`
+mode. Putting a non-gating script in a gate chain is enforcement theatre.
+⚠ **They were built and left UNWIRED** (zero `package.json` refs) until 2026-08-09 — this repo's
+recorded failure mode, the same one D493 caught running for three weeks. **Never assume a built
+detector is reachable: grep `package.json` before believing it runs.**
+⚠ **`survey-inspector-surface.js` counts DECLARED rows**, while D544's live-editor figures count
+DEFAULT-VISIBLE ones. Trust its OWN-vs-EXTENSION split (which matches the live measurement exactly);
+do not quote its row totals as "what the client sees".
+
 The `--experimental-modules` flag is required for `viewScriptModule` in block.json. Check if stabilised in the installed @wordpress/scripts version.
 
 The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — dynamic blocks won't render without this.

@@ -1815,3 +1815,31 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   number exists at all — the same discipline the memory index calls
   `never-claim-a-gate-field-you-did-not-measure`, now surfaced here as a catalogue entry rather than
   living only in `MEMORY.md`.
+- **STOP-A-METRIC-THAT-GETS-CHEAPER-WHEN-YOU-HIDE-THINGS-IS-NOT-A-PROGRESS-METRIC.** A library-wide
+  inspector census was measured, looked authoritative (median 12, max 49, total 1121), and was
+  **rejected as a baseline** (D543): it scored any custom composite as ONE row without descending, so
+  wrapping a block's 30 controls in one component would have taken it 31 → ~2 with **zero** client
+  benefit. It also could not see native `supports` panels (64 of 83 blocks declare one, rendered by
+  core with no JSX to walk) or the extensions directory, and it summed mutually-exclusive conditional
+  branches as simultaneously visible — so its error had **two signs** and could not even be given a
+  direction. Live measurement then proved it did not merely undercount but **MIS-RANKED**: the block
+  scoring near-best (8) shows a client ~50 controls, and one scoring 28 shows more than one scoring 45
+  (D544). **Rule: before adopting any number as a progress metric, ask "what is the cheapest way to
+  make this number fall, and does that action help the user?" If the cheapest path is hiding or
+  re-nesting rather than removing, the metric is unfalsifiable as evidence of improvement — and
+  validate its ORDERING against ground truth, not just its magnitude.** Sibling of
+  STOP-VALIDATE-A-DETECTOR-AGAINST-A-KNOWN-ANSWER-BEFORE-QUOTING-ITS-NUMBER; the instrument was not
+  broken, it was a 2-block tool repurposed as an 83-block one, and its own self-test *certified* the
+  defect as the expected answer.
+- **STOP-A-BUILT-DETECTOR-WITH-NO-WIRING-IS-UNREACHABLE-GREP-PACKAGE-JSON.** Five survey detectors —
+  built, self-tested, committed, ~4,600 lines — had **zero** `package.json` references. Nothing was
+  broken; they were simply invisible to anyone who did not already know the file paths. This is the
+  third recorded instance in this repo (`a-gate-can-be-built-and-never-wired`: 5 enforcers / 0 refs;
+  D493: `check-dead-pattern-attrs.py` unwired for three weeks while the docs described it as a
+  standing defence). **Rule: shipping a detector is not done until it is reachable by a named command —
+  grep `package.json` (or the hook/skill that invokes it) and prove the command runs, in the same
+  commit that builds it.** ⚠ Corollary in the other direction, equally important: **absence from
+  `package.json` is NOT evidence of orphaning** — most of this repo's scripts are invoked on demand
+  from docs, hooks or sibling scripts. Separate by MECHANISM (who calls it), never by count. And a
+  census with no `--check` mode must **not** be added to `prebuild` to "wire" it: putting a
+  non-gating script in a gate chain is enforcement theatre.

@@ -1,5 +1,5 @@
 {
-  "note": "Committed floor of the max-ever STOP-CATALOGUE.md identifier set (D101 ratchet, check_stop_carry_forward). This script NEVER writes this file (handoff-preflight.py never edits files) -- bump it by hand to the current superset whenever a STOP is deliberately, legitimately added, so the floor survives a future rename/squash of git history. Seeded 2026-07-31; bumped 2026-08-07 (handoff) to lock 17 STOPs that were beyond the floor, incl. the 3 added this session (git add -A fallback / date-keyed gate / preset-layer duplication) during the D101 numeric-STOP recovery + citation-guard build. Bumped 2026-08-09 (handoff) to lock the 6 STOPs added in section E10. The 14 numeric phantoms (STOP-8/13/26/37/38/45/51/54/58/61/62/63/65/69) were DELIBERATELY NOT added: the catalogue itself lists them as cited-but-undefined under its zero-fabrication UNRESOLVED section, and the floor must not assert a defence that has no text. Bumped again 2026-08-09 (second handoff of the day) to lock the 8 STOPs added in section E11 (substring-vs-word match; case-sensitive grep false all-clear; dry-run that exits before the writer; group by mechanism not symptom-count; banned-phrase gate too broad AND too narrow; stale IDE diagnostics; measurement blind behind an iframe; figure written before measuring). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text.",
+  "note": "Committed floor of the max-ever STOP-CATALOGUE.md identifier set (D101 ratchet, check_stop_carry_forward). This script NEVER writes this file (handoff-preflight.py never edits files) -- bump it by hand to the current superset whenever a STOP is deliberately, legitimately added, so the floor survives a future rename/squash of git history. Seeded 2026-07-31; bumped 2026-08-07 (handoff) to lock 17 STOPs that were beyond the floor, incl. the 3 added this session (git add -A fallback / date-keyed gate / preset-layer duplication) during the D101 numeric-STOP recovery + citation-guard build. Bumped 2026-08-09 (handoff) to lock the 6 STOPs added in section E10. The 14 numeric phantoms (STOP-8/13/26/37/38/45/51/54/58/61/62/63/65/69) were DELIBERATELY NOT added: the catalogue itself lists them as cited-but-undefined under its zero-fabrication UNRESOLVED section, and the floor must not assert a defence that has no text. Bumped again 2026-08-09 (second handoff of the day) to lock the 8 STOPs added in section E11 (substring-vs-word match; case-sensitive grep false all-clear; dry-run that exits before the writer; group by mechanism not symptom-count; banned-phrase gate too broad AND too narrow; stale IDE diagnostics; measurement blind behind an iframe; figure written before measuring). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text. Bumped again 2026-08-09 (third session of the day) to lock the 2 STOPs added while reconciling the Spec 35 docs: a metric that gets cheaper when you hide things is not a progress metric (D543/D544 — the rejected inspector census, which MIS-RANKED not merely undercounted), and a built detector with no package.json wiring is unreachable (five survey detectors shipped with zero references — third instance of this failure mode in this repo). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text.",
   "updated": "2026-08-09",
   "ids": [
     "STOP-10",
@@ -61,6 +61,7 @@
     "STOP-A-A-TEST-CAN-PASS-THE-VERY-DEFECT-IT-WAS-WRITTEN-TO-CATCH",
     "STOP-A-BANNED-PHRASE-GATE-CAN-BE-TOO-BROAD-AND-TOO-NARROW-AT-ONCE",
     "STOP-A-BLOCKER-YOU-ASSERT-WITHOUT-READING-IS-NOT-A-BLOCKER",
+    "STOP-A-BUILT-DETECTOR-WITH-NO-WIRING-IS-UNREACHABLE-GREP-PACKAGE-JSON",
     "STOP-A-CAPABILITY-PRESENT-IN-EVERY-ARTEFACT-CAN-STILL-DO-NOTHING",
     "STOP-A-CASE-SENSITIVE-GREP-CAN-MANUFACTURE-A-FALSE-ALL-CLEAR",
     "STOP-A-COMMENT-THAT-JUSTIFIES-A-BREACH-IS-A-DATED-OPINION",
@@ -88,6 +89,7 @@
     "STOP-A-MANIFEST-NOTE-CAN-BE-WRITTEN-FROM-A-FILE-SCOPED-SEARCH",
     "STOP-A-MATCHING-MD5-PROVES-CONSISTENCY-NOT-CORRECTNESS",
     "STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY",
+    "STOP-A-METRIC-THAT-GETS-CHEAPER-WHEN-YOU-HIDE-THINGS-IS-NOT-A-PROGRESS-METRIC",
     "STOP-A-PEERS-ACCOUNT-OF-YOUR-OWN-WORKTREE-IS-A-HYPOTHESIS",
     "STOP-A-PROSE-IS-NOT-AN-ARTEFACT",
     "STOP-A-REBASELINE-MUST-BE-FOLLOWED-BY-A-SELF-TEST",
