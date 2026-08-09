@@ -158,8 +158,11 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * An extension-injected control belongs to NO declared element
 				 * (written at runtime by a registerBlockType filter, so it is
 				 * in no block's supports.sgs.elements). Per THE PLACEMENT RULE
-				 * it takes a block-level panel, and the MEDIA contract's Tab
-				 * field puts sizing/position in Styles.
+				 * (TWO TIERS, D537 2026-08-09) sizing/position resolves to
+				 * its TIER 2 property-family — LAYOUT/POSITION — not a single
+				 * catch-all block-level panel. The routing below (native
+				 * group="styles") is kept as the interim WP-native-group home
+				 * until that family panel itself is built (unbuilt as of D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason only.
 				 */ }

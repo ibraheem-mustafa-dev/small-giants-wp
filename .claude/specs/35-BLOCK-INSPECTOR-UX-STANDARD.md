@@ -51,6 +51,15 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   beside each base value**. Hover is never its own panel. Unresolved element → the control does not
   move. Kadence, Spectra, Stackable, Otter and Essential Blocks all converge on this grouping
   independently. Canonical statement: contract §CO-2 + §"THE ELEMENT MANIFEST".
+  ⛔ **TWO TIERS (Bean-locked, D537, 2026-08-09).** A4 is TIER 1 only. **TIER 2** governs WITHIN a
+  panel, and for every control that scopes to no element: group by **property-family**
+  (text/fill/layout/position/motion/animation — already defined in
+  `scripts/consistency/cluster-member-sets.json`, not invented per-block), resolved via each
+  element's declared `clusters` and honouring `appliesToLayers`. This **replaces** the earlier
+  framing that block-root/no-element controls needed a single catch-all "block-level panel" still
+  to be designed. A control that styles **nothing** (`variant`, `templateMode`, `tagName`, `layout`,
+  `autoplay`, `showDots`, `required`) takes **one `Settings` panel, pinned first.** Full rule:
+  `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls:
   optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
 - **A6. Never duplicate a native `supports` panel** (inspector-UX form of R-31-9).

@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """placement-reach.py — how far does THE PLACEMENT RULE actually reach?
 
-Spec 35 §"THE PLACEMENT RULE" says: one panel per element, holding that element's
-content, styling and hover together. Everything that scopes to NO element takes a
-block-level panel instead.
+Spec 35 §"THE PLACEMENT RULE" is TWO TIERS (D537, 2026-08-09, Bean-locked). TIER 1: one
+panel per element, holding that element's content, styling and hover together. TIER 2:
+everything that scopes to NO element resolves to a PROPERTY-FAMILY panel instead
+(text/fill/layout/position/motion/animation, per cluster-member-sets.json) — NOT a
+single catch-all "block-level panel". A control with no CSS property behind it at all
+(variant, templateMode, tagName, layout, autoplay, showDots, required) takes one
+Settings panel, pinned first.
 
 This script implements that rule against real `block.json` data and reports the
-SPLIT: how many declared attributes resolve to an element panel, and how many fall
-through to the block-level panel.
+SPLIT: how many declared attributes resolve to an element panel (tier 1), and how many
+fall through to tier-2 property-family resolution.
 
 WHY IT EXISTS AS A COMMITTED ARTEFACT: the 46%/54% split was first produced by an
 ephemeral one-off script, and a handoff QC reviewer correctly flagged the figure as

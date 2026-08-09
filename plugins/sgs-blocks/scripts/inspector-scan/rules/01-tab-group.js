@@ -95,7 +95,7 @@ module.exports = {
 					( hasAdvancedRouting
 						? ' (Advanced is already routed via InspectorAdvancedControls, not counted above.)'
 						: '' ),
-				fix: 'Give each declared element in supports.sgs.elements ONE panel holding its content, its styling and its hover together (THE PLACEMENT RULE, .claude/plans/spec-35-control-type-contract.md). Controls belonging to no element take a block-level panel, grouped per that control type\'s Tab field. Do NOT sort by behaviour-vs-appearance — that rule was retired 2026-08-08.',
+				fix: 'TWO TIERS (THE PLACEMENT RULE, .claude/plans/spec-35-control-type-contract.md, D537 2026-08-09). TIER 1: give each declared element in supports.sgs.elements ONE panel holding its content, its styling and its hover together. TIER 2: within a panel, and for every control belonging to no element, group by property-family (text/fill/layout/position/motion/animation, per scripts/consistency/cluster-member-sets.json) — NOT a single catch-all block-level panel. A control that styles nothing (variant, templateMode, tagName, layout, autoplay, showDots, required) takes one Settings panel, pinned first. Do NOT sort by behaviour-vs-appearance — that rule was retired 2026-08-08.',
 				keyParts: [ 'no-group-routing' ],
 			} ),
 		];

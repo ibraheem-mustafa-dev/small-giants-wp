@@ -11,6 +11,18 @@ amended: |
   `contentAttrs`); CO-2 rewritten; §8/§9 field 4, CO-28's hard-dependency box and Cross-cutting A
   updated; the "§6 field 4" miscitation corrected to §8. Sibling edits: spec 35 A3/A4,
   check-element-manifest-conformance.js docblock.
+  2026-08-09 (D537, Bean-locked) — PLACEMENT is now explicitly TWO TIERS. Tier 1 (unchanged):
+  one panel per declared element. Tier 2 (new): WITHIN a panel, and for every control that scopes
+  to no element, controls group by PROPERTY-FAMILY (text / fill / layout / position / motion /
+  animation — the families already defined in `scripts/consistency/cluster-member-sets.json`, not
+  invented here), resolved via each element's declared `clusters` and honouring `appliesToLayers`.
+  A control that styles NOTHING (`variant`, `templateMode`, `tagName`, `layout`, `autoplay`,
+  `showDots`, `required` — no CSS property behind it) takes one `Settings` panel, pinned first.
+  This retires the earlier framing that block-root/no-element controls needed a single
+  catch-all "block-level panel" still to be designed — they resolve to a property-family panel by
+  declaration, same as element panels do. §8/§9 field 4 and Cross-cutting A's "Tab field picks the
+  WordPress group" language are corrected below; the per-contract `Tab` field is now subordinate
+  to BOTH tiers, not just tier 1.
 governs: the universal block-inspector control surface (Spec 35)
 spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
 supersedes: .claude/plans/spec-35-inspector-DONE-checklist.md (the 27 end conditions + T1/T2/T3) —
@@ -229,13 +241,29 @@ in the **correct tab**, and contains none of the **banned lookalikes**.
 
 ---
 
-## ⛔ THE PLACEMENT RULE *(amended 2026-08-08, Bean-locked — replaces "behaviour → Settings")*
+## ⛔ THE PLACEMENT RULE *(amended 2026-08-08, Bean-locked — replaces "behaviour → Settings"; TWO-TIER structure added 2026-08-09, D537)*
 
-> **One panel per element, holding that element's content, its styling and its hover together.
-> Panel title = the element's `label`. Panel order = the element's `order`. Hover renders inline
-> beside the value it modifies — never as its own panel.**
+> **TIER 1 — the element.** One panel per element, holding that element's content, its styling and
+> its hover together. Panel title = the element's `label`. Panel order = the element's `order`.
+> Hover renders inline beside the value it modifies — never as its own panel.
+>
+> **TIER 2 — the property-family.** WITHIN a panel — and for every control that scopes to no
+> element — controls group by property family: text / fill / layout / position / motion /
+> animation. These families are **not invented for this rule**; they are the families already
+> defined in `scripts/consistency/cluster-member-sets.json`, with labels and owning components
+> already declared there. Which families an element HAS is its own `clusters` key. Resolution
+> honours `appliesToLayers`.
+>
+> **A control that styles NOTHING** (`variant`, `templateMode`, `tagName`, `layout`, `autoplay`,
+> `showDots`, `required` — no CSS property behind it) takes **one `Settings` panel, pinned first.**
 
 That is the whole rule. There is **no behaviour-vs-appearance question** anywhere in it.
+
+Two resolver rules ship with tier 2, both derived from declarations, neither a manufactured
+tie-break: (a) an explicit `attrMap` entry is AUTHORITATIVE — another element's cluster reaching
+the same attribute name is not ambiguity; (b) an element that explicitly claims a cluster member
+owns that member's WHOLE SUFFIX FAMILY (`grid` maps `css:grid-template-columns`, so a block's
+separate `columns` attribute — the same member under another name — is `grid`'s too).
 
 ⚠ **"Panel order = the element's `order`" is PROVISIONAL (Bean, 2026-08-08).** It gives a per-block
 order, which is not the same thing as **CO-28**'s cross-block canonical order — and CO-28's own gate
@@ -254,8 +282,15 @@ and the ambiguity is reported — no-worse-than-today is the floor.
 beside their base value (18 elements declare `hover`, 4 declare `selected`).
 
 **Controls with no element** — anything injected by a universal extension in
-`src/blocks/extensions/`, and any block-wide setting — belong to no element by construction. They
-take a **block-level panel**, and the per-control-type `Tab` field below chooses its native group.
+`src/blocks/extensions/`, and any block-wide setting — belong to no element by construction. Under
+D537 (2026-08-09) they do **not** collect in one catch-all "block-level panel": each one resolves
+to its **TIER 2 property-family panel** (text/fill/layout/position/motion/animation) via
+`cluster-member-sets.json`, exactly as an element's own controls do. Only a control that styles
+**nothing** — no CSS property behind it (`variant`, `templateMode`, `tagName`, `layout`,
+`autoplay`, `showDots`, `required`) — takes the single pinned-first `Settings` panel. The
+per-control-type `Tab` field below is now subordinate to this resolution too: it picks the
+WordPress *group* only for a "styles-nothing" control landing in the pinned `Settings` panel, not
+for any control that has a real property family.
 
 ### Where the tabs go — Bean-decided 2026-08-08
 
@@ -320,8 +355,9 @@ frequencies — `label` 283 · `order` 283 · `clusters` 283 · `attrMap` 149 ·
     "clusters": [ "text", "fill" ],   // REQUIRED — which of text/fill/layout this element HAS (F4 flag)
     "prefix": "headline",             // OPTIONAL — attr-name prefix for the default convention
     "isWrapper": true,                // OPTIONAL — ONLY the element representing the block ROOT.
-                                      //   Gates the native-supports fallback, AND selects step 2
-                                      //   of THE PLACEMENT RULE.
+                                      //   Gates the native-supports fallback, AND selects TIER 2
+                                      //   of THE PLACEMENT RULE (D537 — block-root controls
+                                      //   resolve by property-family, not to a catch-all panel).
     "layer": "OUTER",                 // OPTIONAL — OUTER | GRID | CONTENT | GRID_AREA (wrapper layer)
     "attrMap": {                      // OPTIONAL — explicit STYLE overrides, always tried first
       "css:font-size": "headlineFontSize",
@@ -547,7 +583,10 @@ Regenerate before building any gate on them.
    raw `GradientPicker` inside `GradientOverlayControl.js:191`, reaching `container`, `hero`,
    `trust-bar`, `cta-section` indirectly.
 4. **Tab** — `group="color"` → Styles, mirroring native `supports.color`. Measured: 37/41 in
-   Settings, 3 Styles, 1 explicit settings. *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+   Settings, 3 Styles, 1 explicit settings. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — eligibility `surfaces.colour` (64); detection target `role='color'` (50 blocks,
    261 rows). The 14-block gap is a DB-completeness issue, not a control gap.
 6. **Conformance** — 49/50 conform. `sgs/star-rating` violates.
@@ -567,7 +606,10 @@ Regenerate before building any gate on them.
    a separate `SelectControl` for target and `TextControl` for rel — three raw controls doing one
    component's job); **`extensions/hover-effects.js:388` raw URL field injected into 67 blocks**
    (84 − 17 opt-outs; the "~82" this doc first carried is the `customCss` figure, transposed).
-4. **Tab** — `settings`. Placement is already consistent; **component choice is the live problem.** *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+4. **Tab** — `settings`. Placement is already consistent; **component choice is the live problem.** *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `surfaces.link` (16) is both over- and under-inclusive: 9 of the 16 match on a media
    URL or a colour token; 6 blocks with genuine repeater-item links are invisible because
    `build-roster.py` only scans top-level attr names. **True denominator: 14 blocks with a
@@ -587,7 +629,10 @@ Regenerate before building any gate on them.
 2. **Required props** — `value` bound to the attr; `options` matching the declared `enum` **exactly**.
 3. **Banned lookalikes** — (a) a shared aggregator offering options outside the consuming block's
    enum; (b) a PHP-enforced closed set with no `block.json` enum (free-text box, no validation).
-4. **Tab** — `settings`, explicitly, not by relying on the default. *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+4. **Tab** — `settings`, explicitly, not by relying on the default. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — 284 rows with declared enums; 1,372 string rows are the search space, not the
    violator count.
 6. **Conformance — three distinct live defects on ONE shared control:**
@@ -619,7 +664,10 @@ Regenerate before building any gate on them.
    gated); a `TextControl` standing in for `UnitControl` — `sgs/card-grid.cardRadius`, help text
    *"e.g. 8px"*, accepts invalid CSS.
 4. **Tab** — `typography` for font-size/line-height, `dimensions` for spacing, `layout` for grid
-   geometry. All Styles. *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+   geometry. All Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `is_responsive=1 AND css_property IN (<length set>)` → 36 blocks.
 6. **Conformance** — the `TypographyControls` consumers conform. Violators: `cardRadius`; 79 of 85
    blocks with no tab split; **12 attributes declared + rendered with no control** (below).
@@ -634,7 +682,10 @@ Regenerate before building any gate on them.
 2. **Required props** — `values` per tier, `onChange(tier, next)`, real `units`.
 3. **Banned lookalikes** — per-side scalars (**migration COMPLETE — 0 remaining**); regex side-token
    grouping in the converter (already gated, converter-side only — nothing guards editor code).
-4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles. *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — reconciled to **51 blocks** (46 DB-classified ∪ 48 grep-matched, 43 overlap). The
    discrepancy resolved: `before-after`/`media` use `ResponsiveBorderRadiusControl` (no "BoxControl"
    substring); 5 blocks have live box controls with `box_family` NULL.
@@ -681,7 +732,10 @@ Regenerate before building any gate on them.
 3. **Banned lookalikes** — per-tier duplicate pickers instead of one `ResponsiveControl`-wrapped
    picker: `sgs/responsive-logo/edit.js:281-305` renders **three always-visible** logo slots.
 4. **Tab** — `settings`; `content` for collection/repeater media (0 SGS blocks currently use
-   `group="content"`). *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+   `group="content"`). *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `surfaces.media` (30) is the eligible pool. The 15 blocks declaring
    `supports.sgs.imageControls` are a **conformance subset, not the pool**. Rule 18's own
    `wrapsImage` resolution is MORE precise than the DB proxy — do not regress it.
@@ -703,9 +757,12 @@ Regenerate before building any gate on them.
 3. **Banned lookalikes** — a 2-option `SelectControl` driving a boolean (3 DB rows); a
    `RadioControl` with two options (**1 live instance — `heading/edit.js:281`**; the earlier "ZERO"
    was false, the judgement it supported survives); literal "On/Off" toggle groups (**none found**).
-4. **Tab** — **element-scoped → that element's panel in Settings (THE PLACEMENT RULE, step 1).**
-   Root-scoped only, step 2: behaviour → Settings; appearance → Styles. That discriminator is the
-   contract **at root scope**; it was never a whole-inspector rule and must not be read as one again.
+4. **Tab** — **element-scoped → that element's panel in Settings (THE PLACEMENT RULE, TIER 1).**
+   Root-scoped (no element): resolves to its TIER 2 property-family panel via
+   `cluster-member-sets.json` (D537), UNLESS the boolean styles nothing — e.g. `autoplay`,
+   `showDots`, `required` — in which case it takes the pinned-first `Settings` panel. The old
+   "behaviour → Settings; appearance → Styles" root-scope split is retired; it was never a
+   whole-inspector rule and must not be read as one again.
 5. **Scope** — 252 boolean rows.
 6. **Conformance** — 89 boolean rows have no recorded control. **Not asserted as defects** — needs
    per-row triage.
@@ -724,9 +781,12 @@ Regenerate before building any gate on them.
 3. **Banned lookalikes** — free text where a closed set exists (→ ENUM); free text driving a colour
    (`star-rating`) or typography (7 rows); `product-card.ctaFontSize` as a bare unitless
    `NumberControl` — a direct breach of the mandatory `TypographyControls` rule.
-4. **Tab** — **element-scoped → that element's panel in Settings (THE PLACEMENT RULE, step 1)** — an
+4. **Tab** — **element-scoped → that element's panel in Settings (THE PLACEMENT RULE, TIER 1)** — an
    element's text content and its appearance numbers sit in the SAME panel, not opposite tabs.
-   Root-scoped only, step 2: content/behaviour → Settings; appearance numbers → Styles.
+   Root-scoped (no element): resolves to its TIER 2 property-family panel via
+   `cluster-member-sets.json` (D537), UNLESS the field styles nothing (e.g. `tagName`), in which
+   case it takes the pinned-first `Settings` panel. The old "content/behaviour → Settings;
+   appearance numbers → Styles" root-scope split is retired.
 5. **Scope** — 1,654 string rows, 432 number/integer rows.
 6. **Conformance** — **the content split is SOUND**: body content lives in-canvas via `RichText`,
    sidebar text fields are genuinely short labels. Validated pattern, not a gap.
@@ -745,8 +805,10 @@ Regenerate before building any gate on them.
    listed so a future repeater cannot claim novelty).
 4. **Tab** — `settings` when the icon carries meaning (a list marker, a nav affordance);
    `styles` when it is decoration on an already-labelled control. *(Subordinate to THE PLACEMENT
-   RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped
-   control goes in its element's panel regardless of this field.)*
+   RULE: this Tab field only governs a control that STYLES NOTHING and lands in the pinned
+   `Settings` panel (D537). A control with a real property family resolves to its TIER 2 family
+   panel via `cluster-member-sets.json` instead. An element-scoped control goes in its element's
+   panel (TIER 1) regardless of this field.)*
 5. **Scope — `block_capabilities` capability `icon-picker` (13 blocks / 15 sites), declared via
    `supports.sgs.iconPicker`.** ⛔ **Never scope this contract by `role LIKE 'icon-%'`** — that role
    family is the converter's icon-SOURCE discriminator and tags 2 blocks, an 85% under-count of a
@@ -783,7 +845,10 @@ Regenerate before building any gate on them.
      `sgs/button`, ~80 duplicated lines, incompatible shape;
    - **no control at all** — `sgs/heading` and `sgs/text` declare `boxShadow`/`boxShadowHover`,
      render them, and expose nothing. Rule 07 cannot see this class by construction.
-4. **Tab** — `styles` (it is appearance), inside the border/effects grouping. *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+4. **Tab** — `styles` (it is appearance), inside the border/effects grouping. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `css_property LIKE '%shadow%'` across `block_attributes`, **plus** the extension
    surface. Real footprint **17 blocks**; rule 07 reports 1.
 6. **Conformance** — 4 exact defects confirmed (`heading`/`text` × `boxShadow`/`boxShadowHover`),
@@ -881,7 +946,10 @@ cross-check — do not treat this guard as complete.
    builder (the exact shape condition 7 banned for shadow, and it was dropped for border); per-side
    scalar attrs instead of an object (**migration COMPLETE — 0 remaining**, keep the gate);
    a `TextControl` taking a raw CSS `border` shorthand; radius folded into the width control.
-4. **Tab** — `border`. Styles. *(Subordinate to THE PLACEMENT RULE: this picks the native GROUP for a control that belongs to no element. An element-scoped control goes in its element's panel regardless of this field.)*
+4. **Tab** — `border`. Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
+its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
+its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `box_family IN ('borderWidth', …)` ∪ `css_property LIKE 'border%'`. ⚠ `box_family` is
    now trustworthy (D523) but still scopes only to 4-side/4-corner OBJECT attrs — a scalar radius
    (`card-grid.cardRadius`, `nav-menu.itemRadius`, `mega-aside.asideRadius`) is correctly NULL there
@@ -1005,8 +1073,11 @@ each contract above'."* Two defects in that sentence, both corrected 2026-08-08:
 
 - **The citation was wrong.** That sentence lives in **§8 BOOLEAN field 4**, not §6 (STATE / HOVER).
 - **The rule was wrong**, and it is the rule that produced the rejected 8-block sort. Placement is now
-  governed by **THE PLACEMENT RULE** (top of this document): element scope decides the TAB; a
-  contract's `Tab` field only picks the WordPress *group* for controls that scope to no element.
+  governed by **THE PLACEMENT RULE** (top of this document, TWO-TIER since D537 2026-08-09): TIER 1
+  element scope decides the panel first; TIER 2 property-family (`cluster-member-sets.json`) decides
+  placement for everything scoped to no element; a contract's `Tab` field is authoritative only for a
+  control that styles nothing, and there only picks the WordPress *group* inside the pinned
+  `Settings` panel.
 
 Still nothing to choose, only to apply — but apply the amended rule, and derive it from
 `supports.sgs.elements` rather than sorting by hand.
@@ -1203,9 +1274,13 @@ panel *inside* Settings, not its own tab. `content` and `list` map to their own 
 
 ⚠ **AMENDED 2026-08-08 — this line used to read "The definitive tab assignment is the 'Tab' field of
 each contract above." It is no longer true and must not be quoted.** The definitive tab assignment is
-**THE PLACEMENT RULE** at the top of this document: element scope decides the tab first. A contract's
-`Tab` field is authoritative only for controls that scope to **no single element**, and then only for
-choosing *which group inside Styles* they land in.
+**THE PLACEMENT RULE** at the top of this document: TIER 1 element scope decides the panel first.
+
+⚠ **FURTHER AMENDED 2026-08-09, D537 — controls scoping to no element are NOT all "Tab field"
+territory.** TIER 2 property-family (`cluster-member-sets.json`) is authoritative for any such
+control that styles something. A contract's `Tab` field is authoritative only for a control that
+styles **nothing** — no CSS property behind it — and there only for choosing *which group inside
+the pinned-first `Settings` panel* it lands in.
 
 **The highest-leverage placement fix is NOT the 66-block backlog — it is 6 files.** The universal
 extensions inject panels into all 84 blocks and mostly use a bare `<InspectorControls>`:

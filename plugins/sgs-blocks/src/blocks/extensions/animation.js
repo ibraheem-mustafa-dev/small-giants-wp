@@ -139,10 +139,13 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * An extension-injected control belongs to NO declared element
 				 * (it is written at runtime by a registerBlockType filter, so
 				 * it appears in no block's supports.sgs.elements). Per THE
-				 * PLACEMENT RULE it therefore takes a block-level panel, and
-				 * this control type's Tab field puts motion in Styles —
-				 * matching fx.js's "Scroll & effects" panel, the other
-				 * motion-control surface in this codebase.
+				 * PLACEMENT RULE (TWO TIERS, D537 2026-08-09) it resolves to
+				 * its TIER 2 property-family panel — MOTION — not a single
+				 * catch-all block-level panel. The routing below (native
+				 * group="styles") matches fx.js's "Scroll & effects" panel,
+				 * the other motion-control surface in this codebase, and is
+				 * kept as the interim WP-native-group home until the MOTION
+				 * family panel itself is built (unbuilt as of D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — that rule was RETIRED 2026-08-08. The routing
 				 * below is unchanged; only its reason is.

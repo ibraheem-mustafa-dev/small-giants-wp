@@ -280,9 +280,14 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * These controls are injected at runtime by a
 				 * registerBlockType filter, so they belong to NO declared
 				 * element in any block's supports.sgs.elements. Per THE
-				 * PLACEMENT RULE they take block-level panels, and each
-				 * control type's Tab field picks the native group: the
-				 * effects panels go to Styles, Block Link to Settings.
+				 * PLACEMENT RULE (TWO TIERS, D537 2026-08-09) the effects
+				 * panels resolve to their TIER 2 property-family — MOTION —
+				 * not a single catch-all block-level panel; Block Link styles
+				 * nothing (no CSS property behind it), so it belongs in the
+				 * pinned-first Settings panel. The routing below (native
+				 * group="styles" for effects, Settings for Block Link) is
+				 * kept as the interim WP-native-group home until the MOTION
+				 * family panel itself is built (unbuilt as of D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
 				 * only.
