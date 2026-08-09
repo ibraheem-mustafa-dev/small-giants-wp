@@ -71,6 +71,31 @@ them. **Ordering is Bean's call** — recorded here as evidence, not acted on.
 **83 SGS block types registered in the live editor** — a third independent confirmation of the D543
 denominator, now from the running site rather than the DB or the filesystem.
 
+### Phase 1's precondition re-verified, and STRENGTHENED — write, not just read
+
+Last session measured `core/editor.getDeviceType()` **reads** in both editors. Re-verified
+independently 2026-08-09, and extended to the half that actually matters for a global toggle — the
+**write**:
+
+| Surface | `getDeviceType()` | `setDeviceType()` round-trip | `core/edit-post` | `core/edit-site` |
+|---|---|---|---|---|
+| Post editor (`post.php`) | `"Desktop"` | Tablet → reads Tablet → restored | present | — |
+| **Site editor** (`site-editor.php?canvas=edit`) | `"Desktop"` | Mobile → reads Mobile → restored | **absent** | present |
+
+`core/edit-post` being **absent in the site editor** is the mechanism behind the stale comment at
+`ResponsiveControl.js:107-113` — it checked the wrong store and concluded the device type was
+unavailable. `core/editor` answers on both.
+
+**Therefore, and now proven on both surfaces in both directions:** the `localKey` / `setLocalKey` /
+`usingNative` fallback (`:115-129`) is dead code, `usingNative` is always true, and a global toggle
+driving `core/editor` covers both editors. Phase 1.2 is unblocked on evidence, not on inheritance.
+
+⚠ Still NOT probed: the legacy widgets screen. Reinstating a fallback for it would need its own
+measurement — do not restore one on the strength of the same stale comment.
+⛔ Unaffected by this: `ResponsiveControl`'s `isInherited`/`resolvedValue`/`onReset` API has zero
+callers but is a deliberate Spec 35 T1.2 deliverable. It is NOT dead code and its deletion needs its
+own gate (contract §12 field 8).
+
 ## D543 — The library-wide inspector census was measured, reviewed and REJECTED as a baseline [INCIDENT]
 
 **2026-08-09, Bean-decided.** Track 1b's first action was to take the BEFORE numbers. Two were taken.
