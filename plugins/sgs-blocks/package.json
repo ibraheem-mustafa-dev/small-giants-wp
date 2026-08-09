@@ -38,7 +38,13 @@
     "inspector-scan": "node scripts/inspector-scan/run.js",
     "inspector-scan:check": "node scripts/inspector-scan/run.js --check",
     "inspector-scan:json": "node scripts/inspector-scan/run.js --json",
-    "inspector-scan:selftest": "node scripts/inspector-scan/run.js --self-test"
+    "inspector-scan:selftest": "node scripts/inspector-scan/run.js --self-test",
+    "survey:inspector-surface": "node scripts/surveys/survey-inspector-surface.js",
+    "survey:length": "python scripts/surveys/survey-length-controls.py",
+    "survey:colour": "python scripts/surveys/survey-colour-controls.py",
+    "survey:typography": "python scripts/surveys/survey-typography-controls.py",
+    "survey:box": "python scripts/surveys/survey-box-controls.py",
+    "survey:selftest": "node scripts/surveys/survey-inspector-surface.js --self-test && python scripts/surveys/survey-length-controls.py --self-test && python scripts/surveys/survey-colour-controls.py --self-test && python scripts/surveys/survey-typography-controls.py --self-test && python scripts/surveys/survey-box-controls.py --self-test"
   },
   "devDependencies": {
     "@wordpress/icons": "^11.6.0",
