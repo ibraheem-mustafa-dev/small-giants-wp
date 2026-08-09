@@ -280,14 +280,32 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * These controls are injected at runtime by a
 				 * registerBlockType filter, so they belong to NO declared
 				 * element in any block's supports.sgs.elements. Per THE
-				 * PLACEMENT RULE (TWO TIERS, D537 2026-08-09) the effects
-				 * panels resolve to their TIER 2 property-family — MOTION —
-				 * not a single catch-all block-level panel; Block Link styles
-				 * nothing (no CSS property behind it), so it belongs in the
-				 * pinned-first Settings panel. The routing below (native
-				 * group="styles" for effects, Settings for Block Link) is
-				 * kept as the interim WP-native-group home until the MOTION
-				 * family panel itself is built (unbuilt as of D537).
+				 * PLACEMENT RULE (TWO TIERS, D537 2026-08-09) they resolve to
+				 * their TIER 2 property-families — not a single catch-all
+				 * block-level panel. This panel is MIXED-FAMILY; do not label
+				 * it with one family. Per scripts/consistency/
+				 * cluster-member-sets.json:
+				 *   FILL      — hover background / colour
+				 *   LAYOUT    — hover shadow (css:box-shadow)
+				 *   MOTION    — transition duration / easing
+				 *               (css:transition-duration / -timing-function)
+				 *   ANIMATION — stagger delay (anim:stagger)
+				 *   (none)    — scale, image zoom, grayscale, tilt and border
+				 *               accent are members of NO cluster. That is
+				 *               deliberate, not an omission: the cluster
+				 *               file's own states _note calls out
+				 *               imageZoomHover / grayscaleHover as "booleans/
+				 *               preset selectors, not state-variant style
+				 *               properties". Verify by reading the members
+				 *               arrays — the words appear in that prose note,
+				 *               so a raw substring search FALSELY reports them
+				 *               as present.
+				 * Block Link styles nothing (no CSS property behind it — it is
+				 * a URL string that wraps the block in an <a>), so it belongs
+				 * in the pinned-first Settings panel. The routing below (native
+				 * group="styles" for effects, Settings for Block Link) is kept
+				 * as the interim WP-native-group home until those family panels
+				 * are built (all unbuilt as of D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
 				 * only.

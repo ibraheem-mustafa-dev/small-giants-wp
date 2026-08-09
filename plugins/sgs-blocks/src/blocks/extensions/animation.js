@@ -140,11 +140,17 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * (it is written at runtime by a registerBlockType filter, so
 				 * it appears in no block's supports.sgs.elements). Per THE
 				 * PLACEMENT RULE (TWO TIERS, D537 2026-08-09) it resolves to
-				 * its TIER 2 property-family panel — MOTION — not a single
-				 * catch-all block-level panel. The routing below (native
+				 * its TIER 2 property-family panel — ANIMATION — not a single
+				 * catch-all block-level panel. ANIMATION, not MOTION: these
+				 * controls (sgsAnimation / Delay / Duration / Easing) are the
+				 * anim:preset / anim:duration / anim:easing members of the
+				 * `animation` cluster in scripts/consistency/
+				 * cluster-member-sets.json. `motion` in that file is a
+				 * DIFFERENT family holding only css:transition-duration and
+				 * css:transition-timing-function. The routing below (native
 				 * group="styles") matches fx.js's "Scroll & effects" panel,
-				 * the other motion-control surface in this codebase, and is
-				 * kept as the interim WP-native-group home until the MOTION
+				 * the other animation-control surface in this codebase, and is
+				 * kept as the interim WP-native-group home until the ANIMATION
 				 * family panel itself is built (unbuilt as of D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — that rule was RETIRED 2026-08-08. The routing

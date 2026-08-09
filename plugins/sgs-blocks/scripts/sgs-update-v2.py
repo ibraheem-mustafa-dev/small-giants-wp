@@ -726,6 +726,38 @@ def _index_sgs_block_files(
                     new_attrs += 1
                 elif tuple(ex_attr) != scraped_attr:
                     updated_attrs += 1
+
+            # --- supports drift (mirrors the write path below) ---
+            # WHY THIS EXISTS: this branch previously counted blocks + attrs and
+            # then `continue`d, never reaching the supports writer — so
+            # new_supports/updated_supports were STRUCTURALLY always 0 in a
+            # dry run. `--dry-run` is the documented pre-write check for
+            # "does the DB still agree with block.json?", and it reported a
+            # clean 0 while three blocks' `supports.sgs` blobs genuinely
+            # differed (2026-08-09; the real run then reported 3). A preview
+            # that cannot report the drift it is run to find reads green
+            # forever. Mirrors the write path at "INSERT OR IGNORE supports"
+            # exactly — including its quirk that UNIQUE(block_slug,
+            # support_name) does NOT include `source`, so a row under ANY
+            # source blocks the insert and only the sgs-scoped value is
+            # then compared.
+            for support_name, support_val in supports.items():
+                support_json = json.dumps(support_val)
+                exists_any = c.execute(
+                    "SELECT 1 FROM block_supports "
+                    "WHERE block_slug = ? AND support_name = ?",
+                    (slug, support_name),
+                ).fetchone()
+                if exists_any is None:
+                    new_supports += 1
+                    continue
+                ex_sup = c.execute(
+                    "SELECT support_value FROM block_supports "
+                    "WHERE block_slug = ? AND support_name = ? AND source = 'sgs'",
+                    (slug, support_name),
+                ).fetchone()
+                if ex_sup is not None and ex_sup[0] != support_json:
+                    updated_supports += 1
             continue
 
         # --- INSERT OR IGNORE block ---

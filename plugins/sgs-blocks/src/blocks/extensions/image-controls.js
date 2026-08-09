@@ -158,11 +158,20 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * An extension-injected control belongs to NO declared element
 				 * (written at runtime by a registerBlockType filter, so it is
 				 * in no block's supports.sgs.elements). Per THE PLACEMENT RULE
-				 * (TWO TIERS, D537 2026-08-09) sizing/position resolves to
-				 * its TIER 2 property-family — LAYOUT/POSITION — not a single
-				 * catch-all block-level panel. The routing below (native
-				 * group="styles") is kept as the interim WP-native-group home
-				 * until that family panel itself is built (unbuilt as of D537).
+				 * (TWO TIERS, D537 2026-08-09) these controls resolve to their
+				 * TIER 2 property-families — not a single catch-all
+				 * block-level panel. This panel spans TWO families, per
+				 * scripts/consistency/cluster-member-sets.json:
+				 *   FILL   — sgsObjectFit / sgsObjectPosition
+				 *            (css:object-fit, css:object-position)
+				 *   LAYOUT — sgsMaxWidth / sgsHeight*
+				 *            (css:max-width, css:height)
+				 * ⛔ NOT "position": the `position` cluster holds only css:top,
+				 * css:bottom and css:z-index. object-position is a FILL member
+				 * despite its name, and there is no merged "layout/position"
+				 * family. The routing below (native group="styles") is kept as
+				 * the interim WP-native-group home until those family panels
+				 * are built (both unbuilt as of D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason only.
 				 */ }

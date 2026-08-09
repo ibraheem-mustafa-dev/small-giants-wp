@@ -394,11 +394,11 @@ def main():
     print('declared attributes (non-_)  : %d' % total_attrs)
     if total_attrs:
         print('  -> element panel           : %d (%.1f%%)' % (total_scoped, 100.0 * total_scoped / total_attrs))
-        print('  -> BLOCK-LEVEL panel       : %d (%.1f%%)' % (block_level_total, 100.0 * block_level_total / total_attrs))
+        print('  -> tier-2 (property-family): %d (%.1f%%)' % (block_level_total, 100.0 * block_level_total / total_attrs))
     print()
-    print('most block-level (the panel the rule does not yet design):')
+    print('most tier-2 (resolved BY PROPERTY-FAMILY, not a catch-all panel):')
     for slug, scoped, block_level in sorted(rows, key=lambda r: -r[2])[:8]:
-        print('  %-22s element=%-4d block-level=%-4d' % (slug, scoped, block_level))
+        print('  %-22s element=%-4d tier-2=%-4d' % (slug, scoped, block_level))
 
     # CONTESTED — two elements can both claim the attribute, so which panel it lands
     # in is not determined by the manifest. Reported, never silently tie-broken: the

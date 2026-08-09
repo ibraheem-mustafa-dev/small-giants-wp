@@ -194,12 +194,17 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * "Colour" panel living in Settings). Parallax is injected by
 				 * a runtime filter, so it belongs to no declared element; per
 				 * THE PLACEMENT RULE (TWO TIERS, D537 2026-08-09) it resolves
-				 * to its TIER 2 property-family panel — MOTION — not a single
-				 * catch-all block-level panel, the same family as
-				 * animation.js's panel. Element parallax therefore joins
-				 * Background parallax in the Styles tab via group="styles",
-				 * kept as the interim WP-native-group home until the MOTION
-				 * family panel itself is built (unbuilt as of D537).
+				 * to its TIER 2 property-family panel — ANIMATION — not a
+				 * single catch-all block-level panel, the same family as
+				 * animation.js's panel. ANIMATION, not MOTION: `anim:parallax`
+				 * is declared a member of the `animation` cluster in
+				 * scripts/consistency/cluster-member-sets.json (suffixes
+				 * Parallax / ParallaxStrength). `motion` in that file is a
+				 * DIFFERENT family holding only css:transition-duration and
+				 * css:transition-timing-function. Element parallax therefore
+				 * joins Background parallax in the Styles tab via
+				 * group="styles", kept as the interim WP-native-group home
+				 * until the ANIMATION family panel is built (unbuilt at D537).
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
 				 * only.
