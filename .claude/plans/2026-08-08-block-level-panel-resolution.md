@@ -4,9 +4,15 @@ title: "The block-level panel — tier 1 element, tier 2 property-family"
 spec_ref: .claude/plans/spec-35-control-type-contract.md §THE PLACEMENT RULE · §CO-28
 date: 2026-08-08
 status: "MODEL APPROVED (D537, Bean, 2026-08-09) — tier 1 element / tier 2 property-family is
-        locked and propagated (f5a31435, d4d6d687). §4 VOCABULARY GATE ALSO APPROVED (Bean,
-        2026-08-09, after a /qc pass on the propagation work) — the cluster-member additions
-        may proceed. Resolver upgraded; no block touched yet."
+        locked and propagated (f5a31435, d4d6d687). §4 VOCABULARY GATE BUILT (055a24ce,
+        e2be7f73, ab9cb5c7) — background-media + shape-divider members landed in
+        cluster-member-sets.json, gated by check-cluster-coverage.py's widened self-tested
+        typo guard. Hero's tier-2 count closed 61 -> 30 (python
+        plugins/sgs-blocks/scripts/placement-reach.py --block hero, re-derived 2026-08-09);
+        library-wide 1,236 (46.1%) -> 1,702 (65.6%) element-scoped. The remaining 30 on hero
+        are the per-block manifest families §3 already named as NOT vocabulary work (split-
+        media, alignment, prefix-mismatch, content, hover+motion, block-scope) — see §3 update
+        below."
 supersedes: "the Task 1 framing in LEDGER.md (2026-08-08) — 'design the block-level panel'"
 ---
 
@@ -85,44 +91,58 @@ attribute before the gate could matter, so it passed for the wrong reason.
 
 ## 3. Every one of hero's 61 has a named home
 
-| Family | n | Why it falls through | Home |
-|---|---|---|---|
-| **Background media** — `backgroundImage*`, `bgVideo*`, `bgSvg*`, `bgKenBurns`, `svgContent`, `backgroundOverlay*`, `overlayGradient*`, `overlayOpacity` | 21 | The `fill` cluster has members for background *position / repeat / size / attachment* but **none for the media system itself** | `fill` cluster — §4 members |
-| **Shape dividers** — `shapeDivider{Top,Bottom}{,Colour,Height,Flip,Invert}` | 10 | No cluster covers them at all | new `decoration` member set — §4 |
-| **Split-variant media** — `splitImage*`, `splitMedia`, `splitContentOrderMobile` | 8 | The `media` element declares prefix `image`, so `split*` never matches | `media` element `attrMap` |
-| **Alignment** — `alignment`, `textAlign{Desktop,Tablet,Mobile}`, `verticalAlign`, `verticalAlignment` | 6 | Members exist (`css:text-align`, `css:align-items`) under different attribute names | element `attrMap` |
-| **Prefix mismatch** — `mediaPadding*`, `subHeadline{MarginBottom,MarginBottomMobile,MaxWidth}` | 6 | `media`'s prefix is `image`; `sub-headline` declares empty `clusters` | element manifest |
-| **Content** — `headline`, `subHeadline`, `label` | 3 | `contentAttrs` declared by zero blocks | Task 3 generator |
-| **Hover + motion** — `textColourHover`, `transitionDuration`, `transitionEasing` | 3 | Universal-extension duplicates already slated for deletion | design §4 (hover migration) |
-| **Block-scope** — `variant`, `templateMode`, `tagName`, `layout` | 4 | Nothing to fall through *to* — these style nothing | **the pinned Settings panel** |
+**✅ Closed 2026-08-09 (055a24ce, e2be7f73, ab9cb5c7)** — the two vocabulary families below (31 of
+the 61) are now homed by the §4 gate; hero's tier-2 count is **30**, re-derivable via
+`python plugins/sgs-blocks/scripts/placement-reach.py --block hero`. The other six families were
+always per-block manifest work, not vocabulary, and remain open (§6).
 
-**61 = 21 + 10 + 8 + 6 + 6 + 3 + 3 + 4.** Four are the panel; fifty-seven are data.
+| Family | n | Why it falls through | Home | Status |
+|---|---|---|---|---|
+| **Background media** — `backgroundImage*`, `bgVideo*`, `bgSvg*`, `bgKenBurns`, `svgContent`, `backgroundOverlay*`, `overlayGradient*`, `overlayOpacity` | 21 | The `fill` cluster has members for background *position / repeat / size / attachment* but **none for the media system itself** | `fill` cluster — §4 members | ✅ CLOSED (055a24ce, ab9cb5c7 — `input:media-source`/`input:code-svg` members) |
+| **Shape dividers** — `shapeDivider{Top,Bottom}{,Colour,Height,Flip,Invert}` | 10 | No cluster covers them at all | `layout` cluster, appended last (Bean: "bottom of the layout section") | ✅ CLOSED (e2be7f73, ab9cb5c7 — routed via `layout`, not a new `decoration` set) |
+| **Split-variant media** — `splitImage*`, `splitMedia`, `splitContentOrderMobile` | 8 | The `media` element declares prefix `image`, so `split*` never matches | `media` element `attrMap` | ⏳ OPEN — element-manifest edit |
+| **Alignment** — `alignment`, `textAlign{Desktop,Tablet,Mobile}`, `verticalAlign`, `verticalAlignment` | 6 | Members exist (`css:text-align`, `css:align-items`) under different attribute names | element `attrMap` | ⏳ OPEN — element-manifest edit |
+| **Prefix mismatch** — `mediaPadding*`, `subHeadline{MarginBottom,MarginBottomMobile,MaxWidth}` | 6 | `media`'s prefix is `image`; `sub-headline` declares empty `clusters` | element manifest | ⏳ OPEN — element-manifest edit |
+| **Content** — `headline`, `subHeadline`, `label` | 3 | `contentAttrs` declared by zero blocks | Task 3 generator | ⏳ OPEN — waits on `contentAttrs` |
+| **Hover + motion** — `textColourHover`, `transitionDuration`, `transitionEasing` | 3 | Universal-extension duplicates already slated for deletion | design §4 (hover migration) | ⏳ OPEN |
+| **Block-scope** — `variant`, `templateMode`, `tagName`, `layout` | 4 | Nothing to fall through *to* — these style nothing | **the pinned Settings panel** | ✅ Correctly placed per D537 — not a gap |
 
-## 4. ⛔ DESIGN GATE — the one change that needs approval before building
+**61 = 21 + 10 + 8 + 6 + 6 + 3 + 3 + 4.** Four are the panel; fifty-seven were data — 31 of those
+are now closed by the §4 gate, leaving **30 = 8 + 6 + 6 + 3 + 3 + 4**.
 
-Closing the two largest families means adding members to `cluster-member-sets.json`:
+## 4. ⛔ DESIGN GATE — BUILT (055a24ce, e2be7f73, ab9cb5c7 — 2026-08-09, Bean-approved)
 
-- **`fill` gains the background media members** — `css:background-image` (media source, per tier),
-  video source, SVG source and its presentation options, Ken Burns, and the gradient-overlay
-  members currently absent.
-- **a `decoration` member set** for shape dividers, or the divider attrs move onto the wrapper's
-  `attrMap` explicitly.
+Closing the two largest families meant adding members to `cluster-member-sets.json`. What actually
+shipped, after two revisions once real data was checked:
 
-**Blast radius, stated plainly:** that file is read by `check-element-manifest-conformance.js`,
-a wired gate. Every member added becomes something all 283 elements are measured against, so
-elements that report clean today will report new GAPs tomorrow. The gate is advisory, so nothing
-breaks — but the reported gap count will rise before it falls, and that number should not move
-without you knowing why. Per project rule 7 this is a shared-mechanism change and does not
-proceed on my judgement alone.
+- **`fill` gained the background media members** via two `input:*` registry rows that already
+  existed and described them (`input:media-source`, `input:code-svg`) — not a new `css:*` row, which
+  the coverage gate would have rejected as unbacked. `check-cluster-coverage.py`'s TYPO GUARD was
+  widened to validate member keys against **all** registry rows (not just `css:*`/`anim:*`), while
+  COVERAGE stayed scoped to `css:*`/`anim:*` only — a deliberate scope split, not a general
+  loosening. The gate gained a 7-case `--self-test` in the same commit.
+- **Shape dividers did NOT get a new `decoration` member set** (the option this doc originally
+  proposed). Bean ruled divider height + shape belong "at the bottom of the layout section", so
+  they were appended last to the existing `layout` cluster instead. An earlier attempt routed the
+  divider *heights* through the unscoped `css:height` member and measurably regressed contested
+  placements 9 → 19 (both OUTER-scoped members collided) — reverted at e2be7f73, then fixed at
+  ab9cb5c7 by keeping both divider families `appliesToLayers: ["OUTER"]` only.
 
-**Not in this gate** (ordinary per-block data work, no shared mechanism touched): the split-media,
-alignment and prefix-mismatch families — 20 of the 61 — are element-manifest edits on hero.
+**Blast radius, as predicted:** conformance gap count rose (GAP 3250 → 3346, `check-element-
+manifest-conformance.js` — advisory, non-blocking, exactly as this doc forecast) while OK/ORPHAN/
+defects held steady. Coverage gate stayed green (69 css/anim rows, scope unchanged). `npm run
+build` exit 0. Contested placements held at 9 throughout this gate's work (all pre-existing
+nav-menu — see D538/D539) and are now 0 library-wide following the separate D539 nav-menu fix.
+
+**Not in this gate** (ordinary per-block data work, no shared mechanism touched, still open): the
+split-media, alignment and prefix-mismatch families — 20 of the original 61 — remain element-
+manifest edits on hero.
 
 ## 5. What is explicitly NOT covered here
 
 - **Rendering the inspector from the model.** This defines placement; the hero POC (Task 4)
   builds it.
-- **`contentAttrs`.** Task 3. Three of hero's 61 wait on it.
+- **`contentAttrs`.** Task 3. Three of hero's remaining 30 wait on it.
 - **The hover extension's deletion.** Design §4, unchanged; 48 blocks still depend on it.
 - **The other 82 blocks' data gaps.** The resolver reports them per block; closing them is the
   Phase 6 roll-out, not this document.
@@ -133,6 +153,9 @@ alignment and prefix-mismatch families — 20 of the 61 — are element-manifest
 
 The LEDGER's gate for this task: *re-run the placement resolver and show the block-level count
 DROPS, per block.* It does — 1,445 → 1,109 library-wide, 76 → 61 on hero, from the resolver step
-alone with no block edited. Closing §4 takes hero to 30, and the §3 per-block data work to 10.
+alone with no block edited. **Closing §4 took hero to 30 (measured, not projected —
+`python plugins/sgs-blocks/scripts/placement-reach.py --block hero`, re-derived 2026-08-09).**
+The §3 per-block data work (split-media 8, alignment 6, prefix-mismatch 6, content 3, hover+motion
+3 = 26 of the 30) remains open; the block-scope 4 are already correctly placed, not a gap.
 
 Bean signs off on the model before it is applied to any block (Rule 9 — this scopes all 83).

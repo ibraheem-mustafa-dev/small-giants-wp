@@ -56,7 +56,12 @@ points here. Neither ever silently drops a STOP.
   chains — and re-read your own prior tool output before re-running a narrower version of the
   same search.
 
-- **STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER** — NEW 2026-08-01.
+- **STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER** — NEW 2026-08-01. EXTENDED
+  2026-08-09 (D540 session) with a second occurrence: `grep ... | head -8` on a requires-audit
+  showed requires at lines 78-85 and was read as "this file has no more requires past that point" —
+  the real require sat at line 89, one row past the truncation. Same mechanism as the original
+  finding, different command shape (`head` on a piped `grep`, not a raw `ls`), which is the point:
+  the truncation risk travels with ANY pipeline ending in `head`/`tail`, not just directory listings.
   `ls sites/*/... | head -4` on an 8-client sweep showed exactly the four clients that were fine
   and silently hid the four that were not — `head` truncates by POSITION, not by relevance, and
   a verification pass has no reason to expect the interesting rows sort to the top. Same failure
@@ -64,7 +69,8 @@ points here. Neither ever silently drops a STOP.
   earlier: here the listing command itself discarded the evidence before a human ever chose which
   client to check. **Rule: never pipe a verification listing through `head`/`tail` unless you have
   already confirmed the full count fits, or you are deliberately sampling and say so** — print the
-  full list, or grep for the specific condition across all rows.
+  full list, or grep for the specific condition across all rows. When in doubt, grep the FULL output
+  and count matches rather than eyeballing a truncated page of it.
 
 - **STOP-A-WRONG-EXPLANATION-DOES-NOT-MAKE-THE-OBSERVATION-WRONG** — NEW 2026-08-01. A report
   correctly OBSERVED a dimmed input field but misattributed the MECHANISM (named the wrong CSS
@@ -1071,11 +1077,24 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
 11. Is my VERIFICATION METHOD itself capable of seeing the thing I'm checking — literal grep
     vs var()-driven values, static contrast maths vs composited opacity/filter, `head`-truncated
     listings, a syntax-checker mistaken for a scope-checker, a forced lint rule the project's own
-    config can override? (STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE,
+    config can override, a BARE STRING search that will match a substring of a longer identifier,
+    a case-sensitive search claiming absence of prose that exists in a different casing, or a DOM
+    query scoped to the wrong document (top-level vs an editor `<iframe>`)? (STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE,
     STOP-STATIC-CONTRAST-MATHS-CANNOT-SEE-COMPOSITED-DIMMING,
     STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER,
     STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE,
-    STOP-A-FORCED-LINT-RULE-CAN-BE-OVERRIDDEN-BY-PROJECT-CONFIG.)
+    STOP-A-FORCED-LINT-RULE-CAN-BE-OVERRIDDEN-BY-PROJECT-CONFIG,
+    STOP-A-SUBSTRING-MATCH-IS-NOT-A-WORD-MATCH,
+    STOP-A-CASE-SENSITIVE-GREP-CAN-MANUFACTURE-A-FALSE-ALL-CLEAR,
+    STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY.)
+12. Before grouping two or more findings/fixes under one remedy because they share a SYMPTOM or a
+    COUNT, have I traced the actual MECHANISM each one depends on — and before trusting a
+    `--dry-run`/preview/IDE-diagnostics result, or writing a "measured"/"verified" figure into a
+    commit or registration, have I confirmed the method can actually REACH and REPORT the value it
+    claims to show, run against the real artefact, right now? (STOP-GROUP-FIXES-BY-MECHANISM-NOT-BY-SYMPTOM-COUNT,
+    STOP-A-DRY-RUN-THAT-EXITS-BEFORE-THE-WRITER-CANNOT-REPORT-ITS-OWN-SUBJECT,
+    STOP-IDE-DIAGNOSTICS-CAN-BE-A-STALE-MID-EDIT-SNAPSHOT,
+    STOP-DO-NOT-WRITE-A-FIGURE-INTO-A-COMMIT-OR-REGISTRATION-BEFORE-MEASURING-IT.)
 
 For a doc-model / enforcement-hook session (like P4), swap 4/5/8 for: does every new gate
 pass the **Enforcement Contract** (auto-fires on an event, fails safe, acts on NEW state,
@@ -1085,6 +1104,23 @@ for real before claiming done?
 ---
 
 ## D. D101 count-check receipt
+
+- **2026-08-09 (handoff, D540-session verification-method audit — 9 earned lessons: substring vs
+  word match, case-sensitive grep, truncated `head` search, a dry-run that cannot report its own
+  subject, grouping fixes by symptom-count vs mechanism, a banned-phrase gate too broad AND too
+  narrow at once, stale IDE diagnostics mid-edit, an iframe-blind measurement, and a figure written
+  before it was measured):** measured with this file's own canonical commands immediately before
+  writing (never carried forward). DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 176 -> 184
+  (+8, new §E11 — one of the 9 lessons EXTENDED the existing
+  `STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER` entry rather than adding a
+  duplicate, so it is not counted again here). Bullet defences (`grep -cE '^- \*\*'`, all bullets
+  including non-STOP-prefixed ones) 238 -> 246. Unique `STOP-*` tokens (definitions + citations,
+  `grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`) 206 -> 216. Sections (`## ` headings)
+  5 -> 5 unchanged (§E11 is a `###` sub-section of §E, matching the §E9/§E10 pattern). Pre-flight
+  ritual questions (§C) 11 -> 12 (+1 new question 12, covering mechanism-vs-symptom grouping,
+  dry-run/preview honesty and pre-measurement figures; question 11 also extended in place with 3
+  new sibling citations, which does not change its count). Nothing SUBTRACTED from any category.
+  184 >= 176. 246 >= 238. 216 >= 206. 5 >= 5. 12 >= 11. ALL PASS.
 
 - **2026-08-08 (handoff, Spec 35 placement + Phase 1):** bullet defences 222 -> 232 via `grep -cE '^- \*\*'` (+9 defences in new section E9, +1 = this receipt line, itself a bullet). Sections 5 -> 5 (E9 is a sub-section of E). Ritual questions 11 -> 11. Unique `STOP-*` tokens 191 -> 200 (9 new E9 tokens). Nothing SUBTRACTED. ⚠ **UNIT NOTE (added after handoff QC flagged it):** "bullet defences" counts EVERY `- **` rule bullet, only some of which carry a `STOP-*` token — the two metrics are different units and must not be compared to each other. The token count also includes CITATIONS of a STOP elsewhere in the prose, not only its definition; `stop-floor.json` is the authoritative list of DEFINED defences (170), and it is bumped only with tokens verified present in this file.
 
@@ -1684,3 +1720,98 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   **`git add` is not atomic with the commit that follows it. Verify with `git show --stat HEAD`, not
   the fact that commit exited 0** — this is the sibling of the existing "a commit that succeeds in
   terminal output can be silently BLOCKED" entry, from the opposite direction.
+
+### E11. Earned 2026-08-09 — D540-session verification-method audit (nav-menu wrapper exit + doc sweep)
+
+- **STOP-A-SUBSTRING-MATCH-IS-NOT-A-WORD-MATCH.** Twice in one session a substring search produced a
+  false positive that reached the owner: `columns` was reported "wired" on `sgs/nav-menu` because the
+  string appears inside `listColumns` (the actual wired control) and inside label text — a
+  word-boundary search (`\bcolumns\b`) showed zero real bindings. Earlier the same day `layout`/`gap`
+  were similarly over-counted by the same shape of search. **The second occurrence happened AFTER the
+  weakness had been explicitly named in-session** — naming a method's blind spot once does not retire
+  it; the next search still has to be written correctly. **Rule: a bare string search over identifier-
+  or attribute-shaped text is a substring match by default — wrap it in a word boundary
+  (`\b…\b`, or a language-aware AST/property lookup) before trusting "found" or "not found" for a name
+  that could be a fragment of a longer one.** Sibling of STOP-A-GREPS-BLIND-SPOT-IS-THE-SHAPE-OF-THE-GREP
+  (pattern-shape blind spots in general) and STOP-WP-STYLE-SUBSTRING-COLLISION (the same class of bug,
+  but in a shipped CSS selector rather than in a diagnostic search).
+- **STOP-A-CASE-SENSITIVE-GREP-CAN-MANUFACTURE-A-FALSE-ALL-CLEAR.** A verification grep for
+  `block-level panel` (lower case) reported zero hits and was read as "no surface still teaches the
+  retired rule" — a commit then closed on that claim. The retired phrase was present, printed in
+  capitals (`BLOCK-LEVEL panel`) by the wired script's own output, and a reviewer using a
+  case-insensitive grep found it immediately. **Rule: any grep used to prove an absence of PROSE
+  (as opposed to a code identifier, which usually is case-sensitive by convention) must be run
+  case-insensitively (`grep -i`), or explicitly justified as case-sensitive** — a search that
+  structurally cannot match a legitimate casing of its own target is not evidence of absence.
+  Sibling of STOP-A-SUBSTRING-MATCH-IS-NOT-A-WORD-MATCH (same session, same family: the search tool's
+  default mode was quietly narrower than the claim built on top of it).
+- **STOP-A-DRY-RUN-THAT-EXITS-BEFORE-THE-WRITER-CANNOT-REPORT-ITS-OWN-SUBJECT.** A seeding script's
+  `--dry-run` branch counted blocks and attributes, then hit a `continue` and returned BEFORE reaching
+  the supports-writing code — so its preview column (`updated_supports`) printed **0** on every run,
+  including runs where three blocks genuinely differed and would have been rewritten for real. The
+  flag was honest about not mutating (unlike STOP-A-FLAG-NAMED-CHECK-IS-NOT-ALWAYS-A-DRY-RUN, where the
+  flag lied); the bug is structural — the preview path physically cannot reach the value it claims to
+  preview. **Rule: a preview/dry-run branch needs the same can-this-report-a-non-zero-result proof as a
+  gate needs a can-this-fail proof (STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER) — plant a case
+  the dry-run SHOULD flag and confirm its own report shows it, before trusting a clean dry-run over
+  real state.**
+- **STOP-GROUP-FIXES-BY-MECHANISM-NOT-BY-SYMPTOM-COUNT.** Four blocks shared one symptom — container
+  attributes declared with no inspector controls anywhere — and were grouped by raw COUNT
+  (`physics-canvas 79, nav-menu 17, site-header-row 12, site-footer-row 12`) into a single proposed
+  remedy. Investigation into what each block's markup actually does showed the count was coincidental
+  and the correct remedies were OPPOSITE: `nav-menu` is specialised and should EXIT the shared wrapper
+  entirely (the wrapper's arrangement CSS never lands on the element the operator's children sit in);
+  `site-header-row`/`site-footer-row` are genuine containers whose missing controls should be WIRED, not
+  removed. Grouping by symptom-count alone would have deleted real capability from two generic blocks
+  to match a fix aimed at a third, unrelated one. **The separating test is mechanism, never a count:
+  does the shared code's arrangement/behaviour actually reach the elements the operator is trying to
+  control?** Verify by tracing the selector/attribute the shared code emits to, not by how many
+  unwired attributes two blocks happen to share. Sibling of
+  STOP-FIXING-ONE-INSTANCE-OF-A-FAILURE-CLASS-DOES-NOT-IMMUNISE-THE-NEXT (same-symptom instances can
+  still need different fixes) and D538/D539 in `decisions.md` (the worked example this entry is drawn
+  from).
+- **STOP-A-BANNED-PHRASE-GATE-CAN-BE-TOO-BROAD-AND-TOO-NARROW-AT-ONCE.** A pattern banning a retired
+  rule's exact wording fired on the DOCUMENTATION recording that rule's retirement (a false positive —
+  the phrase was being quoted in order to strike it, not asserted as live), while missing the same
+  phrase where a different file had line-wrapped it across two lines (a false negative — the substring
+  no longer appeared on one line for the pattern to match). Both failures come from the same design
+  choice: gating on an exact phrase gives you neither reliable recall (line-wraps, paraphrases, casing
+  defeat it — see the case-sensitivity entry above) nor reliable precision (any file quoting the phrase
+  to explain its own retirement trips the same alarm as a file still asserting it). **A phrase that
+  must be quoted verbatim to say it is retired cannot be banned by literal substring — gate on
+  STRUCTURE (is this phrase inside an active rule statement vs. inside a "RETIRED:"/"superseded"
+  annotation?) or accept the false-positive rate and hand-triage it, but do not trust the raw hit count
+  either way.** Sibling of STOP-AMENDING-A-RULES-STATEMENT-IS-NOT-AMENDING-ITS-DISTRIBUTION (a retired
+  rule's wording surviving in N places) and STOP-A-GATES-EVIDENCE-PREDICATE-CAN-BE-TOO-BROAD-TO-MEAN-ANYTHING.
+- **STOP-IDE-DIAGNOSTICS-CAN-BE-A-STALE-MID-EDIT-SNAPSHOT.** Undefined-variable errors appeared in the
+  IDE diagnostics pane for three files while a subagent was still mid-edit on them; treating the
+  diagnostics as ground truth would have meant reporting a live defect. Reading the files directly
+  showed zero undefined-identifier hits — the diagnostics pane was showing a stale intermediate parse
+  from a save that had already been superseded. **Rule: the IDE diagnostics pane is a CACHE with its
+  own refresh lag, not a live oracle — when a diagnostic surfaces during or immediately after
+  concurrent/subagent edits, re-verify against the file's actual on-disk content (Read, or a fresh
+  lint/typecheck run) before acting on it.** Sibling of STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE and
+  STOP-VERIFY-THE-VARIABLE-EXISTS-BEFORE-BUILDING-ON-IT (both: a tool's verdict about identifiers needs
+  a second, direct check) — here the tool itself was simply out of date, not wrong in kind.
+- **STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY.** `canvasRendered: false` was reported
+  for three blocks and read as a rendering defect; the probe was querying `document` at the PARENT
+  level while the WordPress block editor renders its canvas inside an `<iframe>`. Re-querying inside
+  the iframe's own document showed all three rendering correctly. **Rule: before trusting any
+  editor-canvas DOM query (element counts, computed styles, visibility checks), confirm whether the
+  target frame is the top document or the editor iframe — a query scoped to the wrong document returns
+  a clean-looking "not found" that is actually "not looked at".** Same family as
+  STOP-A-ZERO-FROM-AN-UNAUTHENTICATED-FETCH-PROVES-NOTHING and
+  STOP-A-A-PROBE-THAT-NEVER-REACHES-THE-EFFECT-IS-MEASURING-THE-PROBE (a "false" reading that is really
+  a description of where the probe looked, not of what exists) and STOP-THE-EDITOR-IS-WHERE-THE-CLIENT-LIVES
+  (the editor surface needs its own verification path, not an assumption inherited from the frontend).
+- **STOP-DO-NOT-WRITE-A-FIGURE-INTO-A-COMMIT-OR-REGISTRATION-BEFORE-MEASURING-IT.** "Measured: 0
+  findings" was written into a rule registration ahead of the rule's first real run — a plausible,
+  optimistic placeholder rather than an observed value — and the first actual run returned **1**. The
+  figure had already been quoted as fact by the time the real number existed. **Rule: a field labelled
+  "measured" or "verified" is a factual claim, not an expectation — never write one until the
+  command that produces it has actually been run for this specific artefact, even when the true answer
+  seems obvious or the run is "about to happen anyway".** Extends STOP-A-PROSE-CLAIM-IN-A-REPORT-IS-NOT-A-COMMITTED-ARTEFACT
+  and STOP-VALIDATE-A-DETECTOR-AGAINST-A-KNOWN-ANSWER-BEFORE-QUOTING-ITS-NUMBER to the moment BEFORE a
+  number exists at all — the same discipline the memory index calls
+  `never-claim-a-gate-field-you-did-not-measure`, now surfaced here as a catalogue entry rather than
+  living only in `MEMORY.md`.

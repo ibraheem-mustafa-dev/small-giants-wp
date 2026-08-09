@@ -52,7 +52,7 @@ tiers); `contentWidth` had already gone at D539 as one of its 19 unreachable att
 ### Open
 
 A gate asserting the rule (`contentWidth` present ⟹ block renders an inner band) is NOT built. Same
-shape as rule 22 and worth having, since this is exactly the kind of meaning that drifts silently.
+shape as rule 22, and owed: this meaning drifted silently on 5 blocks before anyone noticed.
 
 ## D539 — nav-menu's wrapper exit BUILT; D538's "specialised" carve-out narrowed to a measured test [INCIDENT]
 

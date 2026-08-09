@@ -11,224 +11,200 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 **Where 2026-08-09 left things:**
 
-- **The thing that was blocking everything turned out not to exist.** The plan said 54% of a block's
-  controls fall into a "block-level panel" nobody had designed, and designing it was the next job. On
-  the hero block that was 76 controls. The real number that genuinely belongs there is **four**. The
-  rest were gaps in the data, not a missing design.
-- **Your two-tier rule needed no invention.** You said tier 1 is per element, tier 2 is per
-  property-family. Those six property families were *already* defined in the codebase, and every one
-  of the 283 elements already declares which it has. The measuring script just never read the file.
-  Teaching it to read it moved control placement from 46% to 59% without editing a single block.
-- **I gave you a number that was wrong by seven times.** I reported 175 "contested" controls. It was
-  25. My detector was counting controls that had already been explicitly assigned. I only caught it
-  by checking the tool against a block whose answer I already knew — which should have happened
-  before I quoted it, not after.
-- **The reviews earned their keep.** Two independent reviewers ran in parallel. One found I'd
-  overclaimed that my script matched an existing one. The other mutation-tested my self-test to prove
-  it could actually fail. One of its findings was itself wrong, and refuting it mattered as much.
-- **Twice I told you a change was small and safe. Twice the build gate proved otherwise.** Nothing
-  shipped either time — the gate caught it, not me.
-- **You made a call on nav-menu** — a specialised block shouldn't inherit the universal wrapper's
-  whole control set. That's recorded as D538 and explains a real defect: nav-menu carries 17
-  container controls a client can never reach.
+- **A rule you locked yesterday was being taught wrong in nine places.** The decision was written
+  into the decisions log and nowhere else — including a scanner whose own advice message told
+  operators the retired version. Fixed, and then **gated**, so a tenth surface can't drift silently.
+- **Your question changed the answer for three of four blocks.** Four blocks looked identical —
+  each carrying container settings a client could never reach. The plan said: strip the shared
+  wrapper from all four. You asked whether those settings might actually be *useful* on some of
+  them. They were. For two blocks the fix was the **opposite** — wire the missing controls up. Had
+  we run the plan as written, we'd have deleted capability from blocks that needed it exposed.
+- **You spotted a naming problem that turned out to be framework-wide.** "Content width" is
+  supposed to mean the width of an inner box wrapping the content. On 5 blocks it had quietly
+  become a second plain width on the same element, under a name promising something else. Removed
+  there, untouched on the 28 where it's real.
+- **Two bugs that had been live for a long time.** The nav's "Item gap" control never spaced
+  anything, and nav labels containing "&" reached screen readers as literal `&amp;`. Both fixed and
+  proven on the real site.
+- **I got things wrong three times and each was caught before it mattered.** A reviewer refuted a
+  claim I'd made confidently to you; a case-sensitive search made me miss a surface; and I quoted a
+  "measured" figure I hadn't measured. All three are now STOP-catalogue entries.
 
 **Full narrative:** `memory/session-2026-08-09*.md`.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D538**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D540**.
 
-### ⭐ Track 1b (Spec 35) — Phase 0/1 shipped; the Phase 2 blocker is DISSOLVED
+### ⭐ Track 1b (Spec 35) — inspector placement rule LANDED, PROPAGATED and GATED
 
-**The "design the block-level panel" task is closed — there was almost nothing to design (D537).**
-Of `sgs/hero`'s 76 unplaced controls, **4** are genuinely block-scope (`variant`, `templateMode`,
-`tagName`, `layout`) and take the pinned Settings panel. The rest are data gaps with named owners.
-
-**The model, in one line (D537):** tier 1 is the element; tier 2 is the property-family (the element's
-declared `clusters`, ordered and labelled by `cluster-member-sets.json`); controls that style nothing
-take one **Settings** panel pinned first. Prior art checked before deriving — Gutenberg PR #77279
-moves core the same way.
-
-**Measured, re-derivable via `python plugins/sgs-blocks/scripts/placement-reach.py`:**
+**Nine code commits on `main`**, `e3adbf06..282a06ee`, plus this handoff's doc commit on top.
 
 | | Session start | Now |
 |---|---|---|
-| Controls resolving to a panel | 1,236 (46.1%) | **1,573 (58.7%)** |
-| `sgs/hero` unplaced | 76 | **61** |
-| Contested (panel undetermined) | — | **9**, all in `nav-menu` |
+| Controls resolving to a panel | 1,573 (58.7%) | **1,702 (65.6%)** |
+| `sgs/hero` unplaced | 61 | **30** |
+| **Contested placements** | 9 (all nav-menu) | **0 — library-wide** |
+| `render-without-control` findings | 243 | **130** |
 
-#### Shipped this session
+#### Shipped
 
-- **`02786254`** — tier-2 cluster-member resolution in `placement-reach.py`, honouring
-  `appliesToLayers` exactly as the conformance checker does. 46.1% → 58.6%, no block edited.
-  Design doc: `plans/2026-08-08-block-level-panel-resolution.md` (homes all 61 of hero's residual in
-  eight named families).
-- **`2b93330c`** — contested placements REPORTED, never silently tie-broken. The winner had been
-  decided by block.json key order, so reordering that file — a content-free change — moved controls
-  between panels. Ordering is now (prefix length, declared `order`, element key), asserted by a
-  self-test that reverses the key order and demands the same result.
-- **`1da8fedb`** — the detector bug (175 → 25), the suffix-family ownership rule (25 → 12), and three
-  blocks' manifest gaps closed (12 → 9): `sgs/button` font-family → button, `google-reviews` +
-  `trustpilot-reviews` max-width → wrapper.
-- **Two independent reviews**, dispatched in parallel on different angles. Findings applied; one
-  refuted (a "91 dead attrs" claim from a file-scoped grep — the repo's own gate reports 3).
-- **A silent-degradation path closed** — `_load_clusters()` returned `{}` with no error if the cluster
-  file lost its key, making the script report the exact pre-change figure while measuring nothing.
+- **`f5a31435` + `d4d6d687`** — D537 (two-tier placement) propagated to all 9 surfaces that STATE
+  it. A two-reviewer panel then found 4 real defects in that commit, including a surface the first
+  pass missed. Both reviewers' findings fact-checked; one refuted.
+- **`055a24ce` `e2be7f73` `ab9cb5c7`** — Task 3 vocabulary: background-media + shape-divider
+  families. 5 genuine new rows (`css:text-shadow`, `css:fill`, `css:transform`, `anim:ken-burns`,
+  `anim:svg-animation`), none invented. Bean's placement ruling: media sources → the background
+  section; divider height + shape → the bottom of layout.
+- **Also fixed in passing** — `setting-registry.json`'s `_meta` self-description was stale
+  (declared 81 rows / 12 behaviour-family against an actual 87 / 18). It is the golden master's
+  own account of itself; now recomputed from the data rather than hand-maintained.
+- **`dc332ba1`** — **inspector-scan rule 22** `placement-rule-surfaces` (ADVISORY) + its
+  `placement-rule-surfaces.json` manifest. Proven able to fail twice over: a 4-case fixture AND a
+  real-tree positive control (retired framing injected into `parallax.js`, flagged, restored).
+- **`4d501a16`** — D539. nav-menu EXITS the wrapper; both row blocks KEEP it and got controls
+  WIRED; physics-canvas SPLIT (61 deleted, 18 wired). Three remedies, one symptom.
+- **`282a06ee`** — D540. `contentWidth` deleted from the 5 blocks with no inner band; nav-menu
+  lost `maxWidth` (its parent owns width).
+
+All live-verified on the canary: **9 visual-diff reports**, each `source_sha`-bound to its staged diff.
 
 #### ⛔ Do NOT start these
 
-- **Adding members to `cluster-member-sets.json`** without new `css:*` rows in `setting-registry.json`
-  first. `check-cluster-coverage.py` indexes ONLY `css:*`/`anim:*` rows and is **BLOCKING GATE 1/3**
-  in prebuild. Two attempts to shortcut this were refuted by the gate.
-- **Hero POC / rolling the model across blocks** — Task 3 (`contentAttrs`) comes first; it is declared
-  by ZERO blocks, so the content half of the model resolves for nothing.
-- **Deleting the universal hover extension** — 48 blocks rely on it solely; capability first.
-- **Re-sorting blocks' panels by hand** — re-derived by the model or not at all.
+- **Re-litigating D294 vs D539.** D539 records that D294 is genuinely DEPARTED FROM, not satisfied.
+  nav-menu declared `containerKind:'layout'`, which by D294's axis is a KEEP. The exit stands on
+  its own measured evidence. Read D539 before touching any wrapper-exit question.
+- **Grouping blocks by attribute COUNT.** That is what produced the wrong four-block plan. The
+  separating test is MECHANISM: does the wrapper's arrangement CSS land on the element whose
+  children the operator is arranging?
+- **Adding cluster members without their `css:*`/`anim:*` rows** — `check-cluster-coverage.py` is
+  a BLOCKING prebuild gate. Rows and members land together or the build fails.
+- **Re-adding `ShapeDivider*Height` to the `css:height` member.** Measured: contested 9 → 19,
+  reverted. The member is unscoped and two elements claim `layout`. The reason is stored on the
+  member itself.
 
 ## ⭐ NEXT SESSION — orchestration plan
 
-**Identity.** SGS framework engineer on Track 1b (Spec 35 inspector). The Phase 2 blocker is gone;
-you are propagating a Bean-locked model into the places that enforce it, then extending it.
+**Identity.** SGS framework engineer on Track 1b (Spec 35 inspector). The placement model is
+locked, propagated and gated; the vocabulary is built. You are closing the enforcement gap it
+exposed, then returning to the element-driven inspector roll-out.
 
-**State recap.** The inspector is hand-written per block. The plan renders it FROM each block's own
-`supports.sgs.elements` map (82 of 83 declare it; 283 elements). Bean locked a two-tier placement
-model (D537): element, then property-family. The resolver implements it and measures 58.7%. What
-remains is (a) propagating the rule into the four places it lives, (b) making the enforcement and
-seeding scripts agree with it, (c) the background-media vocabulary, (d) nav-menu's wrapper exit.
+**State recap.** Inspector controls are placed by a two-tier rule (D537): tier 1 the page part,
+tier 2 the property family. It is now stated consistently in 9 places and a scanner asserts it
+stays that way. A second rule landed at D540 — "content width" may only exist on a block that
+renders an inner band — and it is enforced by NOTHING. That is Task 1.
 
 > **⭐ STANDING INSTRUCTION (Bean, 2026-08-09).** At EVERY design-gate and at the CLOSE of EVERY
 > implementation, run a multi-rater review — `/qc-council`, `/adversarial-council`, or the fitting
 > variant — and use `/delegate` + parallel subagents rather than reviewing inline and alone. Give
-> reviewers DIFFERENT angles; identical briefs reproduce one blind spot. Fact-check every finding
-> before applying it. Memory: `feedback_delegate_and_council_at_every_gate.md`.
+> reviewers DIFFERENT angles; identical briefs reproduce one blind spot. **Fact-check every finding
+> before applying it** — a reviewer was wrong once today and refuting it mattered as much as
+> accepting the rest. Memory: `feedback_delegate_and_council_at_every_gate.md`.
 
-### Task 1 — Propagate the tier-1/tier-2 rule to all four places (DELEGATED, Sonnet)
+### Task 1 — Gate the D540 `contentWidth` rule (INLINE, Opus) ⭐ START HERE
 
-**What:** fold D537 into every place the placement rule is stated or enforced.
-**Why:** amending a rule's statement is not amending its distribution — the last session shipped a
-corrected rule while 9 restatements and a wired scanner still taught the retired one (E9).
-**The four places (mapped read-only this session, do not re-derive):**
-`specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` · `plans/spec-35-control-type-contract.md` (12
-per-control-type `Tab` fields + §6) · `scripts/inspector-scan/rules/01-tab-group.js` (prints the rule
-as its fix message) · `scripts/consistency/check-cluster-coverage.py`.
-**Estimated time:** ~30 min.
-**Orchestration:** delegated, Sonnet via `/delegate`. Context it won't have: the rule is D537 in
-`decisions.md`; the scanner's fix MESSAGE is a restatement and counts as a fifth surface.
+**What:** a scanner asserting that any block declaring `contentWidth` actually renders an inner
+band, and that a block without one uses `maxWidth` (or `width`), never `contentWidth`.
+**Why:** D540 is prose today. The drift it corrected took hold silently on 5 blocks; nothing stops
+a sixth. This is the same failure mode rule 22 was built for, two decisions running.
+**Estimated time:** ~20 min.
+**Orchestration:** inline, Opus. Copy the SHAPE of `inspector-scan/rules/22-placement-rule-surfaces.js`
+— it is this session's own worked example: a committed manifest resolved from `ctx.repoRoot` so the
+fixture can supply its own, plus `mustFlag`/`mustNotFlag` cases.
+**Context it won't have:** the legitimate inner-band signal is the wrapper forcing
+`$grid_on_inner`/`$do_wrap` (`class-sgs-container-wrapper.php:525-533`, `:1906-1911`) or an explicit
+`wrap_inner => true`; 28 blocks are legitimate and must NOT flag.
 **Depends on:** none. **Parallel with:** Task 2.
-**/qc gate after:** yes — grep every restatement AND every enforcer; a count of surfaces agreeing must
-equal N+1.
-**Acceptance:** no surface states the single-tier rule; `npm run build` exit 0.
+**/qc gate after:** yes — multi-rater per the standing instruction.
+**Acceptance:** the rule FAILS on a fixture block declaring `contentWidth` with no inner band, and
+passes clean on the real tree (expected 0 findings — verify, do not assume). Registered ADVISORY
+first, per E6 point 9.
 
-### Task 2 — Make enforcement + seeding agree with the new classifications (INLINE, Opus)
+### Task 2 — `tagName` on physics-canvas (DELEGATED, Sonnet)
 
-**What:** Bean's explicit ask — check that the enforcement scripts and the seeding scripts reflect any
-new classification, and run whatever check/update is needed for new data.
-**Why:** three `block.json` `attrMap` entries changed this session. `/sgs-update` seeds
-`block_attributes` from block.json, so the DB may now disagree with the files.
-**Estimated time:** ~30 min.
-**Orchestration:** inline, Opus. ⚠ **`/sgs-update` is a shared-DB reseed and is a CROSS-TRACK action**
-— it has broken both tracks' builds before (memory `a-shared-db-reseed-is-a-cross-track-action`). Run
-`--check`-style verification FIRST and read what it would change before any write.
+**What:** physics-canvas declares `tagName`, the wrapper renders it, no control exists. It is the
+single remaining `render-without-control` finding on that block.
+**Why:** it was deliberately left outside D539's authorised scope; it is a real reachable gap.
+**Estimated time:** ~15 min.
+**Orchestration:** delegated, Sonnet via `/delegate`. Wire a control matching how other blocks
+expose `tagName`; do NOT touch the physics runtime, `aria-hidden`, or `ALLOWED_BLOCKS`.
 **Depends on:** none. **Parallel with:** Task 1.
-**/qc gate after:** yes — `/qc-inline`, plus `npm run build` exit 0 before and after.
-**Acceptance:** DB and block.json agree; no gate newly fails; any reseed is reported to Bean with what
-it changed.
+**/qc gate after:** `/qc-inline` + `check-dead-controls`.
+**Acceptance:** rule 21 findings for physics-canvas reach 0; build exit 0.
 
-### Task 3 — Background-media vocabulary (INLINE, Opus — DESIGN GATE, Bean signs off first)
+### Task 3 — Compact `MEMORY.md` (INLINE, small)
 
-**What:** new `css:*` rows in `setting-registry.json` (87-row golden master) for background video,
-SVG, Ken Burns, gradient angle/from/to and shape dividers, plus their cluster members.
-**Why:** it is hero's largest family — 21 of its 61 — and the biggest single remaining move.
-**Estimated time:** ~1h including the gate.
-**Orchestration:** inline, Opus. ⛔ **Design-gate BEFORE building (Rule 7).** Two prior attempts to
-call this small were refuted. Scope members `appliesToLayers: ["OUTER"]` — five of hero's elements
-declare `fill`, and unscoped members arrive contested five ways (measured: with scoping, contested
-stayed flat at its then-current figure while placement rose). Rows and members must land TOGETHER —
-the gate requires every `css:*` row to be clustered exactly once.
-**Depends on:** Bean sign-off. **/qc gate after:** yes — multi-rater per the standing instruction.
-**Acceptance:** `check-cluster-coverage.py` green, `npm run build` exit 0, hero's block-level drops,
-contested does NOT rise.
+Near its **24,576-byte hard cap**. Past it the file truncates silently and rules stop loading with
+no error. Move detail to topic files / `MEMORY-archive.md`; one line per entry.
 
-### Task 4 — nav-menu exits the universal wrapper (DESIGN GATE, Bean signs off first)
+### Task 4 — physics-canvas `containerKind` reclassification (DESIGN GATE, Bean signs off)
 
-**What:** implement D538 — a specialised block stops inheriting `SGS_Container_Wrapper`'s whole
-vocabulary.
-**Why:** nav-menu declares **17 container attributes with no controls anywhere**, frozen at defaults;
-its 9 contested placements are a symptom. Same family: physics-canvas 79, site-header-row 12,
-site-footer-row 12.
-**Orchestration:** ⛔ shared-mechanism change — design-gate first (Rule 7), then multi-rater.
-Open within it: scope, the other three blocks, and whether `bar` should stay `layer=GRID` given the
-wrapper emits arrangement CSS at `$grid_sel` (the block root), never at the `<ul>`.
-**Depends on:** Bean sign-off. **Acceptance:** Bean's eye + no capability lost.
-
-### Task 5 — Compact `MEMORY.md` (INLINE, small)
-
-At **23.7KB against a 24,576-byte hard cap**. Past it the file is silently truncated and rules stop
-loading with NO error. Move detail to topic files / `MEMORY-archive.md`; keep one line per entry.
+It declares `"section"` but behaves as content-KIND (box + width only, no background layers). D294's
+axis keys off this. Bean-locked scope; flagged twice today and deliberately untouched.
 
 ### Dependency graph
 
 ```
-Task 1 (propagate rule, Sonnet)  ║ parallel ║  Task 2 (enforcement + seeding, Opus)
+Task 1 (gate the rule, Opus)  ║ parallel ║  Task 2 (tagName, Sonnet)
                     ↓ both green, build exit 0
-Task 3 (background vocabulary) ──► Bean design-gate ──► multi-rater ──► build
+Task 3 (MEMORY compaction)
                     ↓
-Task 4 (nav-menu wrapper exit) ──► Bean design-gate ──► Bean's eye
+Task 4 ──► Bean design-gate ──► multi-rater
                     ↓
         commit by exact path, main
 ```
 
-### Methodology guardrails (every one was earned — do not skip)
+### Methodology guardrails (every one was earned TODAY — do not skip)
 
-- **Validate a detector against a KNOWN answer before quoting its number.** A 7x-inflated figure
-  reached Bean and a commit message this session. One block whose answer was already visible caught it.
-- **A row existing in the data is not the gate accepting it.** Read the gate's index, not the source.
-- **Enumerate every consumer before calling a shared-file change small** — and check each is blocking
-  or advisory. A reassurance is a claim needing the same evidence as a finding.
-- **Verify your own worktree before acting on a peer's account of it.** `git diff --stat`. A peer
-  reported clobbering work that was intact and offered a patch that would have double-applied.
-- **`git add` is not atomic with the commit after it.** A failed pathspec staged nothing and the
-  commit still succeeded, describing 140 lines it did not contain. Verify `git show --stat HEAD`.
-- **A prose note asserting absence tells you where its author searched.** Two false "it doesn't exist"
-  claims this session, both from file-scoped searches missing shared `includes/`.
-- **An explicit declaration outranks a reachable name** — that is why the contested figure was wrong.
-- **Never invent a tie-break; report the ambiguity.** Silent tie-breaks hid a key-order dependency.
-- **A surface your change TOUCHES is not "out of scope".**
-- **Verify BOTH surfaces — frontend and editor.** The editor is where non-technical clients live.
-- **Use the canary credentials** — `.claude/secrets/sandybrown.env`, always available, no need to ask.
-- **State the predicate with any derived count.**
-- **Before `rm -rf`, list the path and check `git ls-files`.**
-- **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped; §E10 is this
-  session's — 176 entries, carried forward from 170).
+- **A substring match is not a word match.** `columns` read as "wired" because of `listColumns`;
+  the same class of error twice in one session, the second time after I had named the weakness.
+- **Grep case-insensitively when asserting absence.** A lowercase search missed a retired rule
+  printed in CAPITALS by a live script; a reviewer's case-insensitive grep found it.
+- **A truncated search manufactures a false absence.** `| head -8` hid a require at line 89.
+- **A preview that cannot report its own subject reads green forever.** `--dry-run` structurally
+  skipped the supports writer and reported 0 drift while 3 blocks differed.
+- **Unwired ≠ dead.** Same symptom, opposite remedies. Separate by mechanism, never by count.
+- **A banned-phrase gate can be too broad and too narrow at once** — it fired on the documentation
+  recording a rule's retirement while missing the line-wrapped instance.
+- **IDE diagnostics can be a stale mid-edit snapshot.** Verify against the file.
+- **Never write a measured figure before measuring it.** "Measured: 0" preceded a run returning 1.
+- **Deploy needs `--payload <prefix>`, never `--allow-dirty`** — the gate's own sanctioned path for
+  a deliberate uncommitted wave.
+- **Visual-diff reports need `source_sha`** recomputed from the STAGED bytes, or the gate rejects
+  them. Never fabricate `verdict: PASS` / `first_paint_capture_passed`.
+- **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped, D101 —
+  carry-forward count-checked this session).
 
 ### Other tracks — stable
 
 - **Track 1** — routing audit + tier axis COMPLETE (D480); Phase 4 PARTIAL, 5 OPEN.
-  `reports/2026-08-02-pipeline-routing-review.md`.
-- **Track 1c** (Spec 31 converter completion) — build shipped; open item is PROOF not build,
-  `batch-report.json` reads 33 UNVERIFIED. `plans/2026-07-22-spec31-completion-to-100.md`.
-- **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.
-  `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`.
+- **Track 1c** (Spec 31 converter completion) — build shipped; open item is PROOF not build.
+- **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress. ⚠ This session changed
+  `site-header-row` and `site-footer-row` (controls WIRED, D539) and `sgs/nav-menu` (D539+D540).
 - **Track 3** — CLOSED (D479). ⛔ GSAP is NOT MIT · LYGIA is Prosperity-licensed.
 
 ---
 
 ## State Snapshot
 
-- **Branch:** `main` at `1da8fedb`. **Tree CLEAN** — 0 dirty, 0 untracked, 0 stashes.
-  Still commit by EXACT PATH — a pre-commit gate requires a pathspec.
+- **Branch:** `main`. The session's 9 CODE commits end at `282a06ee`; the handoff doc commit follows
+  them, so HEAD when you read this is that doc commit, not `282a06ee`. ⛔ **Do not trust this line
+  for tree state — run `git status`.** (An earlier draft asserted "Tree CLEAN" while seven doc files
+  including this one were still uncommitted; the handoff QC caught it. A status line that describes
+  the moment before its own commit is false by construction.) Still commit by EXACT PATH — a
+  pre-commit gate requires a pathspec, and the visual-diff gate requires a `source_sha`-bound report
+  per changed block.
 - **Build:** `npm run build` exit 0, all prebuild gates passing. `check-cluster-coverage.py` green
-  (64 css/anim rows covered). `placement-reach.py --self-test` passes with negative + positive
-  controls.
-- **Pre-existing, NOT ours:** `audit-declared-vs-seeded-roles.py` reports 3 STALE override entries
-  (`responsive-logo.alt`, `cart.ariaLabel`, `tabs.blockLabel`). Advisory by construction in prebuild
-  (`|| echo`). Untouched by this session.
+  (69 css/anim rows) and now carries a 7-case `--self-test`. `placement-reach.py --self-test` passes.
+  `inspector-scan --self-test` passes incl. the harness meta-check.
+- **Canary:** deployed twice this session and live-verified (frontend + editor).
+- **Pre-existing, NOT ours:** `audit-declared-vs-seeded-roles.py` 3 STALE overrides;
+  `check-dead-controls` CHECK 4 advisory lists 3 fully-dead attrs (`before-after::maxWidthUnit`,
+  `button::fontFamily`, `hero::subHeadline`).
 - **Verify every session, no cached line is authoritative:** `git log -1 --stat` · `git status` ·
   `git branch --show-current` · D-ceiling
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (heading-anchored — the unanchored form once matched hex colour `#0D5557` and reported D5557).
 - **Sites:** dev = palestine-lives.org · canary = sandybrown-nightingale-600381.hostingersite.com
-  (WP 7.0.3, read from `wp-includes/version.php` 2026-08-08).
 - **Canary credentials:** `.claude/secrets/sandybrown.env` (gitignored, always available).
 
 ---
@@ -238,28 +214,28 @@ Task 4 (nav-menu wrapper exit) ──► Bean design-gate ──► Bean's eye
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| The block-level panel resolution + hero's 61 homed | `plans/2026-08-08-block-level-panel-resolution.md` |
-| The live design | `plans/2026-08-08-element-driven-inspector-design.md` |
-| Control-type contract (⛔ still states the SINGLE-tier rule — Task 1) | `plans/spec-35-control-type-contract.md` |
+| The placement model + hero's families | `plans/2026-08-08-block-level-panel-resolution.md` |
+| Control-type contract | `plans/spec-35-control-type-contract.md` |
+| The placement-rule surface manifest (add new surfaces here) | `plugins/sgs-blocks/scripts/inspector-scan/placement-rule-surfaces.json` |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Decisions (D-numbered) | `decisions.md` (+ `memory/decisions-archive.md`) |
 | Parked work (OPEN/PARTIAL/BLOCKED/DEFERRED only) | `parking.md` (+ `memory/parking-archive.md`) |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
-| Prior sessions | `memory/session-YYYY-MM-DD*.md` |
+| Live verification evidence for this session | `reports/visual-diff/*-2026-08-09.md` (9 reports) |
 
 ## Blockers
 
-**NONE for Track 1b.** Tasks 3 and 4 need a Bean design-gate before building, which is a gate, not a
-blocker. `--target palestine-lives` still aborts on `oldshape-audit`; that site is disposable Indus
-staging and blocks nothing.
+**NONE.** Task 4 needs a Bean design-gate, which is a gate, not a blocker.
 
 ## Open — carried, not ours to close
 
 - ⚠ **Track 2's canary (post 2164) lost a text node** 2026-08-07 — `sgs/mega-group`'s
-  `templateLock:'all'` dropped a stored `sgs/text` child. Track 2 should re-count text-owning nodes.
+  `templateLock:'all'` dropped a stored `sgs/text` child.
 - **Residual empty `sgs/media` ChildBlock** in the art-direction walk (D514), emitter untraced.
-  Blocks the `scalar-media` retirement.
-- **Non-colour hover effects** (`sgsHoverScale`/`Shadow`/`ImageZoom`/`Grayscale`) survive the
-  extension's deletion as a capability — placement decided (design §10.1), build not scoped.
-- **`_meta` drift in `setting-registry.json`** — declares `total_rows: 81` and `behaviour-family: 12`;
-  actual is 87 and 18. Cosmetic, but it is the golden master.
+- **Non-colour hover effects** survive the extension's deletion as a capability; build not scoped.
+- **`templateMode` is inert** on both row blocks and physics-canvas — declared, referenced nowhere.
+- **`gridTemplateColumns` type mismatch** between the two row blocks (string on header, object on
+  footer). Flagged, deliberately not normalised.
+- **The FX generator derives `draw` eligibility from `bgSvgContent`, not `allowedBlocks`** — so
+  physics-canvas lost `draw` when that attr went, though its icon/decorative-image children can
+  render real SVG. A modelling question, surfaced not caused by this session.

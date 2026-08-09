@@ -465,6 +465,49 @@ Spec 32 amendment below) · `sgs-758` lifted-CSS MIME error (one-off, unchased) 
 `HeaderBehavioursTest.php` needs a composer/PHPUnit env to execute · Shrink+Hide legacy-transition
 overlap on pre-animation-timeline browsers (documented, not speculatively fixed).
 
+**2026-08-09 (D537–D540) — THE PLACEMENT RULE itself changed shape; several rows above are now
+superseded, not merely extended.** Full text: `decisions.md` D537–D540; canonical rule text: A3/A4
+above + `.claude/plans/spec-35-control-type-contract.md` §THE PLACEMENT RULE.
+- **A4's "block-level panel" is retired.** Every root-scoped control now resolves to a TIER 2
+  property-family panel via `cluster-member-sets.json`, not a catch-all — see A4 above. The Task 3
+  vocabulary gap this exposed (background-media + shape-divider families had no cluster member to
+  resolve to) is now closed: `check-cluster-coverage.py`'s typo guard was widened to validate
+  member keys against every registry row (not just `css:*`/`anim:*`), gaining a 7-case
+  `--self-test` in the same change (`ab9cb5c7`).
+- **A new advisory gate, rule 22 (`inspector-scan/rules/22-placement-rule-surfaces.js` +
+  `placement-rule-surfaces.json`), asserts every doc surface stating the placement rule states the
+  CURRENT one** (`dc332ba1`). Re-run: `node plugins/sgs-blocks/scripts/inspector-scan/run.js` —
+  currently **0 flagged, 0 baselined** (re-derived 2026-08-09).
+- **Measured, library-wide** (`python plugins/sgs-blocks/scripts/placement-reach.py`, re-derived
+  2026-08-09): element-scoped 1,702/2,595 (65.6%), tier-2 893/2,595 (34.4%); `sgs/hero`'s tier-2
+  count closed 61 → 30. Contested placements (the tie-break-instead-of-report defect the earlier
+  46.1% figure hid) are **0 library-wide** — the last 9 were all `sgs/nav-menu`, resolved by its
+  wrapper exit below. `inspector-scan` rule 21 (`render-without-control`) fell 243 → 130 in the
+  same work (re-derived: `node plugins/sgs-blocks/scripts/inspector-scan/run.js`, currently
+  **130 flagged, 12 baselined**).
+- **The composite-mirror rule (root `CLAUDE.md` §"Composite-mirror rule") gained a fourth,
+  measured exit condition (D538/D539): a block whose wrapper contributes ZERO live arrangement CSS
+  to its own children may exit `SGS_Container_Wrapper` and render block-private — this is
+  DIFFERENT from D294's KIND-based test and stands on its own measured evidence, not on D294's
+  authority.** `sgs/nav-menu` exited on this test (24 of ~107 wrapper keys declared, 3 reachable,
+  wrapper contributed no live CSS) — attrs 77 → 57, `render-without-control` findings for this
+  block 17 → 0, contested placements 9 → 0. Two live bugs fixed in the same change: the "item gap"
+  control moved from the wrapper root (where its flex sibling had already been `display:none`d,
+  so it painted nothing) to `.sgs-nav-menu__bar`; the accessible name's double-`esc_attr()` was
+  fixed to single. `sgs/site-header-row`/`sgs/site-footer-row` took the OPPOSITE fix — they KEEP
+  the wrapper and had their ~7 real missing controls wired, because `responsive_model=>'object'`
+  forces their InnerBlocks to be direct children of the element the wrapper's arrangement CSS
+  targets (genuine containers, not specialised). `sgs/physics-canvas` SPLIT: ~18 box/width attrs
+  were a real gap (`minHeight` had no control at all) and are now wired; ~61 were inert or
+  colliding with a hardcoded selector in `style.css` and were deleted.
+- **`contentWidth` is now a NAMED contract (D540): it may exist only on a block that renders a
+  genuine inner band.** Five block-private composites (`quote`, `testimonial`, `notice-banner`,
+  `team-member`, `product-faq`) were emitting `max-width` (from `maxWidth`) AND `width` (from
+  `contentWidth`) on the SAME root selector — two competing widths under one name promising a
+  second layer that did not exist. `contentWidth` was deleted from all five; `sgs/nav-menu` also
+  lost `maxWidth` (redundant with its parent row's own width control, wired above). A gate
+  asserting this rule is NOT yet built (recorded open in D540).
+
 ## PART N — Role data layer + enforcement rules for Task F (added 2026-08-06)
 
 **Why this Part exists.** Parts A–L specify the CONTROL SURFACE. This Part specifies the DATA
