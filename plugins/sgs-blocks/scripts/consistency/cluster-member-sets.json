@@ -233,6 +233,17 @@
 					"appliesToLayers": [
 						"OUTER"
 					]
+				},
+				{
+					"key": "css:fill",
+					"label": "Fill (SVG paint)",
+					"suffixes": [
+						"ShapeDividerTopColour",
+						"ShapeDividerBottomColour"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					]
 				}
 			]
 		},
@@ -301,7 +312,8 @@
 					"label": "Height",
 					"suffixes": [
 						"Height"
-					]
+					],
+					"note": "ShapeDivider{Top,Bottom}Height deliberately NOT listed here. This member is unscoped (no appliesToLayers), and both `grid` and `wrapper` declare `layout`, so adding those suffixes made the divider heights claimable twice in 5 blocks — measured 2026-08-09: contested 9 -> 19. They need an OUTER-scoped home or an explicit attrMap entry, not a suffix on this member."
 				},
 				{
 					"key": "css:max-width",
@@ -512,6 +524,19 @@
 					"appliesToLayers": [
 						"OUTER",
 						"GRID"
+					]
+				},
+				{
+					"key": "css:transform",
+					"label": "Transform (flip / invert)",
+					"suffixes": [
+						"ShapeDividerTopFlip",
+						"ShapeDividerBottomFlip",
+						"ShapeDividerTopInvert",
+						"ShapeDividerBottomInvert"
+					],
+					"appliesToLayers": [
+						"OUTER"
 					]
 				}
 			]

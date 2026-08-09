@@ -3,10 +3,10 @@
 		"purpose": "Spec 35 Phase 2 — optimal-control registry (golden master). One row per genuine setting.",
 		"spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B/H/I)",
 		"design_spine": ".claude/plans/spec-35-setting-registry-design.md",
-		"total_rows": 90,
+		"total_rows": 92,
 		"by_category": {
 			"behaviour-family": 20,
-			"css-property": 59,
+			"css-property": 61,
 			"input-type": 11
 		},
 		"by_severity": {
@@ -3031,6 +3031,55 @@
 			"divergence": "block-private enum, no shared component",
 			"divergence_severity": "medium",
 			"notes": "Added 2026-08-09 (D537 §4 vocabulary gate). Covers BOTH the style selector and its speed companion — they are one setting with two controls, so they share one row rather than splitting into a row whose partner would be unclustered."
+		},
+		{
+			"setting_key": "css:fill",
+			"category": "css-property",
+			"label": "Fill (SVG paint)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (enableAlpha + clearable, as every other colour control)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 35 Part B (Colour completeness) + Part H",
+			"current_state": "2 instances (sgs/hero shapeDividerTopColour + shapeDividerBottomColour)",
+			"divergence": "painted on an SVG shape, so css:color / css:background-color do not apply",
+			"divergence_severity": "low",
+			"notes": "Added 2026-08-09 (D537 §4 vocabulary gate). A genuine CSS property the registry lacked. Distinct from css:color (glyphs) and css:background-color (the box): `fill` paints SVG geometry, which is what a shape divider IS."
+		},
+		{
+			"setting_key": "css:transform",
+			"category": "css-property",
+			"label": "Transform (flip / mirror / rotate)",
+			"optimal_control": {
+				"component": "ToggleControl per axis for flip/invert; ShadowControl-style builder only if arbitrary transforms are ever wanted",
+				"props": {
+					"checked": "boolean per axis (scaleX(-1) / scaleY(-1))"
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": null,
+			"spec_ref": "Spec 35 Part C (Effects) + Part H",
+			"current_state": "4 instances (sgs/hero shapeDivider{Top,Bottom}{Flip,Invert}, all boolean)",
+			"divergence": "booleans that compile to scaleX/scaleY; no arbitrary-transform path exists",
+			"divergence_severity": "low",
+			"notes": "Added 2026-08-09 (D537 §4 vocabulary gate). Flip and invert are two AXES of one property (scaleX vs scaleY), which is why both live on this single row rather than splitting into a row whose partner would be unclustered. ⛔ Do NOT fold hover scale/tilt in here without a decision: those are extension-injected and are members of no cluster today, deliberately (see hover-effects.js)."
 		}
 	]
 }
