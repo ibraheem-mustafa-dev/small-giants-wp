@@ -64,8 +64,17 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 - **`core/editor.getDeviceType()` answers in BOTH the post editor AND the site editor** (WP 7.0.2,
   canary). `ResponsiveControl.js:107-113`'s comment claiming otherwise is **STALE** → its `localKey`
   fallback is dead code and Phase 1.2 is unblocked.
-- **Length-control divergence, from `scripts/surveys/survey-length-controls.py`:** 694 length-family
-  instances (345 DB-direct + 349 suffix-resolved). **All 17 present properties diverge.**
+- **Length-control divergence — REAL, confirmed by two independent methods, but read the two numbers
+  together.** (a) `scripts/surveys/survey-length-controls.py` (file-scanning heuristic): 694
+  length-family instances (345 DB-direct + 349 suffix-resolved), **all 17 present properties
+  diverge**. (b) Independent SQL straight at `block_attributes` (`css_property` ×
+  `inspector_control_type`, non-NULL only): **8 properties diverge** — `max-width` 5 components,
+  `padding`/`letter-spacing`/`gap`/`border-radius` 4 each, `width` 3, `height`/`font-size` 2.
+  ⚠ **8 is the floor you can defend from the DB alone; 17 is the survey's wider suffix-resolved net.**
+  The difference is the ~65%-NULL `inspector_control_type` column — which is itself the Phase 3.2b
+  blocker, not a discrepancy to reconcile away. Quote 8 when you need a number that survives
+  challenge; quote 17 only with the method named. (The "all 17" figure was single-sourced and stated
+  as settled fact until the handoff QC flagged it — the cross-check is what produced this line.)
   `border-radius` → 7 components (BorderRadiusControl 24 / UnitControl 11 / BoxControl 5 /
   RangeControl 3 / TextControl 3 / SelectControl 2 + unresolved) · `width` → SelectControl 15 /
   RangeControl 10 / UnitControl 8 · `padding` → BoxControl 115 (correct, dominant) but SelectControl
@@ -200,6 +209,17 @@ Then: Phase 2.1 opt-in inversion (script-derived; Bean reviews the diff)
   core `BorderBoxControl` example the plan is built on).
 - **Build:** `npm run build` exit 0, all prebuild gates passing. `inspector-scan --self-test` green
   incl. the harness meta-check. `build-deploy.py --self-test` green.
+- ⚠ **Handoff QC was PARTLY self-run — read `f8b73833`'s message with that in mind.** The independent
+  QC subagent **stalled and failed** (no progress 600s, no verdict). Its 18 mechanical checks were
+  re-run by the author instead and all 18 reproduced — those are deterministic facts (file contents,
+  counts, `git diff --stat`), so they stand. What was NOT independently reviewed is the **judgement
+  layer**: whether the D541/D542 narrative overclaims. The commit message says "QC verified" without
+  disclosing that. **Resolved:** a narrow re-run returned **NARRATIVE HONEST — no overclaims**, with
+  two soft flags. One was refuted (it said the LEDGER doesn't restate the first action inline; it
+  does — the reviewer's read window was capped at 60 lines by my own instruction). The other was
+  **correct and is now fixed**: the "all 17 properties diverge" figure was single-sourced to one new
+  script, and an independent SQL cross-check put the DB-defensible floor at 8 — see the divergence
+  bullet above.
 - **Canary:** deployed and live-verified this session (frontend + editor, both surfaces).
 - **Pre-existing, NOT ours:** `audit-declared-vs-seeded-roles.py` 3 STALE overrides;
   `check-dead-controls` CHECK 4 advisory lists 3 fully-dead attrs.
