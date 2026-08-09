@@ -244,6 +244,29 @@
 					"appliesToLayers": [
 						"OUTER"
 					]
+				},
+				{
+					"key": "input:media-source",
+					"label": "Background video source",
+					"suffixes": [
+						"BgVideo"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					],
+					"note": "Bean 2026-08-09: background media stays in the BACKGROUND section it already lives in. A <video> has no CSS property to name it; input:media-source already described it."
+				},
+				{
+					"key": "input:code-svg",
+					"label": "Background SVG source",
+					"suffixes": [
+						"BgSvgContent",
+						"SvgContent"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					],
+					"note": "Same ruling. Inline SVG markup, not a CSS property — input:code-svg's own label is 'Raw SVG markup (decorative background shape)'."
 				}
 			]
 		},
@@ -538,6 +561,30 @@
 					"appliesToLayers": [
 						"OUTER"
 					]
+				},
+				{
+					"key": "input:number",
+					"label": "Shape divider height",
+					"suffixes": [
+						"ShapeDividerTopHeight",
+						"ShapeDividerBottomHeight"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					],
+					"note": "Bean 2026-08-09: divider heights sit at the bottom of the LAYOUT section. OUTER-scoped deliberately — routing these through the unscoped css:height member made them claimable by both `grid` and `wrapper` and took contested 9 -> 19 (measured, reverted)."
+				},
+				{
+					"key": "input:enum-select",
+					"label": "Shape divider shape",
+					"suffixes": [
+						"ShapeDividerTop",
+						"ShapeDividerBottom"
+					],
+					"appliesToLayers": [
+						"OUTER"
+					],
+					"note": "Same ruling. The shape SELECTOR — a choice from a closed set, which is what input:enum-select describes."
 				}
 			]
 		},
