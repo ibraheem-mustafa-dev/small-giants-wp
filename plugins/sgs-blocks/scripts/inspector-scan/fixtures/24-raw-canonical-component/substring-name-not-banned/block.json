@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/substring-name-not-banned",
+	"title": "Fixture: NEGATIVE CONTROL — component names merely CONTAINING a banned name as a substring must not flag under exact-name matching",
+	"category": "sgs",
+	"attributes": {}
+}

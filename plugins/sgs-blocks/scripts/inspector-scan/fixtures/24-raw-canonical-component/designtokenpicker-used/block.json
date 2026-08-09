@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/designtokenpicker-used",
+	"title": "Fixture: canonical DesignTokenPicker only — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

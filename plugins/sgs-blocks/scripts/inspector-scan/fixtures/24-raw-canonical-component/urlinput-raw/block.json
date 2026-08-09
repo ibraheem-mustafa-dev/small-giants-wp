@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/urlinput-raw",
+	"title": "Fixture: raw URLInput component — mirrors the real sgs/button defect (must flag)",
+	"category": "sgs",
+	"attributes": {}
+}

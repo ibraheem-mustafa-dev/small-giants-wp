@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/comment-mentions-banned-names",
+	"title": "Fixture: banned names appear ONLY inside comments/strings, never as JSX tags — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}
