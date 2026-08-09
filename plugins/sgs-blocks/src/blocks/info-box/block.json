@@ -102,9 +102,9 @@
 					"order": 2,
 					"clusters": [ "layout" ],
 					"attrMap": {
-						"css:width": "contentWidth"
+						"css:width": "width"
 					},
-					"_note": "Heading/subtitle/description/button are native InnerBlocks children (HC2/D192 — parent owns LAYOUT, child owns TYPOGRAPHY), each carrying its own typography inspector, so this block declares no text cluster for them. contentWidth resolves via css:width (render.php:298 `{$root_sel}{width:{$cw_safe};}` — a real `width` declaration, distinct from the separate maxWidth/css:max-width control, Spec 35 vocabulary fix)."
+					"_note": "Heading/subtitle/description/button are native InnerBlocks children (HC2/D192 — parent owns LAYOUT, child owns TYPOGRAPHY), each carrying its own typography inspector, so this block declares no text cluster for them. `width` resolves via css:width (render.php `{$root_sel}{width:{$cw_safe};}` — a real `width` declaration, distinct from the separate maxWidth/css:max-width control). RENAMED from `contentWidth` 2026-08-10 per D540: this block renders no inner band, and D540 reserves `contentWidth` for a block that does — a block wanting a fixed width says `width`."
 				},
 				"media": {
 					"label": "Icon / media",
@@ -207,7 +207,7 @@
 			"type": "string",
 			"default": "default"
 		},
-		"contentWidth": {
+		"width": {
 			"type": "string",
 			"default": ""
 		},

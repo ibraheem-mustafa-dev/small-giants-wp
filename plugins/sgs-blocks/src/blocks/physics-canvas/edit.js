@@ -19,6 +19,20 @@ import {
 // (mirrors trust-bar's "Section (outer)" panel exactly).
 import { WidthPanel, MIN_HEIGHT_OPTIONS } from '../container/components/ContainerWrapperControls';
 
+// Semantic HTML tag (mirrors sgs/container's edit.js exactly — must match the
+// block.json `tagName` enum here and render.php's sanitize_key() default).
+const TAG_NAME_OPTIONS = [
+	{ label: __( 'Section (default)', 'sgs-blocks' ), value: 'section' },
+	{ label: __( 'Div (no semantics)', 'sgs-blocks' ), value: 'div' },
+	{ label: __( 'Main (page main content)', 'sgs-blocks' ), value: 'main' },
+	{ label: __( 'Article (self-contained)', 'sgs-blocks' ), value: 'article' },
+	{ label: __( 'Aside (complementary)', 'sgs-blocks' ), value: 'aside' },
+	{ label: __( 'Nav (navigation)', 'sgs-blocks' ), value: 'nav' },
+	{ label: __( 'Header', 'sgs-blocks' ), value: 'header' },
+	{ label: __( 'Footer', 'sgs-blocks' ), value: 'footer' },
+	{ label: __( 'Figure', 'sgs-blocks' ), value: 'figure' },
+];
+
 /**
  * DECORATIVE-ONLY roster (Spec 38 FR-38-27 / D447). Every entry here renders
  * with no operable control and no must-read body copy, which is what
@@ -109,6 +123,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				     320px mobile) with no control until now, so a client could
 				     never resize the throw arena at all. */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'HTML tag', 'sgs-blocks' ) }
+						value={ attributes.tagName || 'section' }
+						options={ TAG_NAME_OPTIONS }
+						onChange={ ( val ) => setAttributes( { tagName: val } ) }
+						help={ __( 'Semantic tag for accessibility landmarks and SEO. Use Main / Nav / Aside / Article for their meaning; Div for a plain wrapper.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<hr style={ { margin: '16px 0' } } />
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
 					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => {

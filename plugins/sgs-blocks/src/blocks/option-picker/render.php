@@ -5,7 +5,7 @@
  * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration
  * contract §A/§B/§B3, 2026-07-09 — D294 pattern selector): sgs/option-picker
  * is CONTENT-kind (box + width only — `SGS_Container_Wrapper::render()` for
- * 'content' kind only ever emitted maxWidth/contentWidth/padding, never
+ * 'content' kind only ever emitted maxWidth/width/padding, never
  * grid/background/overlay/shape-divider machinery) and it already renders a
  * single semantic root (`<fieldset>`), so the shared wrapper was dead weight —
  * same proven pattern as sgs/quote (D294). The `<fieldset>` IS the block root,
@@ -117,7 +117,10 @@ $pill_sel_radius_raw  = isset( $attributes['pillSelectedBorderRadius'] ) ? (stri
 
 // Root wrapper (box+width only, content-kind — matches the mirrored
 // SGS_Container_Wrapper 'content' capability set).
-$content_width = $attributes['contentWidth'] ?? '';
+// RENAMED from `contentWidth` 2026-08-10 (D540): this block renders no inner
+// band — the value becomes a plain `width:` in $root_decls beside `max-width:`.
+// D540 reserves `contentWidth` for a real second layer; a fixed width is `width`.
+$content_width = $attributes['width'] ?? '';
 $max_width     = $attributes['maxWidth'] ?? '';
 
 // Root border — custom attrs (mirrors sgs/quote: radius stays WP-native,

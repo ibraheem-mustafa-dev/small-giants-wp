@@ -99,7 +99,7 @@ function buildRootPreviewStyle( attributes ) {
 		borderStyle,
 		borderColour,
 		maxWidth,
-		contentWidth,
+		width,
 		pillBgColour,
 		pillTextColour,
 		pillBorderColour,
@@ -142,8 +142,8 @@ function buildRootPreviewStyle( attributes ) {
 	if ( maxWidth ) {
 		rootStyle.maxWidth = maxWidth;
 	}
-	if ( contentWidth ) {
-		rootStyle.width = contentWidth;
+	if ( width ) {
+		rootStyle.width = width;
 	}
 
 	// Pill colour/radius vars — CSS custom-property VALUES only (Spec 32
@@ -193,7 +193,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		contentWidth,
+		width,
 		maxWidth,
 	} = attributes;
 
@@ -814,10 +814,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 					<UnitControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						value={ contentWidth || '' }
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ width || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 400px. Leave blank for natural width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>

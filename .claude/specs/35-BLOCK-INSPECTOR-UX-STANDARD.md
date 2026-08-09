@@ -505,8 +505,19 @@ above + `.claude/plans/spec-35-control-type-contract.md` §THE PLACEMENT RULE.
   `team-member`, `product-faq`) were emitting `max-width` (from `maxWidth`) AND `width` (from
   `contentWidth`) on the SAME root selector — two competing widths under one name promising a
   second layer that did not exist. `contentWidth` was deleted from all five; `sgs/nav-menu` also
-  lost `maxWidth` (redundant with its parent row's own width control, wired above). A gate
-  asserting this rule is NOT yet built (recorded open in D540).
+  lost `maxWidth` (redundant with its parent row's own width control, wired above).
+- **The gate IS now built (2026-08-10): `inspector-scan` rule 23
+  (`23-content-width-needs-inner-band.js`, ADVISORY).** Building it falsified D540's own census,
+  which had grouped 33 blocks on "routes through `SGS_Container_Wrapper`" without reading each
+  render path. Three more blocks were carrying the drift: `product-card` (suppresses the band
+  unconditionally via `wrap_inner => false` and reads the attr nowhere — inert control, DELETED) and
+  `info-box` + `option-picker` (never wrapper-routed at all; they dropped it under D294 and the
+  census matched their COMMENTS saying so — both RENAMED `contentWidth` → `width`, behaviour
+  identical, 6 canary rows migrated). `sgs/hero` split does NOT flag: it suppresses the `__inner`
+  div but bands the content with centred `padding-inline` on the grid, which is a real band and the
+  right mechanism for a grid item (Bean-ruled 2026-08-10). Re-run:
+  `node plugins/sgs-blocks/scripts/inspector-scan/run.js` — currently **0 flagged**. Full record:
+  `decisions.md` D540 §"CLOSED + CORRECTED 2026-08-10".
 
 ## PART N — Role data layer + enforcement rules for Task F (added 2026-08-06)
 

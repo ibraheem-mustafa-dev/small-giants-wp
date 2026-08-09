@@ -30,7 +30,7 @@
  * 1023/767). Border radius/width/colour/style stay WP-native
  * `style.border.*` (skip-serialised, wholesale-passed to the style engine —
  * matches sgs/container's no-inline residual; this block never had a
- * per-side custom-attr border model). contentWidth/maxWidth are kept-scalar
+ * per-side custom-attr border model). width/maxWidth are kept-scalar
  * single-value families (contract §C), base only — matches the pre-existing
  * contract (no tablet/mobile tiers were ever declared for this block).
  *
@@ -93,8 +93,13 @@ $sgs_hover_shadow   = isset( $attributes['shadowHover'] ) ? $attributes['shadowH
 $sgs_hover_gray     = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
 
 // Width — SGS custom scalars (kept-scalar single-value families, contract §C).
-// Base only — this block never declared maxWidthTablet/contentWidthTablet.
-$sgs_content_width = isset( $attributes['contentWidth'] ) ? $attributes['contentWidth'] : '';
+// Base only — this block never declared maxWidthTablet/widthTablet.
+// RENAMED from `contentWidth` 2026-08-10 (D540): this block renders NO inner
+// band — it emits a plain `width:` on its own root selector, alongside
+// `max-width:` from maxWidth. D540 reserves `contentWidth` for a block that
+// genuinely wraps its content in a second layer; one that wants a fixed width
+// says `width`. Behaviour is unchanged; only the name now tells the truth.
+$sgs_content_width = isset( $attributes['width'] ) ? $attributes['width'] : '';
 $sgs_max_width     = isset( $attributes['maxWidth'] ) ? $attributes['maxWidth'] : '';
 
 // ---------------------------------------------------------------------------

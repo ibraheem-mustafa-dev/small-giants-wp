@@ -54,6 +54,51 @@ tiers); `contentWidth` had already gone at D539 as one of its 19 unreachable att
 A gate asserting the rule (`contentWidth` present ⟹ block renders an inner band) is NOT built. Same
 shape as rule 22, and owed: this meaning drifted silently on 5 blocks before anyone noticed.
 
+### CLOSED + CORRECTED 2026-08-10 — the gate is built, and it falsified this entry's own census
+
+`inspector-scan` **rule 23** (`23-content-width-needs-inner-band.js`, ADVISORY per E6 point 9) now
+asserts the rule. Building it required reading the render paths the census above only grouped, and
+**the census was wrong twice**:
+
+1. **"28 render through `SGS_Container_Wrapper` → meaning intact" does not follow.** Three call
+   sites override the band guard via `$opts['wrap_inner']` (`class-sgs-container-wrapper.php:81,112`).
+   `physics-canvas:97` forces it TRUE (clean). `hero:1065-1066` suppresses it for split but bands the
+   content with centred `padding-inline` on the grid (`:326-341`) — a REAL band, and the correct
+   mechanism there, because a grid item is sized by its track so a `max-width` on the column would be
+   an inert lever (**Bean-ruled 2026-08-10**, correcting a draft of rule 23 that would have flagged
+   hero). `product-card:313` suppresses it UNCONDITIONALLY in the `$base_opts` every branch shares
+   and reads `contentWidth` nowhere in code — so the wrapper wrote band CSS to a selector that never
+   renders and the client's control did nothing.
+2. **Two blocks were never wrapper-routed at all.** `sgs/info-box` and `sgs/option-picker` DROPPED
+   the wrapper under D294 and mention it only in prose explaining that they dropped it — the census
+   grepped for the class NAME and matched those COMMENTS. Both render block-private, each emitting
+   `width:` from `contentWidth` and `max-width:` from `maxWidth` onto the SAME root selector
+   (`info-box/render.php:299-304`, `option-picker/render.php:347-352`). That is verbatim the shape
+   this entry describes and deleted from five blocks.
+
+**Measured: 3, not 0.** Remedies differ by evidence, Bean-ruled:
+
+| Block | Remedy | Why |
+|---|---|---|
+| `product-card` | `contentWidth` **DELETED** | Inert. 0 theme patterns, 0 canary posts set it — render-neutral |
+| `info-box` | **RENAMED** `contentWidth` → `width` | Live on 2 published canary pages at 900px/480px. Deleting would have changed real pages; this entry's own rule says a block wanting a fixed width says `width` |
+| `option-picker` | **RENAMED** `contentWidth` → `width` | Same shape, unused anywhere; kept consistent with info-box |
+
+Stored content migrated before deploy (6 canary rows: 2 published pages + 4 revisions), scoped to
+`wp:sgs/info-box` comments only so `sgs/container`'s 140 legitimate instances were untouched — and
+verified after: `info-box`+`contentWidth` = 0, `container`+`contentWidth` = 140 unchanged, and both
+pages still compute `width: 900px` / `480px` live. The pre-deploy `oldshape-audit` independently
+flagged the same two pages before the migration and passed after it.
+
+Rule 23 is proven able to FAIL against real code, not fixtures alone: `contentWidth` was temporarily
+restored to `sgs/quote`, the run reported 1 finding naming it, and the revert was confirmed on disk
+before the 0 was trusted. Live: **0 FLAGGED**.
+
+**The transferable lesson: a grep for a class NAME answers "is this identifier present", never "is
+this mechanism used".** The census committed exactly the trap rule 23's own header warns about for
+the render side. It is the same failure shape as D539's count-based grouping — a single cheap
+property standing in for a mechanism nobody read.
+
 ## D539 — nav-menu's wrapper exit BUILT; D538's "specialised" carve-out narrowed to a measured test [INCIDENT]
 
 **2026-08-09, Bean-approved after a 3-agent investigation.** Builds D538 and **corrects its

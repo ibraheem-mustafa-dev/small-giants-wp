@@ -18,8 +18,15 @@
  *
  * WS-4 (composite-mirror): render.php now delegates the OUTER wrapper to
  * SGS_Container_Wrapper::render() so sgs/product-card mirrors sgs/container's
- * wrapper capabilities (align, contentWidth, maxWidth, etc.). The block is
+ * wrapper capabilities (align, maxWidth, etc.). The block is
  * a CONTENT-KIND composite — only width layers are emitted (no bg/grid/shapes).
+ *
+ * `contentWidth` was DELETED 2026-08-10 (D540). It was declared and exposed to
+ * the client, but $base_opts below passes `wrap_inner => false` on EVERY branch,
+ * so `.sgs-container__inner` never renders and the wrapper wrote the band CSS to
+ * a selector that does not exist. The control changed nothing. D540 reserves the
+ * name for a block that genuinely renders an inner band; this one cannot.
+ * Render-neutral at deletion: 0 theme patterns/parts and 0 canary posts set it.
  *
  * Shell classes:
  *  - standard: .product-card

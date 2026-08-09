@@ -57,7 +57,7 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:width": "contentWidth",
+						"css:width": "width",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -330,7 +330,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"contentWidth": {
+		"width": {
 			"type": "string",
 			"default": ""
 		},

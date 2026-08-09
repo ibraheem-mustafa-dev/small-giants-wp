@@ -351,10 +351,6 @@
 			"default": {},
 			"description": "Box padding for the card's content BODY { top, right, bottom, left } — the product image is full-bleed and sits outside the padded body. Migrated 2026-07-24 (FR-31-22) from the single-value innerPadding scalar to the universal box-object standard — mirrors ctaPadding/tagPadding. Rendered scoped (never inline) via sgs_box_object_shorthand() on the card's own uid selector, targeting .product-card-body/.sgs-product-card__body. Empty = theme default (20px, style.css)."
 		},
-		"contentWidth": {
-			"type": "string",
-			"default": ""
-		},
 		"maxWidth": {
 			"type": "string",
 			"default": ""

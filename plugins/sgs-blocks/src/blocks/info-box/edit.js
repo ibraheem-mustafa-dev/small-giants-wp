@@ -23,7 +23,7 @@ import { ResponsiveBoxControl } from '../../components';
  * Inspector controls cover only WRAPPER-level styling/layout that render.php
  * actually consumes:
  *   - cardStyle, effectHover, iconPosition (drive wrapper BEM classes)
- *   - Width (maxWidth / contentWidth — kept-scalar, base only)
+ *   - Width (maxWidth / width — kept-scalar, base only)
  *   - Spacing (padding / margin — base via WP-native Dimensions panel,
  *     tablet/mobile via the paddingTablet/paddingMobile/marginTablet/
  *     marginMobile object attrs)
@@ -78,7 +78,7 @@ function boxShorthand( box ) {
  * @returns {Object} React inline-style object.
  */
 function buildPreviewStyle( attributes ) {
-	const { style, contentWidth, maxWidth } = attributes;
+	const { style, width, maxWidth } = attributes;
 	const preview = {};
 
 	const bg = style?.color?.background;
@@ -124,8 +124,8 @@ function buildPreviewStyle( attributes ) {
 		preview.maxWidth = maxWidth;
 		preview.marginInline = 'auto';
 	}
-	if ( contentWidth ) {
-		preview.width = contentWidth;
+	if ( width ) {
+		preview.width = width;
 	}
 
 	return preview;
@@ -241,7 +241,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		cardStyle,
 		effectHover,
 		iconPosition,
-		contentWidth,
+		width,
 		maxWidth,
 		paddingTablet,
 		paddingMobile,
@@ -379,10 +379,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 					/>
 					<UnitControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						value={ contentWidth || '' }
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ width || '' }
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
