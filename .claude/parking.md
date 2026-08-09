@@ -41,14 +41,20 @@ TRUTH-SPEC.md. Relevant to the Phase-5 section-annihilation bug, which fires on 
 
 *61 entries total (measured 2026-08-07 via `grep -c "^### P-"`). The previous "52 open entries" was a `**Bucket:** pipeline` count, which is 19 — it never counted the file. Re-measure, do not trust this line.*
 
-### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 7,263 lines against a 600 cap
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
+### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 6,961 lines against a 600 cap
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30 · **Re-measured:** 2026-08-09
 
-`docscore` grades `decisions.md` at 67.3% (C), and the only genuine failure is length: 7,263 lines
-against the 600-line cap for the doc type (2,634 when parked 2026-07-30; 3,097 after D424; 3,604
-after D432 — it is still growing, ~1 doc-grade point lost per session). The project already has the remedy — archive-on-resolve
+**Re-measured 2026-08-09 and the trend REVERSED — the entry's own figures had drifted, downward.**
+Live: **6,961 lines**, `docscore` **86.3% (B+)** — not the 7,263 lines / 67.3% (C) this entry carried.
+A sweep has happened since it was parked (`handoff-preflight` reports the file *shrinking*:
+"grown −409,822 of 65,536 budget"), so the "still growing, ~1 doc-grade point lost per session" claim
+is no longer true and is struck. Length remains the **only genuine failure** (the other three are
+scorer false positives, itemised below).
+
+~~`docscore` grades `decisions.md` at 67.3% (C) … 2,634 when parked 2026-07-30; 3,097 after D424;
+3,604 after D432 — it is still growing~~. The project already has the remedy — archive-on-resolve
 into `memory/decisions-archive.md` for retired/superseded/non-load-bearing entries — it just has
-not been run recently enough to keep pace.
+not been run recently enough to reach the cap.
 
 **The other three docscore failures on this file are SCORER FALSE POSITIVES — do not "fix" them:**
 - `organization` ×10 flagged as US spelling. These are Schema.org type identifiers

@@ -9,7 +9,8 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Where 2026-08-09 left things** *(previous session's narrative: `memory/session-2026-08-10*.md`)*:
+**Where 2026-08-09 left things** *(prior narrative: `memory/session-2026-08-08*.md`. The old pointer
+to `session-2026-08-10*.md` was dangling — no such file; QC-caught, corrected.)*:
 
 - **We finally have a baseline — and we threw one of the two candidates away on purpose.** The count
   that flattered us (median 12 controls a block) turned out to *mis-rank* the library: the block that
@@ -69,12 +70,8 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
   blocker, not a discrepancy to reconcile away. Quote 8 when you need a number that survives
   challenge; quote 17 only with the method named. (The "all 17" figure was single-sourced and stated
   as settled fact until the handoff QC flagged it — the cross-check is what produced this line.)
-  `border-radius` → 7 components (BorderRadiusControl 24 / UnitControl 11 / BoxControl 5 /
-  RangeControl 3 / TextControl 3 / SelectControl 2 + unresolved) · `width` → SelectControl 15 /
-  RangeControl 10 / UnitControl 8 · `padding` → BoxControl 115 (correct, dominant) but SelectControl
-  11 / RangeControl 5 / TextControl 5 / ToggleControl 4 · `max-width` → UnitControl 13 dominant, still
-  RangeControl 3 / TextControl 2. Canonical `UnitControl` **already in use** in 49 places — so the
-  target shape exists in-tree and is being adopted, not invented.
+  Per-property breakdowns: re-run `npm run survey:length` rather than reading a cached list here.
+  Canonical `UnitControl` **already in use** in 49 places — the target shape exists in-tree.
   ⚠ **Attribution is a static nearest-preceding-JSX heuristic, not an AST parse** — one real false
   positive is documented in the script's own docstring. Spot-check file:line before building a `--fix`
   on any divergent row. 26 NULL (all `*Unit` companions, kept as their own bucket) · 295 no-control-found.
@@ -237,6 +234,19 @@ merges. ⚠ **Both are value-DOMAIN changes** (`RangeControl`→`UnitControl`; c
 D521-class silent-coercion risk, so the codemod PROPOSES and a human signs off, with a stored-content
 migration. **1.4c (`hero/edit.js:906`, `:1006-1017`) is NOT a merge** — mobile-only orphans with no
 tier counterpart; needs Bean's design call first (D545).
+
+### ⚠ Two ACTIVE residuals on the new detector (not parked — they bite the next measurement)
+
+1. **`survey-inspector-surface.js` counts DECLARED rows; D544's live figures count DEFAULT-VISIBLE
+   ones.** It therefore does NOT reproduce the live ordering (live: product-card > button > hero >
+   quote > label; detector: product-card > hero > quote > button > label). **Its OWN-vs-EXTENSION
+   split IS exact** (`sgs/label` 4/6/1 panels, matching the live measurement) — use that, and do not
+   quote its row totals as "what the client sees". Closing it = one bounded pass making
+   default-visible the primary number, declared the secondary.
+2. **Unresolved 7-vs-6 discrepancy on `sgs/label`'s extension panels.** The detector counts a `fx.js`
+   "Scroll & effects" panel (source says label qualifies via `SHIPPED_EFFECTS`); the live
+   click-through recorded only 6 and did not show it. **One of the two is wrong and which has not
+   been determined.** Resolve before the next calibration, or the calibration inherits the error.
 
 ### Dependency graph
 

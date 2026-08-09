@@ -1,9 +1,19 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-07-28 (Spec 35 close-out sweep — +3 injection-class/wrapper-collision/chained-shell lessons; retired 3 oldest 2026-05-29 DB-migration-specific stubs to archive; active set = 30, cap restored)
+**Last updated:** 2026-08-09 (Spec 35 Track 1b — +2 stubs: enforcement-claim-without-reading-the-gate, metric-that-mis-ranks). ⚠ ACTIVE SET IS 49, NOT 30 — the cap drifted before this session and an archive sweep to memory/mistakes-archive.md is OWED. Not done here: retiring stubs at the end of a long session risks un-surfacing a live defence, and that judgement belongs in its own pass.
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+### [2026-08-09] I wrote "these gates ban the raw components" into a spec without reading either rule body — both claims were false
+- **Pattern key:** `never-assert-an-enforcement-claim-without-reading-the-gate`
+- **Feedback file:** [feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md)
+- **Rule:** correcting Spec 35 Part H, I asserted that rules 04/08 gate raw `ColorPalette`/`LinkControl` out of a block's `edit.js`. Reading the bodies: `04-colour-alpha.js:92` returns early when `enableAlpha` is present (so `<ColorPalette enableAlpha>` passes clean), and `08-raw-url-link.js:99-101` matches `<TextControl type="url">` only and has never heard of `LinkControl`. **Neither is gated.** It was the one sentence in the change an operator would have acted on. A gate's NAME and its checklist item are not its CONDITION — read the matcher before describing what it enforces. Fixed by building rule 24 and proving the gap by planting `<ColorPalette enableAlpha>` in a real block: rule 04 reported 0, rule 24 flagged it.
+
+### [2026-08-09] A metric can MIS-RANK, not merely undercount — and its own self-test can certify the defect
+- **Pattern key:** `a-metric-that-gets-cheaper-when-you-hide-things`
+- **Feedback file:** [feedback_a_metric_that_gets_cheaper_when_you_hide_things.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_metric_that_gets_cheaper_when_you_hide_things.md)
+- **Rule:** a library-wide inspector census (median 12 / max 49 / total 1121) was rejected as a baseline (D543): it scored any composite as ONE row, could not see native `supports` panels (64 of 83 blocks) or `extensions/`, and summed mutually-exclusive branches — error with TWO signs. The live editor then proved it MIS-RANKED (D544): the block scoring 8 shows a client ~50 controls. Ask "what is the cheapest way to make this number fall, and does that help the user?" and validate ORDERING, not just magnitude. Its `--self-test` certified the worst defect as the expected answer, so it could never have caught this.
+
 ### [2026-07-28] A render_block injector must anchor past the leading scoped `<style>` block or its payload gets lifted/stripped, erasing injection AND evidence
 - **Pattern key:** `render-injectors-must-anchor-past-leading-scoped-style`
 - **Feedback file:** [feedback_render_injectors_must_anchor_past_leading_scoped_style.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_render_injectors_must_anchor_past_leading_scoped_style.md)
