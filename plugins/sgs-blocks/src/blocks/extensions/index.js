@@ -3,6 +3,11 @@
  *
  * Loaded once in the editor via enqueue_block_editor_assets.
  *
+ * - Responsive device toggle: ONE global Desktop/Tablet/Mobile control portalled
+ *   to the top of the block inspector, plus a persistent cue when the client is
+ *   editing a non-desktop tier. Imported FIRST so it is registered before any
+ *   panel-rendering extension. It registers a plugin (not a BlockEdit filter),
+ *   so its position in this list does not affect panel order.
  * - Animation: controls for sgs/* blocks only (scroll-triggered animations).
  * - Hover effects: hover animations for sgs/* blocks.
  * - Custom CSS: per-block scoped CSS textarea in Advanced panel (also
@@ -19,6 +24,7 @@
  *   core's structurally-last "Advanced" panel — see that file's header for
  *   the proof.
  */
+import './responsive-device-toggle';
 import './animation';
 import './hover-effects';
 import './custom-css';

@@ -35,6 +35,16 @@ final class SGS_Blocks {
 		// document and is not subject to this.
 		add_action( 'enqueue_block_assets', [ $this, 'enqueue_editor_extension_styles' ] );
 
+		// A THIRD hook, for a third reason. The global device toggle and its cue
+		// render in the OUTER admin document (the block inspector is not inside
+		// the canvas iframe — measured 2026-08-10), so their CSS must land there.
+		// It cannot ride `enqueue_block_assets` above: device-visibility.php
+		// attaches inline CSS guarded on that handle, and it cannot ride
+		// `enqueue_block_editor_assets` without being shimmed into the iframe and
+		// re-emitting the very warning the comment above documents.
+		// `admin_enqueue_scripts` reaches the outer document and is never shimmed.
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_device_toggle_styles' ] );
+
 		// Post Grid REST endpoint for AJAX pagination and category filtering.
 		require_once SGS_BLOCKS_PATH . 'includes/class-post-grid-rest.php';
 		Post_Grid_REST::register();
@@ -288,6 +298,52 @@ final class SGS_Blocks {
 			wp_enqueue_style(
 				'sgs-extensions-editor',
 				SGS_BLOCKS_URL . 'assets/css/extensions.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
+	}
+
+	/**
+	 * Enqueue the global device-toggle CSS into the OUTER admin document.
+	 *
+	 * Deliberately a THIRD hook, not a reuse of either enqueue method above:
+	 *
+	 *   - `enqueue_block_assets` (the method above) targets the canvas IFRAME,
+	 *     and `device-visibility.php` attaches inline CSS guarded on
+	 *     `wp_style_is( 'sgs-extensions-editor', 'enqueued' )`. Adding sidebar CSS
+	 *     to that handle would work, but any later split of the hook silently
+	 *     drops the device-visibility CSS with no error.
+	 *   - `enqueue_block_editor_assets` reaches the outer document but is copied
+	 *     into the iframe by core's compatibility shim, re-emitting the "added to
+	 *     the iframe incorrectly" warning this plugin removed on 2026-07-31.
+	 *
+	 * `admin_enqueue_scripts` reaches the outer admin document — where the block
+	 * inspector actually lives (verified on the canary, both editors, 2026-08-10:
+	 * `.block-editor-block-inspector` is present in the outer document and absent
+	 * inside the canvas iframe) — and is never iframe-shimmed.
+	 *
+	 * @param string $hook_suffix Current admin page. Unused; screen check is finer.
+	 * @return void
+	 */
+	public function enqueue_device_toggle_styles( $hook_suffix ): void {
+		unset( $hook_suffix );
+
+		// `is_block_editor()` is a WP_Screen METHOD, not a global function.
+		// Guarded the same way as class-product-preflight.php does.
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( ! $screen || ! $screen->is_block_editor() ) {
+			return;
+		}
+
+		$css_file = SGS_BLOCKS_PATH . 'assets/css/device-toggle.css';
+		if ( file_exists( $css_file ) ) {
+			wp_enqueue_style(
+				'sgs-device-toggle',
+				SGS_BLOCKS_URL . 'assets/css/device-toggle.css',
 				[],
 				SGS_BLOCKS_VERSION
 			);

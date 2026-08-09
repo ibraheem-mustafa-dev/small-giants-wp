@@ -1,0 +1,371 @@
+/**
+ * Global device toggle — ONE device switcher for the whole inspector.
+ *
+ * Replaces ~192 per-control Desktop/Tablet/Mobile strips (73 <ResponsiveControl>
+ * call sites across 32 files), every one of which read and wrote the SAME
+ * WordPress state: `core/editor`'s getDeviceType/setDeviceType. This renders that
+ * state once, at the top of the block inspector, and drives the canvas preview.
+ *
+ * Design + the probe evidence behind every decision below:
+ *   .claude/plans/2026-08-10-global-device-toggle-design.md
+ *
+ * Three things here look like over-engineering and are not. Each was measured on
+ * the canary (WP 7.0.2, both editors, 2026-08-10):
+ *
+ *   1. MutationObserver on `.interface-interface-skeleton` (D2 / probe P4).
+ *      A store-only trigger is INCOMPLETE. Toggling distraction-free DESTROYS and
+ *      recreates `.block-editor-block-inspector` while
+ *      `getActiveComplementaryArea` never changes — so a useSelect-driven
+ *      re-render never fires and the portal orphans permanently. Enumerating
+ *      events was proven to be whack-a-mole; observing the one ancestor that
+ *      survives every measured state is complete by construction.
+ *      Cost is low: the canvas is a separate IFRAME document, so typing never
+ *      reaches this observer — only sidebar/header chrome does.
+ *
+ *   2. document.body.contains() before reusing a cached node (D2 / probe P3).
+ *      The detached node was measured returning false. A cached ref goes stale on
+ *      a Page/Block tab switch, a sidebar close, and a distraction-free toggle.
+ *
+ *   3. A bounded rAF retry (D2). The replacement node arrives on a LATER React
+ *      commit than the event that destroyed it, so one synchronous query can run
+ *      a tick early and find nothing. Self-terminating — NOT a second observer.
+ *
+ * ⛔ NOT placed in conditional-visibility.js: that file is wrapped end-to-end in a
+ *    window.__sgsConditionalVisibilityRegistered guard (:64-65 … :630). If that
+ *    guard trips, this toggle would vanish product-wide and every responsive
+ *    control would lose its switcher — a runtime failure no source-reading gate
+ *    can see.
+ *
+ * ⛔ role="tablist" is NOT used (D3). DeviceTabs renders role="tab"/aria-selected
+ *    with no tabpanel and no aria-controls. For a per-setting strip that is a
+ *    tolerated stretch; for a control that changes what every OTHER control means
+ *    it is a WCAG 4.1.2 defect — the role promises content-switching. This is a
+ *    radio group, which is what ToggleGroupControl renders. Spec 35 Part H names
+ *    ToggleGroupControl canonical for segmented choice.
+ *
+ * ⛔ NO persistence (D4, Bean-decided 2026-08-10). Every fresh editor load starts
+ *    on Desktop. A deliberate deviation from GenerateBlocks' localStorage: it
+ *    makes "editing in Tablet unaware" structurally unreachable, because the
+ *    client can only be in Tablet if they chose it in that sitting. Do NOT
+ *    "restore" localStorage as a missing feature.
+ *
+ * @package SGS\Blocks
+ */
+import { registerPlugin } from '@wordpress/plugins';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useState, useEffect, useRef, createPortal } from '@wordpress/element';
+import {
+	// ⛔ The `__experimental` prefix is REQUIRED on this WordPress version, and
+	// aliasing it is the established pattern in every one of this plugin's five
+	// other callers (nav-menu/edit.js:38-39, ContainerWrapperControls.js:51-52,
+	// fx.js:39-40, before-after/BooleanResponsiveControl.js:44-45). The
+	// unprefixed names are NOT exported: `wp.components.ToggleGroupControl` is
+	// literally `undefined` at runtime, which React reports only as minified
+	// error #130 ("element type is invalid… got: undefined") — it builds clean,
+	// passes every prebuild gate, and fails silently in the browser.
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	VisuallyHidden,
+} from '@wordpress/components';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Guard against double registration.
+ *
+ * registerPlugin warns-and-no-ops on a duplicate name rather than throwing, so
+ * "renders once by construction" holds only while this file is imported from
+ * exactly one place. That invariant has been broken in this repo before — a
+ * direct block-level import of animation.js once produced two Animation panels
+ * on every block (D148). Matches the identical pattern in animation.js:109,
+ * parallax.js:49, responsive-visibility.js and conditional-visibility.js:64.
+ */
+if ( ! window.__sgsResponsiveDeviceToggleRegistered ) {
+window.__sgsResponsiveDeviceToggleRegistered = true;
+
+/**
+ * The device tiers, in the casing `setDeviceType()` expects.
+ *
+ * ⛔ Capitalised deliberately. WordPress's own getDeviceType() returns
+ * 'Desktop'/'Tablet'/'Mobile' (verified live). The nearest in-repo precedent —
+ * nav-menu/edit.js:613 — uses lowercase values for its OWN block attribute;
+ * copying that casing here silently breaks the core API call.
+ */
+const DEVICES = [
+	{ value: 'Desktop', label: __( 'Desktop', 'sgs-blocks' ) },
+	{ value: 'Tablet', label: __( 'Tablet', 'sgs-blocks' ) },
+	{ value: 'Mobile', label: __( 'Mobile', 'sgs-blocks' ) },
+];
+
+/**
+ * Plain-English warning shown while the client is editing a non-desktop tier.
+ *
+ * Needed because core surfaces NO persistent device indicator anywhere: the
+ * header's View button is byte-identical in Desktop and Tablet (same aria-label,
+ * same classes, same single <svg>, no text), and <body> carries no device class.
+ * The device state lives only inside a collapsed dropdown. Measured, both
+ * editors — see design doc P2.
+ */
+const CUE_TEXT = {
+	Tablet: __(
+		"You're editing the tablet view — changes here won't show on desktop.",
+		'sgs-blocks'
+	),
+	Mobile: __(
+		"You're editing the mobile view — changes here won't show on desktop or tablet.",
+		'sgs-blocks'
+	),
+};
+
+/**
+ * The one ancestor that survives every measured editor state.
+ *
+ * Measured 2026-08-10: `.interface-interface-skeleton__sidebar` is ABSENT in
+ * distraction-free mode and REPLACED when leaving it, while this node is the
+ * same object throughout. Observing it is therefore complete regardless of which
+ * event caused the inspector to be rebuilt.
+ */
+const OBSERVE_ROOT_SELECTOR = '.interface-interface-skeleton';
+const INSPECTOR_SELECTOR = '.block-editor-block-inspector';
+
+/** Max rAF attempts when re-acquiring the portal target. */
+const MAX_ACQUIRE_FRAMES = 5;
+
+/**
+ * Resolve the live block-inspector node, or null.
+ *
+ * @return {HTMLElement|null} The inspector element when genuinely in the document.
+ */
+function findInspector() {
+	const node = document.querySelector( INSPECTOR_SELECTOR );
+	return node && document.body.contains( node ) ? node : null;
+}
+
+/**
+ * Maintain a host element pinned as the FIRST child of the block inspector.
+ *
+ * ⛔ Portalling straight into `.block-editor-block-inspector` does NOT work:
+ * createPortal APPENDS, so the toggle lands at the BOTTOM of the sidebar, below
+ * the Advanced panel. That shipped in the first Gate 1 build and every automated
+ * assertion passed it — mounted, inside the inspector, right height, right
+ * labels, 44px targets. Only the screenshot showed it in the wrong place
+ * (R-31-13: the numbers alone do not close). Hence an own host element that this
+ * hook explicitly inserts at the top and keeps there.
+ *
+ * @return {HTMLElement|null} The host to portal into, or null when the inspector
+ *                            is not mounted (sidebar closed, Page tab active,
+ *                            distraction-free mode, no block selected).
+ */
+function useInspectorPortalHost() {
+	const [ host, setHost ] = useState( null );
+	const frameRef = useRef( null );
+	const hostRef = useRef( null );
+
+	useEffect( () => {
+		let cancelled = false;
+		let attempts = 0;
+
+		if ( ! hostRef.current ) {
+			hostRef.current = document.createElement( 'div' );
+			hostRef.current.className = 'sgs-device-toggle-host';
+		}
+		const hostEl = hostRef.current;
+
+		/** @return {boolean} True when the host is already correctly placed. */
+		const isSettled = () => {
+			const inspector = findInspector();
+			return !! inspector && inspector.firstChild === hostEl;
+		};
+
+		// The replacement inspector arrives on a LATER React commit than the
+		// mutation that removed the old one, so one query can run a tick early.
+		const acquire = () => {
+			if ( cancelled ) {
+				return;
+			}
+			const inspector = findInspector();
+			if ( inspector ) {
+				if ( inspector.firstChild !== hostEl ) {
+					inspector.insertBefore( hostEl, inspector.firstChild );
+				}
+				attempts = 0;
+				setHost( ( current ) =>
+					current === hostEl ? current : hostEl
+				);
+				return;
+			}
+			if ( attempts++ < MAX_ACQUIRE_FRAMES ) {
+				frameRef.current = window.requestAnimationFrame( acquire );
+				return;
+			}
+			// Genuinely absent, not merely late.
+			attempts = 0;
+			if ( hostEl.parentElement ) {
+				hostEl.remove();
+			}
+			setHost( ( current ) => ( current === null ? current : null ) );
+		};
+
+		const schedule = () => {
+			if ( frameRef.current ) {
+				window.cancelAnimationFrame( frameRef.current );
+			}
+			attempts = 0;
+			frameRef.current = window.requestAnimationFrame( acquire );
+		};
+
+		// Ignore mutations we caused ourselves, and React's renders INTO the
+		// host — otherwise every keystroke of our own output re-schedules work.
+		const onMutate = () => {
+			if ( isSettled() ) {
+				return;
+			}
+			schedule();
+		};
+
+		const root =
+			document.querySelector( OBSERVE_ROOT_SELECTOR ) || document.body;
+		const observer = new window.MutationObserver( onMutate );
+		observer.observe( root, { childList: true, subtree: true } );
+
+		// Initial acquisition — the observer only fires on CHANGE.
+		schedule();
+
+		return () => {
+			cancelled = true;
+			observer.disconnect();
+			if ( frameRef.current ) {
+				window.cancelAnimationFrame( frameRef.current );
+			}
+			if ( hostEl.parentElement ) {
+				hostEl.remove();
+			}
+		};
+	}, [] );
+
+	return host;
+}
+
+/**
+ * Read the current device tier and a setter, from the one store that answers in
+ * BOTH the post editor and the site editor.
+ *
+ * `core/editor`'s getDeviceType/setDeviceType are STABLE (not __experimental);
+ * the old per-editor __experimentalGetPreviewDeviceType APIs are formally
+ * deprecated *to* these since WP 6.5. Verified answering in both editors.
+ *
+ * @return {{device: string, setDevice: Function}} Current tier and its setter.
+ */
+function useDeviceType() {
+	const device = useSelect( ( select ) => {
+		const editor = select( 'core/editor' );
+		return editor && typeof editor.getDeviceType === 'function'
+			? editor.getDeviceType()
+			: 'Desktop';
+	}, [] );
+
+	const { setDeviceType } = useDispatch( 'core/editor' ) || {};
+
+	return {
+		device: device || 'Desktop',
+		setDevice: ( next ) => {
+			if ( typeof setDeviceType === 'function' ) {
+				setDeviceType( next );
+			}
+		},
+	};
+}
+
+/**
+ * The toggle itself, portalled to the top of the block inspector.
+ *
+ * @return {JSX.Element|null} The portalled control, or null when there is no
+ *                            inspector to portal into.
+ */
+function DeviceTogglePortal() {
+	const target = useInspectorPortalHost();
+	const { device, setDevice } = useDeviceType();
+
+	// createPortal( children, null ) throws — never call it without a target.
+	if ( ! target ) {
+		return null;
+	}
+
+	return createPortal(
+		<div
+			className="sgs-device-toggle"
+			data-sgs-device-toggle="mounted"
+		>
+			<ToggleGroupControl
+				label={ __( 'Editing for', 'sgs-blocks' ) }
+				value={ device }
+				isBlock
+				__nextHasNoMarginBottom
+				onChange={ ( value ) => setDevice( value ) }
+			>
+				{ DEVICES.map( ( { value, label } ) => (
+					<ToggleGroupControlOption
+						key={ value }
+						value={ value }
+						label={ label }
+					/>
+				) ) }
+			</ToggleGroupControl>
+		</div>,
+		target
+	);
+}
+
+/**
+ * The persistent cue + the screen-reader announcement.
+ *
+ * Mounted straight to document.body, NOT into the inspector — deliberately. The
+ * inspector is destroyed by a Page-tab switch, a closed sidebar and
+ * distraction-free mode, and a cue that disappears in exactly those states fails
+ * at the one job it has. There is no core Slot that survives all of them.
+ *
+ * @return {JSX.Element|null} The portalled cue, or null on Desktop.
+ */
+function DeviceCuePortal() {
+	const { device } = useDeviceType();
+	const message = CUE_TEXT[ device ] || null;
+
+	return createPortal(
+		<>
+			{ /* WCAG 4.1.3 Status Messages — the tier changes with no focus
+			     move, so without this a screen-reader user learns only that a
+			     button became pressed, not that every other control now means
+			     something different. polite, never assertive. */ }
+			<VisuallyHidden aria-live="polite" aria-atomic="true">
+				{ sprintf(
+					/* translators: %s: device tier name, e.g. Tablet. */
+					__( 'Now editing the %s view.', 'sgs-blocks' ),
+					device.toLowerCase()
+				) }
+			</VisuallyHidden>
+			{ /* Visual affordance ONLY — deliberately carries no role and no
+			     aria-live. `role="status"` implies aria-live="polite", which
+			     would announce this text IN ADDITION to the region above, so a
+			     screen-reader user would hear the tier change twice. The hidden
+			     region owns the announcement; this owns the sighted cue. It is
+			     aria-hidden so the duplicate text is not reachable by browsing
+			     either. */ }
+			{ message && (
+				<div className="sgs-device-cue" aria-hidden="true">
+					{ message }
+				</div>
+			) }
+		</>,
+		document.body
+	);
+}
+
+registerPlugin( 'sgs-responsive-device-toggle', {
+	render: () => (
+		<>
+			<DeviceTogglePortal />
+			<DeviceCuePortal />
+		</>
+	),
+} );
+
+} // end guard: window.__sgsResponsiveDeviceToggleRegistered

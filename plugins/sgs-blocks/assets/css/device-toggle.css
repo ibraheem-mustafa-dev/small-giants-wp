@@ -1,0 +1,115 @@
+/**
+ * Global device toggle + non-desktop cue — EDITOR SIDEBAR ONLY.
+ *
+ * ⛔ HOOK MATTERS. This file is enqueued on `admin_enqueue_scripts` (gated on
+ * get_current_screen()->is_block_editor()), NOT on `enqueue_block_editor_assets`
+ * and NOT on `enqueue_block_assets`. Measured 2026-08-10: the block inspector
+ * lives in the OUTER admin document, not the canvas iframe. Styles registered on
+ * `enqueue_block_editor_assets` get copied into the iframe by WordPress's
+ * compatibility shim, which is exactly the console warning this plugin fixed on
+ * 2026-07-31 (see class-sgs-blocks.php:255-280). `admin_enqueue_scripts` reaches
+ * the same outer document and is never shimmed.
+ *
+ * ⛔ Do NOT merge this into assets/css/extensions.css. That file rides
+ * `enqueue_block_assets` for the canvas, and device-visibility.php:124 attaches
+ * inline CSS guarded on its handle being enqueued — splitting that hook makes the
+ * device-visibility CSS vanish from the editor with no error at all.
+ *
+ * Design + evidence: .claude/plans/2026-08-10-global-device-toggle-design.md
+ *
+ * @package SGS\Blocks
+ */
+
+/* -------------------------------------------------------------------------
+ * POSITIVE CONTROL — served its purpose, now removed.
+ *
+ * A `outline: 3px solid red` rule shipped in the first deploy of this file and
+ * was asserted live via getComputedStyle at Gate 1 (2026-08-10): it returned
+ * `rgb(255, 0, 0) 2.72727px` on the toggle's own element, proving the stylesheet
+ * both LOADED and MATCHED. That mattered because no `sgs-responsive-*` class in
+ * this plugin has ever carried any CSS — "the rules are there" had never once
+ * been verified for this surface.
+ *
+ * It was paired with a SECOND control (`data-sgs-device-toggle="mounted"`,
+ * asserted in the same run) because a CSS rule can paint on an always-present
+ * wrapper while the React portal silently fails to attach. On the FIRST deploy
+ * that is exactly what happened: the stylesheet loaded and the component did not
+ * mount. One control would have reported a pass.
+ * ---------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * The toggle, pinned at the top of the block inspector.
+ * ---------------------------------------------------------------------- */
+.sgs-device-toggle {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	padding: 12px 16px;
+	background: #fff;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+/* 44px minimum touch target (~/.claude/rules/visual-standards.md; WCAG 2.2's
+   cheap win, which this project keeps). WordPress's own default here is 36px,
+   and the DeviceTabs strip this replaces already used 44px — matching it keeps
+   the control operable on a touch device without regressing what was there. */
+.sgs-device-toggle .components-toggle-group-control-option-base {
+	min-height: 44px;
+}
+
+/* -------------------------------------------------------------------------
+ * The non-desktop cue.
+ *
+ * Fixed to the viewport and portalled to <body>, so it survives every state
+ * that destroys the inspector: the Page tab, a closed sidebar, and
+ * distraction-free mode (all three measured 2026-08-10).
+ *
+ * Bottom-centre rather than the top: the editor header carries Save/Publish and
+ * the document title, and a top banner would either cover them or push the whole
+ * canvas down. The design requirement is "persistently visible without depending
+ * on the inspector" — position is free, occluding Publish is not.
+ * ---------------------------------------------------------------------- */
+.sgs-device-cue {
+	position: fixed;
+	bottom: 16px;
+	left: 50%;
+	transform: translateX(-50%);
+
+	/* Above the editor chrome. WordPress's admin bar sits at 99999; this is a
+	   status message about the current editing mode and must not be buried. */
+	z-index: 100000;
+
+	max-width: min(90vw, 640px);
+	padding: 10px 18px;
+	border-radius: 4px;
+
+	/* Amber, not red: this is a mode reminder, not an error. Reserving red for
+	   destructive states keeps red meaningful elsewhere in the editor.
+	   #1e1e1e on #f0b849 measures ~9.5:1 — comfortably past WCAG 1.4.3's 4.5:1. */
+	background: #f0b849;
+	color: #1e1e1e;
+	border: 1px solid #d89e2a;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+	font-size: 13px;
+	line-height: 1.5;
+	text-align: center;
+	pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-device-cue {
+		animation: sgs-device-cue-in 160ms ease-out;
+	}
+}
+
+@keyframes sgs-device-cue-in {
+	from {
+		opacity: 0;
+		transform: translateX(-50%) translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+}
