@@ -1,5 +1,67 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D538 — sgs/nav-menu exits the universal container wrapper [INCIDENT]
+
+**2026-08-09, Bean.** *"I don't think nav-menu should use the container wrapper — such a specialised
+block doesn't really match this universal shared wrapper with all of its controls."*
+
+**Extends D294, does not contradict it.** D294 settled the axis as content-KIND composites MAY render
+block-private while section/layout-KIND KEEP the wrapper. This adds a second exit condition:
+a **specialised** block whose purpose is not "arrange a section" does not inherit the wrapper's whole
+attribute vocabulary merely because it has a root element.
+
+**The evidence that forced it.** `nav-menu` passes its attributes wholesale to
+`SGS_Container_Wrapper::render()` (`render.php:1436`), so it inherits the wrapper's entire vocabulary
+as *rendered* — and therefore declares **17 container attributes with no controls anywhere**, frozen
+at their block.json defaults forever. Its `edit.js` mentions none of them. This is the dominant family
+in the inspector-scan `21-render-without-control` backlog (physics-canvas 79, nav-menu 17,
+site-header-row 12, site-footer-row 12) — not a nav-menu quirk.
+
+It also resolves a live contradiction: the `bar` element is documented as *"the `<ul>` that actually
+arranges the item links"*, but the wrapper emits arrangement CSS at `$grid_sel`
+(`class-sgs-container-wrapper.php:1192`), which resolves to the block root or its `__inner` — never
+the `<ul>`. The manifest prose and the rendered CSS disagree about who owns those attributes. Exiting
+the wrapper removes the disagreement rather than adjudicating it.
+
+⛔ **Not yet built.** Scope, the other three blocks in the same family, and whether `bar` should stay
+`layer=GRID` are open. Design-gate before building (Rule 7) — this touches a shared mechanism.
+
+## D537 — Inspector placement is TWO tiers: element, then property-family [ROUTINE]
+
+**2026-08-09, Bean:** *"For block root controls, always use property-family panels. Tier 1 is per
+element and then tier 2 is per property-family."* Plus: controls that style nothing (`variant`,
+`templateMode`, `autoplay`, `showDots`, `required`) take **one Settings panel, pinned first**.
+
+Supersedes the framing that a "block-level panel" needed designing. It did not: of `sgs/hero`'s 76
+unplaced controls, **four** are genuinely block-scope. The rest were data gaps.
+
+**Tier 2 needed no invention** — the six property families (text / fill / layout / position / motion /
+animation) are already defined in `scripts/consistency/cluster-member-sets.json` with labels and
+owning components, and all 283 elements already declare which they have. `placement-reach.py` simply
+never read that file. Teaching it to (honouring `appliesToLayers`) moved placement **46.1% → 58.6%**
+with no block edited.
+
+**Prior art (checked before deriving, per E9):** Gutenberg PR #77279 moves block-root controls out of
+a catch-all Color panel into Typography / Background, and sub-element controls into an Elements panel
+— core groups a block's OWN styling by property family and its SUB-PARTS by element. That is this
+model, arrived at independently.
+
+**Two resolver rules shipped with it, both derived from declarations, neither a manufactured
+tie-break:** an explicit `attrMap` entry is AUTHORITATIVE (another element's cluster reaching the same
+name is not ambiguity); and an element that explicitly claims a member owns that member's WHOLE
+SUFFIX FAMILY (`grid` maps `css:grid-template-columns`, so the block's separate `columns` attribute —
+the same member under its other name — is `grid`'s too).
+
+⚠ **A figure reported mid-session was wrong by 7x.** Contested placements were quoted as 175; the
+detector was counting explicitly-mapped attributes as ambiguous. True figure 25, now **9** (all in
+`nav-menu`, see D538). Caught only by validating the detector against a block whose answer was
+already known. Design doc: `.claude/plans/2026-08-08-block-level-panel-resolution.md`.
+
+⛔ **Open:** the background-media vocabulary. Homing hero's 21 background controls needs new `css:*`
+rows in `setting-registry.json` (87-row golden master) — `check-cluster-coverage.py` indexes ONLY
+`css:*`/`anim:*` rows and is BLOCKING GATE 1/3 in prebuild, so `input:*` members are rejected. Two
+attempts to call this change small were both refuted by that gate.
+
 ## D536 — Phase 1 background capability: media on a ::before layer, flat colour ungated [ROUTINE]
 
 **2026-08-08.** Three gaps closed in `SGS_Container_Wrapper`, Rule-7 design-gated and Bean-approved

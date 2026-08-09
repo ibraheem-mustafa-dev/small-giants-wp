@@ -1638,3 +1638,49 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   `<div class="wp-block-sgs-container">` wrapper made every probe container INVALID in the editor
   while rendering perfectly on the frontend (render.php ignores stored markup). **`save()` decides
   what may be hand-written — read it before authoring block markup.**
+
+### E10. Earned 2026-08-09 — Spec 35 tier-2 placement session (D537-D538)
+
+- **STOP-VALIDATE-A-DETECTOR-AGAINST-A-KNOWN-ANSWER-BEFORE-QUOTING-ITS-NUMBER.** A new contested-
+  placement detector was built, run, and its output (**175 attributes across 20 blocks**) reported to
+  Bean as a finding — and written into a commit message. The true figure was **25**. It was counting
+  attributes an element had ALREADY claimed with an explicit `attrMap` entry as "ambiguous". One
+  minute spent on `sgs/container`, whose `grid` element visibly declares 8 of its 13 reported
+  conflicts, would have caught it. **A detector's first output is a hypothesis. Run it against a case
+  whose answer you already know BEFORE the number leaves your context.** Sibling of
+  `validate-grading-tool-against-gold-standard` — this is that rule applied to a tool built minutes
+  earlier, which is exactly when it feels least necessary.
+- **STOP-A-ROW-EXISTING-IN-THE-DATA-IS-NOT-THE-GATE-ACCEPTING-IT.** `input:media-source` and
+  `input:code-svg` are genuine rows in `setting-registry.json` — enumerated and confirmed. The change
+  built on them was still rejected, because `check-cluster-coverage.py:65` indexes ONLY `css:*` and
+  `anim:*` rows and then requires every member key to be in THAT index. **Read the gate's index, not
+  the source data. "The row exists" and "the gate will accept it" are different claims needing
+  different evidence.**
+- **STOP-CALLING-A-SHARED-GATE-CHANGE-SMALL-BEFORE-READING-THE-GATE.** Twice in one session a change
+  to `cluster-member-sets.json` was described to Bean as low-risk — first "advisory, nothing breaks"
+  (true of one consumer, false of the other), then "no new vocabulary needed" (refuted on execution).
+  `check-cluster-coverage.py` is **BLOCKING GATE 1/3** inside `run-consistency-gates.py`, the FIRST
+  command in `prebuild`. **Before characterising blast radius, enumerate every consumer of the file
+  and check whether each is blocking or advisory. A reassurance is a claim and needs the same
+  evidence as a finding.**
+- **STOP-A-PEERS-ACCOUNT-OF-YOUR-OWN-WORKTREE-IS-A-HYPOTHESIS.** A peer agent reported it had
+  clobbered uncommitted work with `git checkout` and helpfully supplied a reconstructed patch to
+  re-apply. `git diff --stat` showed the work **intact** — 35 lines still modified, guard strings
+  present, self-test naming the guard. Applying the reconstruction would have installed the fix a
+  SECOND time on top of itself. **Verify your own tree before acting on anyone's account of it,
+  including a confident one offering a fix.** Corollary: commit early on a shared worktree, because a
+  peer that ran `git checkout` once can run it again.
+- **STOP-A-MANIFEST-NOTE-CAN-BE-WRITTEN-FROM-A-FILE-SCOPED-SEARCH.** `sgs/nav-menu`'s `bar` element
+  carries `"Remaining ARRANGEMENT members are honest GAPs ... with no attribute"`. All nine ARE
+  declared with real defaults and ARE consumed — in shared `includes/`, not the block's own files.
+  The note's author looked at the block's own `style.css` and concluded absence. The SAME blind spot
+  produced a reviewer's false finding the same night ("91 dead attrs" — actually consumed in
+  `includes/`; the repo's own gate reports 3). **A prose note asserting absence is evidence about
+  where its author searched, not about the codebase.**
+- **STOP-A-COMMIT-THAT-STAGES-NOTHING-STILL-COMMITS.** `git add fileA fileB fileC` failed on a stale
+  pathspec (fileC had been renamed) and staged NOTHING — but the following `git commit` succeeded
+  anyway, capturing an earlier `git mv` and producing a commit whose message described 140 lines it
+  did not contain. Caught only by `git status` showing both files still modified afterwards.
+  **`git add` is not atomic with the commit that follows it. Verify with `git show --stat HEAD`, not
+  the fact that commit exited 0** — this is the sibling of the existing "a commit that succeeds in
+  terminal output can be silently BLOCKED" entry, from the opposite direction.
