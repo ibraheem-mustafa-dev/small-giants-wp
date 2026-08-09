@@ -141,29 +141,37 @@ instrument (Bean-decided): a new calibrated detector, plan Step 2 — **not yet 
   `core/roster.js:58-70` admits only directories with a `block.json`. The contract records a raw URL
   field reaching 67 blocks through there. Unbuilt plumbing, separate job.
 - **Three survey detectors** (`b6ca16a8`) — `survey-{colour,typography,box}-controls.py`, joining
-  `survey-length-controls.py`. All `--survey` only. Each proven able to FAIL by sabotage-and-restore
-  (colour 7/7→6/1, typography 9/9→7/2, box 5/5→5/1); each expected population derived independently
-  BEFORE the live run per `zeroIsAClaim`.
-  - **COLOUR** 263 instances — `color` diverges: `DesignTokenPicker` 99 vs `TextControl type="color"`
-    2 (`sgs/star-rating`, verified at `edit.js:155,162`).
-  - **TYPOGRAPHY** 181 — `font-size` diverges: `TypographyControls` 78 vs TextControl 3 /
-    RangeControl 2 / NumberControl 1 (`product-card.ctaFontSize`, `edit.js:1687`) / UnitControl 1.
-    ⚠ **A literal-name scan would have MISSED most of this**: `grep -c nameFontSizeTablet
-    brand-strip/edit.js` = **0** while the DB carries it — `TypographyControls` builds attr names at
-    runtime from `prefix`. The survey parses call sites and ports the component's own naming logic.
-    **Genuine gap found:** `nameLineHeight*`/`nameLetterSpacing*` tiers have NO editor control at all
-    (`showResponsive` covers font-size only) though PHP renders them.
-  - **BOX** — §5's *"per-side scalar migration COMPLETE, 0 remaining"* now **PROVEN** (0 four-sibling
-    groups; independently re-derived — no block has more than 2 per-side scalars). **§14 BORDER
-    conformance measured for the FIRST time** (field 6 read "not yet measured"): 31 four-corner
-    object attrs → 24 canonical, 5 on the wrong component, 7 no control; 222 four-side → 210
-    canonical, 4 raw `BoxControl` bypasses.
-  - ⛔ **Disclosed blind spot:** colour + typography scan `edit.js` + `src/components/` only, so
-    per-block local component dirs are missed — that is where `GradientOverlayControl` lives for
-    container/hero/trust-bar/cta-section. **The absence of `GradientPicker` findings is NOT a clean
-    bill.**
+  `survey-length-controls.py`. `--survey` only. Each proven able to FAIL by sabotage-and-restore;
+  each expected population derived independently BEFORE the live run per `zeroIsAClaim`.
+  COLOUR 263 (`color` diverges: DesignTokenPicker 99 vs raw `TextControl type="color"` 2 —
+  `star-rating`). TYPOGRAPHY 181 (`font-size` diverges: TypographyControls 78 vs 7 others; **a
+  literal-name scan would have MISSED most of it** — `grep -c nameFontSizeTablet brand-strip/edit.js`
+  = 0 while the DB carries it, so the survey ports the component's own runtime naming logic; **gap
+  found:** line-height/letter-spacing tiers have no editor control at all). BOX — §5's *"0 remaining
+  per-side scalars"* now **PROVEN**, and **§14 BORDER conformance measured for the FIRST time**
+  (field 6 read "not yet measured"): 31 corner attrs → 24 canonical / 5 wrong component / 7 none.
+  - ⛔ **Disclosed blind spot:** colour + typography scan `edit.js` + `src/components/` only, missing
+    per-block local component dirs — where `GradientOverlayControl` lives. **Zero `GradientPicker`
+    findings is NOT a clean bill.**
 
 **Advisory backlog now 243** (242 + rule 24's 1). Gates still 4, still none promoted.
+
+#### ⭐ LIVE-EDITOR CALIBRATION — read D544 before sequencing anything
+
+Run BEFORE building the replacement detector, on the canary, both tabs, all panels expanded.
+**The static census MIS-RANKS, it does not merely undercount:** `label` 8 static → **~50 live**;
+`button` 28 static → **84 live**, more than `hero` (45 static → 80). Also: `product-card` 19 panels /
+86 controls, `quote` 11 / 60. **83 block types registered live** — third confirmation of the
+denominator.
+
+**The dominant term is the EXTENSION LOAD, not the block.** `sgs/label` panel-by-panel: its own
+surface is **11 controls / 4 panels**; universal extensions add **34 controls / 6 panels** (Visibility
+conditions 15, Hover Effects 15, + 4 singles) = **76% of its SGS controls**. All 15 hover controls
+verified genuinely visible, including *"Zoom image on hover"* and *"Grayscale to colour"* — on a text
+block with no image.
+
+⚠ **This puts Phase 2.1 (opt-in inversion, D542 ruling 1) ahead of Phase 1 (responsive model) on
+measured impact — but ordering is BEAN'S CALL and has NOT been changed.** Both are real.
 
 #### ⛔ Do NOT start these
 

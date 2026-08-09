@@ -1,5 +1,76 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D544 — The live editor says the dominant term is the EXTENSION LOAD, not the block [INCIDENT]
+
+**2026-08-09.** D543 rejected the static census and Bean chose a *calibrated* replacement. The
+calibration was run first, before building the detector — deliberately, because building a model and
+then discovering it is wrong is how this session opened. **The calibration invalidated the plan's
+priority ordering, which is exactly what a calibration is for.**
+
+### Method
+
+Live canary post editor (WP 7.0.2), `wp.data` block insertion, sidebar opened explicitly, **both**
+tabs selected by `aria-label`, **every collapsed `PanelBody` expanded** before counting (a collapsed
+`ToolsPanel` keeps its children out of the DOM — recorded trap), controls counted as
+`.components-base-control`, then re-counted filtered to genuinely visible elements.
+
+### Measured — static census vs live editor
+
+| Block | Static census | Live panels | Live controls |
+|---|---|---|---|
+| `product-card` | 49 | 19 | **86** |
+| `hero` | 45 | 22 | **80** |
+| `button` | 28 | 17 | **84** |
+| `quote` | 16 | 11 | **60** |
+| `label` | **8** | 11 | **~50** |
+
+**The static metric does not merely undercount — it MIS-RANKS.** `sgs/label` scored 8 (near-simplest
+in the library) and shows the client ~50 controls. `sgs/button` scored 28 against `hero`'s 45, yet
+shows *more* live controls than hero. Any ordering taken from the static census is wrong. D543's
+rejection is vindicated on evidence, not just on argument.
+
+⚠ `label` measured 50 in the per-block pass and 48 when summed per-panel. Not reconciled — a control
+rendering after the panel-level snapshot is the likely cause. **Quote it as ~50 and re-measure before
+using it as a target.**
+
+### The finding that re-orders the work — `sgs/label`, a plain text label, panel by panel
+
+| Panel | Controls | Owner |
+|---|---|---|
+| Colour · Typography · Box · Spacing | 2 · 2 · 5 · 2 = **11** | the block's own |
+| Block Link | 1 | universal extension |
+| **Visibility conditions** | **15** | universal extension |
+| Animation | 1 | universal extension |
+| **Hover Effects** | **15** | universal extension |
+| Click Effects | 1 | universal extension |
+| Element parallax | 1 | universal extension |
+| Advanced | 3 | WordPress core |
+
+**34 of the 45 SGS controls on a text label are universal extensions — 76%.** The block's own
+surface is 11 controls in 4 panels; the extensions add 34 in 6.
+
+All 15 Hover Effects controls were verified genuinely **visible** (not hidden sub-controls), and
+their labels include **"Zoom image on hover"** and **"Grayscale to colour"** — on a block that
+renders no image. This is the captured lesson *universal-extensions-attach-where-they-make-no-sense*
+("13 panels on a nav menu"), now quantified on the live surface rather than inferred.
+
+### Consequence for the programme — a recommendation, NOT a unilateral re-order
+
+The plan sequences **Phase 1 (responsive model)** first — build a global device toggle, delete ~192
+per-control device switchers. That is real work and the switchers are real clutter. But the
+measurement says the **larger** term is Phase 2.1's opt-in inversion (D542 ruling 1): a constant
+~34-control, 6-panel load on *every* block, irrespective of what the block is.
+
+Phase 1's ~192 switchers are spread across 83 blocks; the extension load is ~34 controls on each of
+them. **Ordering is Bean's call** — recorded here as evidence, not acted on.
+
+⛔ **Do not read this as "Phase 1 is not worth doing".** The two are independent and both real.
+
+### Also confirmed here
+
+**83 SGS block types registered in the live editor** — a third independent confirmation of the D543
+denominator, now from the running site rather than the DB or the filesystem.
+
 ## D543 — The library-wide inspector census was measured, reviewed and REJECTED as a baseline [INCIDENT]
 
 **2026-08-09, Bean-decided.** Track 1b's first action was to take the BEFORE numbers. Two were taken.
