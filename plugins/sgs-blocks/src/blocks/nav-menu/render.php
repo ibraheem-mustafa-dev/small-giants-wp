@@ -39,7 +39,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
-require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+// class-sgs-container-wrapper.php is deliberately NOT required — this block
+// renders its root block-private since D539 (see §5). Re-adding the require
+// would reintroduce a dependency nothing uses.
 
 if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 	/**
@@ -1416,43 +1418,158 @@ if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__indicator{background-color:' . sgs_colour_value( $indicator_colour ) . ';}';
 }
 
+// 4g-bis. ROOT BOX — max-width + native spacing + responsive padding tiers.
+//
+// These were SGS_Container_Wrapper's job until this block exited it (D539).
+// Measured before the exit: nav-menu declared 24 of the wrapper's ~107
+// attribute keys and only THREE were reachable by a client — maxWidth and the
+// two padding tiers. The other 21 had no control anywhere and were frozen at
+// their block.json defaults forever. They are deleted, not reproduced.
+//
+// ⛔ Native `spacing` is declared with __experimentalSkipSerialization, so
+// WordPress does NOT inline padding/margin — whoever renders the root MUST emit
+// it scoped or both controls are silently dead. The wrapper used to do this.
+$root_box_css = '';
+
+$nav_max_width = isset( $attributes['maxWidth'] ) ? sgs_css_length_sanitise( (string) $attributes['maxWidth'] ) : '';
+if ( '' !== $nav_max_width ) {
+	$root_box_css .= $uid_sel . '{max-width:' . $nav_max_width . ';}';
+}
+
+$nav_base_spacing = array();
+foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
+	$raw_sides = $attributes['style']['spacing'][ $spacing_prop ] ?? null;
+	if ( ! is_array( $raw_sides ) ) {
+		continue;
+	}
+	$sides = array();
+	foreach ( $raw_sides as $side => $value ) {
+		if ( is_string( $value ) && '' !== $value ) {
+			$sides[ $side ] = $value;
+		}
+	}
+	if ( $sides ) {
+		$nav_base_spacing[ $spacing_prop ] = $sides;
+	}
+}
+if ( $nav_base_spacing && function_exists( 'wp_style_engine_get_styles' ) ) {
+	// The style engine resolves preset tokens (var:preset|spacing|40) that a raw
+	// string concat would emit verbatim and the browser would drop.
+	$nav_spacing_styles = wp_style_engine_get_styles( array( 'spacing' => $nav_base_spacing ) );
+	if ( ! empty( $nav_spacing_styles['css'] ) ) {
+		$root_box_css .= $uid_sel . '{' . $nav_spacing_styles['css'] . '}';
+	}
+}
+
+// Device-tier padding. 767/1023 mirrors what the wrapper emitted for these exact
+// attributes (verified against class-sgs-container-wrapper.php before the exit),
+// so the rendered breakpoints do not move — this is the locked 768/1024 device
+// standard, NOT an arbitrary visual breakpoint.
+foreach ( array(
+	array( 'paddingTablet', '(max-width:1023px)' ),
+	array( 'paddingMobile', '(max-width:767px)' ),
+) as $nav_tier ) {
+	list( $tier_attr, $tier_mq ) = $nav_tier;
+	$tier_box = is_array( $attributes[ $tier_attr ] ?? null ) ? $attributes[ $tier_attr ] : array();
+	if ( ! $tier_box ) {
+		continue;
+	}
+	$tier_shorthand = sgs_box_object_shorthand( $tier_box );
+	if ( null !== $tier_shorthand && '' !== $tier_shorthand ) {
+		$root_box_css .= '@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}';
+	}
+}
+
+// `gap` — the "Item gap" control. Emitted on the BAR (the <ul> whose flex
+// children ARE the item links), not on the root.
+//
+// ⚠ THIS IS A BUG FIX, not a like-for-like port. SGS_Container_Wrapper emitted
+// gap at $grid_sel, which for this block resolved to the ROOT
+// (class-sgs-container-wrapper.php:1192 — contentWidth 'full' meant no band, so
+// no __inner). The root's flex children are the bar and the toggle, and §4f
+// swaps those by display:none at the collapse point, so exactly ONE flex child
+// exists at any width — and a flex gap between one item paints nothing. The
+// control has therefore been inert for its whole life while looking wired: it
+// had a label, a value and a reset, and changed the page not at all.
+$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_sanitise( (string) $attributes['gap'] ) : '';
+if ( '' !== $nav_gap ) {
+	$root_box_css .= $uid_sel . ' .sgs-nav-menu__bar{gap:' . $nav_gap . ';}';
+}
+
+if ( '' !== $root_box_css ) {
+	$css .= $root_box_css;
+}
+
 // 4h. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
 // punctuation only) and stripped of any </style> breakout below with the rest.
 if ( ! empty( $attributes['sgsCustomCss'] ) ) {
 	$css .= preg_replace( '/<\/?script/i', '', (string) $attributes['sgsCustomCss'] );
 }
 
-// ── 5. Assemble via the shared composite wrapper (layout KIND — flex/grid +
-// maxWidth/contentWidth/gap; no bg/overlay/shape layers). The bar is a
-// COMPOSITE (nav + list + toggle), so it keeps SGS_Container_Wrapper rather
-// than rendering block-private (R-31-9 composite-mirror rule).
+// ── 5. Assemble — BLOCK-PRIVATE root (D539, Bean-approved 2026-08-09).
+//
+// This block used to render through SGS_Container_Wrapper with kind 'layout'.
+// It no longer does. The evidence, measured rather than argued:
+// (a) it declared 24 of the wrapper's ~107 attribute keys and only THREE were
+// reachable by a client — maxWidth plus the two padding tiers;
+// (b) the wrapper contributed ZERO live arrangement CSS. justifyContent,
+// flexDirection, flexWrap, alignItems and the whole grid family were frozen at
+// empty defaults with no control, so its arrangement array stayed empty and
+// 100% of this nav's visible flex layout comes from style.css;
+// (c) `gap` was wired but inert in practice — the bar and the toggle swap by
+// display:none at the collapse point (§4f), so only ever ONE flex child exists
+// and a flex gap between one item paints nothing.
+// The 21 unreachable attributes are DELETED from block.json, not reproduced.
+//
+// ⛔ Do NOT "restore the composite-mirror rule" here. D294's KIND axis (layout
+// KIND keeps the wrapper) was weighed and consciously departed from; D539
+// records the reasoning and amends D538's over-broad "specialised block"
+// framing. Re-read D539 before reverting this.
+//
+// R-31-9 is NOT breached: per D294's own clarification, "mirror capabilities"
+// forbids a per-block hack that DIVERGES from the wrapper's computed behaviour,
+// not a clean block-private implementation reproducing the same capability set
+// — which §4g-bis above does for max-width, native spacing and the tiers.
 $inner_html = $bar_html . $toggle_html;
 
 if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via the shared helpers + esc_attr/sanitize_html_class fragments above; wp_strip_all_tags guards </style>.
 }
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper escapes internally (get_block_wrapper_attributes()); $inner_html built from pre-sanitised/escaped fragments above.
-echo SGS_Container_Wrapper::render(
-	$attributes,
-	$block,
-	$inner_html,
-	'layout',
-	array(
-		'tag'           => 'nav',
-		'block_class'   => 'sgs-nav-menu',
-		// STOP-21 / DONE-item-2: the block's own scoped `<style>` targets
-		// `.$uid …`, so the SAME `$uid` MUST ride onto the rendered element as a
-		// CLASS or every scoped rule is a silent render no-op. The wrapper adds
-		// its OWN `sgs-container-<hash>` class (different prefix), so pass this
-		// block's `$uid` through extra_classes exactly as the hero reference does.
-		'extra_classes' => array( $uid ),
-		// `'tag' => 'nav'` above makes THIS element the navigation landmark, so
-		// the accessible name belongs here — on the element that carries the
-		// role. There is exactly one <nav> per instance and exactly one label,
-		// so the two cannot drift. (FR-36-10 / FR-36-11; see the label block
-		// above for why an inner second <nav> was reverted on 2026-07-23.)
-		'extra_attrs'   => array( 'aria-label' => esc_attr( $nav_label ) ),
-	)
+// STOP-21 / DONE-item-2: the block's own scoped `<style>` targets `.$uid …`, so
+// the SAME `$uid` MUST ride onto the rendered element as a CLASS or every scoped
+// rule above is a silent render no-op. `sgs-nav-menu` is the stable BEM root the
+// stylesheet and view.js both key on; `$uid` is the per-instance scope.
+$nav_root_classes = array( 'sgs-nav-menu', $uid );
+
+// This <nav> IS the navigation landmark, so the accessible name belongs here —
+// on the element carrying the role. Exactly one <nav> per instance and exactly
+// one label, so the two cannot drift (FR-36-10 / FR-36-11; see the label block
+// above for why an inner second <nav> was reverted on 2026-07-23).
+//
+// ⚠ $nav_label and $anchor_val are passed RAW. get_block_wrapper_attributes()
+// runs esc_attr() on every value it renders. The pre-exit code passed
+// esc_attr($nav_label) into the wrapper's extra_attrs, which forwarded it into
+// the SAME function (class-sgs-container-wrapper.php:923) — so the accessible
+// name was escaped TWICE, and a label containing `&` reached the a11y tree as a
+// literal `&amp;`. Escaping once here is a fix, not an omission; do not "restore"
+// the esc_attr.
+$nav_root_attrs = array(
+	'class'      => implode( ' ', $nav_root_classes ),
+	'aria-label' => $nav_label,
 );
-// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+
+// `anchor: true` is declared in block.json. The wrapper used to wire the id for
+// free via get_block_wrapper_attributes(); rendering block-private means doing it
+// explicitly. Miss this and every Table-of-Contents / jump link targeting this nav
+// breaks SILENTLY — no gate catches an unresolvable fragment. Pattern mirrors
+// quote/render.php:557-561.
+if ( '' !== $anchor_val ) {
+	$nav_root_attrs['id'] = $anchor_val;
+}
+
+printf(
+	'<nav %1$s>%2$s</nav>',
+	get_block_wrapper_attributes( $nav_root_attrs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() esc_attr()s every value and returns a ready-to-print attribute string.
+	$inner_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from pre-sanitised/escaped fragments (esc_url/esc_attr/esc_html per link).
+);

@@ -1,5 +1,70 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D539 — nav-menu's wrapper exit BUILT; D538's "specialised" carve-out narrowed to a measured test [INCIDENT]
+
+**2026-08-09, Bean-approved after a 3-agent investigation.** Builds D538 and **corrects its
+scope**. Bean: *"I don't like the idea of having a bunch of unwired wrapper attributes on the nav
+bar. Does the nav really fit the universal wrapper's functionality?"* — then, on the other three
+blocks: *"if those blocks could actually use the unwired attributes or if those are truly dead."*
+
+**That question inverted the remedy for three of the four blocks, and is the whole value of this
+entry.** "Unwired" is NOT a synonym for "dead". For a genuinely container-shaped block, unwired
+container attributes are a MISSING-CONTROLS gap to wire; for a specialised one they are
+inappropriate inheritance to delete. Same symptom, opposite fix. D538 grouped four blocks by
+attribute COUNT (`physics-canvas 79, nav-menu 17, site-header-row 12, site-footer-row 12`) and
+proposed one remedy for all four. The count similarity is COINCIDENTAL; the mechanisms differ.
+
+**The test that actually separates them** (use this, not a count): does the wrapper's arrangement
+CSS land on the element whose children the operator is trying to arrange? `$grid_sel`
+(`class-sgs-container-wrapper.php:1192`) resolves to `.uid` or `.uid>.sgs-container__inner` — never
+an arbitrary inner element.
+
+| Block | Verdict | Why |
+|---|---|---|
+| `sgs/nav-menu` | **EXIT** (built here) | Declared 24 of the wrapper's ~107 keys; THREE reachable. Wrapper contributed ZERO live arrangement CSS |
+| `sgs/site-header-row` / `-footer-row` | **KEEP + WIRE** | `responsive_model=>'object'` FORCES `$grid_on_inner`+`$do_wrap` true (`:525-533`, `:1906-1911`), so the operator's InnerBlocks ARE the direct children of the element the arrangement CSS targets. Genuine containers; ~7 real missing controls |
+| `sgs/physics-canvas` | **SPLIT** | ~18 box/width are a real gap (`minHeight` defaults 480px with NO control); ~62 are inert or would COLLIDE with `style.css:12-21`, which hardcodes flex/gap/align on the very selector the wrapper emits to |
+
+**D294 is departed from, not satisfied — say so plainly.** D294's settled axis is KIND-based:
+content-KIND may go block-private, section/layout-KIND KEEP the wrapper. nav-menu declared
+`containerKind:'layout'` and passed `kind='layout'`, so by D294 it was a KEEP. D538 claimed to
+"extend D294, not contradict it" — it does not; it introduces a THIRD exit condition D294's council
+never weighed. The exit stands on its OWN measured evidence (above), not on D294's authority.
+`containerKind` is removed from the block: it existed to drive wrapper capability propagation the
+block no longer participates in. R-31-9 is NOT breached — per D294's own clarification, "mirror
+capabilities" forbids a per-block hack that DIVERGES from the wrapper's computed behaviour, not a
+clean block-private implementation reproducing the same capability set.
+
+**Two live bugs found while building, both pre-existing and both fixed here:**
+1. **"Item gap" never worked.** The wrapper emitted `gap` at `$grid_sel` = the ROOT, whose flex
+   children are the bar and the toggle — and §4f swaps those by `display:none` at the collapse
+   point, so exactly ONE flex child exists at any width and a flex gap between one item paints
+   nothing. The control had a label, a value and a reset, and changed the page not at all. Now
+   emitted on `.sgs-nav-menu__bar`, where the item links actually live.
+2. **The accessible name was escaped twice.** `render.php` passed `esc_attr($nav_label)` into the
+   wrapper's `extra_attrs`, which forwards into `get_block_wrapper_attributes()` (`:923`) — which
+   `esc_attr()`s again. A nav label containing `&` reached the accessibility tree as literal
+   `&amp;`. Now passed raw and escaped once.
+
+⚠ **A claim in this session's own reasoning was REFUTED by the red-team and must not be repeated:**
+"a client setting `columns` arranges the menu against the hamburger". False — they are never
+simultaneous flex children (`render.php:1018-1019` `display:none` swap). And `columns` was never
+wired at all: the "Panel columns" control writes `listColumns`. The three occurrences of the bare
+word in `edit.js` are LABEL TEXT. A substring search reported it as wired; a word-boundary search
+did not.
+
+**Measured:** contested placements **9 → 0 library-wide** (nav-menu held the last of them);
+nav-menu `render-without-control` findings **17 → 0**; attrs 77 → 57 (19 deleted); `npm run build`
+exit 0; `check-dead-pattern-attrs` OK (no theme pattern wrote a deleted attr);
+`check-dead-controls` 0 net-new. **Cloning pipeline unaffected** — `section_passes.py:29`
+chrome-skips `<nav>` at top level and `converter/` has zero references to this block.
+
+**Open, deliberately:** `bar`'s `layer=GRID` is now vestigial (there is no wrapper layer model to
+belong to) — left as-is rather than changed speculatively. `block_composition.container_kind` is
+NULL in the DB for nav-menu AND physics-canvas while their block.json declared values — pre-existing
+seed drift, not introduced here. The row-block and physics-canvas remedies are APPROVED but NOT
+BUILT.
+
 ## D538 — sgs/nav-menu exits the universal container wrapper [INCIDENT]
 
 **2026-08-09, Bean.** *"I don't think nav-menu should use the container wrapper — such a specialised

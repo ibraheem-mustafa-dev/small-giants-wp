@@ -4,7 +4,20 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, Notice } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/components';
+import {
+	DesignTokenPicker,
+	ResponsiveBoxControl,
+	ResponsiveControl,
+	ShadowControl,
+} from '../../components';
+// Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
+// D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
+// its box + width controls must be the SAME shape sgs/container itself exposes —
+// WidthPanel already handles maxWidth/contentWidth + their Tablet/Mobile tiers,
+// MIN_HEIGHT_OPTIONS is the shared preset list for the min-height SelectControl
+// (mirrors trust-bar's "Section (outer)" panel exactly).
+import { WidthPanel, MIN_HEIGHT_OPTIONS } from '../container/components/ContainerWrapperControls';
 
 /**
  * DECORATIVE-ONLY roster (Spec 38 FR-38-27 / D447). Every entry here renders
@@ -86,6 +99,132 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 1 }
 						step={ 0.05 }
+					/>
+				</PanelBody>
+
+				{ /* ── Section (outer): width + min-height ────────────────────
+				     Same shape as sgs/container / sgs/trust-bar's own "Section
+				     (outer)" panel (composite-mirror rule, D152) — this is the
+				     resizable arena box: minHeight ships defaults (480px desktop /
+				     320px mobile) with no control until now, so a client could
+				     never resize the throw arena at all. */ }
+				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) } initialOpen={ false }>
+					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'minHeight',
+								tablet: 'minHeightTablet',
+								mobile: 'minHeightMobile',
+							};
+							return (
+								<SelectControl
+									value={ attributes[ attrMap[ breakpoint ] ] || '' }
+									options={ MIN_HEIGHT_OPTIONS }
+									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
+									help={ breakpoint === 'desktop'
+										? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
+										: undefined }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
+				</PanelBody>
+
+				{ /* ── Padding & margin (box-object tiers) — base tier writes to the
+				     WP-native style.spacing object; tablet/mobile write to the
+				     paddingTablet/paddingMobile + marginTablet/marginMobile object
+				     attrs the wrapper's @media tiers read. Mirrors sgs/container's
+				     and sgs/trust-bar's own edit.js exactly. ────────────────── */ }
+				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.padding ?? {},
+							tablet: attributes.paddingTablet ?? {},
+							mobile: attributes.paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.margin ?? {},
+							tablet: attributes.marginTablet ?? {},
+							mobile: attributes.marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, margin: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Content band (Layer 2 __inner) — this band IS the physics
+				     arena (block.json's own note); its rendered box is what view.js
+				     reads as Draggable's bounds and the Physics2D floor/wall
+				     geometry, so band padding/background here directly changes the
+				     playable area, not just decoration. ─────────────────────── */ }
+				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
+					<p className="components-base-control__help">
+						{ __( 'Styles the inner content band — the throw arena itself (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
+					</p>
+					<DesignTokenPicker
+						label={ __( 'Band background colour', 'sgs-blocks' ) }
+						value={ attributes.contentBandBackground || '' }
+						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Band padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.contentBandPadding ?? {},
+							tablet: attributes.contentBandPaddingTablet ?? {},
+							mobile: attributes.contentBandPaddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const attrMap = {
+								base: 'contentBandPadding',
+								tablet: 'contentBandPaddingTablet',
+								mobile: 'contentBandPaddingMobile',
+							};
+							setAttributes( { [ attrMap[ tier ] ]: next } );
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
+				     box-shadow CSS string built by ShadowControl), resolved by
+				     sgs_shadow_value(). ───────────────────────────────────────── */ }
+				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						value={ attributes.shadow || '' }
+						onChange={ ( val ) => setAttributes( { shadow: val } ) }
 					/>
 				</PanelBody>
 			</InspectorControls>
