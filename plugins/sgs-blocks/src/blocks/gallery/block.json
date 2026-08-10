@@ -149,8 +149,9 @@
 			"default": 1
 		},
 		"gap": {
-			"type": "string",
-			"default": "16"
+			"type": "object",
+			"default": {"desktop": "16px"},
+			"_comment": "Was the bare number \"16\". MEASURED before and after: this default renders 16px either way, so the change is behaviour-preserving — it only makes the value explicit. (An earlier draft of this comment claimed the default had been silently dead because spacing slug 16 does not exist in theme.json. That was WRONG: gallery's own render.php already appended `px` to a bare number before handing it on, so \"16\" always meant 16px here. The live capture showed 16px on both builds and corrected the claim.) Notably this block had already implemented the bare-number-means-px convention locally, which is now the framework-wide rule. Bean-ruled 2026-08-10."
 		},
 		"aspectRatio": {
 			"type": "string",
@@ -313,14 +314,6 @@
 			"default": ""
 		},
 		"templateMode": {
-			"type": "string",
-			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gapTablet": {
 			"type": "string",
 			"default": ""
 		},

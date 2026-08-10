@@ -49,7 +49,14 @@ $direction_mobile = $sgs_mb_attr( 'flexDirectionMobile', 'column' );
 // Back-compat: pre-consolidation posts stored a numeric (int) gap value; the old render
 // appended "px" via absint(). Append "px" to digit-only strings before the helper so
 // sgs_container_gap_value() treats them as raw CSS lengths, not WP preset slugs.
-$gap_raw = isset( $attributes['gap'] ) ? (string) $attributes['gap'] : '12px';
+// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10). ⛔ Never cast it to string —
+// it is an ARRAY, and casting emits "Array to string conversion" on every render plus
+// literal `gap:Array` in the CSS. Each tier keeps the fallback it had as a flat sibling.
+$gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$gap_raw = (string) ( $gap_obj['desktop'] ?? '' );
+if ( '' === $gap_raw ) {
+	$gap_raw = '12px';
+}
 if ( preg_match( '/^\d+$/', $gap_raw ) ) {
 	$gap_raw = $gap_raw . 'px';
 }
@@ -57,7 +64,7 @@ $gap_css = sgs_container_gap_value( $gap_raw );
 if ( '' === $gap_css ) {
 	$gap_css = '12px';
 }
-$gap_tab_raw = isset( $attributes['gapTablet'] ) ? (string) $attributes['gapTablet'] : '';
+$gap_tab_raw = (string) ( $gap_obj['tablet'] ?? '' );
 if ( '' !== $gap_tab_raw ) {
 	if ( preg_match( '/^\d+$/', $gap_tab_raw ) ) {
 		$gap_tab_raw = $gap_tab_raw . 'px';
@@ -69,7 +76,10 @@ if ( '' !== $gap_tab_raw ) {
 } else {
 	$gap_tab_css = $gap_css;
 }
-$gap_mob_raw = isset( $attributes['gapMobile'] ) ? (string) $attributes['gapMobile'] : '8px';
+$gap_mob_raw = (string) ( $gap_obj['mobile'] ?? '' );
+if ( '' === $gap_mob_raw ) {
+	$gap_mob_raw = '8px';
+}
 if ( '' !== $gap_mob_raw ) {
 	if ( preg_match( '/^\d+$/', $gap_mob_raw ) ) {
 		$gap_mob_raw = $gap_mob_raw . 'px';

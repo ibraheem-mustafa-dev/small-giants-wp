@@ -1,0 +1,4 @@
+{
+  "_fixture_purpose": "NEGATIVE CONTROL for check_flat_tier_regression.py. sgs/accordion's 'gap' is emitted correctly as the migrated object shape (no flat gapTablet/gapMobile keys). 'columns' is a genuinely still-flat property on this block (columnsTablet/columnsMobile siblings ARE declared in block.json), so those flat keys are legitimate and must NOT be flagged. This fixture MUST NOT trigger the gate.",
+  "block_markup": "<!-- wp:sgs/accordion {\"gap\":{\"desktop\":\"24px\",\"tablet\":\"16px\",\"mobile\":\"8px\"},\"columns\":2,\"columnsTablet\":2,\"columnsMobile\":1} -->\n<div class=\"wp-block-sgs-accordion\"></div>\n<!-- /wp:sgs/accordion -->\n<!-- wp:sgs/heading {\"content\":\"A clean, fully-migrated clone\",\"level\":\"h2\"} -->\n<h2 class=\"wp-block-sgs-heading\">A clean, fully-migrated clone</h2>\n<!-- /wp:sgs/heading -->"
+}

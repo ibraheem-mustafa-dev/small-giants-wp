@@ -13,6 +13,15 @@ R-31-15  Anti-mirror gate (check_no_mirror.py)
          Armed with --baseline so the 10 legacy violations are grandfathered.
          Only NEW violations (absent from the baseline) cause a hard fail.
 
+Spec 35  Flat-to-object migration gate (check_flat_tier_regression.py)
+D554-C   Fails a clone run that emits a flat tier (a <property>Tablet /
+         <property>Mobile sibling key, or a scalar base value) for a
+         property already migrated to the object shape on the target
+         block (decisions.md D554-C, Bean-ruled 2026-08-10). NO baseline —
+         D554-C explicitly rejects a converter shim, so every violation is
+         a live regression, not a grandfathered legacy debt. Opt out with
+         --skip-flat-tier-gate (diagnostic runs only).
+
 ADDING A NEW GATE
 =================
 Add a function named gate_<name>(run_dir: Path) -> None and call it from
@@ -53,6 +62,9 @@ CHECK_NO_MIRROR = HERE / "check_no_mirror.py"
 # This path is relative to HERE so it works from any working directory.
 BASELINE_PATH = HERE / "check-no-mirror-baseline.json"
 
+# Path to the Spec 35 flat-to-object migration gate (sibling file).
+CHECK_FLAT_TIER_REGRESSION = HERE / "check_flat_tier_regression.py"
+
 
 # ---------------------------------------------------------------------------
 # Gate implementations
@@ -87,15 +99,42 @@ def gate_r22_15_anti_mirror(run_dir: Path) -> None:
     )
 
 
+def gate_flat_tier_regression(run_dir: Path) -> None:
+    """Spec 35 / D554-C flat-to-object migration gate.
+
+    Runs check_flat_tier_regression.py in --enforce mode against the same
+    post-Stage-9 extract.json this module's R-31-15 gate already reads.
+    Unlike the anti-mirror gate, this one carries NO baseline — D554-C
+    (decisions.md, Bean-ruled 2026-08-10) explicitly rejected a converter
+    shim, so every flat-tier-on-a-migrated-property emission is a live
+    regression to fix, not a legacy debt to grandfather. Any violation
+    hard-halts the clone run.
+    """
+    subprocess.run(
+        [
+            sys.executable,
+            str(CHECK_FLAT_TIER_REGRESSION),
+            str(run_dir),
+            "--enforce",
+        ],
+        check=True,  # raises CalledProcessError → propagates as non-zero exit
+    )
+
+
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 
-def run_all_gates(run_dir: Path) -> None:
+def run_all_gates(run_dir: Path, *, skip_flat_tier_gate: bool = False) -> None:
     """Run every armed gate in sequence.  Raises SystemExit(1) on first failure."""
     print(f"pipeline-stage-gate: running gates on {run_dir.name}")
 
     gate_r22_15_anti_mirror(run_dir)
+
+    if skip_flat_tier_gate:
+        print("pipeline-stage-gate: Spec 35 flat-tier-regression gate skipped per --skip-flat-tier-gate")
+    else:
+        gate_flat_tier_regression(run_dir)
 
     print("pipeline-stage-gate: all gates passed.")
 
@@ -114,6 +153,16 @@ def main(argv: list[str] | None = None) -> int:
         "run_dir",
         help="Path to the pipeline-state/<run> directory produced by /sgs-clone.",
     )
+    parser.add_argument(
+        "--skip-flat-tier-gate",
+        action="store_true",
+        default=False,
+        help="Skip the Spec 35 / D554-C flat-to-object migration gate "
+             "(check_flat_tier_regression.py). Use only for diagnostic runs "
+             "where you need to inspect flat-tier output without halting. "
+             "The R-31-15 anti-mirror gate still runs. (default: False — "
+             "the gate runs.)",
+    )
     args = parser.parse_args(argv)
 
     run_dir = Path(args.run_dir)
@@ -122,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     try:
-        run_all_gates(run_dir)
+        run_all_gates(run_dir, skip_flat_tier_gate=args.skip_flat_tier_gate)
     except subprocess.CalledProcessError as exc:
         # Gate script already printed its own error; just relay the exit code.
         return exc.returncode or 1

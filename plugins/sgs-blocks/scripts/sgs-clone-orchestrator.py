@@ -63,10 +63,12 @@ FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.p
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
-# R-31-15 post-clone structural gate (anti-mirror, baseline-aware). Runs on the
-# converter output (extract.json) the moment Stage 9 has written it, BEFORE any
-# media-sideload / deploy / +REGISTER tail, so a mirror-cheat clone halts before
-# it can reach the live page. Wired into main() after stage_9_report().
+# Post-clone structural gates (R-31-15 anti-mirror, baseline-aware; and
+# Spec 35/D554-C flat-tier-regression, no baseline). Both run on the
+# converter output (extract.json) the moment Stage 9 has written it, BEFORE
+# any media-sideload / deploy / +REGISTER tail, so a mirror-cheat clone or a
+# flat-tier-on-a-migrated-property clone halts before it can reach the live
+# page. Wired into main() after stage_9_report().
 PIPELINE_STAGE_GATE_SCRIPT = ORCHESTRATOR_DIR / "pipeline-stage-gate.py"
 
 # ---------------------------------------------------------------------------
@@ -2410,6 +2412,20 @@ def main():
              "need to inspect the output without halting. (default: False — gate runs)",
     )
     parser.add_argument(
+        "--skip-flat-tier-gate", action="store_true",
+        help="Skip the Spec 35 / D554-C flat-to-object migration gate "
+             "(check_flat_tier_regression.py, run inside pipeline-stage-gate.py "
+             "alongside R-31-15). By default it runs on the converter output "
+             "(extract.json) right after Stage 9 and HARD-HALTS the clone before "
+             "deploy/register the moment a flat tier is emitted for a property "
+             "already migrated to the object shape on the target block "
+             "(decisions.md D554-C — no baseline, no shim, every violation blocks). "
+             "Use this flag only for diagnostic runs where you need to inspect "
+             "flat-tier output without halting; --skip-stage-gate also skips it "
+             "(that flag skips the whole pipeline-stage-gate.py subprocess, "
+             "including R-31-15). (default: False — gate runs)",
+    )
+    parser.add_argument(
         "--enforce-autonomy-gate", action="store_true",
         help="Force the autonomy gate ON even in --mode draft. By default draft runs "
              "(dev/verification) auto-skip the gate so the deploy stays inspectable; "
@@ -2641,39 +2657,49 @@ def main():
           promoted_count=autonomy.get("promoted_count", 0))
 
     # ------------------------------------------------------------------
-    # R-31-15 ANTI-MIRROR GATE (STOP-6 wire — 2026-06-21).
+    # R-31-15 ANTI-MIRROR GATE (STOP-6 wire — 2026-06-21) + Spec 35/D554-C
+    # FLAT-TIER-REGRESSION GATE (2026-08-10).
     # Stage 9 has just written extract.json. Run the post-clone structural
-    # gate on the converter output NOW, before media-sideload / deploy /
-    # +REGISTER, so a clone that introduced a NEW draft-class container or a
-    # bound sourceMode (a "mirror cheat") halts before it can reach the live
-    # page. The gate is baseline-aware: the 13 known legacy violations are
-    # grandfathered; only NEW violations cause a hard halt. It reads
-    # extract.json deterministically, so it runs identically in every --mode
-    # (unlike the autonomy gate, which needs a real visual-QA signal).
-    # Pass --skip-stage-gate to opt out for diagnostic runs.
+    # gates on the converter output NOW, before media-sideload / deploy /
+    # +REGISTER, so a clone that introduced a NEW draft-class container, a
+    # bound sourceMode (a "mirror cheat"), OR a flat tier for a property
+    # already migrated to the object shape on the target block (D554-C)
+    # halts before it can reach the live page. Both gates read extract.json
+    # deterministically, so they run identically in every --mode (unlike
+    # the autonomy gate, which needs a real visual-QA signal).
+    # --skip-stage-gate opts out of BOTH gates (skips the whole
+    # pipeline-stage-gate.py subprocess). --skip-flat-tier-gate opts out of
+    # ONLY the D554-C gate, leaving R-31-15 enforced.
     # ------------------------------------------------------------------
     if args.skip_stage_gate:
-        print("[stage-gate] skipped per --skip-stage-gate")
+        print("[stage-gate] skipped per --skip-stage-gate (both R-31-15 and Spec 35/D554-C gates)")
         _emit(_trace_for(run_dir), stage="stage_gate_anti_mirror",
               decision="skipped", reason="--skip-stage-gate")
     else:
-        gate_proc = subprocess.run(
-            [sys.executable, str(PIPELINE_STAGE_GATE_SCRIPT), str(run_dir)],
-        )
+        gate_cmd = [sys.executable, str(PIPELINE_STAGE_GATE_SCRIPT), str(run_dir)]
+        if args.skip_flat_tier_gate:
+            gate_cmd.append("--skip-flat-tier-gate")
+            print("[stage-gate] Spec 35/D554-C flat-tier-regression gate skipped per --skip-flat-tier-gate")
+        gate_proc = subprocess.run(gate_cmd)
         if gate_proc.returncode != 0:
             _emit(_trace_for(run_dir), stage="stage_gate_anti_mirror",
                   decision="halted", passed=False,
-                  error="NEW mirror-cheat violation in converter output",
+                  error="NEW mirror-cheat or flat-tier-regression violation in converter output",
                   returncode=gate_proc.returncode)
             _surface_logs(run_dir, "stage-9c")
             print(
-                "[stage-gate] HALTED: the anti-mirror gate found a NEW mirror-cheat "
-                "violation in the converter output (a draft-class container or a "
-                "bound sourceMode that is not in the baseline). The clone was NOT "
-                "deployed or registered. Fix the converter so it converts the "
-                "section to native block attributes instead of mirroring the draft "
-                "wrapper, then re-run. If the violation is genuinely intended, "
-                "regenerate the baseline with check_no_mirror.py --update-baseline.",
+                "[stage-gate] HALTED: pipeline-stage-gate.py found a violation in the "
+                "converter output — either (a) the R-31-15 anti-mirror gate found a "
+                "NEW mirror-cheat (a draft-class container or a bound sourceMode not "
+                "in the baseline), or (b) the Spec 35/D554-C gate found a flat tier "
+                "emitted for a property already migrated to the object shape on the "
+                "target block. The clone was NOT deployed or registered. Scroll up "
+                "for the specific gate's report. Fix (a) by converting the section to "
+                "native block attributes instead of mirroring the draft wrapper, or "
+                "regenerate the baseline with check_no_mirror.py --update-baseline if "
+                "genuinely intended. Fix (b) by emitting the object shape for that "
+                "property in the converter — there is no shim and no baseline for (b) "
+                "by design (D554-C).",
                 file=sys.stderr,
             )
             sys.exit(gate_proc.returncode)

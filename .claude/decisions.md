@@ -1,5 +1,81 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D563 — Pass 1 lands: `gap` is a tier object on 21 blocks, its EDITOR control migrated with it, and a bare number now means px [INCIDENT]
+
+**2026-08-11.** Pass 1's storage migration was deployed and called verified on 2026-08-10. It was
+neither complete nor, in one respect, correct — and both faults were found by building the evidence
+the visual-diff gate had been asking for, not by review.
+
+### 1. The control that WRITES the value was never migrated
+
+`ContainerWrapperControls.js:504` still rendered Gap as `ResponsiveControl` over a flat attrMap
+`{desktop:'gap', tablet:'gapTablet', mobile:'gapMobile'}` — and pass 1 deleted `gapTablet`/`gapMobile`
+from all 21 `block.json`. WordPress SILENTLY DISCARDS an attribute a block does not declare (D338),
+so **both per-device fields saved nothing on 19 blocks.** The desktop field was worse: it wrote a
+STRING into an attr now declared `"type":"object"`, and a flat value on an object-typed attr is
+coerced to the default — so setting desktop gap in the inspector DELETED the whole setting.
+
+The two blocks that worked, `site-header-row` and `site-footer-row`, are the two that were already
+object-shaped before pass 1 and already used `ResponsiveOverride`. **Nothing was special about
+them; they were simply never migrated by pass 1.**
+
+⚠ **Why the 2026-08-10 verification missed it:** it set values programmatically, so they were already
+object-shaped. The inspector was never the input path under test. `feedback_verify_both_surfaces_frontend_and_editor`
+existed and was not applied. Fixed in 3 files; the control is shared, so one edit covered 19 blocks.
+
+### 2. A bare number changed meaning, silently
+
+The old flat path ran through `sgs_css_length_value()` (`helpers-css-safety.php:73-76`), where
+digits-only means a WordPress spacing-scale SLUG. The object path formats atoms via
+`sgs_responsive_format_atom_value()` (`helpers-responsive.php:419`), which appends `unit_default` —
+and the wrapper's gap spec passed none, so `$unit=''` and a bare number emitted **`gap:20`**, invalid
+CSS the browser drops.
+
+**Bean ruled: a bare number means `px`, everywhere.** `unit_default => 'px'` added to the gap spec;
+the three defaults that depended on the old slug meaning rewritten explicitly to preserve their
+MEASURED rendering — `card-grid` `"30"`→`"1rem"`, `trust-bar` `"20"`→`"0.5rem"`, `gallery` `"16"`→`"16px"`.
+
+⚠ **A claim made during this work was WRONG and is corrected here:** `sgs/gallery`'s default was
+asserted to have been "silently dead" because spacing slug 16 does not exist. The live capture showed
+**16px on both builds** — `gallery/render.php` already appended `px` to a bare number itself
+(HEAD lines 57-59). The block had already implemented locally the very convention now made
+framework-wide. The rewrite is behaviour-preserving, not a repair.
+
+### 3. The evidence, and the toolkit that will produce it for passes 2-6
+
+Three committed scripts: `build-tier-fixture-page.py` (derives the migrated-block roster from
+`block.json`, publishes ONE canary page carrying each block twice — once at its default, once with
+per-tier values set), `capture-tier-fixture.py` (scoped computed-style probe, 3 viewports),
+`make-visual-diff-reports.py` (one report per block, each citing its OWN measurement).
+
+**The generator REFUSES rather than fabricates** — no measurement, an unmatched selector, an
+unexplained change, a PHP diagnostic or a missing `source_sha` produces no report and a non-zero
+exit. A missing report blocks the commit, which is the correct outcome.
+
+**Result: 42 measurements per build (21 blocks × 2 variants), before and after. No default moved on
+any block.** The positive control (`64px`/`32px`/`8px` set explicitly) binds on 19.
+
+### 4. Three traps found by building it, each worth more than the fix
+
+- **`supports.anchor` is not the same as HONOURING it.** WP applies the anchor only via
+  `get_block_wrapper_attributes()`; blocks that hand-build their wrapper (site-header, site-footer,
+  their rows, multi-button, feature-grid) drop it silently. The probe then finds nothing, which looks
+  exactly like a regression. **Every fixture instance is now wrapped in an anchored `sgs/container`
+  and selected as its child**, depending on nothing the measured block does.
+- **Scoping is not optional.** The fixture page carries **8** `.wp-block-sgs-site-header` elements,
+  because the real site header renders on it too. An unscoped query is a coin toss.
+- **`sgs/text` declares `text`, not `content`.** The fixture wrote `content`; the deploy's
+  stored-content audit caught it as 56 HIGH findings before it reached anything.
+
+### 5. Found and NOT fixed — reported instead
+
+**`sgs/site-header` and `sgs/site-footer` declare `gap` but render it nowhere.** Grep of both
+`render.php` for `gap` returns nothing, at HEAD and after. Their positive control cannot pass because
+there is nothing to bind. **Pre-existing, not caused by this pass, and not fixed by it.** Their
+reports carry it as an explicit DEAD CONTROL finding via a new `--known-dead` flag that requires
+evidence — never a silent pass. ⛔ The flag errors if the control actually passes, so it cannot
+become a way to wave a working block through.
+
 ## D562 — The visual-diff gate gains a fifth auto-skip branch: editor-only changes; and the hook that enforces it is UNTRACKED [INCIDENT]
 
 **2026-08-11, Bean-approved** (shared-gate change, rule 7 design gate).

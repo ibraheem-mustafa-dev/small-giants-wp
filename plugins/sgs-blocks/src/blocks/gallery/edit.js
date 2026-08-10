@@ -326,7 +326,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				  Gallery therefore declares NO supports.spacing: all box CSS flows
 				  through the object model here and is emitted by SGS_Container_Wrapper
-				  under responsive_model=object, exactly as site-header-row /
+				  under the object value model, exactly as site-header-row /
 				  site-footer-row / nav-menu already do. One system, not two.
 				*/ }
 				<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />

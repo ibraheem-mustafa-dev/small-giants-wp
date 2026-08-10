@@ -8,8 +8,9 @@ import {
   PanelBody,
   SelectControl,
 } from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from "../../components";
-import { resolveShadowPreview } from "../../utils";
+import { resolveShadowPreview, resolveResponsiveTier } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -22,24 +23,45 @@ import {
 /**
  * Resolve a gap attribute value to a CSS string for editor preview.
  *
- * Mirrors PHP sgs_container_gap_value():
- *  - Bare slug (digits only, e.g. "40") → var(--wp--preset--spacing--40)
- *  - Raw CSS length (contains a letter or %, e.g. "16px", "1.5rem") → pass through
+ * `gap` is a TIER OBJECT — {desktop,tablet,mobile} in ONE attribute (Spec 35
+ * pass 1, 2026-08-10) — so the tier is resolved first, with a blank tier
+ * inheriting the one above it. A plain string is still accepted so an
+ * un-migrated caller degrades to its old behaviour rather than rendering
+ * nothing.
+ *
+ * Mirrors the FRONTEND emitter (sgs_responsive_format_atom_value):
+ *  - Bare number (e.g. "24") → "24px". ⚠ This is a DELIBERATE change of
+ *    meaning, Bean-ruled 2026-08-10. It previously resolved to
+ *    var(--wp--preset--spacing--24) — a spacing-SCALE slug, where slug 30 is
+ *    1rem and slug 20 is 0.5rem, so a bare number meant something quite
+ *    unlike its face value. A bare number now means px everywhere, matching
+ *    every other numeric control an operator touches. Block defaults that
+ *    relied on the old slug meaning were rewritten to explicit lengths in the
+ *    same change, so nothing renders differently because of this.
+ *  - Raw CSS length ("16px", "1.5rem", "clamp(...)") → pass through
  *  - Empty → undefined (so the style key is omitted)
  *
- * @param {string} gap Gap attribute value.
+ * ⛔ Keep this in step with the PHP path. If they disagree, the editor lies
+ * about what the page will look like — which is the failure this mirror exists
+ * to prevent.
+ *
+ * @param {Object|string} gap  Gap attribute value (tier object, or legacy string).
+ * @param {string}        tier Active device tier ('desktop'|'tablet'|'mobile').
  * @returns {string|undefined}
  */
-function gapCssValue( gap ) {
-	if ( ! gap ) {
+function gapCssValue( gap, tier = 'desktop' ) {
+	const raw =
+		gap && typeof gap === 'object' ? resolveResponsiveTier( gap, tier ) : gap;
+
+	if ( ! raw ) {
 		return undefined;
 	}
-	// Bare numeric slug → WP spacing preset var.
-	if ( /^\d+$/.test( gap ) ) {
-		return `var(--wp--preset--spacing--${ gap })`;
+	// Bare number → px (mirrors the frontend's unit_default).
+	if ( /^\d+(\.\d+)?$/.test( String( raw ) ) ) {
+		return `${ raw }px`;
 	}
 	// Raw CSS length — return as-is (already validated by SpacingControl freeInput).
-	return gap;
+	return raw;
 }
 
 // Semantic HTML tag (D344) — ARIA landmarks + sectioning for screen-reader
@@ -81,12 +103,23 @@ export default function Edit({ attributes, setAttributes }) {
     templateMode = "free",
   } = attributes;
 
+  // Active device tier for the preview, read from the SAME source the inspector's
+  // global device toggle writes (`core/editor` getDeviceType) — mirrors
+  // ResponsiveControl.js:103. Without this the preview would always show desktop
+  // while the operator is editing the mobile tier.
+  const previewTier = useSelect( ( select ) => {
+    const ed = select( "core/editor" );
+    const device =
+      ed && typeof ed.getDeviceType === "function" ? ed.getDeviceType() : null;
+    return { Tablet: "tablet", Mobile: "mobile" }[ device ] || "desktop";
+  }, [] );
+
   // Editor preview: show bg-image if set (video not previewed inline — too complex for editor).
   const hasBgImage = !!backgroundImage?.url;
   const hasBgVideo = !!bgVideo?.url;
 
   const style = {
-    gap: gapCssValue( gap ),
+    gap: gapCssValue( gap, previewTier ),
     minHeight: minHeight || undefined,
     ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
     // Media is handed to a ::before layer via custom properties rather than

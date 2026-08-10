@@ -57,6 +57,7 @@ import {
 import { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';
 import {
 	ResponsiveControl,
+	ResponsiveOverride,
 	SpacingControl,
 	DesignTokenPicker,
 	ShadowControl,
@@ -501,23 +502,36 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 				</ResponsiveControl>
 			) }
 
-			<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
-				{ ( breakpoint ) => {
-					const attrMap = {
-						desktop: 'gap',
-						tablet: 'gapTablet',
-						mobile: 'gapMobile',
-					};
-					const attr = attrMap[ breakpoint ];
-					return (
-						<SpacingControl
-							freeInput
-							value={ attributes[ attr ] || '' }
-							onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-						/>
-					);
-				} }
-			</ResponsiveControl>
+			{ /*
+				  Gap is a TIER OBJECT — ONE attr holding {desktop,tablet,mobile}
+				  (Spec 35 pass 1, 2026-08-10). It must therefore use
+				  ResponsiveOverride, which reads and writes the object, NOT
+				  ResponsiveControl, which writes one flat attr per tier.
+
+				  ⛔ Do NOT revert this to `ResponsiveControl` + an attrMap of
+				  `{desktop:'gap', tablet:'gapTablet', mobile:'gapMobile'}`.
+				  `gapTablet`/`gapMobile` are no longer declared by ANY
+				  block.json, and WordPress SILENTLY DISCARDS an attribute a
+				  block does not declare (D338) — so both tiers saved nothing.
+				  The desktop branch was worse: it wrote a STRING into an attr
+				  declared `"type":"object"`, and a flat value on an
+				  object-typed attr is coerced to the default, dropping the
+				  whole setting. Mirrors site-header-row/edit.js:397.
+			*/ }
+			<ResponsiveOverride
+				label={ __( 'Gap', 'sgs-blocks' ) }
+				value={ attributes.gap }
+				onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SpacingControl
+						freeInput
+						value={ ownValue }
+						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ setOwnValue }
+					/>
+				) }
+			</ResponsiveOverride>
 
 			{ ( layout === 'flex' || layout === 'grid' ) && (
 				<SelectControl

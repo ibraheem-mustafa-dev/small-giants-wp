@@ -201,8 +201,9 @@
 			"default": 1
 		},
 		"gap": {
-			"type": "string",
-			"default": "30"
+			"type": "object",
+			"default": {"desktop": "1rem"},
+			"_comment": "Was the bare number \"30\", which the old flat path read as WordPress spacing-scale SLUG 30 = 1rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 30px."
 		},
 		"aspectRatio": {
 			"type": "string",
@@ -559,15 +560,7 @@
 		"templateMode": {
 			"type": "string",
 			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

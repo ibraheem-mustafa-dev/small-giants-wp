@@ -1,0 +1,4 @@
+{
+  "_fixture_purpose": "POSITIVE CONTROL for check_flat_tier_regression.py. sgs/accordion's 'gap' attribute is object-typed with no Tablet/Mobile siblings in the live block.json (already migrated, Spec 35 D554-A). Emitting 'gapTablet' as a flat sibling key here is exactly the regression D554-C says must halt the clone. This fixture MUST trigger the gate.",
+  "block_markup": "<!-- wp:sgs/accordion {\"gap\":{\"desktop\":\"24px\",\"tablet\":\"16px\",\"mobile\":\"8px\"},\"gapTablet\":\"16px\",\"columns\":2,\"columnsTablet\":2,\"columnsMobile\":1} -->\n<div class=\"wp-block-sgs-accordion\"></div>\n<!-- /wp:sgs/accordion -->"
+}

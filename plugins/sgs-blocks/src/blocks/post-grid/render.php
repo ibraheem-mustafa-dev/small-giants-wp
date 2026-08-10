@@ -70,7 +70,13 @@ $columns_mobile = absint( $attributes['columnsMobile'] ?? 1 );
 // Back-compat: pre-consolidation posts stored a bare digit string (e.g. "30")
 // that render.php rendered as absint().'px'. Append "px" before the helper so
 // sgs_container_gap_value() treats it as a raw CSS length, not a preset slug.
-$gap_raw = (string) ( $attributes['gap'] ?? '30px' );
+// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10) - casting the array would emit
+// "Array to string conversion" on every render plus literal `gap:Array`.
+$gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$gap_raw = (string) ( $gap_obj['desktop'] ?? '' );
+if ( '' === $gap_raw ) {
+	$gap_raw = '30px';
+}
 if ( preg_match( '/^\d+$/', $gap_raw ) ) {
 	$gap_raw = $gap_raw . 'px';
 }

@@ -242,8 +242,8 @@
 			"default": 1
 		},
 		"gap": {
-			"type": "string",
-			"default": "30px"
+			"type": "object",
+			"default": {"desktop": "30px"}
 		},
 		"aspectRatio": {
 			"type": "string",
@@ -411,15 +411,7 @@
 		"maxWidth": {
 			"type": "string",
 			"default": ""
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "string",
 			"default": ""

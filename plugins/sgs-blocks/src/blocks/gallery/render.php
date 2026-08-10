@@ -53,7 +53,13 @@ $columns_mobile  = absint( $attributes['columnsMobile'] ?? 1 );
 // the old own RangeControl wrote bare numeric strings like "16".
 // sgs_container_gap_value() handles slug ("40") and raw-CSS ("16px") natively.
 // Back-compat: a bare numeric string (old format) → append "px" before resolving.
-$gap_raw = (string) ( $attributes['gap'] ?? '16' );
+// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10). Casting the array to string
+// would emit "Array to string conversion" every render plus literal `gap:Array`.
+$gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$gap_raw = (string) ( $gap_obj['desktop'] ?? '' );
+if ( '' === $gap_raw ) {
+	$gap_raw = '16';
+}
 if ( preg_match( '/^\d+$/', $gap_raw ) ) {
 	$gap_raw = $gap_raw . 'px';
 }
@@ -238,8 +244,8 @@ $sgs_gallery_gap_tier = static function ( $value ) {
 	return sgs_container_gap_value( $value );
 };
 
-$gap_tablet = $sgs_gallery_gap_tier( $attributes['gapTablet'] ?? '' );
-$gap_mobile = $sgs_gallery_gap_tier( $attributes['gapMobile'] ?? '' );
+$gap_tablet = $sgs_gallery_gap_tier( $gap_obj['tablet'] ?? '' );
+$gap_mobile = $sgs_gallery_gap_tier( $gap_obj['mobile'] ?? '' );
 
 if ( '' !== $gap_tablet ) {
 	$gallery_responsive_css .= '@media (max-width:1023px){' . $root_sel . '{--sgs-gap:' . $gap_tablet . '}}';
@@ -655,7 +661,7 @@ echo SGS_Container_Wrapper::render(
 		// guard in the wrapper leaves them on the legacy scalar path unchanged —
 		// the wrapper's own comment states that flipping this flag "never breaks
 		// an un-migrated instance's columns".
-		'responsive_model' => 'object',
+		'container_queries' => true,
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

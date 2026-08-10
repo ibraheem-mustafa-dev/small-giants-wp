@@ -198,15 +198,7 @@
 				"column",
 				"column-reverse"
 			]
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""

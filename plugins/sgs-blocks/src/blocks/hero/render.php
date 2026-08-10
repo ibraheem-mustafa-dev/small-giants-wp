@@ -418,7 +418,11 @@ if ( $is_split ) {
 	// their own "Column gap" control duplicated the shared gap/gapTablet/gapMobile
 	// (ContainerWrapperControls "Gap"). One gap attr + one control now. Empty =
 	// no gap emitted (grid default 0 = flush) — no more forced `gap:0px`.
-	$hero_gap = sgs_container_gap_value( $attributes['gap'] ?? '' );
+	// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10). sgs_container_gap_value()
+	// expects a scalar length -- handing it the raw array would emit
+	// "Array to string conversion" on every render plus literal `gap:Array`.
+	$hero_gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+	$hero_gap = sgs_container_gap_value( $hero_gap_obj['desktop'] ?? '' );
 	if ( '' !== $hero_gap ) {
 		$responsive_css .= '.' . $uid . '{gap:' . $hero_gap . '}';
 	}
@@ -443,12 +447,12 @@ if ( $is_split ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . '}}';
 	}
 	// Tablet gap override — shared gapTablet.
-	$hero_gap_tablet = sgs_container_gap_value( $attributes['gapTablet'] ?? '' );
+	$hero_gap_tablet = sgs_container_gap_value( $hero_gap_obj['tablet'] ?? '' );
 	if ( '' !== $hero_gap_tablet ) {
 		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . $hero_gap_tablet . '}}';
 	}
 	// Mobile gap override — shared gapMobile.
-	$hero_gap_mobile = sgs_container_gap_value( $attributes['gapMobile'] ?? '' );
+	$hero_gap_mobile = sgs_container_gap_value( $hero_gap_obj['mobile'] ?? '' );
 	if ( '' !== $hero_gap_mobile ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}

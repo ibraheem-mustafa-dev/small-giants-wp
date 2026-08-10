@@ -1,0 +1,4 @@
+{
+  "_fixture_purpose": "SCALAR-BASE CONTROL for check_flat_tier_regression.py, rule (b). sgs/accordion's 'gap' is emitted as a flat SCALAR ('24px') rather than the migrated object shape -- no Tablet/Mobile suffix key is involved, so rule (a) alone would miss this. This fixture MUST trigger a rule-(b) violation.",
+  "block_markup": "<!-- wp:sgs/accordion {\"gap\":\"24px\",\"columns\":2,\"columnsTablet\":2,\"columnsMobile\":1} -->\n<div class=\"wp-block-sgs-accordion\"></div>\n<!-- /wp:sgs/accordion -->"
+}

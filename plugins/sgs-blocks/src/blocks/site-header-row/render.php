@@ -219,7 +219,7 @@ echo SGS_Container_Wrapper::render(
 		'extra_attrs'      => $shr_extra_attrs,
 		// Spec 37 FR-37-16: gap is stored as the {desktop,tablet,mobile} object model; the
 		// shared wrapper emits its responsive CSS via sgs_emit_responsive_css().
-		'responsive_model' => 'object',
+		'container_queries' => true,
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

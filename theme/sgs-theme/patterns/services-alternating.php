@@ -13,7 +13,7 @@
 
 	<!-- wp:sgs/heading {"content":"How We Help You Succeed","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"50% 50%","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|60","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"50% 50%","gridTemplateColumnsMobile":"1fr","align":"wide","gap":{"desktop":"var:preset|spacing|60"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} -->
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
 			<!-- wp:sgs/heading {"content":"Strategy & Planning","level":"h3","fontSize":"x-large"} /-->
 			<!-- wp:sgs/text {"text":"We begin every project with a thorough understanding of your goals, audience, and market. Our strategic approach ensures every decision is purposeful.","textColour":"text-muted","fontSize":"medium"} /-->
@@ -23,7 +23,7 @@
 		<!-- /wp:sgs/container -->
 	<!-- /wp:sgs/container -->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"50% 50%","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|60"} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"50% 50%","gridTemplateColumnsMobile":"1fr","align":"wide","gap":{"desktop":"var:preset|spacing|60"}} -->
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/600x400/F87A1F/FFFFFF?text=Execution","imageAlt":"Execution and delivery","style":{"border":{"radius":"12px"}}} /-->
 		<!-- /wp:sgs/container -->

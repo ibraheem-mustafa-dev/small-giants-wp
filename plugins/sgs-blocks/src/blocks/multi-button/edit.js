@@ -8,7 +8,7 @@ import {
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { ResponsiveControl, SpacingControl } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, SpacingControl } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -193,22 +193,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<hr style={ { margin: '12px 0' } } />
 
-					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'gap',
-								tablet:  'gapTablet',
-								mobile:  'gapMobile',
-							};
-							return (
-								<SpacingControl
-									freeInput
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  Gap is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass 1, 2026-08-10).
+						  ⛔ Do NOT revert to `ResponsiveControl` + an attrMap of
+						  `gap`/`gapTablet`/`gapMobile`: the latter two are no
+						  longer declared in block.json and WordPress silently
+						  discards an undeclared attribute (D338), while the
+						  desktop branch wrote a STRING into an object-typed
+						  attr, which coerces to the default and loses the lot.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Gap', 'sgs-blocks' ) }
+						value={ attributes.gap }
+						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SpacingControl
+								freeInput
+								value={ ownValue }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ setOwnValue }
+							/>
+						) }
+					</ResponsiveOverride>
 
 					<hr style={ { margin: '12px 0' } } />
 

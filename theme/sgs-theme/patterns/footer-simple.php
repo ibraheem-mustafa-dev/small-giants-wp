@@ -18,7 +18,7 @@
 
 <!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
 
-<!-- wp:sgs/multi-button {"gap":"12px","flexWrap":"wrap"} -->
+<!-- wp:sgs/multi-button {"gap":{"desktop":"12px"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/button {"label":"Privacy Policy","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":14} /-->
 
 <!-- wp:sgs/button {"label":"Terms of Service","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":14} /-->

@@ -374,17 +374,9 @@
 			]
 		},
 		"gap": {
-			"type": "string",
-			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		},
+			"type": "object",
+			"default": {}
+		},
 		"justifyContent": {
 			"type": "string",
 			"default": "",

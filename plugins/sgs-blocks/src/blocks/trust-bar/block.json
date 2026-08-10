@@ -384,8 +384,9 @@
 			"default": 4
 		},
 		"gap": {
-			"type": "string",
-			"default": "20"
+			"type": "object",
+			"default": {"desktop": "0.5rem"},
+			"_comment": "Was the bare number \"20\", which the old flat path read as WordPress spacing-scale SLUG 20 = 0.5rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 20px. This block is pure-wrapper (render.php:86 — gap is handled entirely by the shared wrapper), so it had no render.php fallback shielding it."
 		},
 		"autoScroll": {
 			"type": "boolean",
@@ -427,15 +428,7 @@
 		"gridTemplateColumnsMobile": {
 			"type": "string",
 			"default": "1fr 1fr"
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
-		},
+		},
 		"backgroundImage": {
 			"type": "object"
 		},

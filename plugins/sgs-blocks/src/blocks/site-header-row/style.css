@@ -74,7 +74,7 @@
  * container-type:inline-size here is a defensive restatement of the
  * identical rule the shared wrapper ALREADY emits per-instance
  * (class-sgs-container-wrapper.php:1555 — unconditional for this block
- * because render.php passes responsive_model:'object'). Same property,
+ * because the wrapper emits object-shaped values for every block). Same property,
  * same value, same element — applied here via the stable plain class
  * rather than the dynamic per-instance uid, so the @container rule below
  * does not silently depend on that PHP wiring staying unchanged.

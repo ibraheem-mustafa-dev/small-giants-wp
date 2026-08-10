@@ -45,7 +45,18 @@ $min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attrib
 // Normalise it to a px value. The retired gapUnit attr is no longer declared, so WP
 // strips it before render (the old unit was always "px") — reading it would be a
 // dead legacy-attr fallback (R-31-14).
-$gap_raw = isset( $attributes['gap'] ) ? (string) $attributes['gap'] : '24px';
+// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10): one attr carrying every tier.
+// ⛔ Do NOT cast $attributes['gap'] to string — it is an ARRAY now, and casting one
+// emits the PHP notice "Array to string conversion" on EVERY render plus literal
+// garbage CSS (`gap:Array`). That exact defect has already shipped here once as
+// `grid-auto-rows:Array`. sgs_responsive_normalise_object() always returns
+// desktop/tablet/mobile keys, so the emission below is otherwise unchanged, and each
+// tier keeps the same fallback it had as a flat sibling.
+$gap_obj = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$gap_raw = (string) ( $gap_obj['desktop'] ?? '' );
+if ( '' === $gap_raw ) {
+	$gap_raw = '24px';
+}
 if ( '' !== $gap_raw && preg_match( '/^\d+$/', $gap_raw ) ) {
 	// Bare digit-only number — append "px" (e.g. "24" → "24px").
 	$gap_raw = $gap_raw . 'px';
@@ -55,8 +66,11 @@ if ( '' === $gap_css ) {
 	$gap_css = '24px'; // Safe fallback if attribute is missing or invalid.
 }
 
-$gap_tablet_raw = isset( $attributes['gapTablet'] ) ? (string) $attributes['gapTablet'] : '';
-$gap_mobile_raw = isset( $attributes['gapMobile'] ) ? (string) $attributes['gapMobile'] : '16px';
+$gap_tablet_raw = (string) ( $gap_obj['tablet'] ?? '' );
+$gap_mobile_raw = (string) ( $gap_obj['mobile'] ?? '' );
+if ( '' === $gap_mobile_raw ) {
+	$gap_mobile_raw = '16px';
+}
 
 // Back-compat: tablet/mobile gap may also be a bare digit string from pre-consolidation posts.
 if ( '' !== $gap_tablet_raw && preg_match( '/^\d+$/', $gap_tablet_raw ) ) {

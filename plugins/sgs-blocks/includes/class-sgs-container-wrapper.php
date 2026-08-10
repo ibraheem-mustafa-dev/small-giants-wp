@@ -121,49 +121,65 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$is_layout  = 'layout' === $kind;
 			// content kind = only maxWidth/align/contentWidth/padding; used by content-level composites.
 
-			// Spec 37 FR-37-16 opt-in: the header/footer/nav blocks store responsive
-			// properties as the {desktop,tablet,mobile} object model and pass this
-			// flag so sgs_emit_responsive_css() (called below) owns their responsive
-			// CSS.
-			// Flag ABSENT (every other block) → this feature is inert and the scalar
-			// path is byte-identical. This never reorders/mutates $attributes, so the
-			// uid md5 is untouched (STOP-NO-KSORT).
+			// Spec 37 FR-37-16, RENAMED D555 (2026-08-10). This flag used to be
+			// `responsive_model => 'object'` and gated TWO things: object-shaped value
+			// emission AND container-query DOM behaviour. Value emission is now
+			// UNIVERSAL — any block carrying an object-shaped attr gets it emitted by
+			// sgs_emit_responsive_css() with no flag at all (see "ENTRY IS NO LONGER
+			// GATED ON THE OPT-IN" below, ~:1904). So this flag now controls ONLY the
+			// container-query DOM feature: CSS containment (`container-type`) on the
+			// outer element, plus forcing an inner wrapper element to render and
+			// moving the block's own flex/grid onto it, so the block can respond to
+			// ITS OWN width rather than the screen's. Renamed to `container_queries
+			// => true` to say what it actually does — `responsive_model => 'object'`
+			// now read as "this block's responsive model is object-shaped", which is
+			// false: every block's responsive model is object-shaped these days.
+			// The header/footer/nav + gallery blocks pass this flag because they were
+			// built to want the container-query DOM feature specifically.
+			// Flag ABSENT (every other block) → the container-query DOM change is
+			// inert; the universal object-value emission is unaffected either way.
+			// This never reorders/mutates $attributes, so the uid md5 is untouched
+			// (STOP-NO-KSORT).
 			//
-			// ⚠ HOW THE LEGACY PATH IS ACTUALLY NEUTRALISED — corrected 2026-08-10
-			// (D552). This comment previously claimed neutralisation came from "the
-			// is_array guards below + the ! $object_model gates further down".
-			// MEASURED: there is NO `! $object_model` gate anywhere in this file —
-			// grep returned only that sentence. Believing it would let the next change
-			// assume protection it does not have, so here is the real mechanism.
+			// ⚠ HOW THE LEGACY SCALAR PATH IS ACTUALLY NEUTRALISED — corrected
+			// 2026-08-10 (D552; updated for the D555 rename). This comment previously
+			// claimed neutralisation came from "the is_array guards below + a
+			// `! $container_queries` gate further down". MEASURED: there is NO
+			// `! $container_queries` gate anywhere in this file — grep returned only
+			// that sentence. Believing it would let the next change assume protection
+			// it does not have, so here is the real mechanism.
 			// (1) is_array() guards on each BASE read (e.g. $gap, $max_width,
 			// $grid_template) coerce an object value to '' so the scalar path cannot
-			// stringify an array — this is what does most of the work.
+			// stringify an array — this is what does most of the work, and it applies
+			// to every block, not only the ones that pass this flag.
 			// (2) $object_grid (below) suppresses the legacy columns/grid emission, and
 			// ONLY when an object gridTemplateColumns is actually present.
-			// (3) Three POSITIVE $object_model checks (~:594, ~:1206, ~:2186) force
-			// container-type/emission behaviour. None of them is a negative gate.
+			// (3) Three POSITIVE $container_queries checks (~:622, ~:1234, ~:2329)
+			// force container-type/DOM-wrap behaviour. None of them is a negative gate.
 			// The TIER reads are NOT guarded or gated at all: $gap_tablet/$gap_mobile
 			// (below) are read raw, and their @media emission (~:1413-1417) is
 			// conditioned only on those siblings being truthy — it sits at the SAME
 			// brace depth as the `'' !== $gap` guard above it, not inside it. So an
-			// opted-in instance carrying BOTH an object gap AND a stored flat
-			// gapTablet would emit two competing tablet rules, resolved by source
-			// order rather than by design.
+			// instance carrying BOTH an object gap AND a stored flat gapTablet would
+			// emit two competing tablet rules, resolved by source order rather than by
+			// design. This is a value-emission risk, universal now (any object-shaped
+			// block, not only the three that pass this flag) — the measurement below
+			// was taken while emission was still gated to those three.
 			// LATENT, NOT LIVE — measured on the canary 2026-08-10: 109 instances of
-			// the three opted-in blocks (78 site-header-row / 24 site-footer-row /
-			// 7 gallery; 15 publish, 12 draft, 82 revisions) yielded ZERO
-			// object+populated-flat-sibling collisions. Controls: 511 posts contain
-			// an sgs block opening, and the same reader DID flag a gallery instance's
-			// instance inside that set, so the zero is a measurement and not a blind
-			// spot. Add the negative gate when a real collision appears, or as part of
-			// the flat→object migration — do not add it speculatively.
-			$object_model = ( ( $opts['responsive_model'] ?? '' ) === 'object' );
+			// the three container_queries blocks (78 site-header-row / 24
+			// site-footer-row / 7 gallery; 15 publish, 12 draft, 82 revisions) yielded
+			// ZERO object+populated-flat-sibling collisions. Controls: 511 posts
+			// contain an sgs block opening, and the same reader DID flag a gallery
+			// instance's instance inside that set, so the zero is a measurement and
+			// not a blind spot. Add the negative gate when a real collision appears,
+			// or as part of the flat→object migration — do not add it speculatively.
+			$container_queries = ( ( $opts['container_queries'] ?? '' ) === true );
 			// Grid gate: only suppress the legacy columns/grid emission when an OBJECT
 			// gridTemplateColumns is actually present. A block that opted in but whose
 			// stored instance still carries flat grid attrs (migration pending, D270
 			// re-clone) keeps rendering its grid via the legacy path until re-saved —
 			// so flipping the flag never breaks an un-migrated instance's columns.
-			$object_grid = $object_model && is_array( $attributes['gridTemplateColumns'] ?? null );
+			$object_grid = $container_queries && is_array( $attributes['gridTemplateColumns'] ?? null );
 
 			// D456 — content-aware column collapse, declared per block type via
 			// supports.sgs.intrinsicColumns. Resolved ONCE here, unconditionally,
@@ -614,12 +630,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			);
 
 			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
-			// Object model (Spec 37 FR-37-16): force the two-layer structure so the flex/grid
-			// container (where gap applies) is the __inner — a DESCENDANT of the
-			// container-type outer — so @container queries can respond to the block's
-			// own width (an element cannot size-query itself). Paired with the $do_wrap
-			// force further down so the __inner element actually renders.
-			if ( $object_model && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			// Container queries (Spec 37 FR-37-16): force the two-layer structure so the
+			// flex/grid container (where gap applies) is the __inner — a DESCENDANT of
+			// the container-type outer — so @container queries can respond to the
+			// block's own width (an element cannot size-query itself). Paired with the
+			// $do_wrap force further down so the __inner element actually renders.
+			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
 				$grid_on_inner = true;
 			}
 			$inner_grid_decls = array();
@@ -747,9 +763,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						: ( $intrinsic_columns
 							? sgs_intrinsic_columns_track( absint( $columns ), sgs_container_tier_gap( $attributes, 'desktop' ) )
 							: 'repeat(' . absint( $columns ) . ',1fr)' );
-					// Object model owns grid-template-columns via sgs_emit_responsive_css();
-					// suppress the legacy columns/base fallback under $object_model so the
-					// two don't both emit (the columns default would win as repeat(2,1fr)).
+					// An object-shaped gridTemplateColumns owns emission via
+					// sgs_emit_responsive_css(); suppress the legacy columns/base fallback
+					// when $object_grid is true (object grid present AND container_queries
+					// on) so the two don't both emit (the columns default would win as
+					// repeat(2,1fr)).
 					if ( ! ( $grid_template_tablet || $grid_template_mobile ) && ! $object_grid ) {
 						$gd[] = 'grid-template-columns:' . $gtc_base;
 					}
@@ -1231,7 +1249,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_base_band
 				|| $has_base_grid
 				|| $has_base_outer
-				|| $object_model
+				|| $container_queries
 				|| '' !== $overlay_decls
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) )
@@ -1901,12 +1919,35 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// .$uid with @media (an element can't size-@container itself). contentWidth
 			// → band max-width on the __inner. Only object-shaped attrs contribute; a
 			// flat value never reaches here (the block passes objects only under the flag).
-			if ( $object_model && $uid ) {
+			// ENTRY IS NO LONGER GATED ON THE OPT-IN (Spec 35 pass 1, 2026-08-10).
+			// An object-shaped attribute must be emitted by whichever block carries one,
+			// not only by the three blocks that happened to set `responsive_model`. Pass 1
+			// converts `gap` on 21 blocks; only 3 opt in, and the flat path above blanks an
+			// array value via its is_array() guard — so gating this block too would have
+			// left ~15 blocks emitting NO gap at all. Universal by data, not by flag.
+			//
+			// SAFE because nothing here has an effect without object data: the body only
+			// BUILDS $obj_inner_props, and the single emission at the end is already
+			// guarded `if ( $obj_inner_props && '' !== $grid_sel )`. A block with no
+			// object-shaped attr therefore enters, collects nothing and emits nothing.
+			// The selector is unchanged either way — $grid_sel (:1284) is `.$uid` unless
+			// $grid_on_inner, which is exactly where the FLAT gap path emits (:1439).
+			//
+			// ⛔ The DOM/containment half stays opt-in DELIBERATELY. `container-type`
+			// below, plus $grid_on_inner (:622) and the forced $do_wrap (:2297), relocate
+			// grid/flex onto a `__inner` element and make it render. That is a real layout
+			// change on blocks that have no such wrapper today, it needs per-block visual
+			// verification, and a gap-only pass must not smuggle it in. Moving every block
+			// onto the FULL object model is its own phase.
+			if ( $uid ) {
 				$obj_outer_sel = '.' . $uid;
 
 				// container-type on the OUTER element establishes the query container the
 				// __inner reads (Spec 37 FR-37-16 "adapts to its own width when reused narrow").
-				$responsive_css .= $obj_outer_sel . '{container-type:inline-size}';
+				// Still opt-in only: it applies CSS containment, which is not behaviour-neutral.
+				if ( $container_queries ) {
+					$responsive_css .= $obj_outer_sel . '{container-type:inline-size}';
+				}
 
 				/**
 				 * True when a TIER object actually carries a value on some tier.
@@ -1944,11 +1985,32 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					return false;
 				};
 
+				// ⭐ THE BARE-NUMBER RULE (Bean-ruled 2026-08-10). Every
+				// LENGTH-valued entry in this list MUST declare a
+				// `unit_default`, or sgs_responsive_format_atom_value()
+				// (helpers-responsive.php:419) appends the empty string to a
+				// bare number and emits an invalid declaration — `gap:20` —
+				// which the browser silently drops. Passes 2-6 add maxWidth and
+				// friends here; give each one its unit as it lands.
+				//
+				// ⚠ A bare number means `px`. It previously meant a WordPress
+				// spacing-SCALE SLUG, because the old flat path ran through
+				// sgs_css_length_value() (helpers-css-safety.php:73-76), where
+				// digits-only → var(--wp--preset--spacing--N). That was a trap:
+				// theme.json defines slug 30 as 1rem and slug 20 as 0.5rem, so
+				// `20` rendered 8px — nothing like its face value — and slug 16
+				// does not exist at all, so sgs/gallery's `"16"` default
+				// resolved to nothing and its gap was silently dead. Block
+				// defaults that depended on the slug meaning were rewritten to
+				// explicit lengths in this same change, so this restores no
+				// old behaviour and changes no rendering; it removes an
+				// ambiguity. Keep container/edit.js's gapCssValue() in step.
 				$obj_inner_props = array();
 				if ( isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ) {
 					$obj_inner_props[] = array(
-						'value' => $attributes['gap'],
-						'css'   => 'gap',
+						'value'        => $attributes['gap'],
+						'css'          => 'gap',
+						'unit_default' => 'px',
 					);
 				}
 				if ( isset( $attributes['gridTemplateColumns'] ) && is_array( $attributes['gridTemplateColumns'] ) ) {
@@ -2130,7 +2192,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 
 				if ( $obj_inner_props && '' !== $grid_sel ) {
-					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => true ) );
+					// `container` adds an @container copy of each tier rule ALONGSIDE the
+					// @media one (class-sgs-breakpoints.php:74-81 emits both, never one
+					// instead of the other) — so the tiers apply either way. But an
+					// @container query can only match inside a query container, and
+					// container-type is emitted above only under $container_queries. Passing
+					// the flag through means a non-opted block gets the working @media
+					// rules without a duplicate set of @container rules that can never
+					// match. Dead CSS is not free: it is what the next reader has to
+					// explain before they can trust the rest.
+					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => $container_queries ) );
 				}
 
 				// CENTRING — the second half of a width band, and the flat path's
@@ -2294,7 +2365,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Object model (Spec 37 FR-37-16): the __inner must render so the forced
 			// $grid_on_inner target (.uid>.sgs-container__inner) exists for the
 			// flex/grid + gap rules and the @container queries.
-			if ( $object_model && ( 'grid' === $layout || 'flex' === $layout ) ) {
+			if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout ) ) {
 				$do_wrap = true;
 			}
 
@@ -2316,7 +2387,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			 * effect beyond "it needs an inner wrapper".
 			 *
 			 * Deliberately narrow: gated on one exact attribute value that only
-			 * this effect sets, mirroring the $object_model force directly above.
+			 * this effect sets, mirroring the $container_queries force directly above.
 			 */
 			$fx_track_attr = '';
 			if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {

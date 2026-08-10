@@ -152,7 +152,7 @@ const ALIGN_CONTENT_OPTIONS = [
 // tier is an object) to the {desktop,tablet,mobile} shape ResponsiveOverride
 // expects. Consumed unconditionally by the wrapper's legacy responsive-grid
 // path (class-sgs-container-wrapper.php:1485-1500) — not gated behind the
-// object-model flag, so this bridge is safe regardless of responsive_model.
+// object-model flag, so this bridge is safe either way.
 const GRID_TEMPLATE_COLUMNS_ATTR = {
 	desktop: 'gridTemplateColumns',
 	tablet: 'gridTemplateColumnsTablet',

@@ -48,7 +48,10 @@ $items              = $attributes['items'] ?? array();
 $columns            = $attributes['columns'] ?? 3;
 $columns_mobile     = $attributes['columnsMobile'] ?? 1;
 $columns_tablet     = $attributes['columnsTablet'] ?? 2;
-$gap                = $attributes['gap'] ?? '30';
+// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10) - read the desktop tier, never
+// the raw array (a string cast downstream would emit `gap:Array`).
+$gap_obj            = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$gap                = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
 $aspect_ratio       = $attributes['aspectRatio'] ?? '16/10';
 $hover_effect       = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 // overlayStyle removed — no editor control, no consumer anywhere in the
