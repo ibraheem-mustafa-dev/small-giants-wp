@@ -8,6 +8,7 @@ import {
 	Button,
 	RangeControl,
 	Notice,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -576,12 +577,22 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ iconCircleBackground }
 							onChange={ ( val ) => setAttributes( { iconCircleBackground: val } ) }
 						/>
-						<TextControl
+						{ /* §14.3 raw-TextControl violation fixed (D561). '%' is
+						     load-bearing here — the attribute DEFAULTS to '50%' to
+						     make the circle, so a px-only units array would silently
+						     remove the block's own default shape. */ }
+						<UnitControl
 							label={ __( 'Icon circle border radius', 'sgs-blocks' ) }
 							value={ iconCircleBorderRadius }
-							onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val } ) }
-							help={ __( "CSS border-radius, e.g. '50%' (circle), '8px' (rounded square).", 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val || '' } ) }
+							units={ [
+								{ value: '%', label: '%', default: 50 },
+								{ value: 'px', label: 'px', default: 8 },
+								{ value: 'rem', label: 'rem', default: 0.5 },
+								{ value: 'em', label: 'em', default: 0.5 },
+							] }
+							help={ __( "50% makes a circle; a px value makes a rounded square.", 'sgs-blocks' ) }
+							__next40pxDefaultSize
 						/>
 						<ShadowControl
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
@@ -624,12 +635,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { badgeImageObjectFit: val } ) }
 							__nextHasNoMarginBottom
 						/>
-						<TextControl
+						{ /* §14.3 raw-TextControl violation fixed (D561). Same units
+						     array as the icon circle above — '%' reaches the circle
+						     case the old help text advertised. */ }
+						<UnitControl
 							label={ __( 'Badge image border radius', 'sgs-blocks' ) }
 							value={ badgeImageBorderRadius }
-							onChange={ ( val ) => setAttributes( { badgeImageBorderRadius: val } ) }
-							help={ __( "CSS border-radius, e.g. '8px' (rounded), '50%' (circle). Leave blank for square corners.", 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
+							onChange={ ( val ) => setAttributes( { badgeImageBorderRadius: val || '' } ) }
+							units={ [
+								{ value: 'px', label: 'px', default: 8 },
+								{ value: '%', label: '%', default: 50 },
+								{ value: 'rem', label: 'rem', default: 0.5 },
+								{ value: 'em', label: 'em', default: 0.5 },
+							] }
+							help={ __( 'Leave blank for square corners; 50% makes a circle.', 'sgs-blocks' ) }
+							__next40pxDefaultSize
 						/>
 						<ShadowControl
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }

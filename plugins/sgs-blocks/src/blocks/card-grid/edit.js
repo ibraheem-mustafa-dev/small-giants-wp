@@ -12,6 +12,7 @@ import {
 	TextControl,
 	ToggleControl,
 	Spinner,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -544,17 +545,29 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { cardBorderWidth: next } )
 						}
 					/>
-					<TextControl
+					{ /* Contract §14.3 forbids a raw TextControl taking free CSS here —
+					     it accepted invalid values and offered no unit affordance.
+					     UnitControl per §14.1/§14.2 with an explicit units array
+					     (D561). The attribute stays `type: string` and render.php:72
+					     still reads a plain string, so the value domain is unchanged;
+					     the canary carried 0 stored values at migration. */ }
+					<UnitControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ cardRadius || '' }
 						onChange={ ( val ) =>
-							setAttributes( { cardRadius: val } )
+							setAttributes( { cardRadius: val || '' } )
 						}
+						units={ [
+							{ value: 'px', label: 'px', default: 8 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 0.5 },
+							{ value: 'em', label: 'em', default: 0.5 },
+						] }
 						help={ __(
-							'e.g. 8px. Leave empty to use the theme default.',
+							'Leave empty to use the theme default.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
