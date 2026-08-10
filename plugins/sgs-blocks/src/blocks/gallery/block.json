@@ -30,11 +30,6 @@
 			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
@@ -71,8 +66,8 @@
 					"attrMap": {
 						"css:background-color": "native:color.background",
 						"css:color": "native:color.text",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
@@ -250,12 +245,20 @@
 			"default": "ease-out"
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
+		},
+		"padding": {
+			"type": "object",
+			"default": {}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
 		},
 		"gridTemplateColumns": {
 			"type": "string",

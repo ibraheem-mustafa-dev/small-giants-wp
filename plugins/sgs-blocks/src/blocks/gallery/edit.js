@@ -17,10 +17,11 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 // Precedent: sgs/hero and sgs/cta-section already skip the aggregator for this reason.
 import {
 	LayoutPanel,
-	WidthPanel,
-	ResponsiveSpacingPanel,
 	ContentBandPanel,
 } from '../container/components/ContainerWrapperControls';
+// Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
+// WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
+import { ResponsiveBoxControls } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -308,9 +309,27 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						showLayout={ false }
 					/>
-					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
-				<ResponsiveSpacingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /*
+				  Spec 37 FR-37-16 object model — ONE panel owning padding, margin,
+				  max-width and content-width across all three tiers, each on the
+				  {desktop,tablet,mobile} shape.
+
+				  Replaces TWO panels that were both defective here:
+				  * <ResponsiveSpacingPanel> rendered 16 tablet/mobile spacing controls
+				    writing paddingTopTablet… — attributes NO block.json declares, so
+				    WordPress silently DISCARDED every value on save. A client could set
+				    tablet padding, save, and watch it vanish with no error. This was the
+				    panel's last mount; it is deleted with this change.
+				  * <WidthPanel> drove maxWidth/contentWidth on the flat STRING model,
+				    which this block has now left.
+
+				  Gallery therefore declares NO supports.spacing: all box CSS flows
+				  through the object model here and is emitted by SGS_Container_Wrapper
+				  under responsive_model=object, exactly as site-header-row /
+				  site-footer-row / nav-menu already do. One system, not two.
+				*/ }
+				<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 				<ContentBandPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* Panel 1: Images */ }

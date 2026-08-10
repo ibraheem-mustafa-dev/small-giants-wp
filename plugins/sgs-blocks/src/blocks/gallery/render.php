@@ -641,10 +641,21 @@ echo SGS_Container_Wrapper::render(
 	$inner_html,
 	'layout',
 	array(
-		'tag'           => 'div',
-		'extra_classes' => explode( ' ', $wrapper_classes ),
-		'extra_styles'  => array( $inline_styles ),
-		'extra_attrs'   => $extra_attrs,
+		'tag'              => 'div',
+		'extra_classes'    => explode( ' ', $wrapper_classes ),
+		'extra_styles'     => array( $inline_styles ),
+		'extra_attrs'      => $extra_attrs,
+		// Spec 37 FR-37-16 (Spec 35 Phase 1.4, 2026-08-10): padding / margin /
+		// max-width / content-width are stored as the {desktop,tablet,mobile}
+		// object model, and sgs_emit_responsive_css() owns their responsive CSS.
+		//
+		// Safe for this block's OTHER responsive attrs: the flag only diverts a
+		// value that is actually array-shaped. gap ("16") and the
+		// gridTemplateColumns* family are flat strings here, so every is_array()
+		// guard in the wrapper leaves them on the legacy scalar path unchanged —
+		// the wrapper's own comment states that flipping this flag "never breaks
+		// an un-migrated instance's columns".
+		'responsive_model' => 'object',
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

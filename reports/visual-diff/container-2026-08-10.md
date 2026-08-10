@@ -6,12 +6,13 @@ date: 2026-08-10
 wave: "Spec 35 Track 1b Phase 1.4d — fold the two 'by viewport' duplicates into their originals"
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 4f8732baa3f37b48
+source_sha: 4652d23be690e69b
 ---
 
-> **Covers TWO editor-only changes to `ContainerWrapperControls.js` on 2026-08-10**, in
-> order: (1) the `WidthPanel` responsive-duplicate merge, and (2) deletion of the
-> unreachable min-height panel. `source_sha` tracks the latest staged content — the gate
+> **Covers THREE editor-only changes to `ContainerWrapperControls.js` on 2026-08-10**, in
+> order: (1) the `WidthPanel` responsive-duplicate merge, (2) deletion of the
+> unreachable min-height panel, and (3) deletion of `ResponsiveSpacingPanel`.
+> `source_sha` tracks the latest staged content — the gate
 > rejected this report while it still carried the first change's sha, which is the
 > stale-report defence working exactly as intended.
 
@@ -194,3 +195,37 @@ and was deliberately not smuggled into this deletion.
 - `inspector-scan` rule 21: **129 → 135**, every one of the +6 accounted for above.
 - `--self-test`: PASS, all 12 rules **plus** the harness meta-check.
 - `npm run build`: exit **0**.
+
+---
+
+# Change 3 — `ResponsiveSpacingPanel` deleted (editor-only)
+
+**Verdict: PASS**, same basis. `render.php`, `style.css` and
+`includes/class-sgs-container-wrapper.php` are still byte-identical to HEAD; this change
+removes an editor component and adds no attribute, so the frontend cannot differ.
+
+The panel's LAST mount was `sgs/gallery`, migrated to `ResponsiveBoxControls` in the same
+commit — see `gallery-2026-08-10.md`, which carries the frontend analysis and the
+stored-content migration for that block.
+
+## Why it was deleted rather than repaired
+
+1. **It wrote attributes nothing declares.** 16 tablet/mobile padding + margin controls
+   writing `paddingTopTablet` / `marginLeftMobile` / etc. No `block.json` anywhere declares
+   them, and WordPress silently DISCARDS an undeclared attribute — a client could set
+   tablet padding, save, and watch it vanish with no error and no failing gate.
+2. **Its desktop tier was structurally hollow.** Both Padding and Margin returned a `<p>`
+   reading "set in the Dimensions panel above" instead of a control, because desktop
+   spacing came from WP-native `supports.spacing` while the tiers came from SGS attrs.
+   These were the last two `hollow-tier` findings from `inspector-scan` rule 26.
+
+Repairing it in place was not available: merging desktop into the wrapper would have meant
+either duplicating a native-supports panel (CO-15) or stripping native spacing supports
+(D542). The FR-37-16 object model resolves both by owning all three tiers itself, which is
+why the replacement rather than the repair was the right shape.
+
+## Evidence
+
+- `inspector-scan` rule 26: **5 → 3**; both remaining `hollow-tier` findings resolved.
+- `npm run build`: exit **0**, all gates green across all three concurrent streams.
+- No attribute added, removed or renamed by THIS change, so no stored content moves.
