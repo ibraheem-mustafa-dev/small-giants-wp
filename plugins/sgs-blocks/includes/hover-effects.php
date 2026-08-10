@@ -269,6 +269,43 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	if ( $has_hover ) {
 		$add_classes[] = 'sgs-has-hover';
 	}
+	// PER-PROPERTY hover classes (2026-08-10). Each exists so extensions.css can
+	// gate that ONE declaration on real evidence that the operator set it.
+	//
+	// WHY THIS WAS NEEDED. The hover rules in extensions.css were gated on
+	// `[style*="--sgs-hover-bg"]`, which can NEVER match — this file emits its
+	// custom properties inside a scoped <style> and never writes a style=""
+	// attribute (Spec 32 / FR-32-11, see sgs_append_scoped_var_style below).
+	// Every hover colour/shadow rule was therefore DEAD on the frontend.
+	//
+	// Un-gating alone would have been a REGRESSION, not a fix. The early bail
+	// above is per-BLOCK, not per-PROPERTY: a block that set only a hover SCALE
+	// still carries `sgs-has-hover`, so an unconditional
+	// `background-color: var(--sgs-hover-bg, transparent)` would fade away a
+	// resting background it never asked to change, and
+	// `box-shadow: var(--sgs-hover-shadow, none)` would strip a resting shadow
+	// on hover. CSS cannot express "declare this only if the var exists" —
+	// var() ALWAYS declares, and no fallback value means "don't declare me".
+	// So the gate has to come from the class list, which is what the
+	// pre-existing `sgs-has-hover-scale` already did for scale. These four
+	// extend that same proven pattern to the properties that lacked it.
+	//
+	// Each condition MIRRORS its `$css_vars[]` guard above exactly — if a var is
+	// emitted, its class is emitted, and neither without the other.
+	if ( $hover_bg ) {
+		$add_classes[] = 'sgs-has-hover-bg';
+	}
+	if ( $hover_text ) {
+		$add_classes[] = 'sgs-has-hover-text';
+	}
+	if ( $hover_border ) {
+		$add_classes[] = 'sgs-has-hover-border';
+	}
+	if ( $hover_shadow && in_array( $hover_shadow, array( 'subtle', 'raised', 'floating', 'glow' ), true ) ) {
+		// Mirrors the allowlist on the --sgs-hover-shadow var above: an
+		// out-of-list value emits NO var, so it must emit no class either.
+		$add_classes[] = 'sgs-has-hover-shadow';
+	}
 	if ( $hover_scale || $hover_scale_preset ) {
 		$add_classes[] = 'sgs-has-hover-scale';
 	}

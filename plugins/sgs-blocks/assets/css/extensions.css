@@ -124,25 +124,59 @@
 	            box-shadow var(--sgs-hover-duration, 250ms) ease;
 }
 
-/* Only apply individual hover properties when the custom property is set */
-.sgs-has-hover[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
+/*
+ * hover-effects.php emits --sgs-hover-bg/text/border/scale/shadow as CSS
+ * custom properties inside a scoped `<style>` rule keyed to `.sgs-hover-{uid}`
+ * (Spec 32 no-inline contract, FR-32-11) — it NEVER writes a `style=""`
+ * attribute. The `[style*="--sgs-hover-*"]` attribute gates below could never
+ * match, so background/text/border-colour, scale and shadow hover effects
+ * were INERT on the frontend for every block using `sgs-has-hover`. Un-gated
+ * to match what PHP actually emits, using the same unconditional
+ * var(--x, fallback) pattern already used above for the image-controls
+ * rules — merged into one rule for bg/text/border/shadow since removing the
+ * gate makes their selector lists identical (stylelint no-duplicate-selectors).
+ * Scale keeps its own rule, gated on the REAL `.sgs-has-hover-scale` class
+ * (added by PHP only when a scale value is actually set) rather than a
+ * fallback, so it carries no behaviour-change risk.
+ *
+ * ⛔ EACH PROPERTY IS GATED ON ITS OWN CLASS — do NOT collapse these into one
+ * `.sgs-has-hover:hover` rule with var() fallbacks. That was tried and is a
+ * REGRESSION, not a simplification:
+ *
+ *   `.sgs-has-hover` is added when ANY ONE hover effect is set — it is a
+ *   per-BLOCK flag, not per-property (hover-effects.php's early bail only
+ *   excludes blocks with ZERO hover intent). So a block that set only a hover
+ *   SCALE would also receive `background-color:transparent` and
+ *   `box-shadow:none` on hover, visibly fading a resting background or
+ *   stripping a resting shadow it never asked to change.
+ *
+ * CSS cannot express "declare this only if the custom property exists" —
+ * `var()` ALWAYS declares, and no fallback value means "don't declare me". So
+ * the gate has to come from the CLASS LIST. `sgs-has-hover-scale` already did
+ * exactly this; `sgs-has-hover-bg/text/border/shadow` (hover-effects.php,
+ * added 2026-08-10) extend the same proven pattern to the rest. Each class is
+ * emitted under the SAME condition as its custom property, so a rule can only
+ * apply where the operator genuinely set that value — and the fallbacks below
+ * are therefore unreachable safety nets, not silent behaviour.
+ */
+.sgs-has-hover-bg:hover {
+	background-color: var(--sgs-hover-bg, transparent);
 }
 
-.sgs-has-hover[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
+.sgs-has-hover-text:hover {
+	color: var(--sgs-hover-text, inherit);
 }
 
-.sgs-has-hover[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
+.sgs-has-hover-border:hover {
+	border-color: var(--sgs-hover-border, currentcolor);
 }
 
-.sgs-has-hover[style*="--sgs-hover-scale"]:hover {
-	transform: scale(var(--sgs-hover-scale));
+.sgs-has-hover-shadow:hover {
+	box-shadow: var(--sgs-hover-shadow, none);
 }
 
-.sgs-has-hover[style*="--sgs-hover-shadow"]:hover {
-	box-shadow: var(--sgs-hover-shadow);
+.sgs-has-hover-scale:hover {
+	transform: scale(var(--sgs-hover-scale, 1));
 }
 
 @media (prefers-reduced-motion: reduce) {
