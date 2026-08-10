@@ -119,7 +119,13 @@ message claims.
 verify ("live editor verification is still owed and is explicitly NOT claimed"). No commit was
 found claiming a verification its diff does not support. Keep that pattern.
 
-## D549 — The shared wrapper becomes fully responsive GENERICALLY; two storage shapes, two independent axes [ROUTINE]
+## D549 — Every desktop-only STYLING property on the shared wrapper becomes tier-capable, GENERICALLY; two storage shapes, two independent axes [ROUTINE]
+
+⚠ **Scope, precisely:** 16 of `sgs/container`'s settings carried a CSS property with NO per-device
+option. **14 are styling and all 14 are now tier-capable** (6 here + 8 in Stage 2, `dc1f0023`).
+The other 2 (`bgParallax`, `bgAnimationDuration`) are MOTION, governed by Spec 38, and are
+deliberately untouched. "Fully responsive" in this entry means those 14 — not literally every
+attribute on the block. Settings that already had tiers were not changed.
 
 **2026-08-10. Bean-directed, verbatim (twice, in-session):** *"The shared wrapper should be
 updated to be fully responsive too"* and *"We need to make the shared wrapper completely updated

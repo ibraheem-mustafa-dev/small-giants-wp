@@ -63,6 +63,9 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 | Hover effects were DEAD on the frontend — un-gated per PROPERTY | `7908a22f` |
 | **Wrapper STAGE 2 — all 8 remaining properties tier-capable** | `dc1f0023` |
 | **`max-width:Array` painting live — empty `{}` is UNSET, not a value** | `57a0d019` |
+| Doc sweep: blocks CLAUDE.md + Spec 35 Part M | `92c8bbae` |
+| **`survey:dead-css` — static dead-CSS detector, proven on the pre-fix snapshot** | `6afe843c` |
+| STOP catalogue E12 (189 → 197) | `5eccf090` |
 
 #### ⛔ Do NOT start these
 
@@ -80,8 +83,11 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 Bean-directed: continue the ORIGINAL planned work. Phase 1 is done; the plan's later phases are not.
 
 **The delegation brief is measured and ready.** `npm run survey:responsive-shape` — 83 blocks, 311
-tier families: **185 flat**, 32 declaring BOTH shapes, 94 orphans. Of those, **173 are real
-migration candidates** (`cascading_value`). The survey separates them from families that are
+tier families: **185 flat**, 32 declaring BOTH shapes, 94 orphans. **160 are real migration
+candidates across 41 blocks** — the script's own `MIGRATION CANDIDATES` list.
+⚠ Do NOT quote the `cascading_value` hint total (173) as the work-list: it also counts 13
+`both_shapes` families that are ALREADY tier-capable, which the candidate list deliberately
+excludes (`shape=="flat_tiers" and hint=="cascading_value"`). Quoting 173 overstates the work by 13. The survey separates them from families that are
 CORRECT as-is and must NOT be migrated blindly: **36 `asset_like`** (a per-tier ASSET is a different
 resource per device — `sgs/media`'s tiers are a deliberate runtime swap, D521) and **7 `flag_like`**
 (conjunctive per-device flags the operator must see all of at once). The 94 orphans are explained:
@@ -190,10 +196,9 @@ is USED before investing in making it correct** — the census that answered it 
   padding via the wrapper's un-gated `style.spacing` read (a graceful window, verified) but its
   `contentWidth:"1200px"` will coerce to `{}` once the new schema is live. **Run it, then confirm
   the 1200px band and 48/24/24/48 padding on the live page.**
-- **Wrapper STAGE 2** — the six `gridItem*` properties plus `shadow`/`contentBandBackground` emit as
-  CSS custom properties on a different selector and need their own tier plumbing.
-- **Hover effects have the SAME dead-CSS bug** as image controls (`extensions.css:128-144` gates on
-  `[style*="--sgs-hover-bg"]` while the PHP emits a scoped `<style>`).
+- ⚠ **Wrapper Stage 2 has no LIVE-EDITOR verification.** The code shipped (`dc1f0023`, all 8
+  properties) and its 16/16 probe tests the HELPER, not the editor. A green build proves almost
+  nothing about editor JS — verify in both editors before treating Stage 2 as closed.
 - **The lost at-a-glance affordance** — deleted per-control strips showed which OTHER tiers had a
   value. Needs its own design; ⛔ must NOT be solved by re-adding a per-control switcher.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
