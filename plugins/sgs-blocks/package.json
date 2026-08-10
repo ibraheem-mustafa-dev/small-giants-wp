@@ -44,14 +44,15 @@
     "survey:colour": "python scripts/surveys/survey-colour-controls.py",
     "survey:typography": "python scripts/surveys/survey-typography-controls.py",
     "survey:box": "python scripts/surveys/survey-box-controls.py",
-    "survey:selftest": "node scripts/surveys/survey-inspector-surface.js --self-test && python scripts/surveys/survey-length-controls.py --self-test && python scripts/surveys/survey-colour-controls.py --self-test && python scripts/surveys/survey-typography-controls.py --self-test && python scripts/surveys/survey-box-controls.py --self-test && python scripts/surveys/survey-responsive-shape.py --self-test",
+    "survey:selftest": "node scripts/surveys/survey-inspector-surface.js --self-test && python scripts/surveys/survey-length-controls.py --self-test && python scripts/surveys/survey-colour-controls.py --self-test && python scripts/surveys/survey-typography-controls.py --self-test && python scripts/surveys/survey-box-controls.py --self-test && python scripts/surveys/survey-responsive-shape.py --self-test && python scripts/surveys/survey-dead-css.py --self-test",
     "audit:post-content": "python scripts/audit-post-content-blocks.py",
     "audit:element-manifest": "node scripts/check-element-manifest-conformance.js",
     "audit:placement-reach": "python scripts/placement-reach.py",
     "check:device-toggle": "node scripts/check-device-toggle.js",
     "check:device-toggle:gate": "node scripts/check-device-toggle.js --check",
     "check:device-toggle:selftest": "node scripts/check-device-toggle.js --self-test",
-    "survey:responsive-shape": "python scripts/surveys/survey-responsive-shape.py"
+    "survey:responsive-shape": "python scripts/surveys/survey-responsive-shape.py",
+    "survey:dead-css": "python scripts/surveys/survey-dead-css.py"
   },
   "devDependencies": {
     "@wordpress/icons": "^11.6.0",
