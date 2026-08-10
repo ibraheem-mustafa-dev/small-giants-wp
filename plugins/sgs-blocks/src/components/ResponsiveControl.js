@@ -4,29 +4,30 @@
  * Wraps any control and passes the current breakpoint (desktop/tablet/mobile)
  * to the child render function so attributes can be stored per-breakpoint.
  *
- * ── Synced to WordPress's NATIVE device preview (2026-07-18) ──────────────
- * The switcher READS and DRIVES WordPress's own editor device-preview type
- * (`core/editor` `getDeviceType()` / `setDeviceType()` — the Desktop/Tablet/
- * Mobile toggle that resizes the canvas). Previously each control kept a
- * PRIVATE `useState`, so switching a control to "tablet" changed which attr
- * you edited but NOT the canvas — no visual feedback, and every control had
- * its own out-of-sync switcher. Now:
- *   - clicking a device button switches the real canvas preview, so a tablet/
- *     mobile value is immediately visible;
- *   - every responsive control across the block (and the WP top-bar toggle)
- *     stays in lockstep on one source of truth;
- *   - fully compatible with WP core's own responsive preview.
- * Falls back to local state where `core/editor` isn't available (e.g. a
- * site-editor / widget context without the post-editor store).
+ * ── ONE global switcher (Spec 35 Phase 1.2, 2026-08-10) ───────────────────
+ * This component NO LONGER RENDERS A SWITCHER. It reads the current tier from
+ * `core/editor` `getDeviceType()` and passes it to its child; the tier is
+ * chosen once, in the global toggle docked at the bottom of the inspector
+ * (`src/blocks/extensions/responsive-device-toggle.js`).
  *
- * ── Accessible device switcher (FR-37-29, 2026-07-23) ─────────────────────
- * The switcher UI is the shared `DeviceTabs` component — a real
- * `role="tablist"`/`role="tab"` structure with roving tabindex, arrow/Home/End
- * keyboard navigation and >=44x44px targets, replacing the previous plain
- * `ButtonGroup` of small (~24-32px) Tab-key-only buttons. `DeviceTabs` is
- * presentational only; this component still owns which tier is active (either
- * WP's native device preview or the local-state fallback above) and passes
- * that state straight through.
+ * Why: this component has 73 call sites across 32 files, and the strip it used
+ * to render appeared roughly 192 times on screen — 192 copies of the same three
+ * buttons, every one reading and writing the SAME piece of state. Deleting the
+ * strip from this one file removed all of them.
+ *
+ * ⛔ Do NOT re-add a per-control switcher here or in any consumer. That is the
+ * whole point of the change, and `inspector-scan` rule 25 exists to catch it.
+ *
+ * ⛔ The old local-state fallback is GONE and must not be reinstated on the
+ * strength of the comment that used to justify it. That comment claimed
+ * `core/editor` is unavailable in the site editor; measured on WP 7.0.2 it
+ * answers in BOTH editors, so the fallback branch was unreachable. The widgets
+ * screen is the only unprobed surface — re-adding a fallback for it needs its
+ * own evidence, not this docblock's say-so.
+ *
+ * The accessible `DeviceTabs` component (FR-37-29) still exists and is still
+ * used by `ResponsiveOverride` and `ResponsiveTriStateControl`; it is simply no
+ * longer used here.
  *
  * Usage:
  *   <ResponsiveControl label="Columns">
@@ -59,33 +60,19 @@
  * owns the auxiliary hint + reset UI, exactly as it already owns nothing about
  * the input itself.
  */
-import { useState } from '@wordpress/element';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { Button } from '@wordpress/components';
-import { desktop, tablet, mobile } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
-import DeviceTabs from './DeviceTabs';
 
-const BREAKPOINTS = [
-	{
-		key: 'desktop',
-		device: 'Desktop',
-		icon: desktop,
-		label: __( 'Desktop', 'sgs-blocks' ),
-	},
-	{
-		key: 'tablet',
-		device: 'Tablet',
-		icon: tablet,
-		label: __( 'Tablet', 'sgs-blocks' ),
-	},
-	{
-		key: 'mobile',
-		device: 'Mobile',
-		icon: mobile,
-		label: __( 'Mobile', 'sgs-blocks' ),
-	},
-];
+// ⛔ Five imports and the BREAKPOINTS table were removed with the switcher
+// (Phase 1.2): `useState` + `useDispatch` (the deleted local-state fallback and
+// its writer), `DeviceTabs`, and the `desktop`/`tablet`/`mobile` icons that only
+// the BREAKPOINTS table used. All were verified unreferenced elsewhere in this
+// file before deletion, and BREAKPOINTS was never exported. `Button` and
+// `sprintf` STAY — they are used by the inherit-reset control further down.
+//
+// `lint:js` is NOT in the prebuild chain, so an unused import here would not
+// fail any gate. It was checked by hand.
 
 // WP's native device-type names → our breakpoint keys.
 const DEVICE_TO_KEY = {
@@ -102,32 +89,25 @@ export default function ResponsiveControl( {
 	resolvedValue,
 	onReset,
 } ) {
-	// WP-native device preview (the canvas-resizing top-bar toggle). null when
-	// the post-editor store isn't present (site editor / widgets context).
+	// The device tier now comes from ONE place: the global toggle docked at the
+	// bottom of the inspector (src/blocks/extensions/responsive-device-toggle.js).
+	// This component only READS the tier and passes it to its child.
+	//
+	// ⛔ The old local-state fallback here was DEAD CODE and is deleted. The
+	// comment justifying it claimed `core/editor` is absent in the site editor;
+	// that was measured FALSE on WP 7.0.2 (getDeviceType answers in BOTH the post
+	// editor and the site editor), so `usingNative` was always true and
+	// `localKey` was never read. Do not reinstate a fallback on the strength of
+	// that comment — the widgets screen is the only unprobed surface, and
+	// re-adding one there needs its own evidence.
 	const nativeDevice = useSelect( ( select ) => {
 		const ed = select( 'core/editor' );
 		return ed && typeof ed.getDeviceType === 'function'
 			? ed.getDeviceType()
 			: null;
 	}, [] );
-	const { setDeviceType } = useDispatch( 'core/editor' ) || {};
 
-	// Local fallback only used when the native store is unavailable.
-	const [ localKey, setLocalKey ] = useState( 'desktop' );
-
-	const usingNative = !! nativeDevice && typeof setDeviceType === 'function';
-	const breakpoint = usingNative
-		? DEVICE_TO_KEY[ nativeDevice ] || 'desktop'
-		: localKey;
-
-	const pick = ( key ) => {
-		if ( usingNative ) {
-			const bp = BREAKPOINTS.find( ( b ) => b.key === key );
-			setDeviceType( bp.device );
-		} else {
-			setLocalKey( key );
-		}
-	};
+	const breakpoint = DEVICE_TO_KEY[ nativeDevice ] || 'desktop';
 
 	// Optional inherit-indicator + reset (P2 §4.2, Spec 35 T1.2). Every prop
 	// here is optional; a caller that doesn't pass them (all current callers)
@@ -155,17 +135,13 @@ export default function ResponsiveControl( {
 						{ label }
 					</span>
 				) }
-				<DeviceTabs
-					className="sgs-responsive-control__buttons"
-					tiers={ BREAKPOINTS }
-					active={ breakpoint }
-					onChange={ pick }
-					ariaLabel={ sprintf(
-						/* translators: %s: control label. */
-						__( '%s — device', 'sgs-blocks' ),
-						label || __( 'Responsive', 'sgs-blocks' )
-					) }
-				/>
+				{ /* ⛔ The per-control <DeviceTabs> strip was DELETED here (Spec 35
+				     Phase 1.2). This one line rendered ~192 identical three-button
+				     strips across 73 call sites in 32 files, every one of them
+				     reading and writing the SAME core/editor state. The tier is now
+				     chosen once, in the global toggle docked at the bottom of the
+				     inspector. Do not re-add a switcher here: `inspector-scan` rule
+				     25 exists to catch exactly that. */ }
 			</div>
 			{ children( breakpoint ) }
 			{ tierIsInherited && (
