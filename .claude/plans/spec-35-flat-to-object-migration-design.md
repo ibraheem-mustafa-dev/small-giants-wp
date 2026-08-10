@@ -50,7 +50,7 @@ reason to change course mid-pass.
 
 ---
 
-## The property order
+## Phase overview — the property order
 
 Chosen so that **every early property is already proven in the object shape on a live block** — the
 mechanism is never being tried for the first time at scale.
@@ -113,8 +113,6 @@ cross-track action; and it is the file the codemod edits each pass, so gate and 
 
 ⛔ **Therefore the gate needs no block-level phase marker at all**, and `responsive_model` stays purely
 what it is — the wrapper's runtime switch.
-
-**Required of the gate:**
 
 **Required of the gate:**
 - a **positive and negative control per assertion**, and **proven able to fail on the real tree** —
@@ -280,7 +278,7 @@ before the converter rework and go silent after.** Passive observation is not ev
      *declared-object-but-stored-flat* coercion or only the wholly-undeclared case — read the script.
 9. `decisions.md` D-entry + `LEDGER.md` replaced, in the same commit as the change.
 
-## Out of scope, explicitly
+## Out of scope
 
 - **Converter object emission** → Spec 39 (`.claude/plans/spec-39-seed-requirements.md`).
 - **Stored-content migration** → deleted by ruling B.

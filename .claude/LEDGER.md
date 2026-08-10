@@ -36,37 +36,11 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 - **A database staleness bug fixed**: the gallery block's settings had changed shape months ago but the
   database still described the old shape, so every tool reading it was working from a dead model.
 
-**Where 2026-08-10 (session 2) left things:**
-
-- **The shared container is now FULLY responsive by design, not block by block.** You asked for the
-  wrapper to be fixed once so no block needs "individual fixes that require forking". **Every one
-  of the 14 settings that was desktop-only now works per device** — row-vs-column (the commonest
-  mobile need), spacing, colours, shadows and the content band. (Precisely: 16 of its settings
-  carried a CSS property with no per-device option; 14 were styling and all 14 are done, and the
-  other 2 are motion, which a different spec governs. Settings that already worked per device are
-  untouched.) It took
-  **rows in a list, not a rewrite**: the generic machinery already existed and nobody had fed it
-  these properties. Adding the next one is a single line.
-- **A styling bug was found painting on a real page — and it pre-dated today.** A container was
-  emitting the literal text `max-width:Array` instead of a width. It was never caused by today's
-  work: any block whose setting was left untouched hit it, so the header and footer rows have been
-  doing it since that system was built. Found by checking the live page, fixed, and re-verified.
-- **The thing that made this possible was this morning's toggle.** Adding per-device options used
-  to mean more controls on screen. With one global Desktop/Tablet/Mobile switch, it adds **zero** —
-  so "make everything responsive" and "reduce clutter" turned out to be the same job, not opposites.
-- **Two controls that were quietly lying to clients are gone.** A gallery panel with 16 spacing
-  controls threw away everything typed into it (WordPress discards settings a block doesn't
-  declare — no error, nothing). And a min-height panel no block could actually reach.
-- **Two bits of styling had been dead on real pages.** Desktop image height and object-fit never
-  worked — the CSS was waiting for something the code stopped producing months ago. Found and fixed.
-  The identical fault in hover effects was found too.
-- **A review panel checked the whole session and found three things**, all fixed: a hidden trap
-  waiting to bite the next piece of work, a missing record of your approval, and three wrong numbers
-  (now re-measured properly).
+**Session-2 narrative:** `memory/session-2026-08-10*.md` (rotated by the Stop hook). Not repeated here.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D553**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D555**.
 
 ### Shipped 2026-08-10 session 3
 
@@ -76,7 +50,10 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 | Wrapper `:128` comment promised `! $object_model` gates that do not exist | `a6e0f390` |
 | Centring guard requires a REAL tier value (`[]` is UNSET, not a value) + my build regression | `9b4722a9` |
 | **`check-dead-controls` stripper: line comments BEFORE block comments** (+ Test G, proven able to fail) | `f11b122a` |
-| D552 + D553; 2026-08-08 plan §4/Phase 4 marked SUPERSEDED | *(this commit)* |
+| D552 + D553; 2026-08-08 plan §4/Phase 4 marked SUPERSEDED | `c4befadf` |
+| **Retired Stage 3 DELETED — `/sgs-update` renumbered to a contiguous 1-13** (D555) | `accd5fbc` |
+| Migration design gate CLOSED (D554) + Spec 39 seed captured; my inspector-scan count error corrected | `c0af4188` |
+| `/qc-council` outcome: P1 re-keyed to `block.json` type; one rater finding REFUTED; 6 gaps closed | `6e5cd36a` |
 
 ### ⭐ Track 1b (Spec 35) — inspector control standardisation
 
@@ -84,25 +61,10 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 #### Shipped 2026-08-10 session 2
 
-| What | Commit |
-|---|---|
-| `inspector-scan` **rule 26** — the detector, built BEFORE any edit | `629971c7` |
-| 1.4d — folded the two "… by viewport" duplicates; live-verified BOTH editors | `a05194e3`, `ed41a748` |
-| 1.4b — deleted the unreachable min-height panel | `2e48c3ff` |
-| Un-gated image-control CSS that could never match | `8b07cdb9` |
-| `sgs/gallery` → FR-37-16 object model; `ResponsiveSpacingPanel` retired | `0e6209e6` |
-| 1.4c — hero's 3 mobile-only orphans → responsive triples | `0d7b32ec` |
-| **Six wrapper layout properties tier-capable, generically** | `2056af6a` |
-| `survey:responsive-shape` census + `gridAutoRows` guard + D548/D549 | `05f3ecad` |
-| D550 — council falsifications, three numbers corrected | `f305cba8` |
-| Docs sweep: LEDGER + contract §12 + baseline re-derived | `5f13e46b` |
-| D551 — problematic universal extensions → disconnect + opt-in | `cc91128d` |
-| Hover effects were DEAD on the frontend — un-gated per PROPERTY | `7908a22f` |
-| **Wrapper STAGE 2 — all 8 remaining properties tier-capable** | `dc1f0023` |
-| **`max-width:Array` painting live — empty `{}` is UNSET, not a value** | `57a0d019` |
-| Doc sweep: blocks CLAUDE.md + Spec 35 Part M | `92c8bbae` |
-| **`survey:dead-css` — static dead-CSS detector, proven on the pre-fix snapshot** | `6afe843c` |
-| STOP catalogue E12 (189 → 197) | `5eccf090` |
+Session-2 commit table moved to `memory/session-2026-08-10*.md` (17 rows). Headlines that still matter:
+wrapper Stage 1+2 made 14 properties tier-capable (`2056af6a`, `dc1f0023`) — **capability only, nothing
+wired, see D552 §2**; `sgs/gallery` → FR-37-16 object model (`0e6209e6`); `survey:responsive-shape` +
+`survey:dead-css` censuses built; STOP catalogue 189 → 197.
 
 #### ⛔ Do NOT start these
 
@@ -115,31 +77,131 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 - **Restoring `localStorage` on the toggle** — its absence is deliberate (D546).
 - **Rebuilding the rejected inspector census** (D543).
 
-### ⭐ NEXT SESSION — BUILD P1 + P2, then start migration pass 1 (`gap`)
+### ⭐ NEXT SESSION — ORCHESTRATION PLAN (6 tasks, 2 parallel pairs)
 
-**All 7 steps of `go-track-1b-mossy-babbage.md` are DONE.** The design gate is CLOSED — Bean ruled all
-three questions at D554: **property-by-property**, **trash-not-migrate** the old canary pages, and
-**gate the clone output** while the converter stays flat.
+**All 7 steps of `go-track-1b-mossy-babbage.md` are DONE and the design gate is CLOSED** (D554:
+property-by-property · trash-not-migrate · gate-the-clone). `/qc-council` ran; its findings are applied.
 
-**Read first:** `.claude/plans/spec-35-flat-to-object-migration-design.md` (the sequencing + P1/P2
-design, awaiting nothing — it is signed off) and `.claude/plans/spec-39-seed-requirements.md`.
+**Read first, in this order:** `plans/spec-35-flat-to-object-migration-design.md` (signed off — the
+sequencing + P1/P2) · `plans/spec-39-seed-requirements.md` · `decisions.md` D552-D555.
 
-**The next build, in order — no block edit until both are green:**
-1. **P1** — the phase-aware storage-shape gate, with a positive AND negative control per assertion and
-   **proven able to fail on the real tree**. Same-commit change to `lint-responsive-controls.py:106` +
-   contract §12 field 1 (they currently call flat canonical while §12's amendment says object).
-2. **P2** — `/sgs-update` seeding for object attrs. **Settle the `css_property = NULL` question first**
-   by reading the extraction — the shape is NOT the cause (gallery's object `maxWidth` keeps
-   `css_property`), so it is probably a fossil. Prove the reseed on one migrated block.
-3. **Then migration pass 1: `gap`** (object already on both row blocks, so the mechanism is proven live).
+#### State recap, plain English
 
-⛔ Still not delegable: P1 and P2. The 160 families are only "repetitive" *behind* a proven detector and
-correct seeding.
+We are collapsing 160 three-attribute per-device trios (`gap`/`gapTablet`/`gapMobile`) into single
+object-shaped settings, across 41 blocks, one PROPERTY at a time. The shared container already reads the
+new shape; almost nothing is stored in it, which is why yesterday's per-device work reaches nothing yet.
+Two prerequisites must be green before any block is edited: a gate that can tell migrated from
+un-migrated (**P1**) and correct database seeding for the new shape (**P2**). Old canary pages holding
+the old shape get binned, not converted.
 
-*(Historical: the older `go-track-1b-playful-hamster.md` remains the programme-level plan, Phases 0-4,
-still valid for scope.)*
+#### Task 1 — Settle the `css_property = NULL` question (P2's deciding read)
 
-**Superseded detail from earlier in this session, kept for context:**
+**What:** determine whether a NULL `css_property` on an object-typed attr is a FOSSIL (Stage 1 updates
+`attr_type` without clearing it) or a RULE (routing dropped on shape change).
+**Why:** P2's whole representation design turns on this. If routing is genuinely dropped, the migration
+would silently strip `css_property`/`css_tier` from 160 families — load-bearing for Spec 31 §3.A/§4.
+**Estimated time:** 20 min.
+**Orchestration:** delegated · **Sonnet** via `/delegate` · single agent.
+**Brief:** read `sgs-update-v2.py`'s Stage 1 attribute extraction and say which code path writes
+`css_property`, and why gallery's *object* `maxWidth` retains `max-width` while both row blocks' object
+`maxWidth` is NULL. Report only; do not reseed.
+**Context it needs:** the asymmetry is already measured (query in D552 §5); the DB is at
+`~/.agents/skills/sgs-wp-engine/sgs-framework.db` (`~/.claude/...` is a junction to the same file).
+**Depends on:** none. **Parallel with:** Task 2. **/qc gate after:** no — it is a read, its output is an answer.
+**Acceptance:** a sentence naming the writing code path with file:line, and a FOSSIL-or-RULE verdict.
+
+#### Task 2 — The pre-pass-1 census (the last unmeasured survivors)
+
+**What:** do `wp_block` (reusable blocks), `wp_global_styles`, or autosaves hold tier-sibling values? And
+does `check-dead-pattern-attrs.py` catch the *declared-object-but-stored-flat* case or only the
+wholly-undeclared one?
+**Why:** ruling B bins the pages, but these four surfaces survive a page deletion. Both are open
+UNPROVEN items from the council.
+**Estimated time:** 20 min.
+**Orchestration:** delegated · **Sonnet** via `/delegate` · single agent · **output is a script**, so the
+census is re-runnable per pass rather than hand-repeated.
+**Brief:** SQL the canary for tier-sibling names inside `wp_block`/`wp_global_styles`/autosave rows, with
+a positive control; then read `check-dead-pattern-attrs.py` and state which of the two coercion classes
+it detects.
+**Context it needs:** credentials at `.claude/secrets/sandybrown.env` (always available); SSH alias
+`ssh hd`; ⚠ a grep pattern starting `--` is eaten as a flag, use `-e`.
+**Depends on:** none. **Parallel with:** Task 1. **/qc gate after:** no. **Acceptance:** a committed
+census script + a number per surface, each with a positive control.
+
+#### Task 3 — Build P1, the storage-shape gate
+
+**What:** a gate asserting each tier family is fully flat or fully object, never blended — keyed on the
+attribute's declared `type` in `block.json` and **nothing else**.
+**Why:** without it the migration has no enforcement, and 160 edits become unverifiable.
+**Estimated time:** 1 hour.
+**Orchestration:** **inline (main thread)** — gates are judgement, and this project's gates have failed
+three distinct ways this month.
+⛔ **Do NOT key on `'responsive_model' => 'object'`** — it is block-level and already false-as-a-label for
+4 of gallery's 8 families (council BLOCKER, measured). Not the DB either: `block.json` is what WP
+enforces, needs no reseed, and is the file the codemod edits.
+**Depends on:** none. **Parallel with:** Task 6. **/qc gate after:** yes — `/qc-inline`.
+**Acceptance:** the gate FLAGS an injected blended family, naming block + attr; revert restores green;
+confirmed on disk. Ships with a `--self-test` carrying a positive AND negative control, and a named
+promotion trigger. Same-commit one-line clarification to contract §12 field 1 (*"both components remain
+canonical during migration; object storage is the end state"* — it is NOT a factual error, see council).
+
+#### Task 4 — Build P2, the seeding rework
+
+**What:** `/sgs-update` seeds object-shaped attrs and their per-tier identity correctly.
+**Why:** the converter, every gate and all six surveys read that identity from the DB.
+**Estimated time:** 1 hour (depends on Task 1's verdict).
+**Orchestration:** **inline** — schema representation is a design call.
+**Depends on:** Task 1. **Parallel with:** nothing. **/qc gate after:** yes — `/qc-inline`.
+**Acceptance:** reseed one already-object block; DB rows match its `block.json`; `inspector-scan` backlog
+diffed before/after (rule 21 = **133**, tree-wide **250** at HEAD — safe to cite); DB snapshotted with a
+named rollback first.
+
+#### Task 5 — Migration pass 1: `gap`
+
+**What:** collapse `gap`/`gapTablet`/`gapMobile` to one object attr everywhere it is a cascading value.
+**Why:** first real pass; `gap` is already object on both row blocks, so the mechanism is proven live.
+**Estimated time:** 2 hours including the codemod.
+**Orchestration:** **the codemod IS the delegation** — build it inline (propose-only, per
+`migrate-core-blocks`: lint → judge → apply, `README.md:24`), then **delegate its per-block application
+to Sonnet behind P1's gate**. That is where the repetition goes; do not hand-edit 41 blocks.
+**Depends on:** Tasks 3 + 4 both green. **Parallel with:** Task 6. **/qc gate after:** yes — `/qc-council`
+if the codemod refuses any block.
+**Acceptance:** `npm run survey:responsive-shape` shows `gap`'s `flat_tiers` at 0 for every block it
+applies to; per-pass DoD in the design doc satisfied **including the legacy-scalar-read `is_array()`
+check** (this class already fired: `grid-auto-rows:Array` on every render).
+
+#### Task 6 — The clone-output gate
+
+**What:** fail a clone run that emits a flat tier for an already-migrated property.
+**Why:** ruling C — the interim divergence must be loud, not silent.
+**Estimated time:** 45 min.
+**Orchestration:** delegated · **Sonnet** · single agent — **the site is already known**, which is what
+makes this safely delegable: `sgs-clone-orchestrator.py` writes `extract.json` at `:2053`, and the
+R-31-15 anti-mirror gate already runs in that slot (`:70`, ~`:2645-2670`, `--skip-stage-gate` at `:2404`).
+Build beside it with its own skip flag.
+**Depends on:** none. **Parallel with:** Tasks 3 and 5 (file-disjoint). **/qc gate after:** yes — `/qc-inline`.
+**Acceptance:** ⛔ **needs a POSITIVE CONTROL** — a fixture clone that provably TRIGGERS the gate. "It
+stopped firing" is vacuously satisfiable if nothing exercises a migrated property.
+
+#### Dependency graph
+
+```
+Task 1 (Sonnet)  ┐                      Task 6 (Sonnet) ── /qc-inline
+                 ├── parallel                 │ file-disjoint, runs alongside 3 and 5
+Task 2 (Sonnet)  ┘                            │
+      ↓ (Task 1 only)                         │
+Task 3 — P1 gate (inline) ── /qc-inline       │
+      ↓                                       │
+Task 4 — P2 seeding (inline) ── /qc-inline    │
+      ↓ both green                            │
+Task 5 — pass 1 `gap`: codemod inline, application DELEGATED
+      ↓ /qc-council if any block refused
+commit + push (path-scoped)
+```
+
+**Efficiency shape:** 2 measurement tasks run in parallel up front · the clone gate runs beside the whole
+chain · the 41-block repetition is absorbed by a codemod rather than hand-edits · the census ships as a
+re-runnable script so each later pass costs a command, not a session.
 
 - **Step 6 — sequence the AUTHORISED flat→object migration.** Bean authorised the migration itself and
   set the ordering rule: **the block standard leads, the cloning pipeline is reworked afterwards** to
@@ -149,31 +211,20 @@ still valid for scope.)*
   proven able to fail (and expressing the PHASE — flat is conforming for an un-migrated block, object
   for a migrated one), **P2** `/sgs-update` seeding reworked so object-shaped attrs and their unique
   identifiers seed correctly. P2's deciding question is the `css_property = NULL` item under *Open*.
-- **Step 7 — capture Spec 39 seed requirements** (`.claude/plans/spec-39-seed-requirements.md`). Spec
-  39 does not exist yet; 38 is the highest live spec. Capture inputs, do not write the spec.
+- **Step 7 — Spec 39 seed** → DONE: `plans/spec-39-seed-requirements.md`.
 
-⚠ The older `go-track-1b-playful-hamster.md` remains the programme-level plan (Phases 0-4) and is
-still valid for scope; `mossy-babbage` is the live execution plan.
+**Survey figures, safe to cite** (`npm run survey:responsive-shape`): 83 blocks, 311 tier families —
+**160 real migration candidates across 41 blocks** (the script's own `MIGRATION CANDIDATES` list).
+⚠ Do NOT quote the `cascading_value` total (173) as the work-list — it also counts 13 `both_shapes`
+families already tier-capable, overstating the work by 13. **36 `asset_like`** (per-tier ASSET = a
+different resource per device, D521) + **7 `flag_like`** (conjunctive per-device flags) are CORRECT
+as-is. The 94 orphans are explained: 79 `padding*`/`margin*` per-side + 11 `borderRadius`, base in
+native supports.
 
-Bean-directed: continue the ORIGINAL planned work. Phase 1 is done; the plan's later phases are not.
-
-**The delegation brief is measured and ready.** `npm run survey:responsive-shape` — 83 blocks, 311
-tier families: **185 flat**, 32 declaring BOTH shapes, 94 orphans. **160 are real migration
-candidates across 41 blocks** — the script's own `MIGRATION CANDIDATES` list.
-⚠ Do NOT quote the `cascading_value` hint total (173) as the work-list: it also counts 13
-`both_shapes` families that are ALREADY tier-capable, which the candidate list deliberately
-excludes (`shape=="flat_tiers" and hint=="cascading_value"`). Quoting 173 overstates the work by 13. The survey separates them from families that are
-CORRECT as-is and must NOT be migrated blindly: **36 `asset_like`** (a per-tier ASSET is a different
-resource per device — `sgs/media`'s tiers are a deliberate runtime swap, D521) and **7 `flag_like`**
-(conjunctive per-device flags the operator must see all of at once). The 94 orphans are explained:
-79 `padding*`/`margin*` per-side + 11 `borderRadius`, whose base lives in native supports.
-
-This is repetitive deterministic work → route via `/delegate` per Bean.
-
-**Also queued:** Phase 3.2a's `--fix` on the length survey (survey finished, no open design
-decision) · Phase 2.1 opt-in inversion (biggest payoff — 59% of live inspector controls come from
-universal extensions — gated on deriving the opt-in list from actual `post_content`, not
-`hideExtensions`, per D545).
+**Also queued, not started:** Phase 3.2a `--fix` on the length survey (⚠ its input has a measured
+false-positive rate — see the Parked note in `go-track-1b-mossy-babbage.md`) · Phase 2.1 opt-in
+inversion (biggest payoff: 59% of live inspector controls come from universal extensions; gated on
+deriving the list from real `post_content`, per D545).
 
 ### ⭐ Phase 2.1 SCOPE EXPANDED — Bean-directed 2026-08-10 (D551)
 
