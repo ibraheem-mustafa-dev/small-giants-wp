@@ -1,5 +1,54 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D562 — The visual-diff gate gains a fifth auto-skip branch: editor-only changes; and the hook that enforces it is UNTRACKED [INCIDENT]
+
+**2026-08-11, Bean-approved** (shared-gate change, rule 7 design gate).
+
+**The gap.** An `edit.js`-only change — an inspector control swap — cannot alter frontend first
+paint: `render.php`, `style.css` and the saved output are untouched, and WordPress never serves
+`edit.js` to a visitor. The gate demanded a first-paint capture anyway, which would have compared a
+page against itself. The three available answers were the same three the four existing branches were
+each created to remove: stamp a `first_paint_capture_passed: true` nobody measured, revert correct
+work to avoid stamping it, or `--no-verify` away gitleaks, the wp-* pre-merge gate, cheat-gate, F5
+and F6 — all of which had already passed in the same run. In the gate's own words: *"the gate was
+asking an inapplicable question; that is a gate bug, not an honesty problem in the author."*
+
+This is a recurring class, not a one-off — every future inspector change hits the same wall, and the
+whole of Spec 35 Phase 3 is inspector changes.
+
+**`check-editor-only.py`.** Four rules, all failing safe:
+1. Every staged file for the block is `edit.js`. ⛔ `editor.css` deliberately NOT admitted — it
+   restyles the editor canvas, a surface an author may legitimately want captured.
+2. `edit.js` is MODIFIED, not added/deleted/renamed.
+3. The **staged** `edit.js` carries no NAMED export — a `export const` could be imported by a
+   frontend bundle, at which point "editor-only" stops being true.
+4. No sibling but `index.js` imports `./edit` (index.js's import IS the registration's `edit:` field).
+
+Rules 3 and 4 are **re-checked per block on every run, never assumed** from the introduction census
+(measured: 0 of 83 `edit.js` carry a named export; 0 `save.js`/`view.js` import edit; 83 `index.js`
+do). The census is why the rules are cheap, not a substitute for them.
+
+**Proven able to fail on the live tree, not fixtures alone:** staging a real `render.php` alongside
+`edit.js` made it refuse *and name `render.php`*; unstaging returned it to pass. `--self-test`
+carries 12 cases with both a positive and a negative control per rule.
+
+### ⛔ Found while wiring it: the enforcing hook is UNTRACKED
+
+`core.hooksPath` → `.git/hooks`, whose `pre-commit` is **316 lines** and carries the visual-diff
+gate, gitleaks, the wp-* pre-merge gate, cheat-gate, F5 and F6. **It is not in git.** The *tracked*
+`.githooks/pre-commit` is **71 lines**, carries none of them, and documents itself as *"Activated
+repo-wide via: git config core.hooksPath .githooks"* — which is not where the pointer actually goes.
+
+**Consequence:** every gate in that hook exists only in this clone. A fresh clone, a second worktree,
+or a co-active session on another machine commits with none of them — and would read the tracked
+71-line hook as the whole defence. The `check-editor-only.py` script is committed; **its wiring is
+not, and cannot be, until this is resolved.**
+
+Flagged, not fixed — reconciling the two hooks is a shared-mechanism change needing its own design
+gate. ⚠ Do not "fix" it by copying the 316-line hook into `.githooks/` unexamined: it references
+scripts by path and at least one branch was added per incident, so the merge needs reading, not a
+`cp`.
+
 ## D561 — Phase 0 item 0c was already closed and the record said otherwise; §14's census has a measured false-positive rate [INCIDENT]
 
 **2026-08-11.** Closing Phase 0 of the inspector programme surfaced two failures of the same shape —
