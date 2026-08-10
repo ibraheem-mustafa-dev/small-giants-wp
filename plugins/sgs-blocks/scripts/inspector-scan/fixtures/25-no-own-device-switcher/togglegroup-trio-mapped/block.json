@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/togglegroup-trio-mapped",
+	"title": "Fixture: switcher built by mapping an EXTERNAL array — the idiom responsive-device-toggle.js itself uses (must flag)",
+	"category": "sgs",
+	"attributes": {}
+}

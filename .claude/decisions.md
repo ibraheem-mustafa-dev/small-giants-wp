@@ -58,7 +58,8 @@ design.md` (now marked BUILT). Prior research: D545.
   silence Tablet then edit Mobile unwarned, the exact failure the cue exists to prevent), plus a
   visually-hidden `aria-live="polite"` announcement.
 - Deleted `<DeviceTabs>` from `ResponsiveControl.js` — one deletion removes the switcher from all 73
-  `<ResponsiveControl>` call sites across 32 files (~192 strips on screen). The component still reads
+  `<ResponsiveControl>` JSX call sites across 31 files (~192 strips on screen) — ⚑ 73/32 was a raw
+  grep line count, 5 of those lines being JSDoc; corrected by QC council 2026-08-10. The component still reads
   `core/editor`'s device type and passes it down; only the per-control UI is gone.
 - Deleted the private tier `useState` in `ResponsiveOverride.js` (4 files) and
   `ResponsiveTriStateControl.js` (site-header) — both now read the ONE global tier instead of running
@@ -107,8 +108,12 @@ re-adding a per-control switcher. Not parked yet pending Bean's call on priority
 
 Phase 1.4a/1.4b/1.4c (sibling-merge codemods) and Phase 2.1 (opt-in inversion) were not touched.
 Items 1.6 (a new advisory `inspector-scan` rule for the no-own-switcher contract) and 1.6b (a
-Playwright detector for the toggle) were reported as in progress by other agents in parallel during
-this session — their outcomes are not recorded here; read their own commits when they land.
+Playwright detector for the toggle) BOTH SHIPPED in this same session — `925fa3da` and `99859d38`
+respectively, both ancestors of this entry's own commit. ⚑ This paragraph originally called them
+"in progress ... read their own commits when they land": a status doc reporting unknown status for
+two deliverables already sitting in its own tree. Caught by the QC council; the lesson is that a
+parallel-dispatch brief written BEFORE the branches land goes stale the moment they do, so the
+summary must be re-read against `git log` before it is committed, not after.
 
 ## D545 — Phase 1 is a judgement problem, not a volume problem; and the ecosystem already agrees with us [ROUTINE]
 

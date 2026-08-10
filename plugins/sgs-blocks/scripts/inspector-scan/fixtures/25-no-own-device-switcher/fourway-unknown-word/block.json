@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/fourway-unknown-word",
+	"title": "Fixture: genuine 4-value picker whose 4th word was never in the old vocabulary (must NOT flag)",
+	"category": "sgs",
+	"attributes": {}
+}

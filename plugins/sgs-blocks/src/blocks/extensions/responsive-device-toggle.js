@@ -1,10 +1,18 @@
 /**
  * Global device toggle — ONE device switcher for the whole inspector.
  *
- * Replaces ~192 per-control Desktop/Tablet/Mobile strips (73 <ResponsiveControl>
- * call sites across 32 files), every one of which read and wrote the SAME
+ * Replaces ~192 per-control Desktop/Tablet/Mobile strips (68 <ResponsiveControl>
+ * JSX call sites across 31 files), every one of which read and wrote the SAME
  * WordPress state: `core/editor`'s getDeviceType/setDeviceType. This renders that
- * state once, at the top of the block inspector, and drives the canvas preview.
+ * state once, DOCKED AT THE BOTTOM EDGE of the block inspector, and drives the
+ * canvas preview.
+ *
+ * ⚑ Two corrections to this paragraph, both found by a QC council (2026-08-10):
+ * it said "at the top", which the shipped code contradicts — Bean rejected the
+ * top dock on sight because it pushes the controls a client actually uses further
+ * down on every edit. And "73 call sites across 32 files" was a RAW GREP LINE
+ * COUNT quoted as a call-site count; 5 of those lines are JSDoc prose. The real
+ * figures are 68 / 31.
  *
  * Design + the probe evidence behind every decision below:
  *   .claude/plans/2026-08-10-global-device-toggle-design.md

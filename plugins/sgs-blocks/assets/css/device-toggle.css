@@ -115,8 +115,11 @@
    `data-active-item` is Ariakit's FOCUSED item, not the checked one — it moves
    with hover and keyboard focus, so it does not reliably exclude the selected
    button. The result was black hover text landing on the dark blue pill, which
-   is unreadable (#1e1e1e on #0969da is 2.6:1). `aria-checked` is the real
-   selected marker and cannot drift. */
+   fails AA (#1e1e1e on #0969da is 3.21:1, against a 4.5:1 requirement).
+   `aria-checked` is the real selected marker and cannot drift.
+   ⚑ This comment said 2.6:1 until a QC council recomputed it (2026-08-10). The
+   fix was right and the ratio still fails; only the quoted number was wrong.
+   Every other ratio in this file was re-derived at the same time and holds. */
 .sgs-device-toggle
 	.components-toggle-group-control-option-base[aria-checked='false']:hover {
 	color: #1e1e1e;

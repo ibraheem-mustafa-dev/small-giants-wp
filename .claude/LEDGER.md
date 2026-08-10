@@ -16,7 +16,8 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
   editor. There is now ONE, docked to the bottom of the sidebar, and it drives all of them. You caught
   five real problems on first look (wrong edge, wrong label weight, a broken height, an invisible
   selection pill, a badly-placed warning) — all five are fixed and verified live.
-  - **192 old switchers are deleted**, not just hidden. One file change removed all of them.
+  - **192 old switchers are deleted**, not just hidden. One edit removed the bulk of them; two
+    smaller components needed their own pass.
   - **The two other places quietly running their own separate device switch are now wired to the
     same one** — before this, three different parts of the editor could each think you were editing a
     different device at once. That's closed.
@@ -52,8 +53,10 @@ split-brain components + pill alignment + hover contrast). Full record: D546 + D
   `.interface-interface-skeleton__sidebar`. Dismissible per-tier cue in the breadcrumb strip +
   `aria-live` announcement. Verified live, both editors: mounts once, drives the canvas
   (1247/781/479px), 0 console errors, survives Page-tab/distraction-free/closed-sidebar.
-- **`<DeviceTabs>` deleted from `ResponsiveControl.js`** — removes the switcher from all 73 call
-  sites across 32 files (~192 strips) from one file change. Verified: with the toggle on Tablet,
+- **`<DeviceTabs>` deleted from `ResponsiveControl.js`** — removes the switcher from all 68 JSX call
+  sites across 31 files (~192 strips). ⚑ 73/32 was a raw grep line count (5 are JSDoc). 1.2 touched
+  only `ResponsiveControl.js`; 1.3 removed strips from `ResponsiveOverride` + `ResponsiveTriState`
+  too — three files, two commits. Verified: with the toggle on Tablet,
   editing a container's Gap wrote `gapTablet:"123px"` and ONLY that key.
 - **`ResponsiveOverride.js` (4 files) + `ResponsiveTriStateControl.js` (site-header)** now read the
   global tier instead of private state — closes a real split-brain bug (three disagreeing device
@@ -65,7 +68,8 @@ split-brain components + pill alignment + hover contrast). Full record: D546 + D
   design; do not solve by re-adding a per-control switcher.
 - **Not started:** Phase 1.4a/1.4b/1.4c (sibling-merge codemods), Phase 2.1 (opt-in inversion).
   **In progress by other agents this session, outcome not yet known:** item 1.6 (advisory
-  `inspector-scan` rule for no-own-switcher) and 1.6b (Playwright detector for the toggle) — check
+  `inspector-scan` rule, `925fa3da`) and 1.6b (Playwright detector, `99859d38`) — BOTH LANDED, plus
+  two QC-council fixes to rule 25. Check
   their own commits before assuming either landed.
 
 #### Shipped 2026-08-09
@@ -89,13 +93,15 @@ split-brain components + pill alignment + hover contrast). Full record: D546 + D
   canary). `ResponsiveControl.js:107-113`'s comment claiming otherwise is **STALE** → its `localKey`
   fallback is dead code and Phase 1.2 is unblocked.
 - **Length-control divergence — REAL, two independent methods, read both numbers together.**
-  (a) `survey-length-controls.py` (file-scanning heuristic): 694 instances, all 17 present properties
+  (a) `survey-length-controls.py` (file-scanning heuristic): 694 instances, 16 of the 17 present properties
   diverge. (b) Independent SQL on `block_attributes` (non-NULL `inspector_control_type` only): **8**
   properties diverge (`max-width` 5, `padding`/`letter-spacing`/`gap`/`border-radius` 4 each, `width`
   3, `height`/`font-size` 2). ⚠ **8 is the DB-defensible floor; 17 is the survey's wider net** — the
   gap is the ~65%-NULL `inspector_control_type` column, itself the Phase 3.2b blocker. Quote 8 under
   challenge, 17 only with the method named. Re-run `npm run survey:length` for current breakdowns —
-  do not read a cached list here. Canonical `UnitControl` already in use in 49 places. ⚠ Attribution
+  do not read a cached list here. ⚑ The 17th (`bottom`) has ONE instance so cannot diverge. The
+  cached "49 places" of `UnitControl` reproduces by no method (survey JSON: 64 across 43 file:line)
+  and is WITHDRAWN — re-run the survey. ⚠ Attribution
   is a nearest-preceding-JSX heuristic, not an AST parse — spot-check before any `--fix`.
 - **29** blocks use `ContainerWrapperControls` (not 18). **4** gates, none ever promoted.
   `setting-registry.json` live severity 28/40/20/4 (its `_meta` cache says 25/35/17 — drifted).
@@ -145,7 +151,7 @@ instrument (Bean-decided): a new calibrated detector, plan Step 2 — **not yet 
   enforced it. Proven by injection test, not argued (rule 04 returns early on `enableAlpha`, rule 08
   matches `type="url"` only). NEW rule at advisory. Live: **1 FLAGGED** —
   `sgs/button/edit.js:312`, a raw `<URLInput>`. ⛔ **Blind spot:** `src/blocks/extensions/` is out of
-  scope (`core/roster.js:58-70` admits only `block.json` dirs) — the contract records a raw URL field
+  scope (`core/roster.js:76` admits only `block.json` dirs) — the contract records a raw URL field
   reaching 67 blocks through there. Unbuilt plumbing, separate job.
 - **Three survey detectors** (`b6ca16a8`) — `survey-{colour,typography,box}-controls.py`, joining
   `survey-length-controls.py`. `--survey` only, each proven able to FAIL by sabotage-and-restore.
@@ -226,8 +232,8 @@ enum→open value) — D521-class silent-coercion risk, so the codemod PROPOSES 
 with a stored-content migration. **1.4c (`hero/edit.js:906`, `:1006-1017`) is NOT a merge** —
 mobile-only orphans with no tier counterpart; needs Bean's design call first (D545).
 
-**Before starting, check on the two parallel in-progress items** (1.6 advisory `inspector-scan` rule
-for no-own-switcher; 1.6b Playwright detector for the toggle) — they may have landed since this was
+**1.6 and 1.6b BOTH SHIPPED** — rule 25 (`925fa3da`, advisory, later hardened by a QC council) and
+the Playwright detector (`99859d38`, `npm run check:device-toggle`). Nothing to chase. This line
 written; read their own commits rather than assuming either outcome.
 
 **After Phase 1 closes:** Phase 3.2a's `--fix` (survey already finished, highest leverage left, no
@@ -253,7 +259,7 @@ come from universal extensions — but gated on deriving the new opt-in list fro
 ```
 ✅ 1.1 toggle ──> ✅ 1.2 delete strips ──> ✅ 1.3 split-brain fix   [ALL DONE 2026-08-10]
                                             ├─ 1.5 gate rewrites: MEASURED NOT NEEDED, skipped
-                                            └─ 1.6 rule / 1.6b detector: IN PROGRESS (other agents)
+                                            └─ 1.6 rule / 1.6b detector: SHIPPED (925fa3da / 99859d38)
 1.4a ─┐ file-disjoint — safe to PARALLELISE
 1.4b ─┘        1.4c ── blocked on Bean's design call, not on 1.4a/b
                     ↓ multi-rater /qc · canary verify BOTH editors

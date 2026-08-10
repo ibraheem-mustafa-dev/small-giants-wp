@@ -25,9 +25,13 @@
  *    devices: On)" — via the shared `resolveTier()` resolver, never a
  *    second cascade implementation.
  *
- * Tier switching reuses the shared `DeviceTabs` component (the same shell
- * `ResponsiveControl`/`ResponsiveOverride` use) rather than forking a new tab
- * pattern.
+ * ⚑ CORRECTED 2026-08-10 (Spec 35 Phase 1.3). This used to read "Tier switching
+ * reuses the shared `DeviceTabs` component (the same shell
+ * `ResponsiveControl`/`ResponsiveOverride` use)". It no longer does: this
+ * component renders NO tier switcher at all. The tier is chosen once, in the
+ * global toggle docked at the bottom of the inspector
+ * (`src/blocks/extensions/responsive-device-toggle.js`), and read here via
+ * `core/editor`'s `getDeviceType`. `DeviceTabs` now has zero callers anywhere.
  *
  * A11y: the tri-state segment is a `ToggleGroupControl` (native `radiogroup`,
  * arrow-key operable); the customised-tiers indicator is TEXT, never colour

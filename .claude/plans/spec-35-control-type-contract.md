@@ -935,7 +935,7 @@ them here is what stops the next enforcement pass repeating the 27's blind spot.
 | raw `BoxControl` (not the Responsive wrapper) | 5 sites | 4-VALUE BOX (§5) | **Needs a contract** — bypasses the tier wrapper |
 | `BorderRadiusControl` (singular, non-responsive) | live | BORDER (§14) | **Absorbed by §14** |
 | `SpacingControl` | 9 sites | LENGTH (§4) | **Needs a contract** — is it a length, or its own token-scale type? |
-| `DeviceTabs` | live | RESPONSIVE (§12) | **Banned lookalike** — recorded in §12 field 3 |
+| `DeviceTabs` | ⚑ **DEAD — 0 callers** (Spec 35 Phase 1.2/1.3, 2026-08-10) | RESPONSIVE (§12) | **Banned lookalike — verdict still binds if reintroduced.** The component file still exists and is still exported from `components/index.js`, but every `<DeviceTabs>` render was deleted: the tier is now chosen once, in the global toggle (`src/blocks/extensions/responsive-device-toggle.js`). `inspector-scan` rule 25 flags any block that reintroduces one. This cell read `live` until the QC council caught it. |
 | `AnimationControl` | 1 site | — | **Needs a contract**, and it is where carried obligation 17 (reduced-motion) binds |
 | `ComboboxControl` | 2 sites | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
 | `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |

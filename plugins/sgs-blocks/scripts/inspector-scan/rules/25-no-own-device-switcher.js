@@ -106,16 +106,149 @@ function jsxName( openingElement ) {
 	return null;
 }
 
-// The full universe of tier-shaped words this rule ever compares against —
-// deliberately including the two words nav-menu's exempted burger picker
-// uses ("always", "custom") so that control's value set is captured in full
-// and correctly fails the exact-match test below, rather than being
-// silently truncated to a subset that might accidentally match.
-const TIER_WORD_UNIVERSE = new Set( [ 'desktop', 'tablet', 'mobile', 'always', 'custom' ] );
 const EXACT_SWITCHER_SET = [ 'desktop', 'tablet', 'mobile' ].sort().join( ',' );
 
 function setEquals( set, sortedTarget ) {
 	return [ ...set ].sort().join( ',' ) === sortedTarget;
+}
+
+/**
+ * Collect the OPTION VALUES a ButtonGroup/ToggleGroupControl offers.
+ *
+ * ⛔ TWO GAPS THIS FIXES, both found by an adversarial reviewer and then
+ * reproduced against real code before the fix was written.
+ *
+ * GAP 1 — FALSE NEGATIVE, and it missed this rule's own reference idiom.
+ * The first version called `elPath.traverse()` and collected any StringLiteral
+ * inside the JSX subtree. But the canonical way to build these options — the
+ * way `responsive-device-toggle.js` ITSELF does it — is to map over an array
+ * declared OUTSIDE the JSX:
+ *     const DEVICES = [ { value: 'Desktop' }, … ];
+ *     …
+ *     { DEVICES.map( ( d ) => <Option value={ d.value } /> ) }
+ * Those literals live in a top-level declaration the subtree walk never
+ * reaches, so the value set came back empty and nothing was flagged. VERIFIED:
+ * planting exactly that shape in a real block produced 0 findings. A rule that
+ * cannot see its own exemplar's idiom is enforcement theatre.
+ *
+ * GAP 2 — FALSE POSITIVE, from a closed vocabulary.
+ * The first version filtered literals through a fixed 5-word
+ * TIER_WORD_UNIVERSE {desktop,tablet,mobile,always,custom}. Any genuine
+ * multi-value picker using an UNANTICIPATED word (print, auto, wide…) would
+ * have that word silently dropped, leaving exactly {desktop,tablet,mobile}
+ * behind — a false exact match on a control that is not a tier switch at all.
+ * The docblock's "exempted by shape, not a slug list" was therefore only true
+ * for words someone had already thought of.
+ *
+ * THE FIX for both: collect from `value` POSITIONS with NO vocabulary filter,
+ * and follow `.map()` into the resolved array. Every option value now counts,
+ * so an extra value of ANY word breaks the exact-match test (nav-menu's
+ * {always,tablet,mobile,custom} still fails it, now for a structural reason
+ * rather than because someone pre-listed its words), and mapped arrays are
+ * reached.
+ *
+ * @param {Object} elPath Babel path for the JSX element.
+ * @return {Set<string>} Lower-cased option values the control offers.
+ */
+function collectOptionValues( elPath ) {
+	const values = new Set();
+
+	const addFrom = ( node ) => {
+		if ( node && node.type === 'StringLiteral' ) {
+			values.add( String( node.value ).toLowerCase() );
+		}
+	};
+
+	// ⚠ FOUR PRECISE SOURCES, not "every literal minus an exclusion list".
+	//
+	// A broad sweep was tried first and is WRONG: the buttongroup-trio idiom
+	// writes `variant={ tier === 'desktop' ? 'primary' : 'secondary' }`, so a
+	// collect-everything walk picks up 'primary' and 'secondary' too. The set
+	// becomes five words, the exact-match test fails, and a REAL switcher goes
+	// unflagged. The fixture caught that regression.
+	//
+	// None of the four sources below consults a list of expected value WORDS —
+	// that is what keeps gap 2 (the closed vocabulary) fixed. They constrain by
+	// SYNTACTIC POSITION instead, so an unanticipated 4th value is still
+	// collected and still breaks the exact match.
+
+	// (a) `value="desktop"` / `value={ 'desktop' }` written inline.
+	elPath.traverse( {
+		JSXAttribute( attrPath ) {
+			if ( ! attrPath.node.name || attrPath.node.name.name !== 'value' ) return;
+			const v = attrPath.node.value;
+			if ( ! v ) return;
+			if ( v.type === 'StringLiteral' ) addFrom( v );
+			else if ( v.type === 'JSXExpressionContainer' ) addFrom( v.expression );
+		},
+	} );
+
+	// (b) `tier === 'desktop'` — a comparison operand. This is how a ButtonGroup
+	//     marks which option is active. Ternary BRANCHES are deliberately not
+	//     collected, which is what keeps 'primary'/'secondary' out.
+	elPath.traverse( {
+		BinaryExpression( binPath ) {
+			const op = binPath.node.operator;
+			if ( op !== '===' && op !== '==' && op !== '!==' && op !== '!=' ) return;
+			addFrom( binPath.node.left );
+			addFrom( binPath.node.right );
+		},
+	} );
+
+	// (c) `setAttributes( { tier: 'desktop' } )` — an object-property value passed
+	//     to a call. This is the ButtonGroup's writer half.
+	elPath.traverse( {
+		CallExpression( callPath ) {
+			callPath.node.arguments.forEach( ( arg ) => {
+				if ( ! arg || arg.type !== 'ObjectExpression' ) return;
+				arg.properties.forEach( ( prop ) => {
+					if ( prop.type === 'ObjectProperty' ) addFrom( prop.value );
+				} );
+			} );
+		},
+	} );
+
+	// (b) `{ SOME_ARRAY.map( … ) }` — resolve the identifier and read the
+	//     `value:` properties of its array literal, wherever it is declared.
+	elPath.traverse( {
+		CallExpression( callPath ) {
+			const callee = callPath.node.callee;
+			if (
+				! callee ||
+				callee.type !== 'MemberExpression' ||
+				! callee.property ||
+				callee.property.name !== 'map' ||
+				! callee.object ||
+				callee.object.type !== 'Identifier'
+			) {
+				return;
+			}
+			const binding = callPath.scope.getBinding( callee.object.name );
+			if ( ! binding || ! binding.path || ! binding.path.node ) return;
+			const init = binding.path.node.init;
+			if ( ! init || init.type !== 'ArrayExpression' ) return;
+
+			init.elements.forEach( ( el ) => {
+				if ( ! el ) return;
+				// [ 'desktop', 'tablet', 'mobile' ]
+				if ( el.type === 'StringLiteral' ) addFrom( el );
+				// [ { value: 'Desktop', … }, … ]
+				if ( el.type === 'ObjectExpression' ) {
+					el.properties.forEach( ( prop ) => {
+						if (
+							prop.type === 'ObjectProperty' &&
+							prop.key &&
+							( prop.key.name === 'value' || prop.key.value === 'value' )
+						) {
+							addFrom( prop.value );
+						}
+					} );
+				}
+			} );
+		},
+	} );
+
+	return values;
 }
 
 module.exports = {
@@ -178,13 +311,10 @@ module.exports = {
 				// literal value set is EXACTLY the three device tiers.
 				if ( name !== 'ButtonGroup' && name !== 'ToggleGroupControl' ) return;
 
-				const tierValues = new Set();
-				elPath.traverse( {
-					StringLiteral( litPath ) {
-						const val = litPath.node.value;
-						if ( TIER_WORD_UNIVERSE.has( val ) ) tierValues.add( val );
-					},
-				} );
+				// Every option value, un-filtered, including ones reached through
+				// `.map()` over an array declared elsewhere. See collectOptionValues'
+				// header for the two gaps this replaced and how each was reproduced.
+				const tierValues = collectOptionValues( elPath );
 
 				if ( setEquals( tierValues, EXACT_SWITCHER_SET ) ) {
 					const line = opening.loc ? opening.loc.start.line : 0;
@@ -278,13 +408,24 @@ module.exports = {
 	},
 	selfTest: {
 		fixture: 'fixtures/25-no-own-device-switcher',
-		mustFlag: [ 'devicetabs-direct', 'togglegroup-trio', 'buttongroup-trio', 'usestate-desktop-tier' ],
+		mustFlag: [
+			'devicetabs-direct',
+			'togglegroup-trio',
+			'buttongroup-trio',
+			'usestate-desktop-tier',
+			// Regression guards added 2026-08-10 after a QC council found both
+			// gaps and each was reproduced against real code before fixing.
+			// Neither failure mode had fixture coverage, so --self-test would
+			// have gone green on a reintroduction of either.
+			'togglegroup-trio-mapped',
+		],
 		mustNotFlag: [
 			'nav-menu-burger-breakpoint',
 			'responsive-logo-switch-mode',
 			'image-sequence-uses-responsive-control',
 			'unrelated-buttongroup',
 			'usestate-desktop-unrelated',
+			'fourway-unknown-word',
 		],
 	},
 };
