@@ -427,6 +427,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$grid_template_rows_tablet = $attributes['gridTemplateRowsTablet'] ?? '';
 			$grid_template_rows_mobile = $attributes['gridTemplateRowsMobile'] ?? '';
 			$grid_auto_rows            = $attributes['gridAutoRows'] ?? '';
+			// is_array guard — same shape as $columns/$gap/$grid_template at :157-167.
+			// D549 made gridAutoRows tier-capable, so a block MAY now store it as a
+			// {desktop,tablet,mobile} object. Without this line the legacy scalar path
+			// below hands that array to sgs_sanitize_grid_template( (string) $x ) and
+			// PHP raises "Array to string conversion" on EVERY render, emitting a
+			// garbage `grid-auto-rows:Array` declaration beside the correct one.
+			//
+			// Found by a QC-council rater as a LATENT landmine (no block declares it
+			// as an object yet, so it cannot fire today) — aimed squarely at the very
+			// next step, the delegated per-block migration. Nothing would have caught
+			// it: a PHP runtime warning is not a build error.
+			//
+			// ⚑ The rater reported all SIX new tier-capable properties as exposed.
+			// Fact-checked before applying: only this one is. The other five
+			// (justifyItems, alignContent, justifyContent, flexDirection, flexWrap)
+			// are already protected by the STRICT in_array() allowlists at :433-457 —
+			// an array fails a strict comparison against a list of strings and falls
+			// back to the safe default, with no warning and no garbage declaration.
+			$grid_auto_rows            = is_array( $grid_auto_rows ) ? '' : $grid_auto_rows;
 			$justify_items             = $attributes['justifyItems'] ?? 'stretch';
 			$align_content             = $attributes['alignContent'] ?? 'stretch';
 			$allowed_justify_items     = array( 'stretch', 'start', 'center', 'end' );

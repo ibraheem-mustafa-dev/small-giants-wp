@@ -1,5 +1,109 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D549 — The shared wrapper becomes fully responsive GENERICALLY; two storage shapes, two independent axes [ROUTINE]
+
+**2026-08-10. Bean-directed, verbatim (twice, in-session):** *"The shared wrapper should be
+updated to be fully responsive too"* and *"We need to make the shared wrapper completely updated
+to be compliant with spec 35's contract and all the other points I have raised. That way every
+block that uses it doesn't need individual fixes that require forking."*
+
+⚑ **Recorded retroactively, same day, and the reason matters.** A QC-council rater ranked this
+the MOST SEVERE finding of the session: the approval for `2056af6a` existed ONLY inside the
+commit message that made the change — no D-number, and the six-property change was not in the
+LEDGER's Phase 1.4 scope. The direction was genuine (Bean, live, twice) but **unfalsifiable from
+repo state**, which is exactly what this log exists to prevent. A self-attested approval on a
+shared, high-blast-radius file is the shape Rule 7 forbids, regardless of whether the change is
+right. Logged so the next session inherits an artefact, not a claim.
+
+### The tension that dissolved (this is the load-bearing insight)
+
+"Make every property responsive" appeared to CONTRADICT Spec 35's purpose (shrink the client's
+control surface). It does not, **because of the global device toggle shipped this same day
+(D546)**: a `<ResponsiveControl>` renders ONE control at a time and the tier is chosen once,
+globally. Adding tiers behind it adds **zero** visible controls. The surface only grows if tiers
+render side by side — which is precisely the banned lookalike `inspector-scan` rule 26 catches.
+"Fully responsive" and "shrink the surface" are therefore the SAME change. Do not re-litigate
+this as a trade-off; it was one only before the toggle existed.
+
+### Two shapes, two INDEPENDENT axes (Bean-clarified — this was blurred and is now settled)
+
+| Axis | Shape | Applies to |
+|---|---|---|
+| **TIER** | `{desktop, tablet, mobile}` | **ANY** property — including text colour. A different colour on mobile is legitimate. |
+| **BOX** | `{top, right, bottom, left}` | ONLY genuinely per-side properties (padding, margin, border-width, border-radius). |
+
+A property may have one, both or neither. Text colour cannot be a per-side box but CAN have
+tiers. Conflating the two axes is the specific confusion `survey-responsive-shape.py` exists to
+surface.
+
+### Built: the emitter was already generic — six rows, not 32 branches
+
+`sgs_emit_responsive_css()` already expands each spec to atoms, null-coalesces up the tier
+cascade and TIER-DIFFS (emitting a tier only where it differs). So `alignContent`,
+`justifyContent`, `justifyItems`, `flexDirection`, `flexWrap` and `gridAutoRows` became **six
+array rows**. Adding property #7 is one row. This is not tidiness: 32 hand-written branches is
+exactly where this session found a desktop CSS rule dead for months, and a data-driven prop_map
+cannot grow that failure mode.
+
+**Backwards-compatible BY CONSTRUCTION, proven not asserted.** Each row is `is_array()`-guarded,
+and `sgs_responsive_normalise_object()` maps a plain scalar to the desktop tier with null
+tablet/mobile. Four controls run against the real helper: POSITIVE (tiered object emits base +
+`@media` mobile, tablet correctly absent because null inherits); UN-MIGRATED (plain scalar emits
+desktop-only); NEGATIVE (identical tiers emit NO `@media` — tier-diff works); INJECTION
+(`row;} body{display:none}/*` → `row bodydisplaynone`, cannot break out of its declaration).
+
+### ⛔ STAGE 2, named not deferred (STOP-29)
+
+The six `gridItem*` properties plus `shadow` and `contentBandBackground` emit as CSS CUSTOM
+PROPERTIES (`--sgs-gi-*`) onto a different selector and need their own tier plumbing, not a
+prop_map row. Shipping six with a VERIFIED selector beat fourteen with eight guessed ones — a
+wrong selector is silently dead CSS, the exact bug class found twice this session.
+
+### Adjudicated by the council, so it is not re-argued
+
+- **R-31-1 (no hardcoded dicts): NO VIOLATION.** R-31-1 scopes to the cloning PIPELINE; this is
+  WordPress runtime PHP that cannot query a dev-only SQLite file per page render, and the
+  identical `'css' => 'padding'` shape already existed in the same function beforehand.
+- **D152 composite-mirror: NO VIOLATION** — convergence onto an existing shared mechanism, the
+  opposite of divergence.
+
+## D548 — sgs/gallery migrates to FR-37-16; ResponsiveSpacingPanel retired; D542 knowingly reversed for this block [ROUTINE]
+
+**2026-08-10.** Bean chose the full FR-37-16 object model over a spacing-only variant.
+
+`ResponsiveSpacingPanel` was defective two ways and `sgs/gallery` was its LAST mount:
+**(1)** it rendered 16 tablet/mobile padding+margin controls writing `paddingTopTablet` etc —
+attributes NO `block.json` declares, so WordPress silently DISCARDED every value on save (a
+client could set tablet padding, save, and watch it vanish with no error and no failing gate);
+**(2)** its desktop tier was structurally hollow, returning a `<p>` reading "set in the
+Dimensions panel above", because desktop came from native `supports.spacing` while the tiers came
+from SGS attrs.
+
+**⚠ D542 IS REVERSED FOR THIS BLOCK, DELIBERATELY, WITH A REAL COST.** D542 says keep native
+`spacing` DECLARED and use `skipSerialization`; gallery now declares NONE. Repair in place was
+unavailable: merging desktop into the wrapper meant either duplicating a native-supports panel
+(CO-15) or stripping the supports (D542). FR-37-16 resolves both by owning all three tiers, and
+`site-header-row`/`site-footer-row`/`nav-menu` were already there — gallery is the fourth block
+on a documented universal model, not a bespoke exception.
+
+**The cost, stated plainly rather than softened:** gallery loses theme.json / Global-Styles-driven
+spacing. That was D542's stated reason for the rule. Accepted for this block because the
+alternative was keeping a panel that silently discarded client input.
+
+**One live page was at risk.** WP coerces a type-mismatched value to the attribute default, so a
+stored `contentWidth:"1200px"` against an object-typed attr becomes `{}` and the cap VANISHES
+silently. `audit-post-content-blocks.py` does NOT catch this — it checks attribute NAMES and
+stranded content, never value TYPES. Measured: 5 gallery instances, 1 carrying
+`contentWidth:"1200px"` + native padding 48/24/24/48 (page 1591), POSITIVE CONTROL 1706
+`wp:sgs/*` openings parsed. `scripts/migrate-gallery-object-model.js` is dry-run-by-default,
+idempotent, brace-balanced (a non-greedy regex truncates at the first `}` and mangles nested
+`style.spacing.padding`), and refuses to write if any byte outside the gallery block comments
+differs.
+
+**Graceful window, verified:** the wrapper's base-spacing read (`:1056-1076`) is NOT gated by
+`$object_model`, so an un-migrated instance keeps rendering its old padding after deploy rather
+than losing it instantly.
+
 ## D547 — Four measurement reversals during the toggle build, each caught before ship [ROUTINE]
 
 **2026-08-10.** Recorded separately from D546 because these are durable methodology lessons, not
