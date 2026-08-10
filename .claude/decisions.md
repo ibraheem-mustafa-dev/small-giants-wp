@@ -1,5 +1,75 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D555 — The retired Stage 3 is DELETED from `/sgs-update`, not documented around; 14 slots → 13 [ROUTINE]
+
+**2026-08-10, Bean-directed, verbatim:** *"if stage 3 of sgs-update has been retired or merged into
+stage 2, then it should be removed from the list and leave us with 13 stages instead of constantly
+wasting time and tokens mentioning and reading on a retired stage"*.
+
+Stage 3 (`wpcli_handbook_refresh`) was retired at D56 and merged into Stage 2, but kept its slot, a
+tombstone lambda, a docstring line and six prose references — so every reader paid to learn it does
+nothing. **Deleted; stages 4-14 renumber down one to a contiguous 1-13.**
+
+**Safe because measured first:** every EXTERNAL caller uses only `--stage 1`, which does not move
+(`db-consistency/check_*.py` ×9 and others all cite stage 1). `choices=range(1, 15)` → `range(1, 14)`.
+
+⚠ **Prose comments recording the retirement are HISTORY and were reworded, not deleted** — a comment
+explaining that something was retired at D56 stays true; only the implication of a *live* Stage 3 goes.
+⚠ **Anyone with muscle memory for the old numbers is now wrong by one** for 3-13 (e.g. motion-FX regen
+was Stage 12, is now 11). The docstring carries a dated note saying so.
+
+**The general rule this instantiates:** a retired-but-numbered slot is not free — it is a permanent
+reading tax on every future session. Retire *and remove*, or do not retire.
+
+---
+
+## D554 — The flat→object migration: property-by-property, trash-not-migrate, gate the clone window [ROUTINE]
+
+**2026-08-10, Bean-ruled at the design gate.** The migration was authorised earlier (D552); these three
+rulings settle **how**. Design: `.claude/plans/spec-35-flat-to-object-migration-design.md`.
+
+### A — Property-by-property, not block-by-block
+
+Migrate `gap` across all blocks, then the widths, then the grid settings. **Why it wins:** each pass is
+the same edit repeated, which is what makes it genuinely delegable behind a detector; and the Spec 39
+converter rework can follow the same property order, one resolver at a time. Cost accepted: a block sits
+in a mixed state for most of the programme — already true of gallery and both row blocks today, and the
+wrapper handles it.
+
+**Order chosen so every early property is ALREADY proven object-shaped on a live block** — the mechanism
+is never first tried at scale: `gap` → `maxWidth`+`contentWidth` (whose centring defect was fixed at
+`1979c419`) → `gridTemplateColumns`+`Rows` → `columns` → the font-size families → the tail.
+
+### B — Old canary pages are TRASHED, not migrated
+
+**Bean, verbatim:** *"The pages will be on the canary site so they will just be scratch/test pages
+anyway. We can just trash them since they are no longer useful even if they were migrated. And, if they
+are potentially an active testing page, it'd probably be faster to trash the current page and use CLI or
+API to just make a fresh page and reinsert the block."*
+
+**This deletes an entire risk category** — no stored-content migration script exists in the plan, and the
+long-standing tension between `plugins/sgs-blocks/CLAUDE.md:289` ("pre-production, no live content to
+migrate") and the deploy-time stored-content audit stops mattering for this programme. WP's silent
+coercion of a mismatched value is no longer a hazard to engineer around; the pages holding those values
+are being deleted.
+
+### C — The converter stays flat; its output gets gated
+
+A check FAILS a clone run that emits a flat tier for a property already migrated on the target block.
+**Divergence becomes loud instead of silent.** Accepted consequence: cloning is blocked for migrated
+properties until the Spec 39 rework lands, making that rework the pacing item for client delivery — the
+intended trade under D552's ordering rule (standard leads, pipeline follows).
+
+⛔ **Rejected: a temporary converter shim.** It would make the pipeline pace the standard (inverting the
+ordering ruling), and a shim written under time pressure becomes the permanent implementation.
+
+### Still gated on P1 + P2 (unchanged from D552)
+
+No block edit until **P1** (the phase-aware gate, proven able to fail) and **P2** (`/sgs-update` seeding
+for object attrs, proven on one block) are both green. Neither is delegable mechanical work.
+
+---
+
 ## D553 — D551 supersedes the 2026-08-08 plan's §4/Phase 4 on hover; one owner named [ROUTINE]
 
 **2026-08-10, Bean-ruled.** Two plans claimed the hover work by opposite methods:
@@ -97,11 +167,24 @@ docblock that needed a third now spells the delimiters in words.
   `maxWidth` retains `css_property = max-width`. Most likely a fossil (Stage 1 updates `attr_type`
   without clearing `css_property`). **Read the seeder before designing P2** — this is the question P2
   turns on.
-- ⛔ **OPEN — `inspector-scan` count discrepancy.** LEDGER claims rule 21 = **133** / **245** tree-wide.
-  Measured this session, same `rules[].findings` + `status:"FLAGGED"` method: **98** / **215**. Neither
-  adopted as truth. Do not cite either until reconciled.
-- ⛔ **OPEN — `/sgs-update` has 14 stages**, not the 12 the docs claim. Read the stage map in
-  `sgs-update-v2.py`; do not trust a cached count.
+- ✅ **RESOLVED same session — the `inspector-scan` "discrepancy" was §4's bug, in the OPPOSITE
+  direction.** I recorded rule 21 = 98 / 215 tree-wide against the LEDGER's 133 / 245 and said neither
+  was adopted. **The LEDGER was right and I was wrong.** Live at HEAD now: rule 21 = **133** FLAGGED
+  (145 findings, 12 BASELINED), tree-wide **250**. Both of my 98/215 readings were taken while HEAD was
+  `a6e0f390` — the commit carrying the stray sequence. **Proven by re-injection:** putting the sequence
+  back reproduces rule 21 = 98 / total 215 exactly; removing it restores 133 / 250.
+  ⭐ **So one two-character sequence skewed TWO gates in OPPOSITE directions** — it *invented* 73
+  findings in `check-dead-controls` (code looks broken) while *hiding* 35 real ones in `inspector-scan`
+  rule 21 (code looks healthier). A corrupted corpus does not fail in a consistent direction, so
+  "the number moved" tells you nothing about which way is worse. ⚠ I did not locate the stripping
+  mechanism *inside* `inspector-scan` (a grep for one found nothing) — the effect is proven, the shared
+  code path is not. Worth tracing before trusting any cross-gate count.
+- ✅ **RESOLVED same session — `/sgs-update` stage count.** Authoritative: **14 numbered slots, 13
+  implemented**; Stage 3 is `[RETIRED — merged into Stage 2]` and has no `def stage_3_` function.
+  Source: `sgs-update-v2.py:1-63` docstring + `choices=range(1, 15)` at `:6398`; cross-checked against
+  13 `def stage_N_` definitions. Root `CLAUDE.md`'s "12-stage" replaced with a pointer — that line had
+  drifted **three** times. (Disambiguation: "Stage 11.6" belongs to the CLONING pipeline's
+  `sgs-clone-orchestrator.py`, not `/sgs-update`.)
 
 **Also verified:** the gallery page-1591 migration was **already run** in a prior session (the LEDGER
 open item was stale; the script is idempotent and correctly reported 0). Both editor surfaces verified

@@ -115,10 +115,31 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 - **Restoring `localStorage` on the toggle** — its absence is deliberate (D546).
 - **Rebuilding the rejected inspector census** (D543).
 
-### ⭐ NEXT SESSION — resume `C:\Users\Bean\.claude\plans\go-track-1b-mossy-babbage.md` at STEP 6
+### ⭐ NEXT SESSION — BUILD P1 + P2, then start migration pass 1 (`gap`)
 
-Steps 1-5 of that plan are DONE (see *Shipped session 3* above + D552/D553). **Steps 6 and 7 remain**
-and are the substantial ones:
+**All 7 steps of `go-track-1b-mossy-babbage.md` are DONE.** The design gate is CLOSED — Bean ruled all
+three questions at D554: **property-by-property**, **trash-not-migrate** the old canary pages, and
+**gate the clone output** while the converter stays flat.
+
+**Read first:** `.claude/plans/spec-35-flat-to-object-migration-design.md` (the sequencing + P1/P2
+design, awaiting nothing — it is signed off) and `.claude/plans/spec-39-seed-requirements.md`.
+
+**The next build, in order — no block edit until both are green:**
+1. **P1** — the phase-aware storage-shape gate, with a positive AND negative control per assertion and
+   **proven able to fail on the real tree**. Same-commit change to `lint-responsive-controls.py:106` +
+   contract §12 field 1 (they currently call flat canonical while §12's amendment says object).
+2. **P2** — `/sgs-update` seeding for object attrs. **Settle the `css_property = NULL` question first**
+   by reading the extraction — the shape is NOT the cause (gallery's object `maxWidth` keeps
+   `css_property`), so it is probably a fossil. Prove the reseed on one migrated block.
+3. **Then migration pass 1: `gap`** (object already on both row blocks, so the mechanism is proven live).
+
+⛔ Still not delegable: P1 and P2. The 160 families are only "repetitive" *behind* a proven detector and
+correct seeding.
+
+*(Historical: the older `go-track-1b-playful-hamster.md` remains the programme-level plan, Phases 0-4,
+still valid for scope.)*
+
+**Superseded detail from earlier in this session, kept for context:**
 
 - **Step 6 — sequence the AUTHORISED flat→object migration.** Bean authorised the migration itself and
   set the ordering rule: **the block standard leads, the cloning pipeline is reworked afterwards** to
@@ -256,12 +277,16 @@ is USED before investing in making it correct** — the census that answered it 
   honest result is that **Stage 2's 14 properties are CAPABILITY-ONLY — zero reachable instances**
   (only 3 of 83 blocks opt in, none declares them object-typed). Reachable: `gap` ×2,
   `gridTemplateColumns` ×1, `contentWidth`/`maxWidth`/`padding`/`margin` ×3. See D552 §2.
-- ⛔ **OPEN — `inspector-scan` count discrepancy, unreconciled.** This doc claims rule 21 = **133** and
-  **245** tree-wide. Measured 2026-08-10 s3 with the same `rules[].findings` + `status:"FLAGGED"`
-  method: **98** and **215**. Neither is adopted as truth. **Do not cite either figure until this is
-  reconciled** — and re-measure rather than trusting this line.
-- ⛔ **OPEN — `/sgs-update` has 14 stages, not 12.** `sgs-update-v2.py` references Stage 14. Read its
-  stage map; do not trust any cached count (including this one).
+- ✅ **RESOLVED 2026-08-10 s3 — the `inspector-scan` count. THIS DOC WAS RIGHT.** Live at HEAD: rule 21
+  = **133** FLAGGED (145 findings, 12 BASELINED), tree-wide **250**. My 98/215 reading was a real
+  measurement of a tree corrupted by the stray-sequence bug (see D552 §4) — **proven by re-injection**:
+  putting the sequence back reproduces 98/215, removing it restores 133/250. ⭐ The same bug moved TWO
+  gates in OPPOSITE directions: +73 false in `check-dead-controls`, −35 hidden in rule 21. Safe to cite
+  133/250 at HEAD and 129/245 at `cb209dc1`. **Still re-measure rather than trusting this line.**
+- ✅ **RESOLVED 2026-08-10 s3 — `/sgs-update` stage count.** **14 numbered slots, 13 implemented**
+  (Stage 3 `[RETIRED — merged into Stage 2]`, no `def stage_3_`). Source of truth is the script's own
+  docstring `sgs-update-v2.py:1-63` + `choices=range(1, 15)` at `:6398`. Root `CLAUDE.md` corrected to a
+  pointer after drifting three times. Do not cache the number here either.
 - ⛔ **OPEN, and it decides P2's design — `css_property = NULL` on object attrs is NOT caused by the
   shape.** Refuted 2026-08-10 s3: gallery's *object* `maxWidth` retains `css_property = max-width`
   while the row blocks' object `maxWidth` is NULL. Most likely a fossil (Stage 1 updates `attr_type`
