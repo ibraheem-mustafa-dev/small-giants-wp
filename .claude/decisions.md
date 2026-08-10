@@ -19,20 +19,45 @@ construction**. Only a JSX-element (AST) count is trustworthy. Generalises
 `a-grep-for-a-class-name-is-not-a-usage-census`: when an identifier is discussed in comments as
 often as it is used, naming the trap is not enough — the METHOD has to change.
 
-**2. Tree-wide FLAGGED at `cb209dc1` is DISPUTED — three values in circulation, all withdrawn.**
-Author measured 243 FLAGGED / 257 raw; `LEDGER.md` claims 254 raw; a rater rebuilt the tree from
-a frozen `git archive cb209dc1` snapshot, ran the real scanner against it, and got **245 / 259**.
-The rater's method is the strongest of the three (re-execution against reconstructed historical
-source, with a probe defect caught and fixed mid-run when a missing `theme/` dir skewed rules
-17/20). **Do not cite any tree-wide figure until re-derived.** ⚑ Note this does NOT affect rule
-21, which all three methods agree on: **129 at `cb209dc1`**, independently reproduced.
+**2. Tree-wide FLAGGED at `cb209dc1` — DISPUTED, then RESOLVED the same day. The correct figure
+is 245 FLAGGED / 259 raw.** Three values were in circulation: author 243/257, `LEDGER.md` 254,
+rater 245/259. The rater rebuilt the tree from a frozen `git archive cb209dc1` snapshot and ran
+the real scanner against it (catching its own probe defect mid-run when a missing `theme/` dir
+skewed rules 17/20, since those read `ctx.themeDir`).
 
-**3. "16 desktop-only CSS-bearing wrapper properties" has NO recorded derivation.** It was
-measured in-session via `sgs-db` (`css_property IS NOT NULL AND css_tier IS NULL AND
-is_responsive=0`, excluding tier siblings) and never written to the repo, so a rater could not
-find its source. The number is believed correct but is UNVERIFIED as committed. Either re-derive
-it and record the query, or stop citing it. The six properties actually shipped in `2056af6a`
-are named explicitly and are not in doubt.
+**RESOLVED by reproducing that method independently — a THIRD run agreed exactly: 245 / 259.**
+Both the author's 243/257 and the LEDGER's 254 are WRONG and are corrected wherever they appear.
+Rule 21 (**129**) and the denominator (**83**) were never in doubt — all three methods agree.
+
+⭐ **The method is now the standard for any historical baseline** (cheap, exact, and it does not
+touch repo state):
+
+```bash
+SNAP=$(mktemp -d)
+git archive <sha> -- plugins/sgs-blocks theme | tar -x -C "$SNAP"
+ln -s "$PWD/plugins/sgs-blocks/node_modules" "$SNAP/plugins/sgs-blocks/node_modules"
+cd "$SNAP/plugins/sgs-blocks" && node scripts/inspector-scan/run.js --json
+```
+
+⚠ `theme/` MUST be included in the archive — omit it and rules 17/20 silently mis-measure.
+
+**3. "16 desktop-only CSS-bearing wrapper properties" — RE-DERIVED and RECORDED. 16 confirmed.**
+It had no findable source because it was measured in-session and never written down. The query is
+now recorded so it is reproducible rather than asserted:
+
+```sql
+SELECT attr_name, css_property FROM block_attributes
+WHERE block_slug='sgs/container'
+  AND css_property IS NOT NULL          -- carries a real CSS property
+  AND css_tier IS NULL                  -- is not itself a tier sibling row
+  AND is_responsive=0                   -- not already marked responsive
+  AND attr_name NOT LIKE '%Tablet' AND attr_name NOT LIKE '%Mobile';
+-- 16
+```
+
+Of the 16, six shipped tier-capable in `2056af6a` (the layout set); eight are STAGE 2 (the
+`gridItem*` custom-property set plus `shadow`/`contentBandBackground`); two are motion
+(`bgParallax`, `bgAnimationDuration`), governed by Spec 38, not layout.
 
 **Confirmed by independent re-derivation (cite these freely):** rule 21 = 129 at `cb209dc1` and
 133 now; rule 26 8→3 with the full path reconstructed (8 →`a05194e3` −2→ 6 →`2e48c3ff` −1→ 5

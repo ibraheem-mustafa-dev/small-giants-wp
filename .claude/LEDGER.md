@@ -9,202 +9,106 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Where 2026-08-10 left things** *(prior narrative: `memory/session-2026-08-09*.md`.)*:
+**Where 2026-08-10 (session 2) left things** *(prior narrative: `memory/session-2026-08-09*.md`)*:
 
-- **The one-toggle switcher is built, live, and you signed off on it.** Every responsive setting used
-  to carry its own little Desktop/Tablet/Mobile switcher — about 192 of them scattered across the
-  editor. There is now ONE, docked to the bottom of the sidebar, and it drives all of them. You caught
-  five real problems on first look (wrong edge, wrong label weight, a broken height, an invisible
-  selection pill, a badly-placed warning) — all five are fixed and verified live.
-  - **192 old switchers are deleted**, not just hidden. One edit removed the bulk of them; two
-    smaller components needed their own pass.
-  - **The two other places quietly running their own separate device switch are now wired to the
-    same one** — before this, three different parts of the editor could each think you were editing a
-    different device at once. That's closed.
-  - **One thing is genuinely lost and not yet replaced:** the old switchers could show at a glance
-    which OTHER device sizes had a custom value set. The new one can't show that (it doesn't know
-    per-setting). Needs its own small design later — not urgent, not forgotten.
-- **Four separate "looks fixed, isn't" traps were caught before anything shipped broken**, each one
-  worth remembering: a build that passes green while a component silently fails to render; a
-  measurement tool that says "on-screen" when the browser has actually clipped it off; a control that
-  landed at the bottom of a list when it should be visible; a fix drawn from watching only ONE
-  scenario when a second scenario broke it. All four are recorded so the pattern is caught faster next
-  time.
-- **What's carried over from 2026-08-09, unchanged:** the earlier baseline count (129 settings with no
-  editor control, down from 243) and the finding that most controls a client sees come from add-on
-  features rather than the block itself — both still stand; see below.
+- **The shared container is now responsive by design, not block by block.** You asked for the
+  wrapper to be fixed once so no block needs "individual fixes that require forking". Six layout
+  settings (including row-vs-column, the commonest mobile need) now work per device for every block
+  that uses the wrapper. It took **six lines, not a rewrite** — the generic machinery already
+  existed; nobody had fed it these properties.
+- **The thing that made this possible was this morning's toggle.** Adding per-device options used
+  to mean more controls on screen. With one global Desktop/Tablet/Mobile switch, it adds **zero** —
+  so "make everything responsive" and "reduce clutter" turned out to be the same job, not opposites.
+- **Two controls that were quietly lying to clients are gone.** A gallery panel with 16 spacing
+  controls threw away everything typed into it (WordPress discards settings a block doesn't
+  declare — no error, nothing). And a min-height panel no block could actually reach.
+- **Two bits of styling had been dead on real pages.** Desktop image height and object-fit never
+  worked — the CSS was waiting for something the code stopped producing months ago. Found and fixed.
+  The identical fault in hover effects was found too.
+- **A review panel checked the whole session and found three things**, all fixed: a hidden trap
+  waiting to bite the next piece of work, a missing record of your approval, and three wrong numbers
+  (now re-measured properly).
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D547**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D550**.
 
 ### ⭐ Track 1b (Spec 35) — inspector control standardisation
 
-**Five commits on `main` today (2026-08-10):** `66ce8502` (Phase 1.1, toggle, additive) ·
-`63e8a481` (Bean's Gate 1 review, 5 points) · `0b1e452e` (pinned to sidebar bottom + per-tier cue
-dismissal) · `d406c73c` (Phase 1.2 — delete the ~192 per-control strips) · `b202157e` (Phase 1.3 —
-split-brain components + pill alignment + hover contrast). Full record: D546 + D547. Design doc
-(now marked BUILT): `plans/2026-08-10-global-device-toggle-design.md`.
+**Phase 1 is CLOSED.** 1.1/1.2/1.3 shipped in session 1; 1.4a/1.4b/1.4c/1.4d in session 2.
 
-#### ⭐ Shipped today — Phase 1.1 + 1.2 + 1.3 (the toggle programme)
+#### Shipped 2026-08-10 session 2
 
-- **One global `ToggleGroupControl` device switcher**, own file
-  `src/blocks/extensions/responsive-device-toggle.js`, docked absolutely to the BOTTOM edge of
-  `.interface-interface-skeleton__sidebar`. Dismissible per-tier cue in the breadcrumb strip +
-  `aria-live` announcement. Verified live, both editors: mounts once, drives the canvas
-  (1247/781/479px), 0 console errors, survives Page-tab/distraction-free/closed-sidebar.
-- **`<DeviceTabs>` deleted from `ResponsiveControl.js`** — removes the switcher from all 68 JSX call
-  sites across 31 files (~192 strips). ⚑ 73/32 was a raw grep line count (5 are JSDoc). 1.2 touched
-  only `ResponsiveControl.js`; 1.3 removed strips from `ResponsiveOverride` + `ResponsiveTriState`
-  too — three files, two commits. Verified: with the toggle on Tablet,
-  editing a container's Gap wrote `gapTablet:"123px"` and ONLY that key.
-- **`ResponsiveOverride.js` (3 call sites) + `ResponsiveTriStateControl.js` (site-header)** now read the
-  global tier instead of private state — closes a real split-brain bug (three disagreeing device
-  models running at once pre-fix).
-- **Item 1.5 (gate rewrites) confirmed NOT needed** — measured against the post-1.2 tree, both gates
-  still pass and still scan the full block roster. Neither gate was touched.
-- **Known open item, not closed:** the deleted per-control strips could show at-a-glance which OTHER
-  tiers had a custom value ("(inherited)"/"(customised)"); the global toggle cannot. Needs its own
-  design; do not solve by re-adding a per-control switcher.
-- **Not started:** Phase 1.4a/1.4b/1.4c (sibling-merge codemods), Phase 2.1 (opt-in inversion).
-  **In progress by other agents this session, outcome not yet known:** item 1.6 (advisory
-  `inspector-scan` rule, `925fa3da`) and 1.6b (Playwright detector, `99859d38`) — BOTH LANDED, plus
-  two QC-council fixes to rule 25. Check
-  their own commits before assuming either landed.
-
-#### Prior session (2026-08-09) — condensed; full record in D539-D545
-
-- **BEFORE baseline, still the number the programme reports against:** `inspector-scan` rule
-  `21-render-without-control` = **129 FLAGGED**, tree-wide advisory total **243**. Re-measured
-  2026-08-10 after Phases 1.2/1.3: **unchanged** — no regression. Command: `node
-  scripts/inspector-scan/run.js --json` from `plugins/sgs-blocks`, counting `status:"FLAGGED"`
-  ONLY (raw arrays read 141/254 — they include the 12 baselined entries).
-- **Rule 23 + rule 24 shipped; three blocks corrected; five survey detectors built AND wired.**
-- **A library-wide panel/control census was measured then REJECTED (D543) — do not rebuild it.**
-  `check-simple-surface-cap.js` MIS-RANKS (it scores a composite as one row, cannot see native
-  supports, misses `extensions/`). It is correct for its own 2-block job; leave it exactly as is.
-- **LIVE-EDITOR CALIBRATION (D544): the dominant term is the EXTENSION LOAD, not the block.**
-  `sgs/label` shows ~50 controls live against a static score of 8; 59% of the library's inspector
-  surface comes from universal extensions. This is why Phase 2.1 (opt-in inversion) has the
-  biggest payoff left. **83 block types registered live** — the denominator is 83, not 84.
+| What | Commit |
+|---|---|
+| `inspector-scan` **rule 26** — the detector, built BEFORE any edit | `629971c7` |
+| 1.4d — folded the two "… by viewport" duplicates; live-verified BOTH editors | `a05194e3`, `ed41a748` |
+| 1.4b — deleted the unreachable min-height panel | `2e48c3ff` |
+| Un-gated image-control CSS that could never match | `8b07cdb9` |
+| `sgs/gallery` → FR-37-16 object model; `ResponsiveSpacingPanel` retired | `0e6209e6` |
+| 1.4c — hero's 3 mobile-only orphans → responsive triples | `0d7b32ec` |
+| **Six wrapper layout properties tier-capable, generically** | `2056af6a` |
+| `survey:responsive-shape` census + `gridAutoRows` guard + D548/D549 | `05f3ecad` |
+| D550 — council falsifications, three numbers corrected | `f305cba8` |
 
 #### ⛔ Do NOT start these
 
-- **Re-deriving the canonical control set.** `.claude/plans/spec-35-control-type-contract.md` is
-  AUTHORITATIVE and already specifies it (§14 BORDER = `BorderBoxControl`; §4 LENGTH/UNIT; §12
-  RESPONSIVE WRAPPER FAMILY). Read it before designing anything.
-- **Stripping the native WP `color`/`spacing`/`__experimentalBorder` supports.** They *render* the
-  panel we called ideal, and stripping severs theme.json/Global Styles. Keep them declared, use
-  `skipSerialization` (Spec 32's locked rule). See D542.
-- **Overloading `variant_slots` for capability scoping.** It stores *discriminating* slots by
-  set-difference, so anything shared by all variants appears nowhere — it structurally cannot answer
-  "which groups apply to this variant". Needs its own declaration with a `common` bucket, in a column
-  the cloning converter provably does not read.
-- **Citing D539's four block counts** as a population for anything — D539 already re-adjudicated them
-  and found the mechanisms differ.
+- **Re-deriving the canonical control set** — `plans/spec-35-control-type-contract.md` is
+  AUTHORITATIVE. Read it before designing anything.
+- **Stripping native `color`/`__experimentalBorder` supports** (D542). ⚠ `spacing` was knowingly
+  removed from `sgs/gallery` ONLY (D548) — that is a per-block, documented reversal with a stated
+  cost, NOT a general licence.
+- **Re-adding any per-control device switcher** — rule 25 flags it.
+- **Restoring `localStorage` on the toggle** — its absence is deliberate (D546).
+- **Rebuilding the rejected inspector census** (D543).
 
-## ⭐ NEXT SESSION — orchestration plan
+### ⭐ NEXT SESSION — resume `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md`
 
-**Identity.** SGS framework engineer on Track 1b. The programme is planned, council-reviewed and
-fact-checked. You are executing it — starting with measurement, not building.
+Bean-directed: continue the ORIGINAL planned work. Phase 1 is done; the plan's later phases are not.
 
-**⛔ READ FIRST, IN THIS ORDER, BEFORE ANY EDIT** (the council's sharpest finding was a plan written
-without these): 1. `.claude/plans/spec-35-control-type-contract.md` (governing) · 2.
-`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part H · 3. D537 · 4.
-`scripts/inspector-scan/rules.json` `_meta`. Then the plan:
-`C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md`.
+**The delegation brief is measured and ready.** `npm run survey:responsive-shape` — 83 blocks, 311
+tier families: **185 flat**, 32 declaring BOTH shapes, 94 orphans. Of those, **173 are real
+migration candidates** (`cascading_value`). The survey separates them from families that are
+CORRECT as-is and must NOT be migrated blindly: **36 `asset_like`** (a per-tier ASSET is a different
+resource per device — `sgs/media`'s tiers are a deliberate runtime swap, D521) and **7 `flag_like`**
+(conjunctive per-device flags the operator must see all of at once). The 94 orphans are explained:
+79 `padding*`/`margin*` per-side + 11 `borderRadius`, whose base lives in native supports.
 
-> **⭐ STANDING INSTRUCTION (Bean, 2026-08-09).** Multi-rater review at EVERY design gate and at the
-> CLOSE of every implementation — `/qc-council`, `/adversarial-council` or the fitting variant — via
-> `/delegate` + parallel subagents, never inline and alone. Give reviewers DIFFERENT angles.
-> **Fact-check every finding before applying it.** This session the council was wrong about live
-> client sites (there are none) and right about four of my own claims; both mattered.
+This is repetitive deterministic work → route via `/delegate` per Bean.
 
-> **⭐ THE METHOD (Bean, 2026-08-10) — the script triad.** The thing that finds every instance, the
-> thing that fixes them and the thing that keeps them fixed are the SAME detector: `--survey`
-> (exhaustive census, run BEFORE the design) → `--fix` (parameterised codemod) → `--check` (the gate).
-> **No phase does by hand what its own detector could do.** If an item touches >3 blocks, the first
-> deliverable is the detector, not the edit.
+**Also queued:** Phase 3.2a's `--fix` on the length survey (survey finished, no open design
+decision) · Phase 2.1 opt-in inversion (biggest payoff — 59% of live inspector controls come from
+universal extensions — gated on deriving the opt-in list from actual `post_content`, not
+`hideExtensions`, per D545).
 
-✅ **Tasks 1 + 2 of the previous plan are DONE** — baseline measured (rule 21 = **129**), five survey
-detectors built AND wired. **✅ Phase 1.1 + 1.2 + 1.3 are DONE (2026-08-10, D546/D547)** — the global
-toggle, the ~192-strip deletion, and the split-brain fix. Do not redo any of these.
+### Methodology guardrails (earned; do not skip)
 
-### ⭐ START HERE — Phase 1.4a + 1.4b (SCRIPT), 1.4c (SENIOR design call)
-
-**What's left in Phase 1.** 1.4a `image-controls.js:225-281` · 1.4b
-`ContainerWrapperControls.js:1483-1511` — genuine 3-sibling merges, file-disjoint from each other and
-safe to parallelise. ⚠ **Both are value-DOMAIN changes** (`RangeControl`→`UnitControl`; closed
-enum→open value) — D521-class silent-coercion risk, so the codemod PROPOSES and a human signs off,
-with a stored-content migration. **1.4c (`hero/edit.js:906`, `:1006-1017`) is NOT a merge** —
-mobile-only orphans with no tier counterpart; needs Bean's design call first (D545).
-
-**1.6 and 1.6b BOTH SHIPPED.** Rule 25 (`925fa3da`, advisory) — a QC council then found it missed
-the ARRAY-MAPPED switcher idiom (the one `responsive-device-toggle.js` itself uses) and could
-false-positive on a 4-value picker using an unanticipated word. Both fixed + fixture-guarded in
-`2ae3c8be`. Playwright detector (`99859d38`, `npm run check:device-toggle` / `:gate` / `:selftest`)
-— ⚠ NOT in `prebuild` (needs network + credentials) and ⚠ **playwright is NOT declared in
-`package.json`**, so on a fresh clone it degrades to "unavailable". Declaring it is a real decision:
-it is a heavy install every contributor would pay for.
-
-**After Phase 1 closes:** Phase 3.2a's `--fix` (survey already finished, highest leverage left, no
-open design decision) · Phase 2.1 opt-in inversion (bigger payoff — 59% of live inspector controls
-come from universal extensions — but gated on deriving the new opt-in list from actual
-`post_content` usage, not from `hideExtensions`, per D545).
-
-### ⚠ Two ACTIVE residuals on `survey-inspector-surface` (not parked — they bite the next measurement)
-
-1. **It counts DECLARED rows; D544's live figures count DEFAULT-VISIBLE ones**, so it does not
-   reproduce the live ordering. **Its OWN-vs-EXTENSION split IS exact** — use that, never its row
-   totals as "what the client sees". Fix = one bounded pass making default-visible primary.
-2. **Unresolved 7-vs-6 on `sgs/label`'s extension panels** — the detector counts an `fx.js`
-   "Scroll & effects" panel the live click-through did not show. One is wrong; which is undetermined.
-   Resolve before the next calibration or it inherits the error.
-
-### Dependency graph
-
-```
-✅ 1.1 toggle ──> ✅ 1.2 delete strips ──> ✅ 1.3 split-brain fix   [ALL DONE 2026-08-10]
-                                            ├─ 1.5 gate rewrites: MEASURED NOT NEEDED, skipped
-                                            └─ 1.6 rule / 1.6b detector: SHIPPED (925fa3da / 99859d38)
-1.4a ─┐ file-disjoint — safe to PARALLELISE
-1.4b ─┘        1.4c ── blocked on Bean's design call, not on 1.4a/b
-                    ↓ multi-rater /qc · canary verify BOTH editors
-Then: Phase 3.2a's `--fix` (highest leverage left) · Phase 2.1 opt-in inversion
-```
-
-### Methodology guardrails (earned this session; do not skip)
-
-- **A grep for a class NAME answers "is this identifier present", never "is this mechanism used."**
-  Two blocks counted as wrapper-routed because the name appeared in comments saying they'd dropped it.
-- **Never relay a number you did not measure.** I quoted `setting-registry.json`'s own `_meta` cache
-  (25/35/17); live is 28/40/20/4.
-- **A collapsed `ToolsPanel` keeps its children out of the DOM, and inspector tab buttons carry NO
-  text** (`aria-label` only). Both produced false "the control is missing" readings this session.
-- **A probe that never reaches the effect measures the probe** — a bogus image URL, then a page whose
-  own markup was invalid, both produced meaningless hero measurements.
-- **Validate a census query with a positive control before trusting a zero.** A canary query returned
-  0 for *everything*, including the control.
-- **A static heuristic is not an AST parse** — the length survey's own docstring names a real false
-  positive. Spot-check before acting on a row.
-- ⭐ **`inspector-scan --json` has NO top-level `findings` key — it is `rules[].findings`.** Reading
-  the wrong key returns `[]` and looks like a clean pass. This produced FIVE vacuous zero-readings
-  in one session, two of which were briefly read as evidence AGAINST a working rule. Always filter
-  to `status:"FLAGGED"` (raw arrays over-count by the baselined entries: rule 21 reads 141 vs 129).
-- ⭐ **`getBoundingClientRect()` is not a visibility test.** It reports the LAYOUT box and knows
-  nothing about ancestor `overflow:hidden` or the viewport edge — a clipped, off-screen element
-  still reports a healthy size. It caused three false "regression" alarms in one session. Use
-  `document.elementFromPoint()` and confirm the hit element IS the target.
-- ⭐ **A green build proves almost nothing about editor JS.** `lint:js` is NOT in `prebuild`, so an
-  undefined identifier or an unused import ships clean; and an unprefixed `__experimental` import is
-  `undefined` at runtime (React error #130) through every gate. Verify live, in both editors.
-- **Deploy needs `--payload <prefix>`, never `--allow-dirty`.**
+- ⭐ **A text count of an identifier discussed in comments is wrong BY CONSTRUCTION.**
+  `<ContainerWrapperControls` appears in prose in six files that record having STOPPED using it.
+  This contaminated the count **three times in one session** (24 mounts → 16; then a 10/6 split that
+  is really 11/5). Naming the trap twice did not stop it. **Use an AST/JSX-element count.**
+- ⭐ **Historical baselines: rebuild the tree, don't trust a remembered number.**
+  `git archive <sha> -- plugins/sgs-blocks theme | tar -x -C $SNAP`, symlink `node_modules`, run the
+  real scanner. ⚠ **Include `theme/`** — omit it and rules 17/20 silently mis-measure. This settled a
+  three-way dispute (243/254/245) on the third independent run.
+- ⭐ **`inspector-scan --json` has NO top-level `findings` key** — it is `rules[].findings`, filtered
+  to `status:"FLAGGED"`. The wrong key returns `[]` and looks exactly like a clean pass.
+- **A green build proves almost nothing about editor JS.** `lint:js` is NOT in `prebuild`.
+- **`lint:js` raw is useless** — 12,969 pre-existing problems, 12,111 prettier CRLF noise, 66
+  pre-existing `no-undef`. Lint the CHANGED FILES and diff the rule-count PROFILE.
+- **Match a file's own formatting** — writing tabs into a 2-space `package.json` churned 66 lines
+  for a 3-line change.
+- **A gate firing is evidence about your data.** Deleting dead code moved rule 21 129→135; the +6
+  were REAL findings the dead code had been MASKING (a metric counting name-presence rather than
+  reachability rewards keeping dead code).
+- **Fact-check every rater finding.** This session: one was overstated 6× (1 of 6 properties truly
+  exposed), one framing challenge was refuted in code, and one rater was right where I was wrong.
 - **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped, D101).
 
 ### Other tracks — stable
 
 - **Track 1** — routing audit + tier axis COMPLETE (D480); Phase 4 PARTIAL, 5 OPEN.
-- **Track 1c** (Spec 31 converter completion) — build shipped; open item is PROOF not build.
+- **Track 1c** (Spec 31 converter) — build shipped; open item is PROOF not build.
 - **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.
 - **Track 3** — CLOSED (D479). ⛔ GSAP is NOT MIT · LYGIA is Prosperity-licensed.
 
@@ -212,26 +116,23 @@ Then: Phase 3.2a's `--fix` (highest leverage left) · Phase 2.1 opt-in inversion
 
 ## State Snapshot
 
-- **Branch:** `main` at `2ae3c8be`, PUSHED. Nine commits this session (`e1e418aa..2ae3c8be`). ⛔ **Do
-  not trust this line for tree state — run `git status`.** Commit by EXACT PATH (a pre-commit gate requires a
-  pathspec; the visual-diff gate requires a `source_sha`-bound report per changed block).
-- **Untracked, deliberate:** `.claude/Border Example HTML.html` (Bean's saved reference markup — the
-  core `BorderBoxControl` example the plan is built on).
-- **Build:** `npm run build` exit 0, all prebuild gates passing. `inspector-scan --self-test` green
-  incl. the harness meta-check. `build-deploy.py --self-test` green.
-- **2026-08-09 handoff QC — RESOLVED.** The independent QC subagent stalled (600s, no verdict); 18
-  mechanical checks were re-run by the author and all reproduced. A follow-up judgement-layer re-run
-  returned NARRATIVE HONEST — one soft flag refuted, one correct and fixed (the "17 diverge" figure
-  was single-sourced; the DB-defensible floor of 8 is now recorded above). Commit `f8b73833`.
-- **Canary:** deployed and live-verified this session (frontend + editor, both surfaces).
-- **Pre-existing, NOT ours:** `audit-declared-vs-seeded-roles.py` 3 STALE overrides;
-  `check-dead-controls` CHECK 4 advisory lists 3 fully-dead attrs.
-- **Verify every session, no cached line is authoritative:** `git log -1 --stat` · `git status` ·
-  `git branch --show-current` · D-ceiling
-  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Site:** canary = sandybrown-nightingale-600381.hostingersite.com — **the only one**
-  (palestine-lives.org is gone; removed from deploy TARGETS 2026-08-10).
-- **Canary credentials:** `.claude/secrets/sandybrown.env` (gitignored, always available).
+- **Branch:** `main`. ⛔ **Do not trust this line for tree state — run `git status`.** Commit by
+  EXACT PATH (a pre-commit gate requires a pathspec; the visual-diff gate requires a `source_sha`
+  in the report, and REJECTS a report still carrying a previous change's sha — that is the
+  stale-report defence working, not a bug).
+- **Untracked, deliberate:** `.claude/Border Example HTML.html` (Bean's reference markup).
+  `plugins/sgs-blocks/err_tmp.txt` is a 0-byte pre-existing stray, safe to delete.
+- **Baselines, re-derived 2026-08-10 and safe to cite:** `inspector-scan` rule 21 = **129** at
+  `cb209dc1`, **133** now (+6 unmasked by the dead-panel deletion, −2 unattributed — no
+  pre-dispatch snapshot was taken; **snapshot `rules[].findings` before any concurrent dispatch**).
+  Tree-wide at `cb209dc1` = **245 FLAGGED / 259 raw** (the earlier 243/257 and 254 are BOTH wrong).
+  Rule 26 = **3**. Denominator **83**.
+- **Build:** `npm run build` exit 0, all gates green. `survey:selftest` 47 assertions across six
+  detectors. `inspector-scan --self-test` green incl. the harness meta-check.
+- **Canary:** sandybrown-nightingale-600381.hostingersite.com — **the only site**.
+  Credentials `.claude/secrets/sandybrown.env` (gitignored, always available).
+- **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
+  D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 
 ---
 
@@ -240,29 +141,35 @@ Then: Phase 3.2a's `--fix` (highest leverage left) · Phase 2.1 opt-in inversion
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| **The canonical control set (GOVERNING)** | `plans/spec-35-control-type-contract.md` (AUTHORITATIVE 2026-08-08) |
-| The standardisation programme | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
-| Inspector placement (two tiers) | `decisions.md` D537 |
-| Element-driven inspector (owns hover + native-support retirement) | `plans/2026-08-08-element-driven-inspector-design.md` |
+| **The canonical control set (GOVERNING)** | `plans/spec-35-control-type-contract.md` |
+| The standardisation programme (RESUME HERE) | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
+| This session's plan + wrapper design | `C:\Users\Bean\.claude\plans\invoke-autopilot-before-doing-memoized-locket.md` |
+| Decisions (D-numbered) | `decisions.md` — D546-D550 are today |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
-| Decisions (D-numbered) | `decisions.md` (+ `memory/decisions-archive.md`) |
-| Parked work (OPEN/PARTIAL/BLOCKED/DEFERRED only) | `parking.md` (+ `memory/parking-archive.md`) |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Blockers
 
-**NONE.** Phase 1.2 was gated on the site-editor probe; that is now measured and clear.
+**NONE.**
 
 ## Open — carried, not ours to close
 
-- ⚠ **Track 2's canary (post 2164) lost a text node** 2026-08-07 — `sgs/mega-group`'s
-  `templateLock:'all'` dropped a stored `sgs/text` child.
-- **Residual empty `sgs/media` ChildBlock** in the art-direction walk (D514), emitter untraced.
-- **`templateMode` is inert** on both row blocks and physics-canvas.
-- **`gridTemplateColumns` type mismatch** between the two row blocks. Flagged, deliberately not normalised.
-- **`sgs/hero` split-image bleed** — latent only, **0 live instances**. `splitImageBleed` cancels a
-  fixed `2rem` against a band inset that grows with viewport, and the media column is separately
-  clamped by `max-width: calc(50% + …)`. Bean ruled object-fit covers the need; parked.
-- **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening the canvas to any block with a
-  physics-participation toggle (default off; operability detected by what a child DOES, never a slug
-  list). Reverses D447's rationale; needs its own design gate. Not started.
+- **`sgs/gallery` page 1591 migration is WRITTEN + dry-run clean but NOT YET RUN `--live`.**
+  `scripts/migrate-gallery-object-model.js`. Until it runs, that page keeps rendering its old
+  padding via the wrapper's un-gated `style.spacing` read (a graceful window, verified) but its
+  `contentWidth:"1200px"` will coerce to `{}` once the new schema is live. **Run it, then confirm
+  the 1200px band and 48/24/24/48 padding on the live page.**
+- **Wrapper STAGE 2** — the six `gridItem*` properties plus `shadow`/`contentBandBackground` emit as
+  CSS custom properties on a different selector and need their own tier plumbing.
+- **Hover effects have the SAME dead-CSS bug** as image controls (`extensions.css:128-144` gates on
+  `[style*="--sgs-hover-bg"]` while the PHP emits a scoped `<style>`).
+- **The lost at-a-glance affordance** — deleted per-control strips showed which OTHER tiers had a
+  value. Needs its own design; ⛔ must NOT be solved by re-adding a per-control switcher.
+- **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
+- **`templateMode` inert** on both row blocks and physics-canvas.
+- **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
+- **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
+  toggle; needs its own design gate. Not started.
+- **blub :5050 is DOWN** (HTTP 000, diagnosed). Re-POST pending lessons to `/api/learning`.
+- **`MEMORY.md` at ~24,420 of 24,576 bytes** — a real compaction (archiving, not trimming) is owed
+  and blocks new entries.

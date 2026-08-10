@@ -883,6 +883,47 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ## 12. THE RESPONSIVE WRAPPER FAMILY
 
+> ### ⭐ AMENDED 2026-08-10 (D548 / D549 / D550) — read before acting on this section
+>
+> **The shared wrapper is now responsive GENERICALLY.** Bean-directed: fix the wrapper once so
+> "every block that uses it doesn't need individual fixes that require forking". Six layout
+> properties (`alignContent`, `justifyContent`, `justifyItems`, `flexDirection`, `flexWrap`,
+> `gridAutoRows`) are tier-capable as of `2056af6a` — as **six array rows**, not new code:
+> `sgs_emit_responsive_css()` was already generic (atoms → tier cascade → tier-diff). Adding
+> property #7 is one row.
+>
+> **The apparent conflict with this spec's purpose is RESOLVED, not a trade-off.** "Make every
+> property responsive" looked like it contradicted Spec 35's goal of shrinking the control
+> surface. It does not, **because of the one global device toggle (D546)**: a `<ResponsiveControl>`
+> renders ONE control at a time, so a tier adds **zero** visible controls. The surface only grows
+> if tiers render side by side — the banned lookalike in field 3 below. ⛔ Do not re-litigate this
+> as a cost/benefit; it was one only before the toggle existed.
+>
+> **TWO INDEPENDENT AXES (Bean-clarified — this was blurred and is now settled):**
+>
+> | Axis | Shape | Applies to |
+> |---|---|---|
+> | **TIER** | `{desktop, tablet, mobile}` | **ANY** property, including text colour |
+> | **BOX** | `{top, right, bottom, left}` | ONLY genuinely per-side props (padding, margin, border-width, border-radius) |
+>
+> A property may have one, both or neither. Text colour cannot be a per-side box but CAN have
+> tiers. Field 6's "three incompatible STORAGE shapes" is being collapsed onto the TIER object;
+> the BOX axis is orthogonal and stays.
+>
+> **Census, not guesswork:** `npm run survey:responsive-shape` — 83 blocks, 311 tier families
+> (185 flat, 32 declaring BOTH shapes, 94 orphans). **173 are real migration candidates.** It
+> separates them from families that are CORRECT as-is: 36 `asset_like` (a per-tier ASSET is a
+> different resource per device, not a cascade — `sgs/media`'s tiers are a deliberate runtime
+> swap, D521) and 7 `flag_like` (conjunctive per-device flags the operator must see together).
+>
+> ⛔ **STAGE 2 still open:** the six `gridItem*` properties plus `shadow`/`contentBandBackground`
+> emit as CSS CUSTOM PROPERTIES on a different selector and need their own tier plumbing.
+>
+> ⚠ **Landmine, guarded once, will recur:** a tier object reaching a LEGACY scalar read causes a
+> PHP "Array to string conversion" on every render. `gridAutoRows` is guarded; five siblings were
+> already safe via strict `in_array()` allowlists. **Check the legacy read before making any
+> further property tier-capable.**
+
 1. **Canonical** — **`ResponsiveControl`** (flat per-tier attrs) and **`ResponsiveOverride`**
    (object-cascade rows). ⛔ These two are the **only** sanctioned primitives, and that is not this
    document's opinion — **`lint-responsive-controls.py` is a WIRED prebuild gate naming exactly these
