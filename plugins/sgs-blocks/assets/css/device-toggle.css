@@ -111,8 +111,14 @@
 	color: #57606a;
 }
 
+/* ⛔ Hover must key on [aria-checked="false"], NOT :not([data-active-item]).
+   `data-active-item` is Ariakit's FOCUSED item, not the checked one — it moves
+   with hover and keyboard focus, so it does not reliably exclude the selected
+   button. The result was black hover text landing on the dark blue pill, which
+   is unreadable (#1e1e1e on #0969da is 2.6:1). `aria-checked` is the real
+   selected marker and cannot drift. */
 .sgs-device-toggle
-	.components-toggle-group-control-option-base:hover:not([data-active-item]) {
+	.components-toggle-group-control-option-base[aria-checked='false']:hover {
 	color: #1e1e1e;
 }
 
@@ -135,6 +141,22 @@
 .sgs-device-toggle .components-toggle-group-control::before {
 	background: #0969da;
 	border-color: #0969da;
+
+	/* ⛔ Re-align the pill with its button. WordPress insets this backdrop
+	   ASYMMETRICALLY (`left: -2px` with `right: <computed>`), then positions it
+	   with `translateX(var(--selected-left))`. Measured on the Mobile option:
+	   the pill painted from 163.09 while the button starts at 165.09 — 2px
+	   early — so the pill overhangs on the left and leaves a visible gap on the
+	   right of the LAST option. Anchoring left to 0 and taking the width from
+	   WordPress's own var makes the pill track the button exactly: painted left
+	   165.09 == button left, right 247.27 == button right.
+
+	   `--selected-width` is UNITLESS (measured: "82.1818", no px), so it must be
+	   multiplied — `width: var(--selected-width)` alone is an invalid value and
+	   silently drops the whole declaration. */
+	left: 0;
+	right: auto;
+	width: calc( var( --selected-width ) * 1px );
 }
 
 /* -------------------------------------------------------------------------

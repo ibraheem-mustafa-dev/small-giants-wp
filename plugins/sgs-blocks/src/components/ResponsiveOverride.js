@@ -30,23 +30,39 @@
  *     ) }
  *   </ResponsiveOverride>
  */
-import { useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { Button } from '@wordpress/components';
-import { desktop, tablet, mobile, link as linkIcon } from '@wordpress/icons';
+import { link as linkIcon } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
-import DeviceTabs from './DeviceTabs';
 
-const TIERS = [
-	{ key: 'desktop', icon: desktop, label: __( 'Desktop', 'sgs-blocks' ) },
-	{ key: 'tablet', icon: tablet, label: __( 'Tablet', 'sgs-blocks' ) },
-	{ key: 'mobile', icon: mobile, label: __( 'Mobile', 'sgs-blocks' ) },
-];
+// ⛔ Removed with the switcher (Phase 1.3): `useState` (the private tier), the
+// `DeviceTabs` import, the TIERS table, and the desktop/tablet/mobile icons that
+// only TIERS used. `linkIcon` STAYS — the "Inherited from X" cue uses it, and it
+// is a non-colour affordance (WCAG 1.4.1), not decoration.
+// `lint:js` is not in the prebuild chain, so unused imports here would fail no
+// gate; these were checked by hand.
+
+// WP's native device-type names → this component's tier keys.
+const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
 
 const TIER_ABOVE = { tablet: __( 'Desktop', 'sgs-blocks' ), mobile: __( 'Tablet', 'sgs-blocks' ) };
 
 export default function ResponsiveOverride( { label, value, onChange, children } ) {
-	const [ active, setActive ] = useState( 'desktop' );
+	// The tier comes from the ONE global toggle docked at the bottom of the
+	// inspector, not from private state. Before Spec 35 Phase 1.3 this component
+	// held its own `useState('desktop')`, so its strip and every
+	// <ResponsiveControl> could disagree about which tier you were editing —
+	// three device models running at once.
+	const active = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
+		return DEVICE_TO_KEY[ device ] || 'desktop';
+	}, [] );
+
 	const obj = value && typeof value === 'object' ? value : {};
 
 	const resolved = resolveResponsiveTier( obj, active );
@@ -68,12 +84,9 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 	const setOwnValue = ( v ) => writeTier( active, v );
 	const resetTier = () => writeTier( active, '' );
 
-	// A tier (other than desktop) with no own value renders an "(inherited)"
-	// label suffix — the inherit-state affordance DeviceTabs itself has no
-	// concept of, so it's supplied via the getTabLabel callback.
-	const tierHasOwnValue = ( tierKey ) =>
-		tierKey === 'desktop' ||
-		( obj?.[ tierKey ] !== undefined && obj?.[ tierKey ] !== null && obj?.[ tierKey ] !== '' );
+	// (`tierHasOwnValue` lived here and fed the deleted tabs' "(inherited)" label
+	// suffix. It had no other caller, so it went with them — see the note in the
+	// header row about the affordance that was lost with it.)
 
 	return (
 		<div className="sgs-responsive-override">
@@ -81,26 +94,18 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 				{ label && (
 					<span className="sgs-responsive-override__label">{ label }</span>
 				) }
-				<DeviceTabs
-					className="sgs-responsive-override__tabs"
-					tiers={ TIERS }
-					active={ active }
-					onChange={ setActive }
-					ariaLabel={ sprintf(
-						/* translators: %s: control label. */
-						__( '%s — device', 'sgs-blocks' ),
-						label || __( 'Responsive', 'sgs-blocks' )
-					) }
-					getTabLabel={ ( t ) =>
-						tierHasOwnValue( t.key )
-							? t.label
-							: sprintf(
-									/* translators: %s: device name. */
-									__( '%s (inherited)', 'sgs-blocks' ),
-									t.label
-							  )
-					}
-				/>
+				{ /* ⛔ Per-control <DeviceTabs> deleted (Spec 35 Phase 1.3). The tier
+				     is chosen once, globally.
+
+				     ⚠ ONE AFFORDANCE IS GENUINELY LOST and is recorded rather than
+				     glossed: these tabs used getTabLabel to mark every tier that had
+				     no own value as "(inherited)", so you could see at a glance which
+				     OTHER tiers were set. The global toggle has no per-attribute
+				     knowledge and cannot show that. What survives is the "Inherited
+				     from X" line below the field, which still states it for the tier
+				     you are actually on — the case that matters while editing. If the
+				     at-a-glance view is wanted back, it needs its own design; do not
+				     solve it by re-adding a per-control switcher. */ }
 			</div>
 
 			<div

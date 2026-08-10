@@ -44,17 +44,25 @@
  *   />
  */
 import { useState, useRef } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import {
 	ToggleControl,
 	Button,
-	VisuallyHidden,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { desktop, tablet, mobile } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { resolveTier } from '../utils/responsive';
-import DeviceTabs from './DeviceTabs';
+
+// ⛔ Removed with the switcher (Phase 1.3): the `DeviceTabs` import and
+// `VisuallyHidden` — the latter only wrapped the tier announcement, which is now
+// the global toggle's job (keeping it would announce every tier change once PER
+// RENDERED INSTANCE of this control). TIER_META stays: TIER_LABEL_BY_KEY derives
+// from it and is still used six times.
+
+// WP's native device-type names → this component's tier keys.
+const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
 
 const TIER_META = [
 	{ key: 'desktop', icon: desktop, label: __( 'All devices', 'sgs-blocks' ) },
@@ -79,7 +87,19 @@ export default function ResponsiveTriStateControl( {
 	defaultValue = 'off',
 } ) {
 	const [ expanded, setExpanded ] = useState( false );
-	const [ activeTier, setActiveTier ] = useState( 'desktop' );
+
+	// The tier comes from the ONE global toggle (Spec 35 Phase 1.3), not from
+	// private state. `expanded` STAYS local — it is a disclosure, not a tier, and
+	// whether this control's per-device panel is open is genuinely per-control.
+	const activeTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function'
+				? ed.getDeviceType()
+				: null;
+		return DEVICE_TO_KEY[ device ] || 'desktop';
+	}, [] );
+
 	const resolvedHintRef = useRef( null );
 
 	const obj = value && typeof value === 'object' ? value : {};
@@ -184,35 +204,17 @@ export default function ResponsiveTriStateControl( {
 
 			{ expanded && (
 				<div className="sgs-tri-state-control__panel">
-					<DeviceTabs
-						className="sgs-tri-state-control__tabs"
-						tiers={ TIER_META }
-						active={ activeTier }
-						onChange={ setActiveTier }
-						ariaLabel={ sprintf(
-							/* translators: %s: control label. */
-							__( '%s — device', 'sgs-blocks' ),
-							safeLabel
-						) }
-						getTabLabel={ ( t ) =>
-							isExplicit( obj[ t.key ] )
-								? sprintf(
-										/* translators: %s: device name. */
-										__( '%s (customised)', 'sgs-blocks' ),
-										t.label
-								  )
-								: t.label
-						}
-					/>
+					{ /* ⛔ Per-control <DeviceTabs> deleted (Spec 35 Phase 1.3) — the
+					     tier is chosen once, globally. As in ResponsiveOverride, the
+					     tabs' "(customised)" per-tier hint goes with them; the
+					     "Customise per device" summary below still names which tiers
+					     carry an override, so that information is not lost here.
 
-					{ /* Non-visual tier-change announcement (§4.3 Operator MF-A4). */ }
-					<VisuallyHidden aria-live="polite">
-						{ sprintf(
-							/* translators: %s: device tier name. */
-							__( 'Now editing %s', 'sgs-blocks' ),
-							TIER_LABEL_BY_KEY[ activeTier ]
-						) }
-					</VisuallyHidden>
+					     ⛔ The aria-live announcement is deleted too, DELIBERATELY:
+					     the global toggle already announces "Now editing the tablet
+					     view." on every change. Keeping this would announce the same
+					     event twice — and once per rendered instance of this control
+					     on the page, which is worse the more of them there are. */ }
 
 					<ToggleGroupControl
 						__nextHasNoMarginBottom
