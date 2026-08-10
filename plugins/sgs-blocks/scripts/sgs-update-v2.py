@@ -2436,6 +2436,80 @@ def _apply_attr_classification_overrides(
     return {"override_applied": applied, "override_missing_row": missing}
 
 
+def _reconcile_object_family_tiers(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
+    """Stage 1 sub-step C2: clear a FOSSIL css_tier off a collapsed tier object.
+
+    THE RULE, derived from the live data rather than invented (measured 2026-08-10):
+
+      * A base attr whose per-tier SIBLING ROWS exist is ONE TIER AMONG SEVERAL ROWS,
+        so it correctly carries css_tier='desktop' while its siblings carry
+        'tablet'/'mobile'. This is the model db_lookup.py:1216-1242 describes and
+        `_base_clause` selects on. sgs/hero's imageBorderRadius / imagePadding /
+        contentPadding / mediaPadding are all this shape and are CORRECT.
+      * A base attr with NO sibling rows holds every tier INSIDE its own value, so
+        there is no tier to name and css_tier must be NULL. Every pre-existing
+        collapsed family is already NULL (site-header-row/site-footer-row maxWidth
+        and contentWidth), so NULL is the established convention, not a new one.
+
+    WHY THIS STEP HAS TO EXIST (the Spec 35 migration hazard, and it is systemic):
+    collapsing a flat trio retypes the base to `object` and deletes the two sibling
+    rows -- and NOTHING clears the base's now-meaningless css_tier. Stage 1's
+    attribute UPDATE cannot: its SET clause covers attr_type/default_value/
+    enum_values/description/is_responsive and deliberately never touches the derived
+    routing columns. Stage 9's prune deletes the sibling ROWS without looking at the
+    base. So the stale value survives as a fossil, exactly like the css_property
+    fossils that motivated wiring Task A.
+
+    Caught on the first real case: sgs/hero.imageHeight was retyped object-with-no-
+    siblings and kept css_tier='desktop' from its scalar days. Harmless to base
+    SELECTION (db_lookup's clause accepts NULL *or* 'desktop'), but it makes the row
+    disagree with every other collapsed family, and a disagreement nobody reconciles
+    is how the next reader concludes the wrong thing. All 160 planned migrations
+    would leave the same fossil.
+
+    Scope is deliberately narrow: object-typed attrs ONLY, and only where no sibling
+    row exists. A scalar attr's css_tier is none of this step's business.
+    """
+    # ⛔ The attr must be a BASE, not itself a tier sibling. Without this clause the
+    # rule inverts and eats the very identity it exists to protect: `contentPaddingMobile`
+    # is ALSO object-typed (a box object), and asking whether IT has siblings named
+    # `contentPaddingMobileTablet` always answers no -- so a sibling reads as a collapsed
+    # base and its css_tier='mobile' gets cleared. That is the exact column db_lookup's
+    # `_base_clause` uses to EXCLUDE siblings from base selection, so stripping it makes
+    # every sibling look like a base and reintroduces the ambiguity errors this whole
+    # session removed. Caught by the idempotency control on the first re-run: 12 sibling
+    # rows across sgs/hero, sgs/label and sgs/team-member were wrongly cleared.
+    rows = conn.execute(
+        """
+        SELECT a.block_slug, a.attr_name, a.css_tier
+        FROM block_attributes a
+        WHERE a.attr_type = 'object'
+          AND a.css_tier IS NOT NULL
+          AND a.attr_name NOT LIKE '%Tablet'
+          AND a.attr_name NOT LIKE '%Mobile'
+          AND NOT EXISTS (
+              SELECT 1 FROM block_attributes s
+              WHERE s.block_slug = a.block_slug
+                AND s.attr_name IN (a.attr_name || 'Tablet', a.attr_name || 'Mobile')
+          )
+        ORDER BY a.block_slug, a.attr_name
+        """
+    ).fetchall()
+
+    cleared = []
+    for slug, attr, tier in rows:
+        cleared.append(f"{slug}.{attr} (was {tier!r})")
+        if not dry_run:
+            conn.execute(
+                "UPDATE block_attributes SET css_tier = NULL "
+                "WHERE block_slug = ? AND attr_name = ?",
+                (slug, attr),
+            )
+    if cleared and not dry_run:
+        conn.commit()
+    return {"object_tier_fossils_cleared": len(cleared), "detail": cleared}
+
+
 def _populate_emit_shape(
     blocks_dir: Path,
     conn: "sqlite3.Connection",
@@ -2719,6 +2793,15 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         print(
             f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "
             f"missing_row={ov_counts['override_missing_row']}."
+        )
+
+        # --- Stage 1 sub-step C2: clear fossil css_tier off collapsed tier objects ---
+        # MUST run AFTER sub-step C, which is the last writer of css_tier. See the
+        # function docstring for the rule and why the Spec 35 migration needs it.
+        ot_counts = _reconcile_object_family_tiers(conn, dry_run=False)
+        print(
+            f"Stage 1 (object-tier fossils): cleared={ot_counts['object_tier_fossils_cleared']}"
+            + (f" -> {', '.join(ot_counts['detail'])}" if ot_counts["detail"] else "")
         )
 
         # --- Stage 1 sub-step D: seed block_attributes.emit_shape (FR-31-2.6) ---
