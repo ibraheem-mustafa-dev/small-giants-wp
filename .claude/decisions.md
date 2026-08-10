@@ -1,5 +1,115 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D547 — Four measurement reversals during the toggle build, each caught before ship [ROUTINE]
+
+**2026-08-10.** Recorded separately from D546 because these are durable methodology lessons, not
+implementation detail — the same failure shapes will recur on the next inspector-surface build if
+not named explicitly.
+
+1. **A store-only re-mount trigger was INCOMPLETE.** An earlier design draft concluded "no
+   MutationObserver required" from ONE measured transition (Page/Block tab switch) — n=1 generalised.
+   Measured directly: toggling distraction-free DESTROYS and recreates the inspector node while
+   `getActiveComplementaryArea` never changes, so a `useSelect`-only trigger orphans the portal
+   permanently. Fix: observe `.interface-interface-skeleton`, the one ancestor proven to survive
+   every measured state (Page/Block switch, sidebar close/reopen, List View, distraction-free
+   on/off).
+2. **The first deploy did not work, and every gate said it did.** Unprefixed `ToggleGroupControl` is
+   `undefined` on this WP version — it is exported only as `__experimentalToggleGroupControl` — giving
+   React error #130. Clean build, every prebuild gate green, stylesheet loaded fine. A CSS-only
+   positive control (a deliberately-red outline rule) would have reported a pass on a component that
+   never mounted. Fix going forward: pair a CSS positive control with a `data-*` mount-marker
+   positive control, asserted live — one proves the stylesheet loaded, the other proves the
+   component rendered, and neither substitutes for the other.
+3. **`createPortal` appends, not prepends.** The toggle first landed at the BOTTOM of the sidebar,
+   below "Advanced", while every automated assertion (build, gate, mount-marker) passed. Only the
+   screenshot caught it (R-31-13 — script measurement + Bean's eye both required, neither alone
+   closes).
+4. **`getBoundingClientRect()` produced three false alarms in this session alone.** It reports the
+   layout box only and knows nothing about ancestor `overflow:hidden` or the viewport edge. A closed
+   sidebar reads 32×106 via `getBoundingClientRect` and looks like it bleeds over the canvas; it does
+   not — `elementFromPoint` at the same coordinates correctly returns the canvas, not the toggle.
+   `elementFromPoint`/`elementsFromPoint` is the visibility and paint-order test; `getBoundingClientRect`
+   is not.
+
+**A fifth, process-level finding:** the plan's inherited edit range for Phase 1.2 ("delete
+`ResponsiveControl.js:115-129`") would have shipped a `ReferenceError` — `breakpoint` is declared in
+that range and read at six later lines. It passed the build regardless, because `lint:js` is NOT in
+the `prebuild` chain. The actual edit set was derived by listing every reference to every symbol
+first, not by trusting the plan's line numbers. `npm run build` exit 0 is necessary, not sufficient,
+for a deletion.
+
+## D546 — The ONE global device toggle ships; ~192 per-control strips deleted; the two remaining
+device models converge onto it [ROUTINE]
+
+**2026-08-10.** Five commits on `main`: `66ce8502` (Phase 1.1, additive) → `63e8a481` (Bean's Gate 1
+review, five points) → `0b1e452e` (pinned to sidebar bottom edge + per-tier cue dismissal) →
+`d406c73c` (Phase 1.2 — delete the per-control strips) → `b202157e` (Phase 1.3 — split-brain
+components + pill alignment + hover contrast). Design gate: `plans/2026-08-10-global-device-toggle-
+design.md` (now marked BUILT). Prior research: D545.
+
+### What shipped
+
+- One `ToggleGroupControl` device switcher, mounted via `registerPlugin` + `createPortal`, in its own
+  `src/blocks/extensions/responsive-device-toggle.js` — not folded into an existing extension file.
+  Docked absolutely inside `.interface-interface-skeleton__sidebar` (bottom edge, not sticky, not
+  top — Bean: a top strip pushes the controls a client actually uses further down on every edit).
+- A dismissible cue in the editor's breadcrumb strip when the tier is not Desktop, dismissal
+  **per tier** (dismissing Tablet still warns on Mobile — a page-wide dismiss would let a client
+  silence Tablet then edit Mobile unwarned, the exact failure the cue exists to prevent), plus a
+  visually-hidden `aria-live="polite"` announcement.
+- Deleted `<DeviceTabs>` from `ResponsiveControl.js` — one deletion removes the switcher from all 73
+  `<ResponsiveControl>` call sites across 32 files (~192 strips on screen). The component still reads
+  `core/editor`'s device type and passes it down; only the per-control UI is gone.
+- Deleted the private tier `useState` in `ResponsiveOverride.js` (4 files) and
+  `ResponsiveTriStateControl.js` (site-header) — both now read the ONE global tier instead of running
+  a third, disagreeing device model. Before this fix the editor ran THREE device models
+  simultaneously and a client could set the global toggle to Mobile while a stray strip kept editing
+  Desktop.
+- Fixed two Bean-reported visual defects during 1.3: pill misalignment (WordPress insets its
+  selection backdrop asymmetrically; `--selected-width` is unitless and needs multiplying, or the
+  declaration drops silently) and hover-text contrast (the guard excluded Ariakit's *focused* item,
+  not the *checked* one, so black hover text could land on the selected blue pill at 2.6:1; re-keyed
+  on `[aria-checked="false"]`, the true selected marker).
+
+### Verified live, both editors (post editor + site editor), canary WP 7.0.2
+
+Toggle mounts exactly once · drives the canvas (1247/781/479px) · with the toggle on Tablet, editing
+a container's Gap wrote `gapTablet:"123px"` and ONLY that key, desktop value untouched · 0
+`.sgs-responsive-control__buttons` remain in the inspector (only WP's own Settings/Styles tablist
+survives) · 0 console errors · survives Page-tab round trip, distraction-free, closed sidebar.
+
+### Decisions locked (not to be re-litigated)
+
+- **Mount via `registerPlugin`**, not GenerateBlocks' BlockEdit-HOC + window-flag pattern — renders
+  once by construction.
+- **NO persistence.** Every fresh editor load starts on Desktop, deliberately diverging from
+  GenerateBlocks' `localStorage`, because it makes "editing in Tablet unaware" structurally
+  unreachable. Do not add `localStorage`/`sessionStorage` back as a "missing feature".
+- **Palette from `/uimax`** (GitHub Primer / Figma SDS) — Primer is itself an admin UI and therefore
+  client-neutral. `#6E7781` was rejected for unselected text at 4.27:1, replaced with `#57606A` at
+  6.00:1.
+- **Item 1.5 (rewriting `check-control-ux.js` + `lint-responsive-controls.py`) was NOT needed.** The
+  plan's claim that they would "false-fire tree-wide" / "go vacuous" was measured against the
+  post-1.2 tree and refuted: `check-control-ux.js --check` exits 0 (4 baselined, 0 net-new);
+  `lint-responsive-controls.py --check` PASSES and still scans all 83 blocks. Both key on
+  `ResponsiveControl` existing and being imported, which 1.2 does not change. Neither gate was
+  touched.
+
+### Known open item — NOT closed by this work
+
+One affordance was lost in 1.3: the deleted per-control strips marked tiers with no own value as
+"(inherited)"/"(customised)", giving an at-a-glance view of which OTHER tiers were set. The global
+toggle has no per-attribute knowledge and cannot show that; the "Inherited from X" line still covers
+only the active tier. Restoring the at-a-glance view needs its own design — it must NOT be solved by
+re-adding a per-control switcher. Not parked yet pending Bean's call on priority.
+
+### Not started this session
+
+Phase 1.4a/1.4b/1.4c (sibling-merge codemods) and Phase 2.1 (opt-in inversion) were not touched.
+Items 1.6 (a new advisory `inspector-scan` rule for the no-own-switcher contract) and 1.6b (a
+Playwright detector for the toggle) were reported as in progress by other agents in parallel during
+this session — their outcomes are not recorded here; read their own commits when they land.
+
 ## D545 — Phase 1 is a judgement problem, not a volume problem; and the ecosystem already agrees with us [ROUTINE]
 
 **2026-08-09.** Three parallel research branches (GitHub prior art · Phase 1 delegability · future-phase

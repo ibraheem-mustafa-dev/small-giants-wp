@@ -3,15 +3,25 @@ doc_type: design
 spec_id: 35
 project: small-giants-wp
 last_updated: 2026-08-10
-status: DESIGN GATE — awaiting multi-rater review + Bean sign-off
+status: BUILT — Phase 1.1 + 1.2 + 1.3 shipped 2026-08-10 (D546/D547). Design gate closed; kept as the
+  historical record of the probes + decisions the build rests on.
 ---
 
 # Global device toggle — design gate (Spec 35, Track 1b, Phase 1.1)
 
+> **⭐ BUILT (2026-08-10).** This document is the design gate that PRECEDED the build — read it for the
+> probes and reasoning, not as a live spec of current behaviour. Where the shipped code diverged from
+> a decision recorded below, the divergence is called out inline as a **POST-BUILD CORRECTION**. Full
+> record: `.claude/decisions.md` D546 (the build) + D547 (four measurement reversals caught during
+> the build). Five commits: `66ce8502` → `63e8a481` → `0b1e452e` → `d406c73c` → `b202157e`.
+
 **What this is, plainly.** Today every responsive setting in the block editor carries its own little
 Desktop/Tablet/Mobile icon strip — about 192 of them on screen, all driving one shared WordPress
-setting. This builds ONE toggle at the top of the block sidebar to replace them. Phase 1.1 adds the
-toggle; Phase 1.2 deletes the 192 copies.
+setting. This builds ONE toggle, docked to the **bottom edge** of the block sidebar (see D1a below —
+"top" was the opening intent, revised after Bean's Gate 1 review), to replace them. Phase 1.1 added
+the toggle; Phase 1.2 deleted the 192 copies; Phase 1.3 moved the two other device models
+(`ResponsiveOverride`, `ResponsiveTriStateControl`) onto the same global tier so the editor no longer
+runs three disagreeing device models at once.
 
 ⛔ **Every decision below is backed by a probe run on the canary (WP 7.0.2) on 2026-08-10, in BOTH
 editors.** Where a probe overturned an inherited claim, the correction is recorded inline. Nothing
@@ -124,6 +134,18 @@ confirmed available in the site editor.
 
 ### D1. Host — `registerPlugin` + `createPortal` *(Bean-decided)*
 
+> **POST-BUILD CORRECTION (D1a — docking position + mechanism).** This document did not originally
+> specify where in the sidebar the toggle mounts; the opening summary above said "at the top". Bean's
+> Gate 1 review reversed that: a strip at the top pushes every control the client actually came to
+> use further down the page on every edit. The shipped mechanism is **absolute positioning pinned to
+> the BOTTOM edge of `.interface-interface-skeleton__sidebar`** (that element is already
+> `position: relative` and full-height, measured 866px, so this needs no override of core layout) —
+> **not** `position: sticky` inside the block inspector, which was tried first and only reached the
+> bottom edge when a sparse panel happened to overflow. The scroller gets 84px `padding-bottom` via a
+> `:has()` rule, scoped so it applies only while the toggle is mounted. A
+> `:not(:has(.interface-complementary-area))` rule sets the dock to `display:none` when the sidebar is
+> closed — verified by paint (`elementFromPoint`), not by `getBoundingClientRect` (see D547 point 4).
+
 Renders exactly once per editor; WordPress rejects a duplicate registration by name.
 ⚑ **Still carry a `window.__sgsResponsiveDeviceToggleRegistered` guard** matching its four siblings
 (`animation.js:109`, `parallax.js`, `responsive-visibility.js`, `conditional-visibility.js`).
@@ -200,6 +222,14 @@ chose it in that sitting. **Do not "restore" localStorage as a missing feature.*
 
 ### D5. The cue — SHIPS (P2)
 
+> **POST-BUILD CORRECTION (D5a — dismissal scope).** This document does not fix a dismissal scope.
+> The build shipped page-lifetime dismissal first (`63e8a481`), then Bean caught that a client could
+> dismiss once for the whole page, later switch to a different non-Desktop tier, and edit unwarned —
+> reintroducing the failure the cue exists to prevent. Shipped mechanism (`0b1e452e`): dismissal is
+> **per tier** — dismissing the Tablet cue still shows the Mobile cue, and vice versa. Verified live:
+> Tablet dismissed → Mobile RE-SHOWS → Mobile dismissed → back to Tablet stays dismissed. Still
+> in-memory only, consistent with D4 (resets on reload/page change, same as the tier itself).
+
 ⚑ **Mount point, resolved concretely after review.** "Independently of the inspector" was a
 requirement, not a mechanism — two implementers would have built two different things, and one of
 them would have reached for a Slot that dies with the sidebar, reintroducing the P3/P4 bug. There is
@@ -233,6 +263,9 @@ only that a button became pressed, not that every other control now means someth
 ⛔ Not `assertive`.
 
 ### D7. Stylesheet hook — `admin_enqueue_scripts`, gated on `is_block_editor()`
+
+> **CONFIRMED AS BUILT.** No divergence — the shipped code rides `admin_enqueue_scripts` gated by
+> `get_current_screen()->is_block_editor()` exactly as decided below.
 
 ⚑ **Both options in the approved plan were wrong.** The inspector is outer-document (P5), so the CSS
 must land there — but `enqueue_block_editor_assets` styles are copied into the canvas iframe by WP's
@@ -287,3 +320,16 @@ reconciling them is not this change.
 4. Live, **both** editors: renders once; drives the canvas; survives a Page-tab round trip; keyboard
    operable; zero console errors; cue appears/disappears at the right tiers.
 5. Screenshot pair for Bean (R-31-13).
+
+---
+
+## Part 5 — Outcome (added post-build, 2026-08-10)
+
+Gate 1 was passed with five points of Bean feedback (docking position, label styling, a height bug,
+a pill-backdrop class that does not exist in this WP version, cue placement) — see D546. Phase 1.2
+(delete the 192 per-control strips) and Phase 1.3 (move the two other device models onto the same
+global tier) followed in the same session rather than a later one, because Phase 1's own file-cluster
+dependency graph made them sequential with 1.1, not independent future work. Full verification
+evidence, the four measurement reversals this design's own probes did not anticipate, and the one
+known-lost affordance (per-tier "(inherited)"/"(customised)" marking) are recorded in
+`.claude/decisions.md` D546 + D547 — read those for current status, not this document.
