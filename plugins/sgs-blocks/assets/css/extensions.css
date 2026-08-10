@@ -534,6 +534,20 @@
  *   - figure > img (team-member, testimonial avatar)
  */
 
+/*
+ * object-position / max-width / object-fit were previously split into two
+ * rule blocks, with object-fit gated on `[style*="--sgs-object-fit"]`. That
+ * gate — and the equivalent one that used to sit on the desktop-height rule
+ * below — can NEVER match: the PHP (image-controls.php) emits these as CSS
+ * custom properties inside a scoped `<style>` rule keyed to a
+ * `.sgs-imgctl-{uid}` class, NEVER as an inline `style=""` attribute (Spec 32
+ * no-inline contract, FR-32-11). Both rules were dead on the frontend for
+ * every opted-in block. Un-gated to match what PHP actually emits, using the
+ * same unconditional var()-fallback pattern already used below for the
+ * tablet/mobile height rules (which read the inherited custom property
+ * directly rather than gating on a style attribute) — and merged into one
+ * rule since the selector list is now identical for all three properties.
+ */
 .sgs-has-image-controls > img,
 .sgs-has-image-controls .wp-block-image > img,
 .sgs-has-image-controls figure > img,
@@ -541,23 +555,14 @@
 .sgs-has-image-controls .wp-block-image > video,
 .sgs-has-image-controls figure > video {
 	object-position: var(--sgs-object-position, center center);
+	object-fit: var(--sgs-object-fit, cover);
 	max-width: var(--sgs-max-width, 100%);
 }
 
-/* object-fit — only applied when --sgs-object-fit is present (T3.5). */
-.sgs-has-image-controls[style*="--sgs-object-fit"] > img,
-.sgs-has-image-controls[style*="--sgs-object-fit"] .wp-block-image > img,
-.sgs-has-image-controls[style*="--sgs-object-fit"] figure > img,
-.sgs-has-image-controls[style*="--sgs-object-fit"] > video,
-.sgs-has-image-controls[style*="--sgs-object-fit"] .wp-block-image > video,
-.sgs-has-image-controls[style*="--sgs-object-fit"] figure > video {
-	object-fit: var(--sgs-object-fit, cover);
-}
-
 /* Desktop height (also the base for tablet/mobile fallbacks). */
-.sgs-has-image-controls[style*="--sgs-height-desktop"] > img,
-.sgs-has-image-controls[style*="--sgs-height-desktop"] .wp-block-image > img,
-.sgs-has-image-controls[style*="--sgs-height-desktop"] figure > img {
+.sgs-has-image-controls > img,
+.sgs-has-image-controls .wp-block-image > img,
+.sgs-has-image-controls figure > img {
 	height: var(--sgs-height-desktop, auto);
 }
 
