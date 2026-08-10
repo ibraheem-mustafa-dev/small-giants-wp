@@ -1935,3 +1935,36 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   second rater's framing challenge was refuted in code. A third rater was right where the author
   was wrong. **Rule: raters are evidence, not verdicts. Check each finding against source before
   changing anything — the correct fix is often narrower than the report.**
+- **STOP-NEVER-DISPATCH-AN-AGENT-ONTO-A-FILE-YOU-ARE-STILL-EDITING.** Mid-migration on
+  `class-sgs-container-wrapper.php`, a rename agent was dispatched at that same file. It renamed the
+  variable's DEFINITION and left 7 references dangling; PHP treats an undefined variable as falsy, so
+  the container-query feature went silently OFF for three blocks — and `php -l` passed, because an
+  undefined variable is not a syntax error. The half-renamed file reached the canary before the IDE
+  diagnostics surfaced it. This is STOP-2/STOP-39 (one writer per file) violated by the ORCHESTRATOR
+  rather than by parallel subagents. **Rule: before any dispatch, list the agent's target files and
+  confirm none is in your own working set. And `php -l` is not a safety net for a rename — grep the
+  old identifier to zero.**
+- **STOP-A-LINTER-THAT-PASSES-IS-NOT-A-CHECK-THAT-THE-THING-WORKS.** Same incident: `php -l` reported
+  "No syntax errors detected" on a file whose central control variable no longer existed. The check
+  ran, was green, and was blind to the defect by construction. **Rule: match the check to the failure
+  mode. For a rename, the check is "zero occurrences of the old name", not "the file still parses".**
+- **STOP-SCOPE-A-DOM-QUERY-OR-YOU-WILL-MEASURE-THE-WRONG-ELEMENT.** A live positive control reported
+  FAILURE (`gap: normal`) for a migrated block. The probe used
+  `document.querySelector('.wp-block-sgs-container')`, which returned the SITE HEADER — also a
+  container, and earlier in the DOM. Scoped to the post content, the same probe returned the correct
+  64px/8px. A confident false failure was reported to Bean off the back of it. **Rule: scope every
+  live-DOM probe to the region under test, and assert the element you found is the one you meant.**
+  Sibling of `confirm-what-your-output-describes`.
+- **STOP-NEVER-SELECT-A-TARGET-WITH-A-GLOB-ON-A-MULTI-TENANT-SERVER.** `ls ~/domains/*/public_html |
+  head -1` resolved to `feldeluxe.com` — a site with ZERO SGS blocks — and the resulting "0 hero
+  instances, 0 stored values" was used to justify deleting two attribute families as a no-op. There
+  are **11 WordPress installs** on that host. Re-measured against the real canary: 175 heroes and 14
+  affected rows. The conclusion survived only because all 14 were revisions or trash. **Rule: name
+  the full site path explicitly, every time. A glob picks whatever sorts first and reports about it
+  with total confidence.**
+- **STOP-AN-IDEMPOTENCY-RUN-IS-A-CONTROL-AND-IT-CATCHES-INVERTED-RULES.** A new seeding step designed
+  to clear a fossil column cleared 12 LEGITIMATE tier-sibling rows instead — its rule inverted, because
+  a sibling is also object-typed and has no siblings of its own, so it read as a collapsed base. It was
+  caught only because the second run reported `cleared=12` where a correct step must report `0`.
+  **Rule: any "clean up X" step must be run TWICE and must report zero the second time. A step that
+  keeps finding work is not idempotent — it is wrong.**

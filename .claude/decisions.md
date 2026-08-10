@@ -1,5 +1,80 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D559 — Per-device VALUES are universal; only the container-query DOM behaviour stays opt-in [INCIDENT]
+
+**2026-08-11, Bean-directed**, verbatim: *"Shouldn't all blocks opt into the responsive-model by default
+since all have multiple css attributes that are responsive?"* — correct, and the code now says so.
+
+`SGS_Container_Wrapper` gated its object-value emission on a per-block `responsive_model => 'object'`
+opt that exactly THREE blocks set. The flat path blanks an array via its own `is_array()` guard, so
+migrating `gap` to an object would have left **~15 blocks emitting no gap at all, silently**. Entry is
+now ungated: whichever block carries an object-shaped value gets it emitted. Universal by DATA, not by
+flag — a per-block opt-in for a framework-wide capability was the R-31-9 carve-out this rule forbids.
+
+**⛔ The flag was NOT deleted, and the DOM half stays opt-in.** It bundled two unrelated things.
+`container-type`, `$grid_on_inner` (`:622`) and the forced `$do_wrap` (`:2297`) relocate grid/flex onto
+a `__inner` element and make it RENDER — a real layout change on blocks that have no such wrapper. It is
+renamed **`container_queries => true`** so it names only what it still does. The old name claimed to
+govern responsiveness generally, which is now false and would mislead the next reader.
+
+**Safe because measured, not reasoned:** both paths emit to `$grid_sel` (`:1284`), which is `.$uid`
+unless `$grid_on_inner` — exactly where the flat gap path emitted (`:1439`). `container` is passed as
+`$container_queries` so a non-opted block gets working `@media` tiers without a duplicate set of
+`@container` rules that can never match (`class-sgs-breakpoints.php:74-81` emits BOTH, never one
+instead of the other). Live positive control on `sgs/container`, which never opted in: **64px desktop /
+8px mobile, and no `__inner` forced**.
+
+## D558 — P2: a collapsed tier object carries `css_tier = NULL`; the fossil is cleared at seed time [ROUTINE]
+
+**The rule, derived from live data rather than invented.** A base attr whose per-tier SIBLING ROWS exist
+is one tier among several rows, so it correctly carries `css_tier='desktop'` (the model
+`db_lookup.py:1216-1242` documents and its `_base_clause` selects on). A base with NO sibling rows holds
+every tier inside its value, so there is no tier to name: `NULL`. Every pre-existing collapsed family
+(`maxWidth`, `contentWidth` on the row blocks) was already NULL — this names the existing convention.
+
+**Why a seeding step is required, and it is systemic:** collapsing a trio retypes the base to `object`
+and deletes its siblings, and NOTHING clears the base's now-meaningless `css_tier`. Stage 1's attribute
+UPDATE cannot (its SET clause never touches the derived routing columns); Stage 9's prune deletes the
+sibling ROWS without looking at the base. All 160 planned migrations would leave the fossil.
+`_reconcile_object_family_tiers` (Stage 1 sub-step C2) clears it.
+
+⚠ **The first version of that rule was WRONG and did live damage** — without the "attr must not itself
+be a tier sibling" clause it inverts: `contentPaddingMobile` is also object-typed, and asking whether IT
+has a `…MobileTablet` sibling always answers no, so a SIBLING reads as a collapsed base and loses the
+very column that keeps siblings out of base selection. It cleared 12 rows across hero/label/team-member
+before the IDEMPOTENCY control caught it (a second run must report 0 and reported 12). All restored;
+tier-carrying rows verified 313 → 342 against the session-start snapshot, i.e. UP, not down.
+
+## D557 — The css-property classifier is wired into `/sgs-update`, and ORDER is load-bearing [ROUTINE]
+
+Task A (`extract_css_property_and_layer`) had to be run BY HAND and evidently had not been for a long
+time, so the derived `css_property`/`css_layer`/`css_element` layer was a frozen snapshot — stale where
+it had values, absent for newer blocks. That, not object shape, is why gallery's `maxWidth` kept a
+`css_property` while both row blocks' had none: **a fossil, not a rule.** Wired as Stage 1 sub-step B2.
+
+⛔ **It MUST run BEFORE sub-step C**, which reads the file it regenerates. First placed in the Stage 1
+tail mirroring the Task B seeder — consistent-looking, but it made the pipeline lag one run behind and
+required two runs to converge. Entries 1043 → 1125; all three object blocks now resolve
+`max-width`/OUTER/wrapper. Surfaced 7 pre-existing stale rows (attrs deleted at D540) and 2 real hero
+routing collisions; Stage 9 pruned 94 orphan rows and `db-consistency` went from FAILING to exit 0.
+
+## D556 — `sgs/hero`: two attribute families were writing `height` to the same element [INCIDENT]
+
+`splitImageHeight`/`…Tablet`/`splitImageMobileHeight` and `imageHeight`/`…Tablet`/`…Mobile` both wrote
+`height` to `.sgs-hero__split-image`, each with its own inspector control. The live resolver *"silently
+picks the first by rowid order"*; the column-first resolver *"raises AmbiguousLayerAttrError at clone
+time"*. The `splitImageHeight` family was added EARLIER THE SAME DAY by the Phase 1.4c tier promotion —
+correct on its own terms, but it could not see the collision because the routing data was stale (D557).
+Largely a same-day revert.
+
+`imageHeight` survives (configurable unit, no forced `object-fit`, conventional tier names) and becomes
+a tier object. Its emission is now UNGATED because the removed family was — otherwise a hero setting a
+height without also choosing `custom` object-fit would silently lose it. Verified before/after on a real
+published hero: **39 measurements across 3 viewports, all identical**, plus a positive control proving
+the new attr applies (222px). ⚠ The earlier "zero hero instances" safety claim was measured against the
+WRONG SITE (`ls ~/domains/*/public_html | head -1` → `feldeluxe.com`; there are 11 installs). Re-measured:
+175 heroes on the canary, 14 affected rows, **all revisions or trash, zero published**.
+
 ## D555 — The retired Stage 3 is DELETED from `/sgs-update`, not documented around; 14 slots → 13 [ROUTINE]
 
 **2026-08-10, Bean-directed, verbatim:** *"if stage 3 of sgs-update has been retired or merged into
