@@ -225,7 +225,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$bg_animation_duration  = 20;
 			}
 
-			$shadow    = $attributes['shadow'] ?? '';
+			$shadow = $attributes['shadow'] ?? '';
+			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
+			// tier-capable below (its own sgs_emit_responsive_css() call on `.$uid`,
+			// the "OUTER shadow" block). A tiered {desktop,tablet,mobile} object
+			// reaching this LEGACY scalar path would TypeError-fatal
+			// `sgs_shadow_value( ?string $slug_or_value )` at :591 —
+			// arrays never coerce to a scalar type-hint, so this is a hard fatal on
+			// every render, not just a warning. Same shape as the $grid_auto_rows
+			// guard at :448.
+			$shadow    = is_array( $shadow ) ? '' : $shadow;
 			$max_width = $attributes['maxWidth'] ?? '';
 			$max_width = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
@@ -361,6 +370,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// sgs_colour_value (returns a CSS-safe string or empty; reuse the same
 			// sanitiser as gridItemBackground).
 			$band_background = $attributes['contentBandBackground'] ?? '';
+			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): contentBandBackground is
+			// being made tier-capable below. A tiered {desktop,tablet,mobile} object
+			// reaching this LEGACY scalar var would TypeError-fatal
+			// sgs_colour_value( ?string $slug_or_value ) at the two call sites below
+			// (:1315/:1619) — arrays never coerce to a scalar type-hint. Same shape
+			// as the $grid_auto_rows guard at :448.
+			// $band_background_is_tiered is captured BEFORE the guard nulls the
+			// array out, so $has_band_props below (which decides whether the
+			// __inner band element renders at all) still sees a tiered value as
+			// "band background is set" — without this a tiered band background
+			// would silently render NO __inner element and the tiered CSS below
+			// would target a selector that doesn't exist in the markup.
+			$band_background_is_tiered = is_array( $band_background );
+			$band_background           = $band_background_is_tiered ? '' : $band_background;
 
 			// Responsive content-width overrides for the band (tablet / mobile).
 			// Use the token-or-literal resolver (same as the base) so 'narrow'/'default'/
@@ -415,12 +438,33 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// consumers ($grid_item_padding !== '' guards, sgs_sanitize_grid_template)
 			// are unchanged. Empty/absent object → '' (identical neutral
 			// behaviour to the old empty-string default).
+			// $grid_item_padding / $grid_item_border_radius are ALREADY safe against a
+			// tiered {desktop,tablet,mobile} object reaching this legacy scalar path
+			// (Spec 35 Phase 1.4b, STAGE 2 verification): sgs_serialise_box_sides() /
+			// sgs_serialise_box_corners() only read specific side/corner keys
+			// (top/right/bottom/left | topLeft/topRight/bottomLeft/bottomRight) off
+			// the array they're given via `?? ''` allowlist reads — a tiered object
+			// carries none of those keys, so every side/corner sanitises to '' and
+			// the whole shorthand returns '' (no side/corner set). No guard needed.
 			$grid_item_padding       = sgs_serialise_box_sides( $attributes['gridItemPadding'] ?? array() );
 			$grid_item_background    = $attributes['gridItemBackground'] ?? '';
 			$grid_item_border_radius = sgs_serialise_box_corners( $attributes['gridItemBorderRadius'] ?? array() );
 			$grid_item_border        = $attributes['gridItemBorder'] ?? '';
 			$grid_item_shadow        = $attributes['gridItemShadow'] ?? '';
 			$grid_item_text_colour   = $attributes['gridItemTextColour'] ?? '';
+			// is_array guards (Spec 35 Phase 1.4b, STAGE 2): these four ARE being made
+			// tier-capable below. A tiered object reaching these legacy scalar vars
+			// would TypeError-fatal sgs_colour_value()/sgs_shadow_value() (both
+			// `?string` typed — array never coerces) at ~:775 ($grid_item_background),
+			// ~:788 ($grid_item_shadow), ~:792 ($grid_item_text_colour), or fatal
+			// preg_replace()+trim() on an array at ~:781-782 ($grid_item_border —
+			// preg_replace on an array SUBJECT returns an array, and trim() then
+			// TypeErrors on that array). Same shape as the $grid_auto_rows guard
+			// at :448.
+			$grid_item_background  = is_array( $grid_item_background ) ? '' : $grid_item_background;
+			$grid_item_border      = is_array( $grid_item_border ) ? '' : $grid_item_border;
+			$grid_item_shadow      = is_array( $grid_item_shadow ) ? '' : $grid_item_shadow;
+			$grid_item_text_colour = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
 
 			// QB-1 advanced grid attrs (section + layout kinds only).
 			$grid_template_rows        = $attributes['gridTemplateRows'] ?? '';
@@ -445,11 +489,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// are already protected by the STRICT in_array() allowlists at :433-457 —
 			// an array fails a strict comparison against a list of strings and falls
 			// back to the safe default, with no warning and no garbage declaration.
-			$grid_auto_rows            = is_array( $grid_auto_rows ) ? '' : $grid_auto_rows;
-			$justify_items             = $attributes['justifyItems'] ?? 'stretch';
-			$align_content             = $attributes['alignContent'] ?? 'stretch';
-			$allowed_justify_items     = array( 'stretch', 'start', 'center', 'end' );
-			$allowed_align_content     = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
+			$grid_auto_rows        = is_array( $grid_auto_rows ) ? '' : $grid_auto_rows;
+			$justify_items         = $attributes['justifyItems'] ?? 'stretch';
+			$align_content         = $attributes['alignContent'] ?? 'stretch';
+			$allowed_justify_items = array( 'stretch', 'start', 'center', 'end' );
+			$allowed_align_content = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
 			if ( ! in_array( $justify_items, $allowed_justify_items, true ) ) {
 				$justify_items = 'stretch';
 			}
@@ -537,7 +581,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'' !== $band_padding_right ||
 				'' !== $band_padding_bottom ||
 				'' !== $band_padding_left ||
-				'' !== $band_background
+				'' !== $band_background ||
+				$band_background_is_tiered
 			);
 
 			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
@@ -1934,8 +1979,145 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 				}
 
+				// GRID-ITEM properties — tier-capable (Spec 35 Phase 1.4b, STAGE 2,
+				// 2026-08-10). The six --sgs-gi-* custom properties ($gi[], built
+				// above at ~:772-794) are NOT "a different selector" as the STAGE 2
+				// deferral comment above speculated — VERIFIED by reading both merge
+				// branches: when $grid_on_inner, $gi is merged into
+				// $inner_grid_decls, which is emitted at exactly $grid_sel (:1380);
+				// when not $grid_on_inner, $gi is merged into $styles, which emits
+				// as a scoped `.$uid{…}` rule — and $grid_sel already resolves to
+				// `.$uid` in that branch (see the $grid_sel definition). Both
+				// branches land on $grid_sel. So these six join the SAME
+				// $obj_inner_props array and the SAME sgs_emit_responsive_css() call
+				// as the six LAYOUT properties above — one selector, one emission.
+				//
+				// gridItemPadding / gridItemBorderRadius are NOT genuinely per-SIDE
+				// box properties for this emitter's purposes, despite being
+				// BoxControl-shaped attrs: the consuming CSS (style.css :9-14) reads
+				// ONE custom property per box (`--sgs-gi-padding`, `--sgs-gi-radius`)
+				// holding a full shorthand string, never four separate
+				// `--sgs-gi-padding-{side}` properties. `box => true` would emit
+				// four atoms nothing ever reads (dead CSS) and, worse, would be
+				// wrong for gridItemBorderRadius specifically: its keys are CORNERS
+				// (topLeft/topRight/bottomLeft/bottomRight — sgs_serialise_box_corners())
+				// not SIDES (top/right/bottom/left — sgs_responsive_side_order()), so
+				// box=>true's per-side atom expansion would read the wrong keys
+				// entirely and emit nothing. Both are therefore scalar props (no
+				// `box`) whose `transform` serialises a whole tier's box/corner
+				// object into the one shorthand string the custom property expects
+				// — same two-step sanitisation the legacy path already applies
+				// (serialise → sgs_sanitize_grid_template).
+				if ( isset( $attributes['gridItemPadding'] ) && is_array( $attributes['gridItemPadding'] ) ) {
+					$obj_inner_props[] = array(
+						'value'     => $attributes['gridItemPadding'],
+						'css'       => '--sgs-gi-padding',
+						'transform' => static function ( $raw ) {
+							return sgs_sanitize_grid_template( sgs_serialise_box_sides( is_array( $raw ) ? $raw : array() ) );
+						},
+					);
+				}
+				if ( isset( $attributes['gridItemBorderRadius'] ) && is_array( $attributes['gridItemBorderRadius'] ) ) {
+					$obj_inner_props[] = array(
+						'value'     => $attributes['gridItemBorderRadius'],
+						'css'       => '--sgs-gi-radius',
+						'transform' => static function ( $raw ) {
+							return sgs_serialise_box_corners( is_array( $raw ) ? $raw : array() );
+						},
+					);
+				}
+				if ( isset( $attributes['gridItemBackground'] ) && is_array( $attributes['gridItemBackground'] ) ) {
+					$obj_inner_props[] = array(
+						'value'     => $attributes['gridItemBackground'],
+						'css'       => '--sgs-gi-bg',
+						// sgs_colour_value() self-escapes on every return path (its own
+						// docblock + the docblock example at helpers-responsive.php:66) —
+						// no extra esc_attr needed, matching every other colour transform
+						// in this method.
+						'transform' => 'sgs_colour_value',
+					);
+				}
+				if ( isset( $attributes['gridItemTextColour'] ) && is_array( $attributes['gridItemTextColour'] ) ) {
+					$obj_inner_props[] = array(
+						'value'     => $attributes['gridItemTextColour'],
+						'css'       => '--sgs-gi-color',
+						'transform' => 'sgs_colour_value',
+					);
+				}
+				if ( isset( $attributes['gridItemShadow'] ) && is_array( $attributes['gridItemShadow'] ) ) {
+					$obj_inner_props[] = array(
+						'value'     => $attributes['gridItemShadow'],
+						'css'       => '--sgs-gi-shadow',
+						// sgs_shadow_value() self-escapes too (see its own return paths).
+						'transform' => 'sgs_shadow_value',
+					);
+				}
+				if ( isset( $attributes['gridItemBorder'] ) && is_array( $attributes['gridItemBorder'] ) ) {
+					$obj_inner_props[] = array(
+						'value'     => $attributes['gridItemBorder'],
+						'css'       => '--sgs-gi-border',
+						// Same allowlist the legacy path uses at ~:783 (raw CSS border
+						// shorthand, e.g. "1px solid #ccc" — not a colour/shadow token,
+						// so neither sgs_colour_value() nor sgs_shadow_value() apply).
+						'transform' => static function ( $raw ) {
+							return trim( preg_replace( '/[^A-Za-z0-9\s%(),.\-#]/', '', (string) $raw ) );
+						},
+					);
+				}
+
 				if ( $obj_inner_props && '' !== $grid_sel ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => true ) );
+				}
+
+				// OUTER shadow — tier-capable (Spec 35 Phase 1.4b, STAGE 2). VERIFIED
+				// selector: the legacy `$shadow` scalar path (~:634-637) emits
+				// `box-shadow` into $base_outer_decls, which is emitted as a scoped
+				// `.$uid{…}` rule (:1250-ish, `$base_outer_decls && $uid`) — the bare
+				// outer wrapper, NOT $grid_sel (min-height uses the identical
+				// selector, same array). Independent selector from the grid-item
+				// properties above, so it is its own sgs_emit_responsive_css() call
+				// rather than joining $obj_inner_props.
+				if ( isset( $attributes['shadow'] ) && is_array( $attributes['shadow'] ) ) {
+					$responsive_css .= sgs_emit_responsive_css(
+						'.' . $uid,
+						array(
+							array(
+								'value'     => $attributes['shadow'],
+								'css'       => 'box-shadow',
+								'transform' => 'sgs_shadow_value',
+							),
+						),
+						array( 'container' => false )
+					);
+				}
+
+				// Content-band background — tier-capable (Spec 35 Phase 1.4b, STAGE 2).
+				// VERIFIED selector: BOTH legacy band-background emission sites
+				// (~:1343 base-band, ~:1647 responsive-band) write
+				// `background-color` on the identical selector
+				// `.$uid>.sgs-container__inner` — built fresh here rather than
+				// reusing the local `$band_sel` variable defined inside the
+				// `if ( $has_band_responsive )` block above, because that variable
+				// is UNSET whenever $has_band_responsive is false (PHP has no block
+				// scoping — referencing it here would warn/notice on every render
+				// where no band padding/content-width tier exists, which is the
+				// common case for a block using ONLY a tiered band background).
+				// Gated on the RAW attribute (not $band_background, already nulled
+				// to '' by the is_array guard above) so this only fires for a
+				// tiered value; $band_background_is_tiered mirrors the same check
+				// and already feeds $has_band_props so __inner still renders.
+				if ( $band_background_is_tiered ) {
+					$responsive_css .= sgs_emit_responsive_css(
+						'.' . $uid . '>.sgs-container__inner',
+						array(
+							array(
+								'value'     => $attributes['contentBandBackground'],
+								'css'       => 'background-color',
+								'transform' => 'sgs_colour_value',
+							),
+						),
+						array( 'container' => false )
+					);
 				}
 
 				$obj_outer_props = array();
