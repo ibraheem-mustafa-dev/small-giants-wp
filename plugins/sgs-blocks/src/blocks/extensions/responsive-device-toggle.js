@@ -125,7 +125,24 @@ const CUE_TEXT = {
  * event caused the inspector to be rebuilt.
  */
 const OBSERVE_ROOT_SELECTOR = '.interface-interface-skeleton';
-const INSPECTOR_SELECTOR = '.block-editor-block-inspector';
+
+/**
+ * The sidebar SHELL — where the toggle docks.
+ *
+ * ⚑ Not the block inspector. Docking inside the inspector meant the toggle only
+ * reached the bottom edge when the panel content happened to be taller than the
+ * viewport; on a block with few settings it sat directly beneath the last panel,
+ * adding to the visual noise instead of separating from it (Bean, 2026-08-10).
+ *
+ * This shell is `position: relative` and full-height already (measured: 866px,
+ * `overflow: hidden`, one child), so a child can be absolutely pinned to its
+ * bottom edge with NO override of core layout — no flex rewrite of the panel
+ * chain, no min-height arithmetic against the header.
+ */
+const SIDEBAR_SHELL_SELECTOR = '.interface-interface-skeleton__sidebar';
+
+/** The scroll container, used only to decide whether the sidebar is open. */
+const SIDEBAR_SCROLLER_SELECTOR = '.interface-complementary-area';
 
 /**
  * The editor's bottom breadcrumb strip ("Page › SGS Container › Label").
@@ -143,33 +160,44 @@ const FOOTER_SELECTOR = '.interface-interface-skeleton__footer';
 const MAX_ACQUIRE_FRAMES = 5;
 
 /**
- * Resolve the live block-inspector node, or null.
+ * Resolve the sidebar shell to dock into — but ONLY while the sidebar is
+ * actually open.
  *
- * @return {HTMLElement|null} The inspector element when genuinely in the document.
+ * The shell itself survives the sidebar being closed (measured: same node
+ * throughout), so its presence alone is not a visibility signal. The scroller
+ * having real width is: when the client closes the sidebar it collapses to zero.
+ * Without this check the toggle would render into a zero-width shell and either
+ * vanish silently or bleed over the canvas.
+ *
+ * @return {HTMLElement|null} The shell when the sidebar is open, else null.
  */
-function findInspector() {
-	const node = document.querySelector( INSPECTOR_SELECTOR );
-	return node && document.body.contains( node ) ? node : null;
+function findDockTarget() {
+	const shell = document.querySelector( SIDEBAR_SHELL_SELECTOR );
+	if ( ! shell || ! document.body.contains( shell ) ) {
+		return null;
+	}
+	const scroller = shell.querySelector( SIDEBAR_SCROLLER_SELECTOR );
+	if ( ! scroller || scroller.getBoundingClientRect().width < 40 ) {
+		return null;
+	}
+	return shell;
 }
 
 /**
- * Maintain a host element pinned as the LAST child of the block inspector,
- * which the stylesheet then docks to the bottom of the sidebar.
+ * Maintain a host element pinned to the bottom edge of the sidebar shell.
  *
- * ⚑ It was briefly the FIRST child. Bean rejected that on sight: a strip at the
- * top pushes every control the client actually came to use further down the
- * page, which is a UX cost paid on every single edit for a control touched
- * occasionally. Docked to the bottom it reads as part of the panel chrome and
- * costs nothing.
+ * ⚑ Two placements were tried and rejected before this one, both by Bean on
+ * sight rather than by any assertion:
+ *   1. TOP of the inspector — pushed every control the client actually came to
+ *      use further down the page, on every edit, for a control touched rarely.
+ *   2. BOTTOM of the inspector — only reached the bottom edge when the panel
+ *      content happened to overflow. On a block with few settings it sat right
+ *      under the last panel, adding noise instead of separating from it.
+ * Docking to the shell pins it to the bottom edge unconditionally.
  *
- * The host still has to be managed explicitly rather than portalling straight
- * into the inspector: `position: sticky` only docks against the scroll container
- * (`.interface-complementary-area`, measured) when the element is a real child
- * in flow, and the hook must re-place it every time the inspector is rebuilt.
- *
- * @return {HTMLElement|null} The host to portal into, or null when the inspector
- *                            is not mounted (sidebar closed, Page tab active,
- *                            distraction-free mode, no block selected).
+ * @return {HTMLElement|null} The host to portal into, or null when the sidebar
+ *                            is closed or its chrome is removed
+ *                            (distraction-free mode).
  */
 function useInspectorPortalHost() {
 	const [ host, setHost ] = useState( null );
@@ -188,8 +216,8 @@ function useInspectorPortalHost() {
 
 		/** @return {boolean} True when the host is already correctly placed. */
 		const isSettled = () => {
-			const inspector = findInspector();
-			return !! inspector && inspector.lastChild === hostEl;
+			const dock = findDockTarget();
+			return !! dock && dock.lastChild === hostEl;
 		};
 
 		// The replacement inspector arrives on a LATER React commit than the
@@ -198,10 +226,10 @@ function useInspectorPortalHost() {
 			if ( cancelled ) {
 				return;
 			}
-			const inspector = findInspector();
-			if ( inspector ) {
-				if ( inspector.lastChild !== hostEl ) {
-					inspector.appendChild( hostEl );
+			const dock = findDockTarget();
+			if ( dock ) {
+				if ( dock.lastChild !== hostEl ) {
+					dock.appendChild( hostEl );
 				}
 				attempts = 0;
 				setHost( ( current ) =>
@@ -377,9 +405,17 @@ function DeviceTogglePortal() {
  */
 function DeviceCuePortal() {
 	const { device } = useDeviceType();
-	const [ dismissed, setDismissed ] = useState( false );
+
+	// ⚑ Dismissal is PER TIER, not per page (Bean, 2026-08-10). Dismissing once
+	// for the whole page would let a client silence the Tablet cue, later switch
+	// to Mobile, and edit on unwarned — reintroducing exactly the failure the cue
+	// exists to prevent. Keyed by tier, each warns once and then stays quiet.
+	// Still in-memory only, so it resets on reload or page change, matching the
+	// device tier's own reset rule (D4).
+	const [ dismissedTiers, setDismissedTiers ] = useState( {} );
 	const footer = useFooterStrip();
 	const message = CUE_TEXT[ device ] || null;
+	const dismissed = !! dismissedTiers[ device ];
 
 	// The announcement is mounted to <body> unconditionally: it must fire even
 	// when the footer strip is absent (distraction-free hides the chrome).
@@ -413,7 +449,12 @@ function DeviceCuePortal() {
 					<button
 						type="button"
 						className="sgs-device-cue__dismiss"
-						onClick={ () => setDismissed( true ) }
+						onClick={ () =>
+							setDismissedTiers( ( current ) => ( {
+								...current,
+								[ device ]: true,
+							} ) )
+						}
 						aria-label={ __( 'Dismiss', 'sgs-blocks' ) }
 					>
 						×

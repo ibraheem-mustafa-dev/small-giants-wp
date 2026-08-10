@@ -29,28 +29,52 @@
  * @package SGS\Blocks
  */
 
-.sgs-device-toggle-host {
-	/* Docks to the bottom of the sidebar. The scroll container is
-	   `.interface-complementary-area` (measured: 827px visible / 1083px content),
-	   and this host is the inspector's LAST child, so `sticky bottom` pins it to
-	   the panel foot while the controls above scroll normally.
+/* Pinned to the bottom EDGE of the sidebar, always — not merely to the end of
+   the panel content. `.interface-interface-skeleton__sidebar` is already
+   `position: relative` and full height (measured 866px), so this needs no
+   override of core layout: no flex rewrite of the panel chain, no min-height
+   arithmetic against the header.
 
-	   ⚑ It was briefly pinned to the TOP. That pushed every control the client
-	   actually came to use further down the page — a cost paid on every edit for
-	   a control touched occasionally. Bottom reads as panel chrome instead. */
-	position: sticky;
+   ⚑ Two earlier placements were rejected. TOP of the inspector pushed the real
+   controls down on every edit. BOTTOM of the inspector only reached the bottom
+   edge when the panel happened to overflow — on a sparse block it sat directly
+   beneath the last panel, which adds noise rather than separating from it. */
+.sgs-device-toggle-host {
+	position: absolute;
 	bottom: 0;
+	left: 0;
+	right: 0;
 	z-index: 10;
-	margin-top: auto;
+}
+
+/* Keep the last panel clear of the dock. Scoped with :has() so it applies ONLY
+   while our toggle is actually mounted — if the toggle is ever removed, core's
+   own spacing returns with no orphaned rule to find and delete. */
+.interface-interface-skeleton__sidebar:has(.sgs-device-toggle-host)
+	.interface-complementary-area {
+	padding-bottom: 84px;
+}
+
+/* Belt-and-braces: hide the dock whenever the sidebar has no scroller, i.e. the
+   client has closed it. Measured with the sidebar closed: the shell collapses to
+   0 width with `overflow: hidden` and the host sits at the viewport edge, so it
+   is ALREADY invisible (elementFromPoint returns the canvas, not the toggle) —
+   but that invisibility is incidental to clipping, and clipping is not a
+   contract. If core ever gives the collapsed shell width or visible overflow,
+   the toggle would appear floating over the canvas with nothing in the markup
+   looking wrong. This makes the intent explicit and enforced. */
+.interface-interface-skeleton__sidebar:not(:has(.interface-complementary-area))
+	.sgs-device-toggle-host {
+	display: none;
 }
 
 .sgs-device-toggle {
-	/* Full-bleed against the sidebar edges so it reads as built-in rather than
-	   as a floating card: cancel the inspector's own horizontal padding. */
-	margin: 0 -16px -16px;
 	padding: 10px 16px 12px;
 	background: #f6f8fa;
 	border-top: 1px solid #d0d7de;
+	/* Separation from the panels above — Bean: sitting flush against them reads
+	   as more noise rather than as distinct chrome. */
+	box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.06);
 }
 
 /* The label. Bean: sentence case and bold — WordPress's default control label
