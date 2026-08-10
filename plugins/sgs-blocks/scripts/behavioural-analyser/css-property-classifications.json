@@ -1216,6 +1216,22 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "column-gap,gap,grid-auto-columns,grid-template-columns,margin-bottom",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "column-gap,gap,grid-auto-columns,grid-template-columns,margin-bottom",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "overlayColourHover",
       "fields": {
         "css_property": "background-color",
@@ -1614,27 +1630,6 @@
       "attr": "imageHeight",
       "fields": {
         "css_property": "height",
-        "css_tier": "desktop",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-image"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "imageHeightMobile",
-      "fields": {
-        "css_property": "height",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-image"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "imageHeightTablet",
-      "fields": {
-        "css_property": "height",
-        "css_tier": "tablet",
         "css_layer": "GRID_AREA",
         "css_element": "split-image"
       }
@@ -1653,8 +1648,19 @@
       "attr": "imageObjectPosition",
       "fields": {
         "css_property": "object-position",
+        "css_tier": "desktop",
         "css_layer": "GRID_AREA",
         "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "imageObjectPositionTablet",
+      "fields": {
+        "css_property": "object-position",
+        "css_tier": "tablet",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1783,14 +1789,6 @@
         "css_property": "min-height",
         "css_tier": "tablet",
         "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitImageMobileHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "split-image"
       }
     },
     {
@@ -2073,7 +2071,8 @@
       "slug": "sgs/image-sequence",
       "attr": "aspectRatio",
       "fields": {
-        "css_property": "aspect-ratio"
+        "css_property": "aspect-ratio",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2712,6 +2711,15 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "indicatorColour",
       "fields": {
         "css_property": "background-color",
@@ -2897,15 +2905,6 @@
     },
     {
       "slug": "sgs/option-picker",
-      "attr": "contentWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/option-picker",
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
@@ -3080,6 +3079,14 @@
         "css_property": "color",
         "css_element": "pill",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "width",
+      "fields": {
+        "css_property": "width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3843,14 +3850,6 @@
     },
     {
       "slug": "sgs/quote",
-      "attr": "contentWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "CONTENT"
-      }
-    },
-    {
-      "slug": "sgs/quote",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -4146,14 +4145,6 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
-      "attr": "contentWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "CONTENT"
       }
     },
     {
@@ -4868,6 +4859,14 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "fontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "fontSize",
       "fields": {
         "css_property": "font-size",
@@ -5230,105 +5229,6 @@
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "alignContent",
-      "fields": {
-        "css_property": "align-content",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "alignItems",
-      "fields": {
-        "css_property": "align-items",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "flexDirection",
-      "fields": {
-        "css_property": "flex-direction",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "flexWrap",
-      "fields": {
-        "css_property": "flex-wrap",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridAutoRows",
-      "fields": {
-        "css_property": "grid-auto-rows",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridTemplateColumns",
-      "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridTemplateRows",
-      "fields": {
-        "css_property": "grid-template-rows",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "justifyContent",
-      "fields": {
-        "css_property": "justify-content",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "justifyItems",
-      "fields": {
-        "css_property": "justify-items",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "maxWidth",
-      "fields": {
-        "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -5955,9 +5855,27 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6077,6 +5995,15 @@
         "css_property": "justify-items",
         "css_layer": "GRID",
         "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6331,14 +6258,6 @@
     },
     {
       "slug": "sgs/info-box",
-      "attr": "contentWidth",
-      "fields": {
-        "css_property": "width",
-        "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/info-box",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -6368,6 +6287,14 @@
       "fields": {
         "css_property": "anim:easing",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "width",
+      "fields": {
+        "css_property": "width",
+        "css_element": "content"
       }
     },
     {
@@ -6482,33 +6409,6 @@
         "css_property": "padding",
         "css_layer": "GRID",
         "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "gap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "GRID",
-        "css_element": "bar"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "maxWidth",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/notice-banner",
-      "attr": "contentWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
       }
     },
     {
@@ -6896,6 +6796,584 @@
       }
     },
     {
+      "slug": "sgs/site-footer",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundAttachment",
+      "fields": {
+        "css_property": "background-attachment",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "background-position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundRepeat",
+      "fields": {
+        "css_property": "background-repeat",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "background-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "bgAnimationDuration",
+      "fields": {
+        "css_property": "anim:duration",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "bgParallax",
+      "fields": {
+        "css_property": "anim:parallax",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "columns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "contentBandBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "verticalAlign",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridAutoRows",
+      "fields": {
+        "css_property": "grid-auto-rows",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridTemplateColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridTemplateRows",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "justifyItems",
+      "fields": {
+        "css_property": "justify-items",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "verticalAlign",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundAttachment",
+      "fields": {
+        "css_property": "background-attachment",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "background-position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundRepeat",
+      "fields": {
+        "css_property": "background-repeat",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "background-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "bgAnimationDuration",
+      "fields": {
+        "css_property": "anim:duration",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "bgParallax",
+      "fields": {
+        "css_property": "anim:parallax",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "columns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "contentBandBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "verticalAlign",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "alignContent",
+      "fields": {
+        "css_property": "align-content",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "contentWidth",
+      "fields": {
+        "css_property": "width",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "flexDirection",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "flexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridAutoRows",
+      "fields": {
+        "css_property": "grid-auto-rows",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridTemplateColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridTemplateRows",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "justifyItems",
+      "fields": {
+        "css_property": "justify-items",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "verticalAlign",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/tab",
       "attr": "maxWidth",
       "fields": {
@@ -7010,15 +7488,6 @@
       "fields": {
         "css_property": "transition-duration",
         "css_element": "tab"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "contentWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
       }
     },
     {
@@ -7530,6 +7999,15 @@
     },
     {
       "slug": "sgs/trustpilot-reviews",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
       "attr": "sgsAnimation",
       "fields": {
         "css_property": "anim:preset",
@@ -7908,66 +8386,6 @@
       }
     },
     {
-      "slug": "sgs/content-collection",
-      "attr": "gapMobile",
-      "fields": {
-        "css_property": "gap",
-        "css_tier": "mobile",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gapTablet",
-      "fields": {
-        "css_property": "gap",
-        "css_tier": "tablet",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridTemplateColumnsMobile",
-      "fields": {
-        "css_property": "grid-template-columns",
-        "css_tier": "mobile",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridTemplateColumnsTablet",
-      "fields": {
-        "css_property": "grid-template-columns",
-        "css_tier": "tablet",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridTemplateRowsMobile",
-      "fields": {
-        "css_property": "grid-template-rows",
-        "css_tier": "mobile",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/content-collection",
-      "attr": "gridTemplateRowsTablet",
-      "fields": {
-        "css_property": "grid-template-rows",
-        "css_tier": "tablet",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/cta-section",
       "attr": "contentWidthMobile",
       "fields": {
@@ -8319,26 +8737,6 @@
     },
     {
       "slug": "sgs/gallery",
-      "attr": "gapMobile",
-      "fields": {
-        "css_property": "gap",
-        "css_tier": "mobile",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
-      "attr": "gapTablet",
-      "fields": {
-        "css_property": "gap",
-        "css_tier": "tablet",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
       "attr": "gridTemplateColumnsMobile",
       "fields": {
         "css_property": "grid-template-columns",
@@ -8602,26 +9000,6 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "attr": "gapMobile",
-      "fields": {
-        "css_property": "gap",
-        "css_tier": "mobile",
-        "css_layer": "GRID",
-        "css_element": "bar"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "gapTablet",
-      "fields": {
-        "css_property": "gap",
-        "css_tier": "tablet",
-        "css_layer": "GRID",
-        "css_element": "bar"
-      }
-    },
-    {
       "slug": "sgs/physics-canvas",
       "attr": "contentWidthMobile",
       "fields": {
@@ -8872,6 +9250,326 @@
       "fields": {
         "css_property": "width",
         "css_tier": "tablet",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "columnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "columnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "contentWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "contentWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "columnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "columnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "contentWidthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "contentWidthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_layer": "CONTENT",
+        "css_element": "content-band"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "GRID",
+        "css_element": "grid"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "maxWidthMobile",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "maxWidthTablet",
+      "fields": {
+        "css_property": "max-width",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "minHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "minHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gapMobile",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gapTablet",
+      "fields": {
+        "css_property": "gap",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridTemplateColumnsMobile",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridTemplateColumnsTablet",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridTemplateRowsMobile",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "gridTemplateRowsTablet",
+      "fields": {
+        "css_property": "grid-template-rows",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },

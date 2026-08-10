@@ -1393,6 +1393,53 @@ def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (inspector-control-type seed): WARN {exc}")
 
 
+def _run_css_property_classifier_seed(conn: sqlite3.Connection) -> None:
+    """Run extract-signatures.py --task-a-only as Stage 1 sub-step B2 (2026-08-10).
+
+    Task A derives css_property/css_layer/css_element/css_state/css_tier and
+    writes them to css-property-classifications.json — the DERIVED layer
+    `_apply_attr_classification_overrides` (Stage 1 sub-step C) reads as its
+    base layer. Before this change, ONLY Task B (`--task-b-only`, the
+    inspector_control_type seeder) was wired into every /sgs-update; Task A
+    had to be run by hand, so the JSON was a frozen snapshot — stale for
+    blocks whose block.json/style.css had since changed, absent for blocks
+    added after the last manual run. Wiring it here mirrors
+    `_run_inspector_control_type_seed`/`_run_composition_role_seed` exactly —
+    same subprocess pattern, same swallow-as-warning failure handling, same
+    "never block the rest of /sgs-update on this step" contract.
+
+    ⛔ CALL ORDER IS LOAD-BEARING. This must run BEFORE Stage 1 sub-step C
+    (`_apply_attr_classification_overrides`), which reads the regenerated JSON as
+    its base layer. It was first wired into the Stage 1 TAIL, mirroring the Task B
+    seeder's position — which looked consistent but made the pipeline lag one run
+    behind: sub-step C had already read the previous file, so the DB never reflected
+    the current classification and /sgs-update had to be run twice to converge.
+    JSON-only with no DB mutation of its own (the `conn.commit()` below only
+    releases the write lock for the subprocess), so running this early is safe.
+    """
+    try:
+        seeder_script = REPO_ROOT / "plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py"
+        if not seeder_script.exists():
+            print("Stage 1 tail (css-property classifier seed): WARN script missing — not applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seeder_script), "--task-a-only"],
+            capture_output=True, text=True, timeout=60,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "css_property_written=" in ln]
+            print(f"Stage 1 tail (css-property classifier seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (css-property classifier seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (css-property classifier seed): WARN {exc}")
+
+
 def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
     """Run seed-motion-fx-registry.py as a Stage 1 tail step (D432, 2026-08-01).
 
@@ -2653,8 +2700,21 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         conn.commit()
         _run_canonical_assignment(conn)
 
+        # --- Stage 1 sub-step B2: regenerate css-property-classifications.json ---
+        # MUST run BEFORE sub-step C, which reads that file as its base layer.
+        # Wired 2026-08-10: before this, Task A had to be run by hand, so the derived
+        # css_property/css_layer/css_element layer was a frozen snapshot — stale where
+        # it had values, absent for blocks added since the last manual run.
+        # ⛔ Do NOT move this after sub-step C. It was briefly placed in the Stage 1
+        # tail alongside the Task B seeder, which mirrored that seeder's shape but made
+        # the pipeline lag by one run: sub-step C had already read the OLD file, so the
+        # DB reflected the previous run's classification and /sgs-update had to be run
+        # twice to converge. JSON-only, no DB mutation, so it is safe this early.
+        _run_css_property_classifier_seed(conn)
+
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
-        # (AFTER canonical assignment so overrides are the final writer.)
+        # (AFTER canonical assignment so overrides are the final writer, and AFTER
+        #  sub-step B2 so the derived layer it reads is THIS run's, not the last one's.)
         ov_counts = _apply_attr_classification_overrides(conn, blocks_dir, dry_run=False)
         print(
             f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "

@@ -81,6 +81,24 @@ FX_ATTR_NAMES = {
 BLOCK_RE = re.compile(r'<!--\s*wp:(sgs/[a-z0-9-]+)\s*(\{.*?\})?\s*/?-->', re.S)
 
 
+def parse_block_attribute_types(d: dict) -> dict:
+    """Given a parsed block.json dict, return {attr_name: declared_type}.
+
+    Several shipped block.json files embed documentation as plain STRING
+    values inside `attributes` (e.g. before-after's `_comment_ssr_nullable`,
+    card-grid's `_comment_items_media`, brand-strip's `_comment_logos_media`).
+    Those entries are not attribute declarations — skip any non-dict entry
+    explicitly rather than calling `.get('type')` on a string, which raises
+    AttributeError.
+    """
+    out = {}
+    for key, spec in d.get('attributes', {}).items():
+        if not isinstance(spec, dict):
+            continue
+        out[key] = spec.get('type')
+    return out
+
+
 def load_schemas() -> dict:
     out = {}
     for bj in BLOCKS_DIR.glob('*/block.json'):
@@ -89,7 +107,7 @@ def load_schemas() -> dict:
         except json.JSONDecodeError:
             continue
         if 'name' in d:
-            out[d['name']] = set(d.get('attributes', {}).keys())
+            out[d['name']] = parse_block_attribute_types(d)
     return out
 
 
@@ -104,12 +122,27 @@ def load_fx_qualifying_blocks() -> dict:
         return {}
 
 
-def is_legit(key: str, declared: set, block_name: str, fx_qualifying: dict) -> bool:
+def is_legit(key: str, declared: dict, block_name: str, fx_qualifying: dict) -> bool:
     if key in declared or key in NATIVE or key in EXT_EXACT:
         return True
     if key in FX_ATTR_NAMES:
         return block_name in fx_qualifying
     return key.startswith(EXT_PREFIXES)
+
+
+def is_shape_mismatch(declared_type, value) -> bool:
+    """WP coerces a value whose SHAPE contradicts the declared `type` to the
+    attribute's default — same silent-discard failure as an undeclared attr,
+    just one layer in. Scope (per the live D555-adjacent migration risk):
+    declared `type: "object"` but the stored value is a scalar (str/int/
+    float/bool) or a list. `None` is deliberately excluded — a null default
+    is the documented inherit-nothing pattern, not a shape violation.
+    """
+    if declared_type != 'object':
+        return False
+    if value is None or isinstance(value, dict):
+        return False
+    return isinstance(value, (str, int, float, bool, list))
 
 
 def scan() -> list:
@@ -128,12 +161,16 @@ def scan() -> list:
                 attrs = json.loads(raw)
             except json.JSONDecodeError:
                 continue
-            for key in attrs:
-                if is_legit(key, schemas[name], name, fx_qualifying):
-                    continue
+            declared = schemas[name]
+            for key, value in attrs.items():
                 line = src[: m.start()].count('\n') + 1
                 rel = path.relative_to(REPO).as_posix()
-                findings.append((rel, line, name, key))
+                if key in declared and is_shape_mismatch(declared[key], value):
+                    findings.append((rel, line, name, key, 'shape-mismatch'))
+                    continue
+                if is_legit(key, declared, name, fx_qualifying):
+                    continue
+                findings.append((rel, line, name, key, 'undeclared'))
     return findings
 
 
@@ -141,16 +178,79 @@ def main() -> int:
     check = '--check' in sys.argv
     findings = scan()
     if not findings:
-        print('[dead-pattern-attrs] OK — every sgs/* attr in every theme pattern/part is declared.')
+        print('[dead-pattern-attrs] OK — every sgs/* attr in every theme pattern/part is declared and shape-correct.')
         return 0
-    print(f'[dead-pattern-attrs] {len(findings)} SILENTLY-DISCARDED attribute(s):\n')
-    for rel, line, name, key in findings:
+    undeclared = [f for f in findings if f[4] == 'undeclared']
+    shape = [f for f in findings if f[4] == 'shape-mismatch']
+    print(f'[dead-pattern-attrs] {len(findings)} SILENTLY-DISCARDED attribute(s) '
+          f'({len(undeclared)} undeclared, {len(shape)} shape-mismatch):\n')
+    for rel, line, name, key, kind in findings:
         print(f'  {rel}:{line}')
-        print(f'      {name} -> "{key}" is not declared in its block.json — WP drops it at render.\n')
+        if kind == 'undeclared':
+            print(f'      {name} -> "{key}" is not declared in its block.json — WP drops it at render.\n')
+        else:
+            print(f'      {name} -> "{key}" is declared type:"object" but the stored value is a '
+                  f'scalar/list — WP coerces it to the default at render.\n')
     print('Fix the attr name (check the block.json), or declare it. A discarded attr is')
     print('not a style bug — the value never reaches render at all.')
     return 1 if check else 0
 
 
+def self_test() -> int:
+    """Three controls, all in-memory/temp — never mutates real repo files.
+
+    1. POSITIVE — a flat scalar against an object declaration MUST be flagged.
+    2. NEGATIVE — a correctly-shaped object against the same declaration MUST NOT
+       be flagged. Proves the check isn't just always-firing.
+    3. CRASH-GUARD — a `_comment_*` string entry inside `attributes` MUST NOT
+       raise (several real block.json files carry these — before-after,
+       card-grid, brand-strip).
+    """
+    failures = []
+
+    # 1. POSITIVE control.
+    if not is_shape_mismatch('object', '2rem'):
+        failures.append('POSITIVE control failed: flat "gap": "2rem" against an '
+                         'object declaration was NOT flagged.')
+
+    # 2. NEGATIVE control.
+    if is_shape_mismatch('object', {'desktop': '2rem'}):
+        failures.append('NEGATIVE control failed: correctly-shaped '
+                         '"gap": {"desktop": "2rem"} was flagged.')
+
+    # 3. CRASH-GUARD.
+    synthetic_block_json = {
+        'name': 'sgs/self-test-fixture',
+        'attributes': {
+            '_comment_something': 'this is documentation, not an attribute',
+            'gap': {'type': 'object', 'default': {}},
+        },
+    }
+    try:
+        types = parse_block_attribute_types(synthetic_block_json)
+    except AttributeError as exc:
+        failures.append(f'CRASH-GUARD failed: parse_block_attribute_types raised {exc!r} '
+                         f'on a string attribute entry.')
+    else:
+        if '_comment_something' in types:
+            failures.append('CRASH-GUARD failed: the string doc entry was not skipped '
+                             '— it leaked into the declared-type map.')
+        if types.get('gap') != 'object':
+            failures.append('CRASH-GUARD failed: the real dict attribute entry '
+                             '("gap") was not parsed correctly alongside the string entry.')
+
+    if failures:
+        print('[dead-pattern-attrs --self-test] FAILED:\n')
+        for f in failures:
+            print(f'  - {f}')
+        return 1
+
+    print('[dead-pattern-attrs --self-test] OK — positive, negative, and crash-guard '
+          'controls all behaved as expected.')
+    return 0
+
+
 if __name__ == '__main__':
+    if '--self-test' in sys.argv:
+        sys.exit(self_test())
     sys.exit(main())

@@ -842,8 +842,8 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
-        "animation": true
+        "media": false,
+        "animation": false
       }
     },
     {
