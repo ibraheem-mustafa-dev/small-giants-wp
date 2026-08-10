@@ -47,14 +47,14 @@ rotated, so their record is the commit messages + `decisions.md` D546-D555. ⚠ 
 
 | What | Commit |
 |---|---|
-| **Object-shaped width bands never centred** — flat path's missing `margin-inline:auto` twin | `1979c419` |
+| Object-shaped width bands never centred — no `margin-inline:auto` | `1979c419` |
 | Wrapper `:128` comment promised `! $object_model` gates that do not exist | `a6e0f390` |
-| Centring guard requires a REAL tier value (`[]` is UNSET, not a value) + my build regression | `9b4722a9` |
-| **`check-dead-controls` stripper: line comments BEFORE block comments** (+ Test G, proven able to fail) | `f11b122a` |
+| Centring guard needs a REAL tier value (`[]` is UNSET) | `9b4722a9` |
+| **Stripper: line comments BEFORE block** (+ Test G, able to fail) | `f11b122a` |
 | D552 + D553; 2026-08-08 plan §4/Phase 4 marked SUPERSEDED | `c4befadf` |
 | **Retired Stage 3 DELETED — `/sgs-update` renumbered to a contiguous 1-13** (D555) | `accd5fbc` |
-| Migration design gate CLOSED (D554) + Spec 39 seed captured; my inspector-scan count error corrected | `c0af4188` |
-| `/qc-council` outcome: P1 re-keyed to `block.json` type; one rater finding REFUTED; 6 gaps closed | `6e5cd36a` |
+| Migration design gate CLOSED (D554) + Spec 39 seed; my count error fixed | `c0af4188` |
+| `/qc-council`: P1 re-keyed to `block.json` type; 1 finding REFUTED | `6e5cd36a` |
 
 ### ⭐ Track 1b (Spec 35) — inspector control standardisation
 
@@ -62,10 +62,8 @@ rotated, so their record is the commit messages + `decisions.md` D546-D555. ⚠ 
 
 #### Shipped 2026-08-10 session 2
 
-Session-2 commit table moved to `memory/session-2026-08-10*.md` (17 rows). Headlines that still matter:
-wrapper Stage 1+2 made 14 properties tier-capable (`2056af6a`, `dc1f0023`) — **capability only, nothing
-wired, see D552 §2**; `sgs/gallery` → FR-37-16 object model (`0e6209e6`); `survey:responsive-shape` +
-`survey:dead-css` censuses built; STOP catalogue 189 → 197.
+17 commits; see git log. The fact that still matters: wrapper Stage 1+2 made 14 properties
+tier-capable (`2056af6a`, `dc1f0023`) — **capability only, nothing wired** (D552 §2).
 
 #### ⛔ Do NOT start these
 
@@ -81,8 +79,13 @@ wired, see D552 §2**; `sgs/gallery` → FR-37-16 object model (`0e6209e6`); `su
 **All 7 steps of `go-track-1b-mossy-babbage.md` are DONE and the design gate is CLOSED** (D554:
 property-by-property · trash-not-migrate · gate-the-clone). `/qc-council` ran; its findings are applied.
 
-**Read first, in this order:** `plans/spec-35-flat-to-object-migration-design.md` (signed off — the
-sequencing + P1/P2) · `plans/spec-39-seed-requirements.md` · `decisions.md` D552-D555.
+**Read first, in this order:**
+1. `plans/spec-35-flat-to-object-migration-design.md` — signed off; the sequencing + P1/P2
+2. `plans/spec-39-seed-requirements.md` — the converter rework this implies
+3. `decisions.md` D552-D555
+4. `~/.claude/plans/go-track-1b-playful-hamster.md` — **the PROGRAMME plan**: every phase + its
+   rationale. Status table reconciled 2026-08-10; this migration is its **Phase 1.6**. Read for WHY
+   and WHAT-ELSE — not the entry point (this file is).
 
 #### State recap, plain English
 
