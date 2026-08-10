@@ -95,7 +95,48 @@ the render surface is untouched and the stored attribute set is unchanged. The c
 made is the narrow one the gate protects (frontend first paint is unaffected), proven by
 file-level and attribute-level evidence rather than by a pixel capture.
 
-**Live editor verification of the merged panel (post + site editor, canary) is a separate,
-still-owed step** and is NOT claimed by this report. A green build proves almost nothing
-about editor JS: an unprefixed `__experimental*` import is `undefined` at runtime with a
-perfectly clean build (D547). This report asserts only that the FRONTEND cannot regress.
+**Live editor verification of the merged panel — now DONE.** Appended below rather than
+left as an open claim; the paragraph that stood here said it was still owed, which was true
+at the time the report was written and is recorded rather than quietly overwritten.
+
+## Live verification — canary, BOTH editors (2026-08-10, post-deploy)
+
+A green build proves almost nothing about editor JS: an unprefixed `__experimental*` import
+is `undefined` at runtime with a perfectly clean build (D547). So both surfaces were opened
+and probed directly.
+
+Every collapsed `PanelBody` was expanded before reading the DOM — a collapsed panel keeps
+its children OUT of the DOM entirely, which produced false "the control is missing"
+readings earlier in this programme.
+
+**Post editor** (`post.php?post=2227`, an `sgs/container` on a real canary page):
+
+| Check | Expected | Measured |
+|---|---|---|
+| "Outer max-width" controls | 1 (was 2) | **1** |
+| "Content band width" controls | 1 (was 2) | **1** |
+| "by viewport" label | 0 | **0** |
+| "set above" help branch | 0 | **0** |
+| "Normal ≈ 1200px" token help | present | **present** |
+
+**Behaviour, not just presence** — an effect that renders is not an effect that works:
+
+- Global toggle → Tablet: `core/editor.getDeviceType()` returns `Tablet`.
+- With tablet blank, the sidebar shows **"Inheriting from Desktop"** — the new
+  `isInherited`/`resolvedValue` API is live and firing, not merely wired.
+- Writing at Tablet wrote `maxWidthTablet: "640px"` **and only that key**;
+  `maxWidth` stayed `"900px"`. No tier bleed.
+- (Editor state only — never saved, so the canary page's stored content is unchanged.)
+
+**Site editor** (`site-editor.php?canvas=edit`), the surface D547's failure hid in:
+
+- `sgs/container` selected, inspector sidebar found, 3,746 chars of text — the non-zero
+  counts are their own positive control, so the zeros below are not a blank-DOM artefact.
+- "Outer max-width" = **1**; "by viewport" = **0**; "set above" = **0**.
+- `core/editor.getDeviceType()` answers **"Desktop"** here too, re-confirming D546's
+  measurement that this one store covers both surfaces.
+- **0 console errors.**
+
+The panel rendering at all is itself the mount proof: a component that failed to mount
+(React #130) would leave the label absent, which is exactly the failure this check exists
+to catch.
