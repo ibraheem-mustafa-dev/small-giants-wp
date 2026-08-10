@@ -164,8 +164,11 @@
 						"Opacity",
 						"OverlayOpacity",
 						"BackgroundOverlayOpacity",
-						"BgSvgOpacity"
-					]
+						"BgSvgOpacity",
+						"BackgroundMediaOpacity",
+						"BackgroundImageOpacity"
+					],
+					"note": "Phase 0 item 0c, 2026-08-11 (D561): the last two widen an existing member rather than adding a css:* row — the same pattern 055a24ce used. sgs/container.backgroundMediaOpacity dims the ::before media layer (class-sgs-container-wrapper.php:727-730, D536); sgs/cta-section.backgroundImageOpacity dims that block's own hardcoded scrim (D536 names it as the LOOKALIKE of the former, not a duplicate). Both were falling through to tier-2 with nothing claiming them."
 				},
 				{
 					"key": "css:background-image",
@@ -249,12 +252,13 @@
 					"key": "input:media-source",
 					"label": "Background video source",
 					"suffixes": [
-						"BgVideo"
+						"BgVideo",
+						"BackgroundMedia"
 					],
 					"appliesToLayers": [
 						"OUTER"
 					],
-					"note": "Bean 2026-08-09: background media stays in the BACKGROUND section it already lives in. A <video> has no CSS property to name it; input:media-source already described it."
+					"note": "Bean 2026-08-09: background media stays in the BACKGROUND section it already lives in. A <video> has no CSS property to name it; input:media-source already described it. BackgroundMedia added 2026-08-11 (Phase 0 item 0c, D561) for sgs/cta-section.backgroundMedia — one object attr accepting image OR video, so input:media-source describes it exactly. Deliberately NOT a new css:* row: check-cluster-coverage.py:12-25 records that a fabricated css:background-video would pass the gate while putting a lie in the golden master."
 				},
 				{
 					"key": "input:code-svg",

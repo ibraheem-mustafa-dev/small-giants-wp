@@ -683,16 +683,18 @@ its element's panel (TIER 1) regardless of this field.)*
    family declares Tablet/Mobile siblings. **Label association REQUIRED and missing** — see §10.
 3. **Banned lookalikes** — raw-px `RangeControl` (**0 live violations found** — the only hits are the
    shadow builder's sliders, which are correct); `SelectControl` writing a `*Unit` attr (already
-   gated); a `TextControl` standing in for `UnitControl` — `sgs/card-grid.cardRadius`, help text
-   *"e.g. 8px"*, accepts invalid CSS.
+   gated); a `TextControl` standing in for `UnitControl` — ~~`sgs/card-grid.cardRadius`, help text
+   *"e.g. 8px"*, accepts invalid CSS~~ ✅ **FIXED 2026-08-11 (D561)**; see §14 field 6 for the full
+   raw-text census (3 found, 3 fixed, 0 remaining). **Phase 3.2a must not re-list `cardRadius`.**
 4. **Tab** — `typography` for font-size/line-height, `dimensions` for spacing, `layout` for grid
    geometry. All Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
 5. **Scope** — `is_responsive=1 AND css_property IN (<length set>)` → 36 blocks.
-6. **Conformance** — the `TypographyControls` consumers conform. Violators: `cardRadius`; 79 of 85
-   blocks with no tab split; **12 attributes declared + rendered with no control** (below).
+6. **Conformance** — the `TypographyControls` consumers conform. Violators: ~~`cardRadius`~~
+   (fixed 2026-08-11, D561); 79 of 85 blocks with no tab split; **12 attributes declared + rendered
+   with no control** (below).
 7. **Detection** — join `css_property` against a length allowlist, then assert the innermost control
    is a `UnitControl`.
 8. **Open** — spacing-token scale is unbuilt; does the contract require it once it exists?
@@ -1017,13 +1019,79 @@ its element's panel (TIER 1) regardless of this field.)*
    now trustworthy (D523) but still scopes only to 4-side/4-corner OBJECT attrs — a scalar radius
    (`card-grid.cardRadius`, `nav-menu.itemRadius`, `mega-aside.asideRadius`) is correctly NULL there
    and must be picked up by the `css_property` leg, or the rule will miss every one of them.
-6. **Conformance** — **not yet measured.** This contract was absent from the draft, so no census
-   exists. ⛔ Recorded as unmeasured rather than assumed conformant.
+6. **Conformance** — ✅ **MEASURED 2026-08-11 (Phase 0 item 0a, D561).** Source:
+   `npm run survey:box`, re-run after the three fixes below. Cite these, not the pre-fix figures.
+
+   | Leg | In scope | Canonical | Non-canonical |
+   |---|---|---|---|
+   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **24** | `ResponsiveBoxControl` 5 (wrong shape — sides fed a corners attr), `SelectControl` 2, 6 with **no control at all** |
+   | **Scalar radius** | 13 | `UnitControl` **11** *(was 8; +3 this session)* | `RangeControl` 2 |
+   | **Scalar border-width** | 7 | — | `RangeControl` 1, remainder unresolved |
+   | **Per-side scalars** (§14.3 migration) | — | — | **0 — §14.3's "migration COMPLETE" claim reproduces independently** |
+
+   **Fixed this session (raw `TextControl` taking free CSS → `UnitControl`, §14.3 → §14.1/§14.2):**
+   `sgs/card-grid.cardRadius`, `sgs/trust-bar.iconCircleBorderRadius`,
+   `sgs/trust-bar.badgeImageBorderRadius`. All three are `type: string` and their `render.php` reads
+   a plain string, so the value domain is unchanged; the canary carried **0** stored instances
+   (positive controls: 295 posts with `wp:sgs/` blocks, 33 with some radius). Each got an explicit
+   `units` array **including `%`** per field 2 — load-bearing, since `iconCircleBorderRadius`
+   *defaults* to `'50%'` and a px-only array would have silently removed the block's own circle.
+
+   ⛔ **THE SURVEY HAS A MEASURED FALSE-POSITIVE RATE — do not dispatch a codemod at its raw
+   output.** Both `SelectControl` hits in the 4-CORNER leg are **false positives of the
+   comment-match class**, verified by reading the surrounding code:
+   - `sgs/button` — the flagged `SelectControl` is `textDecorationHover`; `borderRadiusTablet/Mobile`
+     actually feed `ResponsiveBorderRadiusControl` (`edit.js:772-773`). **Canonical.**
+   - `sgs/product-card` — the flagged `SelectControl` is `ctaStyle`; `ctaBorderRadius` feeds
+     `ResponsiveBorderRadiusControl` (`edit.js:1670`). **Canonical.**
+
+   So the *real* §14.3 banned-lookalike population was **3, not 5**, and all 3 are now fixed. This is
+   the same defect class already recorded against the LENGTH survey — the scanner attributes an
+   attribute name found in a nearby **comment** to the next control it sees. Treat every survey leg
+   as a candidate list requiring a read, never a defect list.
+
+   **Recorded, NOT fixed — Phase 3, not Phase 0** (adding a missing control is a capability decision,
+   and the wrong-shape mounts need a per-block read): the 6 no-control radius attrs
+   (`gridItemBorderRadius` on container/cta-section/hero/trust-bar, `option-picker.borderRadius`
+   Tablet/Mobile) and the 5 corner-attrs fed to the 4-SIDE `ResponsiveBoxControl`.
+
+   ⚠ **Two instrument defects found while measuring, both owed to whoever next touches the survey:**
+   (a) the scalar-radius leg has **no canonical component declared**, so all 13 print
+   `[non-canonical/raw]` including the 11 correct `UnitControl` mounts — `UnitControl` is canonical
+   there per §4, and the allowlist should say so or this leg reads as 100% non-conformant forever.
+   (b) 8 of the 13 existing scalar mounts pass **no `units` array**, which field 2 requires.
 7. **Detection** — as §11 SHADOW: classify each border attr's control into compliant / preset-select
-   / raw-text / no-control. `sgs/card-grid.cardRadius` is a known raw-text violation (help text
-   *"e.g. 8px"*, accepts invalid CSS) — already named under LENGTH §4, and it belongs to both.
-8. **Open** — does `BorderBoxControl` need a responsive wrapper, or is border width a desktop-only
-   property in practice? Measure before deciding.
+   / raw-text / no-control. ~~`sgs/card-grid.cardRadius` is a known raw-text violation (help text
+   *"e.g. 8px"*, accepts invalid CSS)~~ — ✅ **FIXED 2026-08-11 (D561), along with two this field
+   never named: `sgs/trust-bar.iconCircleBorderRadius` and `.badgeImageBorderRadius`.** The
+   raw-text population was **3**, and it is now **0**. ⚠ `cardRadius` is also listed under LENGTH §4
+   — it is discharged there too, so Phase 3.2a must not re-list it.
+8. ~~**Open**~~ — ✅ **ANSWERED 2026-08-11 (D560). Border splits in two, and the measurement is
+   unambiguous.**
+   - **RADIUS is already responsive, and already built.** **12** blocks declare
+     `…borderRadius{Tablet,Mobile}` — before-after, brand-strip, button, countdown-timer, counter,
+     hero, icon-list, media, option-picker, table-of-contents, timeline, whatsapp-cta. The wrapper
+     is `ResponsiveBorderRadiusControl` (`src/components/ResponsiveBoxControl.js:162-196`), in
+     production at 17 mounts. **No build owed** — the responsive wrapper question was answered by
+     someone shipping one.
+   - **WIDTH / STYLE / COLOUR are desktop-only in practice.** `borderWidth{Tablet,Mobile}` matches
+     **0 of 83** `block.json` files; `border{Style,Colour,Color}{Tablet,Mobile}` likewise **0**. The
+     11 `borderWidth` object attrs and 31 `border-color` attrs carry no tier sibling anywhere. The
+     one apparent counter-example, `sgs/separator.thickness`, is a **scalar** `border-width` whose
+     3 tiers are a flat→object migration candidate (Phase 1.6), not a per-side border builder.
+   - **Ruling: leave width/style/colour desktop-only.** ⚠ This is a **demand** ruling, not a
+     capability ruling. D549's generic principle (any property may take the TIER axis) still stands,
+     and `SGS_Container_Wrapper` is *already* tier-plumbed for border since D549 Stage 2
+     (`class-sgs-container-wrapper.php:2125-2172`) — so reversing this costs block-side attributes
+     and control mounts only, never wrapper work. That is what makes it cheap to reverse, and why
+     building on principle ahead of demand was rejected.
+   - **Promotion trigger, if wanted later:** the first block, stored instance, or draft clone that
+     actually carries a per-device border width. Until one exists there is nothing to verify a
+     build against.
+   - ⛔ **Separately, and NOT resolved by this:** `BorderBoxControl` — §14.1's canonical component
+     for width + style + colour — has **zero source files** tree-wide (only docs, survey allowlists
+     and a Jest mock of `__experimentalBorderControl`). It has never been built or mounted. That is
+     a Phase 3 build, recorded here so field 1 is not read as describing something that exists.
 
 ---
 

@@ -1,5 +1,102 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D561 — Phase 0 item 0c was already closed and the record said otherwise; §14's census has a measured false-positive rate [INCIDENT]
+
+**2026-08-11.** Closing Phase 0 of the inspector programme surfaced two failures of the same shape —
+**a written claim outliving the code that falsified it** — plus one real fix.
+
+### 1. 0c was closed in code for two days while the record called it a blocker
+
+D537 carried `⛔ Open: the background-media vocabulary … needs new css:* rows … Two attempts to call
+this change small were both refuted by that gate.` Every clause was stale. The actual fix, landed the
+**same day** by `055a24ce` / `e2be7f73` / `ab9cb5c7`, was not new `css:*` rows at all: the coverage
+gate's **typo guard** was widened to validate member keys against all registry rows while **coverage**
+stayed scoped to `css:*`/`anim:*`, making `input:*` members legal — so the existing
+`input:media-source` and `input:code-svg` rows homed the 21 controls. Fabricating a
+`css:background-video` row was rejected because it *would have passed the gate while putting a lie in
+the golden master* (`check-cluster-coverage.py:12-25`).
+
+Verified before acting: `placement-reach.py --block hero` → tier-2 **31**, zero background attrs;
+`check-cluster-coverage.py --json` → `errors: []`, `uncovered: []`.
+
+**Cost:** Phase 4 was carried as blocked on it, and a session was planned to re-do it. **Rule: a
+`⛔ Open` in a decision entry is a claim with a shelf life. Close it in the commit that closes the
+code, or it becomes a false blocker.** The paragraph is corrected in place, not deleted.
+
+**Residual genuinely fixed here** — three background attrs nothing claimed, all falling through to
+tier-2: `sgs/container.backgroundMediaOpacity`, `sgs/cta-section.backgroundMedia`, and
+`sgs/cta-section.backgroundImageOpacity` (found while verifying; D536 names it as the *lookalike* of
+the first). Fixed by **widening two existing member `suffixes`** — the `055a24ce` pattern — never a
+new row. Measured: container tier-2 5→4, cta-section 17→15, hero unchanged at 31, **contested 0
+throughout**, all three blocking gates exit 0, `check-cluster-coverage.py --self-test` still passes
+its 7 cases.
+
+⚠ **The gate caught my own error mid-edit** — the first suffix widening dropped a closing brace and
+`check-cluster-coverage.py` failed the build on invalid JSON. Worth recording as the gate working:
+this file is read by two blocking gates, so it cannot be edited blind.
+
+### 2. §14's border census is a candidate list, not a defect list
+
+§14 field 6 read *"Conformance: not yet measured"*. Now measured (figures in the contract). But the
+survey named **5** violations and **2 are false positives of the comment-match class**:
+
+| Flagged | Reality |
+|---|---|
+| `sgs/button` preset `SelectControl` | The `SelectControl` is `textDecorationHover`. `borderRadiusTablet/Mobile` feed `ResponsiveBorderRadiusControl` (`edit.js:772-773`). **Canonical.** |
+| `sgs/product-card` preset `SelectControl` | The `SelectControl` is `ctaStyle`. `ctaBorderRadius` feeds `ResponsiveBorderRadiusControl` (`edit.js:1670`). **Canonical.** |
+
+The scanner attributes an attribute name found in a nearby **comment** to the next control it sees —
+the same defect already recorded against the LENGTH survey, which is why 3.2a is a decision and not a
+build. **This was approved as "fix the 5" and corrected to 3 before any edit ran.** ⛔ Never dispatch
+a codemod at a survey leg's raw output.
+
+**The 3 real ones, all raw `TextControl` taking free CSS, all fixed** → `UnitControl` with an
+explicit `units` array: `card-grid.cardRadius`, `trust-bar.iconCircleBorderRadius`,
+`trust-bar.badgeImageBorderRadius`. Content-safe: all `type: string`, `render.php` reads a string,
+and the canary held **0** stored instances (positive controls fired at 295 / 33 — the zero is a
+measurement, not a silent failure). **`%` is load-bearing** in the units array:
+`iconCircleBorderRadius` *defaults* to `'50%'`, so a px-only array would have deleted the block's own
+circle shape.
+
+**Two instrument defects recorded for the next person to touch the survey:** the scalar-radius leg
+declares no canonical component, so 11 correct `UnitControl` mounts print `[non-canonical/raw]`; and
+8 existing scalar mounts pass no `units` array, which §14 field 2 requires.
+
+## D560 — Border radius is already responsive; border width/style/colour stay desktop-only on DEMAND, not on capability [ROUTINE]
+
+**2026-08-11, Bean-ruled.** Closes contract §14 field 8 (*"does `BorderBoxControl` need a responsive
+wrapper, or is border width a desktop-only property in practice? Measure before deciding"*) — Phase 0
+item **0b** of the inspector-standardisation programme.
+
+**Measured, not inferred.** Border is two properties wearing one name:
+
+| | Tier attrs declared | Wrapper component | Verdict |
+|---|---|---|---|
+| **radius** | **12 of 83 blocks** ship `…borderRadius{Tablet,Mobile}` | `ResponsiveBorderRadiusControl` (`ResponsiveBoxControl.js:162-196`), 17 mounts | Already responsive. **Nothing owed.** |
+| **width** | **0 of 83** — `borderWidth{Tablet,Mobile}` matches no file | — | Desktop-only in practice |
+| **style / colour** | **0 of 83** | — | Desktop-only in practice |
+
+The single apparent counter-example, `sgs/separator.thickness`, is a **scalar** `border-width` with
+3 flat tiers — a Phase 1.6 flat→object candidate, not evidence for a per-side responsive builder.
+
+**The ruling is about DEMAND, not capability, and that distinction is the whole decision.** D549
+already made every wrapper styling property tier-capable generically, and
+`class-sgs-container-wrapper.php:2125-2172` (D549 Stage 2) already carries border down the tier path.
+So the question was never *"can it?"* but *"has anything ever asked?"* — and nothing has: no block,
+no stored instance, no survey, no clone. Building the ~22 attributes, ~12 control mounts and ~12
+render readers would have been capability manufactured against zero evidence, and would then need
+maintaining. **Promotion trigger:** the first real per-device border width to appear anywhere.
+
+Cheap to reverse precisely because the wrapper half is already done — a reversal costs block-side
+work only.
+
+⛔ **Recorded separately, not resolved by this:** §14.1's canonical `BorderBoxControl` has **zero
+source files** in the tree. It has never been built. Field 1 describes a target, not a component that
+exists; the build belongs to Phase 3.
+
+**Method note.** The survey's own border output named 2 preset-`SelectControl` violations that are
+**both false positives** — see D561. A census is an input to a ruling, never the ruling.
+
 ## D559 — Per-device VALUES are universal; only the container-query DOM behaviour stays opt-in [INCIDENT]
 
 **2026-08-11, Bean-directed**, verbatim: *"Shouldn't all blocks opt into the responsive-model by default
@@ -1254,10 +1351,29 @@ detector was counting explicitly-mapped attributes as ambiguous. True figure 25,
 `nav-menu`, see D538). Caught only by validating the detector against a block whose answer was
 already known. Design doc: `.claude/plans/2026-08-08-block-level-panel-resolution.md`.
 
-⛔ **Open:** the background-media vocabulary. Homing hero's 21 background controls needs new `css:*`
-rows in `setting-registry.json` (87-row golden master) — `check-cluster-coverage.py` indexes ONLY
-`css:*`/`anim:*` rows and is BLOCKING GATE 1/3 in prebuild, so `input:*` members are rejected. Two
-attempts to call this change small were both refuted by that gate.
+~~⛔ **Open:**~~ ✅ **CLOSED — and this paragraph was WRONG in its central claim. Kept, not deleted,
+because a corrected record is the only defence against re-deriving it (see D561).**
+
+The paragraph read: *"the background-media vocabulary. Homing hero's 21 background controls needs new
+`css:*` rows in `setting-registry.json` (87-row golden master) — `check-cluster-coverage.py` indexes
+ONLY `css:*`/`anim:*` rows and is BLOCKING GATE 1/3 in prebuild, so `input:*` members are rejected.
+Two attempts to call this change small were both refuted by that gate."*
+
+**What actually happened, the same day (2026-08-09):** the fix was NOT new `css:*` rows. The gate's
+**typo guard** was widened to validate member keys against **all** registry rows while **coverage**
+stayed scoped to `css:*`/`anim:*` — so `input:*` members became legal and the existing
+`input:media-source` / `input:code-svg` rows, which already described a `<video>` source and inline
+SVG markup, homed the controls. Commits `055a24ce` (61→45), `e2be7f73` (45→39), `ab9cb5c7` (Bean's
+placement ruling). Fabricating a `css:background-video` row was explicitly rejected — it *would have
+passed the gate while putting a lie in the golden master* (`check-cluster-coverage.py:12-25`).
+
+**Verified 2026-08-11:** `placement-reach.py --block hero` → tier-2 = **31**, containing **zero**
+background attributes; `check-cluster-coverage.py --json` → `errors: []`, `uncovered: []`. The 21
+controls are homed. **Phase 4's Background item is unblocked.**
+
+⚠ The stale marker cost real time: this was carried as an open blocker for two days after the code
+closed it, and a Phase 0 session planned around re-doing it. **A `⛔ Open` in a decision entry is a
+claim with a shelf life — close it in the same commit as the code, or it becomes a false blocker.**
 
 ## D536 — Phase 1 background capability: media on a ::before layer, flat colour ungated [ROUTINE]
 
