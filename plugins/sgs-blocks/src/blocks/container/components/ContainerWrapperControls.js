@@ -238,13 +238,23 @@ function contentWidthPreset( v ) {
 /**
  * Width + contentWidth controls (v0.5 model — widthMode retired).
  *
+ * TWO controls, each covering all three tiers through ONE <ResponsiveControl>
+ * driven by the global device toggle:
+ *
  * OUTER layer: maxWidth UnitControl (literal CSS length or empty → full-width).
- *   Responsive: maxWidthTablet / maxWidthMobile via ResponsiveControl.
+ *   Tiers: maxWidth (desktop) / maxWidthTablet / maxWidthMobile.
  *
  * CONTENT BAND: ToggleGroupControl with tokens normal / wide / full / custom.
  *   Default is 'full' (no band cap — content fills outer maxWidth).
  *   When custom is selected a UnitControl for the literal value is revealed.
- *   Responsive: contentWidthTablet / contentWidthMobile (same pattern).
+ *   Tiers: contentWidth (desktop) / contentWidthTablet / contentWidthMobile.
+ *
+ * ⛔ Do NOT re-add a standalone desktop control beside either wrapper. Until
+ * 2026-08-10 each family rendered a desktop control PLUS a "… by viewport"
+ * <ResponsiveControl> whose desktop branch returned a <p> reading "set above" —
+ * two controls for one property, and a hole where a control belongs. That shape
+ * is what `inspector-scan` rule 26 (hollow-tier) exists to catch, with these two
+ * exact sites as its `mustFlag` fixtures.
  *
  * Breakout (alignwide / alignfull) is handled by WP-native supports.align
  * toolbar — NO custom control is rendered here.
@@ -261,115 +271,131 @@ export function WidthPanel( { attributes, setAttributes } ) {
 		contentWidthMobile = '',
 	} = attributes;
 
-	const cwPreset = contentWidthPreset( contentWidth );
-	const cwLiteral = ! isToken( contentWidth ) && /\d/.test( contentWidth ) ? contentWidth : '';
+	// ── ONE control per property family, all three tiers ──────────────────
+	//
+	// Both families previously rendered a standalone DESKTOP control plus a
+	// <ResponsiveControl> whose desktop branch returned a <p> saying "set
+	// above" — a responsive control added ALONGSIDE its non-responsive
+	// original rather than replacing it. Two controls for one property, and a
+	// hole in the wrapper where a control should be. Flagged by
+	// `inspector-scan` rule 26 (hollow-tier) at what were lines :284 and :351.
+	//
+	// The two branches rendered the IDENTICAL control over identical options —
+	// verified line by line before merging, because "desktop deliberately has a
+	// richer control" would have made this a wrong merge rather than a
+	// de-duplication. It does not: both used the same <UnitControl> with the
+	// same LENGTH_UNITS, and the same <ToggleGroupControl> over the same
+	// CONTENT_WIDTH_PRESET_OPTIONS sharing contentWidthPreset()/isToken().
+	//
+	// Desktop keeps the BASE attribute (`maxWidth`, `contentWidth`), so nothing
+	// stored changes and no migration is needed.
+	const MAX_WIDTH_ATTR = {
+		desktop: 'maxWidth',
+		tablet: 'maxWidthTablet',
+		mobile: 'maxWidthMobile',
+	};
+	const CONTENT_WIDTH_ATTR = {
+		desktop: 'contentWidth',
+		tablet: 'contentWidthTablet',
+		mobile: 'contentWidthMobile',
+	};
+	const maxWidthByTier = { desktop: maxWidth, tablet: maxWidthTablet, mobile: maxWidthMobile };
+	const contentWidthByTier = {
+		desktop: contentWidth,
+		tablet: contentWidthTablet,
+		mobile: contentWidthMobile,
+	};
 
-	const cwTabletPreset = contentWidthPreset( contentWidthTablet );
-	const cwTabletLiteral = ! isToken( contentWidthTablet ) && /\d/.test( contentWidthTablet ) ? contentWidthTablet : '';
+	// A blank non-desktop tier INHERITS desktop. Unchanged semantics — but
+	// previously invisible, and on the content band actively misleading:
+	// contentWidthPreset('') returns 'full', and SGS_Container_Wrapper treats
+	// 'full' and '' identically, so an inheriting tablet tier rendered as
+	// "Full" selected — indistinguishable from an explicit Full override. With
+	// desktop and the tiers now in one control, that ambiguity would have been
+	// the ONLY thing a client sees. Fixed here by showing the RESOLVED value
+	// plus ResponsiveControl's inherit hint.
+	const isTierInherited = ( byTier ) => ( tier ) =>
+		tier !== 'desktop' && ( byTier[ tier ] === '' || byTier[ tier ] == null );
 
-	const cwMobilePreset = contentWidthPreset( contentWidthMobile );
-	const cwMobileLiteral = ! isToken( contentWidthMobile ) && /\d/.test( contentWidthMobile ) ? contentWidthMobile : '';
+	const resolveTierValue = ( byTier ) => ( tier ) =>
+		isTierInherited( byTier )( tier ) ? byTier.desktop : byTier[ tier ];
+
+	// Mirrors the previous per-tier literal derivation exactly (a non-token
+	// value containing a digit is a literal CSS length; anything else is not).
+	const literalOf = ( raw ) => ( ! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '' );
+
+	const resolvedMaxWidth = resolveTierValue( maxWidthByTier );
+	const resolvedContentWidth = resolveTierValue( contentWidthByTier );
+	const maxWidthInherited = isTierInherited( maxWidthByTier );
+	const contentWidthInherited = isTierInherited( contentWidthByTier );
 
 	return (
 		<>
-			{ /* ---- OUTER max-width ---- */ }
-			<UnitControl
+			{ /* ---- OUTER max-width — one control, all three tiers ---- */ }
+			<ResponsiveControl
 				label={ __( 'Outer max-width', 'sgs-blocks' ) }
-				value={ maxWidth || '' }
-				units={ LENGTH_UNITS }
-				onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-				help={ __( 'Exact CSS length applied as max-width on the outer block (e.g. 800px). Leave blank for no cap. Breakout (wide / full) is set via the block toolbar.', 'sgs-blocks' ) }
-				__nextHasNoMarginBottom
-			/>
-			<ResponsiveControl label={ __( 'Outer max-width by viewport', 'sgs-blocks' ) }>
-				{ ( breakpoint ) => {
-					if ( breakpoint === 'desktop' ) {
-						return (
-							<p className="sgs-inspector-help">
-								{ __( 'Desktop max-width is set above.', 'sgs-blocks' ) }
-							</p>
-						);
-					}
-					const attrMap = {
-						tablet: 'maxWidthTablet',
-						mobile: 'maxWidthMobile',
-					};
-					return (
-						<UnitControl
-							value={ attributes[ attrMap[ breakpoint ] ] || '' }
-							units={ LENGTH_UNITS }
-							onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val ?? '' } ) }
-							help={ __( 'Override outer max-width at this viewport. Leave blank to inherit desktop.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-					);
-				} }
+				value={ maxWidthByTier }
+				isInherited={ maxWidthInherited }
+				resolvedValue={ ( tier ) => resolvedMaxWidth( tier ) || __( 'no cap', 'sgs-blocks' ) }
+				onReset={ ( tier ) => setAttributes( { [ MAX_WIDTH_ATTR[ tier ] ]: '' } ) }
+			>
+				{ ( breakpoint ) => (
+					<UnitControl
+						value={ maxWidthByTier[ breakpoint ] || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) =>
+							setAttributes( { [ MAX_WIDTH_ATTR[ breakpoint ] ]: val ?? '' } )
+						}
+						help={
+							breakpoint === 'desktop'
+								? __(
+										'Exact CSS length applied as max-width on the outer block (e.g. 800px). Leave blank for no cap. Breakout (wide / full) is set via the block toolbar.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Override outer max-width at this viewport. Leave blank to inherit desktop.',
+										'sgs-blocks'
+								  )
+						}
+						__nextHasNoMarginBottom
+					/>
+				) }
 			</ResponsiveControl>
 
 			<hr style={ { margin: '16px 0' } } />
 
-			{ /* ---- CONTENT BAND width ---- */ }
-			<ToggleGroupControl
+			{ /* ---- CONTENT BAND width — one control, all three tiers ---- */ }
+			<ResponsiveControl
 				label={ __( 'Content band width', 'sgs-blocks' ) }
-				value={ cwPreset }
-				onChange={ ( val ) => {
-					if ( val === 'custom' ) {
-						// Seed a real starter literal (not '') so contentWidthPreset() reads
-						// 'custom' on the next render — otherwise '' maps back to 'full' and the
-						// radio snaps back with no input box. 800px rarely equals a preset
-						// (content-size ≈ 1200 / wide-size ≈ 1400). Keep any existing literal.
-						setAttributes( { contentWidth: cwLiteral || '800px' } );
-					} else {
-						setAttributes( { contentWidth: val } );
-					}
+				value={ contentWidthByTier }
+				isInherited={ contentWidthInherited }
+				resolvedValue={ ( tier ) => {
+					const resolved = resolvedContentWidth( tier );
+					const preset = contentWidthPreset( resolved );
+					const match = CONTENT_WIDTH_PRESET_OPTIONS.find( ( o ) => o.value === preset );
+					return preset === 'custom' ? resolved : match?.label ?? preset;
 				} }
-				isBlock
-				__nextHasNoMarginBottom
+				onReset={ ( tier ) => setAttributes( { [ CONTENT_WIDTH_ATTR[ tier ] ]: '' } ) }
 			>
-				{ CONTENT_WIDTH_PRESET_OPTIONS.map( ( opt ) => (
-					<ToggleGroupControlOption
-						key={ opt.value }
-						value={ opt.value }
-						label={ opt.label }
-					/>
-				) ) }
-			</ToggleGroupControl>
-			<p className="components-base-control__help">
-				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size), Wide ≈ 1400px (wide-size), Full = no cap (default).', 'sgs-blocks' ) }
-			</p>
-			{ cwPreset === 'custom' && (
-				<UnitControl
-					label={ __( 'Custom content band width', 'sgs-blocks' ) }
-					value={ cwLiteral }
-					units={ LENGTH_UNITS }
-					onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-					help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-				/>
-			) }
-
-			<ResponsiveControl label={ __( 'Content band width by viewport', 'sgs-blocks' ) }>
 				{ ( breakpoint ) => {
-					if ( breakpoint === 'desktop' ) {
-						return (
-							<p className="sgs-inspector-help">
-								{ __( 'Desktop content band width is set above.', 'sgs-blocks' ) }
-							</p>
-						);
-					}
-					const attrMap = {
-						tablet: { preset: cwTabletPreset, literal: cwTabletLiteral, attr: 'contentWidthTablet' },
-						mobile: { preset: cwMobilePreset, literal: cwMobileLiteral, attr: 'contentWidthMobile' },
-					};
-					const { preset, literal, attr } = attrMap[ breakpoint ];
+					const attr = CONTENT_WIDTH_ATTR[ breakpoint ];
+					// An inheriting tier shows the value it actually renders at,
+					// not the 'full' that contentWidthPreset('') would report.
+					const shown = resolvedContentWidth( breakpoint );
+					const preset = contentWidthPreset( shown );
+					const literal = literalOf( shown );
 					return (
 						<>
 							<ToggleGroupControl
 								value={ preset }
 								onChange={ ( val ) => {
 									if ( val === 'custom' ) {
-										// Seed a real starter literal (see desktop handler above)
-										// so the tier's preset reads 'custom' and its input appears.
+										// Seed a real starter literal (not '') so
+										// contentWidthPreset() reads 'custom' on the next
+										// render — otherwise '' maps back to 'full' and the
+										// radio snaps back with no input box. 800px rarely
+										// equals a preset (content-size ≈ 1200 / wide-size
+										// ≈ 1400). Keep any existing literal.
 										setAttributes( { [ attr ]: literal || '800px' } );
 									} else {
 										setAttributes( { [ attr ]: val } );
@@ -388,10 +414,11 @@ export function WidthPanel( { attributes, setAttributes } ) {
 							</ToggleGroupControl>
 							{ preset === 'custom' && (
 								<UnitControl
+									label={ __( 'Custom content band width', 'sgs-blocks' ) }
 									value={ literal }
 									units={ LENGTH_UNITS }
 									onChange={ ( val ) => setAttributes( { [ attr ]: val ?? '' } ) }
-									help={ __( 'Exact CSS length for this viewport.', 'sgs-blocks' ) }
+									help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
 								/>
 							) }
@@ -399,6 +426,12 @@ export function WidthPanel( { attributes, setAttributes } ) {
 					);
 				} }
 			</ResponsiveControl>
+			{ /* Kept OUTSIDE the wrapper deliberately: this is the only place a
+			     non-technical client is told what the tokens mean, and inside the
+			     render prop it would show on one tier at a time. */ }
+			<p className="components-base-control__help">
+				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size), Wide ≈ 1400px (wide-size), Full = no cap (default).', 'sgs-blocks' ) }
+			</p>
 		</>
 	);
 }
