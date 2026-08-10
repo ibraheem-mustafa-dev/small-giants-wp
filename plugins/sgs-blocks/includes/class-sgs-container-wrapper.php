@@ -1019,13 +1019,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$shape_bottom = $attributes['shapeDividerBottom'] ?? '';
 
 				if ( $shape_top ) {
-					$shape_top_html               = sgs_render_shape_divider(
+					$shape_top_html             = sgs_render_shape_divider(
 						$shape_top,
 						! empty( $attributes['shapeDividerTopFlip'] ),
 						! empty( $attributes['shapeDividerTopInvert'] ),
 						'top'
 					);
-					$shape_divider_decls['top']   = sgs_shape_divider_decls(
+					$shape_divider_decls['top'] = sgs_shape_divider_decls(
 						sgs_colour_value( $attributes['shapeDividerTopColour'] ?? 'surface' ),
 						(int) ( $attributes['shapeDividerTopHeight'] ?? 60 )
 					);
@@ -1526,13 +1526,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						// content size, so that collapse was structurally incapable of
 						// ever being organic.
 						if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
-							$tablet_track     = $intrinsic_columns
+							$tablet_track    = $intrinsic_columns
 								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ) )
 								: 'repeat(' . absint( $columns_tablet ) . ',1fr)';
 							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . $tablet_track . '}}';
 						}
 						if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
-							$mobile_track     = $intrinsic_columns
+							$mobile_track    = $intrinsic_columns
 								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ) )
 								: 'repeat(' . absint( $columns_mobile ) . ',1fr)';
 							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . $mobile_track . '}}';
@@ -1840,6 +1840,81 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						'transform' => $sgs_resolve_content_width,
 					);
 				}
+				// ------------------------------------------------------------
+				// LAYOUT properties — tier-capable (Spec 35 Phase 1.4, 2026-08-10).
+				//
+				// Bean-directed: "the shared wrapper should be updated to be fully
+				// responsive too … that way every block that uses it doesn't need
+				// individual fixes that require forking".
+				//
+				// These six were DESKTOP-ONLY. They are the six with the strongest
+				// per-device case in the whole wrapper — `flex-direction` alone
+				// (row on desktop, column on mobile) is the commonest responsive
+				// need there is — and every one of them previously forced a block
+				// wanting a mobile variant to fork its own attribute.
+				//
+				// WHY THIS IS BEHAVIOUR-PRESERVING, not a rendering change:
+				// * Each entry is is_array()-GUARDED, exactly like maxWidth /
+				// padding / margin above. A block still storing a plain scalar
+				// never reaches here and keeps its existing
+				// $base_grid_real_decls path, byte-identical.
+				// * A block that DOES store {desktop,tablet,mobile} gets all three
+				// tiers automatically — no new branch, no new code.
+				// * sgs_responsive_normalise_object() maps a plain scalar to the
+				// desktop tier with null tablet/mobile, so even a scalar routed
+				// here would emit desktop-only. The guard is belt-and-braces.
+				//
+				// WHY THERE IS NO PER-PROPERTY EMISSION CODE: sgs_emit_responsive_css()
+				// is already generic — it expands each spec to atoms, null-coalesces
+				// up the tier cascade, and TIER-DIFFS so a tier emits only where it
+				// actually differs from the tier below. Adding property #7 is one
+				// array entry, not another branch. That is the whole point: 32
+				// hand-written branches is where the dead desktop-height rule hid
+				// for months, and this shape cannot grow that failure mode.
+				//
+				// SELECTOR: $grid_sel — verified, not assumed. All six currently
+				// emit via $base_grid_real_decls, which routes to $grid_sel (the
+				// __inner band when $grid_on_inner, else the outer .$uid). Same
+				// selector the gap / grid-template-columns entries above already use.
+				//
+				// ⛔ STAGE 2 (named, NOT "out of scope" — STOP-29): the six
+				// grid-item properties (gridItemPadding, gridItemBorderRadius,
+				// gridItemBackground, gridItemTextColour, gridItemBorder,
+				// gridItemShadow) plus `shadow` and `contentBandBackground` are NOT
+				// here. They emit as CSS CUSTOM PROPERTIES (`--sgs-gi-*`, see $gi[]
+				// around :710) onto a different selector, so they need their own
+				// tier plumbing rather than a prop_map row. Deferred deliberately:
+				// shipping six with a verified selector beats shipping fourteen with
+				// eight guessed ones — a wrong selector is silently dead CSS, which
+				// is the exact bug class this session already found twice.
+				foreach ( array(
+					'alignContent'   => 'align-content',
+					'justifyContent' => 'justify-content',
+					'justifyItems'   => 'justify-items',
+					'flexDirection'  => 'flex-direction',
+					'flexWrap'       => 'flex-wrap',
+					'gridAutoRows'   => 'grid-auto-rows',
+				) as $sgs_attr => $sgs_css_prop ) {
+					if ( isset( $attributes[ $sgs_attr ] ) && is_array( $attributes[ $sgs_attr ] ) ) {
+						$obj_inner_props[] = array(
+							'value'     => $attributes[ $sgs_attr ],
+							'css'       => $sgs_css_prop,
+							// Keyword properties, not lengths — sanitise as a CSS
+							// keyword so a tier value can never break its declaration.
+							// grid-auto-rows takes a track value, so it uses the
+							// grid-template sanitiser the base path already applies
+							// at :755.
+							'transform' => ( 'grid-auto-rows' === $sgs_css_prop )
+								? static function ( $raw ) {
+									return sgs_sanitize_grid_template( (string) $raw );
+								}
+								: static function ( $raw ) {
+									return preg_replace( '/[^A-Za-z0-9 _-]/', '', (string) $raw );
+								},
+						);
+					}
+				}
+
 				if ( $obj_inner_props && '' !== $grid_sel ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => true ) );
 				}
