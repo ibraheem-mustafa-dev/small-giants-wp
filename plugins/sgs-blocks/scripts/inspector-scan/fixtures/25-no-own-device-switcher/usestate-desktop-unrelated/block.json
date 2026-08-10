@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/usestate-desktop-unrelated",
+	"title": "Fixture: useState('desktop') used as an unrelated default with no tablet/mobile setter calls (must NOT flag)",
+	"category": "sgs",
+	"attributes": {}
+}

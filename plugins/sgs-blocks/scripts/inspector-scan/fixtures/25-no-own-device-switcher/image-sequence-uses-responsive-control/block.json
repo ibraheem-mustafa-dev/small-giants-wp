@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/image-sequence-uses-responsive-control",
+	"title": "Fixture: mirrors image-sequence's use of the shared <ResponsiveControl> wrapper (must NOT flag)",
+	"category": "sgs",
+	"attributes": {}
+}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/responsive-logo-switch-mode",
+	"title": "Fixture: mirrors responsive-logo's 2-option SelectControl mode picker — not a 3-tier switcher (must NOT flag)",
+	"category": "sgs",
+	"attributes": {}
+}

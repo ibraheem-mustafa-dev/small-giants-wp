@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/nav-menu-burger-breakpoint",
+	"title": "Fixture: mirrors the real nav-menu burger-breakpoint ToggleGroupControl — a value picker, not a device switcher (must NOT flag)",
+	"category": "sgs",
+	"attributes": {}
+}

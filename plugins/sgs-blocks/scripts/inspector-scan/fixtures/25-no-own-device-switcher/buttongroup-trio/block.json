@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/buttongroup-trio",
+	"title": "Fixture: hand-rolled ButtonGroup with exactly desktop/tablet/mobile values (must flag)",
+	"category": "sgs",
+	"attributes": {}
+}

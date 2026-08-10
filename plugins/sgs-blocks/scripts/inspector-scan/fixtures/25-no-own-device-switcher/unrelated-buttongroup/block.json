@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/unrelated-buttongroup",
+	"title": "Fixture: mirrors media's ButtonGroup for media-type selection (image/video/svg) — unrelated to device tiers (must NOT flag)",
+	"category": "sgs",
+	"attributes": {}
+}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/devicetabs-direct",
+	"title": "Fixture: block renders <DeviceTabs> directly (must flag)",
+	"category": "sgs",
+	"attributes": {}
+}

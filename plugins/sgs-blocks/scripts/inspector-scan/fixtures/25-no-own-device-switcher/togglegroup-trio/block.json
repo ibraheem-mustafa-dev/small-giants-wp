@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/togglegroup-trio",
+	"title": "Fixture: hand-rolled ToggleGroupControl with exactly desktop/tablet/mobile values (must flag)",
+	"category": "sgs",
+	"attributes": {}
+}
