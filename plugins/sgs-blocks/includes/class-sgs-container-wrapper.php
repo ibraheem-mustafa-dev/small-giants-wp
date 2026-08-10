@@ -2069,6 +2069,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => true ) );
 				}
 
+				// CENTRING — the second half of a width band, and the flat path's
+				// missing twin. A `max-width` alone does NOT centre: the leftover space
+				// has to be shared explicitly. EVERY flat-path width rule emits
+				// `margin-inline:auto` in the SAME declaration (:1288, :1329, :1441,
+				// :1633) — the object path emitted only the max-width, so an
+				// object-shaped band rendered flush-left.
+				//
+				// MEASURED 2026-08-10 on the canary, both directions (D552).
+				// OBJECT contentWidth, page 1591: 1200px band, 47.46px of dead space on
+				// the right, 0.00px on the left.
+				// FLAT contentWidth, homepage: all 5 bands centred, margin-inline
+				// resolving to 77.7 / 107.7 / 147.7px each side.
+				// Same measurement method, opposite result: that pair is the proof, not
+				// the source read alone.
+				//
+				// Emitted ONCE at base, not per tier: `margin-inline:auto` is a no-op
+				// without a width constraint, so a tier carrying no width is unaffected
+				// and no tier-coupling machinery is needed (Bean-approved shape,
+				// 2026-08-10 — the simple fix over changing the shared emitter).
+				if ( '' !== $grid_sel && isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
+					$responsive_css .= $grid_sel . '{margin-inline:auto}';
+				}
+
 				// OUTER shadow — tier-capable (Spec 35 Phase 1.4b, STAGE 2). VERIFIED
 				// selector: the legacy `$shadow` scalar path (~:634-637) emits
 				// `box-shadow` into $base_outer_decls, which is emitted as a scoped
@@ -2148,6 +2171,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 				if ( $obj_outer_props ) {
 					$responsive_css .= sgs_emit_responsive_css( $obj_outer_sel, $obj_outer_props, array( 'container' => false ) );
+				}
+
+				// Same centring pairing for the OUTER max-width. The flat path emits
+				// both halves together at :1441 —
+				// `.uid{max-width:…;margin-inline:auto}` — so an object-shaped outer
+				// max-width without this renders flush-left for the same reason the
+				// inner band did. Guarded on the object shape only, so the flat path is
+				// untouched and cannot double-emit.
+				if ( isset( $attributes['maxWidth'] ) && is_array( $attributes['maxWidth'] ) ) {
+					$responsive_css .= $obj_outer_sel . '{margin-inline:auto}';
 				}
 			}
 
