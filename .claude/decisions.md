@@ -1,5 +1,49 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D550 — Corrections owed from the 2026-08-10 QC council; three numbers withdrawn [INCIDENT]
+
+**2026-08-10.** A 3-rater QC council on the session's 9 commits. Two raters found real defects
+(both already fixed — see D549's landmine note). This entry records what the third falsified,
+because a wrong number quoted confidently is worse than no number.
+
+**1. The `kind` split in commit `2e48c3ff`'s message is WRONG. Corrected: 11 layout / 5 content,
+not "10 / 6".** A rater read all 16 mount sites individually; an independent re-count reproduced
+it. The load-bearing claims are UNAFFECTED — 16 real mounts, and ZERO passing `'section'`, which
+is what made the min-height panel unreachable — but the internal split was off by one in each
+direction.
+
+⚠ **This is the THIRD comment-contaminated count of this same identifier in one session** (first
+"24 mounts, 19 omitting kind", then this). `<ContainerWrapperControls` appears in PROSE in six
+files that document having STOPPED using it, so **any text-based count of it is wrong by
+construction**. Only a JSX-element (AST) count is trustworthy. Generalises
+`a-grep-for-a-class-name-is-not-a-usage-census`: when an identifier is discussed in comments as
+often as it is used, naming the trap is not enough — the METHOD has to change.
+
+**2. Tree-wide FLAGGED at `cb209dc1` is DISPUTED — three values in circulation, all withdrawn.**
+Author measured 243 FLAGGED / 257 raw; `LEDGER.md` claims 254 raw; a rater rebuilt the tree from
+a frozen `git archive cb209dc1` snapshot, ran the real scanner against it, and got **245 / 259**.
+The rater's method is the strongest of the three (re-execution against reconstructed historical
+source, with a probe defect caught and fixed mid-run when a missing `theme/` dir skewed rules
+17/20). **Do not cite any tree-wide figure until re-derived.** ⚑ Note this does NOT affect rule
+21, which all three methods agree on: **129 at `cb209dc1`**, independently reproduced.
+
+**3. "16 desktop-only CSS-bearing wrapper properties" has NO recorded derivation.** It was
+measured in-session via `sgs-db` (`css_property IS NOT NULL AND css_tier IS NULL AND
+is_responsive=0`, excluding tier siblings) and never written to the repo, so a rater could not
+find its source. The number is believed correct but is UNVERIFIED as committed. Either re-derive
+it and record the query, or stop citing it. The six properties actually shipped in `2056af6a`
+are named explicitly and are not in doubt.
+
+**Confirmed by independent re-derivation (cite these freely):** rule 21 = 129 at `cb209dc1` and
+133 now; rule 26 8→3 with the full path reconstructed (8 →`a05194e3` −2→ 6 →`2e48c3ff` −1→ 5
+→`0e6209e6` −2→ 3); 16 real mounts, 0 `section`; 8 blocks declare `minHeight*` with 0 enums; 15
+blocks opt into `imageControls`; denominator 83; exactly 8 commits, each scoped to what its
+message claims.
+
+**Also noted by the rater, and worth keeping:** several commits explicitly flag what they did NOT
+verify ("live editor verification is still owed and is explicitly NOT claimed"). No commit was
+found claiming a verification its diff does not support. Keep that pattern.
+
 ## D549 — The shared wrapper becomes fully responsive GENERICALLY; two storage shapes, two independent axes [ROUTINE]
 
 **2026-08-10. Bean-directed, verbatim (twice, in-session):** *"The shared wrapper should be
