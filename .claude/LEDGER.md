@@ -9,8 +9,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Where 2026-08-10 (session 3) left things** *(session 2 summary kept below; prior narrative:
-`memory/session-2026-08-09*.md`)*:
+**Where 2026-08-10 (session 3) left things:**
 
 - **A real styling bug was painting on a live page, and it's fixed.** A block that should sit in a
   centred 1200-pixel column was shoved to the left with a 47-pixel gap on one side only. Cause: telling
@@ -36,7 +35,9 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 - **A database staleness bug fixed**: the gallery block's settings had changed shape months ago but the
   database still described the old shape, so every tool reading it was working from a dead model.
 
-**Session-2 narrative:** `memory/session-2026-08-10*.md` (rotated by the Stop hook). Not repeated here.
+**Earlier narrative:** newest snapshot on disk is `memory/session-2026-08-08.md`. Sessions 2-3 were not
+rotated, so their record is the commit messages + `decisions.md` D546-D555. ⚠ Pointers to
+`session-2026-08-09*`/`-10*` were DANGLING — globs escape the preflight's link check.
 
 ## CURRENT FRONTS
 
@@ -68,11 +69,9 @@ wired, see D552 §2**; `sgs/gallery` → FR-37-16 object model (`0e6209e6`); `su
 
 #### ⛔ Do NOT start these
 
-- **Re-deriving the canonical control set** — `plans/spec-35-control-type-contract.md` is
-  AUTHORITATIVE. Read it before designing anything.
-- **Stripping native `color`/`__experimentalBorder` supports** (D542). ⚠ `spacing` was knowingly
-  removed from `sgs/gallery` ONLY (D548) — that is a per-block, documented reversal with a stated
-  cost, NOT a general licence.
+- **Re-deriving the canonical control set** — `plans/spec-35-control-type-contract.md` is AUTHORITATIVE.
+- **Stripping native `color`/`__experimentalBorder` supports** (D542). ⚠ `spacing` was removed from
+  `sgs/gallery` ONLY (D548) — a documented per-block reversal, NOT a general licence.
 - **Re-adding any per-control device switcher** — rule 25 flags it.
 - **Restoring `localStorage` on the toggle** — its absence is deliberate (D546).
 - **Rebuilding the rejected inspector census** (D543).
@@ -305,9 +304,9 @@ is USED before investing in making it correct** — the census that answered it 
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | **The canonical control set (GOVERNING)** | `plans/spec-35-control-type-contract.md` |
-| The standardisation programme (RESUME HERE) | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
-| This session's plan + wrapper design | `C:\Users\Bean\.claude\plans\invoke-autopilot-before-doing-memoized-locket.md` |
-| Decisions (D-numbered) | `decisions.md` — D546-D550 are today |
+| Programme scope + phases (NOT the entry point) | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
+| **The live migration design** | `plans/spec-35-flat-to-object-migration-design.md` + `spec-39-seed-requirements.md` |
+| Decisions (D-numbered) | `decisions.md` — D552-D555 are today |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
