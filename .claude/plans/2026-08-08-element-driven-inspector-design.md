@@ -145,6 +145,21 @@ element declares `contentAttrs`, its content controls stay where they are** — 
 
 ## 4. Hover — delete the universal system (Bean decision 2)
 
+> # ⛔ SUPERSEDED 2026-08-10 by D551, ruled at D553. DO NOT EXECUTE THIS SECTION.
+>
+> This section (and Phase 4 in the phase table below) required **capability-first in five ordered
+> steps**, gated on *"no block loses capability"*, because 48 blocks rely on the hover extension
+> solely. **D551 is newer and Bean-verbatim, and it governs:** `hover-effects`, `block-link` and the
+> other problematic extensions are **DISCONNECTED and made opt-in as part of Phase 2.1**, and effort
+> spent making them correct is effort entrenching a mechanism being removed.
+>
+> The evidence that settled it: **ZERO stored hover attributes across 194 canary pages** (positive
+> control — 1706 SGS block openings parsed, so the zero is a measurement). *"48 blocks rely on it"*
+> and *"nobody uses it"* are both true; which one governs was Bean's call, not a deduction.
+>
+> Owner is now Phase 2.1 in `go-track-1b-*`. Kept here for its measurements and its 48-block census,
+> **not** as instructions.
+
 **Destination:** `extensions/hover-effects.js`'s colour controls go. Hover belongs to the element.
 
 ⛔ **It cannot be step one.** 48 blocks have NO hover attributes of their own and rely entirely on

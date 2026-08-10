@@ -9,7 +9,34 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Where 2026-08-10 (session 2) left things** *(prior narrative: `memory/session-2026-08-09*.md`)*:
+**Where 2026-08-10 (session 3) left things** *(session 2 summary kept below; prior narrative:
+`memory/session-2026-08-09*.md`)*:
+
+- **A real styling bug was painting on a live page, and it's fixed.** A block that should sit in a
+  centred 1200-pixel column was shoved to the left with a 47-pixel gap on one side only. Cause: telling
+  a browser "at most 1200 wide" doesn't centre anything — you also have to say "split the leftover
+  space evenly", and the newer of our two ways of storing per-device settings was only saying the first
+  half. Found by measuring the live page, fixed, re-measured: **23.73 pixels each side**.
+- **The same bug would have hit all 160 settings we're about to migrate.** Fixing it now cost minutes.
+  Finding it halfway through the migration would have meant redoing that work.
+- **Yesterday's "everything now works per device" was an overclaim, and I corrected the record.** The
+  shared container *can* now do it. But **no block is wired to use it yet** — only 3 of 83 blocks opt
+  in, and none of them declares the 8 newest settings in the shape the new code reads. The capability
+  shipped; the wiring is the migration. That's not a blocker, it's the second half.
+- **A comment in the code was promising protection that doesn't exist.** It claimed certain safety
+  checks were "further down the file". There are none — the sentence was the only mention. Anyone
+  reading it would have assumed cover they didn't have. Now accurate.
+- **I broke the build and then found the real reason, which is worth more than the fix.** A
+  *comment-only* change turned a build check from "all clear" to "73 problems", blocking the build. The
+  cause: our checker strips comments in the wrong order, so a file path with a `*` in it written inside
+  a comment silently deleted a chunk of real code from what the checker examines. It then blamed the
+  code instead of itself. Fixed with your approval, plus a test proving it can catch this — and that
+  test caught **its own** blind spot first (it passed while the bug was deliberately switched back on).
+- **Two other places in the codebase had the same trap**, harmless only by luck. Now neutralised.
+- **A database staleness bug fixed**: the gallery block's settings had changed shape months ago but the
+  database still described the old shape, so every tool reading it was working from a dead model.
+
+**Where 2026-08-10 (session 2) left things:**
 
 - **The shared container is now FULLY responsive by design, not block by block.** You asked for the
   wrapper to be fixed once so no block needs "individual fixes that require forking". **Every one
@@ -39,7 +66,17 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D551**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D553**.
+
+### Shipped 2026-08-10 session 3
+
+| What | Commit |
+|---|---|
+| **Object-shaped width bands never centred** — flat path's missing `margin-inline:auto` twin | `1979c419` |
+| Wrapper `:128` comment promised `! $object_model` gates that do not exist | `a6e0f390` |
+| Centring guard requires a REAL tier value (`[]` is UNSET, not a value) + my build regression | `9b4722a9` |
+| **`check-dead-controls` stripper: line comments BEFORE block comments** (+ Test G, proven able to fail) | `f11b122a` |
+| D552 + D553; 2026-08-08 plan §4/Phase 4 marked SUPERSEDED | *(this commit)* |
 
 ### ⭐ Track 1b (Spec 35) — inspector control standardisation
 
@@ -78,7 +115,24 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 - **Restoring `localStorage` on the toggle** — its absence is deliberate (D546).
 - **Rebuilding the rejected inspector census** (D543).
 
-### ⭐ NEXT SESSION — resume `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md`
+### ⭐ NEXT SESSION — resume `C:\Users\Bean\.claude\plans\go-track-1b-mossy-babbage.md` at STEP 6
+
+Steps 1-5 of that plan are DONE (see *Shipped session 3* above + D552/D553). **Steps 6 and 7 remain**
+and are the substantial ones:
+
+- **Step 6 — sequence the AUTHORISED flat→object migration.** Bean authorised the migration itself and
+  set the ordering rule: **the block standard leads, the cloning pipeline is reworked afterwards** to
+  the universalised norm, so the converter's missing object emitter is scheduled work and NEVER a
+  precondition. Deliverable is a design document for Bean's approval, then `/qc-council`. ⛔ Two hard
+  prerequisites are DESIGNED in Step 6 and BUILT next, before any block edit: **P1** the `--check` gate
+  proven able to fail (and expressing the PHASE — flat is conforming for an un-migrated block, object
+  for a migrated one), **P2** `/sgs-update` seeding reworked so object-shaped attrs and their unique
+  identifiers seed correctly. P2's deciding question is the `css_property = NULL` item under *Open*.
+- **Step 7 — capture Spec 39 seed requirements** (`.claude/plans/spec-39-seed-requirements.md`). Spec
+  39 does not exist yet; 38 is the highest live spec. Capture inputs, do not write the spec.
+
+⚠ The older `go-track-1b-playful-hamster.md` remains the programme-level plan (Phases 0-4) and is
+still valid for scope; `mossy-babbage` is the live execution plan.
 
 Bean-directed: continue the ORIGINAL planned work. Phase 1 is done; the plan's later phases are not.
 
@@ -191,14 +245,27 @@ is USED before investing in making it correct** — the census that answered it 
 
 ## Open — carried, not ours to close
 
-- **`sgs/gallery` page 1591 migration is WRITTEN + dry-run clean but NOT YET RUN `--live`.**
-  `scripts/migrate-gallery-object-model.js`. Until it runs, that page keeps rendering its old
-  padding via the wrapper's un-gated `style.spacing` read (a graceful window, verified) but its
-  `contentWidth:"1200px"` will coerce to `{}` once the new schema is live. **Run it, then confirm
-  the 1200px band and 48/24/24/48 padding on the live page.**
-- ⚠ **Wrapper Stage 2 has no LIVE-EDITOR verification.** The code shipped (`dc1f0023`, all 8
-  properties) and its 16/16 probe tests the HELPER, not the editor. A green build proves almost
-  nothing about editor JS — verify in both editors before treating Stage 2 as closed.
+- ✅ **CLOSED 2026-08-10 s3 — `sgs/gallery` page 1591 migration.** It had **already been run** in a
+  prior session; this item was stale. The script is idempotent and correctly reported 0 posts. Stored
+  content verified `contentWidth:{"desktop":"1200px"}` + `padding:{"desktop":{48/24/48/24}}`, no
+  `style.spacing` remaining, and the live page now renders a **centred** 1200px band (23.73px each
+  side, measured at a viewport where 1200px actually constrains).
+- ✅ **CLOSED 2026-08-10 s3 — wrapper Stage 2 live-editor verification, with the honest scope.**
+  Verified in BOTH surfaces, 0 console errors: post editor renders the object-model panel *"Spacing &
+  width (per device)"*; `core/editor.getDeviceType()` resolves in the **site** editor too. ⚠ The
+  honest result is that **Stage 2's 14 properties are CAPABILITY-ONLY — zero reachable instances**
+  (only 3 of 83 blocks opt in, none declares them object-typed). Reachable: `gap` ×2,
+  `gridTemplateColumns` ×1, `contentWidth`/`maxWidth`/`padding`/`margin` ×3. See D552 §2.
+- ⛔ **OPEN — `inspector-scan` count discrepancy, unreconciled.** This doc claims rule 21 = **133** and
+  **245** tree-wide. Measured 2026-08-10 s3 with the same `rules[].findings` + `status:"FLAGGED"`
+  method: **98** and **215**. Neither is adopted as truth. **Do not cite either figure until this is
+  reconciled** — and re-measure rather than trusting this line.
+- ⛔ **OPEN — `/sgs-update` has 14 stages, not 12.** `sgs-update-v2.py` references Stage 14. Read its
+  stage map; do not trust any cached count (including this one).
+- ⛔ **OPEN, and it decides P2's design — `css_property = NULL` on object attrs is NOT caused by the
+  shape.** Refuted 2026-08-10 s3: gallery's *object* `maxWidth` retains `css_property = max-width`
+  while the row blocks' object `maxWidth` is NULL. Most likely a fossil (Stage 1 updates `attr_type`
+  without clearing `css_property`). **Read the seeder before designing P2.**
 - **The lost at-a-glance affordance** — deleted per-control strips showed which OTHER tiers had a
   value. Needs its own design; ⛔ must NOT be solved by re-adding a per-control switcher.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).

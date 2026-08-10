@@ -1,5 +1,117 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D553 — D551 supersedes the 2026-08-08 plan's §4/Phase 4 on hover; one owner named [ROUTINE]
+
+**2026-08-10, Bean-ruled.** Two plans claimed the hover work by opposite methods:
+D551 (2026-08-10, Bean-verbatim) puts it in **Phase 2.1** as *disconnect now, stop repairing*;
+`.claude/plans/2026-08-08-element-driven-inspector-design.md` §4 / Phase 4 requires
+**capability-first in five ordered steps** gated on *"no block loses capability"*, because 48 blocks
+rely on the hover extension solely.
+
+**Ruling: D551 governs.** It is newer and Bean-verbatim. The 2026-08-08 plan's §4/Phase 4 is
+**SUPERSEDED** — mark it so in that file rather than leaving two live owners.
+
+⚠ The two facts were never actually in conflict: *"48 blocks rely on it"* (capability exists) and
+*"ZERO stored hover attributes across 194 pages"* (nobody uses it) are both true. Which one governs
+was a decision, not a deduction — recorded here so it is not re-litigated as though evidence alone
+settles it.
+
+---
+
+## D552 — Object-shaped width bands never centred; the wrapper's own comment promised gates that do not exist; a glob in a comment blinded a prebuild gate [INCIDENT]
+
+**2026-08-10 session 3.** Four findings from verifying what the 2026-08-10 wrapper commits actually
+reach. Commits `1979c419`, `a6e0f390`, `9b4722a9`, `f11b122a`.
+
+### 1. A LIVE styling defect — object width bands did not centre (FIXED)
+
+A `max-width` alone does not centre; the leftover space must be shared. Every FLAT-path width rule
+emits `margin-inline:auto` in the same declaration (`class-sgs-container-wrapper.php:1288, :1329,
+:1441, :1633`). The OBJECT path emitted only the max-width.
+
+**Measured both directions — the pair is the proof, not the source read:**
+- OBJECT `contentWidth`, page 1591: 1200px band, **47.46px** dead space right, **0.00px** left.
+- FLAT `contentWidth`, homepage: all 5 bands centred, `margin-inline` = 77.7 / 107.7 / 147.7px.
+
+Fixed by emitting the centring once at base (Bean-approved shape over changing the shared emitter —
+`margin-inline:auto` is inert without a width). Post-fix live: **23.73px each side**, band still
+1200px, verified at a viewport where 1200px actually constrains (an earlier reading at a narrow
+viewport was a **vacuous** pass — slack 0 both sides because the band filled the space).
+
+⚠ **`is_array()` cannot detect an unset object attr.** An unset object arrives as an empty **ARRAY**
+(`"default": {}` → PHP `array()` → JSON `[]`); measured live, `sgs/site-header-row` and `sgs/gallery`
+both report `maxWidth: []` / `padding: []` / `margin: []`. Guard now uses
+`$sgs_tier_object_has_value` (7/7 assertions incl. four negative controls).
+
+### 2. Stage 2's 14 tier-capable properties are CAPABILITY-ONLY — zero reachable
+
+Proven by construction, not sampling: only **3 of 83** blocks pass `'responsive_model' => 'object'`
+(gallery, site-header-row, site-footer-row), and **none** declares any of the 8 Stage-2 properties as
+object-typed. `flexDirection` is `type: string` everywhere, so the `is_array()` guard rejects it every
+render. `gridItemPadding`/`gridItemBorderRadius` are object on the **BOX** axis, not TIER, and their
+4 blocks do not opt in. **Reachable today:** `gap` ×2, `gridTemplateColumns` ×1, `contentWidth` /
+`maxWidth` / `padding` / `margin` ×3.
+
+### 3. The wrapper's neutralisation comment described gates that do not exist (FIXED)
+
+`:128` claimed *"the is_array guards below + the `! $object_model` gates further down"*. `grep`
+returns that sentence as the **only** hit — there is no negative gate in the file. Real mechanism:
+is_array() guards on base reads + `$object_grid` + three POSITIVE `$object_model` checks.
+
+**The residual gap, measured LATENT not live:** `$gap_tablet`/`$gap_mobile` are read raw and their
+`@media` emission (`~:1413-1417`) is conditioned only on the siblings being truthy — at the same brace
+depth as the `'' !== $gap` guard, not inside it. Canary: **109 instances** (78 header-row / 24
+footer-row / 7 gallery; 15 publish, 12 draft, 82 revisions) → **0** object+populated-flat collisions.
+Controls: 511 posts contain SGS blocks, and the same reader DID flag `gapTablet`/`gapMobile` on a
+gallery instance **inside that set**, so the zero is a measurement. No speculative gate added.
+
+### 4. ⭐ A GATE BUG: a glob in a `//` comment blinded `check-dead-controls` (FIXED, Bean-approved)
+
+`stripComments()` ran the block-comment rule FIRST, so a slash-star sequence inside a **line** comment
+opened a span running to the next close-delimiter anywhere later in the file, deleting the real code
+between. One such sequence in a wrapper comment removed every `$attributes['gapTablet']`-style read
+from the shared corpus → **73 NET-NEW dead controls against healthy code**, CHECK 4 inflated **3 → 102**,
+build blocked, and the message **accused the code rather than the scanner**.
+
+Bisect: the offending commit was **comment-only**. Excluded first: the working-tree edit (73 with AND
+without) and the DB reseed (73 on the pre-seed snapshot too). Fix = strip line comments first
+(corpus can only get MORE complete → findings can only fall). Real-tree findings **identical**
+before/after, as predicted. Two further instances in `helpers-css-safety.php:91,:128` were harmless
+only by luck and are now neutralised.
+
+⚠ **Test G caught its own vacuity before shipping.** Its first fixture omitted a closing delimiter and
+**passed with the bug deliberately reintroduced** — the regex needs a close to match at all. Fixture
+now carries one; proven able to fail (Test G red, exit 1, on a reverted strip order).
+
+⛔ **Two zero-width spaces in `check-dead-controls.js` are LOAD-BEARING** — they sit between a star and
+a slash inside docblocks to stop them closing early. A global "remove invisible characters" tidy-up
+deleted them, two docblocks terminated at their own example text, and the file stopped parsing. The
+docblock that needed a third now spells the delimiters in words.
+
+### 5. Housekeeping + two OPEN discrepancies
+
+- `/sgs-update --stage 1` reseeded `sgs/gallery`, whose `contentWidth`/`maxWidth` were `object` in
+  block.json but `string` in `block_attributes` since `0e6209e6`. Every DB-first consumer was reading a
+  dead shape. `inspector-scan` backlog unchanged (215 → 215, 0 of 15 rules moved).
+- **`css_property = NULL` on object attrs is NOT caused by the shape** — refuted: gallery's *object*
+  `maxWidth` retains `css_property = max-width`. Most likely a fossil (Stage 1 updates `attr_type`
+  without clearing `css_property`). **Read the seeder before designing P2** — this is the question P2
+  turns on.
+- ⛔ **OPEN — `inspector-scan` count discrepancy.** LEDGER claims rule 21 = **133** / **245** tree-wide.
+  Measured this session, same `rules[].findings` + `status:"FLAGGED"` method: **98** / **215**. Neither
+  adopted as truth. Do not cite either until reconciled.
+- ⛔ **OPEN — `/sgs-update` has 14 stages**, not the 12 the docs claim. Read the stage map in
+  `sgs-update-v2.py`; do not trust a cached count.
+
+**Also verified:** the gallery page-1591 migration was **already run** in a prior session (the LEDGER
+open item was stale; the script is idempotent and correctly reported 0). Both editor surfaces verified
+with **0 console errors** — post editor renders the object-model panel *"Spacing & width (per device)"*,
+and `core/editor.getDeviceType()` resolves in the **site** editor too, confirming the single-store
+claim. The three live header rows carry object `gap` with **empty** flat siblings — an independent
+third confirmation of the zero-collision result.
+
+---
+
 ## D551 — The problematic universal extensions get DISCONNECTED and made opt-in; stop repairing them [ROUTINE]
 
 **2026-08-10. Bean-directed, verbatim:** *"lets not waste any time catering to or fixing
