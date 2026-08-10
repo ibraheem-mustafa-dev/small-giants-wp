@@ -247,7 +247,12 @@ async function main() {
 		}
 
 		if ( LIVE ) {
-			const put = await fetch( `${ url }/wp-json/wp/v2/${ post.type }/${ post.id }`, {
+			// REST collections are PLURAL routes (`/wp/v2/pages/123`), but `post.type`
+			// is the SINGULAR post type (`page`). Deriving the write URL from the type
+			// gave `/wp/v2/page/123` -> HTTP 404 on the first live run. The READ path
+			// never hit this because it hardcodes the collection names.
+			const collection = post.type === 'page' ? 'pages' : 'posts';
+			const put = await fetch( `${ url }/wp-json/wp/v2/${ collection }/${ post.id }`, {
 				method: 'POST',
 				headers: { Authorization: auth, 'Content-Type': 'application/json' },
 				body: JSON.stringify( { content: nextContent } ),

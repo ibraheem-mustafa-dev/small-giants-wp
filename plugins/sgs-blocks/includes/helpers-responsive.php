@@ -297,6 +297,27 @@ if ( ! function_exists( 'sgs_responsive_normalise_object' ) ) {
 					'mobile'  => null,
 				);
 			}
+
+			// An ARRAY with no tier keys on a NON-box property is UNSET, not a value.
+			//
+			// ⛔ Without this branch it fell through to the "plain scalar" return
+			// below and assigned the ARRAY ITSELF as the desktop value, which the
+			// formatter then stringified — emitting a literal `max-width:Array`
+			// declaration. Found LIVE on the canary 2026-08-10 (gallery, page 1591):
+			// every block whose object-typed attr still holds its `default: {}`
+			// reached this path, which is site-header-row and site-footer-row too
+			// (object maxWidth since FR-37-16) — so the defect PRE-DATES the gallery
+			// migration; the migration merely exposed it.
+			//
+			// An empty `{}` is exactly what an untouched object attr looks like, so
+			// this is the COMMON case, not an edge case. Returning all-null lets the
+			// tier-diff emit nothing at all, which is the correct rendering for
+			// "the operator has not set this".
+			return array(
+				'desktop' => null,
+				'tablet'  => null,
+				'mobile'  => null,
+			);
 		}
 
 		// Plain scalar.
