@@ -124,11 +124,39 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Spec 37 FR-37-16 opt-in: the header/footer/nav blocks store responsive
 			// properties as the {desktop,tablet,mobile} object model and pass this
 			// flag so sgs_emit_responsive_css() (called below) owns their responsive
-			// CSS. When set, the legacy flat-scalar responsive paths are neutralised
-			// (the is_array guards below + the ! $object_model gates further down).
+			// CSS.
 			// Flag ABSENT (every other block) → this feature is inert and the scalar
 			// path is byte-identical. This never reorders/mutates $attributes, so the
 			// uid md5 is untouched (STOP-NO-KSORT).
+			//
+			// ⚠ HOW THE LEGACY PATH IS ACTUALLY NEUTRALISED — corrected 2026-08-10
+			// (D552). This comment previously claimed neutralisation came from "the
+			// is_array guards below + the ! $object_model gates further down".
+			// MEASURED: there is NO `! $object_model` gate anywhere in this file —
+			// grep returned only that sentence. Believing it would let the next change
+			// assume protection it does not have, so here is the real mechanism.
+			// (1) is_array() guards on each BASE read (e.g. $gap, $max_width,
+			// $grid_template) coerce an object value to '' so the scalar path cannot
+			// stringify an array — this is what does most of the work.
+			// (2) $object_grid (below) suppresses the legacy columns/grid emission, and
+			// ONLY when an object gridTemplateColumns is actually present.
+			// (3) Three POSITIVE $object_model checks (~:594, ~:1206, ~:2186) force
+			// container-type/emission behaviour. None of them is a negative gate.
+			// The TIER reads are NOT guarded or gated at all: $gap_tablet/$gap_mobile
+			// (below) are read raw, and their @media emission (~:1413-1417) is
+			// conditioned only on those siblings being truthy — it sits at the SAME
+			// brace depth as the `'' !== $gap` guard above it, not inside it. So an
+			// opted-in instance carrying BOTH an object gap AND a stored flat
+			// gapTablet would emit two competing tablet rules, resolved by source
+			// order rather than by design.
+			// LATENT, NOT LIVE — measured on the canary 2026-08-10: 109 instances of
+			// the three opted-in blocks (78 site-header-row / 24 site-footer-row /
+			// 7 gallery; 15 publish, 12 draft, 82 revisions) yielded ZERO
+			// object+populated-flat-sibling collisions. Controls: 511 posts contain
+			// wp:sgs/*, and the same reader DID flag gapTablet/gapMobile on a gallery
+			// instance inside that set, so the zero is a measurement and not a blind
+			// spot. Add the negative gate when a real collision appears, or as part of
+			// the flat→object migration — do not add it speculatively.
 			$object_model = ( ( $opts['responsive_model'] ?? '' ) === 'object' );
 			// Grid gate: only suppress the legacy columns/grid emission when an OBJECT
 			// gridTemplateColumns is actually present. A block that opted in but whose
