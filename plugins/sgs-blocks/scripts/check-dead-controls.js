@@ -303,10 +303,32 @@ function loadSharedCorpus() {
  * `//`, `#`, `/* *​/`. Applied to PHP and JS consumption corpora.
  */
 function stripComments( src ) {
+	// ORDER IS LOAD-BEARING — line comments FIRST, block comments LAST.
+	//
+	// The reverse order (block-first, shipped until 2026-08-10) let a slash-star
+	// sequence written inside a DOUBLE-SLASH comment silently delete real code. A
+	// glob in prose is not a comment opener to a human, but the block-comment
+	// regex cannot tell it sits inside a line comment, so it opened a span that
+	// ran to the next close-delimiter ANYWHERE later in the file and replaced
+	// everything between with a single space.
+	//
+	// MEASURED 2026-08-10: one such sequence in a container-wrapper comment
+	// removed every $attributes['gapTablet']-style read from the shared corpus.
+	// isConsumed() then found nothing, so this gate reported 73 NET-NEW dead
+	// controls against completely healthy code and blocked the build — and the
+	// message accused the code, not the scanner. It also inflated CHECK 4 from 3
+	// to 102. Two more instances live in helpers-css-safety.php (:91, :128),
+	// harmless only by luck: whether damage occurs depends on where the next
+	// close-delimiter happens to fall.
+	//
+	// Stripping line comments first removes the stray sequence before the block
+	// rule ever runs. This can only make the corpus MORE complete, so findings
+	// can only fall or stay equal — verified before/after on the real tree, not
+	// reasoned about. Test G in --self-test asserts both directions.
 	return src
-		.replace( /\/\*[\s\S]*?\*\//g, ' ' ) // /* ... */
-		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' ) // // ... (avoid http://)
-		.replace( /^\s*#[^\n]*/gm, ' ' ); // # ... (PHP line comment)
+		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' ) // line comment (avoid http://)
+		.replace( /^\s*#[^\n]*/gm, ' ' ) // PHP hash line comment
+		.replace( /\/\*[\s\S]*?\*\//g, ' ' ); // block comment, LAST — see above
 }
 
 /**
@@ -1788,6 +1810,48 @@ function runCheck4SelfTest( log ) {
 		log(
 			`FAIL — Test F: shouldFailBuild(advisory)=${ failsWhenAdvisory } (expected false), ` +
 				`shouldFailBuild(blocking)=${ failsWhenBlocking } (expected true).`
+		);
+		pass = false;
+	}
+
+	// Test G — stripComments() must NOT let a slash-star sequence inside a LINE
+	// comment swallow the code that follows it. This is the 2026-08-10 regression:
+	// one glob in a container-wrapper comment removed every
+	// $attributes['gapTablet'] read from the shared corpus, and this gate then
+	// reported 73 NET-NEW dead controls against healthy code while blocking the
+	// build.
+	//
+	// The stray sequence is BUILT BY CONCATENATION, never written literally, so
+	// this test file cannot re-trigger the very bug it guards.
+	//
+	// ⚠ THE FIXTURE MUST CARRY A CLOSING DELIMITER AFTER THE CODE. The first
+	// version of this test omitted it and was VACUOUS — it passed with the bug
+	// deliberately reintroduced, because the block-comment regex needs a closing
+	// delimiter to match at all, so with none present nothing was ever swallowed.
+	// The real-world damage only happened because a LATER docblock supplied that
+	// close, putting the live code inside the accidental span. Proven able to fail
+	// by reverting the strip order in place and watching Test G go red.
+	//
+	// Positive control (sequence present) and negative control (absent) are
+	// asserted TOGETHER — a test that only checks the clean case passes happily
+	// while the bug is live, which is precisely how this shipped.
+	const closer = '/*' + '* doc *' + '/';
+	const strayOpener =
+		'// see wp:sgs' + '/' + '* for detail\n' + "$attributes['gapTablet'];\n" + closer + '\n';
+	const noOpener =
+		'// see sgs blocks for detail\n' + "$attributes['gapTablet'];\n" + closer + '\n';
+	const survivesWithStray = isConsumed( 'gapTablet', stripComments( strayOpener ) );
+	const survivesWithout = isConsumed( 'gapTablet', stripComments( noOpener ) );
+	if ( survivesWithStray && survivesWithout ) {
+		log(
+			'PASS — Test G: a slash-star sequence inside a line comment no longer eats ' +
+				'the code after it (consumed=true with AND without the stray sequence).'
+		);
+	} else {
+		log(
+			`FAIL — Test G: gapTablet consumed with stray opener=${ survivesWithStray } ` +
+				`(expected true), without=${ survivesWithout } (expected true). ` +
+				'stripComments() must strip LINE comments before BLOCK comments.'
 		);
 		pass = false;
 	}
