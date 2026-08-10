@@ -6,8 +6,14 @@ date: 2026-08-10
 wave: "Spec 35 Track 1b Phase 1.4d — fold the two 'by viewport' duplicates into their originals"
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 862a23fb1440e109
+source_sha: 4f8732baa3f37b48
 ---
+
+> **Covers TWO editor-only changes to `ContainerWrapperControls.js` on 2026-08-10**, in
+> order: (1) the `WidthPanel` responsive-duplicate merge, and (2) deletion of the
+> unreachable min-height panel. `source_sha` tracks the latest staged content — the gate
+> rejected this report while it still carried the first change's sha, which is the
+> stale-report defence working exactly as intended.
 
 # sgs/container — `WidthPanel` responsive-duplicate merge (editor-only change)
 
@@ -140,3 +146,51 @@ readings earlier in this programme.
 The panel rendering at all is itself the mount proof: a component that failed to mount
 (React #130) would leave the label absent, which is exactly the failure this check exists
 to catch.
+
+---
+
+# Change 2 — deletion of the unreachable min-height panel (editor-only)
+
+**Verdict: PASS**, same basis. `render.php`, `style.css` and
+`includes/class-sgs-container-wrapper.php` remain byte-identical to HEAD, and no attribute
+is added, removed or renamed — so stored content and frontend first paint cannot change.
+
+## What was deleted, and why it is provably dead
+
+The three flat min-height `SelectControl`s in `KIND_PANELS.section`. All 16 live
+`<ContainerWrapperControls>` mounts pass `kind` explicitly — `'layout'` ×10, `'content'`
+×6 — and **not one passes `'section'`**. The array is reached only through the
+unknown-kind fallback (`KIND_PANELS[kind] ?? KIND_PANELS.section`), so no block ever
+rendered these controls. **Nothing a client could see has changed**, which is why no
+editor screenshot pair is offered for this half: there is no before state to photograph.
+
+Kept: the `section` entry itself as the unknown-kind safety net, and the
+`MIN_HEIGHT_OPTIONS` export — three blocks that DO show it import it
+(`container/edit.js:19`, `physics-canvas/edit.js:20`, `trust-bar/edit.js:30`), and removing
+the export would give all three `options={undefined}` and a crashed inspector panel with
+**no build error**.
+
+## ⚠ Rule 21 moves 129 → 135, and the new number is the honest one
+
+The +6 are exactly `minHeightTablet` + `minHeightMobile` on `sgs/cta-section`,
+`sgs/site-footer` and `sgs/site-header`. **Not a regression — an unmasking.** Rule 21
+detects a control by whether the attribute NAME appears in the block's control corpus, and
+`ContainerWrapperControls.js` is in that corpus; the unreachable panel's literal names made
+the static scan read "controlled". Deleting the dead code removed the mask.
+
+Corroboration that this reading is right, not a rationalisation: the three blocks that
+surfaced are precisely those documented as NOT using the aggregator wholesale, and
+`container` / `hero` / `trust-bar` did NOT surface — because each has its own real,
+reachable min-height control. The split falls exactly where the mechanism predicts.
+
+**So the 129 baseline was 6 too low.** A metric that counts name-presence rather than
+reachability can be improved by keeping dead code — the wrong incentive, and worth naming.
+The 6 represent a genuine capability gap in those three blocks; wiring it is separate work
+and was deliberately not smuggled into this deletion.
+
+## Evidence
+
+- `inspector-scan` rule 26: **6 → 5**.
+- `inspector-scan` rule 21: **129 → 135**, every one of the +6 accounted for above.
+- `--self-test`: PASS, all 12 rules **plus** the harness meta-check.
+- `npm run build`: exit **0**.

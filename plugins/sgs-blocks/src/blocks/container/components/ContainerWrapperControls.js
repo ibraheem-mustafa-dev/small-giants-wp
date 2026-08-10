@@ -1514,32 +1514,32 @@ export function GridAreaPanel( { attributes, setAttributes, areaName, label } ) 
 //
 const KIND_PANELS = {
 	section: [
-		// 1. Section (outer) — layout type, columns, gap, width, min-height, contentWidth.
+		// 1. Section (outer) — layout type, columns, gap, width, contentWidth.
+		//
+		// ⛔ The three flat min-height SelectControls that sat here were DELETED
+		// 2026-08-10 as UNREACHABLE DEAD UI. Measured, not assumed: all 16 live
+		// <ContainerWrapperControls> mounts pass `kind` explicitly — 'layout' ×10,
+		// 'content' ×6 — and NOT ONE passes 'section'. This array is reached only
+		// via the unknown-kind fallback (`KIND_PANELS[kind] ?? KIND_PANELS.section`),
+		// so no block ever rendered these three controls.
+		//
+		// An earlier count of "24 mounts, 19 omitting kind" was WRONG: it counted
+		// COMMENT lines in six files whose only mention of this component is prose
+		// recording that they STOPPED using it, and it missed that the real mounts
+		// declare `kind` a few lines below the opening tag. That error made this
+		// panel look like a live UX defect and put it at the top of Phase 1.4.
+		// (`a-grep-for-a-class-name-is-not-a-usage-census`.)
+		//
+		// The `section` entry itself is KEPT as the unknown-kind safety net — only
+		// the dead controls are gone. MIN_HEIGHT_OPTIONS stays exported: three
+		// blocks that DO show it import it (container/edit.js:19,
+		// physics-canvas/edit.js:20, trust-bar/edit.js:30), and removing the export
+		// would hand all three `options={undefined}` and a crashed inspector panel
+		// with NO build error — lint:js is not in prebuild and webpack does not
+		// fail on a missing named export.
 		( props ) => (
 			<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 				<WidthPanel { ...props } />
-				<SelectControl
-					label={ __( 'Min height', 'sgs-blocks' ) }
-					value={ props.attributes.minHeight || '' }
-					options={ MIN_HEIGHT_OPTIONS }
-					onChange={ ( val ) => props.setAttributes( { minHeight: val } ) }
-					help={ __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-				/>
-				<SelectControl
-					label={ __( 'Min height (tablet)', 'sgs-blocks' ) }
-					value={ props.attributes.minHeightTablet || '' }
-					options={ MIN_HEIGHT_OPTIONS }
-					onChange={ ( val ) => props.setAttributes( { minHeightTablet: val } ) }
-					__nextHasNoMarginBottom
-				/>
-				<SelectControl
-					label={ __( 'Min height (mobile)', 'sgs-blocks' ) }
-					value={ props.attributes.minHeightMobile || '' }
-					options={ MIN_HEIGHT_OPTIONS }
-					onChange={ ( val ) => props.setAttributes( { minHeightMobile: val } ) }
-					__nextHasNoMarginBottom
-				/>
 			</PanelBody>
 		),
 		// 2. Inner band (content band).
