@@ -17,8 +17,7 @@
  *   colourHover, transitionDuration, transitionEasing, bgParallax, bgKenBurns,
  *   bgVideo*, splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
- *   splitImageHeight, splitImageHeightTablet, splitImageMobileHeight,
- *   imageObjectFit/Position, image*Width/Height*, imageBorderStyle/Colour,
+ *   imageObjectFit/Position, imageWidth*, imageHeight (TIER OBJECT), imageBorderStyle/Colour,
  *   splitColumnRatio*, splitGap*,
  *   splitContentOrder, splitContentOrderTablet, splitContentOrderMobile,
  *   verticalAlignment.
@@ -176,11 +175,10 @@ $headline_margin_bottom        = $attributes['headlineMarginBottom'] ?? null;
 $headline_margin_bottom_mobile = $attributes['headlineMarginBottomMobile'] ?? null;
 $sub_headline_margin_bottom        = $attributes['subHeadlineMarginBottom'] ?? null;
 $sub_headline_margin_bottom_mobile = $attributes['subHeadlineMarginBottomMobile'] ?? null;
-$split_image_mobile_height  = $attributes['splitImageMobileHeight'] ?? null;
-// Desktop + tablet tiers of the split-image-height triple (Spec 35 Track 1b
-// Phase 1.4c — promoted from a mobile-only orphan; mobile default unchanged).
-$split_image_height         = $attributes['splitImageHeight'] ?? null;
-$split_image_height_tablet  = $attributes['splitImageHeightTablet'] ?? null;
+// splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were REMOVED
+// 2026-08-10 — they duplicated `imageHeight` on the same property AND the same
+// element (`.sgs-hero__split-image`). See the consolidation note at the emission
+// site. Height for the split image now comes solely from the `imageHeight` object.
 
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
@@ -207,9 +205,15 @@ $image_width_tablet = $attributes['imageWidthTablet'] ?? null;
 $image_width_mobile = $attributes['imageWidthMobile'] ?? null;
 $image_width_unit   = $sgs_css_length( $attributes['imageWidthUnit'] ?? '%' );
 
-$image_height        = $attributes['imageHeight'] ?? null;
-$image_height_tablet = $attributes['imageHeightTablet'] ?? null;
-$image_height_mobile = $attributes['imageHeightMobile'] ?? null;
+// imageHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,
+// replacing the imageHeight/imageHeightTablet/imageHeightMobile trio 2026-08-10.
+// It also absorbed the removed splitImageHeight family — see the emission site.
+// sgs_responsive_normalise_object() is the canonical reader (helpers-responsive.php:273);
+// it always returns desktop/tablet/mobile keys, so the emission code below is unchanged.
+$image_height_obj    = sgs_responsive_normalise_object( $attributes['imageHeight'] ?? null );
+$image_height        = $image_height_obj['desktop'] ?? null;
+$image_height_tablet = $image_height_obj['tablet'] ?? null;
+$image_height_mobile = $image_height_obj['mobile'] ?? null;
 $image_height_unit   = $sgs_css_length( $attributes['imageHeightUnit'] ?? 'px' );
 
 // Image border radius — box-object family (contract §B): base + tablet +
@@ -448,19 +452,20 @@ if ( $is_split ) {
 	if ( '' !== $hero_gap_mobile ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}
-	// Split image height — base + tablet + mobile (promoted from a mobile-only
-	// orphan, Spec 35 Track 1b Phase 1.4c). Emitted in base -> tablet -> mobile
-	// source order so the later, narrower @media rule wins the cascade at its
-	// width (same convention as grid-template-columns/gap above).
-	if ( $split_image_height ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_height ) . 'px;object-fit:cover}';
-	}
-	if ( $split_image_height_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_height_tablet ) . 'px;object-fit:cover}}';
-	}
-	if ( $split_image_mobile_height ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
-	}
+	// Split-image height is NOT emitted here. The `splitImageHeight` family was
+	// REMOVED 2026-08-10: it wrote `height` to `.sgs-hero__split-image` — the exact
+	// same property on the exact same element as the `imageHeight` family below, so
+	// the two genuinely contended for one routing slot. The DB gate caught it
+	// (`amb:sgs/hero:height:wrapper_css:split-image`) once the css-property
+	// classifier was actually run for the first time; before that the collision was
+	// invisible. At equal specificity the later rule wins, and `imageHeight` emits
+	// later — so `imageHeight` was ALREADY the effective winner whenever both were
+	// set. Consolidating onto it therefore changes no rendered output.
+	// `imageHeight` was kept as the survivor because it carries a configurable unit
+	// (`imageHeightUnit`) rather than hardcoding px, forces no `object-fit`, and was
+	// the only one of the two named consistently across all three tiers
+	// (`splitImageMobileHeight` put the tier token in the middle, which is also why
+	// the classifier could not tier it). See the imageHeight block below.
 
 	// Desktop/base column order. Blank ('') = natural DOM order (content is
 	// first in markup, so it lands in the first/left grid track). 'media-first'
@@ -564,14 +569,11 @@ if ( $is_split ) {
 	}
 }
 
-// ── imageWidth / imageHeight: base + tablet + mobile (custom fit only) ─────
+// ── imageWidth: base + tablet + mobile (custom fit only) ──────────────────
 // Base moved here from the inline style="" on the split <img> (Pattern A).
 if ( 'custom' === $image_object_fit ) {
 	if ( null !== $image_width ) {
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width ) . esc_attr( $image_width_unit ) . '}';
-	}
-	if ( null !== $image_height ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
 	}
 	if ( null !== $image_width_tablet ) {
 		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_tablet ) . esc_attr( $image_width_unit ) . '}}';
@@ -579,12 +581,25 @@ if ( 'custom' === $image_object_fit ) {
 	if ( null !== $image_width_mobile ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_mobile ) . esc_attr( $image_width_unit ) . '}}';
 	}
-	if ( null !== $image_height_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
-	}
-	if ( null !== $image_height_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
-	}
+}
+
+// ── imageHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
+// Deliberately OUTSIDE the `custom` object-fit gate above (2026-08-10). Height
+// used to be gated with width, while the now-removed `splitImageHeight` family
+// wrote the same property to the same element with NO gate. Consolidating onto
+// `imageHeight` therefore has to keep the UNGATED reach, or every hero that set
+// a split-image height without also choosing `custom` object-fit would silently
+// lose it. Width stays gated — it never had an ungated equivalent.
+// Emitted base -> tablet -> mobile so the later, narrower @media rule wins at
+// its own width (same cascade convention as gap/grid-template-columns above).
+if ( null !== $image_height ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
+}
+if ( null !== $image_height_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
+}
+if ( null !== $image_height_mobile ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
 }
 
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).

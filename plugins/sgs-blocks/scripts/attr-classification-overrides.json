@@ -1434,13 +1434,6 @@
       }
     },
     {
-      "slug": "sgs/hero",
-      "attr": "splitImageMobileHeight",
-      "fields": {
-        "css_property": null
-      }
-    },
-    {
       "slug": "sgs/quote",
       "attr": "attributionFontStyle",
       "fields": {

@@ -24,6 +24,7 @@ import {
 import {
 	DesignTokenPicker,
 	ResponsiveControl,
+	ResponsiveOverride,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	ShadowControl,
@@ -215,9 +216,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageWidthTablet,
 		imageWidthMobile,
 		imageWidthUnit,
+		// imageHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
+		// the imageHeightTablet/imageHeightMobile siblings no longer exist.
 		imageHeight,
-		imageHeightTablet,
-		imageHeightMobile,
 		imageHeightUnit,
 		// Box-object families (contract §B, 2026-07-09).
 		imageBorderRadius,
@@ -1074,33 +1075,15 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ isSplit && (
 						<>
-							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split image height', 'sgs-blocks' ) }</p>
-							<ResponsiveControl label={ __( 'Height (px)', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const heightAttrMap = {
-										desktop: 'splitImageHeight',
-										tablet: 'splitImageHeightTablet',
-										mobile: 'splitImageMobileHeight',
-									};
-									const heightKey = heightAttrMap[ breakpoint ];
-									return (
-										<RangeControl
-											help={ breakpoint === 'desktop'
-												? __( 'Fixed height for the split image. 0 = auto (fits content).', 'sgs-blocks' )
-												: __( 'Overrides the wider tier at this breakpoint. 0 = auto.', 'sgs-blocks' ) }
-											value={ attributes[ heightKey ] || 0 }
-											onChange={ ( val ) =>
-												setAttributes( { [ heightKey ]: val || null } )
-											}
-											min={ 0 }
-											max={ 600 }
-											step={ 10 }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
-
+							{ /* The "Split image height" control was REMOVED 2026-08-10. It wrote
+							     the splitImageHeight/…Tablet/splitImageMobileHeight trio, which set
+							     `height` on `.sgs-hero__split-image` — the SAME property on the SAME
+							     element as the "Height" control further down this panel. Two controls
+							     for one setting is the duplicate-control class this framework bans, and
+							     at equal CSS specificity the later-emitted rule won, so this one was
+							     already the loser whenever both were set. The surviving control is the
+							     Height control below, which carries a unit picker instead of hardcoding
+							     px. Its render is now UNGATED so it keeps this control's reach. */ }
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
 							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom />
 							<ResponsiveControl label={ __( 'Object position', 'sgs-blocks' ) }>
@@ -1148,10 +1131,34 @@ export default function Edit( { attributes, setAttributes } ) {
 										} }
 										__nextHasNoMarginBottom
 									/>
-									<RRangeControl label={ __( 'Height', 'sgs-blocks' ) } attrDesktop="imageHeight" attrTablet="imageHeightTablet" attrMobile="imageHeightMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
+									{ /* imageHeight is the OBJECT model (Spec 35 / FR-37-16): one attr
+									     holding all three tiers, so this uses ResponsiveOverride rather
+									     than the flat attrDesktop/attrTablet/attrMobile trio the Width
+									     control above still uses. A blank tier INHERITS the tier above.
+									     This control also absorbed the removed "Split image height"
+									     control — both wrote `height` to `.sgs-hero__split-image`. */ }
+									<ResponsiveOverride
+										label={ __( 'Height', 'sgs-blocks' ) }
+										value={ imageHeight }
+										onChange={ ( obj ) => setAttributes( { imageHeight: obj } ) }
+									>
+										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+											<RangeControl
+												help={ inherited
+													? __( 'Inherited. Set a value to override at this device.', 'sgs-blocks' )
+													: __( 'Fixed height for the split image. 0 = auto (fits content).', 'sgs-blocks' ) }
+												value={ Number( ownValue ?? effectiveValue ) || 0 }
+												onChange={ ( val ) => setOwnValue( val || null ) }
+												min={ 0 }
+												max={ 1200 }
+												step={ 1 }
+												__nextHasNoMarginBottom
+											/>
+										) }
+									</ResponsiveOverride>
 									<UnitControl
 										label={ __( 'Height unit', 'sgs-blocks' ) }
-										value={ `${ imageHeight || 0 }${ imageHeightUnit || 'px' }` }
+										value={ `${ imageHeight?.desktop || 0 }${ imageHeightUnit || 'px' }` }
 										units={ [
 											{ value: 'px', label: 'px', default: 0 },
 											{ value: '%',  label: '%',  default: 0 },

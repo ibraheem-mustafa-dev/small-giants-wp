@@ -400,18 +400,6 @@
 			"type": "number",
 			"default": null
 		},
-		"splitImageMobileHeight": {
-			"type": "number",
-			"default": null
-		},
-		"splitImageHeight": {
-			"type": "number",
-			"default": null
-		},
-		"splitImageHeightTablet": {
-			"type": "number",
-			"default": null
-		},
 		"imageObjectFit": {
 			"type": "string",
 			"default": "cover"
@@ -437,16 +425,8 @@
 			"default": "%"
 		},
 		"imageHeight": {
-			"type": "number",
-			"default": null
-		},
-		"imageHeightTablet": {
-			"type": "number",
-			"default": null
-		},
-		"imageHeightMobile": {
-			"type": "number",
-			"default": null
+			"type": "object",
+			"default": {}
 		},
 		"imageHeightUnit": {
 			"type": "string",
