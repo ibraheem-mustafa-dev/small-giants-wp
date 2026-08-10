@@ -84,11 +84,37 @@ one family).
 *a violation* for a migrated one. A gate asserting "flat is canonical" full-stop would fight the
 migration it is policing; one asserting "object is canonical" would fail 80 blocks on day one.
 
-**How a block declares its phase — use what already exists.** `'responsive_model' => 'object'` in
-`render.php` is already the runtime switch the wrapper reads (`class-sgs-container-wrapper.php:132`).
-Reuse it as the phase marker; do not invent a second roster. Per-property granularity comes from the
-property being object-typed in that block's `block.json` — which is a fact about the schema, not a
-declaration anyone maintains by hand.
+**How a block declares its phase — key on `block.json`'s attribute `type`, and NOTHING else.**
+
+⛔ **CORRECTED after council review (Rater B, BLOCKER — confirmed by direct measurement).** An earlier
+draft named `'responsive_model' => 'object'` (`class-sgs-container-wrapper.php:160`) as "the phase
+marker". **That is wrong: it is a block-level, all-or-nothing boolean that says nothing about any
+individual property.** `sgs/gallery` opts in at `render.php:658` and is nonetheless *mixed today*:
+
+```
+gap                 type=string  siblings=[gapTablet, gapMobile]        <- FLAT
+columns             type=number  siblings=[columnsTablet, columnsMobile] <- FLAT
+gridTemplateColumns type=string  siblings=[…Tablet, …Mobile]            <- FLAT
+gridTemplateRows    type=string  siblings=[…Tablet, …Mobile]            <- FLAT
+maxWidth            type=object  siblings=[]                            <- OBJECT
+contentWidth        type=object  siblings=[]                            <- OBJECT
+padding / margin    type=object  siblings=[]                            <- OBJECT
+```
+
+So the opt-in flag is already FALSE-as-a-phase-label for 4 of gallery's 8 families. A gate reading it
+would call those 4 violations on day one.
+
+**The correct signal is per-property and already in the schema:** a family is OBJECT if its base attr
+is `"type": "object"` with no `Tablet`/`Mobile` siblings, and FLAT if the base is a scalar type WITH
+siblings. Blended = both at once. **Parse `block.json` directly — not `render.php`, not the DB.**
+Rater B's reasoning, which holds: `block.json`'s `type` is what WordPress itself enforces at runtime;
+it needs no reseed (unlike the DB, whose `attr_type` is *seeded from* that same file); it is not a
+cross-track action; and it is the file the codemod edits each pass, so gate and codemod read one truth.
+
+⛔ **Therefore the gate needs no block-level phase marker at all**, and `responsive_model` stays purely
+what it is — the wrapper's runtime switch.
+
+**Required of the gate:**
 
 **Required of the gate:**
 - a **positive and negative control per assertion**, and **proven able to fail on the real tree** —
@@ -98,10 +124,24 @@ declaration anyone maintains by hand.
   census matched `SGS_Container_Wrapper` inside comments that recorded *dropping* it, and a stray
   `/*` in a comment corrupted two gates' corpora at once (D552 §4).
 
-⛔ **Same-commit change to `lint-responsive-controls.py:106`** (`PRIMITIVE_FILES` names
-`ResponsiveControl.js` + `ResponsiveOverride.js` as the only sanctioned primitives) **and to contract
-§12 field 1**, which currently calls flat-per-tier canonical while §12's own amendment says collapse
-onto the object. That contradiction is settled in the commit that makes it false — not left for later.
+**P1 does NOT overlap any existing gate — verified, so it is legitimately new rather than a second
+overlapping fix** (the project forbids those; two fixes for one cause are unfalsifiable):
+- `lint-responsive-controls.py` scans **`edit.js` component-import shape** — whether a bespoke per-tier
+  UI was hand-rolled instead of using the two sanctioned wrappers. It never inspects `block.json`
+  attribute types or storage shape.
+- `check-duplicate-controls.js` checks a different axis again (two controls for one setting).
+
+⚠ **Contract §12 field 1 is NOT a factual contradiction — softened after council review (Rater B).**
+The exact wording is *"**Canonical** — `ResponsiveControl` (flat per-tier attrs) and `ResponsiveOverride`
+(object-cascade rows). These two are the only sanctioned **primitives**"* (`:927-931`, read verbatim).
+That is a statement about **UI components**, while §12's amendment is about **storage**. Both can be
+true at once. So the same-commit change is a **one-line clarification** — "both components remain
+canonical *during* migration; object storage is the *end state* per D548-550" — not a correction of a
+wrong claim. Do not "fix" field 1 as though it were an error.
+
+⛔ **Still same-commit:** if the gate's arrival changes what `lint-responsive-controls.py` should say
+about either primitive, that file changes alongside it — its own §12 note warns that renaming or
+removing either primitive without updating the gate fails the build.
 
 ## P2 — `/sgs-update` seeding, reworked and verified BEFORE the migration depends on it
 
@@ -141,11 +181,11 @@ the same bytes — verify with `samefile`, don't assume two databases.
 
 ## The codemod contract
 
-Model on `scripts/migrate-core-blocks/` — the real precedent triad (`README.md:19`: *lint → judge →
+Model on `scripts/migrate-core-blocks/` — the real precedent triad (`README.md:24`: *lint → judge →
 apply*). ⛔ `scripts/wp-migrate-oldshape-blocks.js` **does not exist**; it has been cited twice under
 two names in this programme's docs. Do not look for it.
 
-**Copy its load-bearing rule** (`README.md:16-18`): every emitted attr must be declared by the target
+**Copy its load-bearing rule** (`README.md:22`): every emitted attr must be declared by the target
 `block.json`; every source attr mapped, dropped-with-reason, or flagged — **a loud failure, never a
 quiet loss.** That is the D521 silent-coercion protection.
 
@@ -173,6 +213,22 @@ step. **Consequence, accepted:** cloning is blocked for migrated properties unti
 rework lands, which makes that rework the pacing item for client delivery — the intended trade under
 ruling D.
 
+⭐ **WHERE IT GOES — found by council review (Rater C), and there is a precedent gate in the exact slot.**
+`sgs-clone-orchestrator.py:2053` writes `extract_copy = run_dir / "extract.json"` right after Stage 9,
+and the **R-31-15 anti-mirror gate already runs at that point** (`PIPELINE_STAGE_GATE_SCRIPT` defined
+`:70`, invoked ~`:2645-2670`, hard-halting on failure, with a `--skip-stage-gate` escape at `:2404` /
+`:2653-2656`). Build the new check as a second gate in that same slot — or as another check function
+inside `pipeline-stage-gate.py` — reading the same `extract.json`, with its own `--skip-…-gate` flag
+mirroring the existing one. **This is not a new architectural surface**; the chokepoint, the halt
+semantics and the opt-out shape all already exist.
+
+⛔ **The retirement criterion needs a POSITIVE CONTROL or it goes vacuously green (Rater C).** "When the
+gate stops firing, the converter rework is done" is satisfiable by nothing ever exercising it — if no
+clone run touches a migrated property, it never fires, and 0 findings is indistinguishable from done.
+That is the same shape as this project's `empty-section-false-pixel-diff-win` rule. **So: a fixture clone
+run against a mockup section that maps to at least one migrated property, confirmed to TRIGGER the gate
+before the converter rework and go silent after.** Passive observation is not evidence.
+
 ---
 
 ## Per-pass definition of done
@@ -190,9 +246,39 @@ ruling D.
    breakpoint, then `ToolsPanel` ⋮ **Reset all** and one undo.
    ⚠ **Measure at a viewport where the value actually binds.** A width band at a narrow viewport is
    trivially "centred" because there is no leftover space — that produced a vacuous pass this session.
-6. Old canary pages holding the pre-migration shape: **trashed** (ruling B). Where a page is still
-   wanted, recreate it via WP-CLI/REST and re-insert the block rather than converting it.
-7. `decisions.md` D-entry + `LEDGER.md` replaced, in the same commit as the change.
+6. ⭐ **Check the property's LEGACY SCALAR READS in every `render.php` that consumes it, and add an
+   `is_array()` guard or prove none exist** (added after council review — Rater C). **This class has
+   already fired once:** a tier object reaching a scalar read produces PHP *"Array to string
+   conversion"* on **every render**, emitting garbage CSS such as `grid-auto-rows:Array`. The wrapper
+   carries the fix at `class-sgs-container-wrapper.php:506` and **51 `is_array()` guards** in total,
+   and contract §12 (`:923`) warns verbatim: *"Check the legacy read before making any further property
+   tier-capable."* **Nothing gates this today** — it is a per-property manual step, which is exactly why
+   it belongs in the definition of done rather than in someone's memory.
+7. **Old canary pages holding the pre-migration shape: trashed** (ruling B) — and **`trash` is not
+   `purge`**. Use `wp post delete <id> --force`; an ordinary trash leaves the row (and its revisions)
+   in place. Where a page is still wanted, recreate it via WP-CLI/REST and re-insert the block.
+   ⚠ **The rebuild path has its own silent-loss mode** (Rater A): a hand-written insert is precisely the
+   shape that produced D338's 45 silently-discarded attrs, because WP drops any attr `block.json` does
+   not declare. **After rebuilding, run `audit-post-content-blocks.py` against the new `post_content`**
+   — its `undeclared-attr` detector is exactly this check — before calling the rebuild done.
+8. **Where else the old shape survives a page deletion** — enumerated, because "trash the page" does not
+   reach all of it:
+   - **Revisions.** Measured 2026-08-10: of 109 stored instances of the three opted-in blocks, **82 were
+     `post_status='inherit'`** (revisions). Reproduce with
+     `wp db query "SELECT post_status, COUNT(*) FROM \$wp_posts WHERE post_content LIKE '%sgs/site-header-row%' GROUP BY post_status"`.
+     They survive a trash. Either purge them or record explicitly that nothing re-reads a revision, so
+     stale values there are inert — **but state which**, do not leave it unaddressed.
+   - **Theme patterns.** Clean for passes 1-3 (no `gap`/`maxWidth`/`gridTemplateColumns` siblings), but
+     **three files hold `columns` siblings, which lands in pass 4**: `patterns/footer-columns.php:17`
+     (`columnsTablet:2`), `patterns/mega-brands-1.php:17` (`columnsTablet:3`, `columnsMobile:2`),
+     `patterns/mega-media-cards-1.php:17` (`columnsTablet:2`, `columnsMobile:1`). ✅ **Already protected:**
+     `check-dead-pattern-attrs.py` is green today *because those attrs are still declared*, and will go
+     RED the moment pass 4 deletes them from `block.json`. Pass 4 must update those 3 files; the existing
+     gate is the net. No new guard needed.
+   - **Not yet checked, and worth one query before pass 1:** `wp_block` (reusable blocks),
+     `wp_global_styles`, autosaves. ⚠ Also UNPROVEN: whether `check-dead-pattern-attrs.py` catches the
+     *declared-object-but-stored-flat* coercion or only the wholly-undeclared case — read the script.
+9. `decisions.md` D-entry + `LEDGER.md` replaced, in the same commit as the change.
 
 ## Out of scope, explicitly
 

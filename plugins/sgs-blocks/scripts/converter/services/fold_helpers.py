@@ -265,10 +265,22 @@ def route_area_css_to_block_attrs(
         bp_decls['Tablet']      -> attr + 'Tablet'
         bp_decls['Mobile']      -> attr + 'Mobile'
 
-    NOTE (D259): currently UNWIRED in the new engine — the live grid-per-area path is
-    the per-declaration ``resolvers/grid_area.py`` resolver (fed by the ``Decl`` stream
-    ``_build_css_attrs`` assembles). Kept as a port; the tier mapping below matches the
-    post-D259 cascade semantics so it is safe if wired. Ported from convert.py:2405.
+    ⚠ THIS FUNCTION IS WIRED AND LIVE. Corrected 2026-08-10 — the note below said
+    "currently UNWIRED" and that is STALE. It was wired via ``assembly.py`` (import at
+    ``:260``, call at ``:276``, assembly step 3d), and ``tests/test_l4_area_wiring.py``
+    exists precisely to assert the live path — its own header says the L4 extraction
+    "WAS UNWIRED (MF-5)", past tense.
+
+    Left uncorrected, this docstring is actively dangerous: a QC-council rater read it,
+    concluded in good faith that this was dead code, and recommended REMOVING it from the
+    Spec 39 converter-rework inventory. Following that would have left a live flat-tier
+    emitter unmigrated. Refuted by the call graph, not by opinion — grep the callers
+    before believing any "unwired" claim, including this one.
+
+    Historical: the per-declaration ``resolvers/grid_area.py`` resolver (fed by the
+    ``Decl`` stream ``_build_css_attrs`` assembles) is the OTHER grid-per-area path; both
+    are live. The tier mapping below matches post-D259 cascade semantics. Ported from
+    convert.py:2405.
     """
     base_decls, bp_decls = collect_css_decls_for_element(
         child_node, css_rules, residual_sink=residual_sink

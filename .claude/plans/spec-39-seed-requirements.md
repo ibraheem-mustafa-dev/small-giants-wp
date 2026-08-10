@@ -33,7 +33,7 @@ things; the precise statement is that it lacks an *object* emitter.) Every site 
 
 | File | Evidence |
 |---|---|
-| `scripts/converter/services/fold_helpers.py` | `:262` — `bp_decls['Tablet'] -> attr + 'Tablet'`; also `:291`, `:326`, `:352` |
+| `scripts/converter/services/fold_helpers.py` | `:262` — `bp_decls['Tablet'] -> attr + 'Tablet'`; also `:291`, `:326`, `:352`. ⚠ **LIVE — see the refutation below; its own docstring used to claim otherwise** |
 | `scripts/converter/services/extraction.py` | `:652` — `target_attr = f"{base_attr}Mobile" if is_mobile else base_attr` |
 | `scripts/converter/resolvers/grid.py` | `:19` — "unsuffixed, Tablet → `*Tablet`, Mobile → `*Mobile`" |
 | `scripts/converter/resolvers/grid_area.py` | `:16` |
@@ -47,6 +47,23 @@ things; the precise statement is that it lacks an *object* emitter.) Every site 
 
 **Question for Spec 39:** does emission become object-only, or dual-shape during a transition window
 keyed on whether the target block has migrated that property?
+
+### ⛔ A REFUTED "correction" — do not re-make it
+
+A council rater (2026-08-10) read `fold_helpers.py`'s docstring, which said *"currently UNWIRED in the
+new engine"*, and recommended **removing `fold_helpers.py` from this inventory as dead code**. Following
+that would have left a **live** flat-tier emitter unmigrated.
+
+**The docstring was stale.** The call graph refutes it: `assembly.py:260` imports
+`route_area_css_to_block_attrs` and `:276` calls it (assembly step 3d), and
+`tests/test_l4_area_wiring.py` exists to assert that live path — its own header says the L4 extraction
+*"was UNWIRED (MF-5)"*, **past tense**. The stale docstring was corrected 2026-08-10 and now carries this
+refutation inline; 7 converter tests pass.
+
+⚑ **The transferable rule:** *"unwired" in a comment is a dated claim, not a fact.* Grep the callers
+before believing it — including when the comment is in the file you are about to skip. This is the same
+class as the project's existing `unwired-is-not-dead-separate-by-mechanism-not-count` and
+`a-comment-that-justifies-a-breach-is-a-dated-opinion` rules.
 
 ## R2 — The breakpoint vocabulary is already DB-owned, and that is a strength
 
@@ -95,8 +112,28 @@ work that makes a call site cross them arms it.
 ## R6 — The interim clone gate becomes Spec 39's entry condition
 
 Per Bean's ruling C, during the migration a check FAILS a clone run that emits a flat tier for an
-already-migrated property. **That gate's findings are the precise work-list for R1** — when it stops
-firing, R1 is complete. Spec 39 should adopt it as its own acceptance signal rather than inventing one.
+already-migrated property. **That gate's findings are the precise work-list for R1.**
+
+**Where it lives** (found during council review): `sgs-clone-orchestrator.py` — `extract.json` is written
+at `:2053`, and the R-31-15 anti-mirror gate already runs in that slot (`PIPELINE_STAGE_GATE_SCRIPT` at
+`:70`, invoked ~`:2645-2670`, `--skip-stage-gate` at `:2404`). The new check belongs beside it, reading
+the same artefact.
+
+⛔ **"When the gate stops firing, R1 is done" is VACUOUSLY SATISFIABLE and must not be the acceptance
+test as written.** If no clone run ever exercises a migrated property, the gate never fires, and zero
+findings is indistinguishable from complete. Same shape as this project's
+`empty-section-false-pixel-diff-win` rule. **Spec 39 needs a POSITIVE CONTROL:** a fixture clone against
+a mockup section mapping to at least one migrated property, proven to trigger the gate before the rework
+and go silent after.
+
+## R6a — Two things learnable only by reading the converter now
+
+- **The GRID_AREA object shape may already be half-solved.** `route_area_css_to_block_attrs`'s docstring
+  records that its tier mapping "matches the post-D259 cascade semantics", i.e. someone reasoned the
+  shape through once already. Read it before re-deriving GRID_AREA object emission from scratch.
+- **`css_pass.py:211-255` is the merge-order site** — `native_attrs` → `result.attrs()` →
+  `overlay_attrs` → `preset_attrs`, each `.update()`-ing over the last. An object-shaped emission has to
+  slot in there without breaking that precedence. Nothing else in R1-R7 names it.
 
 ## R7 — Two measurement traps that cost real time this session
 
