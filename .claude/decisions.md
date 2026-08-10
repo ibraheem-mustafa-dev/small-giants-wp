@@ -57,11 +57,11 @@ design.md` (now marked BUILT). Prior research: D545.
   **per tier** (dismissing Tablet still warns on Mobile — a page-wide dismiss would let a client
   silence Tablet then edit Mobile unwarned, the exact failure the cue exists to prevent), plus a
   visually-hidden `aria-live="polite"` announcement.
-- Deleted `<DeviceTabs>` from `ResponsiveControl.js` — one deletion removes the switcher from all 73
+- Deleted `<DeviceTabs>` from `ResponsiveControl.js` — one deletion removes the switcher from all 68
   `<ResponsiveControl>` JSX call sites across 31 files (~192 strips on screen) — ⚑ 73/32 was a raw
   grep line count, 5 of those lines being JSDoc; corrected by QC council 2026-08-10. The component still reads
   `core/editor`'s device type and passes it down; only the per-control UI is gone.
-- Deleted the private tier `useState` in `ResponsiveOverride.js` (4 files) and
+- Deleted the private tier `useState` in `ResponsiveOverride.js` (3 call sites) and
   `ResponsiveTriStateControl.js` (site-header) — both now read the ONE global tier instead of running
   a third, disagreeing device model. Before this fix the editor ran THREE device models
   simultaneously and a client could set the global toggle to Mobile while a stray strip kept editing
@@ -69,7 +69,7 @@ design.md` (now marked BUILT). Prior research: D545.
 - Fixed two Bean-reported visual defects during 1.3: pill misalignment (WordPress insets its
   selection backdrop asymmetrically; `--selected-width` is unitless and needs multiplying, or the
   declaration drops silently) and hover-text contrast (the guard excluded Ariakit's *focused* item,
-  not the *checked* one, so black hover text could land on the selected blue pill at 2.6:1; re-keyed
+  not the *checked* one, so black hover text could land on the selected blue pill at 3.21:1 (recomputed; an earlier draft said 2.6:1); re-keyed
   on `[aria-checked="false"]`, the true selected marker).
 
 ### Verified live, both editors (post editor + site editor), canary WP 7.0.2

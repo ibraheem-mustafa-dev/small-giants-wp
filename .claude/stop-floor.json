@@ -1,6 +1,6 @@
 {
-  "note": "Committed floor of the max-ever STOP-CATALOGUE.md identifier set (D101 ratchet, check_stop_carry_forward). This script NEVER writes this file (handoff-preflight.py never edits files) -- bump it by hand to the current superset whenever a STOP is deliberately, legitimately added, so the floor survives a future rename/squash of git history. Seeded 2026-07-31; bumped 2026-08-07 (handoff) to lock 17 STOPs that were beyond the floor, incl. the 3 added this session (git add -A fallback / date-keyed gate / preset-layer duplication) during the D101 numeric-STOP recovery + citation-guard build. Bumped 2026-08-09 (handoff) to lock the 6 STOPs added in section E10. The 14 numeric phantoms (STOP-8/13/26/37/38/45/51/54/58/61/62/63/65/69) were DELIBERATELY NOT added: the catalogue itself lists them as cited-but-undefined under its zero-fabrication UNRESOLVED section, and the floor must not assert a defence that has no text. Bumped again 2026-08-09 (second handoff of the day) to lock the 8 STOPs added in section E11 (substring-vs-word match; case-sensitive grep false all-clear; dry-run that exits before the writer; group by mechanism not symptom-count; banned-phrase gate too broad AND too narrow; stale IDE diagnostics; measurement blind behind an iframe; figure written before measuring). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text. Bumped again 2026-08-09 (third session of the day) to lock the 2 STOPs added while reconciling the Spec 35 docs: a metric that gets cheaper when you hide things is not a progress metric (D543/D544 — the rejected inspector census, which MIS-RANKED not merely undercounted), and a built detector with no package.json wiring is unreachable (five survey detectors shipped with zero references — third instance of this failure mode in this repo). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text.",
-  "updated": "2026-08-09",
+  "note": "Committed floor of the max-ever STOP-CATALOGUE.md identifier set (D101 ratchet, check_stop_carry_forward). This script NEVER writes this file (handoff-preflight.py never edits files) -- bump it by hand to the current superset whenever a STOP is deliberately, legitimately added, so the floor survives a future rename/squash of git history. Seeded 2026-07-31; bumped 2026-08-07 (handoff) to lock 17 STOPs that were beyond the floor, incl. the 3 added this session (git add -A fallback / date-keyed gate / preset-layer duplication) during the D101 numeric-STOP recovery + citation-guard build. Bumped 2026-08-09 (handoff) to lock the 6 STOPs added in section E10. The 14 numeric phantoms (STOP-8/13/26/37/38/45/51/54/58/61/62/63/65/69) were DELIBERATELY NOT added: the catalogue itself lists them as cited-but-undefined under its zero-fabrication UNRESOLVED section, and the floor must not assert a defence that has no text. Bumped again 2026-08-09 (second handoff of the day) to lock the 8 STOPs added in section E11 (substring-vs-word match; case-sensitive grep false all-clear; dry-run that exits before the writer; group by mechanism not symptom-count; banned-phrase gate too broad AND too narrow; stale IDE diagnostics; measurement blind behind an iframe; figure written before measuring). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text. Bumped again 2026-08-09 (third session of the day) to lock the 2 STOPs added while reconciling the Spec 35 docs: a metric that gets cheaper when you hide things is not a progress metric (D543/D544 — the rejected inspector census, which MIS-RANKED not merely undercounted), and a built detector with no package.json wiring is unreachable (five survey detectors shipped with zero references — third instance of this failure mode in this repo). The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text. Bumped 2026-08-10 (Spec 35 device-toggle session) to lock the 3 STOPs added after a 3-rater QC council: a zero read from the WRONG JSON key is indistinguishable from a clean pass (five vacuous zero-readings in one session, two briefly read as evidence against a working rule); getBoundingClientRect reports the LAYOUT box and is not a visibility test (three false regression alarms from one cause); and a green build proves almost nothing about editor JS because lint:js is not in prebuild and an unprefixed __experimental import is undefined at runtime through every gate. The 14 numeric phantoms remain DELIBERATELY excluded — the floor must not assert a defence that has no text.",
+  "updated": "2026-08-10",
   "ids": [
     "STOP-10",
     "STOP-11",
@@ -81,6 +81,7 @@
     "STOP-A-GATES-SCOPE-MAY-BE-A-GUARD-NOT-A-BLIND-SPOT",
     "STOP-A-GENERATOR-THAT-STAMPS-A-TIMESTAMP-DIRTIES-A-TRACKED-FILE-FOREVER",
     "STOP-A-GREEN-BUILD-IS-NOT-EVIDENCE-AN-EFFECT-FIRES",
+    "STOP-A-GREEN-BUILD-PROVES-ALMOST-NOTHING-ABOUT-EDITOR-JS",
     "STOP-A-GREEN-MEASUREMENT-IS-NOT-FIDELITY-AND-MUST-NOT-BE-PRESENTED-AS-IT",
     "STOP-A-GREP-COUNT-IS-NOT-A-MEASUREMENT",
     "STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING",
@@ -107,6 +108,7 @@
     "STOP-A-UNIVERSAL-EXTENSION-ATTACHES-TO-BLOCKS-IT-MAKES-NO-SENSE-ON",
     "STOP-A-WRONG-EXPLANATION-DOES-NOT-MAKE-THE-OBSERVATION-WRONG",
     "STOP-A-ZERO-FROM-AN-UNAUTHENTICATED-FETCH-PROVES-NOTHING",
+    "STOP-A-ZERO-FROM-THE-WRONG-JSON-KEY-LOOKS-EXACTLY-LIKE-A-CLEAN-PASS",
     "STOP-AMENDING-A-RULES-STATEMENT-IS-NOT-AMENDING-ITS-DISTRIBUTION",
     "STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING",
     "STOP-AN-OPTION-NAME-THAT-DOES-NOT-EXIST-IS-DISCARDED-IN-SILENCE",
@@ -134,6 +136,7 @@
     "STOP-GATE-BLIND-TO-DELETION",
     "STOP-GATE-COMMENT-STRIPPER",
     "STOP-GATES-GREEN-IS-NOT-VERIFIED",
+    "STOP-GETBOUNDINGCLIENTRECT-IS-NOT-A-VISIBILITY-TEST",
     "STOP-GLOBAL-MINI-SIGN-OFF",
     "STOP-GROUP-FIXES-BY-MECHANISM-NOT-BY-SYMPTOM-COUNT",
     "STOP-HARDCODE-IS-OVERRIDE-NOT-LITERAL",

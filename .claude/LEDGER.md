@@ -58,7 +58,7 @@ split-brain components + pill alignment + hover contrast). Full record: D546 + D
   only `ResponsiveControl.js`; 1.3 removed strips from `ResponsiveOverride` + `ResponsiveTriState`
   too — three files, two commits. Verified: with the toggle on Tablet,
   editing a container's Gap wrote `gapTablet:"123px"` and ONLY that key.
-- **`ResponsiveOverride.js` (4 files) + `ResponsiveTriStateControl.js` (site-header)** now read the
+- **`ResponsiveOverride.js` (3 call sites) + `ResponsiveTriStateControl.js` (site-header)** now read the
   global tier instead of private state — closes a real split-brain bug (three disagreeing device
   models running at once pre-fix).
 - **Item 1.5 (gate rewrites) confirmed NOT needed** — measured against the post-1.2 tree, both gates
@@ -72,114 +72,21 @@ split-brain components + pill alignment + hover contrast). Full record: D546 + D
   two QC-council fixes to rule 25. Check
   their own commits before assuming either landed.
 
-#### Shipped 2026-08-09
+#### Prior session (2026-08-09) — condensed; full record in D539-D545
 
-- **`inspector-scan` rule 23** `content-width-needs-inner-band` (ADVISORY) gates D540. Live: **0
-  flagged**. Proven able to fail twice by its own fixtures during construction, then by a real-tree
-  positive control on `sgs/quote`. Full record: **D541**.
-- **Three blocks corrected by differing remedies** — `product-card` `contentWidth` DELETED (inert),
-  `info-box` + `option-picker` RENAMED → `width` (behaviour identical). **6 canary rows migrated**
-  before deploy, scoped so `sgs/container`'s 140 legitimate instances stayed untouched.
-- **`sgs/physics-canvas` `tagName` control wired** (9 options matching its enum exactly) — its last
-  `render-without-control` finding, now 0. Delegated, verified independently.
-- **Deploy hygiene** — `palestine-lives` removed from `TARGETS` (site gone) and the hand-rolled
-  `rm -rf`-before-extract recipe deleted from `plugins/sgs-blocks/CLAUDE.md`. `build-deploy.py
-  --self-test` green incl. the D336 negative control.
-- **Plan rewritten** after the council: `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md`.
-
-#### Measured this session (facts, not summaries)
-
-- **`core/editor.getDeviceType()` answers in BOTH the post editor AND the site editor** (WP 7.0.2,
-  canary). `ResponsiveControl.js:107-113`'s comment claiming otherwise is **STALE** → its `localKey`
-  fallback is dead code and Phase 1.2 is unblocked.
-- **Length-control divergence — REAL, two independent methods, read both numbers together.**
-  (a) `survey-length-controls.py` (file-scanning heuristic): 694 instances, 16 of the 17 present properties
-  diverge. (b) Independent SQL on `block_attributes` (non-NULL `inspector_control_type` only): **8**
-  properties diverge (`max-width` 5, `padding`/`letter-spacing`/`gap`/`border-radius` 4 each, `width`
-  3, `height`/`font-size` 2). ⚠ **8 is the DB-defensible floor; 17 is the survey's wider net** — the
-  gap is the ~65%-NULL `inspector_control_type` column, itself the Phase 3.2b blocker. Quote 8 under
-  challenge, 17 only with the method named. Re-run `npm run survey:length` for current breakdowns —
-  do not read a cached list here. ⚑ The 17th (`bottom`) has ONE instance so cannot diverge. The
-  cached "49 places" of `UnitControl` reproduces by no method (survey JSON: 64 across 43 file:line)
-  and is WITHDRAWN — re-run the survey. ⚠ Attribution
-  is a nearest-preceding-JSX heuristic, not an AST parse — spot-check before any `--fix`.
-- **29** blocks use `ContainerWrapperControls` (not 18). **4** gates, none ever promoted.
-  `setting-registry.json` live severity 28/40/20/4 (its `_meta` cache says 25/35/17 — drifted).
-  ⚠ Advisory backlog is measured live via `--json` counting `status:"FLAGGED"` only (**242** at
-  `a09226e8`) — a cached `openBacklog` sum is not the same measurement; same trap twice in two
-  sessions.
-
-#### ⭐ BEFORE baseline — measured 2026-08-09 at `a09226e8`, tree clean
-
-**The number the programme reports against: `inspector-scan` rule `21-render-without-control` =
-129 FLAGGED.** Command: `node scripts/inspector-scan/run.js --json` from `plugins/sgs-blocks`.
-
-⚠ **Count `status:"FLAGGED"`, never the raw findings array.** `core/report.js:96-101` serialises
-BASELINED entries too, while `printHuman` and `computeExit` both filter to FLAGGED. Reading the raw
-array gives 141 for rule 21 and 254 overall — both wrong by exactly the baselined entries.
-
-| Rule | Mode | FLAGGED | Baselined | `openBacklog` **before** this session |
-|---|---|---|---|---|
-| `21-render-without-control` | advisory | **129** | 12 | 243 |
-| `01-tab-group` | advisory | 58 | 0 | 66 |
-| `20-pattern-template-lock` | advisory | 23 | 0 | 23 |
-| `03-dense-panel-candidate` | advisory | 16 | 0 | 15 |
-| `18-decorative-image-aria` | advisory | 15 | 0 | 15 |
-| `07-preset-only-shadow` | advisory | 1 | 0 | 1 |
-| `22` / `23` | advisory | 0 | 0 | — / 0 |
-| `04` / `08` / `14` / `17` | **gate** | **0** | 2 (rule 08) | 0 |
-
-⚠ The right-hand column is **history, not the current file** — `rules.json` was rewritten to
-129/58/16 in this same change, each with its cause recorded in the rule's `advisoryReason`. Total
-baselined tree-wide is **14** (12 advisory + rule 08's 2); raw `--json` array totals are 254 advisory
-/ 256 tree-wide.
-
-**Rule 21's 243 → 129 is a REAL win and the arithmetic closes exactly.** The rule file is untouched
-since the commit that wrote 243, so it cannot be a logic change: against its own cached per-block
-census, physics-canvas 79→0, nav-menu 17→0, site-header-row 12→2, site-footer-row 12→4 = **−114**,
-and 243−129 = **114**. Earned by `4d501a16` (D539) + `282a06ee` (D540).
-
-**A library-wide panel/control census was ALSO measured and then REJECTED as a baseline — see D543.**
-Do not rebuild it: `check-simple-surface-cap.js` run across all 83 blocks gives median 12 / max 49 /
-total 1121, and every one of those figures is untrustworthy in *both* directions. Replacement
-instrument (Bean-decided): a new calibrated detector, plan Step 2 — **not yet built.**
-
-#### Shipped AFTER the baseline (same session)
-
-- **`inspector-scan` rule 24 `raw-canonical-component`** (ADVISORY, `a29e37b5`) — closes the gap D543
-  found: the contract BANS raw `ColorPalette`/`GradientPicker`/`URLInput`/`LinkControl`, and nothing
-  enforced it. Proven by injection test, not argued (rule 04 returns early on `enableAlpha`, rule 08
-  matches `type="url"` only). NEW rule at advisory. Live: **1 FLAGGED** —
-  `sgs/button/edit.js:312`, a raw `<URLInput>`. ⛔ **Blind spot:** `src/blocks/extensions/` is out of
-  scope (`core/roster.js:76` admits only `block.json` dirs) — the contract records a raw URL field
-  reaching 67 blocks through there. Unbuilt plumbing, separate job.
-- **Three survey detectors** (`b6ca16a8`) — `survey-{colour,typography,box}-controls.py`, joining
-  `survey-length-controls.py`. `--survey` only, each proven able to FAIL by sabotage-and-restore.
-  COLOUR 263 diverging. TYPOGRAPHY 181 diverging — a literal-name grep would have missed most of it
-  (the survey ports the component's own runtime naming logic); gap found: line-height/letter-spacing
-  tiers have no editor control at all. BOX — §5's "0 remaining per-side scalars" now PROVEN; §14
-  BORDER measured for the first time: 31 corner attrs → 24 canonical / 5 wrong component / 7 none.
-  ⛔ **Blind spot:** colour + typography scan `edit.js` + `src/components/` only, missing per-block
-  local dirs (`GradientOverlayControl`) — zero `GradientPicker` findings is not a clean bill.
-
-**Advisory backlog now 243** (242 + rule 24's 1). Gates still 4, still none promoted.
-
-#### ⭐ LIVE-EDITOR CALIBRATION — read D544 before sequencing anything
-
-Run BEFORE building the replacement detector, on the canary, both tabs, all panels expanded.
-**The static census MIS-RANKS, it does not merely undercount:** `label` 8 static → **~50 live**;
-`button` 28 static → **84 live**, more than `hero` (45 static → 80). Also: `product-card` 19 panels /
-86 controls, `quote` 11 / 60. **83 block types registered live** — third confirmation of the
-denominator.
-
-**The dominant term is the EXTENSION LOAD, not the block.** `sgs/label` panel-by-panel: its own
-surface is **11 controls / 4 panels**; universal extensions add **34 controls / 6 panels** (Visibility
-conditions 15, Hover Effects 15, + 4 singles) = **76% of its SGS controls**. All 15 hover controls
-verified genuinely visible, including *"Zoom image on hover"* and *"Grayscale to colour"* — on a text
-block with no image.
-
-⚠ **This puts Phase 2.1 (opt-in inversion, D542 ruling 1) ahead of Phase 1 (responsive model) on
-measured impact — but ordering is BEAN'S CALL and has NOT been changed.** Both are real.
+- **BEFORE baseline, still the number the programme reports against:** `inspector-scan` rule
+  `21-render-without-control` = **129 FLAGGED**, tree-wide advisory total **243**. Re-measured
+  2026-08-10 after Phases 1.2/1.3: **unchanged** — no regression. Command: `node
+  scripts/inspector-scan/run.js --json` from `plugins/sgs-blocks`, counting `status:"FLAGGED"`
+  ONLY (raw arrays read 141/254 — they include the 12 baselined entries).
+- **Rule 23 + rule 24 shipped; three blocks corrected; five survey detectors built AND wired.**
+- **A library-wide panel/control census was measured then REJECTED (D543) — do not rebuild it.**
+  `check-simple-surface-cap.js` MIS-RANKS (it scores a composite as one row, cannot see native
+  supports, misses `extensions/`). It is correct for its own 2-block job; leave it exactly as is.
+- **LIVE-EDITOR CALIBRATION (D544): the dominant term is the EXTENSION LOAD, not the block.**
+  `sgs/label` shows ~50 controls live against a static score of 8; 59% of the library's inspector
+  surface comes from universal extensions. This is why Phase 2.1 (opt-in inversion) has the
+  biggest payoff left. **83 block types registered live** — the denominator is 83, not 84.
 
 #### ⛔ Do NOT start these
 
@@ -232,27 +139,27 @@ enum→open value) — D521-class silent-coercion risk, so the codemod PROPOSES 
 with a stored-content migration. **1.4c (`hero/edit.js:906`, `:1006-1017`) is NOT a merge** —
 mobile-only orphans with no tier counterpart; needs Bean's design call first (D545).
 
-**1.6 and 1.6b BOTH SHIPPED** — rule 25 (`925fa3da`, advisory, later hardened by a QC council) and
-the Playwright detector (`99859d38`, `npm run check:device-toggle`). Nothing to chase. This line
-written; read their own commits rather than assuming either outcome.
+**1.6 and 1.6b BOTH SHIPPED.** Rule 25 (`925fa3da`, advisory) — a QC council then found it missed
+the ARRAY-MAPPED switcher idiom (the one `responsive-device-toggle.js` itself uses) and could
+false-positive on a 4-value picker using an unanticipated word. Both fixed + fixture-guarded in
+`2ae3c8be`. Playwright detector (`99859d38`, `npm run check:device-toggle` / `:gate` / `:selftest`)
+— ⚠ NOT in `prebuild` (needs network + credentials) and ⚠ **playwright is NOT declared in
+`package.json`**, so on a fresh clone it degrades to "unavailable". Declaring it is a real decision:
+it is a heavy install every contributor would pay for.
 
 **After Phase 1 closes:** Phase 3.2a's `--fix` (survey already finished, highest leverage left, no
 open design decision) · Phase 2.1 opt-in inversion (bigger payoff — 59% of live inspector controls
 come from universal extensions — but gated on deriving the new opt-in list from actual
 `post_content` usage, not from `hideExtensions`, per D545).
 
-### ⚠ Two ACTIVE residuals on the survey-inspector-surface detector (not parked — they bite the next measurement)
+### ⚠ Two ACTIVE residuals on `survey-inspector-surface` (not parked — they bite the next measurement)
 
-1. **`survey-inspector-surface.js` counts DECLARED rows; D544's live figures count DEFAULT-VISIBLE
-   ones.** It therefore does NOT reproduce the live ordering (live: product-card > button > hero >
-   quote > label; detector: product-card > hero > quote > button > label). **Its OWN-vs-EXTENSION
-   split IS exact** (`sgs/label` 4/6/1 panels, matching the live measurement) — use that, and do not
-   quote its row totals as "what the client sees". Closing it = one bounded pass making
-   default-visible the primary number, declared the secondary.
-2. **Unresolved 7-vs-6 discrepancy on `sgs/label`'s extension panels.** The detector counts a `fx.js`
-   "Scroll & effects" panel (source says label qualifies via `SHIPPED_EFFECTS`); the live
-   click-through recorded only 6 and did not show it. **One of the two is wrong and which has not
-   been determined.** Resolve before the next calibration, or the calibration inherits the error.
+1. **It counts DECLARED rows; D544's live figures count DEFAULT-VISIBLE ones**, so it does not
+   reproduce the live ordering. **Its OWN-vs-EXTENSION split IS exact** — use that, never its row
+   totals as "what the client sees". Fix = one bounded pass making default-visible primary.
+2. **Unresolved 7-vs-6 on `sgs/label`'s extension panels** — the detector counts an `fx.js`
+   "Scroll & effects" panel the live click-through did not show. One is wrong; which is undetermined.
+   Resolve before the next calibration or it inherits the error.
 
 ### Dependency graph
 
@@ -280,6 +187,17 @@ Then: Phase 3.2a's `--fix` (highest leverage left) · Phase 2.1 opt-in inversion
   0 for *everything*, including the control.
 - **A static heuristic is not an AST parse** — the length survey's own docstring names a real false
   positive. Spot-check before acting on a row.
+- ⭐ **`inspector-scan --json` has NO top-level `findings` key — it is `rules[].findings`.** Reading
+  the wrong key returns `[]` and looks like a clean pass. This produced FIVE vacuous zero-readings
+  in one session, two of which were briefly read as evidence AGAINST a working rule. Always filter
+  to `status:"FLAGGED"` (raw arrays over-count by the baselined entries: rule 21 reads 141 vs 129).
+- ⭐ **`getBoundingClientRect()` is not a visibility test.** It reports the LAYOUT box and knows
+  nothing about ancestor `overflow:hidden` or the viewport edge — a clipped, off-screen element
+  still reports a healthy size. It caused three false "regression" alarms in one session. Use
+  `document.elementFromPoint()` and confirm the hit element IS the target.
+- ⭐ **A green build proves almost nothing about editor JS.** `lint:js` is NOT in `prebuild`, so an
+  undefined identifier or an unused import ships clean; and an unprefixed `__experimental` import is
+  `undefined` at runtime (React error #130) through every gate. Verify live, in both editors.
 - **Deploy needs `--payload <prefix>`, never `--allow-dirty`.**
 - **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped, D101).
 
@@ -294,8 +212,8 @@ Then: Phase 3.2a's `--fix` (highest leverage left) · Phase 2.1 opt-in inversion
 
 ## State Snapshot
 
-- **Branch:** `main` at `b202157e` (Phase 1.3) + this handoff's doc commit on top. ⛔ **Do not trust
-  this line for tree state — run `git status`.** Commit by EXACT PATH (a pre-commit gate requires a
+- **Branch:** `main` at `2ae3c8be`, PUSHED. Nine commits this session (`e1e418aa..2ae3c8be`). ⛔ **Do
+  not trust this line for tree state — run `git status`.** Commit by EXACT PATH (a pre-commit gate requires a
   pathspec; the visual-diff gate requires a `source_sha`-bound report per changed block).
 - **Untracked, deliberate:** `.claude/Border Example HTML.html` (Bean's saved reference markup — the
   core `BorderBoxControl` example the plan is built on).

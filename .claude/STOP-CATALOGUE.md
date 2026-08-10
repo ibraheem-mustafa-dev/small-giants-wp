@@ -1843,3 +1843,31 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   from docs, hooks or sibling scripts. Separate by MECHANISM (who calls it), never by count. And a
   census with no `--check` mode must **not** be added to `prebuild` to "wire" it: putting a
   non-gating script in a gate chain is enforcement theatre.
+
+- **STOP-A-ZERO-FROM-THE-WRONG-JSON-KEY-LOOKS-EXACTLY-LIKE-A-CLEAN-PASS.** `inspector-scan --json`
+  has **no top-level `findings` key** — findings live at `rules[].findings`. Reading the wrong key
+  returns `[]`, and an empty array is indistinguishable from a genuinely clean run. On 2026-08-10
+  this produced **five** vacuous zero-readings in one session, and **two of them were briefly read as
+  evidence that a working rule could not fire** — nearly reverting a correct rule. **Rule: before
+  trusting any zero from a JSON report, print the top-level keys and confirm the array you are
+  reading is the one that carries findings; then filter to `status:"FLAGGED"`** (raw arrays include
+  BASELINED entries — rule 21 reads 141 raw vs 129 flagged). Sibling of the existing
+  positive-control rule: a zero you cannot make non-zero on demand is not a measurement.
+
+- **STOP-GETBOUNDINGCLIENTRECT-IS-NOT-A-VISIBILITY-TEST.** It reports the **layout box** and knows
+  nothing about an ancestor's `overflow:hidden`, a zero-width parent, or the viewport edge. A toggle
+  that was fully clipped and off-screen still reported `32x106`, which read as "it is bleeding over
+  the canvas" — one of **three** false regression alarms from the same cause in a single session.
+  **Rule: for "is it visible?", hit-test with `document.elementFromPoint(cx, cy)` and confirm the
+  returned element IS the target or a descendant.** Same family as the collapsed-`ToolsPanel` and
+  the probe-that-never-reaches-the-effect entries: the number was real, the inference was not.
+
+- **STOP-A-GREEN-BUILD-PROVES-ALMOST-NOTHING-ABOUT-EDITOR-JS.** `lint:js` is **not** in the
+  `prebuild` chain, so an undefined identifier or an unused import ships through every gate. Worse,
+  an unprefixed `__experimental*` import from `@wordpress/components` is `undefined` at runtime
+  (React minified error #130) with a perfectly clean build — the component simply never mounts. On
+  2026-08-10 the first deploy of the device toggle did exactly this: **the stylesheet loaded and the
+  component did not**, so a CSS-only positive control would have reported a pass. **Rule: editor-JS
+  changes are verified in the live editor, in BOTH the post and site editor, with a `data-*` mount
+  marker asserted — never on build exit code alone. Ship two positive controls when the delivery
+  mechanism (CSS) and the behaviour (React mount) can fail independently.**
