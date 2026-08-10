@@ -13,12 +13,15 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
- *   svgContent, minHeight*, background/text/border colourHover,
- *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
- *   splitImageBleed,
- *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
+ *   imageObjectPositionTablet, svgContent, minHeight*, background/text/border
+ *   colourHover, transitionDuration, transitionEasing, bgParallax, bgKenBurns,
+ *   bgVideo*, splitImageBleed,
+ *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
+ *   splitImageHeight, splitImageHeightTablet, splitImageMobileHeight,
  *   imageObjectFit/Position, image*Width/Height*, imageBorderStyle/Colour,
- *   splitColumnRatio*, splitGap*, splitContentOrderMobile, verticalAlignment.
+ *   splitColumnRatio*, splitGap*,
+ *   splitContentOrder, splitContentOrderTablet, splitContentOrderMobile,
+ *   verticalAlignment.
  *   Headline / sub-headline / label FONT-SIZE (all breakpoints) is
  *   owned by the child sgs/heading / sgs/text / sgs/label blocks — not emitted
  *   here.
@@ -151,6 +154,10 @@ if ( empty( $split_image['url'] ) && ! empty( $split_media['url'] ) && 'image' =
 $split_image_tablet  = $attributes['splitImageTablet'] ?? null;
 $split_image_mobile  = $attributes['splitImageMobile'] ?? null;
 $split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
+// Tablet tier of the object-position triple (Spec 35 Track 1b Phase 1.4c —
+// promoted from a mobile-only orphan). Desktop tier is $image_object_position
+// below (imageObjectPosition, already wired); '' = inherit desktop.
+$image_object_position_tablet = $attributes['imageObjectPositionTablet'] ?? '';
 $svg_content         = $attributes['svgContent'] ?? '';
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
@@ -170,6 +177,10 @@ $headline_margin_bottom_mobile = $attributes['headlineMarginBottomMobile'] ?? nu
 $sub_headline_margin_bottom        = $attributes['subHeadlineMarginBottom'] ?? null;
 $sub_headline_margin_bottom_mobile = $attributes['subHeadlineMarginBottomMobile'] ?? null;
 $split_image_mobile_height  = $attributes['splitImageMobileHeight'] ?? null;
+// Desktop + tablet tiers of the split-image-height triple (Spec 35 Track 1b
+// Phase 1.4c — promoted from a mobile-only orphan; mobile default unchanged).
+$split_image_height         = $attributes['splitImageHeight'] ?? null;
+$split_image_height_tablet  = $attributes['splitImageHeightTablet'] ?? null;
 
 $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour       = $attributes['textColourHover'] ?? '';
@@ -255,6 +266,12 @@ $split_col_ratio_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
 // splitGap* REMOVED (de-duped 2026-07-06) — the split grid gap now reads the
 // shared gap/gapTablet/gapMobile (see the gap emission below).
 $split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';
+// Desktop + tablet tiers of the content-order triple (Spec 35 Track 1b
+// Phase 1.4c — promoted from a mobile-only orphan; mobile default unchanged).
+// '' = inherit (desktop falls back to natural DOM order; tablet falls back
+// to the resolved desktop order).
+$split_order         = $attributes['splitContentOrder'] ?? '';
+$split_order_tablet  = $attributes['splitContentOrderTablet'] ?? '';
 
 // Vertical alignment. Content max-width now lives on the universal wrapper attr
 // `contentWidth` (rendered by SGS_Container_Wrapper as the .sgs-container__inner
@@ -384,11 +401,6 @@ if ( $sub_headline_max_width ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__subheadline{max-width:' . absint( $sub_headline_max_width ) . 'px}';
 }
 
-// Split image mobile height.
-if ( $split_image_mobile_height ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
-}
-
 // ── Split variant: grid-template-columns + gap (base + tablet + mobile) ────
 if ( $is_split ) {
 	// Base grid-template-columns — moved here from the old inline style="" on
@@ -436,7 +448,42 @@ if ( $is_split ) {
 	if ( '' !== $hero_gap_mobile ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}
-	// Mobile column order.
+	// Split image height — base + tablet + mobile (promoted from a mobile-only
+	// orphan, Spec 35 Track 1b Phase 1.4c). Emitted in base -> tablet -> mobile
+	// source order so the later, narrower @media rule wins the cascade at its
+	// width (same convention as grid-template-columns/gap above).
+	if ( $split_image_height ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_height ) . 'px;object-fit:cover}';
+	}
+	if ( $split_image_height_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_height_tablet ) . 'px;object-fit:cover}}';
+	}
+	if ( $split_image_mobile_height ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
+	}
+
+	// Desktop/base column order. Blank ('') = natural DOM order (content is
+	// first in markup, so it lands in the first/left grid track). 'media-first'
+	// swaps: image first/left, content second/right. This is a LEFT/RIGHT
+	// decision — the split is a 2-col grid at this width.
+	if ( 'media-first' === $split_order ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}';
+	}
+	// Tablet column order override. Blank = inherit the resolved desktop order
+	// above (same "blank = inherit" convention as the tablet column ratio).
+	// Meaning depends on whether the tablet grid is side-by-side or stacked at
+	// this width (gridTemplateColumnsTablet) — LEFT/RIGHT if side-by-side,
+	// ABOVE/BELOW if stacked.
+	if ( $split_order_tablet ) {
+		if ( 'content-first' === $split_order_tablet ) {
+			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
+		} else {
+			// media-first.
+			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
+		}
+	}
+	// Mobile column order. Mobile always stacks to a single column, so this is
+	// an ABOVE/BELOW decision, not LEFT/RIGHT.
 	if ( 'content-first' === $split_order_mobile ) {
 		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
 	} else {
@@ -507,6 +554,13 @@ if ( $is_split ) {
 	$safe_object_position = $sgs_css_object_position( $image_object_position );
 	if ( '' !== $safe_object_position ) {
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{object-position:' . $safe_object_position . '}';
+	}
+	// Tablet tier override. Blank = inherit the desktop rule above.
+	if ( $image_object_position_tablet ) {
+		$safe_object_position_tablet = $sgs_css_object_position( $image_object_position_tablet );
+		if ( '' !== $safe_object_position_tablet ) {
+			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{object-position:' . $safe_object_position_tablet . '}}';
+		}
 	}
 }
 

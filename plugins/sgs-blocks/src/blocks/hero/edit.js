@@ -99,6 +99,24 @@ const MOBILE_ORDER_OPTIONS = [
 	{ label: __( 'Content first (text on top)', 'sgs-blocks' ), value: 'content-first' },
 ];
 
+// Desktop/tablet column order (Spec 35 Track 1b Phase 1.4c — promoted from the
+// mobile-only splitContentOrderMobile orphan to a full responsive triple).
+// Desktop/tablet decide LEFT/RIGHT column order (the split is a 2-col grid at
+// >=768px); mobile decides ABOVE/BELOW because mobile always stacks. Same
+// underlying values ('' / 'content-first' / 'media-first') as
+// MOBILE_ORDER_OPTIONS — only the labels change per tier so a non-technical
+// client understands which axis they're setting.
+const DESKTOP_ORDER_OPTIONS = [
+	{ label: __( 'Content left, image right (default)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Image left, content right', 'sgs-blocks' ), value: 'media-first' },
+];
+
+const TABLET_ORDER_OPTIONS = [
+	{ label: __( 'Same as desktop', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Content first (left if side-by-side, top if stacked)', 'sgs-blocks' ), value: 'content-first' },
+	{ label: __( 'Image first (left if side-by-side, top if stacked)', 'sgs-blocks' ), value: 'media-first' },
+];
+
 /**
  * Responsive RangeControl helper.
  * Renders a RangeControl wrapped in ResponsiveControl, mapping
@@ -187,14 +205,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		subHeadlineMaxWidth,
 		subHeadlineMarginBottom,
 		subHeadlineMarginBottomMobile,
-		splitImageMobileHeight,
 		bgParallax,
 		bgKenBurns,
 		bgVideo,
 		bgVideoMobile,
 		// Phase 1 — image display.
 		imageObjectFit,
-		imageObjectPosition,
 		imageWidth,
 		imageWidthTablet,
 		imageWidthMobile,
@@ -231,6 +247,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		gridTemplateColumnsTablet,
 		gridTemplateColumnsMobile,
 		splitContentOrderMobile,
+		splitContentOrder,
+		splitContentOrderTablet,
 		// Phase 1 — vertical alignment.
 		verticalAlignment,
 		// HC2 — per-breakpoint text alignment on .sgs-hero__content.
@@ -645,6 +663,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									gridTemplateColumns: '',
 									gridTemplateColumnsTablet: '',
 									gridTemplateColumnsMobile: '',
+									splitContentOrder: '',
+									splitContentOrderTablet: '',
 									splitContentOrderMobile: 'media-first',
 									splitImageBleed: false,
 								} ),
@@ -762,6 +782,19 @@ export default function Edit( { attributes, setAttributes } ) {
 													attrMap[ breakpoint ]
 												]
 											}
+											// ⚑ DELIBERATE divergence from the shared MIN_HEIGHT_OPTIONS
+											// (container/components/ContainerWrapperControls.js) — decided,
+											// not an oversight (Spec 35 Track 1b Phase 1.4c). Kept because:
+											// (1) minHeightMobile's own declared default is "360px"
+											// (block.json), which isn't in the shared list at all — aligning
+											// would make the block's own default unselectable in its dropdown.
+											// (2) A hero is a full-bleed section; 80vh/520px are realistic
+											// hero heights the shared list (built for generic containers,
+											// which top out lower) doesn't offer. (3) The shared list's
+											// "closed" set is already not authoritative elsewhere —
+											// sgs/physics-canvas defaults minHeight to "480px", a value in
+											// NEITHER list, so a hero-specific list matching a hero-specific
+											// default is the more honest approach, not the odd one out.
 											options={ [
 												{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
 												{ label: '50vh',  value: '50vh'  },
@@ -840,6 +873,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									!! gridTemplateColumns ||
 									!! attributes.gridTemplateColumnsTablet ||
 									!! attributes.gridTemplateColumnsMobile ||
+									!! splitContentOrder ||
+									!! splitContentOrderTablet ||
 									splitContentOrderMobile !== 'media-first' ||
 									!! splitImageBleed
 								}
@@ -848,6 +883,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										gridTemplateColumns: '',
 										gridTemplateColumnsTablet: '',
 										gridTemplateColumnsMobile: '',
+										splitContentOrder: '',
+										splitContentOrderTablet: '',
 										splitContentOrderMobile: 'media-first',
 										splitImageBleed: false,
 									} )
@@ -903,7 +940,41 @@ export default function Edit( { attributes, setAttributes } ) {
 								     the container gap, controlled by the shared "Gap" control
 								     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
 								     bespoke splitGap* "Column gap" control was a duplicate. */ }
-								<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
+								<ResponsiveControl label={ __( 'Column / stacking order', 'sgs-blocks' ) }>
+									{ ( breakpoint ) => {
+										const orderAttrMap = {
+											desktop: 'splitContentOrder',
+											tablet: 'splitContentOrderTablet',
+											mobile: 'splitContentOrderMobile',
+										};
+										const orderOptionsMap = {
+											desktop: DESKTOP_ORDER_OPTIONS,
+											tablet: TABLET_ORDER_OPTIONS,
+											mobile: MOBILE_ORDER_OPTIONS,
+										};
+										const orderLabelMap = {
+											desktop: __( 'Desktop order', 'sgs-blocks' ),
+											tablet: __( 'Tablet order', 'sgs-blocks' ),
+											mobile: __( 'Mobile stacking order', 'sgs-blocks' ),
+										};
+										const orderHelpMap = {
+											desktop: __( 'Which column sits on the left when content and image are side by side.', 'sgs-blocks' ),
+											tablet: __( 'Overrides desktop for tablet screens only. If your tablet grid is side by side this sets left/right; if it stacks (single column) this sets top/bottom.', 'sgs-blocks' ),
+											mobile: __( 'Mobile always stacks into a single column — this sets which section shows on top.', 'sgs-blocks' ),
+										};
+										const orderKey = orderAttrMap[ breakpoint ];
+										return (
+											<SelectControl
+												label={ orderLabelMap[ breakpoint ] }
+												value={ attributes[ orderKey ] }
+												options={ orderOptionsMap[ breakpoint ] }
+												help={ orderHelpMap[ breakpoint ] }
+												onChange={ ( val ) => setAttributes( { [ orderKey ]: val } ) }
+												__nextHasNoMarginBottom
+											/>
+										);
+									} }
+								</ResponsiveControl>
 								<ToggleControl
 									label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
 									help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
@@ -1003,22 +1074,63 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ isSplit && (
 						<>
-							<RangeControl
-								label={ __( 'Split image mobile height (px)', 'sgs-blocks' ) }
-								help={ __( 'Fixed height for the split image on mobile screens. 0 = auto.', 'sgs-blocks' ) }
-								value={ splitImageMobileHeight || 0 }
-								onChange={ ( val ) =>
-									setAttributes( { splitImageMobileHeight: val || null } )
-								}
-								min={ 0 }
-								max={ 600 }
-								step={ 10 }
-								__nextHasNoMarginBottom
-							/>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split image height', 'sgs-blocks' ) }</p>
+							<ResponsiveControl label={ __( 'Height (px)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const heightAttrMap = {
+										desktop: 'splitImageHeight',
+										tablet: 'splitImageHeightTablet',
+										mobile: 'splitImageMobileHeight',
+									};
+									const heightKey = heightAttrMap[ breakpoint ];
+									return (
+										<RangeControl
+											help={ breakpoint === 'desktop'
+												? __( 'Fixed height for the split image. 0 = auto (fits content).', 'sgs-blocks' )
+												: __( 'Overrides the wider tier at this breakpoint. 0 = auto.', 'sgs-blocks' ) }
+											value={ attributes[ heightKey ] || 0 }
+											onChange={ ( val ) =>
+												setAttributes( { [ heightKey ]: val || null } )
+											}
+											min={ 0 }
+											max={ 600 }
+											step={ 10 }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
 							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom />
-							<TextControl label={ __( 'Object position', 'sgs-blocks' ) } help={ __( 'CSS object-position (e.g. "center 20%").', 'sgs-blocks' ) } value={ imageObjectPosition || 'center center' } onChange={ ( val ) => setAttributes( { imageObjectPosition: val } ) } __nextHasNoMarginBottom />
+							<ResponsiveControl label={ __( 'Object position', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const posAttrMap = {
+										desktop: 'imageObjectPosition',
+										tablet: 'imageObjectPositionTablet',
+										mobile: 'splitImageMobileObjectPosition',
+									};
+									const posKey = posAttrMap[ breakpoint ];
+									const posDefault = {
+										desktop: 'center center',
+										tablet: '',
+										mobile: 'center 20%',
+									}[ breakpoint ];
+									const posHelpMap = {
+										desktop: __( 'CSS object-position (e.g. "center 20%"). Applies to tablet too unless overridden below.', 'sgs-blocks' ),
+										tablet: __( 'Blank = inherit the desktop position above.', 'sgs-blocks' ),
+										mobile: __( 'Only used when a separate mobile image is set above.', 'sgs-blocks' ),
+									};
+									return (
+										<TextControl
+											help={ posHelpMap[ breakpoint ] }
+											value={ attributes[ posKey ] ?? posDefault }
+											onChange={ ( val ) => setAttributes( { [ posKey ]: val } ) }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
 							{ imageObjectFit === 'custom' && (
 								<>
 									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>

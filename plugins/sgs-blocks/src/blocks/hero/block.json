@@ -319,6 +319,10 @@
 			"type": "string",
 			"default": "center 20%"
 		},
+		"imageObjectPositionTablet": {
+			"type": "string",
+			"default": ""
+		},
 		"label": {
 			"type": "string",
 			"default": "",
@@ -397,6 +401,14 @@
 			"default": null
 		},
 		"splitImageMobileHeight": {
+			"type": "number",
+			"default": null
+		},
+		"splitImageHeight": {
+			"type": "number",
+			"default": null
+		},
+		"splitImageHeightTablet": {
 			"type": "number",
 			"default": null
 		},
@@ -511,6 +523,14 @@
 		"splitContentOrderMobile": {
 			"type": "string",
 			"default": "media-first"
+		},
+		"splitContentOrder": {
+			"type": "string",
+			"default": ""
+		},
+		"splitContentOrderTablet": {
+			"type": "string",
+			"default": ""
 		},
 		"verticalAlignment": {
 			"type": "string",
