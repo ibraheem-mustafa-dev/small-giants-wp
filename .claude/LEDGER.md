@@ -81,6 +81,24 @@ decision) · Phase 2.1 opt-in inversion (biggest payoff — 59% of live inspecto
 universal extensions — gated on deriving the opt-in list from actual `post_content`, not
 `hideExtensions`, per D545).
 
+### ⭐ Phase 2.1 SCOPE EXPANDED — Bean-directed 2026-08-10 (D551)
+
+**`hover-effects`, `block-link` and the other problematic extensions get DISCONNECTED from blocks
+and made OPT-IN.** This is part of Phase 2.1, not a separate errand.
+
+Why they are wrong at the root, not merely untidy: they create **single-state colour pickers**
+(contract §6's banned lookalike — canonical is `StateToggleControl`, one toggle per attr GROUP
+covering BOTH states), and they **do not apply the effect to the element** — they paint the block
+root, the same defect the element-driven inspector work exists to remove.
+
+⛔ **STOP REPAIRING THEM.** Effort spent making a legacy extension correct entrenches a mechanism
+being removed. Today's `7908a22f` hover fix is KEPT only because it is already done and measured
+harmless (ZERO stored hover attrs on the canary, positive control 1706) — do not extend it.
+
+⚑ **Transferable lesson:** that dead CSS sat inert for months because **nobody uses the feature**.
+A defect nobody can trigger is weak evidence the feature is worth having. **Check whether a thing
+is USED before investing in making it correct** — the census that answered it took one command.
+
 ### Methodology guardrails (earned; do not skip)
 
 - ⭐ **A text count of an identifier discussed in comments is wrong BY CONSTRUCTION.**

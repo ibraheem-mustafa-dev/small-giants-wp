@@ -1,5 +1,55 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D551 — The problematic universal extensions get DISCONNECTED and made opt-in; stop repairing them [ROUTINE]
+
+**2026-08-10. Bean-directed, verbatim:** *"lets not waste any time catering to or fixing
+Hover effects.php - It needs to be disconnected from the blocks and switched only to opt-in as
+well as block-link and the other problematic extensions. Hover effects is a very problematic
+legacy setup that directly contradicts all of our planned work because it creates single state
+colour pickers and doesn't apply the hover effects to elements directly."*
+
+### Why it is wrong at the root (not merely untidy)
+
+1. **Single-state colour pickers are contract §6's BANNED LOOKALIKE.** The canonical shape is
+   `src/components/StateToggleControl.js` — ONE toggle per logical attr GROUP, whose render-prop
+   covers EVERY paired attr in BOTH states. `hover-effects.php` instead attaches standalone
+   "hover colour" pickers with no resting-state pairing, so the operator sets a hover colour with
+   no visible relationship to the colour it replaces.
+2. **It does not apply the effect to the ELEMENT.** It paints the block ROOT, not the element the
+   operator is actually styling — which is the same class of defect the element-driven inspector
+   work (`plans/2026-08-08-element-driven-inspector-design.md`) exists to remove.
+3. **It is a UNIVERSAL extension.** D544 measured that **59% of the library's live inspector
+   surface comes from universal extensions**, and that is why Phase 2.1 (opt-in inversion) has the
+   largest remaining payoff. `hover-effects` is one of the worst offenders and attaches to blocks
+   that have no business carrying it.
+
+### The decision
+
+`hover-effects`, `block-link` and the other problematic extensions are **disconnected from blocks
+and become OPT-IN**. This is now part of Phase 2.1's scope, not a separate errand.
+
+⛔ **STOP REPAIRING THEM.** Effort spent making a legacy extension work correctly is effort spent
+entrenching a mechanism that is being removed. Fix them only where a defect is actively harmful.
+
+### What was already done today, and why it is NOT reverted
+
+`7908a22f` fixed genuinely dead CSS in `hover-effects` (rules gated on a `style=""` attribute the
+PHP never writes, so hover colour/shadow were inert on the frontend). It was reworked to
+PER-PROPERTY class gating because the naive un-gate was a regression.
+
+**Kept, on evidence:** measured on the canary — **ZERO stored hover attributes across 194
+pages/posts** (POSITIVE CONTROL: 1706 `wp:sgs/*` openings parsed, so the zero is a measurement,
+not a broken query). The fix therefore changes NOTHING on any live page. It leaves the extension
+correct-in-itself for whatever opts in later, and reverting would only re-introduce dead code.
+
+⚑ **The lesson, worth more than the fix:** the dead CSS had been inert for months and nobody
+noticed — *because nobody uses the feature*. A defect nobody can trigger is weak evidence that
+the feature is worth having. **Check whether a thing is USED before investing in making it
+correct.** The census that answered this took one command.
+
+⛔ **Do NOT re-fix the remaining `hover-effects` gaps** the subagent flagged (per-property
+granularity beyond what shipped). They are superseded by the disconnection.
+
 ## D550 — Corrections owed from the 2026-08-10 QC council; three numbers withdrawn [INCIDENT]
 
 **2026-08-10.** A 3-rater QC council on the session's 9 commits. Two raters found real defects
