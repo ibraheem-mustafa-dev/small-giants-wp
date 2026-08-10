@@ -11,8 +11,14 @@
 # business-info / content-collection). See
 # plugins/sgs-blocks/scripts/generate-extension-attributes.js.
 #
-# Activated repo-wide via:  git config core.hooksPath .githooks
-# (run once per clone; see .githooks/README.md).
+# ⛔ CORRECTED 2026-08-11 (D563). This header used to read "Activated repo-wide
+#    via: git config core.hooksPath .githooks" — which README.md explicitly
+#    FORBIDS, because repointing core.hooksPath would disable the Gitleaks
+#    secret scanner living in .git/hooks/. Two documents in the same directory
+#    gave opposite instructions; this one was wrong.
+#
+# Actual invocation: .git/hooks/pre-commit (a thin per-machine wrapper) calls
+#   gitleaks → .githooks/sgs-gates.sh → this file. See .githooks/README.md.
 
 GEN="plugins/sgs-blocks/scripts/generate-extension-attributes.js"
 
