@@ -11,11 +11,16 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 **Where 2026-08-10 (session 2) left things** *(prior narrative: `memory/session-2026-08-09*.md`)*:
 
-- **The shared container is now responsive by design, not block by block.** You asked for the
-  wrapper to be fixed once so no block needs "individual fixes that require forking". Six layout
-  settings (including row-vs-column, the commonest mobile need) now work per device for every block
-  that uses the wrapper. It took **six lines, not a rewrite** — the generic machinery already
-  existed; nobody had fed it these properties.
+- **The shared container is now FULLY responsive by design, not block by block.** You asked for the
+  wrapper to be fixed once so no block needs "individual fixes that require forking". **All 14 of
+  its styling settings** — including row-vs-column (the commonest mobile need), spacing, colours,
+  shadows and the content band — now work per device for every block that uses it. It took
+  **rows in a list, not a rewrite**: the generic machinery already existed and nobody had fed it
+  these properties. Adding the next one is a single line.
+- **A styling bug was found painting on a real page — and it pre-dated today.** A container was
+  emitting the literal text `max-width:Array` instead of a width. It was never caused by today's
+  work: any block whose setting was left untouched hit it, so the header and footer rows have been
+  doing it since that system was built. Found by checking the live page, fixed, and re-verified.
 - **The thing that made this possible was this morning's toggle.** Adding per-device options used
   to mean more controls on screen. With one global Desktop/Tablet/Mobile switch, it adds **zero** —
   so "make everything responsive" and "reduce clutter" turned out to be the same job, not opposites.
@@ -31,7 +36,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D550**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D551**.
 
 ### ⭐ Track 1b (Spec 35) — inspector control standardisation
 
@@ -50,6 +55,11 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 | **Six wrapper layout properties tier-capable, generically** | `2056af6a` |
 | `survey:responsive-shape` census + `gridAutoRows` guard + D548/D549 | `05f3ecad` |
 | D550 — council falsifications, three numbers corrected | `f305cba8` |
+| Docs sweep: LEDGER + contract §12 + baseline re-derived | `5f13e46b` |
+| D551 — problematic universal extensions → disconnect + opt-in | `cc91128d` |
+| Hover effects were DEAD on the frontend — un-gated per PROPERTY | `7908a22f` |
+| **Wrapper STAGE 2 — all 8 remaining properties tier-capable** | `dc1f0023` |
+| **`max-width:Array` painting live — empty `{}` is UNSET, not a value** | `57a0d019` |
 
 #### ⛔ Do NOT start these
 

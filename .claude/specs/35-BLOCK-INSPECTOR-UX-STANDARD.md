@@ -400,7 +400,7 @@ on every MediaUpload · [ ] no native-supports panel duplicated · [ ] native su
 + ARIA-label where needed · [ ] keyboard + contrast + `aria-describedby` a11y pass · [ ] client patterns
 use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 
-## PART M — Implementation status (living; updated 2026-07-28)
+## PART M — Implementation status (living; updated 2026-08-10)
 
 **The STANDARD (Parts A–L) is COMPLETE as a written spec (v2.0). The BUILD SURFACE against it is
 now SUBSTANTIALLY COMPLETE (`07c67642` → `64f5080e`, late 2026-07-28, ~18 delegate-routed packages
@@ -553,6 +553,25 @@ above + `.claude/plans/spec-35-control-type-contract.md` §THE PLACEMENT RULE.
   right mechanism for a grid item (Bean-ruled 2026-08-10). Re-run:
   `node plugins/sgs-blocks/scripts/inspector-scan/run.js` — currently **0 flagged**. Full record:
   `decisions.md` D540 §"CLOSED + CORRECTED 2026-08-10".
+
+**2026-08-10 (session 2) — the shared wrapper became generically responsive; the tier axis is now
+universal, not per-block.** Full amendment (the two-axis model, the six-row prop_map, the Stage-2
+custom-property split, the four measurement controls): **`plans/spec-35-control-type-contract.md`
+§12 (THE RESPONSIVE WRAPPER FAMILY)** — do not duplicate that text here, it drifts. Summary only:
+- `inspector-scan` gained **rule 26** (a new detector; see the rule file for its exact contract) and
+  `sgs_emit_responsive_css()`'s `WidthPanel` had its two duplicate "… by viewport" controls merged
+  into the shared tier mechanism.
+- The unreachable min-height panel was deleted (0 mount sites passed `'section'`, per D550).
+- Dead image-control CSS was un-gated (per-property hover gating now applies).
+- `sgs/gallery` migrated to the FR-37-16 object model — see its Block Build Status row in
+  `plugins/sgs-blocks/CLAUDE.md`; `ResponsiveSpacingPanel` is now DELETED (D548).
+- `sgs/hero`'s three mobile-only orphan attrs were promoted to full responsive triples.
+- **The shared wrapper itself is now fully responsive (D549)**: 14 properties are tier-capable — 6
+  shipped as data-driven `prop_map` rows (layout set), 8 named as Stage 2 (the `gridItem*` custom-
+  property set plus `shadow`/`contentBandBackground`, STILL OPEN per D549's STOP-29 flag — do not
+  treat these as shipped).
+- A live `max-width:Array` bug in `sgs_responsive_normalise_object()` was fixed (an un-normalised
+  object leaking into a scalar-only code path).
 
 ## PART N — Role data layer + enforcement rules for Task F (added 2026-08-06)
 
