@@ -1,23 +1,30 @@
 """
-sgs-update-v2.py — 14-stage holistic refresh of the SGS framework knowledge base.
+sgs-update-v2.py — 13-stage holistic refresh of the SGS framework knowledge base.
 
 Phase 4 of the architecture programme. Co-exists with the legacy 3-script setup
 (update-db.py + generate-block-reference.py + sgs-update-uimax-sync.py) until
-all 14 stages pass the Phase 4 gate, at which point the slash command entrypoint
+all 13 stages pass the Phase 4 gate, at which point the slash command entrypoint
 swaps to this script.
+
+Renumbered 2026-08-10 (Bean-directed): the pipeline used to carry 14 numbered
+slots but only 13 stage functions — the old Stage 3 (wpcli_handbook_refresh)
+was retired and merged into Stage 2's Source 3, yet still occupied slot 3 with
+a tombstone lambda. That slot has been deleted outright and every stage from
+the old 4-14 has shifted down by one to close the gap, so the pipeline is now
+a clean contiguous 1-13. Anyone with muscle memory for the pre-2026-08-10
+numbers should subtract one from any stage number 3 or higher.
 
 Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
   1. sgs_codebase_scan      — walk src/blocks/*/block.json into sgs-framework.db
                               (INSERT new rows + UPDATE drifted rows when block.json changes)
   2. core_gutenberg_cache_refresh — pull from 10 canonical upstream sources (Decision 30)
-  3. wpcli_handbook_refresh — refresh wp-cli/handbook docs [RETIRED — merged into Stage 2]
-  4. style_variation_sync   — walk sites/*/theme-snapshot.json (no-op pre-Phase-5a)
-  5. slot_synonym_auto_seed — heuristic slot → block mapping
-  6. block_replacement_mapping — verify blocks.replaces validity
-  7. spec_doc_regen         — regenerate .claude/specs/02-SGS-BLOCKS-REFERENCE.md
-  8. uimax_mirror           — mirror sgs-blocks → uimax CSV
-  9. drift_gate             — warn on MAJOR.MINOR WP version mismatch
- 10. prune_orphans          — delete orphan rows across three categories:
+  3. style_variation_sync   — walk sites/*/theme-snapshot.json (no-op pre-Phase-5a)
+  4. slot_synonym_auto_seed — heuristic slot → block mapping
+  5. block_replacement_mapping — verify blocks.replaces validity
+  6. spec_doc_regen         — regenerate .claude/specs/02-SGS-BLOCKS-REFERENCE.md
+  7. uimax_mirror           — mirror sgs-blocks → uimax CSV
+  8. drift_gate             — warn on MAJOR.MINOR WP version mismatch
+  9. prune_orphans          — delete orphan rows across three categories:
                               (a) BLOCK-LEVEL: block_slug absent from `blocks` table
                                   (block retired/renamed — deletes stale attrs/supports/caps)
                               (b) STALE-SUPPORTS: block exists but support_name removed from
@@ -26,11 +33,11 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                   (ghost rows Stage 1 never removes — always deleted regardless
                                   of prune_mode; block_attributes has no is_stale column)
                               Operates on both .agents + .claude DBs.
- 11. container_mirror_report — run sync-container-wrapping-blocks.py --write-block-json
+ 10. container_mirror_report — run sync-container-wrapping-blocks.py --write-block-json
                                (report-only; NO --apply — operator-gated). Surfaces which
                                KIND-scoped sgs/container attrs each composite is missing
                                so a version-bump is visible before any operator-gated --apply.
- 12. motion_fx_artefact_regen — regenerate the Spec 38 motion-fx shipped artefacts
+ 11. motion_fx_artefact_regen — regenerate the Spec 38 motion-fx shipped artefacts
                                (generated-fx-effects.php + generated-fx-effect-meta.json +
                                generated-fx-qualifying-blocks.php + .json) from fx_effects
                                (DB, finalised by Stage 1's tail step) + block.json/edit.js/
@@ -39,12 +46,12 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                2026-08-01 — the DB was made the single source for the
                                fx:* namespace, but nothing regenerated the artefacts THE
                                DB IS FOR; this stage is that missing writer.
- 13. run_audit_scanners     — run audit scanners keyed to DB/roster (report-only).
+ 12. run_audit_scanners     — run audit scanners keyed to DB/roster (report-only).
                               Regenerate roster.json, then run consistency checks
                               (db-consistency, consistency-gates, fx-list-drift,
                               box-family-guard, inspector-conformance, feature-parity).
                               Findings are informational; never fail the reseed.
- 14. export_db_to_csv       — export every live table to CSV in
+ 13. export_db_to_csv       — export every live table to CSV in
                               ~/.agents/skills/sgs-wp-engine/db\\ data/ (the space is
                               literal). Idempotent + deterministic. Removes CSVs for
                               retired tables. Reports tables exported, row counts, added/removed.
@@ -52,12 +59,12 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
 Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE] [--self-test]
 
-    --stage N               Run only stage N (1-14; stage 3 is retired). Omit to run all.
+    --stage N               Run only stage N (1-13). Omit to run all.
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
-    --prune-mode MODE       Stage 10 only: 'aggressive' (default) DELETEs stale support rows.
+    --prune-mode MODE       Stage 9 only: 'aggressive' (default) DELETEs stale support rows.
                             'conservative' sets is_stale=1 instead (opt-in cautious mode).
-    --self-test             Stage 14 only: test that the export stage can fail (do not use operationally).
+    --self-test             Stage 13 only: test that the export stage can fail (do not use operationally).
                             Attr-level orphans are always deleted regardless of prune_mode
                             (block_attributes has no is_stale column).
 """
@@ -671,7 +678,7 @@ def _index_sgs_block_files(
         # loaded above), NOT block.json — the mapping lives in ONE version-controlled
         # place (D270, 2026-07-04). A record entry is a list of core slugs (many-core
         # →one-sgs, e.g. sgs/media replaces image+video). Normalise to the comma-
-        # separated string Stage 6 + _blocks_replaces_reverse split on. Absent → None.
+        # separated string Stage 5 + _blocks_replaces_reverse split on. Absent → None.
         _raw_replaces = replacements_record.get(slug)
         if isinstance(_raw_replaces, list):
             replaces = ",".join(t.strip() for t in _raw_replaces if str(t).strip()) or None
@@ -1222,7 +1229,7 @@ def _index_sgs_block_files(
     # --- Prune stale block_selectors rows (Task 2b, 2026-08-01) ---
     # Retired blocks (block_slug still in block_selectors but no block.json on
     # disk any more) are never visited by the per-block loop above, so their
-    # rows would otherwise survive forever. Stage 10's prune_orphans does NOT
+    # rows would otherwise survive forever. Stage 9's prune_orphans does NOT
     # cover block_selectors — verified: it only touches block_supports,
     # block_capabilities, block_attributes, and blocks itself (see
     # _prune_orphans_on_conn docstring) — so this explicit prune is the only
@@ -2767,7 +2774,9 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 # Sources:
 #   1. WordPress/gutenberg block-library block.json files (GitHub API)
 #   2. WordPress/wordpress-develop PHP hook files (GitHub API)
-#   3. wp-cli/handbook markdown files (GitHub API) — replaces retired Stage 3
+#   3. wp-cli/handbook markdown files (GitHub API) — replaces the handbook
+#      refresh retired at D56 (formerly its own pipeline stage, numbered 3;
+#      removed from the pipeline entirely on 2026-08-10)
 #   4. developer.wordpress.org/reference/since/<version>/ (urllib + html.parser)
 #   5. make.wordpress.org/core/<version>-field-guide (urllib)
 #   6-10. developer.wordpress.org/{news,block-editor,themes,plugins,rest-api} (urllib)
@@ -3700,15 +3709,7 @@ def stage_2_core_gutenberg_cache_refresh(
 
 
 # ---------------------------------------------------------------------------
-# Stage 3 — RETIRED (architecture-staging Phase 1 close-out, decisions.md D56)
-#
-# WP-CLI handbook content is now refreshed by Stage 2 Source 3 directly.
-# The orchestrator prints a tombstone line and skips this stage number.
-# ---------------------------------------------------------------------------
-
-
-# ---------------------------------------------------------------------------
-# Stage 4 — Style variation sync (Phase 5a activated)
+# Stage 3 — Style variation sync (Phase 5a activated)
 # Walks sites/*/theme-snapshot.json → INSERT OR IGNORE into design_tokens.
 # Idempotent. Reports per-client insert / skip / filter counts.
 # ---------------------------------------------------------------------------
@@ -3730,7 +3731,7 @@ def _extract_custom_leaf_keys(node: dict, prefix: str = "") -> list[tuple[str, s
 
 
 # ---------------------------------------------------------------------------
-# Stage 4 helpers (promoted from inner defs for cognitive-complexity reduction)
+# Stage 3 helpers (promoted from inner defs for cognitive-complexity reduction)
 # ---------------------------------------------------------------------------
 
 def _extract_colour_tokens(settings: dict, client_slug: str) -> list[dict]:
@@ -4035,7 +4036,7 @@ def _write_stage4_report(
     summary_line: str,
     dry_run: bool,
 ) -> None:
-    """Assemble and write the Stage 4 plain-text audit report.
+    """Assemble and write the Stage 3 plain-text audit report.
 
     Writes only in non-dry-run mode (matches the original behaviour). The
     report directory is still created so a follow-up actual run finds it ready.
@@ -4046,7 +4047,7 @@ def _write_stage4_report(
         report_path.write_text("\n".join(all_lines), encoding="utf-8")
 
 
-def stage_4_style_variation_sync(
+def stage_3_style_variation_sync(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
     """Walk sites/*/theme-snapshot.json → INSERT OR IGNORE into design_tokens.
@@ -4094,7 +4095,7 @@ def stage_4_style_variation_sync(
     ts = datetime.now(timezone.utc).strftime(_UTC_TIMESTAMP_FMT)
 
     header_lines: list[str] = [
-        f"# Stage 4 Style Variation Sync — {ts}",
+        f"# Stage 3 Style Variation Sync — {ts}",
         "",
         "Phase 5a shipped. DB writes active.",
         "",
@@ -4155,7 +4156,7 @@ def stage_4_style_variation_sync(
 
     mode = "dry-run" if dry_run else "actual"
     print(
-        f"Stage 4 [{mode}]: {snapshots_found} snapshots, {snapshots_missing} missing. "
+        f"Stage 3 [{mode}]: {snapshots_found} snapshots, {snapshots_missing} missing. "
         f"Inserted: {total_inserted}, skipped: {total_skipped}, conflicts: {total_conflicts}. "
         f"Report: {report_path}"
     )
@@ -4173,7 +4174,7 @@ def stage_4_style_variation_sync(
 
 
 # ---------------------------------------------------------------------------
-# Stage 5 — Slot synonym auto-seed (Step 4.5)
+# Stage 4 — Slot synonym auto-seed (Step 4.5)
 #
 # D99 2026-05-29: queries `slots WHERE scope='element'` (was slot_synonyms).
 # slot_synonyms was retired in D99; all 89 element-scope rows migrated to the
@@ -4303,7 +4304,7 @@ def _build_synonym_report(
     return "\n".join(lines)
 
 
-def stage_5_slot_synonym_auto_seed(
+def stage_4_slot_synonym_auto_seed(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
     """Heuristic auto-seed of slot_synonyms.standalone_block for unmapped rows.
@@ -4407,7 +4408,7 @@ def stage_5_slot_synonym_auto_seed(
 
     mode = "dry-run" if dry_run else "actual"
     print(
-        f"Stage 5 [{mode}]: {unmapped_count} unmapped slots. "
+        f"Stage 4 [{mode}]: {unmapped_count} unmapped slots. "
         f"Auto-updated: {auto_inserted}, manual review: {manual_review}, "
         f"no match: {no_match}. "
         f"Report: {report_path}"
@@ -4424,7 +4425,7 @@ def stage_5_slot_synonym_auto_seed(
 
 
 # ---------------------------------------------------------------------------
-# Stage 6 — Block replacement mapping (Step 4.5)
+# Stage 5 — Block replacement mapping (Step 4.5)
 #
 # Walks blocks WHERE source='sgs' AND replaces IS NOT NULL.
 # For each `replaces` value (single slug or comma-separated list),
@@ -4486,7 +4487,7 @@ def _write_stale_report(
     report_path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def stage_6_block_replacement_mapping(
+def stage_5_block_replacement_mapping(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
     """Validate blocks.replaces mappings against the current native_wp block roster.
@@ -4539,7 +4540,7 @@ def stage_6_block_replacement_mapping(
 
     mode = "dry-run" if dry_run else "actual"
     print(
-        f"Stage 6 [{mode}]: {checked} blocks checked. "
+        f"Stage 5 [{mode}]: {checked} blocks checked. "
         f"Valid: {valid}, Stale: {stale}. "
         f"Report: {report_path}"
     )
@@ -4554,14 +4555,14 @@ def stage_6_block_replacement_mapping(
 
 
 # ---------------------------------------------------------------------------
-# Stage 7 — Spec doc regeneration
+# Stage 6 — Spec doc regeneration
 # PORTED FROM: plugins/sgs-blocks/scripts/generate-block-reference.py
 # Strategy: delegates to existing script via subprocess.run() — the script
 # uses its own DB connection path resolution and has complex rendering logic.
-# Stage 7: delegates to existing generate-block-reference.py until full port.
+# Stage 6: delegates to existing generate-block-reference.py until full port.
 # ---------------------------------------------------------------------------
 
-def stage_7_spec_doc_regen(dry_run: bool = False) -> dict:
+def stage_6_spec_doc_regen(dry_run: bool = False) -> dict:
     """Regenerate .claude/specs/02-SGS-BLOCKS-REFERENCE.md from DB.
 
     PORTED FROM: plugins/sgs-blocks/scripts/generate-block-reference.py
@@ -4588,14 +4589,14 @@ def stage_7_spec_doc_regen(dry_run: bool = False) -> dict:
                 ).fetchone()[0]
                 _conn.close()
                 print(
-                    f"Stage 7 [dry-run]: would regenerate spec from {total} total block rows "
+                    f"Stage 6 [dry-run]: would regenerate spec from {total} total block rows "
                     f"({sgs_count} sgs + {total - sgs_count} other sources)"
                 )
                 return {"dry_run": True, "total_blocks": total, "sgs_blocks": sgs_count}
             except Exception as exc:
-                print(f"Stage 7 [dry-run]: DB read error — {exc}")
+                print(f"Stage 6 [dry-run]: DB read error — {exc}")
                 return {"dry_run": True, "error": str(exc)}
-        print("Stage 7 [dry-run]: would regenerate spec (DB not found for count)")
+        print("Stage 6 [dry-run]: would regenerate spec (DB not found for count)")
         return {"dry_run": True}
 
     result = subprocess.run(
@@ -4607,11 +4608,11 @@ def stage_7_spec_doc_regen(dry_run: bool = False) -> dict:
     )
     if result.returncode != 0:
         error_msg = (result.stderr or result.stdout or "").strip()[:400]
-        print(f"Stage 7 ERROR: generate-block-reference.py failed — {error_msg}")
+        print(f"Stage 6 ERROR: generate-block-reference.py failed — {error_msg}")
         return {"error": error_msg, "exit_code": result.returncode}
 
     output_line = (result.stdout or "").strip()
-    print(f"Stage 7: {output_line}")
+    print(f"Stage 6: {output_line}")
 
     # Validate: output file must exist
     if not output_path.exists():
@@ -4632,14 +4633,14 @@ def stage_7_spec_doc_regen(dry_run: bool = False) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Stage 8 — uimax mirror
+# Stage 7 — uimax mirror
 # PORTED FROM: plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py
 # Strategy: delegates to existing script via subprocess.run() — the script
 # imports uimax_write.py (a sibling module) and has complex validation logic.
-# Stage 8: delegates to existing sgs-update-uimax-sync.py until full port.
+# Stage 7: delegates to existing sgs-update-uimax-sync.py until full port.
 # ---------------------------------------------------------------------------
 
-def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
+def stage_7_uimax_mirror(dry_run: bool = False) -> dict:
     """Mirror sgs-blocks → ~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv.
 
     PORTED FROM: plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py
@@ -4647,7 +4648,7 @@ def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
     (a sibling module with its own validation chokepoint). Only Stage 3 of that
     script (the DB→CSV sync) is invoked; Stage 4 (animation gap scan) is retired
     (sgs-framework.db animations table dropped at Step 6b 2026-05-14).
-    Stage 8: delegates to existing sgs-update-uimax-sync.py until full port.
+    Stage 7: delegates to existing sgs-update-uimax-sync.py until full port.
     """
     script = (
         REPO_ROOT
@@ -4676,7 +4677,7 @@ def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
     output = (result.stdout or "").strip()
     if result.returncode != 0:
         error_msg = (result.stderr or output or "").strip()[:400]
-        print(f"Stage 8 ERROR: sgs-update-uimax-sync.py failed — {error_msg}")
+        print(f"Stage 7 ERROR: sgs-update-uimax-sync.py failed — {error_msg}")
         return {"error": error_msg, "exit_code": result.returncode}
 
     # Print the subprocess output so it appears in the parent's stream
@@ -4705,7 +4706,7 @@ def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Stage 9 — Drift gate (STUB — Step 4.6)
+# Stage 8 — Drift gate (STUB — Step 4.6)
 # ---------------------------------------------------------------------------
 
 def _extract_major_minor(version_str: str) -> str | None:
@@ -4718,7 +4719,7 @@ def _extract_major_minor(version_str: str) -> str | None:
     return m.group(1) if m else None
 
 
-def stage_9_drift_gate(
+def stage_8_drift_gate(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
     """Compare live site WP MAJOR.MINOR against schema_metadata.wp_version_indexed.
@@ -4736,7 +4737,7 @@ def stage_9_drift_gate(
 
     # TODO: wire into .claude/hooks/deploy hook as a future integration point.
     # When the deploy pre-hook is built, call:
-    #   python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 9
+    #   python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 8
     # and gate the deploy on the returned status being 'ok' or 'skipped'.
     """
     c = conn.cursor()
@@ -4749,20 +4750,20 @@ def stage_9_drift_gate(
 
     if row is None or not row[0]:
         msg = "wp_version_indexed not set; run Stage 2 first"
-        print(f"Stage 9 [skipped]: {msg}")
+        print(f"Stage 8 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}
 
     db_indexed_raw: str = row[0]
     db_major_minor = _extract_major_minor(db_indexed_raw)
     if db_major_minor is None:
         msg = f"wp_version_indexed value '{db_indexed_raw}' is not a parseable version"
-        print(f"Stage 9 [skipped]: {msg}")
+        print(f"Stage 8 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}
 
     # Step 2 — Dry-run: skip SSH call
     if dry_run:
         msg = "dry-run mode"
-        print(f"Stage 9 [dry-run]: skipping SSH version check ({msg})")
+        print(f"Stage 8 [dry-run]: skipping SSH version check ({msg})")
         return {"status": "skipped", "reason": msg, "db_indexed": db_indexed_raw}
 
     # Step 3 — Fetch live WP version via SSH (sandybrown dev site)
@@ -4792,15 +4793,15 @@ def stage_9_drift_gate(
         if result.returncode != 0 or not raw_output:
             stderr_snippet = (result.stderr or "").strip()[:200]
             msg = f"SSH command failed (exit {result.returncode}): {stderr_snippet or '(no stderr)'}"
-            print(f"Stage 9 [skipped]: {msg}")
+            print(f"Stage 8 [skipped]: {msg}")
             return {"status": "skipped", "reason": msg}
     except subprocess.TimeoutExpired:
         msg = "SSH timed out after 15 s — drift check skipped"
-        print(f"Stage 9 [skipped]: {msg}")
+        print(f"Stage 8 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}
     except OSError as exc:
         msg = f"SSH unavailable — drift check skipped ({exc})"
-        print(f"Stage 9 [skipped]: {msg}")
+        print(f"Stage 8 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}
 
     # Step 4 — Parse and compare
@@ -4809,13 +4810,13 @@ def stage_9_drift_gate(
 
     if site_major_minor is None:
         msg = f"Could not parse WP version from SSH output: {site_version_raw!r}"
-        print(f"Stage 9 [skipped]: {msg}")
+        print(f"Stage 8 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}
 
     if site_major_minor == db_major_minor:
         # Silent pass — versions agree at MAJOR.MINOR level
         print(
-            f"Stage 9 [ok]: site WP {site_version_raw} matches "
+            f"Stage 8 [ok]: site WP {site_version_raw} matches "
             f"DB indexed version {db_indexed_raw} (MAJOR.MINOR: {db_major_minor})"
         )
         return {
@@ -4831,7 +4832,7 @@ def stage_9_drift_gate(
         f"(MAJOR.MINOR {db_major_minor}). "
         "Run /sgs-update (Stage 2 live-scrapes upstream) before deploying knowledge-dependent features."
     )
-    print(f"\n⚠  Stage 9 [drift_detected]: {warning}\n")
+    print(f"\n⚠  Stage 8 [drift_detected]: {warning}\n")
     return {
         "status": "drift_detected",
         "site_version": site_version_raw,
@@ -4841,7 +4842,7 @@ def stage_9_drift_gate(
 
 
 # ---------------------------------------------------------------------------
-# Stage 10 — Prune orphans
+# Stage 9 — Prune orphans
 #
 # Cleans rows in block_supports / block_capabilities / block_attributes whose
 # block_slug no longer exists in the `blocks` table (i.e. the block was retired
@@ -4857,7 +4858,7 @@ def stage_9_drift_gate(
 # ---------------------------------------------------------------------------
 
 # Second DB path (.claude) — the .agents DB is the canonical primary and is
-# opened by `open_db()` / the `conn` argument.  Stage 10 also writes to this
+# opened by `open_db()` / the `conn` argument.  Stage 9 also writes to this
 # secondary path so both stores stay in sync.
 _CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -5116,7 +5117,7 @@ def _prune_orphans_on_conn(
     }
 
 
-def stage_10_prune_orphans(
+def stage_9_prune_orphans(
     conn: sqlite3.Connection,
     dry_run: bool = False,
     prune_mode: str = _PRUNE_MODE_AGGRESSIVE,
@@ -5155,7 +5156,7 @@ def stage_10_prune_orphans(
     blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
     if not blocks_dir.exists():
         msg = f"blocks dir not found: {blocks_dir}"
-        print(f"Stage 10 [error]: {msg}")
+        print(f"Stage 9 [error]: {msg}")
         return {"error": msg}
 
     # Build live_slugs, live_supports, and live_attrs from current block.json files
@@ -5240,7 +5241,7 @@ def stage_10_prune_orphans(
 
     stale_verb = "deleted" if prune_mode == _PRUNE_MODE_AGGRESSIVE else "marked_stale"
     summary = (
-        f"Stage 10: orphan_block_supports_deleted={total_orphan_supports}, "
+        f"Stage 9: orphan_block_supports_deleted={total_orphan_supports}, "
         f"orphan_capabilities_deleted={total_orphan_caps}, "
         f"orphan_attributes_deleted={total_orphan_attrs}, "
         f"stale_supports_{stale_verb}={total_stale_supports}, "
@@ -5265,41 +5266,41 @@ def stage_10_prune_orphans(
 
 
 # ---------------------------------------------------------------------------
-# Stage 11 — Container-wrapper attribute mirror (WS-4, D160)
+# Stage 10 — Container-wrapper attribute mirror (WS-4, D160)
 # ---------------------------------------------------------------------------
 # Runs sync-container-wrapping-blocks.py in --write-block-json mode (report-only
 # by default — NO --apply flag so no block.json files are written).  A container
 # version-bump surfaces the diff for operator review; --apply is gated behind an
 # explicit operator command.
 #
-# The script is invoked as a subprocess (same pattern as Stage 7 / Stage 8) so
+# The script is invoked as a subprocess (same pattern as Stage 6 / Stage 7) so
 # it runs in its own Python process and cannot import-side-effect this module.
 
 
-def stage_11_container_mirror_report(dry_run: bool = False) -> dict:
-    """Stage 11 — container-wrapper attribute mirror diff (report-only).
+def stage_10_container_mirror_report(dry_run: bool = False) -> dict:
+    """Stage 10 — container-wrapper attribute mirror diff (report-only).
 
     Calls sync-container-wrapping-blocks.py --write-block-json (no --apply).
-    dry_run=True: just prints what Stage 11 would invoke and returns stub output.
+    dry_run=True: just prints what Stage 10 would invoke and returns stub output.
     """
     sync_script = (
         Path(__file__).resolve().parent / "sync-container-wrapping-blocks.py"
     )
     if not sync_script.exists():
         msg = f"sync-container-wrapping-blocks.py not found at {sync_script}"
-        print(f"Stage 11 ERROR: {msg}")
+        print(f"Stage 10 ERROR: {msg}")
         return {"error": msg, "dry_run": dry_run}
 
     if dry_run:
         print(
-            f"Stage 11 [dry-run]: would run:\n"
+            f"Stage 10 [dry-run]: would run:\n"
             f"  python {sync_script} --write-block-json\n"
             "(no --apply — operator-gated; this stage only surfaces the diff)"
         )
         return {"status": "dry-run", "dry_run": True}
 
     cmd = [sys.executable, str(sync_script), "--write-block-json"]
-    print(f"Stage 11: running {' '.join(cmd)}")
+    print(f"Stage 10: running {' '.join(cmd)}")
     try:
         result = subprocess.run(
             cmd,
@@ -5310,32 +5311,32 @@ def stage_11_container_mirror_report(dry_run: bool = False) -> dict:
         )
         if result.returncode != 0:
             msg = f"sync-container-wrapping-blocks.py exited {result.returncode}"
-            print(f"Stage 11 WARN: {msg}")
+            print(f"Stage 10 WARN: {msg}")
             return {"status": "warn", "returncode": result.returncode, "dry_run": False}
-        print("Stage 11: container-wrapper mirror diff complete.")
+        print("Stage 10: container-wrapper mirror diff complete.")
         return {"status": "ok", "dry_run": False}
     except subprocess.TimeoutExpired:
         msg = "sync-container-wrapping-blocks.py timed out after 120 s"
-        print(f"Stage 11 ERROR: {msg}")
+        print(f"Stage 10 ERROR: {msg}")
         return {"error": msg, "dry_run": False}
     except Exception as exc:
         msg = str(exc)
-        print(f"Stage 11 ERROR: {msg}")
+        print(f"Stage 10 ERROR: {msg}")
         return {"error": msg, "dry_run": False}
 
 
 # ---------------------------------------------------------------------------
-# Stage 12 — Motion-fx artefact regeneration (D432 follow-up, 2026-08-01)
+# Stage 11 — Motion-fx artefact regeneration (D432 follow-up, 2026-08-01)
 # PORTED FROM: plugins/sgs-blocks/scripts/generate-fx-effects-php.py +
 #              plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py
 # Strategy: delegates to both existing scripts via subprocess.run() — same
-# "delegate rather than duplicate" shape as Stage 7 (generate-block-reference.py)
-# and Stage 8 (sgs-update-uimax-sync.py). Both generators already own their own
+# "delegate rather than duplicate" shape as Stage 6 (generate-block-reference.py)
+# and Stage 7 (sgs-update-uimax-sync.py). Both generators already own their own
 # DB-path resolution, a pure render function, and a --check diff mode; importing
 # their logic here would duplicate it for zero benefit.
 # ---------------------------------------------------------------------------
 
-def stage_12_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
+def stage_11_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
     """Regenerate the Spec 38 motion-fx shipped artefacts from fx_effects (DB)
     plus block.json/edit.js/style.css (files).
 
@@ -5355,21 +5356,21 @@ def stage_12_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
     developer remembered to run the generators by hand.
 
     This stage is that missing writer. It runs the two generator scripts with
-    NO `--check` flag (their write mode), exactly mirroring Stage 7/8's
+    NO `--check` flag (their write mode), exactly mirroring Stage 6/7's
     subprocess-delegate pattern. `npm run build` keeps `--check`-only via
     `run-motion-fx-generators.js` — unchanged by this task — so there remains
     exactly ONE writer per artefact (this stage) and exactly one verifier
     (the build gate), never two writers racing the same file (the same class
     of bug D432 fixed for the DB column, now closed for the files it feeds).
 
-    ORDERING (why Stage 12, last): `generate-fx-qualifying-blocks.py` reads
+    ORDERING (why Stage 11, last): `generate-fx-qualifying-blocks.py` reads
     block.json/edit.js/style.css directly, never the DB, for block-provision
     facts (verified in its own module docstring: "This script reads block.json
     + edit.js FILES directly... for block-provision facts... It reads the DB
     ONLY for fx_effects.scope/requires"). BOTH generators read `fx_effects` for
     the effect-side facts, and that table is only fully current after Stage 1's
     tail step (`_run_motion_fx_registry_seed`) has already run earlier in THIS
-    SAME invocation. Running after Stage 10 (prune) also means a block retired
+    SAME invocation. Running after Stage 9 (prune) also means a block retired
     this run can never leave a stale entry in the qualifying-blocks map.
 
     Idempotent by construction: both generators are pure functions of
@@ -5393,14 +5394,14 @@ def stage_12_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
                 ).fetchone()[0]
                 _conn.close()
                 print(
-                    f"Stage 12 [dry-run]: would regenerate motion-fx artefacts from "
+                    f"Stage 11 [dry-run]: would regenerate motion-fx artefacts from "
                     f"{fx_count} fx_effects rows + block.json/edit.js/style.css"
                 )
                 return {"dry_run": True, "fx_effects_rows": fx_count}
             except Exception as exc:
-                print(f"Stage 12 [dry-run]: DB read error — {exc}")
+                print(f"Stage 11 [dry-run]: DB read error — {exc}")
                 return {"dry_run": True, "error": str(exc)}
-        print("Stage 12 [dry-run]: would regenerate motion-fx artefacts (DB not found for count)")
+        print("Stage 11 [dry-run]: would regenerate motion-fx artefacts (DB not found for count)")
         return {"dry_run": True}
 
     results: dict[str, str] = {}
@@ -5417,22 +5418,22 @@ def stage_12_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
         )
         if result.returncode != 0:
             error_msg = (result.stderr or result.stdout or "").strip()[:400]
-            print(f"Stage 12 ERROR ({label}): {script.name} failed — {error_msg}")
+            print(f"Stage 11 ERROR ({label}): {script.name} failed — {error_msg}")
             return {"error": error_msg, "exit_code": result.returncode, "failed_generator": label}
 
         output_lines = [ln for ln in (result.stdout or "").strip().splitlines() if ln]
         output_line = output_lines[-1] if output_lines else ""
-        print(f"Stage 12 ({label}): {output_line}")
+        print(f"Stage 11 ({label}): {output_line}")
         results[label] = output_line
 
     return {"status": "ok", "dry_run": False, **results}
 
 
 # ---------------------------------------------------------------------------
-# Stage 13 — Run DB/roster-keyed audit scanners (report-only)
+# Stage 12 — Run DB/roster-keyed audit scanners (report-only)
 # ---------------------------------------------------------------------------
 
-def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) -> dict:
+def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) -> dict:
     """Run audit scanners keyed to DB and roster state (report-only, never fail).
 
     After /sgs-update reseeds the knowledge base (Stages 1-12), the DB is fresh
@@ -5649,7 +5650,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                 }
 
             # --- Extended self-test coverage (2026-08-03): proves the extraction logic
-            # for the NEW scanners wired into Stage 13 this session, mirroring the exact
+            # for the NEW scanners wired into Stage 12 this session, mirroring the exact
             # branches added above so a regression in the parsing (not the scanner) is
             # caught here rather than silently reading as "0 findings".
 
@@ -5739,7 +5740,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
     if dry_run:
         found = [s for s in scanners if (scripts_dir / s[0]).exists()]
         missing = [s for s in scanners if not (scripts_dir / s[0]).exists()]
-        print(f"Stage 13 [dry-run]: would run {len(found)} audit scanner(s)")
+        print(f"Stage 12 [dry-run]: would run {len(found)} audit scanner(s)")
         if missing:
             print(f"  {len(missing)} scanner(s) not found: {', '.join(s[1] for s in missing)}")
         return {"dry_run": True, "scanners_found": len(found), "scanners_missing": len(missing)}
@@ -5750,7 +5751,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
     for rel_path, label, args in scanners:
         script_path = scripts_dir / rel_path
         if not script_path.exists():
-            print(f"Stage 13 SKIP {label}: script not found at {script_path}")
+            print(f"Stage 12 SKIP {label}: script not found at {script_path}")
             findings_by_scanner[label] = {"status": "SKIP", "reason": "script not found"}
             continue
 
@@ -5792,7 +5793,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                     "summary": f"INVOCATION_FAILED — scanner {reason}; NOT a clean result",
                 }
                 print(
-                    f"Stage 13 ({label}): INVOCATION_FAILED — scanner {reason}. "
+                    f"Stage 12 ({label}): INVOCATION_FAILED — scanner {reason}. "
                     f"This is NOT a pass; the scanner did not run.",
                     file=sys.stderr,
                 )
@@ -5814,7 +5815,7 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                         "status": "WARN",
                         "error": stderr.strip()[:200] or "unknown error",
                     }
-                    print(f"Stage 13 ({label}): WARNING — {stderr.strip()[:200]}")
+                    print(f"Stage 12 ({label}): WARNING — {stderr.strip()[:200]}")
                     continue
 
             elif label == "consistency-gates":
@@ -6156,18 +6157,18 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
             # produced "18 finding(s) — 18 finding(s) — 16 informational, 2 warn".
             # Print the summary verbatim; the machine-readable count lives in
             # findings_by_scanner[label]["findings"].
-            print(f"Stage 13 ({label}): {summary_line[:100]}")
+            print(f"Stage 12 ({label}): {summary_line[:100]}")
 
         except subprocess.TimeoutExpired:
             findings_by_scanner[label] = {"status": "TIMEOUT", "error": "scanner timed out (120s)"}
-            print(f"Stage 13 ({label}): TIMEOUT (120s)")
+            print(f"Stage 12 ({label}): TIMEOUT (120s)")
         except Exception as exc:
             findings_by_scanner[label] = {"status": "ERROR", "error": str(exc)[:100]}
-            print(f"Stage 13 ({label}): ERROR — {exc}")
+            print(f"Stage 12 ({label}): ERROR — {exc}")
 
     # Summary
     print()
-    print(f"Stage 13 Summary:")
+    print(f"Stage 12 Summary:")
     for label, info in findings_by_scanner.items():
         status = info.get("status", "unknown")
         findings = info.get("findings", 0)
@@ -6191,10 +6192,10 @@ def stage_13_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
 
 
 # ---------------------------------------------------------------------------
-# Stage 14 — Export database tables to CSV (final stage)
+# Stage 13 — Export database tables to CSV (final stage)
 # ---------------------------------------------------------------------------
 
-def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) -> dict:
+def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) -> dict:
     """Export every live table in the framework DB to CSV, one file per table.
 
     The CSV folder at `~/.agents/skills/sgs-wp-engine/db data/` (note the space)
@@ -6239,10 +6240,10 @@ def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
             )
             tables = [row[0] for row in cursor.fetchall()]
             conn.close()
-            print(f"Stage 14 [dry-run]: would export {len(tables)} tables to {CSV_FOLDER}")
+            print(f"Stage 13 [dry-run]: would export {len(tables)} tables to {CSV_FOLDER}")
             return {"dry_run": True, "table_count": len(tables)}
         except Exception as exc:
-            print(f"Stage 14 [dry-run]: DB read error — {exc}")
+            print(f"Stage 13 [dry-run]: DB read error — {exc}")
             return {"dry_run": True, "error": str(exc)}
 
     # Create the CSV folder if it doesn't exist
@@ -6305,7 +6306,7 @@ def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
             conn.close()
         except Exception as exc:
             errors.append(f"{table_name}: {str(exc)[:80]}")
-            print(f"Stage 14 ERROR exporting {table_name}: {exc}")
+            print(f"Stage 13 ERROR exporting {table_name}: {exc}")
 
     # Clean up CSVs for tables no longer in the DB
     existing_csvs = {f.stem for f in CSV_FOLDER.glob("*.csv")}
@@ -6314,10 +6315,10 @@ def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
         try:
             csv_path.unlink()
             removed.append(csv_stem)
-            print(f"Stage 14: removed {csv_stem}.csv (table no longer exists in DB)")
+            print(f"Stage 13: removed {csv_stem}.csv (table no longer exists in DB)")
         except Exception as exc:
             errors.append(f"remove {csv_stem}.csv: {str(exc)[:80]}")
-            print(f"Stage 14 ERROR removing {csv_stem}.csv: {exc}")
+            print(f"Stage 13 ERROR removing {csv_stem}.csv: {exc}")
 
     # Report
     result = {
@@ -6339,7 +6340,7 @@ def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
     if errors:
         summary += f", {len(errors)} error(s)"
 
-    print(f"Stage 14: {summary}")
+    print(f"Stage 13: {summary}")
     result["summary"] = summary
 
     return result
@@ -6352,13 +6353,17 @@ def stage_14_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
 def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) -> dict[int, Callable[[], dict]]:
     """Build {stage_num: lambda} mapping; each lambda runs the right stage function.
 
-    Stage 3 is retired — its lambda prints the tombstone line and returns
-    {"status": "retired", "dry_run": args.dry_run}.
-    Stage 10 is the prune-orphans stage (controlled by --prune-mode).
-    Stage 11 is the container-wrapper attribute mirror diff (WS-4, D160).
-    Stage 12 is the motion-fx artefact regeneration (D432 follow-up, 2026-08-01).
-    Stage 13 is the audit scanners (DB/roster-keyed, report-only).
-    Stage 14 is the database-to-CSV export (final stage, idempotent).
+    Renumbered 2026-08-10: the retired handbook-refresh stage (formerly Stage 3,
+    merged into Stage 2 at decisions.md D56) was removed from the pipeline
+    entirely rather than kept as a skipped slot. Stages 3-13 below are what
+    used to be numbered 4-14 — muscle memory for the old numbers should treat
+    every stage from 3 onward as "one less than it used to be".
+
+    Stage 9 is the prune-orphans stage (controlled by --prune-mode).
+    Stage 10 is the container-wrapper attribute mirror diff (WS-4, D160).
+    Stage 11 is the motion-fx artefact regeneration (D432 follow-up, 2026-08-01).
+    Stage 12 is the audit scanners (DB/roster-keyed, report-only).
+    Stage 13 is the database-to-CSV export (final stage, idempotent).
     """
     prune_mode = getattr(args, "prune_mode", _PRUNE_MODE_AGGRESSIVE)
     return {
@@ -6366,43 +6371,36 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
         2: lambda: stage_2_core_gutenberg_cache_refresh(
             conn, wp_version=args.wp_version, dry_run=args.dry_run
         ),
-        3: lambda: (
-            print(
-                "Stage 3 retired (architecture-staging Phase 1 close-out, decisions.md D56). "
-                "WP-CLI handbook refresh now lives in Stage 2 Source 3. Skipping."
-            )
-            or {"status": "retired", "dry_run": args.dry_run}
-        ),
-        4: lambda: stage_4_style_variation_sync(conn, dry_run=args.dry_run),
-        5: lambda: stage_5_slot_synonym_auto_seed(conn, dry_run=args.dry_run),
-        6: lambda: stage_6_block_replacement_mapping(conn, dry_run=args.dry_run),
-        7: lambda: stage_7_spec_doc_regen(dry_run=args.dry_run),
-        8: lambda: stage_8_uimax_mirror(dry_run=args.dry_run),
-        9: lambda: stage_9_drift_gate(conn, dry_run=args.dry_run),
-        10: lambda: stage_10_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
-        11: lambda: stage_11_container_mirror_report(dry_run=args.dry_run),
-        12: lambda: stage_12_motion_fx_artefact_regen(dry_run=args.dry_run),
-        13: lambda: stage_13_run_audit_scanners(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
-        14: lambda: stage_14_export_db_to_csv(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
+        3: lambda: stage_3_style_variation_sync(conn, dry_run=args.dry_run),
+        4: lambda: stage_4_slot_synonym_auto_seed(conn, dry_run=args.dry_run),
+        5: lambda: stage_5_block_replacement_mapping(conn, dry_run=args.dry_run),
+        6: lambda: stage_6_spec_doc_regen(dry_run=args.dry_run),
+        7: lambda: stage_7_uimax_mirror(dry_run=args.dry_run),
+        8: lambda: stage_8_drift_gate(conn, dry_run=args.dry_run),
+        9: lambda: stage_9_prune_orphans(conn, dry_run=args.dry_run, prune_mode=prune_mode),
+        10: lambda: stage_10_container_mirror_report(dry_run=args.dry_run),
+        11: lambda: stage_11_motion_fx_artefact_regen(dry_run=args.dry_run),
+        12: lambda: stage_12_run_audit_scanners(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
+        13: lambda: stage_13_export_db_to_csv(dry_run=args.dry_run, self_test=getattr(args, "self_test", False)),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="SGS framework knowledge base — 14-stage holistic refresh",
+        description="SGS framework knowledge base — 13-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--stage",
         type=int,
-        choices=range(1, 15),
+        choices=range(1, 14),
         metavar="N",
-        help="Run a single stage only (1-14). Omit to run all stages.",
+        help="Run a single stage only (1-13). Omit to run all stages.",
     )
     parser.add_argument(
         "--self-test",
         action="store_true",
-        help="Stage 14 only: prove the export stage can fail (test mode, do not use operationally).",
+        help="Stage 13 only: prove the export stage can fail (test mode, do not use operationally).",
     )
     parser.add_argument(
         "--dry-run",
@@ -6420,7 +6418,7 @@ def main() -> None:
         choices=[_PRUNE_MODE_AGGRESSIVE, _PRUNE_MODE_CONSERVATIVE],
         default=_PRUNE_MODE_AGGRESSIVE,
         help=(
-            "Stage 10 prune behaviour for stale support rows "
+            "Stage 9 prune behaviour for stale support rows "
             "(block_slug exists in blocks but support_name removed from block.json). "
             "'aggressive' (default) DELETEs them — source of truth is block.json. "
             "'conservative' sets is_stale=1 instead (opt-in cautious mode). "
@@ -6453,14 +6451,14 @@ def main() -> None:
     conn = open_db()
     ensure_schema_metadata(conn)
 
-    stages_to_run = [args.stage] if args.stage else list(range(1, 15))
+    stages_to_run = [args.stage] if args.stage else list(range(1, 14))
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:
-            print(f"Unknown stage: {stage_num}. Valid: 1-14.")
+            print(f"Unknown stage: {stage_num}. Valid: 1-13.")
             continue
         results[stage_num] = dispatch[stage_num]()
 
@@ -6475,8 +6473,10 @@ def main() -> None:
         # This loop previously did `status = result.get("error", "ok")` and NEVER looked at
         # result["status"] — so any stage returning {"status": "warn"} (or "retired",
         # "refreshed", "synced") printed a flat **"ok"** unless it happened to carry an
-        # "error" key. Measured live: Stage 11 returned {"status": "warn", "returncode": 1}
-        # and the summary said "Stage 11: ok"; Stage 3 returned {"status": "retired"} and
+        # "error" key. Measured live (2026-07-16, pre-renumber numbering — container_mirror_report
+        # was Stage 11 then, now Stage 10): it returned {"status": "warn", "returncode": 1}
+        # and the summary said "ok"; the since-removed retired-stage tombstone (formerly
+        # Stage 3, deleted from the pipeline 2026-08-10) returned {"status": "retired"} and
         # also said "ok". A summary that reports ok for a stage that warned is the same
         # silent-degradation class that let a half-seeded DB rot unnoticed for a day —
         # and this summary is the ONLY thing a non-coder operator reads.

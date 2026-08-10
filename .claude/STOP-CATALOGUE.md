@@ -767,7 +767,7 @@ points here. Neither ever silently drops a STOP.
   no-version-bumps rule below.
 - **STOP-64** — a wrapper-class residual can't override an ID-scoped block rule; route the
   class-scoped rule so the residual wins.
-- **STOP-66** — `/sgs-update` stage discipline: --stage 1 seeds, --stage 10 prunes.
+- **STOP-66** — `/sgs-update` stage discipline: `--stage 1` seeds, **`--stage 9`** prunes orphans. ⚠ Was `--stage 10` until 2026-08-10 (D555): the retired Stage 3 slot was deleted and stages 4-14 renumbered down one, so `prune_orphans` moved 10 → 9 and `--stage 10` is now `container_mirror_report`. Verify against the stage map in `sgs-update-v2.py:1-63` rather than trusting this line.
 - **STOP-68** — no inline grid across live SGS elements (grid/flex moved inline→scoped, D296).
 
 ### Recovered numeric STOPs (2026-07-31, D427)
