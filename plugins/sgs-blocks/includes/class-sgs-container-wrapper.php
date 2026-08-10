@@ -153,7 +153,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// the three opted-in blocks (78 site-header-row / 24 site-footer-row /
 			// 7 gallery; 15 publish, 12 draft, 82 revisions) yielded ZERO
 			// object+populated-flat-sibling collisions. Controls: 511 posts contain
-			// wp:sgs/*, and the same reader DID flag gapTablet/gapMobile on a gallery
+			// an sgs block opening, and the same reader DID flag a gallery instance's
 			// instance inside that set, so the zero is a measurement and not a blind
 			// spot. Add the negative gate when a real collision appears, or as part of
 			// the flat→object migration — do not add it speculatively.
@@ -1908,6 +1908,42 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// __inner reads (Spec 37 FR-37-16 "adapts to its own width when reused narrow").
 				$responsive_css .= $obj_outer_sel . '{container-type:inline-size}';
 
+				/**
+				 * True when a TIER object actually carries a value on some tier.
+				 *
+				 * `is_array()` cannot answer this: an UNSET object attr arrives as an
+				 * empty PHP array (block.json `"default": {}` → array() → JSON `[]`),
+				 * and `is_array( array() )` is TRUE. Measured in the live editor
+				 * 2026-08-10 — sgs/site-header-row and sgs/gallery both report
+				 * maxWidth: [] / padding: [] / margin: [] when unset.
+				 *
+				 * Reuses sgs_responsive_normalise_object() rather than inspecting keys
+				 * directly, so it stays correct if the tier vocabulary ever changes.
+				 *
+				 * ⚠ Deliberate residual: a token that RESOLVES to no rule (contentWidth
+				 * 'full' → '') still counts as "set" here. That emits margin-inline:auto
+				 * on a full-width band, which is inert (full width leaves no space to
+				 * share). Gating on the resolved value would mean running each tier
+				 * through its transform, which is the emitter-level coupling Bean
+				 * declined in favour of the simple fix — recorded, not overlooked.
+				 *
+				 * @param mixed $raw Stored attribute value, any shape.
+				 * @return bool
+				 */
+				$sgs_tier_object_has_value = static function ( $raw ) {
+					if ( ! is_array( $raw ) || array() === $raw ) {
+						return false;
+					}
+					$obj = sgs_responsive_normalise_object( $raw );
+					foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+						$val = $obj[ $tier ] ?? null;
+						if ( null !== $val && '' !== $val && array() !== $val ) {
+							return true;
+						}
+					}
+					return false;
+				};
+
 				$obj_inner_props = array();
 				if ( isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ) {
 					$obj_inner_props[] = array(
@@ -2116,7 +2152,19 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// without a width constraint, so a tier carrying no width is unaffected
 				// and no tier-coupling machinery is needed (Bean-approved shape,
 				// 2026-08-10 — the simple fix over changing the shared emitter).
-				if ( '' !== $grid_sel && isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
+				//
+				// ⚠ is_array() ALONE IS NOT ENOUGH — an UNSET object attr arrives as an
+				// empty ARRAY, not an empty object. block.json `"default": {}` becomes
+				// PHP array() and serialises to JSON `[]`; measured in the live editor
+				// 2026-08-10, sgs/site-header-row reports maxWidth: [] and padding: []
+				// for unset values, and sgs/gallery the same. `is_array( array() )` is
+				// TRUE, so keying on it alone emitted centring for every opted-in block
+				// whether or not a width existed. Harmless in isolation (no width → no
+				// leftover space → auto resolves to 0) but it contradicts 57a0d019's
+				// rule that an empty value is UNSET, and it would silently start
+				// centring if a width ever arrived from another source. So require a
+				// REAL tier value.
+				if ( '' !== $grid_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
 					$responsive_css .= $grid_sel . '{margin-inline:auto}';
 				}
 
@@ -2205,9 +2253,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// both halves together at :1441 —
 				// `.uid{max-width:…;margin-inline:auto}` — so an object-shaped outer
 				// max-width without this renders flush-left for the same reason the
-				// inner band did. Guarded on the object shape only, so the flat path is
-				// untouched and cannot double-emit.
-				if ( isset( $attributes['maxWidth'] ) && is_array( $attributes['maxWidth'] ) ) {
+				// inner band did. Gated on a REAL tier value (not bare is_array — see
+				// $sgs_tier_object_has_value above: an unset object attr is an empty
+				// ARRAY, and every opted-in block reports maxWidth: [] today), so the
+				// flat path is untouched and cannot double-emit.
+				if ( $sgs_tier_object_has_value( $attributes['maxWidth'] ?? null ) ) {
 					$responsive_css .= $obj_outer_sel . '{margin-inline:auto}';
 				}
 			}
