@@ -22,6 +22,26 @@ SEED, not a spec, and it needs three genuine design decisions before anything is
 
 ---
 
+## Reading list — Spec 35 order, NOT the cloning-pipeline order
+
+⛔ **Do NOT open Spec 31 end-to-end for this session.** The project rule that mandates it says
+*"every **cloning-pipeline** session"* — this is BLOCK-STANDARD work, so the precondition does not
+hold. It was carried into an earlier handoff as boilerplate and displaced the spec that actually
+governs. Spec 31 is ~195KB; reading it whole here is a large unjustified cost.
+
+| # | Read | Why |
+|---|---|---|
+| 1 | `.claude/LEDGER.md` | State + orchestration plan |
+| 2 | **`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`** | **THE GOVERNING SPEC** (ACTIVE v2.0) — the one that was missing from the list |
+| 3 | `plans/spec-35-control-type-contract.md` | The canonical control set (GOVERNING for §12 storage shape) |
+| 4 | `plans/spec-35-flat-to-object-migration-design.md` | The live migration design + rulings A-D |
+| 5 | This plan | The task breakdown |
+| 6 | `decisions.md` D556-D559 | This migration's rulings |
+| 7 | `.claude/STOP-CATALOGUE.md` | 202 entries; the newest 5 are last session's |
+| 8 | `~/.claude/plans/go-track-1b-playful-hamster.md` | Programme scope + phase status — for WHY/WHAT-ELSE, **not the entry point** |
+| 9 | `plans/spec-39-seed-requirements.md` | **Wave 3 only** — do not front-load it |
+| 10 | Spec 31 §13 + the orchestrator gate slot (`:70`, `:2053`, `~:2645-2670`) | **T2 only, targeted** — never end-to-end for this track |
+
 ## Delegation shape (Bean-directed: parallel, delegate, offload the repetitive)
 
 | Kind of work | Who | Why |

@@ -134,6 +134,28 @@ route through `TypographyControls`, a different edit shape) · Phase 2.1 (gated 
 from real `post_content`, D545) · Phase 3.2a — ⛔ its input has a **measured false-positive rate**;
 it is a decision, not a build.
 
+### Programme scope — done vs remaining (measured 2026-08-11, re-derive rather than trust)
+
+**Phase level** (`go-track-1b-playful-hamster.md`): of 9 phases, **1 CLOSED** (Phase 1, the
+responsive model), **1 IN PROGRESS** (1.6, this migration), **7 OPEN** — 0b/0c, 1.5, 2.1, 2.2/3.2b,
+3.2a, 3.3, 4. Two are blocked on others (Phase 4 on 0c; 3.3 on replacing a hardcoded 16-name tuple),
+and 3.2a is ⛔ **a decision, not a build** — its input has a measured false-positive rate.
+
+**Phase 1.6 (the migration) — roughly 12% done.** `npm run survey:responsive-shape` at HEAD:
+
+| | Before pass 1 | Now | Source |
+|---|---|---|---|
+| Tier families total | 311 | **288** | the survey's own count |
+| **Migration candidates** | 160 / 41 blocks | **141 / 41 blocks** | the survey's `MIGRATION CANDIDATES` line |
+
+Pass 1 cleared **19 candidates** (the 19 flat `gap` blocks; the 2 blended row blocks were never
+candidates). **141 remain.** Biggest clusters still flat: `columns` 21 blocks · `gridTemplateColumns`
+19 · `gridTemplateRows` 19 · `maxWidth` 11 · `minHeight` 8 · `contentWidth` 7 — so passes 2 and 3
+alone account for **~56 of the 141**, and pass 4 (`columns`) another 21.
+
+⚠ **Do not quote 160 as the work-list any more** — it was the pre-pass-1 figure and is now stale by
+19. Re-run the survey; it prints the live number.
+
 ### Methodology guardrails (earned this session; do not skip)
 
 - ⛔ **Never dispatch an agent onto a file the main thread is editing.** Cost: a half-renamed shared
@@ -189,9 +211,10 @@ it is a decision, not a build.
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| **THE next-session plan** | `plans/2026-08-11-track-1b-next-session.md` |
+| **THE next-session plan (carries the full reading ORDER)** | `plans/2026-08-11-track-1b-next-session.md` |
+| **⭐ THE GOVERNING SPEC for this track** | **`specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`** (ACTIVE v2.0) |
 | **The canonical control set (GOVERNING)** | `plans/spec-35-control-type-contract.md` |
-| Programme scope + phases (NOT the entry point) | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
+| **Programme scope + phases** (NOT the entry point) | `C:\Users\Bean\.claude\plans\go-track-1b-playful-hamster.md` |
 | **The live migration design** | `plans/spec-35-flat-to-object-migration-design.md` + `spec-39-seed-requirements.md` |
 | Decisions (D-numbered) | `decisions.md` — D556-D559 are this session |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
