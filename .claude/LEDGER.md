@@ -12,9 +12,12 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 **Where 2026-08-10 (session 2) left things** *(prior narrative: `memory/session-2026-08-09*.md`)*:
 
 - **The shared container is now FULLY responsive by design, not block by block.** You asked for the
-  wrapper to be fixed once so no block needs "individual fixes that require forking". **All 14 of
-  its styling settings** — including row-vs-column (the commonest mobile need), spacing, colours,
-  shadows and the content band — now work per device for every block that uses it. It took
+  wrapper to be fixed once so no block needs "individual fixes that require forking". **Every one
+  of the 14 settings that was desktop-only now works per device** — row-vs-column (the commonest
+  mobile need), spacing, colours, shadows and the content band. (Precisely: 16 of its settings
+  carried a CSS property with no per-device option; 14 were styling and all 14 are done, and the
+  other 2 are motion, which a different spec governs. Settings that already worked per device are
+  untouched.) It took
   **rows in a list, not a rewrite**: the generic machinery already existed and nobody had fed it
   these properties. Adding the next one is a single line.
 - **A styling bug was found painting on a real page — and it pre-dated today.** A container was
