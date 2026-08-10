@@ -1871,3 +1871,67 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   changes are verified in the live editor, in BOTH the post and site editor, with a `data-*` mount
   marker asserted — never on build exit code alone. Ship two positive controls when the delivery
   mechanism (CSS) and the behaviour (React mount) can fail independently.**
+
+### E12. Earned 2026-08-10 (session 2) — Spec 35 Phase 1.4 / fully-responsive wrapper (D548-D551)
+
+- **STOP-A-TEXT-COUNT-OF-AN-IDENTIFIER-DISCUSSED-IN-COMMENTS-IS-WRONG-BY-CONSTRUCTION.**
+  `<ContainerWrapperControls` appears in PROSE in six files whose comments record that they
+  STOPPED using it. A text count therefore counts documentation of ABSENCE as evidence of
+  PRESENCE. This contaminated **three separate counts in one session**: "24 mounts, 19 omitting
+  kind" (really 16, all passing `kind`), and then a "10 layout / 6 content" split shipped in a
+  commit message (really 11/5). **Naming the trap twice did not prevent the third.** Sibling of
+  STOP-A-GREP-FOR-A-CLASS-NAME-IS-NOT-A-USAGE-CENSUS, but sharper: when an identifier is
+  DISCUSSED as often as it is USED, no amount of care makes a text search correct. **Rule: count
+  JSX/AST ELEMENTS, not text matches, for any identifier that appears in comments.** The 24-count
+  error put an unreachable dead panel at the top of a phase plan.
+- **STOP-REBUILD-THE-TREE-TO-MEASURE-A-HISTORICAL-BASELINE.** Three different values for the same
+  figure were in circulation (author 243/257, LEDGER 254, rater 245/259). The dispute was settled
+  by `git archive <sha> -- plugins/sgs-blocks theme | tar -x`, symlinking `node_modules`, and
+  running the REAL scanner against the reconstructed tree — a third independent run agreed with
+  the rater, and BOTH other figures were wrong. ⚠ **`theme/` MUST be included in the archive** —
+  omit it and rules reading `ctx.themeDir` silently mis-measure (the rater caught this as its own
+  probe defect mid-run). **Rule: a remembered number is not a baseline. Rebuild the tree.**
+- **STOP-A-SHAPE-MISMATCH-CAN-PAINT-A-LITERAL-`Array`-ON-A-LIVE-PAGE.**
+  `sgs_responsive_normalise_object()` treated an array with no tier keys as a plain scalar and
+  assigned THE ARRAY ITSELF as the desktop value, which the formatter stringified — emitting
+  `max-width:Array` into production CSS. An empty `{}` is exactly what an UNTOUCHED object-typed
+  attribute looks like, so this was the COMMON case, not an edge case, and it had been shipping on
+  the header/footer rows since FR-37-16. **Rule: when adding an object-typed attribute, test the
+  EMPTY-OBJECT default explicitly — `{}` is the state every instance starts in, and it is the one
+  nobody writes a test for.**
+- **STOP-A-PAGE-HTML-GREP-CANNOT-SEE-LIFTED-CSS.** Three consecutive probes reported the gallery's
+  band and padding as missing. All three were wrong: SGS block CSS is LIFTED into
+  `uploads/sgs-css/<hash>.css` and is not in the page HTML at all; and a follow-up regex for the
+  stylesheet link missed it because the filename is `sgs-1303-<hash>.css`, not the shape assumed.
+  A fourth probe (a brace-greedy verification regex) then failed on nested JSON — the exact trap
+  the migration script itself had been written to avoid. **Rule: to verify SGS block CSS, FETCH
+  THE LIFTED STYLESHEET. A page-HTML grep proves nothing.** Four probe defects in one verification
+  is the signal that the instrument, not the code, is under test.
+- **STOP-DEAD-CSS-IS-STATICALLY-DECIDABLE-BUILD-THE-DETECTOR.** Twice in one session CSS was found
+  that could never match, both times by hand-reading code or checking a live page. Both were the
+  SAME shape: a selector whose precondition the emitter provably never produces (CSS gated on
+  `[style*="--sgs-…"]`; PHP emitting that property only inside a scoped `<style>`, never a
+  `style=""` attribute). **This does not need a browser.** `survey-dead-css.py` now detects it and
+  was PROVEN against a frozen pre-fix snapshot, flagging both historical bugs at their exact
+  lines. **Rule: when a defect is found by eye twice, the third instance is the detector's job —
+  and validate the detector against the history it was built from, not against fixtures alone.**
+- **STOP-CHECK-WHETHER-A-THING-IS-USED-BEFORE-INVESTING-IN-MAKING-IT-CORRECT.** A dead-CSS bug in
+  `hover-effects` had been inert for MONTHS with nobody noticing — because nobody uses the feature
+  (measured: ZERO stored hover attributes across 194 canary pages/posts, positive control 1706).
+  A subagent branch was spent fixing it; Bean then directed that the whole extension be
+  disconnected and made opt-in (D551), making the repair effort largely moot. **Rule: a defect
+  nobody can trigger is weak evidence the feature is worth having. Run the usage census BEFORE
+  dispatching work at a legacy surface — it is one command, and it redirects whole branches.**
+- **STOP-AN-INHERITED-DEFERRAL-IS-A-HYPOTHESIS-EVEN-WHEN-YOU-WROTE-IT.** D549's own Stage-2 note
+  deferred eight properties because they "emit onto a DIFFERENT selector". A subagent verified the
+  claim and it was FALSE — they land on exactly the same `$grid_sel`, so all eight joined the
+  existing emission call with no new plumbing. The deferral reason was written hours earlier in
+  the same session by the same author. **Rule: verify a deferral before executing it, including
+  your own from earlier today.** Sibling of `verify-a-deferral-before-executing-it`.
+- **STOP-FACT-CHECK-EVERY-RATER-FINDING-BEFORE-APPLYING-IT.** A QC council returned three real
+  defects, but one was OVERSTATED 6x (it reported all six new tier-capable properties as exposed
+  to an Array-to-string fatal; fact-checking showed only ONE was — the other five were already
+  protected by strict `in_array()` allowlists that reject an array and fall back to a default). A
+  second rater's framing challenge was refuted in code. A third rater was right where the author
+  was wrong. **Rule: raters are evidence, not verdicts. Check each finding against source before
+  changing anything — the correct fix is often narrower than the report.**
