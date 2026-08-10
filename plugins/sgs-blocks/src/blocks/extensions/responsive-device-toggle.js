@@ -127,6 +127,18 @@ const CUE_TEXT = {
 const OBSERVE_ROOT_SELECTOR = '.interface-interface-skeleton';
 const INSPECTOR_SELECTOR = '.block-editor-block-inspector';
 
+/**
+ * The editor's bottom breadcrumb strip ("Page › SGS Container › Label").
+ *
+ * The cue lives HERE rather than floating over the canvas. Measured
+ * 2026-08-10: `display:flex`, 25px tall, white, one child (the breadcrumb), so
+ * appending a second flex child with `margin-left:auto` right-aligns it against
+ * existing chrome instead of covering the design. A centred floating pill was
+ * the first attempt and obscured the bottom of the tablet/mobile canvas — the
+ * exact area being reviewed.
+ */
+const FOOTER_SELECTOR = '.interface-interface-skeleton__footer';
+
 /** Max rAF attempts when re-acquiring the portal target. */
 const MAX_ACQUIRE_FRAMES = 5;
 
@@ -141,15 +153,19 @@ function findInspector() {
 }
 
 /**
- * Maintain a host element pinned as the FIRST child of the block inspector.
+ * Maintain a host element pinned as the LAST child of the block inspector,
+ * which the stylesheet then docks to the bottom of the sidebar.
  *
- * ⛔ Portalling straight into `.block-editor-block-inspector` does NOT work:
- * createPortal APPENDS, so the toggle lands at the BOTTOM of the sidebar, below
- * the Advanced panel. That shipped in the first Gate 1 build and every automated
- * assertion passed it — mounted, inside the inspector, right height, right
- * labels, 44px targets. Only the screenshot showed it in the wrong place
- * (R-31-13: the numbers alone do not close). Hence an own host element that this
- * hook explicitly inserts at the top and keeps there.
+ * ⚑ It was briefly the FIRST child. Bean rejected that on sight: a strip at the
+ * top pushes every control the client actually came to use further down the
+ * page, which is a UX cost paid on every single edit for a control touched
+ * occasionally. Docked to the bottom it reads as part of the panel chrome and
+ * costs nothing.
+ *
+ * The host still has to be managed explicitly rather than portalling straight
+ * into the inspector: `position: sticky` only docks against the scroll container
+ * (`.interface-complementary-area`, measured) when the element is a real child
+ * in flow, and the hook must re-place it every time the inspector is rebuilt.
  *
  * @return {HTMLElement|null} The host to portal into, or null when the inspector
  *                            is not mounted (sidebar closed, Page tab active,
@@ -173,7 +189,7 @@ function useInspectorPortalHost() {
 		/** @return {boolean} True when the host is already correctly placed. */
 		const isSettled = () => {
 			const inspector = findInspector();
-			return !! inspector && inspector.firstChild === hostEl;
+			return !! inspector && inspector.lastChild === hostEl;
 		};
 
 		// The replacement inspector arrives on a LATER React commit than the
@@ -184,8 +200,8 @@ function useInspectorPortalHost() {
 			}
 			const inspector = findInspector();
 			if ( inspector ) {
-				if ( inspector.firstChild !== hostEl ) {
-					inspector.insertBefore( hostEl, inspector.firstChild );
+				if ( inspector.lastChild !== hostEl ) {
+					inspector.appendChild( hostEl );
 				}
 				attempts = 0;
 				setHost( ( current ) =>
@@ -246,6 +262,40 @@ function useInspectorPortalHost() {
 }
 
 /**
+ * Track the editor's bottom breadcrumb strip, which the cue portals into.
+ *
+ * Tracked rather than queried once for the same reason as the inspector: the
+ * strip is chrome, and chrome is removed in distraction-free mode. When it is
+ * absent the cue simply does not render — the screen-reader announcement is
+ * mounted separately to <body> and is unaffected.
+ *
+ * @return {HTMLElement|null} The footer element, or null when it is not present.
+ */
+function useFooterStrip() {
+	const [ footer, setFooter ] = useState( () =>
+		document.querySelector( FOOTER_SELECTOR )
+	);
+
+	useEffect( () => {
+		const read = () => {
+			const node = document.querySelector( FOOTER_SELECTOR );
+			const live = node && document.body.contains( node ) ? node : null;
+			setFooter( ( current ) => ( current === live ? current : live ) );
+		};
+
+		const root =
+			document.querySelector( OBSERVE_ROOT_SELECTOR ) || document.body;
+		const observer = new window.MutationObserver( read );
+		observer.observe( root, { childList: true, subtree: true } );
+		read();
+
+		return () => observer.disconnect();
+	}, [] );
+
+	return footer;
+}
+
+/**
  * Read the current device tier and a setter, from the one store that answers in
  * BOTH the post editor and the site editor.
  *
@@ -296,7 +346,7 @@ function DeviceTogglePortal() {
 			data-sgs-device-toggle="mounted"
 		>
 			<ToggleGroupControl
-				label={ __( 'Editing for', 'sgs-blocks' ) }
+				label={ __( 'Currently Editing', 'sgs-blocks' ) }
 				value={ device }
 				isBlock
 				__nextHasNoMarginBottom
@@ -327,35 +377,51 @@ function DeviceTogglePortal() {
  */
 function DeviceCuePortal() {
 	const { device } = useDeviceType();
+	const [ dismissed, setDismissed ] = useState( false );
+	const footer = useFooterStrip();
 	const message = CUE_TEXT[ device ] || null;
 
-	return createPortal(
-		<>
-			{ /* WCAG 4.1.3 Status Messages — the tier changes with no focus
-			     move, so without this a screen-reader user learns only that a
-			     button became pressed, not that every other control now means
-			     something different. polite, never assertive. */ }
-			<VisuallyHidden aria-live="polite" aria-atomic="true">
-				{ sprintf(
-					/* translators: %s: device tier name, e.g. Tablet. */
-					__( 'Now editing the %s view.', 'sgs-blocks' ),
-					device.toLowerCase()
-				) }
-			</VisuallyHidden>
-			{ /* Visual affordance ONLY — deliberately carries no role and no
-			     aria-live. `role="status"` implies aria-live="polite", which
-			     would announce this text IN ADDITION to the region above, so a
-			     screen-reader user would hear the tier change twice. The hidden
-			     region owns the announcement; this owns the sighted cue. It is
-			     aria-hidden so the duplicate text is not reachable by browsing
-			     either. */ }
-			{ message && (
-				<div className="sgs-device-cue" aria-hidden="true">
-					{ message }
-				</div>
+	// The announcement is mounted to <body> unconditionally: it must fire even
+	// when the footer strip is absent (distraction-free hides the chrome).
+	const announcement = createPortal(
+		/* WCAG 4.1.3 Status Messages — the tier changes with no focus move, so
+		   without this a screen-reader user learns only that a button became
+		   pressed, not that every other control now means something different.
+		   polite, never assertive. */
+		<VisuallyHidden aria-live="polite" aria-atomic="true">
+			{ sprintf(
+				/* translators: %s: device tier name, e.g. tablet. */
+				__( 'Now editing the %s view.', 'sgs-blocks' ),
+				device.toLowerCase()
 			) }
-		</>,
+		</VisuallyHidden>,
 		document.body
+	);
+
+	if ( ! message || dismissed || ! footer ) {
+		return announcement;
+	}
+
+	return (
+		<>
+			{ announcement }
+			{ createPortal(
+				/* aria-hidden: the announcement above already conveys this to a
+				   screen reader. Without it the tier change is spoken twice. */
+				<div className="sgs-device-cue" aria-hidden="true">
+					<span className="sgs-device-cue__text">{ message }</span>
+					<button
+						type="button"
+						className="sgs-device-cue__dismiss"
+						onClick={ () => setDismissed( true ) }
+						aria-label={ __( 'Dismiss', 'sgs-blocks' ) }
+					>
+						×
+					</button>
+				</div>,
+				footer
+			) }
+		</>
 	);
 }
 

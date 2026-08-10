@@ -1,115 +1,174 @@
 /**
  * Global device toggle + non-desktop cue — EDITOR SIDEBAR ONLY.
  *
- * ⛔ HOOK MATTERS. This file is enqueued on `admin_enqueue_scripts` (gated on
- * get_current_screen()->is_block_editor()), NOT on `enqueue_block_editor_assets`
- * and NOT on `enqueue_block_assets`. Measured 2026-08-10: the block inspector
- * lives in the OUTER admin document, not the canvas iframe. Styles registered on
+ * ⛔ HOOK MATTERS. Enqueued on `admin_enqueue_scripts` (gated on
+ * get_current_screen()->is_block_editor()), NOT `enqueue_block_editor_assets`
+ * and NOT `enqueue_block_assets`. Measured 2026-08-10: the block inspector lives
+ * in the OUTER admin document, not the canvas iframe. Styles registered on
  * `enqueue_block_editor_assets` get copied into the iframe by WordPress's
- * compatibility shim, which is exactly the console warning this plugin fixed on
- * 2026-07-31 (see class-sgs-blocks.php:255-280). `admin_enqueue_scripts` reaches
- * the same outer document and is never shimmed.
+ * compatibility shim — the console warning this plugin removed on 2026-07-31
+ * (see class-sgs-blocks.php:255-280). `admin_enqueue_scripts` is never shimmed.
  *
- * ⛔ Do NOT merge this into assets/css/extensions.css. That file rides
+ * ⛔ Do NOT merge into assets/css/extensions.css: that rides
  * `enqueue_block_assets` for the canvas, and device-visibility.php:124 attaches
- * inline CSS guarded on its handle being enqueued — splitting that hook makes the
- * device-visibility CSS vanish from the editor with no error at all.
+ * inline CSS guarded on its handle being enqueued.
  *
- * Design + evidence: .claude/plans/2026-08-10-global-device-toggle-design.md
+ * PALETTE — GitHub Primer + Figma SDS tokens via /uimax, chosen because Primer
+ * is itself an admin/tool UI, so it is client-neutral by construction. This is
+ * editor chrome: it must look identical for a bakery, a law firm and a wedding
+ * planner, so NO client brand colour may appear here.
+ *
+ * Every pair below was contrast-checked, not eyeballed:
+ *   label      #1e1e1e on #f6f8fa   15.66:1
+ *   unselected #57606a on #f6f8fa    6.00:1   (#6e7781 was rejected at 4.27:1)
+ *   selected   #ffffff on #0969da    5.19:1
+ *   cue text   #54470a on #fff8c5    8.54:1
+ *   cue border #bf6a02 on #fff8c5    3.69:1   (UI boundary, 3:1 threshold)
+ *   dismiss    #57606a on #fff8c5    5.93:1
  *
  * @package SGS\Blocks
  */
 
-/* -------------------------------------------------------------------------
- * POSITIVE CONTROL — served its purpose, now removed.
- *
- * A `outline: 3px solid red` rule shipped in the first deploy of this file and
- * was asserted live via getComputedStyle at Gate 1 (2026-08-10): it returned
- * `rgb(255, 0, 0) 2.72727px` on the toggle's own element, proving the stylesheet
- * both LOADED and MATCHED. That mattered because no `sgs-responsive-*` class in
- * this plugin has ever carried any CSS — "the rules are there" had never once
- * been verified for this surface.
- *
- * It was paired with a SECOND control (`data-sgs-device-toggle="mounted"`,
- * asserted in the same run) because a CSS rule can paint on an always-present
- * wrapper while the React portal silently fails to attach. On the FIRST deploy
- * that is exactly what happened: the stylesheet loaded and the component did not
- * mount. One control would have reported a pass.
- * ---------------------------------------------------------------------- */
+.sgs-device-toggle-host {
+	/* Docks to the bottom of the sidebar. The scroll container is
+	   `.interface-complementary-area` (measured: 827px visible / 1083px content),
+	   and this host is the inspector's LAST child, so `sticky bottom` pins it to
+	   the panel foot while the controls above scroll normally.
 
-/* -------------------------------------------------------------------------
- * The toggle, pinned at the top of the block inspector.
- * ---------------------------------------------------------------------- */
-.sgs-device-toggle {
+	   ⚑ It was briefly pinned to the TOP. That pushed every control the client
+	   actually came to use further down the page — a cost paid on every edit for
+	   a control touched occasionally. Bottom reads as panel chrome instead. */
 	position: sticky;
-	top: 0;
+	bottom: 0;
 	z-index: 10;
-	padding: 12px 16px;
-	background: #fff;
-	border-bottom: 1px solid #e0e0e0;
+	margin-top: auto;
 }
 
-/* 44px minimum touch target (~/.claude/rules/visual-standards.md; WCAG 2.2's
-   cheap win, which this project keeps). WordPress's own default here is 36px,
-   and the DeviceTabs strip this replaces already used 44px — matching it keeps
-   the control operable on a touch device without regressing what was there. */
-.sgs-device-toggle .components-toggle-group-control-option-base {
+.sgs-device-toggle {
+	/* Full-bleed against the sidebar edges so it reads as built-in rather than
+	   as a floating card: cancel the inspector's own horizontal padding. */
+	margin: 0 -16px -16px;
+	padding: 10px 16px 12px;
+	background: #f6f8fa;
+	border-top: 1px solid #d0d7de;
+}
+
+/* The label. Bean: sentence case and bold — WordPress's default control label
+   is uppercase and light, which shouted for a passive piece of chrome. */
+.sgs-device-toggle .components-base-control__label,
+.sgs-device-toggle label {
+	text-transform: none;
+	font-weight: 600;
+	font-size: 12px;
+	color: #1e1e1e;
+	margin-bottom: 6px;
+}
+
+/* ⛔ HEIGHT GOES ON THE ROOT, NOT THE OPTION.
+   Setting `min-height` on `.components-toggle-group-control-option-base` alone
+   is what produced the low-sitting labels Bean spotted: the option grew to 44px
+   while the ToggleGroupControl root stayed 36px and its JS-computed backdrop
+   var stayed `--selected-height: 34.5`, so the text was centred inside a 34.5px
+   box floating in a 44px button. Sizing the ROOT lets WordPress re-measure and
+   the backdrop follows. Verify with `--selected-height` in the live inspector,
+   not by eye. */
+.sgs-device-toggle .components-toggle-group-control {
+	width: 100%;
 	min-height: 44px;
+	background: #eaeef2;
+	border-color: #d0d7de;
+}
+
+/* 44px touch target (~/.claude/rules/visual-standards.md — WCAG 2.2's cheap win,
+   which this project keeps). WordPress's own default here is 36px. */
+.sgs-device-toggle .components-toggle-group-control-option-base {
+	min-height: 42px;
+	font-size: 12px;
+	color: #57606a;
+}
+
+.sgs-device-toggle
+	.components-toggle-group-control-option-base:hover:not([data-active-item]) {
+	color: #1e1e1e;
+}
+
+/* Selected state. WordPress's default selected backdrop is white-on-grey, which
+   Bean found too close to the unselected state to read at a glance. */
+.sgs-device-toggle
+	.components-toggle-group-control-option-base[aria-checked='true'] {
+	color: #fff;
+	font-weight: 600;
+}
+
+/* ⛔ THE SELECTED PILL IS THE ROOT'S ::before, NOT A `__backdrop` ELEMENT.
+   A first attempt styled `.components-toggle-group-control__backdrop` — a class
+   that does not exist in this WordPress version. The rule was inert, so the
+   pill stayed WordPress's default #f0f0f0 while the selected label had already
+   been set to white: white on #f0f0f0 is ~1.1:1, i.e. invisible. Nothing in the
+   markup looked wrong; it was caught by reading the paint stack under the
+   selected label with elementsFromPoint. Verify this rule by sampling the
+   painted pixel, never by confirming the selector exists in the CSS. */
+.sgs-device-toggle .components-toggle-group-control::before {
+	background: #0969da;
+	border-color: #0969da;
 }
 
 /* -------------------------------------------------------------------------
- * The non-desktop cue.
+ * The non-desktop cue, docked into the editor's breadcrumb strip.
  *
- * Fixed to the viewport and portalled to <body>, so it survives every state
- * that destroys the inspector: the Page tab, a closed sidebar, and
- * distraction-free mode (all three measured 2026-08-10).
- *
- * Bottom-centre rather than the top: the editor header carries Save/Publish and
- * the document title, and a top banner would either cover them or push the whole
- * canvas down. The design requirement is "persistently visible without depending
- * on the inspector" — position is free, occluding Publish is not.
+ * It previously floated centred above the canvas, where it covered the bottom
+ * of the tablet/mobile preview — the exact region being reviewed. The strip is
+ * `display:flex` with one child (measured), so `margin-left:auto` parks this
+ * against the right-hand edge, clear of the breadcrumb and clear of the design.
  * ---------------------------------------------------------------------- */
 .sgs-device-cue {
-	position: fixed;
-	bottom: 16px;
-	left: 50%;
-	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: auto;
+	padding: 0 8px;
+	max-width: 46vw;
 
-	/* Above the editor chrome. WordPress's admin bar sits at 99999; this is a
-	   status message about the current editing mode and must not be buried. */
-	z-index: 100000;
+	background: #fff8c5;
+	color: #54470a;
+	border-left: 3px solid #bf6a02;
 
-	max-width: min(90vw, 640px);
-	padding: 10px 18px;
-	border-radius: 4px;
+	font-size: 12px;
+	line-height: 1.4;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/* Amber, not red: this is a mode reminder, not an error. Reserving red for
-	   destructive states keeps red meaningful elsewhere in the editor.
-	   #1e1e1e on #f0b849 measures ~9.5:1 — comfortably past WCAG 1.4.3's 4.5:1. */
-	background: #f0b849;
+.sgs-device-cue__text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.sgs-device-cue__dismiss {
+	flex: 0 0 auto;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: 0;
+	/* A CSS linter flags this pair as failing contrast. It is a FALSE POSITIVE:
+	   the linter resolves `transparent` as the background and cannot see the
+	   inherited cue surface. Measured against the real painted background,
+	   #57606a on #fff8c5 is 5.93:1 — passes AA. Do not "fix" it by darkening. */
+	background: transparent;
+	color: #57606a;
+	font-size: 15px;
+	line-height: 1;
+	cursor: pointer;
+	border-radius: 2px;
+}
+
+.sgs-device-cue__dismiss:hover {
 	color: #1e1e1e;
-	border: 1px solid #d89e2a;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-
-	font-size: 13px;
-	line-height: 1.5;
-	text-align: center;
-	pointer-events: none;
+	background: rgba(0, 0, 0, 0.06);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-device-cue {
-		animation: sgs-device-cue-in 160ms ease-out;
-	}
-}
-
-@keyframes sgs-device-cue-in {
-	from {
-		opacity: 0;
-		transform: translateX(-50%) translateY(6px);
-	}
-	to {
-		opacity: 1;
-		transform: translateX(-50%) translateY(0);
-	}
+/* Never remove a focus ring without replacing it (visual-standards.md). */
+.sgs-device-cue__dismiss:focus-visible {
+	outline: 2px solid #0969da;
+	outline-offset: 1px;
 }
