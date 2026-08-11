@@ -35,7 +35,9 @@ that were already live on the canary.
   unset** — a check of every one, where the gate would have sampled a handful. What that does
   NOT cover is written down plainly rather than glossed.
 - **A test page (1593) was blocking the deploy** with an old setting the migration removed.
-  Fixed. ⚠ The tool the error message told me to use for that doesn't exist in the repo.
+  Fixed. ⚠ I said the tool the error message named "doesn't exist in the repo" — wrong: it is
+  at the repo root `scripts/wp-migrate-oldshape-blocks.js`. I searched the plugin's scripts
+  folder and reported absence as fact. An earlier session recorded the same false absence.
 - **Then your question — "isn't there a cheaper way to measure these?" — found three real
   bugs.** Chasing it showed most of the "34 not working" wasn't a measuring problem: the
   settings genuinely weren't reaching the page. **125 broken style rules were live on the

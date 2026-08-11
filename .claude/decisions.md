@@ -246,9 +246,13 @@ three distinct classes — all now visible, none silently passing:
 **Canary housekeeping:** page 1593 ("F3 Oracle sgs-hero") stored a `fontSizeMobile` the
 migration removed; the oldshape audit correctly refused to deploy. Folded to
 `{"desktop":40,"mobile":28}` (the shape the theme codemod produces), verified by re-reading
-the stored content. ⚠ The remedy script that gate's own error message names,
-`scripts/wp-migrate-oldshape-blocks.js`, **does not exist in the repo** — a gate pointing at a
-missing tool.
+the stored content. ⚠⚠ **CORRECTED 2026-08-11 (Bean pointed at the file).** This entry said the remedy script the
+gate names, `scripts/wp-migrate-oldshape-blocks.js`, "does not exist in the repo". **It does** —
+at the REPO ROOT `scripts/`, tracked since `1d13997d`, 19KB, with its own dry-run-by-default
+safety model. I searched `plugins/sgs-blocks/scripts/` (where every other script on this track
+lives), found nothing, and reported absence as fact. **A file not being where I expected is not
+a file that does not exist**, and the gate's message gives the path from the repo root — which
+I did not read as written. The gate is fine; my search was pointed at the wrong root.
 
 ## D573 — The fixture instrument was blind on 29 of 41 properties; the attr→CSS mapping is now DERIVED from source, and refuses rather than blanks [INCIDENT]
 
@@ -1728,6 +1732,13 @@ of edits** — Phase 1 is not a volume problem, and delegating it as though it w
 - **`scripts/wp-migrate-oldshape-blocks.js` DOES NOT EXIST**, though the plan cites it as a codemod
   precedent. The plan's own corrections table already records the same phantom under another name
   (`oldshape-audit`) — cited twice in one document. `migrate-core-blocks/` is the only real precedent.
+  ⚠⚠ **THIS FINDING IS ITSELF FALSE — corrected 2026-08-11 (Bean).** The script EXISTS at the repo
+  root `scripts/wp-migrate-oldshape-blocks.js`, tracked since `1d13997d`. Two separate sessions
+  independently "verified" it missing and wrote that down; a later session then repeated the claim
+  citing this entry, and elsewhere in this same file (`D-entry ~:2008`) the script is cited as real
+  — the file contradicted itself for weeks. **A false ABSENCE is more durable than a false presence:
+  nothing ever trips over it, so it propagates into every doc that cites the entry.** Whatever the
+  original search was, it did not look at the repo root.
 - **All five survey detectors built this session had ZERO `package.json` references.** This repo's own
   recorded failure mode (`a-gate-can-be-built-and-never-wired`; D493 records the same thing running
   three weeks). **Fixed** — named `survey:*` commands + `survey:selftest` running all five (40

@@ -611,6 +611,97 @@ def step_scoped_selector_audit(page_id: str, dry_run: bool) -> int:
     return rc
 
 
+def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:
+    """CHANGE-SPECIFIC verify: does the LIVE plugin match the payload we just shipped?
+
+    ⛔ WHY THIS EXISTS (D576, 2026-08-11). `step_verify()` above is deliberately
+    cause-agnostic and GENERIC — it asserts the page returns 200 and contains
+    `wp-block-sgs`. Every one of those assertions passes just as happily on LAST
+    WEEK'S build. Measured that day: a co-active session deploying from its own
+    worktree shipped an OLDER `build/` over this track's, reverting every migrated
+    `block.json` to the pre-migration `type:string` schema. WordPress then rejected
+    each object-valued attribute in `prepare_attributes_for_render()` and refilled
+    it from the old scalar default, so the value never reached render.php at all —
+    and this script printed [DONE] with a green verify. Two sessions of PHP
+    debugging chased a bug no PHP fix could ever have reached.
+
+    Closes the gap parked as P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC.
+
+    Compares the md5 of every deployed `build/blocks/*/block.json` against the
+    local copy that was just packaged. block.json is the right file to check
+    because it carries the ATTRIBUTE SCHEMA — the thing WordPress validates stored
+    content against, and therefore the thing whose staleness silently discards
+    data rather than erroring. It is also cheap: one SSH round trip, no per-file
+    fetch.
+
+    Cause-agnostic by construction: it does not care WHY the live copy differs
+    (a racing deploy, a partial extract, a stale tar). Any difference fails.
+    """
+    import hashlib
+
+    local_root = REPO_ROOT / "plugins" / "sgs-blocks" / "build" / "blocks"
+    if not local_root.is_dir():
+        err(f"[payload-verify] local build dir missing: {local_root}")
+        return 1
+
+    local: dict[str, str] = {}
+    for bj in sorted(local_root.glob("*/block.json")):
+        local[bj.parent.name] = hashlib.md5(bj.read_bytes()).hexdigest()
+    if not local:
+        err(f"[payload-verify] no block.json found under {local_root}")
+        return 1
+
+    remote_dir = f"{wp_content}/plugins/sgs-blocks/build/blocks"
+    remote_cmd = (
+        f"cd {shlex.quote(remote_dir)} 2>/dev/null && "
+        "md5sum */block.json 2>/dev/null || echo __MISSING__"
+    )
+    log(f"[payload-verify] comparing {len(local)} block.json checksums against the live plugin")
+    try:
+        out = subprocess.run(ssh_base_cmd(use_alias) + [remote_cmd], capture_output=True,
+                             text=True, encoding="utf-8", errors="replace", timeout=120)
+    except (subprocess.SubprocessError, OSError) as e:
+        err(f"[payload-verify] SSH failed: {e}")
+        return 1
+    if out.returncode != 0 or "__MISSING__" in (out.stdout or ""):
+        err("[payload-verify] could not read the deployed build/blocks dir - "
+            f"expected at {remote_dir}")
+        return 1
+
+    remote: dict[str, str] = {}
+    for line in (out.stdout or "").splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[1].endswith("/block.json"):
+            remote[parts[1].rsplit("/block.json", 1)[0]] = parts[0]
+
+    if not remote:
+        err("[payload-verify] the live plugin reported no block.json files at all")
+        return 1
+
+    mismatched = sorted(k for k in local if k in remote and local[k] != remote[k])
+    missing = sorted(k for k in local if k not in remote)
+
+    if not mismatched and not missing:
+        log(f"[payload-verify] PASS: all {len(local)} deployed block.json match the payload")
+        return 0
+
+    # ASCII only past this point: err() writes to stderr, which is not
+    # reconfigured to utf-8, so non-ASCII mangles on a Windows console.
+    err(f"[payload-verify] FAIL: the LIVE plugin is not what this run shipped "
+        f"({len(mismatched)} differ, {len(missing)} missing)")
+    for name in mismatched[:12]:
+        err(f"    differs : {name}  local={local[name][:8]} live={remote[name][:8]}")
+    for name in missing[:12]:
+        err(f"    missing : {name}")
+    if len(mismatched) + len(missing) > 24:
+        err(f"    ... and {len(mismatched) + len(missing) - 24} more")
+    err("[payload-verify] MOST LIKELY CAUSE: another session deployed over this one "
+        "(the canary is shared, and a worktree deploy ships ITS build/, not yours). "
+        "Re-run this deploy, then re-check. Do NOT assume your code is live because "
+        "the page returned 200 - that is exactly the D576 failure.")
+    return 1
+
+
 def step_verify(url: str) -> int:
     """Post-deploy smoke test. Returns non-zero when the deploy has broken the site.
 
@@ -683,9 +774,19 @@ def step_verify(url: str) -> int:
         # fail-closed. A verify leg that cannot fail reads green forever.
         # NOTE this is still a GENERIC assertion (these markers match any
         # working SGS page, including one running last week's build); it is
-        # not change-specific. The change-specific check (--assert-contains
-        # / per-file checksum) is tracked in parking as
-        # P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC and is NOT solved here.
+        # not change-specific — deliberately, because its job is "is the site
+        # alive", not "is my code live".
+        # ✅ The change-specific half IS now solved, by `step_verify_payload()`
+        # above (2026-08-11, D576): it md5s every deployed block.json against
+        # the local payload over the SSH connection this script already opens.
+        # ⚠ That check proves AGREEMENT, not correctness — matching bytes mean
+        # the live plugin is what this run shipped, never that what it shipped
+        # is right.
+        # STILL OPEN, and needs Bean's sign-off on takeover semantics: the
+        # deploy-ownership marker (`.sgs-deploy-marker.json` naming deployer +
+        # commit SHA, aborting unless --takeover when the recorded commit is not
+        # an ancestor of HEAD). That is part (b) of the same parking entry and
+        # turns a silent clobber into a deliberate one.
         err(f"[verify] none of {markers} found in {url} - "
             "the deployed page is not rendering SGS markup")
         err(f"[verify] {ROLLBACK_HINT}")
@@ -867,6 +968,16 @@ def main() -> int:
                   "or fix forward. If the site was ALREADY broken before this "
                   "run, this check cannot tell the difference; confirm first.",
                   flush=True)
+            return 1
+
+    # Post-deploy CHANGE-SPECIFIC gate: is the live plugin what we just shipped?
+    # Runs after the smoke test so a broken SITE is reported before a stale PAYLOAD.
+    if deploy_blocks and not args.skip_verify and not args.dry_run:
+        rc = step_verify_payload(use_alias, target["wp_content"], deploy_blocks)
+        if rc != 0:
+            print("[DEPLOYED-BUT-STALE] the deploy completed and the site responds, "
+                  "but the LIVE plugin does not match this run's payload. Your code "
+                  "is probably NOT what is running (D576).", flush=True)
             return 1
 
     # Post-deploy structural gate: live scoped-selector match audit.
