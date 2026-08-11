@@ -15,13 +15,18 @@
  * belongs in a real component in `src/components/`, not here — the moment this
  * file has behaviour, it stops being a boundary and becomes a dependency.
  *
- * WHY IT EXISTS (Spec 35 Phase 0 item 0d, D564)
+ * WHY IT EXISTS (Spec 35 Phase 0 item 0d, D565)
  * ---------------------------------------------
  * Measured 2026-08-11: EVERY component primitive this tree imports from
- * WordPress is `__experimental*` — 115 import sites across 47 files, 10 distinct
- * symbols. `__experimental` is core's explicit statement that the export may be
- * renamed or removed without a deprecation cycle. Before this file, such a
- * rename was a 47-file emergency; now it is a one-line edit here.
+ * WordPress is `__experimental*` — 115 import sites across **50** files, 10
+ * distinct symbols. `__experimental` is core's explicit statement that the
+ * export may be renamed or removed without a deprecation cycle. Before this
+ * file, such a rename was a 50-file emergency; now it is a one-line edit here.
+ *
+ * ⛔ This comment said "47 files" when first committed — the number a
+ * line-start-anchored grep produced, which the detector had ALREADY corrected to
+ * 50 in the same commit's own message. Caught by a QC council (D566). The three
+ * it missed put the specifier mid-line in a single-line import.
  *
  * ⚠ TWO SOURCE PACKAGES — this is the trap, and it is why a naive
  *   find-and-replace to a single package breaks the build:

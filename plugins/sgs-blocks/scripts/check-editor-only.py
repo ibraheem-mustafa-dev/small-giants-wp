@@ -61,8 +61,28 @@ A block's staged change is editor-only iff ALL hold:
      ``components/*.js``, so the walk would have passed by being blind rather
      than by proving anything.
 
-Rules 3, 4 and 5 are CHECKED PER BLOCK on every run, never assumed from the
+  6. No staged ``edit.js`` line sits inside a ``useEffect``/``useLayoutEffect``
+     that calls ``setAttributes``. ⛔ ADDED 2026-08-11 (D566) because this file's
+     founding premise — "edit.js cannot change frontend first paint" — is FALSE
+     for an UNATTENDED write. ``sgs/form``'s edit.js generates ``formId`` in a
+     mount effect and ``form/render.php:51,113`` prints it, so editing that
+     generation logic changes what a visitor gets, from an edit.js-only diff. A
+     ``setAttributes`` in an ``onChange`` is fine — the operator caused it and
+     can see it. One that fires on its own is not.
+
+Rules 3, 4, 5 and 6 are CHECKED PER BLOCK on every run, never assumed from the
 census above. The census is why the rules are cheap, not a substitute for them.
+
+⛔ WHAT A QC COUNCIL FOUND ON THE DAY THIS SHIPPED (D566) — three real holes, all
+demonstrated rather than theorised, all now closed and each with its own control:
+  * a lone ``index.js`` was admitted as editor-only. It is the REGISTRATION file
+    (``save``, ``deprecated``), so that was a frontend change waved through.
+  * the mount-effect hole above.
+  * rule 5 first checked DIRECT imports only, and the sibling map was collected
+    non-recursively, so it could not see the very ``components/*.js`` files this
+    branch was widened to admit.
+Read that list before widening this file again: every one of them was a case
+where the rule looked right and was blind.
 
 Exit codes:
   0 — editor-only (the gate may SKIP the visual-report requirement)
@@ -122,7 +142,71 @@ IMPORT_EXEMPT = {"index.js"}
 
 # Files WordPress serves to a visitor (or that build what it serves). If one of
 # these imports a staged inspector component, the change is not editor-only.
-FRONTEND_SURFACES = {"save.js", "view.js", "view.jsx", "save.jsx", "frontend.js"}
+#
+# ⛔ `index.js` IS IN THIS SET, and that is not obvious — it is the block
+# REGISTRATION file. It wires `save`, `deprecated` and `edit` into
+# registerBlockType. A change to `save` wiring on a static block rewrites what is
+# serialised into `post_content`; a change to `deprecated` breaks migration of
+# already-saved content. Both are first-order frontend changes.
+#
+# Found by a QC council 2026-08-11 (D566) and demonstrated, not theorised: a lone
+# staged `index.js` was classified EDITOR-ONLY by the first version of this file
+# and skipped the visual-diff gate entirely. `IMPORT_EXEMPT` below rationalises
+# index.js for RULE 4 only (its import of ./edit is the registration), and that
+# narrow exemption was wrongly reading as whole-file admission.
+FRONTEND_SURFACES = {
+    "save.js", "save.jsx",
+    "view.js", "view.jsx",
+    "frontend.js",
+    "index.js",
+}
+
+
+def mount_effect_write_ranges(text: str) -> list[tuple[int, int]]:
+    """Line ranges of `useEffect`/`useLayoutEffect` bodies that call setAttributes.
+
+    WHY (D566, found by QC council 2026-08-11 — demonstrated in live code, not
+    theorised): this branch's premise was "edit.js cannot change frontend first
+    paint". That is FALSE for a write that happens WITHOUT user interaction.
+    `sgs/form`'s edit.js auto-generates `formId` in a mount effect
+    (``setAttributes({ formId: `form-${clientId.substr(0,8)}` })``) and
+    ``form/render.php`` reads `$attributes['formId']` and prints it into the
+    rendered form. Editing that generation logic changes what the VISITOR gets,
+    from an edit.js-only diff.
+
+    A setAttributes call in an onChange handler is fine — the operator caused it
+    and can see the result. A call in an effect fires on its own.
+    """
+    ranges: list[tuple[int, int]] = []
+    for match in re.finditer(r"use(?:Layout)?Effect\s*\(", text):
+        i = text.find("{", match.end())
+        if i == -1:
+            continue
+        depth, j = 0, i
+        while j < len(text):
+            if text[j] == "{":
+                depth += 1
+            elif text[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        body = text[i:j]
+        if "setAttributes" in body:
+            ranges.append(
+                (text[:i].count("\n") + 1, text[:j].count("\n") + 1)
+            )
+    return ranges
+
+
+def changed_line_numbers(diff: str) -> list[int]:
+    """New-file line numbers touched by a unified diff (parsed from @@ hunks)."""
+    lines: list[int] = []
+    for hunk in re.finditer(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@", diff, re.MULTILINE):
+        start = int(hunk.group(1))
+        count = int(hunk.group(2) or 1)
+        lines.extend(range(start, start + max(count, 1)))
+    return lines
 
 
 def _run(args: list[str]) -> str:
@@ -140,6 +224,7 @@ def verdict(
     edit_js_text: str,
     siblings: dict[str, str],
     frontend_entries: set | None = None,
+    edit_changed_lines: list | None = None,
 ) -> tuple[bool, str]:
     """Return (editor_only, reason).
 
@@ -257,6 +342,18 @@ def verdict(
         if EDIT_IMPORT_RE.search(text):
             return False, f"{name} imports ./edit — editor code reaches another surface"
 
+    # Rule 6 — a staged edit.js line inside a MOUNT-EFFECT that writes attributes.
+    # See mount_effect_write_ranges() for why this is not editor-only.
+    if edit_js_text and edit_changed_lines:
+        for start, end in mount_effect_write_ranges(edit_js_text):
+            hit = [n for n in edit_changed_lines if start <= n <= end]
+            if hit:
+                return False, (
+                    f"edit.js:{hit[0]} is inside a useEffect that calls setAttributes "
+                    f"(lines {start}-{end}) — an unattended write to stored attributes "
+                    "can change what render.php prints to visitors"
+                )
+
     what = "edit.js"
     if component_files:
         what = ", ".join(component_files) if len(staged_rows) == len(component_files) \
@@ -319,7 +416,13 @@ def is_editor_only(block: str) -> tuple[bool, str]:
                 if isinstance(item, str) and item:
                     frontend_entries.add(item.replace("file:./", "").replace("file:", "").split("/")[-1])
 
-    return verdict(rows, edit_text, siblings, frontend_entries)
+    edit_changed = None
+    if any(p == EDITOR_FILE for _, p in rows):
+        edit_changed = changed_line_numbers(
+            _run(["git", "diff", "--cached", "-U0", "--", f"{prefix}{EDITOR_FILE}"])
+        )
+
+    return verdict(rows, edit_text, siblings, frontend_entries, edit_changed)
 
 
 # ---------------------------------------------------------------------------
@@ -465,6 +568,21 @@ _CASES = [
         },
         False,
     ),
+    # ── D566 council findings: index.js + mount-effect writes ────────────────
+    (
+        "NEGATIVE (D566/B1) — a lone index.js is REGISTRATION, not editor-only",
+        [("M", "index.js")],
+        "",
+        {"index.js": "import Save from './save'; registerBlockType(n,{edit:Edit,save:Save});"},
+        False,
+    ),
+    (
+        "NEGATIVE (D566/B1) — edit.js + index.js together is still not editor-only",
+        [("M", "edit.js"), ("M", "index.js")],
+        "export default function Edit() {}",
+        {},
+        False,
+    ),
     (
         "NEGATIVE — a nested non-component path is not admitted",
         [("M", "assets/sprite.js")],
@@ -477,6 +595,41 @@ _CASES = [
 
 def _self_test() -> int:
     failures = 0
+
+    # ── Rule 6 (D566): mount-effect writes ───────────────────────────────────
+    _EFFECT = chr(10).join([
+        "export default function Edit({ attributes, setAttributes, clientId }) {",
+        "  useEffect( () => {",
+        "    if ( ! formId ) {",
+        "      setAttributes( { formId: `form-` + clientId } );",
+        "    }",
+        "  }, [ formId ] );",
+        "  return <UnitControl onChange={ (v) => setAttributes({ radius: v }) } />;",
+        "}",
+    ])
+    r6 = [
+        ("POSITIVE (rule 6) — a mount-effect setAttributes range is FOUND",
+         lambda: len(mount_effect_write_ranges(_EFFECT)) == 1),
+        ("NEGATIVE (rule 6) — an onChange-only file has NO effect range",
+         lambda: mount_effect_write_ranges(
+             "const E=()=> <X onChange={(v)=>setAttributes({a:v})} />;") == []),
+        ("NEGATIVE (rule 6) — a useEffect WITHOUT setAttributes is not flagged",
+         lambda: mount_effect_write_ranges(
+             "useEffect( () => { console.log(1); }, [] );") == []),
+        ("POSITIVE (rule 6) — a line INSIDE the effect gates; one OUTSIDE does not",
+         lambda: (verdict([("M", "edit.js")], _EFFECT, {}, None, [4])[0] is False)
+                 and (verdict([("M", "edit.js")], _EFFECT, {}, None, [7])[0] is True)),
+    ]
+    for name, fn in r6:
+        ok = False
+        try:
+            ok = bool(fn())
+        except Exception as exc:  # a crashing control is a failing control
+            print(f"         raised: {exc}")
+        if not ok:
+            failures += 1
+        print(f"  [{'PASS' if ok else 'FAIL'}] {name}")
+
     for label, rows, edit_text, siblings, expected in _CASES:
         got, reason = verdict(rows, edit_text, siblings)
         ok = got == expected
@@ -488,11 +641,11 @@ def _self_test() -> int:
 
     print()
     if failures:
-        print(f"self-test: FAIL ({failures} of {len(_CASES)} cases)")
+        print(f"self-test: FAIL ({failures} of {len(_CASES) + len(r6)} cases)")
         return 1
     print(
-        f"self-test: PASS ({len(_CASES)} cases — rule 1 file scope, rule 2 modification, "
-        "rule 3 named exports, rule 4 sibling imports, each with both controls)"
+        f"self-test: PASS ({len(_CASES) + len(r6)} cases — rule 1 file scope, rule 2 modification, "
+        "rule 3 named exports, rule 4 sibling imports, rule 5 transitive reach, rule 6 mount-effect writes — each with both controls)"
     )
     return 0
 

@@ -1024,7 +1024,7 @@ its element's panel (TIER 1) regardless of this field.)*
 
    | Leg | In scope | Canonical | Non-canonical |
    |---|---|---|---|
-   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **24** | `ResponsiveBoxControl` 5 (wrong shape — sides fed a corners attr), `SelectControl` 2, 6 with **no control at all** |
+   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **24** | ~~`ResponsiveBoxControl` 5~~ **0 real — see below**, ~~`SelectControl` 2~~ **0 real**, 6 with **no control at all** |
    | **Scalar radius** | 13 | `UnitControl` **11** *(was 8; +3 this session)* | `RangeControl` 2 |
    | **Scalar border-width** | 7 | — | `RangeControl` 1, remainder unresolved |
    | **Per-side scalars** (§14.3 migration) | — | — | **0 — §14.3's "migration COMPLETE" claim reproduces independently** |
@@ -1037,9 +1037,22 @@ its element's panel (TIER 1) regardless of this field.)*
    `units` array **including `%`** per field 2 — load-bearing, since `iconCircleBorderRadius`
    *defaults* to `'50%'` and a px-only array would have silently removed the block's own circle.
 
-   ⛔ **THE SURVEY HAS A MEASURED FALSE-POSITIVE RATE — do not dispatch a codemod at its raw
-   output.** Both `SelectControl` hits in the 4-CORNER leg are **false positives of the
-   comment-match class**, verified by reading the surrounding code:
+   ⛔ **THE SURVEY'S FALSE-POSITIVE RATE IN THIS LEG IS 7 OF 7 — every non-canonical hit it named
+   was wrong. Do not dispatch a codemod at its raw output.**
+
+   ⚠ **CORRECTED 2026-08-11 by a QC council (D566), and the way it was wrong is the lesson.** This
+   entry first recorded only the 2 `SelectControl` hits as false positives and passed the 5
+   `ResponsiveBoxControl` hits through as real, under "Recorded, NOT fixed — Phase 3". A rater read
+   the code; **all 5 are the same defect class as the 2 already caught.** `sgs/counter:196`,
+   `sgs/timeline:390` and `sgs/whatsapp-cta:204` are each the **Margin** `ResponsiveBoxControl`
+   (`values={{ base: style?.spacing?.margin … }}`) — the scanner attributed a nearby `borderRadius*`
+   attribute NAME to the closest `ResponsiveBoxControl`, which controls margin. **Real count: 0.**
+
+   The failure was not the scanner — it was applying the read-the-code check to one bucket of a
+   table and not the bucket beside it. **When a survey leg is shown to mis-attribute, re-check EVERY
+   bucket in that leg, not just the one that prompted the suspicion.**
+
+   The 2 `SelectControl` hits, for the record:
    - `sgs/button` — the flagged `SelectControl` is `textDecorationHover`; `borderRadiusTablet/Mobile`
      actually feed `ResponsiveBorderRadiusControl` (`edit.js:772-773`). **Canonical.**
    - `sgs/product-card` — the flagged `SelectControl` is `ctaStyle`; `ctaBorderRadius` feeds
@@ -1050,10 +1063,17 @@ its element's panel (TIER 1) regardless of this field.)*
    attribute name found in a nearby **comment** to the next control it sees. Treat every survey leg
    as a candidate list requiring a read, never a defect list.
 
-   **Recorded, NOT fixed — Phase 3, not Phase 0** (adding a missing control is a capability decision,
-   and the wrong-shape mounts need a per-block read): the 6 no-control radius attrs
-   (`gridItemBorderRadius` on container/cta-section/hero/trust-bar, `option-picker.borderRadius`
-   Tablet/Mobile) and the 5 corner-attrs fed to the 4-SIDE `ResponsiveBoxControl`.
+   **Recorded, NOT fixed** (adding a missing control is a capability decision): the **6** no-control
+   radius attrs — `gridItemBorderRadius` on container/cta-section/hero/trust-bar, and
+   `option-picker.borderRadius` Tablet/Mobile. ~~Plus 5 corner-attrs fed to a 4-SIDE control~~ —
+   **withdrawn, they were false positives (D566).**
+
+   ⛔ **These are the ONLY residual §14 items, and until 2026-08-11 they were deferred to a "Phase 3"
+   that contains no border work at all** — a named-sounding deferral that resolved to nothing when
+   opened, which is the STOP-29 failure this project forbids. Now parked explicitly:
+   `P-SPEC35-BORDER-RESIDUALS` in `.claude/parking.md`, which also owns **field 1's unbuilt
+   `BorderBoxControl`**, the **8 scalar mounts missing a `units` array** (field 2), and the **2
+   survey instrument defects** below. Nothing in §14 is orphaned any more.
 
    ⚠ **Two instrument defects found while measuring, both owed to whoever next touches the survey:**
    (a) the scalar-radius leg has **no canonical component declared**, so all 13 print

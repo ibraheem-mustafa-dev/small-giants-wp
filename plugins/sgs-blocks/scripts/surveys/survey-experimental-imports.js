@@ -14,10 +14,12 @@
  * Every component primitive this tree imports from WordPress is
  * `__experimental*` — core's explicit statement that it may be renamed or
  * removed with no deprecation cycle. Measured at introduction: 115 import sites
- * across 47 files, 10 symbols. Routing them through one barrel turns a rename
- * from a 47-file emergency into a one-line edit.
+ * across 50 files, 10 symbols. Routing them through one barrel turns a rename
+ * from a 50-file emergency into a one-line edit.
+ * (This header said 47 when first committed — the number a line-start-anchored
+ * grep gave, which this detector itself corrected to 50. Fixed per D566.)
  *
- * TWO TRAPS THIS ENCODES, both measured rather than assumed:
+ * THREE TRAPS THIS ENCODES, each measured rather than assumed:
  *
  *  1. TWO SOURCE PACKAGES. `__experimentalBorderRadiusControl` comes from
  *     `@wordpress/block-editor`; the other nine from `@wordpress/components`. A
@@ -59,6 +61,40 @@ const WP_PACKAGES = [ '@wordpress/components', '@wordpress/block-editor' ];
 const IMPORT_BLOCK = /import\s*\{([^}]*)\}\s*from\s*(['"])(@wordpress\/[a-z-]+)\2\s*;?/g;
 /** `__experimentalFoo as Foo` */
 const SPECIFIER = /(__experimental[A-Za-z0-9_]+)\s+as\s+([A-Za-z0-9_$]+)/g;
+
+/**
+ * NON-IMPORT access to the same unstable symbols — the blind spot this gate had
+ * on the day it shipped, found by a QC council (D566).
+ *
+ * `IMPORT_BLOCK` matches only `import { ... } from '@wordpress/...'` statement
+ * syntax. Two live files reach `__experimentalNumberControl` through a
+ * structurally different path and were invisible to it, so the gate reported
+ * 100% coverage while missing them:
+ *   src/blocks/filter-search/edit.js  — `const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};`
+ *   src/blocks/product-search/edit.js — `( { __experimentalNumberControl: NumberControl } = require( '@wordpress/components' ) );`
+ *
+ * Both are DELIBERATE compat guards (the symbol may be absent on older WP, and
+ * they fall back to TextControl), so they are exempted BY NAME with a reason
+ * below rather than migrated — but the gate must SEE them, or "every access goes
+ * through the barrel" is a claim nothing checks. `--survey` reports them.
+ */
+// ⚠ Must NOT require the closing brace right after the alias: product-search
+// writes the pattern across three lines with a trailing comma, and the first
+// version of this regex silently missed it — the same blind-spot shape, one
+// layer down. Caught only because the exemption list named a file the
+// detector never reported. `s` flag so the pattern may span lines.
+const DESTRUCTURED_ACCESS = /\{[^{}]*?(__experimental[A-Za-z0-9_]+)\s*:\s*([A-Za-z0-9_$]+)/gs;
+
+/**
+ * Reasoned exemptions for non-import access. Each MUST carry why. An entry here
+ * is accepted debt, not an oversight — and it is visible in `--survey` output.
+ */
+const NON_IMPORT_EXEMPT = {
+	'blocks/filter-search/edit.js':
+		'deliberate compat guard — reads wp.components at runtime and falls back to TextControl when the experimental export is absent on older WP',
+	'blocks/product-search/edit.js':
+		'deliberate compat guard — require() inside try/catch so a missing module cannot crash the editor; falls back to TextControl',
+};
 
 /** Strip // and block comments so prose mentions never count as code. */
 function stripComments( text ) {
@@ -117,6 +153,19 @@ function findRawImports( text ) {
 		}
 	}
 	return found;
+}
+
+
+/** Non-import access findings for one file's text: [{symbol, alias}]. */
+function findNonImportAccess( text ) {
+	const code = stripComments( text );
+	const out = [];
+	let m;
+	DESTRUCTURED_ACCESS.lastIndex = 0;
+	while ( ( m = DESTRUCTURED_ACCESS.exec( code ) ) !== null ) {
+		out.push( { symbol: m[ 1 ], alias: m[ 2 ] } );
+	}
+	return out;
 }
 
 /** Relative specifier from a source file to the barrel, POSIX-style. */
@@ -226,6 +275,19 @@ function collect() {
 		.filter( ( r ) => r.findings.length > 0 );
 }
 
+/** Non-import access sites, split into exempt and unexempt. */
+function collectNonImport() {
+	const exempt = [], flagged = [];
+	for ( const f of walk( REPO_SRC ) ) {
+		if ( isBarrel( f ) ) continue;
+		const hits = findNonImportAccess( fs.readFileSync( f, 'utf8' ) );
+		if ( ! hits.length ) continue;
+		const rel = path.relative( REPO_SRC, f ).split( path.sep ).join( '/' );
+		( NON_IMPORT_EXEMPT[ rel ] ? exempt : flagged ).push( { rel, hits } );
+	}
+	return { exempt, flagged };
+}
+
 function modeSurvey() {
 	const results = collect();
 	const bySymbol = new Map();
@@ -260,6 +322,21 @@ function modeSurvey() {
 		if ( q === '"' ) console.log( `    double-quoted: ${ path.relative( REPO_SRC, file ) }` );
 	}
 	console.log( `    ${ [ ...quotes.entries() ].map( ( [ q, n ] ) => `${ q } x${ n } file(s)` ).join( ', ' ) }` );
+
+	// D566 — non-import access, the blind spot this gate shipped with.
+	const nonImport = collectNonImport();
+	console.log( '' );
+	console.log( '  NON-IMPORT access (destructuring wp.components / require()):' );
+	if ( ! nonImport.exempt.length && ! nonImport.flagged.length ) {
+		console.log( '    none' );
+	}
+	for ( const f of nonImport.exempt ) {
+		console.log( `    EXEMPT  ${ f.rel }  [${ f.hits.map( ( h ) => h.alias ).join( ', ' ) }]` );
+		console.log( `            reason: ${ NON_IMPORT_EXEMPT[ f.rel ] }` );
+	}
+	for ( const f of nonImport.flagged ) {
+		console.log( `    FLAGGED ${ f.rel }  [${ f.hits.map( ( h ) => h.alias ).join( ', ' ) }]` );
+	}
 	return 0;
 }
 
@@ -306,8 +383,34 @@ function modeFix( apply ) {
 
 function modeCheck() {
 	const results = collect();
+	// D566: non-import access is a real bypass of this gate. Unexempted hits FAIL.
+	const nonImport = collectNonImport();
+	// A stale exemption is its own defect: it reads as "handled" while pointing at
+	// nothing. Surface it rather than let the list rot silently.
+	const seen = new Set( [ ...nonImport.exempt, ...nonImport.flagged ].map( ( f ) => f.rel ) );
+	const stale = Object.keys( NON_IMPORT_EXEMPT ).filter( ( k ) => ! seen.has( k ) );
+	if ( stale.length ) {
+		console.log( '' );
+		console.log( 'BUILD BLOCKED — STALE non-import exemption(s); the file no longer has the access they excuse:' );
+		stale.forEach( ( k ) => console.log( `  ${ k }` ) );
+		console.log( '  Remove the entry from NON_IMPORT_EXEMPT.' );
+		return 1;
+	}
+	if ( nonImport.flagged.length ) {
+		console.log( '' );
+		console.log( 'BUILD BLOCKED — __experimental* reached WITHOUT an import statement:' );
+		for ( const f of nonImport.flagged ) {
+			for ( const h of f.hits ) console.log( `  ${ f.rel }: { ${ h.symbol }: ${ h.alias } }` );
+		}
+		console.log( '' );
+		console.log( '  Destructuring wp.components or require() bypasses the compat boundary just as' );
+		console.log( '  surely as a raw import. Route it through src/components/primitives, or add a' );
+		console.log( '  reasoned entry to NON_IMPORT_EXEMPT in this file.' );
+		return 1;
+	}
 	if ( results.length === 0 ) {
-		console.log( '[check-experimental-imports] PASS — every __experimental* component import goes through src/components/primitives.' );
+		const ex = nonImport.exempt.length;
+		console.log( `[check-experimental-imports] PASS — every __experimental* component import goes through src/components/primitives${ ex ? ` (+${ ex } reasoned non-import exemption(s))` : '' }.` );
 		return 0;
 	}
 	console.log( '' );
@@ -426,6 +529,26 @@ const CASES = [
 
 function selfTest() {
 	let failures = 0;
+
+	// ── D566: the non-import blind spot ──────────────────────────────────────
+	const niCases = [
+		[ 'single-line wp.components destructure IS detected',
+		  "const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};", 1 ],
+		[ 'MULTI-LINE require() destructure with a trailing comma IS detected',
+		  [ '( {', "\t__experimentalNumberControl: NumberControl,", "} = require( '@wordpress/components' ) );" ].join( '\n' ), 1 ],
+		[ 'NEGATIVE — an ordinary import is not counted as non-import access',
+		  "import { UnitControl } from '../../components/primitives';", 0 ],
+		[ 'NEGATIVE — a COMMENT mentioning the pattern is not access',
+		  "// we avoid { __experimentalNumberControl: NumberControl } here", 0 ],
+	];
+	for ( const [ name, src, expected ] of niCases ) {
+		const got = findNonImportAccess( src ).length;
+		const ok = got === expected;
+		if ( ! ok ) failures++;
+		console.log( `  [${ ok ? 'PASS' : 'FAIL' }] ${ name }` );
+		if ( ! ok ) console.log( `         expected ${ expected } hit(s), got ${ got }` );
+	}
+
 	for ( const c of CASES ) {
 		const { text, moved } = transform( c.input, './primitives' );
 		const problems = [];
@@ -478,10 +601,10 @@ function selfTest() {
 
 	console.log( '' );
 	if ( failures ) {
-		console.log( `self-test: FAIL (${ failures } of ${ CASES.length + 2 } cases)` );
+		console.log( `self-test: FAIL (${ failures } of ${ CASES.length + 6 } cases)` );
 		return 1;
 	}
-	console.log( `self-test: PASS (${ CASES.length + 2 } cases — both quote styles, both packages, statement deletion, idempotency, comment immunity, and both gate controls)` );
+	console.log( `self-test: PASS (${ CASES.length + 6 } cases — both quote styles, both packages, statement deletion, idempotency, comment immunity, and both gate controls)` );
 	return 0;
 }
 

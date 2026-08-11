@@ -355,6 +355,33 @@ as `P-TIMELINE-ADVANCED-VISUAL-EFFECTS`.
 
 **Trigger:** After cloning pipeline Method-2 lands.
 
+### P-SPEC35-BORDER-RESIDUALS — contract §14's residual border obligations, un-orphaned
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-11
+
+Created by a QC council on Phase 0 (D566). These four items were each recorded in
+`plans/spec-35-control-type-contract.md` §14 as "Phase 3, not Phase 0" — but Phase 3 of
+`go-track-1b-playful-hamster.md` contains 3.1/3.2a/3.2b/3.3 and **no border work at all**, so the
+deferral was named-sounding and resolved to nothing. That is the STOP-29 failure this project
+forbids; parking them is the fix.
+
+1. **`BorderBoxControl` does not exist.** §14 field 1 names it CANONICAL for border style + per-side
+   width + colour + alpha. It has **zero source files** tree-wide (only docs, survey allowlists and a
+   Jest mock). The contract's canonical component for this property family has never been built.
+2. **6 radius attrs with no control at all** — `gridItemBorderRadius` on container / cta-section /
+   hero / trust-bar, plus `option-picker.borderRadius` Tablet+Mobile. Adding a control is a
+   capability decision, not a swap.
+3. **8 of 13 scalar radius mounts pass no `units` array**, which §14 field 2 requires.
+4. **Two survey instrument defects** in `survey-box-controls.py`: the scalar-radius leg declares no
+   canonical component, so 11 correct `UnitControl` mounts print `[non-canonical/raw]`; and the leg
+   mis-attributes an attribute NAME to the nearest control (7 of 7 non-canonical hits in the 4-CORNER
+   leg were false positives — 2 SelectControl + 5 that were actually the Margin box control).
+
+⛔ Fix (4) BEFORE acting on any remaining §14 count — the instrument that produces the work-list is
+the thing with the measured error.
+
+**Trigger:** whoever opens Phase 3 (canonical control per CSS property). Item 1 is a build and needs
+its own design gate; items 2-3 are per-block capability decisions; item 4 is a detector fix.
+
 ### P-ARCHIVE-PRODUCT-WC-VALIDATION — archive-product template shows editor block-validation errors (frontend renders fine)
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 

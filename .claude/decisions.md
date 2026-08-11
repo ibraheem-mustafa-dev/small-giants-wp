@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D566 — A QC council on Phase 0 found 5 real defects in the same session that shipped it [INCIDENT]
+
+**2026-08-11, Bean-requested** after Phase 0 was declared complete. Four raters, distinct angles,
+each required to cite `file:line`. **The declaration held; the workmanship did not.** Every finding
+below was DEMONSTRATED, not argued, and every one is now fixed with its own control.
+
+### The three gate holes — in gates written the same day
+
+| # | Hole | Why it mattered |
+|---|---|---|
+| **1** | A lone staged **`index.js`** was classified EDITOR-ONLY and skipped the visual-diff gate | `index.js` is the REGISTRATION file — it wires `save` and `deprecated`. On a static block `save` output IS what lands in `post_content`; a `deprecated` change breaks migration of saved content. `IMPORT_EXEMPT` rationalised index.js for rule 4 only, and that narrow exemption leaked into whole-file admission. |
+| **2** | An **`edit.js` mount-effect** that writes stored attributes | The branch's founding premise — "edit.js cannot change frontend first paint" — is FALSE for an UNATTENDED write. `sgs/form`'s edit.js generates `formId` in a `useEffect`; `form/render.php:51,113` prints it. Editing that logic changes what visitors get, from an edit.js-only diff. Now rule 6: a changed line inside a `useEffect` that calls `setAttributes` gates. An `onChange` write is still fine — the operator caused it. |
+| **3** | The **import gate was blind to non-import access** | `IMPORT_BLOCK` matches only `import {...} from '@wordpress/…'`. Two live files reach `__experimentalNumberControl` by destructuring `wp.components` / `require()` (`filter-search`, `product-search`), so the gate reported 100% coverage while missing them. Both are deliberate compat guards, now EXEMPT BY NAME WITH A REASON — and a **stale-exemption check** fails the build if an entry stops matching. |
+
+⚠ **Hole 3's fix was itself blind first.** The new regex required the closing brace right after the
+alias, so it caught `filter-search` and missed `product-search`, which spreads the pattern over three
+lines with a trailing comma. Caught only because the exemption list named a file the detector never
+reported — **an exemption that matches nothing is evidence, not noise.**
+
+### Two false numbers in "MEASURED" material
+
+- ⛔ **§14 field 6's "`ResponsiveBoxControl` 5 (wrong shape)" was FALSE — the real count is 0.** All
+  five are the **Margin** `ResponsiveBoxControl` (`sgs/counter:196`, `sgs/timeline:390`,
+  `sgs/whatsapp-cta:204`); the scanner attributed a nearby `borderRadius*` NAME to the closest box
+  control. **This is the same defect class the very same table already documented for its 2
+  `SelectControl` hits.** The failure was applying the read-the-code check to one bucket and not the
+  bucket beside it. **The leg's true false-positive rate is 7 of 7.** New rule: *when a survey leg is
+  shown to mis-attribute, re-check EVERY bucket in that leg.*
+- `primitives/index.js` shipped a comment saying **"47 files"** — a number the same commit's own
+  message had already corrected to 50. A claim outliving the fact that falsified it, inside the
+  artefact rather than a doc.
+
+### The orphaned-scope violation
+
+Four §14 residuals (unbuilt `BorderBoxControl`, 6 no-control radius attrs, 8 mounts missing `units`,
+2 survey instrument defects) were deferred to "Phase 3" — which contains **no border work at all**.
+A named-sounding deferral that resolves to nothing is the STOP-29 failure this project forbids.
+Parked properly as **`P-SPEC35-BORDER-RESIDUALS`**, which also records that the instrument defect
+must be fixed BEFORE acting on any remaining §14 count.
+
+### What held
+
+Rater D found the codemod clean, and I re-verified WIDER than its 3-file sample: **all 115 pre-commit
+import sites across all 51 files, all 10 symbols — 0 package mismatches**, nothing missing from the
+barrel, no unused export, no cycle, no duplicate binding, webpack externals intact. The
+runtime-`undefined` risk is genuinely closed. Hook wiring, cluster-coverage figures, D560's 12/0/0
+border counts and both self-test suites' negative-control quality all reproduced independently.
+
+⚠ **STILL OPEN: none of this is deployed.** Phase 0 is committed and build-green but has never been
+opened in a live editor — and a green build is explicitly not evidence that an editor component
+resolves (React #130). Live-editor verification is owed before Phase 3 leans on any of it.
+
+**Method note.** The council paid for itself: 3 gate holes and 2 false numbers, in work that had
+already passed a build, three self-test suites and a doc-hygiene gate. **A self-test proves a rule
+does what its author thought; it cannot prove the author thought of everything.**
+
 ## D565 — Phase 0 item 0d: the `__experimental*` compat boundary, migrated and gated; and a codemod that shredded a comment [INCIDENT]
 
 **2026-08-11, Bean-directed** ("build it and migrate imports" — not the barrel alone, which would be
