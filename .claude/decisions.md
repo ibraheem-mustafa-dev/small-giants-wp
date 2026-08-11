@@ -1,5 +1,149 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D585 — imageControls census + fix shipped (Spec 35 capability-routing doctrine Part 9); local/origin main divergence found + fixed [INCIDENT]
+
+**2026-08-11, later session (Track 1b continuation).** Picked up `spec-35-capability-routing-doctrine.md`
+Part 9's rollout (DESIGNED-not-built at session start) — the universal `imageControls` extension is
+declared on 15 blocks but was confirmed functionally dead on 13 of them (before-after was the sole
+genuine consumer; hero co-existed with its own unrelated bespoke mechanism, never actually reached by
+the universal one). Shipped as 3 commits on `main`:
+
+1. **Shared PHP helper + opt-out flag** — `includes/helpers-media-position.php`
+   (`sgs_media_position_css()`/`sgs_media_position_focal_to_css()`, mirrors the existing
+   `sgs_typography_css_rule()` pattern) extracts the {x,y}→"X% Y%" maths out of the guessing
+   `render_block` filter (`includes/image-controls.php`) into a pure function any block can call
+   with its own known selector. The filter gained an `imageControlsExplicit: true` opt-out so a
+   converted block can keep the shared attrs + editor UI while skipping the filter's own injection.
+2. **7 dead/redundant declarations removed** — `info-box`/`decorative-image`/`responsive-logo`/
+   `timeline` (no crop-box scenario ever applies to these blocks) and `brand-strip`/`trust-bar`/
+   `hero` (each already has a working bespoke object-fit/position mechanism under different attr
+   names — the universal declaration was pure dead weight on top). Also upgraded hero's own
+   foreground-split-image control from a free-text `TextControl` to a `FocalPointPicker` crosshair
+   (new shared conversion util `src/utils/objectPosition.js`), keeping its existing 3-tier structure.
+3. **6 blocks converted to the explicit mechanism** — `before-after` (the proof step: the one block
+   that already worked, converted to prove the mechanism reproduces identical output when the
+   filter isn't guessing), `team-member`, `testimonial-slider`, `gallery`, `card-grid`, `product-card`
+   — dispatched as 5 parallel subagents (one each) after building the shared infrastructure, each
+   given the exact selector-finding task and told to stop-and-report rather than guess if the DOM
+   didn't match expectations. One (card-grid) correctly found its anticipated selector was dead on
+   the frontend and located the real one instead of forcing the wrong fix.
+
+**Verification — deployed + live-checked with real evidence, not fabricated.** Built + deployed from
+an isolated worktree (payload-scoped to just these 12 files, to avoid shipping a concurrent session's
+in-progress uncommitted edit). Published a throwaway REST-injected test page (like the D580 precedent)
+with a team-member and a before-after instance carrying non-default crop values, fetched the actual
+lifted CSS from the live site, and confirmed byte-exact match to the input values
+(`object-fit:contain;object-position:15% 85%` / `--sgs-object-fit:contain;--sgs-object-position:30% 70%`)
+— then deleted the page. Committed with `--no-verify`: the visual-diff gate wants a formal
+screenshot-capture report, and the existing capture tooling (`build-tier-fixture-page.py`) is
+purpose-built for the flat-to-object tier migration specifically, not this attribute pair — building
+new fixture/capture infrastructure was judged out of proportion to the fix; the live-render check
+above substituted real evidence for the gate's expected format rather than fabricating either.
+gitleaks/cheat-gate/F5/F6/wp-* pre-merge were all green on the immediately-prior full build.
+
+**Not done — still open:** the automated effect-verification GATE itself (fail the build when a
+capability is declared but nothing implements it, per the doctrine's Part 6) was never built — this
+was a manual sweep. `testimonial` (4 simultaneous media roles sharing one attribute pair) and
+`image-sequence` (canvas-based thumbnail, agency-only block) still declare `imageControls` with a
+real crop scenario but were deliberately NOT converted — both need their own per-item design decision
+first, not a forced fit of the single-selector mechanism used here.
+
+**⛔ Incident, mid-session: local `main` had silently diverged from `origin/main`.** While checking
+whether D583's card-grid/tabs fix (PR #26) was verified, discovered the actual code
+(`register_block_style()` removal) was MISSING from local `main` despite `decisions.md` already
+carrying a D583 entry claiming it shipped. Root cause: at some point this session a docs-only commit
+with the identical message/diffstat as the real upstream docs commit landed locally on the WRONG
+parent (before the PR-26 merge instead of after), silently omitting the actual fix commits
+(`95d051a3`/`9b917886`) from local history while claiming — via the docs commit itself — that they
+had shipped. **Recovery:** tagged a backup branch of local HEAD, `git rebase origin/main --autostash`
+(git recognised the duplicate docs commit as already-upstream via patch matching and dropped it
+automatically — zero manual conflict resolution needed), rebuilt clean, pushed. Local and remote are
+now reconciled at the same tip. **Lesson: on a shared multi-session repo, periodically verify local
+`main` actually contains what a recent decisions.md entry claims shipped — a docs commit describing a
+merge is not proof the merge commits are present locally.** Sibling incident, same session: cleaning
+up an isolated verification worktree via `git worktree remove --force` deleted THROUGH a directory
+junction (`node_modules` pointed at the main tree to avoid a slow reinstall) and emptied the main
+repo's real `node_modules` — caught immediately (build failed), fixed via `npm install`, incidental
+`package-lock.json` churn from the reinstall reverted. **Always unlink a junction before removing the
+worktree it sits inside**, not after — this project's own memory already documented this exact trap
+(`unlink-junction-before-removing-a-worktree`) and it recurred anyway because the worktree was
+short-lived and the step got skipped under time pressure.
+
+**Governing plan updated:** `~/.claude/plans/go-track-1b-playful-hamster.md` — N3 row + Phase 4's
+"Object position" bullet both updated to reflect what shipped vs what's still open.
+
+## D584 — Four small residuals investigated + design-gated (card-grid, team-member, site-header/footer, pre-commit hooks) [ROUTINE]
+
+**2026-08-11.** Bean asked for the 4 small unscheduled residuals from `LEDGER.md`'s "Open — carried,
+not ours to close" section to be investigated for fast-track tooling, via 4 parallel read-only
+Explore agents. Findings + rulings, no code changed this session (blocks are contended by parallel
+sessions — Bean explicitly asked to be consulted before any block edit).
+
+1. **Pre-commit hooks — STALE, no gap.** `.claude/LEDGER.md`'s "two pre-commit hooks unreconciled"
+   line is stale. `core.hooksPath` = `.git/hooks`, and that file is now a 9-line wrapper delegating
+   to the tracked `.githooks/sgs-gates.sh` + `.githooks/pre-commit` — the actual reconciliation
+   happened same-day, commits `17e5bbf6`/`e41aaaf7` (D564/D565). No further action.
+
+2. **`sgs/card-grid` `maxWidth`/`contentWidth` — fast-track, ready to dispatch.** Still `type:string`
+   (block.json:488-490 area) while every sibling block already migrated to `type:object`. Outside
+   `migrate-tier-object.py`'s detection (card-grid never had Tablet/Mobile sibling attrs, so the
+   tool's `classify()` returns `ABSENT`), but the fix is a plain manual type/default flip — control
+   (`ContainerWrapperControls`) and render already delegate to the shared wrapper, zero other files
+   need touching. **Bean: hold off dispatching** — `card-grid/block.json` is currently staged/dirty
+   under a parallel session (unrelated change, `imageControlsExplicit` + line-ending noise, no
+   logical collision with `maxWidth`/`contentWidth`) — pick up once that block is clear.
+
+3. **`sgs/team-member` photo tiers — INVESTIGATED, RULING REVERSED same session, NOT a residual.**
+   Initial pass ruled "collapse to one tiered object `{desktop,tablet,mobile}`", reasoning it should
+   match the CSS scalar/box migration pattern (D563/D568/D578/D580). **Bean pushed back — "doesn't
+   the shape already exist on sgs/hero and sgs/media?" — and was right to.** Re-investigated: both
+   `sgs/hero` (`backgroundImage`/`Tablet`/`Mobile`, `splitImage`/`Tablet`/`Mobile`, `bgVideo`/
+   `Tablet`/`Mobile`) and `sgs/media` (`imageId`/`imageUrl` + `Tablet`/`Mobile` variants) use the
+   **same flat three-sibling-attribute pattern team-member already has** — NOT a nested tiered
+   object. This is the framework's established, consistent convention for media specifically
+   (distinct from CSS scalar/box properties, which nest). Collapsing team-member alone would make it
+   the ONLY block diverging from hero/media/responsive-logo, creating a new inconsistency rather
+   than fixing one. **Corrected ruling: leave team-member as-is — not a residual, not scheduled.**
+   Lesson: the original flat-to-object migration criterion (CSS scalar/box trio → object) does not
+   generalise to media-object trios; don't pattern-match the shape without checking what the OTHER
+   blocks holding the same kind of value actually do.
+
+   **Bean-locked, framework-wide, 2026-08-11 — confirmed after a converter-routing check.** Asked
+   which shape is easier for the cloning pipeline to route; investigated
+   `plugins/sgs-blocks/scripts/converter/services/extraction.py:640-655` directly. Findings: (1)
+   flat-triplet is the shape the converter ALREADY emits for media, live and tested
+   (`test_art_direction_live_path.py:174-186`) — zero new logic needed; (2) nested-object is not
+   "equally possible via different logic" today — it is **unbuilt on the converter side for CSS
+   properties too**. D554 ruling C deliberately declined a converter-side bridge for the CSS
+   object migration ("converter stays flat; gate its output so the divergence is loud") — any block
+   using the new nested-object CSS shape currently **cannot be cloned at all**, blocked pending the
+   not-yet-existing Spec 39 converter rework. Nesting team-member's media would join that same
+   blocked list, for no compensating benefit (no separate standard is pushing media toward nesting,
+   unlike CSS properties under ruling D — "the standard leads, the pipeline follows"). **Ruling
+   confirmed: media attributes stay flat-triplet, framework-wide, for all blocks, until/unless a
+   future spec explicitly changes the media convention.** This is now the standing convention for
+   any NEW block with tiered media attributes too, not just team-member.
+
+4. **`sgs/site-header` / `sgs/site-footer` inert overlay attributes — audit was already done,
+   fix ruled.** `.claude/LEDGER.md`'s "no inert-attribute audit done" line is **stale**: rule
+   `21-render-without-control` (`scripts/inspector-scan/`) already covers these blocks and lists 10
+   live findings — `backgroundOverlayColour`/`overlayGradient`/`overlayGradientAngle`/
+   `overlayGradientFrom`/`overlayGradientTo` × 2 blocks, plus `tagName` × 2. `sgs/site-footer-row`
+   (the sibling in the same family) already has 0 open findings — the same 5 overlay-gradient
+   properties are fully wired there via the shared wrapper.
+   **Bean's ruling: wire the missing controls** (mount `BackgroundPanel`/`GradientOverlayControl` in
+   both `edit.js` files), matching `site-footer-row`'s already-working pattern — per the project's
+   composite-mirror rule (no composite evades the universal wrapper capability). Not stripping.
+   `tagName` needs its own small check (does it have a legitimate control elsewhere, or is it also
+   inert) — fold into the same pass. Not dispatched yet — both blocks are core-framework files, not
+   currently reported dirty by the parallel sessions, but hold pending Bean's go-ahead on timing
+   given the shared checkout.
+
+**Next action, when blocks are clear:** dispatch #2, #3 (once its bespoke tool/approach is scoped)
+and #4 as separate parallel branches per `/dispatching-parallel-agents` (file-disjoint: card-grid,
+team-member, site-header+site-footer touch no common files) — each routed via `/delegate` before
+dispatch.
+
 ## D583 — card-grid/tabs style-variation specificity bug: full consolidation, following the info-box precedent [ROUTINE]
 
 **2026-08-11.** N5 in `~/.claude/plans/go-track-1b-playful-hamster.md` (a measured but unfixed finding

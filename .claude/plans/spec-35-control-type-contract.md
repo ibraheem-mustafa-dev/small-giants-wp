@@ -1020,7 +1020,7 @@ them here is what stops the next enforcement pass repeating the 27's blind spot.
 | `AnimationControl` | 1 site | — | **Needs a contract**, and it is where carried obligation 17 (reduced-motion) binds |
 | `ComboboxControl` | 2 sites | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
 | `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |
-| `FocalPointPicker` | 1 site | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
+| `FocalPointPicker` | 7 sites (2026-08-11, D585 — was 1 when this row was written; `imageControls` census + fix shipped: before-after + 6 newly-converted blocks) | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
 | repeater item editors | `plans`, `icons`, `tiles` | — | **Needs a contract.** ⚠ D523 proved a per-item control must never be recorded as the array's control. ⛔ **The D523 guard is FRAGILE — see below.** |
 
 ⛔ **Known fragility in the D523 repeater guard (QC council, 2026-08-08).** `_repeater_item_spans()`

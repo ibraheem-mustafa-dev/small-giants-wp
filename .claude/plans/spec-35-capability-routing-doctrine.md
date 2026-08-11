@@ -1,7 +1,14 @@
 ---
 doc_type: design
 title: "Capability routing doctrine — how any capability attaches to a block, and how we verify it did"
-status: DESIGNED — not built. Council-validated 2026-08-11 (5 raters + 3 external research streams).
+status: PART 9 ROLLOUT SHIPPED 2026-08-11 (later session) — shared helper, opt-out flag, 7 dead
+  declarations removed, 6 blocks converted (before-after/team-member/testimonial-slider/gallery/
+  card-grid/product-card), live-verified on the canary. Commits on `main`: `2759340d`/`11fd1a7f`/
+  `cba34778`/`6b17d99b`. Full record: `decisions.md` D585, `.claude/LEDGER.md`. Still open: the
+  Part 6 automated effect-verification gate (never built — this was a manual sweep); `testimonial`/
+  `image-sequence` (real crop scenario, needs its own per-item design decision first); Part 4's
+  multi-image item-schema extension; Part 7's Phase 2.2 native-supports census. Council-validated
+  2026-08-11 (5 raters + 3 external research streams) before any of the above was built.
 date: 2026-08-11
 supersedes: "spec-35-media-positioning-standard-design.md (b202f965) — same session, narrower framing, FOUR factual errors corrected here"
 ---

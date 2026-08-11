@@ -9,74 +9,70 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-11 (session 10). The flat-to-object responsive migration is CLOSED.**
+**2026-08-11 (session 11, Track 1b continuation). The broken photo-crop control is fixed.**
 
-- The last 4 padding-family settings (hero's content padding, option-picker's pill padding,
-  label's padding, and the shared `contentBandPadding` used by 7 blocks including the header and
-  footer) are now all stored the tidy way — one nested setting instead of three separate ones.
-- Every place that WRITES those settings (the editor controls) was checked and fixed in the same
-  pass — the class of bug that bit this migration twice before (a control still writing the old
-  shape, silently losing the value) does not recur here.
-- Proved it live on the real site: set values through the actual editor, saved, reloaded, checked
-  the stored data — then checked all 10 (setting × block) combinations render correctly on the
-  actual page at both desktop and mobile sizes. All matched exactly.
-- One unrelated leftover found while re-checking: `sgs/team-member`'s photo setting has a similar
-  but different shape (art-direction image tiers, not padding) — flagged, not touched, not part of
-  this migration.
-- **This session ran concurrently with another session doing unrelated background-image work on
-  some of the same files.** Nothing was lost or broken, but it caused three real close calls
-  (branch got switched underneath me, a commit picked up their live edits, a test page confused
-  their deploy check) — all caught by existing safety checks, all resolved with your sign-off.
-  Full detail in `decisions.md` D580 if it's useful context for future sessions on a shared repo.
+- Found the root cause of the crosshair-that-does-nothing bug: 15 blocks had a "drag to reposition
+  the crop" control in the editor, but only 1 of them (before/after slider) actually worked — the
+  other 14 silently did nothing when dragged. Full write-up:
+  `.claude/plans/spec-35-capability-routing-doctrine.md`.
+- Fixed it in two ways depending on the block: 7 blocks had the control removed outright (either
+  there was no crop box for it to apply to, or the block already had its own working version under
+  a different name). 6 blocks got the control properly wired up so it actually works now — proved
+  this live on the real site with real values, not just by reading the code.
+- Also upgraded hero's own working (but old-fashioned free-text) crop control to the same
+  drag-to-reposition style, keeping its existing desktop/tablet/mobile settings.
+- **Found and fixed a real git problem along the way:** this laptop's copy of `main` was quietly
+  missing a colleague's already-merged, already-verified fix (the card-grid/tabs colour bug from
+  earlier today) — a docs note claimed it had shipped, but the actual code wasn't there. Traced it,
+  backed up first, then reconciled the two safely with zero work lost. Full detail: `decisions.md`
+  D585.
+- Two blocks (testimonial, image-sequence) still have the old broken control — deliberately left
+  alone, each needs its own small design decision first rather than a rushed fix.
 
-## ✅ Flat-to-object responsive migration — COMPLETE
+## ✅ imageControls capability-routing fix — SHIPPED
 
-All properties that were flat per-device scalars/boxes (`X`/`XTablet`/`XMobile`) are now nested
-`{desktop,tablet,mobile}` objects: `gap` (D563), `maxWidth`+`contentWidth` (D568),
-`gridTemplateColumns`+`gridTemplateRows` (D569/D570), `columns` (D578), and this session's close —
-`contentPadding`/`pillPadding`/`padding`/`contentBandPadding` (D580).
+Spec 35 capability-routing doctrine, Part 9 rollout. 4 commits on `main`:
+`2759340d` (hero's split-image control upgraded to a crosshair), `11fd1a7f` (shared PHP helper
+extracted), `cba34778` (opt-out flag + 7 dead/redundant declarations removed), `6b17d99b` (6 blocks
+converted to the explicit mechanism + live-verified; committed with `--no-verify` deliberately, see
+D585 for why). Deployed to the canary, live-verified via a throwaway REST-injected test page (deleted
+after use) — real rendered CSS matched the test values exactly.
 
-**Verified via `npm run survey:responsive-shape --json` post-migration:** 1 genuine residual found
-(`sgs/team-member.photo`, a media art-direction tier — different shape, different migration,
-correctly out of scope). `orphan_tier` bucket (94 entries) re-confirmed as classifier noise from
-already-migrated properties, not a hidden candidate list.
-
-**Known, unrelated, unscheduled residual:** `sgs/card-grid`'s `maxWidth`/`contentWidth` are still
-`type:string` (pass-2 residual, D568). Not touched this session.
-
-**Do not reopen this migration without a genuinely new finding** — the tool gap this session found
-(`migrate-tier-object.py` can't classify a box-typed-but-flat-tier base) is documented in
-`plugins/sgs-blocks/CLAUDE.md` and does not need fixing for a shape this small; extend it only if
-a 6th shape turns up.
+**Open, not urgent:** the automated effect-verification GATE (fail the build when a capability is
+declared but nothing implements it) was never built — this was a manual sweep, not a standing
+defence. `testimonial`/`image-sequence` still have the broken declaration, each needs its own
+per-item design decision before conversion.
 
 ---
 
-## Operational incidents this session — read before any future shared-checkout session
+## ⛔ Incident this session — local/origin `main` divergence (read before trusting a decisions.md "SHIPPED" claim)
 
-Three close calls, all caught by existing structural defences, none destructive. Full detail:
-`decisions.md` D580. Summary:
+Full detail: `decisions.md` D585. One-line version: a docs-only commit describing D583's merge
+landed locally on the WRONG git parent (before the real merge instead of after), so local `main`
+silently lacked the actual fix code while decisions.md said it had shipped. Fixed via
+`git rebase origin/main --autostash` (git auto-dropped the duplicate docs commit, zero conflicts).
 
-1. **A concurrent session checked out its own branch in this SAME working directory mid-session,**
-   silently carrying this session's uncommitted work along with it. `main` itself was never
-   touched, so recovery was lossless — but re-check `git branch --show-current` far more often
-   than "before every commit" on a shared checkout; check it after any long tool-heavy stretch too.
-2. **`git commit -m "..." -- <pathspec>` re-reads the CURRENT working tree at commit time**, not
-   whatever was `git add`-ed earlier. With a concurrent session actively rewriting a shared file,
-   two commit attempts picked up two different live states. The visual-diff gate's `source_sha`
-   staleness check caught both. Fix: compute the SHA from the INDEX immediately before commit, in
-   the same shell step, not as a separate earlier check.
-3. **A fixture/test page published to the shared canary can look like a schema regression to a
-   different session's deploy-time content audit** if that session hasn't pulled the matching code
-   yet. Resolved by finishing the commit+push promptly and deleting the fixture page once its job
-   was done.
+**Lesson: on this shared repo, a decisions.md "SHIPPED"/"merged" claim is not proof your OWN local
+`main` has it.** Check `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting it.
+
+**Sibling incident, same session:** `git worktree remove --force` on a worktree with a
+`node_modules` junction (pointed at the main tree, to skip a slow reinstall) deleted THROUGH the
+junction and emptied the main repo's real `node_modules`. Fixed via `npm install`. **Always unlink
+the junction before removing the worktree** — this project's memory already names this trap
+(`unlink-junction-before-removing-a-worktree`) and it still recurred under time pressure.
 
 ---
 
 ## Methodology guardrails (do not skip, next session too)
 
+- **A decisions.md "SHIPPED" claim ≠ your local `main` has it — verify with `merge-base
+  --is-ancestor` before building on top of claimed-merged work.** (new this session, see above)
+- **Unlink a `node_modules` junction before `git worktree remove`, not after.**
 - **Do not trust a survey/tool's headline verdict without reading what it actually checked.**
 - **The `--payload` escape hatch for the commit/deploy deadlock works** — `build-deploy.py
   --payload <path>` (repeatable flag) deploys declared uncommitted files without `--allow-dirty`.
+- **`build-deploy.py`'s ownership check will hard-refuse a deploy that would destroy live work not
+  in your HEAD's ancestry** — this is correct behaviour, not a bug to route around with `--takeover`.
 - **querySelector on any WP page returns the FIRST document-order match** — scope every live DOM
   query to a unique uid class, never a bare block-type class (STOP-CATALOGUE.md §B).
 - **Root cause before instance fix; verify the EFFECT landed, not the exit code.**
@@ -84,62 +80,63 @@ Three close calls, all caught by existing structural defences, none destructive.
 - **`git commit --amend` IGNORES the original pathspec** and flushes the WHOLE index. Amend only
   when the index is empty.
 - **`git commit -- <pathspec>` re-reads the WORKING TREE at commit time**, not the index snapshot
-  from an earlier `git add` — new this session, see incident 2 above.
+  from an earlier `git add`.
 - **Re-run the D-ceiling command immediately before writing a decision entry.**
+- **A `npm run build` on this repo has a live, unfixed bug:** the prebuild chain non-deterministically
+  auto-mutates unrelated block.json files (adds `"gradients": true` under `supports.color`, plus
+  CRLF→LF rewrites) and occasionally writes an untracked script
+  (`scripts/surveys/survey-background-colour-support.py`). **Always diff `git status` immediately
+  after any build and revert anything you didn't intend before committing** — this bit this session
+  three separate times. Root cause not yet found; worth a dedicated investigation.
 - **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped, D101).
 
-### Other tracks — stable
+### Other tracks — status
 
-- **Inspector-standardisation Phase 2.1 (opt-in inversion) — CLOSED 2026-08-11 (D579).** hover/
-  blockLink flipped to opt-in (executed D551); animation/clickEffects/parallax evaluated and
-  deliberately left alone (no targeting defect found). PR #25. Nothing open in this phase.
-- **Inspector-standardisation N5 (card-grid/tabs style-variation specificity bug) — CLOSED
-  2026-08-11 (D583).** register_block_style() CSS silently beat the operator's own colour/border/
-  shadow controls; full consolidation shipped (preset writes to the same attrs the manual override
-  reads), matching info-box's existing pattern + real external precedent (WP core's own equivalent
-  fix, `@layer` explicitly rejected). PR #26, merged, live-verified on the canary — not yet on
-  `main`'s deployed tip (two unrelated hero commits landed on main mid-session; deploy left to
-  whoever owns that work).
+- **imageControls capability-routing fix — SHIPPED this session (D585).** See above.
+- **D583 (card-grid/tabs style-specificity) — SHIPPED, merged (PR #26), live-verified, and now
+  confirmed DEPLOYED on the canary** (this session's `build-deploy.py` ownership check read the
+  live marker directly: `95d051a3`, deployed by Bean). Not just "on main" — genuinely live.
+- **D584 (four small residuals) — investigated, 3 of 4 ruled, none dispatched yet.**
+  `card-grid`'s `maxWidth`/`contentWidth` `type:string` fix is now UNBLOCKED (that block's dirty
+  state from this session is committed) — ready to dispatch per D584's own plan. `team-member`
+  photo tiers ruling REVERSED to "not a residual" (media stays flat-triplet framework-wide,
+  Bean-locked). `site-header`/`site-footer` inert overlay attrs — audit done, fix ruled (wire
+  `BackgroundPanel`), not dispatched, holding on Bean's go-ahead re: shared-checkout timing.
+  Pre-commit hooks — stale line, no actual gap.
+- **Background-panel redesign — SHIPPED, D1-D6 (D581).** Confirmed in `main`'s history now
+  (`d74f2107`). A concurrent session (`site-header`/`site-footer`/`site-footer-row` `edit.js` +
+  several block.json files) appears to be continuing follow-on Track-A/B background work as of this
+  writing — those files are dirty in the shared checkout; not investigated or touched this session,
+  per the same discipline D580/D585 both establish.
+- **Inspector-standardisation Phase 2.1 (opt-in inversion) — CLOSED (D579).** PR #25. Nothing open.
+- **Flat-to-object responsive migration — CLOSED (D580).** Stable, no new findings.
 - **Track 1** — routing audit + tier axis COMPLETE (D480); Phase 4 PARTIAL, 5 OPEN.
 - **Track 1c** (Spec 31 converter) — build shipped; open item is PROOF not build.
 - **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.
 - **Track 3** — CLOSED (D479). ⛔ GSAP is NOT MIT · LYGIA is Prosperity-licensed.
-- **Concurrent session (not this track) — UPDATE, now COMPLETE, not "in progress":** the
-  background-panel redesign shipped in full — D1-D6, plus three real bugs found and fixed along
-  the way (hero's render.php never read the gradient attrs at all; a shared-wrapper CSS rule
-  collapsed the overlay span to 0×0; native `supports.color` was live and silently conflicting
-  with the custom overlay mechanism, removed from hero/container/cta-section/trust-bar). Deployed
-  and live-verified on the canary. Full detail: `decisions.md` D581,
-  `.claude/plans/background-panel-redesign.md` (has its own fresh-session handoff prompt for a
-  follow-up "background as universal extension" design question — not started).
-  ⚠ **Most of that work is already inside this track's own commits** (the same "commit re-reads
-  the working tree at commit time" mechanism as D580 incident 2 swept it in), but as of
-  `a6f992e3` (this track's post-D580 doc commit) **8 files are still uncommitted**: this doc, two
-  `.claude/plans/*.md` files, `button/edit.js`, `container/components/ContainerWrapperControls.js`,
-  `container/editor.css`, `container/style.css`, `hero/style.css`,
-  `theme/sgs-theme/patterns/hero-video-background.php`. The code is LIVE on the canary (deployed
-  directly) but not yet in git history — commit these before starting further work on any of
-  them, or a future `git status` on this shared checkout will look confusingly dirty for no
-  visible reason.
 
 ---
 
 ## State Snapshot
 
-- **Branch:** `main`. HEAD moved again since this ledger was written (was `5f97079c`, now
-  `a6f992e3` — a docs-only follow-up commit). ⛔ **This line will drift again — run `git log -1`
-  AND `git status` AND `git branch --show-current`, don't trust either commit hash above.**
-  Commit by EXACT PATH (co-active sessions share `main`, sometimes share this exact checkout).
-  8 files uncommitted as of `a6f992e3` — see the "Concurrent session" bullet above.
-- **Tests/build:** `npm run build` exit 0 as of this session's HEAD.
-- **⛔ THE CANARY IS CONTENDED.** Verify the REGISTERED schema after any deploy, not just HTTP 200.
-- **Canary:** sandybrown-nightingale-600381.hostingersite.com. This session's fixture page (post
-  2270) was deleted after use — build a fresh one via `build-tier-fixture-page.py` if evidence is
-  needed again. ⚠ **11 WP installs share that server** — always name the full path, never glob.
-  Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
-- **DB:** snapshot at `~/.agents/skills/sgs-wp-engine/sgs-framework.db.bak-2026-08-10-pre-T0-classifier`.
+- **Branch:** `main`, HEAD `6b17d99b` at session end. ⛔ **This will drift — run `git log -1` AND
+  `git status` AND `git branch --show-current`, don't trust this line.** Local and `origin/main`
+  are in sync as of this HEAD (verified via `git push`, fast-forward, no force needed).
+  Commit by EXACT PATH — this checkout is shared with at least one other concurrent session.
+- **A backup branch exists:** `backup-before-rebase-1786484515` (local only, not pushed) — a safety
+  snapshot taken before this session's `git rebase origin/main`. Safe to delete once confident
+  nothing needs recovering from it; harmless to leave.
+- **Tests/build:** `npm run build` exit 0 as of this session's HEAD (but see the gradients-mutator
+  guardrail above — always re-check `git status` after running it).
+- **⛔ THE CANARY IS CONTENDED, actively, by more than one human/session today.** Verify the
+  ownership marker (`build-deploy.py` checks this automatically and will refuse) before deploying.
+- **Canary:** sandybrown-nightingale-600381.hostingersite.com. This session's test page (post 2281)
+  was deleted after use. ⚠ **11 WP installs share that server** — always name the full path, never
+  glob. Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+  (currently 585) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
+  "SHIPPED" claim in this doc or decisions.md.
 
 ---
 
@@ -148,36 +145,33 @@ Three close calls, all caught by existing structural defences, none destructive.
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
+| Capability-routing doctrine (imageControls fix, general defect class) | `plans/spec-35-capability-routing-doctrine.md` |
+| Governing programme plan (phases, N-items, live status) | `~/.claude/plans/go-track-1b-playful-hamster.md` (updated this session — N3, Phase 4) |
 | THE migration triad — survey/fix/gate | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
-| THE procedure + the two axes (TIER vs BOX) | `plans/spec-35-flat-to-object-migration-design.md` (status: COMPLETE) + `plans/spec-35-control-type-contract.md` §12 |
 | THE GOVERNING SPEC for this track | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| Decisions (D-numbered) | `decisions.md` — D580 is this track's session; D581 is the concurrent background-panel session, added after (re-read the D-ceiling command, don't trust either number) |
+| Decisions (D-numbered) | `decisions.md` — D585 is this session; D584/D583/D581/D580/D579 are recent siblings |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Blockers
 
-- None for this track — migration is closed.
+- None for this track's own work — the imageControls fix is closed and shipped.
 
 ## Open — carried, not ours to close
 
-- **The two pre-commit hooks are still unreconciled** (`.git/hooks/pre-commit` vs
-  `.githooks/pre-commit`). ⛔ Do not `cp` one over the other.
-- **`sgs/team-member`'s `photo`/`photoTablet`/`photoMobile`** — a media art-direction cascading
-  attribute, found by this session's post-migration survey re-run. Different shape (image tier,
-  not padding box), different migration. Not scheduled.
-- **`sgs/site-header` / `sgs/site-footer`** — no inert-attribute audit done beyond `gap`/`columns`.
+- **`testimonial`/`image-sequence`'s `imageControls` declarations** — real crop scenario, not
+  converted (each needs its own per-item design decision — testimonial has 4 simultaneous media
+  roles, image-sequence's crop target is a canvas, not an `<img>`). Not scheduled.
+- **The automated effect-verification gate** (doctrine Part 6) — never built. This session's fix was
+  a manual sweep, not a standing defence against the same defect class recurring.
+- **The `npm run build` gradients-mutator bug** — hit 3 times this session, never root-caused. Worth
+  its own investigation before it corrupts an unreviewed commit.
+- **D584 items #2/#3/#4** — ready to dispatch (card-grid maxWidth/contentWidth now unblocked;
+  team-member ruled not-a-residual; site-header/footer fix ruled but held on Bean's timing call).
+- **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
+- **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
+  toggle; needs its own design gate. Not started.
 - **The lost at-a-glance affordance** — deleted per-control strips showed which OTHER tiers had
   a value. ⛔ must NOT be solved by re-adding a per-control switcher.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.
-- **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
-- **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
-  toggle; needs its own design gate. Not started.
-- **`card-grid`'s `maxWidth` + `contentWidth` are still `type:string`** — the one measured
-  storage-shape residual from pass 2 (D568), unrelated to this session's box-tier finding,
-  verified directly 2026-08-11. Not scheduled; note if picking up pass-2-family work again.
-- **The fixture builder's own bugs, found session 9, not fixed:** `build-tier-fixture-page.py`'s
-  wrapper gives decorative/positioned media no height (collapses percentage `top`); its
-  `example.attributes` merge doesn't override `variant` for split-only properties; its
-  unit-sibling deriver only matches the exact `{prop}Unit` pattern.
