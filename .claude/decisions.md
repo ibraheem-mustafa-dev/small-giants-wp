@@ -1,5 +1,102 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D565 — Phase 0 item 0d: the `__experimental*` compat boundary, migrated and gated; and a codemod that shredded a comment [INCIDENT]
+
+**2026-08-11, Bean-directed** ("build it and migrate imports" — not the barrel alone, which would be
+this repo's built-and-never-wired failure mode). **Closes Phase 0.**
+
+Every component primitive this tree imports from WordPress is `__experimental*` — core's explicit
+statement that it may be renamed or removed with no deprecation cycle. Measured on a clean tree:
+**115 import sites, 50 files, 10 symbols**. A core rename was a 50-file emergency; it is now a
+one-line edit in `src/components/primitives/index.js`. Not a skin layer (Bean-ruled): bare
+re-exports under the aliases already in use, so the diff changes no rendering.
+
+**Three traps, each measured rather than assumed:**
+
+| Trap | Detail |
+|---|---|
+| Two source packages | `__experimentalBorderRadiusControl` is from `@wordpress/block-editor`; the other nine from `@wordpress/components`. A single-package rewrite breaks the build at those sites. |
+| Two quote styles | 49 files single-quoted + tabs; `icon-list/edit.js` DOUBLE-quoted + 2-space. A single-quote regex silently skips it — how a codemod reports "all done" while leaving violations. |
+| **My own count was wrong** | A line-start-anchored grep said 47 files; the detector found **50**. The three it missed put the specifier mid-line. The grep's blind spot was the shape of the grep — and building the detector first is what caught it. |
+
+### ⛔ The codemod shipped a real defect. Recording it, because the shape recurs.
+
+The first transform split the import body on **commas** and rebuilt it from the surviving pieces.
+`responsive-device-toggle.js` carries a nine-line comment **containing commas** — explaining that the
+`__experimental` prefix is mandatory and the unprefixed names are `undefined` at runtime — and the
+rebuild scattered its fragments as bare code, producing a **SyntaxError written to disk**, caught
+only by the build. Deleting that comment silently would have been the worse outcome.
+
+Fixed by **surgical removal**: excise exactly the specifier substrings, leave every other byte of the
+body untouched. Two structural defences, not a promise to be careful:
+- **`--fix` now REFUSES to write output it cannot parse** (`@babel/parser`) — the codemod checks
+  itself instead of relying on a downstream gate noticing.
+- A regression fixture carrying that exact comma-bearing comment, asserted to **PARSE**. Every string
+  assertion had passed on the broken output; only parsing catches that class.
+
+Self-test 14 cases. Gate wired into `prebuild` in the same commit (4 `package.json` references,
+grep-verified). **Proven able to fail on the live tree:** a real raw `__experimentalNumberControl`
+import injected into `src/blocks/text/edit.js` made it exit 1 naming file and symbol; reverted and
+confirmed 0 occurrences on disk.
+
+### ⚠ A line-keyed baseline was invalidated — re-anchored, not re-accepted
+
+`inspector-scan`'s `08-raw-url-link` keys entries on `file:LINE`. Removing 2 import lines from
+`trustpilot-reviews/edit.js` moved an already-accepted exemption **193 → 191**, so it re-read as a
+brand-new **gating** finding and reddened the build. Same block, same rule, same locus type, same
+`<TextControl type="url">`. Re-anchored, with a `_meta` warning recording that **any** line-shifting
+change invalidates that file and that re-anchoring is legal only when nothing but the line moved.
+
+### The editor-only gate branch widened (D562's branch)
+
+The codemod also rewrote `container/components/ContainerWrapperControls.js`, and D562's branch covered
+`edit.js` only. Splitting that one file out was not an option — leaving it unmigrated while the new
+gate was wired would fail the build on every fresh clone. Bean approved widening. **Two of my own
+rules were wrong first and were fixed by their own controls:**
+- Rule 5 checked **direct** imports only. `view.js` → `helper.js` → staged file would have been
+  cleared. Now walks the import graph transitively from every frontend entry.
+- The sibling map was collected **non-recursively**, so `components/*.js` never entered it and the
+  walk would have passed *by being blind rather than by proving anything*.
+
+The frontend set is now derived from **`block.json`** (`viewScript`/`viewScriptModule`/`script`/
+`render`/`style`), not guessed from filenames — which is how `before-after` and `media`, which keep
+their inspector control at the block ROOT, are handled with no hardcoded allowlist. Self-test 12 → 20
+cases; proven able to fail on the live tree by appending a real line to `before-after/render.php`.
+
+## D564 — The SGS commit gates were version-controlled; three defects that only bit other machines [INCIDENT]
+
+**2026-08-11.** Follow-through on D562's finding, and it turned out to be more than a move.
+
+`.githooks/README.md` sets out the intended split: `.git/hooks/pre-commit` is a thin **per-machine**
+wrapper (the Gitleaks path differs per box), and `.githooks/` holds the check **logic** under version
+control. That split had drifted: ~200 lines of SGS gate logic — the visual-diff gate and its five
+auto-skip branches, the M1 CSS first-paint audit, the block-uniformity audit, the Stage 0.1/0.5
+mockup lints, the wp-* pre-merge gate and Gate A — lived **only** in the untracked wrapper. A comment
+inside that file had already recorded the consequence on 2026-07-29 (*"NOTE: .git/hooks/ is
+untracked, so this fix is LOCAL ONLY and will not reach other clones"*) without the logic ever moving.
+
+Moved to `.githooks/sgs-gates.sh` **without** repointing `core.hooksPath`, which README.md explicitly
+forbids (it would disable the Gitleaks scanner). ⛔ It could not be a copy — the wrapper *calls*
+`.githooks/pre-commit` as a sub-gate, so overwriting that file would have made it call itself.
+
+**Three defects found in the reading, each silently weakening the gates anywhere but this machine:**
+
+| Defect | Effect |
+|---|---|
+| gitleaks missing → `exit 0` | Aborted the **entire** hook. No gitleaks meant no SGS gates either, and the commit looked checked. |
+| Gate A hardcoded `/c/Python313/python.exe` | "command not found" elsewhere; status then came from the failed lookup, so a missing interpreter and a real fixture regression were indistinguishable. |
+| Gate A read `${PIPESTATUS[0]}` under `#!/bin/sh` | `PIPESTATUS` is bash-only. Under a POSIX shell it read `sed`'s status, not pytest's — **Gate A would report PASS on a real regression.** Works today only because Git-for-Windows' `sh` *is* bash. |
+
+Also corrected `.githooks/pre-commit`'s header, which instructed readers to run
+`git config core.hooksPath .githooks` — the exact thing README.md forbids. Two files in one directory
+gave opposite instructions.
+
+**Proven able to fail:** appending a real CSS declaration to `card-grid/style.css` made the
+restructured chain exit 1 with "COMMIT BLOCKED by SGS visual diff gate"; reverted and confirmed on
+disk. ⚠ Two earlier negative controls were **vacuous** and neither would have proven anything — one
+staged a file a co-active session had just committed (nothing staged), the other appended a `//` line
+that `check-markup-neutral.py` correctly classifies as comment-only. Both were caught and replaced.
+
 ## D563 — Pass 1 lands: `gap` is a tier object on 21 blocks, its EDITOR control migrated with it, and a bare number now means px [INCIDENT]
 
 **2026-08-11.** Pass 1's storage migration was deployed and called verified on 2026-08-10. It was

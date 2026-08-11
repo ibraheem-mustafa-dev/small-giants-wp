@@ -11,7 +11,7 @@
 # business-info / content-collection). See
 # plugins/sgs-blocks/scripts/generate-extension-attributes.js.
 #
-# ⛔ CORRECTED 2026-08-11 (D563). This header used to read "Activated repo-wide
+# ⛔ CORRECTED 2026-08-11 (D564). This header used to read "Activated repo-wide
 #    via: git config core.hooksPath .githooks" — which README.md explicitly
 #    FORBIDS, because repointing core.hooksPath would disable the Gitleaks
 #    secret scanner living in .git/hooks/. Two documents in the same directory

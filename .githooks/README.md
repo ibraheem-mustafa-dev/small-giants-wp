@@ -25,7 +25,7 @@ break with "Error loading block: Invalid parameter(s): attributes". Fix:
 build` in the plugin), re-stage, commit. (Uses `node.exe` so it runs even when
 the bare `node` shim is broken under nvm4w on Windows git-bash.)
 
-## `sgs-gates.sh` — the SGS commit gates *(added 2026-08-11, D563)*
+## `sgs-gates.sh` — the SGS commit gates *(added 2026-08-11, D564)*
 
 Everything the visual-diff gate does (plus its five auto-skip branches), the M1
 CSS first-paint audit, the block-uniformity audit, the Stage 0.1/0.5 mockup

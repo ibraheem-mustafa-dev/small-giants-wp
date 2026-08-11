@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# SGS commit gates — the VERSION-CONTROLLED logic (D563, 2026-08-11).
+# SGS commit gates — the VERSION-CONTROLLED logic (D564, 2026-08-11).
 #
 # WHY THIS FILE EXISTS
 # --------------------
@@ -305,7 +305,7 @@ STAGED_CONVERTER=$(git diff --cached --name-only --diff-filter=ACM | grep -E \
     'plugins/sgs-blocks/scripts/orchestrator/converter_v2/' || true)
 if [ -n "$STAGED_CONVERTER" ]; then
     echo "SGS Gate A: running converter golden-fixture conformance harness..."
-    # Portability fix (D563): this line hardcoded /c/Python313/python.exe. On any
+    # Portability fix (D564): this line hardcoded /c/Python313/python.exe. On any
     # machine without that exact path the gate died with "command not found" —
     # and because the exit status was then read from a failed lookup rather than
     # from pytest, a REAL fixture regression and a MISSING interpreter were
@@ -318,7 +318,7 @@ if [ -n "$STAGED_CONVERTER" ]; then
         echo "   Gate A SKIPPED — no python on PATH (install python to enforce)."
         GATE_A_EXIT=0
     else
-        # Second portability fix (D563): the status used to come from
+        # Second portability fix (D564): the status used to come from
         # `${PIPESTATUS[0]:-$?}` after piping pytest through `sed`. PIPESTATUS is
         # a BASH array and this file is `#!/bin/sh` — under a POSIX shell it
         # expands to nothing, leaving `$?` (the exit status of `sed`, which is
