@@ -30,6 +30,18 @@ of each block, so the migration still can't be committed. One commit pushed (`a3
   and "row direction", where a pixel value is meaningless, so they can never match.
 - **A test page (1593) was blocking the deploy** with an old setting the migration removed.
   Fixed. ⚠ The tool the error message told me to use for that doesn't exist in the repo.
+- **Then your question — "isn't there a cheaper way to measure these?" — found three real
+  bugs.** Chasing it showed most of the "34 not working" wasn't a measuring problem: the
+  settings genuinely weren't reaching the page. **125 broken style rules were live on the
+  canary**, all one cause — a per-device setting handed to code expecting a single value, which
+  PHP turns into the literal word "Array". Worst of them: **a section's minimum height did
+  nothing at all when an operator set it**, and its tablet/mobile values never rendered. All
+  three fixed and verified live (125 → 0). You design-gated the shared-wrapper one; I changed
+  only that single read.
+- **The migration's own checker could never have caught the worst one.** It only looks inside
+  block files, never the shared code every block runs through — and its own documentation
+  asserts the shared wrapper "already reads the new format", which is what made every block
+  report clean. Both now dispatched to agents to fix.
 
 **2026-08-11 (session 7). The whole remaining long tail migrated in one pass — 41 settings
 across 35 blocks. Six commits pushed. The migration itself is NOT committed yet, because the
@@ -148,10 +160,12 @@ probe measurements do not bind**, in three separated classes. Full detail in D57
    `quote.attributionFontSize`, `brand-strip.name*`, `product-card.tagFontSize` report
    target `None`: the BLOCK paints but the ELEMENT does not. Same shape as task A one level
    down — extend the render minimums so each measured element has content.
-3. **(c) LAST — what remains may be REAL regressions.** `sgs/container` + `sgs/cta-section`
-   emit no root `min-height` for a set value while `sgs/hero` does; `sgs/heading` `fontSize`
-   reads 16px against a set 64px. ⛔ UNPROVEN in both directions — do not fix or dismiss
-   before (a) and (b) are cleared.
+3. **(c) ✅ RESOLVED — they WERE real regressions (D575).** `container`/`cta-section`
+   `min-height` and `heading` `fontSize` were all one bug: an object attr PHP-coerced to the
+   literal `"Array"`. **125 broken declarations live; now 0, verified on the page.** Fixed at
+   `helpers-typography.php:166`, `heading/render.php:453`,
+   `class-sgs-container-wrapper.php:323` (Bean-gated, narrow). All three staged with the
+   migration. **Keeping (c) as "unproven" rather than dismissing it is what surfaced these.**
 
 ⛔ **Do NOT re-run task A's fix.** And note `--payload` is required to deploy with the tree
 deliberately dirty: `build-deploy.py --target sandybrown --payload plugins/sgs-blocks/src/

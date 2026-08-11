@@ -1,5 +1,53 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D575 — 125 live `Array`-coerced CSS declarations across 3 call sites; the migration's own survey could never have seen the worst one [INCIDENT]
+
+**2026-08-11.** Bean's question — *"is there no way to measure them in another way that's low
+impact?"* — was aimed at D574's 34 non-binding measurements. Chasing it found that a large
+share of them were **not a measurement problem at all**. The instrument was right; the code
+was wrong. **This is why D574 records those cases as UNPROVEN rather than dismissing them.**
+
+**One bug class, three call sites, all shipped to the canary.** An object-typed attribute
+reached code expecting a scalar; PHP coerces an array to the literal string `"Array"`, so the
+block emitted a declaration the browser discards, silently dropping the property to inherited:
+
+| Call site | Emitted | Live count | Effect |
+|---|---|---|---|
+| `includes/helpers-typography.php:166` | `font-size:var(--wp--preset--font-size--array)` | 47 | undefined custom property → invalid at computed-value time |
+| `src/blocks/heading/render.php:453` | same | 5 | every heading lost its size |
+| `includes/class-sgs-container-wrapper.php:323` | `min-height:Array` | **73** | operator's section min-height did nothing |
+
+**Verified live after each fix: 47→0, 5→0, 73→0, and zero `:Array` of any kind remaining on
+the fixture page.** Fixed by routing every read through `sgs_responsive_normalise_object()` and
+using its normalised desktop tier — the pattern `src/blocks/text/render.php:357` already used
+correctly (its comment cites D569/D570); `heading` and the wrapper were simply missed.
+
+⚠ **The wrapper was worse than a bad value.** It also read `minHeightTablet`/`minHeightMobile`
+— attributes the migration DELETED — so both read `''`, `$has_responsive_min_height` was always
+false, and the tablet/mobile tiers never rendered at all. Bean design-gated this change (Rule 7,
+shared wrapper) and approved the narrow fix: the `minHeight` read only, nothing else touched.
+
+**Why the census said "0 RAW findings" — two defects in the detector, not bad luck:**
+1. **`migrate-tier-object.py --survey` scans only `src/blocks/*/render.php`.** Shared includes
+   are never scanned — so the single highest-blast-radius consumer of every migrated property
+   is outside the census by construction.
+2. **A false claim in its own docstring (lines 26-40):** *"Blocks that delegate entirely to
+   SGS_Container_Wrapper need no render.php change at all: the wrapper already reads an object
+   value."* True for the reads near `:2048`, false for `minHeight` at `:323` — and on that
+   assumption every delegating block was classified `DELEGATED` (= done) with nothing ever
+   verifying the wrapper's own read. **An assumption written into a detector's documentation
+   becomes an assumption the detector enforces.**
+
+Same class as the `max-width:Array` defect already recorded inside
+`sgs_responsive_normalise_object()` itself (found live 2026-08-10) and as D569/D570 — the
+**fourth and fifth** recorded instances. The recurrence is the point: each was fixed at its own
+call site, and no detector was ever taught to find the next one. That gap is now dispatched.
+
+**Sibling finding, cheap:** for D574's remaining genuine measurement gap (a `64px` probe written
+into keyword/integer properties), each block.json's own `default` already holds valid per-tier
+values for its own property (`{"desktop":"center","mobile":"stretch"}`) — a derived source, no
+hand-written type map.
+
 ## D574 — D573 fixed WHICH PROPERTY; this fixes WHICH ELEMENT. The fixture measured the block root while 22 of 41 properties are styled on a descendant [INCIDENT]
 
 **2026-08-11.** Commit `a33c87ce`. Task A (the 7 non-rendering fixture blocks) is DONE and
