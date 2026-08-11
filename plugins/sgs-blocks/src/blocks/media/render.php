@@ -41,10 +41,19 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 // 1. Extract shared styling attributes with safe defaults.
 // ---------------------------------------------------------------------------
-$max_width        = isset( $attributes['maxWidth'] ) ? (string) $attributes['maxWidth'] : '';
+// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
+// holding {desktop,tablet,mobile}. Read it through the shared normaliser rather
+// than three sibling attrs: `maxWidthTablet`/`maxWidthMobile` no longer exist,
+// and a `(string)` cast on the object-typed base raised PHP "Array to string
+// conversion" on EVERY render, emitting a garbage `max-width:Array`.
+// `maxHeight` and `height` below are still flat families — untouched by this
+// pass, and NOT to be aligned onto this shape without migrating their storage
+// in the same commit (D563).
+$max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
+$max_width        = (string) ( $max_width_tiers['desktop'] ?? '' );
+$max_width_tablet = (string) ( $max_width_tiers['tablet'] ?? '' );
+$max_width_mobile = (string) ( $max_width_tiers['mobile'] ?? '' );
 $max_width_unit   = isset( $attributes['maxWidthUnit'] ) ? (string) $attributes['maxWidthUnit'] : 'px';
-$max_width_mobile = isset( $attributes['maxWidthMobile'] ) ? (string) $attributes['maxWidthMobile'] : '';
-$max_width_tablet = isset( $attributes['maxWidthTablet'] ) ? (string) $attributes['maxWidthTablet'] : '';
 
 $max_height        = isset( $attributes['maxHeight'] ) ? (string) $attributes['maxHeight'] : '';
 $max_height_unit   = isset( $attributes['maxHeightUnit'] ) ? (string) $attributes['maxHeightUnit'] : 'px';

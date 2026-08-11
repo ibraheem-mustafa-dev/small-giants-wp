@@ -295,20 +295,12 @@
 			"default": null
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": null
+			"type": "object",
+			"default": {}
 		},
 		"maxWidthUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"maxWidthMobile": {
-			"type": "string",
-			"default": null
-		},
-		"maxWidthTablet": {
-			"type": "string",
-			"default": null
 		},
 		"maxHeight": {
 			"type": "string",

@@ -10,7 +10,7 @@
 
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","contentWidth":"600px"} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","contentWidth":{"desktop":"600px"}} -->
 
 	<!-- wp:sgs/heading {"content":"Let’s Start a Conversation","textAlign":"center","fontSize":"xx-large"} /-->
 

@@ -136,19 +136,13 @@
 			"default": 240
 		},
 		"maxWidth": {
-			"type": "number",
-			"_comment": "FR-36-22 basics: per-tier max box. null/unset = no cap."
+			"type": "object",
+			"default": {}
 		},
 		"maxWidthUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"maxWidthTablet": {
-			"type": "number"
-		},
-		"maxWidthMobile": {
-			"type": "number"
-		},
+		},
 		"maxHeight": {
 			"type": "number"
 		},

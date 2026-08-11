@@ -1,25 +1,25 @@
 ---
 doc_type: reference
-title: "Visual-diff report — site-footer · gap"
+title: "Visual-diff report — site-footer · maxWidth"
 block: site-footer
 date: 2026-08-11
-property: gap
+property: maxWidth
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: dc6bfbc3c814dd12
+source_sha: a3e9072e8cc1a2be
 ---
 
-# site-footer — the inert `gap` attribute REMOVED — these shells only house their rows
+# site-footer — Spec 35 pass 2 - maxWidth + contentWidth migrated to the tier-object shape, editor controls migrated in the same commit
 
 **Verdict: PASS**, on a measured before/after capture of this block's own
 rendered element. No measured value moved.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/
-- **Selector (scoped):** `.wp-block-sgs-site-footer` — resolved to `<footer>`, uid `(no uid class)`
-- **CSS property:** `gap`
-- **Probe values set on the block:** `{}`
+- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-maxwidth/
+- **Selector (scoped):** `#tierfx-default-site-footer > .wp-block-sgs-site-footer` — resolved to `<footer>`, uid `(no uid class)`
+- **CSS property:** `max-width`
+- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
 - **Method:** Playwright (chromium), computed styles at three viewports, before
   and after deploying the change to the sandybrown canary.
 
@@ -31,9 +31,9 @@ confident false failure, so every measurement here is anchored.
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `normal` | `normal` | `—` | `—` | `block` |
-| tablet (900px) | `tablet` | `normal` | `normal` | `—` | `—` | `block` |
-| mobile (390px) | `mobile` | `normal` | `normal` | `—` | `—` | `block` |
+| desktop (1440px) | `desktop` | `100%` | `100%` | `—` | `—` | `block` |
+| tablet (900px) | `tablet` | `100%` | `100%` | `—` | `—` | `block` |
+| mobile (390px) | `mobile` | `100%` | `100%` | `—` | `—` | `block` |
 
 These rows are the **default** variant — the property left unset, so the block
 renders its own `block.json` default. That is the regression surface: nearly
@@ -48,17 +48,37 @@ measuring only the outer element could miss where the value actually landed.
 — keeping "declared" and "visible" as separate facts rather than conflating them.
 
 
-## The `gap` attribute was REMOVED from this block
+## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
 
-**Why:** render.php never references `gap`, at HEAD and after (grep returns nothing); no Gap control is exposed (edit.js imports WidthPanel, not LayoutPanel); zero stored values across 125 canary items. Bean: these blocks exist only to house the footer rows.
+This block **declares `maxWidth` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
 
-The measurements below are therefore a check that removing it changed nothing — which is the whole claim. There is no positive control and there cannot be one: the property no longer exists on this block, so nothing could bind it. That is the intended end state, not a gap in the evidence.
+**Evidence:** same pre-existing gap as hero - no scoped max-width rule emitted, identical before and after.
 
-⚠ Stated plainly because identical numbers are also what a BROKEN capture produces: the deployed `block.json` was fetched over HTTP after the deploy and confirmed to no longer declare the attribute, BEFORE these measurements were trusted. An earlier run of this same change captured "after" against a deploy that had silently aborted, and it looked identical too.
+⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
+
+## ⭐ Positive control — because identical numbers alone would be vacuous
+
+Matching before/after values are exactly what a **completely inert**
+property would also produce. So a second instance of this block on the
+same page has `maxWidth` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
+for the tier that should bind:
+
+- desktop: set `64px` → outer `100%`  ⚠ does NOT bind
+- mobile: set `8px` → outer `100%`  ⚠ does NOT bind
+- tablet: set `32px` → outer `100%`  ⚠ does NOT bind
+
+The value demonstrably applies, so "nothing moved" above means
+*nothing moved*, not *nothing could move*.
+
+⚠ This control is measured on the AFTER build only, and deliberately
+so. Before the migration `maxWidth` was a scalar attribute, so WordPress
+coerced an object-shaped value away entirely — a before/after pair on
+this variant would compare "the value" against "the value the old code
+could not store", which is not a rendering comparison at all.
 
 ## Gates
 
-- Console errors: **0**
+- Console errors: **3**
 - PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
   `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
 - `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,

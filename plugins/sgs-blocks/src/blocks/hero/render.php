@@ -344,7 +344,13 @@ if ( $is_split ) {
 	// edge-to-edge behind the padding, while the two columns stay confined to a
 	// centred band. Mirrors the wrapper's own token→length resolver
 	// (normal→content-size, wide→wide-size, full/empty→no cap, else literal).
-	$cw_raw = (string) ( $attributes['contentWidth'] ?? '' );
+	// `contentWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11). This
+	// split-hero band is a DESKTOP-tier concern (it confines the two grid
+	// columns, which stack below 768px), so it reads the desktop tier — via the
+	// shared normaliser, never a `(string)` cast on the object, which raised PHP
+	// "Array to string conversion" on every render and emitted a garbage band.
+	$cw_tiers = sgs_responsive_normalise_object( $attributes['contentWidth'] ?? null );
+	$cw_raw   = (string) ( $cw_tiers['desktop'] ?? '' );
 	$band   = '';
 	if ( 'normal' === $cw_raw ) {
 		// Tie to the theme.json global (framework default 1200px; per-site

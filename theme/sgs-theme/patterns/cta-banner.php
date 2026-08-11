@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","contentWidth":"800px"} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","contentWidth":{"desktop":"800px"}} -->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"65% 35%","gridTemplateColumnsMobile":"1fr","verticalAlign":"center","gap":{"desktop":"var:preset|spacing|40"}} -->
 

@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ResponsiveOverride } from '../../components';
 import { UnitControl } from '../../components/primitives';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
@@ -175,23 +175,27 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 	} = attributes;
 
-	const maxWidthAttrMap = {
-		desktop: 'maxWidth',
-		tablet: 'maxWidthTablet',
-		mobile: 'maxWidthMobile',
-	};
+	// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
+	// holding {desktop,tablet,mobile}, so it has no per-tier attr map. `maxHeight`
+	// is still the flat sibling family and keeps its map below; do not align the
+	// two without migrating maxHeight's storage in the same commit (D563).
+	//
+	// The per-tier VALUE stays a bare NUMBER paired with the block-level
+	// `maxWidthUnit` — the tier axis and the unit are separate concerns, and
+	// collapsing them here would change what render.php reads.
 	const maxHeightAttrMap = {
 		desktop: 'maxHeight',
 		tablet: 'maxHeightTablet',
 		mobile: 'maxHeightMobile',
 	};
 
-	const onMaxWidthChange = ( breakpoint, raw ) => {
+	// setOwnTier is ResponsiveOverride's own per-tier writer — it owns which tier
+	// is active and how the object is rebuilt, so this handler only splits the
+	// raw input into number + unit and hands the number back.
+	const onMaxWidthChange = ( setOwnTier, raw ) => {
 		const { num, unit } = parseMaxBoxValue( raw, maxWidthUnit || 'px' );
-		setAttributes( {
-			[ maxWidthAttrMap[ breakpoint ] ]: num,
-			maxWidthUnit: unit,
-		} );
+		setOwnTier( num === undefined ? '' : num );
+		setAttributes( { maxWidthUnit: unit } );
 	};
 
 	const onMaxHeightChange = ( breakpoint, raw ) => {
@@ -427,21 +431,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p className="sgs-responsive-logo-editor__panel-hint">
 						{ __( 'Cap the logo box independently per breakpoint. Leave a tier blank for no maximum at that size.', 'sgs-blocks' ) }
 					</p>
-					<ResponsiveControl label={ __( 'Max width', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
+					<ResponsiveOverride
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ attributes.maxWidth }
+						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 							<UnitControl
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeMaxBoxValue(
-									attributes[ maxWidthAttrMap[ breakpoint ] ],
-									maxWidthUnit || 'px'
-								) }
+								value={ composeMaxBoxValue( ownValue, maxWidthUnit || 'px' ) }
+								placeholder={
+									inherited
+										? composeMaxBoxValue( effectiveValue, maxWidthUnit || 'px' )
+										: ''
+								}
 								units={ MAX_BOX_UNITS }
-								onChange={ ( val ) => onMaxWidthChange( breakpoint, val ) }
+								onChange={ ( val ) => onMaxWidthChange( setOwnValue, val ) }
 								__nextHasNoMarginBottom
 							/>
 						) }
-					</ResponsiveControl>
+					</ResponsiveOverride>
 					<ResponsiveControl label={ __( 'Max height', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
 							<UnitControl

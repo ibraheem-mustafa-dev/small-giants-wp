@@ -97,15 +97,17 @@
 		"root": ".wp-block-sgs-physics-canvas"
 	},
 	"attributes": {
-		"maxWidth": { "type": "string", "default": "" },
-		"maxWidthTablet": { "type": "string", "default": "" },
-		"maxWidthMobile": { "type": "string", "default": "" },
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
 		"minHeight": { "type": "string", "default": "480px" },
 		"minHeightTablet": { "type": "string", "default": "" },
 		"minHeightMobile": { "type": "string", "default": "320px" },
-		"contentWidth": { "type": "string", "default": "full" },
-		"contentWidthTablet": { "type": "string", "default": "" },
-		"contentWidthMobile": { "type": "string", "default": "" },
+		"contentWidth": {
+			"type": "object",
+			"default": {"desktop": "full"}
+		},
 		"contentBandBackground": { "type": "string", "default": "" },
 		"contentBandPadding": { "type": "object", "default": {} },
 		"contentBandPaddingTablet": { "type": "object", "default": {} },

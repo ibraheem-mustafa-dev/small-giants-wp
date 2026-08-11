@@ -104,10 +104,15 @@ $sgs_css_safe_value = static function ( $value ) {
 // 3. Frame (root) attributes.
 // ---------------------------------------------------------------------------
 
-$box_shadow       = $attributes['boxShadow'] ?? '';
-$max_width        = $attributes['maxWidth'] ?? '';
-$max_width_tablet = $attributes['maxWidthTablet'] ?? '';
-$max_width_mobile = $attributes['maxWidthMobile'] ?? '';
+$box_shadow = $attributes['boxShadow'] ?? '';
+
+// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
+// holding {desktop,tablet,mobile}, read through the shared normaliser. The
+// `height` family below is still flat and is untouched by this pass.
+$max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
+$max_width        = $max_width_tiers['desktop'] ?? '';
+$max_width_tablet = $max_width_tiers['tablet'] ?? '';
+$max_width_mobile = $max_width_tiers['mobile'] ?? '';
 
 $height        = isset( $attributes['height'] ) ? (float) $attributes['height'] : 400;
 $height_unit   = in_array( $attributes['heightUnit'] ?? 'px', array( 'px', 'vh', 'em', 'rem', '%' ), true ) ? $attributes['heightUnit'] : 'px';

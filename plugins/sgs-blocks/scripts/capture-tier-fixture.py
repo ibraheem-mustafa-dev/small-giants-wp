@@ -60,6 +60,89 @@ except ImportError:
 
 VIEWPORTS = [(1440, 900, 'desktop'), (900, 900, 'tablet'), (390, 844, 'mobile')]
 
+# ---------------------------------------------------------------------------
+# Attribute name → CSS property name.
+#
+# ⛔ THIS EXISTS BECAUSE THE SCRIPT SILENTLY MEASURED NOTHING FOR A WHOLE PASS.
+# The manifest carries the ATTRIBUTE name (`maxWidth`), and this script fed it
+# straight to `getComputedStyle().getPropertyValue()`. CSSOM's getPropertyValue
+# takes the HYPHENATED CSS name and returns an EMPTY STRING for anything else —
+# it does not throw, and `''` is indistinguishable in the output from "the block
+# genuinely has no value". Every measurement for the property came back blank.
+#
+# It went unnoticed through pass 1 because that pass migrated `gap`, whose
+# attribute name and CSS name are IDENTICAL — the one property in the programme
+# that cannot expose the bug. It fired the moment pass 2 measured `maxWidth`,
+# and only because make-visual-diff-reports.py runs a POSITIVE CONTROL: it sets
+# a real per-tier value and refuses to report a PASS unless that value is
+# observed to bind. Without that control this would have produced 15 confident
+# "no measured value moved" reports off 90 blank readings.
+#
+# Most names are a plain camelCase → kebab-case conversion. The entries below
+# are the ones that are NOT derivable and must be stated:
+_CSS_PROPERTY_OVERRIDES = {
+    # The content BAND is capped with max-width on the inner element; there is
+    # no `content-width` CSS property at all.
+    'contentWidth': 'max-width',
+    # The `columns` attr drives the grid track list, not the CSS `columns`
+    # (multi-column layout) shorthand — measuring `columns` would read an
+    # unrelated property that happens to exist. Lands in pass 4.
+    'columns': 'grid-template-columns',
+}
+
+
+def css_property_for(attr: str) -> str:
+    """Map a block ATTRIBUTE name to the CSS property a browser will answer for.
+
+    camelCase → kebab-case, with the non-derivable cases named explicitly above.
+    """
+    if attr in _CSS_PROPERTY_OVERRIDES:
+        return _CSS_PROPERTY_OVERRIDES[attr]
+    out = []
+    for ch in attr:
+        if ch.isupper():
+            out.append('-')
+            out.append(ch.lower())
+        else:
+            out.append(ch)
+    return ''.join(out)
+
+
+def self_test() -> int:
+    """Prove the mapping, and prove it can still FAIL.
+
+    A mapping test that only asserts the happy path is the shape that let the
+    original defect ship, so the negative cases are asserted too.
+    """
+    cases = [
+        ('gap', 'gap'),                                    # the pass-1 blind spot
+        ('maxWidth', 'max-width'),                         # the pass-2 defect
+        ('gridTemplateColumns', 'grid-template-columns'),  # pass 3a
+        ('gridTemplateRows', 'grid-template-rows'),        # pass 3b
+        ('contentWidth', 'max-width'),                     # override, not derivable
+        ('columns', 'grid-template-columns'),              # override, not derivable
+        ('padding', 'padding'),
+    ]
+    failures = []
+    for attr, expected in cases:
+        got = css_property_for(attr)
+        if got != expected:
+            failures.append(f'  css_property_for({attr!r}) → {got!r}, expected {expected!r}')
+
+    # NEGATIVE CONTROL: the pre-fix behaviour must be detectably wrong, or this
+    # test would pass just as happily against the broken version.
+    if css_property_for('maxWidth') == 'maxWidth':
+        failures.append('  NEGATIVE CONTROL: maxWidth was not converted — the '
+                        'pre-fix identity behaviour is still present')
+    if 'contentWidth' not in _CSS_PROPERTY_OVERRIDES:
+        failures.append('  NEGATIVE CONTROL: contentWidth override missing — it '
+                        'would kebab to `content-width`, which no browser answers')
+
+    for line in failures:
+        print(line)
+    print(f'self-test: {len(cases)} case(s), {len(failures)} failure(s)')
+    return 1 if failures else 0
+
 # Which measured tier each viewport should bind, given the SGS device-tier
 # standard (768/1024 — max-width:1023px is tablet, max-width:767px is mobile).
 # Read from the standard, not guessed: 900 is < 1024 so it is TABLET, and 390 is
@@ -120,11 +203,19 @@ PHP_NEEDLES = ('Array to string conversion', 'Fatal error', 'Warning:',
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--manifest', required=True)
-    ap.add_argument('--label', required=True, help='before | after')
-    ap.add_argument('--out', required=True, help='directory for JSON + screenshots')
+    ap.add_argument('--manifest')
+    ap.add_argument('--label', help='before | after')
+    ap.add_argument('--out', help='directory for JSON + screenshots')
     ap.add_argument('--url', default=None, help='override the manifest URL')
+    ap.add_argument('--self-test', action='store_true',
+                    help='prove the attribute→CSS-property mapping (and that it can fail)')
     args = ap.parse_args()
+
+    if args.self_test:
+        return self_test()
+    missing = [f'--{n}' for n in ('manifest', 'label', 'out') if not getattr(args, n)]
+    if missing:
+        ap.error('the following arguments are required: ' + ', '.join(missing))
 
     manifest = json.loads(Path(args.manifest).read_text(encoding='utf-8'))
     url = args.url or manifest.get('url')
@@ -132,7 +223,14 @@ def main() -> int:
         sys.exit('FAIL: manifest has no `url` — publish the fixture page first '
                  '(build-tier-fixture-page.py --publish --manifest …).')
 
-    prop_css = manifest.get('css_property') or manifest['property']
+    # The manifest's `property` is the block ATTRIBUTE name; CSSOM needs the CSS
+    # property name. An explicit `css_property` in the manifest still wins, but
+    # it is no longer required — the fallback now CONVERTS rather than assuming
+    # the two names are the same. See css_property_for() for why that assumption
+    # silently blanked every measurement in pass 2.
+    prop_css = manifest.get('css_property') or css_property_for(manifest['property'])
+    if prop_css != manifest['property']:
+        print(f'  property: attr `{manifest["property"]}` → CSS `{prop_css}`')
     blocks = [b for b in manifest['blocks'] if not b.get('skipped')]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)

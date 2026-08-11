@@ -19,6 +19,7 @@ import {
 } from '@wordpress/components';
 import {
 	ResponsiveControl,
+	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
 	SgsLinkControl,
 } from '../../components';
@@ -408,7 +409,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( {
 							objectFit: 'cover',
 							objectPosition: 'center center',
-							...resetResponsiveLength( 'maxWidth' ),
+							// maxWidth is a TIER OBJECT (pass 2) — reset to an empty
+							// object, NOT resetResponsiveLength()'s `null` + flat
+							// siblings. A null on an object-typed attr coerces to
+							// the declared default, and the siblings no longer
+							// exist so WP discards them silently (D338/D563).
+							maxWidth: {},
 							...resetResponsiveLength( 'maxHeight' ),
 							...resetResponsiveLength( 'height' ),
 							style: {
@@ -500,28 +506,41 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 
+					{ /*
+					  `maxWidth` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
+					  {desktop,tablet,mobile}, so it uses ResponsiveOverride rather
+					  than the flat-sibling <RUnitControl> its neighbours still use.
+					  `maxHeight` / `height` remain flat and are untouched by this
+					  pass — do not "tidy" them onto the same primitive without
+					  migrating their storage in the same commit (D563).
+					*/ }
 					<ToolsPanelItem
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						hasValue={ () =>
 							!! (
-								attributes.maxWidth ||
-								attributes.maxWidthTablet ||
-								attributes.maxWidthMobile
+								attributes.maxWidth &&
+								Object.values( attributes.maxWidth ).some(
+									( v ) => v !== undefined && v !== null && v !== ''
+								)
 							)
 						}
-						onDeselect={ () =>
-							setAttributes( resetResponsiveLength( 'maxWidth' ) )
-						}
+						onDeselect={ () => setAttributes( { maxWidth: {} } ) }
 						isShownByDefault
 					>
-						<RUnitControl
+						<ResponsiveOverride
 							label={ __( 'Max width', 'sgs-blocks' ) }
-							attrDesktop="maxWidth"
-							attrTablet="maxWidthTablet"
-							attrMobile="maxWidthMobile"
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-						/>
+							value={ attributes.maxWidth }
+							onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<UnitControl
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue || '' : '' }
+									onChange={ ( v ) => setOwnValue( v || '' ) }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem

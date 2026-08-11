@@ -517,8 +517,8 @@
 			"type": "string"
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"minHeight": {
 			"type": "string"
@@ -717,8 +717,8 @@
 			]
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"paddingTablet": {
 			"type": "object",
@@ -751,23 +751,7 @@
 		"contentBandPaddingMobile": {
 			"type": "object",
 			"default": {}
-		},
-		"contentWidthMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentWidthTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthTablet": {
-			"type": "string",
-			"default": ""
-		},
+		},
 		"tagName": {
 			"type": "string",
 			"enum": [

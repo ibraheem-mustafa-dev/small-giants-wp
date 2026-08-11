@@ -162,11 +162,14 @@ $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease-in-out';
 $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease-in-out';
 
-// Width (SGS custom scalars — kept per contract §C: single-value families stay
-// scalar). Emitted scoped block-private (base + tablet/mobile tiers).
-$max_width        = $attributes['maxWidth'] ?? '';
-$max_width_tablet = $attributes['maxWidthTablet'] ?? '';
-$max_width_mobile = $attributes['maxWidthMobile'] ?? '';
+// Width. `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE
+// attr holding {desktop,tablet,mobile}, read through the shared normaliser.
+// Still emitted scoped block-private (base + tablet/mobile tiers), so nothing
+// downstream of these three variables changes.
+$max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
+$max_width        = $max_width_tiers['desktop'] ?? '';
+$max_width_tablet = $max_width_tiers['tablet'] ?? '';
+$max_width_mobile = $max_width_tiers['mobile'] ?? '';
 
 // ---------------------------------------------------------------------------
 // 5. Base padding/margin/border-radius — WP-native style.* objects

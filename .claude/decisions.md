@@ -1,5 +1,83 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D568 — Pass 2 (`maxWidth` + `contentWidth`) — and the measuring instrument was blind to both [INCIDENT]
+
+**2026-08-11.** Spec 35 pass 2 migrated `maxWidth` (11 blocks) and `contentWidth` (7 blocks) — 18
+migrations across 11 distinct blocks — to the `{desktop,tablet,mobile}` tier object, with every
+control migrated in the SAME commit per D563. `--check` reports both properties fully object-shaped;
+`inspector-scan` unchanged at 244 FLAGGED; build exit 0.
+
+**D563's lesson held on its first outing.** `ContainerWrapperControls.js` — ONE shared file feeding
+**24** blocks — carried every writer for both properties. It moved to `ResponsiveOverride` alongside
+the storage, as did 4 per-block `edit.js` files. Zero non-comment references to the four sibling
+attrs remain in `src/`. **Proven in the LIVE EDITOR through the real inspector control, not
+programmatically** (a `dispatch()` write is the same blind spot that let pass 1 ship): typing into
+"Outer max-width" stores `{desktop:"456px"}`; switching the global device toggle to Tablet and
+typing stores `{tablet:"789px"}`. No flat siblings, no new console errors. Both halves of D563 —
+desktop destroying the setting, tablet saving nothing — are closed by measurement.
+
+### ⛔ THE INSTRUMENT WAS BROKEN, AND ONLY THE POSITIVE CONTROL CAUGHT IT
+
+`capture-tier-fixture.py` fed the block ATTRIBUTE name to
+`getComputedStyle().getPropertyValue()`. CSSOM takes the HYPHENATED CSS name and returns an EMPTY
+STRING for anything else — it does not throw, and `''` is indistinguishable in the output from "this
+block genuinely has no value". **Every `maxWidth` reading came back blank.**
+
+It survived pass 1 because that pass measured **`gap`, whose attribute name and CSS name are
+identical** — the one property in the whole programme that cannot expose the defect. Without
+`make-visual-diff-reports.py`'s positive control this pass would have produced **15 confident
+"no measured value moved" reports off 90 blank readings** — fabricated evidence that would have
+passed every gate.
+
+Fixed with an explicit attr→CSS map (`contentWidth`→`max-width` and `columns`→`grid-template-columns`
+are not derivable) plus kebab-case conversion, a `--self-test` covering all six programme properties,
+and NEGATIVE CONTROLS asserting the pre-fix identity behaviour is detectably absent. Verified able to
+fail: monkey-patched back to the old behaviour, the self-test reports 6 failures and exits 1.
+
+**This is the session's own headline rule firing again — FIX THE INSTRUMENT BEFORE WORKING ITS LIST
+— and the sharper corollary: a measurement that can only ever return "no change" is not evidence.**
+
+### Two more findings the plan did not predict
+
+1. **49 scalar values across 33 theme files**, in `patterns/`, `templates/` AND `parts/`. The
+   pre-existing `check-dead-pattern-attrs.py` failed the build and named every one. The survey that
+   preceded this pass had checked `patterns/` only, and only for orphan SIBLINGS — never for a BASE
+   attr whose stored shape no longer matches its declared type. Rewritten by a scoped codemod that
+   only touches `wp:sgs/*` delimiters and parses the JSON rather than regexing values; second run
+   reports 0, and the diff is 49 insertions / 49 deletions with no line-ending churn.
+2. **`sgs/responsive-logo` would have lost its width cap with NO warning.**
+   `sgs_responsive_css_rule()`'s validity gate is `$transform || is_numeric( $raw )`; this block
+   supplies no transform, and `is_numeric()` on an array is false — so every tier failed the gate and
+   the declaration vanished silently. Not an "Array to string" warning, not an error: nothing. Its
+   `render.php` now normalises the object and strips a trailing unit (the block stores a bare number
+   with a separate `maxWidthUnit`, so a unit-bearing value is rejected by the same gate).
+
+### `unit_default` on the wrapper's object entry would have been INERT — do not add it
+
+Item 0c says declare `unit_default` for every length-valued property. For `maxWidth` that would have
+been a fix that provably does nothing: `sgs_responsive_format_atom_value()` returns EARLY when a
+`transform` is set, so the unit is never consulted. The bare-number rule therefore lives INSIDE the
+transform — a bare `800` becomes `800px` rather than emitting `max-width:800`. **Recorded because
+adding the inert version would have looked like compliance and satisfied a reviewer.**
+
+### Pre-existing gap surfaced, NOT introduced here (needs its own design gate)
+
+`sgs/hero`, `sgs/site-header` and `sgs/site-footer` declare a `maxWidth` control that **renders
+nothing**. Proven from the browser CSSOM: no scoped `max-width` rule exists for their uid BEFORE or
+AFTER, their `render.php` files contain zero `maxWidth` references, and they delegate to
+`SGS_Container_Wrapper` whose object emit keys on a uid their rendered element does not carry
+(`.sgs-site-header{max-width:100%}` wins by default). Before == after on every tier, so this pass
+changed nothing about it. Recorded in each block's report via `--known-dead` with the evidence.
+Fixing it is a composite-mirror capability change requiring a Rule 7 gate, not a migration-pass edit.
+
+**Evidence:** 11 per-block reports at `reports/visual-diff/*-2026-08-11.md`. `sgs/media` and
+`sgs/before-after` needed a **media-bearing probe page** — without media they render no element at
+all, so the shared fixture measured nothing for them and said so rather than passing them.
+⚠ The report filename is `{block}-{date}.md` and the commit gate hardcodes that shape, so a second
+pass on the same day REPLACES the first's file. Not data loss — pass 1's reports live at `fa638cea`
+and the file is a per-day artefact tied to the staged `source_sha` — but worth knowing before
+passes 3a/3b run today.
+
 ## D567 — Deploying and opening the editor found a hard crash every static gate missed [INCIDENT]
 
 **2026-08-11.** Bean instructed: close the §14 residuals, then deploy everything. The deploy-then-open-

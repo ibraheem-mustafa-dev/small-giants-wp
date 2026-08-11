@@ -250,17 +250,9 @@
 			"default": {}
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthMobile": {
-			"type": "string",
-			"default": ""
-		},
+			"type": "object",
+			"default": {}
+		},
 		"inheritStyle": {
 			"type": "boolean",
 			"default": false

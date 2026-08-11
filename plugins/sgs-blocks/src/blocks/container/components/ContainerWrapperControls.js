@@ -295,16 +295,16 @@ function contentWidthPreset( v ) {
 /**
  * Width + contentWidth controls (v0.5 model — widthMode retired).
  *
- * TWO controls, each covering all three tiers through ONE <ResponsiveControl>
+ * TWO controls, each covering all three tiers through ONE <ResponsiveOverride>
  * driven by the global device toggle:
  *
  * OUTER layer: maxWidth UnitControl (literal CSS length or empty → full-width).
- *   Tiers: maxWidth (desktop) / maxWidthTablet / maxWidthMobile.
+ *   Tiers: the single object attr `maxWidth` = {desktop,tablet,mobile}.
  *
  * CONTENT BAND: ToggleGroupControl with tokens normal / wide / full / custom.
  *   Default is 'full' (no band cap — content fills outer maxWidth).
  *   When custom is selected a UnitControl for the literal value is revealed.
- *   Tiers: contentWidth (desktop) / contentWidthTablet / contentWidthMobile.
+ *   Tiers: the single object attr `contentWidth` = {desktop,tablet,mobile}.
  *
  * ⛔ Do NOT re-add a standalone desktop control beside either wrapper. Until
  * 2026-08-10 each family rendered a desktop control PLUS a "… by viewport"
@@ -319,15 +319,6 @@ function contentWidthPreset( v ) {
  * Used by all three kinds.
  */
 export function WidthPanel( { attributes, setAttributes } ) {
-	const {
-		maxWidth = '',
-		maxWidthTablet = '',
-		maxWidthMobile = '',
-		contentWidth = 'full',
-		contentWidthTablet = '',
-		contentWidthMobile = '',
-	} = attributes;
-
 	// ── ONE control per property family, all three tiers ──────────────────
 	//
 	// Both families previously rendered a standalone DESKTOP control plus a
@@ -337,108 +328,73 @@ export function WidthPanel( { attributes, setAttributes } ) {
 	// hole in the wrapper where a control should be. Flagged by
 	// `inspector-scan` rule 26 (hollow-tier) at what were lines :284 and :351.
 	//
-	// The two branches rendered the IDENTICAL control over identical options —
-	// verified line by line before merging, because "desktop deliberately has a
-	// richer control" would have made this a wrong merge rather than a
-	// de-duplication. It does not: both used the same <UnitControl> with the
-	// same LENGTH_UNITS, and the same <ToggleGroupControl> over the same
-	// CONTENT_WIDTH_PRESET_OPTIONS sharing contentWidthPreset()/isToken().
+	// ⛔ BOTH FAMILIES ARE TIER OBJECTS as of Spec 35 pass 2 (2026-08-11):
+	// `maxWidth` and `contentWidth` are each ONE attr declared
+	// `"type":"object"` holding {desktop,tablet,mobile}, and the
+	// `maxWidthTablet` / `maxWidthMobile` / `contentWidthTablet` /
+	// `contentWidthMobile` siblings are no longer declared by ANY block.json.
 	//
-	// Desktop keeps the BASE attribute (`maxWidth`, `contentWidth`), so nothing
-	// stored changes and no migration is needed.
-	const MAX_WIDTH_ATTR = {
-		desktop: 'maxWidth',
-		tablet: 'maxWidthTablet',
-		mobile: 'maxWidthMobile',
-	};
-	const CONTENT_WIDTH_ATTR = {
-		desktop: 'contentWidth',
-		tablet: 'contentWidthTablet',
-		mobile: 'contentWidthMobile',
-	};
-	const maxWidthByTier = { desktop: maxWidth, tablet: maxWidthTablet, mobile: maxWidthMobile };
-	const contentWidthByTier = {
-		desktop: contentWidth,
-		tablet: contentWidthTablet,
-		mobile: contentWidthMobile,
-	};
-
-	// A blank non-desktop tier INHERITS desktop. Unchanged semantics — but
-	// previously invisible, and on the content band actively misleading:
-	// contentWidthPreset('') returns 'full', and SGS_Container_Wrapper treats
-	// 'full' and '' identically, so an inheriting tablet tier rendered as
-	// "Full" selected — indistinguishable from an explicit Full override. With
-	// desktop and the tiers now in one control, that ambiguity would have been
-	// the ONLY thing a client sees. Fixed here by showing the RESOLVED value
-	// plus ResponsiveControl's inherit hint.
-	const isTierInherited = ( byTier ) => ( tier ) =>
-		tier !== 'desktop' && ( byTier[ tier ] === '' || byTier[ tier ] == null );
-
-	const resolveTierValue = ( byTier ) => ( tier ) =>
-		isTierInherited( byTier )( tier ) ? byTier.desktop : byTier[ tier ];
+	// They must therefore use ResponsiveOverride, which reads and writes the
+	// object, NOT ResponsiveControl, which writes one flat attr per tier. Do
+	// NOT revert to an attrMap of
+	// `{desktop:'maxWidth', tablet:'maxWidthTablet', mobile:'maxWidthMobile'}`:
+	// WordPress SILENTLY DISCARDS an attribute a block does not declare (D338),
+	// so both tiers would save nothing, and the desktop branch would write a
+	// STRING into an object-typed attr — which coerces to the default and
+	// destroys the whole setting. That exact mismatch shipped live on 19 blocks
+	// after pass 1 migrated `gap` without its control (D563).
+	//
+	// ResponsiveOverride owns the inherit semantics itself (a blank non-desktop
+	// tier inherits the tier above, desktop always concrete), so the local
+	// by-tier maps, isTierInherited() and resolveTierValue() that used to live
+	// here are gone rather than duplicated.
 
 	// Mirrors the previous per-tier literal derivation exactly (a non-token
 	// value containing a digit is a literal CSS length; anything else is not).
 	const literalOf = ( raw ) => ( ! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '' );
 
-	const resolvedMaxWidth = resolveTierValue( maxWidthByTier );
-	const resolvedContentWidth = resolveTierValue( contentWidthByTier );
-	const maxWidthInherited = isTierInherited( maxWidthByTier );
-	const contentWidthInherited = isTierInherited( contentWidthByTier );
-
 	return (
 		<>
 			{ /* ---- OUTER max-width — one control, all three tiers ---- */ }
-			<ResponsiveControl
+			<ResponsiveOverride
 				label={ __( 'Outer max-width', 'sgs-blocks' ) }
-				value={ maxWidthByTier }
-				isInherited={ maxWidthInherited }
-				resolvedValue={ ( tier ) => resolvedMaxWidth( tier ) || __( 'no cap', 'sgs-blocks' ) }
-				onReset={ ( tier ) => setAttributes( { [ MAX_WIDTH_ATTR[ tier ] ]: '' } ) }
+				value={ attributes.maxWidth }
+				onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 			>
-				{ ( breakpoint ) => (
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 					<UnitControl
-						value={ maxWidthByTier[ breakpoint ] || '' }
+						value={ ownValue || '' }
+						placeholder={
+							inherited
+								? effectiveValue || __( 'no cap', 'sgs-blocks' )
+								: __( 'no cap', 'sgs-blocks' )
+						}
 						units={ LENGTH_UNITS }
-						onChange={ ( val ) =>
-							setAttributes( { [ MAX_WIDTH_ATTR[ breakpoint ] ]: val ?? '' } )
-						}
-						help={
-							breakpoint === 'desktop'
-								? __(
-										'Exact CSS length applied as max-width on the outer block (e.g. 800px). Leave blank for no cap. Breakout (wide / full) is set via the block toolbar.',
-										'sgs-blocks'
-								  )
-								: __(
-										'Override outer max-width at this viewport. Leave blank to inherit desktop.',
-										'sgs-blocks'
-								  )
-						}
+						onChange={ ( val ) => setOwnValue( val ?? '' ) }
+						help={ __(
+							'Exact CSS length applied as max-width on the outer block (e.g. 800px). Leave blank for no cap — on tablet or mobile, blank inherits the tier above. Breakout (wide / full) is set via the block toolbar.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 					/>
 				) }
-			</ResponsiveControl>
+			</ResponsiveOverride>
 
 			<hr style={ { margin: '16px 0' } } />
 
 			{ /* ---- CONTENT BAND width — one control, all three tiers ---- */ }
-			<ResponsiveControl
+			<ResponsiveOverride
 				label={ __( 'Content band width', 'sgs-blocks' ) }
-				value={ contentWidthByTier }
-				isInherited={ contentWidthInherited }
-				resolvedValue={ ( tier ) => {
-					const resolved = resolvedContentWidth( tier );
-					const preset = contentWidthPreset( resolved );
-					const match = CONTENT_WIDTH_PRESET_OPTIONS.find( ( o ) => o.value === preset );
-					return preset === 'custom' ? resolved : match?.label ?? preset;
-				} }
-				onReset={ ( tier ) => setAttributes( { [ CONTENT_WIDTH_ATTR[ tier ] ]: '' } ) }
+				value={ attributes.contentWidth }
+				onChange={ ( obj ) => setAttributes( { contentWidth: obj } ) }
 			>
-				{ ( breakpoint ) => {
-					const attr = CONTENT_WIDTH_ATTR[ breakpoint ];
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
 					// An inheriting tier shows the value it actually renders at,
 					// not the 'full' that contentWidthPreset('') would report.
-					const shown = resolvedContentWidth( breakpoint );
+					// Without this, an inheriting tablet tier renders as "Full"
+					// selected — indistinguishable from an explicit Full override,
+					// because SGS_Container_Wrapper treats 'full' and '' identically.
+					const shown = inherited ? effectiveValue : ownValue;
 					const preset = contentWidthPreset( shown );
 					const literal = literalOf( shown );
 					return (
@@ -453,9 +409,9 @@ export function WidthPanel( { attributes, setAttributes } ) {
 										// radio snaps back with no input box. 800px rarely
 										// equals a preset (content-size ≈ 1200 / wide-size
 										// ≈ 1400). Keep any existing literal.
-										setAttributes( { [ attr ]: literal || '800px' } );
+										setOwnValue( literal || '800px' );
 									} else {
-										setAttributes( { [ attr ]: val } );
+										setOwnValue( val );
 									}
 								} }
 								isBlock
@@ -474,7 +430,7 @@ export function WidthPanel( { attributes, setAttributes } ) {
 									label={ __( 'Custom content band width', 'sgs-blocks' ) }
 									value={ literal }
 									units={ LENGTH_UNITS }
-									onChange={ ( val ) => setAttributes( { [ attr ]: val ?? '' } ) }
+									onChange={ ( val ) => setOwnValue( val ?? '' ) }
 									help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
 								/>
@@ -482,7 +438,7 @@ export function WidthPanel( { attributes, setAttributes } ) {
 						</>
 					);
 				} }
-			</ResponsiveControl>
+			</ResponsiveOverride>
 			{ /* Kept OUTSIDE the wrapper deliberately: this is the only place a
 			     non-technical client is told what the tokens mean, and inside the
 			     render prop it would show on one tier at a time. */ }
@@ -1383,8 +1339,8 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
  *
  * Controls for the Layer-2 content band (__inner wrapper) — background colour,
  * base padding (4 sides, desktop), and responsive padding overrides (tablet /
- * mobile). Band width (contentWidth / contentWidthTablet / contentWidthMobile)
- * is owned by WidthPanel — not duplicated here.
+ * mobile). Band width (the single tier-object attr `contentWidth`) is owned by
+ * WidthPanel — not duplicated here.
  *
  * Gating: section + layout kinds only — these are the only kinds whose PHP
  * render path can emit the __inner wrapper. The 'content' kind uses WP-native
@@ -1399,7 +1355,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
  *   contentBandPaddingTopTablet   → Padding › Tablet › Top
  *   contentBandPaddingRightTablet → Padding › Tablet › Right
  *   ...etc.
- *   (contentWidthTablet / Mobile → owned by WidthPanel, not rendered here)
+ *   (the `contentWidth` tier object → owned by WidthPanel, not rendered here)
  */
 export function ContentBandPanel( { attributes, setAttributes } ) {
 	const BAND_PADDING_SIDES = [

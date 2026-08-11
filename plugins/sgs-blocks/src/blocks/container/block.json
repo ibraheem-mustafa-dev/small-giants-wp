@@ -294,16 +294,8 @@
 			"type": "string"
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthMobile": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"minHeight": {
 			"type": "string"
@@ -510,8 +502,8 @@
 			]
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": "full"
+			"type": "object",
+			"default": {"desktop": "full"}
 		},
 		"paddingTablet": {
 			"type": "object",
@@ -542,14 +534,6 @@
 			"default": {}
 		},
 		"contentBandBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"contentWidthTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentWidthMobile": {
 			"type": "string",
 			"default": ""
 		}

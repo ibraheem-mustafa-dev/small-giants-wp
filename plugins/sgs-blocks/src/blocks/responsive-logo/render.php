@@ -205,8 +205,47 @@ if ( 'left' === $align ) {
 // --- Per-tier max box (FR-36-22 basics) — caps the rendered logo box on top
 // of the `width` custom property, independently per breakpoint. Unset tiers
 // emit nothing (no cap at that tier). ---
-$scoped_css[] = sgs_responsive_css_rule(
+// ⛔ `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11), and feeding
+// the object straight to sgs_responsive_css_rule() would DROP IT SILENTLY — not
+// warn, not error. That helper's validity gate is
+// `$transform || is_numeric( $raw )` (helpers-responsive.php), this spec supplies
+// no `transform`, and `is_numeric()` on an array is false, so every tier would
+// fail the gate and the whole max-width cap would vanish with nothing in the
+// error log to show for it. `unit_default` does not save it — the value never
+// reaches the formatter.
+//
+// So the object is flattened back to the three keys the helper expects, keeping
+// its unit handling and @media emission byte-identical. `maxHeight` is still a
+// flat family and is passed through untouched.
+$rl_max_width_tiers = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
+
+// This block stores maxWidth as a bare NUMBER with the unit in its own
+// `maxWidthUnit` attr, and sgs_responsive_css_rule()'s validity gate is
+// `is_numeric()` — so a unit-bearing string like "64px" is REJECTED and the cap
+// silently disappears. The editor writes a bare number (parseMaxBoxValue splits
+// it), but hand-authored, cloned or fixture content can carry the unit inline.
+// Strip a trailing unit so both shapes work rather than one of them vanishing.
+$rl_max_width_num = static function ( $raw ) {
+	if ( null === $raw || '' === $raw ) {
+		return '';
+	}
+	if ( is_numeric( $raw ) ) {
+		return $raw;
+	}
+	return preg_match( '/^\s*([\d.]+)\s*[a-z%]*\s*$/i', (string) $raw, $m ) ? $m[1] : '';
+};
+
+$rl_css_attributes = array_merge(
 	$attributes,
+	array(
+		'maxWidth'       => $rl_max_width_num( $rl_max_width_tiers['desktop'] ?? '' ),
+		'maxWidthTablet' => $rl_max_width_num( $rl_max_width_tiers['tablet'] ?? '' ),
+		'maxWidthMobile' => $rl_max_width_num( $rl_max_width_tiers['mobile'] ?? '' ),
+	)
+);
+
+$scoped_css[] = sgs_responsive_css_rule(
+	$rl_css_attributes,
 	array(
 		array(
 			'attr'         => 'maxWidth',

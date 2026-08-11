@@ -335,6 +335,21 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// through as invalid CSS lengths; now: token-aware resolver — v0.5 tokens: normal/wide/full).
 			$content_width = $sgs_resolve_content_width( $content_width );
 			// Responsive outer max-width — literal CSS lengths (empty = not set by converter yet).
+			//
+			// ⚠ LEGACY FLAT PATH, now UNREACHABLE (Spec 35 pass 2, 2026-08-11).
+			// `maxWidthTablet` / `maxWidthMobile` are no longer declared by ANY
+			// block.json, so both reads resolve to '' on every render and every
+			// downstream guard ($has_responsive_max_width at :343, the emits at
+			// :1489/:1492) is permanently false. The tiers now travel inside the
+			// `maxWidth` OBJECT and are emitted by the object path at ~:2294.
+			//
+			// Left in place deliberately rather than removed: the flag threads
+			// through ~10 call sites, and unpicking that during a migration pass
+			// is a change to the shared wrapper — Rule 7 design-gate territory,
+			// not a drive-by. It is inert, not wrong.
+			// REMOVAL TRIGGER: delete this block and its flag together with the
+			// contentWidth twin at :435 once passes 2-6 are all closed, in one
+			// gated shared-wrapper commit.
 			$max_width_tablet = $sgs_css_length( $attributes['maxWidthTablet'] ?? '' );
 			$max_width_mobile = $sgs_css_length( $attributes['maxWidthMobile'] ?? '' );
 			// When responsive outer max-width tiers exist, the base maxWidth must NOT be
@@ -432,6 +447,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Responsive content-width overrides for the band (tablet / mobile).
 			// Use the token-or-literal resolver (same as the base) so 'narrow'/'default'/
 			// 'full'/literal all resolve correctly at every tier.
+			// ⚠ LEGACY FLAT PATH, now UNREACHABLE — the contentWidth twin of the
+			// maxWidth note at :338. `contentWidthTablet` / `contentWidthMobile` are
+			// no longer declared by any block.json; the tiers travel inside the
+			// `contentWidth` OBJECT and are emitted at ~:2022. Same removal trigger.
 			$content_width_tablet = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthTablet'] ?? '' ) : '';
 			$content_width_mobile = ( $is_section || $is_layout ) ? $sgs_resolve_content_width( $attributes['contentWidthMobile'] ?? '' ) : '';
 
@@ -2297,7 +2316,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						'css'       => 'max-width',
 						// Per-tier literal lengths — sanitise each exactly like the base
 						// path (L276-277) so a tier value can never break its declaration.
-						'transform' => $sgs_css_length,
+						//
+						// ⛔ A `unit_default` here would be INERT, not a safety net:
+						// sgs_responsive_format_atom_value() returns EARLY when a
+						// transform is set (`if ( $transform ) { … return; }`,
+						// helpers-responsive.php), so the unit is never consulted. The
+						// bare-number rule therefore has to live inside the transform,
+						// which is what this closure adds over $sgs_css_length: a bare
+						// `800` becomes `800px` (Bean-ruled 2026-08-10 — a bare number
+						// means px framework-wide) instead of emitting `max-width:800`,
+						// invalid CSS the browser silently drops. Anything already
+						// carrying a unit, a %, or a CSS function is passed through to
+						// the same sanitiser the flat path uses, so no existing value
+						// changes meaning.
+						'transform' => static function ( $raw ) use ( $sgs_css_length ) {
+							$clean = $sgs_css_length( $raw );
+							return is_numeric( $clean ) ? $clean . 'px' : $clean;
+						},
 					);
 				}
 				if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {

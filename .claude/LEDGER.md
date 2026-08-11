@@ -40,7 +40,7 @@ commit messages + `decisions.md` D546-D567.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D567**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D568**.
 
 ### ✅ PHASE 0 IS CLOSED — 2026-08-11
 
@@ -97,9 +97,42 @@ storage-shape gate **1 finding, baselined** (was 3; both `gap` entries cleared a
 baseline — it shrinks only) · live-editor check **PASS** (stores `{desktop,mobile}`, no flat siblings,
 0 console errors).
 
-### ⭐ NEXT SESSION — Wave 2, then Wave 3
+### ✅ PASS 2 (`maxWidth` + `contentWidth`, 11 blocks) — CLOSED 2026-08-11
 
-**Both were planned for session 5 and NOT started. Nothing is ahead of them.**
+**Record: D568.** 18 migrations / 11 distinct blocks. Control migrated in the SAME commit
+(`ContainerWrapperControls.js` feeds **24** blocks) and **proven through the real inspector control
+in the live editor**, not programmatically — desktop stores `{desktop:"456px"}`, the global device
+toggle on Tablet stores `{tablet:"789px"}`, zero flat siblings, no new console errors. Both halves of
+D563 closed by measurement. **Evidence:** 11 reports at `reports/visual-diff/*-2026-08-11.md`.
+
+⛔ **THE MEASURING INSTRUMENT WAS BLIND AND ONLY THE POSITIVE CONTROL CAUGHT IT.**
+`capture-tier-fixture.py` passed the ATTRIBUTE name to `getPropertyValue()`, which needs the
+HYPHENATED CSS name and returns `''` otherwise — silently. Every `maxWidth` reading was blank. It
+survived pass 1 only because `gap`'s attribute and CSS names are identical. Without the positive
+control this pass would have emitted **15 confident "nothing moved" reports off 90 blank readings**.
+Fixed + `--self-test` (7 cases, negative controls, proven able to fail). **Passes 3a-6 depend on it.**
+
+**Three things the plan did not predict, all now closed:**
+1. **49 scalar values in 33 THEME files** — `patterns/` + `templates/` + `parts/`. The survey checked
+   `patterns/` only, and only for orphan SIBLINGS, never a BASE attr whose shape stopped matching.
+   `check-dead-pattern-attrs.py` failed the build and named all 49.
+2. **`responsive-logo` lost its cap with NO warning** — `sgs_responsive_css_rule()`'s gate is
+   `$transform || is_numeric()`; an array fails it and the declaration just vanishes.
+3. **`unit_default` on the wrapper's `maxWidth` entry would be INERT** — the atom formatter returns
+   early when a transform is set. The bare-number→px rule lives in the transform instead.
+
+⚠ **Carried, NOT introduced by pass 2:** `sgs/hero`, `sgs/site-header`, `sgs/site-footer` declare a
+`maxWidth` control that renders NOTHING — no scoped rule in the browser CSSOM before or after, zero
+`maxWidth` references in their own `render.php`. Recorded per block via `--known-dead`. Composite-
+mirror capability gap; needs a Rule 7 design gate, not a migration edit.
+
+⚠ **Report filenames are `{block}-{date}.md` and the commit gate hardcodes that** — a second pass the
+same day REPLACES the first's file. Pass 1's reports live at `fa638cea`; the file is a per-day
+artefact tied to the staged `source_sha`. Know this before 3a/3b run today.
+
+### ⭐ NEXT — pass 3a, then 3b, then Wave 3
+
+**Pass 2 is done. 3a/3b/Wave 3 remain.**
 
 #### READING GATE — Spec 35 order. ⛔ Do NOT open Spec 31 end-to-end.
 
@@ -123,8 +156,6 @@ does not hold and Spec 31 is ~195KB. Read Spec 31 only for converter work, targe
 python scripts/migrate-tier-object.py --property <p> --survey | --fix | --fix --apply | --check
 ```
 
-**Pass 2 — `maxWidth` + `contentWidth`.** Already object on gallery + both row blocks; their centring
-defect closed at `1979c419`, so the known trap is shut.
 **Pass 3 — `gridTemplateColumns` + `gridTemplateRows`.** `sgs/site-footer-row.gridTemplateColumns` is
 the ONE finding the storage-shape gate still baselines — pass 3 takes it to **0**, its named promotion
 trigger. **Wire `check-tier-storage-shape.py` into `prebuild` at that point.**

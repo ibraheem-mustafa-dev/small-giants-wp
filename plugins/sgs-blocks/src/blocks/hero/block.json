@@ -679,8 +679,8 @@
 			"default": 2
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gap": {
 			"type": "object",
@@ -753,8 +753,8 @@
 			"default": ""
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"overlayGradient": {
 			"type": "boolean",
@@ -843,22 +843,6 @@
 		"contentBandPaddingMobile": {
 			"type": "object",
 			"default": {}
-		},
-		"contentWidthMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentWidthTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"maxWidthTablet": {
-			"type": "string",
-			"default": ""
 		},
 		"paddingTablet": {
 			"type": "object",

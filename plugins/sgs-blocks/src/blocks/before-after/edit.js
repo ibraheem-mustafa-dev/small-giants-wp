@@ -37,6 +37,7 @@ import {
 	DesignTokenPicker,
 	TypographyControls,
 	ResponsiveControl,
+	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
@@ -646,27 +647,30 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
-					<ResponsiveControl
+					{ /*
+					  `maxWidth` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
+					  {desktop,tablet,mobile}. It must use ResponsiveOverride, which
+					  reads and writes the object; ResponsiveControl writes one flat
+					  attr per tier and `maxWidthTablet`/`maxWidthMobile` are no
+					  longer declared, so WordPress would silently discard them
+					  (D338) while the desktop branch wrote a string into an
+					  object-typed attr and destroyed the setting (D563).
+					*/ }
+					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ attributes.maxWidth }
+						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
-						{ ( bp ) => {
-							const key = {
-								desktop: 'maxWidth',
-								tablet: 'maxWidthTablet',
-								mobile: 'maxWidthMobile',
-							}[ bp ];
-							return (
-								<UnitControl
-									value={ attributes[ key ] || '' }
-									onChange={ ( v ) =>
-										setAttributes( { [ key ]: v || null } )
-									}
-									units={ WIDTH_UNITS }
-									__next40pxDefaultSize
-								/>
-							);
-						} }
-					</ResponsiveControl>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<UnitControl
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								units={ WIDTH_UNITS }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

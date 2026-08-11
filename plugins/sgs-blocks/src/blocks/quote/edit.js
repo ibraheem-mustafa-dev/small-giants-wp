@@ -47,6 +47,7 @@ import {
 import {
 	DesignTokenPicker,
 	ResponsiveControl,
+	ResponsiveOverride,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 } from '../../components';
@@ -306,8 +307,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		maxWidth,
-		maxWidthTablet,
-		maxWidthMobile,
 		inheritStyle,
 		transitionDuration,
 		transitionEasing,
@@ -348,12 +347,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		mobile: 'attributionMarginTopMobile',
 	};
 
-	// Per-breakpoint attr keys for max-width (kept-scalar family, contract §C).
-	const maxWidthBreakpoints = {
-		desktop: 'maxWidth',
-		tablet: 'maxWidthTablet',
-		mobile: 'maxWidthMobile',
-	};
+	// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
+	// holding {desktop,tablet,mobile}. The per-breakpoint attr-key map that used
+	// to live here is gone with the flat siblings it addressed; the control below
+	// uses <ResponsiveOverride>, which reads and writes the object itself.
 
 	return (
 		<>
@@ -662,9 +659,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									paddingMobile: {},
 									marginTablet: {},
 									marginMobile: {},
-									maxWidth: '',
-									maxWidthTablet: '',
-									maxWidthMobile: '',
+									maxWidth: {},
 								} )
 							}
 						>
@@ -770,32 +765,33 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToolsPanelItem
 								label={ __( 'Outer max-width', 'sgs-blocks' ) }
 								hasValue={ () =>
-									!! maxWidth || !! maxWidthTablet || !! maxWidthMobile
+									!! (
+										maxWidth &&
+										Object.values( maxWidth ).some(
+											( v ) => v !== undefined && v !== null && v !== ''
+										)
+									)
 								}
-								onDeselect={ () =>
-									setAttributes( {
-										maxWidth: '',
-										maxWidthTablet: '',
-										maxWidthMobile: '',
-									} )
-								}
+								onDeselect={ () => setAttributes( { maxWidth: {} } ) }
 							>
-								<ResponsiveControl label={ __( 'Outer max-width', 'sgs-blocks' ) }>
-									{ ( breakpoint ) => {
-										const attrKey = maxWidthBreakpoints[ breakpoint ];
-										return (
-											<UnitControl
-												label={ __( 'Max-width', 'sgs-blocks' ) }
-												hideLabelFromVision
-												value={ attributes[ attrKey ] || '' }
-												units={ LENGTH_UNITS }
-												onChange={ ( val ) => setAttributes( { [ attrKey ]: val ?? '' } ) }
-												help={ breakpoint === 'desktop' ? __( 'Leave blank for no cap.', 'sgs-blocks' ) : __( 'Leave blank to inherit desktop.', 'sgs-blocks' ) }
-												__nextHasNoMarginBottom
-											/>
-										);
-									} }
-								</ResponsiveControl>
+								<ResponsiveOverride
+									label={ __( 'Outer max-width', 'sgs-blocks' ) }
+									value={ maxWidth }
+									onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<UnitControl
+											label={ __( 'Max-width', 'sgs-blocks' ) }
+											hideLabelFromVision
+											value={ ownValue || '' }
+											placeholder={ inherited ? effectiveValue || '' : '' }
+											units={ LENGTH_UNITS }
+											onChange={ ( val ) => setOwnValue( val ?? '' ) }
+											help={ __( 'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.', 'sgs-blocks' ) }
+											__nextHasNoMarginBottom
+										/>
+									) }
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 						</ToolsPanel>
 					</PanelBody>

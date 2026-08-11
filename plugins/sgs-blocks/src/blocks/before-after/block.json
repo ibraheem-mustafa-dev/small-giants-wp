@@ -152,10 +152,11 @@
 		"heightUnit": { "type": "string", "default": "px" },
 		"heightTablet": { "type": [ "number", "string" ], "default": null },
 		"heightMobile": { "type": [ "number", "string" ], "default": null },
-		"maxWidth": { "type": "string", "default": null },
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
 		"maxWidthUnit": { "type": "string", "default": "px" },
-		"maxWidthTablet": { "type": "string", "default": null },
-		"maxWidthMobile": { "type": "string", "default": null },
 		"boxShadow": { "type": "string", "default": "" },
 		"borderRadiusTablet": { "type": "object", "default": {} },
 		"borderRadiusMobile": { "type": "object", "default": {} }
