@@ -90,6 +90,64 @@ detector is reachable: grep `package.json` before believing it runs.**
 DEFAULT-VISIBLE ones. Trust its OWN-vs-EXTENSION split (which matches the live measurement exactly);
 do not quote its row totals as "what the client sees".
 
+### Tier-object migration triad — `scripts/migrate-tier-object.py` (Spec 35 / D549 / D554 / D571)
+
+The flat-scalar-trio → tier-object migration (`<prop>` / `<prop>Tablet` / `<prop>Mobile` →
+`<prop>: {desktop,tablet,mobile}`) runs PROPERTY-BY-PROPERTY across every block, driven by one
+script with the full census → fix → gate triad, now covering all THREE layers a migration touches:
+
+```bash
+python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <prop> --survey       # census
+python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <prop> --fix           # dry-run diff
+python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <prop> --fix --apply    # write it
+python plugins/sgs-blocks/scripts/migrate-tier-object.py --property <prop> --check          # CI gate
+python plugins/sgs-blocks/scripts/migrate-tier-object.py --self-test                        # 14 assertions
+```
+
+**S1 (block.json shape) — full triad, auto-applied.** `--fix --apply` rewrites the flat trio into
+one object attr, folding the authored default as the desktop tier so no un-set instance silently
+re-renders differently. Refuses (writes nothing) rather than emit invalid JSON.
+
+**S2 (edit.js control wiring) — full triad, auto-applied, narrowly.** `--survey` classifies every
+block's control as `SHARED` (delegates to `LayoutPanel`/`ContainerWrapperControls`, nothing to
+do), `OVERRIDDEN` (already on `<ResponsiveOverride>`, done), `LEGACY` (the old
+`<ResponsiveControl>` + breakpoint-keyed attrMap + one child control — needs the edit), `NONE`
+(no local control), or `UNCLEAR` (refuses to guess — read it by hand). `--fix --apply` rewrites
+`LEGACY` blocks automatically, but ONLY when the block matches the exact known shape byte-for-byte
+— proven safe against two real historical examples (`ContainerWrapperControls.js` and
+`site-footer-row/edit.js`, both pre-fix), not invented. Anything that doesn't match exactly is
+refused, never guessed at or partially rewritten.
+
+**S3 (render.php reads) — detect only, deliberately NOT auto-applied.** `--survey` classifies
+`DELEGATED` (prop never appears — the shared wrapper handles it), `NORMALISED` (already read via
+`sgs_responsive_normalise_object( $attributes['prop'] ?? null )`), `RAW` (still a raw
+`$attributes['prop']` bracket read — needs the edit), or `UNCLEAR`. There is no `--fix` for this
+layer. What makes a render.php read safe or unsafe isn't the read itself, it's what the
+surrounding code DOES with the value afterwards (`trim()`? cast? `is_array()` check?) — exactly
+where pass 3a's and 3b's real regressions lived (D569/D570: an unguarded `trim((string)$attr)`
+PHP-coerced an object attr to the literal string `"Array"`). Auto-rewriting the read without
+inspecting what consumes it downstream would risk reintroducing that exact bug class, so this
+stays a flagged judgement call for a human or a targeted agent, never a blind rewrite.
+
+⛔ **Why this exists (D571, 2026-08-11):** before the S2/S3 classifier, `--survey` only reported
+raw regex hit-COUNTS for edit.js/render.php, which stayed non-zero even on an already-correct
+file — so an agent doing pass 3b's migration burned real time (twice, once duplicated in parallel
+by another session) hand-re-reading every block to answer "is this already done?" A census that
+can't tell done from not-done isn't a census. The classifier regexes are pattern-matching, not a
+parser — confirmed to false-positive twice during build (a comment merely MENTIONING
+`$attributes['gap']` as prose, and `sgs_responsive_normalise_object()`'s real call signature being
+positional, not a string-keyed argument) — both now covered by the self-test's negative controls.
+If the shared control/normaliser shapes change again, update the regexes in the SAME commit.
+
+⛔ **Do not run a project-wide JS formatter (`wp-scripts lint-js --fix`, prettier, etc.) as a
+post-step on this script's edit.js output "to tidy the indentation".** Tried once during D571's
+build: passing an out-of-tree scratch-fixture path to `wp-scripts lint-js --fix` silently fell
+back to its default `src/` glob and reformatted **~250 files across the entire plugin** to a
+different, stricter style config — caught only because `git status` was checked immediately after
+(STOP-CATALOGUE pre-flight ritual), reverted before it touched anything committed. The fixer's own
+Python code now handles its own re-indentation (dedent-by-one-level + explicit newline
+normalisation) precisely so it never needs an external formatter pass.
+
 The `--experimental-modules` flag is required for `viewScriptModule` in block.json. Check if stabilised in the installed @wordpress/scripts version.
 
 The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — dynamic blocks won't render without this.

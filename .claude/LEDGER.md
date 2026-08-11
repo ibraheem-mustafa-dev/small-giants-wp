@@ -128,16 +128,29 @@ a React style value. `feature-grid/edit.js:78`, `gallery/edit.js:264,295`, `trus
 
 Target: `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6 and its estimates.
 
-**B1. Make the migration mechanical (Bean's proposal, endorsed).** We are hand-repeating one edit
-20+ times. Classify the SHAPES, then write one codemod per shape:
-- **S1** flat trio → object in `block.json` — `migrate-tier-object.py` ALREADY does this.
-- **S2** `ResponsiveControl` + attrMap → `ResponsiveOverride` in `edit.js` — identical every
-  time, NOT automated, done by hand ~8 times this session.
-- **S3** `render.php` scalar read → `sgs_responsive_normalise_object()` — ~10 by hand.
+**B1. Make the migration mechanical (Bean's proposal, endorsed).** We were hand-repeating one edit
+20+ times. Classify the SHAPES, then write one codemod per shape — **S1 and S2 DONE (D571,
+2026-08-11), S3 deliberately stays manual, S4 still open**:
+- **S1** flat trio → object in `block.json` — `migrate-tier-object.py --fix --apply` does this,
+  full triad (`--survey`/`--fix`/`--check`).
+- **S2** `ResponsiveControl` + attrMap → `ResponsiveOverride` in `edit.js` — **NOW AUTOMATED
+  (D571).** `migrate-tier-object.py --survey` classifies every block's control as
+  SHARED/OVERRIDDEN/LEGACY/NONE/UNCLEAR; `--fix --apply` rewrites `LEGACY` blocks, proven against
+  two real historical examples (`ContainerWrapperControls.js`, `site-footer-row/edit.js`, both
+  pre-fix) and self-tested (14 assertions, `--self-test`). Refuses on anything not matching the
+  exact known shape.
+- **S3** `render.php` scalar read → `sgs_responsive_normalise_object()` — **detect-only, ON
+  PURPOSE, not a gap to close.** `--survey` classifies DELEGATED/NORMALISED/RAW/UNCLEAR, but there
+  is no `--fix`: what matters is what the surrounding code DOES with the value afterwards
+  (`trim()`? cast? `is_array()`?) — exactly where D569/D570's real regressions lived. Auto-writing
+  this risks reintroducing that exact bug class. Stays a flagged judgement call.
 - **S4** theme pattern/template scalar → object, folding orphan siblings in — a working codemod
-  exists at `scratchpad/migrate_theme_tier_scalars.py`; **promote it into `scripts/`** (it handled 49
-  values, then 15 more, converging to 0 on a second run both times).
-⭐ **S2+S3+S4 are the whole manual cost. Automating them is the single biggest speed win.**
+  exists at `scratchpad/migrate_theme_tier_scalars.py` (handled 49 values, then 15 more,
+  converging to 0 on a second run both times) but is **still unpromoted** — 0 theme instances
+  existed for `gridTemplateRows` so pass 3b had nothing to prove it against. Promote on the next
+  pass that actually has theme instances to migrate.
+⭐ Full documentation of the triad + why S3 stays manual: `plugins/sgs-blocks/CLAUDE.md` §"Tier-
+object migration triad".
 
 **B2. Golden-shape comparison instead of before/after (Bean's proposal — endorsed WITH one
 correction).** We now know what a correct migration looks like, so most of it can be asserted

@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D571 — `migrate-tier-object.py` survey now classifies edit.js/render.php state, not just counts; S2 gets a proven auto-fixer, S3 stays detect-only by design [ROUTINE]
+
+**2026-08-11.** Bean's question after D570 ("weren't these mechanical? what took so long?")
+surfaced the actual cause: `--survey` reported raw regex hit-COUNTS for edit.js/render.php
+references, which stayed non-zero on an already-correct file (e.g. `value={ attributes.prop }`
+inside a working `<ResponsiveOverride>` still matches `\bprop\b`). So an agent doing D570's
+migration burned real time — once, then duplicated in parallel by another session — hand-reading
+every block's files to answer "is this already done?" A census that can't tell done from
+not-done isn't a census.
+
+**Extended `migrate-tier-object.py` (not a new script — Bean explicitly asked whether the
+existing triad tool could be extended rather than building fresh, and it could):**
+- `--survey` now reports `render_state` (`DELEGATED`/`NORMALISED`/`RAW`/`UNCLEAR`) and
+  `edit_state` (`SHARED`/`OVERRIDDEN`/`LEGACY`/`NONE`/`UNCLEAR`) per block, independent of the
+  block.json S1 shape — an already-object-shaped block can still have a LEGACY control or a RAW
+  render read, which is exactly what D570's wasted re-discovery was about.
+- `--fix --apply` now ALSO rewrites `LEGACY` edit.js blocks to `ResponsiveOverride` (S2), proven
+  against two real historical examples (`ContainerWrapperControls.js`, `site-footer-row/edit.js`,
+  both captured pre-fix) — not invented shapes. Refuses on anything not matching byte-for-byte.
+- `render.php` (S3) deliberately gets NO `--fix`. What makes a raw read safe or unsafe is what the
+  surrounding code does with it afterwards (trim()? cast? `is_array()`?) — precisely where D569's
+  and D570's real regressions lived. Auto-rewriting the read without inspecting the downstream
+  consumer risks reintroducing that exact bug class, so it stays a flagged judgement call.
+
+**Two real false positives found and fixed while proving the classifier against known-good
+ground truth (surveyed `gap`, `gridTemplateColumns`, `gridTemplateRows` — all three fully
+migrated already, so any non-clean result was necessarily a tool bug, not a real finding):**
+1. `sgs_responsive_normalise_object()`'s real call signature is POSITIONAL
+   (`$attributes['prop'] ?? null`), not a string-keyed argument — the first regex assumed the
+   wrong signature and reported every correctly-migrated block as `UNCLEAR`.
+2. A bare `\bprop\b` presence check matched plain-English prose (`form/render.php`'s docblock
+   listing "gap" as a feature; a comment in `trust-bar/render.php` explaining
+   `$attributes['gap']` in words) as if it were code. Tightened to require a code-like marker
+   (`$`, `'`, `"`) immediately before the token, AND added PHP comment-stripping — the
+   `trust-bar` false RAW finding was specifically a `//` comment, not live code.
+
+**Verification:** `--self-test` (new, 14 assertions) — positive control proves the S2 fixer
+produces byte-identical output to the real hand-made fix on a captured real pre-migration
+fixture, including that re-running on the fixed file correctly refuses; two negative controls
+prove an unfamiliar JSX shape is refused untouched, and the comment-vs-code false positive stays
+fixed. Also re-ran `--survey` for `gap`/`gridTemplateColumns`/`gridTemplateRows` post-fix: all
+three report fully clean (zero `RAW`/`LEGACY`/`UNCLEAR`) against known ground truth.
+
+⛔ **Near-miss during this build, caught by the STOP-CATALOGUE pre-flight ritual:** testing the S2
+fixer's raw regex output, I ran `wp-scripts lint-js --fix` against an out-of-tree scratch path to
+tidy the indentation. It silently fell back to its default `src/` glob and reformatted ~250 files
+across the ENTIRE plugin to a different, stricter style config — including one already-committed
+file. Caught by `git status` immediately after (the pre-flight ritual, not luck), reverted before
+touching anything committed. Lesson: never run a project-wide formatter as a post-step on scripted
+output; the fixer's own Python now handles its own re-indentation precisely so it never needs one.
+Documented as a standing ⛔ in `plugins/sgs-blocks/CLAUDE.md`.
+
+Full documentation: `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad — 
+`scripts/migrate-tier-object.py`". S4 (theme pattern folding) remains unpromoted — 0 theme
+instances existed for `gridTemplateRows` so this pass had nothing to prove it against.
+
 ## D570 — Pass 3b (`gridTemplateRows`): storage + control side already migrated on session start; wrapper guard, A3 gap-preview carry-forward and live fixture evidence closed it [ROUTINE]
 
 **2026-08-11.** Continuation of Spec 35 pass 3b. On picking this up, `block.json` was
