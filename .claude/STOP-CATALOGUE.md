@@ -1968,3 +1968,60 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   caught only because the second run reported `cleared=12` where a correct step must report `0`.
   **Rule: any "clean up X" step must be run TWICE and must report zero the second time. A step that
   keeps finding work is not idempotent — it is wrong.**
+
+### E13. Earned 2026-08-11 (session 5) — Spec 35 pass 1: `gap` → tier object (D563)
+
+- **STOP-VERIFY-THE-EFFECT-LANDED-NOT-THE-EXIT-CODE.** Two separate silent failures in one session,
+  and **both produced output that looked exactly like success**. (1) `build-deploy.py` **ABORTED** on a
+  missing `build/` directory; the capture that followed ran happily and reported values identical to
+  the "before" run — which is precisely what a correct result looks like. It was caught only by
+  fetching the deployed `block.json` over HTTP and finding the attribute still present. (2) A
+  `git stash push` / `git stash pop` cycle **reported success and dropped the content change**; the
+  follow-up `git diff --stat` showed a large diff, which read as "restored", but that was line-ending
+  churn masking the fact that the real 5 lines were gone. **Rule: after any deploy or any
+  stash/restore, verify the EFFECT — fetch the deployed artefact, or diff with `--ignore-cr-at-eol`.
+  An exit code of 0 and an unchanged measurement are both consistent with nothing having happened.**
+
+- **STOP-A-CONTROL-PRIMITIVE-MUST-MATCH-ITS-STORAGE-SHAPE.** Migrating `gap` to an object-typed
+  attribute without migrating the control that writes it left **19 of 21 blocks with a destructive
+  inspector, live on the canary for a day**. `ResponsiveControl` writes one flat attr per tier; once
+  `gapTablet`/`gapMobile` were deleted WordPress discarded both silently (D338), and its desktop
+  branch wrote a STRING into an object-typed attr, which coerces to the default and **destroys the
+  whole setting**. Every static gate passed. **Rule: storage shape and control primitive change in
+  the SAME commit — `ResponsiveControl` for flat siblings, `ResponsiveOverride` for an object base —
+  and the writers are found by grepping `edit.js`, `components/` AND `extensions/`. A SHARED
+  component is the high-risk case: one file fed 19 blocks here.** Governing text:
+  `plans/spec-35-control-type-contract.md` §12 field 3.
+
+- **STOP-THE-FRONTEND-IS-NOT-THE-EDITOR-AND-A-SCRIPTED-VALUE-NEVER-TOUCHES-THE-INSPECTOR.** The prior
+  session's verification set values programmatically, so they were already the correct shape and the
+  inspector — the surface carrying the bug — was never the input path under test. **Rule: after any
+  attribute-shape change, open the editor: register → render the control → write a value → assert the
+  STORED shape → assert no flat siblings → assert zero console errors.** Sibling: D567, reached
+  independently the same day by the other track from a JSX reference to a deleted symbol, which is
+  likewise invisible to every static gate here.
+
+- **STOP-SUPPORTS-ANCHOR-IS-NOT-THE-SAME-AS-HONOURING-IT.** WordPress applies `anchor` automatically
+  only when a block renders through `get_block_wrapper_attributes()`. Blocks that hand-build their
+  wrapper (measured: site-header, site-footer, their rows, multi-button, feature-grid) **drop it
+  silently** — no id appears, the probe matches nothing, and the run reports a missing measurement
+  that is indistinguishable from a real regression. **Rule: never depend on the block under test
+  honouring an anchor. Wrap each fixture instance in a container that provably honours one, and select
+  the block as its child.**
+
+- **STOP-GATE-RESULTS-ARE-UNRELIABLE-WHILE-ANOTHER-SESSION-IS-WRITING.** A build failure chased for
+  ~20 minutes was a co-active track mid-edit on a lint baseline; the same gate went green on its own
+  minutes later with no change from this side. **Rule: on a shared worktree, before diagnosing a gate
+  failure, establish whether it also fails at HEAD and whether another session is actively writing.
+  Attribute first, debug second.**
+
+**D101 carry-forward receipt for E13.** Verified by `python .claude/hooks/handoff-preflight.py --check`
+— the authoritative mechanical count — **not** by hand-arithmetic, and deliberately so: a hand regex
+over this file returns 161 because the catalogue mixes `### STOP-X` headings with `- **STOP-X.**`
+bullets, and any single pattern under-counts one shape. **202 → 207. 207 >= 202. PASS.** Five added,
+zero removed. `stop-floor.json` bumped 201 → 206 in the same edit (the floor deliberately excludes the
+14 numeric phantoms, which remain cited-but-undefined). All five are earned by failures that actually
+occurred this session: an aborted deploy and a dropped `git stash` that both reported success; a
+control primitive that did not match its storage shape and shipped a destructive inspector on 19
+blocks; a frontend check that could not see an editor-only defect; a declared `supports.anchor` that
+was never honoured; and a gate failure that belonged to a co-active session, not to this one.

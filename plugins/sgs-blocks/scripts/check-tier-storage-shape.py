@@ -68,9 +68,15 @@ TIER_SUFFIXES = ('Tablet', 'Mobile')
 
 # The known half-migrated families as of 2026-08-10. Present so the gate reports a
 # DELTA rather than a raw count while the migration is in flight. Emptied by pass 1.
+# ⛔ Shrinks only. An entry leaves this set the moment the gate reports it CLEAR;
+# it is never re-added to make a run pass. Pass 1 (`gap`, D563, 2026-08-11)
+# cleared both `gap` entries — the two row blocks' flat siblings are gone, so the
+# families are no longer blended.
+#
+# ONE entry remains, and it is the gate's own promotion trigger: pass 3
+# (`gridTemplateColumns` + `gridTemplateRows`) takes this to ZERO, at which point
+# wire this script into `prebuild`.
 BASELINE = {
-    ('sgs/site-header-row', 'gap'),
-    ('sgs/site-footer-row', 'gap'),
     ('sgs/site-footer-row', 'gridTemplateColumns'),
 }
 

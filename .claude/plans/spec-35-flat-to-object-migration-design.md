@@ -3,7 +3,10 @@ doc_type: design
 title: "Flat tier siblings → tier objects: the migration sequencing"
 spec_ref: .claude/plans/spec-35-control-type-contract.md §12 (governing) · D549 · D552
 date: 2026-08-10
-status: DESIGN — awaiting Bean sign-off; P1 and P2 are BUILT NEXT, no block edits until both are green
+updated: 2026-08-11
+status: ACTIVE — signed off. P1 + P2 built and green. Pass 1 (`gap`, 21 blocks) CLOSED 2026-08-11
+  (D563). Passes 2-6 OPEN. ⛔ Read "Per-pass definition of done" items 0a-0d FIRST — they were added
+  after pass 1 shipped incomplete, and each one recurs on every remaining pass.
 ---
 
 # Flat → object migration — how it happens
@@ -228,6 +231,43 @@ run against a mockup section that maps to at least one migrated property, confir
 before the converter rework and go silent after.** Passive observation is not evidence.
 
 ---
+
+## ⛔ Per-pass definition of done — ITEMS 0a-0c ADDED AFTER PASS 1 SHIPPED INCOMPLETE
+
+**Pass 1 (`gap`) satisfied every item below as this document originally listed them, was deployed,
+and was still wrong in two ways.** Both are now items in their own right, because both recur on
+every remaining pass. Full record: D563.
+
+**0a. Migrate the CONTROL in the same commit as the storage.** A family whose storage becomes an
+object MUST have every control that writes it swapped from `ResponsiveControl` (one flat attr per
+tier) to `ResponsiveOverride` (the object). Pass 1 did not, and
+`ContainerWrapperControls.js` — ONE shared file feeding 19 of the 21 blocks — kept writing
+`gapTablet`/`gapMobile`, which no longer existed. WordPress discards an undeclared attribute
+silently (D338), so both per-device fields saved nothing; and the desktop branch wrote a STRING into
+an object-typed attr, which coerces to the default and **destroys the whole setting**. Find every
+writer first: `grep -rn "<propertyName>Tablet\|<propertyName>Mobile" src/` across `edit.js`,
+`components/` AND `extensions/`, and remember a match inside a comment is not a usage.
+
+**0b. Prove it in the LIVE EDITOR, not just the frontend.** Register → render the control → write a
+value → assert the STORED shape is the object and that no flat siblings appear → assert zero console
+errors. Pass 1's frontend verification could not have caught 0a because it set values
+programmatically, so they were already object-shaped and the inspector was never the input path
+under test. A JSX reference to a deleted symbol is invisible to every static gate here (D567, the
+same day, from the other track).
+
+**0c. Declare `unit_default` for every LENGTH-valued property added to the wrapper's object prop
+list.** `sgs_responsive_format_atom_value()` appends the unit to a bare number; with none declared it
+emits `gap:20`, invalid CSS the browser silently drops. ⚠ A bare number now means **px**
+framework-wide (Bean-ruled 2026-08-10) — it previously meant a WordPress spacing-SCALE SLUG through
+`sgs_css_length_value()`, where slug 30 is 1rem and slug 20 is 0.5rem. Any block default relying on
+the old meaning must be rewritten to an explicit length preserving its MEASURED rendering.
+
+**0d. The evidence toolkit exists — use it, do not hand-write reports.**
+`build-tier-fixture-page.py` → `capture-tier-fixture.py` → `make-visual-diff-reports.py`. The
+generator refuses to emit a PASS it cannot substantiate; a missing report blocks the commit, which is
+the correct outcome. Flags for the honest edge cases: `--expect-change` (rendering deliberately
+moved), `--known-dead` (attribute exists but renders nowhere), `--removed-attr` (attribute deleted —
+no positive control is possible, and printing one would read as missing evidence).
 
 ## Per-pass definition of done
 

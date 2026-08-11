@@ -400,7 +400,27 @@ on every MediaUpload · [ ] no native-supports panel duplicated · [ ] native su
 + ARIA-label where needed · [ ] keyboard + contrast + `aria-describedby` a11y pass · [ ] client patterns
 use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 
-## PART M — Implementation status (living; updated 2026-08-10)
+## PART M — Implementation status (living; updated 2026-08-11)
+
+> ### Phase 1.6 pass 1 (`gap` → tier object, 21 blocks) — CLOSED 2026-08-11
+>
+> `fa638cea` + `0cd1c314`; record **D563**; per-block evidence in
+> `reports/visual-diff/*-2026-08-11.md`. Passes 2-6 remain OPEN — programme detail lives in
+> `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6, sequencing in
+> `.claude/plans/spec-35-flat-to-object-migration-design.md`. Do not duplicate their content here.
+>
+> **One rule from that pass is a STANDARD-level rule and belongs in this document, not only in the
+> plans:** a responsive family's **control primitive must match its STORAGE SHAPE**, and the two
+> change together in one commit — `ResponsiveControl` for flat sibling attrs, `ResponsiveOverride`
+> for an object-typed base. Governing text with the measured incident:
+> `plans/spec-35-control-type-contract.md` §12 field 3.
+>
+> **Why it earned a place here:** the mismatch is silent and destructive in both directions.
+> WordPress discards an attribute a block no longer declares, and coerces a flat value on an
+> object-typed attr to its default. Migrating `gap`'s storage without its control left **19 of 21
+> blocks with an inspector that deleted the setting when used** — through a green build, every static
+> gate, and a deploy. **Only opening the editor finds this class**, which is the same conclusion D567
+> reached independently the same day from the other track.
 
 **The STANDARD (Parts A–L) is COMPLETE as a written spec (v2.0). The BUILD SURFACE against it is
 now SUBSTANTIALLY COMPLETE (`07c67642` → `64f5080e`, late 2026-07-28, ~18 delegate-routed packages

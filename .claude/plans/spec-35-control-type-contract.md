@@ -948,6 +948,29 @@ its element's panel (TIER 1) regardless of this field.)*
    control (`responsive-logo/edit.js:281-305` renders three always-visible logo slots); a bespoke
    `DeviceTabs`; a third breakpoint of any value (**the 768/1024 lock — carried obligation 11**);
    blending `ResponsiveControl` with `ResponsiveOverride` on one attr family.
+
+   ⛔ **THE PAIRING IS BINDING, AND IT BROKE LIVE ON 19 BLOCKS (D563, 2026-08-11).** The primitive
+   must match the STORAGE SHAPE of the family it writes, and the two are chosen together or not at
+   all:
+
+   | Storage in `block.json` | The only correct primitive |
+   |---|---|
+   | scalar base **with** `Tablet`/`Mobile` sibling attrs | `ResponsiveControl` |
+   | `"type": "object"` base, **no** siblings | `ResponsiveOverride` |
+
+   A mismatch is not a style question, it is **destructive and silent in both directions**. Measured:
+   after `gap` migrated to the object shape, `ContainerWrapperControls.js` — ONE shared file feeding
+   19 blocks — still wrote `gap`/`gapTablet`/`gapMobile` through `ResponsiveControl`. The two sibling
+   attrs no longer existed, so WordPress discarded them without error (D338); and the desktop branch
+   wrote a STRING into an object-typed attr, which coerces to the default and **destroys the whole
+   setting**. Nothing failed, nothing warned, and it shipped to the canary.
+
+   **Therefore, whenever a family's storage shape changes, every control writing it changes in the
+   SAME commit, and the result is proven in the LIVE EDITOR** — register, render, write, assert the
+   stored shape, assert no flat siblings, assert zero console errors. A frontend check cannot find
+   this, because a programmatically-set value is already the right shape and never exercises the
+   inspector. Search every writer across `edit.js`, `components/` and `extensions/` — a shared
+   component is the high-risk case precisely because one file serves many blocks.
 4. **Tab** — inherits the tab of whatever it wraps. The wrapper never changes placement.
 5. **Scope** — `block_attributes.is_responsive=1` → 45 blocks, **plus** any attr family declaring
    `Tablet`/`Mobile` siblings that the column has not caught.
