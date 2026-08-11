@@ -1,5 +1,68 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D576 — A deploy shipped STALE `build/blocks/*/block.json`, so WordPress dropped every migrated object attribute before render — and my own probe hid it behind a green reading [INCIDENT]
+
+**2026-08-11.** Commit `f1150251`. Two `/systematic-debugging` agents, dispatched
+independently on two unrelated-looking bugs, converged on ONE root cause. Both were right;
+**I was wrong, twice, and my instrument was wrong once.**
+
+**THE ROOT CAUSE (proven on the server, not inferred).** The canary's deployed
+`wp-content/plugins/sgs-blocks/build/blocks/*/block.json` carried the PRE-migration schema
+(`"minHeight": {"type":"string"}`) while the local `build/` was correct
+(`{"type":"object"}`). Blocks register from the DEPLOYED file
+(`class-sgs-blocks.php:184` → `register_block_type( $block_json )`; there is no
+`blocks-manifest.php` in this plugin). WP core's
+`WP_Block_Type::prepare_attributes_for_render()` validates each stored attribute against the
+REGISTERED schema, and an object value against a `string` schema is **rejected and unset**,
+then refilled from the old scalar default. **The attribute never reaches render.php at all** —
+so no PHP fix at any call site could have mattered.
+
+Confirmed three ways: `wp eval` on `WP_Block_Type_Registry` returned `{"type":"string"}`;
+`md5sum` of live vs local differed; the live file's mtime was that afternoon's deploy. After
+one redeploy the registry returned `{"type":"object"}` and **both bugs vanished with no code
+change**.
+
+**Both agents' PRE-REGISTERED predictions were confirmed exactly** — they were required to
+state the expected measurement per block per viewport BEFORE the single verification deploy
+(they were forbidden from deploying: parallel deploys to a shared canary is a recorded
+incident). min-height: `64/32/8` on all seven blocks. multi-button: `flex-start` / `column` /
+`wrap` / `center`. A prediction made before the measurement is far stronger evidence than one
+made after, and it is what turned "plausible story" into "proven".
+
+⚠ **CORRECTS D575's own correction.** D575 said the wrapper fix "did NOT restore min-height
+binding". That was based on a capture taken minutes after a deploy — and on a probe defect
+(below). The wrapper fix WAS correct; it simply could not take effect while the attribute was
+being dropped upstream. Do not re-open it.
+
+**MY PROBE'S DEFECT — the same failure class, one layer along.** `capture-tier-fixture.py`
+accepted a selector ending in a UNIVERSAL compound as a property's target. The container
+wrapper emits `.sgs-container-<uid> > * { min-width:0; min-height:0 }` — the shrink-to-fit
+backstop — which mentions the block's own uid class AND declares `min-height`. The search
+accepted it, resolved to a CHILD block, and read that child's computed value, **reporting
+`64px` for a property with no rule of its own anywhere on the page**. That green reading is
+what let me tell Bean min-height was fixed while it was not. D573 was the wrong PROPERTY,
+D574 the wrong ELEMENT, this is the wrong element again via a rule that was never the
+attribute's own. **The instrument recorded the truth in `propTargets` the whole time; the
+ANALYSIS read `propValues` alone and never checked it.** A field that records provenance is
+only a defence if something reads it.
+
+**An agent claim I checked and DISPROVED, for the record:** one agent asserted `propValues`
+"just echoes the input `probe_values` rather than a real `getComputedStyle()` read", which
+would have invalidated every measurement this session. It does not —
+`capture-tier-fixture.py:555` is a live `getComputedStyle().getPropertyValue()` call, and it
+returned `0px` where the input was `64px`, which an echo cannot do. Its supporting evidence
+(the `prop` field disagreeing with `propValues`) has a mundane cause: `prop` reads the ROOT
+while `propValues` reads the retargeted element (D574). **A correct root cause does not make
+every claim in the same report correct.**
+
+**STILL UNPROVEN — do not theorise it into a fix.** WHY the deploy shipped a stale `build/`.
+`npm run build` run now leaves those files byte-identical, so `build/` was already correct
+locally; yet the tar packaged an older copy, and the `.bak` (previous deploy) held the NEWER
+object schema — i.e. the staleness went BACKWARDS across two deploys. Not reproduced, not
+explained. **The cause-agnostic mitigation is what matters and is cheap:** `build-deploy.py`
+should verify the DEPLOYED registered schema matches local after every deploy, so a stale
+payload fails the deploy instead of silently disabling every migrated attribute.
+
 ## D575 — 125 live `Array`-coerced CSS declarations across 3 call sites; the migration's own survey could never have seen the worst one [INCIDENT]
 
 **2026-08-11.** Bean's question — *"is there no way to measure them in another way that's low

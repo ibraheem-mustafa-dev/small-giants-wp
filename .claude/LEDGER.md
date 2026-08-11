@@ -41,7 +41,19 @@ of each block, so the migration still can't be committed. One commit pushed (`a3
 - **The migration's own checker could never have caught the worst one.** It only looks inside
   block files, never the shared code every block runs through — and its own documentation
   asserts the shared wrapper "already reads the new format", which is what made every block
-  report clean. Both now dispatched to agents to fix.
+  report clean. Fixed and pushed.
+- **⚠ THE BIG ONE, found last: the canary had been running STALE settings files.** Every
+  per-device setting was being thrown away by WordPress before any block code ran, because the
+  deployed schema still said "this is a single value" while the page stored a per-device one.
+  **No amount of PHP fixing could have worked** — the value was gone upstream. One redeploy
+  fixed both remaining bugs with zero code changes.
+- **I told you min-height was fixed when it wasn't, and my own tool caused that.** It matched a
+  generic "shrink to fit" rule that mentions every block, measured a CHILD element, and reported
+  a confident 64px for a setting that had no rule anywhere on the page. Two agents proved me
+  wrong while I was reporting it as done. Guard added; the tool had actually recorded which
+  element it measured all along — I just never read that field.
+- **Both agents had to predict the result BEFORE I deployed.** Both predictions were exactly
+  right, which is what turned a plausible story into proof.
 
 **2026-08-11 (session 7). The whole remaining long tail migrated in one pass — 41 settings
 across 35 blocks. Six commits pushed. The migration itself is NOT committed yet, because the
