@@ -24,7 +24,7 @@
 			"boxFamilies": {
 				"drawerPadding": [ "drawerPadding" ]
 			},
-			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax" ],
+			"hideExtensions": [ "clickEffects", "parallax" ],
 			"variantAttr": "variantPreset",
 			"variants": {
 				"floating-capped-card": [ "variantPreset", "anchor", "panelSize", "surfaceOpacity", "surfaceBlur", "closeStyle", "drawerAlign", "drawerBg" ],
