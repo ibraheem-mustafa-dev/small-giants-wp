@@ -114,9 +114,9 @@ row carries ITS OWN numbers. ⚠ **Design concern to weigh, not merely test:** a
 grid?"*.
 
 **A2. Pass 3b — `gridTemplateRows`, 19 blocks.** The only remaining pass needing NEW plumbing
-first: `class-sgs-container-wrapper.php:514` has NO `is_array()` guard (every neighbour does), and
+first: `class-sgs-container-wrapper.php:569` has NO `is_array()` guard (every neighbour does), and
 there is no object emission path. Both are one-line additions — add
-`'gridTemplateRows' => 'grid-template-rows'` to the prop map at ~`:2080`, reusing the
+`'gridTemplateRows' => 'grid-template-rows'` to the prop map at ~`:2141`, reusing the
 `sgs_sanitize_grid_template` transform branch already written for `gridAutoRows`.
 
 **A3. The `gap` editor-preview residue — LIVE since pass 1.** `gap` is object-typed on
