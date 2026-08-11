@@ -494,6 +494,18 @@ PROBE = """(args) => {
         for ( const sel of rule.selectorText.split( ',' ) ) {
           const trimmed = sel.trim();
           if ( pass.need && ! pass.need.some( ( h ) => mentions( trimmed, h ) ) ) continue;
+          // ⛔ A selector ending in a UNIVERSAL compound (`> *`, ` *`) is never
+          // the element an attribute styles — it is a blanket backstop applied
+          // to every child. Measured: the container wrapper emits
+          // `.sgs-container-<uid> > * { min-width:0; min-height:0 }` (the
+          // shrink-to-fit rule), which mentions the block's own uid class and
+          // declares `min-height`. Without this guard the probe accepted it,
+          // resolved the target to a CHILD block, and read THAT child's
+          // min-height — reporting `64px` for a property with no rule of its
+          // own anywhere on the page. A confident number measured off the
+          // wrong element: the exact failure this file exists to prevent, and
+          // it briefly hid a real deploy bug behind a green reading.
+          if ( /(^|[\s>+~])\*$/.test( trimmed ) ) continue;
           let matches;
           try { matches = document.querySelectorAll( trimmed ); } catch ( e ) { continue; }
           for ( const m of Array.from( matches ) ) {
