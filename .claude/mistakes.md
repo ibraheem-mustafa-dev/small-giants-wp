@@ -1,9 +1,14 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-09 (Spec 35 Track 1b — +2 stubs: enforcement-claim-without-reading-the-gate, metric-that-mis-ranks). ⚠ ACTIVE SET IS 49, NOT 30 — the cap drifted before this session and an archive sweep to memory/mistakes-archive.md is OWED. Not done here: retiring stubs at the end of a long session risks un-surfacing a live defence, and that judgement belongs in its own pass.
+**Last updated:** 2026-08-11 (Spec 35 Track 1b session 9 — +1 stub: queryselector-returns-first-document-match; -1 to archive to avoid growing the debt). ⚠ ACTIVE SET IS 49, NOT 30 — the cap drifted before session 8 and a full archive sweep to memory/mistakes-archive.md is still OWED. Not done here: retiring 19 stubs at the end of a session risks un-surfacing a live defence, and that judgement belongs in its own pass.
 
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+### [2026-08-11] querySelector grabbed the site header's container instead of my test block, and I nearly reported a working migration as broken
+- **Pattern key:** `queryselector-returns-first-document-match-not-your-test-instance`
+- **Feedback file:** [feedback_queryselector_first_match_not_test_instance.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_queryselector_first_match_not_test_instance.md)
+- **Rule:** `document.querySelector('.wp-block-sgs-container')` on a live verification page matched the site header's nav container (same shared block type, renders first in document order) instead of the test content block further down the page — silently, no error. Always scope live-verification DOM queries to the content container (`.entry-content <selector>`) or the block's own unique uid class, never a bare block-type class, on any page with shared header/footer chrome.
+
 ### [2026-08-09] I wrote "these gates ban the raw components" into a spec without reading either rule body — both claims were false
 - **Pattern key:** `never-assert-an-enforcement-claim-without-reading-the-gate`
 - **Feedback file:** [feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_never_assert_an_enforcement_claim_without_reading_the_gate.md)
@@ -249,8 +254,3 @@
 - **Pattern key:** `preserve-line-endings-or-a-rewrite-becomes-a-whole-file-diff`
 - **Evidence:** Sweeping `decisions.md` to its archive, my script read with `read_text()` and would have written back with `write_text()`. On this CRLF checkout that silently converts EVERY line ending to LF — a 7,679-line diff masquerading as a 218-line archive move, on a shared worktree where another track is committing. Caught only because the script's byte count (1,121,611) disagreed with the gate's on-disk count (1,129,290) by exactly the line count, 7,679. Fixed with `newline=""` on both read and write; the real diff came out 218 out / 224 in.
 - **Rule:** Any script that rewrites a repo file must open with `newline=""` on read AND write. And when two byte counts of the "same" file disagree by exactly the line count, that is a line-ending conversion, not a measurement error — sibling of `a-checksum-across-a-git-boundary-is-not-a-measurement`.
-
-### [2026-08-08] The council's summary survived; its raw output did not, so a real finding was lost
-- **Pattern key:** `a-summary-survives-but-the-raw-record-does-not`
-- **Evidence:** The 2026-08-07/08 QC council produced findings A–I, D527 and the ABSORPTION MAP — all SUMMARIES, each written by me. No per-rater output was ever committed: there is no council report file anywhere in `reports/` or `memory/`. The control-ORDER point was raised by that council, never made it into any summary, and was recoverable only because Bean remembered it. Auditing "what else did they raise?" is impossible against a record that only contains what I already thought worth keeping.
-- **Rule:** Commit the VERBATIM per-rater output before acting on a council, not the synthesis alone. A synthesis is lossy in exactly the direction that hides your own blind spots — the findings you did not think mattered are the ones the panel existed to surface.

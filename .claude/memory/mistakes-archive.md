@@ -1,8 +1,13 @@
 # mistakes — Archive
 Entries moved here when active stubs exceed 30. Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedback_*.md.
-Last prune: 2026-07-28 (3 entries from 2026-05-29 moved here to make room for the Spec 35 close-out lessons).
+Last prune: 2026-08-11 (1 entry moved to make room for a new stub; the set was already 19 over cap before this — a full sweep to 30 is still owed, this only prevented it growing further).
 
 ---
+
+### [2026-08-08] The council's summary survived; its raw output did not, so a real finding was lost
+- **Pattern key:** `a-summary-survives-but-the-raw-record-does-not`
+- **Evidence:** The 2026-08-07/08 QC council produced findings A–I, D527 and the ABSORPTION MAP — all SUMMARIES, each written by me. No per-rater output was ever committed: there is no council report file anywhere in `reports/` or `memory/`. The control-ORDER point was raised by that council, never made it into any summary, and was recoverable only because Bean remembered it. Auditing "what else did they raise?" is impossible against a record that only contains what I already thought worth keeping.
+- **Rule:** Commit the VERBATIM per-rater output before acting on a council, not the synthesis alone. A synthesis is lossy in exactly the direction that hides your own blind spots — the findings you did not think mattered are the ones the panel existed to surface.
 
 ### [2026-05-29] `.claude` and `.agents` DB paths share inode (NTFS junction) — not two DBs to mirror; real two DBs are sgs-framework + ui-ux-pro-max
 - **Pattern key:** `dbs-are-junction-not-mirror`

@@ -405,11 +405,14 @@ use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 
 ## PART M — Implementation status (living; updated 2026-08-11)
 
-> ### Phase 1.6 pass 1 (`gap` → tier object, 21 blocks) — CLOSED 2026-08-11
+> ### Phase 1.6 passes 1-4 of 6 — CLOSED 2026-08-11
 >
-> `fa638cea` + `0cd1c314`; record **D563**; per-block evidence in
-> `reports/visual-diff/*-2026-08-11.md`. Passes 2-6 remain OPEN — programme detail lives in
-> `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6, sequencing in
+> `gap` (D563, `fa638cea`+`0cd1c314`), `maxWidth`+`contentWidth` (D568), `gridTemplateColumns`+
+> `gridTemplateRows` (D569/D570), `columns` (D578) — all four properties that route through
+> `class-sgs-container-wrapper.php`, so this closes the shared-wrapper portion of the migration.
+> Per-block evidence in `reports/visual-diff/*-2026-08-11.md`. Passes 5-6 (font-size families,
+> the long tail) remain OPEN and route through `TypographyControls` instead — programme detail
+> lives in `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6, sequencing in
 > `.claude/plans/spec-35-flat-to-object-migration-design.md`. Do not duplicate their content here.
 >
 > **One rule from that pass is a STANDARD-level rule and belongs in this document, not only in the

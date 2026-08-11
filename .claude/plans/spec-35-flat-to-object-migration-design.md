@@ -4,9 +4,12 @@ title: "Flat tier siblings → tier objects: the migration sequencing"
 spec_ref: .claude/plans/spec-35-control-type-contract.md §12 (governing) · D549 · D552
 date: 2026-08-10
 updated: 2026-08-11
-status: ACTIVE — signed off. P1 + P2 built and green. Pass 1 (`gap`, 21 blocks) CLOSED 2026-08-11
-  (D563). Passes 2-6 OPEN. ⛔ Read "Per-pass definition of done" items 0a-0d FIRST — they were added
-  after pass 1 shipped incomplete, and each one recurs on every remaining pass.
+status: ACTIVE — signed off. P1 + P2 built and green. Passes 1-4 of 6 CLOSED 2026-08-11 — Pass 1
+  `gap` (D563), Pass 2 `maxWidth`+`contentWidth` (D568), Pass 3 `gridTemplateColumns`+
+  `gridTemplateRows` (D569/D570), Pass 4 `columns` (D578) — the last pass touching the shared
+  wrapper. Passes 5-6 (font-size families, long tail) OPEN; neither touches
+  `class-sgs-container-wrapper.php`. ⛔ Read "Per-pass definition of done" items 0a-0d FIRST — they
+  recur on every remaining pass.
 ---
 
 # Flat → object migration — how it happens
