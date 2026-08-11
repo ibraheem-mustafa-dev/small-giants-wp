@@ -1,5 +1,57 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D573 — The fixture instrument was blind on 29 of 41 properties; the attr→CSS mapping is now DERIVED from source, and refuses rather than blanks [INCIDENT]
+
+**2026-08-11.** `capture-tier-fixture.py` derived each property's CSS name by
+camelCase→kebab-case. Correct for `minHeight`→`min-height`; **wrong for 29 of the 41
+properties** in this session's batch pass: `labelFontSize`→`label-font-size`,
+`priceFontSize`→`price-font-size`, `thickness`→`thickness`, `positionX`→`position-x`. None
+are CSS properties. `getPropertyValue()` returns `''` for an unknown property **without
+throwing**, and `''` is indistinguishable from "this block has no value set".
+
+**This is the pass-2 blind-instrument bug (already documented in that file's own header) at
+~70% of a pass instead of one property.** It was found by RUNNING a real capture, not by
+reasoning — every self-test passed beforehand, because the old batch assertion only checked
+that the result *looked* like a CSS property (lowercase, hyphenated). `label-font-size`
+satisfies that perfectly while measuring nothing. **A weak assertion is worse than none: it
+converts "untested" into "tested and green".**
+
+**Bean's correction is what fixed it:** *"the mapping is easy and is findable in the blocks
+source files."* Correct — I was about to spec a design session for something the code already
+declares. The mapping now resolves in order:
+1. **explicit override**, each cited to the `render.php` line it came from — `positionX`→`left`
+   and `positionY`→`top` (decorative-image sets them as `left`/`top` %), `rotation`→`transform`
+   (emitted as `rotate(Ndeg)`), `thickness`→`border-bottom-width` and
+   `iconSize`→`--sgs-btn-icon-size` (both literal `'css' =>` entries in their render.php
+   prop_maps), `widthType`→`width` (an enum selecting how width computes);
+2. **`property_suffixes` in `sgs-framework.db`, LONGEST suffix wins** — the project's canonical
+   table (R-31-1 DB-first, no hardcoded dicts). Resolves **33 of 41 on its own**, because
+   `labelFontSize` ends in `FontSize` → `font-size`, which is what the block actually emits
+   onto its label element via `sgs_typography_css_rule`. Longest-suffix matters: `FontSize`
+   must beat the shorter `Size`;
+3. kebab-case only as a last resort.
+
+**Plus the guard whose absence let this ship:** `validate_css_property()` REFUSES before
+measuring anything that does not resolve to a real CSS property (custom `--sgs-*` properties
+allowed), rather than recording blanks that later read as clean evidence. Two attributes are
+declared unmeasurable-by-design and SKIPPED with a stated reason instead of silently blanked:
+`customWidthUnit` (a unit modifier for `customWidth`, not a property) and `maxResults` (a REST
+query limit — evidenced by its own render.php/edit.js using it as a query arg, never in CSS).
+
+**Verification:** self-test 32→34 assertions and materially stronger — it now asserts the REAL
+target per attribute, with negative controls proving the validator rejects the naive kebab
+output, accepts a real property and a custom property, and holds the declared-unmeasurable set.
+Re-run against the real 41-property manifest: all 39 measurable properties map to real CSS
+properties, 2 skipped with reasons, 0 blanks.
+
+**Sibling finding, NOT yet fixed (blocks the migration commit):** 7 blocks
+(`before-after, collapsible-text, decorative-image, media, option-picker, text, whatsapp-cta`)
+render as empty shells on the fixture page and are reported NOT-FOUND. The capture correctly
+refuses to score them. Fix = extend `build-tier-fixture-page.py`'s `TYPED_ITEMS` with the
+minimum attrs that make each paint, read from each block's own `block.json`.
+
+Commits: `12f86c12` (batch mode, all 3 scripts), `7af83d4b` (this mapping fix).
+
 ## D572 — S4 (theme pattern/template folding) promoted to `scripts/migrate-theme-tier-scalars.py`, proven against real git history; caught a real false-positive before it shipped [ROUTINE]
 
 **2026-08-11.** Bean's follow-up after D571 ("why not promote S4 by testing it against ANOTHER
