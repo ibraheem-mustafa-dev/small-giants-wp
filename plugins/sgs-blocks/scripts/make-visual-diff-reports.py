@@ -790,7 +790,15 @@ def main() -> int:
                               removed_attr, date, out_dir, args.dry_run)
     passed, failed = result['passed'], result['failed']
 
-    print(f"property: {after['property']}   date: {date}")
+    # ⚠ `properties` first, and NEVER a bare `after['property']`. A batch
+    # capture omits `property` entirely (capture-tier-fixture.py keeps it only
+    # when the run is single-property), so the direct subscript raised
+    # KeyError here — AFTER every report had been written, turning a completed
+    # run into a traceback and hiding its real pass/fail. Every other read in
+    # this file already used this fallback; this one line did not.
+    props_label = ', '.join(after.get('properties')
+                            or ([after['property']] if after.get('property') else [])) or '(none)'
+    print(f"property: {props_label}   date: {date}")
     print(f'PASS  {len(passed)} report(s){" (dry run — nothing written)" if args.dry_run else ""}')
     for n in passed:
         print(f'  ✓ {n}')

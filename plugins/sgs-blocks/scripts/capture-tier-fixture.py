@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -346,12 +347,167 @@ def self_test() -> int:
 # < 768 so it is MOBILE.
 VIEWPORT_TIER = {'desktop': 'desktop', 'tablet': 'tablet', 'mobile': 'mobile'}
 
+BLOCKS_DIR = Path(__file__).resolve().parents[3] / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
+
+_TYPO_SUFFIXES = ('FontSize', 'FontWeight', 'FontStyle', 'LineHeight', 'LetterSpacing')
+
+
+def element_hints(block_dir: str, attr: str) -> list[str]:
+    """The BEM element class(es) `attr`'s CSS is actually emitted onto.
+
+    ⛔ WHY A HINT IS NEEDED AT ALL. The probe finds a property's target by
+    looking for the block's own rule that declares that CSS property — but two
+    attributes on one block routinely map to the SAME property:
+    `labelFontSize` and `titleFontSize` are both `font-size`. Measured on
+    sgs/trust-bar, the search returned `.sgs-trust-bar__label` for BOTH, so
+    `titleFontSize` was read off the label. A plausible element is not the
+    right element.
+
+    DERIVED FROM SOURCE, not from a naming convention: every per-element
+    typography rule is emitted by a
+    `sgs_typography_css_rule( $attributes, '<prefix>', <selector> )` call whose
+    THIRD argument is the selector. `titleFontSize` -> prefix `title` -> that
+    call's selector -> `.sgs-card-grid__title`. Where the selector is held in a
+    variable the assignment is resolved, and a comma list returns every class
+    (trust-bar's label rule covers `__label` AND `__badge-label`).
+
+    Returns [] for a non-typography attribute or a block with no such call —
+    the probe then falls back to the property search, which is unambiguous when
+    only one attribute maps to that property.
+    """
+    prefix = next((attr[:-len(s)] for s in _TYPO_SUFFIXES
+                   if attr.endswith(s) and len(attr) > len(s)), None)
+    if not prefix:
+        return []
+    src_path = BLOCKS_DIR / block_dir / 'render.php'
+    if not src_path.is_file():
+        return []
+    src = src_path.read_text(encoding='utf-8', errors='replace')
+    call = re.search(r"sgs_typography_css_rule\(\s*\$attributes,\s*'"
+                     + re.escape(prefix) + r"'\s*,\s*(.+?)\)\s*[;.]", src, re.S)
+    if not call:
+        return []
+    expr = call.group(1)
+    bare_var = re.fullmatch(r'\s*(\$[A-Za-z_][A-Za-z0-9_]*)\s*', expr)
+    if bare_var:
+        assign = re.search(re.escape(bare_var.group(1)) + r"\s*=\s*(.+?);", src, re.S)
+        if assign:
+            expr = assign.group(1)
+    # Only class tokens from the QUOTED literal parts; `$uid` interpolation is
+    # per-instance and already handled by the probe's own scoping.
+    return re.findall(r"\.([a-z][a-z0-9-]*(?:__[a-z0-9-]+)*)", expr)
+
+
 PROBE = """(args) => {
-  const { selector, props } = args;
+  const { selector, props, bemClass, conventionClass } = args;
   const el = document.querySelector( selector );
   if ( ! el ) {
     return { found: false, selector };
   }
+  // ⛔ WHICH ELEMENT a property is read FROM is as load-bearing as which CSS
+  // property it maps to. D573 fixed the NAME (`labelFontSize` -> `font-size`,
+  // not `label-font-size`); this fixes the TARGET. Measured on the real page:
+  // 22 of the 41 migrated properties are emitted onto a DESCENDANT of the block
+  // root — `sgs_typography_css_rule( $attributes, 'label', '.{uid}
+  // .sgs-trust-bar__label' )` and its siblings across trust-bar, card-grid,
+  // product-card, brand-strip, counter, icon-list, nav-menu, option-picker,
+  // quote, separator, whatsapp-cta. Reading the ROOT for those returns the
+  // inherited base (16px/18px) — a real number, from an element the rule never
+  // touches. It cannot move when the property moves, so the positive control
+  // fails and the evidence is worthless either way.
+  //
+  // The target is DERIVED FROM THE EMITTED CSS, not from parsing render.php:
+  // every SGS block scopes its per-instance <style> on a class its own root
+  // carries, so a rule is "this block's" exactly when its selector mentions one
+  // of the measured node's classes. That also excludes theme rules like
+  // `:root :where(h2){font-size}` which declare the same property and match
+  // nodes inside the block but say nothing about this attribute.
+  // A class matches only at a CLASS BOUNDARY. ⚠ Plain `.includes()` is a
+  // substring test, and every BEM element class starts with its block class:
+  // `.sgs-button__icon svg` contains `.sgs-button`, so the icon's `width:15px`
+  // was returned as the target for the button's own `customWidth`. Measured,
+  // not hypothesised.
+  const mentions = ( selectorText, cls ) => new RegExp(
+    '\\.' + cls.replace( /[.*+?^${}()|[\\]\\\\]/g, '\\\\$&' ) + '(?![\\\\w-])'
+  ).test( selectorText );
+
+  const ownRules = ( node, instanceClasses ) => {
+    const own = Array.from( node.classList );
+    const out = [], generic = [];
+    const walk = ( rules ) => {
+      for ( const rule of Array.from( rules || [] ) ) {
+        if ( rule.style && rule.selectorText ) {
+          // PER-INSTANCE rules first. The scoped <style> render.php emits for
+          // THIS instance is what the block attribute actually drives; the
+          // block's shared style.css may declare the same property on a
+          // different element entirely. Ranking by which class matched keeps
+          // the attribute's own rule winning without guessing at specificity.
+          if ( instanceClasses.some( ( c ) => mentions( rule.selectorText, c ) ) ) {
+            out.push( rule );
+          } else if ( own.some( ( c ) => mentions( rule.selectorText, c ) ) ) {
+            generic.push( rule );
+          }
+        }
+        // Recurse into @media LAST, and on `.length` — never on truthiness.
+        // ⚠ Since CSS Nesting shipped, Chrome's CSSStyleRule ALSO exposes a
+        // `cssRules` list; it is empty, but it is an object, so a truthiness
+        // check is true for EVERY ordinary style rule. Measured: an
+        // `if ( rule.cssRules ) { ...; continue; }` guard walked 64 stylesheets
+        // and examined 0 rules, reporting "this block emits no rule" for all
+        // 130 measurements — a total blackout that looked like a clean result.
+        if ( rule.cssRules && rule.cssRules.length ) walk( rule.cssRules );
+      }
+    };
+    for ( const sheet of Array.from( document.styleSheets ) ) {
+      try { walk( sheet.cssRules ); } catch ( e ) { continue; }  // cross-origin
+    }
+    return out.concat( generic );
+  };
+
+  // The element THIS BLOCK styles for `cssProp`, or null when the block emits
+  // no rule for it — null is reported rather than silently swapped for the
+  // root, so a missing rule reads as "no target", never as a clean value.
+  const targetFor = ( node, cssProp, rules, hints ) => {
+    // A `hints` class comes from the attribute's OWN
+    // `sgs_typography_css_rule` selector in render.php. When one exists it is
+    // the ONLY acceptable target — there is deliberately no fall back to "any
+    // rule declaring this property".
+    //
+    // ⛔ A fallback was tried and removed. `titleFontSize` is unset on the
+    // default variant, so no rule is emitted for it; the fallback then handed
+    // back `.sgs-trust-bar__label` — the other font-size rule on the block —
+    // and the reading looked perfectly reasonable while describing the wrong
+    // element. Returning null says "this block emits no rule for this
+    // attribute", which is both true and useful. A plausible element is not
+    // the right element.
+    // With no hint the attribute belongs to the block ROOT, so the root is
+    // tried before any descendant. ⚠ Without this, `minHeight` on
+    // sgs/container resolved to `.sgs-container-<uid> > *` — a rule that sets
+    // min-height on the container's CHILDREN — and read `0px` while the root
+    // carried the value correctly. First-rule-wins is not root-wins.
+    const passes = ( hints && hints.length )
+      ? [ { need: hints, rootOnly: false } ]
+      : [ { need: null, rootOnly: true }, { need: null, rootOnly: false } ];
+    for ( const pass of passes ) {
+      for ( const rule of rules ) {
+        if ( rule.style.getPropertyValue( cssProp ) === '' ) continue;
+        for ( const sel of rule.selectorText.split( ',' ) ) {
+          const trimmed = sel.trim();
+          if ( pass.need && ! pass.need.some( ( h ) => mentions( trimmed, h ) ) ) continue;
+          let matches;
+          try { matches = document.querySelectorAll( trimmed ); } catch ( e ) { continue; }
+          for ( const m of Array.from( matches ) ) {
+            if ( m === node ) return { node: m, selector: trimmed };
+            if ( ! pass.rootOnly && node.contains( m ) ) {
+              return { node: m, selector: trimmed };
+            }
+          }
+        }
+      }
+    }
+    return null;
+  };
+
   const read = ( node ) => {
     const c = getComputedStyle( node );
     const r = node.getBoundingClientRect();
@@ -378,14 +534,33 @@ PROBE = """(args) => {
     // leave the rest unevidenced while looking complete. `prop` is retained
     // as the FIRST property's value so single-property consumers that predate
     // batch mode keep reading what they expect.
+    // Each value is read from the element the BLOCK's own rule targets — the
+    // root when the rule sits on the root, the descendant when it does not.
+    // `propTargets` records which, so a report can never quietly present a
+    // root reading as evidence for a descendant-scoped property.
+    // The per-instance (uid) classes: everything on the root that is NOT the
+    // WordPress convention class, the shared BEM root class, or one of its
+    // `--modifier` forms. What remains is the uid render.php scopes this
+    // instance's <style> on (`sgs-hdg-43da6855`, `sgs-tb-6`, …), derived from
+    // the block name rather than pattern-guessed at a hash.
+    const shared = [ conventionClass, bemClass ];
+    const instanceClasses = Array.from( node.classList ).filter(
+      ( c ) => shared.indexOf( c ) === -1 && c.indexOf( bemClass + '--' ) !== 0
+    );
+    const rules = ownRules( node, instanceClasses );
     const propValues = {};
+    const propTargets = {};
     for ( const p of props ) {
-      propValues[ p.attr ] = c.getPropertyValue( p.css );
+      const t = targetFor( node, p.css, rules, p.hints );
+      propValues[ p.attr ] = getComputedStyle( t ? t.node : node )
+        .getPropertyValue( p.css );
+      propTargets[ p.attr ] = t ? t.selector : null;
     }
     return {
       classes: node.className,
       prop: props.length ? c.getPropertyValue( props[ 0 ].css ) : '',
       propValues,
+      propTargets,
       display: c.display,
       gridTemplateColumns: c.gridTemplateColumns,
       boxWidth: Math.round( r.width ),
@@ -517,10 +692,17 @@ def main() -> int:
                 # exactly the "looks measured, proves nothing" failure this
                 # pipeline exists to prevent.
                 b_props = b.get('properties') or all_props
-                probe_props = [{'attr': p, 'css': css_for.get(p, css_property_for(p))}
+                probe_props = [{'attr': p, 'css': css_for.get(p, css_property_for(p)),
+                                'hints': element_hints(b['dir'], p)}
                                for p in b_props]
+                # `sgs/trust-bar` -> shared classes `sgs-trust-bar` (BEM root)
+                # and `wp-block-sgs-trust-bar` (the WP convention). Anything
+                # else on the root is this instance's own uid class, which is
+                # what its scoped <style> keys on.
+                bem = b['name'].replace('/', '-')
                 measured = page.evaluate(
-                    PROBE, {'selector': b['selector'], 'props': probe_props})
+                    PROBE, {'selector': b['selector'], 'props': probe_props,
+                            'bemClass': bem, 'conventionClass': 'wp-block-' + bem})
                 measured['variant'] = b['variant']
                 measured['block'] = b['dir']
                 measured['properties'] = b_props
