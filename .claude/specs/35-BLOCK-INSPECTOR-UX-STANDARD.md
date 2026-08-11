@@ -410,10 +410,13 @@ use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 > `gap` (D563, `fa638cea`+`0cd1c314`), `maxWidth`+`contentWidth` (D568), `gridTemplateColumns`+
 > `gridTemplateRows` (D569/D570), `columns` (D578) — all four properties that route through
 > `class-sgs-container-wrapper.php`, so this closes the shared-wrapper portion of the migration.
-> Per-block evidence in `reports/visual-diff/*-2026-08-11.md`. Passes 5-6 (font-size families,
-> the long tail) remain OPEN and route through `TypographyControls` instead — programme detail
-> lives in `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6, sequencing in
-> `.claude/plans/spec-35-flat-to-object-migration-design.md`. Do not duplicate their content here.
+> Per-block evidence in `reports/visual-diff/*-2026-08-11.md`. ⛔ **"Passes 5-6 = font-size
+> families + long tail" is FALSE, corrected 2026-08-11 (later same day): every font-size family
+> is already object-shaped, verified directly against `block.json`.** The real remaining work is
+> a 5th SHAPE this migration's own tooling doesn't yet classify correctly — 4 BOX-per-tier
+> properties (`contentBandPadding` [7 blocks, shared wrapper], `contentPadding`, `pillPadding`,
+> `padding`) — programme detail + orchestration plan lives in `.claude/LEDGER.md`. Do not
+> duplicate that content here.
 >
 > **One rule from that pass is a STANDARD-level rule and belongs in this document, not only in the
 > plans:** a responsive family's **control primitive must match its STORAGE SHAPE**, and the two

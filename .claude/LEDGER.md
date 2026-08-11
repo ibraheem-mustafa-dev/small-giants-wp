@@ -7,153 +7,250 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 # small-giants-wp — LEDGER (the one living status)
 
+## ⛔ MANDATORY READING — before touching any responsive-migration file
+
+Read these two in full before Task 1 or Task 2 below. Skipping either is exactly how last
+session's "font-size families" plan went stale within an hour:
+
+1. **`.claude/plans/spec-35-flat-to-object-migration-design.md`** — the whole design, especially
+   the "⛔ Per-pass definition of done" items 0a-0d (item 0a is the recurring bug: a shared control
+   file keeps writing to deleted flat attrs).
+2. **`.claude/plans/spec-35-control-type-contract.md` §12** ("THE RESPONSIVE WRAPPER FAMILY") —
+   the TIER axis vs BOX axis distinction. This session's whole finding rests on that distinction:
+   a box-typed base attribute is NOT the same claim as a tier-collapsed base attribute, and the
+   migration tool currently conflates them.
+
+Also re-read `.claude/STOP-CATALOGUE.md` §C (pre-flight ritual) before any live-editor
+verification — item 11 was extended this session with the querySelector document-order trap.
+
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-11 (session 9). `columns` — the last property that touches the shared wrapper —
-is migrated, deployed, and live-verified.** Four of the six passes in the responsive-settings
-migration are now done (`gap`, `maxWidth`, `gridTemplateColumns`, `columns`). Two remain
-(the font-size families, and a long tail) and neither touches the shared wrapper file, so this
-is the last of the RISKY passes.
+**2026-08-11 (session 9, continued). Corrected the plan for what's left, and it's smaller and
+different from what the last plan said.**
 
-- **What "migrated" means in practice:** the number-of-columns setting used to be stored as
-  three separate boxes (one per device). Now it's one box holding all three, matching how
-  spacing and width already work. I edited the shared piece of code all 21 grid blocks use
-  myself (the highest-risk part, per your sign-off), and delegated the block-by-block sweep
-  (schema + editor controls + render code + 6 theme patterns) to a subagent.
-- **The exact bug that broke `gap` on 19 blocks last session (a shared control still writing
-  to boxes that no longer exist) was checked for and found again** — the same shared file, plus
-  two header/footer files independently reintroducing it. Fixed in the same commit, not left
-  for next time.
-- **Proven live, not just on paper:** I opened the real block editor, set a column count per
-  device, saved, and measured the actual rendered page at all three screen widths — 3 columns
-  on desktop, 2 on tablet, 1 on mobile, exactly matching what was set. Reset and undo both
-  worked. Then I built a second page carrying all 21 blocks at once and proved 14 of them bind
-  live; the other 7 are individually explained (2 don't actually use this setting for their
-  grid at all — traced to the exact line of code proving it; 5 have no CSS grid this method can
-  see, e.g. they're flex or JS-driven, which is a fact about the code, not a gap in testing).
-- **The visual-diff safety check couldn't run its normal way a second time** — same reason as
-  last session (documented then as D577): once the code is live, there's no way to capture
-  "what it looked like before" any more. I used the same stronger-but-narrower evidence Bean
-  already accepted once, and said plainly what it doesn't cover.
-- **Found and fixed a real, unrelated bug along the way:** a button's font-size setting never
-  rendered at all — the code computed the right value and then forgot to use it. One line fix.
-  (Investigated by a background agent that also looked at 3 other "broken" settings; those 3
-  turned out to be the TEST PAGE's fault, not the blocks' — explained, not guessed.)
-- **4 stale test pages on the canary were blocking the deploy** (old-shape content) — checked
-  each one's title first, confirmed they were scratch/QA pages, deleted them.
+- **"Font-size settings are next" was wrong — they're already done.** I checked every block's
+  actual saved schema directly rather than trusting the plan document, and every font-size
+  setting across the framework is already in the new one-box-per-setting shape. It must have
+  been folded into an earlier big batch of changes without anyone updating this specific plan.
+- **What's actually left is smaller: 4 settings, 10 blocks total**, and they're a genuinely
+  different shape — not "three separate device boxes" but "three separate FOUR-SIDED boxes"
+  (padding/spacing settings, which have a top/right/bottom/left each). None of them are broken
+  today — they render correctly right now — this is pure tidying, not a fix.
+- **One of the four (`contentBandPadding`, used by 7 blocks including the header and footer)
+  touches the same shared piece of code the `columns` setting did.** Same rule applies: your
+  sign-off before I touch it.
+- **The tool that's supposed to find this work currently reports "nothing to migrate" for all
+  four** — a real gap I found and am flagging rather than trusting. It only checks "is this
+  stored as one box or three", not "is this box the RIGHT shape yet" — so it can't tell a
+  finished job from an unfinished one when both look like "one box".
 
-**Earlier narrative:** session 8 → `memory/session-2026-08-11-session8.md` (once rotated);
-session 7 → `memory/session-2026-08-11-session7.md`; session 6 and earlier →
-`memory/session-2026-08-08.md`. Full detail in commit messages + `decisions.md` D546-D578.
+**Earlier narrative:** session 9 (the `columns` migration) → this same file's prior version,
+snapshotted to `memory/session-2026-08-11-session9.md` on next rotation. Full detail in commit
+messages + `decisions.md` D546-D578.
 
 ## CURRENT FRONTS
 
 > **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D578**.
 
-### ✅ SESSION 9 — the `columns` pass (D578)
+### ✅ Passes 1-4 of the flat→object migration are CLOSED (unchanged from last session)
 
-| What | Where |
-|---|---|
-| Shared wrapper extraction → tier-object read | `class-sgs-container-wrapper.php:228-241` |
-| S1-S4 sweep (21 blocks: block.json/edit.js/render.php + 6 theme patterns) | delegated agent, verified inline |
-| `button.fontSize` never emitted — found + fixed | `button/render.php` |
-| 3 of 4 "non-binding" properties from session 8 explained as FIXTURE bugs, not block bugs | see Task 3 result below |
-| Deploy via `--payload` (broke the commit/deploy deadlock) + 4 stale pages deleted | canary |
-| Live-editor + 21-block positive-control verification | `/tier-fixture-columns/` (post 2255) |
-| Visual-diff gate bypassed a 2nd time, same shape as D577 | `decisions.md` D578 |
+`gap` (D563), `maxWidth`+`contentWidth` (D568), `gridTemplateColumns`+`gridTemplateRows`
+(D569/D570), `columns` (D578) — all four properties that route through
+`class-sgs-container-wrapper.php`.
 
-**Task 3 result (the 4 unexplained non-binding properties from session 8):**
-- `button.fontSize` — REAL bug, fixed (see above).
-- `decorative-image.positionY`, `hero.splitContentOrder`, `quote.attributionMarginTop` — all
-  three are **fixture/probe construction gaps**, not block defects (zero-height wrapper
-  collapsing a percentage `top`; the fixture forcing `variant:'standard'` so a split-only code
-  path never runs; a probe deriving the wrong unit-sibling name). Each has a proven file:line
-  cause. No block code needs changing for these three; the fixture builder does, when someone
-  picks that up — not currently scheduled.
+### ⛔ CORRECTED THIS SESSION — "Pass 5" was already shipped; the real remaining work is different
 
-### ⭐ NEXT SESSION — orchestration plan
+**Verified directly against `block.json` for every block (not from a doc):** every font-size
+family (`labelFontSize`, `titleFontSize`, `priceFontSize`, `quoteFontSize`, etc. — checked ~30
+attributes across ~20 blocks) is already `"type":"object"` with no `Tablet`/`Mobile` siblings.
+Handful of exceptions checked individually (`media.captionFontSize`, `product-card.ctaFontSize`,
+`testimonial.quoteFontSize`/`summaryFontSize`, `text.firstLetterFontSize`) — none has
+`Tablet`/`Mobile` siblings at all, so none was ever part of this migration; they're plain
+non-responsive settings, correctly out of scope.
 
-**Passes 1-4 of 6 are DONE** (`gap`, `maxWidth`, `gridTemplateColumns`, `columns`) — all four
-shared-wrapper properties. **Passes 5-6 remain and do NOT touch the shared wrapper.**
+**What `npm run survey:responsive-shape` genuinely still lists, verified against real schema:**
+
+| Property | Blocks (7+1+1+1 = 10 total) | Shape | Shared wrapper? |
+|---|---|---|---|
+| `contentBandPadding` | container, cta-section, hero, physics-canvas, site-footer, site-header, trust-bar | box-per-tier, 3 sibling attrs | **YES** — `class-sgs-container-wrapper.php:467-478` |
+| `contentPadding` | hero | box-per-tier, 3 sibling attrs | No — `hero/render.php` reads it directly |
+| `pillPadding` | option-picker | box-per-tier, 3 sibling attrs | No — `option-picker/render.php` reads it directly |
+| `padding` | label | box-per-tier, 3 sibling attrs | No — `label/render.php` reads it directly |
+
+**None of these are live bugs.** Each currently has a safe `is_array()` guard at its read site —
+unlike the pre-migration flat-scalar pattern, an unset tier here can't produce an `Array to
+string conversion`. This is schema-consistency cleanup, not an urgency-1 fix.
+
+**⛔ Tool gap found and NOT yet fixed:** `migrate-tier-object.py --property <name> --survey`
+reports **"0 blocks to migrate"** for all four of these, misclassifying every one as `ASSET`
+shape. Verified by running it live against all four. Its S1 classifier tests only whether the
+base attr is `"type":"object"` — it cannot distinguish a box-typed-but-still-flat-tier base
+(what these actually are: `contentBandPadding` holds ONE box, `contentBandPaddingTablet` holds
+ANOTHER box, `contentBandPaddingMobile` a third — three separate box objects, never merged) from
+a genuinely finished nested tier-of-boxes (`contentBandPadding: {desktop:{...}, tablet:{...},
+mobile:{...}}`). **Do not trust this tool's verdict for these four properties. Migrate them by
+hand, following the exact pattern below — do not spend session time extending the generic tool
+for a shape this small (10 blocks total); that would be over-engineering for what looks like the
+terminal case of this migration.**
+
+**The target shape, concretely** (mirrors the already-working pattern in
+`sgs_responsive_normalise_object()` + `ResponsiveOverride`, just one level deeper):
+```json
+"contentBandPadding": {
+  "type": "object",
+  "default": { "desktop": {} }
+}
+```
+Read via `sgs_responsive_normalise_object($attributes['contentBandPadding'] ?? null)` then
+`$tier['desktop'] ?? array()` etc. per tier — each tier value is itself the 4-side box object,
+unchanged in shape from today's per-tier box. Only the OUTER nesting changes.
 
 ---
 
-## Task 1 — Pass 5: migrate the font-size families to the tier-object shape
+## Task 1 — Migrate the 3 block-private box-tier properties (contentPadding, pillPadding, padding)
 
-**What:** `labelFontSize`, `titleFontSize`, `priceFontSize` and siblings across the blocks that
-declare them — a different shape from passes 1-4 (bespoke per-block NAMES but one underlying
-mechanism), routed through `TypographyControls` + `sgs_typography_css_rule` rather than the
-shared container wrapper.
-**Why:** the next scheduled pass per the migration design's property order (§Phase overview).
-**Estimated time:** 20 min design/survey + 40 min build.
+**What:** fold each of `contentPadding` (hero), `pillPadding` (option-picker), `padding` (label)
+from 3 sibling box attrs into 1 nested tier-of-boxes object.
+**Why:** closes 3 of the 4 remaining properties with zero shared-wrapper risk — no design gate
+needed, can start immediately.
+**Estimated time:** 25 min (3 single-block edits, same shape repeated).
 
 **Orchestration:**
-- Execution: delegated (no shared-wrapper edit this pass — lower blast radius than passes 1-4).
+- Execution: delegated, no design gate needed (none of the three touches the shared wrapper).
 - Model: `sonnet` via `/delegate`
-- Dispatch pattern: single-agent, same triad as passes 1-4
-  (`migrate-tier-object.py --property <name> --survey/--fix/--check`).
-- Brief: run `npm run survey:responsive-shape` fresh to regenerate the exact font-size property
-  list (do not trust a cached list — it drifts). Each property routes through
-  `TypographyControls`/`sgs_typography_css_rule`, NOT `SGS_Container_Wrapper` — read
-  `plugins/sgs-blocks/CLAUDE.md`'s "TYPOGRAPHY — use the SHARED component" box before touching
-  any block. Apply the same item-0a check (grep every writer of `<name>Tablet`/`<name>Mobile`
-  across `edit.js`/`components/`/`extensions/` — a shared component is the high-risk case).
-- Context it will not have: the design doc's "Per-pass definition of done" (items 1-9 +
-  0a-0d) governs every pass, including this one — read
-  `.claude/plans/spec-35-flat-to-object-migration-design.md` in full first.
+- Dispatch pattern: single-agent, all three properties in one dispatch (same shape, low risk,
+  no shared file conflict between them).
+- Brief: for each of the three, (a) fold `block.json`'s 3 sibling attrs into 1 nested object per
+  the target shape above, folding the base's authored default as the desktop tier; (b) find and
+  fix every `edit.js`/shared-component writer of the old flat siblings (item 0a — grep
+  `<name>Tablet\|<name>Mobile` across `edit.js`, `components/`, `extensions/`); (c) update the
+  `render.php` read to `sgs_responsive_normalise_object()` then per-tier box access. **Do NOT
+  trust `migrate-tier-object.py --survey`'s verdict on these — it misreports all three as
+  already-done. Verify the actual `block.json` type + sibling presence yourself.**
+- Context it will not have: `option-picker`'s `edit.js` state is `SHARED` (delegates to a shared
+  control) per a stale tool read — check by hand whether that's still true and whether that
+  shared control needs the item-0a fix too.
 - Depends on: none.
-- Parallel with: none scheduled.
-- /qc gate after: `/qc-inline` (no shared-wrapper change this pass, so `/qc-council`'s
-  shared-mechanism trigger does not apply — confirm that's still true before skipping it).
+- Parallel with: Task 2's design-gate wait (not its wrapper edit).
+- /qc gate after: `/qc-inline` + live-editor verification on at least one of the three (register
+  → render the control → write a value → assert stored shape is nested → assert no flat siblings
+  → assert zero console errors — same check as this session's `columns` verification, item 0b).
 
-**Acceptance:** `migrate-tier-object.py --property <name> --check` exits 0 for every font-size
-property AND at least one block's binding proven live in the editor (item 0b) AND the visual-diff
-gate satisfied NORMALLY this time (a genuine before-capture is obtainable since this property was
-never deployed pre-migration on this pass — do not assume another bypass is available).
+**Acceptance:** all 3 block.json files show the nested shape with 0 flat siblings; `npm run
+build` exit 0; live-editor round-trip proven on ≥1 block; `npm run
+survey:responsive-shape` no longer lists these 3 as `flat_tiers`/`both_shapes` for the base
+(⚠ but re-verify by reading the JSON output's `hint`, not the headline "0 candidates" line — see
+the tool-gap note above).
 
 ---
 
-## Task 2 — Pass 6: the long tail
+## Task 2 — `contentBandPadding` (7 blocks, SHARED WRAPPER) — needs Bean's design gate FIRST
 
-**What:** whatever `npm run survey:responsive-shape` still lists after pass 5 closes.
-**Why:** closes the migration.
-**Estimated time:** unknown until pass 5 closes and the survey re-runs — do not estimate from a
-stale list.
+**What:** the last property migration this pass — fold `contentBandPadding`'s 3 sibling box
+attrs into 1 nested object, across all 7 blocks that declare it, and update the shared wrapper's
+read at `class-sgs-container-wrapper.php:467-478`.
+**Why:** the only remaining property that touches shared code (per Rule 7, needs sign-off before
+building — same as `columns` last session).
+**Estimated time:** 15 min design gate + 35 min build.
 
 **Orchestration:**
-- Execution: inline first (re-run the survey, read what's left), then delegate per-property.
-- Depends on: Task 1 (pass 5) closing, so the survey reflects the true remaining set.
-- /qc gate after: per-property, same as Task 1.
+- Execution: **inline (main thread) for the wrapper edit** (Rule 7 — same split as `columns`);
+  delegated for the 7-block sweep.
+- If delegated (sweep only):
+  - Model: `sonnet` via `/delegate`
+  - Dispatch pattern: single-agent
+  - Brief: apply the target shape (above) to all 7 blocks' `block.json` + `edit.js` + any
+    `render.php` that reads the attr directly (`container`/`cta-section`/`hero`/`physics-canvas`/
+    `trust-bar` are `edit=LEGACY`; `site-footer`/`site-header` are `edit=SHARED` — check what
+    that shared control is and whether it needs the item-0a fix, same recurring risk class that
+    hit `gap` (D563) and `ContainerWrapperControls.js`/`site-header-row`/`site-footer-row`
+    (D578) twice already this migration).
+  - Context it will not have: `contentBandPadding` is read at
+    `class-sgs-container-wrapper.php:467-478` with an inline `is_array(...) ? X : array()` guard
+    already present — that part is safe today; the main-thread wrapper edit changes ONLY the
+    read shape (mirror the `columns`/`min_height_obj` precedent from `2d7b0b7c` — read via
+    `sgs_responsive_normalise_object()` once, keep every downstream variable name/type
+    unchanged), not the guard logic itself.
+- Depends on: **Bean's design gate.** Do not start the wrapper edit without it — same ask as
+  `columns`: approve migrating `contentBandPadding` to the nested shape, touching the shared
+  wrapper's read for 7 blocks.
+- Parallel with: Task 1.
+- /qc gate after: **yes — code review of the wrapper diff specifically** (same closing step this
+  session used for `columns`, `2d7b0b7c`'s wrapper edit) — `/qc-council` if the diff ends up
+  larger than a single-read-shape change.
 
-**Acceptance:** `npm run survey:responsive-shape` shows 0 real migration candidates remaining
-(the `asset_like`/`flag_like` families stay correct as-is, per the design doc's own exclusion).
+**Acceptance:** `class-sgs-container-wrapper.php`'s `contentBandPadding` read matches the
+`columns`/`min_height_obj` pattern; all 7 blocks' `block.json` show the nested shape with 0 flat
+siblings; live-editor round-trip proven on ≥1 of the 7 (prefer `container` — matches this
+session's `columns` fixture, fastest to reuse); a positive-control fixture built via
+`build-tier-fixture-page.py --property contentBandPadding --publish` +
+`capture-tier-fixture.py` (the exact toolkit that produced this session's 21-block evidence in
+~15 minutes) proves the value binds live across all 7 blocks, not just the one hand-tested.
+
+---
+
+## Task 3 — Close the migration (only after Task 1 AND Task 2 both land)
+
+**What:** confirm nothing real remains, then mark the whole flat→object migration COMPLETE
+across every doc that tracks it.
+**Why:** this is genuinely the last known property class — closing it properly (not leaving
+another stale "next pass" line) matters more here than usual.
+**Estimated time:** 15 min.
+
+**Orchestration:**
+- Execution: inline (main thread) — this is a verify + doc-write step, not a build.
+- Depends on: Task 1 AND Task 2 both committed and deployed.
+- /qc gate after: none needed — this task IS the closing verification.
+
+**Steps:**
+1. Re-run `npm run survey:responsive-shape --json` fresh. Confirm 0 entries with
+   `shape:flat_tiers` or `shape:both_shapes` carry `hint:cascading_value` or `hint:box_family`
+   (the two hints that mean "genuine migration candidate" — `asset_like`/`flag_like` are
+   correct-as-is by design, never migrate those).
+2. Spot-check the `orphan_tier` bucket (94 entries as of this session, dominated by
+   `margin`/`padding`/`borderRadius` — confirmed this session to be classifier noise from
+   already-fully-migrated box properties, not a hidden candidate list — but RE-confirm rather
+   than trusting this line, since it's exactly the kind of cached-count claim this project's
+   docs keep getting burned by).
+3. Update `decisions.md` (new D-entry), `LEDGER.md` (replace, mark migration COMPLETE),
+   `.claude/plans/spec-35-flat-to-object-migration-design.md` (status → COMPLETE, all 6 "passes"
+   language retired since the real shape turned out different from the original 6-pass plan),
+   `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part M, and
+   `~/.claude/plans/go-track-1b-playful-hamster.md` Phase 1.6 row — all four, in the SAME commit
+   as whatever code change Task 3 itself makes (none expected — this is a verify-and-close task).
+
+**Acceptance:** every doc in step 3 says the same thing about what's done — verified by the same
+kind of independent QC subagent cross-check this session used for the `columns` handoff, not by
+self-assertion.
 
 ---
 
 ## Dependency graph
 
 ```
-Task 1 (pass 5, sonnet, no wrapper edit) ──► Task 2 (pass 6, survey-driven)
+Task 1 (3 block-private props, sonnet) ──────────────────────┐
+Bean design gate (contentBandPadding) ─► Task 2 (wrapper inline + sweep sonnet) ─┤
+                                                                                    ├─► ONE deploy ─► Task 3 (close)
 ```
 
-⛔ **ONE deploy per cycle, run by the main thread.** Parallel deploys to the shared canary
-caused D576. Verify the DEPLOYED schema after any deploy, not just HTTP 200.
+⛔ **ONE deploy per cycle, run by the main thread.** Combine Task 1 + Task 2's changes into a
+single deploy/commit, same as this session did for `columns` + the concurrent hero-gradient work
+— do not deploy Task 1 and Task 2 separately unless something blocks one of them.
 
 ## Methodology guardrails (do not skip)
 
-- **Deploy before measure** — and then verify the DEPLOYED schema, not just HTTP 200 (D576).
-- **The dirty-tree/visual-diff-gate deadlock has a built escape:** `build-deploy.py --payload
-  <path>` deploys a declared uncommitted payload without `--allow-dirty`, so you can capture the
-  live evidence the pre-commit gate demands BEFORE committing. Used this session — works.
-- **`querySelector` on a page with header/footer/multiple instances of a block type returns the
-  FIRST match in document order, not necessarily your test instance** — scope every DOM query to
-  the specific container (`.entry-content .wp-block-sgs-x`), never the bare class. Caught this
-  session mid-verification (grabbed the site header's container instead of the test block).
-- **Root cause before instance fix** — ask what CLASS of failure this is before fixing the one
-  case.
-- **`/qc-council` before every commit** touching converter/pipeline/shared-wrapper/SGS block
-  logic (blub.db 255).
-- **Verify the EFFECT landed, not the exit code.**
+- **Do not trust a survey/tool's headline verdict without reading what it actually checked** —
+  this session's whole finding was `migrate-tier-object.py` silently misclassifying box-shaped
+  properties as done. The same trap can recur for any shape the tool wasn't built for.
+- **The `--payload` escape hatch for the commit/deploy deadlock works** — `build-deploy.py
+  --payload <path>` (repeatable flag) deploys declared uncommitted files without
+  `--allow-dirty`, letting you capture live evidence before committing. Used successfully this
+  session.
+- **querySelector on any WP page returns the FIRST document-order match** — scope every live
+  DOM query to `.entry-content <selector>` or a unique uid class, never a bare block-type class
+  (STOP-CATALOGUE.md §B, new entry this session).
+- **Root cause before instance fix; verify the EFFECT landed, not the exit code.**
+- **`/qc-council` before every commit touching shared-wrapper/SGS block logic** (blub.db 255).
 - **`git commit --amend` IGNORES the original pathspec** and flushes the WHOLE index. Amend only
   when the index is empty.
 - **Re-run the D-ceiling command immediately before writing a decision entry.**
@@ -165,40 +262,29 @@ caused D576. Verify the DEPLOYED schema after any deploy, not just HTTP 200.
 - **Track 1c** (Spec 31 converter) — build shipped; open item is PROOF not build.
 - **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.
 - **Track 3** — CLOSED (D479). ⛔ GSAP is NOT MIT · LYGIA is Prosperity-licensed.
-- **Concurrent session (not this track):** hero gradient-overlay work
-  (`hero/block.json`/`edit.js`/`render.php`, `GradientOverlayControl.js`,
-  `components/primitives/index.js`) was IN-FLIGHT and uncommitted when this session started —
-  Bean-approved to ship bundled in this session's commit (non-overlapping schema additions,
-  verified no conflict). If that work is still incomplete, its owner should check the commit
-  landed what they expected.
+- **Concurrent session (not this track):** hero gradient-overlay work continued past session 9's
+  close (further edits to `container`/`cta-section`/`site-footer`/`site-header`/`trust-bar`
+  `block.json` + `GradientOverlayControl.js` appeared uncommitted after this session's commits
+  landed). Not this track's work — leave it alone; check its own commits before touching any of
+  those files for Task 1/2 above, since some of them (`container`, `cta-section`, `trust-bar`,
+  `site-footer`, `site-header`) overlap the `contentBandPadding` block list.
 
 ---
 
 ## State Snapshot
 
 - **Branch:** `main`. ⛔ **Do not trust this line for tree state — run `git status`.** Commit by
-  EXACT PATH (co-active sessions share `main`); the visual-diff gate REJECTS a report whose
-  `source_sha` describes a previous change.
+  EXACT PATH (co-active sessions share `main`).
   ⛔ **`git commit --amend` IGNORES the original pathspec and flushes the WHOLE index.** Amend
   only when the index is EMPTY.
-- **Tests/build:** `npm run build` exit 0 after re-anchoring 2 line-shifted baseline exemptions
-  in `08-raw-url-link.json` (google-reviews/trustpilot-reviews — same pre-existing config-URL
-  controls, just moved by this pass's edit.js edits, verified via `git show HEAD`).
-- **`migrate-tier-object.py --self-test`: 2 pre-existing FAILURES, unrelated to `columns`** —
-  both about `minHeight`, both because the self-test's embedded "pre-fix HEAD" fixture assumes
-  `git show HEAD` still shows the old buggy read, but HEAD (as of the migration landing) already
-  contains the fix. Verified independently this session (not just trusted): `git show
-  HEAD:...class-sgs-container-wrapper.php` already has `sgs_responsive_normalise_object()` for
-  minHeight. Needs the self-test's own embedded fixture updated to match the new HEAD — not
-  something touching `columns` can fix, and not blocking.
-- **⛔ THE CANARY IS CONTENDED.** A parallel session deploys to it from its own worktree.
-  **After ANY deploy, verify the REGISTERED schema, not just HTTP 200:**
-  `wp eval 'echo json_encode(WP_Block_Type_Registry::get_instance()->get_registered("sgs/container")->attributes["columns"]);'`
-  over SSH. Done this session — confirmed `{"type":"object","default":{"desktop":2,"tablet":2,"mobile":1}}`.
-- **Canary:** sandybrown-nightingale-600381.hostingersite.com. Fixture page **2255**
-  (`/tier-fixture-columns/`) exists from this session — reusable for a future `columns` recheck.
-  ⚠ **11 WP installs share that server** — always name the full path, never glob. Credentials
-  `.claude/secrets/sandybrown.env` (always available; do not ask).
+- **Tests/build:** `npm run build` exit 0 as of `969c9a61` (session 9 close).
+- **⛔ THE CANARY IS CONTENDED.** A parallel session (hero gradient work) deploys to it from its
+  own worktree. **After ANY deploy, verify the REGISTERED schema, not just HTTP 200.**
+- **Canary:** sandybrown-nightingale-600381.hostingersite.com. Fixture pages from prior passes
+  still live and reusable: `/tier-fixture-columns/` (post 2255). Build a fresh one for
+  `contentBandPadding` via the same toolkit. ⚠ **11 WP installs share that server** — always
+  name the full path, never glob. Credentials `.claude/secrets/sandybrown.env` (always
+  available; do not ask).
 - **DB:** snapshot at `~/.agents/skills/sgs-wp-engine/sgs-framework.db.bak-2026-08-10-pre-T0-classifier`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
@@ -210,29 +296,27 @@ caused D576. Verify the DEPLOYED schema after any deploy, not just HTTP 200.
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| **THE migration triad — survey/fix/gate, all 4 shapes** | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
-| **THE procedure for the next passes** | `plans/spec-35-flat-to-object-migration-design.md` |
+| **THE migration triad — survey/fix/gate, all 4 shapes (⚠ box-tier is a 5th shape it doesn't handle yet — see above)** | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
+| **THE procedure + the two axes (TIER vs BOX) this session's finding turns on** | `plans/spec-35-flat-to-object-migration-design.md` + `plans/spec-35-control-type-contract.md` §12 |
 | **THE GOVERNING SPEC for this track** | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| **The canonical control set (GOVERNING)** | `plans/spec-35-control-type-contract.md` |
-| Programme scope + phases (NOT the entry point) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
 | Decisions (D-numbered) | `decisions.md` — D578 is session 9 |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Blockers
 
-- **NONE for this track.** `columns` (pass 4/6) is committed, deployed and live-verified.
-  Passes 5-6 (font-size families + long tail) are scoped above and don't touch the shared
-  wrapper.
+- **contentBandPadding (Task 2) is GATED, not blocked** — needs Bean's design-gate approval
+  before the wrapper edit starts, same shape as the `columns` gate last session.
+- **Task 1 has no blocker** — can start immediately next session.
 
 ## Open — carried, not ours to close
 
 - **The two pre-commit hooks are still unreconciled** (`.git/hooks/pre-commit` vs
-  `.githooks/pre-commit`) — shared-mechanism change needing its own design gate.
-  ⛔ Do not `cp` one over the other.
-- **`migrate-tier-object.py`'s classifier does not recognise `TypographyControls`** as a shared
-  import — relevant now that pass 5 touches it directly. Add it to
-  `_SHARED_CONTROL_IMPORT_RE` before or during pass 5, not after.
+  `.githooks/pre-commit`). ⛔ Do not `cp` one over the other.
+- **`migrate-tier-object.py` cannot correctly classify a box-typed-but-flat-tier property** —
+  found this session (see above). Whether to extend the generic tool or keep hand-migrating the
+  rare box-tier case is an open design question; this session judged hand-migration faster for
+  the 10-block scope actually remaining, but if a 6th shape turns up later, revisit.
 - **`sgs/site-header` / `sgs/site-footer`** — no inert-attribute audit done beyond `gap`/`columns`.
 - **The lost at-a-glance affordance** — deleted per-control strips showed which OTHER tiers had
   a value. ⛔ must NOT be solved by re-adding a per-control switcher.
@@ -241,12 +325,10 @@ caused D576. Verify the DEPLOYED schema after any deploy, not just HTTP 200.
 - **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
 - **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
   toggle; needs its own design gate. Not started.
-- **The `tier-fixture-columns` (post 2255) and any earlier per-pass fixture pages are LIVE
-  content on the canary** — reusable for spot-checks, but count against ruling B if a future
-  pass wants a clean slate; trash-and-rebuild rather than hand-editing.
-- **The fixture builder's own bugs, found this session, not fixed (out of scope for `columns`):**
-  `build-tier-fixture-page.py`'s wrapper gives decorative/positioned media no height (collapses
-  percentage `top`); its `example.attributes` merge doesn't override `variant` for split-only
-  properties like hero's `splitContentOrder`; its unit-sibling deriver only matches the exact
-  `{prop}Unit` pattern and misses `attributionMarginTop`→`attributionMarginUnit`. Whoever next
-  touches the fixture toolkit should read Task 3's result above first.
+- **`card-grid`'s `maxWidth` + `contentWidth` are still `type:string`** — the one measured
+  storage-shape residual from pass 2 (D568), unrelated to this session's box-tier finding,
+  verified directly 2026-08-11. Not scheduled; note if picking up pass-2-family work again.
+- **The fixture builder's own bugs, found session 9, not fixed:** `build-tier-fixture-page.py`'s
+  wrapper gives decorative/positioned media no height (collapses percentage `top`); its
+  `example.attributes` merge doesn't override `variant` for split-only properties; its
+  unit-sibling deriver only matches the exact `{prop}Unit` pattern.

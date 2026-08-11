@@ -7,9 +7,14 @@ updated: 2026-08-11
 status: ACTIVE — signed off. P1 + P2 built and green. Passes 1-4 of 6 CLOSED 2026-08-11 — Pass 1
   `gap` (D563), Pass 2 `maxWidth`+`contentWidth` (D568), Pass 3 `gridTemplateColumns`+
   `gridTemplateRows` (D569/D570), Pass 4 `columns` (D578) — the last pass touching the shared
-  wrapper. Passes 5-6 (font-size families, long tail) OPEN; neither touches
-  `class-sgs-container-wrapper.php`. ⛔ Read "Per-pass definition of done" items 0a-0d FIRST — they
-  recur on every remaining pass.
+  wrapper. ⛔ **"Pass 5 = font-size families" is FALSE — verified directly against every block's
+  `block.json` 2026-08-11 (later same day): every font-size family is already object-shaped,
+  folded in earlier. The real remaining work is 4 BOX-shaped properties this 6-pass plan never
+  named** (`contentBandPadding` [7 blocks, shared wrapper], `contentPadding`, `pillPadding`,
+  `padding` on `label`) — a genuinely different shape (a 4-side box per tier, not a scalar per
+  tier) that `migrate-tier-object.py`'s S1 classifier currently misreports as "0 to migrate".
+  Full detail + orchestration plan: `.claude/LEDGER.md`. ⛔ Read "Per-pass definition of done"
+  items 0a-0d FIRST — they recur on every remaining pass.
 ---
 
 # Flat → object migration — how it happens
