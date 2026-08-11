@@ -88,16 +88,110 @@ _CSS_PROPERTY_OVERRIDES = {
     # (multi-column layout) shorthand — measuring `columns` would read an
     # unrelated property that happens to exist. Lands in pass 4.
     'columns': 'grid-template-columns',
+    # ⛔ ADDED D573 (2026-08-11) after a REAL batch run proved kebab-casing is
+    # wrong for most attributes. Each is read from the block's own render.php,
+    # cited, never guessed:
+    # decorative-image/render.php:~99 sets `left`/`top` from positionX/Y (%).
+    'positionX': 'left',
+    'positionY': 'top',
+    # decorative-image/render.php:150 — `rotate(<deg>)` inside `transform`.
+    # The measurable computed property is the matrix on `transform`.
+    'rotation': 'transform',
+    # button/render.php:610 — widthType is an ENUM selecting how width is
+    # computed (full → 100%, custom → value+unit, fit → auto). What paints is
+    # `width`.
+    'widthType': 'width',
+    # button — the icon size rides a CUSTOM PROPERTY, not a CSS property
+    # (render.php prop_map: 'attr' => 'iconSize', 'css' => '--sgs-btn-icon-size').
+    'iconSize': '--sgs-btn-icon-size',
+    # separator/render.php prop_map: 'thickness' => 'border-bottom-width'.
+    'thickness': 'border-bottom-width',
 }
+
+# Attributes that are deliberately NOT CSS-measurable. Naming them is the point:
+# an unmeasurable property must be DECLARED unmeasurable, never silently read as
+# an empty string and reported as evidence.
+_NOT_CSS_MEASURABLE = {
+    # A UNIT modifier — it changes the unit on customWidth's output, it is not a
+    # property in its own right. customWidth itself IS measured (→ width).
+    'customWidthUnit': 'a unit modifier for customWidth, not a property of its own',
+    # product-search: a REST query limit (how many results to fetch). Genuinely
+    # not a visual property — evidenced by its own render.php/edit.js, which use
+    # it as a query arg, never in CSS.
+    'maxResults': 'a REST query limit, not a rendered CSS value',
+}
+
+
+def _db_suffix_map() -> dict:
+    """`property_suffixes` from sgs-framework.db — the project's CANONICAL
+    attribute-suffix → CSS-property table (R-31-1: DB-first, no hardcoded
+    dicts). Returns {} if the DB is unreachable, so this degrades to the
+    explicit overrides rather than crashing a capture.
+    """
+    import os
+    import re as _re
+    import subprocess as _sp
+    script = os.path.expanduser(
+        '~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py')
+    if not os.path.isfile(script):
+        return {}
+    try:
+        out = _sp.run([sys.executable, script, 'sql',
+                       'SELECT suffix, css_property FROM property_suffixes'],
+                      capture_output=True, text=True, encoding='utf-8',
+                      timeout=30).stdout
+    except (OSError, _sp.SubprocessError):
+        return {}
+    rows = {}
+    for line in out.splitlines():
+        m = _re.match(r'\s{2}(\S+)\s+(\S.*?)\s*$', line)
+        if m and m.group(1) not in ('suffix',) and not m.group(1).startswith('---'):
+            if m.group(2) != 'None':
+                rows[m.group(1)] = m.group(2)
+    return rows
+
+
+_DB_SUFFIXES: dict | None = None
 
 
 def css_property_for(attr: str) -> str:
     """Map a block ATTRIBUTE name to the CSS property a browser will answer for.
 
-    camelCase → kebab-case, with the non-derivable cases named explicitly above.
+    ⛔ THIS USED TO BE A BLIND camelCase→kebab-case CONVERSION, AND THAT IS
+    WRONG FOR MOST ATTRIBUTES. Measured on the first real batch run (D573,
+    2026-08-11): 29 of 41 properties kebab-cased to a CSS property that DOES
+    NOT EXIST — `labelFontSize` → `label-font-size`, `priceFontSize` →
+    `price-font-size`, `thickness` → `thickness`. `getPropertyValue()` returns
+    an EMPTY STRING for an unknown property without throwing, and blank is
+    indistinguishable from "this block has no value" — the exact pass-2
+    blind-instrument bug, at ~70% of a pass rather than one property.
+
+    The real mapping is DECLARED IN THE SOURCE and is derived here, in order:
+      1. an explicit override above (each one cited to the render.php line it
+         came from — the not-derivable cases);
+      2. `property_suffixes` in sgs-framework.db, LONGEST suffix wins. This is
+         the project's canonical table and the reason most of these resolve:
+         `labelFontSize` ends in `FontSize` → `font-size`, which is what the
+         block actually emits (onto its label element, via
+         `sgs_typography_css_rule`);
+      3. kebab-case, as a last resort for a genuinely plain attribute.
+
+    ⚠ Longest-suffix wins deliberately: `labelFontSize` must match `FontSize`
+    (font-size), never the shorter `Size`.
     """
+    global _DB_SUFFIXES
     if attr in _CSS_PROPERTY_OVERRIDES:
         return _CSS_PROPERTY_OVERRIDES[attr]
+    if _DB_SUFFIXES is None:
+        _DB_SUFFIXES = _db_suffix_map()
+    cap = attr[:1].upper() + attr[1:]
+    best = None
+    for suf, css in _DB_SUFFIXES.items():
+        if cap == suf or cap.endswith(suf):
+            if best is None or len(suf) > len(best[0]):
+                best = (suf, css)
+    if best:
+        return best[1]
     out = []
     for ch in attr:
         if ch.isupper():
@@ -106,6 +200,47 @@ def css_property_for(attr: str) -> str:
         else:
             out.append(ch)
     return ''.join(out)
+
+
+# Every CSS property this pipeline is allowed to believe in. A property that
+# resolves to something NOT in here is REFUSED rather than measured — because
+# an unknown property reads back as '' and would be reported as "no value",
+# which is how a whole pass can look green while measuring nothing at all.
+# Custom properties (--sgs-*) are always allowed: they are real and resolvable.
+_KNOWN_CSS_PROPERTIES = {
+    'align-content', 'align-items', 'aspect-ratio', 'background-color',
+    'border-bottom-width', 'border-color', 'border-radius', 'border-style',
+    'border-width', 'bottom', 'box-shadow', 'color', 'column-gap', 'display',
+    'flex-direction', 'flex-wrap', 'font-family', 'font-size', 'font-style',
+    'font-weight', 'gap', 'grid-auto-flow', 'grid-auto-rows',
+    'grid-template-columns', 'grid-template-rows', 'height', 'justify-content',
+    'justify-items', 'left', 'letter-spacing', 'line-height', 'margin-bottom',
+    'margin-left', 'margin-right', 'margin-top', 'max-height', 'max-width',
+    'min-height', 'min-width', 'opacity', 'order', 'padding-bottom',
+    'padding-left', 'padding-right', 'padding-top', 'position', 'right',
+    'row-gap', 'text-align', 'text-decoration', 'text-transform', 'top',
+    'transform', 'transition-duration', 'width', 'z-index',
+}
+
+
+def validate_css_property(attr: str, css: str) -> str | None:
+    """None when the mapping is measurable; otherwise the reason it is not.
+
+    This is the guard whose ABSENCE let 29 blank mappings through. It fails
+    LOUDLY at capture time rather than producing empty readings that later look
+    like clean evidence.
+    """
+    if attr in _NOT_CSS_MEASURABLE:
+        return _NOT_CSS_MEASURABLE[attr]
+    if css.startswith('--'):
+        return None
+    if css not in _KNOWN_CSS_PROPERTIES:
+        return (f'`{attr}` resolved to `{css}`, which is not a CSS property this '
+                'pipeline recognises. getPropertyValue() would return an empty '
+                'string for it and the run would look clean while measuring '
+                'nothing. Add it to _KNOWN_CSS_PROPERTIES if it is real, or to '
+                '_CSS_PROPERTY_OVERRIDES / _NOT_CSS_MEASURABLE if it is not.')
+    return None
 
 
 def self_test() -> int:
@@ -142,29 +277,66 @@ def self_test() -> int:
     # property. A batch is where a bad mapping hides best — 40 good mappings and
     # one silently-blank reading looks like a clean run, which is precisely the
     # pass-2 failure at larger scale. These are the batch this pass shipped.
-    batch = ['minHeight', 'labelFontSize', 'fontSize', 'letterSpacing', 'lineHeight',
-             'width', 'height', 'maxHeight', 'iconSize', 'rotation', 'order',
-             'alignItems', 'flexDirection', 'flexWrap', 'justifyContent', 'thickness',
-             'positionX', 'splitContentOrder', 'maxResults']
-    for attr in batch:
+    # ⛔ D573: these assert the REAL CSS property each attribute drives, read
+    # from the block's own render.php / the property_suffixes DB — NOT a
+    # kebab-cased guess. The earlier version of this block asserted only that
+    # the result "looked like" a CSS property (lowercase, hyphenated), which
+    # `label-font-size` satisfies perfectly while being measurable as nothing.
+    # That weak assertion is exactly why 29 blank mappings reached a real run.
+    batch = [
+        ('minHeight', 'min-height'),
+        ('maxHeight', 'max-height'),
+        ('flexDirection', 'flex-direction'),
+        # The whole point: a PREFIXED font-size drives real `font-size` on a
+        # child element, never `<prefix>-font-size`.
+        ('labelFontSize', 'font-size'),
+        ('titleFontSize', 'font-size'),
+        ('priceFontSize', 'font-size'),
+        ('attributionFontSize', 'font-size'),
+        ('nameLetterSpacing', 'letter-spacing'),
+        ('nameLineHeight', 'line-height'),
+        ('headlineMarginBottom', 'margin-bottom'),
+        ('attributionMarginTop', 'margin-top'),
+        ('splitContentOrder', 'order'),
+        # From render.php prop_maps / explicit overrides, each cited above.
+        ('thickness', 'border-bottom-width'),
+        ('iconSize', '--sgs-btn-icon-size'),
+        ('positionX', 'left'),
+        ('positionY', 'top'),
+        ('rotation', 'transform'),
+        ('widthType', 'width'),
+    ]
+    for attr, expected in batch:
         got = css_property_for(attr)
-        if not got or got != got.lower() or '_' in got:
-            failures.append(f'  BATCH: css_property_for({attr!r}) → {got!r} is not a '
-                            'plausible CSS property name')
-    # Spot-check the derivable ones actually kebab correctly.
-    for attr, expected in (('minHeight', 'min-height'), ('maxHeight', 'max-height'),
-                           ('labelFontSize', 'label-font-size'),
-                           ('flexDirection', 'flex-direction')):
-        if css_property_for(attr) != expected:
-            failures.append(f'  BATCH: css_property_for({attr!r}) → '
-                            f'{css_property_for(attr)!r}, expected {expected!r}')
+        if got != expected:
+            failures.append(f'  BATCH: css_property_for({attr!r}) → {got!r}, '
+                            f'expected {expected!r}')
+
+    # NEGATIVE CONTROL: the naive kebab-case result must be REJECTED by the
+    # validator. Without this, a future refactor could reintroduce blind
+    # kebab-casing and every assertion above would still be the only thing
+    # standing between it and a silent all-blank run.
+    for bogus in ('label-font-size', 'price-font-size', 'max-results'):
+        if validate_css_property('someAttr', bogus) is None:
+            failures.append(f'  NEGATIVE CONTROL: validate_css_property accepted '
+                            f'{bogus!r}, which no browser answers for')
+    if validate_css_property('fontSize', 'font-size') is not None:
+        failures.append('  NEGATIVE CONTROL: validate_css_property REJECTED a real '
+                        'property (font-size) — the guard is too strict')
+    if validate_css_property('iconSize', '--sgs-btn-icon-size') is not None:
+        failures.append('  NEGATIVE CONTROL: validate_css_property rejected a custom '
+                        'property, which is real and resolvable')
+    for declared in _NOT_CSS_MEASURABLE:
+        if validate_css_property(declared, css_property_for(declared)) is None:
+            failures.append(f'  NEGATIVE CONTROL: {declared!r} is declared '
+                            'unmeasurable but the validator passed it')
 
     for line in failures:
         print(line)
     # Count every assertion, not just the `cases` table — a count that under-reports
     # what ran makes a growing self-test look static, and this one now covers the
     # batch mappings too. (2 explicit negative controls + the batch checks.)
-    total = len(cases) + 2 + len(batch) + 4
+    total = len(cases) + 2 + len(batch) + 3 + 2 + len(_NOT_CSS_MEASURABLE)
     print(f'self-test: {total} assertion(s), {len(failures)} failure(s)')
     return 1 if failures else 0
 
@@ -275,9 +447,35 @@ def main() -> int:
     css_override = manifest.get('css_property')
     css_for = {p: (css_override if (css_override and len(all_props) == 1)
                    else css_property_for(p)) for p in all_props}
-    for attr, css in css_for.items():
-        if css != attr:
-            print(f'  property: attr `{attr}` → CSS `{css}`')
+
+    # ⛔ REFUSE before measuring anything (D573). A property that does not
+    # resolve to a real CSS property reads back as '' — indistinguishable from
+    # "no value set" — so a run would look clean while measuring nothing. This
+    # gate exists because a real batch run proved 29 of 41 properties were in
+    # exactly that state. Unmeasurable-by-design properties are DROPPED with a
+    # stated reason rather than silently blanked; anything else is fatal.
+    unmeasurable, fatal = {}, []
+    for attr, css in sorted(css_for.items()):
+        why = validate_css_property(attr, css)
+        if why is None:
+            if css != attr:
+                print(f'  property: attr `{attr}` → CSS `{css}`')
+            continue
+        if attr in _NOT_CSS_MEASURABLE:
+            unmeasurable[attr] = why
+        else:
+            fatal.append(why)
+    if fatal:
+        print('\nFAIL: unmeasurable property mapping(s) — refusing to capture:')
+        for f in fatal:
+            print(f'  - {f}')
+        return 1
+    for attr, why in unmeasurable.items():
+        print(f'  ⚠ SKIPPED `{attr}` — {why} (declared unmeasurable, not blanked)')
+        css_for.pop(attr, None)
+    all_props = [p for p in all_props if p in css_for]
+    if not all_props:
+        sys.exit('FAIL: every requested property is unmeasurable — nothing to capture.')
     blocks = [b for b in manifest['blocks'] if not b.get('skipped')]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
