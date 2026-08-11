@@ -82,12 +82,14 @@ the junction before removing the worktree** — this project's memory already na
 - **`git commit -- <pathspec>` re-reads the WORKING TREE at commit time**, not the index snapshot
   from an earlier `git add`.
 - **Re-run the D-ceiling command immediately before writing a decision entry.**
-- **A `npm run build` on this repo has a live, unfixed bug:** the prebuild chain non-deterministically
-  auto-mutates unrelated block.json files (adds `"gradients": true` under `supports.color`, plus
-  CRLF→LF rewrites) and occasionally writes an untracked script
-  (`scripts/surveys/survey-background-colour-support.py`). **Always diff `git status` immediately
-  after any build and revert anything you didn't intend before committing** — this bit this session
-  three separate times. Root cause not yet found; worth a dedicated investigation.
+- **A `npm run build` on this repo mutated unrelated block.json files 3 times this session** (adds
+  `"gradients": true` under `supports.color`, plus CRLF→LF rewrites). **Likely lead, not yet
+  confirmed:** a concurrent session built + wired `scripts/surveys/survey-background-colour-support.py
+  --check` into `prebuild` the same day (see `go-track-1b-playful-hamster.md` Phase 4 "Background,
+  part 2") — that script is the newest prebuild addition and matches the mutation's subject matter
+  exactly, but its own `--check` code path doesn't obviously write outside its `--self-test` fixture
+  generator on inspection, so this is a lead, not a proven cause. **Always diff `git status`
+  immediately after any build and revert anything you didn't intend before committing.**
 - **Full STOP catalogue + pre-flight ritual: `.claude/STOP-CATALOGUE.md`** (uncapped, D101).
 
 ### Other tracks — status
@@ -162,10 +164,13 @@ the junction before removing the worktree** — this project's memory already na
 - **`testimonial`/`image-sequence`'s `imageControls` declarations** — real crop scenario, not
   converted (each needs its own per-item design decision — testimonial has 4 simultaneous media
   roles, image-sequence's crop target is a canvas, not an `<img>`). Not scheduled.
-- **The automated effect-verification gate** (doctrine Part 6) — never built. This session's fix was
-  a manual sweep, not a standing defence against the same defect class recurring.
-- **The `npm run build` gradients-mutator bug** — hit 3 times this session, never root-caused. Worth
-  its own investigation before it corrupts an unreviewed commit.
+- **The `imageControls`-specific effect-verification gate** (doctrine Part 6) — still never built;
+  this session's fix was a manual sweep. **Not the same as the general gate class itself** — a first
+  instance shipped same day for a different capability (`survey-background-colour-support.py`, see
+  above and `go-track-1b-playful-hamster.md` Phase 4) — worth checking whether that script's pattern
+  can be reused/extended for `imageControls` rather than building a second one from scratch.
+- **The `npm run build` gradients-mutator effect** — hit 3 times this session; likely lead
+  (`survey-background-colour-support.py`) named above, not yet confirmed as the actual writer.
 - **D584 items #2/#3/#4** — ready to dispatch (card-grid maxWidth/contentWidth now unblocked;
   team-member ruled not-a-residual; site-header/footer fix ruled but held on Bean's timing call).
 - **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
