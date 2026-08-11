@@ -9,6 +9,18 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+**2026-08-11 (session 12, Track 1b continuation). Audited the plan's remaining open items — both
+were already done by a concurrent session. Found and fixed one new dead control along the way.**
+
+- Checked the two things LEDGER said were still open for this track (card-grid's storage shape,
+  contentBandPadding + 3 padding properties). Both were already shipped — verified directly
+  against the block files, not against the doc, which is what the doc itself asks for.
+- While checking, found a real bug of the same kind as last session's photo-crop fix: the Gallery
+  block's "Content band" panel (background colour + padding, ~13 fields) wrote to settings that
+  don't exist on that block, so every value a client entered there silently vanished. Removed it —
+  it never applied to Gallery in the first place. Full detail: `decisions.md` D586.
+- Deployed to the canary, pushed to `main`.
+
 **2026-08-11 (session 11, Track 1b continuation). The broken photo-crop control is fixed.**
 
 - Found the root cause of the crosshair-that-does-nothing bug: 15 blocks had a "drag to reposition
@@ -121,7 +133,7 @@ the junction before removing the worktree** — this project's memory already na
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `6b17d99b` at session end. ⛔ **This will drift — run `git log -1` AND
+- **Branch:** `main`, HEAD `69d1a3d8` at session end (D586, gallery ContentBandPanel fix). ⛔ **This will drift — run `git log -1` AND
   `git status` AND `git branch --show-current`, don't trust this line.** Local and `origin/main`
   are in sync as of this HEAD (verified via `git push`, fast-forward, no force needed).
   Commit by EXACT PATH — this checkout is shared with at least one other concurrent session.
@@ -137,7 +149,7 @@ the junction before removing the worktree** — this project's memory already na
   glob. Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (currently 585) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
+  (currently 586) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
   "SHIPPED" claim in this doc or decisions.md.
 
 ---

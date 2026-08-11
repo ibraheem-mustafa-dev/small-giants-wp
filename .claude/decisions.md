@@ -1,5 +1,30 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D586 — Track 1b audit: both proposed items already shipped; found + fixed a dead gallery control [ROUTINE]
+
+**2026-08-11, later session (Track 1b continuation).** Asked to pick up the two items LEDGER.md
+listed as open — `card-grid` maxWidth/contentWidth storage shape, and `contentBandPadding` + 3
+block-private padding properties. Verified both directly against `block.json`/`edit.js` before
+touching anything: **all already shipped** (card-grid's two attrs are `type:object`; all 7
+`contentBandPadding` blocks + `contentPadding`/`pillPadding`/`padding` are object-shaped with
+their controls already writing the tier-object correctly). Confirms the concurrent session's own
+D584/D585 work already closed these.
+
+**Found instead, auditing the shared `ContentBandPanel` component while checking the above:**
+`sgs/gallery` mounted `<ContentBandPanel>` (from `ContainerWrapperControls.js`) unconditionally in
+its inspector — 13 controls (background colour + padding × 3 tiers) — but gallery's `block.json`
+declares no `containerKind` and no `contentBand*` attributes at all, and its `render.php` has no
+`.sgs-container__inner` band for the panel to target. Every value a client set there was silently
+discarded by WordPress on save; the panel visually did nothing. Same defect class as
+imageControls (D585) and the `ResponsiveSpacingPanel` this same file already removed one line
+above `ContentBandPanel`'s mount — that earlier cleanup pass missed this sibling.
+
+**Fix:** removed the `ContentBandPanel` import + mount from `gallery/edit.js` (cta-section, the
+panel's other apparent "mount" per an initial grep, turned out to be comment-only — a
+grep-is-not-a-usage-census trap caught before acting on it). No other block imports it. Bundle
+verified post-deploy: `ContentBandPanel` string absent from the deployed `gallery/index.js`.
+Commit `69d1a3d8`, deployed + pushed to `main`.
+
 ## D585 — imageControls census + fix shipped (Spec 35 capability-routing doctrine Part 9); local/origin main divergence found + fixed [INCIDENT]
 
 **2026-08-11, later session (Track 1b continuation).** Picked up `spec-35-capability-routing-doctrine.md`
