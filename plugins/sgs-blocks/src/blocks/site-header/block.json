@@ -97,7 +97,6 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:gap": "gap",
 						"css:grid-template-columns": "columns",
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
@@ -373,10 +372,6 @@
 				"wrap-reverse"
 			]
 		},
-		"gap": {
-			"type": "object",
-			"default": {}
-		},
 		"justifyContent": {
 			"type": "string",
 			"default": "",

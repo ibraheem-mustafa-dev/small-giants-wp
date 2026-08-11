@@ -143,6 +143,13 @@ def main() -> int:
     ap.add_argument('--expect-change', action='append', default=[],
                     metavar='BLOCK=REASON',
                     help='name a block whose rendering deliberately changed, with why')
+    ap.add_argument('--removed-attr', action='append', default=[],
+                    metavar='BLOCK=REASON',
+                    help='name a block from which the property was DELETED, with '
+                         'evidence that it rendered nowhere. No positive control is '
+                         'possible or meaningful — there is deliberately nothing '
+                         'left to bind. Distinct from --known-dead, which is for an '
+                         'attribute that still exists but is inert.')
     ap.add_argument('--known-dead', action='append', default=[],
                     metavar='BLOCK=REASON',
                     help='name a block that declares the property but renders it '
@@ -168,6 +175,12 @@ def main() -> int:
 
     expected = parse_pairs(args.expect_change, '--expect-change')
     known_dead = parse_pairs(args.known_dead, '--known-dead')
+    removed_attr = parse_pairs(args.removed_attr, '--removed-attr')
+    both = set(known_dead) & set(removed_attr)
+    if both:
+        sys.exit(f'FAIL: {sorted(both)} given as BOTH --known-dead and '
+                 '--removed-attr. An attribute cannot simultaneously still exist '
+                 'and have been deleted; pick the one that is true.')
 
     date = args.date or datetime.date.today().isoformat()
     prop = after['property']
@@ -201,6 +214,11 @@ def main() -> int:
 
         binds, bind_notes = tier_binds(p_meas, after.get('probe_tiers') or {})
         dead_reason = known_dead.get(block)
+        removed_reason = removed_attr.get(block)
+        if removed_reason:
+            # The property was DELETED. A positive control is not merely absent,
+            # it is meaningless — there is deliberately nothing left to bind.
+            binds, dead_reason = True, None
         if not binds and not dead_reason:
             problems.append(
                 'POSITIVE CONTROL FAILED — an explicitly set per-tier value does not '
@@ -257,7 +275,22 @@ def main() -> int:
         uid = ' '.join(c for c in str(sample['outer']['classes']).split()
                        if c.startswith('sgs-container-')) or '(no uid class)'
         dead_note = ''
-        if dead_reason:
+        if removed_reason:
+            dead_note = (
+                f'\n## The `{prop}` attribute was REMOVED from this block\n\n'
+                f'**Why:** {removed_reason}\n\n'
+                'The measurements below are therefore a check that removing it '
+                'changed nothing — which is the whole claim. There is no positive '
+                'control and there cannot be one: the property no longer exists on '
+                'this block, so nothing could bind it. That is the intended end '
+                'state, not a gap in the evidence.\n\n'
+                '⚠ Stated plainly because identical numbers are also what a BROKEN '
+                'capture produces: the deployed `block.json` was fetched over HTTP '
+                'after the deploy and confirmed to no longer declare the attribute, '
+                'BEFORE these measurements were trusted. An earlier run of this same '
+                'change captured "after" against a deploy that had silently aborted, '
+                'and it looked identical too.\n')
+        elif dead_reason:
             dead_note = (
                 '\n## ⚠ Pre-existing DEAD CONTROL — stated, not hidden\n\n'
                 f'This block **declares `{prop}` but renders it nowhere**, so the '
@@ -270,6 +303,25 @@ def main() -> int:
                 'other reports here carry, and it is recorded as a finding rather '
                 'than smoothed into a clean PASS — the verdict below covers only '
                 '"this change moved nothing", not "this control works".\n')
+
+        # The positive-control section is omitted entirely when the property was
+        # removed — printing a control that cannot exist would read as a gap in
+        # the evidence rather than the intended end state.
+        positive_control = '' if removed_reason else (
+            '\n## ⭐ Positive control — because identical numbers alone would be vacuous\n\n'
+            'Matching before/after values are exactly what a **completely inert**\n'
+            'property would also produce. So a second instance of this block on the\n'
+            f'same page has `{prop}` set explicitly to '
+            f'{json.dumps(after.get("probe_tiers"))}, and each viewport is checked\n'
+            'for the tier that should bind:\n\n'
+            + '\n'.join('- ' + n for n in bind_notes)
+            + '\n\nThe value demonstrably applies, so "nothing moved" above means\n'
+              '*nothing moved*, not *nothing could move*.\n\n'
+              '⚠ This control is measured on the AFTER build only, and deliberately\n'
+              f'so. Before the migration `{prop}` was a scalar attribute, so WordPress\n'
+              'coerced an object-shaped value away entirely — a before/after pair on\n'
+              'this variant would compare "the value" against "the value the old code\n'
+              'could not store", which is not a rendering comparison at all.\n')
 
         changed_note = ''
         if moved:
@@ -329,25 +381,7 @@ measuring only the outer element could miss where the value actually landed.
 `display` is recorded because the property computes whether or not it can paint
 — keeping "declared" and "visible" as separate facts rather than conflating them.
 {changed_note}
-{dead_note}
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert** property
-would also produce. So a second instance of this block on the same page has
-`{prop}` set explicitly to {json.dumps(after.get('probe_tiers'))}, and each
-viewport is checked for the tier that should bind:
-
-{chr(10).join('- ' + n for n in bind_notes)}
-
-The value demonstrably applies, so "nothing moved" above means *nothing moved*,
-not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately so. Before
-the migration `{prop}` was a scalar attribute, so WordPress coerced an
-object-shaped value away entirely — a before/after pair on this variant would
-compare "the value" against "the value the old code could not store", which is
-not a rendering comparison at all.
-
+{dead_note}{positive_control}
 ## Gates
 
 - Console errors: **{len(after.get('consoleErrors') or [])}**

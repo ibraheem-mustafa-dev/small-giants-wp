@@ -6,20 +6,20 @@ date: 2026-08-11
 property: gap
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 78fc02f765a5fb50
+source_sha: fe45c0ff9a391bc1
 ---
 
-# site-header — Spec 35 pass 1 — `gap` migrated to the tier-object shape, editor control migrated with it, bare number now means px
+# site-header — the inert `gap` attribute REMOVED — these shells only house their rows
 
 **Verdict: PASS**, on a measured before/after capture of this block's own
 rendered element. No measured value moved.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gap/
-- **Selector (scoped):** `#tierfx-default-site-header > .wp-block-sgs-site-header` — resolved to `<header>`, uid `(no uid class)`
+- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/
+- **Selector (scoped):** `.wp-block-sgs-site-header` — resolved to `<header>`, uid `sgs-container-784c90a6`
 - **CSS property:** `gap`
-- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
+- **Probe values set on the block:** `{}`
 - **Method:** Playwright (chromium), computed styles at three viewports, before
   and after deploying the change to the sandybrown canary.
 
@@ -48,37 +48,17 @@ measuring only the outer element could miss where the value actually landed.
 — keeping "declared" and "visible" as separate facts rather than conflating them.
 
 
-## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
+## The `gap` attribute was REMOVED from this block
 
-This block **declares `gap` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
+**Why:** render.php never references `gap`, at HEAD and after (grep returns nothing); no Gap control is exposed (edit.js imports WidthPanel, not LayoutPanel); zero stored values across 125 canary items. Bean: these blocks exist only to house the header rows.
 
-**Evidence:** render.php never references `gap`; grep of plugins/sgs-blocks/src/blocks/site-header/render.php for 'gap' returns nothing, at HEAD and after. The attribute is declared and inspector-exposed but no CSS is emitted for it, on either build.
+The measurements below are therefore a check that removing it changed nothing — which is the whole claim. There is no positive control and there cannot be one: the property no longer exists on this block, so nothing could bind it. That is the intended end state, not a gap in the evidence.
 
-⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
-
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert** property
-would also produce. So a second instance of this block on the same page has
-`gap` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each
-viewport is checked for the tier that should bind:
-
-- desktop: set `64px` → outer `normal`  ⚠ does NOT bind
-- mobile: set `8px` → outer `normal`  ⚠ does NOT bind
-- tablet: set `32px` → outer `normal`  ⚠ does NOT bind
-
-The value demonstrably applies, so "nothing moved" above means *nothing moved*,
-not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately so. Before
-the migration `gap` was a scalar attribute, so WordPress coerced an
-object-shaped value away entirely — a before/after pair on this variant would
-compare "the value" against "the value the old code could not store", which is
-not a rendering comparison at all.
+⚠ Stated plainly because identical numbers are also what a BROKEN capture produces: the deployed `block.json` was fetched over HTTP after the deploy and confirmed to no longer declare the attribute, BEFORE these measurements were trusted. An earlier run of this same change captured "after" against a deploy that had silently aborted, and it looked identical too.
 
 ## Gates
 
-- Console errors: **3**
+- Console errors: **0**
 - PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
   `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
 - `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,
