@@ -27,9 +27,7 @@
         "sgs": {
             "hideExtensions": [
                 "animation",
-                "blockLink",
                 "clickEffects",
-                "hover",
                 "parallax"
             ],
             "elements": {

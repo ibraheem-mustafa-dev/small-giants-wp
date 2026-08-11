@@ -23,7 +23,7 @@
 			"imageControls": true,
 			"arrayContentLift": true,
 			"containerMirror": false,
-			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax" ],
+			"hideExtensions": [ "clickEffects", "parallax" ],
 			"elements": {
 				"tile": {
 					"label": "Tile",
@@ -196,7 +196,7 @@
 		"nameFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"nameFontWeight": {
 			"type": "string",
 			"default": ""
@@ -212,7 +212,7 @@
 		"nameLineHeightUnit": {
 			"type": "string",
 			"default": ""
-		},
+		},
 		"nameLetterSpacing": {
 			"type": "object",
 			"default": {}
@@ -220,7 +220,7 @@
 		"nameLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
-		},
+		},
 		"nameTextTransform": {
 			"type": "string",
 			"default": ""

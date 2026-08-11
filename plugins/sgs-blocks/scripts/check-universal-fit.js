@@ -202,9 +202,16 @@ function readBlock( slug, rosterEntry ) {
 		hasNativeSpacingSupport: Boolean( supports.spacing ),
 		// image-controls.js: `!!blockNameOrSettings?.supports?.sgs?.imageControls`
 		imageControlsEnabled: Boolean( sgsSupports.imageControls ),
-		// hide-extensions.js: `supports?.sgs?.hideExtensions` array of slugs.
+		// hide-extensions.js: `supports?.sgs?.hideExtensions` array of slugs
+		// (DENYLIST — attached unless listed).
 		hideExtensions: Array.isArray( sgsSupports.hideExtensions )
 			? sgsSupports.hideExtensions
+			: [],
+		// hide-extensions.js: `supports?.sgs?.enabledExtensions` array of slugs
+		// (ALLOWLIST — D551, Phase 2.1: hover/blockLink only, attached ONLY
+		// when listed).
+		enabledExtensions: Array.isArray( sgsSupports.enabledExtensions )
+			? sgsSupports.enabledExtensions
 			: [],
 		ownCorpus: readBlockOwnCorpus( dir ),
 		// roster.json fields — DB-derived "kind" signal, see isInappropriateFitKind().
@@ -273,7 +280,14 @@ const EXTENSIONS = [
 			'sgsHoverTilt3D', 'sgsFocusRing',
 		],
 		hideSlug: 'hover',
-		appliesTo: ( b ) => b.supportsClassName,
+		// D551 (Phase 2.1): OPT-IN, not opt-out — disconnected from every
+		// block by default (0 stored usage, 194+ canary pages, measured
+		// 2026-08-10 and re-verified 2026-08-11). Attached only when a block
+		// lists 'hover' in supports.sgs.enabledExtensions. className check
+		// still gates first — mirrors hover-effects.js's own
+		// `type?.supports?.className === false` early return.
+		appliesTo: ( b ) => b.supportsClassName && b.enabledExtensions.includes( 'hover' ),
+		optIn: true,
 	},
 	{
 		id: 'blockLink',
@@ -281,7 +295,9 @@ const EXTENSIONS = [
 		panel: 'Block Link',
 		attrs: [ 'sgsBlockLink', 'sgsBlockLinkTarget' ],
 		hideSlug: 'blockLink',
-		appliesTo: ( b ) => b.supportsClassName,
+		// D551 (Phase 2.1): OPT-IN, not opt-out — same shape as 'hover' above.
+		appliesTo: ( b ) => b.supportsClassName && b.enabledExtensions.includes( 'blockLink' ),
+		optIn: true,
 	},
 	{
 		id: 'clickEffects',
@@ -801,6 +817,7 @@ function makeFakeBlock( overrides ) {
 			hasNativeSpacingSupport: false,
 			imageControlsEnabled: false,
 			hideExtensions: [],
+			enabledExtensions: [],
 			ownCorpus: '',
 			category: null,
 			tier: null,
@@ -817,23 +834,31 @@ const SELF_TEST_EXTENSION = EXTENSIONS.find( ( e ) => e.id === 'hover' );
 function runSelfTest() {
 	const cases = [
 		{
-			name: 'block never references any hover attr -> FLAGGED (negative control)',
+			name: 'block does NOT opt in (default, D551) -> not-applicable (pass — this is the new default reality)',
 			block: makeFakeBlock( { ownCorpus: '' } ),
+			expectStatus: 'not-applicable',
+		},
+		{
+			name: 'block opts in but never references any hover attr -> FLAGGED (negative control)',
+			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'hover' ] } ),
 			expectStatus: 'flagged',
 		},
 		{
-			name: 'block references sgsHoverScale in its own corpus -> bespoke (pass)',
-			block: makeFakeBlock( { ownCorpus: 'style.css uses .self-test { transform: var(--sgsHoverScale); }' } ),
+			name: 'block opts in and references sgsHoverScale in its own corpus -> bespoke (pass)',
+			block: makeFakeBlock( {
+				ownCorpus: 'style.css uses .self-test { transform: var(--sgsHoverScale); }',
+				enabledExtensions: [ 'hover' ],
+			} ),
 			expectStatus: 'bespoke',
 		},
 		{
-			name: 'block opts out via hideExtensions -> opted-out (pass)',
-			block: makeFakeBlock( { ownCorpus: '', hideExtensions: [ 'hover' ] } ),
+			name: 'block opts in but also carries the legacy hideExtensions entry -> opted-out (pass — vestigial denylist still short-circuits if present)',
+			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'hover' ], hideExtensions: [ 'hover' ] } ),
 			expectStatus: 'opted-out',
 		},
 		{
-			name: 'block does not support className -> not-applicable (pass)',
-			block: makeFakeBlock( { ownCorpus: '', supportsClassName: false } ),
+			name: 'block opts in but does not support className -> not-applicable (pass — className gate still wins)',
+			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'hover' ], supportsClassName: false } ),
 			expectStatus: 'not-applicable',
 		},
 	];
