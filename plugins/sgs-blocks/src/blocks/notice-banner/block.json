@@ -51,6 +51,7 @@
 		"sgs": {
 			"iconPicker": true,
 			"is_section_root": true,
+			"enabledExtensions": [ "blockLink" ],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
