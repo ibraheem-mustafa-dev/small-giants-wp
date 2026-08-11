@@ -511,18 +511,13 @@
 			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBorderRadius. CSS length string (e.g. 6px); empty = match the resting pill radius."
 		},
 		"titleFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"titleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"titleFontSizeTablet": {
-			"type": "number"
-		},
-		"titleFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"titleFontWeight": {
 			"type": "string",
 			"default": ""
@@ -544,18 +539,13 @@
 			"description": "Colour for the product title heading. Theme token slug or raw hex. Empty = theme default."
 		},
 		"priceFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"priceFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"priceFontSizeTablet": {
-			"type": "number"
-		},
-		"priceFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"priceFontWeight": {
 			"type": "string",
 			"default": ""
@@ -566,18 +556,13 @@
 			"description": "Colour for the price element. Theme token slug or raw hex. Empty = theme default."
 		},
 		"descFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"descFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"descFontSizeTablet": {
-			"type": "number"
-		},
-		"descFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"descLineHeight": {
 			"type": "number"
 		},
@@ -591,62 +576,42 @@
 			"description": "Colour for the product description text. Theme token slug or raw hex. Empty = theme default."
 		},
 		"pillFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"pillFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"pillFontSizeTablet": {
-			"type": "number"
-		},
-		"pillFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"priceNoteFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"priceNoteFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"priceNoteFontSizeTablet": {
-			"type": "number"
-		},
-		"priceNoteFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"priceNoteColour": {
 			"type": "string",
 			"default": "",
 			"description": "Colour for the price-note text. Theme token slug or raw hex. Empty = theme default (muted)."
 		},
 		"priceFromLabelFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"priceFromLabelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"priceFromLabelFontSizeTablet": {
-			"type": "number"
-		},
-		"priceFromLabelFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"tagFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"tagFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"tagFontSizeTablet": {
-			"type": "number"
-		},
-		"tagFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"tagPadding": {
 			"type": "object",
 			"default": {},

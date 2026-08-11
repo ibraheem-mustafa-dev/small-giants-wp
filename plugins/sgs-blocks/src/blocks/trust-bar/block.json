@@ -274,18 +274,13 @@
 			"default": "text-muted"
 		},
 		"titleFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"titleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"titleFontSizeTablet": {
-			"type": "number"
-		},
-		"titleFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"titleFontWeight": {
 			"type": "string",
 			"default": ""
@@ -306,18 +301,13 @@
 			"default": "text"
 		},
 		"labelFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"labelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"labelFontSizeTablet": {
-			"type": "number"
-		},
-		"labelFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"labelFontWeight": {
 			"type": "string",
 			"default": ""
@@ -513,16 +503,9 @@
 			"default": {}
 		},
 		"minHeight": {
-			"type": "string"
-		},
-		"minHeightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"minHeightMobile": {
-			"type": "string",
-			"default": ""
-		},
+			"type": "object",
+			"default": {}
+		},
 		"verticalAlign": {
 			"type": "string",
 			"default": "start"

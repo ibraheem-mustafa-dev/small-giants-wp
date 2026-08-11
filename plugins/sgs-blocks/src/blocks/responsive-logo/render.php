@@ -215,9 +215,12 @@ if ( 'left' === $align ) {
 // reaches the formatter.
 //
 // So the object is flattened back to the three keys the helper expects, keeping
-// its unit handling and @media emission byte-identical. `maxHeight` is still a
-// flat family and is passed through untouched.
-$rl_max_width_tiers = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
+// its unit handling and @media emission byte-identical. `maxHeight` became the
+// SAME tier-object shape in the same pass (2026-08-11) — flattened identically
+// below, via the same $rl_max_width_num() stripper (kept its historic name;
+// it is unit-agnostic and used for both families).
+$rl_max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
+$rl_max_height_tiers = sgs_responsive_normalise_object( $attributes['maxHeight'] ?? null );
 
 // This block stores maxWidth as a bare NUMBER with the unit in its own
 // `maxWidthUnit` attr, and sgs_responsive_css_rule()'s validity gate is
@@ -238,9 +241,12 @@ $rl_max_width_num = static function ( $raw ) {
 $rl_css_attributes = array_merge(
 	$attributes,
 	array(
-		'maxWidth'       => $rl_max_width_num( $rl_max_width_tiers['desktop'] ?? '' ),
-		'maxWidthTablet' => $rl_max_width_num( $rl_max_width_tiers['tablet'] ?? '' ),
-		'maxWidthMobile' => $rl_max_width_num( $rl_max_width_tiers['mobile'] ?? '' ),
+		'maxWidth'        => $rl_max_width_num( $rl_max_width_tiers['desktop'] ?? '' ),
+		'maxWidthTablet'  => $rl_max_width_num( $rl_max_width_tiers['tablet'] ?? '' ),
+		'maxWidthMobile'  => $rl_max_width_num( $rl_max_width_tiers['mobile'] ?? '' ),
+		'maxHeight'       => $rl_max_width_num( $rl_max_height_tiers['desktop'] ?? '' ),
+		'maxHeightTablet' => $rl_max_width_num( $rl_max_height_tiers['tablet'] ?? '' ),
+		'maxHeightMobile' => $rl_max_width_num( $rl_max_height_tiers['mobile'] ?? '' ),
 	)
 );
 

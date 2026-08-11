@@ -40,6 +40,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // ---------------------------------------------------------------------------
 // NO-INLINE (per-block no-inline migration contract): a CSS-length sanitiser
 // for hand-built box shorthand values (mirrors sgs/label + sgs/heading).
@@ -62,9 +64,14 @@ $button_label = ! empty( $attributes['buttonLabel'] )
 
 // FR-36-20 MUST: ≤10 desktop / 4–8 mobile — both caps are clamped server-side
 // so a stored value can never widen past the spec ceiling regardless of what
-// the editor sent.
-$max_results        = isset( $attributes['maxResults'] ) ? max( 1, min( 10, (int) $attributes['maxResults'] ) ) : 10;
-$max_results_mobile = isset( $attributes['maxResultsMobile'] ) ? max( 4, min( 8, (int) $attributes['maxResultsMobile'] ) ) : 6;
+// the editor sent. `maxResults` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
+// holding {desktop,tablet,mobile}; `maxResultsMobile` no longer exists as a
+// sibling attr. Tablet has no design-distinct cap (Baymard's mobile-only
+// finding — see edit.js), so it inherits the desktop cap/value, matching the
+// pre-migration behaviour where no tablet attr ever existed.
+$max_results_tiers  = sgs_responsive_normalise_object( $attributes['maxResults'] ?? null );
+$max_results        = isset( $max_results_tiers['desktop'] ) && '' !== $max_results_tiers['desktop'] && null !== $max_results_tiers['desktop'] ? max( 1, min( 10, (int) $max_results_tiers['desktop'] ) ) : 10;
+$max_results_mobile = isset( $max_results_tiers['mobile'] ) && '' !== $max_results_tiers['mobile'] && null !== $max_results_tiers['mobile'] ? max( 4, min( 8, (int) $max_results_tiers['mobile'] ) ) : 6;
 
 // Validate display mode. FR-36-20: inline-bar | icon-expand | full-screen-overlay.
 // Legacy alias map keeps pre-existing 'inline'/'icon' instances rendering

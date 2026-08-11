@@ -190,18 +190,13 @@
 			"default": true
 		},
 		"nameFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"nameFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"nameFontSizeTablet": {
-			"type": "number"
-		},
-		"nameFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"nameFontWeight": {
 			"type": "string",
 			"default": ""
@@ -211,31 +206,21 @@
 			"default": ""
 		},
 		"nameLineHeight": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"nameLineHeightUnit": {
 			"type": "string",
 			"default": ""
-		},
-		"nameLineHeightTablet": {
-			"type": "number"
-		},
-		"nameLineHeightMobile": {
-			"type": "number"
-		},
+		},
 		"nameLetterSpacing": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"nameLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
-		},
-		"nameLetterSpacingTablet": {
-			"type": "number"
-		},
-		"nameLetterSpacingMobile": {
-			"type": "number"
-		},
+		},
 		"nameTextTransform": {
 			"type": "string",
 			"default": ""

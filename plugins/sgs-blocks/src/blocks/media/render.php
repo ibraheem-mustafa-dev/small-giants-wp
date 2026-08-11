@@ -41,32 +41,34 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 // 1. Extract shared styling attributes with safe defaults.
 // ---------------------------------------------------------------------------
-// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
-// holding {desktop,tablet,mobile}. Read it through the shared normaliser rather
-// than three sibling attrs: `maxWidthTablet`/`maxWidthMobile` no longer exist,
-// and a `(string)` cast on the object-typed base raised PHP "Array to string
-// conversion" on EVERY render, emitting a garbage `max-width:Array`.
-// `maxHeight` and `height` below are still flat families — untouched by this
-// pass, and NOT to be aligned onto this shape without migrating their storage
-// in the same commit (D563).
+// `maxWidth`, `maxHeight` AND (as of this pass) `height` are TIER OBJECTS —
+// ONE attr each holding {desktop,tablet,mobile}. Read them through the
+// shared normaliser rather than sibling attrs: `maxWidthTablet`/`maxWidthMobile`,
+// `maxHeightTablet`/`maxHeightMobile`, and `heightTablet`/`heightMobile` no
+// longer exist as declared attrs, and a `(string)` cast on the object-typed
+// base raises PHP "Array to string conversion" on EVERY render, emitting a
+// garbage `max-width:Array` / `max-height:Array` / `height:Array`.
 $max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $max_width        = (string) ( $max_width_tiers['desktop'] ?? '' );
 $max_width_tablet = (string) ( $max_width_tiers['tablet'] ?? '' );
 $max_width_mobile = (string) ( $max_width_tiers['mobile'] ?? '' );
 $max_width_unit   = isset( $attributes['maxWidthUnit'] ) ? (string) $attributes['maxWidthUnit'] : 'px';
 
-$max_height        = isset( $attributes['maxHeight'] ) ? (string) $attributes['maxHeight'] : '';
+$max_height_tiers  = sgs_responsive_normalise_object( $attributes['maxHeight'] ?? null );
+$max_height        = (string) ( $max_height_tiers['desktop'] ?? '' );
+$max_height_tablet = (string) ( $max_height_tiers['tablet'] ?? '' );
+$max_height_mobile = (string) ( $max_height_tiers['mobile'] ?? '' );
 $max_height_unit   = isset( $attributes['maxHeightUnit'] ) ? (string) $attributes['maxHeightUnit'] : 'px';
-$max_height_mobile = isset( $attributes['maxHeightMobile'] ) ? (string) $attributes['maxHeightMobile'] : '';
-$max_height_tablet = isset( $attributes['maxHeightTablet'] ) ? (string) $attributes['maxHeightTablet'] : '';
 
 // Fixed CSS height (fill) — distinct from maxHeight (a cap) and imageHeight (the
 // intrinsic HTML attr). A draft `height:440px` on an image makes it FILL that
-// height with object-fit cropping. Same unit-embedded + tier format as maxHeight.
-$height        = isset( $attributes['height'] ) ? (string) $attributes['height'] : '';
+// height with object-fit cropping. Same unit-embedded + tier-object format as
+// maxHeight above (Spec 35 pass, D563).
+$height_tiers  = sgs_responsive_normalise_object( $attributes['height'] ?? null );
+$height        = (string) ( $height_tiers['desktop'] ?? '' );
 $height_unit   = isset( $attributes['heightUnit'] ) ? (string) $attributes['heightUnit'] : 'px';
-$height_mobile = isset( $attributes['heightMobile'] ) ? (string) $attributes['heightMobile'] : '';
-$height_tablet = isset( $attributes['heightTablet'] ) ? (string) $attributes['heightTablet'] : '';
+$height_tablet = (string) ( $height_tiers['tablet'] ?? '' );
+$height_mobile = (string) ( $height_tiers['mobile'] ?? '' );
 
 // Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — replaces the old
 // hand-rolled scalar `aspectRatio` attr. Read from style.dimensions.aspectRatio
@@ -100,9 +102,14 @@ $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'left';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'left';
 
-$css_order        = isset( $attributes['order'] ) && null !== $attributes['order'] ? intval( $attributes['order'] ) : null;
-$css_order_mobile = isset( $attributes['orderMobile'] ) && null !== $attributes['orderMobile'] ? intval( $attributes['orderMobile'] ) : null;
-$css_order_tablet = isset( $attributes['orderTablet'] ) && null !== $attributes['orderTablet'] ? intval( $attributes['orderTablet'] ) : null;
+// `order` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
+// {desktop,tablet,mobile}. `orderMobile`/`orderTablet` no longer exist as
+// sibling attrs; read the object through the shared normaliser so a
+// legacy/malformed value can't PHP-coerce to the literal string "Array".
+$order_tiers      = sgs_responsive_normalise_object( $attributes['order'] ?? null );
+$css_order        = isset( $order_tiers['desktop'] ) && '' !== $order_tiers['desktop'] && null !== $order_tiers['desktop'] ? intval( $order_tiers['desktop'] ) : null;
+$css_order_tablet = isset( $order_tiers['tablet'] ) && '' !== $order_tiers['tablet'] && null !== $order_tiers['tablet'] ? intval( $order_tiers['tablet'] ) : null;
+$css_order_mobile = isset( $order_tiers['mobile'] ) && '' !== $order_tiers['mobile'] && null !== $order_tiers['mobile'] ? intval( $order_tiers['mobile'] ) : null;
 
 $caption                = isset( $attributes['caption'] ) ? (string) $attributes['caption'] : '';
 $allowed_caption_tags   = array( 'figcaption', 'div' );

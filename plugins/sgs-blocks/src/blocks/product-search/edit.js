@@ -8,7 +8,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride } from '../../components';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -34,7 +34,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		placeholder,
 		buttonLabel,
 		maxResults,
-		maxResultsMobile,
 		style,
 		paddingTablet,
 		paddingMobile,
@@ -108,34 +107,56 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					/>
-					<ResponsiveControl
+					{ /*
+					  `maxResults` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
+					  holding {desktop,tablet,mobile}, so it uses
+					  <ResponsiveOverride> rather than the old breakpoint-keyed
+					  attrMap. FR-36-20's caps are per-tier (Baymard: max 10
+					  desktop, 4–8 mobile) with NO distinct tablet design
+					  finding — render.php inherits the desktop value/cap for
+					  tablet (matching the pre-migration behaviour where no
+					  tablet attr ever existed), so the tablet tier here shows
+					  explanatory text rather than a second control that
+					  render.php would never read (would be a dead control).
+					*/ }
+					<ResponsiveOverride
 						label={ __( 'Max suggestions', 'sgs-blocks' ) }
+						value={ maxResults }
+						onChange={ ( obj ) =>
+							setAttributes( { maxResults: obj } )
+						}
 					>
-						{ ( breakpoint ) => {
-							// FR-36-20 caps: max 10 desktop, 4-8 mobile (Baymard).
-							// Tablet inherits desktop (the framework's
-							// desktop-is-base cascade) - there is no tablet attr.
-							const isMobile = breakpoint === 'mobile';
-							const attr = isMobile
-								? 'maxResultsMobile'
-								: 'maxResults';
+						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
+							if ( 'tablet' === tier ) {
+								return (
+									<p style={ { margin: 0, fontStyle: 'italic' } }>
+										{ __(
+											'Tablet uses the desktop value above — there is no separate tablet cap (Baymard research covers mobile only).',
+											'sgs-blocks'
+										) }
+									</p>
+								);
+							}
+
+							const isMobile = 'mobile' === tier;
 							const min = isMobile ? 4 : 1;
 							const max = isMobile ? 8 : 10;
 							const fallback = isMobile ? 6 : 10;
-							const current = isMobile
-								? maxResultsMobile
-								: maxResults;
+							const current =
+								'' !== ownValue && undefined !== ownValue
+									? ownValue
+									: effectiveValue;
 							const commit = ( value ) =>
-								setAttributes( {
-									[ attr ]: Math.max(
+								setOwnValue(
+									Math.max(
 										min,
 										Math.min(
 											max,
 											Number.parseInt( value, 10 ) ||
 												fallback
 										)
-									),
-								} );
+									)
+								);
 							const helpText = isMobile
 								? __(
 										'Maximum product suggestions shown on mobile (4–8, Baymard).',
@@ -156,14 +177,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							) : (
 								<TextControl
-									value={ String( current ) }
+									value={ String( current ?? '' ) }
 									type="number"
 									onChange={ commit }
 									help={ helpText }
 								/>
 							);
 						} }
-					</ResponsiveControl>
+					</ResponsiveOverride>
 				</PanelBody>
 
 				<PanelBody

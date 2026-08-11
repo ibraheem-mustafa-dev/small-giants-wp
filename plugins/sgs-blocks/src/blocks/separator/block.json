@@ -80,8 +80,8 @@
 			"default": "solid"
 		},
 		"width": {
-			"type": "number",
-			"default": 100
+			"type": "object",
+			"default": {"desktop": 100}
 		},
 		"widthUnit": {
 			"type": "string",
@@ -90,27 +90,15 @@
 				"%"
 			],
 			"default": "%"
-		},
-		"widthTablet": {
-			"type": "number"
-		},
-		"widthMobile": {
-			"type": "number"
-		},
+		},
 		"thickness": {
-			"type": "number",
-			"default": 1
+			"type": "object",
+			"default": {"desktop": 1}
 		},
 		"thicknessUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"thicknessTablet": {
-			"type": "number"
-		},
-		"thicknessMobile": {
-			"type": "number"
-		},
+		},
 		"colour": {
 			"type": "string",
 			"default": ""
@@ -208,18 +196,13 @@
 			"default": ""
 		},
 		"contentFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"contentFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"contentFontSizeTablet": {
-			"type": "number"
-		},
-		"contentFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"contentFontWeight": {
 			"type": "string",
 			"default": ""

@@ -116,14 +116,9 @@
 			"default": ""
 		},
 		"attributionFontSize": {
-			"type": "number"
-		},
-		"attributionFontSizeTablet": {
-			"type": "number"
-		},
-		"attributionFontSizeMobile": {
-			"type": "number"
-		},
+			"type": "object",
+			"default": {}
+		},
 		"attributionFontSizeUnit": {
 			"type": "string",
 			"default": "px"
@@ -174,14 +169,9 @@
 			"default": "em"
 		},
 		"attributionMarginTop": {
-			"type": "number"
-		},
-		"attributionMarginTopTablet": {
-			"type": "number"
-		},
-		"attributionMarginTopMobile": {
-			"type": "number"
-		},
+			"type": "object",
+			"default": {}
+		},
 		"attributionMarginUnit": {
 			"type": "string",
 			"default": "px"

@@ -9,7 +9,7 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview, resolveResponsiveTier } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
@@ -390,26 +390,30 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* ── Section (outer): width + min-height ──────────────────── */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
-					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'minHeight',
-								tablet: 'minHeightTablet',
-								mobile: 'minHeightMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									options={ MIN_HEIGHT_OPTIONS }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-									help={ breakpoint === 'desktop'
-										? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
-										: undefined }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `minHeight` is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass), same shape as
+						  `gridTemplateColumns` in ContainerWrapperControls.
+						  `minHeightTablet`/`…Mobile` are no longer declared in
+						  block.json.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
+						value={ attributes.minHeight }
+						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ MIN_HEIGHT_OPTIONS }
+								onChange={ ( val ) => setOwnValue( val ) }
+								help={ tier === 'desktop'
+									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
+									: undefined }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Padding & margin (box-object tiers) ───────────────────── */ }

@@ -102,17 +102,12 @@
 			"default": "text"
 		},
 		"labelFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"labelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"labelFontSizeTablet": {
-			"type": "number"
-		},
-		"labelFontSizeMobile": {
-			"type": "number"
 		},
 		"labelFontWeight": {
 			"type": "string",

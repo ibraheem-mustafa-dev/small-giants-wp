@@ -81,25 +81,25 @@
             "role": "content"
         },
         "positionX": {
-            "type": "number",
-            "default": 50
-        },
+			"type": "object",
+			"default": {"desktop": 50}
+		},
         "positionY": {
-            "type": "number",
-            "default": 50
-        },
+			"type": "object",
+			"default": {"desktop": 50}
+		},
         "width": {
-            "type": "number",
-            "default": 200
-        },
+			"type": "object",
+			"default": {"desktop": 200}
+		},
         "maxWidthPercent": {
             "type": "number",
             "default": 20
         },
         "rotation": {
-            "type": "number",
-            "default": 0
-        },
+			"type": "object",
+			"default": {"desktop": 0}
+		},
         "opacity": {
             "type": "number",
             "default": 85
@@ -124,33 +124,9 @@
             "type": "string",
             "default": "visible"
         },
-        "positionXTablet": {
-            "type": "number"
-        },
-        "positionYTablet": {
-            "type": "number"
-        },
-        "widthTablet": {
-            "type": "number"
-        },
-        "rotationTablet": {
-            "type": "number"
-        },
         "hideOnTablet": {
             "type": "boolean",
             "default": false
-        },
-        "positionXMobile": {
-            "type": "number"
-        },
-        "positionYMobile": {
-            "type": "number"
-        },
-        "widthMobile": {
-            "type": "number"
-        },
-        "rotationMobile": {
-            "type": "number"
         },
         "hideOnMobile": {
             "type": "boolean",

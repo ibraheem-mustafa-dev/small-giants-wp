@@ -320,9 +320,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
 			$content_width     = $attributes['contentWidth'] ?? '';
 			$content_width     = is_array( $content_width ) ? '' : $content_width;
-			$min_height        = $attributes['minHeight'] ?? '';
-			$min_height_tablet = $attributes['minHeightTablet'] ?? '';
-			$min_height_mobile = $attributes['minHeightMobile'] ?? '';
+			// minHeight is a TIER OBJECT {desktop,tablet,mobile} (Spec 35 migration,
+			// 2026-08-11); `minHeightTablet` / `minHeightMobile` are no longer
+			// declared by any block.json.
+			//
+			// ⛔ This read used to take `$attributes['minHeight']` raw and the two
+			// deleted sibling attrs. Post-migration that meant the ARRAY itself
+			// reached the emitter and PHP-coerced to the literal string "Array",
+			// shipping `min-height:Array` — measured LIVE on the canary: 73
+			// declarations (D574). Both tier siblings read '' because the attrs no
+			// longer exist, so `$has_responsive_min_height` was always false and the
+			// tablet/mobile tiers never rendered at all. An operator setting a
+			// section min-height got nothing: the probe set a value and measured 0px.
+			//
+			// Why the migration's own survey missed it: `migrate-tier-object.py`
+			// classifies a block as DELEGATED when it defers to this wrapper, on the
+			// stated assumption that "the wrapper already reads an object value" —
+			// true for the reads at ~2048, false here — and it only scans
+			// `src/blocks/*/render.php`, never shared includes like this one.
+			$min_height_obj    = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
+			$min_height        = $min_height_obj['desktop'] ?? '';
+			$min_height_tablet = $min_height_obj['tablet'] ?? '';
+			$min_height_mobile = $min_height_obj['mobile'] ?? '';
 			// WS-A dual-key fallback (2026-06-12): read EITHER align attr name —
 			// `verticalAlign` (container/hero/cta/trust-bar) or `alignItems` (grid-
 			// mirror blocks: feature-grid/card-grid/gallery). verticalAlign wins when

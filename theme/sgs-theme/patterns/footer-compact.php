@@ -26,7 +26,7 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"}} -->
-<!-- wp:sgs/heading {"content":"Get In Touch","level":"h3","textColour":"surface","fontWeight":"700","fontSize":"medium"} /-->
+<!-- wp:sgs/heading {"content":"Get In Touch","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":"small"} /-->
 

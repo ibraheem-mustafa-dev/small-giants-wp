@@ -93,18 +93,12 @@
 			"default": ""
 		},
 		"fontSize": {
-			"type": "number",
-			"default": 12
+			"type": "object",
+			"default": {"desktop": 12}
 		},
 		"fontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"fontSizeTablet": {
-			"type": "number"
-		},
-		"fontSizeMobile": {
-			"type": "number"
 		},
 		"fontWeight": {
 			"type": "string",

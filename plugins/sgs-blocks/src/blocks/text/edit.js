@@ -87,11 +87,9 @@ const MAX_WIDTH_UNITS = [
 	{ value: 'ch', label: 'ch', default: 65 },
 ];
 
-const LETTER_SPACING_UNITS = [
-	{ value: 'em', label: 'em', default: 0 },
-	{ value: 'rem', label: 'rem', default: 0 },
-	{ value: 'px', label: 'px', default: 0 },
-];
+// LETTER_SPACING_UNITS removed — letter-spacing is now rendered exclusively by
+// the shared TypographyControls component (showLetterSpacing={ true }); the
+// local duplicate UnitControl that used this constant was removed alongside it.
 
 const BORDER_STYLE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
@@ -151,6 +149,18 @@ function buildEditorStyle( attributes ) {
 
 	const previewStyle = {};
 
+	// fontSize / lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,
+	// mobile} attrs (Spec 35 tier-object migration) — the canvas preview always
+	// shows the DESKTOP tier (tablet/mobile only apply via the responsive
+	// device-toggle preview, which WP re-renders this same function under).
+	// Resolve before use so `${fontSize}` never string-concatenates the whole
+	// object into the literal text "[object Object]".
+	const resolveDesktop = ( val ) =>
+		val !== null && typeof val === 'object' && ! Array.isArray( val ) ? val.desktop : val;
+	const fontSizeVal = resolveDesktop( fontSize );
+	const lineHeightVal = resolveDesktop( lineHeight );
+	const letterSpacingVal = resolveDesktop( letterSpacing );
+
 	if ( textColour ) {
 		// colourVar wraps slugs in var(--wp--preset--color--X);
 		// raw hex passes through as-is from ColorPalette.
@@ -158,22 +168,22 @@ function buildEditorStyle( attributes ) {
 			? textColour
 			: colourVar( textColour );
 	}
-	if ( fontSize ) {
+	if ( fontSizeVal ) {
 		// A string fontSize is a theme preset slug — resolve to the preset
 		// custom property (mirrors sgs_font_size_value() server-side).
 		previewStyle.fontSize =
-			typeof fontSize === 'string'
-				? fontSizeVar( fontSize )
-				: `${ fontSize }${ fontSizeUnit }`;
+			typeof fontSizeVal === 'string'
+				? fontSizeVar( fontSizeVal )
+				: `${ fontSizeVal }${ fontSizeUnit }`;
 	}
 	if ( fontWeight ) {
 		previewStyle.fontWeight = fontWeight;
 	}
-	if ( lineHeight ) {
-		previewStyle.lineHeight = `${ lineHeight }${ lineHeightUnit }`;
+	if ( lineHeightVal ) {
+		previewStyle.lineHeight = `${ lineHeightVal }${ lineHeightUnit }`;
 	}
-	if ( letterSpacing != null ) {
-		previewStyle.letterSpacing = `${ letterSpacing }${ letterSpacingUnit }`;
+	if ( letterSpacingVal != null ) {
+		previewStyle.letterSpacing = `${ letterSpacingVal }${ letterSpacingUnit }`;
 	}
 	if ( fontStyle ) {
 		previewStyle.fontStyle = fontStyle;
@@ -266,10 +276,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		fontWeight,
 		lineHeight,
 		lineHeightUnit,
-		lineHeightTablet,
-		lineHeightMobile,
-		letterSpacing,
-		letterSpacingUnit,
 		fontStyle,
 		textDecoration,
 		textTransform,
@@ -339,18 +345,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						showTransform={ true }
 					/>
 
-					{ /* Line height tablet/mobile via ResponsiveControl (TypographyControls
-					   handles only the desktop lineHeight; the Tablet/Mobile breakpoints
-					   for line height are managed here since TypographyControls' lineHeight
-					   control is a single UnitControl without a responsive switcher).
-					   We attach it directly below TypographyControls. */ }
+					{ /* Line height tablet/mobile — lineHeight is now an OBJECT-typed
+					   {desktop,tablet,mobile} attr (Spec 35 tier-object migration).
+					   TypographyControls' own lineHeight UnitControl only edits the
+					   desktop tier; the tablet/mobile tiers are managed here, writing
+					   into the SAME object rather than the retired lineHeightTablet/
+					   lineHeightMobile sibling attrs (folded into this object — WP
+					   silently discards a value written to an undeclared attr). */ }
 					<ResponsiveControl label={ __( 'Line height (tablet / mobile)', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => {
 							if ( breakpoint === 'desktop' ) {
 								return null; // desktop handled by TypographyControls above
 							}
-							const attrKey = breakpoint === 'tablet' ? 'lineHeightTablet' : 'lineHeightMobile';
-							const val = breakpoint === 'tablet' ? lineHeightTablet : lineHeightMobile;
+							const lineHeightObj =
+								lineHeight && 'object' === typeof lineHeight && ! Array.isArray( lineHeight )
+									? lineHeight
+									: {};
+							const val = lineHeightObj[ breakpoint ];
 							return (
 								<RangeControl
 									label={ breakpoint === 'tablet'
@@ -358,7 +369,9 @@ export default function Edit( { attributes, setAttributes } ) {
 										: __( 'Line height (mobile)', 'sgs-blocks' )
 									}
 									value={ val ?? '' }
-									onChange={ ( v ) => setAttributes( { [ attrKey ]: v } ) }
+									onChange={ ( v ) =>
+										setAttributes( { lineHeight: { ...lineHeightObj, [ breakpoint ]: v } } )
+									}
 									min={ 0.8 }
 									max={ 3 }
 									step={ 0.05 }
@@ -369,17 +382,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveControl>
 
-					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
-					<UnitControl
-						label={ __( 'Letter spacing', 'sgs-blocks' ) }
-						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
-						units={ LETTER_SPACING_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
-							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
-						} }
-						__nextHasNoMarginBottom
-					/>
+					{ /* Letter spacing is already rendered by TypographyControls above
+					   (showLetterSpacing={ true }) — this block used to duplicate it with
+					   a second, conflicting flat-value UnitControl that would clobber the
+					   letterSpacing OBJECT with a bare number. Removed rather than fixed:
+					   TypographyControls is the single owner. */ }
 
 					<SelectControl
 						label={ __( 'Text decoration', 'sgs-blocks' ) }

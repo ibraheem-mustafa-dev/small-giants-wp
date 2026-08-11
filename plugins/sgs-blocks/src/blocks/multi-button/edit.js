@@ -8,7 +8,7 @@ import {
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { ResponsiveControl, ResponsiveOverride, SpacingControl } from '../../components';
+import { ResponsiveOverride, SpacingControl } from '../../components';
 import {
 	PanelBody,
 	SelectControl,
@@ -73,24 +73,23 @@ const ALIGN_ITEMS_OPTIONS_WITH_INHERIT = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
-		// New-name-first with a legacy fallback for the editor PREVIEW only, mirroring
-		// render.php. Both names are declared for one deploy (phase A of the flex-attr
-		// rename) so stored values are never undeclared while content migrates; the
-		// controls below WRITE only the new names, so any edit moves a block forward.
+		// `flexDirection`/`flexWrap`/`justifyContent`/`alignItems` are now TIER
+		// OBJECTS (Spec 35 pass, {desktop,tablet,mobile}) — the legacy
+		// `direction`/`wrap` names and the flat `…Tablet`/`…Mobile` siblings are
+		// no longer declared by block.json (folded into the object).
 		flexDirection,
-		direction: legacyDirection,
 		gap,
 		justifyContent,
 		flexWrap,
-		wrap: legacyWrap,
 		alignItems,
 	} = attributes;
 
-	// Only the DESKTOP pair is read here (the editorStyle preview below). The tier
-	// controls read attributes[...] directly through their own attrMap, so merged
-	// tier locals would be dead code — ESLint caught exactly that on the first cut.
-	const direction = flexDirection || legacyDirection;
-	const wrap      = flexWrap || legacyWrap;
+	// Only the DESKTOP tier is read here (the editorStyle preview below). The
+	// tier controls read/write the object directly via ResponsiveOverride.
+	const direction = flexDirection?.desktop || 'row';
+	const wrap      = flexWrap?.desktop || 'nowrap';
+	const justify   = justifyContent?.desktop || 'flex-start';
+	const align     = alignItems?.desktop || 'center';
 
 	// "Apply to all buttons" — bulk preset-as-seed for every sgs/button child.
 	const [ groupPreset, setGroupPreset ] = useState( 'primary' );
@@ -116,9 +115,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		display: 'flex',
 		flexDirection: direction,
 		flexWrap: wrap,
-		gap: gap || undefined,
-		justifyContent,
-		alignItems,
+		gap: gap?.desktop || undefined,
+		justifyContent: justify,
+		alignItems: align,
 	};
 
 	const blockProps = useBlockProps( { style: editorStyle } );
@@ -172,24 +171,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Layout', 'sgs-blocks' ) }
 					initialOpen={ true }
 				>
-					<ResponsiveControl label={ __( 'Direction', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							// Writes the NEW names only — an edit migrates the block forward.
-							const attrMap = {
-								desktop: 'flexDirection',
-								tablet:  'flexDirectionTablet',
-								mobile:  'flexDirectionMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] }
-									options={ breakpoint === 'desktop' ? DIRECTION_OPTIONS : DIRECTION_OPTIONS_WITH_INHERIT }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `flexDirection` is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass), same shape as
+						  `gap` below. `flexDirectionTablet`/`…Mobile` are no
+						  longer declared in block.json.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Direction', 'sgs-blocks' ) }
+						value={ flexDirection }
+						onChange={ ( obj ) => setAttributes( { flexDirection: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ tier === 'desktop' ? DIRECTION_OPTIONS : DIRECTION_OPTIONS_WITH_INHERIT }
+								onChange={ ( val ) => setOwnValue( val ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 
 					<hr style={ { margin: '12px 0' } } />
 
@@ -220,24 +221,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 					<hr style={ { margin: '12px 0' } } />
 
-					<ResponsiveControl label={ __( 'Wrap', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							// Writes the NEW names only — an edit migrates the block forward.
-							const attrMap = {
-								desktop: 'flexWrap',
-								tablet:  'flexWrapTablet',
-								mobile:  'flexWrapMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] }
-									options={ breakpoint === 'desktop' ? WRAP_OPTIONS : WRAP_OPTIONS_WITH_INHERIT }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `flexWrap` is a TIER OBJECT — same shape as `flexDirection`
+						  above. `flexWrapTablet`/`…Mobile` are no longer declared
+						  in block.json.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Wrap', 'sgs-blocks' ) }
+						value={ flexWrap }
+						onChange={ ( obj ) => setAttributes( { flexWrap: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ tier === 'desktop' ? WRAP_OPTIONS : WRAP_OPTIONS_WITH_INHERIT }
+								onChange={ ( val ) => setOwnValue( val ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Alignment panel ── */ }
@@ -245,44 +247,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Alignment', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveControl label={ __( 'Justify Content (main axis)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'justifyContent',
-								tablet:  'justifyContentTablet',
-								mobile:  'justifyContentMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] }
-									options={ breakpoint === 'desktop' ? JUSTIFY_OPTIONS : JUSTIFY_OPTIONS_WITH_INHERIT }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `justifyContent` is a TIER OBJECT — same shape as
+						  `flexDirection` above. `justifyContentTablet`/`…Mobile`
+						  are no longer declared in block.json.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Justify Content (main axis)', 'sgs-blocks' ) }
+						value={ justifyContent }
+						onChange={ ( obj ) => setAttributes( { justifyContent: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ tier === 'desktop' ? JUSTIFY_OPTIONS : JUSTIFY_OPTIONS_WITH_INHERIT }
+								onChange={ ( val ) => setOwnValue( val ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 
 					<hr style={ { margin: '12px 0' } } />
 
-					<ResponsiveControl label={ __( 'Align Items (cross axis)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'alignItems',
-								tablet:  'alignItemsTablet',
-								mobile:  'alignItemsMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] }
-									options={ breakpoint === 'desktop' ? ALIGN_ITEMS_OPTIONS : ALIGN_ITEMS_OPTIONS_WITH_INHERIT }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-									help={ breakpoint === 'mobile' ? __( 'Mobile stacks buttons full-width by default (stretch).', 'sgs-blocks' ) : undefined }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `alignItems` is a TIER OBJECT — same shape as
+						  `flexDirection` above. `alignItemsTablet`/`…Mobile` are
+						  no longer declared in block.json.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Align Items (cross axis)', 'sgs-blocks' ) }
+						value={ alignItems }
+						onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ tier === 'desktop' ? ALIGN_ITEMS_OPTIONS : ALIGN_ITEMS_OPTIONS_WITH_INHERIT }
+								onChange={ ( val ) => setOwnValue( val ) }
+								help={ tier === 'mobile' ? __( 'Mobile stacks buttons full-width by default (stretch).', 'sgs-blocks' ) : undefined }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

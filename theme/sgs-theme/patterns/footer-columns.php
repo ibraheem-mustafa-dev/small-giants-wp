@@ -23,7 +23,7 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Company Links"}} -->
-<!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":"medium"} /-->
+<!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
 <ul style="padding-left:0;line-height:2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
@@ -39,7 +39,7 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Services Links"}} -->
-<!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":"medium"} /-->
+<!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
 <ul style="padding-left:0;line-height:2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
@@ -55,12 +55,12 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Newsletter"}} -->
-<!-- wp:sgs/heading {"content":"Stay Updated","level":"h4","textColour":"surface","fontWeight":"700","fontSize":"medium"} /-->
+<!-- wp:sgs/heading {"content":"Stay Updated","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
-<!-- wp:sgs/text {"text":"Subscribe to our newsletter for the latest updates, tips, and insights.","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/text {"text":"Subscribe to our newsletter for the latest updates, tips, and insights.","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
-<!-- wp:sgs/multi-button {"justifyContent":"flex-start"} -->
-<!-- wp:sgs/button {"label":"Subscribe","url":"#","inheritStyle":"custom","colourBackground":"accent","colourText":"text","fontSize":14,"style":{"border":{"radius":"8px"}}} /-->
+<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"flex-start"}} -->
+<!-- wp:sgs/button {"label":"Subscribe","url":"#","inheritStyle":"custom","colourBackground":"accent","colourText":"text","fontSize":{"desktop":14},"style":{"border":{"radius":"8px"}}} /-->
 <!-- /wp:sgs/multi-button -->
 <!-- /wp:sgs/container -->
 

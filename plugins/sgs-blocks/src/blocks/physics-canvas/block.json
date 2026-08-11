@@ -101,9 +101,10 @@
 			"type": "object",
 			"default": {}
 		},
-		"minHeight": { "type": "string", "default": "480px" },
-		"minHeightTablet": { "type": "string", "default": "" },
-		"minHeightMobile": { "type": "string", "default": "320px" },
+		"minHeight": {
+			"type": "object",
+			"default": {"desktop": "480px", "mobile": "320px"}
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {"desktop": "full"}

@@ -12,8 +12,8 @@
 
 <!-- wp:sgs/container {"tagName":"div","layout":"flex","justifyContent":"center","flexDirection":"column","flexWrap":"nowrap"} -->
 
-	<!-- wp:sgs/heading {"headingRole":"heading","content":"A section heading that converts","level":"h2","fontSize":36} /-->
+	<!-- wp:sgs/heading {"headingRole":"heading","content":"A section heading that converts","level":"h2","fontSize":{"desktop":36}} /-->
 
-	<!-- wp:sgs/heading {"headingRole":"subheading","content":"Optional supporting copy that gives context to the section above.","subTag":"p","fontSize":16} /-->
+	<!-- wp:sgs/heading {"headingRole":"subheading","content":"Optional supporting copy that gives context to the section above.","subTag":"p","fontSize":{"desktop":16}} /-->
 
 <!-- /wp:sgs/container -->

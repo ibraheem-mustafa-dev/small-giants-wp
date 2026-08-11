@@ -403,10 +403,38 @@ if ( $text_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $text_decls ) . ';}';
 }
 
+// fontSize is a TIER OBJECT when authored as a number (Spec 35 migration,
+// 2026-08-11) — {desktop,tablet,mobile}; the old …Tablet/…Mobile sibling
+// attrs are no longer declared by block.json. A STRING fontSize (a theme
+// preset slug) is untouched by this — sgs_responsive_normalise_object()
+// on a string is not this migration's concern, and the preset-slug branch
+// below reads $attributes['fontSize'] directly, unaffected by this block.
+// is_numeric() on the raw value below correctly gates BOTH shapes: a preset
+// slug string is non-numeric (skipped here, handled below), and the object
+// case is handled by feeding the normalised desktop/tablet/mobile scalars
+// through under the OLD flat key names sgs_responsive_css_rule() expects —
+// same pattern as button/render.php's $tier_object_synthetic_attrs.
+// Normalised UNCONDITIONALLY, exactly as text/render.php does it: the helper
+// already routes every shape correctly — a tier object keeps its tiers, an
+// empty `{}` (an untouched object attr, the COMMON case) returns all-null so
+// nothing is emitted, and a plain preset-slug string becomes the desktop
+// value. The previous ternary sent a STRING down its else branch to all-null,
+// which is why the preset-slug branch below had to re-read the raw attribute —
+// and re-reading it is what emitted `font-size:var(--wp--preset--font-size--array)`
+// once fontSize became an object.
+$heading_font_size_obj = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
+
 // --- Root font-size — base + tablet + mobile on the SAME selector (Pattern A)
 // so the narrower tier wins by cascade order, never inline. ---
 $scoped_css[] = sgs_responsive_css_rule(
-	$attributes,
+	array_merge(
+		$attributes,
+		array(
+			'fontSize'       => $heading_font_size_obj['desktop'],
+			'fontSizeTablet' => $heading_font_size_obj['tablet'],
+			'fontSizeMobile' => $heading_font_size_obj['mobile'],
+		)
+	),
 	array(
 		array(
 			'attr'         => 'fontSize',
@@ -424,8 +452,18 @@ $scoped_css[] = sgs_responsive_css_rule(
 // The numeric emitter above skips non-numerics, so resolve it via
 // sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same selector.
 // Mirrors the canonical legacy-string branch in helpers-typography.php.
-if ( isset( $attributes['fontSize'] ) && '' !== $attributes['fontSize'] && ! is_numeric( $attributes['fontSize'] ) ) {
-	$preset_font_size = sgs_font_size_value( (string) $attributes['fontSize'] );
+// ⛔ Reads the NORMALISED desktop tier, never the raw attribute. Once fontSize
+// became an object, `(string) $attributes['fontSize']` PHP-coerced it to the
+// literal "Array" and emitted `font-size:var(--wp--preset--font-size--array)` —
+// an undefined custom property, so the declaration is invalid at
+// computed-value time and the heading silently drops to its inherited size.
+// Measured live on the canary: 5 heading instances (D574). Same bug class as
+// D569/D570 and as the `max-width:Array` defect recorded in
+// sgs_responsive_normalise_object() itself.
+$heading_preset_source = $heading_font_size_obj['desktop'];
+if ( null !== $heading_preset_source && '' !== $heading_preset_source
+	&& ! is_numeric( $heading_preset_source ) ) {
+	$preset_font_size = sgs_font_size_value( (string) $heading_preset_source );
 	if ( '' !== $preset_font_size ) {
 		$scoped_css[] = "{$root_sel}{font-size:{$preset_font_size};}";
 	}

@@ -9,7 +9,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveControl, ResponsiveOverride } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -41,15 +41,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		parallaxStrength,
 		fadeOnScroll,
 		overflow,
-		positionXTablet,
-		positionYTablet,
-		widthTablet,
-		rotationTablet,
 		hideOnTablet,
-		positionXMobile,
-		positionYMobile,
-		widthMobile,
-		rotationMobile,
 		hideOnMobile,
 		pathDrawOnScroll,
 		pathDrawDurationMs,
@@ -94,19 +86,27 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
+	// positionX/positionY/rotation are TIER OBJECTS (Spec 35 pass) — the
+	// editor preview always shows the DESKTOP tier, same as the frontend's
+	// unprefixed CSS rule before any @media override applies.
+	const positionXDesktop = positionX?.desktop ?? 50;
+	const positionYDesktop = positionY?.desktop ?? 50;
+	const rotationDesktop = rotation?.desktop ?? 0;
+	const widthDesktop = width?.desktop ?? 200;
+
 	// Build preview styles for editor.
 	const previewStyles = {
 		position: 'absolute',
-		left: `${ positionX }%`,
-		top: `${ positionY }%`,
-		width: `${ width }px`,
+		left: `${ positionXDesktop }%`,
+		top: `${ positionYDesktop }%`,
+		width: `${ widthDesktop }px`,
 		maxWidth: `${ maxWidthPercent }%`,
 		opacity: opacity / 100,
 		zIndex,
 		pointerEvents: 'none',
 		transform: [
 			'translate(-50%, -50%)',
-			rotation !== 0 && `rotate(${ rotation }deg)`,
+			rotationDesktop !== 0 && `rotate(${ rotationDesktop }deg)`,
 			flipX && 'scaleX(-1)',
 		]
 			.filter( Boolean )
@@ -183,32 +183,14 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
-				<PanelBody
-					title={ __( 'Position', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<RangeControl
-						label={ __( 'Position X (%)', 'sgs-blocks' ) }
-						help={ __( 'Horizontal position from left edge', 'sgs-blocks' ) }
-						value={ positionX }
-						onChange={ ( val ) => setAttributes( { positionX: val } ) }
-						min={ 0 }
-						max={ 100 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Position Y (%)', 'sgs-blocks' ) }
-						help={ __( 'Vertical position from top edge', 'sgs-blocks' ) }
-						value={ positionY }
-						onChange={ ( val ) => setAttributes( { positionY: val } ) }
-						min={ 0 }
-						max={ 100 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
+				{ /* The old bare desktop-only "Position" panel (Position X / Y) was
+				     deleted here — it duplicated the tier-aware ResponsiveOverride
+				     controls in the "Responsive Overrides" panel below, which cover
+				     desktop/tablet/mobile for the same positionX/positionY object
+				     attrs. Two controls writing the same attr under the pre-migration
+				     flat-scalar shape were merely redundant; under the new tier-object
+				     shape they would actively conflict (one control expects a plain
+				     number, the other an {desktop,tablet,mobile} object). */ }
 				<PanelBody
 					title={ __( 'Size', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -237,15 +219,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Transform', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<RangeControl
-						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
-						value={ rotation }
-						onChange={ ( val ) => setAttributes( { rotation: val } ) }
-						min={ -180 }
-						max={ 180 }
-						step={ 5 }
-						__nextHasNoMarginBottom
-					/>
+					{ /* Bare desktop-only Rotation control deleted — duplicated the
+					     tier-aware ResponsiveOverride control in "Responsive
+					     Overrides" below, which now owns the object-typed `rotation`
+					     attr (see the Position-panel removal note above for why). */ }
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
 						checked={ flipX }
@@ -357,18 +334,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( {
 								hideOnTablet: false,
 								hideOnMobile: false,
-								positionX: 50,
-								positionXTablet: undefined,
-								positionXMobile: undefined,
-								positionY: 50,
-								positionYTablet: undefined,
-								positionYMobile: undefined,
-								width: 200,
-								widthTablet: undefined,
-								widthMobile: undefined,
-								rotation: 0,
-								rotationTablet: undefined,
-								rotationMobile: undefined,
+								positionX: { desktop: 50 },
+								positionY: { desktop: 50 },
+								width: { desktop: 200 },
+								rotation: { desktop: 0 },
 							} )
 						}
 					>
@@ -402,178 +371,128 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToolsPanelItem
 							label={ __( 'Position X (%)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								positionX !== 50 ||
-								positionXTablet !== undefined ||
-								positionXMobile !== undefined
+								JSON.stringify( positionX ) !== JSON.stringify( { desktop: 50 } )
 							}
 							onDeselect={ () =>
-								setAttributes( {
-									positionX: 50,
-									positionXTablet: undefined,
-									positionXMobile: undefined,
-								} )
+								setAttributes( { positionX: { desktop: 50 } } )
 							}
 							isShownByDefault
 						>
-							<ResponsiveControl label={ __( 'Position X (%)', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'positionX',
-										tablet:  'positionXTablet',
-										mobile:  'positionXMobile',
-									};
-									const attr = attrMap[ breakpoint ];
-									const val  = attributes[ attr ];
-									return (
-										<RangeControl
-											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-											value={ breakpoint === 'desktop' ? ( val ?? 50 ) : ( val ?? '' ) }
-											onChange={ ( v ) =>
-												setAttributes( {
-													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-												} )
-											}
-											min={ 0 }
-											max={ 100 }
-											step={ 1 }
-											allowReset={ breakpoint !== 'desktop' }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
+							{ /* `positionX` is a TIER OBJECT (Spec 35 pass) — ONE attr
+							     holding {desktop,tablet,mobile}, so it uses
+							     ResponsiveOverride. `positionXTablet`/`positionXMobile`
+							     are no longer declared by block.json. */ }
+							<ResponsiveOverride
+								label={ __( 'Position X (%)', 'sgs-blocks' ) }
+								value={ positionX }
+								onChange={ ( obj ) => setAttributes( { positionX: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<RangeControl
+										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+										value={ ownValue || effectiveValue || 50 }
+										onChange={ ( v ) => setOwnValue( v ) }
+										min={ 0 }
+										max={ 100 }
+										step={ 1 }
+										allowReset={ inherited }
+										__nextHasNoMarginBottom
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Position Y (%)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								positionY !== 50 ||
-								positionYTablet !== undefined ||
-								positionYMobile !== undefined
+								JSON.stringify( positionY ) !== JSON.stringify( { desktop: 50 } )
 							}
 							onDeselect={ () =>
-								setAttributes( {
-									positionY: 50,
-									positionYTablet: undefined,
-									positionYMobile: undefined,
-								} )
+								setAttributes( { positionY: { desktop: 50 } } )
 							}
 						>
-							<ResponsiveControl label={ __( 'Position Y (%)', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'positionY',
-										tablet:  'positionYTablet',
-										mobile:  'positionYMobile',
-									};
-									const attr = attrMap[ breakpoint ];
-									const val  = attributes[ attr ];
-									return (
-										<RangeControl
-											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-											value={ breakpoint === 'desktop' ? ( val ?? 50 ) : ( val ?? '' ) }
-											onChange={ ( v ) =>
-												setAttributes( {
-													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-												} )
-											}
-											min={ 0 }
-											max={ 100 }
-											step={ 1 }
-											allowReset={ breakpoint !== 'desktop' }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
+							{ /* `positionY` is a TIER OBJECT — same shape as `positionX`
+							     above. */ }
+							<ResponsiveOverride
+								label={ __( 'Position Y (%)', 'sgs-blocks' ) }
+								value={ positionY }
+								onChange={ ( obj ) => setAttributes( { positionY: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<RangeControl
+										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+										value={ ownValue || effectiveValue || 50 }
+										onChange={ ( v ) => setOwnValue( v ) }
+										min={ 0 }
+										max={ 100 }
+										step={ 1 }
+										allowReset={ inherited }
+										__nextHasNoMarginBottom
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Width (px)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								width !== 200 ||
-								widthTablet !== undefined ||
-								widthMobile !== undefined
+								JSON.stringify( width ) !== JSON.stringify( { desktop: 200 } )
 							}
 							onDeselect={ () =>
-								setAttributes( {
-									width: 200,
-									widthTablet: undefined,
-									widthMobile: undefined,
-								} )
+								setAttributes( { width: { desktop: 200 } } )
 							}
 						>
-							<ResponsiveControl label={ __( 'Width (px)', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'width',
-										tablet:  'widthTablet',
-										mobile:  'widthMobile',
-									};
-									const attr = attrMap[ breakpoint ];
-									const val  = attributes[ attr ];
-									return (
-										<RangeControl
-											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-											value={ breakpoint === 'desktop' ? ( val ?? 200 ) : ( val ?? '' ) }
-											onChange={ ( v ) =>
-												setAttributes( {
-													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-												} )
-											}
-											min={ 50 }
-											max={ 800 }
-											step={ 10 }
-											allowReset={ breakpoint !== 'desktop' }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
+							{ /* `width` is a TIER OBJECT — same shape as `positionX`/
+							     `positionY`/`rotation` above. */ }
+							<ResponsiveOverride
+								label={ __( 'Width (px)', 'sgs-blocks' ) }
+								value={ width }
+								onChange={ ( obj ) => setAttributes( { width: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<RangeControl
+										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+										value={ ownValue ?? effectiveValue ?? 200 }
+										onChange={ ( v ) => setOwnValue( v ) }
+										min={ 50 }
+										max={ 800 }
+										step={ 10 }
+										allowReset={ inherited }
+										__nextHasNoMarginBottom
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								rotation !== 0 ||
-								rotationTablet !== undefined ||
-								rotationMobile !== undefined
+								JSON.stringify( rotation ) !== JSON.stringify( { desktop: 0 } )
 							}
 							onDeselect={ () =>
-								setAttributes( {
-									rotation: 0,
-									rotationTablet: undefined,
-									rotationMobile: undefined,
-								} )
+								setAttributes( { rotation: { desktop: 0 } } )
 							}
 						>
-							<ResponsiveControl label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'rotation',
-										tablet:  'rotationTablet',
-										mobile:  'rotationMobile',
-									};
-									const attr = attrMap[ breakpoint ];
-									const val  = attributes[ attr ];
-									return (
-										<RangeControl
-											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-											value={ breakpoint === 'desktop' ? ( val ?? 0 ) : ( val ?? '' ) }
-											onChange={ ( v ) =>
-												setAttributes( {
-													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-												} )
-											}
-											min={ -180 }
-											max={ 180 }
-											step={ 5 }
-											allowReset={ breakpoint !== 'desktop' }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
+							{ /* `rotation` is a TIER OBJECT — same shape as `positionX`/
+							     `positionY` above. */ }
+							<ResponsiveOverride
+								label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
+								value={ rotation }
+								onChange={ ( obj ) => setAttributes( { rotation: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<RangeControl
+										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+										value={ ownValue || effectiveValue || 0 }
+										onChange={ ( v ) => setOwnValue( v ) }
+										min={ -180 }
+										max={ 180 }
+										step={ 5 }
+										allowReset={ inherited }
+										__nextHasNoMarginBottom
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>

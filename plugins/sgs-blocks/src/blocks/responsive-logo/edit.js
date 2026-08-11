@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ResponsiveOverride } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride } from '../../components';
 import { UnitControl } from '../../components/primitives';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
@@ -175,19 +175,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 	} = attributes;
 
-	// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
-	// holding {desktop,tablet,mobile}, so it has no per-tier attr map. `maxHeight`
-	// is still the flat sibling family and keeps its map below; do not align the
-	// two without migrating maxHeight's storage in the same commit (D563).
+	// `maxWidth` AND `maxHeight` are both TIER OBJECTS as of Spec 35 pass 2
+	// (2026-08-11) — ONE attr each holding {desktop,tablet,mobile}. Neither has
+	// a per-tier attr map any more (D563's flat `maxHeightAttrMap` sibling was
+	// retired in the same pass that folded `maxHeightTablet`/`maxHeightMobile`
+	// into the object).
 	//
 	// The per-tier VALUE stays a bare NUMBER paired with the block-level
-	// `maxWidthUnit` — the tier axis and the unit are separate concerns, and
-	// collapsing them here would change what render.php reads.
-	const maxHeightAttrMap = {
-		desktop: 'maxHeight',
-		tablet: 'maxHeightTablet',
-		mobile: 'maxHeightMobile',
-	};
+	// `maxWidthUnit`/`maxHeightUnit` — the tier axis and the unit are separate
+	// concerns, and collapsing them here would change what render.php reads.
 
 	// setOwnTier is ResponsiveOverride's own per-tier writer — it owns which tier
 	// is active and how the object is rebuilt, so this handler only splits the
@@ -198,12 +194,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { maxWidthUnit: unit } );
 	};
 
-	const onMaxHeightChange = ( breakpoint, raw ) => {
+	const onMaxHeightChange = ( setOwnTier, raw ) => {
 		const { num, unit } = parseMaxBoxValue( raw, maxHeightUnit || 'px' );
-		setAttributes( {
-			[ maxHeightAttrMap[ breakpoint ] ]: num,
-			maxHeightUnit: unit,
-		} );
+		setOwnTier( num === undefined ? '' : num );
+		setAttributes( { maxHeightUnit: unit } );
 	};
 
 	// The picker now persists BOTH the attachment ID and its URL, to the declared
@@ -452,21 +446,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveControl label={ __( 'Max height', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
+					<ResponsiveOverride
+						label={ __( 'Max height', 'sgs-blocks' ) }
+						value={ attributes.maxHeight }
+						onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 							<UnitControl
 								label={ __( 'Max height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeMaxBoxValue(
-									attributes[ maxHeightAttrMap[ breakpoint ] ],
-									maxHeightUnit || 'px'
-								) }
+								value={ composeMaxBoxValue( ownValue, maxHeightUnit || 'px' ) }
+								placeholder={
+									inherited
+										? composeMaxBoxValue( effectiveValue, maxHeightUnit || 'px' )
+										: ''
+								}
 								units={ MAX_BOX_UNITS }
-								onChange={ ( val ) => onMaxHeightChange( breakpoint, val ) }
+								onChange={ ( val ) => onMaxHeightChange( setOwnValue, val ) }
 								__nextHasNoMarginBottom
 							/>
 						) }
-					</ResponsiveControl>
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Panel 4: Spacing ── */ }

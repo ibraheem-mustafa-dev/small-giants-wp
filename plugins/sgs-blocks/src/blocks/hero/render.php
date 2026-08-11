@@ -161,20 +161,31 @@ $svg_content         = $attributes['svgContent'] ?? '';
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
 // ;{}() and so cannot prevent CSS-rule breakout).
-$min_height          = $sgs_css_length( $attributes['minHeight'] ?? '' );
-$min_height_tablet   = $sgs_css_length( $attributes['minHeightTablet'] ?? '' );
-$min_height_mobile   = $sgs_css_length( $attributes['minHeightMobile'] ?? '360px' );
+// minHeight is a TIER OBJECT {desktop,tablet,mobile} (Spec 35 pass 3b,
+// 2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist
+// in block.json (WP silently discards any attr the block.json doesn't
+// declare, D338). sgs_responsive_normalise_object() is the canonical reader.
+$min_height_obj      = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
+$min_height          = $sgs_css_length( $min_height_obj['desktop'] ?? '' );
+$min_height_tablet   = $sgs_css_length( $min_height_obj['tablet'] ?? '' );
+$min_height_mobile   = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
 
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
 // scoped font-size <style> is emitted here.
 $sub_headline_max_width     = $attributes['subHeadlineMaxWidth'] ?? null;
 
-// Margin-bottom controls for headline and sub-headline (F1/F2).
-$headline_margin_bottom        = $attributes['headlineMarginBottom'] ?? null;
-$headline_margin_bottom_mobile = $attributes['headlineMarginBottomMobile'] ?? null;
-$sub_headline_margin_bottom        = $attributes['subHeadlineMarginBottom'] ?? null;
-$sub_headline_margin_bottom_mobile = $attributes['subHeadlineMarginBottomMobile'] ?? null;
+// Margin-bottom controls for headline and sub-headline (F1/F2). Both are TIER
+// OBJECTS {desktop,tablet,mobile} (Spec 35 pass 3b) — the *Mobile siblings no
+// longer exist in block.json.
+$headline_margin_bottom_obj        = sgs_responsive_normalise_object( $attributes['headlineMarginBottom'] ?? null );
+$headline_margin_bottom            = $headline_margin_bottom_obj['desktop'] ?? null;
+$headline_margin_bottom_tablet     = $headline_margin_bottom_obj['tablet'] ?? null;
+$headline_margin_bottom_mobile     = $headline_margin_bottom_obj['mobile'] ?? null;
+$sub_headline_margin_bottom_obj    = sgs_responsive_normalise_object( $attributes['subHeadlineMarginBottom'] ?? null );
+$sub_headline_margin_bottom        = $sub_headline_margin_bottom_obj['desktop'] ?? null;
+$sub_headline_margin_bottom_tablet = $sub_headline_margin_bottom_obj['tablet'] ?? null;
+$sub_headline_margin_bottom_mobile = $sub_headline_margin_bottom_obj['mobile'] ?? null;
 // splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were REMOVED
 // 2026-08-10 — they duplicated `imageHeight` on the same property AND the same
 // element (`.sgs-hero__split-image`). See the consolidation note at the emission
@@ -274,13 +285,15 @@ $split_col_ratio_tablet = $split_col_tiers['tablet'] ?? '';
 $split_col_ratio_mobile = $split_col_tiers['mobile'] ?? '';
 // splitGap* REMOVED (de-duped 2026-07-06) — the split grid gap now reads the
 // shared gap/gapTablet/gapMobile (see the gap emission below).
-$split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';
-// Desktop + tablet tiers of the content-order triple (Spec 35 Track 1b
-// Phase 1.4c — promoted from a mobile-only orphan; mobile default unchanged).
-// '' = inherit (desktop falls back to natural DOM order; tablet falls back
-// to the resolved desktop order).
-$split_order         = $attributes['splitContentOrder'] ?? '';
-$split_order_tablet  = $attributes['splitContentOrderTablet'] ?? '';
+// splitContentOrder is a TIER OBJECT {desktop,tablet,mobile} (Spec 35 pass
+// 3b) — the *Tablet/*Mobile siblings no longer exist in block.json. '' on
+// desktop/tablet = inherit (desktop falls back to natural DOM order; tablet
+// falls back to the resolved desktop order); mobile falls back to
+// 'media-first', matching block.json's declared default.
+$split_order_obj    = sgs_responsive_normalise_object( $attributes['splitContentOrder'] ?? null );
+$split_order        = $split_order_obj['desktop'] ?? '';
+$split_order_tablet = $split_order_obj['tablet'] ?? '';
+$split_order_mobile = $split_order_obj['mobile'] ?? 'media-first';
 
 // Vertical alignment. Content max-width now lives on the universal wrapper attr
 // `contentWidth` (rendered by SGS_Container_Wrapper as the .sgs-container__inner
@@ -402,6 +415,14 @@ if ( null !== $headline_margin_bottom ) {
 }
 if ( null !== $sub_headline_margin_bottom ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom ) . 'px}';
+}
+// Tablet overrides (Spec 35 pass 3b — new tier the flat-trio model never had;
+// blank = inherit the desktop rule above via cascade, Pattern A convention).
+if ( null !== $headline_margin_bottom_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__headline{margin-bottom:' . absint( $headline_margin_bottom_tablet ) . 'px}}';
+}
+if ( null !== $sub_headline_margin_bottom_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom_tablet ) . 'px}}';
 }
 // Mobile overrides — !important required to beat inline styles (F4 pattern).
 if ( null !== $headline_margin_bottom_mobile ) {
@@ -1133,9 +1154,10 @@ foreach ( array(
 	'bgVideo',
 	'bgVideoMobile',
 	'bgSvgContent',
+	// minHeight is a TIER OBJECT (Spec 35 pass 3b) — nulling the one attr
+	// nulls all three tiers; the old minHeightTablet/minHeightMobile entries
+	// no longer exist as real attribute keys.
 	'minHeight',
-	'minHeightTablet',
-	'minHeightMobile',
 ) as $sgs_hero_null_attr ) {
 	$hero_helper_attrs[ $sgs_hero_null_attr ] = null;
 }

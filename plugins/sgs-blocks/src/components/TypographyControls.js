@@ -48,7 +48,22 @@ import { __ } from '@wordpress/i18n';
 import { SelectControl } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
 import ResponsiveControl from './ResponsiveControl';
+import ResponsiveOverride from './ResponsiveOverride';
 import { UnitControl } from './primitives';
+import { makeResponsive } from '../utils/responsive';
+
+/**
+ * Is this stored attribute value the modern {desktop,tablet,mobile} OBJECT
+ * shape (Spec 35 tier-object migration), rather than the legacy flat scalar?
+ * `null` is deliberately excluded (typeof null === 'object' in JS) since a
+ * `null` default on a legacy scalar attr means "inherit", not "tiered".
+ *
+ * @param {*} val Stored attribute value.
+ * @return {boolean} True when tiered-object shaped.
+ */
+function isTieredValue( val ) {
+	return val !== null && typeof val === 'object' && ! Array.isArray( val );
+}
 
 export const SGS_FONT_WEIGHT_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
@@ -253,6 +268,16 @@ export default function TypographyControls( {
 } ) {
 	const k = typographyAttrKeys( prefix );
 
+	// Each property's tier shape is read from the CURRENTLY STORED value, not
+	// hardcoded per-block — the tier-object migration runs property-by-property,
+	// so e.g. sgs/label has an object fontSize but a still-scalar lineHeight.
+	const fontSizeRaw       = attributes[ k.fontSize ];
+	const fontSizeIsTiered  = isTieredValue( fontSizeRaw );
+	const lineHeightRaw     = attributes[ k.lineHeight ];
+	const lineHeightIsTiered = isTieredValue( lineHeightRaw );
+	const letterSpacingRaw  = attributes[ k.letterSpacing ];
+	const letterSpacingIsTiered = isTieredValue( letterSpacingRaw );
+
 	// Theme preset font-size scale (guard against null before settings load —
 	// same pattern as SpacingControl.js). Hook must run unconditionally.
 	const [ themeFontSizes ] = useSettings( 'typography.fontSizes' );
@@ -273,6 +298,12 @@ export default function TypographyControls( {
 	 * @param {string} slug Preset slug or '' to clear.
 	 */
 	function onFontSizePresetChange( slug ) {
+		if ( fontSizeIsTiered ) {
+			setAttributes( {
+				[ k.fontSize ]: slug ? makeResponsive( { desktop: slug } ) : makeResponsive( {} ),
+			} );
+			return;
+		}
 		setAttributes( {
 			[ k.fontSize ]: slug || undefined,
 			[ k.fontSizeTablet ]: undefined,
@@ -281,9 +312,19 @@ export default function TypographyControls( {
 	}
 
 	const currentLetterSpacingUnit = attributes[ k.letterSpacingUnit ] || 'px';
+	const currentLetterSpacingValue = letterSpacingIsTiered
+		? letterSpacingRaw?.desktop
+		: letterSpacingRaw;
 
 	function onLetterSpacingChange( raw ) {
 		const { num, unit } = parseUnitValue( raw, currentLetterSpacingUnit );
+		if ( letterSpacingIsTiered ) {
+			setAttributes( {
+				[ k.letterSpacing ]: makeResponsive( { ...( letterSpacingRaw || {} ), desktop: num } ),
+				[ k.letterSpacingUnit ]: unit,
+			} );
+			return;
+		}
 		setAttributes( {
 			[ k.letterSpacing ]: num,
 			[ k.letterSpacingUnit ]: unit,
@@ -309,6 +350,13 @@ export default function TypographyControls( {
 	 */
 	function onFontSizeChange( breakpoint, raw ) {
 		const { num, unit } = parseUnitValue( raw, currentFontSizeUnit );
+		if ( fontSizeIsTiered ) {
+			setAttributes( {
+				[ k.fontSize ]: makeResponsive( { ...( fontSizeRaw || {} ), [ breakpoint ]: num } ),
+				[ k.fontSizeUnit ]: unit,
+			} );
+			return;
+		}
 		const attrKey = fontSizeAttrMap[ breakpoint ];
 		setAttributes( {
 			[ attrKey ]: num,
@@ -316,9 +364,27 @@ export default function TypographyControls( {
 		} );
 	}
 
+	/**
+	 * onChange for the font-size UnitControl in TIERED mode, writing only the
+	 * active tier via ResponsiveOverride's setOwnValue.
+	 *
+	 * @param {Function} setOwnValue Writer for the active tier (from ResponsiveOverride).
+	 * @param {string}   raw         Raw value from UnitControl onChange.
+	 */
+	function onFontSizeChangeTiered( setOwnValue, raw ) {
+		const { num, unit } = parseUnitValue( raw, currentFontSizeUnit );
+		setOwnValue( num );
+		if ( unit !== currentFontSizeUnit ) {
+			setAttributes( { [ k.fontSizeUnit ]: unit } );
+		}
+	}
+
 	const currentLineHeightUnit = attributes[ k.lineHeightUnit ] !== undefined
 		? attributes[ k.lineHeightUnit ]
 		: '';
+	const currentLineHeightValue = lineHeightIsTiered
+		? lineHeightRaw?.desktop
+		: lineHeightRaw;
 
 	/**
 	 * onChange for the line-height UnitControl.
@@ -329,6 +395,13 @@ export default function TypographyControls( {
 	 */
 	function onLineHeightChange( raw ) {
 		const { num, unit } = parseUnitValue( raw, currentLineHeightUnit );
+		if ( lineHeightIsTiered ) {
+			setAttributes( {
+				[ k.lineHeight ]: makeResponsive( { ...( lineHeightRaw || {} ), desktop: num } ),
+				[ k.lineHeightUnit ]: unit,
+			} );
+			return;
+		}
 		setAttributes( {
 			[ k.lineHeight ]: num,
 			[ k.lineHeightUnit ]: unit,
@@ -340,18 +413,37 @@ export default function TypographyControls( {
 			{ showSize && fontSizePresets && (
 				<SelectControl
 					label={ __( 'Preset size', 'sgs-blocks' ) }
-					value={
-						typeof attributes[ k.fontSize ] === 'string'
-							? attributes[ k.fontSize ]
-							: ''
-					}
+					value={ ( () => {
+						const desktopVal = fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ];
+						return typeof desktopVal === 'string' ? desktopVal : '';
+					} )() }
 					options={ fontSizePresetOptions }
 					onChange={ onFontSizePresetChange }
 					__nextHasNoMarginBottom
 				/>
 			) }
 
-			{ showSize && showResponsive && (
+			{ showSize && showResponsive && fontSizeIsTiered && (
+				<ResponsiveOverride
+					label={ __( 'Font size', 'sgs-blocks' ) }
+					value={ fontSizeRaw }
+					onChange={ ( obj ) => setAttributes( { [ k.fontSize ]: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<UnitControl
+							label={ __( 'Font size', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ composeUnitValue( inherited ? undefined : ownValue, currentFontSizeUnit ) }
+							placeholder={ inherited ? composeUnitValue( effectiveValue, currentFontSizeUnit ) : undefined }
+							units={ FONT_SIZE_UNITS }
+							onChange={ ( val ) => onFontSizeChangeTiered( setOwnValue, val ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ResponsiveOverride>
+			) }
+
+			{ showSize && showResponsive && ! fontSizeIsTiered && (
 				<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
 					{ ( breakpoint ) => (
 						<UnitControl
@@ -373,7 +465,7 @@ export default function TypographyControls( {
 				<UnitControl
 					label={ __( 'Font size', 'sgs-blocks' ) }
 					value={ composeUnitValue(
-						attributes[ k.fontSize ],
+						fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ],
 						currentFontSizeUnit
 					) }
 					units={ FONT_SIZE_UNITS }
@@ -406,7 +498,7 @@ export default function TypographyControls( {
 				<UnitControl
 					label={ __( 'Line height', 'sgs-blocks' ) }
 					value={ composeUnitValue(
-						attributes[ k.lineHeight ],
+						currentLineHeightValue,
 						currentLineHeightUnit
 					) }
 					units={ LINE_HEIGHT_UNITS }
@@ -419,7 +511,7 @@ export default function TypographyControls( {
 				<UnitControl
 					label={ __( 'Letter spacing', 'sgs-blocks' ) }
 					value={ composeUnitValue(
-						attributes[ k.letterSpacing ],
+						currentLetterSpacingValue,
 						currentLetterSpacingUnit
 					) }
 					units={ LETTER_SPACING_UNITS }

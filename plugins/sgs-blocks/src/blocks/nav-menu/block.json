@@ -266,17 +266,12 @@
 			"default": 6
 		},
 		"itemFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"itemFontSizeUnit": {
 			"type": "string",
 			"default": ""
-		},
-		"itemFontSizeTablet": {
-			"type": "number"
-		},
-		"itemFontSizeMobile": {
-			"type": "number"
 		},
 		"itemFontWeight": {
 			"type": "string",

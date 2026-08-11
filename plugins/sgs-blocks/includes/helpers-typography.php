@@ -64,43 +64,96 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$k_style      = sgs_typography_attr( $prefix, 'FontStyle' );
 		$k_transform  = sgs_typography_attr( $prefix, 'TextTransform' );
 		$k_decoration = sgs_typography_attr( $prefix, 'TextDecoration' );
+		$k_line       = sgs_typography_attr( $prefix, 'LineHeight' );
+		$k_line_unit  = sgs_typography_attr( $prefix, 'LineHeightUnit' );
+		$k_letter     = sgs_typography_attr( $prefix, 'LetterSpacing' );
+		$k_letter_unit = sgs_typography_attr( $prefix, 'LetterSpacingUnit' );
 
-		// Numeric responsive families (font-size / line-height / letter-spacing)
-		// delegate to the general Pattern A emitter — base + tablet + mobile on
-		// the SAME selector, only set values emitted.
+		// Numeric responsive families (font-size / line-height / letter-spacing) may
+		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
+		// tier-object migration) or the LEGACY flat {prop}/{prop}Tablet/{prop}Mobile
+		// trio — depending on how far that individual property has migrated on this
+		// block (migration runs property-by-property, not block-by-block, so e.g.
+		// sgs/label has an object fontSize but a still-flat lineHeight/letterSpacing).
+		// Route each property independently to the matching emitter; never assume the
+		// whole prefix migrated together.
 		$size_unit_set = isset( $attributes[ $k_size_unit ] ) && '' !== $attributes[ $k_size_unit ];
+		$size_unit     = $size_unit_set ? sgs_responsive_sanitise_unit( $attributes[ $k_size_unit ] ) : 'px';
 
-		$css = sgs_responsive_css_rule(
-			$attributes,
-			array(
-				array(
-					'attr'         => $k_size,
-					'css'          => 'font-size',
-					'unit_attr'    => $size_unit_set ? $k_size_unit : '',
-					'unit_default' => 'px',
-					'tablet_attr'  => sgs_typography_attr( $prefix, 'FontSizeTablet' ),
-					'mobile_attr'  => sgs_typography_attr( $prefix, 'FontSizeMobile' ),
-				),
-				array(
-					'attr'              => sgs_typography_attr( $prefix, 'LineHeight' ),
-					'css'               => 'line-height',
-					'unit_attr'         => sgs_typography_attr( $prefix, 'LineHeightUnit' ),
-					'unit_default'      => '',
-					'unitless_sentinel' => 'unitless',
-					'tablet_attr'       => sgs_typography_attr( $prefix, 'LineHeightTablet' ),
-					'mobile_attr'       => sgs_typography_attr( $prefix, 'LineHeightMobile' ),
-				),
-				array(
-					'attr'         => sgs_typography_attr( $prefix, 'LetterSpacing' ),
-					'css'          => 'letter-spacing',
-					'unit_attr'    => sgs_typography_attr( $prefix, 'LetterSpacingUnit' ),
-					'unit_default' => 'em',
-					'tablet_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingTablet' ),
-					'mobile_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingMobile' ),
-				),
-			),
-			$selector
-		);
+		$line_unit_raw = isset( $attributes[ $k_line_unit ] ) ? (string) $attributes[ $k_line_unit ] : '';
+		$line_unit     = ( '' === $line_unit_raw || 'unitless' === $line_unit_raw )
+			? ''
+			: sgs_responsive_sanitise_unit( $line_unit_raw );
+
+		$letter_unit_set = isset( $attributes[ $k_letter_unit ] ) && '' !== $attributes[ $k_letter_unit ];
+		$letter_unit     = $letter_unit_set ? sgs_responsive_sanitise_unit( $attributes[ $k_letter_unit ] ) : 'em';
+
+		$size_is_tiered   = isset( $attributes[ $k_size ] ) && is_array( $attributes[ $k_size ] );
+		$line_is_tiered   = isset( $attributes[ $k_line ] ) && is_array( $attributes[ $k_line ] );
+		$letter_is_tiered = isset( $attributes[ $k_letter ] ) && is_array( $attributes[ $k_letter ] );
+
+		$tiered_specs = array();
+		$flat_specs   = array();
+
+		if ( $size_is_tiered ) {
+			$tiered_specs[] = array(
+				'value'        => $attributes[ $k_size ],
+				'css'          => 'font-size',
+				'unit_default' => $size_unit,
+			);
+		} else {
+			$flat_specs[] = array(
+				'attr'         => $k_size,
+				'css'          => 'font-size',
+				'unit_attr'    => $size_unit_set ? $k_size_unit : '',
+				'unit_default' => 'px',
+				'tablet_attr'  => sgs_typography_attr( $prefix, 'FontSizeTablet' ),
+				'mobile_attr'  => sgs_typography_attr( $prefix, 'FontSizeMobile' ),
+			);
+		}
+
+		if ( $line_is_tiered ) {
+			$tiered_specs[] = array(
+				'value'        => $attributes[ $k_line ],
+				'css'          => 'line-height',
+				'unit_default' => $line_unit,
+			);
+		} else {
+			$flat_specs[] = array(
+				'attr'              => $k_line,
+				'css'               => 'line-height',
+				'unit_attr'         => $k_line_unit,
+				'unit_default'      => '',
+				'unitless_sentinel' => 'unitless',
+				'tablet_attr'       => sgs_typography_attr( $prefix, 'LineHeightTablet' ),
+				'mobile_attr'       => sgs_typography_attr( $prefix, 'LineHeightMobile' ),
+			);
+		}
+
+		if ( $letter_is_tiered ) {
+			$tiered_specs[] = array(
+				'value'        => $attributes[ $k_letter ],
+				'css'          => 'letter-spacing',
+				'unit_default' => $letter_unit,
+			);
+		} else {
+			$flat_specs[] = array(
+				'attr'         => $k_letter,
+				'css'          => 'letter-spacing',
+				'unit_attr'    => $k_letter_unit,
+				'unit_default' => 'em',
+				'tablet_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingTablet' ),
+				'mobile_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingMobile' ),
+			);
+		}
+
+		$css = '';
+		if ( ! empty( $tiered_specs ) ) {
+			$css .= sgs_emit_responsive_css( $selector, $tiered_specs );
+		}
+		if ( ! empty( $flat_specs ) ) {
+			$css .= sgs_responsive_css_rule( $attributes, $flat_specs, $selector );
+		}
 
 		// Base-only (non-responsive) typography props, appended as a second rule
 		// on the same selector: legacy string font-size, weight, style, transform,
@@ -110,7 +163,22 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		// Legacy STRING font-size (pre-2026-06-11 token/raw-CSS shape) — honoured
 		// verbatim when the modern numeric value is absent (numeric always wins;
 		// sgs_responsive_css_rule skips non-numeric values so no double-emit).
-		if ( isset( $attributes[ $k_size ] ) && '' !== $attributes[ $k_size ] && ! is_numeric( $attributes[ $k_size ] ) ) {
+		// ⛔ `! $size_is_tiered` is load-bearing, not defensive. Once FontSize
+		// migrated to the tier-object shape the value is an ARRAY, and an array
+		// satisfies both `'' !== $v` and `! is_numeric( $v )` — so it fell into
+		// this legacy-STRING branch and `(string) $v` PHP-coerced it to the
+		// literal "Array". That became slug `array` and emitted
+		// `font-size:var(--wp--preset--font-size--array)`: an UNDEFINED custom
+		// property, which makes the declaration invalid at computed-value time
+		// and silently drops the element to its inherited size.
+		// Measured on the canary (D574): every instance carrying an object
+		// FontSize emitted it. Where an explicit per-tier value exists the
+		// later tier rule overrides it, which is exactly why it looked fine —
+		// but an UNSET tier (the common case on real content) emitted the
+		// broken rule ALONE. Same bug class as D569/D570's unguarded
+		// `trim( (string) $attr )`.
+		if ( isset( $attributes[ $k_size ] ) && ! $size_is_tiered
+			&& '' !== $attributes[ $k_size ] && ! is_numeric( $attributes[ $k_size ] ) ) {
 			$legacy = sgs_font_size_value( (string) $attributes[ $k_size ] );
 			if ( '' !== $legacy ) {
 				$base_decls[] = 'font-size:' . $legacy . ';';

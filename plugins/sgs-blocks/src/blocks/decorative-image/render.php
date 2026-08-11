@@ -68,11 +68,22 @@ if ( empty( $image_url ) && ! empty( $decor_media['url'] ) && 'image' === ( $dec
 	$image_id  = isset( $decor_media['id'] ) ? absint( $decor_media['id'] ) : 0;
 	$image_alt = isset( $decor_media['alt'] ) ? (string) $decor_media['alt'] : '';
 }
-$position_x          = $attributes['positionX'] ?? 50;
-$position_y          = $attributes['positionY'] ?? 50;
-$width               = $attributes['width'] ?? 200;
+// `positionX`/`positionY`/`rotation` are TIER OBJECTS (Spec 35 pass,
+// {desktop,tablet,mobile}) — normalise before reading any tier. The base
+// desktop-tier value drives the always-on scoped CSS rule below; tablet/
+// mobile tiers feed the `data-*` attrs further down (a pre-existing,
+// documented gap — see style.css:31 — those attrs have never had a CSS/JS
+// consumer, so this migration preserves that exact behaviour rather than
+// wiring a new one in as a side effect).
+$position_x_obj      = sgs_responsive_normalise_object( $attributes['positionX'] ?? null );
+$position_y_obj      = sgs_responsive_normalise_object( $attributes['positionY'] ?? null );
+$rotation_obj        = sgs_responsive_normalise_object( $attributes['rotation'] ?? null );
+$position_x          = $position_x_obj['desktop'] ?? 50;
+$position_y          = $position_y_obj['desktop'] ?? 50;
+$width_obj           = sgs_responsive_normalise_object( $attributes['width'] ?? null );
+$width               = $width_obj['desktop'] ?? 200;
 $max_width_percent   = $attributes['maxWidthPercent'] ?? 20;
-$rotation            = $attributes['rotation'] ?? 0;
+$rotation            = $rotation_obj['desktop'] ?? 0;
 $opacity             = $attributes['opacity'] ?? 85;
 $z_index             = $attributes['zIndex'] ?? 1;
 $flip_x              = $attributes['flipX'] ?? false;
@@ -92,17 +103,20 @@ $path_draw_easing    = in_array( $attributes['pathDrawEasing'] ?? 'ease-out', $a
 	? $attributes['pathDrawEasing']
 	: 'ease-out';
 
-// Responsive overrides.
-$position_x_tablet   = $attributes['positionXTablet'] ?? null;
-$position_y_tablet   = $attributes['positionYTablet'] ?? null;
-$width_tablet        = $attributes['widthTablet'] ?? null;
-$rotation_tablet     = $attributes['rotationTablet'] ?? null;
+// Responsive overrides. positionX/positionY/rotation tablet+mobile tiers now
+// come off the normalised tier objects built above ($position_x_obj etc.) —
+// `positionXTablet`/`positionYTablet`/`rotationTablet` and their Mobile
+// siblings are no longer declared by block.json (folded into the object).
+$position_x_tablet   = $position_x_obj['tablet'] ?? null;
+$position_y_tablet   = $position_y_obj['tablet'] ?? null;
+$width_tablet        = $width_obj['tablet'] ?? null;
+$rotation_tablet     = $rotation_obj['tablet'] ?? null;
 $hide_on_tablet      = $attributes['hideOnTablet'] ?? false;
 
-$position_x_mobile   = $attributes['positionXMobile'] ?? null;
-$position_y_mobile   = $attributes['positionYMobile'] ?? null;
-$width_mobile        = $attributes['widthMobile'] ?? null;
-$rotation_mobile     = $attributes['rotationMobile'] ?? null;
+$position_x_mobile   = $position_x_obj['mobile'] ?? null;
+$position_y_mobile   = $position_y_obj['mobile'] ?? null;
+$width_mobile        = $width_obj['mobile'] ?? null;
+$rotation_mobile     = $rotation_obj['mobile'] ?? null;
 $hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
 
 // Don't render if no media.

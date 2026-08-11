@@ -109,49 +109,32 @@
 			"default": ""
 		},
 		"fontSize": {
-			"type": [ "number", "string" ]
+			"type": "object",
+			"default": {}
 		},
 		"fontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"fontSizeTablet": {
-			"type": "number"
-		},
-		"fontSizeMobile": {
-			"type": "number"
 		},
 		"fontWeight": {
 			"type": "string",
 			"default": ""
 		},
 		"lineHeight": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"lineHeightUnit": {
 			"type": "string",
 			"default": "em"
 		},
-		"lineHeightTablet": {
-			"type": "number"
-		},
-		"lineHeightMobile": {
-			"type": "number"
-		},
 		"letterSpacing": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"letterSpacingUnit": {
 			"type": "string",
 			"default": "em"
-		},
-		"letterSpacingTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"letterSpacingMobile": {
-			"type": "string",
-			"default": ""
 		},
 		"fontStyle": {
 			"type": "string",

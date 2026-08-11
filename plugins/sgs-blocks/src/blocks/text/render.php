@@ -49,21 +49,24 @@ $text = isset( $attributes['text'] ) ? (string) $attributes['text'] : '';
 // emitted this attr; sgs/text always renders a <p>.
 $tag_name         = 'p';
 $text_colour      = $attributes['textColour'] ?? '';
-$font_size        = isset( $attributes['fontSize'] ) ? $attributes['fontSize'] : null;
+// fontSize / lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,mobile}
+// attrs (Spec 35 tier-object migration) — normalise via the shared helper rather
+// than raw-bracket-reading a Tablet/Mobile SIBLING attr that no longer exists in
+// this block's schema (WP silently discards a value written to an undeclared
+// attr — D338). $font_size stays the DESKTOP value for the downstream legacy-
+// string-preset check below; the object itself feeds the Pattern-A emitter.
+$font_size_obj    = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
+$font_size        = $font_size_obj['desktop'];
 $font_size_unit   = $attributes['fontSizeUnit'] ?? 'px';
-$font_size_tablet = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
-$font_size_mobile = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
 $font_weight      = $attributes['fontWeight'] ?? '';
-$line_height      = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
+$line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?? null );
+$line_height      = $line_height_obj['desktop'];
 $line_height_unit = $attributes['lineHeightUnit'] ?? 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $line_height_unit            = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$line_height_tablet          = isset( $attributes['lineHeightTablet'] ) ? $attributes['lineHeightTablet'] : null;
-$line_height_mobile          = isset( $attributes['lineHeightMobile'] ) ? $attributes['lineHeightMobile'] : null;
-$letter_spacing              = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;
+$letter_spacing_obj          = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
+$letter_spacing              = $letter_spacing_obj['desktop'];
 $letter_spacing_unit         = $attributes['letterSpacingUnit'] ?? 'em';
-$letter_spacing_tablet       = isset( $attributes['letterSpacingTablet'] ) && '' !== $attributes['letterSpacingTablet'] ? $attributes['letterSpacingTablet'] : null;
-$letter_spacing_mobile       = isset( $attributes['letterSpacingMobile'] ) && '' !== $attributes['letterSpacingMobile'] ? $attributes['letterSpacingMobile'] : null;
 $font_style                  = $attributes['fontStyle'] ?? '';
 $text_decoration             = $attributes['textDecoration'] ?? '';
 $text_transform              = $attributes['textTransform'] ?? '';
@@ -319,44 +322,40 @@ $scope = '.wp-block-sgs-text.' . esc_attr( $anchor );
 // instances on the same page never collide.
 // ---------------------------------------------------------------------------
 
-// Pattern A (D-migration): base + tablet + mobile emitted together on the
-// SAME selector ($scope) via the shared general helper — replaces the old
-// per-block sgs_text_responsive_css() hand-rolled tablet/mobile-only builder
-// (which left the desktop/base value inline, always defeating it).
-$css_base_and_tiers = sgs_responsive_css_rule(
-	$attributes,
+// Pattern A object-model emitter: base + tablet + mobile emitted together on
+// the SAME selector ($scope), tier-diffed (Spec 35 tier-object migration —
+// fontSize/lineHeight/letterSpacing are now {desktop,tablet,mobile} OBJECT
+// attrs, not flat prop/propTablet/propMobile trios).
+$css_base_and_tiers = sgs_emit_responsive_css(
+	$scope,
 	array(
 		array(
-			'attr'         => 'fontSize',
+			'value'        => $attributes['fontSize'] ?? null,
 			'css'          => 'font-size',
 			'unit_default' => $font_size_unit,
-			'tablet_attr'  => 'fontSizeTablet',
-			'mobile_attr'  => 'fontSizeMobile',
 		),
 		array(
-			'attr'         => 'lineHeight',
+			'value'        => $attributes['lineHeight'] ?? null,
 			'css'          => 'line-height',
 			'unit_default' => $line_height_unit,
-			'tablet_attr'  => 'lineHeightTablet',
-			'mobile_attr'  => 'lineHeightMobile',
 		),
 		array(
-			'attr'         => 'letterSpacing',
+			'value'        => $attributes['letterSpacing'] ?? null,
 			'css'          => 'letter-spacing',
 			'unit_default' => $letter_spacing_unit,
-			'tablet_attr'  => 'letterSpacingTablet',
-			'mobile_attr'  => 'letterSpacingMobile',
 		),
-	),
-	$scope
+	)
 );
 
-// A STRING fontSize is a theme preset slug (core-block parity: `"fontSize":"small"`).
+// A STRING desktop fontSize is a theme preset slug (core-block parity:
+// `"fontSize":"small"`). Read from the already-normalised $font_size (the
+// object's desktop tier) — NOT the raw $attributes['fontSize'] object, which
+// would PHP-coerce to the literal string "Array" (D569/D570's bug class).
 // The numeric emitter above skips non-numerics, so resolve it via
 // sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same scope.
 // Mirrors the canonical legacy-string branch in helpers-typography.php.
-if ( isset( $attributes['fontSize'] ) && '' !== $attributes['fontSize'] && ! is_numeric( $attributes['fontSize'] ) ) {
-	$preset_font_size = sgs_font_size_value( (string) $attributes['fontSize'] );
+if ( null !== $font_size && '' !== $font_size && ! is_numeric( $font_size ) ) {
+	$preset_font_size = sgs_font_size_value( (string) $font_size );
 	if ( '' !== $preset_font_size ) {
 		$css_base_and_tiers .= $scope . '{font-size:' . $preset_font_size . ';}';
 	}

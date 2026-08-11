@@ -107,17 +107,21 @@ $sgs_css_safe_value = static function ( $value ) {
 $box_shadow = $attributes['boxShadow'] ?? '';
 
 // `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
-// holding {desktop,tablet,mobile}, read through the shared normaliser. The
-// `height` family below is still flat and is untouched by this pass.
+// holding {desktop,tablet,mobile}, read through the shared normaliser.
 $max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $max_width        = $max_width_tiers['desktop'] ?? '';
 $max_width_tablet = $max_width_tiers['tablet'] ?? '';
 $max_width_mobile = $max_width_tiers['mobile'] ?? '';
 
-$height        = isset( $attributes['height'] ) ? (float) $attributes['height'] : 400;
+// `height` is now also a TIER OBJECT (Spec 35 pass) — `heightTablet`/
+// `heightMobile` are no longer declared by block.json (folded into the
+// object). `heightUnit` stays a separate flat attr (one unit for all tiers,
+// unchanged by this pass).
+$height_tiers  = sgs_responsive_normalise_object( $attributes['height'] ?? null );
+$height        = isset( $height_tiers['desktop'] ) ? (float) $height_tiers['desktop'] : 400;
 $height_unit   = in_array( $attributes['heightUnit'] ?? 'px', array( 'px', 'vh', 'em', 'rem', '%' ), true ) ? $attributes['heightUnit'] : 'px';
-$height_tablet = $attributes['heightTablet'] ?? null;
-$height_mobile = $attributes['heightMobile'] ?? null;
+$height_tablet = $height_tiers['tablet'] ?? null;
+$height_mobile = $height_tiers['mobile'] ?? null;
 
 $divider_colour  = $attributes['dividerColour'] ?? '';
 $divider_width   = isset( $attributes['dividerWidth'] ) ? max( 1, (float) $attributes['dividerWidth'] ) : 3;
@@ -325,8 +329,23 @@ if ( $label_decls ) {
 $label_font_size_unit   = $attributes['labelFontSizeUnit'] ?? 'px';
 $label_line_height_unit = $attributes['labelLineHeightUnit'] ?? '';
 
+// labelFontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — the old
+// …Tablet/…Mobile sibling attrs are no longer declared by block.json.
+// sgs_responsive_css_rule() reads flat sibling keys, so feed it a synthetic
+// array carrying the normalised tier values under the OLD flat key names —
+// same pattern as button/render.php's $tier_object_synthetic_attrs.
+// labelLineHeight is NOT part of this migration (still genuinely flat, no
+// Tablet/Mobile siblings ever declared) — untouched here.
+$label_font_size_obj = sgs_responsive_normalise_object( $attributes['labelFontSize'] ?? null );
 $css_label_tiers = sgs_responsive_css_rule(
-	$attributes,
+	array_merge(
+		$attributes,
+		array(
+			'labelFontSize'       => $label_font_size_obj['desktop'],
+			'labelFontSizeTablet' => $label_font_size_obj['tablet'],
+			'labelFontSizeMobile' => $label_font_size_obj['mobile'],
+		)
+	),
 	array(
 		array(
 			'attr'         => 'labelFontSize',

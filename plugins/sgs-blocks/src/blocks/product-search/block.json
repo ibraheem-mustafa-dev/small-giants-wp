@@ -66,13 +66,9 @@
 			"default": ""
 		},
 		"maxResults": {
-			"type": "integer",
-			"default": 10
-		},
-		"maxResultsMobile": {
-			"type": "integer",
-			"default": 6
-		},
+			"type": "object",
+			"default": {"desktop": 10, "mobile": 6}
+		},
 		"paddingTablet": {
 			"type": "object",
 			"default": {}

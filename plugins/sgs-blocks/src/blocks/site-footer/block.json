@@ -344,16 +344,9 @@
 			]
 		},
 		"minHeight": {
-			"type": "string"
-		},
-		"minHeightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"minHeightTablet": {
-			"type": "string",
-			"default": ""
-		},
+			"type": "object",
+			"default": {}
+		},
 		"overlayGradient": {
 			"type": "boolean",
 			"default": false

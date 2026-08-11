@@ -136,18 +136,12 @@
       "default": ""
     },
     "fontSize": {
-      "type": [ "number", "string" ],
-      "default": null
-    },
+			"type": "object",
+			"default": {}
+		},
     "fontSizeUnit": {
       "type": "string",
       "default": "px"
-    },
-    "fontSizeTablet": {
-      "type": "number"
-    },
-    "fontSizeMobile": {
-      "type": "number"
     },
     "fontWeight": {
       "type": "string",

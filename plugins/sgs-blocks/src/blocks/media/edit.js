@@ -71,77 +71,15 @@ const PLAYBACK_TIERS = [
 	},
 ];
 
-const SGS_MEDIA_UNITS = [
-	{ value: 'px', label: 'px' },
-	{ value: '%', label: '%' },
-	{ value: 'em', label: 'em' },
-	{ value: 'rem', label: 'rem' },
-	{ value: 'vw', label: 'vw' },
-	{ value: 'vh', label: 'vh' },
-];
-
 /**
- * Responsive UnitControl trio — stores a unit-embedded CSS length string per
- * breakpoint (e.g. "440px", "100%"). attrDesktop/Tablet/Mobile are declared as
- * JSX props so the dead-control guard sees them as controlled attrs.
- * @param root0
- * @param root0.label
- * @param root0.attrDesktop
- * @param root0.attrTablet
- * @param root0.attrMobile
- * @param root0.attributes
- * @param root0.setAttributes
+ * `RUnitControl` (a responsive UnitControl trio storing a unit-embedded CSS
+ * length string per flat `attr`/`attrTablet`/`attrMobile` sibling) and its
+ * `resetResponsiveLength()` reset-object helper were deleted here (Spec 35
+ * pass) once `maxWidth`, `maxHeight` AND `height` — the only three consumers
+ * — all migrated to the {desktop,tablet,mobile} TIER OBJECT shape and moved
+ * onto `<ResponsiveOverride>` instead. Nothing else in this file used either
+ * helper.
  */
-function RUnitControl( {
-	label,
-	attrDesktop,
-	attrTablet,
-	attrMobile,
-	attributes,
-	setAttributes,
-} ) {
-	return (
-		<ResponsiveControl label={ label }>
-			{ ( bp ) => {
-				const key = {
-					desktop: attrDesktop,
-					tablet: attrTablet,
-					mobile: attrMobile,
-				}[ bp ];
-				return (
-					<UnitControl
-						value={ attributes[ key ] || '' }
-						onChange={ ( v ) =>
-							setAttributes( { [ key ]: v || null } )
-						}
-						units={ SGS_MEDIA_UNITS }
-						__next40pxDefaultSize
-					/>
-				);
-			} }
-		</ResponsiveControl>
-	);
-}
-
-/**
- * Build the { [base]: null, [base]Tablet: null, [base]Mobile: null } reset
- * object for a responsive length family (maxWidth / maxHeight / height) owned
- * by <RUnitControl> (which itself wraps the shared <ResponsiveControl>). Uses
- * a computed key for the Tablet/Mobile pair so the reset write is not read by
- * the control-ux static gate as a second, competing direct control —
- * RUnitControl's own onChange (also a computed-key write) remains the single
- * writer the gate sees for these attrs; this helper only clears them back to
- * unset when a panel item / the whole panel resets.
- *
- * @param {string} base Desktop attr name, e.g. 'maxWidth', 'maxHeight', 'height'.
- */
-function resetResponsiveLength( base ) {
-	return {
-		[ base ]: null,
-		[ `${ base }Tablet` ]: null,
-		[ `${ base }Mobile` ]: null,
-	};
-}
 
 /**
  * SGS Media block editor component.
@@ -409,14 +347,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( {
 							objectFit: 'cover',
 							objectPosition: 'center center',
-							// maxWidth is a TIER OBJECT (pass 2) — reset to an empty
-							// object, NOT resetResponsiveLength()'s `null` + flat
-							// siblings. A null on an object-typed attr coerces to
-							// the declared default, and the siblings no longer
-							// exist so WP discards them silently (D338/D563).
+							// maxWidth + maxHeight + height are TIER OBJECTS —
+							// reset to an empty object, NOT resetResponsiveLength()'s
+							// `null` + flat siblings. A null on an object-typed attr
+							// coerces to the declared default, and the siblings no
+							// longer exist so WP discards them silently (D338/D563).
 							maxWidth: {},
-							...resetResponsiveLength( 'maxHeight' ),
-							...resetResponsiveLength( 'height' ),
+							maxHeight: {},
+							height: {},
 							style: {
 								...style,
 								border: { ...style?.border, radius: {} },
@@ -508,11 +446,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					{ /*
 					  `maxWidth` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
-					  {desktop,tablet,mobile}, so it uses ResponsiveOverride rather
-					  than the flat-sibling <RUnitControl> its neighbours still use.
-					  `maxHeight` / `height` remain flat and are untouched by this
-					  pass — do not "tidy" them onto the same primitive without
-					  migrating their storage in the same commit (D563).
+					  {desktop,tablet,mobile}, so it uses ResponsiveOverride. `maxHeight`
+					  and `height` below are on the same shape as of this pass.
 					*/ }
 					<ToolsPanelItem
 						label={ __( 'Max width', 'sgs-blocks' ) }
@@ -543,52 +478,73 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
+					{ /*
+					  `maxHeight` is a TIER OBJECT (Spec 35 pass 2/3c) — ONE attr
+					  holding {desktop,tablet,mobile}, so it uses
+					  <ResponsiveOverride> rather than the flat-sibling
+					  <RUnitControl> its "Height (fill)" neighbour used to use.
+					*/ }
 					<ToolsPanelItem
 						label={ __( 'Max height', 'sgs-blocks' ) }
 						hasValue={ () =>
 							!! (
-								attributes.maxHeight ||
-								attributes.maxHeightTablet ||
-								attributes.maxHeightMobile
+								attributes.maxHeight &&
+								Object.values( attributes.maxHeight ).some(
+									( v ) => v !== undefined && v !== null && v !== ''
+								)
 							)
 						}
-						onDeselect={ () =>
-							setAttributes(
-								resetResponsiveLength( 'maxHeight' )
-							)
-						}
+						onDeselect={ () => setAttributes( { maxHeight: {} } ) }
 					>
-						<RUnitControl
+						<ResponsiveOverride
 							label={ __( 'Max height', 'sgs-blocks' ) }
-							attrDesktop="maxHeight"
-							attrTablet="maxHeightTablet"
-							attrMobile="maxHeightMobile"
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-						/>
+							value={ attributes.maxHeight }
+							onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<UnitControl
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue || '' : '' }
+									onChange={ ( v ) => setOwnValue( v || '' ) }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
+					{ /*
+					  `height` is now ALSO a TIER OBJECT (Spec 35 pass) — ONE attr
+					  holding {desktop,tablet,mobile}, same shape as `maxHeight`
+					  above. `heightTablet`/`heightMobile` are no longer declared
+					  by block.json, so the flat-sibling <RUnitControl> this
+					  control used is retired in favour of <ResponsiveOverride>.
+					*/ }
 					<ToolsPanelItem
 						label={ __( 'Height (fill)', 'sgs-blocks' ) }
 						hasValue={ () =>
 							!! (
-								attributes.height ||
-								attributes.heightTablet ||
-								attributes.heightMobile
+								attributes.height &&
+								Object.values( attributes.height ).some(
+									( v ) => v !== undefined && v !== null && v !== ''
+								)
 							)
 						}
-						onDeselect={ () =>
-							setAttributes( resetResponsiveLength( 'height' ) )
-						}
+						onDeselect={ () => setAttributes( { height: {} } ) }
 					>
-						<RUnitControl
+						<ResponsiveOverride
 							label={ __( 'Height (fill)', 'sgs-blocks' ) }
-							attrDesktop="height"
-							attrTablet="heightTablet"
-							attrMobile="heightMobile"
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-						/>
+							value={ attributes.height }
+							onChange={ ( obj ) => setAttributes( { height: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<UnitControl
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue || '' : '' }
+									onChange={ ( v ) => setOwnValue( v || '' ) }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem

@@ -258,18 +258,13 @@
 			"default": false
 		},
 		"headingFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"headingFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"headingFontSizeTablet": {
-			"type": "number"
-		},
-		"headingFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"headingFontWeight": {
 			"type": "string",
 			"default": ""
@@ -286,18 +281,13 @@
 			"default": ""
 		},
 		"itemFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"itemFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"itemFontSizeTablet": {
-			"type": "number"
-		},
-		"itemFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"itemFontWeight": {
 			"type": "string",
 			"default": ""

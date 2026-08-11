@@ -303,36 +303,20 @@
 			"default": "px"
 		},
 		"maxHeight": {
-			"type": "string",
-			"default": null
+			"type": "object",
+			"default": {}
 		},
 		"maxHeightUnit": {
 			"type": "string",
 			"default": "px"
 		},
-		"maxHeightMobile": {
-			"type": "string",
-			"default": null
-		},
-		"maxHeightTablet": {
-			"type": "string",
-			"default": null
-		},
 		"height": {
-			"type": "string",
-			"default": null
+			"type": "object",
+			"default": {}
 		},
 		"heightUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"heightMobile": {
-			"type": "string",
-			"default": null
-		},
-		"heightTablet": {
-			"type": "string",
-			"default": null
 		},
 		"objectFit": {
 			"type": "string",
@@ -375,16 +359,8 @@
 			]
 		},
 		"order": {
-			"type": "integer",
-			"default": null
-		},
-		"orderMobile": {
-			"type": "integer",
-			"default": null
-		},
-		"orderTablet": {
-			"type": "integer",
-			"default": null
+			"type": "object",
+			"default": {}
 		},
 		"caption": {
 			"type": "string",

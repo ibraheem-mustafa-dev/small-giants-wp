@@ -409,15 +409,8 @@
 			"default": {}
 		},
 		"minHeight": {
-			"type": "string"
-		},
-		"minHeightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"minHeightMobile": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"verticalAlign": {
 			"type": "string",

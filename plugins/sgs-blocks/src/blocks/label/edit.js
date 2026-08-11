@@ -57,18 +57,17 @@ const LINE_HEIGHT_UNITS = [
 ];
 
 /**
- * Build the { fontSizeTablet, fontSizeMobile } reset object for the font-size
- * responsive family owned by <TypographyControls>. Uses computed keys (not a
- * literal object in a setAttributes({...}) call) so the reset write is not
- * read by the control-ux static gate as a second, competing direct control —
- * TypographyControls' own ResponsiveControl/UnitControl onChange remains the
- * single writer the gate sees for fontSizeTablet/fontSizeMobile; this helper
- * only clears them back to unset when the panel item / whole panel resets.
+ * Build the fontSize reset value for the font-size responsive family owned by
+ * <TypographyControls>. fontSize is now an OBJECT-typed {desktop,tablet,
+ * mobile} attr (Spec 35 tier-object migration) — the retired flat
+ * fontSizeTablet/fontSizeMobile sibling attrs no longer exist in this block's
+ * schema, so resetting them individually would silently no-op (WP discards a
+ * write to an undeclared attr). Reset the WHOLE object back to the block's own
+ * default (block.json: `{"desktop":12}`) instead.
  */
 function resetFontSizeResponsive() {
 	return {
-		fontSizeTablet: null,
-		fontSizeMobile: null,
+		fontSize: { desktop: 12 },
 	};
 }
 
@@ -141,10 +140,17 @@ function buildStyle( attributes ) {
 	const marginPreview = boxShorthand( style?.spacing?.margin );
 	const paddingPreview = boxShorthand( padding );
 
+	// fontSize is OBJECT-typed {desktop,tablet,mobile} (Spec 35 tier-object
+	// migration) — the canvas preview always shows the desktop tier.
+	const fontSizeDesktop =
+		fontSize && 'object' === typeof fontSize && ! Array.isArray( fontSize )
+			? fontSize.desktop
+			: fontSize;
+
 	const previewStyle = {
 		color: colourVar( textColour ) || undefined,
 		fontFamily: fontFamily || undefined,
-		fontSize: fontSize ? `${ fontSize }${ fontSizeUnit }` : undefined,
+		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit }` : undefined,
 		fontWeight: fontWeight || undefined,
 		lineHeight: lineHeight ? `${ lineHeight }${ lineHeightUnit }` : undefined,
 		letterSpacing: ( letterSpacing !== null && letterSpacing !== undefined )
@@ -196,8 +202,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColour,
 		fontSize,
 		fontSizeUnit,
-		fontSizeTablet,
-		fontSizeMobile,
 		fontWeight,
 		lineHeight,
 		lineHeightUnit,
@@ -251,7 +255,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Typography', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
-								fontSize: 12,
 								...resetFontSizeResponsive(),
 								fontWeight: '600',
 								textTransform: 'uppercase',
@@ -274,14 +277,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						 */ }
 						<ToolsPanelItem
 							label={ __( 'Font size', 'sgs-blocks' ) }
-							hasValue={ () =>
-								fontSize !== 12 ||
-								!! fontSizeTablet ||
-								!! fontSizeMobile
-							}
+							hasValue={ () => {
+								// fontSize is OBJECT-typed {desktop,tablet,mobile}; compare
+								// against the whole default shape, not a bare number.
+								const fsObj = fontSize && 'object' === typeof fontSize ? fontSize : {};
+								return (
+									fsObj.desktop !== 12 ||
+									!! fsObj.tablet ||
+									!! fsObj.mobile
+								);
+							} }
 							onDeselect={ () =>
 								setAttributes( {
-									fontSize: 12,
 									...resetFontSizeResponsive(),
 								} )
 							}

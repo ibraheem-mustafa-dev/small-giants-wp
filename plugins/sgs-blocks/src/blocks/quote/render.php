@@ -292,8 +292,30 @@ $css_attrib_base = $attrib_decls ? ( $attrib_scope . '{' . implode( ';', $attrib
 // Attribution font-size / line-height / margin-top — base + tablet + mobile on
 // the SAME selector (Pattern A). attributionMarginTop is a KEPT-SCALAR
 // single-side family (contract §C).
-$css_attrib_tiers = sgs_responsive_css_rule(
+//
+// attributionFontSize / attributionMarginTop are TIER OBJECTS
+// {desktop,tablet,mobile} (Spec 35 pass 3b, 2026-08-11) — the *Tablet/*Mobile
+// siblings no longer exist in block.json. sgs_responsive_css_rule() reads its
+// prop_map by ATTRIBUTE NAME from a flat $attributes-shaped array, so the two
+// object attrs are normalised here and fed back in under their old flat key
+// names (attributionLineHeight is untouched — still a plain scalar attr) —
+// this keeps sgs_responsive_css_rule()'s per-tier emission behaviour
+// byte-identical to before the migration, just fed from the new storage shape.
+$attrib_font_size_tiers  = sgs_responsive_normalise_object( $attributes['attributionFontSize'] ?? null );
+$attrib_margin_top_tiers = sgs_responsive_normalise_object( $attributes['attributionMarginTop'] ?? null );
+$css_attrib_prop_attrs   = array_merge(
 	$attributes,
+	array(
+		'attributionFontSize'        => $attrib_font_size_tiers['desktop'] ?? null,
+		'attributionFontSizeTablet'  => $attrib_font_size_tiers['tablet'] ?? null,
+		'attributionFontSizeMobile'  => $attrib_font_size_tiers['mobile'] ?? null,
+		'attributionMarginTop'       => $attrib_margin_top_tiers['desktop'] ?? null,
+		'attributionMarginTopTablet' => $attrib_margin_top_tiers['tablet'] ?? null,
+		'attributionMarginTopMobile' => $attrib_margin_top_tiers['mobile'] ?? null,
+	)
+);
+$css_attrib_tiers = sgs_responsive_css_rule(
+	$css_attrib_prop_attrs,
 	array(
 		array(
 			'attr'         => 'attributionFontSize',

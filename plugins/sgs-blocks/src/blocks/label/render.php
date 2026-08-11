@@ -64,13 +64,16 @@ $tag_name          = 'span';
 $text_colour       = $attributes['textColour'] ?? '';
 $background_colour = $attributes['backgroundColour'] ?? '';
 $font_family       = $attributes['fontFamily'] ?? '';
-$font_size         = $attributes['fontSize'] ?? '';
+// fontSize is OBJECT-typed {desktop,tablet,mobile} (Spec 35 tier-object
+// migration) — normalise via the shared helper rather than raw-bracket-reading
+// a Tablet/Mobile SIBLING attr that no longer exists in this block's schema
+// (WP silently discards a value written to an undeclared attr — D338).
+$font_size_obj     = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
+$font_size         = $font_size_obj['desktop'] ?? '';
 $font_size_unit    = $sgs_css_keyword( $attributes['fontSizeUnit'] ?? 'px' );
 if ( '' === $font_size_unit ) {
 	$font_size_unit = 'px';
 }
-$font_size_tablet = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
-$font_size_mobile = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
 $font_weight      = $attributes['fontWeight'] ?? '';
 $line_height      = $attributes['lineHeight'] ?? '';
 $line_height_unit = $attributes['lineHeightUnit'] ?? '';
@@ -195,20 +198,18 @@ if ( $root_decls ) {
 }
 
 // --- Base font-size — base + tablet + mobile on the SAME selector so the
-// narrower tier wins by cascade order, never inline. ---
-$font_size_css = sgs_responsive_css_rule(
-	$attributes,
+// narrower tier wins by cascade order, never inline. Object-model emitter
+// (Spec 35 tier-object migration — fontSize is now {desktop,tablet,mobile}). ---
+$font_size_css = sgs_emit_responsive_css(
+	$root_sel,
 	array(
 		array(
-			'attr'         => 'fontSize',
+			'value'        => $attributes['fontSize'] ?? null,
 			'css'          => 'font-size',
 			'unit_default' => $font_size_unit,
-			'tablet_attr'  => 'fontSizeTablet',
-			'mobile_attr'  => 'fontSizeMobile',
 			'cast'         => 'int',
 		),
-	),
-	$root_sel
+	)
 );
 if ( '' !== $font_size_css ) {
 	$scoped_css[] = $font_size_css;

@@ -28,7 +28,7 @@ import {
 	DesignTokenPicker,
 	IconPicker,
 	IconPreview,
-	ResponsiveControl,
+	ResponsiveOverride,
 	ResponsiveBoxControl,
 	TypographyControls,
 } from '../../components';
@@ -147,12 +147,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		lineStyle,
 		width,
 		widthUnit,
-		widthTablet,
-		widthMobile,
 		thickness,
 		thicknessUnit,
-		thicknessTablet,
-		thicknessMobile,
 		colour,
 		opacity,
 		alignment,
@@ -172,18 +168,13 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const withContent = 'none' !== contentMode;
 
-	// Line width/breakpoint attr maps (kept-scalar responsive families,
-	// contract §C — width/thickness are single values, not box families).
-	const widthBreakpoints = {
-		desktop: 'width',
-		tablet: 'widthTablet',
-		mobile: 'widthMobile',
-	};
-	const thicknessBreakpoints = {
-		desktop: 'thickness',
-		tablet: 'thicknessTablet',
-		mobile: 'thicknessMobile',
-	};
+	// `width` and `thickness` are TIER OBJECTS (Spec 35 pass 2, 2026-08-11) — ONE
+	// attr each holding {desktop,tablet,mobile}; the old widthTablet/widthMobile/
+	// thicknessTablet/thicknessMobile sibling attrs no longer exist. The editor
+	// canvas preview only ever showed the DESKTOP value (it never rendered a
+	// live @media preview), so it reads the desktop tier here.
+	const widthDesktop = width?.desktop ?? '';
+	const thicknessDesktop = thickness?.desktop ?? '';
 
 	// ---- Editor-canvas preview (mirrors render.php's scoped output) ----
 	const lineDecls = {};
@@ -192,7 +183,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} else {
 		lineDecls.borderBottomStyle = lineStyle;
 		lineDecls.borderBottomWidth =
-			composeUnit( thickness, thicknessUnit ) || undefined;
+			composeUnit( thicknessDesktop, thicknessUnit ) || undefined;
 		if ( gradientEnabled && gradientColourStart && gradientColourEnd ) {
 			const start = /^#|^rgb|^hsl|^var\(/.test( gradientColourStart )
 				? gradientColourStart
@@ -210,7 +201,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const rootPreviewStyle = {
-		width: composeUnit( width, widthUnit ) || undefined,
+		width: composeUnit( widthDesktop, widthUnit ) || undefined,
 		...alignmentMargin( alignment ),
 		opacity:
 			'number' === typeof opacity && 100 !== opacity
@@ -279,10 +270,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					resetAll={ () =>
 						setAttributes( {
 							lineStyle: 'solid',
-							thickness: 1,
+							// `thickness` is a TIER OBJECT (Spec 35 pass 2) — reset
+							// to the declared default shape, not a bare scalar +
+							// undefined siblings that no longer exist as attrs.
+							thickness: { desktop: 1 },
 							thicknessUnit: 'px',
-							thicknessTablet: undefined,
-							thicknessMobile: undefined,
 							colour: '',
 							opacity: 100,
 							gradientEnabled: false,
@@ -309,52 +301,59 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 
-					{ /* Thickness — ResponsiveControl + UnitControl per breakpoint. */ }
+					{ /*
+					  `thickness` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
+					  holding {desktop,tablet,mobile}, so it uses
+					  <ResponsiveOverride> rather than the old breakpoint-keyed
+					  attrMap. The per-tier VALUE stays a bare NUMBER paired with
+					  the block-level `thicknessUnit` (tier axis and unit are
+					  separate concerns — matches sgs/responsive-logo's maxWidth).
+					*/ }
 					<ToolsPanelItem
 						label={ __( 'Thickness', 'sgs-blocks' ) }
 						hasValue={ () =>
-							thickness !== 1 ||
-							thicknessTablet != null ||
-							thicknessMobile != null
+							!! (
+								thickness &&
+								Object.values( thickness ).some(
+									( v ) => v !== undefined && v !== null && v !== ''
+								)
+							)
 						}
 						onDeselect={ () =>
-							setAttributes( {
-								thickness: 1,
-								thicknessTablet: undefined,
-								thicknessMobile: undefined,
-							} )
+							setAttributes( { thickness: { desktop: 1 } } )
 						}
 						isShownByDefault
 					>
-						<ResponsiveControl
+						<ResponsiveOverride
 							label={ __( 'Thickness', 'sgs-blocks' ) }
+							value={ thickness }
+							onChange={ ( obj ) =>
+								setAttributes( { thickness: obj } )
+							}
 						>
-							{ ( breakpoint ) => {
-								const attrKey = thicknessBreakpoints[ breakpoint ];
-								return (
-									<UnitControl
-										label={ __( 'Thickness', 'sgs-blocks' ) }
-										hideLabelFromVision
-										value={ composeUnit(
-											attributes[ attrKey ],
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<UnitControl
+									label={ __( 'Thickness', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ composeUnit( ownValue, thicknessUnit ) }
+									placeholder={
+										inherited
+											? composeUnit( effectiveValue, thicknessUnit )
+											: ''
+									}
+									units={ THICKNESS_UNITS }
+									onChange={ ( raw ) => {
+										const { num, unit } = parseUnit(
+											raw,
 											thicknessUnit
-										) }
-										units={ THICKNESS_UNITS }
-										onChange={ ( raw ) => {
-											const { num, unit } = parseUnit(
-												raw,
-												thicknessUnit
-											);
-											setAttributes( {
-												[ attrKey ]: num,
-												thicknessUnit: unit,
-											} );
-										} }
-										__nextHasNoMarginBottom
-									/>
-								);
-							} }
-						</ResponsiveControl>
+										);
+										setOwnValue( num === undefined ? '' : num );
+										setAttributes( { thicknessUnit: unit } );
+									} }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -462,33 +461,38 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Size & alignment', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveControl label={ __( 'Width', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrKey = widthBreakpoints[ breakpoint ];
-							return (
-								<UnitControl
-									label={ __( 'Width', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ composeUnit(
-										attributes[ attrKey ],
+					{ /*
+					  `width` is a TIER OBJECT (Spec 35 pass 2) — same pattern as
+					  `thickness` above.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ width }
+						onChange={ ( obj ) => setAttributes( { width: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<UnitControl
+								label={ __( 'Width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ composeUnit( ownValue, widthUnit ) }
+								placeholder={
+									inherited
+										? composeUnit( effectiveValue, widthUnit )
+										: ''
+								}
+								units={ WIDTH_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit(
+										raw,
 										widthUnit
-									) }
-									units={ WIDTH_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit(
-											raw,
-											widthUnit
-										);
-										setAttributes( {
-											[ attrKey ]: num,
-											widthUnit: unit,
-										} );
-									} }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+									);
+									setOwnValue( num === undefined ? '' : num );
+									setAttributes( { widthUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 					<SelectControl
 						label={ __( 'Alignment', 'sgs-blocks' ) }
 						help={ __(

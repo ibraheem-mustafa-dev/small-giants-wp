@@ -195,13 +195,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitImageMobile,
 		splitMedia,
 		svgContent,
+		// minHeight is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35 pass 3b
+		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
 		shadow,
+		// headlineMarginBottom / subHeadlineMarginBottom are TIER OBJECTS
+		// {desktop,tablet,mobile} as of Spec 35 pass 3b — the *Mobile siblings no
+		// longer exist.
 		headlineMarginBottom,
-		headlineMarginBottomMobile,
 		subHeadlineMaxWidth,
 		subHeadlineMarginBottom,
-		subHeadlineMarginBottomMobile,
 		bgParallax,
 		bgKenBurns,
 		bgVideo,
@@ -241,9 +244,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
 		gridTemplateColumns,
-		splitContentOrderMobile,
+		// splitContentOrder is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35
+		// pass 3b — the *Tablet/*Mobile siblings no longer exist.
 		splitContentOrder,
-		splitContentOrderTablet,
 		// Phase 1 — vertical alignment.
 		verticalAlignment,
 		// HC2 — per-breakpoint text alignment on .sgs-hero__content.
@@ -262,8 +265,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
 	}
-	if ( minHeight ) {
-		wrapperStyle.minHeight = minHeight;
+	if ( minHeight?.desktop ) {
+		wrapperStyle.minHeight = minHeight.desktop;
 	}
 	if ( shadow ) {
 		wrapperStyle.boxShadow = resolveShadowPreview( shadow );
@@ -646,18 +649,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								textAlignDesktop: '',
 								textAlignTablet: '',
 								textAlignMobile: '',
-								minHeight: '',
-								minHeightTablet: '',
-								minHeightMobile: '360px',
+								minHeight: { mobile: '360px' },
 								contentBackground: '',
 								contentPadding: {},
 								contentPaddingTablet: {},
 								contentPaddingMobile: {},
 								...( isSplit && {
 									gridTemplateColumns: '',
-									splitContentOrder: '',
-									splitContentOrderTablet: '',
-									splitContentOrderMobile: 'media-first',
+									splitContentOrder: { mobile: 'media-first' },
 									splitImageBleed: false,
 								} ),
 							} );
@@ -746,69 +745,58 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToolsPanelItem
 							label={ __( 'Min height', 'sgs-blocks' ) }
 							hasValue={ () =>
-								!! minHeight ||
-								!! attributes.minHeightTablet ||
-								attributes.minHeightMobile !== '360px'
+								!! minHeight?.desktop ||
+								!! minHeight?.tablet ||
+								( minHeight?.mobile ?? '360px' ) !== '360px'
 							}
 							onDeselect={ () =>
-								setAttributes( {
-									minHeight: '',
-									minHeightTablet: '',
-									minHeightMobile: '360px',
-								} )
+								setAttributes( { minHeight: { mobile: '360px' } } )
 							}
 						>
-							<ResponsiveControl
+							{ /* minHeight is a TIER OBJECT {desktop,tablet,mobile}
+							     (Spec 35 pass 3b) — ONE attr, bound directly via
+							     <ResponsiveOverride> (mirrors gridTemplateColumns
+							     above). Blank on tablet inherits the desktop rule
+							     (render.php emits no @media override); blank on
+							     mobile falls back to render.php's own "360px"
+							     default, matching block.json's declared default. */ }
+							<ResponsiveOverride
 								label={ __( 'Min height', 'sgs-blocks' ) }
+								value={ minHeight }
+								onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
 							>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'minHeight',
-										tablet: 'minHeightTablet',
-										mobile: 'minHeightMobile',
-									};
-									return (
-										<SelectControl
-											value={
-												attributes[
-													attrMap[ breakpoint ]
-												]
-											}
-											// ⚑ DELIBERATE divergence from the shared MIN_HEIGHT_OPTIONS
-											// (container/components/ContainerWrapperControls.js) — decided,
-											// not an oversight (Spec 35 Track 1b Phase 1.4c). Kept because:
-											// (1) minHeightMobile's own declared default is "360px"
-											// (block.json), which isn't in the shared list at all — aligning
-											// would make the block's own default unselectable in its dropdown.
-											// (2) A hero is a full-bleed section; 80vh/520px are realistic
-											// hero heights the shared list (built for generic containers,
-											// which top out lower) doesn't offer. (3) The shared list's
-											// "closed" set is already not authoritative elsewhere —
-											// sgs/physics-canvas defaults minHeight to "480px", a value in
-											// NEITHER list, so a hero-specific list matching a hero-specific
-											// default is the more honest approach, not the odd one out.
-											options={ [
-												{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
-												{ label: '50vh',  value: '50vh'  },
-												{ label: '75vh',  value: '75vh'  },
-												{ label: '80vh',  value: '80vh'  },
-												{ label: '100vh', value: '100vh' },
-												{ label: '360px', value: '360px' },
-												{ label: '400px', value: '400px' },
-												{ label: '520px', value: '520px' },
-												{ label: '600px', value: '600px' },
-											] }
-											onChange={ ( val ) =>
-												setAttributes( {
-													[ attrMap[ breakpoint ] ]:
-														val,
-												} )
-											}
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SelectControl
+										value={ ownValue ?? '' }
+										// ⚑ DELIBERATE divergence from the shared MIN_HEIGHT_OPTIONS
+										// (container/components/ContainerWrapperControls.js) — decided,
+										// not an oversight (Spec 35 Track 1b Phase 1.4c). Kept because:
+										// (1) minHeightMobile's own declared default is "360px"
+										// (block.json), which isn't in the shared list at all — aligning
+										// would make the block's own default unselectable in its dropdown.
+										// (2) A hero is a full-bleed section; 80vh/520px are realistic
+										// hero heights the shared list (built for generic containers,
+										// which top out lower) doesn't offer. (3) The shared list's
+										// "closed" set is already not authoritative elsewhere —
+										// sgs/physics-canvas defaults minHeight to "480px", a value in
+										// NEITHER list, so a hero-specific list matching a hero-specific
+										// default is the more honest approach, not the odd one out.
+										options={ [
+											{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
+											{ label: '50vh',  value: '50vh'  },
+											{ label: '75vh',  value: '75vh'  },
+											{ label: '80vh',  value: '80vh'  },
+											{ label: '100vh', value: '100vh' },
+											{ label: '360px', value: '360px' },
+											{ label: '400px', value: '400px' },
+											{ label: '520px', value: '520px' },
+											{ label: '600px', value: '600px' },
+										] }
+										onChange={ ( val ) => setOwnValue( val ) }
+										__nextHasNoMarginBottom
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 
 						{ /* Media background/padding controls live in the "Image" panel's
@@ -863,17 +851,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								label={ __( 'Split layout grid', 'sgs-blocks' ) }
 								hasValue={ () =>
 									!! gridTemplateColumns ||
-										!! splitContentOrder ||
-									!! splitContentOrderTablet ||
-									splitContentOrderMobile !== 'media-first' ||
+										!! splitContentOrder?.desktop ||
+									!! splitContentOrder?.tablet ||
+									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first' ||
 									!! splitImageBleed
 								}
 								onDeselect={ () =>
 									setAttributes( {
 										gridTemplateColumns: '',
-										splitContentOrder: '',
-										splitContentOrderTablet: '',
-										splitContentOrderMobile: 'media-first',
+										splitContentOrder: { mobile: 'media-first' },
 										splitImageBleed: false,
 									} )
 								}
@@ -938,13 +924,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								     the container gap, controlled by the shared "Gap" control
 								     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
 								     bespoke splitGap* "Column gap" control was a duplicate. */ }
-								<ResponsiveControl label={ __( 'Column / stacking order', 'sgs-blocks' ) }>
-									{ ( breakpoint ) => {
-										const orderAttrMap = {
-											desktop: 'splitContentOrder',
-											tablet: 'splitContentOrderTablet',
-											mobile: 'splitContentOrderMobile',
-										};
+								{ /* splitContentOrder is a TIER OBJECT {desktop,tablet,mobile}
+								     (Spec 35 pass 3b) — ONE attr, bound via
+								     <ResponsiveOverride> (mirrors gridTemplateColumns above).
+								     Per-tier option lists/labels/help still vary, so the
+								     render-prop's `tier` selects them exactly as the old
+								     breakpoint-keyed maps did. */ }
+								<ResponsiveOverride
+									label={ __( 'Column / stacking order', 'sgs-blocks' ) }
+									value={ splitContentOrder }
+									onChange={ ( obj ) => setAttributes( { splitContentOrder: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue, tier } ) => {
 										const orderOptionsMap = {
 											desktop: DESKTOP_ORDER_OPTIONS,
 											tablet: TABLET_ORDER_OPTIONS,
@@ -960,19 +951,22 @@ export default function Edit( { attributes, setAttributes } ) {
 											tablet: __( 'Overrides desktop for tablet screens only. If your tablet grid is side by side this sets left/right; if it stacks (single column) this sets top/bottom.', 'sgs-blocks' ),
 											mobile: __( 'Mobile always stacks into a single column — this sets which section shows on top.', 'sgs-blocks' ),
 										};
-										const orderKey = orderAttrMap[ breakpoint ];
+										// Mobile has no blank/inherit option (MOBILE_ORDER_OPTIONS
+										// mirrors render.php's own 'media-first' fallback default);
+										// desktop/tablet keep the blank = inherit convention.
+										const value = 'mobile' === tier ? ( ownValue || 'media-first' ) : ( ownValue || '' );
 										return (
 											<SelectControl
-												label={ orderLabelMap[ breakpoint ] }
-												value={ attributes[ orderKey ] }
-												options={ orderOptionsMap[ breakpoint ] }
-												help={ orderHelpMap[ breakpoint ] }
-												onChange={ ( val ) => setAttributes( { [ orderKey ]: val } ) }
+												label={ orderLabelMap[ tier ] }
+												value={ value }
+												options={ orderOptionsMap[ tier ] }
+												help={ orderHelpMap[ tier ] }
+												onChange={ ( val ) => setOwnValue( val ) }
 												__nextHasNoMarginBottom
 											/>
 										);
 									} }
-								</ResponsiveControl>
+								</ResponsiveOverride>
 								<ToggleControl
 									label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
 									help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
@@ -989,17 +983,27 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{/* ── 4. Headline (h1) ── */}
 				<PanelBody title={ __( 'Headline (h1)', 'sgs-blocks' ) } initialOpen={ false }>
-					<RRangeControl
+					{ /* headlineMarginBottom is a TIER OBJECT {desktop,tablet,mobile}
+					     (Spec 35 pass 3b) — ONE attr, bound via <ResponsiveOverride>.
+					     Blank on tablet/mobile inherits the tier above (render.php
+					     emits no @media override for an absent tier), matching the
+					     old control's desktop==tablet default exactly. */ }
+					<ResponsiveOverride
 						label={ __( 'Margin bottom', 'sgs-blocks' ) }
-						attrDesktop="headlineMarginBottom"
-						attrTablet="headlineMarginBottom"
-						attrMobile="headlineMarginBottomMobile"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						min={ 0 }
-						max={ 120 }
-						step={ 1 }
-					/>
+						value={ headlineMarginBottom }
+						onChange={ ( obj ) => setAttributes( { headlineMarginBottom: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<RangeControl
+								value={ Number( ownValue ?? ( inherited ? effectiveValue : 0 ) ) || 0 }
+								onChange={ ( v ) => setOwnValue( v || null ) }
+								min={ 0 }
+								max={ 120 }
+								step={ 1 }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 					<p style={ { fontSize: '11px', color: '#757575', margin: '-4px 0 8px' } }>
 						{ __( '0 = inherit from theme.', 'sgs-blocks' ) }
 					</p>
@@ -1021,17 +1025,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 10 }
 						__nextHasNoMarginBottom
 					/>
-					<RRangeControl
+					{ /* subHeadlineMarginBottom is a TIER OBJECT {desktop,tablet,mobile}
+					     (Spec 35 pass 3b) — same pattern as headlineMarginBottom above. */ }
+					<ResponsiveOverride
 						label={ __( 'Margin bottom', 'sgs-blocks' ) }
-						attrDesktop="subHeadlineMarginBottom"
-						attrTablet="subHeadlineMarginBottom"
-						attrMobile="subHeadlineMarginBottomMobile"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						min={ 0 }
-						max={ 120 }
-						step={ 1 }
-					/>
+						value={ subHeadlineMarginBottom }
+						onChange={ ( obj ) => setAttributes( { subHeadlineMarginBottom: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<RangeControl
+								value={ Number( ownValue ?? ( inherited ? effectiveValue : 0 ) ) || 0 }
+								onChange={ ( v ) => setOwnValue( v || null ) }
+								min={ 0 }
+								max={ 120 }
+								step={ 1 }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 					<p style={ { fontSize: '11px', color: '#757575', margin: '-4px 0 8px' } }>
 						{ __( '0 = inherit from theme.', 'sgs-blocks' ) }
 					</p>

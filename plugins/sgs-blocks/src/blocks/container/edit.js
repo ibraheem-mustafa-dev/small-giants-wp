@@ -9,7 +9,7 @@ import {
   SelectControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from "../../components";
 import { resolveShadowPreview, resolveResponsiveTier } from "../../utils";
 import {
   LayoutPanel,
@@ -94,8 +94,11 @@ export default function Edit({ attributes, setAttributes }) {
     bgKenBurns = false,
     bgAnimationDuration = 20,
     shadow,
-    maxWidth,
-    minHeight,
+    // maxWidth and minHeight are both TIER OBJECTS — read via
+    // `attributes.maxWidth`/`attributes.minHeight` below, not destructured
+    // bare (a bare destructure was a real live bug for maxWidth's editor
+    // preview, fixed below, same class as gridTemplateColumns already
+    // resolving via resolveResponsiveTier rather than being used bare).
     gridTemplateColumns = "",
     verticalAlign,
     justifyItems = "stretch",
@@ -120,7 +123,7 @@ export default function Edit({ attributes, setAttributes }) {
 
   const style = {
     gap: gapCssValue( gap, previewTier ),
-    minHeight: minHeight || undefined,
+    minHeight: resolveResponsiveTier( attributes.minHeight, previewTier )?.value || undefined,
     ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
     // Media is handed to a ::before layer via custom properties rather than
     // painted on the element, MIRRORING the frontend (Phase 1, 2026-08-08).
@@ -177,8 +180,12 @@ export default function Edit({ attributes, setAttributes }) {
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
   // Breakout (alignwide / alignfull) is driven by WP-native align attr — no inline style needed.
-  if ( maxWidth ) {
-    style.maxWidth = maxWidth;
+  // maxWidth is a TIER OBJECT — was destructured and used BARE here (a real live
+  // bug: an object handed to `style.maxWidth` renders nothing useful in the
+  // editor preview), found and fixed alongside minHeight's own migration.
+  const previewMaxWidth = resolveResponsiveTier( attributes.maxWidth, previewTier )?.value;
+  if ( previewMaxWidth ) {
+    style.maxWidth = previewMaxWidth;
   }
 
   const className = [
@@ -242,26 +249,25 @@ export default function Edit({ attributes, setAttributes }) {
           <LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
           <hr style={ { margin: "16px 0" } } />
           <WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
-          <ResponsiveControl label={ __( "Min height", "sgs-blocks" ) }>
-            { ( breakpoint ) => {
-              const attrMap = {
-                desktop: "minHeight",
-                tablet:  "minHeightTablet",
-                mobile:  "minHeightMobile",
-              };
-              return (
-                <SelectControl
-                  value={ attributes[ attrMap[ breakpoint ] ] || "" }
-                  options={ MIN_HEIGHT_OPTIONS }
-                  onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-                  help={ breakpoint === "desktop"
-                    ? __( "Desktop / base. Tablet and mobile override it at narrower widths.", "sgs-blocks" )
-                    : undefined }
-                  __nextHasNoMarginBottom
-                />
-              );
-            } }
-          </ResponsiveControl>
+          { /* `minHeight` is a TIER OBJECT — {desktop,tablet,mobile} — so it uses
+               ResponsiveOverride. */ }
+          <ResponsiveOverride
+            label={ __( "Min height", "sgs-blocks" ) }
+            value={ attributes.minHeight }
+            onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+          >
+            { ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+              <SelectControl
+                value={ ownValue || "" }
+                options={ MIN_HEIGHT_OPTIONS }
+                onChange={ ( val ) => setOwnValue( val || undefined ) }
+                help={ ! inherited
+                  ? __( "Desktop / base. Tablet and mobile override it at narrower widths.", "sgs-blocks" )
+                  : __( "Leave empty to use the tier above.", "sgs-blocks" ) }
+                __nextHasNoMarginBottom
+              />
+            ) }
+          </ResponsiveOverride>
         </PanelBody>
 
         {/* Responsive spacing (padding + margin) — box-object interface contract

@@ -120,10 +120,11 @@
 		"afterLabel": { "type": "string", "default": "After", "role": "content" },
 		"labelColour": { "type": "string", "default": "" },
 		"labelBackgroundColour": { "type": "string", "default": "" },
-		"labelFontSize": { "type": [ "number", "string" ], "default": null },
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
 		"labelFontSizeUnit": { "type": "string", "default": "px" },
-		"labelFontSizeTablet": { "type": [ "number", "string" ], "default": null },
-		"labelFontSizeMobile": { "type": [ "number", "string" ], "default": null },
 		"labelFontWeight": { "type": "string", "default": "" },
 		"labelFontStyle": { "type": "string", "default": "" },
 		"labelLineHeight": { "type": [ "number", "string" ], "default": null },
@@ -148,10 +149,11 @@
 		"dividerWidth": { "type": "number", "default": 3 },
 		"handleColour": { "type": "string", "default": "" },
 		"handleIconColour": { "type": "string", "default": "" },
-		"height": { "type": "number", "default": 400 },
+		"height": {
+			"type": "object",
+			"default": {"desktop": 400}
+		},
 		"heightUnit": { "type": "string", "default": "px" },
-		"heightTablet": { "type": [ "number", "string" ], "default": null },
-		"heightMobile": { "type": [ "number", "string" ], "default": null },
 		"maxWidth": {
 			"type": "object",
 			"default": {}

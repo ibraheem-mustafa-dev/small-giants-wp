@@ -18,31 +18,18 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
 /**
- * New-name-first, legacy-name-fallback (2026-08-05, phase A of the flex-attr rename).
- *
- * This block named its flex attrs `direction`/`wrap` where the framework — and the
- * shared SGS_Container_Wrapper it renders through
- * (class-sgs-container-wrapper.php:441-442) — uses `flexDirection`/`flexWrap`. Both
- * names are declared in block.json for exactly one deploy so that no STORED value is
- * ever undeclared while content is migrated: WordPress silently DISCARDS an undeclared
- * attribute and DELETES it on the next editor save.
- *
- * Phase B removes the legacy arm of each ?? below together with the legacy block.json
- * declarations, once the two canary pages carrying old values are migrated. This is a
- * transitional read, NOT the R-31-14 "legacy scalar fallback hack" that rule forbids —
- * that bans a permanent server-side shim standing in for a real migration; this exists
- * to make the migration safe and is deleted by the commit that completes it.
+ * `flexDirection`/`flexWrap`/`alignItems`/`justifyContent` are now TIER OBJECTS
+ * (Spec 35 pass, {desktop,tablet,mobile}) — the legacy `direction`/`wrap` names
+ * from the 2026-08-05 rename, and the flat `…Tablet`/`…Mobile` siblings, are no
+ * longer declared by block.json (folded into the object). The former
+ * new-name-first/legacy-name-fallback helper is retired: there is now exactly
+ * ONE name per property, read via the shared normaliser so an unset attr
+ * resolves to `[]` rather than reading a raw array into `esc_attr()`.
  */
-$sgs_mb_attr = static function ( $modern, $fallback ) use ( $attributes ) {
-	if ( ! empty( $attributes[ $modern ] ) ) {
-		return esc_attr( $attributes[ $modern ] );
-	}
-	return $fallback;
-};
-
-$direction        = $sgs_mb_attr( 'flexDirection', 'row' );
-$direction_tablet = $sgs_mb_attr( 'flexDirectionTablet', $direction );
-$direction_mobile = $sgs_mb_attr( 'flexDirectionMobile', 'column' );
+$direction_obj    = sgs_responsive_normalise_object( $attributes['flexDirection'] ?? null );
+$direction        = esc_attr( $direction_obj['desktop'] ?? 'row' );
+$direction_tablet = esc_attr( $direction_obj['tablet'] ?? $direction );
+$direction_mobile = esc_attr( $direction_obj['mobile'] ?? 'column' );
 
 // Gap: resolved via the shared helper (handles preset slugs + raw CSS lengths + back-compat).
 // Falls back to "12px" matching the block.json default.
@@ -92,9 +79,10 @@ if ( '' !== $gap_mob_raw ) {
 	$gap_mob_css = '8px';
 }
 
-$justify_content        = isset( $attributes['justifyContent'] ) ? esc_attr( $attributes['justifyContent'] ) : 'flex-start';
-$justify_content_tablet = ! empty( $attributes['justifyContentTablet'] ) ? esc_attr( $attributes['justifyContentTablet'] ) : $justify_content;
-$justify_content_mobile = ! empty( $attributes['justifyContentMobile'] ) ? esc_attr( $attributes['justifyContentMobile'] ) : $justify_content;
+$justify_content_obj    = sgs_responsive_normalise_object( $attributes['justifyContent'] ?? null );
+$justify_content        = esc_attr( $justify_content_obj['desktop'] ?? 'flex-start' );
+$justify_content_tablet = esc_attr( $justify_content_obj['tablet'] ?? $justify_content );
+$justify_content_mobile = esc_attr( $justify_content_obj['mobile'] ?? $justify_content );
 
 // Default `nowrap` = the CSS initial value (D228: a hardcoded non-initial default
 // that overrides the draft's faithfully-ABSENT flex-wrap is a cheat to remove). A
@@ -102,17 +90,19 @@ $justify_content_mobile = ! empty( $attributes['justifyContentMobile'] ) ? esc_a
 // buttons stay in a ROW (shrinking to fit) until the device-tier `flex-direction`
 // switches to column at 767px. The old `wrap` default made two buttons spill onto a
 // second line at ~800px inside the narrow 2-column hero band (proven live 2026-07-11).
-$wrap        = $sgs_mb_attr( 'flexWrap', 'nowrap' );
-$wrap_tablet = $sgs_mb_attr( 'flexWrapTablet', $wrap );
-$wrap_mobile = $sgs_mb_attr( 'flexWrapMobile', 'nowrap' );
+$wrap_obj    = sgs_responsive_normalise_object( $attributes['flexWrap'] ?? null );
+$wrap        = esc_attr( $wrap_obj['desktop'] ?? 'nowrap' );
+$wrap_tablet = esc_attr( $wrap_obj['tablet'] ?? $wrap );
+$wrap_mobile = esc_attr( $wrap_obj['mobile'] ?? 'nowrap' );
 
-$align_items = isset( $attributes['alignItems'] ) ? esc_attr( $attributes['alignItems'] ) : 'center';
+$align_items_obj = sgs_responsive_normalise_object( $attributes['alignItems'] ?? null );
+$align_items     = esc_attr( $align_items_obj['desktop'] ?? 'center' );
 // Cross-axis alignment is responsive (D288). Mobile defaults to `stretch` — mobile
 // is a flex COLUMN (directionMobile default 'column'), and `stretch` is the CSS
 // column default, so the cloned/authored buttons stack FULL-WIDTH on mobile like a
 // draft's default column flex. Tablet (a row by default) inherits the base value.
-$align_items_tablet = ! empty( $attributes['alignItemsTablet'] ) ? esc_attr( $attributes['alignItemsTablet'] ) : $align_items;
-$align_items_mobile = ! empty( $attributes['alignItemsMobile'] ) ? esc_attr( $attributes['alignItemsMobile'] ) : 'stretch';
+$align_items_tablet = esc_attr( $align_items_obj['tablet'] ?? $align_items );
+$align_items_mobile = esc_attr( $align_items_obj['mobile'] ?? 'stretch' );
 
 // Generate a unique ID so responsive CSS is scoped per block instance.
 $uid = wp_unique_id( 'sgs-mb-' );

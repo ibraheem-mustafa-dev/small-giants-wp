@@ -14,12 +14,12 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"65% 35%","mobile":"1fr"},"verticalAlign":"center","gap":{"desktop":"var:preset|spacing|40"}} -->
 
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
-			<!-- wp:sgs/heading {"content":"Ready to Transform Your Business?","textColour":"surface","fontSize":"x-large","fx":"split-reveal","fxStart":"top 70%","fxDuration":0.8,"fxStagger":0.05,"fxSplit":"words"} /-->
+			<!-- wp:sgs/heading {"content":"Ready to Transform Your Business?","textColour":"surface","fontSize":{"desktop":"x-large"},"fx":"split-reveal","fxStart":"top 70%","fxDuration":0.8,"fxStagger":0.05,"fxSplit":"words"} /-->
 			<!-- wp:sgs/text {"text":"Get a free consultation and discover how we can help you grow.","textColour":"text-inverse"} /-->
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
-			<!-- wp:sgs/multi-button {"justifyContent":"flex-end"} -->
+			<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"flex-end"}} -->
 				<!-- wp:sgs/button {"label":"Get Started Today","colourBackground":"accent","inheritStyle":"custom","colourText":"text","style":{"border":{"radius":"8px"}}} /-->
 			<!-- /wp:sgs/multi-button -->
 		<!-- /wp:sgs/container -->

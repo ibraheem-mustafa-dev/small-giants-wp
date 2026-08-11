@@ -133,17 +133,12 @@
 			"default": true
 		},
 		"labelFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"labelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"labelFontSizeTablet": {
-			"type": "number"
-		},
-		"labelFontSizeMobile": {
-			"type": "number"
 		},
 		"labelFontStyle": {
 			"type": "string",
@@ -247,17 +242,12 @@
 			"default": ""
 		},
 		"pillFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"pillFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"pillFontSizeTablet": {
-			"type": "number"
-		},
-		"pillFontSizeMobile": {
-			"type": "number"
 		},
 		"pillFontWeight": {
 			"type": "string",

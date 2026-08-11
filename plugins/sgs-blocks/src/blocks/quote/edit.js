@@ -255,14 +255,17 @@ function buildAttribStyle( attributes ) {
 			? attributionColour
 			: colourVar( attributionColour );
 	}
-	if ( attributionFontSize ) { style.fontSize = `${ attributionFontSize }${ attributionFontSizeUnit }`; }
+	// attributionFontSize / attributionMarginTop are TIER OBJECTS — the canvas
+	// preview (desktop-only; responsive tiers render via PHP) reads the
+	// desktop tier.
+	if ( attributionFontSize?.desktop ) { style.fontSize = `${ attributionFontSize.desktop }${ attributionFontSizeUnit }`; }
 	if ( attributionFontWeight ) { style.fontWeight = attributionFontWeight; }
 	if ( attributionFontStyle ) { style.fontStyle = attributionFontStyle; }
 	if ( attributionLineHeight != null ) {
 		style.lineHeight = `${ attributionLineHeight }${ attributionLineHeightUnit }`;
 	}
-	if ( attributionMarginTop != null ) {
-		style.marginTop = `${ attributionMarginTop }${ attributionMarginUnit }`;
+	if ( attributionMarginTop?.desktop != null ) {
+		style.marginTop = `${ attributionMarginTop.desktop }${ attributionMarginUnit }`;
 	}
 	return style;
 }
@@ -278,9 +281,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributionTag,
 		attributionEnabled,
 		attributionColour,
+		// attributionFontSize / attributionMarginTop are TIER OBJECTS
+		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
+		// *Tablet/*Mobile siblings no longer exist.
 		attributionFontSize,
-		attributionFontSizeTablet,
-		attributionFontSizeMobile,
 		attributionFontSizeUnit,
 		attributionFontWeight,
 		attributionFontFamily,
@@ -290,8 +294,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributionLineHeight,
 		attributionLineHeightUnit,
 		attributionMarginTop,
-		attributionMarginTopTablet,
-		attributionMarginTopMobile,
 		attributionMarginUnit,
 		backgroundColour,
 		borderWidth,
@@ -333,19 +335,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const attribStyle = buildAttribStyle( attributes );
 
-	// Per-breakpoint attr keys for attribution font size.
-	const attributionFontSizeBreakpoints = {
-		desktop: 'attributionFontSize',
-		tablet: 'attributionFontSizeTablet',
-		mobile: 'attributionFontSizeMobile',
-	};
-
-	// Per-breakpoint attr keys for attribution margin-top.
-	const attributionMarginTopBreakpoints = {
-		desktop: 'attributionMarginTop',
-		tablet: 'attributionMarginTopTablet',
-		mobile: 'attributionMarginTopMobile',
-	};
+	// attributionFontSize / attributionMarginTop are TIER OBJECTS as of Spec 35
+	// pass 3b (2026-08-11) — ONE attr each, holding {desktop,tablet,mobile}. The
+	// per-breakpoint attr-key maps that used to live here are gone with the flat
+	// siblings they addressed; the controls below use <ResponsiveOverride>,
+	// which reads and writes the object itself (mirrors the maxWidth control).
 
 	// `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
 	// holding {desktop,tablet,mobile}. The per-breakpoint attr-key map that used
@@ -375,18 +369,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributionColour: '',
 							attributionFontStyle: '',
 							attributionFontWeight: '',
-							attributionFontSize: undefined,
-							attributionFontSizeTablet: undefined,
-							attributionFontSizeMobile: undefined,
+							attributionFontSize: {},
 							attributionFontSizeUnit: 'px',
 							attributionFontFamily: '',
 							attributionTextDecoration: '',
 							attributionTextTransform: '',
 							attributionLineHeight: undefined,
 							attributionLineHeightUnit: 'em',
-							attributionMarginTop: undefined,
-							attributionMarginTopTablet: undefined,
-							attributionMarginTopMobile: undefined,
+							attributionMarginTop: {},
 							attributionMarginUnit: 'px',
 						} )
 					}
@@ -468,46 +458,46 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							</ToolsPanelItem>
 
-							{ /* Attribution font size — ResponsiveControl + UnitControl per breakpoint */ }
+							{ /* Attribution font size — ResponsiveOverride + UnitControl.
+							     attributionFontSize is a TIER OBJECT (Spec 35 pass 3b)
+							     storing the bare NUMBER per tier; attributionFontSizeUnit
+							     stays a single shared unit selector across all tiers
+							     (unchanged). */ }
 							<ToolsPanelItem
 								label={ __( 'Font size', 'sgs-blocks' ) }
 								hasValue={ () =>
-									attributionFontSize != null ||
-									attributionFontSizeTablet != null ||
-									attributionFontSizeMobile != null
+									attributionFontSize?.desktop != null ||
+									attributionFontSize?.tablet != null ||
+									attributionFontSize?.mobile != null
 								}
 								onDeselect={ () =>
-									setAttributes( {
-										attributionFontSize: undefined,
-										attributionFontSizeTablet: undefined,
-										attributionFontSizeMobile: undefined,
-									} )
+									setAttributes( { attributionFontSize: {} } )
 								}
 								isShownByDefault
 							>
-								<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
-									{ ( breakpoint ) => {
-										const attrKey = attributionFontSizeBreakpoints[ breakpoint ];
-										const numVal = attributes[ attrKey ];
+								<ResponsiveOverride
+									label={ __( 'Font size', 'sgs-blocks' ) }
+									value={ attributionFontSize }
+									onChange={ ( obj ) => setAttributes( { attributionFontSize: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue } ) => {
 										const unitVal = attributionFontSizeUnit || 'px';
 										return (
 											<UnitControl
 												label={ __( 'Font size', 'sgs-blocks' ) }
 												hideLabelFromVision
-												value={ composeUnit( numVal, unitVal ) }
+												value={ composeUnit( ownValue, unitVal ) }
 												units={ FONT_SIZE_UNITS }
 												onChange={ ( raw ) => {
 													const { num, unit } = parseUnit( raw, unitVal );
-													setAttributes( {
-														[ attrKey ]: num,
-														attributionFontSizeUnit: unit,
-													} );
+													setOwnValue( num );
+													setAttributes( { attributionFontSizeUnit: unit } );
 												} }
 												__nextHasNoMarginBottom
 											/>
 										);
 									} }
-								</ResponsiveControl>
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 
 							<ToolsPanelItem
@@ -576,41 +566,39 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							</ToolsPanelItem>
 
-							{ /* Attribution margin-top — ResponsiveControl + UnitControl per breakpoint
-							   (KEPT-SCALAR single-side family, contract §C). */ }
+							{ /* Attribution margin-top — ResponsiveOverride + UnitControl/RangeControl
+							   (KEPT-SCALAR single-side family, contract §C). attributionMarginTop
+							   is a TIER OBJECT (Spec 35 pass 3b) storing the bare NUMBER per tier;
+							   attributionMarginUnit stays a single shared unit across all tiers. */ }
 							<ToolsPanelItem
 								label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }
 								hasValue={ () =>
-									attributionMarginTop != null ||
-									attributionMarginTopTablet != null ||
-									attributionMarginTopMobile != null
+									attributionMarginTop?.desktop != null ||
+									attributionMarginTop?.tablet != null ||
+									attributionMarginTop?.mobile != null
 								}
 								onDeselect={ () =>
-									setAttributes( {
-										attributionMarginTop: undefined,
-										attributionMarginTopTablet: undefined,
-										attributionMarginTopMobile: undefined,
-									} )
+									setAttributes( { attributionMarginTop: {} } )
 								}
 							>
-								<ResponsiveControl label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }>
-									{ ( breakpoint ) => {
-										const attrKey = attributionMarginTopBreakpoints[ breakpoint ];
-										const numVal = attributes[ attrKey ];
+								<ResponsiveOverride
+									label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }
+									value={ attributionMarginTop }
+									onChange={ ( obj ) => setAttributes( { attributionMarginTop: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue, tier } ) => {
 										const unitVal = attributionMarginUnit || 'px';
-										if ( breakpoint === 'desktop' ) {
+										if ( tier === 'desktop' ) {
 											return (
 												<UnitControl
 													label={ __( 'Margin-top', 'sgs-blocks' ) }
 													hideLabelFromVision
-													value={ composeUnit( numVal, unitVal ) }
+													value={ composeUnit( ownValue, unitVal ) }
 													units={ MARGIN_UNITS }
 													onChange={ ( raw ) => {
 														const { num, unit } = parseUnit( raw, unitVal );
-														setAttributes( {
-															attributionMarginTop: num,
-															attributionMarginUnit: unit,
-														} );
+														setOwnValue( num );
+														setAttributes( { attributionMarginUnit: unit } );
 													} }
 													__nextHasNoMarginBottom
 												/>
@@ -618,18 +606,18 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 										return (
 											<RangeControl
-												label={ breakpoint === 'tablet'
+												label={ tier === 'tablet'
 													? __( 'Margin-top (tablet)', 'sgs-blocks' )
 													: __( 'Margin-top (mobile)', 'sgs-blocks' )
 												}
-												value={ numVal ?? '' }
-												onChange={ ( val ) => setAttributes( { [ attrKey ]: val } ) }
+												value={ ownValue ?? '' }
+												onChange={ ( val ) => setOwnValue( val ) }
 												min={ 0 } max={ 80 } step={ 1 } allowReset
 												__nextHasNoMarginBottom
 											/>
 										);
 									} }
-								</ResponsiveControl>
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 						</>
 					) }

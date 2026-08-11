@@ -48,9 +48,13 @@ $has_explicit_aria = isset( $attributes['ariaLabel'] ) && '' !== trim( (string) 
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
 $icon_position = isset( $attributes['iconPosition'] ) ? sanitize_text_field( $attributes['iconPosition'] ) : 'after';
 $icon_gap      = isset( $attributes['iconGap'] ) ? absint( $attributes['iconGap'] ) : 8;
-$icon_size     = isset( $attributes['iconSize'] ) && null !== $attributes['iconSize'] ? absint( $attributes['iconSize'] ) : null;
-$icon_size_tab = isset( $attributes['iconSizeTablet'] ) && null !== $attributes['iconSizeTablet'] ? absint( $attributes['iconSizeTablet'] ) : null;
-$icon_size_mob = isset( $attributes['iconSizeMobile'] ) && null !== $attributes['iconSizeMobile'] ? absint( $attributes['iconSizeMobile'] ) : null;
+// iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — one attr holding
+// {desktop,tablet,mobile}; the iconSizeTablet/iconSizeMobile sibling attrs are
+// no longer declared by block.json, so reading them directly would read nothing.
+$icon_size_obj = sgs_responsive_normalise_object( $attributes['iconSize'] ?? null );
+$icon_size     = null !== $icon_size_obj['desktop'] ? absint( $icon_size_obj['desktop'] ) : null;
+$icon_size_tab = null !== $icon_size_obj['tablet'] ? absint( $icon_size_obj['tablet'] ) : null;
+$icon_size_mob = null !== $icon_size_obj['mobile'] ? absint( $icon_size_obj['mobile'] ) : null;
 $icon_colour   = isset( $attributes['iconColour'] ) ? $attributes['iconColour'] : '';
 $icon_col_hov  = isset( $attributes['iconColourHover'] ) ? $attributes['iconColourHover'] : '';
 $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['iconTitle'] ) : '';
@@ -59,22 +63,35 @@ $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['icon
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
 
 // Width.
-$width_type        = isset( $attributes['widthType'] ) ? sanitize_text_field( $attributes['widthType'] ) : 'fit';
-$custom_width      = isset( $attributes['customWidth'] ) && null !== $attributes['customWidth'] ? absint( $attributes['customWidth'] ) : null;
-$custom_width_unit = isset( $attributes['customWidthUnit'] ) && '%' === $attributes['customWidthUnit'] ? '%' : 'px';
+// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
+// migration, 2026-08-11) — each ONE attr holding {desktop,tablet,mobile}; the
+// old …Tablet/…Mobile sibling attrs are no longer declared by block.json.
+// '' (tablet/mobile) = inherit desktop, matching the pre-migration sentinel.
+$width_type_obj        = sgs_responsive_normalise_object( $attributes['widthType'] ?? null );
+$width_type             = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
+$custom_width_obj      = sgs_responsive_normalise_object( $attributes['customWidth'] ?? null );
+$custom_width           = null !== $custom_width_obj['desktop'] ? absint( $custom_width_obj['desktop'] ) : null;
+$custom_width_unit_obj  = sgs_responsive_normalise_object( $attributes['customWidthUnit'] ?? null );
+$custom_width_unit      = '%' === ( $custom_width_unit_obj['desktop'] ?? '' ) ? '%' : 'px';
 
 // Per-device width tiers ('' = inherit desktop). Each tier carries its own
 // widthType enum + custom value + custom unit so a button can be e.g. fit on
 // desktop, full on mobile (the draft's full-width-on-mobile pattern).
-$width_type_tab       = isset( $attributes['widthTypeTablet'] ) ? sanitize_text_field( $attributes['widthTypeTablet'] ) : '';
-$width_type_mob       = isset( $attributes['widthTypeMobile'] ) ? sanitize_text_field( $attributes['widthTypeMobile'] ) : '';
-$custom_width_tab     = isset( $attributes['customWidthTablet'] ) && null !== $attributes['customWidthTablet'] ? absint( $attributes['customWidthTablet'] ) : null;
-$custom_width_mob     = isset( $attributes['customWidthMobile'] ) && null !== $attributes['customWidthMobile'] ? absint( $attributes['customWidthMobile'] ) : null;
-$custom_width_tab_u   = isset( $attributes['customWidthUnitTablet'] ) && '%' === $attributes['customWidthUnitTablet'] ? '%' : 'px';
-$custom_width_mob_u   = isset( $attributes['customWidthUnitMobile'] ) && '%' === $attributes['customWidthUnitMobile'] ? '%' : 'px';
-$min_height        = isset( $attributes['minHeight'] ) && null !== $attributes['minHeight'] ? absint( $attributes['minHeight'] ) : null;
-$min_height_tab    = isset( $attributes['minHeightTablet'] ) && null !== $attributes['minHeightTablet'] ? absint( $attributes['minHeightTablet'] ) : null;
-$min_height_mob    = isset( $attributes['minHeightMobile'] ) && null !== $attributes['minHeightMobile'] ? absint( $attributes['minHeightMobile'] ) : null;
+$width_type_tab       = null !== $width_type_obj['tablet'] ? sanitize_text_field( $width_type_obj['tablet'] ) : '';
+$width_type_mob       = null !== $width_type_obj['mobile'] ? sanitize_text_field( $width_type_obj['mobile'] ) : '';
+$custom_width_tab     = null !== $custom_width_obj['tablet'] ? absint( $custom_width_obj['tablet'] ) : null;
+$custom_width_mob     = null !== $custom_width_obj['mobile'] ? absint( $custom_width_obj['mobile'] ) : null;
+$custom_width_tab_u   = '%' === ( $custom_width_unit_obj['tablet'] ?? '' ) ? '%' : 'px';
+$custom_width_mob_u   = '%' === ( $custom_width_unit_obj['mobile'] ?? '' ) ? '%' : 'px';
+// minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — {desktop,
+// tablet,mobile}; the old …Tablet/…Mobile sibling attrs are no longer
+// declared by block.json. minHeightUnit/minHeightTabletUnit/minHeightMobileUnit
+// are a SEPARATE, still-flat family (each tier's own unit) — untouched here,
+// out of this migration's scope.
+$min_height_obj    = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
+$min_height        = null !== $min_height_obj['desktop'] ? absint( $min_height_obj['desktop'] ) : null;
+$min_height_tab    = null !== $min_height_obj['tablet'] ? absint( $min_height_obj['tablet'] ) : null;
+$min_height_mob    = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['mobile'] ) : null;
 
 // Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
 // §1): a CSS-length sanitiser for object-attr side/corner values — strips
@@ -160,20 +177,51 @@ $font_weight      = isset( $attributes['fontWeight'] ) ? sanitize_text_field( $a
 $font_style_attr  = isset( $attributes['fontStyle'] ) ? $sgs_css_keyword( $attributes['fontStyle'] ) : 'normal';
 $text_transform   = isset( $attributes['textTransform'] ) ? $sgs_css_keyword( $attributes['textTransform'] ) : '';
 $text_decoration  = isset( $attributes['textDecoration'] ) ? $sgs_css_keyword( $attributes['textDecoration'] ) : '';
-$font_size        = isset( $attributes['fontSize'] ) && null !== $attributes['fontSize'] ? (float) $attributes['fontSize'] : null;
-$font_size_tab    = isset( $attributes['fontSizeTablet'] ) && null !== $attributes['fontSizeTablet'] ? (float) $attributes['fontSizeTablet'] : null;
-$font_size_mob    = isset( $attributes['fontSizeMobile'] ) && null !== $attributes['fontSizeMobile'] ? (float) $attributes['fontSizeMobile'] : null;
+// fontSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — same shape as
+// lineHeight/letterSpacing below; the old …Tablet/…Mobile sibling attrs are
+// no longer declared by block.json.
+$font_size_obj    = sgs_responsive_normalise_object( $attributes['fontSize'] ?? null );
+$font_size        = null !== $font_size_obj['desktop'] ? (float) $font_size_obj['desktop'] : null;
+$font_size_tab    = null !== $font_size_obj['tablet'] ? (float) $font_size_obj['tablet'] : null;
+$font_size_mob    = null !== $font_size_obj['mobile'] ? (float) $font_size_obj['mobile'] : null;
 $font_size_unit   = isset( $attributes['fontSizeUnit'] ) ? sanitize_text_field( $attributes['fontSizeUnit'] ) : 'px';
-$line_height      = isset( $attributes['lineHeight'] ) && null !== $attributes['lineHeight'] ? (float) $attributes['lineHeight'] : null;
-$line_height_tab  = isset( $attributes['lineHeightTablet'] ) && null !== $attributes['lineHeightTablet'] ? (float) $attributes['lineHeightTablet'] : null;
-$line_height_mob  = isset( $attributes['lineHeightMobile'] ) && null !== $attributes['lineHeightMobile'] ? (float) $attributes['lineHeightMobile'] : null;
+// lineHeight / letterSpacing are TIER OBJECTS (Spec 35 migration, 2026-08-11)
+// — each ONE attr holding {desktop,tablet,mobile}; the old …Tablet/…Mobile
+// sibling attrs are no longer declared by block.json. The *Unit attrs were
+// NOT part of this migration and stay flat/shared across tiers.
+$line_height_obj  = sgs_responsive_normalise_object( $attributes['lineHeight'] ?? null );
+$line_height      = null !== $line_height_obj['desktop'] ? (float) $line_height_obj['desktop'] : null;
+$line_height_tab  = null !== $line_height_obj['tablet'] ? (float) $line_height_obj['tablet'] : null;
+$line_height_mob  = null !== $line_height_obj['mobile'] ? (float) $line_height_obj['mobile'] : null;
 $line_height_unit = isset( $attributes['lineHeightUnit'] ) ? sanitize_text_field( $attributes['lineHeightUnit'] ) : 'em';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
-$letter_spacing      = isset( $attributes['letterSpacing'] ) && null !== $attributes['letterSpacing'] ? (float) $attributes['letterSpacing'] : null;
-$letter_spacing_tab  = isset( $attributes['letterSpacingTablet'] ) && null !== $attributes['letterSpacingTablet'] ? (float) $attributes['letterSpacingTablet'] : null;
-$letter_spacing_mob  = isset( $attributes['letterSpacingMobile'] ) && null !== $attributes['letterSpacingMobile'] ? (float) $attributes['letterSpacingMobile'] : null;
+$letter_spacing_obj  = sgs_responsive_normalise_object( $attributes['letterSpacing'] ?? null );
+$letter_spacing      = null !== $letter_spacing_obj['desktop'] ? (float) $letter_spacing_obj['desktop'] : null;
+$letter_spacing_tab  = null !== $letter_spacing_obj['tablet'] ? (float) $letter_spacing_obj['tablet'] : null;
+$letter_spacing_mob  = null !== $letter_spacing_obj['mobile'] ? (float) $letter_spacing_obj['mobile'] : null;
 $letter_spacing_unit = isset( $attributes['letterSpacingUnit'] ) ? sanitize_text_field( $attributes['letterSpacingUnit'] ) : 'px';
+
+// sgs_responsive_css_rule() (used below for the font-size/line-height/
+// letter-spacing rule AND the icon-size rule) reads its prop_map attrs as
+// FLAT sibling keys straight off an $attributes-shaped array — it has no
+// knowledge of the new tier-object shape. Feed it a synthetic array that
+// carries the already-normalised tier values under the OLD flat key names
+// it expects, so its call sites below need no change of their own.
+$tier_object_synthetic_attrs = array_merge(
+	$attributes,
+	array(
+		'lineHeight'          => $line_height,
+		'lineHeightTablet'    => $line_height_tab,
+		'lineHeightMobile'    => $line_height_mob,
+		'letterSpacing'       => $letter_spacing,
+		'letterSpacingTablet' => $letter_spacing_tab,
+		'letterSpacingMobile' => $letter_spacing_mob,
+		'iconSize'            => $icon_size,
+		'iconSizeTablet'      => $icon_size_tab,
+		'iconSizeMobile'      => $icon_size_mob,
+	)
+);
 
 // Colours (custom mode only).
 $colour_text         = isset( $attributes['colourText'] ) ? $attributes['colourText'] : '';
@@ -373,7 +421,7 @@ if ( $icon_col_hov ) {
 // selector (Pattern A). Always emitted — every button is attribute-driven,
 // there is no separate preset-locked mode any more.
 $scoped_css_parts[] = sgs_responsive_css_rule(
-	$attributes,
+	$tier_object_synthetic_attrs,
 	array(
 		array(
 			'attr'         => 'fontSize',
@@ -522,7 +570,7 @@ if ( $mobile_box_decls ) {
 // tier-only vars with no icon to consume them).
 if ( $icon ) {
 	$scoped_css_parts[] = sgs_responsive_css_rule(
-		$attributes,
+		$tier_object_synthetic_attrs,
 		array(
 			array(
 				'attr'         => 'iconSize',

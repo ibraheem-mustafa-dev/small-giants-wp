@@ -226,31 +226,21 @@
 			"default": "text"
 		},
 		"titleFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"titleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"titleFontSizeTablet": {
-			"type": "number"
-		},
-		"titleFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"subtitleFontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"subtitleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"subtitleFontSizeTablet": {
-			"type": "number"
-		},
-		"subtitleFontSizeMobile": {
-			"type": "number"
-		},
+		},
 		"cardBackground": {
 			"type": "string",
 			"default": ""

@@ -102,17 +102,12 @@
 			"minimum": 1
 		},
 		"fontSize": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"fontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"fontSizeTablet": {
-			"type": "number"
-		},
-		"fontSizeMobile": {
-			"type": "number"
 		},
 		"fontWeight": {
 			"type": "string",

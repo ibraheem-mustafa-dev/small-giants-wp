@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, URLInput, useSettings } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
 	TextControl,
@@ -11,6 +12,7 @@ import {
 	IconPicker,
 	TypographyControls,
 	ResponsiveControl,
+	ResponsiveOverride,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	DesignTokenPicker,
@@ -102,6 +104,17 @@ const MIN_HEIGHT_UNITS = [
 	{ value: 'rem', label: 'rem', default: 3 },
 ];
 
+// '' = unitless (matches TypographyControls.js's LINE_HEIGHT_UNITS + the PHP
+// helper's empty-string → unitless semantic). Re-declared locally because this
+// block's lineHeight is now a tier OBJECT and can no longer go through
+// TypographyControls' own (flat-scalar) line-height control.
+const LINE_HEIGHT_UNITS = [
+	{ value: '', label: '—', default: 1.5 },
+	{ value: 'em', label: 'em', default: 1.5 },
+	{ value: 'rem', label: 'rem', default: 1.5 },
+	{ value: 'px', label: 'px', default: 24 },
+];
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -130,21 +143,12 @@ function parseUnit( raw, currentUnit ) {
 	return { num: undefined, unit: currentUnit || 'px' };
 }
 
-// Per-breakpoint attr names for minHeight (value + unit are separate attrs).
-const MIN_HEIGHT_BREAKPOINTS = {
-	desktop: { value: 'minHeight', unit: 'minHeightUnit' },
-	tablet:  { value: 'minHeightTablet', unit: 'minHeightTabletUnit' },
-	mobile:  { value: 'minHeightMobile', unit: 'minHeightMobileUnit' },
-};
 
-// Per-breakpoint attr names for width (type + custom value + custom unit). Each
-// tier has its OWN widthType so a button can be e.g. fit on desktop, full on
-// mobile (the draft's full-width-on-mobile pattern).
-const WIDTH_BREAKPOINTS = {
-	desktop: { type: 'widthType', value: 'customWidth', unit: 'customWidthUnit', options: WIDTH_OPTIONS },
-	tablet:  { type: 'widthTypeTablet', value: 'customWidthTablet', unit: 'customWidthUnitTablet', options: WIDTH_OPTIONS_TIER },
-	mobile:  { type: 'widthTypeMobile', value: 'customWidthMobile', unit: 'customWidthUnitMobile', options: WIDTH_OPTIONS_TIER },
-};
+// widthType / customWidth / customWidthUnit are now TIER OBJECTS (Spec 35
+// migration, 2026-08-11) — one attr each holding {desktop,tablet,mobile} — so
+// the per-breakpoint attr-name map that used to live here is gone; the Width
+// panel below reads/writes the three objects directly via the tier a shared
+// <ResponsiveOverride> exposes.
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -160,11 +164,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		widthType,
 		customWidth,
 		customWidthUnit,
-		minHeight,
+		// minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — read via
+		// `attributes.minHeight` at its control below, not destructured with a
+		// bare default, matching the widthType/customWidth objects above.
 		minHeightUnit,
-		minHeightTablet,
 		minHeightTabletUnit,
-		minHeightMobile,
 		minHeightMobileUnit,
 		icon,
 		iconPosition,
@@ -206,6 +210,24 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const hasIcon = !! icon;
 
+	// minHeight's VALUE is a tier object (ResponsiveOverride-driven), but its
+	// UNIT stays a separate flat-per-tier family (minHeightUnit/Tablet/Mobile) —
+	// not part of this migration. Need the active tier locally to read/write the
+	// matching unit attr alongside ResponsiveOverride's value. Same device-type
+	// resolution ResponsiveOverride.js itself uses internally.
+	const DEVICE_TO_TIER = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+	const activeMinHeightTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device = ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return DEVICE_TO_TIER[ device ] || 'desktop';
+	}, [] );
+	const minHeightUnitAttr = {
+		desktop: 'minHeightUnit',
+		tablet: 'minHeightTabletUnit',
+		mobile: 'minHeightMobileUnit',
+	}[ activeMinHeightTier ];
+	const activeMinHeightUnit = attributes[ minHeightUnitAttr ] || 'px';
+
 	// Build editor preview inline styles. Every button is attribute-driven now
 	// (no locked preset mode) — all colour/typography/border attrs preview
 	// unconditionally, matching render.php.
@@ -246,7 +268,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
 	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
-	if ( widthType === 'custom' && customWidth ) previewStyle.width = `${ customWidth }${ customWidthUnit }`;
+	// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
+	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
+	if ( widthType?.desktop === 'custom' && customWidth?.desktop ) {
+		previewStyle.width = `${ customWidth.desktop }${ customWidthUnit?.desktop || 'px' }`;
+	}
 	if ( minHeight ) previewStyle.minHeight = `${ minHeight }px`;
 
 	// Editor-frontend parity (D288): the button element IS the block root (no
@@ -268,7 +294,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( [ 'primary', 'secondary', 'outline' ].includes( inheritStyle ) ) {
 		blockClasses.push( `sgs-button--${ inheritStyle }` );
 	}
-	if ( widthType === 'full' ) blockClasses.push( 'sgs-button--full' );
+	if ( widthType?.desktop === 'full' ) blockClasses.push( 'sgs-button--full' );
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),
 		style: previewStyle,
@@ -279,7 +305,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const iconPlaceholder = (
 		<span
 			className="sgs-button__icon"
-			style={ { display: 'inline-flex', alignItems: 'center', width: iconSize ? iconSize + 'px' : '1em', height: iconSize ? iconSize + 'px' : '1em', color: iconColour || 'currentColor' } }
+			style={ { display: 'inline-flex', alignItems: 'center', width: iconSize?.desktop ? iconSize.desktop + 'px' : '1em', height: iconSize?.desktop ? iconSize.desktop + 'px' : '1em', color: iconColour || 'currentColor' } }
 			aria-hidden="true"
 		>
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%">
@@ -439,28 +465,38 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Icon appearance', 'sgs-blocks' ) }
 							resetAll={ () =>
 								setAttributes( {
-									iconSize: null,
+									iconSize: {},
 									iconGap: 8,
 									iconColour: '',
 									iconColourHover: '',
 								} )
 							}
 						>
+							{ /* iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) —
+							   one attr holding {desktop,tablet,mobile}. */ }
 							<ToolsPanelItem
 								label={ __( 'Icon size', 'sgs-blocks' ) }
-								hasValue={ () => !! iconSize && iconSize !== 16 }
-								onDeselect={ () => setAttributes( { iconSize: null } ) }
+								hasValue={ () => !! iconSize?.desktop && iconSize.desktop !== 16 }
+								onDeselect={ () => setAttributes( { iconSize: {} } ) }
 								isShownByDefault
 							>
-								<RangeControl
+								<ResponsiveOverride
 									label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-									value={ iconSize || 16 }
-									onChange={ ( val ) => setAttributes( { iconSize: val } ) }
-									min={ 8 }
-									max={ 100 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-								/>
+									value={ iconSize }
+									onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<RangeControl
+											label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+											value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
+											onChange={ ( val ) => setOwnValue( val ) }
+											min={ 8 }
+											max={ 100 }
+											step={ 1 }
+											__nextHasNoMarginBottom
+										/>
+									) }
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 							<ToolsPanelItem
 								label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
@@ -524,23 +560,36 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Layout */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* Width — ResponsiveControl device switcher. Each breakpoint has
-					   its own widthType (fit/full/custom, plus "inherit" on the
-					   tiers) and, for 'custom', its own value + unit attrs. */ }
-					<ResponsiveControl label={ __( 'Width', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const bp = WIDTH_BREAKPOINTS[ breakpoint ];
-							const typeVal = attributes[ bp.type ] ?? ( breakpoint === 'desktop' ? 'fit' : '' );
-							const numVal = attributes[ bp.value ];
-							const unitVal = attributes[ bp.unit ] || 'px';
+					{ /* Width — widthType / customWidth / customWidthUnit are TIER
+					   OBJECTS (Spec 35 migration, 2026-08-11), each ONE attr
+					   holding {desktop,tablet,mobile}. ResponsiveOverride drives
+					   the shared device tier; widthType is the object it manages
+					   directly, and customWidth/customWidthUnit are written for
+					   the SAME tier (via the render-prop's exposed `tier`) so all
+					   three stay in lockstep per breakpoint. Tablet/mobile keep
+					   the explicit "— Same as desktop —" sentinel ('' = inherit,
+					   matching the pre-migration behaviour) rather than showing
+					   the resolved inherited value in the dropdown. */ }
+					<ResponsiveOverride
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ widthType }
+						onChange={ ( obj ) => setAttributes( { widthType: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => {
+							const typeVal = ownValue || ( 'desktop' === tier ? 'fit' : '' );
+							const options = 'desktop' === tier ? WIDTH_OPTIONS : WIDTH_OPTIONS_TIER;
+							const widthObj = customWidth || {};
+							const unitObj = customWidthUnit || {};
+							const numVal = widthObj[ tier ];
+							const unitVal = unitObj[ tier ] || 'px';
 							return (
 								<>
 									<SelectControl
 										label={ __( 'Width', 'sgs-blocks' ) }
 										hideLabelFromVision
 										value={ typeVal }
-										options={ bp.options }
-										onChange={ ( val ) => setAttributes( { [ bp.type ]: val } ) }
+										options={ options }
+										onChange={ ( val ) => setOwnValue( val ) }
 										__nextHasNoMarginBottom
 									/>
 									{ 'custom' === typeVal && (
@@ -550,7 +599,10 @@ export default function Edit( { attributes, setAttributes } ) {
 											units={ CUSTOM_WIDTH_UNITS }
 											onChange={ ( raw ) => {
 												const { num, unit } = parseUnit( raw, unitVal );
-												setAttributes( { [ bp.value ]: num, [ bp.unit ]: unit } );
+												setAttributes( {
+													customWidth: { ...widthObj, [ tier ]: num },
+													customWidthUnit: { ...unitObj, [ tier ]: unit },
+												} );
 											} }
 											__nextHasNoMarginBottom
 											style={ { marginTop: '8px' } }
@@ -559,33 +611,39 @@ export default function Edit( { attributes, setAttributes } ) {
 								</>
 							);
 						} }
-					</ResponsiveControl>
+					</ResponsiveOverride>
 
-					{ /* Min height — ResponsiveControl with one UnitControl per breakpoint.
-					   Each breakpoint has its own number attr AND its own unit attr. */ }
-					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const bp = MIN_HEIGHT_BREAKPOINTS[ breakpoint ];
-							const numVal = attributes[ bp.value ];
-							const unitVal = attributes[ bp.unit ] || 'px';
-							return (
-								<UnitControl
-									label={ __( 'Min height', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ composeUnit( numVal, unitVal ) }
-									units={ MIN_HEIGHT_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit( raw, unitVal );
-										setAttributes( {
-											[ bp.value ]: num,
-											[ bp.unit ]: unit,
-										} );
-									} }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /* `minHeight`'s VALUE is a TIER OBJECT (Spec 35 migration, 2026-08-11)
+					   — {desktop,tablet,mobile} — so it uses ResponsiveOverride. Its UNIT
+					   stays the separate flat-per-tier family declared above
+					   (minHeightUnit/minHeightTabletUnit/minHeightMobileUnit), read/written
+					   alongside via `activeMinHeightTier`/`activeMinHeightUnit`. */ }
+					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
+						value={ attributes.minHeight }
+						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<UnitControl
+								label={ __( 'Min height', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ composeUnit(
+									inherited ? ownValue : ( ownValue ?? effectiveValue ),
+									activeMinHeightUnit
+								) }
+								placeholder={ inherited ? composeUnit( effectiveValue, activeMinHeightUnit ) : undefined }
+								units={ MIN_HEIGHT_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit( raw, activeMinHeightUnit );
+									setOwnValue( num );
+									if ( unit !== activeMinHeightUnit ) {
+										setAttributes( { [ minHeightUnitAttr ]: unit } );
+									}
+								} }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Typography — always editable (preset-as-seed) */ }
@@ -604,9 +662,39 @@ export default function Edit( { attributes, setAttributes } ) {
 							showSize={ true }
 							showWeight={ true }
 							showStyle={ true }
-							showLineHeight={ true }
+							showLineHeight={ false }
 							showResponsive={ true }
 						/>
+						{ /* Line height — lineHeight is now a TIER OBJECT (Spec 35
+						   migration, 2026-08-11), so it can no longer go through
+						   TypographyControls' showLineHeight (that prop still
+						   assumes the old flat lineHeight/lineHeightTablet/
+						   lineHeightMobile trio). Wired by hand here with the
+						   same UnitControl UX, driven by <ResponsiveOverride>.
+						   lineHeightUnit is unchanged — a single flat string
+						   shared across tiers ('' = unitless). */ }
+						<ResponsiveOverride
+							label={ __( 'Line height', 'sgs-blocks' ) }
+							value={ lineHeight }
+							onChange={ ( obj ) => setAttributes( { lineHeight: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => {
+								const lineHeightUnit = attributes.lineHeightUnit !== undefined ? attributes.lineHeightUnit : '';
+								return (
+									<UnitControl
+										label={ __( 'Line height', 'sgs-blocks' ) }
+										value={ composeUnit( ownValue, lineHeightUnit ) }
+										units={ LINE_HEIGHT_UNITS }
+										onChange={ ( raw ) => {
+											const { num, unit } = parseUnit( raw, lineHeightUnit );
+											setOwnValue( num );
+											setAttributes( { lineHeightUnit: unit } );
+										} }
+										__nextHasNoMarginBottom
+									/>
+								);
+							} }
+						</ResponsiveOverride>
 						<SelectControl
 							label={ __( 'Text transform', 'sgs-blocks' ) }
 							value={ textTransform }
@@ -621,15 +709,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
 							__nextHasNoMarginBottom
 						/>
-						<RangeControl
+						{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
+						   2026-08-11) — same RangeControl UX as before, wrapped in
+						   <ResponsiveOverride> so tablet/mobile become editable
+						   (render.php already reads all three tiers). */ }
+						<ResponsiveOverride
 							label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
-							value={ letterSpacing || '' }
-							onChange={ ( val ) => setAttributes( { letterSpacing: val } ) }
-							min={ -5 }
-							max={ 20 }
-							step={ 0.5 }
-							__nextHasNoMarginBottom
-						/>
+							value={ letterSpacing }
+							onChange={ ( obj ) => setAttributes( { letterSpacing: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<RangeControl
+									label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
+									value={ ownValue || 0 }
+									onChange={ ( val ) => setOwnValue( val ) }
+									min={ -5 }
+									max={ 20 }
+									step={ 0.5 }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
 					</PanelBody>
 
 				{ /* Colours — always editable (preset-as-seed). D288: DesignTokenPicker

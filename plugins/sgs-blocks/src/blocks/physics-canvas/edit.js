@@ -8,7 +8,7 @@ import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/compo
 import {
 	DesignTokenPicker,
 	ResponsiveBoxControl,
-	ResponsiveControl,
+	ResponsiveOverride,
 	ShadowControl,
 } from '../../components';
 // Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
@@ -133,26 +133,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
-					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'minHeight',
-								tablet: 'minHeightTablet',
-								mobile: 'minHeightMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									options={ MIN_HEIGHT_OPTIONS }
-									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
-									help={ breakpoint === 'desktop'
-										? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
-										: undefined }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `minHeight` is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass), same shape as
+						  `gridTemplateColumns` in ContainerWrapperControls.
+						  `minHeightTablet`/`…Mobile` are no longer declared in
+						  block.json.
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Min height', 'sgs-blocks' ) }
+						value={ attributes.minHeight }
+						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ MIN_HEIGHT_OPTIONS }
+								onChange={ ( val ) => setOwnValue( val ) }
+								help={ tier === 'desktop'
+									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
+									: undefined }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Padding & margin (box-object tiers) — base tier writes to the
