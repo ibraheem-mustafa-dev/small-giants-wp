@@ -1,5 +1,27 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D582 — Visual-diff gate BYPASSED for container + hero (D581's commit), Bean-authorised, same shape as D577/D580 [INCIDENT]
+
+**2026-08-11.** The commit for D581's work (background/overlay panel) was blocked by
+`.githooks/sgs-gates.sh`'s visual-diff gate: no `reports/visual-diff/{container,hero}-2026-08-11.md`
+existed with a `source_sha` matching the staged content. A true fresh before/after capture was not
+obtainable honestly — the fix was already deployed live and iteratively verified DURING the
+session (see D581), and reverting the live canary just to recapture a "before" state would be the
+exact D576-class risk this project's rules warn against.
+
+**Evidence accepted in its place, recorded in the two report files themselves** (not fabricated —
+the live screenshots and `getComputedStyle()` checks cited were genuinely captured during this
+session's debugging, not synthesised afterward): `reports/visual-diff/container-2026-08-11.md`
+argues container's own rendering is provably unchanged for any non-parallax, non-private-overlay
+instance (the diff only appends `:not()` exclusions and previously-dead CSS classes);
+`reports/visual-diff/hero-2026-08-11.md` cites the actual before/during/after `getComputedStyle()`
+readings and the final live screenshot gathered while diagnosing D581 live on the canary.
+
+**What this does not cover:** an incidental regression outside what's enumerated in each report
+(container instances already using parallax combined with something unusual; hero's Split/
+SVG-animated variants, not re-screenshotted after the final round). Accepted knowingly, on the
+canary, no client site involved, `.bak` rollback available.
+
 ## D581 — Background/overlay panel: root render bug fixed, a CSS collision fixed, native colour support removed (conflict), D1-D6 of the redesign shipped [INCIDENT]
 
 **2026-08-11, this track. Combined into one entry — see `.claude/plans/background-panel-redesign.md` for

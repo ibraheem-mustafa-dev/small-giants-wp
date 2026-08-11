@@ -1,12 +1,94 @@
 ---
 doc_type: design
 title: "Background panel — native colour/gradient, four tabs, and the section-kind gate"
-status: DESIGNED — Bean-approved 2026-08-11 at the design gate. NOT BUILT.
+status: SHIPPED 2026-08-11 — D1/D2/D3/D4/D5/D6 all built; live-verification pending on D4/D6 (deploy blocked by an unrelated Track 1b migration issue at session close). D579-D582, D585.
 date: 2026-08-11
 scope: SHARED WRAPPER (ContainerWrapperControls / BackgroundPanel) — container, cta-section, hero, trust-bar
 ---
 
 # Background panel redesign
+
+> ## ⭐ STATUS 2026-08-11 (session close) — read before acting on anything below
+>
+> **Shipped and live-verified on the canary (page 1486):**
+> - **D1** — swatch+popover, boxed like native (`Card`/`CardBody`), sitting above the tabs. DONE.
+> - **D2** — "Anim" tab rename, 4-tab strip fits. DONE.
+> - **D3** — native `GradientPicker` kept as originally built; the palette-per-stop question is
+>   CLOSED, not deferred — Bean ruled a bespoke stop editor "not worth the time" once shown the
+>   real cost (no WP extension point exists for it). Documented as an accepted trade-off, not a
+>   gap to revisit.
+> - **D5** — both opacity controls fully removed (control + attr + render, all 6 blocks + shared
+>   wrapper + hero's private copy + editor CSS/JS). DONE.
+>
+> **Built this session, deploy pending (blocked by an UNRELATED Track 1b migration issue on
+> post 2270 — `contentBandPadding`, nothing to do with this doc — retry the deploy once that
+> clears; do not re-investigate it, it isn't this track's bug):**
+> - **D4 (parallax)** — BUILT (D585). Real bug, not a design gap: `bgParallax` was fully wired
+>   everywhere except the one CSS declaration that turns it on. Fixed in THREE places
+>   independently (shared wrapper's image case, shared wrapper's NEW video case, hero's own
+>   private image+NEW video case) — see D585 for the exact mechanism (image uses
+>   `background-attachment:fixed`; video/real-`<img>` use `position:fixed`, since
+>   `background-attachment` is a no-op on either).
+> - **D6 (section-kind gate)** — REMOVED (D585). Bean overruled the "background is section-only"
+>   architecture directly. Background/overlay/parallax/ken-burns/SVG-background now read
+>   universally in the shared wrapper; a layout/content-kind block only gets a working background
+>   if it separately declares the attrs in its own block.json (safe by construction — WP drops
+>   undeclared attrs). Shape dividers (same file, separate section-only feature) deliberately left
+>   untouched — out of scope.
+> - **Settings/Styles duplication** (found by Bean live-testing, not originally scoped in this
+>   doc) — hero had THREE redundant media-selection panels on the Settings tab duplicating what
+>   the Styles-tab Background panel already provides for the same attributes. Removed; kept only
+>   the Split variant's own unique media family.
+>
+> **Found and fixed along the way (not originally scoped here, but blocking — see D579-D582 in
+> `decisions.md` for full detail):**
+> 1. Hero's own overlay never read the gradient attributes at all — the real root cause of "the
+>    gradient controls don't work". Render-side bug, unrelated to this panel's UI shape.
+> 2. A shared-wrapper CSS rule collapsed hero's/cta-section's own overlay span to 0×0 — the
+>    control could be 100% correct and still be invisible.
+> 3. **Native `supports.color` background/gradients was REMOVED from hero/container/cta-section/
+>    trust-bar** (D581) — it was competing with this control for the same visual property with no
+>    defined precedence, and (found live, by Bean) was silently winning. This is a NEW decision
+>    beyond the original design — the original doc never anticipated the native panel was still
+>    live and would conflict; it assumed native was either equivalent-and-redundant or already
+>    inert. Neither was true: it was active AND conflicting.
+>
+> **Superseded finding:** the capability-routing doctrine's Part 9 "hero's overlay reaches 2 of 2
+> known-good paths" framing undercounted the real defect — see `spec-35-capability-routing-doctrine.md`'s
+> own status update for the corrected number (0 of 15 for the UNRELATED `image-controls.php`
+> mechanism; this doc's hero overlay is a separate mechanism entirely, now fixed).
+>
+> ### ⭐ NEXT SESSION — fresh-session prompt for the "background as universal extension" question
+>
+> Raised by Bean at session close, deliberately NOT explored inline (this session was already
+> very long). Copy the block below to open a new session:
+>
+> > Invoke /autopilot before doing anything else.
+> >
+> > Read `.claude/plans/background-panel-redesign.md` in full (small, self-contained) — it's
+> > the background/overlay/gradient panel just shipped for hero/container/cta-section/trust-bar
+> > (D579-D582, D585 in `.claude/decisions.md`).
+> >
+> > Open question from Bean, to explore via `/brainstorming` (design mode, not straight to
+> > code): could the colour/gradient part of this system — or MORE of it, gated per-block —
+> > become a universal extension (the `render_block`-filter auto-injection pattern, mechanism
+> > (b) in `.claude/plans/spec-35-capability-routing-doctrine.md` Part 1) reachable by ANY
+> > block, not just the four container-family composites that own it today? Bean specifically
+> > pushed back on "just colour/gradient, nothing else" as too narrow a scope — asked whether
+> > OTHER pieces of the system could also be made available per-block via a gating/capability
+> > declaration, not a blanket yes/no per feature.
+> >
+> > Read `.claude/plans/spec-35-capability-routing-doctrine.md` Part 1 (the 5-mechanism decision
+> > procedure) and Part 2 (the legitimate-auto-injection tests) in full before proposing a shape —
+> > this is EXACTLY the kind of question that doctrine was built to answer, and the prior
+> > investigation already worked out: colour/gradient targets a block's own root directly (passes
+> > the tests cleanly), but image/video/parallax/ken-burns/SVG/responsive-art-direction assume a
+> > real box/grid layout (a `::before` media layer, a content band) that a single-element block
+> > like `sgs/text`/`sgs/button` doesn't have — so a capability-by-capability gating question, not
+> > an all-or-nothing one.
+> >
+> > Do NOT start coding until a design is agreed via `/brainstorming` + a `/strategic-plan` if it's
+> > more than a few files.
 
 ## Context — what Bean found, testing the canary
 
@@ -169,9 +251,20 @@ branch — hide the control — and that is a decision to put back to Bean, not 
 - **Positive control** — a gradient that visibly renders — before any PASS is claimed.
 - Per-block visual-diff reports bound to `source_sha`.
 
-## Open questions
+## Open questions — RESOLVED (2026-08-11 session close)
 
-1. Which block/config produced "none of the gradient controls work"? (Decides D-diagnosis.)
-2. Can the native gradient picker offer theme palette colours per stop? (D3.)
-3. Why are overlay attrs zeroed for layout/content kinds? (D6 — the reason gates the fix shape.)
-4. How many live rows carry non-default `backgroundMediaOpacity`? (D5.)
+1. ✅ **Which block/config produced "none of the gradient controls work"?** Hero, and it wasn't a
+   config issue — hero's render.php never read the gradient attrs at all (D579), plus a CSS
+   specificity collision independently collapsed the overlay span to 0×0 (D580), plus a live
+   conflict with native `supports.color` (D581). All three fixed.
+2. ✅ **Can the native gradient picker offer theme palette colours per stop?** No — confirmed
+   against Gutenberg source, no extension point exists. Bean ruled this "not worth the time";
+   native `GradientPicker` kept as-is (D582/D3).
+3. ⛔ **Still OPEN — why are overlay attrs zeroed for layout/content kinds?** (D6.) Not touched
+   this session. A prior investigation (this doc's earlier revision) found: the markup slot exists
+   for every `container_kind`, but layout/content composites never DECLARE the overlay attrs in
+   their own `block.json` (Spec 31's "KIND gates which attrs exist as a destination" is deliberate
+   architecture, not a bug). Fixing this needs a design decision (add the attrs to those blocks'
+   block.json + lift the two PHP gates together) — still needs Bean's call before building.
+4. ✅ **How many live rows carry non-default `backgroundMediaOpacity`?** 2 pages (internal QA
+   probes only, no client content) — both migrated during the D5 removal (D582).

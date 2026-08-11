@@ -44,7 +44,15 @@
 	pointer-events: none;
 }
 
-.sgs-container > *:not(.sgs-container__overlay) {
+/* Excludes every block's own private overlay span, not just the shared
+   wrapper's own .sgs-container__overlay — a composite that mirrors
+   sgs/container (hero, cta-section) but renders its OWN overlay (C3
+   double-emit guard, `no_overlay` opt) still carries the `sgs-container`
+   class, so this generic child rule matches its overlay span too unless
+   named here. Found live 2026-08-11: hero's gradient overlay CSS was
+   correct but the span collapsed to 0x0 because this rule overrode its
+   `position:absolute` to `position:relative` with no explicit size. */
+.sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay):not(.sgs-cta-section__overlay) {
 	position: relative;
 	z-index: 1;
 }
@@ -148,6 +156,20 @@
    to implement the no-parallax touch fallback. Retained intentionally. */
 .sgs-container--parallax.no-parallax {
 	background-attachment: scroll !important;
+}
+
+/* D4 (2026-08-11): parallax for VIDEO backgrounds — `background-attachment` only
+   applies to CSS backgrounds, not a real <video> element, so the image
+   technique above can't cover this case. The equivalent CSS-only trick is
+   `position: fixed` on the video itself (viewport-relative instead of
+   container-relative). Same touch-device disable path as the image case
+   (view.js adds .no-parallax; this rule restores normal absolute flow). */
+.sgs-container--parallax .sgs-container__video-bg {
+	position: fixed;
+}
+
+.sgs-container--parallax.no-parallax .sgs-container__video-bg {
+	position: absolute !important;
 }
 
 /* Ken-burns — slow zoom on the background-image.

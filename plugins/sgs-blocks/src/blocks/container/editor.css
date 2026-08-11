@@ -17,10 +17,8 @@
 
 /* ===== Editor media layer (Phase 1, 2026-08-08) =====
    Mirrors the frontend: the background image paints on a ::before layer, not on
-   the element, so `backgroundMediaOpacity` dims the MEDIA without dimming the
-   client's content. Before this, edit.js painted the image on the element and
-   the opacity control had no visible effect in the editor at all — the surface
-   clients actually work in disagreed with the published page.
+   the element, so a dimmed colour/gradient overlay above it doesn't dim the
+   client's content too.
 
    Gated on .sgs-container--has-bg-media (added by edit.js only when an image is
    set) so no other container in the canvas gains a pseudo-element. */
@@ -39,5 +37,4 @@
 	background-position: var( --sgs-ed-bg-position, center center );
 	background-repeat: var( --sgs-ed-bg-repeat, no-repeat );
 	background-attachment: var( --sgs-ed-bg-attachment, scroll );
-	opacity: var( --sgs-ed-bg-opacity, 1 );
 }

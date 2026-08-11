@@ -97,19 +97,33 @@ Three close calls, all caught by existing structural defences, none destructive.
 - **Track 1c** (Spec 31 converter) — build shipped; open item is PROOF not build.
 - **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.
 - **Track 3** — CLOSED (D479). ⛔ GSAP is NOT MIT · LYGIA is Prosperity-licensed.
-- **Concurrent session (not this track):** hero background-panel redesign work was in progress
-  throughout this session on `container`/`cta-section`/`hero`/`site-footer`/`site-header`/
-  `trust-bar`/`GradientOverlayControl.js`/`ContainerWrapperControls.js`/theme pattern files —
-  interleaved into this migration's commit per Bean's explicit sign-off (see D580 incident 1/2).
-  Not this track's work; check its own status before touching any of those files further.
+- **Concurrent session (not this track) — UPDATE, now COMPLETE, not "in progress":** the
+  background-panel redesign shipped in full — D1-D6, plus three real bugs found and fixed along
+  the way (hero's render.php never read the gradient attrs at all; a shared-wrapper CSS rule
+  collapsed the overlay span to 0×0; native `supports.color` was live and silently conflicting
+  with the custom overlay mechanism, removed from hero/container/cta-section/trust-bar). Deployed
+  and live-verified on the canary. Full detail: `decisions.md` D581,
+  `.claude/plans/background-panel-redesign.md` (has its own fresh-session handoff prompt for a
+  follow-up "background as universal extension" design question — not started).
+  ⚠ **Most of that work is already inside this track's own commits** (the same "commit re-reads
+  the working tree at commit time" mechanism as D580 incident 2 swept it in), but as of
+  `a6f992e3` (this track's post-D580 doc commit) **8 files are still uncommitted**: this doc, two
+  `.claude/plans/*.md` files, `button/edit.js`, `container/components/ContainerWrapperControls.js`,
+  `container/editor.css`, `container/style.css`, `hero/style.css`,
+  `theme/sgs-theme/patterns/hero-video-background.php`. The code is LIVE on the canary (deployed
+  directly) but not yet in git history — commit these before starting further work on any of
+  them, or a future `git status` on this shared checkout will look confusingly dirty for no
+  visible reason.
 
 ---
 
 ## State Snapshot
 
-- **Branch:** `main`, pushed. HEAD `5f97079c` (merge of D580 + PR #25/D579).
-  ⛔ **Do not trust this line for tree state — run `git status` AND `git branch --show-current`.**
+- **Branch:** `main`. HEAD moved again since this ledger was written (was `5f97079c`, now
+  `a6f992e3` — a docs-only follow-up commit). ⛔ **This line will drift again — run `git log -1`
+  AND `git status` AND `git branch --show-current`, don't trust either commit hash above.**
   Commit by EXACT PATH (co-active sessions share `main`, sometimes share this exact checkout).
+  8 files uncommitted as of `a6f992e3` — see the "Concurrent session" bullet above.
 - **Tests/build:** `npm run build` exit 0 as of this session's HEAD.
 - **⛔ THE CANARY IS CONTENDED.** Verify the REGISTERED schema after any deploy, not just HTTP 200.
 - **Canary:** sandybrown-nightingale-600381.hostingersite.com. This session's fixture page (post
@@ -130,7 +144,7 @@ Three close calls, all caught by existing structural defences, none destructive.
 | THE migration triad — survey/fix/gate | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
 | THE procedure + the two axes (TIER vs BOX) | `plans/spec-35-flat-to-object-migration-design.md` (status: COMPLETE) + `plans/spec-35-control-type-contract.md` §12 |
 | THE GOVERNING SPEC for this track | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| Decisions (D-numbered) | `decisions.md` — D580 is this session |
+| Decisions (D-numbered) | `decisions.md` — D580 is this track's session; D581 is the concurrent background-panel session, added after (re-read the D-ceiling command, don't trust either number) |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 

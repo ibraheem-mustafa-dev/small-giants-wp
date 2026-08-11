@@ -104,8 +104,31 @@ section.sgs-hero {
 	pointer-events: none;
 }
 
-.sgs-hero__bg-img--parallax {
-	background-attachment: fixed;
+/* D4 (2026-08-11): `background-attachment` is a no-op here — `.sgs-hero__bg-img`
+   is a real <img> element (chosen deliberately for LCP fetchpriority support,
+   see the comment above `.sgs-hero__bg-img`), not a CSS background, so this
+   rule never did anything. `position: fixed` is the correct CSS-only
+   equivalent for a real image element (mirrors the same fix applied to
+   sgs/container's video background, `container/style.css`). The touch-device
+   `.no-parallax` disable path below already existed and needed no change. */
+.sgs-hero--parallax .sgs-hero__bg-img--parallax {
+	position: fixed;
+}
+
+.sgs-hero--parallax.no-parallax .sgs-hero__bg-img--parallax {
+	position: absolute !important;
+}
+
+/* D4 (2026-08-11): the Video variant never had parallax wired at all —
+   `.sgs-hero--parallax` was already added to the root whenever bgParallax is
+   set (render.php), but nothing targeted `.sgs-hero__video-bg`. Same
+   position:fixed technique as the image case. */
+.sgs-hero--parallax .sgs-hero__video-bg {
+	position: fixed;
+}
+
+.sgs-hero--parallax.no-parallax .sgs-hero__video-bg {
+	position: absolute !important;
 }
 
 /* Background video */

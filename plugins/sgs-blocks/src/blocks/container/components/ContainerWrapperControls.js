@@ -729,8 +729,6 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 		backgroundPosition = 'center center',
 		backgroundRepeat = 'no-repeat',
 		backgroundAttachment = 'scroll',
-		backgroundOverlayOpacity = 50,
-		backgroundMediaOpacity = 100,
 		bgVideo,
 		bgVideoTablet,
 		bgVideoMobile,
@@ -749,12 +747,21 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 
 	return (
 		<PanelBody title={ __( 'Background', 'sgs-blocks' ) } initialOpen={ false }>
+			<p className="components-base-control__help">
+				{ __(
+					'This colour is the background. With an image or video behind it, lower its alpha to let the media show through — there is no separate overlay to set up.',
+					'sgs-blocks'
+				) }
+			</p>
+			<GradientOverlayControl
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<TabPanel
 				tabs={ [
 					{ name: 'image', title: __( 'Image', 'sgs-blocks' ) },
 					{ name: 'video', title: __( 'Video', 'sgs-blocks' ) },
-					{ name: 'animation', title: __( 'Animation', 'sgs-blocks' ) },
-					{ name: 'overlay', title: __( 'Overlay', 'sgs-blocks' ) },
+					{ name: 'animation', title: __( 'Anim', 'sgs-blocks' ) },
 					{ name: 'svg', title: __( 'SVG', 'sgs-blocks' ) },
 				] }
 			>
@@ -1004,48 +1011,6 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 										__nextHasNoMarginBottom
 									/>
 								) }
-							</>
-						);
-					}
-
-					// ---- Overlay tab ----
-					if ( tab.name === 'overlay' ) {
-						return (
-							<>
-								<p className="components-base-control__help">
-									{ __(
-										'This colour is the background. With an image or video behind it, lower the opacity to let the media show through — there is no separate overlay to set up.',
-										'sgs-blocks'
-									) }
-								</p>
-								<GradientOverlayControl
-									attributes={ attributes }
-									setAttributes={ setAttributes }
-								/>
-								<RangeControl
-									label={ __( 'Colour opacity (%)', 'sgs-blocks' ) }
-									help={ __(
-										'0% shows the media untouched, 100% covers it completely.',
-										'sgs-blocks'
-									) }
-									value={ backgroundOverlayOpacity }
-									onChange={ ( val ) => setAttributes( { backgroundOverlayOpacity: val } ) }
-									min={ 0 }
-									max={ 100 }
-									__nextHasNoMarginBottom
-								/>
-								<RangeControl
-									label={ __( 'Media opacity (%)', 'sgs-blocks' ) }
-									help={ __(
-										'Dims the image or video itself, without dimming the content on top of it.',
-										'sgs-blocks'
-									) }
-									value={ backgroundMediaOpacity }
-									onChange={ ( val ) => setAttributes( { backgroundMediaOpacity: val } ) }
-									min={ 0 }
-									max={ 100 }
-									__nextHasNoMarginBottom
-								/>
 							</>
 						);
 					}

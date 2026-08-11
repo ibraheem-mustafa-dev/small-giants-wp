@@ -273,7 +273,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( widthType?.desktop === 'custom' && customWidth?.desktop ) {
 		previewStyle.width = `${ customWidth.desktop }${ customWidthUnit?.desktop || 'px' }`;
 	}
-	if ( minHeight ) previewStyle.minHeight = `${ minHeight }px`;
+	if ( attributes.minHeight?.desktop ) {
+		previewStyle.minHeight = `${ attributes.minHeight.desktop }${ minHeightUnit || 'px' }`;
+	}
 
 	// Editor-frontend parity (D288): the button element IS the block root (no
 	// wrapper div), matching render.php. Full-width is the `sgs-button--full`

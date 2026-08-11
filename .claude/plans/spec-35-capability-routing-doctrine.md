@@ -453,6 +453,20 @@ re-derives them.
 
 ## Part 9 — Media positioning: the worked example
 
+> ⭐ **UPDATE 2026-08-11 (same day, later session) — hero's OVERLAY (not media-position) mechanism
+> was found broken in a different, more basic way than anything analysed below, and is now fixed.**
+> This Part 9 analysis is about `imageObjectPosition`/media crosshair positioning specifically —
+> it never covered hero's colour/gradient OVERLAY (`overlayGradient`/`backgroundOverlayColour`),
+> which turned out to have its own, unrelated, more severe defect: `hero/render.php` never read
+> the gradient attributes AT ALL (not a conditional-DOM-shape problem like the one below — a
+> flat-out missing read). Separately, a CSS specificity collision in the shared wrapper
+> (`.sgs-container > *:not(.sgs-container__overlay)`) collapsed hero's overlay span to 0×0
+> regardless. Both fixed; native `supports.color` was also removed from hero (it was live and
+> conflicting with the overlay mechanism, not dead as assumed elsewhere in this doc). Full detail:
+> `decisions.md` D581, `.claude/plans/background-panel-redesign.md`. The `:not(.has-background)`
+> conditional-DOM-shape fragility described just below for `.sgs-hero__bg-img`/`.sgs-hero__video-bg`
+> is a SEPARATE, still-real issue — not addressed by this fix.
+
 The original question, answered by the doctrine.
 
 - **Background image/video (hero)** — mechanism **(c)**. ⚠ Today's apparent "it works" is
