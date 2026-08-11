@@ -566,7 +566,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$grid_item_text_colour = is_array( $grid_item_text_colour ) ? '' : $grid_item_text_colour;
 
 			// QB-1 advanced grid attrs (section + layout kinds only).
+			// is_array guard (Spec 35 pass 3b, 2026-08-11) — SAME shape as
+			// $grid_template's guard at :234-235. gridTemplateRows is now
+			// object-typed ({desktop,tablet,mobile}) on migrated blocks; the
+			// legacy scalar path below does `trim((string) $grid_template_rows)`
+			// at :916/:1657, and PHP's array-to-string coercion turns an
+			// unguarded array into the literal string "Array" (non-empty),
+			// which would emit a garbage `grid-template-rows:Array` declaration
+			// and suppress whatever auto-flex/auto-rows fallback exists. This
+			// mirrors the exact defect pass 3a found for gridTemplateColumns
+			// (feature-grid/render.php `trim((string)$attr)` -> "Array").
+			// Tiers are read raw (never object-shaped by any block today) — if
+			// a future block ever stores them as objects too, they will need
+			// the same guard, but nothing does yet so adding it speculatively
+			// would be untestable dead code.
 			$grid_template_rows        = $attributes['gridTemplateRows'] ?? '';
+			$grid_template_rows        = is_array( $grid_template_rows ) ? '' : $grid_template_rows;
 			$grid_template_rows_tablet = $attributes['gridTemplateRowsTablet'] ?? '';
 			$grid_template_rows_mobile = $attributes['gridTemplateRowsMobile'] ?? '';
 			$grid_auto_rows            = $attributes['gridAutoRows'] ?? '';
@@ -2139,6 +2154,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					'flexDirection'  => 'flex-direction',
 					'flexWrap'       => 'flex-wrap',
 					'gridAutoRows'   => 'grid-auto-rows',
+					// gridTemplateRows (Spec 35 pass 3b, 2026-08-11) — mirrors
+					// gridTemplateColumns' object-tier emission at ~:2057 for the
+					// row axis. Reuses the SAME grid-template transform already
+					// wired for gridAutoRows two lines up (both take a
+					// track-list value, not a keyword).
+					'gridTemplateRows' => 'grid-template-rows',
 				) as $sgs_attr => $sgs_css_prop ) {
 					if ( isset( $attributes[ $sgs_attr ] ) && is_array( $attributes[ $sgs_attr ] ) ) {
 						$obj_inner_props[] = array(
@@ -2146,10 +2167,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 							'css'       => $sgs_css_prop,
 							// Keyword properties, not lengths — sanitise as a CSS
 							// keyword so a tier value can never break its declaration.
-							// grid-auto-rows takes a track value, so it uses the
+							// grid-auto-rows AND grid-template-rows both take a track
+							// value (not a bare keyword), so both route through the
 							// grid-template sanitiser the base path already applies
-							// at :755.
-							'transform' => ( 'grid-auto-rows' === $sgs_css_prop )
+							// at :755/:916 — widened for gridTemplateRows (Spec 35
+							// pass 3b) from the earlier gridAutoRows-only check.
+							'transform' => ( in_array( $sgs_css_prop, array( 'grid-auto-rows', 'grid-template-rows' ), true ) )
 								? static function ( $raw ) {
 									return sgs_sanitize_grid_template( (string) $raw );
 								}

@@ -1,33 +1,22 @@
 ---
 doc_type: reference
-title: "Visual-diff report — multi-button · gridTemplateColumns"
+title: "Visual-diff report — multi-button · gridTemplateRows"
 block: multi-button
 date: 2026-08-11
-property: gridTemplateColumns
+property: gridTemplateRows
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: f794bf6fc7a8981b
+source_sha: 47aa622a82ebb60a
 ---
 
-# multi-button — Spec 35 pass 3a - gridTemplateColumns migrated to the tier-object shape, controls migrated in the same commit, 15 theme values folded into the object
+# multi-button — unchanged
 
-**Verdict: PASS**, on a measured before/after capture of this block's own
-rendered element. No measured value moved.
+**Verdict: PASS.** No measured value moved for this block, so the full report
+was collapsed into the shared summary (Change 1, 2026-08-11) — this stub still
+carries this block's own numbers below, and exists in full so the pre-commit
+gate's per-block `source_sha` binding is never dropped.
 
-## What was measured, and where
-
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gridtemplatecolumns/
-- **Selector (scoped):** `#tierfx-default-multi-button > .wp-block-sgs-multi-button` — resolved to `<div>`, uid `sgs-container--grid`
-- **CSS property:** `grid-template-columns`
-- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
-- **Method:** Playwright (chromium), computed styles at three viewports, before
-  and after deploying the change to the sandybrown canary.
-
-⛔ The selector is scoped to this block's own anchor. An unscoped query on a
-wrapper class returned the site header in a previous session and produced a
-confident false failure, so every measurement here is anchored.
-
-## Measurements — this block, not another
+**Auto-derived finding:** auto-derived: measured `display` is `flex` at every element and viewport captured — never `grid` or `inline-grid` — and `grid-template-rows` only takes effect under grid layout, so it cannot apply here by construction. desktop: set `64px` → outer `none`  ⚠ does NOT bind | mobile: set `8px` → outer `none`  ⚠ does NOT bind | tablet: set `32px` → outer `none`  ⚠ does NOT bind
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
@@ -35,55 +24,5 @@ confident false failure, so every measurement here is anchored.
 | tablet (900px) | `tablet` | `none` | `none` | `—` | `—` | `flex` |
 | mobile (390px) | `mobile` | `none` | `none` | `—` | `—` | `flex` |
 
-These rows are the **default** variant — the property left unset, so the block
-renders its own `block.json` default. That is the regression surface: nearly
-every real instance leaves it unset, so a changed default is what would actually
-reach a client site.
-
-The *inner band* column is the `> .sgs-container__inner` element. The shared
-wrapper relocates grid/flex onto it for container-query blocks, so a report
-measuring only the outer element could miss where the value actually landed.
-
-`display` is recorded because the property computes whether or not it can paint
-— keeping "declared" and "visible" as separate facts rather than conflating them.
-
-
-## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
-
-This block **declares `gridTemplateColumns` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
-
-**Evidence:** renders display:flex, so grid-template-columns has no effect on it by construction - measured flex at every viewport, computed none before AND after. Inert here, not broken.
-
-⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
-
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert**
-property would also produce. So a second instance of this block on the
-same page has `gridTemplateColumns` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
-for the tier that should bind:
-
-- desktop: set `64px` → outer `none`  ⚠ does NOT bind
-- mobile: set `8px` → outer `none`  ⚠ does NOT bind
-- tablet: set `32px` → outer `none`  ⚠ does NOT bind
-
-The value demonstrably applies, so "nothing moved" above means
-*nothing moved*, not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately
-so. Before the migration `gridTemplateColumns` was a scalar attribute, so WordPress
-coerced an object-shaped value away entirely — a before/after pair on
-this variant would compare "the value" against "the value the old code
-could not store", which is not a rendering comparison at all.
-
-## Gates
-
-- Console errors: **3**
-- PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
-  `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
-- `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,
-  so the report cannot survive a later edit to the block without going stale.
-
-*Generated by `plugins/sgs-blocks/scripts/make-visual-diff-reports.py` from
-`measurements-before.json` + `measurements-after.json`. Every figure above is read
-from those captures; none is hand-written.*
+Full context (page, selector, probe values, gate totals) for this run:
+`unchanged-summary-gridTemplateRows-2026-08-11.md#multi-button`.

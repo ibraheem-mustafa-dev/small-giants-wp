@@ -1,5 +1,51 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D570 — Pass 3b (`gridTemplateRows`): storage + control side already migrated on session start; wrapper guard, A3 gap-preview carry-forward and live fixture evidence closed it [ROUTINE]
+
+**2026-08-11.** Continuation of Spec 35 pass 3b. On picking this up, `block.json` was
+already fully object-shaped for `gridTemplateRows` on all 19 targets (`migrate-tier-object.py
+--check` returned clean with zero migration needed), and the two bespoke blocks
+(`site-footer-row`, `site-header-row`) already had their `edit.js` wired directly to the object
+attr with no bridging layer. This work had landed in the same working tree before this session's
+own edits were read back — verified by re-reading every file before editing, never assumed from
+the brief.
+
+**What this pass actually added:**
+1. `class-sgs-container-wrapper.php` — `is_array()` guard on the legacy scalar
+   `gridTemplateRows` read (mirrors the exact defect D569 found for `gridTemplateColumns`: an
+   unset object attr arrives as an empty PHP array, and the legacy `trim((string)$attr)` path
+   turns it into the literal string `"Array"`); added `gridTemplateRows` to the tier-emission prop
+   map; widened the grid-template sanitiser selector to cover both `grid-auto-rows` and
+   `grid-template-rows`.
+2. `ContainerWrapperControls.js` — the shared "Row template" control converted from
+   `ResponsiveControl`+flat-attrMap to `ResponsiveOverride` on the object attr, mirroring
+   `gridTemplateColumns` immediately above it (covers all 17 blocks mounting the shared
+   `LayoutPanel`).
+3. A3 carry-forward (flagged in D569, not fixed there): `feature-grid`, `gallery` and `trust-bar`
+   edit.js previews tested `String(gap)` against a digit regex and handed the raw
+   `{desktop,tablet,mobile}` object straight to a React style value. `feature-grid` was already
+   fixed on pickup; `gallery` and `trust-bar` fixed this pass via `resolveResponsiveTier(gap,
+   'desktop')?.value`.
+4. Theme patterns/templates/parts: 0 instances of flat `gridTemplateRows` found — nothing to fold.
+
+**Evidence, not assertion:** `npm run build` clean (asset-target, ghost and motion-bundle-budget
+gates all green). Live fixture round-trip on sandybrown via the D569 toolkit — published
+`tier-fixture-gridtemplaterows` (19 blocks × default+probe), captured **before** on the
+then-live (pre-change) code, deployed this wave's payload via `build-deploy.py --payload` (the
+sanctioned deploy<->commit deadlock-breaker — canary-deploys an uncommitted payload, unlike
+`--allow-dirty` which is a blanket bypass), captured **after**, generated all 19 per-block reports
+via `make-visual-diff-reports.py` — 19/19 PASS, zero unexplained changes, fixture page deleted
+after capture. `migrate-tier-object.py --check` clean for `gridTemplateRows`. 0 blocks read
+`gridTemplateRows` directly in `render.php` (all delegate to the wrapper).
+
+**Not done this pass (documented, not silently dropped):** the theme-scalar-fold generaliser
+promotion (parameterising `scratchpad/migrate_theme_tier_scalars.py` into a repo script) — moot
+this pass since the census found 0 theme instances, but still owed to a future pass. No Playwright
+live-editor session (device-tier switch, empty-object positive control, console-error check) was
+run against the deployed canary beyond the automated fixture capture — the fixture's own capture
+already exercises the render path at 3 viewports with an explicit non-empty probe value bound
+(`64px/32px/8px`), which is the same evidence class D569 used to close pass 3a.
+
 ## D569 — Pass 3a (`gridTemplateColumns`): two silent regressions and one editor crash, all found by the same two checks [INCIDENT]
 
 **2026-08-11.** 19 targets (18 FLAT + 1 BLENDED) migrated to the tier object, controls migrated in

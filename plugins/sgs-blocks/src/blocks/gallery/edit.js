@@ -34,7 +34,7 @@ import { useRef } from '@wordpress/element';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
 import ResponsiveControl from '../../components/ResponsiveControl';
-import { colourVar } from '../../utils';
+import { colourVar, resolveResponsiveTier } from '../../utils';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -254,6 +254,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { mediaItems: mappedItems } );
 	};
 
+	// gap is a TIER OBJECT — resolve the desktop tier (what the canvas shows)
+	// before testing/using it. String() on the raw object would yield
+	// "[object Object]", a non-empty string that fails the numeric test and
+	// gets used verbatim as a bogus CSS value.
+	const gapDesktop = resolveResponsiveTier( gap, 'desktop' )?.value;
+
 	// Wrapper inline styles — CSS custom properties for layout.
 	const inlineStyles = {
 		'--sgs-columns-desktop': columns,
@@ -261,7 +267,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-columns-mobile': columnsMobile,
 		// gap is now a string from the shared SpacingControl (e.g. "16px", "40").
 		// Bare numeric strings (legacy format) are suffixed with px for preview.
-		'--sgs-gap': /^\d+$/.test( String( gap ) ) ? gap + 'px' : gap || '16px',
+		'--sgs-gap': /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
 		'--sgs-transition-duration': transitionDuration + 'ms',
 		'--sgs-transition-easing': transitionEasing,
 	};
@@ -292,7 +298,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				? `repeat( ${ columns }, 1fr )`
 				: undefined,
 		columnCount: layout === 'masonry' ? columns : undefined,
-		gap: /^\d+$/.test( String( gap ) ) ? gap + 'px' : gap || '16px',
+		gap: /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
 	};
 
 	return (

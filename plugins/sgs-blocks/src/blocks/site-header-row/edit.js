@@ -153,14 +153,9 @@ const ALIGN_CONTENT_OPTIONS = [
 // bridge. Keeping a bridge would have re-created the D563 defect in reverse —
 // writing three flat attrs that no block.json declares any more.
 
-// Bridge for gridTemplateRows* — still plain strings on both row blocks
-// (block.json:222-233), read at class-sgs-container-wrapper.php:426-428 and
-// emitted at :751-753 (base) / :1492-1493, 1542-1547 (responsive tiers).
-const GRID_TEMPLATE_ROWS_ATTR = {
-	desktop: 'gridTemplateRows',
-	tablet: 'gridTemplateRowsTablet',
-	mobile: 'gridTemplateRowsMobile',
-};
+// The gridTemplateRows bridge that used to live here is GONE (Spec 35 pass
+// 3b, 2026-08-11) — same reasoning as gridTemplateColumns above: the attr IS
+// the {desktop,tablet,mobile} object now, nothing left to bridge.
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -178,8 +173,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridAutoRows,
 		gridTemplateColumns,
 		gridTemplateRows,
-		gridTemplateRowsTablet,
-		gridTemplateRowsMobile,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -242,17 +235,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const onGridTemplateColumnsChange = ( obj ) =>
 		setAttributes( { gridTemplateColumns: obj } );
 
-	const gridTemplateRowsValue = {
-		...( gridTemplateRows ? { desktop: gridTemplateRows } : {} ),
-		...( gridTemplateRowsTablet ? { tablet: gridTemplateRowsTablet } : {} ),
-		...( gridTemplateRowsMobile ? { mobile: gridTemplateRowsMobile } : {} ),
-	};
+	const gridTemplateRowsValue = gridTemplateRows;
 	const onGridTemplateRowsChange = ( obj ) =>
-		setAttributes( {
-			[ GRID_TEMPLATE_ROWS_ATTR.desktop ]: obj.desktop || '',
-			[ GRID_TEMPLATE_ROWS_ATTR.tablet ]: obj.tablet || '',
-			[ GRID_TEMPLATE_ROWS_ATTR.mobile ]: obj.mobile || '',
-		} );
+		setAttributes( { gridTemplateRows: obj } );
 
 	// Editor preview mirrors the frontend: grid rows preview as an equal-count
 	// column grid at the desktop tier; cluster rows NEVER wrap (D455) — they

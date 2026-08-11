@@ -73,11 +73,15 @@ function buildGridStyle( attributes ) {
 		gridTemplateColumns,
 	} = attributes;
 
+	// gap is a TIER OBJECT — resolve the desktop tier (what the canvas shows)
+	// before testing it, for the same reason gridTemplateColumns is resolved
+	// below: String() on the raw object would yield "[object Object]".
+	const gapDesktop = resolveResponsiveTier( gap, 'desktop' )?.value;
 	// For editor preview: if gap looks like a bare slug (digits only), render
 	// it as a spacing-preset CSS var; otherwise pass through as-is.
-	const gapCss = gap && /^\d+$/.test( String( gap ) )
-		? `var(--wp--preset--spacing--${ gap })`
-		: ( gap || '24px' );
+	const gapCss = gapDesktop && /^\d+$/.test( String( gapDesktop ) )
+		? `var(--wp--preset--spacing--${ gapDesktop })`
+		: ( gapDesktop || '24px' );
 
 	if ( 'auto-flex' === layoutMode ) {
 		return {

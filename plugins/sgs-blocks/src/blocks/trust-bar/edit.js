@@ -11,7 +11,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveResponsiveTier } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // "Responsive spacing" panels write to LEGACY FLAT attrs (contentBandPaddingTop,
@@ -39,17 +39,22 @@ import { UnitControl } from '../../components/primitives';
  *  - Raw CSS length (e.g. "16px", "1.5rem") → pass through as-is
  *  - Empty / nullish → undefined (style key omitted)
  *
- * @param {string|null|undefined} gap Gap attribute value.
+ * gap is a TIER OBJECT (Spec 35) — this resolves the desktop tier (what the
+ * editor canvas shows) before formatting it, the same pattern feature-grid
+ * and gallery use. String() on the raw object would yield "[object Object]".
+ *
+ * @param {Object|null|undefined} gap Gap attribute value ({desktop,tablet,mobile}).
  * @returns {string|undefined}
  */
 function gapCssValue( gap ) {
-	if ( ! gap ) {
+	const gapDesktop = resolveResponsiveTier( gap, 'desktop' )?.value;
+	if ( ! gapDesktop ) {
 		return undefined;
 	}
-	if ( /^\d+$/.test( String( gap ) ) ) {
-		return `var(--wp--preset--spacing--${ gap })`;
+	if ( /^\d+$/.test( String( gapDesktop ) ) ) {
+		return `var(--wp--preset--spacing--${ gapDesktop })`;
 	}
-	return String( gap );
+	return String( gapDesktop );
 }
 
 const BADGE_STYLE_OPTIONS = [

@@ -471,12 +471,10 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 		columns = 2,
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
-		// gridTemplateColumns is a TIER OBJECT (pass 3a) and is read via
-		// `attributes.gridTemplateColumns` at its control below, not destructured
+		// gridTemplateColumns and gridTemplateRows are TIER OBJECTS (pass 3a /
+		// pass 3b) and are read via attributes.gridTemplateColumns /
+		// attributes.gridTemplateRows at their controls below, not destructured
 		// with a scalar '' default — which would mask the object.
-		gridTemplateRows = '',
-		gridTemplateRowsTablet = '',
-		gridTemplateRowsMobile = '',
 		gridAutoRows = '',
 	} = attributes;
 
@@ -638,27 +636,34 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						) }
 					</ResponsiveOverride>
 
-					<ResponsiveControl label={ __( 'Row template', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'gridTemplateRows',
-								tablet: 'gridTemplateRowsTablet',
-								mobile: 'gridTemplateRowsMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							return (
-								<TextControl
-									value={ attributes[ attr ] || '' }
-									onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-									help={ __(
-										"CSS grid-template-rows e.g. 'auto 1fr'. Leave empty for browser default.",
-										'sgs-blocks'
-									) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `gridTemplateRows` is a TIER OBJECT (Spec 35 pass 3b) — same
+						  shape as `gridTemplateColumns` above, so it uses
+						  ResponsiveOverride. The `gridTemplateRowsTablet` /
+						  `…Mobile` siblings are no longer declared by any block.json
+						  once a block is migrated — writing them through
+						  ResponsiveControl would save nothing (D338) while the
+						  desktop branch wrote a string into an object-typed attr
+						  and destroyed the setting (same class as D563).
+						*/ }
+					<ResponsiveOverride
+						label={ __( 'Row template', 'sgs-blocks' ) }
+						value={ attributes.gridTemplateRows }
+						onChange={ ( obj ) => setAttributes( { gridTemplateRows: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<TextControl
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								onChange={ ( val ) => setOwnValue( val ) }
+								help={ __(
+									"CSS grid-template-rows e.g. 'auto 1fr'. Leave empty to inherit the tier above, or for browser default on desktop.",
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 
 					<TextControl
 						label={ __( 'Auto rows', 'sgs-blocks' ) }

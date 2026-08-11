@@ -1,89 +1,26 @@
 ---
 doc_type: reference
-title: "Visual-diff report — form-field-tiles · gridTemplateColumns"
+title: "Visual-diff report — form-field-tiles · gridTemplateRows"
 block: form-field-tiles
 date: 2026-08-11
-property: gridTemplateColumns
+property: gridTemplateRows
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 1a897f5a8e839326
+source_sha: 50434d5247ec4dcc
 ---
 
-# form-field-tiles — Spec 35 pass 3a - gridTemplateColumns migrated to the tier-object shape, controls migrated in the same commit, 15 theme values folded into the object
+# form-field-tiles — unchanged
 
-**Verdict: PASS**, on a measured before/after capture of this block's own
-rendered element. No measured value moved.
-
-## What was measured, and where
-
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gridtemplatecolumns/
-- **Selector (scoped):** `#tierfx-default-form .wp-block-sgs-form-field-tiles` — resolved to `<div>`, uid `sgs-container--grid sgs-container-62aad2b3`
-- **CSS property:** `grid-template-columns`
-- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
-- **Method:** Playwright (chromium), computed styles at three viewports, before
-  and after deploying the change to the sandybrown canary.
-
-⛔ The selector is scoped to this block's own anchor. An unscoped query on a
-wrapper class returned the site header in a previous session and produced a
-confident false failure, so every measurement here is anchored.
-
-## Measurements — this block, not another
+**Verdict: PASS.** No measured value moved for this block, so the full report
+was collapsed into the shared summary (Change 1, 2026-08-11) — this stub still
+carries this block's own numbers below, and exists in full so the pre-commit
+gate's per-block `source_sha` binding is never dropped.
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `184px 184px 184px` | `184px 184px 184px` | `—` | `—` | `grid` |
-| tablet (900px) | `tablet` | `193.562px 193.562px` | `193.562px 193.562px` | `—` | `—` | `grid` |
-| mobile (390px) | `mobile` | `152.484px 152.484px` | `152.484px 152.484px` | `—` | `—` | `grid` |
+| desktop (1440px) | `desktop` | `none` | `none` | `—` | `—` | `grid` |
+| tablet (900px) | `tablet` | `none` | `none` | `—` | `—` | `grid` |
+| mobile (390px) | `mobile` | `none` | `none` | `—` | `—` | `grid` |
 
-These rows are the **default** variant — the property left unset, so the block
-renders its own `block.json` default. That is the regression surface: nearly
-every real instance leaves it unset, so a changed default is what would actually
-reach a client site.
-
-The *inner band* column is the `> .sgs-container__inner` element. The shared
-wrapper relocates grid/flex onto it for container-query blocks, so a report
-measuring only the outer element could miss where the value actually landed.
-
-`display` is recorded because the property computes whether or not it can paint
-— keeping "declared" and "visible" as separate facts rather than conflating them.
-
-
-## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
-
-This block **declares `gridTemplateColumns` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
-
-**Evidence:** the MOBILE tier only. Desktop and tablet BIND correctly. At mobile the track list is driven by the column-count path, which is PASS 4 property, not this pass. DEFAULT variant byte-identical before and after at every viewport.
-
-⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
-
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert**
-property would also produce. So a second instance of this block on the
-same page has `gridTemplateColumns` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
-for the tier that should bind:
-
-- desktop: set `64px` → outer `64px`  ✅ binds
-- mobile: set `8px` → outer `35.625px 35.6406px`  ⚠ does NOT bind
-- tablet: set `32px` → outer `32px`  ✅ binds
-
-The value demonstrably applies, so "nothing moved" above means
-*nothing moved*, not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately
-so. Before the migration `gridTemplateColumns` was a scalar attribute, so WordPress
-coerced an object-shaped value away entirely — a before/after pair on
-this variant would compare "the value" against "the value the old code
-could not store", which is not a rendering comparison at all.
-
-## Gates
-
-- Console errors: **3**
-- PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
-  `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
-- `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,
-  so the report cannot survive a later edit to the block without going stale.
-
-*Generated by `plugins/sgs-blocks/scripts/make-visual-diff-reports.py` from
-`measurements-before.json` + `measurements-after.json`. Every figure above is read
-from those captures; none is hand-written.*
+Full context (page, selector, probe values, gate totals) for this run:
+`unchanged-summary-gridTemplateRows-2026-08-11.md#form-field-tiles`.

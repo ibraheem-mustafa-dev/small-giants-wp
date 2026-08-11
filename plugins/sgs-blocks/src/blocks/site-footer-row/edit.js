@@ -159,28 +159,13 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-// gridTemplateRows* — plain strings on THIS block too (block.json:222-233),
-// bridged to the {desktop,tablet,mobile} shape ResponsiveOverride expects.
-// Read at class-sgs-container-wrapper.php:426-428, emitted at :751-753 (base)
-// and :1492-1493/1542-1547 (responsive tiers) — unconditional, not gated
-// behind the object-model flag.
-const GRID_TEMPLATE_ROWS_ATTR = {
-	desktop: 'gridTemplateRows',
-	tablet: 'gridTemplateRowsTablet',
-	mobile: 'gridTemplateRowsMobile',
-};
-
-// NOTE — gridTemplateColumns on THIS block is declared `"type": "object"`
-// with no default (block.json:122-124), UNLIKE site-header-row where it is a
-// plain string. It is the live {desktop,tablet,mobile} object-model attr
-// (class-sgs-container-wrapper.php:1826-1831, only routed when it IS an
-// array) — wired directly below via ResponsiveOverride on the object attr
-// itself, no bridging. Its flat siblings gridTemplateColumnsTablet /
-// gridTemplateColumnsMobile (also declared in this block's block.json) are
-// NOT wired: the legacy scalar path they'd feed only activates when
-// gridTemplateColumns is NOT an array (class-sgs-container-wrapper.php:138,
-// 162-165), so once the object attr is set they become orphaned duplicates —
-// the exact same shape as the already-identified gapMobile/gapTablet orphans.
+// NOTE — gridTemplateColumns and gridTemplateRows are both declared
+// `"type": "object"` with default `{}` (Spec 35 pass 3a / 3b) — the live
+// {desktop,tablet,mobile} object-model shape, wired directly below via
+// ResponsiveOverride on the object attr itself. No bridging, no flat
+// Tablet/Mobile siblings — those were removed from block.json by the same
+// migration (they would otherwise become orphaned duplicates, the exact
+// same shape as the already-identified gapMobile/gapTablet orphans).
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -198,8 +183,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gridAutoRows,
 		gridTemplateColumns,
 		gridTemplateRows,
-		gridTemplateRowsTablet,
-		gridTemplateRowsMobile,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -257,18 +240,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			[ COUNT_ATTR.desktop ]: obj.desktop,
 			[ COUNT_ATTR.tablet ]: obj.tablet,
 			[ COUNT_ATTR.mobile ]: obj.mobile,
-		} );
-
-	const gridTemplateRowsValue = {
-		...( gridTemplateRows ? { desktop: gridTemplateRows } : {} ),
-		...( gridTemplateRowsTablet ? { tablet: gridTemplateRowsTablet } : {} ),
-		...( gridTemplateRowsMobile ? { mobile: gridTemplateRowsMobile } : {} ),
-	};
-	const onGridTemplateRowsChange = ( obj ) =>
-		setAttributes( {
-			[ GRID_TEMPLATE_ROWS_ATTR.desktop ]: obj.desktop || '',
-			[ GRID_TEMPLATE_ROWS_ATTR.tablet ]: obj.tablet || '',
-			[ GRID_TEMPLATE_ROWS_ATTR.mobile ]: obj.mobile || '',
 		} );
 
 	// Editor preview mirrors the frontend. D456: the grid preview uses the SAME
@@ -512,8 +483,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</ResponsiveOverride>
 							<ResponsiveOverride
 								label={ __( 'Row template', 'sgs-blocks' ) }
-								value={ gridTemplateRowsValue }
-								onChange={ onGridTemplateRowsChange }
+								value={ gridTemplateRows }
+								onChange={ ( obj ) =>
+									setAttributes( {
+										gridTemplateRows: obj,
+									} )
+								}
 							>
 								{ ( {
 									ownValue,
