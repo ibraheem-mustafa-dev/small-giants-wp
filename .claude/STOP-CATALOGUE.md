@@ -705,6 +705,89 @@ points here. Neither ever silently drops a STOP.
 
 ---
 
+
+### A12 - Session 8 (2026-08-11): the deploy lied, and so did my own instrument
+
+- **STOP-A-GREEN-DEPLOY-VERIFY-DOES-NOT-MEAN-YOUR-CODE-IS-RUNNING** - NEW 2026-08-11 (D576).
+  `build-deploy.py`'s verify checks HTTP 200 + markers present. A co-active session deploying
+  from its own worktree shipped an OLDER `build/` over this track's, silently reverting every
+  migrated `block.json` to `type:string`. WordPress then REJECTED every object attribute in
+  `prepare_attributes_for_render()` and refilled from the old scalar default, so the value never
+  reached render.php at all - and the deploy reported success. **Rule: after any deploy that
+  matters, verify the DEPLOYED REGISTERED SCHEMA (`wp eval` on `WP_Block_Type_Registry`), not
+  the HTTP status.** Two sessions of PHP debugging chased a bug no PHP fix could ever reach.
+
+- **STOP-GIT-COMMIT-AMEND-IGNORES-THE-ORIGINAL-PATHSPEC** - NEW 2026-08-11. `git commit -- <paths>`
+  is path-scoped; `git commit --amend` is NOT - it flushes the WHOLE index regardless of what the
+  original commit was scoped to. Used to fix a stray character in a subject line, it swept 89
+  deliberately-staged migration files into an unrelated commit. Caught in `git show --stat`, undone
+  with `reset --soft` + re-commit by path. **Rule: amend ONLY when the index is empty; otherwise
+  re-commit by explicit path.** Note `--pathspec-from-file` does NOT satisfy the co-active
+  path-scoped-commit hook either - a verified whole-index commit needs an explicit
+  `[batch-ok: <reason>]` token in the message.
+
+- **STOP-A-UNIVERSAL-SELECTOR-RULE-IS-NEVER-A-PROPERTYS-TARGET** - NEW 2026-08-11 (D576). A
+  measurement probe resolved which element a property styles by finding a rule that (a) mentions
+  one of the element's own classes and (b) declares that property. The container wrapper emits
+  `.sgs-container-<uid> > * { min-width:0; min-height:0 }` - the shrink-to-fit backstop - which
+  satisfies both. The probe accepted it, resolved to a CHILD block, and reported `64px` for a
+  property with NO rule of its own anywhere on the page. **Rule: reject any selector whose final
+  compound is universal (`> *`, ` *`) - it is a blanket backstop, never the element an attribute
+  styles.** Sibling of D573 (wrong property) and D574 (wrong element).
+
+- **STOP-A-PROVENANCE-FIELD-IS-ONLY-A-DEFENCE-IF-SOMETHING-READS-IT** - NEW 2026-08-11. The same
+  probe recorded WHICH element it measured in a `propTargets` field, correctly, the entire time -
+  including the bogus `.sgs-container-<uid> > *`. The analysis read `propValues` alone and never
+  looked at the field sitting next to it, so a wrong reading was reported to Bean twice as fact.
+  **Rule: when a tool records provenance alongside a value, the consumer MUST assert on the
+  provenance, not just the value** - otherwise it is decoration.
+
+- **STOP-RECURSE-ON-LENGTH-NEVER-ON-TRUTHINESS** - NEW 2026-08-11. Chrome's `CSSStyleRule` has
+  exposed an (empty) `cssRules` list since CSS Nesting shipped, so `if (rule.cssRules) { recurse;
+  continue; }` treats EVERY ordinary style rule as a group and skips it. Measured: 64 stylesheets
+  walked, **0 rules examined**, "this block emits no rule" reported for all 130 measurements - a
+  total blackout that looked like a clean result. **Rule: recurse on `.cssRules.length`.**
+
+- **STOP-A-CLASS-NAME-INCLUDES-CHECK-IS-A-SUBSTRING-TEST** - NEW 2026-08-11. Every BEM element
+  class starts with its block class, so `.sgs-button__icon` contains `.sgs-button` and the icon's
+  `width:15px` was returned as the button's own `customWidth`. **Rule: match class tokens at a
+  boundary, never with a substring check.** Sibling of the recorded
+  `a-substring-match-is-not-a-word-match` lesson, in CSS-selector form.
+
+- **STOP-A-DELETED-SIBLING-READ-IS-ONLY-A-DEFECT-WITH-NO-OBJECT-PATH** - NEW 2026-08-11. A new
+  detector flagged every read of a deleted flat tier attr (`gapTablet`, `contentWidthTablet`) as a
+  live bug and failed its gate on three properties that render perfectly. Those reads are inert
+  dead code - the same file also has a WORKING object-emission path. `minHeight` was the real bug
+  precisely because it had NO such path. **Rule: the discriminator is "does a working object path
+  exist in the same file", not "does a stale read exist". A gate that fires on non-defects gets
+  switched off.**
+
+- **STOP-AN-ASSUMPTION-IN-A-DETECTORS-DOCS-BECOMES-ONE-IT-ENFORCES** - NEW 2026-08-11 (D575).
+  `migrate-tier-object.py`'s docstring asserted "the wrapper already reads an object value", so
+  every block delegating to that wrapper was classified DELEGATED (= done) with nothing ever
+  verifying the wrapper's own read. It reported **0 findings across all 41 properties** while 125
+  broken declarations were live. **Rule: an assumption written into a tool's documentation is
+  load-bearing - verify it or delete it.** Its file scope was the other half: it scanned only
+  `src/blocks/*/render.php`, never shared includes, putting the highest-blast-radius consumer
+  outside the census by construction.
+
+- **STOP-A-CORRECT-ROOT-CAUSE-DOES-NOT-VALIDATE-THE-WHOLE-REPORT** - NEW 2026-08-11. A
+  `/systematic-debugging` agent found the real root cause AND asserted, in the same report, that
+  the measurement harness "just echoes the input rather than reading computed style" - which would
+  have invalidated every measurement of the session. Disproved in one command (the field is a live
+  `getComputedStyle()` call, and it returned `0px` where the input was `64px`). Its supporting
+  evidence had a mundane explanation. **Rule: fact-check each claim independently; being right
+  about the cause earns no credit for the surrounding assertions.**
+
+- **STOP-MAKE-THE-AGENT-PRE-REGISTER-ITS-PREDICTION** - NEW 2026-08-11 (positive pattern, keep).
+  Two debugging agents were FORBIDDEN from deploying (parallel deploys to a shared canary is a
+  recorded incident) and required instead to state the exact expected measurement per block per
+  viewport BEFORE the single verification deploy. Both predictions were confirmed exactly.
+  **Rule: when an agent cannot run the verifying action itself, require a pre-registered
+  prediction - it is far harder to fudge than a post-hoc explanation, and it converts a plausible
+  story into proof.**
+
+
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
 
 - **STOP-SCROLLBAR-LOCK (D340)** — locking body scroll (`position:fixed`/`overflow:hidden`)
@@ -1095,6 +1178,7 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
     STOP-A-DRY-RUN-THAT-EXITS-BEFORE-THE-WRITER-CANNOT-REPORT-ITS-OWN-SUBJECT,
     STOP-IDE-DIAGNOSTICS-CAN-BE-A-STALE-MID-EDIT-SNAPSHOT,
     STOP-DO-NOT-WRITE-A-FIGURE-INTO-A-COMMIT-OR-REGISTRATION-BEFORE-MEASURING-IT.)
+13. **Am I sure the code I am measuring is the code that is DEPLOYED?** Name how I checked - the registered schema, a checksum, a file mtime - not "the deploy said OK". A green deploy verify does not mean your code is running (D576), and the canary is shared with a co-active session that deploys from its own worktree.
 
 For a doc-model / enforcement-hook session (like P4), swap 4/5/8 for: does every new gate
 pass the **Enforcement Contract** (auto-fires on an event, fails safe, acts on NEW state,
@@ -1104,6 +1188,26 @@ for real before claiming done?
 ---
 
 ## D. D101 count-check receipt
+
+- **2026-08-11 (handoff, session 8 - the 41-property migration landed, and 10 earned lessons: a
+  green deploy verify that hid stale code, `git commit --amend` flushing a path-scoped index, a
+  universal-selector rule accepted as a property's target, a provenance field nothing read,
+  truthiness-vs-length recursion over CSS rules, a substring class match, dead-code vs the
+  live-bug shape, an assumption in a detector's own docs, a correct root cause carrying a false
+  claim, and pre-registered agent predictions as a proof device):** measured with this file's own
+  canonical commands immediately before writing (never carried forward). DEFINED `STOP-*` entries
+  (`grep -c '^- \*\*STOP-'`) 207 -> 217 (+10, new sub-section §A12). Bullet defences
+  (`grep -cE '^- \*\*'`) 270 -> **281** (+11 = the 10 new STOP entries +1 for THIS receipt line,
+  which is itself a `- **` bullet — corrected by the handoff QC subagent, which re-ran the
+  canonical command instead of trusting the figure. I measured 280 *before* writing the receipt,
+  so the number was stale the instant it was written: a self-referential count must be taken
+  AFTER the write, or state its own contribution. Earlier receipts got this right and said so).
+  Unique `STOP-*` tokens
+  (`grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`) 241 -> 251. Sections (`## `
+  headings) 5 -> 5 unchanged (§A12 is a `###` sub-section of §A, matching the §A11 pattern).
+  Pre-flight ritual questions (§C) 12 -> 13 (+1 new question 13: "am I sure the code I am
+  measuring is the code that is DEPLOYED?", which is the question that would have saved most of
+  this session). **No category decreased; nothing was dropped or reworded away.**
 
 - **2026-08-09 (handoff, D540-session verification-method audit — 9 earned lessons: substring vs
   word match, case-sensitive grep, truncated `head` search, a dry-run that cannot report its own
