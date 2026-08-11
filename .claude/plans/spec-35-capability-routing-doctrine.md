@@ -108,7 +108,50 @@ The first version examined seven. There are fourteen `render_block`-family injec
 | `hover-effects.php:341-362` | **FAILS 4b** — class injection is plain `preg_replace`. Separately **fails test 3**: the block-link overlay is inserted via `strrpos()` + `substr_replace()` as new `<a>` markup |
 | `custom-css.php:48-53` | **FAILS 4b** (plain `preg_replace`, not the Tag Processor) — but ⛔ **NOT BROKEN. Corrected 2026-08-11 after investigation.** An earlier draft called this "a live latent defect of the same class as image-controls". **Refuted.** Its mechanism differs fundamentally from the four siblings': they match a **tag shape** (`next_tag()` / first-tag regex), which a bare `<style>` satisfies — hence their skip guard. This matches an **attribute string** (`/class="/`, limit 1). Verified: no `<style>` tag emitted anywhere in `src/` carries a `class` attribute (grep: 0 matches), and no emitted CSS contains the literal `class="`. So the leading-`<style>` failure mode is structurally impossible here, across all 25 leading-`<style>` blocks. Converting it to `WP_HTML_Tag_Processor` is **hardening, not a bug fix** — and shipping it as a fix would violate the project's own prove-the-cause rule. Route it through its own design gate if wanted |
 | `image-controls.php:184-201` | **FAILS TEST 1 OUTRIGHT** — the subject of this document |
-| Spec 38 FX family — `fx-attributes.php:660`, `fx-shape-routes.php:376-402`, `fx-path-routes.php:346`, `fx-cursor-field.php:219` | **`fx-shape-routes` FAILS test 3** — injects two raw `<svg>` elements as siblings after the root. Payload is markup. Entire family previously unaudited |
+| `fx-attributes.php:660` | **PASS all.** Target = root, derived from `$block['attrs']['fx']` (legitimately owned parsed block data). Tag Processor throughout |
+| `fx-cursor-field.php:219` | **PASS all.** Class on root + a prepended scoped `<style>` — the sanctioned Spec-32 pattern, not a visible DOM node. Its condition reads a data attribute `fx-attributes.php` wrote on that same root — owned, not inferred |
+| `fx-shape-routes.php:376-402`, `fx-path-routes.php:323-346` | **FAIL test 3 as originally written — but EXEMPT, see below.** Root mutation is clean (Tag Processor, and the consuming `:has(> .sgs-fx-shape-visual)` is keyed off a class the filter itself wrote). They append new `<svg>` siblings, which no class/property could substitute — GSAP's morph/motion-path plugins need real animatable geometry. ⛔ **Separately, they carry a LIVE defect — see the box below** |
+
+⭐ **ALL FOUR carry the leading-`<style>` guard**, via a shared helper `sgs_fx_root_offset()`
+(`fx-attributes.php:453-464`), each call site citing the historical `sgs/container` bug. On that axis
+the FX family is structurally **ahead** of `custom-css.php`.
+
+> ### Test 3 exemption — GSAP-plugin geometry hosts (added 2026-08-11)
+>
+> The original test 3 was **too strict** and would have forced a pointless rewrite of a working
+> system. A `render_block` injector may **append new sibling markup — never wrap, never insert
+> mid-tree** — when all four hold:
+> 1. the payload is consumed by a Tier-G GSAP plugin needing live SVG/DOM geometry no CSS mechanism
+>    can substitute for;
+> 2. the block choosing the effect is unmodified — the new node carries only the effect, never content;
+> 3. positioning is out-of-flow (`position:absolute`, zero layout cost);
+> 4. the injection is uniform and opt-in via a data attribute, never per-block DOM inference.
+>
+> `fx-shape-routes.php` and `fx-path-routes.php` qualify. **A future injector claiming this exemption
+> must be re-tested against it, not assumed to inherit it.**
+>
+> Why this is an exemption and not a loophole: pre-baking the SVG into every one of ~28 eligible
+> blocks' own `render.php`/`save.js` would multiply identical dead markup into blocks that *could*
+> use FX rather than only those that *do* — a worse R-31-9 violation than one shared filter.
+
+> ### ⛔ BLOCKER — the FX route-box defect (already measured, still open)
+>
+> Both `fx-shape-routes` and `fx-path-routes` rely on `:has(> .sgs-fx-shape-visual)` to give the
+> appended SVG's **DOM parent** `position:relative`, so the absolutely-positioned SVG fills "the
+> block's own box". But that parent is whatever contains the block instance in the page —
+> `.entry-content`, or a container's shared child area — **not** the block's own box, unless the block
+> happens to be that parent's only child.
+>
+> **`decisions.md` D435 measured this live on the canary:** a motion-path traveller outside an
+> `.sgs-container` resolved its route box against `.entry-content` at **1200×7934px** — the height of
+> the entire page. D435 records two CSS-only fixes attempted and **measured not to close it**. Open.
+>
+> `fx-shape-routes` uses the **identical** mechanism and has **never been live-verified** — same
+> failure expected. This is the same "works by operator-configuration accident" shape as hero's
+> background layer (Part 9): correct only while the DOM happens to cooperate.
+>
+> **Ranked:** BLOCKER `fx-path-routes` (proven, open) · MAJOR `fx-shape-routes` (unverified, same
+> mechanism) · PASS `fx-attributes`, `fx-cursor-field`.
 | `conditional-visibility.php:41-160` | **OUT OF FRAME** — it never injects; it returns `''` or the content unchanged. It *suppresses*. Recorded explicitly as not-applicable rather than silently cleared |
 
 ⛔ **Correction:** the first version cleared `hover-effects` "on mechanism" while D551 removes it on
