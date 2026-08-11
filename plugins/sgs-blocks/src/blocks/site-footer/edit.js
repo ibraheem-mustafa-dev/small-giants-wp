@@ -18,6 +18,7 @@ import { PanelBody, Notice } from '@wordpress/components';
 // ResponsiveBoxControl bound to the object attrs.
 import {
 	WidthPanel,
+	BackgroundPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveBoxControl } from '../../components';
 
@@ -347,6 +348,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+
+				{ /* Background/overlay panel — same shared component + default
+				     attrNames used by sgs/container, sgs/cta-section and sgs/hero
+				     (ContainerWrapperControls.js's BackgroundPanel, which wraps
+				     GradientOverlayControl). site-footer declares the identical
+				     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
+				     overlayGradientFrom and overlayGradientTo attrs
+				     (block.json:190,330-342) but had no control mounted —
+				     inspector-scan rule 21-render-without-control. */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div ref={ refEl } { ...innerBlocksProps } />

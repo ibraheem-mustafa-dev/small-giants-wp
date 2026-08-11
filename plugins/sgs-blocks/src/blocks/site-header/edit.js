@@ -22,6 +22,7 @@ import {
 // ResponsiveBoxControl bound to the object attrs.
 import {
 	WidthPanel,
+	BackgroundPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveTriStateControl, ResponsiveBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -499,6 +500,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+
+				{ /* Background/overlay panel — same shared component + default
+				     attrNames used by sgs/container, sgs/cta-section and sgs/hero
+				     (ContainerWrapperControls.js's BackgroundPanel, which wraps
+				     GradientOverlayControl). site-header declares the identical
+				     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
+				     overlayGradientFrom and overlayGradientTo attrs
+				     (block.json:216,356-368) but had no
+				     control mounted — inspector-scan rule 21-render-without-control. */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<InspectorControls group="settings">
