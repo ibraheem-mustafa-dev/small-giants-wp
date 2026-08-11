@@ -87,7 +87,7 @@ BLOCK_DIR = "plugins/sgs-blocks/src/blocks"
 # visitor can see (or data that feeds one).
 EDITOR_FILE = "edit.js"
 
-# WIDENED 2026-08-11 (D564, Bean-approved): a block's own inspector components,
+# WIDENED 2026-08-11 (D565, Bean-approved): a block's own inspector components,
 # e.g. `container/components/ContainerWrapperControls.js`. These are imported by
 # edit.js and WordPress never serves them to a visitor, so — exactly like edit.js
 # — they cannot change frontend first paint.
@@ -411,7 +411,7 @@ _CASES = [
         {},
         False,
     ),
-    # ── Rule 1 widening + rule 5 (D564) ──────────────────────────────────────
+    # ── Rule 1 widening + rule 5 (D565) ──────────────────────────────────────
     (
         "POSITIVE — a block's own inspector component is editor-only",
         [("M", "components/ContainerWrapperControls.js")],

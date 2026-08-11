@@ -9,7 +9,7 @@
  *   --check   the gate — exit 1 on any raw import outside the barrel
  *   --self-test  proves the transform and the gate can both fail
  *
- * WHY (Spec 35 Phase 0 item 0d, D564)
+ * WHY (Spec 35 Phase 0 item 0d, D565)
  * -----------------------------------
  * Every component primitive this tree imports from WordPress is
  * `__experimental*` — core's explicit statement that it may be renamed or

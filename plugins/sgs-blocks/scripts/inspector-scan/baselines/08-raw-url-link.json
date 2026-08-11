@@ -3,7 +3,7 @@
 		"rule": "08-raw-url-link",
 		"ruleVersion": 1,
 		"note": "2 of these entries are carried forward VERBATIM (reason text unchanged) from the OLD scripts/inspector-conformance-baseline.json (block+rule keyed, no locus) — Spec 35 Task C migration, 2026-08-05. A THIRD OLD entry, sgs/media, is deliberately NOT carried forward: it is dormant under both systems (src/blocks/media/edit.js has no TextControl type=\"url\" any more — migrated to SgsLinkControl) and the OLD block+rule-only key cannot be translated into this rule's full-tuple key without inventing a locus (line number) that was never observed. See rules/08-raw-url-link.js's header for the full reasoning. PORTABILITY FIX (2026-08-06): the previous version of this file's `key` embedded an ABSOLUTE FILESYSTEM PATH (a pre-existing property of core/finding.js's key shape, shared by every rule in this scanner — flagged here but deliberately left unfixed during the 2026-08-05 port). core/finding.js now normalises the file segment to a repo-relative, forward-slash path before building the key, so these two entries were regenerated below with the new key shape. Re-verified against a live `node run.js --json` run the same day: both keys match their live findings exactly and both suppress (status BASELINED, net 0 FLAGGED for this rule).",
-		"lineKeyedBaselineWarning": "KEYS END IN A LINE NUMBER. Any mechanical line-shifting change (an import migration, a codemod, a formatter) invalidates entries in this file and accepted exemptions re-read as NEW gating findings. Re-anchor the line ONLY when block, rule, locus type and the offending control are all unchanged; anything else is a new finding needing its own sign-off. First hit: 2026-08-11, D564."
+		"lineKeyedBaselineWarning": "KEYS END IN A LINE NUMBER. Any mechanical line-shifting change (an import migration, a codemod, a formatter) invalidates entries in this file and accepted exemptions re-read as NEW gating findings. Re-anchor the line ONLY when block, rule, locus type and the offending control are all unchanged; anything else is a new finding needing its own sign-off. First hit: 2026-08-11, D565."
 	},
 	"entries": [
 		{
@@ -14,7 +14,7 @@
 		},
 		{
 			"key": "08-raw-url-link|sgs/trustpilot-reviews|plugins/sgs-blocks/src/blocks/trustpilot-reviews/edit.js|raw-url-textcontrol|191",
-			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable; parsed for business ID | RE-ANCHORED 2026-08-11 (D564): line 193->191 ONLY. The __experimental* compat-boundary migration removed 2 import lines from this file, and this rule's baseline key ENDS IN THE LINE NUMBER, so an already-accepted exemption re-read as a brand-new GATING finding. Same block, same rule, same locus type, same <TextControl type=\"url\"> for the Trustpilot business URL. NOT new accepted debt.",
+			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable; parsed for business ID | RE-ANCHORED 2026-08-11 (D565): line 193->191 ONLY. The __experimental* compat-boundary migration removed 2 import lines from this file, and this rule's baseline key ENDS IN THE LINE NUMBER, so an already-accepted exemption re-read as a brand-new GATING finding. Same block, same rule, same locus type, same <TextControl type=\"url\"> for the Trustpilot business URL. NOT new accepted debt.",
 			"seededAt": null,
 			"expires": null
 		}
