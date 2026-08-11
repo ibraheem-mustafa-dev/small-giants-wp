@@ -13,11 +13,18 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 // set: it offers Stack/Flex/Grid while this block's `layout` enum is
 // Grid/Masonry/Carousel. Measured 2026-08-07: writing "flex" is accepted, stored,
 // then SILENTLY reverted to "grid" on reload by WordPress's enum coercion. So we take
-// the wrapper's width/spacing/content-band panels and LayoutPanel's GAP only.
+// the wrapper's width/spacing panels and LayoutPanel's GAP only.
 // Precedent: sgs/hero and sgs/cta-section already skip the aggregator for this reason.
+//
+// NOT imported: ContentBandPanel. It targets the `.sgs-container__inner` band, which
+// only section/layout containerKind blocks render — gallery declares no containerKind
+// at all and has no such band (confirmed in render.php). Mounting it here was dead on
+// arrival: every field wrote to contentBandBackground/contentBandPaddingTop* etc.,
+// none of which gallery's block.json ever declared, so WordPress silently discarded
+// every value a client entered. Same defect class as the ResponsiveSpacingPanel this
+// file already removed (see the Spec 37 note below) — removed 2026-08-11, Track 1b.
 import {
 	LayoutPanel,
-	ContentBandPanel,
 } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
@@ -342,7 +349,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				  site-footer-row / nav-menu already do. One system, not two.
 				*/ }
 				<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
-				<ContentBandPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* Panel 1: Images */ }
 				<PanelBody
