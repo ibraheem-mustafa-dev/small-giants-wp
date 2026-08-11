@@ -49,7 +49,6 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"imageControls": true,
 			"is_section_root": true,
 			"containerKind": "section",
 			"variantAttr": "variant",

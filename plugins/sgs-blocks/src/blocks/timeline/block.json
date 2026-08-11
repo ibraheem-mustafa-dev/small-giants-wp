@@ -51,7 +51,6 @@
 		},
 		"sgs": {
 			"iconPicker": true,
-			"imageControls": true,
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
