@@ -1,0 +1,381 @@
+diff --git a/plugins/sgs-blocks/src/blocks/hero/block.json b/plugins/sgs-blocks/src/blocks/hero/block.json
+index 4201f941..a5abde54 100644
+--- a/plugins/sgs-blocks/src/blocks/hero/block.json
++++ b/plugins/sgs-blocks/src/blocks/hero/block.json
+@@ -472,6 +472,22 @@
+ 			"type": "string",
+ 			"default": ""
+ 		},
++		"mediaBackgroundGradient": {
++			"type": "boolean",
++			"default": false
++		},
++		"mediaBackgroundGradientAngle": {
++			"type": "number",
++			"default": 180
++		},
++		"mediaBackgroundGradientFrom": {
++			"type": "string",
++			"default": ""
++		},
++		"mediaBackgroundGradientTo": {
++			"type": "string",
++			"default": ""
++		},
+ 		"contentPadding": {
+ 			"type": "object",
+ 			"default": {}
+@@ -500,6 +516,22 @@
+ 			"type": "string",
+ 			"default": ""
+ 		},
++		"contentBackgroundGradient": {
++			"type": "boolean",
++			"default": false
++		},
++		"contentBackgroundGradientAngle": {
++			"type": "number",
++			"default": 180
++		},
++		"contentBackgroundGradientFrom": {
++			"type": "string",
++			"default": ""
++		},
++		"contentBackgroundGradientTo": {
++			"type": "string",
++			"default": ""
++		},
+ 		"splitContentOrderMobile": {
+ 			"type": "string",
+ 			"default": "media-first"
+diff --git a/plugins/sgs-blocks/src/blocks/hero/edit.js b/plugins/sgs-blocks/src/blocks/hero/edit.js
+index c7b09d44..b98887b3 100644
+--- a/plugins/sgs-blocks/src/blocks/hero/edit.js
++++ b/plugins/sgs-blocks/src/blocks/hero/edit.js
+@@ -23,6 +23,7 @@ import {
+ 	ResponsiveBoxControl,
+ 	ResponsiveBorderRadiusControl,
+ 	ShadowControl,
++	GradientOverlayControl,
+ } from '../../components';
+ import MediaPicker from '../../components/MediaPicker';
+ import { resolveShadowPreview } from '../../utils';
+@@ -227,10 +228,10 @@ export default function Edit( { attributes, setAttributes } ) {
+ 		imagePaddingTablet,
+ 		imagePaddingMobile,
+ 		contentBackground,
++		contentBackgroundGradient,
+ 		contentPadding,
+ 		contentPaddingTablet,
+ 		contentPaddingMobile,
+-		mediaBackground,
+ 		mediaPadding,
+ 		mediaPaddingTablet,
+ 		mediaPaddingMobile,
+@@ -664,13 +665,13 @@ export default function Edit( { attributes, setAttributes } ) {
+ 						} }
+ 					>
+ 						<ToolsPanelItem
+-							label={ __( 'Text alignment', 'sgs-blocks' ) }
++							label={ __( 'Content fill', 'sgs-blocks' ) }
+ 							hasValue={ () => alignment !== 'left' }
+ 							onDeselect={ () => setAttributes( { alignment: 'left' } ) }
+ 							isShownByDefault
+ 						>
+ 							<ToggleGroupControl
+-								label={ __( 'Text alignment', 'sgs-blocks' ) }
++								label={ __( 'Content fill', 'sgs-blocks' ) }
+ 								value={ alignment }
+ 								onChange={ ( val ) =>
+ 									setAttributes( { alignment: val } )
+@@ -821,6 +822,7 @@ export default function Edit( { attributes, setAttributes } ) {
+ 							label={ __( 'Content area', 'sgs-blocks' ) }
+ 							hasValue={ () =>
+ 								!! contentBackground ||
++								!! contentBackgroundGradient ||
+ 								Object.keys( contentPadding ?? {} ).length > 0 ||
+ 								Object.keys( contentPaddingTablet ?? {} ).length > 0 ||
+ 								Object.keys( contentPaddingMobile ?? {} ).length > 0
+@@ -828,6 +830,10 @@ export default function Edit( { attributes, setAttributes } ) {
+ 							onDeselect={ () =>
+ 								setAttributes( {
+ 									contentBackground: '',
++									contentBackgroundGradient: false,
++									contentBackgroundGradientAngle: 180,
++									contentBackgroundGradientFrom: '',
++									contentBackgroundGradientTo: '',
+ 									contentPadding: {},
+ 									contentPaddingTablet: {},
+ 									contentPaddingMobile: {},
+@@ -835,10 +841,18 @@ export default function Edit( { attributes, setAttributes } ) {
+ 							}
+ 						>
+ 							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Content area', 'sgs-blocks' ) }</p>
+-							<DesignTokenPicker
+-								label={ __( 'Content background colour', 'sgs-blocks' ) }
+-								value={ contentBackground || '' }
+-								onChange={ ( val ) => setAttributes( { contentBackground: val } ) }
++							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
++							<GradientOverlayControl
++								attributes={ attributes }
++								setAttributes={ setAttributes }
++								attrNames={ {
++									gradient: 'contentBackgroundGradient',
++									angle: 'contentBackgroundGradientAngle',
++									from: 'contentBackgroundGradientFrom',
++									to: 'contentBackgroundGradientTo',
++									solid: 'contentBackground',
++								} }
++								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
+ 							/>
+ 							<ResponsiveBoxControl
+ 								label={ __( 'Content padding', 'sgs-blocks' ) }
+@@ -1220,13 +1234,21 @@ export default function Edit( { attributes, setAttributes } ) {
+ 								} }
+ 							/>
+ 
++							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
++							<GradientOverlayControl
++								attributes={ attributes }
++								setAttributes={ setAttributes }
++								attrNames={ {
++									gradient: 'mediaBackgroundGradient',
++									angle: 'mediaBackgroundGradientAngle',
++									from: 'mediaBackgroundGradientFrom',
++									to: 'mediaBackgroundGradientTo',
++									solid: 'mediaBackground',
++								} }
++								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
++							/>
+ 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
+ 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
+-							<DesignTokenPicker
+-								label={ __( 'Media background colour', 'sgs-blocks' ) }
+-								value={ mediaBackground || '' }
+-								onChange={ ( val ) => setAttributes( { mediaBackground: val } ) }
+-							/>
+ 							<ResponsiveBoxControl
+ 								label={ __( 'Media padding', 'sgs-blocks' ) }
+ 								values={ {
+diff --git a/plugins/sgs-blocks/src/blocks/hero/render.php b/plugins/sgs-blocks/src/blocks/hero/render.php
+index f498f719..b6b97d60 100644
+--- a/plugins/sgs-blocks/src/blocks/hero/render.php
++++ b/plugins/sgs-blocks/src/blocks/hero/render.php
+@@ -635,8 +635,24 @@ if ( null !== $media_pad_mob ) {
+ // (contract §A). The shared per-area schema attr; the legacy mediaBackgroundColour
+ // attr was removed 2026-07-23 (it duplicated this on css:background-color / element
+ // media and collided in the routing DB — mediaBackground is the sole canonical source).
+-$media_bg_resolved = $attributes['mediaBackground'] ?? '';
+-if ( $media_bg_resolved ) {
++// Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
++// overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
++// (includes/class-sgs-container-wrapper.php ~1159-1176).
++$media_bg_resolved         = $attributes['mediaBackground'] ?? '';
++$media_bg_gradient         = ! empty( $attributes['mediaBackgroundGradient'] );
++$media_bg_gradient_angle   = isset( $attributes['mediaBackgroundGradientAngle'] ) ? absint( $attributes['mediaBackgroundGradientAngle'] ) : 180;
++$media_bg_gradient_from    = $attributes['mediaBackgroundGradientFrom'] ?? '';
++$media_bg_gradient_to      = $attributes['mediaBackgroundGradientTo'] ?? '';
++if ( $media_bg_gradient && $media_bg_gradient_from ) {
++	$media_grad_from = sgs_colour_value( $media_bg_gradient_from );
++	$media_grad_to   = $media_bg_gradient_to ? sgs_colour_value( $media_bg_gradient_to ) : 'transparent';
++	$responsive_css  .= '.' . $uid . ' .sgs-hero__media{' . sprintf(
++		'background-image:linear-gradient(%ddeg,%s,%s)',
++		$media_bg_gradient_angle,
++		$media_grad_from,
++		$media_grad_to
++	) . '}';
++} elseif ( $media_bg_resolved ) {
+ 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-color:' . sgs_colour_value( $media_bg_resolved ) . '}';
+ }
+ 
+@@ -659,6 +675,13 @@ if ( null !== $content_pad_mob ) {
+ // structural declarations (previously duplicated in style.css AND inline);
+ // justify-content is driven by verticalAlignment (top/center/bottom).
+ $content_background = isset( $attributes['contentBackground'] ) ? (string) $attributes['contentBackground'] : '';
++// Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
++// overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
++// (includes/class-sgs-container-wrapper.php ~1159-1176).
++$content_bg_gradient       = ! empty( $attributes['contentBackgroundGradient'] );
++$content_bg_gradient_angle = isset( $attributes['contentBackgroundGradientAngle'] ) ? absint( $attributes['contentBackgroundGradientAngle'] ) : 180;
++$content_bg_gradient_from  = $attributes['contentBackgroundGradientFrom'] ?? '';
++$content_bg_gradient_to    = $attributes['contentBackgroundGradientTo'] ?? '';
+ $v_align_map         = array(
+ 	'top'    => 'flex-start',
+ 	'center' => 'center',
+@@ -666,7 +689,16 @@ $v_align_map         = array(
+ );
+ $content_justify = $v_align_map[ $vertical_alignment ] ?? 'center';
+ $content_decls    = array( 'display:flex', 'flex-direction:column', 'justify-content:' . $content_justify );
+-if ( $content_background ) {
++if ( $content_bg_gradient && $content_bg_gradient_from ) {
++	$content_grad_from = sgs_colour_value( $content_bg_gradient_from );
++	$content_grad_to   = $content_bg_gradient_to ? sgs_colour_value( $content_bg_gradient_to ) : 'transparent';
++	$content_decls[]   = sprintf(
++		'background-image:linear-gradient(%ddeg,%s,%s)',
++		$content_bg_gradient_angle,
++		$content_grad_from,
++		$content_grad_to
++	);
++} elseif ( $content_background ) {
+ 	$content_decls[] = 'background-color:' . sgs_colour_value( $content_background );
+ }
+ $responsive_css .= '.' . $uid . ' .sgs-hero__content{' . implode( ';', $content_decls ) . '}';
+diff --git a/plugins/sgs-blocks/src/components/GradientOverlayControl.js b/plugins/sgs-blocks/src/components/GradientOverlayControl.js
+index b0035c04..5eb43259 100644
+--- a/plugins/sgs-blocks/src/components/GradientOverlayControl.js
++++ b/plugins/sgs-blocks/src/components/GradientOverlayControl.js
+@@ -1,21 +1,25 @@
+ /**
+  * GradientOverlayControl
+  *
+- * Shared "background overlay" picker used by container / cta-section / hero
++ * Shared "background colour or gradient" picker. Originally built for the
++ * whole-block "background overlay" used by container / cta-section / hero
+  * (all three render through the same `BackgroundPanel` in
+- * `blocks/container/components/ContainerWrapperControls.js`).
++ * `blocks/container/components/ContainerWrapperControls.js`), and reused as
++ * of Phase 4 Item 5 (D561 inspector-standardisation plan) for hero's
++ * per-element `mediaBackground`/`contentBackground` colour+gradient controls.
+  *
+  * Spec 35 T3.2 (setting-registry.json ~:964-991): the overlay setting needs a
+  * real GradientPicker (custom builder + per-stop alpha + clearable) with a
+  * solid-colour fallback, not the old bare boolean toggle + two flat
+  * DesignTokenPicker fields.
+  *
+- * CRITICAL CONSTRAINT — the stored attrs do NOT change. The wrapper
+- * (`includes/class-sgs-container-wrapper.php`, read-only) renders exactly:
+- *   overlayGradient (bool) / overlayGradientAngle (deg) /
+- *   overlayGradientFrom / overlayGradientTo  — for the gradient path, and
+- *   backgroundOverlayColour / backgroundOverlayOpacity — for the solid path,
+- * as `linear-gradient(${angle}deg,${from},${to || 'transparent'})`.
++ * CRITICAL CONSTRAINT — the stored attrs do NOT change per call site. Each
++ * consumer's own render.php (`includes/class-sgs-container-wrapper.php` for
++ * the whole-block overlay, `blocks/hero/render.php` for media/content
++ * background) renders exactly the four attrs named by `attrNames` (gradient
++ * bool / angle deg / from / to) for the gradient path, and the `solid` attr
++ * for the flat-colour path, as
++ * `linear-gradient(${angle}deg,${from},${to || 'transparent'})`.
+  * That is a LINEAR, TWO-STOP gradient — angle + start colour + end colour.
+  * WP's native GradientPicker can express far more (radial gradients, N
+  * stops), so this control MAPS the picker's free-form CSS gradient string
+@@ -25,6 +29,12 @@
+  * angle). Anything the two-stop-linear shape can't express is explained in
+  * the control's help text — never reshaped into new attributes, never
+  * pushed into the wrapper.
++ *
++ * `attrNames` — an optional `{ gradient, angle, from, to, solid }` map of
++ * attribute names to read/write. Defaults to the original whole-block
++ * overlay names (`overlayGradient`/`overlayGradientAngle`/
++ * `overlayGradientFrom`/`overlayGradientTo`/`backgroundOverlayColour`) so
++ * every existing call site is unaffected by this parameterisation.
+  */
+ import { __ } from '@wordpress/i18n';
+ import {
+@@ -146,31 +156,49 @@ export function buildGradientCss( angle, from, to ) {
+ 	return `linear-gradient(${ angle }deg, ${ start } 0%, ${ end } 100%)`;
+ }
+ 
++// Default attribute-name map — today's whole-block "overlay" shape. Passing a
++// different map lets other elements (e.g. hero's mediaBackground/
++// contentBackground, Item 5 of the D561 inspector-standardisation plan) reuse
++// this exact control without duplicating it, while every EXISTING call site
++// (container / cta-section / hero's own overlay usage) keeps working
++// unchanged because it relies on this default.
++const DEFAULT_ATTR_NAMES = {
++	gradient: 'overlayGradient',
++	angle: 'overlayGradientAngle',
++	from: 'overlayGradientFrom',
++	to: 'overlayGradientTo',
++	solid: 'backgroundOverlayColour',
++};
++
+ export default function GradientOverlayControl( {
+ 	attributes,
+ 	setAttributes,
++	attrNames = DEFAULT_ATTR_NAMES,
++	solidLabel = __( 'Overlay colour', 'sgs-blocks' ),
+ } ) {
+ 	const {
+-		overlayGradient = false,
+-		overlayGradientAngle = 180,
+-		overlayGradientFrom = '',
+-		overlayGradientTo = '',
+-		backgroundOverlayColour,
++		[ attrNames.gradient ]: gradientEnabled = false,
++		[ attrNames.angle ]: gradientAngle = 180,
++		[ attrNames.from ]: gradientFrom = '',
++		[ attrNames.to ]: gradientTo = '',
++		[ attrNames.solid ]: solidColour,
+ 	} = attributes;
+ 
+ 	const gradientValue = buildGradientCss(
+-		overlayGradientAngle,
+-		overlayGradientFrom,
+-		overlayGradientTo
++		gradientAngle,
++		gradientFrom,
++		gradientTo
+ 	);
+ 
+ 	return (
+ 		<>
+ 			<ToggleGroupControl
+ 				label={ __( 'Overlay type', 'sgs-blocks' ) }
+-				value={ overlayGradient ? 'gradient' : 'solid' }
++				value={ gradientEnabled ? 'gradient' : 'solid' }
+ 				onChange={ ( val ) =>
+-					setAttributes( { overlayGradient: val === 'gradient' } )
++					setAttributes( {
++						[ attrNames.gradient ]: val === 'gradient',
++					} )
+ 				}
+ 				isBlock
+ 				__nextHasNoMarginBottom
+@@ -185,26 +213,26 @@ export default function GradientOverlayControl( {
+ 				/>
+ 			</ToggleGroupControl>
+ 
+-			{ overlayGradient ? (
++			{ gradientEnabled ? (
+ 				<>
+ 					<GradientPicker
+ 						value={ gradientValue }
+ 						onChange={ ( newGradient ) => {
+ 							if ( ! newGradient ) {
+ 								setAttributes( {
+-									overlayGradientFrom: '',
+-									overlayGradientTo: '',
++									[ attrNames.from ]: '',
++									[ attrNames.to ]: '',
+ 								} );
+ 								return;
+ 							}
+ 							const parsed = parseLinearGradient(
+ 								newGradient,
+-								overlayGradientAngle
++								gradientAngle
+ 							);
+ 							setAttributes( {
+-								overlayGradientAngle: parsed.angle,
+-								overlayGradientFrom: parsed.from,
+-								overlayGradientTo: parsed.to,
++								[ attrNames.angle ]: parsed.angle,
++								[ attrNames.from ]: parsed.from,
++								[ attrNames.to ]: parsed.to,
+ 							} );
+ 						} }
+ 						clearable
+@@ -220,10 +248,10 @@ export default function GradientOverlayControl( {
+ 				</>
+ 			) : (
+ 				<DesignTokenPicker
+-					label={ __( 'Overlay colour', 'sgs-blocks' ) }
+-					value={ backgroundOverlayColour }
++					label={ solidLabel }
++					value={ solidColour }
+ 					onChange={ ( val ) =>
+-						setAttributes( { backgroundOverlayColour: val } )
++						setAttributes( { [ attrNames.solid ]: val } )
+ 					}
+ 				/>
+ 			) }
