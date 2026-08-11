@@ -259,6 +259,23 @@ if ( '' !== $gap_mobile ) {
 	$gallery_responsive_css .= '@media (max-width:767px){' . $root_sel . '{--sgs-gap:' . $gap_mobile . '}}';
 }
 
+// -------------------------------------------------------------------------
+// Explicit image-controls crop (Spec 35 capability-routing doctrine, Part 9,
+// mechanism (c)). block.json declares `imageControlsExplicit:true` so the
+// universal render_block guessing-filter (includes/image-controls.php) bails
+// out for this block — this is the ONLY source of the sgsObjectPosition /
+// sgsObjectFit CSS now. Block-wide only (one crop setting for every grid
+// item — per-item cropping is an explicit non-goal, the array `mediaItems`
+// attribute has no per-item position/fit fields). Selector targets every
+// grid-item `<img>` uniformly via `.sgs-gallery__img` (style.css:218-224 —
+// the hardcoded `object-fit:cover` there is the intentional default; this
+// uid-scoped rule has higher specificity and overrides it only when the
+// operator sets a custom value). Deliberately excludes
+// `.sgs-gallery__lightbox-img` (style.css:477, `object-fit:contain`) — a
+// separate, natural-size element per the block census, never scoped by this
+// selector.
+$gallery_responsive_css .= sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-gallery__img' );
+
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$gallery_style_engine_args = array();
 

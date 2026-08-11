@@ -302,6 +302,32 @@ if ( $label_bg_colour ) {
 	$root_var_decls[] = '--sgs-before-after-label-bg-colour:' . sgs_colour_value( $label_bg_colour );
 }
 
+// --- Image controls (supports.sgs.imageControls + imageControlsExplicit) ---
+// This block is the ONE consumer where style.css genuinely reads
+// `--sgs-object-fit`/`--sgs-object-position` (`.__img` + `.__svg svg`
+// selectors, both with their own CSS fallback). Previously relied on the
+// universal `render_block` guessing filter (image-controls.php) to inject
+// these custom properties onto its guessed root; now emitted explicitly here
+// with the KNOWN root selector, using the same shared maths
+// (`sgs_media_position_focal_to_css()`) and the same object-fit enum
+// whitelist as `sgs_media_position_css()` so a stored value resolves
+// identically to the old injected behaviour. Set as CUSTOM-PROPERTY VALUES
+// (not raw `object-fit`/`object-position` declarations) because style.css
+// already reads them via `var(--sgs-object-fit, …)`/`var(--sgs-object-position, …)`
+// with its own fallback per selector — a raw declaration here would compete
+// with, rather than feed, that existing var()-with-fallback pattern.
+$allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
+$object_fit_raw      = $attributes['sgsObjectFit'] ?? '';
+$object_fit           = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : '';
+$object_position      = sgs_media_position_focal_to_css( $attributes['sgsObjectPosition'] ?? null );
+
+if ( '' !== $object_fit ) {
+	$root_var_decls[] = '--sgs-object-fit:' . $object_fit;
+}
+if ( '' !== $object_position ) {
+	$root_var_decls[] = '--sgs-object-position:' . $object_position;
+}
+
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_var_decls ) . ';}';
 
 // --- Label typography (font-weight/font-style — plain declarations; these

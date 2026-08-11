@@ -58,6 +58,7 @@
 			"collection": true,
 			"scalarStylingLift": true,
 			"imageControls": true,
+			"imageControlsExplicit": true,
 			"arrayContentLift": true,
 			"presetSelectors": [ "effectHover" ],
 			"boxFamilies": {
@@ -195,7 +196,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "1rem"},
@@ -208,7 +209,7 @@
 		"effectHover": {
 			"type": "string",
 			"default": "zoom"
-		},
+		},
 		"titleColour": {
 			"type": "string",
 			"default": "primary"
@@ -224,7 +225,7 @@
 		"titleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"subtitleFontSize": {
 			"type": "object",
 			"default": {}
@@ -232,7 +233,7 @@
 		"subtitleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"cardBackground": {
 			"type": "string",
 			"default": ""
@@ -490,11 +491,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -526,7 +527,7 @@
 		"templateMode": {
 			"type": "string",
 			"default": ""
-		}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

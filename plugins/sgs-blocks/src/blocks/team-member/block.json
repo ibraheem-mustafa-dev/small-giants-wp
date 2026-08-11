@@ -44,6 +44,7 @@
 		},
 		"sgs": {
 			"imageControls": true,
+			"imageControlsExplicit": true,
 			"scalarContentLift": true,
 			"presetSelectors": [ "cardStyle" ],
 			"enabledExtensions": [ "blockLink" ],

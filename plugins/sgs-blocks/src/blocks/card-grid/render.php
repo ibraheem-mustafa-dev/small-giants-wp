@@ -233,6 +233,27 @@ if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
 }
 
+// ── Explicit media crop (Spec 35 capability-routing doctrine Part 9,
+// mechanism (c)) — block.json declares BOTH `imageControls: true` (keeps the
+// sgsObjectPosition/sgsObjectFit attrs + the universal editor UI) and
+// `imageControlsExplicit: true` (opts OUT of includes/image-controls.php's
+// guessed-root render_block injector, which can never find this block's real
+// media element — it lives inside `.sgs-card-grid__image-wrap`, several
+// levels under the guessed root, and only in the manual/query render path
+// below). This is the SINGLE block-wide crop setting applied uniformly to
+// EVERY card's media (per-card cropping is an explicit non-goal — items[] is
+// an array, one sgsObjectPosition/sgsObjectFit pair cannot differ per card).
+// Targets both <img> and <video> since the media slot accepts either
+// (sgs_render_media()). Scoped by $root_sel so multiple grids on one page
+// never collide; harmless no-op in the wc-product/cpt-collection branches
+// below, which delegate to sgs/product-card and never render
+// `.sgs-card-grid__image-wrap` at all.
+$card_grid_native_css .= sgs_media_position_css(
+	$attributes,
+	'sgs',
+	$root_sel . ' .sgs-card-grid__image-wrap img, ' . $root_sel . ' .sgs-card-grid__image-wrap video'
+);
+
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
 // manually (mirrors sgs/hero / sgs/quote) so preset palette colours still

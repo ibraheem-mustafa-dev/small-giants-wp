@@ -574,6 +574,17 @@ if ( $role_colour ) {
 	$scoped_css[] = $root_sel . ' .sgs-team-member__role{color:' . sgs_colour_value( $role_colour ) . ';}';
 }
 
+// --- Photo object-fit/object-position (Spec 35 capability-routing doctrine
+// mechanism (c), Part 9) — explicit call to the shared helper with this
+// block's OWN known selector, since supports.sgs.imageControlsExplicit=true
+// opts this block out of the guessing render_block filter
+// (includes/image-controls.php). Returns '' when unset, leaving style.css's
+// hardcoded `object-fit:cover` default in place (style.css:46). ---
+$photo_position_css = sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-team-member__photo img' );
+if ( '' !== $photo_position_css ) {
+	$scoped_css[] = $photo_position_css;
+}
+
 // ---------------------------------------------------------------------------
 // 13. Build interior HTML.
 // ---------------------------------------------------------------------------

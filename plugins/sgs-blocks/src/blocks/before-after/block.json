@@ -12,6 +12,7 @@
 	"supports": {
 		"sgs": {
 			"imageControls": true,
+			"imageControlsExplicit": true,
 			"fx": {
 				"draggable": true
 			},

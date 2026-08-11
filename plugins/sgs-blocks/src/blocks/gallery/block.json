@@ -44,6 +44,7 @@
 		"sgs": {
 			"collection": true,
 			"imageControls": true,
+			"imageControlsExplicit": true,
 			"fx": {
 				"draggable": true,
 				"providesNatively": [
@@ -139,7 +140,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "16px"},
@@ -256,11 +257,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""

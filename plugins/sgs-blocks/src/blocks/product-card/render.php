@@ -198,6 +198,30 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
 
+// ── Explicit media-position (Spec 35 capability-routing doctrine, mechanism
+// (c)) — replaces the guessed-root render_block injector (image-controls.php),
+// which can never find the right element among this block's several <img>
+// roles. Targets ONLY the card's MAIN product image — the element the fixed
+// --sgs-product-card-image-height box + hardcoded object-fit:cover in
+// style.css governs (lines 50-56, 711-718, 937-942) — never the thumbnail
+// strip (.product-card__thumb img, a distinct role with its own 48×48 box,
+// never height-var-governed) or the no-image SVG placeholder. Covers every
+// render branch's own main-image class: the typed built-in element
+// (.sgs-product-card__image, product-card-builtin-render.php), the bound
+// read-only/non-variable-live image (.product-card-img), and the bound
+// variable-configurator image nested one level deeper inside
+// .product-card__media (same element, .product-card-img class, but a
+// higher-specificity style.css override rule at that nesting requires an
+// equally-deep selector here to win). ONE control governs the main image
+// everywhere it can appear (R-31-9 / CG-9) — computed once, before the
+// typed/bound branch split, so it flows into every branch's assembled
+// $sgs_card_typo_css.
+$sgs_card_typo_css .= sgs_media_position_css(
+	$attributes,
+	'sgs',
+	'.' . $sgs_card_uid . ' .sgs-product-card__image, .' . $sgs_card_uid . ' .product-card-img, .' . $sgs_card_uid . ' .product-card__media .product-card-img'
+);
+
 // ── Native styling supports (color + border) → scoped, NOT inline ────────
 // block.json declares supports.color + supports.__experimentalBorder with
 // __experimentalSkipSerialization, so get_block_wrapper_attributes() (called

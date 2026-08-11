@@ -428,6 +428,18 @@ if ( $is_split && ! empty( $side_image['url'] ) ) {
 		)
 	);
 	$side_image_html = '<div class="sgs-testimonial-slider__side-image">' . $side_img_tag . '</div>';
+
+	// Side-image object-fit/object-position (Spec 35 capability-routing
+	// doctrine mechanism (c), Part 9) — explicit call to the shared helper
+	// with this block's OWN known selector, since
+	// supports.sgs.imageControlsExplicit=true opts this block out of the
+	// guessing render_block filter (includes/image-controls.php). Returns ''
+	// when unset, leaving style.css's hardcoded `object-fit:cover` default in
+	// place (style.css:349).
+	$side_image_position_css = sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-testimonial-slider__side-img' );
+	if ( '' !== $side_image_position_css ) {
+		$slider_scoped_css .= $side_image_position_css;
+	}
 }
 
 // ── Schema.org Review JSON-LD ──────────────────────────────────────────────

@@ -19,6 +19,7 @@
 		"sgs": {
 			"collection": true,
 			"imageControls": true,
+			"imageControlsExplicit": true,
 			"containerKind": "layout",
 			"elements": {
 				"slider": {
@@ -198,15 +199,15 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"maxWidth": {
 			"type": "string",
 			"default": ""
@@ -214,7 +215,7 @@
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
