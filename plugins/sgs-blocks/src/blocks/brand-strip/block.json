@@ -43,7 +43,7 @@
 					"label": "Logo image",
 					"order": 2,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus logoFit/imageEffect selects — outside the Text/Fill/Layout style clusters, so it declares none."
+					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares none."
 				},
 				"caption": {
 					"label": "Caption",

@@ -125,7 +125,7 @@
 					"label": "Timeline entry",
 					"order": 5,
 					"clusters": [],
-					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `imageControls: true` governs the per-entry image via the universal image-controls extension, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`."
+					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`."
 				}
 			}
 		}
