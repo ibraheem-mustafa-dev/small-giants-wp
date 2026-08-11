@@ -155,3 +155,106 @@ Recorded because Spec 39 will be measured, and both traps produce confident wron
   per-device flags). These are not migration targets and must not become converter targets either.
 - **Any cached count.** The block count, family count and stage counts in this project have each
   drifted. Spec 39 states methods and file:line sources, never figures in prose.
+
+---
+
+## 2026-08-11 groundwork notes — recording the current setup, not deciding anything
+
+**What this section is.** Spec 35 (the flat→object storage-shape migration) is still open. This
+section records what the survey + the converter code actually show TODAY, so that whenever Spec 39
+starts it can begin from a checked picture instead of re-deriving one. **Nothing below is a design
+decision** — no call is made here on object-only vs dual-shape, on fixing the tier vocabulary, or on
+whether a derived per-tier view should exist. Those remain Spec 39's calls.
+
+### G1 — What has and hasn't migrated (live survey, 2026-08-11)
+
+Ran `cd plugins/sgs-blocks && npm run survey:responsive-shape`. Output: **83 blocks scanned, 251 tier
+families found** — `flat_tiers` 128, `both_shapes` 29, `orphan_tier` 94; by triage hint,
+`cascading_value` 115, `asset_like` 34, `flag_like` 7, `box_family` 1, `orphan` 94. The migration
+work-list (flat cascading values only) is **41 blocks, 105 families**.
+
+Confirms the CLAUDE.md pointer's account (`gap`, `maxWidth`/`contentWidth`, `gridTemplateColumns` done)
+and gives the concrete state of what is explicitly named as NOT yet done:
+- `gridTemplateRows` — still flat on every block that has it (e.g. `sgs/hero`, `sgs/container`,
+  `sgs/cta-section`, `sgs/accordion`, `sgs/feature-grid`, `sgs/form`, and 11 more in the survey output).
+- `columns` — still flat (`sgs/hero`, `sgs/multi-button`, `sgs/trust-bar`, `sgs/container`, `sgs/
+  site-footer`, `sgs/site-header`, and more).
+- The font-size families — still flat, e.g. `sgs/button` (`fontSize`), `sgs/product-card`
+  (`descFontSize`, `pillFontSize`, `priceFontSize`, `priceFromLabelFontSize`, `priceNoteFontSize`,
+  `tagFontSize`), `sgs/text` (`fontSize`), `sgs/heading` (`fontSize`), `sgs/label` (`fontSize`),
+  `sgs/icon-list` (`headingFontSize`, `itemFontSize`).
+
+This list is a **live-scan snapshot dated 2026-08-11** — re-run the survey command at Spec 39 start
+rather than copying these names forward, per R7.2's rule about cached counts.
+
+### G2 — The uniform choke point R1's table doesn't name
+
+R1's table lists per-file evidence of flat-suffix construction, but every one of those sites funnels
+through a single shared function. Verified by reading the file and counting callers:
+
+- **`scripts/converter/services/tier_suffix.py:46`** — `return f"{base_attr}{tier}"` inside
+  `tier_suffix()`. This is the ONE place the flat `{attr}{Tier}` string is built.
+- **`scripts/converter/services/tier_suffix.py:65`** — `tier_state_suffix()` (which then appends an
+  interaction-state suffix) calls `tier_suffix()` internally, so it also funnels through the same line.
+- Grepped every call site of `tier_suffix(` / `tier_state_suffix(` under `scripts/converter/` (excluding
+  the definitions and test files): **15 call sites across 6 resolver/service files** —
+  `resolvers/grid.py` (7: lines 140, 156, 174, 203, 237, 270, 295), `resolvers/content_band.py` (2:
+  lines 106, 188), `resolvers/grid_area.py` (2: lines 89, 151), `resolvers/outer_box.py` (2: lines 215,
+  285), `services/border_side.py` (1: line 76), `resolvers/typography.py` (1: line 105, calls
+  `tier_suffix()` directly rather than `tier_state_suffix()`).
+
+**Why this matters for Spec 39, without deciding anything:** an object-shape rework that changes what
+`tier_suffix()` (or its call inside `tier_state_suffix()`) returns touches all 15 call sites at once —
+this is the leverage point R1's scattered per-resolver table doesn't surface. Whether the fix belongs
+at that one function or has to unwind at each call site is a Spec 39 design question, not answered here.
+
+### G3 — Three R1 items re-verified, two confirmed correct, one had drifted line numbers (now fixed)
+
+Re-checked each of the three items flagged as worth re-verifying:
+
+1. **A second path R1's table omits — confirmed present, unchanged.** `scripts/converter/services/
+   root_supports.py:596` — `flat_probe = f"{camel_base}{bp_suffix}"` (the per-property native `style.*`
+   lift). `root_supports.py:637` — `flat_probe = f"{shorthand}{side.capitalize()}{bp_suffix}"` (the
+   padding/margin shorthand native lift). Both build the flat suffixed name independently of
+   `tier_suffix()` (G2) — this is a genuinely separate emission path R1 doesn't list, confirmed still
+   live at these exact lines.
+
+2. **The shallow-merge risk in `css_pass.py` — confirmed present, line number corrected.** The merge
+   chain is `scripts/converter/services/css_pass.py:211` (`merged: dict = dict(native_attrs)`), then
+   `:214` (`merged.update(result.attrs())`), `:229` (`merged.update(overlay_attrs)`), `:255`
+   (`merged.update(preset_attrs)`). Each `.update()` call replaces a whole dict key's value — so if two
+   of these four sources each produced a tier OBJECT for the same attr name, the later `.update()` would
+   overwrite the entire object (losing whichever tiers only the earlier source set), not merge tiers
+   together. This matches what R6a already names at `css_pass.py:211-255`; recorded here as re-verified,
+   not as new information.
+
+3. **`fold_helpers.py` line numbers — CONFIRMED DRIFTED, corrected:**
+   - R1 cites `:262` for `bp_decls['Tablet'] -> attr + 'Tablet'`. The comment is now at **`:265`**
+     (`bp_decls['Tablet']      -> attr + 'Tablet'`, with `:266` for the Mobile line) — a 3-line drift.
+   - R1 cites `:291`, `:326`, `:352` as further evidence sites. Re-read: **all three now point at
+     unrelated code.** `:291` is `for prop in ("padding", "margin"):` (box-shorthand expansion, no tier
+     string-building). `:326` is inside a `trace("cross_node_gap_candidate", ...)` call (a diagnostic
+     log call, not construction). `:352` is a comment about a legacy name-convention fallback for
+     per-area padding routing — not tier-suffix construction either.
+   - **The real flat-tier construction site in this file is `fold_helpers.py:416`** —
+     `dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base` — inside the loop over
+     `tier_values` (built at `:405-409` from `draft_mob`/`draft_tab`/`draft_base`). This is the line R1
+     should have pointed to; `:262`/`:291`/`:326`/`:352` no longer serve as evidence for it.
+
+### G4 — Box axis vs tier axis: carry the orthogonality rule forward
+
+R5 already states this and documents the one armed-but-inert landmine. Restating only the operational
+takeaway so Spec 39 doesn't have to re-read R5 to get it: **BOX `{top,right,bottom,left}` and TIER
+`{desktop,tablet,mobile}` are two independent axes that combine (a property can have neither, one, or
+both) — never collapse them into one axis or key one off the other's vocabulary.** The two prior
+storage-shape gate rule-attempts that got this wrong are the reason it's called out again here; no new
+file:line evidence was gathered for this item beyond what R5 already cites.
+
+### UNVERIFIED
+
+- **Whether `columns` and `gridTemplateRows` behave identically to `gridTemplateColumns` once
+  migrated** (i.e. whether Spec 35 pass 3a's approach transfers directly) — not checked here; this is
+  Spec 39 design work, out of scope for a groundwork note.
+- **Total count of `.update()`-style shallow-merge sites elsewhere in the converter** beyond
+  `css_pass.py`'s four — only the one file named in the task was checked; a full sweep wasn't run
+  (would risk exactly the "cached count" trap R7.2 warns against).
