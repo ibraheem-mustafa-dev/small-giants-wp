@@ -6,8 +6,9 @@
  * SGS_Container_Wrapper (composite-mirror, R-31-9 / D294) via the block's
  * `layout` attr — no divergent per-block styling path:
  *   - layout='grid'  → a column grid (up to 6 columns → 1 below the mobile tier)
- *                       for the columns row; columns/columnsTablet/columnsMobile
- *                       and gridTemplateColumns* are consumed by the wrapper.
+ *                       for the columns row; `columns` (a TIER OBJECT, Spec 35
+ *                       pass 4) and `gridTemplateColumns` are consumed by the
+ *                       wrapper via sgs_responsive_normalise_object().
  *   - layout='flex'  → an intrinsic never-overflow cluster (top strip / bottom
  *                       bar) that wraps rather than overflowing at any width.
  *

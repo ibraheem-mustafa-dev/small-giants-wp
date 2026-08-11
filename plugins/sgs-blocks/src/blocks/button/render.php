@@ -211,6 +211,9 @@ $letter_spacing_unit = isset( $attributes['letterSpacingUnit'] ) ? sanitize_text
 $tier_object_synthetic_attrs = array_merge(
 	$attributes,
 	array(
+		'fontSize'            => $font_size,
+		'fontSizeTablet'      => $font_size_tab,
+		'fontSizeMobile'      => $font_size_mob,
 		'lineHeight'          => $line_height,
 		'lineHeightTablet'    => $line_height_tab,
 		'lineHeightMobile'    => $line_height_mob,

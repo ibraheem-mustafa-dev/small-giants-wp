@@ -691,15 +691,39 @@ export default function Edit( { attributes, setAttributes } ) {
 				     name, exactly as sgs/button names its icon panel "Icon". */ }
 				{ badgeStyle === 'icon-circle' && (
 					<PanelBody title={ __( 'Badges', 'sgs-blocks' ) } initialOpen={ false }>
-						<RangeControl
-							label={ __( 'Columns (at 600px+)', 'sgs-blocks' ) }
+						{ /*
+							  columns is a TIER OBJECT — ONE attr holding
+							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
+							  therefore use ResponsiveOverride, which reads and
+							  writes the object, NOT a bare RangeControl writing
+							  a raw number — that would coerce the object-typed
+							  attr to its default and drop the whole setting
+							  (D563 bug class). `columnsTablet`/`columnsMobile`
+							  are no longer declared by block.json; the tier
+							  object's tablet/mobile keys carry the "at 600px+"
+							  stacking behaviour that used to be an implicit
+							  default (4/4/2).
+						*/ }
+						<ResponsiveOverride
+							label={ __( 'Columns', 'sgs-blocks' ) }
 							value={ columns }
-							onChange={ ( val ) => setAttributes( { columns: val } ) }
-							min={ 2 }
-							max={ 6 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
+							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+						>
+							{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+								<RangeControl
+									value={
+										ownValue !== ''
+											? ownValue
+											: ( effectiveValue !== '' ? effectiveValue : ( tier === 'mobile' ? 2 : 4 ) )
+									}
+									onChange={ setOwnValue }
+									min={ 2 }
+									max={ 6 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveOverride>
 						{ /* Gap between badges is provided by the shared ContainerWrapperControls
 						     "Gap" responsive control (writes the same `gap` attr via the wrapper
 						     helper). Removed here to eliminate UI duplication. */ }

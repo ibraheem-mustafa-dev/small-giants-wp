@@ -14,7 +14,7 @@
 
 <!-- wp:sgs/site-footer {"align":"full","backgroundColor":"primary-dark","contentWidth":{"desktop":"normal"}} -->
 
-<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":1,"justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--70)","bottom":"var(--wp--preset--spacing--30)"}}} -->
+<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":{"desktop":1},"justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--70)","bottom":"var(--wp--preset--spacing--30)"}}} -->
 
 <!-- wp:sgs/responsive-logo {"width":180,"align":"center","linkToHome":true} /-->
 

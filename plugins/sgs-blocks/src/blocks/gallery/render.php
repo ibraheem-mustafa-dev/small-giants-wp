@@ -45,9 +45,14 @@ $sgs_css_ratio = static function ( $value ) {
 // -------------------------------------------------------------------------
 $images          = (array) ( $attributes['mediaItems'] ?? [] );
 $layout          = sanitize_key( $attributes['layout'] ?? 'grid' );
-$columns         = absint( $attributes['columns'] ?? 3 );
-$columns_tablet  = absint( $attributes['columnsTablet'] ?? 2 );
-$columns_mobile  = absint( $attributes['columnsMobile'] ?? 1 );
+// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// the normaliser, never the raw attribute (absint() on an unresolved array
+// throws "Array to int conversion" and would emit e.g. `columns:0`, the
+// D569/D570 bug class this normaliser exists to prevent).
+$columns_obj     = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns         = absint( $columns_obj['desktop'] ?? 3 );
+$columns_tablet  = absint( $columns_obj['tablet'] ?? 2 );
+$columns_mobile  = absint( $columns_obj['mobile'] ?? 1 );
 // gap is stored as a string (e.g. "16", "24px", or a WP spacing slug like "40").
 // The shared ContainerWrapperControls Gap control writes slug/raw-CSS strings;
 // the old own RangeControl wrote bare numeric strings like "16".

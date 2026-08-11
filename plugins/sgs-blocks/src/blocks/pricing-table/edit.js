@@ -15,7 +15,7 @@ import {
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker, IconPicker, SgsLinkControl } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const STYLE_OPTIONS = [
@@ -108,6 +108,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		popularBadgeBackground,
 	} = attributes;
 
+	// columns is a TIER OBJECT (Spec 35 pass 4) — this block only ever
+	// exposes/uses the desktop tier (no per-device columns UI exists), so
+	// resolve it rather than reading the raw object, or the className/preview
+	// would render "sgs-pricing-table--columns-[object Object]" and a raw
+	// setAttributes({ columns: val }) would coerce the whole object-typed
+	// attr to its default (D563 bug class).
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const setColumnsDesktop = ( val ) =>
+		setAttributes( { columns: { ...( columns && typeof columns === 'object' ? columns : {} ), desktop: val } } );
+
 	// Normalise values from any legacy state.
 	const billingToggle = normaliseBillingToggle( billingToggleRaw );
 	const showToggle = billingToggle === 'monthly-yearly';
@@ -120,7 +130,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const className = [
 		'sgs-pricing-table',
-		`sgs-pricing-table--columns-${ columns }`,
+		`sgs-pricing-table--columns-${ columnsDesktop }`,
 		`sgs-pricing-table--${ style }`,
 	].join( ' ' );
 
@@ -201,10 +211,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Columns', 'sgs-blocks' ) }
-						value={ columns }
-						onChange={ ( val ) =>
-							setAttributes( { columns: val } )
-						}
+						value={ columnsDesktop }
+						onChange={ setColumnsDesktop }
 						min={ 2 }
 						max={ 4 }
 						step={ 1 }

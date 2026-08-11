@@ -140,8 +140,8 @@
 			"default": false
 		},
 		"columns": {
-			"type": "number",
-			"default": 3
+			"type": "object",
+			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
 		},
 		"conditionalField": {
 			"type": "string",
@@ -218,15 +218,7 @@
 				"grid-section",
 				"card-grid"
 			]
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
-		},
+		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",

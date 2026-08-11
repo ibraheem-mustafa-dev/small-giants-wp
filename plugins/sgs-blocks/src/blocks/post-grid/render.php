@@ -62,9 +62,14 @@ $tags       = array_map( 'absint', (array) ( $attributes['tags'] ?? array() ) );
 
 $layout         = sanitize_key( $attributes['layout'] ?? 'grid' );
 $card_style     = sanitize_key( $attributes['cardStyle'] ?? 'card' );
-$columns        = absint( $attributes['columns'] ?? 3 );
-$columns_tablet = absint( $attributes['columnsTablet'] ?? 2 );
-$columns_mobile = absint( $attributes['columnsMobile'] ?? 1 );
+// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// the normaliser, never the raw attribute (absint() on an unresolved array
+// throws "Array to int conversion", the D569/D570 bug class this normaliser
+// exists to prevent).
+$columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns        = absint( $columns_obj['desktop'] ?? 3 );
+$columns_tablet = absint( $columns_obj['tablet'] ?? 2 );
+$columns_mobile = absint( $columns_obj['mobile'] ?? 1 );
 // Gap: resolved via the shared helper (handles raw CSS lengths + back-compat).
 // Falls back to "30px" matching the block.json default.
 // Back-compat: pre-consolidation posts stored a bare digit string (e.g. "30")

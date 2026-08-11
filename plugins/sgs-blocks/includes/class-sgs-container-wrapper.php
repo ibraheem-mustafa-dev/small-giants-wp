@@ -225,11 +225,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// passes through unchanged → byte-identical. Columns keep their NUMERIC
 			// defaults (2/2/1) — absint('') would render repeat(0,1fr)/sgs-cols-0.
 			$layout               = $attributes['layout'] ?? '';
-			$columns              = $attributes['columns'] ?? 2;
+			// Spec 35 pass 4 (2026-08-11) — `columns` migrated flat trio -> tier
+			// object. Same shape as the $min_height_obj precedent at ~:341: read
+			// once via sgs_responsive_normalise_object() (which already returns
+			// null, not '', for an unset tier — including the {} empty-object
+			// case, per its own {} !== 'unset' guard), then `?? <default>` per
+			// tier so $columns/$columns_tablet/$columns_mobile keep their EXACT
+			// prior name, type and downstream meaning. Every consumer below
+			// (:852-854 base fallback track, :1319-1321 tier-count gate,
+			// :1727-1737 per-tier fallback track) reads these three vars
+			// unchanged — this is a read-shape change only, not a logic change.
+			$columns_obj          = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+			$columns              = $columns_obj['desktop'] ?? 2;
 			$columns              = is_array( $columns ) ? 2 : $columns;
-			$columns_mobile       = $attributes['columnsMobile'] ?? 1;
+			$columns_mobile       = $columns_obj['mobile'] ?? 1;
 			$columns_mobile       = is_array( $columns_mobile ) ? 1 : $columns_mobile;
-			$columns_tablet       = $attributes['columnsTablet'] ?? 2;
+			$columns_tablet       = $columns_obj['tablet'] ?? 2;
 			$columns_tablet       = is_array( $columns_tablet ) ? 2 : $columns_tablet;
 			$grid_template        = $attributes['gridTemplateColumns'] ?? '';
 			$grid_template        = is_array( $grid_template ) ? '' : $grid_template;

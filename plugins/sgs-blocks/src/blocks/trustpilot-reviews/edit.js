@@ -10,7 +10,7 @@ import {
 	InspectorControls,
 	useBlockProps,
 } from '@wordpress/block-editor';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveOverride } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -83,8 +83,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showAuthor,
 		showSchema,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		theme,
 		cardStyle,
 		autoplay,
@@ -340,25 +338,44 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ VARIANT_OPTIONS }
 						onChange={ ( value ) => setAttributes( { variant: value } ) }
 					/>
-					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'columns',
-								tablet:  'columnsTablet',
-								mobile:  'columnsMobile',
-							};
+					{ /*
+						  columns is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass 4). It must
+						  therefore use ResponsiveOverride, which reads and
+						  writes the object, NOT ResponsiveControl, which
+						  writes one flat attr per tier.
+
+						  ⛔ Do NOT revert this to `ResponsiveControl` + an
+						  attrMap of `{desktop:'columns',
+						  tablet:'columnsTablet', mobile:'columnsMobile'}`.
+						  Those siblings are no longer declared by block.json
+						  (D338 silent-discard), and a raw number written to
+						  `columns` itself coerces the object-typed attr to
+						  its default, dropping the whole setting (D563 bug
+						  class).
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Columns', 'sgs-blocks' ) }
+						value={ columns }
+						onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+					>
+						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
 							const maxMap = { desktop: 6, tablet: 4, mobile: 2 };
 							return (
 								<RangeControl
-									value={ attributes[ attrMap[ breakpoint ] ] }
-									onChange={ ( value ) => setAttributes( { [ attrMap[ breakpoint ] ]: value } ) }
+									value={
+										ownValue !== ''
+											? ownValue
+											: ( effectiveValue !== '' ? effectiveValue : ( maxMap[ tier ] || 3 ) )
+									}
+									onChange={ setOwnValue }
 									min={ 1 }
-									max={ maxMap[ breakpoint ] }
+									max={ maxMap[ tier ] }
 									__nextHasNoMarginBottom
 								/>
 							);
 						} }
-					</ResponsiveControl>
+					</ResponsiveOverride>
 					<SelectControl
 						label={ __( 'Theme', 'sgs-blocks' ) }
 						value={ theme }

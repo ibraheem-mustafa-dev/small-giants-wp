@@ -656,8 +656,24 @@ if ( null !== $media_pad_mob ) {
 // (contract §A). The shared per-area schema attr; the legacy mediaBackgroundColour
 // attr was removed 2026-07-23 (it duplicated this on css:background-color / element
 // media and collided in the routing DB — mediaBackground is the sole canonical source).
-$media_bg_resolved = $attributes['mediaBackground'] ?? '';
-if ( $media_bg_resolved ) {
+// Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
+// overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
+// (includes/class-sgs-container-wrapper.php ~1159-1176).
+$media_bg_resolved         = $attributes['mediaBackground'] ?? '';
+$media_bg_gradient         = ! empty( $attributes['mediaBackgroundGradient'] );
+$media_bg_gradient_angle   = isset( $attributes['mediaBackgroundGradientAngle'] ) ? absint( $attributes['mediaBackgroundGradientAngle'] ) : 180;
+$media_bg_gradient_from    = $attributes['mediaBackgroundGradientFrom'] ?? '';
+$media_bg_gradient_to      = $attributes['mediaBackgroundGradientTo'] ?? '';
+if ( $media_bg_gradient && $media_bg_gradient_from ) {
+	$media_grad_from = sgs_colour_value( $media_bg_gradient_from );
+	$media_grad_to   = $media_bg_gradient_to ? sgs_colour_value( $media_bg_gradient_to ) : 'transparent';
+	$responsive_css  .= '.' . $uid . ' .sgs-hero__media{' . sprintf(
+		'background-image:linear-gradient(%ddeg,%s,%s)',
+		$media_bg_gradient_angle,
+		$media_grad_from,
+		$media_grad_to
+	) . '}';
+} elseif ( $media_bg_resolved ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-color:' . sgs_colour_value( $media_bg_resolved ) . '}';
 }
 
@@ -680,6 +696,13 @@ if ( null !== $content_pad_mob ) {
 // structural declarations (previously duplicated in style.css AND inline);
 // justify-content is driven by verticalAlignment (top/center/bottom).
 $content_background = isset( $attributes['contentBackground'] ) ? (string) $attributes['contentBackground'] : '';
+// Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
+// overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
+// (includes/class-sgs-container-wrapper.php ~1159-1176).
+$content_bg_gradient       = ! empty( $attributes['contentBackgroundGradient'] );
+$content_bg_gradient_angle = isset( $attributes['contentBackgroundGradientAngle'] ) ? absint( $attributes['contentBackgroundGradientAngle'] ) : 180;
+$content_bg_gradient_from  = $attributes['contentBackgroundGradientFrom'] ?? '';
+$content_bg_gradient_to    = $attributes['contentBackgroundGradientTo'] ?? '';
 $v_align_map         = array(
 	'top'    => 'flex-start',
 	'center' => 'center',
@@ -687,7 +710,16 @@ $v_align_map         = array(
 );
 $content_justify = $v_align_map[ $vertical_alignment ] ?? 'center';
 $content_decls    = array( 'display:flex', 'flex-direction:column', 'justify-content:' . $content_justify );
-if ( $content_background ) {
+if ( $content_bg_gradient && $content_bg_gradient_from ) {
+	$content_grad_from = sgs_colour_value( $content_bg_gradient_from );
+	$content_grad_to   = $content_bg_gradient_to ? sgs_colour_value( $content_bg_gradient_to ) : 'transparent';
+	$content_decls[]   = sprintf(
+		'background-image:linear-gradient(%ddeg,%s,%s)',
+		$content_bg_gradient_angle,
+		$content_grad_from,
+		$content_grad_to
+	);
+} elseif ( $content_background ) {
 	$content_decls[] = 'background-color:' . sgs_colour_value( $content_background );
 }
 $responsive_css .= '.' . $uid . ' .sgs-hero__content{' . implode( ';', $content_decls ) . '}';

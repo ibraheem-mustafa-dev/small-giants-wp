@@ -162,9 +162,13 @@ export default function Edit({ attributes, setAttributes }) {
     // ⛔ Found only by opening the editor: no static gate in this repo can see
     // a type error inside an edit component (D567, same class).
     const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
+    // columns is also a TIER OBJECT (Spec 35 pass 4) — resolve the desktop
+    // tier the same way, or this renders "repeat([object Object], 1fr)" and
+    // silently breaks the editor grid preview (same D567 class as above).
+    const columnsDesktop = resolveResponsiveTier( attributes.columns, 'desktop' )?.value;
     style.gridTemplateColumns = String( gtcDesktop ?? '' ).trim()
       ? String( gtcDesktop ).trim()
-      : `repeat(${attributes.columns}, 1fr)`;
+      : `repeat(${ columnsDesktop || 2 }, 1fr)`;
     style.alignItems = verticalAlign;
     if ( justifyItems && justifyItems !== "stretch" ) {
       style.justifyItems = justifyItems;

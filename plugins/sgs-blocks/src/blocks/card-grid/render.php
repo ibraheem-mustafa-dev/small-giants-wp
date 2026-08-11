@@ -42,18 +42,23 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$source             = $attributes['source'] ?? 'manual';
-$variant            = $attributes['variant'] ?? 'card';
-$items              = $attributes['items'] ?? array();
-$columns            = $attributes['columns'] ?? 3;
-$columns_mobile     = $attributes['columnsMobile'] ?? 1;
-$columns_tablet     = $attributes['columnsTablet'] ?? 2;
+$source  = $attributes['source'] ?? 'manual';
+$variant = $attributes['variant'] ?? 'card';
+$items   = $attributes['items'] ?? array();
+// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// the normaliser, never the raw attribute (absint() on an unresolved array
+// throws "Array to int conversion" and would emit e.g. `columns:0`, exactly
+// the D569/D570 bug class this normaliser exists to prevent).
+$columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns        = $columns_obj['desktop'] ?? 3;
+$columns_tablet = $columns_obj['tablet'] ?? 2;
+$columns_mobile = $columns_obj['mobile'] ?? 1;
 // `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10) - read the desktop tier, never
 // the raw array (a string cast downstream would emit `gap:Array`).
-$gap_obj            = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
-$gap                = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
-$aspect_ratio       = $attributes['aspectRatio'] ?? '16/10';
-$hover_effect       = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
+$gap_obj      = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$gap          = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
+$aspect_ratio = $attributes['aspectRatio'] ?? '16/10';
+$hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 // overlayStyle removed — no editor control, no consumer anywhere in the
 // repo (D338 full-repo grep, 2026-08-06); abandoned attribute, deleted from
 // block.json too.
@@ -264,8 +269,8 @@ if ( 'query' === $source ) {
 		$query_args['cat'] = $query_category;
 	}
 
-	$grid_query   = new WP_Query( $query_args );
-	$query_items  = array();
+	$grid_query  = new WP_Query( $query_args );
+	$query_items = array();
 
 	foreach ( $grid_query->posts as $grid_post ) {
 		$thumb_id  = get_post_thumbnail_id( $grid_post->ID );
@@ -697,7 +702,8 @@ foreach ( $items as $index => $item ) :
 			</div>
 		<?php endif; ?>
 	</<?php echo esc_attr( $item_tag ); ?>>
-<?php endforeach;
+	<?php
+endforeach;
 $card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
 
 // FR-32-4a (no-inline contract): the per-item stagger rule addresses items by

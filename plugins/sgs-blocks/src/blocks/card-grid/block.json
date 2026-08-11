@@ -193,13 +193,9 @@
 			}
 		},
 		"columns": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
+			"type": "object",
+			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "1rem"},
@@ -212,11 +208,7 @@
 		"effectHover": {
 			"type": "string",
 			"default": "zoom"
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
-		},
+		},
 		"titleColour": {
 			"type": "string",
 			"default": "primary"

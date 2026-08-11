@@ -23,6 +23,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	ShadowControl,
+	GradientOverlayControl,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreview } from '../../utils';
@@ -230,10 +231,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		imagePaddingTablet,
 		imagePaddingMobile,
 		contentBackground,
+		contentBackgroundGradient,
 		contentPadding,
 		contentPaddingTablet,
 		contentPaddingMobile,
-		mediaBackground,
 		mediaPadding,
 		mediaPaddingTablet,
 		mediaPaddingMobile,
@@ -663,13 +664,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					>
 						<ToolsPanelItem
-							label={ __( 'Text alignment', 'sgs-blocks' ) }
+							label={ __( 'Content fill', 'sgs-blocks' ) }
 							hasValue={ () => alignment !== 'left' }
 							onDeselect={ () => setAttributes( { alignment: 'left' } ) }
 							isShownByDefault
 						>
 							<ToggleGroupControl
-								label={ __( 'Text alignment', 'sgs-blocks' ) }
+								label={ __( 'Content fill', 'sgs-blocks' ) }
 								value={ alignment }
 								onChange={ ( val ) =>
 									setAttributes( { alignment: val } )
@@ -809,6 +810,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Content area', 'sgs-blocks' ) }
 							hasValue={ () =>
 								!! contentBackground ||
+								!! contentBackgroundGradient ||
 								Object.keys( contentPadding ?? {} ).length > 0 ||
 								Object.keys( contentPaddingTablet ?? {} ).length > 0 ||
 								Object.keys( contentPaddingMobile ?? {} ).length > 0
@@ -816,6 +818,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							onDeselect={ () =>
 								setAttributes( {
 									contentBackground: '',
+									contentBackgroundGradient: false,
+									contentBackgroundGradientAngle: 180,
+									contentBackgroundGradientFrom: '',
+									contentBackgroundGradientTo: '',
 									contentPadding: {},
 									contentPaddingTablet: {},
 									contentPaddingMobile: {},
@@ -823,10 +829,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						>
 							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Content area', 'sgs-blocks' ) }</p>
-							<DesignTokenPicker
-								label={ __( 'Content background colour', 'sgs-blocks' ) }
-								value={ contentBackground || '' }
-								onChange={ ( val ) => setAttributes( { contentBackground: val } ) }
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
+							<GradientOverlayControl
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									gradient: 'contentBackgroundGradient',
+									angle: 'contentBackgroundGradientAngle',
+									from: 'contentBackgroundGradientFrom',
+									to: 'contentBackgroundGradientTo',
+									solid: 'contentBackground',
+								} }
+								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
 							/>
 							<ResponsiveBoxControl
 								label={ __( 'Content padding', 'sgs-blocks' ) }
@@ -1231,13 +1245,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								} }
 							/>
 
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background', 'sgs-blocks' ) }</p>
+							<GradientOverlayControl
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									gradient: 'mediaBackgroundGradient',
+									angle: 'mediaBackgroundGradientAngle',
+									from: 'mediaBackgroundGradientFrom',
+									to: 'mediaBackgroundGradientTo',
+									solid: 'mediaBackground',
+								} }
+								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
+							/>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
 							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
-							<DesignTokenPicker
-								label={ __( 'Media background colour', 'sgs-blocks' ) }
-								value={ mediaBackground || '' }
-								onChange={ ( val ) => setAttributes( { mediaBackground: val } ) }
-							/>
 							<ResponsiveBoxControl
 								label={ __( 'Media padding', 'sgs-blocks' ) }
 								values={ {

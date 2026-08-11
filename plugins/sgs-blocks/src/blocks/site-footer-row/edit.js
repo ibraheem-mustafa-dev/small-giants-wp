@@ -20,6 +20,7 @@ import {
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
 } from '../../components';
+import { resolveResponsiveTier } from '../../utils';
 
 // Promoted common footer elements (Spec 37 §3.5 / FR-37-34). Steering, not
 // gating: the row still accepts ANY block via the normal inserter — this list
@@ -92,9 +93,10 @@ const ROW_LABELS = {
 };
 
 // Columns are an operator-set COUNT per device (Spec 37 §3.3, Bean-locked), NOT
-// a CSS grid-template ratio string. These map 1:1 onto the shared wrapper's flat
-// integer attrs (class-sgs-container-wrapper.php:149-154), rendered as scoped
-// per-tier rules at the grid selector.
+// a CSS grid-template ratio string. `columns` is a TIER OBJECT holding
+// {desktop,tablet,mobile} (Spec 35 pass 4, 2026-08-11) — read by the shared
+// wrapper via sgs_responsive_normalise_object(), rendered as scoped per-tier
+// rules at the grid selector.
 //
 // D456: for THIS block the count is a CEILING, not a fixed number. block.json
 // declares `supports.sgs.intrinsicColumns`, so the wrapper emits a bounded
@@ -107,15 +109,11 @@ const ROW_LABELS = {
 // (Until 2026-07-23 the tiers rode on `sgs-cols-*` classes instead —
 // removed because they addressed the wrapper while the grid had moved to
 // `.sgs-container__inner`, so mobile never stacked. FR-37-11.)
-// The ResponsiveOverride device switcher wants a {desktop,tablet,mobile} object,
-// so we bridge the three flat attrs to that shape and back — no gridTemplateColumns
-// string is ever written from this control. A per-device custom template remains
-// available as an advanced override by setting gridTemplateColumns directly.
-const COUNT_ATTR = {
-	desktop: 'columns',
-	tablet: 'columnsTablet',
-	mobile: 'columnsMobile',
-};
+// ⛔ Do NOT reintroduce a bridge to three flat attrs — `columnsTablet`/
+// `columnsMobile` are no longer declared by block.json (Spec 35 pass 4), and
+// the object attr wires directly onto ResponsiveOverride, exactly like
+// gridTemplateColumns below. A per-device custom template remains available
+// as an advanced override by setting gridTemplateColumns directly.
 
 // Cross-axis alignment — read directly by SGS_Container_Wrapper as
 // `verticalAlign` (class-sgs-container-wrapper.php:247, 668-669/681-682).
@@ -173,8 +171,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		layout,
 		gap,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		justifyContent,
 		verticalAlign,
 		flexDirection,
@@ -227,20 +223,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 
-	// Bridge the three flat count attrs to the object shape ResponsiveOverride
-	// expects. A tier is present only when its attr is set, so a blank tablet /
-	// mobile reads as "inherit" in the switcher.
-	const countValue = {
-		...( columns !== undefined ? { desktop: columns } : {} ),
-		...( columnsTablet !== undefined ? { tablet: columnsTablet } : {} ),
-		...( columnsMobile !== undefined ? { mobile: columnsMobile } : {} ),
-	};
-	const onCountChange = ( obj ) =>
-		setAttributes( {
-			[ COUNT_ATTR.desktop ]: obj.desktop,
-			[ COUNT_ATTR.tablet ]: obj.tablet,
-			[ COUNT_ATTR.mobile ]: obj.mobile,
-		} );
+	// columns is a TIER OBJECT — resolve the desktop tier for the editor
+	// preview (what the canvas shows), the same pattern as gridTemplateColumns
+	// below. String()/arithmetic on the raw object would yield NaN or
+	// "[object Object]" in the template-string preview.
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
 
 	// Editor preview mirrors the frontend. D456: the grid preview uses the SAME
 	// bounded auto-fit track list the wrapper emits, not `repeat(N,1fr)` — the
@@ -253,9 +240,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? {
 				display: 'grid',
 				gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis, 16rem), calc((100% - (${
-					( columns || 3 ) - 1
+					columnsDesktop - 1
 				} * ${ ( gap && gap.desktop ) || '48px' })) / ${
-					columns || 3
+					columnsDesktop
 				}))), 1fr))`,
 				gap: ( gap && gap.desktop ) || '48px',
 		  }
@@ -318,8 +305,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ isGrid && (
 						<ResponsiveOverride
 							label={ __( 'Maximum columns', 'sgs-blocks' ) }
-							value={ countValue }
-							onChange={ onCountChange }
+							value={ columns }
+							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
 						>
 							{ ( {
 								ownValue,

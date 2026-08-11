@@ -1,5 +1,73 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D578 — `columns` (pass 4 of 6) migrated to the tier-object shape; visual-diff gate bypassed a second time, same shape as D577 [INCIDENT]
+
+**2026-08-11. Bean-authorised explicitly, same reasoning shown and accepted as D577.** This is
+the LAST of the 41-property migration's shared-wrapper properties to land (`gap`/`maxWidth`/
+`gridTemplateColumns` shipped in D577; `columns` is the fourth of six passes and the last one
+touching `class-sgs-container-wrapper.php`'s own extraction code — passes 5-6, the font-size
+families and the long tail, do not touch the shared wrapper).
+
+**WHAT SHIPPED.** `columns`/`columnsTablet`/`columnsMobile` collapsed into one
+`columns:{desktop,tablet,mobile}` object across the 21 blocks that declare it. The shared
+wrapper's extraction (`class-sgs-container-wrapper.php:228-241`) now reads the object via
+`sgs_responsive_normalise_object()`, mirroring the existing `$min_height_obj` precedent —
+every downstream consumer (the base grid fallback, the tier-count gate, the per-tier fallback
+track) is unchanged, this was a read-shape change only. `ContainerWrapperControls.js` and the
+`site-header-row`/`site-footer-row` edit.js bridging layers carried the exact bug class that
+broke `gap` on 19 blocks last pass (D563) — a shared control still writing the deleted flat
+siblings — fixed in the same commit as the block.json change, per the design doc's item 0a.
+`button.fontSize` was found never emitting at any tier (a separate, unrelated bug: the
+normalised value was computed but never added to the synthetic flat-key array
+`sgs_responsive_css_rule()` reads) and fixed in the same commit.
+
+**WHY THE GATE COULD NOT BE SATISFIED HONESTLY, AGAIN.** Same root shape as D577: the migration
+needed to be deployed to the canary to prove the live-editor binding (the exact class of defect
+D563 shipped silently — a control writing to deleted attrs — is invisible to every static gate
+and can only be caught by opening the real editor). Once deployed, no genuine pre-migration
+BEFORE capture exists any more — and unlike `gap`/`maxWidth`/`gridTemplateColumns`, `columns`
+had never been captured by this toolkit before this pass at all, so there was no earlier
+capture to fall back to even in principle.
+
+**THE EVIDENCE ACCEPTED IN ITS PLACE:**
+
+1. **Live-editor + frontend verification, proven directly (not sampled).** A test page was
+   built with `sgs/container` in `layout:grid` and `columns:{desktop:3,tablet:2,mobile:1}`. The
+   stored shape round-tripped as the object with zero flat siblings; the rendered
+   `grid-template-columns` at each of the three breakpoints matched the tier value exactly
+   (3 tracks at desktop, 2 at tablet, 1 at mobile, each measured on the ACTUAL bound width, not
+   the requested viewport); `Reset all` (`columns:{}`) and undo both round-tripped correctly;
+   zero console errors. Test page deleted after.
+2. **A DEFAULT-vs-PROBE positive control across all 21 blocks, on the live deployed code.**
+   `build-tier-fixture-page.py`/`capture-tier-fixture.py` published one fixture page (post 2255,
+   `/tier-fixture-columns/`) carrying every migrated block twice — once at the schema default,
+   once at a probe value (64/32/8) — and captured the computed `grid-template-columns` at all 3
+   viewports for both. 14 of 21 blocks show the probe value visibly changing the rendered track
+   list versus the default, on the correct element (outer or the `.sgs-container__inner` band
+   where the shared wrapper relocates grid for container-query blocks) — proof the object is
+   read live, not frozen. 2 blocks (`feature-grid`, `trust-bar`) are VERIFIED, by reading
+   render.php, to route their real grid through a different, already-migrated attribute
+   (`columnsDesktop` family and `gridTemplateColumns` respectively) — `columns` on those two is
+   confirmed dead code, not a migration defect. 5 blocks (`multi-button`, `post-grid`,
+   `testimonial-slider`, `site-footer`, `site-header`) show no CSS grid anywhere the capture can
+   see (flex, JS/carousel-driven layout, or a semantic wrapper whose real grid lives on a nested
+   child block that DOES prove binding) — the same CSS-fact auto-derivation
+   `make-visual-diff-reports.py`'s own "Change 2" logic already applies for a grid-only property
+   with no grid display at any level.
+
+**WHAT THIS EVIDENCE DOES NOT COVER, stated plainly:** same residual as D577 — no comparison
+against the OLD flat-shape rendering exists for this property (never captured before), so an
+incidental visual regression unrelated to the `columns` value itself could theoretically slip
+through unnoticed. Accepted on the canary, `.bak` rollback available, no client site involved.
+
+**Also this session:** 4 stale canary test/QA pages (`T1 container grid`, `Loop Fixture
+post-grid`, `QA Post Grid Carousel Dot Sync` v1/v2 — IDs 1719/2108/2110/2123) held the old flat
+`columnsTablet`/`columnsMobile` shape and blocked the pre-deploy oldshape-audit; hard-deleted
+per ruling B (trash, not migrate — scratch/test content only, confirmed by title before
+deleting). 2 line-shifted baseline exemptions in `08-raw-url-link.json`
+(google-reviews/trustpilot-reviews) re-anchored a second time — same pre-existing config-URL
+controls, verified unchanged via `git show HEAD` before re-anchoring, not new accepted debt.
+
 ## D577 — The 41-property migration lands with the visual-diff gate BYPASSED ONCE, against stronger evidence than the gate samples [INCIDENT]
 
 **2026-08-11. Bean-authorised explicitly, after being shown the trade.** This entry exists so

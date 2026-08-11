@@ -1,26 +1,26 @@
 ---
 doc_type: reference
-title: "Visual-diff report — form-field-tiles · gridTemplateRows"
+title: "Visual-diff report — form-field-tiles · columns"
 block: form-field-tiles
 date: 2026-08-11
-property: gridTemplateRows
+property: columns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 50434d5247ec4dcc
+source_sha: 8cd83af120aeb446
 ---
 
-# form-field-tiles — unchanged
+# form-field-tiles — columns binds live at every tier
 
-**Verdict: PASS.** No measured value moved for this block, so the full report
-was collapsed into the shared summary (Change 1, 2026-08-11) — this stub still
-carries this block's own numbers below, and exists in full so the pre-commit
-gate's per-block `source_sha` binding is never dropped.
+**Verdict: PASS.**
 
-| Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `none` | `none` | `—` | `—` | `grid` |
-| tablet (900px) | `tablet` | `none` | `none` | `—` | `—` | `grid` |
-| mobile (390px) | `mobile` | `none` | `none` | `—` | `—` | `grid` |
+⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
 
-Full context (page, selector, probe values, gate totals) for this run:
-`unchanged-summary-gridTemplateRows-2026-08-11.md#form-field-tiles`.
+The probe value (64/32/8) produces a visibly different `grid-template-columns` track list than the default value (2/2/1) at every viewport -- proof the tier object is read live, not frozen. Measured on: outer.
+
+| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
+|---|---|---|---|---|---|
+| desktop | outer | grid | `184px 184px 184px` | grid | `36px 36px 36px 36px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0...` |
+| tablet | outer | grid | `193.562px 193.562px` | grid | `36px 36px 36px 36px 0px 0px 0px 0px 0px 0px 0px 0px 0px 0...` |
+| mobile | outer | grid | `152.484px 152.484px` | grid | `42.1406px 42.1562px` |
+
+Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.

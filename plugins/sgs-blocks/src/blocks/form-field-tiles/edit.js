@@ -11,6 +11,7 @@ import {
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { IconPicker, IconPreview } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { resolveResponsiveTier } from '../../utils';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -30,6 +31,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		multiSelect,
 		columns,
 	} = attributes;
+
+	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
+	// the desktop tier (there is no per-tier UI here); resolve it for both the
+	// RangeControl value and the inline grid-template-columns preview, or a
+	// raw setAttributes({ columns: val }) would coerce the whole object-typed
+	// attr to its block.json default (D563 bug class).
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const setColumnsDesktop = ( val ) =>
+		setAttributes( { columns: { ...( columns && typeof columns === 'object' ? columns : {} ), desktop: val } } );
 
 	const className = [
 		'sgs-form-field',
@@ -75,7 +85,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								helpText: '',
 								required: false,
 								multiSelect: false,
-								columns: 3,
+								columns: { desktop: 3, tablet: 2, mobile: 1 },
 								width: 'full',
 							} )
 						}
@@ -157,14 +167,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Columns', 'sgs-blocks' ) }
-							hasValue={ () => columns !== 3 }
-							onDeselect={ () => setAttributes( { columns: 3 } ) }
+							hasValue={ () => columnsDesktop !== 3 }
+							onDeselect={ () => setColumnsDesktop( 3 ) }
 						>
 							<RangeControl
 								label={ __( 'Columns', 'sgs-blocks' ) }
-								value={ columns }
+								value={ columnsDesktop }
 								onChange={ ( val ) =>
-									setAttributes( { columns: val } )
+									setColumnsDesktop( val )
 								}
 								min={ 2 }
 								max={ 4 }
@@ -271,7 +281,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					className="sgs-form-tiles"
 					style={ {
 						display: 'grid',
-						gridTemplateColumns: `repeat(${ columns }, 1fr)`,
+						gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
 						gap: '12px',
 					} }
 				>

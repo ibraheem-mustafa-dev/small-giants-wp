@@ -464,6 +464,22 @@
 			"type": "string",
 			"default": ""
 		},
+		"mediaBackgroundGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"mediaBackgroundGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"mediaBackgroundGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"mediaBackgroundGradientTo": {
+			"type": "string",
+			"default": ""
+		},
 		"contentPadding": {
 			"type": "object",
 			"default": {}
@@ -489,6 +505,22 @@
 			"default": {}
 		},
 		"contentBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBackgroundGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"contentBackgroundGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"contentBackgroundGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"contentBackgroundGradientTo": {
 			"type": "string",
 			"default": ""
 		},
@@ -643,16 +675,8 @@
 			"default": false
 		},
 		"columns": {
-			"type": "number",
-			"default": 2
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
+			"type": "object",
+			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
 		},
 		"contentWidth": {
 			"type": "object",

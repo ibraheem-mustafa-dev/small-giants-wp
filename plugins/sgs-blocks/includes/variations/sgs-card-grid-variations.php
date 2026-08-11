@@ -87,7 +87,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-elevated',
-				'columns'   => 3,
+				'columns'   => array( 'desktop' => 3 ),
 			),
 		),
 		array(
@@ -98,7 +98,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-boxed',
-				'columns'   => 3,
+				'columns'   => array( 'desktop' => 3 ),
 			),
 		),
 		array(
@@ -109,7 +109,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-boxed',
-				'columns'   => 4,
+				'columns'   => array( 'desktop' => 4 ),
 			),
 		),
 		array(
@@ -120,7 +120,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-borderless',
-				'columns'   => 3,
+				'columns'   => array( 'desktop' => 3 ),
 			),
 		),
 	);

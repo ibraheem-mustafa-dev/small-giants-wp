@@ -72,7 +72,7 @@ function sgs_register_pricing_table_variations( array $variations, \WP_Block_Typ
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-boxed',
-				'columns'   => 3,
+				'columns'   => array( 'desktop' => 3 ),
 			),
 		),
 		array(
@@ -83,7 +83,7 @@ function sgs_register_pricing_table_variations( array $variations, \WP_Block_Typ
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-boxed',
-				'columns'   => 3,
+				'columns'   => array( 'desktop' => 3 ),
 			),
 		),
 		array(
@@ -94,7 +94,7 @@ function sgs_register_pricing_table_variations( array $variations, \WP_Block_Typ
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
 				'className' => 'is-style-elevated',
-				'columns'   => 1,
+				'columns'   => array( 'desktop' => 1 ),
 			),
 		),
 	);

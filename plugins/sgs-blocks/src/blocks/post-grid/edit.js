@@ -19,8 +19,8 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
-import ResponsiveControl from '../../components/ResponsiveControl';
-import { colourVar } from '../../utils';
+import ResponsiveOverride from '../../components/ResponsiveOverride';
+import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -253,8 +253,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		layout,
 		cardStyle,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		gap,
 		aspectRatio,
 		imageSize,
@@ -371,12 +369,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		return found ? found.name : String( id );
 	} );
 
+	// columns is a TIER OBJECT (Spec 35 pass 4) — resolve each tier explicitly,
+	// or the preview would emit "--sgs-columns-desktop: [object Object]" and
+	// the CSS custom properties would silently fail (D567 class).
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
+	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+
 	// Wrapper inline styles.
 	// gap is now a raw CSS string (e.g. "30px") set by ContainerWrapperControls.
 	const inlineStyles = {
-		'--sgs-columns-desktop': columns,
-		'--sgs-columns-tablet':  columnsTablet,
-		'--sgs-columns-mobile':  columnsMobile,
+		'--sgs-columns-desktop': columnsDesktop,
+		'--sgs-columns-tablet':  columnsTabletTier,
+		'--sgs-columns-mobile':  columnsMobileTier,
 		'--sgs-gap':             gap || '30px',
 	};
 
@@ -392,8 +397,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		display:             'grid',
 		gridTemplateColumns: 'masonry' === layout
 			? undefined
-			: `repeat( ${ columns }, 1fr )`,
-		columnCount:         'masonry' === layout ? columns : undefined,
+			: `repeat( ${ columnsDesktop }, 1fr )`,
+		columnCount:         'masonry' === layout ? columnsDesktop : undefined,
 		gap:                 gap || '30px',
 	};
 
@@ -476,27 +481,45 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ LAYOUT_OPTIONS }
 						onChange={ set( 'layout' ) }
 					/>
-					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'columns',
-								tablet: 'columnsTablet',
-								mobile: 'columnsMobile',
-							};
-							const attr = attrMap[ breakpoint ];
+					{ /*
+						  columns is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass 4). It must
+						  therefore use ResponsiveOverride, which reads and
+						  writes the object, NOT ResponsiveControl, which
+						  writes one flat attr per tier.
+
+						  ⛔ Do NOT revert this to `ResponsiveControl` + an
+						  attrMap of `{desktop:'columns',
+						  tablet:'columnsTablet', mobile:'columnsMobile'}`.
+						  Those siblings are no longer declared by block.json
+						  (D338 silent-discard), and a raw number written to
+						  `columns` itself coerces the object-typed attr to
+						  its default, dropping the whole setting (D563 bug
+						  class).
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Columns', 'sgs-blocks' ) }
+						value={ columns }
+						onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+					>
+						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
 							return (
 								<RangeControl
 									label={ __( 'Columns', 'sgs-blocks' ) }
 									hideLabelFromVision
-									value={ attributes[ attr ] }
-									onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
+									value={
+										ownValue !== ''
+											? ownValue
+											: ( effectiveValue !== '' ? effectiveValue : ( tier === 'mobile' ? 1 : 3 ) )
+									}
+									onChange={ setOwnValue }
 									min={ 1 }
 									max={ 6 }
 									__nextHasNoMarginBottom
 								/>
 							);
 						} }
-					</ResponsiveControl>
+					</ResponsiveOverride>
 					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
 					<SelectControl
 						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }

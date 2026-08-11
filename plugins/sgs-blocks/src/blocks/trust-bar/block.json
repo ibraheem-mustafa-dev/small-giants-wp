@@ -370,8 +370,8 @@
 			"default": "text"
 		},
 		"columns": {
-			"type": "number",
-			"default": 4
+			"type": "object",
+			"default": {"desktop": 4, "tablet": 4, "mobile": 2}
 		},
 		"gap": {
 			"type": "object",
@@ -398,15 +398,7 @@
 		"layout": {
 			"type": "string",
 			"default": "grid"
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 2
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 4
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {"desktop": "repeat(4, 1fr)", "tablet": "repeat(4, 1fr)", "mobile": "1fr 1fr"}

@@ -33,7 +33,7 @@ import {
 import { useRef } from '@wordpress/element';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
-import ResponsiveControl from '../../components/ResponsiveControl';
+import ResponsiveOverride from '../../components/ResponsiveOverride';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 
 // -------------------------------------------------------------------------
@@ -173,8 +173,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		mediaItems,
 		layout,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		gap,
 		aspectRatio,
 		enableLightbox,
@@ -260,11 +258,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	// gets used verbatim as a bogus CSS value.
 	const gapDesktop = resolveResponsiveTier( gap, 'desktop' )?.value;
 
+	// columns is a TIER OBJECT (Spec 35 pass 4) — resolve each tier explicitly,
+	// or the preview would emit "--sgs-columns-desktop: [object Object]" and
+	// the CSS custom properties would silently fail (same D567 class as gap
+	// above).
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
+	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+
 	// Wrapper inline styles — CSS custom properties for layout.
 	const inlineStyles = {
-		'--sgs-columns-desktop': columns,
-		'--sgs-columns-tablet': columnsTablet,
-		'--sgs-columns-mobile': columnsMobile,
+		'--sgs-columns-desktop': columnsDesktop,
+		'--sgs-columns-tablet': columnsTabletTier,
+		'--sgs-columns-mobile': columnsMobileTier,
 		// gap is now a string from the shared SpacingControl (e.g. "16px", "40").
 		// Bare numeric strings (legacy format) are suffixed with px for preview.
 		'--sgs-gap': /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
@@ -295,9 +301,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		display: layout === 'masonry' ? 'block' : 'grid',
 		gridTemplateColumns:
 			layout === 'grid' || layout === 'carousel'
-				? `repeat( ${ columns }, 1fr )`
+				? `repeat( ${ columnsDesktop }, 1fr )`
 				: undefined,
-		columnCount: layout === 'masonry' ? columns : undefined,
+		columnCount: layout === 'masonry' ? columnsDesktop : undefined,
 		gap: /^\d+$/.test( String( gapDesktop ) ) ? gapDesktop + 'px' : gapDesktop || '16px',
 	};
 
@@ -407,29 +413,46 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ LAYOUT_OPTIONS }
 						onChange={ set( 'layout' ) }
 					/>
-					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'columns',
-								tablet: 'columnsTablet',
-								mobile: 'columnsMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							return (
-								<RangeControl
-									label={ __( 'Columns', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ attributes[ attr ] }
-									onChange={ ( val ) =>
-										setAttributes( { [ attr ]: val } )
-									}
-									min={ 1 }
-									max={ 6 }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  columns is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (Spec 35 pass 4). It must
+						  therefore use ResponsiveOverride, which reads and
+						  writes the object, NOT ResponsiveControl, which
+						  writes one flat attr per tier.
+
+						  ⛔ Do NOT revert this to `ResponsiveControl` + an
+						  attrMap of `{desktop:'columns',
+						  tablet:'columnsTablet', mobile:'columnsMobile'}`.
+						  `columnsTablet`/`columnsMobile` are no longer
+						  declared by block.json, and WordPress SILENTLY
+						  DISCARDS an attribute a block does not declare
+						  (D338) — so both tiers would save nothing. The
+						  desktop branch would be worse: it would write a
+						  NUMBER into an attr declared `"type":"object"`,
+						  which coerces to the default and drops the whole
+						  setting (D563's gap regression, same bug class).
+					*/ }
+					<ResponsiveOverride
+						label={ __( 'Columns', 'sgs-blocks' ) }
+						value={ columns }
+						onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+					>
+						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+							<RangeControl
+								label={ __( 'Columns', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={
+									ownValue !== ''
+										? ownValue
+										: ( effectiveValue !== '' ? effectiveValue : ( tier === 'mobile' ? 1 : 3 ) )
+								}
+								onChange={ setOwnValue }
+								min={ 1 }
+								max={ 6 }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 					<SelectControl
 						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
 						value={ aspectRatio }

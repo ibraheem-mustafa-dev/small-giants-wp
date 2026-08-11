@@ -468,13 +468,13 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 	const {
 		layout = 'stack',
 		verticalAlign = 'start',
-		columns = 2,
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
-		// gridTemplateColumns and gridTemplateRows are TIER OBJECTS (pass 3a /
-		// pass 3b) and are read via attributes.gridTemplateColumns /
+		// columns, gridTemplateColumns and gridTemplateRows are TIER OBJECTS
+		// (columns: pass 4; grid template props: pass 3a/3b) and are read via
+		// attributes.columns / attributes.gridTemplateColumns /
 		// attributes.gridTemplateRows at their controls below, not destructured
-		// with a scalar '' default — which would mask the object.
+		// with a scalar default — which would mask the object.
 		gridAutoRows = '',
 	} = attributes;
 
@@ -490,26 +490,45 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 				/>
 			) }
 
+			{ /*
+				  Columns is a TIER OBJECT — ONE attr holding {desktop,tablet,mobile}
+				  (Spec 35 pass 4, 2026-08-11). It must therefore use
+				  ResponsiveOverride, which reads and writes the object, NOT
+				  ResponsiveControl, which writes one flat attr per tier.
+
+				  ⛔ Do NOT revert this to `ResponsiveControl` + an attrMap of
+				  `{desktop:'columns', tablet:'columnsTablet', mobile:'columnsMobile'}`.
+				  `columnsTablet`/`columnsMobile` are no longer declared by ANY
+				  block.json, and WordPress SILENTLY DISCARDS an attribute a
+				  block does not declare (D338) — so both tiers would save
+				  nothing. The desktop branch is worse: it would write a NUMBER
+				  into an attr declared `"type":"object"`, and a flat value on
+				  an object-typed attr is coerced to the default, dropping the
+				  whole setting (D563's gap regression, same bug class).
+				  Mirrors the Gap control above.
+			*/ }
 			{ showLayout && layout === 'grid' && (
-				<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-					{ ( breakpoint ) => {
-						const attrMap = {
-							desktop: 'columns',
-							tablet: 'columnsTablet',
-							mobile: 'columnsMobile',
-						};
-						const attr = attrMap[ breakpoint ];
-						return (
-							<RangeControl
-								value={ attributes[ attr ] ?? ( breakpoint === 'desktop' ? 2 : ( breakpoint === 'tablet' ? 2 : 1 ) ) }
-								onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-								min={ 1 }
-								max={ breakpoint === 'mobile' ? 3 : 6 }
-								__nextHasNoMarginBottom
-							/>
-						);
-					} }
-				</ResponsiveControl>
+				<ResponsiveOverride
+					label={ __( 'Columns', 'sgs-blocks' ) }
+					value={ attributes.columns }
+					onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+				>
+					{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+						<RangeControl
+							value={
+								ownValue !== ''
+									? ownValue
+									: ( effectiveValue !== ''
+										? effectiveValue
+										: ( tier === 'mobile' ? 1 : 2 ) )
+							}
+							onChange={ setOwnValue }
+							min={ 1 }
+							max={ tier === 'mobile' ? 3 : 6 }
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ResponsiveOverride>
 			) }
 
 			{ /*

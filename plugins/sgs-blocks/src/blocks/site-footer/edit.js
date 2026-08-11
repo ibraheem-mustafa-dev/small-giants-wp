@@ -115,15 +115,17 @@ const TEMPLATE = [
 			rowSlot: 'columns',
 			layout: 'grid',
 			// Columns are an operator-set COUNT (Spec 37 §3.3, Bean-locked): the
-			// shared wrapper reads columns/columnsTablet/columnsMobile as flat
-			// integers (class-sgs-container-wrapper.php:149-154) and stacks to 1
-			// on mobile. No gridTemplateColumns object is seeded — an object here
-			// would flip $object_grid true (:138) and suppress the count path.
-			// A per-device custom template stays available as an advanced
+			// shared wrapper reads columns as a TIER OBJECT (Spec 35 pass 4,
+			// class-sgs-container-wrapper.php) and stacks to the mobile tier's
+			// count below 768. No gridTemplateColumns object is seeded — an
+			// object there would flip $object_grid true and suppress the count
+			// path. A per-device custom template stays available as an advanced
 			// override (set gridTemplateColumns explicitly), never the default.
-			columns: 3,
-			columnsTablet: 3,
-			columnsMobile: 1,
+			// ⛔ Do NOT seed columns/columnsTablet/columnsMobile as flat siblings
+			// here — sgs/site-footer-row's block.json no longer declares them
+			// (Spec 35 pass 4), so WordPress would silently discard the seed
+			// (D338/D563 bug class).
+			columns: { desktop: 3, tablet: 3, mobile: 1 },
 			// gap is a {desktop,tablet,mobile} object attr — a flat string would
 			// be coerced to the block.json default at render (D328).
 			gap: { desktop: '48px', mobile: '32px' },

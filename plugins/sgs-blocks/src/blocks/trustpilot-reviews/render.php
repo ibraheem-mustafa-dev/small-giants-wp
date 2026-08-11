@@ -59,9 +59,14 @@ $show_verified      = isset( $attributes['showVerifiedBadge'] ) ? (bool) $attrib
 $show_date          = isset( $attributes['showDate'] ) ? (bool) $attributes['showDate'] : true;
 $show_author        = isset( $attributes['showAuthor'] ) ? (bool) $attributes['showAuthor'] : true;
 $show_schema        = isset( $attributes['showSchema'] ) ? (bool) $attributes['showSchema'] : true;
-$columns            = isset( $attributes['columns'] ) ? intval( $attributes['columns'] ) : 3;
-$columns_tablet     = isset( $attributes['columnsTablet'] ) ? intval( $attributes['columnsTablet'] ) : 2;
-$columns_mobile     = isset( $attributes['columnsMobile'] ) ? intval( $attributes['columnsMobile'] ) : 1;
+// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// the normaliser, never the raw attribute (intval() on an unresolved array
+// throws "Array to int conversion", the D569/D570 bug class this normaliser
+// exists to prevent).
+$columns_obj        = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns            = intval( $columns_obj['desktop'] ?? 3 );
+$columns_tablet     = intval( $columns_obj['tablet'] ?? 2 );
+$columns_mobile     = intval( $columns_obj['mobile'] ?? 1 );
 $theme              = isset( $attributes['theme'] ) ? $attributes['theme'] : 'light';
 $card_style         = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
 $autoplay           = isset( $attributes['autoplay'] ) ? (bool) $attributes['autoplay'] : false;

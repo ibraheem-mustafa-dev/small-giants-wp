@@ -1,26 +1,26 @@
 ---
 doc_type: reference
-title: "Visual-diff report — trustpilot-reviews · gridTemplateRows"
+title: "Visual-diff report — trustpilot-reviews · columns"
 block: trustpilot-reviews
 date: 2026-08-11
-property: gridTemplateRows
+property: columns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 37e4f6ef0ccb8429
+source_sha: eb5005340e7f8d91
 ---
 
-# trustpilot-reviews — unchanged
+# trustpilot-reviews — columns binds live at every tier
 
-**Verdict: PASS.** No measured value moved for this block, so the full report
-was collapsed into the shared summary (Change 1, 2026-08-11) — this stub still
-carries this block's own numbers below, and exists in full so the pre-commit
-gate's per-block `source_sha` binding is never dropped.
+**Verdict: PASS.**
 
-| Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `91.5px` | `91.5px` | `—` | `—` | `grid` |
-| tablet (900px) | `tablet` | `91.5px` | `91.5px` | `—` | `—` | `grid` |
-| mobile (390px) | `mobile` | `117.5px 8px` | `117.5px 8px` | `—` | `—` | `grid` |
+⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
 
-Full context (page, selector, probe values, gate totals) for this run:
-`unchanged-summary-gridTemplateRows-2026-08-11.md#trustpilot-reviews`.
+The probe value (64/32/8) produces a visibly different `grid-template-columns` track list than the default value (2/2/1) at every viewport -- proof the tier object is read live, not frozen. Measured on: outer.
+
+| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
+|---|---|---|---|---|---|
+| desktop | outer | grid | `400px 400px 400px` | grid | `40px 112px 16.8906px 16.8906px 16.8906px 16.8906px 16.890...` |
+| tablet | outer | grid | `426px 426px` | grid | `40px 112px 23.3281px 23.3281px 23.3281px 23.3281px 23.328...` |
+| mobile | outer | grid | `342px` | grid | `42.75px 42.75px 42.75px 42.75px 42.75px 42.75px 42.75px 4...` |
+
+Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.

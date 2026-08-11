@@ -230,17 +230,9 @@
 			]
 		},
 		"columns": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
+			"type": "object",
+			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "30px"}

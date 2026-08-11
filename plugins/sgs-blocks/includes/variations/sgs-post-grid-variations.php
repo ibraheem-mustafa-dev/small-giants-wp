@@ -89,7 +89,7 @@ function sgs_register_post_grid_variations( array $variations, \WP_Block_Type $b
 			'attributes'  => array(
 				'layout'    => 'grid',
 				'className' => 'is-style-elevated',
-				'columns'   => 3,
+				'columns'   => array( 'desktop' => 3 ),
 			),
 		),
 		array(

@@ -1,89 +1,26 @@
 ---
 doc_type: reference
-title: "Visual-diff report — site-header · maxWidth"
+title: "Visual-diff report — site-header · columns"
 block: site-header
 date: 2026-08-11
-property: maxWidth
+property: columns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 67768d26765ce2a6
+source_sha: 5c226b14d915d591
 ---
 
-# site-header — Spec 35 pass 2 - maxWidth + contentWidth migrated to the tier-object shape, editor controls migrated in the same commit
+# site-header — no grid found anywhere for this property (CSS fact)
 
-**Verdict: PASS**, on a measured before/after capture of this block's own
-rendered element. No measured value moved.
+**Verdict: PASS.**
 
-## What was measured, and where
+⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-maxwidth/
-- **Selector (scoped):** `#tierfx-default-site-header > .wp-block-sgs-site-header` — resolved to `<header>`, uid `(no uid class)`
-- **CSS property:** `max-width`
-- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
-- **Method:** Playwright (chromium), computed styles at three viewports, before
-  and after deploying the change to the sandybrown canary.
+**Not a defect (CSS fact, grid-only property).** the top-level `sgs/site-header` wrapper renders `display:block`; its real grid lives on the nested `sgs/site-header-row` child (see that block's own report, which DOES prove the binding).
 
-⛔ The selector is scoped to this block's own anchor. An unscoped query on a
-wrapper class returned the site header in a previous session and produced a
-confident false failure, so every measurement here is anchored.
+| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
+|---|---|---|---|---|---|
+| desktop | outer | block | `none` | block | `none` |
+| tablet | outer | block | `none` | block | `none` |
+| mobile | outer | block | `none` | block | `none` |
 
-## Measurements — this block, not another
-
-| Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `100%` | `100%` | `—` | `—` | `block` |
-| tablet (900px) | `tablet` | `100%` | `100%` | `—` | `—` | `block` |
-| mobile (390px) | `mobile` | `100%` | `100%` | `—` | `—` | `block` |
-
-These rows are the **default** variant — the property left unset, so the block
-renders its own `block.json` default. That is the regression surface: nearly
-every real instance leaves it unset, so a changed default is what would actually
-reach a client site.
-
-The *inner band* column is the `> .sgs-container__inner` element. The shared
-wrapper relocates grid/flex onto it for container-query blocks, so a report
-measuring only the outer element could miss where the value actually landed.
-
-`display` is recorded because the property computes whether or not it can paint
-— keeping "declared" and "visible" as separate facts rather than conflating them.
-
-
-## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
-
-This block **declares `maxWidth` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
-
-**Evidence:** same pre-existing gap as hero - .sgs-site-header{max-width:100%} in the block stylesheet and no scoped rule emitted, identical before and after.
-
-⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
-
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert**
-property would also produce. So a second instance of this block on the
-same page has `maxWidth` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
-for the tier that should bind:
-
-- desktop: set `64px` → outer `100%`  ⚠ does NOT bind
-- mobile: set `8px` → outer `100%`  ⚠ does NOT bind
-- tablet: set `32px` → outer `100%`  ⚠ does NOT bind
-
-The value demonstrably applies, so "nothing moved" above means
-*nothing moved*, not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately
-so. Before the migration `maxWidth` was a scalar attribute, so WordPress
-coerced an object-shaped value away entirely — a before/after pair on
-this variant would compare "the value" against "the value the old code
-could not store", which is not a rendering comparison at all.
-
-## Gates
-
-- Console errors: **3**
-- PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
-  `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
-- `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,
-  so the report cannot survive a later edit to the block without going stale.
-
-*Generated by `plugins/sgs-blocks/scripts/make-visual-diff-reports.py` from
-`measurements-before.json` + `measurements-after.json`. Every figure above is read
-from those captures; none is hand-written.*
+Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.

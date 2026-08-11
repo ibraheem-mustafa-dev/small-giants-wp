@@ -207,17 +207,9 @@
 			"default": ""
 		},
 		"columns": {
-			"type": "number",
-			"default": 2
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
-		},
+			"type": "object",
+			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}

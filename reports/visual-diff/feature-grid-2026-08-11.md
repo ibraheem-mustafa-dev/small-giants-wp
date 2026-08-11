@@ -1,26 +1,26 @@
 ---
 doc_type: reference
-title: "Visual-diff report — feature-grid · gridTemplateRows"
+title: "Visual-diff report — feature-grid · columns"
 block: feature-grid
 date: 2026-08-11
-property: gridTemplateRows
+property: columns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 10291e2f54243d9b
+source_sha: e52b7a83689ce11e
 ---
 
-# feature-grid — unchanged
+# feature-grid — columns is NOT what drives this block's grid (verified in source)
 
-**Verdict: PASS.** No measured value moved for this block, so the full report
-was collapsed into the shared summary (Change 1, 2026-08-11) — this stub still
-carries this block's own numbers below, and exists in full so the pre-commit
-gate's per-block `source_sha` binding is never dropped.
+**Verdict: PASS.**
 
-| Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `48px` | `48px` | `—` | `—` | `grid` |
-| tablet (900px) | `tablet` | `48px` | `48px` | `—` | `—` | `grid` |
-| mobile (390px) | `mobile` | `48px 48px` | `48px 48px` | `—` | `—` | `grid` |
+⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
 
-Full context (page, selector, probe values, gate totals) for this run:
-`unchanged-summary-gridTemplateRows-2026-08-11.md#feature-grid`.
+**Not a defect.** uses its own `columnsDesktop`/`columnsTablet`/`columnsMobile` attribute family for the real grid (a DIFFERENT attribute despite the similar name); the generic `columns` this pass migrated is inherited schema noise on this block, confirmed dead by the measurement (default and probe render byte-identical) and by reading feature-grid/render.php, which never references `columns`.
+
+| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
+|---|---|---|---|---|---|
+| desktop | outer | grid | `282px 282px 282px 282px` | grid | `282px 282px 282px 282px` |
+| tablet | outer | grid | `414px 414px` | grid | `414px 414px` |
+| mobile | outer | grid | `342px` | grid | `342px` |
+
+Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.

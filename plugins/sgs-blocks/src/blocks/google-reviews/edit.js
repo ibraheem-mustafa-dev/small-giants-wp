@@ -18,15 +18,13 @@ import {
 	TextControl,
 	Notice,
 } from '@wordpress/components';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveOverride } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
 		placeId,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		maxReviews,
 		minRating,
 		textOnly,
@@ -89,27 +87,45 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ [ 'grid', 'slider', 'wall' ].includes( variant ) && (
 					<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
-						<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-							{ ( breakpoint ) => {
-								const attrMap = {
-									desktop: 'columns',
-									tablet:  'columnsTablet',
-									mobile:  'columnsMobile',
-								};
+						{ /*
+							  columns is a TIER OBJECT — ONE attr holding
+							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
+							  therefore use ResponsiveOverride, which reads and
+							  writes the object, NOT ResponsiveControl, which
+							  writes one flat attr per tier.
+
+							  ⛔ Do NOT revert this to `ResponsiveControl` + an
+							  attrMap of `{desktop:'columns',
+							  tablet:'columnsTablet', mobile:'columnsMobile'}`.
+							  Those siblings are no longer declared by
+							  block.json — WordPress silently discards them
+							  (D338), and a raw number written to `columns`
+							  itself coerces the object-typed attr to its
+							  default, dropping the whole setting (D563 bug
+							  class).
+						*/ }
+						<ResponsiveOverride
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							value={ columns }
+							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+						>
+							{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
 								const maxMap = { desktop: 4, tablet: 3, mobile: 2 };
 								return (
 									<RangeControl
-										value={ attributes[ attrMap[ breakpoint ] ] }
-										onChange={ ( value ) =>
-											setAttributes( { [ attrMap[ breakpoint ] ]: value } )
+										value={
+											ownValue !== ''
+												? ownValue
+												: ( effectiveValue !== '' ? effectiveValue : ( maxMap[ tier ] || 3 ) )
 										}
+										onChange={ setOwnValue }
 										min={ 1 }
-										max={ maxMap[ breakpoint ] }
+										max={ maxMap[ tier ] }
 										__nextHasNoMarginBottom
 									/>
 								);
 							} }
-						</ResponsiveControl>
+						</ResponsiveOverride>
 					</PanelBody>
 				) }
 

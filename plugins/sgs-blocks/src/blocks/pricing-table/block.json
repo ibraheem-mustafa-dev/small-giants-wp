@@ -171,8 +171,8 @@
 	},
 	"attributes": {
 		"columns": {
-			"type": "number",
-			"default": 3
+			"type": "object",
+			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
 		},
 		"billingToggle": {
 			"type": "string",
@@ -470,15 +470,7 @@
 				"space-around",
 				"space-evenly"
 			]
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
-		},
+		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",

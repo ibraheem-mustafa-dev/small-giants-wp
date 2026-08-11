@@ -20,6 +20,7 @@ import {
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
 } from '../../components';
+import { resolveResponsiveTier } from '../../utils';
 
 // Promoted common header elements (Spec 37 §3.5 / FR-37-34). Steering, not
 // gating: the row still accepts ANY block via the normal inserter — this list
@@ -92,13 +93,11 @@ const ROW_LABELS = {
 	bottom: __( 'Bottom row — message / business info', 'sgs-blocks' ),
 };
 
-// Bridge the three flat count attrs to the {desktop,tablet,mobile} object shape
-// the ResponsiveOverride switcher expects — identical to site-footer-row.
-const COUNT_ATTR = {
-	desktop: 'columns',
-	tablet: 'columnsTablet',
-	mobile: 'columnsMobile',
-};
+// columns is a TIER OBJECT holding {desktop,tablet,mobile} (Spec 35 pass 4,
+// 2026-08-11) — wires directly onto ResponsiveOverride, identical to
+// site-footer-row and gridTemplateColumns. ⛔ Do NOT reintroduce a bridge to
+// three flat attrs — columnsTablet/columnsMobile are no longer declared by
+// block.json.
 
 // Cross-axis alignment of this row's children (align-items on the wrapper's
 // grid/flex track) — read directly by SGS_Container_Wrapper as `verticalAlign`
@@ -164,8 +163,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent,
 		gap,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		verticalAlign,
 		flexDirection,
 		justifyItems,
@@ -217,17 +214,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 
-	const countValue = {
-		...( columns !== undefined ? { desktop: columns } : {} ),
-		...( columnsTablet !== undefined ? { tablet: columnsTablet } : {} ),
-		...( columnsMobile !== undefined ? { mobile: columnsMobile } : {} ),
-	};
-	const onCountChange = ( obj ) =>
-		setAttributes( {
-			[ COUNT_ATTR.desktop ]: obj.desktop,
-			[ COUNT_ATTR.tablet ]: obj.tablet,
-			[ COUNT_ATTR.mobile ]: obj.mobile,
-		} );
+	// columns IS the tier object now — pass it straight through, and write it
+	// straight back. No per-tier fan-out: those sibling attrs no longer exist.
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
 
 	// The attr IS the tier object now — pass it straight through, and write it
 	// straight back. No per-tier fan-out: those sibling attrs no longer exist.
@@ -247,7 +236,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
-				gridTemplateColumns: `repeat(${ columns || 3 }, 1fr)`,
+				gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
 				gap: ( gap && gap.desktop ) || '16px',
 		  }
 		: {
@@ -312,8 +301,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ isGrid && (
 						<ResponsiveOverride
 							label={ __( 'Columns', 'sgs-blocks' ) }
-							value={ countValue }
-							onChange={ onCountChange }
+							value={ columns }
+							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
 						>
 							{ ( {
 								ownValue,

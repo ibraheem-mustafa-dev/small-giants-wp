@@ -39,7 +39,12 @@ $sgs_pt_css_length = static function ( $value ) {
 };
 
 // ── Attributes ──────────────────────────────────────────────────────────────
-$columns        = absint( $attributes['columns'] ?? 3 );
+// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11), though this block
+// only ever exposes/uses the desktop tier (no per-device columns UI exists).
+// Read via the normaliser, never the raw attribute (absint() on an
+// unresolved array throws "Array to int conversion").
+$columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns        = absint( $columns_obj['desktop'] ?? 3 );
 $plans          = (array) ( $attributes['plans'] ?? array() );
 $style          = sanitize_key( $attributes['style'] ?? 'card' );
 $title_colour   = $attributes['titleColour'] ?? '';

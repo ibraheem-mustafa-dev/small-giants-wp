@@ -17,7 +17,7 @@
 
 <!-- wp:sgs/site-footer {"align":"full","backgroundColor":"footer-bg","contentWidth":{"desktop":"normal"}} -->
 
-<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":2,"padding":{"desktop":{"top":"var(--wp--preset--spacing--60)"}}} -->
+<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":{"desktop":2},"padding":{"desktop":{"top":"var(--wp--preset--spacing--60)"}}} -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
 <!-- wp:sgs/responsive-logo {"width":200,"linkToHome":true} /-->

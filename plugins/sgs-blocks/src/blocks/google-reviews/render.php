@@ -66,9 +66,14 @@ if ( 'slider' === $variant && $sgs_gr_loop_carousel ) {
 	$sgs_gr_list_fx_attr .= ' data-sgs-loop="1"';
 }
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
-$columns            = $attributes['columns'] ?? 3;
-$columns_tablet     = $attributes['columnsTablet'] ?? 2;
-$columns_mobile     = $attributes['columnsMobile'] ?? 1;
+// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// the normaliser, never the raw attribute (a cast on an unresolved array
+// throws "Array to int/string conversion", the D569/D570 bug class this
+// normaliser exists to prevent).
+$columns_obj        = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns            = $columns_obj['desktop'] ?? 3;
+$columns_tablet     = $columns_obj['tablet'] ?? 2;
+$columns_mobile     = $columns_obj['mobile'] ?? 1;
 $max_reviews        = $attributes['maxReviews'] ?? 10;
 $min_rating         = $attributes['minRating'] ?? 1;
 $text_only          = $attributes['textOnly'] ?? false;

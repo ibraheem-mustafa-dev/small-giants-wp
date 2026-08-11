@@ -21,7 +21,7 @@ import {
 import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar } from '../../utils';
+import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 const VARIANT_OPTIONS = [
@@ -156,8 +156,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		variant,
 		items,
 		columns,
-		columnsTablet,
-		columnsMobile,
 		gap,
 		aspectRatio,
 		effectHover,
@@ -210,10 +208,18 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const blockProps = useBlockProps( { className } );
 
+	// columns is a TIER OBJECT (Spec 35 pass 4) — resolve each tier explicitly,
+	// or the editor preview would emit "--sgs-card-grid-columns: [object
+	// Object]" and CSS custom properties silently fail to apply (same D567
+	// class as the container/gridTemplateColumns fix).
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
+	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
+	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+
 	const gridStyle = {
-		'--sgs-card-grid-columns': columns,
-		'--sgs-card-grid-columns-tablet': columnsTablet,
-		'--sgs-card-grid-columns-mobile': columnsMobile,
+		'--sgs-card-grid-columns': columnsDesktop,
+		'--sgs-card-grid-columns-tablet': columnsTabletTier,
+		'--sgs-card-grid-columns-mobile': columnsMobileTier,
 		'--sgs-card-grid-gap': spacingVar( gap ),
 		'--sgs-card-grid-aspect': aspectRatio,
 	};

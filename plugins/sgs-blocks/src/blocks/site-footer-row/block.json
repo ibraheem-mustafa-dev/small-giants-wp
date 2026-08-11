@@ -108,17 +108,9 @@
 			"_comment": "D456-follow-up (2026-08-02) — same shape + same latent exposure as sgs/site-header-row's `layout` enum (see that block.json for the full rationale): `class-sgs-container-wrapper.php:528` only routes the shared wrapper's gap onto the query-container-ancestor `.sgs-container__inner` when layout is 'flex' or 'grid'. This row's own gap defaults are plain px today (not cqi), so the landmine has no live symptom here yet — but the enum closes it universally rather than leaving a per-block carve-out (R-31-9), so a future cqi-based gap value on this block can never resolve against the wrong container either. Verified: edit.js LAYOUT_OPTIONS, render.php, and every theme pattern instantiating this block use only 'flex'/'grid'."
 		},
 		"columns": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
+			"type": "object",
+			"default": {"desktop": 3, "tablet": 3, "mobile": 1}
+		},
 		"gridTemplateColumns": {
 			"type": "object"
 		},
