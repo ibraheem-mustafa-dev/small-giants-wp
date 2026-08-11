@@ -798,4 +798,3 @@ P-CP-1's dead-gate caveat. The `animations` table's row count/mapping coverage c
 verified from this repo (it lives in a separate uimax DB) — reported as unverified, not refuted.
 
 **Trigger:** P-CP-1 + P-CP-2 in flight and an animation-rich app port is requested.
-
