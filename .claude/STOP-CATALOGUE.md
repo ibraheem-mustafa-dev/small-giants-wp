@@ -1161,15 +1161,18 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
     vs var()-driven values, static contrast maths vs composited opacity/filter, `head`-truncated
     listings, a syntax-checker mistaken for a scope-checker, a forced lint rule the project's own
     config can override, a BARE STRING search that will match a substring of a longer identifier,
-    a case-sensitive search claiming absence of prose that exists in a different casing, or a DOM
-    query scoped to the wrong document (top-level vs an editor `<iframe>`)? (STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE,
+    a case-sensitive search claiming absence of prose that exists in a different casing, a DOM
+    query scoped to the wrong document (top-level vs an editor `<iframe>`), or a bare selector
+    matching the FIRST instance in document order instead of your test block (e.g. a site
+    header's chrome sharing a class with the content block under test)? (STOP-A-LITERAL-GREP-CANNOT-SEE-A-CSS-VARIABLE-DRIVEN-VALUE,
     STOP-STATIC-CONTRAST-MATHS-CANNOT-SEE-COMPOSITED-DIMMING,
     STOP-HEAD-N-ON-A-VERIFICATION-LISTING-HIDES-THE-ROWS-THAT-MATTER,
     STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE,
     STOP-A-FORCED-LINT-RULE-CAN-BE-OVERRIDDEN-BY-PROJECT-CONFIG,
     STOP-A-SUBSTRING-MATCH-IS-NOT-A-WORD-MATCH,
     STOP-A-CASE-SENSITIVE-GREP-CAN-MANUFACTURE-A-FALSE-ALL-CLEAR,
-    STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY.)
+    STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY,
+    STOP-A-BARE-SELECTOR-MATCHES-THE-FIRST-INSTANCE-IN-DOCUMENT-ORDER-NOT-YOUR-TEST-BLOCK.)
 12. Before grouping two or more findings/fixes under one remedy because they share a SYMPTOM or a
     COUNT, have I traced the actual MECHANISM each one depends on — and before trusting a
     `--dry-run`/preview/IDE-diagnostics result, or writing a "measured"/"verified" figure into a
@@ -1188,6 +1191,17 @@ for real before claiming done?
 ---
 
 ## D. D101 count-check receipt
+
+- **2026-08-11 (handoff, session 9 - the `columns` migration (pass 4/6) landed, plus one
+  measurement lesson: a bare `document.querySelector` matched the site header's chrome instead
+  of the test block):** measured with this file's own canonical commands AFTER writing the new
+  entry (not before — session 8's receipt records why that ordering matters for a
+  self-referential count). DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 217 -> **218**
+  (+1, new entry in §B measurement-traps list). Bullet defences (`grep -cE '^- \*\*'`) 281 ->
+  **282** (+1 = the new STOP entry; this receipt line itself replaces the prior receipt rather
+  than adding a new bullet, so it does not double-count). Pre-flight ritual item 11 (§C) extended
+  with the new failure mode + its STOP token, per the carry-forward rule (add, never subtract).
+  No entries removed.
 
 - **2026-08-11 (handoff, session 8 - the 41-property migration landed, and 10 earned lessons: a
   green deploy verify that hid stale code, `git commit --amend` flushing a path-scoped index, a
@@ -1908,6 +1922,15 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   STOP-A-A-PROBE-THAT-NEVER-REACHES-THE-EFFECT-IS-MEASURING-THE-PROBE (a "false" reading that is really
   a description of where the probe looked, not of what exists) and STOP-THE-EDITOR-IS-WHERE-THE-CLIENT-LIVES
   (the editor surface needs its own verification path, not an assumption inherited from the frontend).
+- **STOP-A-BARE-SELECTOR-MATCHES-THE-FIRST-INSTANCE-IN-DOCUMENT-ORDER-NOT-YOUR-TEST-BLOCK.**
+  `document.querySelector('.wp-block-sgs-container')` on a live verification page returned the SITE
+  HEADER's nav container (same shared block type, renders before `<main>`) instead of the test
+  content block further down the page — silently, no error, `display:flex` where `display:grid`
+  was expected. **Rule: scope every live-verification DOM query to the content container
+  (`.entry-content <selector>`) or the block's own unique uid class, never a bare block-type class
+  — any WP page with header/footer chrome can share that class with content.** Same family as
+  STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY (wrong document) — here the document is
+  right but the match is the wrong ELEMENT within it. Session 9, 2026-08-11.
 - **STOP-DO-NOT-WRITE-A-FIGURE-INTO-A-COMMIT-OR-REGISTRATION-BEFORE-MEASURING-IT.** "Measured: 0
   findings" was written into a rule registration ahead of the rule's first real run — a plausible,
   optimistic placeholder rather than an observed value — and the first actual run returned **1**. The
