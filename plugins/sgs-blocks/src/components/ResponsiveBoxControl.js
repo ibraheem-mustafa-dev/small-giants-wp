@@ -66,9 +66,10 @@
  * `BorderRadiusControl` via the standard WP aliasing pattern.
  */
 import { BoxControl } from '@wordpress/components';
-import { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';
+
 import { __ } from '@wordpress/i18n';
 import ResponsiveControl from './ResponsiveControl';
+import { BorderRadiusControl } from './primitives';
 
 /** Map ResponsiveControl's device-switcher breakpoint keys to the contract's tier keys. */
 const TIER_BY_BREAKPOINT = {

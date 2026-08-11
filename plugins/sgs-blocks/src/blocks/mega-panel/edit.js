@@ -44,9 +44,6 @@ import {
 	TextControl,
 	ToggleControl,
 	SelectControl,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -54,6 +51,7 @@ import {
 	ResponsiveBoxControl,
 } from '../../components';
 import { colourVar } from '../../utils';
+import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /** Default general-variant template: 2 mega-groups (CF-10 pin) — a starting
  *  point only; the panel is NOT locked to this shape (FIX 1). */

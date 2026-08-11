@@ -29,10 +29,9 @@
 import { __ } from '@wordpress/i18n';
 import {
 	GradientPicker,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
+import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
 /**
  * Split a CSS gradient's argument list on top-level commas only (i.e. not the

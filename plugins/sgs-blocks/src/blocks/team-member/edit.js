@@ -38,11 +38,11 @@ import {
 	SelectControl,
 	ToggleControl,
 	Button,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
+import { UnitControl } from '../../components/primitives';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },

@@ -28,11 +28,9 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 const TEMPLATE = [
 	[ 'sgs/media', {} ],

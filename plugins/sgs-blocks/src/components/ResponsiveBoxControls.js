@@ -25,10 +25,10 @@ import { __ } from '@wordpress/i18n';
 import {
 	PanelBody,
 	BoxControl,
-	__experimentalUnitControl as UnitControl,
 	SelectControl,
 } from '@wordpress/components';
 import ResponsiveOverride from './ResponsiveOverride';
+import { UnitControl } from './primitives';
 
 /** Units offered in the BoxControl / UnitControl inputs. */
 const LENGTH_UNITS = [

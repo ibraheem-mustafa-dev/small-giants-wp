@@ -23,9 +23,6 @@ import {
 	TextControl,
 	ToggleControl,
 	RangeControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -36,6 +33,7 @@ import {
 	TypographyControls,
 } from '../../components';
 import { colourVar } from '../../utils';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants

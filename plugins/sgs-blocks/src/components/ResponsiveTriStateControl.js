@@ -52,12 +52,11 @@ import { useSelect } from '@wordpress/data';
 import {
 	ToggleControl,
 	Button,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { desktop, tablet, mobile } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { resolveTier } from '../utils/responsive';
+import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
 // ⛔ Removed with the switcher (Phase 1.3): the `DeviceTabs` import and
 // `VisuallyHidden` — the latter only wrapped the tier announcement, which is now

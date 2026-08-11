@@ -11,8 +11,6 @@ import {
 	ToggleControl,
 	TextControl,
 	Button,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -26,6 +24,7 @@ import {
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const CAPTION_ALIGN_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },

@@ -15,11 +15,6 @@ import {
 	TextareaControl,
 	ToggleControl,
 	Notice,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -46,6 +41,7 @@ import {
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
 } from '../container/components/ContainerWrapperControls';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
 
@@ -300,7 +296,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			templateLock: false,
 		}
 	);
-
 
 	return (
 		<>

@@ -28,14 +28,12 @@ import {
 	PanelBody,
 	TextControl,
 	SelectControl,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalUnitControl as UnitControl,
 	Icon,
 } from '@wordpress/components';
 import { close } from '@wordpress/icons';
 import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
+import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.

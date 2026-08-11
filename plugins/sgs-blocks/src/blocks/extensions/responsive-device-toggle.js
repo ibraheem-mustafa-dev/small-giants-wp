@@ -71,11 +71,10 @@ import {
 	// literally `undefined` at runtime, which React reports only as minified
 	// error #130 ("element type is invalid… got: undefined") — it builds clean,
 	// passes every prebuild gate, and fails silently in the browser.
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	VisuallyHidden,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * Guard against double registration.

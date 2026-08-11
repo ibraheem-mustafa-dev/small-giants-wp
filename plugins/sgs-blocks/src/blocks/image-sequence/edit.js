@@ -9,13 +9,12 @@ import {
 	Notice,
 	Button,
 	Spinner,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import MediaPicker from '../../components/MediaPicker';
 import { ResponsiveControl } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * Hard cap on frames per tier (Step 16, Motion Wave D, Route B). Must stay

@@ -8,7 +8,6 @@ import {
 	Button,
 	RangeControl,
 	Notice,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -30,6 +29,7 @@ import {
 	GridItemDefaultsPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
+import { UnitControl } from '../../components/primitives';
 
 /**
  * Resolve a gap attribute value to a valid CSS string for editor preview.

@@ -16,9 +16,6 @@ import {
 	ToggleControl,
 	RangeControl,
 	Notice,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	ResponsiveControl,
@@ -26,6 +23,7 @@ import {
 	SgsLinkControl,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the

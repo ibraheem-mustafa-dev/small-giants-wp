@@ -8,8 +8,6 @@ import {
   ToggleControl,
   Button,
   Notice,
-  __experimentalToggleGroupControl as ToggleGroupControl,
-  __experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from "@wordpress/components";
 import {
   DesignTokenPicker,
@@ -20,6 +18,7 @@ import {
   TypographyControls,
 } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
+import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 
 const ICON_SIZE_OPTIONS = [
   { label: __("Small", "sgs-blocks"), value: "small" },

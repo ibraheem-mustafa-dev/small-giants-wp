@@ -31,13 +31,11 @@
  * @package SGS\Blocks
  */
 import { useState } from '@wordpress/element';
-import {
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-} from '@wordpress/components';
+
 import { useSettings } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import { resolveColorToken } from './DesignTokenPicker';
+import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
 /**
  * Flatten WordPress's colour palette to a single array of { slug, color }.

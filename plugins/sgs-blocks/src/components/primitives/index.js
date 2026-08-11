@@ -1,0 +1,62 @@
+/**
+ * WordPress primitive re-exports — the `__experimental*` compat boundary.
+ *
+ * WHAT THIS IS
+ * ------------
+ * A single place where this codebase names the unstable WordPress component
+ * primitives. Every `__experimental*` import in `src/` goes through here, so
+ * when core renames or stabilises one, ONE file changes instead of 47.
+ *
+ * ⛔ THIS IS NOT A SKIN LAYER, AND MUST NEVER BECOME ONE (Bean-ruled).
+ * Zero styling. Zero added props. Zero wrapper components. Every line below is a
+ * bare re-export under the same alias the tree already used, so behaviour is
+ * byte-identical and the diff that introduced it changed no rendering at all.
+ * If you find yourself wanting to wrap one of these to add a default prop, that
+ * belongs in a real component in `src/components/`, not here — the moment this
+ * file has behaviour, it stops being a boundary and becomes a dependency.
+ *
+ * WHY IT EXISTS (Spec 35 Phase 0 item 0d, D564)
+ * ---------------------------------------------
+ * Measured 2026-08-11: EVERY component primitive this tree imports from
+ * WordPress is `__experimental*` — 115 import sites across 47 files, 10 distinct
+ * symbols. `__experimental` is core's explicit statement that the export may be
+ * renamed or removed without a deprecation cycle. Before this file, such a
+ * rename was a 47-file emergency; now it is a one-line edit here.
+ *
+ * ⚠ TWO SOURCE PACKAGES — this is the trap, and it is why a naive
+ *   find-and-replace to a single package breaks the build:
+ *   `__experimentalBorderRadiusControl` comes from `@wordpress/block-editor`;
+ *   every other symbol comes from `@wordpress/components`.
+ *
+ * ⚠ `@wordpress/components` is a WEBPACK EXTERNAL, not an installed dependency —
+ *   it resolves to `window.wp.components` at runtime and is NOT in
+ *   `node_modules`. You cannot read its source to check a default; consult the
+ *   Gutenberg source for the installed WP version instead of guessing.
+ *
+ * ENFORCEMENT
+ * -----------
+ * `scripts/surveys/survey-experimental-imports.js --check` fails the build on
+ * any raw `__experimental*` component import outside this file. Wired into
+ * `prebuild` in the same commit that created it.
+ *
+ * NOT IN SCOPE — deliberately absent, do not "fix" by adding them:
+ *   `__experimentalSkipSerialization` and `__experimentalBorder` are `block.json`
+ *   `supports` KEYS, not JS imports (every occurrence in `src/` is inside a
+ *   comment), and `__experimentalGetPreviewDeviceType` is a data-store selector.
+ *   Routing any of them through a component barrel would be meaningless.
+ */
+
+export {
+	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
+	__experimentalNumberControl as NumberControl,
+	__experimentalBoxControl as BoxControl,
+	__experimentalDivider as Divider,
+} from '@wordpress/components';
+
+// ⚠ block-editor, NOT components. The only one.
+export { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';

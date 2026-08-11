@@ -7,11 +7,10 @@ import {
 	SelectControl,
 	RangeControl,
 	Button,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { IconPicker, IconPreview } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },

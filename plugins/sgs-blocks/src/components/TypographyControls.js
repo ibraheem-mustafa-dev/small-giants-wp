@@ -45,9 +45,10 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl, __experimentalUnitControl as UnitControl } from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
 import ResponsiveControl from './ResponsiveControl';
+import { UnitControl } from './primitives';
 
 export const SGS_FONT_WEIGHT_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },

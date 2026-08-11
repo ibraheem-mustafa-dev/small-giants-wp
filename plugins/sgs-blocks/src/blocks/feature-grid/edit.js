@@ -9,9 +9,9 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { ResponsiveControl } from '../../components';
+import { UnitControl } from '../../components/primitives';
 
 const LAYOUT_MODE_OPTIONS = [
 	{

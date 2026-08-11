@@ -22,23 +22,19 @@ import {
 	TextControl,
 	TextareaControl,
 	RangeControl,
-	__experimentalNumberControl as NumberControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalBoxControl as BoxControl,
 	ComboboxControl,
 	ToggleControl,
 	CheckboxControl,
 	Notice,
 	Spinner,
 	Button,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
+import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';

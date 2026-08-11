@@ -9,9 +9,6 @@ import {
 	SelectControl,
 	ToggleControl,
 	Notice,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -20,6 +17,7 @@ import {
 	ResponsiveBoxControl,
 } from '../../components';
 import { colourVar } from '../../utils';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only, matches the pre-existing attribute set). contentWidth was

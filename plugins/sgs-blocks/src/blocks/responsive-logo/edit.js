@@ -11,11 +11,11 @@ import {
 	SelectControl,
 	TextareaControl,
 	Notice,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveControl } from '../../components';
+import { UnitControl } from '../../components/primitives';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;

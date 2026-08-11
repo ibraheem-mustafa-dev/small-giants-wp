@@ -17,8 +17,9 @@
  * for current callers.
  */
 import { useSettings } from '@wordpress/block-editor';
-import { SelectControl, __experimentalUnitControl as UnitControl } from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { UnitControl } from './primitives';
 
 /** Units available in the free-input UnitControl. */
 const FREE_UNITS = [

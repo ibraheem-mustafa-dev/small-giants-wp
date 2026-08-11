@@ -12,13 +12,12 @@ import {
 	RangeControl,
 	TextControl,
 	Button,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const TEMPLATE = [
 	[ 'sgs/tab', { label: __( 'Tab 1', 'sgs-blocks' ) } ],

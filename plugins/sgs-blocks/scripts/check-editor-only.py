@@ -32,26 +32,37 @@ everything else. Every rule fails SAFE.
 
 A block's staged change is editor-only iff ALL hold:
 
-  1. The block has staged files, and EVERY one of them is ``edit.js``. A staged
-     ``render.php`` / ``style.css`` / ``save.js`` / ``view.js`` / ``block.json``
-     can all move pixels, so any of them means the gate applies.
+  1. Every staged file is JavaScript, sits at the block ROOT or under
+     ``components/``, and is NOT a frontend entry. The frontend set is DERIVED
+     from ``block.json`` (``viewScript`` / ``viewScriptModule`` / ``script`` /
+     ``render`` / ``style``) rather than guessed from filenames — which is how a
+     block that keeps its inspector control at the block root
+     (``before-after/BooleanResponsiveControl.js``) is handled without a
+     hardcoded allowlist. PHP, CSS and ``block.json`` are refused outright, and
+     so is any deeper path such as ``assets/sprite.js``.
      ``editor.css`` is deliberately NOT admitted — it restyles the editor canvas,
-     which is a surface an author may legitimately want captured. Widening to it
-     needs its own evidence, not this branch's.
-  2. ``edit.js`` is MODIFIED — not added, deleted or renamed. A new file could be
-     anything, and its history cannot be diffed.
-  3. The STAGED ``edit.js`` exposes no named export. This is load-bearing: a
+     which is a surface an author may legitimately want captured.
+  2. Every staged file is MODIFIED — not added, deleted or renamed. A new file
+     could be anything, and its history cannot be diffed.
+  3. The STAGED ``edit.js`` exposes no named export. Load-bearing: an
      ``export const FOO`` could be imported by a frontend bundle, at which point
-     "editor-only" stops being true. Only a default export (the editor component,
-     which WordPress runs exclusively in the editor) is admitted.
-     Measured at introduction: 0 of 83 blocks carry a named export in edit.js.
-  4. No sibling file in the block directory imports ``./edit``, except
-     ``index.js`` — whose import IS the block registration's ``edit:`` field and
-     is by definition editor-side. Measured at introduction: 83 index.js import
-     it, and 0 save.js / view.js do.
+     "editor-only" stops being true. Measured at introduction: 0 of 83 blocks
+     carry a named export in edit.js. ⚠ This rule is edit.js-ONLY — an inspector
+     COMPONENT is supposed to export named panels, so its equivalent guarantee is
+     rule 5.
+  4. No sibling imports ``./edit`` except ``index.js`` — whose import IS the
+     block registration's ``edit:`` field and is by definition editor-side.
+     Measured at introduction: 83 index.js import it, and 0 save.js / view.js do.
+  5. No staged component is REACHABLE from a frontend entry, transitively. The
+     first shape of this rule checked direct imports only and was wrong:
+     ``view.js`` → ``helper.js`` → the staged file would have been cleared. It
+     now walks the import graph from every frontend entry. The sibling map is
+     collected RECURSIVELY for the same reason — a flat listing never contained
+     ``components/*.js``, so the walk would have passed by being blind rather
+     than by proving anything.
 
-Rules 3 and 4 are CHECKED PER BLOCK on every run, never assumed from the census
-above. The census is why the rules are cheap, not a substitute for them.
+Rules 3, 4 and 5 are CHECKED PER BLOCK on every run, never assumed from the
+census above. The census is why the rules are cheap, not a substitute for them.
 
 Exit codes:
   0 — editor-only (the gate may SKIP the visual-report requirement)
@@ -72,9 +83,26 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 BLOCK_DIR = "plugins/sgs-blocks/src/blocks"
 
-# The one file this branch admits. Anything else in the block is a surface the
+# The files this branch admits. Anything else in the block is a surface the
 # visitor can see (or data that feeds one).
 EDITOR_FILE = "edit.js"
+
+# WIDENED 2026-08-11 (D564, Bean-approved): a block's own inspector components,
+# e.g. `container/components/ContainerWrapperControls.js`. These are imported by
+# edit.js and WordPress never serves them to a visitor, so — exactly like edit.js
+# — they cannot change frontend first paint.
+#
+# The trigger was the `__experimental*` compat-boundary migration, which rewrote
+# an import line in ContainerWrapperControls.js. Splitting that one file out of
+# the commit was not an option: leaving it unmigrated while the new gate was
+# wired would have failed the build on every fresh clone.
+#
+# Measured before widening, not assumed: ContainerWrapperControls.js is imported
+# by 31 edit.js files plus the device-toggle extension, and by ZERO frontend
+# surfaces — the only 4 hits in save.js/view.js/render.php are PHP comments, and
+# PHP cannot import JS. Rule 5 below re-checks that per block on every run rather
+# than trusting this paragraph.
+EDITOR_COMPONENT_DIR = "components"
 
 # `export const X`, `export function X`, `export class X`, `export { X }`,
 # `export default function` is NOT a named export and must not match.
@@ -92,6 +120,10 @@ EDIT_IMPORT_RE = re.compile(r"""(?:from|require\s*\()\s*['"]\./edit(?:\.js)?['"]
 # editor.
 IMPORT_EXEMPT = {"index.js"}
 
+# Files WordPress serves to a visitor (or that build what it serves). If one of
+# these imports a staged inspector component, the change is not editor-only.
+FRONTEND_SURFACES = {"save.js", "view.js", "view.jsx", "save.jsx", "frontend.js"}
+
 
 def _run(args: list[str]) -> str:
     return subprocess.run(
@@ -107,6 +139,7 @@ def verdict(
     staged_rows: list[tuple[str, str]],
     edit_js_text: str,
     siblings: dict[str, str],
+    frontend_entries: set | None = None,
 ) -> tuple[bool, str]:
     """Return (editor_only, reason).
 
@@ -117,17 +150,50 @@ def verdict(
     if not staged_rows:
         return False, "no staged files for this block"
 
+    # The FRONTEND set is derived from block.json, not guessed from filenames.
+    # `viewScript` / `viewScriptModule` / `script` / `render` / `style` name what
+    # WordPress actually serves; `editorScript` names the editor entry. Deriving
+    # it this way is why a block that keeps its inspector control at the block
+    # ROOT (before-after/BooleanResponsiveControl.js) is handled correctly
+    # without adding its filename to any hardcoded list — the project's
+    # detect-by-what-it-does rule, applied here.
+    frontend = set(FRONTEND_SURFACES) | set(frontend_entries or ())
+
     # Rule 1 + 2
+    component_files = []
     for state, path in staged_rows:
-        if path != EDITOR_FILE:
+        norm = path.replace("\\", "/")
+        base = norm.rsplit("/", 1)[-1]
+        if not norm.endswith((".js", ".jsx")):
             return False, (
-                f"{path} is staged — only {EDITOR_FILE} is editor-only "
-                "(render.php/style.css/save.js/view.js/block.json all move pixels)"
+                f"{path} is staged and is not JavaScript — PHP, CSS and block.json "
+                "all change what the visitor sees"
+            )
+        # Defence in depth alongside the manifest check: admit only the block
+        # ROOT (where before-after/media keep BooleanResponsiveControl.js) and
+        # components/. An arbitrary nested path such as assets/sprite.js is
+        # refused outright rather than argued about — narrow beats clever, and a
+        # deeper tree is where transitive reachability gets hard to prove.
+        depth = norm.count("/")
+        if depth > 1 or (depth == 1 and not norm.startswith(EDITOR_COMPONENT_DIR + "/")):
+            return False, (
+                f"{path} is neither at the block root nor under "
+                f"{EDITOR_COMPONENT_DIR}/ — not provably an editor surface"
+            )
+        if base in frontend or norm in frontend:
+            return False, (
+                f"{path} is a FRONTEND entry for this block (named in block.json "
+                "or a save/view surface), so it can change first paint"
             )
         if state != "M":
             return False, f"{path} is {state} (added/deleted/renamed), not a modification"
+        if norm != EDITOR_FILE:
+            component_files.append(norm)
 
-    # Rule 3
+    # Rule 3 — applies to edit.js only. An inspector COMPONENT is expected to
+    # carry named exports (that is how edit.js imports it), so the equivalent
+    # guarantee for components is rule 5 below: prove no frontend surface
+    # actually imports it, rather than forbidding the export shape.
     match = NAMED_EXPORT_RE.search(edit_js_text)
     if match:
         line = edit_js_text[: match.start()].count("\n") + 1
@@ -136,6 +202,54 @@ def verdict(
             "import it, so this file is not provably editor-only"
         )
 
+    # Rule 5 — no FRONTEND surface REACHES a staged component, transitively.
+    # Checked per block per run; never inferred from a past census.
+    #
+    # Direct-import-only was the first shape and it was wrong: view.js could
+    # import a helper that imports the staged file, and the check would clear a
+    # change that genuinely ships to the visitor. Walk the import graph instead,
+    # starting from every frontend entry, following relative specifiers inside
+    # the block.
+    reachable: set[str] = set()
+    queue = [n for n in siblings if n in frontend]
+    while queue:
+        current = queue.pop()
+        if current in reachable:
+            continue
+        reachable.add(current)
+        for spec in re.findall(
+            r"""(?:from|require\s*\()\s*['"](\.[^'"]+)['"]""", siblings.get(current, "")
+        ):
+            stem = spec.split("/")[-1].rsplit(".", 1)[0]
+            for cand in siblings:
+                cand_stem = cand.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+                if cand_stem == stem and cand not in reachable:
+                    queue.append(cand)
+
+    for comp in component_files:
+        comp_stem = comp.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+        for hit in reachable:
+            if hit in frontend:
+                continue  # the entry itself, not a reached component
+            if hit.rsplit("/", 1)[-1].rsplit(".", 1)[0] == comp_stem:
+                return False, (
+                    f"{comp} is reachable from a frontend entry (via {hit}) — "
+                    "it ships to the visitor, so the change is not editor-only"
+                )
+        # Also catch a frontend entry importing the component directly.
+        for name in sorted(siblings):
+            if name not in frontend:
+                continue
+            if re.search(
+                r"""(?:from|require\s*\()\s*['"][^'"]*%s(?:\.jsx?)?['"]"""
+                % re.escape(comp_stem),
+                siblings[name],
+            ):
+                return False, (
+                    f"{name} imports {comp} — a frontend surface reaches this "
+                    "component, so the change is not provably editor-only"
+                )
+
     # Rule 4
     for name, text in sorted(siblings.items()):
         if name in IMPORT_EXEMPT or name == EDITOR_FILE:
@@ -143,7 +257,15 @@ def verdict(
         if EDIT_IMPORT_RE.search(text):
             return False, f"{name} imports ./edit — editor code reaches another surface"
 
-    return True, "only edit.js changed; it has no named export and no non-index sibling imports it"
+    what = "edit.js"
+    if component_files:
+        what = ", ".join(component_files) if len(staged_rows) == len(component_files) \
+            else "edit.js + " + ", ".join(component_files)
+    return True, (
+        f"only editor surfaces staged ({what}); no named export on edit.js, "
+        "no non-index sibling imports ./edit, and no frontend surface imports "
+        "the staged component(s)"
+    )
 
 
 def is_editor_only(block: str) -> tuple[bool, str]:
@@ -167,16 +289,37 @@ def is_editor_only(block: str) -> tuple[bool, str]:
     siblings: dict[str, str] = {}
     block_path = os.path.join(*prefix.rstrip("/").split("/"))
     if os.path.isdir(block_path):
-        for name in os.listdir(block_path):
-            if not name.endswith((".js", ".ts", ".jsx", ".tsx")):
-                continue
-            full = os.path.join(block_path, name)
-            if not os.path.isfile(full):
-                continue
-            with open(full, encoding="utf-8", errors="replace") as handle:
-                siblings[name] = handle.read()
+        # RECURSIVE, keyed by path relative to the block dir. A flat os.listdir
+        # was the first shape and it was wrong: components/*.js never entered the
+        # dict, so rule 5's reachability walk could not see the very files this
+        # branch was widened to admit — it would have cleared them by being blind
+        # rather than by proving anything.
+        for root, _dirs, files in os.walk(block_path):
+            for name in files:
+                if not name.endswith((".js", ".ts", ".jsx", ".tsx")):
+                    continue
+                full = os.path.join(root, name)
+                rel = os.path.relpath(full, block_path).replace(os.sep, "/")
+                with open(full, encoding="utf-8", errors="replace") as handle:
+                    siblings[rel] = handle.read()
 
-    return verdict(rows, edit_text, siblings)
+    frontend_entries = set()
+    bj = os.path.join(block_path, "block.json")
+    if os.path.isfile(bj):
+        import json as _json
+        try:
+            with open(bj, encoding="utf-8") as fh:
+                meta = _json.load(fh)
+        except Exception:
+            # An unreadable manifest means we cannot prove anything — fail safe.
+            return False, "block.json could not be parsed; cannot prove editor-only"
+        for field in ("script", "viewScript", "viewScriptModule", "render", "style", "viewStyle"):
+            val = meta.get(field)
+            for item in (val if isinstance(val, list) else [val]):
+                if isinstance(item, str) and item:
+                    frontend_entries.add(item.replace("file:./", "").replace("file:", "").split("/")[-1])
+
+    return verdict(rows, edit_text, siblings, frontend_entries)
 
 
 # ---------------------------------------------------------------------------
@@ -264,6 +407,67 @@ _CASES = [
     (
         "NEGATIVE — nothing staged means the gate applies",
         [],
+        "",
+        {},
+        False,
+    ),
+    # ── Rule 1 widening + rule 5 (D564) ──────────────────────────────────────
+    (
+        "POSITIVE — a block's own inspector component is editor-only",
+        [("M", "components/ContainerWrapperControls.js")],
+        "",
+        {"index.js": "import Edit from './edit';", "save.js": "export default () => null;"},
+        True,
+    ),
+    (
+        "POSITIVE — edit.js AND its inspector component together",
+        [("M", "edit.js"), ("M", "components/WidthPanel.js")],
+        "export default function Edit() {}",
+        {"save.js": "export default () => null;"},
+        True,
+    ),
+    (
+        "NEGATIVE (rule 5) — save.js importing the staged component breaks it",
+        [("M", "components/ContainerWrapperControls.js")],
+        "",
+        {"save.js": "import X from './components/ContainerWrapperControls';"},
+        False,
+    ),
+    (
+        "NEGATIVE (rule 5) — view.js importing it is caught too",
+        [("M", "components/WidthPanel.js")],
+        "",
+        {"view.js": "const P = require('./components/WidthPanel.js');"},
+        False,
+    ),
+    (
+        "POSITIVE (rule 5) — an EDIT.JS importing the component is fine, not frontend",
+        [("M", "components/WidthPanel.js")],
+        "",
+        {"edit.js": "import WidthPanel from './components/WidthPanel';"},
+        True,
+    ),
+    (
+        "NEGATIVE — a component that is NOT .js (e.g. a css file) is not admitted",
+        [("M", "components/panel.css")],
+        "",
+        {},
+        False,
+    ),
+    (
+        "NEGATIVE (rule 5) — TRANSITIVE reach: view.js -> helper.js -> the staged component",
+        [("M", "components/Thing.js")],
+        "",
+        {
+            "view.js": "import h from './helper';",
+            "helper.js": "import T from './components/Thing';",
+            "components/Thing.js": "export default function Thing() {}",
+        },
+        False,
+    ),
+    (
+        "NEGATIVE — a nested non-component path is not admitted",
+        [("M", "assets/sprite.js")],
         "",
         {},
         False,

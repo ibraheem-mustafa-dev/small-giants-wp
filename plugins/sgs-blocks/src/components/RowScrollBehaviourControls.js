@@ -31,14 +31,13 @@ import {
 	PanelBody,
 	SelectControl,
 	ToggleControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as blocksStore } from '@wordpress/blocks';
 import ResponsiveTriStateControl from './ResponsiveTriStateControl';
 import { resolveTier, resolveOnTiers } from '../utils/responsive';
+import { ToolsPanel, ToolsPanelItem } from './primitives';
 
 /**
  * Derive a stable, DOM-safe anchor id for a child that has none yet.

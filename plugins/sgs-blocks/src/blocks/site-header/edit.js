@@ -11,10 +11,6 @@ import {
 	PanelBody,
 	SelectControl,
 	Notice,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 // No-inline migration (2026-08-05, D-pending): sgs/site-header no longer uses
 // <ContainerWrapperControls>'s ResponsiveSpacingPanel — its flat
@@ -28,6 +24,7 @@ import {
 	WidthPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveTriStateControl, ResponsiveBoxControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // FR-37-28 — Layout preset (Centred / Split / Minimal). A preset is a
 // convenience action that WRITES the block's EXISTING layout attributes

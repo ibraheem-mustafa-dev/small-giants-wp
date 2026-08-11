@@ -31,9 +31,6 @@ import {
 	SelectControl,
 	Notice,
 	Spinner,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -43,6 +40,7 @@ import {
 	ResponsiveBorderRadiusControl,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },

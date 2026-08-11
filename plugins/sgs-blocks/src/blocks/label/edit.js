@@ -10,12 +10,10 @@ import {
 	RangeControl,
 	TextControl,
 	ToggleControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },

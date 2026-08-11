@@ -22,7 +22,6 @@ import {
 	RangeControl,
 	TextControl,
 	ToggleControl,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -32,6 +31,7 @@ import {
 	ResponsiveBorderRadiusControl,
 } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
+import { UnitControl } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants

@@ -30,10 +30,10 @@ import {
 	BaseControl,
 	Button,
 	ButtonGroup,
-	__experimentalUnitControl as UnitControl,
 	ToggleControl,
 } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
+import { UnitControl } from './primitives';
 
 /**
  * Parse a raw CSS box-shadow string into its builder parts. Best-effort —

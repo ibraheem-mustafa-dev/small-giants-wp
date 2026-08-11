@@ -6,9 +6,6 @@ import {
 	SelectControl,
 	RangeControl,
 	ToggleControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -20,6 +17,7 @@ import {
 	StateToggleControl,
 	resolveColorToken,
 } from '../../components';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 const TARGET_OPTIONS = [
 	{ label: __( 'Same tab (_self)', 'sgs-blocks' ), value: '_self' },

@@ -16,14 +16,13 @@ import {
 	RadioControl,
 	FormTokenField,
 	Spinner,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
 import ResponsiveControl from '../../components/ResponsiveControl';
 import { colourVar } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)

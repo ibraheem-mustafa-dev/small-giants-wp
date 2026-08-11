@@ -31,12 +31,6 @@ import {
 	Button,
 	Notice,
 	RangeControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalBoxControl as BoxControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -46,6 +40,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveControl,
 } from '../../components';
+import { BoxControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 /**
  * Burger Menu scope presets (Bean 2026-07-28 — no bare px values in the UI).

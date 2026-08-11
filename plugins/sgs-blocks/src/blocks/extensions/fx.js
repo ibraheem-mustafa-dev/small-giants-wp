@@ -34,11 +34,6 @@ import {
 	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
 	SelectControl,
 	RangeControl,
 	ToggleControl,
@@ -56,6 +51,7 @@ import fxEffectMeta from './generated-fx-effect-meta.json';
 import fxPresets from './fx-presets.json';
 import fxPathRoutes from '../../../includes/fx-path-routes.json';
 import fxShapeRoutes from '../../../includes/fx-shape-routes.json';
+import { ToggleGroupControl, ToggleGroupControlOption, ToggleGroupControlOptionIcon, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * Every runtime effect module that actually exists under

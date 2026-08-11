@@ -9,10 +9,10 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
 import { ResponsiveBoxControl } from '../../components';
+import { UnitControl } from '../../components/primitives';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,

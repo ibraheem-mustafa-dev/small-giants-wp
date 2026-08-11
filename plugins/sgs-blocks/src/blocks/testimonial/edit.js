@@ -23,9 +23,6 @@ import {
 	TextControl,
 	ToggleControl,
 	BaseControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -34,6 +31,7 @@ import {
 	ShadowControl,
 } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
+import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
 // composite using only box+width, so it migrates BLOCK-PRIVATE — dropped

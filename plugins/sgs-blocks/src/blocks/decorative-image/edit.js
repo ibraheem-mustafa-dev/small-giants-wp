@@ -8,11 +8,10 @@ import {
 	RangeControl,
 	ToggleControl,
 	SelectControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },

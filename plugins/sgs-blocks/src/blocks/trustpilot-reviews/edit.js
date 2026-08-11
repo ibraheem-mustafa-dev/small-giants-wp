@@ -22,10 +22,8 @@ import {
 	TextareaControl,
 	Button,
 	Notice,
-	__experimentalNumberControl as NumberControl,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
+import { NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Carousel', 'sgs-blocks' ), value: 'carousel' },

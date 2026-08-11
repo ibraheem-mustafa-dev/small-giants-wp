@@ -30,9 +30,9 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { ResponsiveBoxControl } from '../../components';
+import { UnitControl } from '../../components/primitives';
 
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'H2', 'sgs-blocks' ), value: 2 },

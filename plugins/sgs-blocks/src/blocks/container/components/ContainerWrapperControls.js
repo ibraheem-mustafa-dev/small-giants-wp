@@ -48,13 +48,10 @@ import {
 	ToggleControl,
 	TextareaControl,
 	TextControl,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalUnitControl as UnitControl,
 	TabPanel,
 	BoxControl,
 } from '@wordpress/components';
-import { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';
+
 import {
 	ResponsiveControl,
 	ResponsiveOverride,
@@ -63,6 +60,7 @@ import {
 	ShadowControl,
 	GradientOverlayControl,
 } from '../../../components';
+import { BorderRadiusControl, ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Shared option arrays — kept identical to container/edit.js

@@ -29,10 +29,10 @@ import {
 	TextControl,
 	SelectControl,
 	Notice,
-	__experimentalDivider as Divider,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { Divider } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants

@@ -12,7 +12,6 @@ import {
 	TextControl,
 	ToggleControl,
 	Spinner,
-	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -23,6 +22,7 @@ import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxCont
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
 import { colourVar, spacingVar } from '../../utils';
+import { UnitControl } from '../../components/primitives';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
