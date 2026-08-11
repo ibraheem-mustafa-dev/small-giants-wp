@@ -260,9 +260,17 @@ function checkHoverDuplication( blockSlug, blockDir, meta ) {
 	const findings = [];
 	const supportsSgs = meta.supports && meta.supports.sgs ? meta.supports.sgs : {};
 	const hideList = Array.isArray( supportsSgs.hideExtensions ) ? supportsSgs.hideExtensions : [];
+	const enabledList = Array.isArray( supportsSgs.enabledExtensions ) ? supportsSgs.enabledExtensions : [];
+	// D551 (Phase 2.1): 'hover' is OPT-IN, not opt-out — the universal panel
+	// is absent unless the block lists it in enabledExtensions. A block that
+	// hasn't opted in was never carrying the universal panel, so its private
+	// *Hover attrs (if any) cannot be a duplicate of it.
+	if ( ! enabledList.includes( 'hover' ) ) {
+		return findings;
+	}
 	if ( hideList.includes( 'hover' ) ) {
-		// Block opted out of the universal hover extension entirely — its
-		// private *Hover attrs are the ONLY hover system, not a duplicate.
+		// Legacy denylist entry, now a no-op under the opt-in model — kept
+		// harmless rather than treated as a second source of truth.
 		return findings;
 	}
 	// className:false blocks never receive the universal extension either

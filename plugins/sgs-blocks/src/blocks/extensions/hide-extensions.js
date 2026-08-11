@@ -1,23 +1,28 @@
 /**
- * Per-block universal-extension opt-out.
+ * Per-block universal-extension gating — TWO mechanisms, by design (D551,
+ * Phase 2.1).
  *
- * The universal extensions (hover, block-link, click-effects, parallax,
- * custom-spacing, animation, …) inject an inspector panel onto EVERY sgs/*
- * block. For some blocks a given panel is meaningless — a logo wall
- * (sgs/brand-strip) has no use for a whole-block link, a click ripple, or
- * parallax, and its own spacing panel makes the universal one redundant.
+ * DENYLIST (legacy, still governs click-effects/parallax/animation/etc. until
+ * each gets its own usage-derivation pass — see the plan at
+ * `.claude/plans/go-track-1b-playful-hamster.md` Phase 2.1): every extension
+ * attaches to every sgs/* block unless the block opts OUT —
  *
- * A block opts out declaratively in its block.json:
+ *   "supports": { "sgs": { "hideExtensions": ["clickEffects"] } }
  *
- *   "supports": { "sgs": { "hideExtensions": ["blockLink", "clickEffects"] } }
+ * ALLOWLIST (D551 — hover + blockLink, disconnected outright and made
+ * opt-in-only because they were measured at ZERO stored usage across 194
+ * canary pages and their panel/mechanism is itself flagged as a defect,
+ * not merely unused): an extension attaches to NO block unless the block
+ * opts IN —
  *
- * This is a UNIVERSAL condition, not a per-block carve-out in the extension
- * code — every extension reads the same list, and any block opts out
- * identically. Each universal extension's editor HOC calls this and returns
- * the unmodified BlockEdit (no panel) when its slug is listed.
+ *   "supports": { "sgs": { "enabledExtensions": ["hover"] } }
  *
- * Recognised slugs (match the panel each extension renders):
- *   hover · blockLink · clickEffects · parallax · spacing · animation
+ * As Phase 2.1 derives real usage for the remaining denylist extensions,
+ * each one migrates from `isExtensionHidden` to `isExtensionEnabled` in its
+ * own commit — never both checked for the same slug at once.
+ *
+ * Recognised denylist slugs: clickEffects · parallax · spacing · animation
+ * Recognised allowlist slugs: hover · blockLink
  *
  * @param {string|Object} nameOrSettings Block name (from an editor HOC) OR the
  *                                        settings object (from a
@@ -29,11 +34,28 @@
  */
 import { getBlockType } from '@wordpress/blocks';
 
+function resolveSupports( nameOrSettings ) {
+	return nameOrSettings && 'object' === typeof nameOrSettings
+		? nameOrSettings.supports
+		: getBlockType( nameOrSettings )?.supports;
+}
+
 export function isExtensionHidden( nameOrSettings, slug ) {
-	const supports =
-		nameOrSettings && 'object' === typeof nameOrSettings
-			? nameOrSettings.supports
-			: getBlockType( nameOrSettings )?.supports;
-	const list = supports?.sgs?.hideExtensions;
+	const list = resolveSupports( nameOrSettings )?.sgs?.hideExtensions;
+	return Array.isArray( list ) && list.includes( slug );
+}
+
+/**
+ * Opt-in test for allowlisted extensions (D551). A block must explicitly
+ * list the slug in `supports.sgs.enabledExtensions` to receive that
+ * extension's attributes/controls — the inverse default of
+ * `isExtensionHidden` above.
+ *
+ * @param {string|Object} nameOrSettings Block name or settings object.
+ * @param {string}        slug           Extension slug to test.
+ * @return {boolean} True when the block has opted this extension in.
+ */
+export function isExtensionEnabled( nameOrSettings, slug ) {
+	const list = resolveSupports( nameOrSettings )?.sgs?.enabledExtensions;
 	return Array.isArray( list ) && list.includes( slug );
 }
