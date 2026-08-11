@@ -1,5 +1,57 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D579 — Phase 2.1 opt-in inversion: hover + block-link flipped (D551 executed); animation/clickEffects/parallax deliberately NOT flipped [ROUTINE]
+
+**2026-08-11.** Executed D551's hover/block-link ruling in code, then evaluated whether the same
+treatment should extend to the other three styling/interaction universal extensions still on the
+`hideExtensions` denylist model (`animation`, `clickEffects`, `parallax`) — and ruled it should not.
+
+**WHAT SHIPPED (branch `feat/extension-opt-in-hover-blocklink`, PR #25).** `hover-effects.js`'s
+`hover` and `blockLink` panels/attributes now attach to NO block by default — a block must declare
+`supports.sgs.enabledExtensions: ["hover"]` / `["blockLink"]` to receive them, inverting the old
+"universal unless denylisted" model. `hide-extensions.js` gained `isExtensionEnabled()` alongside
+the existing `isExtensionHidden()` — two extensions, two gating models, both declared in one place.
+`check-duplicate-controls.js` and `check-universal-fit.js` were both still reasoning about the old
+denylist model for hover/blockLink and would have produced permanent false positives (a "duplicate
+hover control" finding on testimonial/testimonial-slider/text that no longer exists; a stale
+UNIVERSAL LOAD RANKING) — both fixed, `check-universal-fit.js`'s self-test extended 4→8 cases to
+cover the opt-in path.
+
+**Evidence gate cleared:** zero real stored usage of any hover/blockLink attribute across the full
+canary (162 pages/posts, any status, 1,305 `sgs/*` block instances) and every theme
+pattern/template/part — verified two ways (structured JSON scan in the new
+`scripts/surveys/survey-extension-usage.py`, and an independent raw-string grep over the same
+corpus) before shipping. No stored-content migration needed.
+
+**RULED OUT: animation/clickEffects/parallax stay on the denylist model, NOT flipped to opt-in.**
+Same usage measurement found zero live usage for these three too (65-66 blocks attached, 0
+instances using them) — but usage alone isn't the right test. D551's actual justification for
+hover was a **mechanism defect**: it painted colour overrides onto the block ROOT when the client
+wanted a specific inner element (a button inside a card), so the panel couldn't do what it
+claimed. Checked the other three against the same test and found no defect — all three are
+explicitly documented as whole-block/root-targeted BY DESIGN: `animation-attributes.php` (docblock)
+injects onto the whole rendered block for the frontend `IntersectionObserver` to watch as a unit;
+`parallax.php` (docblock) explicitly targets "the outermost wrapper element" because a parallax
+offset only makes sense as a whole-block transform; the click-ripple radiates from the click point
+across the whole card by design (Material-style), not a wrapper accident. Root-targeting is
+correct for all three, so there is no bug to fix by disconnecting them — only a clutter argument
+(59% of inspector rows are universal-extension bloat, D544), which is real but weaker than a defect
+and trades against future friction (a block build wanting animation would need to remember to
+declare `enabledExtensions` first). Bean's call: not worth it without a defect driving it.
+
+**Phase 2.1 (opt-in inversion) is now CLOSED** on this basis: hover + blockLink shipped;
+`imageControls` was already opt-in; `conditionalVisibility`/`customCss`/`responsiveVisibility` are
+correctly excluded as universal-by-design utility extensions (not a gap, per
+`check-universal-fit.js`'s own `isUtility` flag); `animation`/`clickEffects`/`parallax` evaluated
+and deliberately left alone. Nothing remains open in this phase's opt-in-inversion scope. The
+`go-track-1b-playful-hamster.md` plan's Phase 2.1 status line is stale as of this decision — update
+it in the same session.
+
+**Live-verified by Bean directly in the canary editor** (not just the static gates) before this
+entry was written.
+
+---
+
 ## D578 — `columns` (pass 4 of 6) migrated to the tier-object shape; visual-diff gate bypassed a second time, same shape as D577 [INCIDENT]
 
 **2026-08-11. Bean-authorised explicitly, same reasoning shown and accepted as D577.** This is

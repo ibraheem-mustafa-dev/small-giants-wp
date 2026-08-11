@@ -258,6 +258,10 @@ single deploy/commit, same as this session did for `columns` + the concurrent he
 
 ### Other tracks — stable
 
+- **Inspector-standardisation Phase 2.1 (opt-in inversion) — CLOSED 2026-08-11 (D579).** Not part of
+  this track's orchestration above — picked up ad hoc from `~/.claude/plans/go-track-1b-playful-hamster.md`.
+  hover/blockLink flipped to opt-in (executed D551); animation/clickEffects/parallax evaluated and
+  deliberately left alone (no targeting defect found). PR #25. Nothing open in this phase.
 - **Track 1** — routing audit + tier axis COMPLETE (D480); Phase 4 PARTIAL, 5 OPEN.
 - **Track 1c** (Spec 31 converter) — build shipped; open item is PROOF not build.
 - **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.

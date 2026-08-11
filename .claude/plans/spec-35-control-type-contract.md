@@ -187,6 +187,14 @@ exactly what dropped **condition 16 (native over hand-rolled)** exists to prompt
 cloning pipeline, so it needs a Rule 7 design gate. Recorded here so it stops being invisible.
 
 ### H. Proposals needing a Rule 7 design gate that this contract failed to mark
+⛔ **`hover-effects.js` block-link removal — DONE, 2026-08-11 (D551 executed, D579).** This item
+warned the removal "removes a client capability" before evidence existed. It shipped only after
+measuring zero real stored usage across the full canary (162 pages, 1,305 `sgs/*` instances) plus
+every theme pattern — double-verified, not assumed — so no capability was actually removed. See
+`decisions.md` D579 for the closure and for why `animation`/`clickEffects`/`parallax` were
+evaluated the same way and deliberately NOT removed (no targeting defect found in their source).
+Left the line below for the historical record of what this contract originally flagged as risky.
+
 6 extension `group` props (84 blocks) · `hover-effects.js` block-link removal (67 blocks, and it
 removes a client capability) · `DesignTokenPicker` id (43 blocks) · `ResponsiveControl` +
 `ResponsiveOverride` label change (both shared; the latter is Spec 37 FR-37-16's switcher) ·

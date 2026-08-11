@@ -63,8 +63,13 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls:
   optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
 - **A6. Never duplicate a native `supports` panel** (inspector-UX form of R-31-9).
-- **A7. Per-block universal-extension opt-out** via `supports.sgs.hideExtensions: [...]`
-  (`hide-extensions.js`). Declarative + universal.
+- **A7. Per-block universal-extension gating — TWO models (D551/D579, 2026-08-11).** Most
+  extensions (`animation`, `clickEffects`, `parallax`) stay **opt-OUT**: universal unless a block
+  declares `supports.sgs.hideExtensions: [...]`. `hover` and `blockLink` are **opt-IN**: attached to
+  NO block unless it declares `supports.sgs.enabledExtensions: [...]` — flipped because their panel
+  had a real targeting defect (painted the block root, not the element a client wanted), not merely
+  because they were unused. Both declarative + read by `hide-extensions.js`
+  (`isExtensionHidden()` / `isExtensionEnabled()`). Full reasoning: `decisions.md` D551 + D579.
 - **A8. Panel order — OPEN, do not build a rule from this line** *(Bean, 2026-08-08)*. "Frequency-first,
   escape-hatches last + collapsed" is one candidate; "the element's declared `order`" (contract §THE
   PLACEMENT RULE) is another, and they do not agree. **CO-28's design gate still stands: Bean picks
@@ -348,7 +353,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | Typography per element | `TypographyControls` EXISTS (R-22-13) | extend to appearance/letter-spacing where missing |
 | Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`) | DONE (Wave 1.1) |
 | Normal/Hover state | `StateToggleControl` EXISTS (2026-07-18) | roll out to stateful blocks |
-| Extension opt-out | `hideExtensions` EXISTS (2026-07-18) | — |
+| Extension gating | `hideExtensions` (opt-out, most extensions) + `enabledExtensions` (opt-in, hover/blockLink only, D579 2026-08-11) EXIST | — |
 | **Shadow builder** | `ShadowControl` **BUILT + ROLLED OUT** (X/Y/blur/spread/colour+alpha/inset + theme presets; `src/components/ShadowControl.js`) — consumers now incl. testimonial `shadowHover`, trust-bar `iconCircleShadow`/`badgeImageShadow` (`b9c5f6d1`, 2026-07-28) | DONE (Wave 1) |
 | **Link/CTA** | `SgsLinkControl` **BUILT + ROLLED OUT** (`src/components/SgsLinkControl.js`) — card-grid, media (4 fields), product-card (3 CTAs), trust-bar item links migrated (`ac0c30eb`, 2026-07-28); raw-url-link WARNs 40→0 (2 reasoned EXC exemptions remain) | DONE (Wave 1) |
 | **Bulk media/gallery** | **BUILT** — `MediaGalleryPicker` extracted from `gallery/edit.js`, both call sites swapped (`07c67642`, 2026-07-28) | DONE (Wave 2) |
