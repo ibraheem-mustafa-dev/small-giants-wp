@@ -1024,9 +1024,32 @@ its element's panel (TIER 1) regardless of this field.)*
 
    | Leg | In scope | Canonical | Non-canonical |
    |---|---|---|---|
-   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **24** | ~~`ResponsiveBoxControl` 5~~ **0 real — see below**, ~~`SelectControl` 2~~ **0 real**, 6 with **no control at all** |
+   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **24** | **0 wrong-shape**, **0 preset-select**, 6 with **no control at all** |
    | **Scalar radius** | 13 | `UnitControl` **11** *(was 8; +3 this session)* | `RangeControl` 2 |
    | **Scalar border-width** | 7 | — | `RangeControl` 1, remainder unresolved |
+
+   ⭐ **RE-MEASURED 2026-08-11 with a FIXED instrument (D566).** The figures above are the
+   post-fix run, not the original. `survey-box-controls.py` had two compounding defects, both now
+   fixed with regression guards (self-test 5 → 7 cases, and `--self-test-demonstrate-failure` still
+   proves the harness is not hard-wired green):
+   - **It counted matches inside COMMENTS.** `sgs/counter/edit.js:216` is the JSX comment
+     `{/* … the borderRadiusTablet/borderRadiusMobile object attrs. */}`.
+   - **It had no ELEMENT BOUNDARY.** `_nearest_preceding_jsx_tag` walked back 60 lines for any
+     capitalised tag, so an occurrence *after* an element closed was still blamed on it — the
+     Margin `<ResponsiveBoxControl>` opened at `:196` and closed `/>` at `:210`.
+
+   Together those manufactured **every** non-canonical hit in the 4-CORNER leg. Post-fix the leg is
+   clean and — the check that matters — **the 24 real canonical mounts are unchanged**, so the
+   false positives were cleared without going blind. A third leg defect is also fixed: the scalar
+   legs passed an EMPTY canonical set, so 11 correct `UnitControl` mounts printed
+   `[non-canonical/raw]`; a leg that can only ever report non-conformance is not a measurement.
+   `UnitControl`/`ResponsiveControl` are canonical there per §4.1 + §14.5.
+
+   ⚠ One residual row, correctly reported and NOT a defect: `product-card.ctaBorderRadius` also
+   appears at `edit.js:1421` inside the style-preset `SelectControl`'s `onChange`, which *reseeds*
+   it from `BUTTON_PRESETS`. That is a side-effect write, not a control mount — its real canonical
+   mount is detected at `:1664`. Attributing a side-effect write to the writing control is a known
+   remaining limitation of static attribution, disclosed rather than silently counted.
    | **Per-side scalars** (§14.3 migration) | — | — | **0 — §14.3's "migration COMPLETE" claim reproduces independently** |
 
    **Fixed this session (raw `TextControl` taking free CSS → `UnitControl`, §14.3 → §14.1/§14.2):**
@@ -1075,11 +1098,10 @@ its element's panel (TIER 1) regardless of this field.)*
    `BorderBoxControl`**, the **8 scalar mounts missing a `units` array** (field 2), and the **2
    survey instrument defects** below. Nothing in §14 is orphaned any more.
 
-   ⚠ **Two instrument defects found while measuring, both owed to whoever next touches the survey:**
-   (a) the scalar-radius leg has **no canonical component declared**, so all 13 print
-   `[non-canonical/raw]` including the 11 correct `UnitControl` mounts — `UnitControl` is canonical
-   there per §4, and the allowlist should say so or this leg reads as 100% non-conformant forever.
-   (b) 8 of the 13 existing scalar mounts pass **no `units` array**, which field 2 requires.
+   ✅ **Instrument defects — FIXED 2026-08-11 (D566), not merely recorded.** (a) the scalar legs now
+   declare `UnitControl`/`ResponsiveControl` canonical; (b) comment matches and out-of-element
+   attributions are both eliminated, with regression guards. Remaining owed work is in
+   `P-SPEC35-BORDER-RESIDUALS`: the 8 scalar mounts still passing **no `units` array** (field 2).
 7. **Detection** — as §11 SHADOW: classify each border attr's control into compliant / preset-select
    / raw-text / no-control. ~~`sgs/card-grid.cardRadius` is a known raw-text violation (help text
    *"e.g. 8px"*, accepts invalid CSS)~~ — ✅ **FIXED 2026-08-11 (D561), along with two this field

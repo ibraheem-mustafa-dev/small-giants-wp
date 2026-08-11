@@ -135,12 +135,23 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 
+					{ /* units array is REQUIRED by contract §14 field 2 — added
+					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). Without it
+					     the operator gets whatever unit set core happens to
+					     default to, and '%' (a pill/circle radius) may not be
+					     reachable at all. */ }
 					<UnitControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ asideRadius || '' }
 						onChange={ ( value ) =>
 							setAttributes( { asideRadius: value || '' } )
 						}
+						units={ [
+							{ value: 'px', label: 'px', default: 8 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 0.5 },
+							{ value: 'em', label: 'em', default: 0.5 },
+						] }
 						__next40pxDefaultSize
 					/>
 

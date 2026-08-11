@@ -237,10 +237,78 @@ def _resolve_shared_component_primitives(component_name):
     return found
 
 
+def _line_is_comment(lines, idx):
+    """Is line `idx` inside a // line comment, a /* */ block, or a {/* */} JSX comment?
+
+    Scans from the top of the file tracking block-comment depth, so a multi-line
+    `{/* … */}` is covered, not just the line carrying the opener.
+    """
+    in_block = False
+    for i, raw in enumerate(lines):
+        line = raw
+        if in_block:
+            if i == idx:
+                return True
+            if '*/' in line:
+                in_block = False
+                # Text after the close on the same line is real code.
+                if i == idx:
+                    return not line.split('*/', 1)[1].strip()
+            continue
+        stripped = line.strip()
+        if stripped.startswith('//') or stripped.startswith('*'):
+            if i == idx:
+                return True
+        opener = line.find('/*')
+        if opener != -1 and '*/' not in line[opener:]:
+            in_block = True
+            if i == idx:
+                return True
+        elif opener != -1 and i == idx:
+            # Single-line /* … */ — comment iff nothing but the comment is on it.
+            before = line[:opener].strip().rstrip('{')
+            after = line.split('*/', 1)[1].strip().lstrip('}')
+            return not before and not after
+        if i == idx:
+            return False
+    return False
+
+
 def _nearest_preceding_jsx_tag(lines, occurrence_idx, window=60):
+    """Nearest OPEN JSX element the occurrence is actually INSIDE.
+
+    ⛔ INSTRUMENT DEFECT FIXED 2026-08-11 (D566/P-SPEC35-BORDER-RESIDUALS item 4).
+    This used to walk back up to `window` lines and return the first capitalised
+    tag it saw, with NO element boundary — so an occurrence AFTER an element had
+    already closed was attributed to that element anyway.
+
+    Measured consequence: `sgs/counter` mentions `borderRadiusTablet` in a
+    COMMENT at edit.js:216; the nearest preceding tag was the **Margin**
+    `<ResponsiveBoxControl>` opened at :196 and closed at :210. The survey
+    therefore reported 5 radius attrs as "fed to a 4-SIDE control", and §14
+    field 6 carried that as real until a QC council read the code. All 5 were
+    this bug. Same shape at `sgs/timeline:390` and `sgs/whatsapp-cta:204`.
+
+    Now: if a self-closing `/>` or a closing `</Tag>` is seen while walking back
+    BEFORE an opening tag, that element has ended and the occurrence is outside
+    it — return None (unresolved) rather than guessing. Failing to "unresolved"
+    is the safe direction: it under-claims instead of mis-attributing.
+    """
     start = max(0, occurrence_idx - window)
     for idx in range(occurrence_idx, start - 1, -1):
-        for m in reversed(list(JSX_OPEN_TAG_RE.finditer(lines[idx]))):
+        line = lines[idx]
+        # Element boundary between the occurrence and any earlier open tag.
+        # Skip the occurrence's own line, whose trailing `/>` (if any) closes the
+        # element the occurrence legitimately sits in.
+        if idx != occurrence_idx and ('/>' in line or re.search(r'</\s*[A-Za-z]', line)):
+            # A tag that OPENS on this same line still wins — e.g. `<X a={1} />`
+            # preceded by nothing else.
+            opens = [m for m in JSX_OPEN_TAG_RE.finditer(line)
+                     if m.group(1) and m.group(1)[0].isupper()]
+            if opens:
+                return opens[-1].group(1), idx + 1
+            return None, None
+        for m in reversed(list(JSX_OPEN_TAG_RE.finditer(line))):
             name = m.group(1)
             if name and name[0].isupper():
                 return name, idx + 1
@@ -272,6 +340,18 @@ def scan_edit_file_for_attribute(edit_js_path, attr_name):
         stripped = line.strip()
         if re.fullmatch(attr_name + r'\s*,?', stripped):
             continue  # pure destructure line, not a control usage
+
+        # ⛔ A MATCH INSIDE A COMMENT IS NOT A USAGE (D566 instrument fix).
+        # `sgs/counter:216` is the JSX comment
+        # `{/* … the borderRadiusTablet/borderRadiusMobile object attrs. */}`,
+        # and counting it as a control occurrence is half of how 5 false
+        # "wrong-shape" findings reached contract §14 field 6. Belt and braces
+        # with the element-boundary fix in _nearest_preceding_jsx_tag: either
+        # alone clears this case, and the pair covers shapes neither catches
+        # alone. This is the project's own recorded rule, applied to its own
+        # instrument — "a match inside a comment is not a usage".
+        if _line_is_comment(lines, idx):
+            continue
 
         jsx_tag, tag_line = _nearest_preceding_jsx_tag(lines, idx)
         if jsx_tag is None or tag_line in seen_lines:
@@ -611,13 +691,25 @@ def render_human(report):
     lines.append('=' * 78)
     lines.append('LEG 3 — BORDER CENSUS (§14 — scalar attrs OUTSIDE box_family scope)')
     lines.append('=' * 78)
+    # ⛔ INSTRUMENT DEFECT FIXED 2026-08-11 (D566/P-SPEC35 item 4). These two legs
+    # passed an EMPTY canonical set, so every mount printed `[non-canonical/raw]`
+    # — including the 11 correct `UnitControl` radius mounts. A leg that can only
+    # ever report non-conformance is not a measurement; it reads as 100% broken
+    # forever and no remediation can ever clear it.
+    #
+    # A SCALAR length is contract §4's territory, not §14.3's 4-value box:
+    # §4.1 makes `UnitControl` canonical for a single length value, and §14.5
+    # explicitly notes a scalar radius is "correctly NULL" in box_family and must
+    # be picked up by the css_property leg. So the canonical shape here is
+    # UnitControl (bare or inside ResponsiveControl for a tiered one).
+    _SCALAR_LENGTH_CANONICAL = {'UnitControl', 'ResponsiveControl'}
     _render_group_census(
         lines, 'Scalar RADIUS (css_property has border-radius, box_family IS NULL, non-object)',
-        report['radius_scalar_census'], set(),  # no declared canonical shape for the scalar case
+        report['radius_scalar_census'], _SCALAR_LENGTH_CANONICAL,
     )
     _render_group_census(
         lines, 'Scalar BORDER-WIDTH (css_property has border-width, box_family IS NULL, non-object)',
-        report['width_scalar_census'], set(),
+        report['width_scalar_census'], _SCALAR_LENGTH_CANONICAL,
     )
 
     lines.append('=' * 78)
@@ -732,6 +824,53 @@ function Edit( { attributes, setAttributes } ) {
                     f'{inst_raw[0]["resolved_component"] if inst_raw else None}). This failure '
                     'is intentional, proving the self-test is not hard-wired to pass.'
                 )
+
+        # === D566 instrument fixes: mis-attribution (both halves) ============
+        # REGRESSION GUARDS for the defect that put 5 phantom "wrong-shape"
+        # findings into contract §14 field 6. Fixture is the real shape from
+        # sgs/counter/edit.js:196-223 — a Margin ResponsiveBoxControl that CLOSES,
+        # then a comment naming the radius attrs, then the real radius control.
+        fixture_attr = _write_temp_fixture(tmpdir, 'd566-misattribution.js', """
+export default function Edit() {
+	return (
+		<>
+			<ResponsiveBoxControl
+				label="Margin"
+				values={ { base: {}, tablet: marginTablet } }
+				onChange={ ( t, n ) => setAttributes( { marginTablet: n } ) }
+			/>
+			{/* Border radius — tiers are the borderRadiusTablet object attrs. */}
+			<ResponsiveBorderRadiusControl
+				label="Border radius"
+				values={ { base: {}, tablet: borderRadiusTablet } }
+				onChange={ ( t, n ) => setAttributes( { borderRadiusTablet: n } ) }
+			/>
+		</>
+	);
+}
+""")
+        d566 = scan_edit_file_for_attribute(fixture_attr, 'borderRadiusTablet')
+        resolved_d566 = {i['resolved_component'] for i in d566}
+        # (a) the Margin box control must NOT be attributed this radius attr
+        if CANONICAL_BOX_COMPONENT not in resolved_d566:
+            passed += 1
+        else:
+            failed.append(
+                'D566 MIS-ATTRIBUTION GUARD FAILED: the Margin '
+                f'{CANONICAL_BOX_COMPONENT} was attributed borderRadiusTablet again '
+                f'(got {d566}). That is the exact bug that produced 5 false '
+                '"wrong-shape" findings in contract §14 field 6.'
+            )
+        # (b) the REAL radius control must still be found — a fix that clears the
+        #     false positive by seeing nothing at all is not a fix.
+        if CANONICAL_RADIUS_COMPONENT in resolved_d566:
+            passed += 1
+        else:
+            failed.append(
+                'D566 SIGNAL-PRESERVATION GUARD FAILED: expected '
+                f'{CANONICAL_RADIUS_COMPONENT} to still resolve, got {d566}. '
+                'Clearing a false positive by going blind is a worse defect.'
+            )
 
         # === Per-side-scalar violation: POSITIVE CONTROL =====================
         # Four separate scalar attrs sharing a prefix, one per side — MUST

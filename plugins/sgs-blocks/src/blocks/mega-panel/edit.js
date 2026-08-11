@@ -308,10 +308,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</ResponsiveControl>
 
+					{ /* units array REQUIRED by contract §14 field 2 — added
+					     2026-08-11 (P-SPEC35-BORDER-RESIDUALS item 3). */ }
 					<UnitControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						value={ borderRadius || '' }
 						onChange={ ( value ) => setAttributes( { borderRadius: value || '20px' } ) }
+						units={ [
+							{ value: 'px', label: 'px', default: 20 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 1.25 },
+							{ value: 'em', label: 'em', default: 1.25 },
+						] }
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
