@@ -1,5 +1,60 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D583 — card-grid/tabs style-variation specificity bug: full consolidation, following the info-box precedent [ROUTINE]
+
+**2026-08-11.** N5 in `~/.claude/plans/go-track-1b-playful-hamster.md` (a measured but unfixed finding
+from the inspector-standardisation programme) — `sgs/card-grid`'s and `sgs/tabs`' block-style
+variations silently overrode the operator's own colour/border/shadow controls, with no error and no
+visible sign anything was wrong.
+
+**ROOT CAUSE, confirmed via `/systematic-debugging` (not re-trusted from the plan's own prior
+note).** `register_block_style()` CSS (`.wp-block-sgs-card-grid.is-style-boxed .sgs-card-grid__item`,
+specificity 0,3,0) always beat the base rule reading the operator's override custom properties
+(`.sgs-card-grid--card .sgs-card-grid__item`, 0,2,0, `style.css:35-41`) — pure CSS specificity, no
+`@layer`/`!important` involved. Same shape on tabs (`panelBgColour` only; the border overlap is
+viewport-conditional and was left alone, matching the plan's own narrower scoping). **The plan's own
+cited precedent (D294) was wrong** — D294 is about wrapper-vs-block-private CSS ownership, not
+presets writing to attributes; the real internal precedent, found during this investigation and not
+previously connected to N5, is `sgs/info-box`'s existing `cardStyle` attribute pattern.
+
+**FIX SHAPE validated via `/research-check` + `/gh-research` before building, not assumed.** WordPress
+core hit this exact bug class and shipped `:where()` zero-specificity wrapping in 6.6 (June 2024,
+[gutenberg#57659](https://github.com/WordPress/gutenberg/pull/57659)); `@layer` was proposed and
+explicitly rejected for the same problem
+([gutenberg#51128](https://github.com/WordPress/gutenberg/issues/51128)) — and is actively wrong for
+SGS specifically, since client sites carry unlayered third-party CSS that would silently outrank a
+layered SGS rule. Neither Kadence Blocks nor Stackable use `register_block_style()` at all for
+anything with a competing per-instance override — both route presets through their own
+attribute-driven systems. Full consolidation (preset writes to the SAME attributes the manual
+override controls already use, zero new parallel attribute, zero competing CSS rule) matches both
+the external professional-library pattern and the internal `info-box` precedent.
+
+**SHIPPED** — branch `fix/card-grid-tabs-style-specificity`, PR #26, merged `9b917886`. Built via
+`/sgs-wp-engine` + `/delegate` (Sonnet, isolated worktree — the earlier D579 vestigial-cleanup
+subagent had touched files outside its scope by running the full `prebuild` chain against a shared
+dirty tree; this build used the same isolation but scoped its own build step to the raw `wp-scripts`
+compiler, not the full gate chain, to avoid repeating that). card-grid: 4 inserter variations
+("Product/Feature/Person/Testimonial Cards") now set concrete `cardBackground`/`cardBorderColour`/
+`cardBorderWidth`/`cardRadius`/`cardShadow` values instead of an `is-style-*` className; a new "Card
+style" preset picker in the existing "Card Styling (resting state)" panel does the same on demand,
+via one `setAttributes()` call, no new attribute added. tabs: removed only the colliding `background`
+line from the "boxed" variation; the border overlap and the whole "outlined" style (no competing
+control) were left untouched. **Live-verified on the canary, not just gate-checked**: a fresh
+manually-configured card-grid instance with the "Boxed" preset applied rendered the exact expected
+computed styles (`background: rgb(251,243,220)`, `border-color: rgb(232,213,192)`, `border-radius:
+8px`, `box-shadow: none`) — real computed values on the real page, confirmed via Playwright, not the
+editor swatch alone.
+
+**Not deployed to `main`'s tip.** The canary currently runs this fix's own branch tree, not `main` —
+`main` gained two unrelated hero commits (D581/D582) from a concurrent session while this work was in
+flight, and deploying `main`'s combined state was deliberately left to whoever owns that work, per
+the standing "ONE deploy per cycle" rule and the canary's D576 contention history. Whoever deploys
+`main` next should verify the REGISTERED schema for `sgs/card-grid`'s `enabledExtensions`-unrelated
+attrs are unaffected (this fix touched no shared/wrapper file, so risk is low, but verify per
+standing practice, don't assume).
+
+---
+
 ## D582 — Visual-diff gate BYPASSED for container + hero (D581's commit), Bean-authorised, same shape as D577/D580 [INCIDENT]
 
 **2026-08-11.** The commit for D581's work (background/overlay panel) was blocked by
