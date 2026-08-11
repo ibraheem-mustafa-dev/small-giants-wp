@@ -5,6 +5,19 @@
  * Variations registered via the `get_block_type_variations` filter (WP 6.5+).
  * Styles registered via `register_block_style()` (canonical WP PHP API).
  *
+ * The "boxed" style's panel `background` declaration was RETIRED (2026-08-11)
+ * — it collided with the `panelBgColour` attribute exactly like card-grid's
+ * variations did: `.wp-block-sgs-tabs.is-style-boxed .sgs-tabs__panel` sits at
+ * specificity (0,3,0) and always beat the base `.sgs-tabs__panel { background:
+ * var(--sgs-panel-bg, transparent); }` rule at (0,1,0), so an operator's own
+ * panel-background choice silently rendered as if it was never set. The
+ * border/border-radius/padding declarations on this same style, and the whole
+ * "outlined" style below, have no competing per-instance attribute (verified
+ * against render.php + style.css) — they stay as genuine CSS-only visual
+ * treatments. The "Vertical Tabs" inserter variation (which applies
+ * is-style-boxed) now sets `panelBgColour: 'surface'` directly so a freshly
+ * inserted instance still renders the same background as before.
+ *
  * @package SGS\Blocks
  * @since   0.1.2
  */
@@ -26,7 +39,6 @@ function sgs_register_tabs_styles(): void {
 				.wp-block-sgs-tabs.is-style-boxed .sgs-tabs__panel {
 					border: 1px solid var( --wp--preset--color--border-subtle );
 					border-radius: 0 0 var( --wp--custom--border-radius--medium ) var( --wp--custom--border-radius--medium );
-					background: var( --wp--preset--color--surface );
 					padding: var( --wp--preset--spacing--50 );
 				}
 				.wp-block-sgs-tabs.is-style-boxed .sgs-tabs__tab {
@@ -97,9 +109,15 @@ function sgs_register_tabs_variations( array $variations, \WP_Block_Type $block_
 			'icon'        => 'table-col-after',
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
-				'orientation' => 'vertical',
-				'tabStyle'    => 'boxed',
-				'className'   => 'is-style-boxed',
+				'orientation'    => 'vertical',
+				'tabStyle'       => 'boxed',
+				'className'      => 'is-style-boxed',
+				// Direct attribute write — replaces the retired CSS `background`
+				// declaration on `.is-style-boxed .sgs-tabs__panel` (see file
+				// header) so a freshly inserted instance still renders the same
+				// panel background as before, theme.json settings.color.palette
+				// slug "surface" (line 48).
+				'panelBgColour'  => 'surface',
 			),
 			'innerBlocks' => $placeholder_tabs,
 		),
