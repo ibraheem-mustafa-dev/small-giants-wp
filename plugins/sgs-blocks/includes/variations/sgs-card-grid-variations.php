@@ -1,9 +1,21 @@
 <?php
 /**
- * SGS Block Variations + Styles — card-grid
+ * SGS Block Variations — card-grid
  *
  * Variations registered via the `get_block_type_variations` filter (WP 6.5+).
- * Styles registered via `register_block_style()` (canonical WP PHP API).
+ *
+ * `register_block_style()` for this block was RETIRED (2026-08-11). The three
+ * styles it used to register (elevated/boxed/borderless) emitted hardcoded CSS
+ * keyed on `.is-style-{name}` at specificity (0,3,0) — that ALWAYS beat this
+ * block's own per-instance override rule `.sgs-card-grid--card
+ * .sgs-card-grid__item` at (0,2,0), so an operator's own
+ * cardBackground/cardBorderColour/cardBorderWidth/cardRadius/cardShadow choice
+ * silently rendered as if it was never set. The fix is a single source of
+ * truth: the 4 inserter variations below now write the SAME 5 attributes the
+ * "Card Styling (resting state)" inspector controls read/write (see edit.js),
+ * so there is only ever one CSS rule per property. The values below are the
+ * closest real-token equivalent of what the retired CSS produced — see the
+ * per-variation comments for the theme.json line each value was read from.
  *
  * @package SGS\Blocks
  * @since   0.1.2
@@ -12,58 +24,6 @@
 namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
-
-/**
- * Register block styles for sgs/card-grid.
- */
-function sgs_register_card_grid_styles(): void {
-	register_block_style(
-		'sgs/card-grid',
-		array(
-			'name'         => 'elevated',
-			'label'        => __( 'Elevated', 'sgs-blocks' ),
-			'inline_style' => '
-				.wp-block-sgs-card-grid.is-style-elevated .sgs-card-grid__item {
-					background: var( --wp--preset--color--surface );
-					box-shadow: var( --wp--custom--shadow--medium );
-					border-radius: var( --wp--custom--border-radius--medium );
-				}
-			',
-		)
-	);
-
-	register_block_style(
-		'sgs/card-grid',
-		array(
-			'name'         => 'boxed',
-			'label'        => __( 'Boxed', 'sgs-blocks' ),
-			'inline_style' => '
-				.wp-block-sgs-card-grid.is-style-boxed .sgs-card-grid__item {
-					border: 1px solid var( --wp--preset--color--border-subtle );
-					border-radius: var( --wp--custom--border-radius--medium );
-					background: var( --wp--preset--color--surface );
-					box-shadow: none;
-				}
-			',
-		)
-	);
-
-	register_block_style(
-		'sgs/card-grid',
-		array(
-			'name'         => 'borderless',
-			'label'        => __( 'Borderless', 'sgs-blocks' ),
-			'inline_style' => '
-				.wp-block-sgs-card-grid.is-style-borderless .sgs-card-grid__item {
-					border: 0;
-					box-shadow: none;
-					background: transparent;
-					border-radius: 0;
-				}
-			',
-		)
-	);
-}
 
 /**
  * Inject SGS variations for sgs/card-grid via the `get_block_type_variations`
@@ -78,6 +38,63 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 		return $variations;
 	}
 
+	// "Elevated" — theme.json settings.color.palette slug "surface" (line 48)
+	// for the background, settings.custom.borderRadius.medium = 8px (line 373)
+	// for the radius. The retired CSS's box-shadow referenced
+	// `var(--wp--custom--border-radius--medium)`... `var(--wp--custom--shadow--medium)`,
+	// a custom token that does NOT exist anywhere in theme.json (only
+	// settings.shadow.presets subtle/raised/floating/glow exist, i.e.
+	// `--wp--preset--shadow--*`) — so the old "Elevated" box-shadow was already
+	// silently rendering as none. "raised" (theme.json line 310-312,
+	// `0 4px 12px rgba(0,0,0,0.1)`) is the closest real preset to the elevated
+	// look the style's name promised.
+	$elevated_card_style = array(
+		'cardBackground'    => 'surface',
+		'cardBorderColour'  => '',
+		'cardBorderWidth'   => array(),
+		'cardRadius'        => '8px',
+		'cardShadow'        => 'raised',
+	);
+
+	// "Boxed" — background "surface" (theme.json line 48) + border colour
+	// "border-subtle" (theme.json line 73) + 1px border on all sides + the
+	// same 8px radius, with the shadow explicitly zeroed out (the retired CSS
+	// set `box-shadow: none`). cardShadow doesn't accept the literal keyword
+	// "none" (an empty string instead falls back to the block's own
+	// `--wp--preset--shadow--raised` default in style.css:40) — a zero-length
+	// raw shadow value is the real equivalent of "no shadow" and is what
+	// ShadowControl's own builder would produce for x=y=blur=spread=0.
+	$boxed_card_style = array(
+		'cardBackground'    => 'surface',
+		'cardBorderColour'  => 'border-subtle',
+		'cardBorderWidth'   => array(
+			'top'    => '1px',
+			'right'  => '1px',
+			'bottom' => '1px',
+			'left'   => '1px',
+		),
+		'cardRadius'        => '8px',
+		'cardShadow'        => '0px 0px 0px 0px transparent',
+	);
+
+	// "Borderless" — transparent background (a recognised raw CSS colour
+	// keyword, passes through sgs_colour_value() unchanged), zero border, zero
+	// radius, no shadow — matches the retired CSS's
+	// `border: 0; box-shadow: none; background: transparent; border-radius: 0;`
+	// line for line.
+	$borderless_card_style = array(
+		'cardBackground'    => 'transparent',
+		'cardBorderColour'  => '',
+		'cardBorderWidth'   => array(
+			'top'    => '0px',
+			'right'  => '0px',
+			'bottom' => '0px',
+			'left'   => '0px',
+		),
+		'cardRadius'        => '0px',
+		'cardShadow'        => '0px 0px 0px 0px transparent',
+	);
+
 	$sgs_variations = array(
 		array(
 			'name'        => 'cardgrid-product',
@@ -85,9 +102,9 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'description' => __( 'Image, title, price, and buy button — for product or service showcases.', 'sgs-blocks' ),
 			'icon'        => 'cart',
 			'scope'       => array( 'inserter' ),
-			'attributes'  => array(
-				'className' => 'is-style-elevated',
-				'columns'   => array( 'desktop' => 3 ),
+			'attributes'  => array_merge(
+				array( 'columns' => array( 'desktop' => 3 ) ),
+				$elevated_card_style
 			),
 		),
 		array(
@@ -96,9 +113,9 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'description' => __( 'Icon, title, and supporting text — for showcasing features or benefits.', 'sgs-blocks' ),
 			'icon'        => 'star-filled',
 			'scope'       => array( 'inserter' ),
-			'attributes'  => array(
-				'className' => 'is-style-boxed',
-				'columns'   => array( 'desktop' => 3 ),
+			'attributes'  => array_merge(
+				array( 'columns' => array( 'desktop' => 3 ) ),
+				$boxed_card_style
 			),
 		),
 		array(
@@ -107,9 +124,9 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'description' => __( 'Avatar, name, and role — for team or client showcases.', 'sgs-blocks' ),
 			'icon'        => 'admin-users',
 			'scope'       => array( 'inserter' ),
-			'attributes'  => array(
-				'className' => 'is-style-boxed',
-				'columns'   => array( 'desktop' => 4 ),
+			'attributes'  => array_merge(
+				array( 'columns' => array( 'desktop' => 4 ) ),
+				$boxed_card_style
 			),
 		),
 		array(
@@ -118,9 +135,9 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'description' => __( 'Quote, author photo, and attribution — for social proof sections.', 'sgs-blocks' ),
 			'icon'        => 'format-quote',
 			'scope'       => array( 'inserter' ),
-			'attributes'  => array(
-				'className' => 'is-style-borderless',
-				'columns'   => array( 'desktop' => 3 ),
+			'attributes'  => array_merge(
+				array( 'columns' => array( 'desktop' => 3 ) ),
+				$borderless_card_style
 			),
 		),
 	);
@@ -128,5 +145,4 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 	return array_merge( $variations, $sgs_variations );
 }
 
-add_action( 'init', __NAMESPACE__ . '\\sgs_register_card_grid_styles' );
 add_filter( 'get_block_type_variations', __NAMESPACE__ . '\\sgs_register_card_grid_variations', 10, 2 );

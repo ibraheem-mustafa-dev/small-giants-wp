@@ -60,6 +60,53 @@ const BADGE_VARIANT_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 ];
 
+// Card style presets — a CONVENIENCE picker, not stored state. Selecting one
+// writes straight into the same 5 attrs the manual controls below read/write
+// (cardBackground/cardBorderColour/cardBorderWidth/cardRadius/cardShadow), so
+// there is only ever ONE CSS rule per property (no competing
+// register_block_style() variation any more — retired 2026-08-11, it always
+// lost the specificity fight against these attrs' own scoped rule). Values
+// mirror the 4 card-grid inserter variations in
+// includes/variations/sgs-card-grid-variations.php — keep both in sync.
+const CARD_STYLE_PRESETS = {
+	default: {
+		cardBackground: '',
+		cardBorderColour: '',
+		cardBorderWidth: {},
+		cardRadius: '',
+		cardShadow: '',
+	},
+	elevated: {
+		cardBackground: 'surface',
+		cardBorderColour: '',
+		cardBorderWidth: {},
+		cardRadius: '8px',
+		cardShadow: 'raised',
+	},
+	boxed: {
+		cardBackground: 'surface',
+		cardBorderColour: 'border-subtle',
+		cardBorderWidth: { top: '1px', right: '1px', bottom: '1px', left: '1px' },
+		cardRadius: '8px',
+		cardShadow: '0px 0px 0px 0px transparent',
+	},
+	borderless: {
+		cardBackground: 'transparent',
+		cardBorderColour: '',
+		cardBorderWidth: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
+		cardRadius: '0px',
+		cardShadow: '0px 0px 0px 0px transparent',
+	},
+};
+
+const CARD_STYLE_PRESET_OPTIONS = [
+	{ label: __( 'Choose a preset…', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Default', 'sgs-blocks' ), value: 'default' },
+	{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
+	{ label: __( 'Boxed', 'sgs-blocks' ), value: 'boxed' },
+	{ label: __( 'Borderless', 'sgs-blocks' ), value: 'borderless' },
+];
+
 function ItemEditor( { item, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
 		onChange( { ...item, [ key ]: value } );
@@ -529,6 +576,22 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
+					<SelectControl
+						label={ __( 'Card style', 'sgs-blocks' ) }
+						value=""
+						options={ CARD_STYLE_PRESET_OPTIONS }
+						onChange={ ( preset ) => {
+							if ( ! preset || ! CARD_STYLE_PRESETS[ preset ] ) {
+								return;
+							}
+							setAttributes( CARD_STYLE_PRESETS[ preset ] );
+						} }
+						help={ __(
+							'Sets background, border, radius and shadow together as a starting point — fine-tune any field below afterwards.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
 					<DesignTokenPicker
 						label={ __( 'Background colour', 'sgs-blocks' ) }
 						value={ cardBackground }
