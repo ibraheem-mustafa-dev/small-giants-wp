@@ -29,9 +29,38 @@ Trying to use the gradient controls after the Phase 4 Item 5 deploy:
 
 ---
 
-## The diagnosis for (1) — STRONG HYPOTHESIS, not yet proven
+## The diagnosis for (1) — ⛔ THE LEADING HYPOTHESIS IS **REFUTED**. Start elsewhere.
 
-⛔ **Do not write this up as the cause until the block identity is confirmed.**
+> ### ⛔ REFUTED 2026-08-11 — Bean confirmed the block was **HERO**
+>
+> `sgs/hero` is **`container_kind = section`** (DB-authoritative: `block_composition`), and
+> `$is_section = 'section' === $kind` (`class-sgs-container-wrapper.php:120`). So for hero
+> `$is_section` is **TRUE** — the overlay emit gate at `:1149` passes, and the attributes are **NOT**
+> zeroed (the `:294-299` zeroing is the layout/content branch, which hero never takes).
+>
+> **The section-kind theory below cannot explain hero. Do not spend time on it.** It is kept only
+> because it remains a real, separate defect for layout/content-kind blocks — a control rendering
+> where its mechanism cannot apply — which is still worth fixing under D6, just not the cause here.
+>
+> ### Revised candidates, cheapest first
+>
+> 1. ⭐ **The canary was in flux between two sessions' deploys.** My verification deploy rolled the
+>    schema back (D576); the concurrent session then redeployed to fix it. If Bean tested inside that
+>    window, WordPress may have been discarding attributes before any block code ran — which presents
+>    exactly as "the control does nothing". **Rule this out FIRST: redeploy a known-good state and
+>    retest.** It costs one deploy and would explain the symptom completely.
+> 2. **The control writes but the value never reaches the wrapper** — trace hero's attrs into
+>    `SGS_Container_Wrapper::render()`. Hero passes a curated attr set, not blindly.
+> 3. **The value is written in a shape the wrapper does not read** — check what `parseLinearGradient`
+>    stores versus what `:275-278` reads.
+> 4. **The gate's other half** — `! $opt_no_overlay` (`:1149`). Does hero pass `no_overlay` in its
+>    helper opts? It sets `wrap_inner=false` for split; check whether it disables the overlay too.
+>
+> **Method:** trace it LIVE in the editor and on the page — write a value, read the stored attribute,
+> then check the emitted CSS. Do not infer from source. Three defects today were invisible to source
+> reading and to a green build.
+
+⛔ **Original hypothesis, retained for the layout/content case only:**
 
 `class-sgs-container-wrapper.php`:
 - `:294-299` — for **layout/content**-kind blocks the overlay attributes are **zeroed outright**
