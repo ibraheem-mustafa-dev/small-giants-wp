@@ -50,6 +50,33 @@ it in the same session.
 **Live-verified by Bean directly in the canary editor** (not just the static gates) before this
 entry was written.
 
+**ADDENDUM 2026-08-11 — "nothing else opts in yet" (above) is now stale; 3 blocks do.** Bean asked
+the follow-up question this closure should have anticipated: opt-in ≠ nobody should ever use it,
+just nobody was FORCED to. Checked which blocks genuinely should opt in via two independent passes
+— my own analysis plus a fresh second-opinion agent dispatched blind to it (same question, no
+knowledge of my conclusions) — and both converged on `info-box` (a classic feature-card pattern
+with no competing link mechanism; spec 35 records it had this capability before and lost it) and
+flagged `notice-banner` as plausible on the same basis (promotional-banner pattern, nothing else
+claims the click).
+
+**The second opinion also caught a real regression the flip introduced, which I'd missed:
+`team-member`.** Its `render.php` says outright *"Block-link is handled universally by the
+sgsBlockLink extension"*, and it still declares `sgsBlockLink`/`sgsBlockLinkTarget` natively in its
+own `block.json` — but it has **zero editor control of its own** (verified: no `blockLink`
+reference anywhere in its `edit.js`). It was built to depend entirely on the universal panel this
+decision made opt-in-only, so the flip silently deleted its only way to ever set a value. No stored
+data was lost (zero usage was already measured for the whole extension), but the *capability* the
+block was deliberately built around vanished. Restored, not a new capability — a fix for one this
+decision itself caused.
+
+**Shipped:** `abcf8f2b` on the same branch/PR. All three verified via `check-universal-fit.js
+--check` (info-box/team-member both moved 7→8 attached panels, zero inappropriate-fit flags) plus
+JSON validity; not yet re-verified live in the canary editor (deploy pending). `product-card` and
+`counter` were considered and explicitly left out — `counter` had no evidence either way, and
+`product-card` already has its own CTA/Add-to-Cart flow complex enough (typed + live WC bound
+modes) that a second, independently-settable link risked pointing somewhere different and
+confusing the two; not worth the risk without a clearer case.
+
 ---
 
 ## D578 — `columns` (pass 4 of 6) migrated to the tier-object shape; visual-diff gate bypassed a second time, same shape as D577 [INCIDENT]
