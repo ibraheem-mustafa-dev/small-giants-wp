@@ -59,8 +59,66 @@ import {
 	DesignTokenPicker,
 	ShadowControl,
 	GradientOverlayControl,
+	ResponsiveBorderRadiusControl,
 } from '../../../components';
-import { BorderRadiusControl, ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
+
+// ---------------------------------------------------------------------------
+// gridItemBorder — shorthand <-> parts (P-SPEC35-BORDER-RESIDUALS item 1).
+//
+// The attribute stays a CSS shorthand STRING ("1px solid #ccc"), exactly as
+// stored today, so replacing the raw TextControl with a real builder needs no
+// content migration. These two helpers are the only bridge.
+// ---------------------------------------------------------------------------
+
+const GRID_ITEM_BORDER_STYLES = [
+	{ label: __( '— None —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+];
+
+const _GRID_BORDER_STYLE_WORDS = [ 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none' ];
+
+/**
+ * Split a CSS border shorthand into { width, style, colour }.
+ *
+ * Order-tolerant on purpose: CSS permits the three components in any order, and
+ * the values already stored were hand-typed into a free-text box, so assuming
+ * "width style colour" would silently mis-parse real content.
+ *
+ * @param {string} value Stored shorthand.
+ * @return {{width: string, style: string, colour: string}} Parts.
+ */
+function _gridBorderParts( value ) {
+	const out = { width: '', style: '', colour: '' };
+	const tokens = String( value || '' ).trim().split( /\s+/ ).filter( Boolean );
+	for ( const token of tokens ) {
+		if ( ! out.style && _GRID_BORDER_STYLE_WORDS.includes( token.toLowerCase() ) ) {
+			out.style = token.toLowerCase();
+		} else if ( ! out.width && /^[\d.]+(px|rem|em|%)?$/.test( token ) ) {
+			out.width = token;
+		} else if ( ! out.colour ) {
+			out.colour = token;
+		}
+	}
+	return out;
+}
+
+/**
+ * Rebuild the shorthand from parts, dropping empties.
+ *
+ * Returns '' when nothing is set, so clearing every field clears the attribute
+ * rather than leaving a stray "solid" that renders an invisible 0-width border.
+ *
+ * @param {{width: string, style: string, colour: string}} parts Parts.
+ * @return {string} Shorthand.
+ */
+function _gridBorderJoin( parts ) {
+	const ordered = [ parts.width, parts.style, parts.colour ].filter( Boolean );
+	return ordered.length ? ordered.join( ' ' ) : '';
+}
 
 // ---------------------------------------------------------------------------
 // Shared option arrays — kept identical to container/edit.js
@@ -1224,18 +1282,62 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				value={ gridItemBackground }
 				onChange={ ( val ) => setAttributes( { gridItemBackground: val } ) }
 			/>
-			<BorderRadiusControl
+			{ /* Canonical per contract §14.1: the wrapper, not the raw primitive.
+			     Fixed 2026-08-11 (P-SPEC35-BORDER-RESIDUALS) — this mounted the
+			     raw `BorderRadiusControl`, which the survey could not see at all
+			     until it learned to search shared component files, so all four
+			     blocks using this panel read as "declared + rendered + NO
+			     CONTROL". `showResponsive={ false }` because gridItemBorderRadius
+			     has no Tablet/Mobile siblings: same base-only shape §14 already
+			     uses on heading/quote/text. */ }
+			<ResponsiveBorderRadiusControl
 				label={ __( 'Border radius', 'sgs-blocks' ) }
-				values={ gridItemBorderRadius ?? {} }
-				onChange={ ( next ) => setAttributes( { gridItemBorderRadius: next } ) }
+				showResponsive={ false }
+				values={ { base: gridItemBorderRadius ?? {} } }
+				onChange={ ( _tier, next ) => setAttributes( { gridItemBorderRadius: next } ) }
 			/>
-			<TextControl
-				label={ __( 'Border', 'sgs-blocks' ) }
-				value={ gridItemBorder }
-				onChange={ ( val ) => setAttributes( { gridItemBorder: val } ) }
-				help={ __( "CSS border shorthand e.g. '1px solid #ccc'.", 'sgs-blocks' ) }
-				__nextHasNoMarginBottom
-			/>
+			{ /* ⛔ WAS a raw <TextControl> taking a CSS border shorthand — the
+			     exact banned lookalike in contract §14.3 ("a TextControl taking a
+			     raw CSS `border` shorthand"). It accepted invalid CSS, offered no
+			     unit affordance and no colour picker, and served FOUR blocks
+			     through this one panel. Replaced 2026-08-11
+			     (P-SPEC35-BORDER-RESIDUALS item 1) with a real builder giving
+			     §14 field 2's required props: a width UnitControl with a units
+			     array, a style dropdown, and a token-aware colour picker.
+
+			     ⚠ It writes the SAME shorthand STRING to the SAME attribute, so
+			     there is no value-domain change and no stored-content migration —
+			     which is why this, rather than core's `__experimentalBorderBoxControl`,
+			     is the right shape here: that component works in a
+			     {color,style,width} OBJECT and adopting it would force a content
+			     migration on every stored instance for no user-visible gain. */ }
+			<div className="sgs-grid-item-border-builder">
+				<UnitControl
+					label={ __( 'Border width', 'sgs-blocks' ) }
+					value={ _gridBorderParts( gridItemBorder ).width }
+					units={ GRID_ITEM_BOX_UNITS }
+					onChange={ ( val ) => setAttributes( {
+						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), width: val || '' } ),
+					} ) }
+					__next40pxDefaultSize
+				/>
+				<SelectControl
+					label={ __( 'Border style', 'sgs-blocks' ) }
+					value={ _gridBorderParts( gridItemBorder ).style }
+					options={ GRID_ITEM_BORDER_STYLES }
+					onChange={ ( val ) => setAttributes( {
+						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), style: val } ),
+					} ) }
+					__nextHasNoMarginBottom
+				/>
+				<DesignTokenPicker
+					label={ __( 'Border colour', 'sgs-blocks' ) }
+					value={ _gridBorderParts( gridItemBorder ).colour }
+					onChange={ ( val ) => setAttributes( {
+						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), colour: val || '' } ),
+					} ) }
+				/>
+			</div>
 			<ShadowControl
 				label={ __( 'Shadow', 'sgs-blocks' ) }
 				value={ gridItemShadow }

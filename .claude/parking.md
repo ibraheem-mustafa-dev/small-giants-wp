@@ -355,51 +355,6 @@ as `P-TIMELINE-ADVANCED-VISUAL-EFFECTS`.
 
 **Trigger:** After cloning pipeline Method-2 lands.
 
-### P-SPEC35-BORDER-RESIDUALS — contract §14's residual border obligations
-**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-08-11
-
-Created by a QC council on Phase 0 (D566) because these were deferred to "Phase 3", which contains
-no border work at all — a named-sounding deferral resolving to nothing (STOP-29). **Two of the four
-items are now DONE; the two that remain are design decisions, not mechanical work.**
-
-✅ **(4) Survey instrument — FIXED 2026-08-11.** `survey-box-controls.py` had three defects:
-it counted matches inside COMMENTS; `_nearest_preceding_jsx_tag` had no ELEMENT BOUNDARY (so an
-occurrence after an element closed was still blamed on it); and the scalar legs passed an EMPTY
-canonical set, so 11 correct `UnitControl` mounts printed `[non-canonical/raw]`. Together the first
-two manufactured EVERY non-canonical hit in the 4-CORNER leg. Post-fix that leg is clean and the 24
-real canonical mounts are unchanged — the false positives cleared without going blind. Self-test
-5 → 7 cases; `--self-test-demonstrate-failure` still proves the harness is not hard-wired green.
-
-✅ **(3) Missing `units` arrays — FIXED 2026-08-11. The recorded figure was wrong: 2, not 8.**
-Measured per element (bounded to each element's own `/>`, not a windowed grep): only
-`mega-aside.asideRadius` and `mega-panel.borderRadius` lacked one. `nav-menu` ×2 and `option-picker`
-×2 already had `units`, and the 3 fixed earlier in the session shipped with one. Both now carry
-px/%/rem/em, with `%` present so a pill/circle radius stays reachable.
-
-⏸ **(2) SIX radius attrs with NO control — DESIGN GATE, analysis complete, do not build blind.**
-Two distinct shapes, and they need different answers:
-- **`gridItemBorderRadius` on container / cta-section / hero / trust-bar (4).** Declared AND rendered
-  (`class-sgs-container-wrapper.php:495` via `sgs_serialise_box_corners`), with no editor control —
-  the fourth quadrant, frozen at its default forever. Adding the control is a genuine capability
-  addition to the SHARED wrapper, so it needs a Rule-7 design gate before any build.
-- **`option-picker.borderRadiusTablet` / `borderRadiusMobile` (2).** Tier attrs with **no base attr
-  at all** (`borderRadius` is not declared; the block's real control is `pillBorderRadius`), a
-  render.php reference, and no control. These look like orphans from an earlier rename rather than a
-  missing feature. ⛔ Do NOT delete without a stored-content census first — attribute deletion is a
-  live-content change.
-
-⏸ **(1) `BorderBoxControl` does not exist — DESIGN GATE, Bean's call.** §14 field 1 names it CANONICAL
-for border style + per-side width + colour + alpha; it has **zero source files** tree-wide (only docs,
-survey allowlists and a Jest mock). Note this interacts with **D560**: border width/style/colour were
-ruled desktop-only on DEMAND, and nothing has yet asked for a per-side border builder either. So the
-honest question for Bean is not "when do we build it" but **"does §14 field 1 still describe the
-target, or should the contract be amended to match the ruling?"** Amending a contract to match
-reality is legitimate; leaving a canonical component nobody has ever needed as permanent open debt is
-not.
-
-**Trigger:** whoever opens Phase 3 (canonical control per CSS property), or sooner if a client asks
-for a per-device border or a grid-item corner radius.
-
 ### P-ARCHIVE-PRODUCT-WC-VALIDATION — archive-product template shows editor block-validation errors (frontend renders fine)
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 

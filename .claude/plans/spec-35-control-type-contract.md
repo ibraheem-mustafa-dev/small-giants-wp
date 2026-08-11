@@ -605,7 +605,8 @@ Regenerate before building any gate on them.
    raw `GradientPicker` inside `GradientOverlayControl.js:191`, reaching `container`, `hero`,
    `trust-bar`, `cta-section` indirectly.
 4. **Tab** — `group="color"` → Styles, mirroring native `supports.color`. Measured: 37/41 in
-   Settings, 3 Styles, 1 explicit settings. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+   Settings, 3 Styles, 1 explicit settings.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -628,7 +629,8 @@ its element's panel (TIER 1) regardless of this field.)*
    a separate `SelectControl` for target and `TextControl` for rel — three raw controls doing one
    component's job); **`extensions/hover-effects.js:388` raw URL field injected into 67 blocks**
    (84 − 17 opt-outs; the "~82" this doc first carried is the `customCss` figure, transposed).
-4. **Tab** — `settings`. Placement is already consistent; **component choice is the live problem.** *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+4. **Tab** — `settings`. Placement is already consistent; **component choice is the live problem.**
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -651,7 +653,8 @@ its element's panel (TIER 1) regardless of this field.)*
 2. **Required props** — `value` bound to the attr; `options` matching the declared `enum` **exactly**.
 3. **Banned lookalikes** — (a) a shared aggregator offering options outside the consuming block's
    enum; (b) a PHP-enforced closed set with no `block.json` enum (free-text box, no validation).
-4. **Tab** — `settings`, explicitly, not by relying on the default. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+4. **Tab** — `settings`, explicitly, not by relying on the default.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -687,7 +690,8 @@ its element's panel (TIER 1) regardless of this field.)*
    *"e.g. 8px"*, accepts invalid CSS~~ ✅ **FIXED 2026-08-11 (D561)**; see §14 field 6 for the full
    raw-text census (3 found, 3 fixed, 0 remaining). **Phase 3.2a must not re-list `cardRadius`.**
 4. **Tab** — `typography` for font-size/line-height, `dimensions` for spacing, `layout` for grid
-   geometry. All Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+   geometry. All Styles.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -706,7 +710,8 @@ its element's panel (TIER 1) regardless of this field.)*
 2. **Required props** — `values` per tier, `onChange(tier, next)`, real `units`.
 3. **Banned lookalikes** — per-side scalars (**migration COMPLETE — 0 remaining**); regex side-token
    grouping in the converter (already gated, converter-side only — nothing guards editor code).
-4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -756,7 +761,8 @@ its element's panel (TIER 1) regardless of this field.)*
 3. **Banned lookalikes** — per-tier duplicate pickers instead of one `ResponsiveControl`-wrapped
    picker: `sgs/responsive-logo/edit.js:281-305` renders **three always-visible** logo slots.
 4. **Tab** — `settings`; `content` for collection/repeater media (0 SGS blocks currently use
-   `group="content"`). *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+   `group="content"`).
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -869,7 +875,8 @@ its element's panel (TIER 1) regardless of this field.)*
      `sgs/button`, ~80 duplicated lines, incompatible shape;
    - **no control at all** — `sgs/heading` and `sgs/text` declare `boxShadow`/`boxShadowHover`,
      render them, and expose nothing. Rule 07 cannot see this class by construction.
-4. **Tab** — `styles` (it is appearance), inside the border/effects grouping. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+4. **Tab** — `styles` (it is appearance), inside the border/effects grouping.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -1003,15 +1010,33 @@ cross-check — do not treat this guard as complete.
 
 ## 14. BORDER (restores condition 7's dropped half)
 
-1. **Canonical** — `BorderBoxControl` for style + per-side width + colour + alpha;
-   `ResponsiveBorderRadiusControl` for the 4 corners. Radius is a **separate** control from width and
+1. **Canonical** — `ResponsiveBorderRadiusControl` for the 4 corners, and for style + width +
+   colour a **composed builder** (width `UnitControl` with a real units array + style
+   `SelectControl` + token-aware colour picker). Radius is a **separate** control from width and
    style — that separation is the condition, not an implementation detail.
+
+   ⭐ **AMENDED 2026-08-11 (D566). This field used to name core's `BorderBoxControl`, which has
+   never existed in this tree.** It was carried as permanent open debt for months. Resolved by
+   evidence rather than by building it:
+   - The only live demand was `gridItemBorder` (container / cta-section / hero / trust-bar, one
+     control in `ContainerWrapperControls.js` serving all four) — a raw `TextControl` taking a CSS
+     shorthand, i.e. §14.3's own banned lookalike. That is now the composed builder above.
+   - ⛔ **Core's `__experimentalBorderBoxControl` was deliberately NOT adopted.** It works in a
+     `{color, style, width}` OBJECT, while the attribute stores a CSS shorthand STRING. Adopting it
+     would force a stored-content migration on every live instance **for no user-visible gain** —
+     the operator gets the same three inputs either way. The composed builder writes the identical
+     string, so the change shipped with zero migration.
+   - Per-side border width has **no demand at all** (D560: 0 tier attrs, and no block asks for
+     per-side widths), so a per-side builder would be capability manufactured against zero evidence.
+     If a client ever asks, this field is the place to revisit — with that request as the evidence.
 2. **Required props** — per-side values, a real `units` array, alpha on the colour, and a `label`.
 3. **Banned lookalikes** — a None/Thin/Thick **preset `SelectControl`** standing in for a real
    builder (the exact shape condition 7 banned for shadow, and it was dropped for border); per-side
    scalar attrs instead of an object (**migration COMPLETE — 0 remaining**, keep the gate);
-   a `TextControl` taking a raw CSS `border` shorthand; radius folded into the width control.
-4. **Tab** — `border`. Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
+   a `TextControl` taking a raw CSS `border` shorthand (**0 remaining as of 2026-08-11** — the last
+   one was `gridItemBorder`, see field 1); radius folded into the width control.
+4. **Tab** — `border`. Styles.
+ *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
 its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
 its element's panel (TIER 1) regardless of this field.)*
@@ -1024,9 +1049,9 @@ its element's panel (TIER 1) regardless of this field.)*
 
    | Leg | In scope | Canonical | Non-canonical |
    |---|---|---|---|
-   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **24** | **0 wrong-shape**, **0 preset-select**, 6 with **no control at all** |
+   | **4-CORNER** (radius objects) | 30 | `ResponsiveBorderRadiusControl` **30 — 100%** | **0** wrong-shape · **0** preset-select · **0** with no control |
    | **Scalar radius** | 13 | `UnitControl` **11** *(was 8; +3 this session)* | `RangeControl` 2 |
-   | **Scalar border-width** | 7 | — | `RangeControl` 1, remainder unresolved |
+   | **Scalar border-width** | 7 | `UnitControl` **3** (the new grid-item builder) | `RangeControl` 1, remainder resolved to panel wrappers. **0 raw-CSS `TextControl`** |
 
    ⭐ **RE-MEASURED 2026-08-11 with a FIXED instrument (D566).** The figures above are the
    post-fix run, not the original. `survey-box-controls.py` had two compounding defects, both now
@@ -1086,17 +1111,15 @@ its element's panel (TIER 1) regardless of this field.)*
    attribute name found in a nearby **comment** to the next control it sees. Treat every survey leg
    as a candidate list requiring a read, never a defect list.
 
-   **Recorded, NOT fixed** (adding a missing control is a capability decision): the **6** no-control
-   radius attrs — `gridItemBorderRadius` on container/cta-section/hero/trust-bar, and
-   `option-picker.borderRadius` Tablet/Mobile. ~~Plus 5 corner-attrs fed to a 4-SIDE control~~ —
-   **withdrawn, they were false positives (D566).**
-
-   ⛔ **These are the ONLY residual §14 items, and until 2026-08-11 they were deferred to a "Phase 3"
-   that contains no border work at all** — a named-sounding deferral that resolved to nothing when
-   opened, which is the STOP-29 failure this project forbids. Now parked explicitly:
-   `P-SPEC35-BORDER-RESIDUALS` in `.claude/parking.md`, which also owns **field 1's unbuilt
-   `BorderBoxControl`**, the **8 scalar mounts missing a `units` array** (field 2), and the **2
-   survey instrument defects** below. Nothing in §14 is orphaned any more.
+   ✅ **ALL §14 RESIDUALS DISCHARGED 2026-08-11 (D566).** There is no remaining border backlog and
+   no parking entry — `P-SPEC35-BORDER-RESIDUALS` was opened to un-orphan these and closed the same
+   day once each was actually resolved:
+   - the 6 "no control" radius attrs → **0**. Four (`gridItemBorderRadius`) always had a control in
+     a shared panel the survey could not see; the two real ones (`option-picker.borderRadiusTablet`
+     /`Mobile`, declared AND rendered at `render.php:250-251`) now have one.
+   - the "5 corner attrs fed to a 4-SIDE control" → **withdrawn, false positives**.
+   - the raw-CSS `TextControl` border → **replaced** (field 1).
+   - the missing `units` arrays → **fixed**; the real gap was **2**, not the 8 recorded.
 
    ✅ **Instrument defects — FIXED 2026-08-11 (D566), not merely recorded.** (a) the scalar legs now
    declare `UnitControl`/`ResponsiveControl` canonical; (b) comment matches and out-of-element

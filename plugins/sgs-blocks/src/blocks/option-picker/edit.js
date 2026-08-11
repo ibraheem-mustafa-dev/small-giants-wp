@@ -181,6 +181,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillSelectedBorderColour,
 		pillBorderRadius,
 		pillSelectedBorderRadius,
+		borderRadiusTablet,
+		borderRadiusMobile,
 		pillPadding,
 		pillPaddingTablet,
 		pillPaddingMobile,
@@ -853,11 +855,29 @@ export default function Edit( { attributes, setAttributes } ) {
 						showResponsive={ false }
 						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
 					/>
+					{ /* borderRadiusTablet/Mobile were DECLARED and RENDERED
+					     (render.php:250-251) with no control — the fourth
+					     quadrant, frozen at default forever. This control was
+					     base-only (`showResponsive={ false }`), so the two tier
+					     attrs were unreachable. Made responsive 2026-08-11
+					     (P-SPEC35-BORDER-RESIDUALS item 2), matching the shape
+					     counter/timeline/whatsapp-cta already use: base is the
+					     WP-native style.border.radius, tiers are SGS object
+					     attrs. */ }
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Root border radius', 'sgs-blocks' ) }
-						values={ { base: style?.border?.radius ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
+						values={ {
+							base: style?.border?.radius ?? {},
+							tablet: borderRadiusTablet ?? {},
+							mobile: borderRadiusMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+							} else {
+								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

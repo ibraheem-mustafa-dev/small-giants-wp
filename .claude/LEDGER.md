@@ -70,7 +70,7 @@ recorded in the commit messages + `decisions.md` D546-D559.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D565**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D566**.
 
 ### ✅ PHASE 0 IS CLOSED — 2026-08-11 session 5
 
@@ -80,9 +80,27 @@ recorded in the commit messages + `decisions.md` D546-D559.
 | 3 raw-`TextControl` radius boxes → `UnitControl` + `check-editor-only.py` (D562) | `9fda666f` |
 | SGS commit gates version-controlled + 3 portability defects (D564) | `17e5bbf6` |
 | **0d — `__experimental*` compat boundary, migrated + gated (D565)** | `5d84324b` |
+| QC council on Phase 0 — 5 defects found + fixed (D566) | `dfaab961` |
+| **§14 residuals discharged: instrument fixed, then the work it mismeasured** | `be5715d0` + this session's close |
 
-**All four Phase 0 items are done.** 0a measured, 0b ruled, 0c closed (it had already shipped), 0d
-built, migrated and gated. Phase 4's Background item is UNBLOCKED.
+**All four Phase 0 items are done, and §14 is now 100% conformant.** 0a measured, 0b ruled, 0c closed
+(it had already shipped), 0d built/migrated/gated. **Phase 4's Background item is UNBLOCKED.**
+
+⭐ **The §14 residuals are DISCHARGED, not parked.** They had been deferred to a "Phase 3" that
+contains no border work (STOP-29 — a named-sounding deferral resolving to nothing). A parking entry
+was opened to un-orphan them and **deleted the same day**, once each was genuinely resolved rather
+than merely tracked. Detail: `decisions.md` D566 + contract §14 fields 1/3/6. Final measured state of the border census:
+**4-CORNER 30/30 canonical · 0 no-control · 0 banned lookalikes · scalar radius 11 canonical ·
+raw-CSS border `TextControl` 3 → 0 · per-side scalars 0.**
+
+⛔ **THE SINGLE MOST USEFUL LESSON OF THE SESSION: fix the instrument BEFORE working its list.**
+`survey-box-controls.py` had **four** defects — it counted matches inside COMMENTS, had no ELEMENT
+BOUNDARY (blaming an already-closed element), could not see controls in SHARED panel files, and
+declared no canonical component for its scalar legs. Every non-canonical hit in the 4-CORNER leg was
+an artefact. Fixing the tool first **removed more "work" than it created**: a 5-item wrong-shape
+backlog evaporated, 4 of 6 "missing controls" turned out to already exist, and the missing-`units`
+gap was 2 rather than the 8 recorded. Only 2 real defects remained, and both are now fixed. The
+instrument ships regression guards for each defect (self-test 5 → 7) and still fails on demand.
 
 ⛔ **A D-NUMBER COLLISION HAPPENED — read this before assuming numbering is safe.** A co-active
 session took **D563** for pass 1 while this work was in flight, so the hook restructure became D564
@@ -301,6 +319,10 @@ alone account for **~56 of the 141**, and pass 4 (`columns`) another 21.
 - ~~0d deferred~~ ✅ **DONE** — pass 1 landed (`fa638cea`, co-active session), the tree went clean,
   and 0d shipped the same session. 115 imports across 50 files now route through
   `src/components/primitives/`, with `check:experimental-imports` wired into `prebuild`.
+- ⚠ **A green build is not a live-editor check.** Phase 0 is deployed to the canary, but the editor
+  surfaces it changes (inspector controls on ~10 blocks) still want a human eye before Phase 3 leans
+  on them. This repo has a recorded case of a component being `undefined` at runtime through a green
+  build.
 - ⚠ **A line-keyed baseline is a live hazard for any future codemod.** `inspector-scan`'s
   `08-raw-url-link` keys entries on `file:LINE`, so a 2-line import shift turned an accepted
   exemption into a gating finding. Re-anchored (D565) with a `_meta` warning. **Passes 2-6 of the

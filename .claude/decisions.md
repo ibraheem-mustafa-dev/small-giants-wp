@@ -32,6 +32,40 @@ reported — **an exemption that matches nothing is evidence, not noise.**
   message had already corrected to 50. A claim outliving the fact that falsified it, inside the
   artefact rather than a doc.
 
+### ⭐ ADDENDUM — the residuals were then CLOSED, and the instrument was the real defect
+
+Bean's call: close the parking entry properly rather than leave items design-gated. Working it
+surfaced **two more instrument defects** on top of the two already known, and fixing the tool first
+**removed more work than it created**:
+
+| Defect | Consequence |
+|---|---|
+| Counted matches inside COMMENTS | `counter/edit.js:216` is a JSX comment naming the radius attrs |
+| No ELEMENT BOUNDARY in `_nearest_preceding_jsx_tag` | Blamed an element that closed 6 lines earlier |
+| **Could not see SHARED panel files** | `gridItemBorderRadius` on 4 blocks read as "no control" — it has had a canonical one in `GridItemDefaultsPanel` all along |
+| **Scalar legs declared NO canonical component** | 11 correct `UnitControl` mounts printed `[non-canonical/raw]` — a leg that can only ever report failure |
+
+**What survived contact with a working instrument:** of the recorded backlog, the 5 "wrong-shape"
+findings were **0**, the 6 "no control" were **2**, and the 8 missing-`units` mounts were **2**. Both
+real gaps are now fixed, plus one genuine defect the fixed tool revealed for the first time:
+`gridItemBorder` was a raw `TextControl` taking a CSS shorthand — §14.3's own banned lookalike,
+serving 4 blocks from one panel.
+
+**§14 field 1 amended rather than built.** It named core's `BorderBoxControl`, which never existed
+here. The live demand was that one raw-text control, now a composed builder (width `UnitControl` +
+style `SelectControl` + token colour picker) that writes **the identical shorthand string** — so it
+shipped with **zero content migration**. Core's `__experimentalBorderBoxControl` was deliberately not
+adopted: it works in a `{color,style,width}` object and would have forced a migration on every stored
+instance for no user-visible gain. Per-side width has no demand at all (D560).
+
+**Final measured state:** 4-CORNER **30/30 canonical**, 0 no-control, 0 banned lookalikes; scalar
+radius 11 canonical; raw-CSS border `TextControl` **3 → 0**; per-side scalars 0. Parking entry
+deleted; no §14 backlog remains.
+
+⛔ **The transferable rule: FIX THE INSTRUMENT BEFORE WORKING ITS LIST.** Three separate figures in
+"MEASURED" material were wrong, all in the same direction — inflated backlog — and every one would
+have been dispatched as real work.
+
 ### The orphaned-scope violation
 
 Four §14 residuals (unbuilt `BorderBoxControl`, 6 no-control radius attrs, 8 mounts missing `units`,

@@ -295,8 +295,20 @@ def verdict(
     # change that genuinely ships to the visitor. Walk the import graph instead,
     # starting from every frontend entry, following relative specifiers inside
     # the block.
+    # ⛔ index.js is a frontend surface for STAGING (rule 1) but must NOT seed the
+    # reachability walk. It imports ./edit by construction — that IS the block
+    # registration — so seeding from it walks index.js → edit.js → components/*
+    # and marks EVERY editor component "reachable from a frontend entry".
+    #
+    # Caught by this gate on its own author, 2026-08-11: the two D566 fixes
+    # interacted, and `container` was refused with the tell-tale message
+    # "reachable ... (via components/ContainerWrapperControls.js)" — the file
+    # matching ITSELF. Verified against reality before changing anything:
+    # container/view.js has ZERO imports and nothing frontend mentions that
+    # component. A false positive, not a discovery.
+    reach_seeds = (frontend - {"index.js"}) | set(frontend_entries or ())
     reachable: set[str] = set()
-    queue = [n for n in siblings if n in frontend]
+    queue = [n for n in siblings if n in reach_seeds]
     while queue:
         current = queue.pop()
         if current in reachable:
@@ -314,7 +326,7 @@ def verdict(
     for comp in component_files:
         comp_stem = comp.rsplit("/", 1)[-1].rsplit(".", 1)[0]
         for hit in reachable:
-            if hit in frontend:
+            if hit in reach_seeds:
                 continue  # the entry itself, not a reached component
             if hit.rsplit("/", 1)[-1].rsplit(".", 1)[0] == comp_stem:
                 return False, (
@@ -323,7 +335,7 @@ def verdict(
                 )
         # Also catch a frontend entry importing the component directly.
         for name in sorted(siblings):
-            if name not in frontend:
+            if name not in reach_seeds:
                 continue
             if re.search(
                 r"""(?:from|require\s*\()\s*['"][^'"]*%s(?:\.jsx?)?['"]"""
@@ -508,7 +520,19 @@ _CASES = [
         True,
     ),
     (
-        "NEGATIVE — nothing staged means the gate applies",
+        "POSITIVE (D566) — index.js must NOT seed reachability (it imports ./edit by design)",
+        [("M", "components/Panel.js")],
+        "",
+        {
+            "index.js": "import Edit from './edit'; registerBlockType(n,{edit:Edit});",
+            "edit.js": "import Panel from './components/Panel';",
+            "components/Panel.js": "export function Panel(){}",
+            "view.js": "",
+        },
+        True,
+    ),
+    (
+        "NEGATIVE (D566) — nothing staged means the gate applies",
         [],
         "",
         {},

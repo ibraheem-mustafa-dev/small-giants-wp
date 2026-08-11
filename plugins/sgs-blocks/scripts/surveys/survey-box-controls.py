@@ -315,6 +315,64 @@ def _nearest_preceding_jsx_tag(lines, occurrence_idx, window=60):
     return None, None
 
 
+# ---------------------------------------------------------------------------
+# Shared-component fallback (D566 instrument fix #4).
+# ---------------------------------------------------------------------------
+
+def _shared_control_files():
+    """Every shared/panel component file a block's edit.js may delegate to.
+
+    ⛔ INSTRUMENT DEFECT FIXED 2026-08-11. The survey scanned ONLY
+    `src/blocks/<block>/edit.js`, so an attribute whose control lives in a shared
+    panel was reported as "NO CONTROL INSTANCE FOUND BY STATIC SCAN" — declared
+    and rendered but apparently unreachable.
+
+    Measured consequence: `gridItemBorderRadius` on container / cta-section /
+    hero / trust-bar was reported as 4 of the 6 no-control findings and carried
+    into contract §14 field 6 as real. It HAS a canonical
+    `ResponsiveBorderRadiusControl`, in `GridItemDefaultsPanel`
+    (`container/components/ContainerWrapperControls.js:1226-1231`), and all four
+    blocks render it. The survey simply could not see across the file boundary —
+    `SHARED_COMPONENT_FILES` mapped one component, `SpacingControl`.
+    """
+    out = []
+    for base in (COMPONENTS_SRC, BLOCKS_SRC):
+        if not os.path.isdir(base):
+            continue
+        for root, _dirs, files in os.walk(base):
+            # A block's own edit.js is scanned directly; only PANEL/COMPONENT
+            # files are fallbacks.
+            if os.path.basename(root) == 'blocks':
+                continue
+            for name in files:
+                if not name.endswith('.js'):
+                    continue
+                if name in ('edit.js', 'save.js', 'view.js', 'index.js'):
+                    continue
+                out.append(os.path.join(root, name))
+    return out
+
+
+_SHARED_FILES_CACHE = None
+
+
+def scan_with_shared_fallback(edit_js_path, attr_name):
+    """edit.js first; if nothing, look in the shared panel components it may use."""
+    global _SHARED_FILES_CACHE
+    instances = scan_edit_file_for_attribute(edit_js_path, attr_name)
+    if instances:
+        return instances
+    if _SHARED_FILES_CACHE is None:
+        _SHARED_FILES_CACHE = _shared_control_files()
+    for path in _SHARED_FILES_CACHE:
+        found = scan_edit_file_for_attribute(path, attr_name)
+        if found:
+            for f in found:
+                f['note'] = f"shared-file:{os.path.basename(path)}|{f['note']}"
+            return found
+    return []
+
+
 def scan_edit_file_for_attribute(edit_js_path, attr_name):
     """Return a list of {line, jsx_tag, resolved_component, note} for every
     JSX-control occurrence of attr_name in edit_js_path. resolved_component
@@ -448,7 +506,7 @@ def build_box_census(rows):
                 no_editor_file.append(row)
                 continue
             rel = os.path.relpath(edit_js, REPO_ROOT).replace('\\', '/')
-            instances = scan_edit_file_for_attribute(edit_js, row['attr_name'])
+            instances = scan_with_shared_fallback(edit_js, row['attr_name'])
             if not instances:
                 no_control_found.append(row)
                 continue
@@ -570,7 +628,7 @@ def build_border_census(rows):
                 no_editor_file.append(row)
                 continue
             rel = os.path.relpath(edit_js, REPO_ROOT).replace('\\', '/')
-            instances = scan_edit_file_for_attribute(edit_js, row['attr_name'])
+            instances = scan_with_shared_fallback(edit_js, row['attr_name'])
             if not instances:
                 no_control_found.append(row)
                 continue
