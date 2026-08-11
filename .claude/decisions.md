@@ -1,5 +1,45 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D567 — Deploying and opening the editor found a hard crash every static gate missed [INCIDENT]
+
+**2026-08-11.** Bean instructed: close the §14 residuals, then deploy everything. The deploy-then-open-
+the-editor step immediately found a **live editor crash that had nothing to do with this session's
+work** — and that no gate in the repo can see.
+
+`sgs/card-grid` (and every other section / layout / content-KIND block, i.e. everything routing
+through the shared wrapper) threw:
+
+```
+ReferenceError: ResponsiveSpacingPanel is not defined
+```
+
+and rendered *"This block has encountered an error and cannot be previewed."* **Its entire inspector
+was gone** — 10 panels, including every control this programme has been adding.
+
+**Cause.** `ResponsiveSpacingPanel` was deliberately DELETED on 2026-08-10 (Spec 35 Phase 1.4 — it
+wrote `paddingTopTablet`/`marginLeftMobile`-shaped attributes that **no** `block.json` declares, which
+WordPress silently discards). Its tombstone comment is still in the file. But **three entries in the
+KIND panel registry still called it** (`section`, `layout`, `content`), so deleting the component took
+out the inspector of every block using the shared wrapper. Latent in source since that commit;
+`git diff HEAD~1` shows this session touched the symbol **zero** times.
+
+⛔ **WHAT DID NOT CATCH IT — the point of this entry.** `npm run build` exit 0 · `inspector-scan`
+0 gating findings · `check-dead-controls` · `check-dead-pattern-attrs` · `check-control-ux` · the
+entire `prebuild` chain · every `--self-test` in the repo. All green, with a hard crash in the editor.
+**A JSX reference to a deleted symbol is invisible to every static gate here**, because the gates ask
+"is this attribute controlled / rendered / declared", never "does this identifier resolve".
+
+**Verified fixed on the live canary:** 0 console errors (was 1), no error banner, **10 inspector
+panels render**, the §14 "Corner radius" control is present, and **10 `UnitControl`s render** — which
+also closes the last open item from D566: the `__experimental*` barrel resolves at RUNTIME, not just
+at build time. All 10 symbols measured `typeof` object/function in the live editor, none undefined.
+
+**The rule this earns.** The project already says "verify on the real page" and "a green build is not
+evidence an effect fires". This is the sharpest instance yet: **the entire static-gate suite can be
+green while the client-facing surface is a crash banner.** Deploying and opening the editor is not a
+formality at the end of a task — for any change touching editor code it is the only check that
+answers the question the gates cannot.
+
 ## D566 — A QC council on Phase 0 found 5 real defects in the same session that shipped it [INCIDENT]
 
 **2026-08-11, Bean-requested** after Phase 0 was declared complete. Four raters, distinct angles,

@@ -70,7 +70,7 @@ recorded in the commit messages + `decisions.md` D546-D559.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D566**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D567**.
 
 ### ✅ PHASE 0 IS CLOSED — 2026-08-11 session 5
 
@@ -319,10 +319,17 @@ alone account for **~56 of the 141**, and pass 4 (`columns`) another 21.
 - ~~0d deferred~~ ✅ **DONE** — pass 1 landed (`fa638cea`, co-active session), the tree went clean,
   and 0d shipped the same session. 115 imports across 50 files now route through
   `src/components/primitives/`, with `check:experimental-imports` wired into `prebuild`.
-- ⚠ **A green build is not a live-editor check.** Phase 0 is deployed to the canary, but the editor
-  surfaces it changes (inspector controls on ~10 blocks) still want a human eye before Phase 3 leans
-  on them. This repo has a recorded case of a component being `undefined` at runtime through a green
-  build.
+- ✅ **DEPLOYED AND VERIFIED LIVE.** All of Phase 0 is on the canary and checked in the real editor:
+  0 console errors, 10 inspector panels render on `sgs/card-grid`, the §14 "Corner radius" control is
+  present, 10 `UnitControl`s render, and all 10 `__experimental*` barrel symbols resolve at RUNTIME
+  (none undefined) — the React-#130 risk is closed by measurement, not inference.
+- ⛔ **That live check found a hard crash every static gate missed (D567).** `ResponsiveSpacingPanel`
+  was deleted 2026-08-10 but three call sites remained, so EVERY section/layout/content-kind block
+  showed "This block has encountered an error and cannot be previewed" with its whole inspector gone.
+  Not this session's work — latent since the deletion commit. Fixed and redeployed.
+  **`npm run build`, `inspector-scan`, `check-dead-controls`, the whole prebuild chain and every
+  self-test were GREEN throughout.** A JSX reference to a deleted symbol is invisible to all of them.
+  **For any editor-code change, deploying and opening the editor is the only check that answers this.**
 - ⚠ **A line-keyed baseline is a live hazard for any future codemod.** `inspector-scan`'s
   `08-raw-url-link` keys entries on `file:LINE`, so a 2-line import shift turned an accepted
   exemption into a gating finding. Re-anchored (D565) with a `_meta` warning. **Passes 2-6 of the
