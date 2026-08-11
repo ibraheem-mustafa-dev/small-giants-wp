@@ -1571,8 +1571,14 @@ const KIND_PANELS = {
 		),
 		// 2. Inner band (content band).
 		( props ) => <ContentBandPanel { ...props } />,
-		// 3. Responsive spacing (outer padding / margin overrides).
-		( props ) => <ResponsiveSpacingPanel { ...props } />,
+		// 3. Responsive spacing — REMOVED 2026-08-11. ResponsiveSpacingPanel was
+		//    deleted on 2026-08-10 (see its tombstone above) but these registry
+		//    entries still called it, so EVERY section/layout/content-kind block
+		//    threw `ReferenceError: ResponsiveSpacingPanel is not defined` and
+		//    showed "This block has encountered an error and cannot be
+		//    previewed." Found on the LIVE canary editor, not by any gate — the
+		//    build, inspector-scan, check-dead-controls and the whole prebuild
+		//    chain were all green with this in place.
 		// 4. Layout.
 		( props ) => (
 			<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
@@ -1620,7 +1626,6 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
-		( props ) => <ResponsiveSpacingPanel { ...props } />,
 		( props ) => <ContentBandPanel { ...props } />,
 	],
 
@@ -1630,9 +1635,10 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
-		( props ) => <ResponsiveSpacingPanel { ...props } />,
-		// Note: base (desktop) padding/margin are handled by WP-native supports.spacing
-		// (Dimensions panel). ResponsiveSpacingPanel only adds tablet/mobile overrides.
+		// Base (desktop) padding/margin are handled by WP-native supports.spacing
+		// (the Dimensions panel). The deleted ResponsiveSpacingPanel used to add
+		// tablet/mobile overrides here; its call was removed 2026-08-11 with the
+		// other two (see note above).
 	],
 };
 
