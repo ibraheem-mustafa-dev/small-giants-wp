@@ -1,18 +1,23 @@
 /**
- * Universal Hover Effects extension.
+ * Hover Effects extension — MIXED gating model (D551, Phase 2.1).
  *
  * Adds hover colour, scale, shadow, image zoom, grayscale, stagger delay,
- * easing, duration, focus ring, and block link controls to ALL blocks.
+ * easing, duration, focus ring, block link and click-ripple controls.
  *
- * Default model: ALL blocks start with EMPTY/FALSE defaults (no hover lift).
- * A small opt-in list of card-like blocks gets subtle lift defaults.
+ * Default model: opted-in blocks start with EMPTY/FALSE defaults (no hover
+ * lift). A small opt-in list of card-like blocks gets subtle lift defaults.
  *
- * Per-block opt-out: a block may declare `supports.sgs.hideExtensions` (e.g.
- * `["hover","blockLink","clickEffects"]`) to suppress any of the three panels
- * this extension renders — and, for the hover panel, its attributes too (so
- * they can't be set and can't collide with a block that owns its own hover,
- * like sgs/brand-strip's per-tile hover). Universal + declarative — see
- * ./hide-extensions.js.
+ * `hover` and `blockLink` are OPT-IN (D551): disconnected from every block by
+ * default, attached only when a block declares
+ * `supports.sgs.enabledExtensions: ["hover"]` / `["blockLink"]`. Ruled by
+ * Bean 2026-08-10 after measuring ZERO stored hover/link attributes across
+ * 194 canary pages — the panel painted the block ROOT rather than the
+ * element and produced unpaired single-state colour pickers, and nothing
+ * live depended on it.
+ *
+ * `clickEffects` is still OPT-OUT (legacy): a block may declare
+ * `supports.sgs.hideExtensions: ["clickEffects"]` to suppress that panel.
+ * Universal + declarative — see ./hide-extensions.js.
  *
  * Class injection is handled server-side by includes/hover-effects.php via
  * the render_block filter. A getSaveContent.extraProps filter here would
@@ -34,7 +39,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { isExtensionHidden } from './hide-extensions';
+import { isExtensionHidden, isExtensionEnabled } from './hide-extensions';
 
 // Lazy-import DesignTokenPicker if available, fallback to nothing.
 let DesignTokenPicker;
@@ -157,15 +162,15 @@ addFilter(
 
 		const defaults = resolveBlockDefaults( settings.name );
 
-		// Declarative per-block opt-out (see ./hide-extensions.js). A block that
-		// owns its own hover (e.g. sgs/brand-strip's per-tile hover) hides
-		// 'hover' so the universal hover attrs are NOT registered — they would
-		// duplicate the block's controls AND collide on the same rendered CSS.
-		// 'blockLink' / 'clickEffects' suppress those panels' attrs on blocks
-		// where they make no sense (a logo wall, etc.).
-		const hoverAttributes = isExtensionHidden( settings, 'hover' )
-			? {}
-			: {
+		// Declarative per-block opt-IN (D551, Phase 2.1 — see ./hide-extensions.js).
+		// 'hover' and 'blockLink' are DISCONNECTED by default: a block must list
+		// the slug in supports.sgs.enabledExtensions to receive that panel's
+		// attrs at all. Measured 2026-08-10: zero stored hover attributes across
+		// 194 canary pages, so this ships with no live-content migration.
+		// 'clickEffects' is unaffected — still governed by the legacy
+		// hideExtensions DENYLIST until its own usage derivation lands.
+		const hoverAttributes = isExtensionEnabled( settings, 'hover' )
+			? {
 				// Colour overrides on hover.
 				sgsHoverBgColour:     { type: 'string',  default: '' },
 				sgsHoverTextColour:   { type: 'string',  default: '' },
@@ -192,11 +197,11 @@ addFilter(
 				sgsHoverTilt3D:       { type: 'boolean', default: false },
 				// Focus ring for keyboard navigation — enabled on opt-in blocks.
 				sgsFocusRing:         { type: 'boolean', default: defaults.focusRing },
-			};
+			}
+			: {};
 
-		const linkAttributes = isExtensionHidden( settings, 'blockLink' )
-			? {}
-			: {
+		const linkAttributes = isExtensionEnabled( settings, 'blockLink' )
+			? {
 				// Block link — injects an empty stretched-link overlay <a> as
 				// the block root's last child (server-side, includes/hover-
 				// effects.php). Never wraps the block — that would produce
@@ -206,7 +211,8 @@ addFilter(
 				// Accessible name for the overlay anchor — required because
 				// an empty anchor has no text content for screen readers.
 				sgsBlockLinkLabel:    { type: 'string',  default: '' },
-			};
+			}
+			: {};
 
 		const clickAttributes = isExtensionHidden( settings, 'clickEffects' )
 			? {}
@@ -241,14 +247,15 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			return <BlockEdit { ...props } />;
 		}
 
-		// Declarative per-block opt-out (see ./hide-extensions.js). Each panel is
-		// suppressed independently when its slug is listed in
-		// supports.sgs.hideExtensions — e.g. a logo wall hides
-		// ['hover','blockLink','clickEffects'] so none of these clutter its
-		// sidebar. Prevents the "duplicate hover" + irrelevant-panel clutter the
-		// client reported on sgs/brand-strip (2026-07-18).
-		const hideHover = isExtensionHidden( name, 'hover' );
-		const hideBlockLink = isExtensionHidden( name, 'blockLink' );
+		// 'hover' / 'blockLink' — opt-IN (D551, Phase 2.1): a panel renders only
+		// when its slug is listed in supports.sgs.enabledExtensions. Disconnected
+		// from every block by default (0 stored usage measured 2026-08-10).
+		// 'clickEffects' stays on the legacy hideExtensions DENYLIST — renders
+		// everywhere unless a block opts out, e.g. a logo wall hiding
+		// ['clickEffects'] to avoid irrelevant-panel clutter (sgs/brand-strip,
+		// 2026-07-18).
+		const hideHover = ! isExtensionEnabled( name, 'hover' );
+		const hideBlockLink = ! isExtensionEnabled( name, 'blockLink' );
 		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
 		const {

@@ -46,6 +46,7 @@
 			"imageControls": true,
 			"scalarContentLift": true,
 			"presetSelectors": [ "cardStyle" ],
+			"enabledExtensions": [ "blockLink" ],
 			"elements": {
 				"card": {
 					"label": "Card",

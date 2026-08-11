@@ -1,5 +1,84 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D579 — Phase 2.1 opt-in inversion: hover + block-link flipped (D551 executed); animation/clickEffects/parallax deliberately NOT flipped [ROUTINE]
+
+**2026-08-11.** Executed D551's hover/block-link ruling in code, then evaluated whether the same
+treatment should extend to the other three styling/interaction universal extensions still on the
+`hideExtensions` denylist model (`animation`, `clickEffects`, `parallax`) — and ruled it should not.
+
+**WHAT SHIPPED (branch `feat/extension-opt-in-hover-blocklink`, PR #25).** `hover-effects.js`'s
+`hover` and `blockLink` panels/attributes now attach to NO block by default — a block must declare
+`supports.sgs.enabledExtensions: ["hover"]` / `["blockLink"]` to receive them, inverting the old
+"universal unless denylisted" model. `hide-extensions.js` gained `isExtensionEnabled()` alongside
+the existing `isExtensionHidden()` — two extensions, two gating models, both declared in one place.
+`check-duplicate-controls.js` and `check-universal-fit.js` were both still reasoning about the old
+denylist model for hover/blockLink and would have produced permanent false positives (a "duplicate
+hover control" finding on testimonial/testimonial-slider/text that no longer exists; a stale
+UNIVERSAL LOAD RANKING) — both fixed, `check-universal-fit.js`'s self-test extended 4→8 cases to
+cover the opt-in path.
+
+**Evidence gate cleared:** zero real stored usage of any hover/blockLink attribute across the full
+canary (162 pages/posts, any status, 1,305 `sgs/*` block instances) and every theme
+pattern/template/part — verified two ways (structured JSON scan in the new
+`scripts/surveys/survey-extension-usage.py`, and an independent raw-string grep over the same
+corpus) before shipping. No stored-content migration needed.
+
+**RULED OUT: animation/clickEffects/parallax stay on the denylist model, NOT flipped to opt-in.**
+Same usage measurement found zero live usage for these three too (65-66 blocks attached, 0
+instances using them) — but usage alone isn't the right test. D551's actual justification for
+hover was a **mechanism defect**: it painted colour overrides onto the block ROOT when the client
+wanted a specific inner element (a button inside a card), so the panel couldn't do what it
+claimed. Checked the other three against the same test and found no defect — all three are
+explicitly documented as whole-block/root-targeted BY DESIGN: `animation-attributes.php` (docblock)
+injects onto the whole rendered block for the frontend `IntersectionObserver` to watch as a unit;
+`parallax.php` (docblock) explicitly targets "the outermost wrapper element" because a parallax
+offset only makes sense as a whole-block transform; the click-ripple radiates from the click point
+across the whole card by design (Material-style), not a wrapper accident. Root-targeting is
+correct for all three, so there is no bug to fix by disconnecting them — only a clutter argument
+(59% of inspector rows are universal-extension bloat, D544), which is real but weaker than a defect
+and trades against future friction (a block build wanting animation would need to remember to
+declare `enabledExtensions` first). Bean's call: not worth it without a defect driving it.
+
+**Phase 2.1 (opt-in inversion) is now CLOSED** on this basis: hover + blockLink shipped;
+`imageControls` was already opt-in; `conditionalVisibility`/`customCss`/`responsiveVisibility` are
+correctly excluded as universal-by-design utility extensions (not a gap, per
+`check-universal-fit.js`'s own `isUtility` flag); `animation`/`clickEffects`/`parallax` evaluated
+and deliberately left alone. Nothing remains open in this phase's opt-in-inversion scope. The
+`go-track-1b-playful-hamster.md` plan's Phase 2.1 status line is stale as of this decision — update
+it in the same session.
+
+**Live-verified by Bean directly in the canary editor** (not just the static gates) before this
+entry was written.
+
+**ADDENDUM 2026-08-11 — "nothing else opts in yet" (above) is now stale; 3 blocks do.** Bean asked
+the follow-up question this closure should have anticipated: opt-in ≠ nobody should ever use it,
+just nobody was FORCED to. Checked which blocks genuinely should opt in via two independent passes
+— my own analysis plus a fresh second-opinion agent dispatched blind to it (same question, no
+knowledge of my conclusions) — and both converged on `info-box` (a classic feature-card pattern
+with no competing link mechanism; spec 35 records it had this capability before and lost it) and
+flagged `notice-banner` as plausible on the same basis (promotional-banner pattern, nothing else
+claims the click).
+
+**The second opinion also caught a real regression the flip introduced, which I'd missed:
+`team-member`.** Its `render.php` says outright *"Block-link is handled universally by the
+sgsBlockLink extension"*, and it still declares `sgsBlockLink`/`sgsBlockLinkTarget` natively in its
+own `block.json` — but it has **zero editor control of its own** (verified: no `blockLink`
+reference anywhere in its `edit.js`). It was built to depend entirely on the universal panel this
+decision made opt-in-only, so the flip silently deleted its only way to ever set a value. No stored
+data was lost (zero usage was already measured for the whole extension), but the *capability* the
+block was deliberately built around vanished. Restored, not a new capability — a fix for one this
+decision itself caused.
+
+**Shipped:** `abcf8f2b` on the same branch/PR. All three verified via `check-universal-fit.js
+--check` (info-box/team-member both moved 7→8 attached panels, zero inappropriate-fit flags) plus
+JSON validity; not yet re-verified live in the canary editor (deploy pending). `product-card` and
+`counter` were considered and explicitly left out — `counter` had no evidence either way, and
+`product-card` already has its own CTA/Add-to-Cart flow complex enough (typed + live WC bound
+modes) that a second, independently-settable link risked pointing somewhere different and
+confusing the two; not worth the risk without a clearer case.
+
+---
+
 ## D578 — `columns` (pass 4 of 6) migrated to the tier-object shape; visual-diff gate bypassed a second time, same shape as D577 [INCIDENT]
 
 **2026-08-11. Bean-authorised explicitly, same reasoning shown and accepted as D577.** This is
