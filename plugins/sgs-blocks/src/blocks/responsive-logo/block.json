@@ -38,7 +38,6 @@
 				],
 				"_comment_providesNatively": "Spec 38 FR-38-15 / §7. This block ALREADY exposes stroke-draw through its own `animationStyle` enum (draw-on-load | hover-redraw | scroll-trigger), whose values FR-38-15 keeps byte-identical across the Vivus->DrawSVG swap. Listing `draw` again in the generic 'Scroll & effects' picker would put TWO controls for ONE capability on this block, which this codebase bans. `generate-fx-qualifying-blocks.py` subtracts every effect named here from the block's derived roster, so the exclusion is a declaration this block OWNS rather than a per-block carve-out in the generator or in fx.js. Any future block that natively owns an fx capability declares it the same way."
 			},
-			"imageControls": true,
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -142,7 +141,7 @@
 		"maxWidthUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"maxHeight": {
 			"type": "object",
 			"default": {}
@@ -150,7 +149,7 @@
 		"maxHeightUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"linkToHome": {
 			"type": "boolean",
 			"default": true

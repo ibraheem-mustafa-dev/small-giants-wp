@@ -20,7 +20,6 @@
 	"supports": {
 		"sgs": {
 			"collection": true,
-			"imageControls": true,
 			"arrayContentLift": true,
 			"containerMirror": false,
 			"hideExtensions": [ "clickEffects", "parallax" ],
@@ -196,7 +195,7 @@
 		"nameFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"nameFontWeight": {
 			"type": "string",
 			"default": ""
@@ -212,7 +211,7 @@
 		"nameLineHeightUnit": {
 			"type": "string",
 			"default": ""
-		},
+		},
 		"nameLetterSpacing": {
 			"type": "object",
 			"default": {}
@@ -220,7 +219,7 @@
 		"nameLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
-		},
+		},
 		"nameTextTransform": {
 			"type": "string",
 			"default": ""

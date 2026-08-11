@@ -56,6 +56,18 @@ function inject_image_controls( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
+	// Opt-out (Spec 35 capability-routing doctrine, Part 9 rollout step 3):
+	// a block that has converted to the explicit mechanism (its OWN render.php
+	// calls sgs_media_position_css() with its own known selector) declares
+	// `imageControlsExplicit: true` alongside `imageControls: true` — it still
+	// wants the sgsObjectPosition/sgsObjectFit ATTRIBUTES + editor UI (both
+	// still provided by extensions/image-controls.js's registerBlockType/
+	// BlockEdit filters, unchanged), it just no longer wants THIS filter's
+	// guessed-root class/CSS-var injection running on top of its own emission.
+	if ( ! empty( $supports['sgs']['imageControlsExplicit'] ) ) {
+		return $block_content;
+	}
+
 	$attrs = $block['attrs'] ?? array();
 
 	// Allowed CSS units — validated strictly to prevent injection.
