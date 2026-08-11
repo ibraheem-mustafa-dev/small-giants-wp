@@ -67,6 +67,12 @@
  *                                     never inline. sgs_typography_css_rule
  *                                     is implemented on top of it.)
  *
+ *   helpers-media-position.php      — sgs_media_position_css,
+ *                                     sgs_media_position_focal_to_css (Spec 35
+ *                                     capability-routing doctrine, mechanism
+ *                                     (c) — explicitly-wired object-fit/
+ *                                     object-position, caller owns selector)
+ *
  * A single `require_once render-helpers.php` continues to resolve every
  * function that this file has always provided. All callers are unchanged.
  *
@@ -78,6 +84,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-typography.php';
+require_once __DIR__ . '/helpers-media-position.php';
 require_once __DIR__ . '/helpers-colour-wcag.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-configurator-pricing.php';
