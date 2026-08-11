@@ -42,6 +42,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shlex
 import shutil
 import subprocess
@@ -611,6 +612,150 @@ def step_scoped_selector_audit(page_id: str, dry_run: bool) -> int:
     return rc
 
 
+# Deploy-ownership marker. Deliberately OUTSIDE the webroot (the SSH home dir):
+# it names a username, a branch and a commit SHA, and anything under wp-content
+# is publicly fetchable. Per-target because several sites share this account.
+def marker_path(target_key: str) -> str:
+    return f".sgs-deploy-marker-{target_key}.json"
+
+
+def read_deploy_marker(use_alias: bool, target_key: str) -> dict | None:
+    """The marker left by whoever deployed this target last, or None.
+
+    Returns None for BOTH "no marker yet" and "could not read it" — the caller
+    treats an absent marker as permission to proceed, because a first-ever
+    deploy must not be blocked by its own bookkeeping.
+    """
+    remote = f"cat {shlex.quote(marker_path(target_key))} 2>/dev/null || echo __NO_MARKER__"
+    try:
+        out = subprocess.run(ssh_base_cmd(use_alias) + [remote], capture_output=True,
+                             text=True, encoding="utf-8", errors="replace", timeout=60)
+    except (subprocess.SubprocessError, OSError):
+        return None
+    body = (out.stdout or "").strip()
+    if out.returncode != 0 or not body or "__NO_MARKER__" in body:
+        return None
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError:
+        return None
+
+
+def step_deploy_ownership(use_alias: bool, target_key: str, takeover: bool,
+                          dry_run: bool) -> int:
+    """PRE-deploy gate: refuse to clobber a deploy carrying work this HEAD lacks.
+
+    ⛔ WHY (D576 + the 2026-07-20 incident it repeated). This canary is shared,
+    and a co-active session deploys from its OWN git worktree — so it ships ITS
+    build/, not yours. On 2026-08-11 that silently reverted every migrated
+    block.json to the pre-migration schema; WordPress then discarded every
+    object-valued attribute before render, and the deploy reported success. The
+    same shape hit a verified visual-diff PASS on 2026-07-20.
+
+    The test is ANCESTRY, not equality: if the recorded commit is an ancestor of
+    HEAD, this deploy carries everything the last one did and overwriting is
+    safe. If it is NOT, the live site holds work this checkout does not have, and
+    deploying would destroy it — abort and make the operator choose.
+
+    Fail-OPEN on the unknowns (no marker / unreadable / no SHA recorded): a
+    first-ever deploy, or a marker written by an older version of this script,
+    must not be blocked by its own bookkeeping. Fail-CLOSED only on the one case
+    that is genuinely provable: a recorded commit that is real and is not an
+    ancestor.
+    """
+    if dry_run:
+        log("[ownership] SKIPPED (--dry-run)")
+        return 0
+
+    marker = read_deploy_marker(use_alias, target_key)
+    if not marker:
+        log("[ownership] no previous marker on this target - proceeding (first deploy "
+            "by this mechanism)")
+        return 0
+
+    sha = str(marker.get("commit") or "").strip()
+    who = marker.get("deployer") or "unknown"
+    when = marker.get("at") or "unknown time"
+    branch = marker.get("branch") or "unknown branch"
+    if not sha:
+        log(f"[ownership] marker has no commit recorded (written by {who} at {when}) "
+            "- proceeding")
+        return 0
+
+    # Is the recorded commit even in this clone? If not, we cannot reason about
+    # ancestry, and the safe reading is "someone deployed something we have never
+    # fetched" - which is exactly the case worth stopping for.
+    known = subprocess.run(["git", "cat-file", "-e", f"{sha}^{{commit}}"],
+                           cwd=REPO_ROOT, capture_output=True)
+    if known.returncode != 0:
+        if takeover:
+            log(f"[ownership] --takeover: overwriting a deploy at unknown commit {sha[:8]} "
+                f"({who}, {when})")
+            return 0
+        err(f"[ownership] ABORT: the live target was deployed at commit {sha[:8]} "
+            f"({branch}, by {who} at {when}), which does not exist in this clone.")
+        err("[ownership] run `git fetch --all` first. If that commit is genuinely gone "
+            "or irrelevant, re-run with --takeover.")
+        return 1
+
+    anc = subprocess.run(["git", "merge-base", "--is-ancestor", sha, "HEAD"],
+                         cwd=REPO_ROOT, capture_output=True)
+    if anc.returncode == 0:
+        log(f"[ownership] OK: live is at {sha[:8]} ({who}), an ancestor of HEAD - "
+            "this deploy is a fast-forward")
+        return 0
+
+    if takeover:
+        log(f"[ownership] --takeover: deliberately overwriting {sha[:8]} ({branch}, "
+            f"{who}, {when}), which is NOT an ancestor of HEAD")
+        return 0
+
+    err(f"[ownership] ABORT: the live target carries commit {sha[:8]} on {branch} "
+        f"(deployed by {who} at {when}), which is NOT an ancestor of your HEAD.")
+    err("[ownership] Deploying would DESTROY work that is live and not in this checkout. "
+        "This is the D576 failure, made visible instead of silent.")
+    err("[ownership] Choose: `git pull --rebase` (or merge that work) and re-run, or "
+        "re-run with --takeover if you genuinely intend to replace it.")
+    return 1
+
+
+def write_deploy_marker(use_alias: bool, target_key: str, dry_run: bool) -> int:
+    """Record who deployed what, AFTER a successful extract.
+
+    Best-effort: a failure here is logged, never fatal. The files are already
+    live at this point, and refusing to finish over bookkeeping would be worse
+    than a missing marker.
+    """
+    if dry_run:
+        return 0
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT,
+                          capture_output=True, text=True)
+    branch = subprocess.run(["git", "branch", "--show-current"], cwd=REPO_ROOT,
+                            capture_output=True, text=True)
+    payload = {
+        "commit": (head.stdout or "").strip(),
+        "branch": (branch.stdout or "").strip() or "(detached)",
+        "deployer": os.environ.get("USERNAME") or os.environ.get("USER") or "unknown",
+        "at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "target": target_key,
+    }
+    blob = json.dumps(payload, separators=(",", ":"))
+    remote = f"cat > {shlex.quote(marker_path(target_key))} <<'SGSEOF'\n{blob}\nSGSEOF"
+    try:
+        out = subprocess.run(ssh_base_cmd(use_alias) + [remote], capture_output=True,
+                             text=True, encoding="utf-8", errors="replace", timeout=60)
+        if out.returncode != 0:
+            log(f"[ownership] WARN: could not write the marker (exit {out.returncode}) "
+                "- deploy stands, but the next session will not see this one")
+            return 0
+    except (subprocess.SubprocessError, OSError) as e:
+        log(f"[ownership] WARN: could not write the marker ({e}) - deploy stands")
+        return 0
+    log(f"[ownership] marker written: {payload['commit'][:8]} on {payload['branch']} "
+        f"by {payload['deployer']}")
+    return 0
+
+
 def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:
     """CHANGE-SPECIFIC verify: does the LIVE plugin match the payload we just shipped?
 
@@ -828,6 +973,11 @@ def parse_args() -> argparse.Namespace:
                    help="Skip the pre-deploy stored-content compatibility gate "
                         "(NOT recommended — it is the only check that catches a "
                         "deploy whose schemas strand or delete stored content).")
+    p.add_argument("--takeover", action="store_true",
+                   help="Deploy even when the live target carries a commit that is NOT "
+                        "an ancestor of HEAD (i.e. deliberately overwrite another "
+                        "session's newer deploy). Without this the deploy ABORTS - see "
+                        "D576, where a silent clobber cost two sessions of debugging.")
     p.add_argument("--payload", action="append", default=[],
                    help="Repo-relative path prefix (e.g. "
                         "plugins/sgs-blocks/src/blocks/quote/) that is THIS wave's "
@@ -926,6 +1076,14 @@ def main() -> int:
             log("[1/5] npm run build: SKIPPED (--theme-only)")
 
     # [2/5] Tar
+    # Pre-deploy ownership gate: would this deploy clobber work that is live and
+    # NOT in this checkout? Runs BEFORE tar/scp so an abort costs nothing.
+    rc = step_deploy_ownership(use_alias, target_key, args.takeover, args.dry_run)
+    if rc != 0:
+        print("[ABORTED] reason: deploy-ownership (the live target carries work this "
+              "HEAD does not have). Nothing was uploaded.", flush=True)
+        return 1
+
     rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks)
     if rc != 0:
         print(f"[ABORTED] reason: tar-failed (exit {rc})", flush=True)
@@ -945,6 +1103,8 @@ def main() -> int:
         return 1
 
     # [5/5] Local cleanup
+    write_deploy_marker(use_alias, target_key, args.dry_run)
+
     rc = step_local_cleanup(args.dry_run)
     if rc != 0:
         print(f"[ABORTED] reason: local-cleanup-failed (exit {rc})", flush=True)
