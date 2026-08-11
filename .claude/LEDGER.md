@@ -93,6 +93,13 @@ Three close calls, all caught by existing structural defences, none destructive.
 - **Inspector-standardisation Phase 2.1 (opt-in inversion) — CLOSED 2026-08-11 (D579).** hover/
   blockLink flipped to opt-in (executed D551); animation/clickEffects/parallax evaluated and
   deliberately left alone (no targeting defect found). PR #25. Nothing open in this phase.
+- **Inspector-standardisation N5 (card-grid/tabs style-variation specificity bug) — CLOSED
+  2026-08-11 (D583).** register_block_style() CSS silently beat the operator's own colour/border/
+  shadow controls; full consolidation shipped (preset writes to the same attrs the manual override
+  reads), matching info-box's existing pattern + real external precedent (WP core's own equivalent
+  fix, `@layer` explicitly rejected). PR #26, merged, live-verified on the canary — not yet on
+  `main`'s deployed tip (two unrelated hero commits landed on main mid-session; deploy left to
+  whoever owns that work).
 - **Track 1** — routing audit + tier axis COMPLETE (D480); Phase 4 PARTIAL, 5 OPEN.
 - **Track 1c** (Spec 31 converter) — build shipped; open item is PROOF not build.
 - **Tracks 2+2b** (nav/header/footer) — Wave 1 CLOSED, Wave 2 in progress.
