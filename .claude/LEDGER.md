@@ -9,93 +9,34 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-11 (session 5). Two tracks ran in parallel; BOTH are finished and merged to `main`.**
+**2026-08-11 (session 6). Two more per-device settings migrated and shipped. Four commits, pushed.**
 
-- **The first migration pass is COMMITTED and pushed.** The per-device setting that used to be three
-  separate settings (`gap`, `gapTablet`, `gapMobile`) is now ONE setting holding all three values,
-  across **21 blocks**. It was stuck last session waiting on evidence; that is cleared.
-- **Building that evidence found the pass had shipped broken, and had been live for a day.** It
-  changed how the value is *stored* but never changed the *control that writes it*. On 19 of 21 blocks
-  the Tablet and Mobile fields saved nothing, and the Desktop field **deleted the whole setting** when
-  used. Fixed, and verified in the real editor. Why nobody saw it: last session's check set values by
-  script, so it never touched the inspector — the surface where the bug lived.
-- **A number quietly changed meaning too.** A bare `20` used to mean "spacing step 20" (8px); after the
-  migration it emitted invalid CSS the browser threw away. You ruled a bare number means **px**. Three
-  block defaults that relied on the old meaning are now explicit, and all three measured identical
-  before and after.
-- **You spotted the header and footer shells shouldn't have a gap at all.** Correct — and it was doing
-  nothing either way. Removed, along with a stale mapping that would have pointed the cloning
-  converter at an attribute that no longer exists.
-- **The evidence is now a tool, not a chore.** Three committed scripts build a test page carrying every
-  migrated block, measure it at three screen sizes before and after, and write one report per block
-  from its own measurement. The generator **refuses** to produce a pass it cannot back up. Passes 2-6
-  reuse it.
-- **Phase 0 of the inspector programme is CLOSED** on the other track. Its best lesson: *fix the
-  measuring instrument before working its list* — doing so removed more "work" than it created.
-- **⚠ Not everything planned got done.** Passes 2 and 3, and the converter design decisions, were in
-  this session's plan and were **not started**. They are the whole of next session.
+- **`maxWidth` + `contentWidth` (pass 2) and `gridTemplateColumns` (pass 3a) are done** — 37
+  migrations across 30 block-slots. The setting that used to be three separate values is now one, and
+  the control that writes it moved in the same commit, which is what pass 1 got wrong.
+- **The thing that measures our work was broken, and had been the whole time.** It asked the browser
+  for the wrong property name and got back a blank answer — indistinguishable from "this block has
+  no value". Pass 1 never noticed because `gap` is the one setting whose name it happened to ask
+  correctly. **Without one check we already had, pass 2 would have shipped 15 confident "all clear"
+  reports built on 90 blank readings.**
+- **Two grids were silently deleted, then put back.** One line treated "setting exists but is empty"
+  as "setting is in use", switching off the column layout on the gallery and the feature grid.
+  Nothing errored. Caught only by comparing against how they looked before.
+- **The editor crashed, and only opening the editor found it.** Every automated check was green.
+- **You were right about the site header and footer.** They are empty shells that house rows, and the
+  test tool refused to test their rows because it wanted the shell to have a setting the shell will
+  never have. That was the tool's mistake, and I repeated it back to you without checking. Fixed —
+  it would have blocked evidence on every remaining pass.
+- **⚠ You called the process too slow, and you are right.** The plan to fix it is in NEXT SESSION
+  below. Short version: we are doing the same migration 20+ times by hand, and verifying it in the
+  most expensive way available.
 
-**Earlier narrative:** newest snapshot is `memory/session-2026-08-08.md`; sessions 2-5 live in the
-commit messages + `decisions.md` D546-D567.
+**Earlier narrative:** `memory/session-2026-08-08.md`; sessions 2-6 in commit messages +
+`decisions.md` D546-D569.
 
 ## CURRENT FRONTS
 
 > **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D569**.
-
-### ✅ PHASE 0 IS CLOSED — 2026-08-11
-
-| What | Commit |
-|---|---|
-| 0b ruled + 0c corrected + §14 conformance measured (D560/D561) | `7c396b61` |
-| 3 raw-`TextControl` radius boxes → `UnitControl` + `check-editor-only.py` (D562) | `9fda666f` |
-| SGS commit gates version-controlled + 3 portability defects (D564) | `17e5bbf6` |
-| **0d — `__experimental*` compat boundary, migrated + gated (D565)** | `5d84324b` |
-| QC council on Phase 0 — 5 defects found + fixed (D566) | `dfaab961` |
-| §14 residuals discharged: instrument fixed, then the work it mismeasured | `be5715d0` |
-| Live-editor crash — 3 calls to the DELETED `ResponsiveSpacingPanel` (D567) | `0bcec27d` |
-
-**All four Phase 0 items are done and §14 is 100% conformant.** 0a measured, 0b ruled, 0c closed (it
-had already shipped), 0d built/migrated/gated. **Phase 4's Background item is UNBLOCKED.**
-
-⭐ **The §14 residuals are DISCHARGED, not parked.** They had been deferred to a "Phase 3" containing
-no border work (STOP-29 — a named-sounding deferral resolving to nothing). Final border census:
-**4-CORNER 30/30 canonical · 0 no-control · 0 banned lookalikes · scalar radius 11 canonical · raw-CSS
-border `TextControl` 3 → 0 · per-side scalars 0.**
-
-⛔ **THE SINGLE MOST USEFUL LESSON: fix the instrument BEFORE working its list.**
-`survey-box-controls.py` had **four** defects — counted matches inside COMMENTS, no ELEMENT BOUNDARY,
-blind to controls in SHARED panel files, no canonical component declared for its scalar legs. Fixing
-the tool first **removed more "work" than it created**: a 5-item wrong-shape backlog evaporated, 4 of
-6 "missing controls" already existed, the missing-`units` gap was 2 not 8. Two real defects remained;
-both fixed. Regression guards per defect (self-test 5 → 7).
-
-### ✅ PASS 1 (`gap` → tier object, 21 blocks) — CLOSED 2026-08-11
-
-| What | Commit |
-|---|---|
-| **Migration + control swap + bare-number rule + the evidence toolkit** | `fa638cea` |
-| Header/footer shells: inert `gap` + its stale `css:gap` mapping REMOVED | `0cd1c314` |
-
-**Record: D563.** **Evidence:** 21 per-block reports at `reports/visual-diff/*-2026-08-11.md`, each
-citing its own measurement, plus the two shell reports.
-
-⛔ **THREE FINDINGS THAT RECUR ON EVERY REMAINING PASS** — now items 0a-0d of the per-pass definition
-of done. Read them there before pass 2:
-
-1. **The CONTROL must migrate in the same commit as the storage.** `ContainerWrapperControls.js` —
-   ONE shared file feeding 19 blocks — kept writing `gapTablet`/`gapMobile` after they were deleted.
-   WordPress discards an undeclared attribute silently (D338); the desktop branch wrote a STRING into
-   an object-typed attr, which coerces to the default and **destroys the setting**.
-2. **The frontend is not the editor.** A programmatically-set value is already the right shape and
-   never exercises the inspector. **Only opening the editor finds this class** — the same conclusion
-   D567 reached independently the same day.
-3. **A bare number means `px`, framework-wide** (Bean-ruled). Every LENGTH-valued entry added to the
-   wrapper's object prop list must declare `unit_default`, or it emits `gap:20` — invalid CSS.
-
-**Measured, re-derive rather than quote:** migration candidates **160 → 141** across 41 blocks ·
-storage-shape gate **1 finding, baselined** (was 3; both `gap` entries cleared and REMOVED from the
-baseline — it shrinks only) · live-editor check **PASS** (stores `{desktop,mobile}`, no flat siblings,
-0 console errors).
 
 ### ✅ PASS 2 (`maxWidth` + `contentWidth`, 11 blocks) — CLOSED 2026-08-11
 
@@ -150,77 +91,91 @@ no flat siblings, 0 console errors.** Evidence: 17 reports at `reports/visual-di
 feature-grid / gallery / trust-bar but their previews still do `String(gap)` and hand the OBJECT to a
 React style value. Sites: `feature-grid/edit.js:78`, `gallery/edit.js:264,295`, `trust-bar/edit.js:49`.
 
-### ⭐ NEXT — pass 3b, then Wave 3
+### ⭐ NEXT SESSION — Bean-directed 2026-08-11. READ THIS WHOLE SECTION FIRST.
 
-**Passes 2 and 3a are done. 3b + Wave 3 remain, plus the `gap`-preview residue above.**
+**Bean's brief:** finish this session's leftovers, then review progress and rework the master plan so
+Spec 35 lands in **as short a time as possible**, folding in what the work itself taught us. **He
+does not have days for foundational uniformity work** — it is not what earns; the cloning pipeline
+is. Treat speed as a requirement, not a preference.
 
-#### READING GATE — Spec 35 order. ⛔ Do NOT open Spec 31 end-to-end.
+#### PART A — finish the leftovers (do first, ~45 min total)
 
-That rule is scoped to *cloning-pipeline* sessions; this is BLOCK-STANDARD work, so its precondition
-does not hold and Spec 31 is ~195KB. Read Spec 31 only for converter work, targeted.
+**A1. Review the uncommitted report-generator change.**
+`plugins/sgs-blocks/scripts/make-visual-diff-reports.py` is MODIFIED and UNCOMMITTED (~660
+insertions). A subagent trimmed it (collapse unchanged blocks into one summary; auto-derive
+"inapplicable" from measured `display`). Its own 14-assertion `--self-test` passes. **It was NOT
+independently verified** — the main thread ran out of context: one negative control failed to
+apply, and the real-data runs were inconclusive because nothing was staged, so `source_sha` failures
+swamped the result.
+⛔ **Verify before committing.** This is the script that caught the blind instrument. Confirm
+specifically: a non-binding probe still FAILS; a changed value with no reason still FAILS; a summary
+row carries ITS OWN numbers. ⚠ **Design concern to weigh, not merely test:** auto-deriving
+"inapplicable" removes the moment a human would ask *"why is this block flex when it should be
+grid?"*.
 
-| # | Read | Why |
-|---|---|---|
-| 1 | **This file** | State + the plan below |
-| 2 | **`plans/spec-35-flat-to-object-migration-design.md`** | **THE procedure. Read "Per-pass definition of done" items 0a-0d FIRST** — added after pass 1 shipped incomplete |
-| 3 | `plans/spec-35-control-type-contract.md` **§12 field 3** | Storage-shape ↔ control-primitive pairing, with the measured incident |
-| 4 | `decisions.md` **D563** (+ **D567**) | Pass 1's record; D567 is the same lesson from the other track |
-| 5 | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **PART M** | The standard's status; the rest is reference, not a cold read |
-| 6 | `STOP-CATALOGUE.md` | Structural defences (uncapped, D101) |
-| 7 | `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6 | Programme scope + phase status — **not the entry point** |
-| 8 | `plans/spec-39-seed-requirements.md` | **Wave 3 only** — do not front-load |
+**A2. Pass 3b — `gridTemplateRows`, 19 blocks.** The only remaining pass needing NEW plumbing
+first: `class-sgs-container-wrapper.php:514` has NO `is_array()` guard (every neighbour does), and
+there is no object emission path. Both are one-line additions — add
+`'gridTemplateRows' => 'grid-template-rows'` to the prop map at ~`:2080`, reusing the
+`sgs_sanitize_grid_template` transform branch already written for `gridAutoRows`.
 
-#### WAVE 2 — passes 2 and 3 *(SEQUENTIAL — same blocks; never parallel writers, STOP-39)*
+**A3. The `gap` editor-preview residue — LIVE since pass 1.** `gap` is object-typed on
+feature-grid / gallery / trust-bar, but their previews still do `String(gap)` and hand the OBJECT to
+a React style value. `feature-grid/edit.js:78`, `gallery/edit.js:264,295`, `trust-bar/edit.js:49`.
+**Do A2 + A3 in ONE build/deploy/capture cycle** — file-disjoint, and the canary is the bottleneck.
+
+#### PART B — rework the plan for SPEED (the main event)
+
+Target: `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6 and its estimates.
+
+**B1. Make the migration mechanical (Bean's proposal, endorsed).** We are hand-repeating one edit
+20+ times. Classify the SHAPES, then write one codemod per shape:
+- **S1** flat trio → object in `block.json` — `migrate-tier-object.py` ALREADY does this.
+- **S2** `ResponsiveControl` + attrMap → `ResponsiveOverride` in `edit.js` — identical every
+  time, NOT automated, done by hand ~8 times this session.
+- **S3** `render.php` scalar read → `sgs_responsive_normalise_object()` — ~10 by hand.
+- **S4** theme pattern/template scalar → object, folding orphan siblings in — a working codemod
+  exists at `scratchpad/migrate_theme_tier_scalars.py`; **promote it into `scripts/`** (it handled 49
+  values, then 15 more, converging to 0 on a second run both times).
+⭐ **S2+S3+S4 are the whole manual cost. Automating them is the single biggest speed win.**
+
+**B2. Golden-shape comparison instead of before/after (Bean's proposal — endorsed WITH one
+correction).** We now know what a correct migration looks like, so most of it can be asserted
+STATICALLY per block, with no deploy and no browser: object-typed attr, zero flat siblings, zero flat
+writers across `edit.js`/`components/`/`extensions/`, `ResponsiveOverride` mounted, normaliser used
+in `render.php`.
+⛔ **The correction, from measured evidence:** a static golden-shape check would NOT have caught
+this session's two real regressions. Both came from a SHARED code path reacting to the new shape
+(`is_array()` on an empty object), not from any block's own structure. So the shape is: **static
+golden check per block (fast, no deploy) + ONE end-to-end rendering probe per pass for the shared
+wrapper + the live-editor check.** That collapses ~19 measure/report cycles into 1, keeps the two
+checks that actually caught things, and drops the three-deploy stash dance entirely.
+
+**B3. Re-estimate honestly.** Current plan estimates are inflated to the point of being misleading.
+**Measured today: 2 full passes + 4 commits + 3 instrument fixes in ONE session.** With B1+B2 a pass
+should be ~15-20 min, not hours. Re-baseline every remaining estimate against that.
+
+**B4. Re-scope what is actually needed.** 4 property families remain (`gridTemplateRows`, `columns`,
+the font-size families, the long tail). Ask per family whether it needs migrating AT ALL to reach
+Spec 35's goal, or whether it is uniformity for its own sake. Bean's constraint makes that a real
+question, not a rhetorical one.
+
+#### Orchestration
+
+| Task | Execution | Model | Depends on | QC gate |
+|---|---|---|---|---|
+| A1 verify generator | inline (Opus) — it guards everything else | — | none | self-test + real data |
+| A2+A3 one cycle | inline (Opus); per-block edits may go Sonnet | `/delegate` | A1 | live editor + 1 render probe |
+| B1 codemods S2/S3/S4 | delegated, parallel per shape | Sonnet | A2 (proves the shape) | `--self-test`, proven able to fail |
+| B2 golden-shape checker | delegated | Sonnet | B1 | must fail on an injected violation |
+| B3+B4 plan rework | inline (Opus), `/strategic-plan` | — | B1+B2 | Bean sign-off |
 
 ```
-python scripts/migrate-tier-object.py --property <p> --survey | --fix | --fix --apply | --check
+A1 -> A2+A3 (one deploy) -> B1 (3 parallel codemods) -> B2 -> B3+B4 -> Bean
 ```
 
-**Pass 3 — `gridTemplateColumns` + `gridTemplateRows`.** `sgs/site-footer-row.gridTemplateColumns` is
-the ONE finding the storage-shape gate still baselines — pass 3 takes it to **0**, its named promotion
-trigger. **Wire `check-tier-storage-shape.py` into `prebuild` at that point.**
-
-⛔ **Per pass, non-negotiable:**
-- **Migrate the CONTROL in the same commit** (`ResponsiveControl` → `ResponsiveOverride`). Grep every
-  writer across `edit.js`, `components/` AND `extensions/`. A shared component is the high-risk case.
-- **Prove it in the LIVE EDITOR** — register, render, write, assert the stored shape, assert no flat
-  siblings, assert 0 console errors.
-- **Declare `unit_default`** for every length-valued property.
-- **Use the evidence toolkit; do not hand-write reports.** `build-tier-fixture-page.py` →
-  `capture-tier-fixture.py` → `make-visual-diff-reports.py`. Honest-edge flags: `--expect-change`,
-  `--known-dead`, `--removed-attr`.
-- Fix every direct `render.php` read (a string cast on an object emits `gap:Array`), migrate theme
-  patterns in the same commit, bin canary pages holding the flat shape **with a backup first**.
-
-**Worth doing first, pays for itself twice:** extend `migrate-tier-object.py` with `--fix-reads` to
-propose the proven `render.php` pattern (`sgs_responsive_normalise_object()` + per-tier fallbacks).
-Pass 1 needed 6 such edits by hand; passes 2-6 need dozens.
-
-**Model:** codemod + design inline; per-block follow-ups Sonnet, ONE block at a time. **~1h per pass.**
-
-#### WAVE 3 — Spec 39's design calls *(INLINE, Opus — do not delegate · ~1h)*
-
-R1 object-only vs dual-shape · R2 tier vocabulary · R3 derived per-tier view vs migrating every
-consumer. **R4 is already answered by D558** and goes in as an input.
-⛔ **R5 — keep the BOX `{top,right,bottom,left}` and TIER `{desktop,tablet,mobile}` axes orthogonal.**
-Conflating them made the storage-shape gate's first two rule attempts wrong.
-
-⭐ **A pre-read is already done, and it changes the shape of the work.** Spec 39's R1 table points at
-scattered per-resolver sites, but there is a **single choke point it never names** —
-`converter/services/tier_suffix.py:46`, which every resolver funnels through via
-`tier_suffix()`/`tier_state_suffix()`. It also misses a whole second path
-(`converter/services/root_supports.py:596,637`, the native `style.*` lift). And
-`converter/services/css_pass.py:211-255` merges with a **shallow `dict.update()`**, which would
-overwrite a whole tier object rather than merge tiers — the concrete thing that breaks first.
-⚠ R1's `fold_helpers.py` numbers have DRIFTED (`:262`→`:265`; `:291`/`:326`/`:352` now point at
-unrelated code; the real construction site is `:416`).
-
-#### Not in scope
-
-Passes 4-6 (`columns` needs 3 pattern files updated in-commit; font-size families route through
-`TypographyControls`, a different edit shape) · Phase 2.1 (gated on deriving its roster from real
-`post_content`, D545) · Phase 3.2a — ⛔ its input has a **measured false-positive rate**; a decision,
-not a build.
+⛔ **Passes stay SEQUENTIAL; the canary is the bottleneck** — one deploy target, one build. Never
+two agents deploying at once (STOP-39).
 
 ### Methodology guardrails (earned; do not skip)
 
