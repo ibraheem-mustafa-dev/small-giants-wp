@@ -10,7 +10,7 @@ import {
 	SelectControl,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveOverride } from '../../components';
 import { UnitControl } from '../../components/primitives';
 import { resolveResponsiveTier } from '../../utils';
 
@@ -64,7 +64,7 @@ const TEMPLATE = [
 function buildGridStyle( attributes ) {
 	const {
 		layoutMode,
-		columnsDesktop,
+		columns,
 		minItemWidth,
 		minItemWidthUnit,
 		gap,
@@ -102,6 +102,7 @@ function buildGridStyle( attributes ) {
 	// preview would have set a bogus track list instead of falling back to the
 	// column count. Resolve the DESKTOP tier, which is what the canvas shows.
 	const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
+	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value ?? 4;
 	const templateCols = String( gtcDesktop ?? '' ).trim()
 		? String( gtcDesktop ).trim()
 		: `repeat(${ columnsDesktop }, 1fr)`;
@@ -118,9 +119,6 @@ function buildGridStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		layoutMode,
-		columnsDesktop,
-		columnsTablet,
-		columnsMobile,
 		minItemWidth,
 		minItemWidthUnit,
 		gap,
@@ -184,29 +182,45 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 
+					{ /*
+						  `columns` is a TIER OBJECT — ONE attr holding
+						  {desktop,tablet,mobile} (see block.json). Uses
+						  ResponsiveOverride, which reads and writes the object,
+						  NOT ResponsiveControl, which writes one flat attr per
+						  tier. The old `columnsTablet`/`columnsMobile` siblings
+						  are no longer declared by this block.json — writing
+						  them through ResponsiveControl would save nothing
+						  (WordPress silently discards an undeclared attribute),
+						  while the desktop branch would write a number into an
+						  object-typed attr and destroy the setting. Mirrors
+						  LayoutPanel's own Columns control in
+						  ContainerWrapperControls.js.
+					*/ }
 					{ 'fixed-columns' === layoutMode && (
-						<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
-							{ ( breakpoint ) => {
-								const attrMap = {
-									desktop: 'columnsDesktop',
-									tablet:  'columnsTablet',
-									mobile:  'columnsMobile',
-								};
+						<ResponsiveOverride
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							value={ attributes.columns }
+							onChange={ ( obj ) => setAttributes( { columns: obj } ) }
+						>
+							{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => {
 								const maxMap = { desktop: 6, tablet: 4, mobile: 2 };
-								const attr = attrMap[ breakpoint ];
 								return (
 									<RangeControl
-										value={ attributes[ attr ] }
-										onChange={ ( val ) =>
-											setAttributes( { [ attr ]: val } )
+										value={
+											ownValue !== ''
+												? ownValue
+												: ( effectiveValue !== ''
+													? effectiveValue
+													: ( tier === 'mobile' ? 1 : 2 ) )
 										}
+										onChange={ setOwnValue }
 										min={ 1 }
-										max={ maxMap[ breakpoint ] }
+										max={ maxMap[ tier ] }
 										__nextHasNoMarginBottom
 									/>
 								);
 							} }
-						</ResponsiveControl>
+						</ResponsiveOverride>
 					) }
 				</PanelBody>
 

@@ -232,7 +232,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "30px"}
@@ -397,21 +397,21 @@
 			"default": "ease-out"
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
-		},
+			"type": "object",
+			"default": {}
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""

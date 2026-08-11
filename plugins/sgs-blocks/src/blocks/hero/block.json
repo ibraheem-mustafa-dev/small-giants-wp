@@ -206,7 +206,7 @@
 				"headline": {
 					"label": "Headline",
 					"order": 7,
-					"clusters": [ "text", "layout" ],
+					"clusters": [ "text" ],
 					"prefix": "headline",
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
@@ -216,16 +216,15 @@
 						"css:font-style": "native:typography.fontStyle",
 						"css:text-transform": "native:typography.textTransform",
 						"css:text-align": "native:typography.textAlign",
-						"css:color": "native:color.text",
-						"css:margin-bottom": "headlineMarginBottom"
+						"css:color": "native:color.text"
 					},
-					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom`/`headlineMarginBottomMobile` (render.php:364-372, `.sgs-hero__headline{margin-bottom:...}`) resolve via the new css:margin-bottom layout member (Spec 35 vocabulary fix) — a partial bottom-only margin, distinct from the whole-box `css:margin` member."
+					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom` (the standalone parent-side spacing override) was RETIRED 2026-08-12 (Spec 35 Phase 2.3, Bean-confirmed dead — its live values were scratch-page defaults, not deliberate client settings) — no layout member remains on this element."
 				},
 				"sub-headline": {
 					"label": "Sub-headline",
 					"order": 8,
 					"clusters": [],
-					"_note": "No dedicated typography attrs — inherits the wrapper's native typography. `subHeadlineMaxWidth`/`subHeadlineMarginBottom(Mobile)` are layout-shaped but partial (not the whole-box padding/margin members), so left unclustered rather than manufacturing a false gap."
+					"_note": "No dedicated typography attrs — inherits the wrapper's native typography. `subHeadlineMaxWidth`/`subHeadlineMarginBottom` were RETIRED 2026-08-12 (Spec 35 Phase 2.3, same as headlineMarginBottom above) — nothing layout-shaped remains on this element."
 				},
 				"cta": {
 					"label": "CTA buttons",
@@ -268,16 +267,6 @@
 				"video",
 				"svg-animated"
 			]
-		},
-		"headline": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
-		"subHeadline": {
-			"type": "string",
-			"default": "",
-			"role": "content"
 		},
 		"alignment": {
 			"type": "string",
@@ -376,10 +365,6 @@
 		"splitImageBleed": {
 			"type": "boolean",
 			"default": false
-		},
-		"subHeadlineMaxWidth": {
-			"type": "number",
-			"default": null
 		},
 		"imageObjectFit": {
 			"type": "string",
@@ -512,14 +497,6 @@
 		"verticalAlignment": {
 			"type": "string",
 			"default": "center"
-		},
-		"headlineMarginBottom": {
-			"type": "object",
-			"default": {}
-		},
-		"subHeadlineMarginBottom": {
-			"type": "object",
-			"default": {}
 		},
 		"alignContent": {
 			"type": "string",
@@ -837,8 +814,6 @@
 	"example": {
 		"attributes": {
 			"variant": "standard",
-			"headline": "Your Compelling Headline Goes Here",
-			"subHeadline": "A brief supporting statement that explains your value proposition.",
 			"alignment": "left"
 		}
 	}

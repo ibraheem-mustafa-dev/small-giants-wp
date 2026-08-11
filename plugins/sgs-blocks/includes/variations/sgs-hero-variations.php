@@ -14,39 +14,6 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Register block styles for sgs/hero.
- */
-function sgs_register_hero_styles(): void {
-	register_block_style(
-		'sgs/hero',
-		array(
-			'name'         => 'boxed',
-			'label'        => __( 'Boxed', 'sgs-blocks' ),
-			'inline_style' => '
-				.wp-block-sgs-hero.is-style-boxed {
-					border-radius: var( --wp--custom--border-radius--large );
-					overflow: hidden;
-				}
-			',
-		)
-	);
-
-	register_block_style(
-		'sgs/hero',
-		array(
-			'name'         => 'borderless',
-			'label'        => __( 'Borderless', 'sgs-blocks' ),
-			'inline_style' => '
-				.wp-block-sgs-hero.is-style-borderless {
-					border-radius: 0;
-					border: 0;
-				}
-			',
-		)
-	);
-}
-
-/**
  * Inject SGS variations for sgs/hero via the `get_block_type_variations`
  * filter (WP 6.5+).
  *
@@ -67,8 +34,7 @@ function sgs_register_hero_variations( array $variations, \WP_Block_Type $block_
 			'icon'        => 'cover-image',
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
-				'variant'   => 'standard',
-				'className' => 'is-style-boxed',
+				'variant' => 'standard',
 			),
 		),
 		array(
@@ -78,8 +44,7 @@ function sgs_register_hero_variations( array $variations, \WP_Block_Type $block_
 			'icon'        => 'align-pull-left',
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
-				'variant'   => 'split',
-				'className' => 'is-style-boxed',
+				'variant' => 'split',
 			),
 		),
 		array(
@@ -89,8 +54,7 @@ function sgs_register_hero_variations( array $variations, \WP_Block_Type $block_
 			'icon'        => 'video-alt2',
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
-				'variant'   => 'video',
-				'className' => 'is-style-borderless',
+				'variant' => 'video',
 			),
 		),
 		array(
@@ -100,8 +64,7 @@ function sgs_register_hero_variations( array $variations, \WP_Block_Type $block_
 			'icon'        => 'admin-appearance',
 			'scope'       => array( 'inserter' ),
 			'attributes'  => array(
-				'variant'   => 'svg-animated',
-				'className' => 'is-style-borderless',
+				'variant' => 'svg-animated',
 			),
 		),
 	);
@@ -109,5 +72,4 @@ function sgs_register_hero_variations( array $variations, \WP_Block_Type $block_
 	return array_merge( $variations, $sgs_variations );
 }
 
-add_action( 'init', __NAMESPACE__ . '\\sgs_register_hero_styles' );
 add_filter( 'get_block_type_variations', __NAMESPACE__ . '\\sgs_register_hero_variations', 10, 2 );

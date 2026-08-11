@@ -83,10 +83,6 @@
 			"type": "string",
 			"default": "fixed-columns"
 		},
-		"columnsDesktop": {
-			"type": "number",
-			"default": 4
-		},
 		"minItemWidth": {
 			"type": "number",
 			"default": 240
@@ -109,12 +105,12 @@
 			"default": "stretch"
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"layout": {
 			"type": "string",
@@ -164,7 +160,7 @@
 	"example": {
 		"attributes": {
 			"layoutMode": "fixed-columns",
-			"columnsDesktop": 4,
+			"columns": {"desktop": 4},
 			"gap": 24
 		}
 	}

@@ -191,7 +191,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
-		},
+		},
 		"theme": {
 			"type": "string",
 			"default": "light",
@@ -250,12 +250,12 @@
 			"default": "ease-out"
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"layout": {
 			"type": "string",
@@ -264,11 +264,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -304,7 +304,7 @@
 		"gap": {
 			"type": "object",
 			"default": {}
-		}
+		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

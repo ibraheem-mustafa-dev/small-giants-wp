@@ -47,10 +47,8 @@ import {
 // ResponsiveBoxControl bound to the new object attrs.
 import {
 	WidthPanel,
-	LayoutPanel,
 	BackgroundPanel,
 	ShapeDividersPanel,
-	GridItemDefaultsPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
@@ -214,12 +212,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
 		shadow,
-		// headlineMarginBottom / subHeadlineMarginBottom are TIER OBJECTS
-		// {desktop,tablet,mobile} as of Spec 35 pass 3b — the *Mobile siblings no
-		// longer exist.
-		headlineMarginBottom,
-		subHeadlineMaxWidth,
-		subHeadlineMarginBottom,
 		bgParallax,
 		bgKenBurns,
 		bgVideo,
@@ -841,74 +833,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanel>
 				</PanelBody>
 
-				{/* ── 4. Headline (h1) ── */}
-				<PanelBody title={ __( 'Headline (h1)', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* headlineMarginBottom is a TIER OBJECT {desktop,tablet,mobile}
-					     (Spec 35 pass 3b) — ONE attr, bound via <ResponsiveOverride>.
-					     Blank on tablet/mobile inherits the tier above (render.php
-					     emits no @media override for an absent tier), matching the
-					     old control's desktop==tablet default exactly. */ }
-					<ResponsiveOverride
-						label={ __( 'Margin bottom', 'sgs-blocks' ) }
-						value={ headlineMarginBottom }
-						onChange={ ( obj ) => setAttributes( { headlineMarginBottom: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<RangeControl
-								value={ Number( ownValue ?? ( inherited ? effectiveValue : 0 ) ) || 0 }
-								onChange={ ( v ) => setOwnValue( v || null ) }
-								min={ 0 }
-								max={ 120 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-							/>
-						) }
-					</ResponsiveOverride>
-					<p style={ { fontSize: '11px', color: '#757575', margin: '-4px 0 8px' } }>
-						{ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-					</p>
-				</PanelBody>
-
-				{/* ── 5. Subheadline ── */}
-				<PanelBody title={ __( 'Subheadline', 'sgs-blocks' ) } initialOpen={ false }>
-					{/* Font size (desktop + responsive) is owned by the child sgs/text
-					    block across all breakpoints. Only max-width / margins remain here. */}
-					<RangeControl
-						label={ __( 'Max width (px)', 'sgs-blocks' ) }
-						help={ __( 'Limits sub-headline width for readability. 0 = no limit.', 'sgs-blocks' ) }
-						value={ subHeadlineMaxWidth || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadlineMaxWidth: val || null } )
-						}
-						min={ 0 }
-						max={ 1200 }
-						step={ 10 }
-						__nextHasNoMarginBottom
-					/>
-					{ /* subHeadlineMarginBottom is a TIER OBJECT {desktop,tablet,mobile}
-					     (Spec 35 pass 3b) — same pattern as headlineMarginBottom above. */ }
-					<ResponsiveOverride
-						label={ __( 'Margin bottom', 'sgs-blocks' ) }
-						value={ subHeadlineMarginBottom }
-						onChange={ ( obj ) => setAttributes( { subHeadlineMarginBottom: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<RangeControl
-								value={ Number( ownValue ?? ( inherited ? effectiveValue : 0 ) ) || 0 }
-								onChange={ ( v ) => setOwnValue( v || null ) }
-								min={ 0 }
-								max={ 120 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-							/>
-						) }
-					</ResponsiveOverride>
-					<p style={ { fontSize: '11px', color: '#757575', margin: '-4px 0 8px' } }>
-						{ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-					</p>
-				</PanelBody>
-
-				{/* ── 6. Image styling (appearance only — media SELECTION for this
+				{/* ── 4. Image styling (appearance only — media SELECTION for this
 				   image lives in the "Image" panel on the Settings tab). ── */}
 				{ /* SKIP-REASON (Spec 35 T4.1 tail, audit-inspector-conformance dense-panel-candidate):
 				     this panel is a MODE-WIZARD, not a flat control set. Its content branches on
@@ -1311,12 +1236,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					/>
 				</PanelBody>
-
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
-				</PanelBody>
-
-				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 

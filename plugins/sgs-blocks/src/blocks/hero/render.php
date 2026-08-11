@@ -189,20 +189,11 @@ $min_height_mobile   = $sgs_css_length( $min_height_obj['mobile'] ?? '360px' );
 
 // Sub-headline / headline / label font-size are owned by the child
 // sgs/text / sgs/heading / sgs/label blocks across all breakpoints — no
-// scoped font-size <style> is emitted here.
-$sub_headline_max_width     = $attributes['subHeadlineMaxWidth'] ?? null;
-
-// Margin-bottom controls for headline and sub-headline (F1/F2). Both are TIER
-// OBJECTS {desktop,tablet,mobile} (Spec 35 pass 3b) — the *Mobile siblings no
-// longer exist in block.json.
-$headline_margin_bottom_obj        = sgs_responsive_normalise_object( $attributes['headlineMarginBottom'] ?? null );
-$headline_margin_bottom            = $headline_margin_bottom_obj['desktop'] ?? null;
-$headline_margin_bottom_tablet     = $headline_margin_bottom_obj['tablet'] ?? null;
-$headline_margin_bottom_mobile     = $headline_margin_bottom_obj['mobile'] ?? null;
-$sub_headline_margin_bottom_obj    = sgs_responsive_normalise_object( $attributes['subHeadlineMarginBottom'] ?? null );
-$sub_headline_margin_bottom        = $sub_headline_margin_bottom_obj['desktop'] ?? null;
-$sub_headline_margin_bottom_tablet = $sub_headline_margin_bottom_obj['tablet'] ?? null;
-$sub_headline_margin_bottom_mobile = $sub_headline_margin_bottom_obj['mobile'] ?? null;
+// scoped font-size <style> is emitted here. headline/subHeadline margin-bottom
+// and subHeadlineMaxWidth controls were RETIRED 2026-08-12 (Spec 35 Phase 2.3):
+// the content itself moved to child InnerBlocks at FR-22-6 and these leftover
+// parent-side spacing overrides never carried meaningful client intent (their
+// live values were scratch-page defaults, not deliberate settings — Bean).
 // splitImageHeight / splitImageHeightTablet / splitImageMobileHeight were REMOVED
 // 2026-08-10 — they duplicated `imageHeight` on the same property AND the same
 // element (`.sgs-hero__split-image`). See the consolidation note at the emission
@@ -429,35 +420,6 @@ if ( $min_height_tablet ) {
 }
 if ( $min_height_mobile ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
-}
-
-// ── Margin-bottom: headline + sub-headline (F1/F2) ─────────────────────────
-// Desktop base rules — no @media wrapper, no !important.
-if ( null !== $headline_margin_bottom ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__headline{margin-bottom:' . absint( $headline_margin_bottom ) . 'px}';
-}
-if ( null !== $sub_headline_margin_bottom ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom ) . 'px}';
-}
-// Tablet overrides (Spec 35 pass 3b — new tier the flat-trio model never had;
-// blank = inherit the desktop rule above via cascade, Pattern A convention).
-if ( null !== $headline_margin_bottom_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__headline{margin-bottom:' . absint( $headline_margin_bottom_tablet ) . 'px}}';
-}
-if ( null !== $sub_headline_margin_bottom_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom_tablet ) . 'px}}';
-}
-// Mobile overrides — !important required to beat inline styles (F4 pattern).
-if ( null !== $headline_margin_bottom_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__headline{margin-bottom:' . absint( $headline_margin_bottom_mobile ) . 'px !important}}';
-}
-if ( null !== $sub_headline_margin_bottom_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom_mobile ) . 'px !important}}';
-}
-
-// Sub-headline max-width.
-if ( $sub_headline_max_width ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__subheadline{max-width:' . absint( $sub_headline_max_width ) . 'px}';
 }
 
 // ── Split variant: grid-template-columns + gap (base + tablet + mobile) ────

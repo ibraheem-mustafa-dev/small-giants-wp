@@ -30,10 +30,13 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$layout_mode     = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'fixed-columns';
-$columns_desktop = isset( $attributes['columnsDesktop'] ) ? absint( $attributes['columnsDesktop'] ) : 4;
-$columns_tablet  = isset( $attributes['columnsTablet'] ) ? absint( $attributes['columnsTablet'] ) : 2;
-$columns_mobile  = isset( $attributes['columnsMobile'] ) ? absint( $attributes['columnsMobile'] ) : 1;
+$layout_mode = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layoutMode'] ) : 'fixed-columns';
+// `columns` is a TIER OBJECT (Spec 35 pass 4) — the old columnsDesktop/columnsTablet/
+// columnsMobile flat trio is retired; resolve each tier from the object instead,
+// preserving the exact same fallback defaults (4/2/1) the flat attrs used.
+$columns_desktop = absint( $attributes['columns']['desktop'] ?? 4 );
+$columns_tablet  = absint( $attributes['columns']['tablet'] ?? 2 );
+$columns_mobile  = absint( $attributes['columns']['mobile'] ?? 1 );
 $min_item_width  = isset( $attributes['minItemWidth'] ) ? absint( $attributes['minItemWidth'] ) : 240;
 $min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attributes['minItemWidthUnit'], array( 'px', 'em', 'rem' ), true )
 	? $attributes['minItemWidthUnit']
@@ -124,7 +127,7 @@ $uid = wp_unique_id( 'sgs-fg-' );
 $grid_template_tiers = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] ?? null );
 $grid_template       = trim( (string) ( $grid_template_tiers['desktop'] ?? '' ) );
 $has_explicit_grid   = '' !== $grid_template;
-$use_auto_flex     = ( 'auto-flex' === $layout_mode ) && ! $has_explicit_grid;
+$use_auto_flex       = ( 'auto-flex' === $layout_mode ) && ! $has_explicit_grid;
 
 $mode_class = 'sgs-feature-grid--' . $layout_mode;
 $css        = '';
@@ -192,7 +195,7 @@ if ( $use_auto_flex ) {
 $root_sel = '.' . $uid . '.sgs-feature-grid';
 // D303: $uid is ALSO a class (the wrapper applies it as an id via extra_attrs) so the
 // class-scoped `.{$uid}.sgs-feature-grid` colour/border rules match this element.
-$classes  = array( 'sgs-feature-grid', $mode_class, $uid );
+$classes = array( 'sgs-feature-grid', $mode_class, $uid );
 
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$fg_style_engine_args = array();
