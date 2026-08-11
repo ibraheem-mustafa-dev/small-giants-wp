@@ -144,6 +144,41 @@ and #4 as separate parallel branches per `/dispatching-parallel-agents` (file-di
 team-member, site-header+site-footer touch no common files) — each routed via `/delegate` before
 dispatch.
 
+**✅ #2 and #4 SHIPPED, same day, later in this session — Bean confirmed the other session had
+completed (commit `2ab542cc`), unblocking both.** Dispatched in parallel (`/delegate`-routed:
+card-grid to Haiku, mechanical; site-header/footer to Sonnet, pattern-mirroring + judgement).
+
+- **Card-grid (`427d560a`):** the 2-line block.json flip, exactly as scoped. One real snag: the
+  file's committed blob carries CRLF despite its own `.gitattributes` declaring `eol:lf` (pre-existing,
+  unrelated to us) — any touch inflates to a 556-line diff on `git add`. Bypassed via a temporary
+  `.git/info/attributes` override (`-text`) so the commit carries only the real 4-line change, not a
+  drive-by renormalisation of a file mid-edit by other sessions. Deployed to the canary
+  (`--payload` scoped, then `--allow-dirty` once Bean confirmed the other session's dirty files were
+  finished work) and live-verified via the tier-fixture toolkit — default vs probe positive control
+  confirmed the attribute binds at every tier (1200px→64px desktop, 852px→32px tablet, 342px→8px
+  mobile). Visual-diff report follows the exact bypass shape as the `columns` report (no genuine
+  before-capture possible once deployed) — but strengthened with the actual default-vs-probe table
+  rather than the tool's auto-generated "unchanged" stub, which only compared the (identical)
+  before/after default instance and never surfaced the binding proof.
+- **Site-header/footer (`7aac8ab3`):** the agent caught that my own brief was wrong — `site-footer-row`
+  does NOT have the overlay-gradient pattern (it declares none of those 5 attrs), so it can't be "the
+  reference" as I'd claimed. Used the real source instead: `BackgroundPanel`
+  (`container/components/ContainerWrapperControls.js`), the same component `container`/`cta-section`/
+  `hero` mount. Rule-21 findings for the 5 properties on both blocks: 10 → 0. Auto-qualified as
+  editor-only (no render.php/style.css touched), so no visual-diff report was needed.
+  **`tagName` correction, mid-session:** my own recommendation to delete the dead `div`/`section`
+  enum options was WRONG — re-read before acting on it. `site-footer/render.php`'s own comment
+  explicitly names `tagName=div` as the documented manual recovery path for a real parked residual
+  (`P-HEADER-DOUBLE-SLOT-NEST` — a duplicate-landmark bug if the header/footer rules engine ever
+  double-serves a template part), not dead debt. `site-header`'s equivalent comment names the same
+  residual but recommends a different fix (a code guard, not the attribute) — the two blocks aren't
+  even internally consistent on what `tagName` is for. Left both attributes completely untouched on
+  both blocks; confirmed content-safe either way via a theme-pattern grep (zero live usage on either
+  block, only on the legitimately multi-tag `sgs/container`).
+
+All 4 residuals from this entry are now closed. #1 and #3 needed no code (stale finding / not a
+residual). #2 and #4 shipped and are live on `main` + deployed to the canary.
+
 ## D583 — card-grid/tabs style-variation specificity bug: full consolidation, following the info-box precedent [ROUTINE]
 
 **2026-08-11.** N5 in `~/.claude/plans/go-track-1b-playful-hamster.md` (a measured but unfixed finding

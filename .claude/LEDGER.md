@@ -98,13 +98,13 @@ the junction before removing the worktree** — this project's memory already na
 - **D583 (card-grid/tabs style-specificity) — SHIPPED, merged (PR #26), live-verified, and now
   confirmed DEPLOYED on the canary** (this session's `build-deploy.py` ownership check read the
   live marker directly: `95d051a3`, deployed by Bean). Not just "on main" — genuinely live.
-- **D584 (four small residuals) — investigated, 3 of 4 ruled, none dispatched yet.**
-  `card-grid`'s `maxWidth`/`contentWidth` `type:string` fix is now UNBLOCKED (that block's dirty
-  state from this session is committed) — ready to dispatch per D584's own plan. `team-member`
-  photo tiers ruling REVERSED to "not a residual" (media stays flat-triplet framework-wide,
-  Bean-locked). `site-header`/`site-footer` inert overlay attrs — audit done, fix ruled (wire
-  `BackgroundPanel`), not dispatched, holding on Bean's go-ahead re: shared-checkout timing.
-  Pre-commit hooks — stale line, no actual gap.
+- **D584 (four small residuals) — ALL 4 CLOSED.** Pre-commit hooks: stale line, no actual gap.
+  `team-member` photo tiers: ruled not-a-residual (media stays flat-triplet framework-wide,
+  Bean-locked). `card-grid` `maxWidth`/`contentWidth`: SHIPPED (`427d560a`), deployed to the canary,
+  live-verified via the tier-fixture toolkit (default-vs-probe binds at every tier). `site-header`/
+  `site-footer` overlay attrs: SHIPPED (`7aac8ab3`) — `BackgroundPanel` mounted on both, rule-21
+  findings 10→0; `tagName` deliberately left untouched (documented recovery path for a real parked
+  landmark-duplication residual, not debt — caught before deleting it).
 - **Background-panel redesign — SHIPPED, D1-D6 (D581).** Confirmed in `main`'s history now
   (`d74f2107`). A concurrent session (`site-header`/`site-footer`/`site-footer-row` `edit.js` +
   several block.json files) appears to be continuing follow-on Track-A/B background work as of this
@@ -171,8 +171,6 @@ the junction before removing the worktree** — this project's memory already na
   can be reused/extended for `imageControls` rather than building a second one from scratch.
 - **The `npm run build` gradients-mutator effect** — hit 3 times this session; likely lead
   (`survey-background-colour-support.py`) named above, not yet confirmed as the actual writer.
-- **D584 items #2/#3/#4** — ready to dispatch (card-grid maxWidth/contentWidth now unblocked;
-  team-member ruled not-a-residual; site-header/footer fix ruled but held on Bean's timing call).
 - **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
 - **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
   toggle; needs its own design gate. Not started.
