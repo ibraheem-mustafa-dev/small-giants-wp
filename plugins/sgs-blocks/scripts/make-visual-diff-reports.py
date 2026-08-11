@@ -142,13 +142,34 @@ def block_sha(block: str) -> str | None:
     return sha or None
 
 
-def fmt_value(measure: dict, key: str) -> str:
+def node_prop(node: dict, prop_name: str | None) -> str:
+    """One node's measured value for `prop_name`.
+
+    BATCH MODE (D572): a capture now stores `propValues` — every property that
+    block carries, keyed by ATTRIBUTE name — alongside the legacy scalar `prop`
+    (the first property's value). Reading `propValues[prop_name]` is what lets
+    one report cover a block like sgs/button, which carries 8 migrated
+    properties in a single instance.
+
+    ⛔ Falls back to `prop` ONLY when no name is supplied (a pre-batch capture).
+    It must NEVER silently fall back when a NAME was given but is absent from
+    propValues — that would report another property's value under this
+    property's heading, which is the exact cross-contamination this whole
+    pipeline exists to prevent. Absent-but-named returns '' so the caller's
+    own "did it bind?" check fails loudly instead.
+    """
+    if prop_name is None:
+        return node.get('prop') or ''
+    return (node.get('propValues') or {}).get(prop_name, '')
+
+
+def fmt_value(measure: dict, key: str, prop_name: str | None = None) -> str:
     if not measure or not measure.get('found'):
         return 'NOT FOUND'
     node = measure.get(key)
     if not node:
         return '—'
-    return node.get('prop') or '(empty)'
+    return node_prop(node, prop_name) or '(empty)'
 
 
 def collect(cap: dict, block: str, variant: str) -> dict:
@@ -171,7 +192,8 @@ def collect(cap: dict, block: str, variant: str) -> dict:
             for vp, v in cap['viewports'].items()}
 
 
-def tier_binds(a_meas: dict, probe_tiers: dict) -> tuple[bool, list[str]]:
+def tier_binds(a_meas: dict, probe_tiers: dict,
+               prop_name: str | None = None) -> tuple[bool, list[str]]:
     """Does the explicitly-set value actually bind, at each viewport's own tier?
 
     This is what makes the after-side control POSITIVE rather than vacuous:
@@ -184,8 +206,8 @@ def tier_binds(a_meas: dict, probe_tiers: dict) -> tuple[bool, list[str]]:
             notes.append(f'{vp}: not found')
             continue
         want = probe_tiers.get(vp)
-        got_outer = (m.get('outer') or {}).get('prop', '')
-        got_inner = (m.get('inner') or {}).get('prop', '')
+        got_outer = node_prop(m.get('outer') or {}, prop_name)
+        got_inner = node_prop(m.get('inner') or {}, prop_name)
         hit = want and (want in str(got_outer) or want in str(got_inner))
         notes.append(f'{vp}: set `{want}` → outer `{got_outer or "(empty)"}`'
                      + (f', inner `{got_inner}`' if m.get('inner') else '')
@@ -222,12 +244,16 @@ def measured_displays(measures: dict) -> list[str]:
     return out
 
 
-def measurement_tuples(a_meas: dict, b_meas: dict, viewport_meta: dict) -> list[dict]:
+def measurement_tuples(a_meas: dict, b_meas: dict, viewport_meta: dict,
+                       prop_name: str | None = None) -> list[dict]:
     """The exact per-viewport figures every report (full OR stub OR summary
     row) is built from. Factored out so a stub's table, a full report's
     table, and a summary row are provably the SAME code path reading THAT
     block's `a_meas`/`b_meas` — never two hand-synced copies that can drift,
     and never a value that could have been copied from another block's call.
+
+    `prop_name` selects WHICH migrated property to read (batch mode, D572).
+    None reads the legacy scalar `prop`, so pre-batch captures are unaffected.
     """
     out = []
     for vp in ('desktop', 'tablet', 'mobile'):
@@ -236,20 +262,27 @@ def measurement_tuples(a_meas: dict, b_meas: dict, viewport_meta: dict) -> list[
         am, bm = a_meas[vp], b_meas[vp]
         out.append({
             'vp': vp,
+            'prop_name': prop_name,
             'width': viewport_meta[vp]['width'],
             'tier': viewport_meta[vp]['expected_tier'],
-            'before_outer': fmt_value(bm, 'outer'),
-            'after_outer': fmt_value(am, 'outer'),
-            'before_inner': fmt_value(bm, 'inner'),
-            'after_inner': fmt_value(am, 'inner'),
+            'before_outer': fmt_value(bm, 'outer', prop_name),
+            'after_outer': fmt_value(am, 'outer', prop_name),
+            'before_inner': fmt_value(bm, 'inner', prop_name),
+            'after_inner': fmt_value(am, 'inner', prop_name),
             'display': am['outer']['display'],
         })
     return out
 
 
 def rows_markdown(tuples: list[dict]) -> list[str]:
+    """One markdown row per (property, viewport). In batch mode a block can
+    carry several properties, so the property is named in its own leading
+    column — otherwise 8 properties x 3 viewports would render as 24
+    indistinguishable rows, which reads as evidence while proving nothing
+    about WHICH property each figure belongs to."""
     return [
-        f"| {t['vp']} ({t['width']}px) | `{t['tier']}` | "
+        (f"| `{t['prop_name']}` " if t.get('prop_name') else '| ')
+        + f"| {t['vp']} ({t['width']}px) | `{t['tier']}` | "
         f"`{t['before_outer']}` | `{t['after_outer']}` | "
         f"`{t['before_inner']}` | `{t['after_inner']}` | `{t['display']}` |"
         for t in tuples
@@ -275,8 +308,23 @@ def generate_reports(before: dict, after: dict, change: str, expected: dict,
     Returns {'passed': [...filenames...], 'failed': [(block, [problems])...],
     'summary_path': Path|None}.
     """
-    prop = after['property']
-    css_prop = after.get('css_property', prop)
+    # BATCH MODE (D572): a capture may carry MANY properties. `properties` is
+    # the list form; `property` is the single-property form kept for captures
+    # that predate batch mode. Each BLOCK measures only its own subset — a
+    # 41-property pass does not mean every block has 41 (sgs/button has 8,
+    # sgs/heading 1), and asking a block for a property it never declared
+    # would read the browser's initial value and record it as evidence.
+    all_props = after.get('properties') or (
+        [after['property']] if after.get('property') else [])
+    if not all_props:
+        sys.exit('FAIL: the after-capture declares neither `properties` nor `property`.')
+    css_props = after.get('css_properties') or {
+        all_props[0]: after.get('css_property', all_props[0])}
+    # Single-property captures keep prop_name=None so they read the legacy
+    # scalar `prop` key exactly as before — pre-batch captures are untouched.
+    batch_mode = len(all_props) > 1 or bool(after.get('properties'))
+    prop = ', '.join(all_props)
+    css_prop = ', '.join(css_props.get(p, p) for p in all_props)
 
     blocks = sorted({k.split('::')[0]
                      for v in after['viewports'].values() for k in v['blocks']})
@@ -307,28 +355,54 @@ def generate_reports(before: dict, after: dict, change: str, expected: dict,
             if not b_meas.get(vp) or not b_meas[vp].get('found'):
                 problems.append(f'before-capture (default): selector matched nothing at {vp}')
 
-        binds, bind_notes = tier_binds(p_meas, after.get('probe_tiers') or {})
+        # Which properties does THIS block actually carry? The capture records
+        # it per block; fall back to the whole list for a pre-batch capture.
+        sample_m = next((m for m in a_meas.values() if m), None) or {}
+        block_props = sample_m.get('properties') or all_props
+        # prop_name=None preserves the exact pre-batch read path.
+        prop_names = block_props if batch_mode else [None]
+
         dead_reason = known_dead.get(block)          # human-declared (CLI flag)
         removed_reason = removed_attr.get(block)      # human-declared (CLI flag)
         auto_dead_reason = None                        # Change 2: derived, not typed
+
+        # EVERY property this block carries must bind, and each is checked
+        # SEPARATELY — a batch where one property silently fails to bind while
+        # 7 others pass is exactly the "looks measured, proves less than it
+        # appears" failure the positive control exists to catch. The block
+        # fails if ANY of its properties fails.
+        binds = True
+        bind_notes: list[str] = []
+        per_prop_binds: dict[str | None, bool] = {}
+        for pn in prop_names:
+            p_ok, p_notes = tier_binds(p_meas, after.get('probe_tiers') or {}, pn)
+            per_prop_binds[pn] = p_ok
+            binds = binds and p_ok
+            label = f'`{pn}` ' if pn else ''
+            bind_notes.extend(f'{label}{n}' for n in p_notes)
+
         if removed_reason:
             # The property was DELETED. A positive control is not merely absent,
             # it is meaningless — there is deliberately nothing left to bind.
             binds, dead_reason = True, None
         if not binds and not dead_reason and not removed_reason:
             # Change 2 — try to derive the "why" before demanding a sentence.
-            # Only fires on proof (see module docstring): grid-only property
-            # AND every captured element/viewport shows non-grid display.
+            # Only fires on proof (see module docstring): EVERY non-binding
+            # property is grid-only AND every captured element/viewport shows
+            # non-grid display. A batch block whose failures are NOT all
+            # grid-only still demands a human sentence, as before.
             displays = measured_displays(p_meas)
-            if (is_grid_only_css_property(css_prop) and displays
-                    and not (set(displays) & _GRID_LAYOUT_DISPLAYS)):
+            failing = [pn for pn, ok in per_prop_binds.items() if not ok]
+            failing_css = [css_props.get(pn, pn) if pn else css_prop for pn in failing]
+            if (failing_css and all(is_grid_only_css_property(c) for c in failing_css)
+                    and displays and not (set(displays) & _GRID_LAYOUT_DISPLAYS)):
                 seen = '/'.join(sorted(set(displays)))
                 auto_dead_reason = (
                     f'auto-derived: measured `display` is `{seen}` at every '
                     f'element and viewport captured — never `grid` or '
-                    f'`inline-grid` — and `{css_prop}` only takes effect '
-                    'under grid layout, so it cannot apply here by '
-                    'construction. ' + ' | '.join(bind_notes))
+                    f'`inline-grid` — and {", ".join(f"`{c}`" for c in failing_css)} '
+                    'only take effect under grid layout, so they cannot apply '
+                    'here by construction. ' + ' | '.join(bind_notes))
             if not auto_dead_reason:
                 problems.append(
                     'POSITIVE CONTROL FAILED — an explicitly set per-tier value does not '
@@ -341,15 +415,17 @@ def generate_reports(before: dict, after: dict, change: str, expected: dict,
                 'PASSED — the property does bind. Remove the flag rather than '
                 'carrying a false claim in the report.')
 
-        # Did the painted value move?
+        # Did the painted value move? Checked per property, so a change in ONE
+        # of a block's 8 properties can never be masked by the other 7 matching.
         moved = []
         if not problems:
-            for vp in sorted(a_meas):
-                for layer in ('outer', 'inner'):
-                    bv = fmt_value(b_meas[vp], layer)
-                    av = fmt_value(a_meas[vp], layer)
-                    if bv != av:
-                        moved.append((vp, layer, bv, av))
+            for pn in prop_names:
+                for vp in sorted(a_meas):
+                    for layer in ('outer', 'inner'):
+                        bv = fmt_value(b_meas[vp], layer, pn)
+                        av = fmt_value(a_meas[vp], layer, pn)
+                        if bv != av:
+                            moved.append((f'{pn}/{vp}' if pn else vp, layer, bv, av))
 
         reason = expected.get(block)
         if moved and not reason:
@@ -368,7 +444,12 @@ def generate_reports(before: dict, after: dict, change: str, expected: dict,
             failed.append((block, problems))
             continue
 
-        tuples = measurement_tuples(a_meas, b_meas, after['viewports'])
+        # One tuple set PER PROPERTY this block carries, concatenated. Built
+        # from the same measurement_tuples() the stub and summary row use, so
+        # a block's figures can never come from another block's call.
+        tuples = []
+        for pn in prop_names:
+            tuples.extend(measurement_tuples(a_meas, b_meas, after['viewports'], pn))
         sample, uid = sample_and_uid(a_meas)
         block_title = after.get('block_names', {}).get(block, block)
 
@@ -502,8 +583,8 @@ confident false failure, so every measurement here is anchored.
 
 ## Measurements — this block, not another
 
-| Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|
+| Property | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
+|---|---|---|---|---|---|---|---|
 {chr(10).join(rows)}
 
 These rows are the **default** variant — the property left unset, so the block
@@ -566,8 +647,8 @@ was collapsed into the shared summary (Change 1, 2026-08-11) — this stub still
 carries this block's own numbers below, and exists in full so the pre-commit
 gate's per-block `source_sha` binding is never dropped.
 {note_block}
-| Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|
+| Property | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
+|---|---|---|---|---|---|---|---|
 {chr(10).join(rows)}
 
 Full context (page, selector, probe values, gate totals) for this run:
@@ -595,9 +676,9 @@ def _write_summary_report(out_dir, prop, css_prop, date, change, after,
             f"### {row['block']}\n\n"
             f"- **Selector:** `{row['selector']}`\n"
             f"{note_line}\n"
-            '| Viewport | Tier that binds | before (outer) | after (outer) | '
+            '| Property | Viewport | Tier that binds | before (outer) | after (outer) | '
             'before (inner band) | after (inner band) | display |\n'
-            '|---|---|---|---|---|---|---|\n'
+            '|---|---|---|---|---|---|---|---|\n'
             + chr(10).join(rows) + '\n')
 
     body = f"""---
@@ -788,6 +869,36 @@ def _same_all_vps(node: dict) -> dict:
     return {'desktop': node, 'tablet': node, 'mobile': node}
 
 
+def _multi_node(prop_values: dict, display: str, properties: list[str]) -> dict:
+    """A node carrying SEVERAL migrated properties (batch mode, D572) — the
+    sgs/button shape, which has 8. `prop_values` maps attribute name → measured
+    value, exactly as capture-tier-fixture.py records in `propValues`."""
+    return {
+        'found': True,
+        'selector': '#test .wp-block-sgs-widget',
+        'tag': 'div',
+        'properties': properties,
+        'outer': {'classes': 'sgs-container sgs-container-abc123',
+                  'prop': next(iter(prop_values.values()), ''),
+                  'propValues': dict(prop_values),
+                  'display': display},
+    }
+
+
+def _batch_capture(properties: list[str], css_properties: dict,
+                   probe_tiers: dict, blocks_per_vp: dict) -> dict:
+    viewports = {}
+    for vp, meta in _VIEWPORT_META.items():
+        viewports[vp] = dict(meta, blocks={
+            key: per_vp[vp] for key, per_vp in blocks_per_vp.items()
+        })
+    return {
+        'label': 'self-test', 'url': 'http://self-test.invalid',
+        'properties': properties, 'css_properties': css_properties,
+        'probe_tiers': probe_tiers, 'viewports': viewports, 'consoleErrors': [],
+    }
+
+
 def _fake_sha(block: str) -> str:
     return f'testsha-{block}'
 
@@ -921,6 +1032,82 @@ def self_test() -> int:
         stub4 = (tmp / 'gridonly-dead-2026-01-01.md').read_text(encoding='utf-8')
         check('4: stub states the auto-derived reason (mentions `flex` and `grid-only`/`grid layout`)',
               'auto-derived' in stub4 and 'flex' in stub4)
+
+    # ---- 5. BATCH MODE (D572) -------------------------------------------
+    # A block carrying SEVERAL migrated properties in ONE instance — the
+    # sgs/button shape (8 properties). The failure this guards is specific and
+    # nastier than the single-property case: with 8 properties on one block, a
+    # report that measured only ONE of them would look complete while leaving 7
+    # unevidenced, and a report that mixed them up would attribute one
+    # property's value to another's heading.
+    batch_props = ['minHeight', 'fontSize', 'letterSpacing']
+    batch_css = {'minHeight': 'min-height', 'fontSize': 'font-size',
+                 'letterSpacing': 'letter-spacing'}
+    probe5 = {'desktop': '64px', 'tablet': '32px', 'mobile': '8px'}
+
+    # All three properties bind at every tier -> PASS.
+    def _b5(vals, display='grid'):
+        return _same_all_vps(_multi_node(vals, display, batch_props))
+
+    before5 = _batch_capture(batch_props, batch_css, probe5, {
+        'multi::default': _b5({'minHeight': '10px', 'fontSize': '16px',
+                               'letterSpacing': '1px'}),
+        'multi::probe': _b5({'minHeight': '10px', 'fontSize': '16px',
+                             'letterSpacing': '1px'}),
+    })
+    after5 = _batch_capture(batch_props, batch_css, probe5, {
+        'multi::default': _b5({'minHeight': '10px', 'fontSize': '16px',
+                               'letterSpacing': '1px'}),
+        # Every tier's probe value present for EVERY property.
+        'multi::probe': {
+            vp: _multi_node({p: probe5[vp] for p in batch_props}, 'grid', batch_props)
+            for vp in ('desktop', 'tablet', 'mobile')},
+    })
+    r5 = generate_reports(before5, after5, 'self-test 5 batch', {}, {}, {},
+                          '2026-01-01', tmp, dry_run=False, sha_fn=_fake_sha)
+    check('5: batch block with 3 properties, all binding -> PASSES',
+          not r5['failed'] and 'multi-2026-01-01.md' in r5['passed'])
+    if 'multi-2026-01-01.md' in r5['passed']:
+        stub5 = (tmp / 'multi-2026-01-01.md').read_text(encoding='utf-8')
+        for p in batch_props:
+            check(f'5: report names property `{p}` in its own row', f'`{p}`' in stub5)
+
+    # NEGATIVE CONTROL: exactly ONE of the three properties fails to bind.
+    # The block MUST fail — a batch must not pass on a 2-of-3 majority.
+    after5b = _batch_capture(batch_props, batch_css, probe5, {
+        'multi::default': _b5({'minHeight': '10px', 'fontSize': '16px',
+                               'letterSpacing': '1px'}),
+        'multi::probe': {
+            vp: _multi_node({'minHeight': probe5[vp], 'fontSize': probe5[vp],
+                             # letterSpacing never reflects the set value.
+                             'letterSpacing': '1px'}, 'grid', batch_props)
+            for vp in ('desktop', 'tablet', 'mobile')},
+    })
+    r5b = generate_reports(before5, after5b, 'self-test 5b', {}, {}, {},
+                           '2026-01-01', tmp, dry_run=True, sha_fn=_fake_sha)
+    failed5b = dict(r5b['failed'])
+    check('5b: NEGATIVE CONTROL — one of three properties does not bind -> block FAILS',
+          'multi' in failed5b)
+    check('5b: the failure names the property that did not bind',
+          any('letterSpacing' in p for p in failed5b.get('multi', [])))
+
+    # NEGATIVE CONTROL: one property's value CHANGES between before and after,
+    # with no --expect-change. Must fail, and must not be masked by the other
+    # two properties matching.
+    after5c = _batch_capture(batch_props, batch_css, probe5, {
+        'multi::default': _b5({'minHeight': '10px', 'fontSize': '99px',
+                               'letterSpacing': '1px'}),
+        'multi::probe': {
+            vp: _multi_node({p: probe5[vp] for p in batch_props}, 'grid', batch_props)
+            for vp in ('desktop', 'tablet', 'mobile')},
+    })
+    r5c = generate_reports(before5, after5c, 'self-test 5c', {}, {}, {},
+                           '2026-01-01', tmp, dry_run=True, sha_fn=_fake_sha)
+    failed5c = dict(r5c['failed'])
+    check('5c: NEGATIVE CONTROL — one property changed, no reason -> block FAILS',
+          'multi' in failed5c)
+    check('5c: the failure names the CHANGED property, not a neighbour',
+          any('fontSize' in p and '99px' in p for p in failed5c.get('multi', [])))
 
     print(f"\n{'ALL PASS' if ok else 'FAILURES ABOVE'} — fixtures under {tmp}")
     return 0 if ok else 1

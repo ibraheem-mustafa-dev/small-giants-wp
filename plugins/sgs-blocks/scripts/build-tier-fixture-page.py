@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-"""Build (and publish) ONE canary page carrying every block that has migrated a
-given responsive property to the tier-object shape.
+"""Build (and publish) ONE canary page carrying every block that has migrated
+ONE OR MORE responsive properties to the tier-object shape.
 
 WHY THIS EXISTS
 ---------------
@@ -14,6 +14,21 @@ evidence, not weak evidence.
 So: one page, every migrated block on it, captured once. This script builds that
 page. `capture-tier-fixture.py` measures it; `make-visual-diff-reports.py` turns
 the measurements into per-block reports.
+
+MULTI-PROPERTY BATCH MODE (D572, 2026-08-11) — `--property` now accepts a
+comma-separated list (e.g. `--property fontSize,letterSpacing,lineHeight`). A
+block carrying SEVERAL of the listed properties (e.g. sgs/button, which has 6)
+still gets exactly ONE default instance and ONE probe instance — not one pair
+per property — with every applicable property set together in the probe
+variant. This is what makes batching actually cut cost: a 41-property pass
+against ~35 blocks is ONE deploy + ONE capture cycle, not 41. Bean's framing
+that motivated this: "is there really a difference between 30 one-offs and one
+property across 30 blocks with our setup?" — no, not once verification is
+batched too; this is the batching. The manifest's per-block entries now carry
+a `properties` LIST, not a single `property` string — `capture-tier-fixture.py`
+and `make-visual-diff-reports.py` were extended alongside this to measure and
+report on that whole list per block, in the SAME commit (D571's own rule: keep
+the classifier/fixer/report generator in lockstep or they drift apart).
 
 ⛔ post_content is written via REST with an application password — the sanctioned
 path. Never via WP-CLI/PHP.
@@ -29,6 +44,7 @@ Usage:
     python build-tier-fixture-page.py --property gap --dry-run
     python build-tier-fixture-page.py --property gap --publish
     python build-tier-fixture-page.py --property gap --delete <page-id>
+    python build-tier-fixture-page.py --property fontSize,letterSpacing,lineHeight --publish
 """
 
 from __future__ import annotations
@@ -131,10 +147,13 @@ def read_block(slug_dir: Path) -> dict | None:
         sys.exit(f'FAIL: {bj} is not valid JSON — {exc}')
 
 
-def migrated_blocks(prop: str) -> list[dict]:
-    """Every block whose `prop` is the tier-object shape (type=object, no
-    Tablet/Mobile siblings). This is the same phase test the storage-shape gate
-    uses — block.json's `type` and nothing else."""
+def migrated_blocks(props: list[str]) -> list[dict]:
+    """Every block that has migrated AT LEAST ONE of `props` to the tier-object
+    shape (type=object, no Tablet/Mobile siblings — same phase test the
+    storage-shape gate uses). Each returned block carries its OWN `properties`
+    list — the subset of `props` it actually has — since a block like
+    sgs/button can carry several (customWidth, iconSize, letterSpacing,
+    lineHeight, minHeight, fontSize) while most carry exactly one."""
     out = []
     for d in sorted(BLOCKS_DIR.iterdir()):
         if not d.is_dir():
@@ -143,17 +162,23 @@ def migrated_blocks(prop: str) -> list[dict]:
         if not meta:
             continue
         attrs = meta.get('attributes') or {}
-        base = attrs.get(prop)
-        if not isinstance(base, dict) or base.get('type') != 'object':
-            continue
-        # A surviving flat sibling means the family is BLENDED, not migrated.
-        if f'{prop}Tablet' in attrs or f'{prop}Mobile' in attrs:
+        matched = []
+        for prop in props:
+            base = attrs.get(prop)
+            if not isinstance(base, dict) or base.get('type') != 'object':
+                continue
+            # A surviving flat sibling means the family is BLENDED, not migrated.
+            if f'{prop}Tablet' in attrs or f'{prop}Mobile' in attrs:
+                continue
+            matched.append(prop)
+        if not matched:
             continue
         out.append({
             'dir': d.name,
             'name': meta.get('name'),
             'parent': (meta.get('parent') or [None])[0],
             'attrs': attrs,
+            'properties': matched,
             'anchorable': supports_anchor(meta),
             'allowed': meta.get('allowedBlocks'),
         })
@@ -179,28 +204,31 @@ def layout_value(attrs: dict) -> str | None:
     return 'grid'
 
 
-def block_markup(blk: dict, prop: str, variant: str, inner: str = '') -> str:
+def block_markup(blk: dict, props: list[str], variant: str, inner: str = '') -> str:
     """One block instance.
 
     `variant` is either:
-      * 'default' — the property is NOT set, so the block renders its own
-        block.json default. THIS IS THE REGRESSION SURFACE: almost every real
+      * 'default' — none of `props` is set, so the block renders its own
+        block.json defaults. THIS IS THE REGRESSION SURFACE: almost every real
         instance leaves the property unset, so a change to a default is what
         would actually reach a client site.
-      * 'probe' — the property is set to distinct per-tier values, proving the
-        new object shape genuinely binds. This is the POSITIVE CONTROL, and it
-        can only be meaningful AFTER the migration: under the pre-migration
-        code the attribute is a scalar, so an object value is coerced away.
-        A capture of this variant on the old build measures defaults, and the
-        report must say so rather than present it as a matched pair.
+      * 'probe' — EVERY property in `props` this block actually has is set to
+        distinct per-tier values in the SAME instance, proving each object
+        shape genuinely binds. This is the POSITIVE CONTROL, and it can only
+        be meaningful AFTER the migration: under the pre-migration code the
+        attribute is a scalar, so an object value is coerced away. A capture
+        of this variant on the old build measures defaults, and the report
+        must say so rather than present it as a matched pair.
     """
     attrs: dict = {}
-    # `prop` is None for a HOST block — scaffolding that exists only so WordPress
-    # will accept its child (a shell parent like sgs/site-header, which does not
-    # own the property at all). Without this guard the probe variant would write
-    # a literal "null" attribute key onto the host.
-    if variant == 'probe' and prop:
-        attrs[prop] = dict(PROBE_TIERS)
+    # `props` is empty for a HOST block — scaffolding that exists only so
+    # WordPress will accept its child (a shell parent like sgs/site-header,
+    # which does not own any target property at all). Without this guard the
+    # probe variant would write nothing extra, which is already correct, but
+    # the explicit empty-list check keeps the host path legible.
+    if variant == 'probe' and props:
+        for prop in props:
+            attrs[prop] = dict(PROBE_TIERS)
     lay = layout_value(blk['attrs'])
     if lay:
         attrs['layout'] = lay
@@ -286,10 +314,11 @@ def selector_for(blk: dict, parent: dict | None, variant: str) -> tuple[str, str
     return f'{scope} > {css_class(blk["name"])}', 'direct child of the anchored wrapper'
 
 
-def build_content(prop: str) -> tuple[str, list[dict]]:
-    blocks = migrated_blocks(prop)
+def build_content(props: list[str]) -> tuple[str, list[dict]]:
+    blocks = migrated_blocks(props)
     if not blocks:
-        sys.exit(f'FAIL: no block has `{prop}` in the tier-object shape — nothing to fixture.')
+        sys.exit(f'FAIL: no block has any of {props} in the tier-object shape — '
+                 'nothing to fixture.')
 
     by_name = {b['name']: b for b in blocks}
     children: dict[str, list[dict]] = {}
@@ -349,15 +378,17 @@ def build_content(prop: str) -> tuple[str, list[dict]]:
     parts, manifest = [], []
     for variant in ('default', 'probe'):
         parts.append(f'<!-- wp:paragraph --><p><strong>SECTION: {variant}</strong> — '
-                     + ('property NOT set; blocks render their own block.json '
+                     + ('properties NOT set; blocks render their own block.json '
                         'defaults (the regression surface).'
                         if variant == 'default' else
-                        f'property set to {PROBE_TIERS} (the positive control).')
+                        f'every applicable property set to {PROBE_TIERS} '
+                        '(the positive control).')
                      + '</p><!-- /wp:paragraph -->')
         for b in top:
             if b.get('skipped'):
                 if variant == 'default':
                     manifest.append({'dir': b['dir'], 'name': b['name'], 'variant': variant,
+                                     'properties': b.get('properties', []),
                                      'selector': None, 'skipped': b['skipped']})
                 continue
             inner = ''
@@ -365,24 +396,27 @@ def build_content(prop: str) -> tuple[str, list[dict]]:
                 # A measured child that is itself a container needs its own
                 # children, or it renders an empty shell and cannot be measured.
                 c_inner = children_markup(child_block(c['name'], c['allowed']))
-                inner += block_markup(c, prop, variant, c_inner) + '\n'
+                inner += block_markup(c, c['properties'], variant, c_inner) + '\n'
                 sel, basis = selector_for(c, b, variant)
                 manifest.append({'dir': c['dir'], 'name': c['name'], 'variant': variant,
+                                 'properties': c['properties'],
                                  'selector': sel, 'selector_basis': basis,
                                  'nested_in': b['name']})
             if not inner:
                 inner = children_markup(child_block(b['name'], b['allowed']))
             # A HOST is scaffolding: it exists only so WordPress will accept its
-            # child. It does not own the property, is rendered with it UNSET, and
-            # is never measured — so it must not enter the manifest, or the report
-            # generator would demand evidence for a block that has none to give.
-            host_prop = None if b.get('is_host') else prop
-            parts.append(wrap_anchored(block_markup(b, host_prop, variant, inner.strip()),
+            # child. It does not own any target property, is rendered with none
+            # set, and is never measured — so it must not enter the manifest, or
+            # the report generator would demand evidence for a block that has
+            # none to give.
+            host_props = [] if b.get('is_host') else b['properties']
+            parts.append(wrap_anchored(block_markup(b, host_props, variant, inner.strip()),
                                        b['dir'], variant))
             if b.get('is_host'):
                 continue
             sel, basis = selector_for(b, None, variant)
             manifest.append({'dir': b['dir'], 'name': b['name'], 'variant': variant,
+                             'properties': b['properties'],
                              'selector': sel, 'selector_basis': basis, 'nested_in': None})
 
     unscoped = [m for m in manifest if m.get('selector') == '']
@@ -412,7 +446,9 @@ def rest(env: dict, path: str, data: dict | None = None, method: str = 'GET'):
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--property', required=True, help='e.g. gap')
+    ap.add_argument('--property', required=True,
+                    help='e.g. gap — or a comma-separated list for a batch pass, '
+                         'e.g. fontSize,letterSpacing,lineHeight')
     ap.add_argument('--slug', default=None, help='page slug (default tier-fixture-<property>)')
     ap.add_argument('--dry-run', action='store_true', help='print the markup, publish nothing')
     ap.add_argument('--publish', action='store_true', help='create/update the page')
@@ -420,7 +456,15 @@ def main() -> int:
     ap.add_argument('--manifest', default=None, help='write the block manifest JSON here')
     args = ap.parse_args()
 
-    slug = args.slug or f'tier-fixture-{args.property}'
+    props = [p.strip() for p in args.property.split(',') if p.strip()]
+    if not props:
+        ap.error('--property is empty')
+    # A multi-property page needs a stable slug that is not 200 chars of
+    # concatenated attribute names. Single-property runs keep their existing
+    # slug EXACTLY, so previously-published fixture pages still resolve.
+    default_slug = (f'tier-fixture-{props[0]}' if len(props) == 1
+                    else f'tier-fixture-batch-{len(props)}props')
+    slug = args.slug or default_slug
 
     if args.delete:
         env = load_env()
@@ -428,17 +472,18 @@ def main() -> int:
         print(f'deleted page {args.delete}')
         return 0
 
-    content, manifest = build_content(args.property)
+    content, manifest = build_content(props)
     present = [m for m in manifest if not m.get('skipped')]
     skipped = [m for m in manifest if m.get('skipped')]
 
-    print(f'property   : {args.property}')
+    print(f'properties : {len(props)} — {", ".join(props)}')
     for variant in ('default', 'probe'):
         rows = [m for m in present if m['variant'] == variant]
         print(f'\nSECTION {variant}  ({len(rows)} blocks)')
         for m in rows:
             nested = f"  (inside {m['nested_in']})" if m['nested_in'] else ''
-            print(f"  - {m['name']:26} {m['selector']}{nested}")
+            props_note = ','.join(m.get('properties') or [])
+            print(f"  - {m['name']:26} [{props_note}] {m['selector']}{nested}")
             if 'own anchor' not in m['selector_basis']:
                 print(f"      -> {m['selector_basis']}")
     if skipped:
@@ -449,8 +494,15 @@ def main() -> int:
 
     if args.manifest:
         Path(args.manifest).write_text(
-            json.dumps({'property': args.property, 'slug': slug,
-                        'probe_tiers': PROBE_TIERS, 'blocks': manifest}, indent=2),
+            json.dumps({
+                # `properties` is the batch-mode field. `property` is retained
+                # ONLY when the run is single-property, so an existing manifest
+                # consumer that predates batch mode still reads what it expects
+                # rather than silently seeing None.
+                'properties': props,
+                **({'property': props[0]} if len(props) == 1 else {}),
+                'slug': slug,
+                'probe_tiers': PROBE_TIERS, 'blocks': manifest}, indent=2),
             encoding='utf-8')
         print(f'manifest → {args.manifest}')
 
@@ -463,7 +515,8 @@ def main() -> int:
 
     env = load_env()
     existing = rest(env, f'pages?slug={slug}&status=any&per_page=1')
-    payload = {'title': f'Tier fixture — {args.property}', 'slug': slug,
+    title_props = props[0] if len(props) == 1 else f'{len(props)} properties'
+    payload = {'title': f'Tier fixture — {title_props}', 'slug': slug,
                'status': 'publish', 'content': content}
     if existing:
         out = rest(env, f'pages/{existing[0]["id"]}', payload, method='POST')

@@ -138,9 +138,34 @@ def self_test() -> int:
         failures.append('  NEGATIVE CONTROL: contentWidth override missing — it '
                         'would kebab to `content-width`, which no browser answers')
 
+    # BATCH MODE (D572): every property in a batch pass must map to a REAL CSS
+    # property. A batch is where a bad mapping hides best — 40 good mappings and
+    # one silently-blank reading looks like a clean run, which is precisely the
+    # pass-2 failure at larger scale. These are the batch this pass shipped.
+    batch = ['minHeight', 'labelFontSize', 'fontSize', 'letterSpacing', 'lineHeight',
+             'width', 'height', 'maxHeight', 'iconSize', 'rotation', 'order',
+             'alignItems', 'flexDirection', 'flexWrap', 'justifyContent', 'thickness',
+             'positionX', 'splitContentOrder', 'maxResults']
+    for attr in batch:
+        got = css_property_for(attr)
+        if not got or got != got.lower() or '_' in got:
+            failures.append(f'  BATCH: css_property_for({attr!r}) → {got!r} is not a '
+                            'plausible CSS property name')
+    # Spot-check the derivable ones actually kebab correctly.
+    for attr, expected in (('minHeight', 'min-height'), ('maxHeight', 'max-height'),
+                           ('labelFontSize', 'label-font-size'),
+                           ('flexDirection', 'flex-direction')):
+        if css_property_for(attr) != expected:
+            failures.append(f'  BATCH: css_property_for({attr!r}) → '
+                            f'{css_property_for(attr)!r}, expected {expected!r}')
+
     for line in failures:
         print(line)
-    print(f'self-test: {len(cases)} case(s), {len(failures)} failure(s)')
+    # Count every assertion, not just the `cases` table — a count that under-reports
+    # what ran makes a growing self-test look static, and this one now covers the
+    # batch mappings too. (2 explicit negative controls + the batch checks.)
+    total = len(cases) + 2 + len(batch) + 4
+    print(f'self-test: {total} assertion(s), {len(failures)} failure(s)')
     return 1 if failures else 0
 
 # Which measured tier each viewport should bind, given the SGS device-tier
@@ -150,7 +175,7 @@ def self_test() -> int:
 VIEWPORT_TIER = {'desktop': 'desktop', 'tablet': 'tablet', 'mobile': 'mobile'}
 
 PROBE = """(args) => {
-  const { selector, prop } = args;
+  const { selector, props } = args;
   const el = document.querySelector( selector );
   if ( ! el ) {
     return { found: false, selector };
@@ -176,9 +201,19 @@ PROBE = """(args) => {
         }
       }
     }
+    // `props` is a list of {attr, css} pairs — a block can carry several
+    // migrated properties (sgs/button has 8), and measuring only one would
+    // leave the rest unevidenced while looking complete. `prop` is retained
+    // as the FIRST property's value so single-property consumers that predate
+    // batch mode keep reading what they expect.
+    const propValues = {};
+    for ( const p of props ) {
+      propValues[ p.attr ] = c.getPropertyValue( p.css );
+    }
     return {
       classes: node.className,
-      prop: c.getPropertyValue( prop ),
+      prop: props.length ? c.getPropertyValue( props[ 0 ].css ) : '',
+      propValues,
       display: c.display,
       gridTemplateColumns: c.gridTemplateColumns,
       boxWidth: Math.round( r.width ),
@@ -223,14 +258,26 @@ def main() -> int:
         sys.exit('FAIL: manifest has no `url` — publish the fixture page first '
                  '(build-tier-fixture-page.py --publish --manifest …).')
 
-    # The manifest's `property` is the block ATTRIBUTE name; CSSOM needs the CSS
-    # property name. An explicit `css_property` in the manifest still wins, but
-    # it is no longer required — the fallback now CONVERTS rather than assuming
+    # The manifest's property names are block ATTRIBUTE names; CSSOM needs the
+    # CSS property name. An explicit `css_property` in the manifest still wins
+    # for a single-property run, but the fallback CONVERTS rather than assuming
     # the two names are the same. See css_property_for() for why that assumption
     # silently blanked every measurement in pass 2.
-    prop_css = manifest.get('css_property') or css_property_for(manifest['property'])
-    if prop_css != manifest['property']:
-        print(f'  property: attr `{manifest["property"]}` → CSS `{prop_css}`')
+    #
+    # BATCH MODE (D572): `properties` is the list form; `property` is the
+    # single-property form kept for manifests that predate batch mode. Each
+    # BLOCK also carries its own `properties` subset, because a 41-property
+    # pass does not mean every block has 41 — sgs/button has 8, sgs/heading 1.
+    all_props = manifest.get('properties') or (
+        [manifest['property']] if manifest.get('property') else [])
+    if not all_props:
+        sys.exit('FAIL: manifest declares neither `properties` nor `property`.')
+    css_override = manifest.get('css_property')
+    css_for = {p: (css_override if (css_override and len(all_props) == 1)
+                   else css_property_for(p)) for p in all_props}
+    for attr, css in css_for.items():
+        if css != attr:
+            print(f'  property: attr `{attr}` → CSS `{css}`')
     blocks = [b for b in manifest['blocks'] if not b.get('skipped')]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -238,8 +285,11 @@ def main() -> int:
     result = {
         'label': args.label,
         'url': url,
-        'property': manifest['property'],
-        'css_property': prop_css,
+        'properties': all_props,
+        # Retained for single-property consumers that predate batch mode.
+        **({'property': all_props[0], 'css_property': css_for[all_props[0]]}
+           if len(all_props) == 1 else {}),
+        'css_properties': css_for,
         'probe_tiers': manifest.get('probe_tiers'),
         'viewports': {},
     }
@@ -263,10 +313,19 @@ def main() -> int:
             # the other — losing exactly the comparison the report needs.
             per_block = {}
             for b in blocks:
+                # Each block measures ONLY the properties it actually carries —
+                # asking for a property a block never declared would read the
+                # browser's initial value and record it as evidence, which is
+                # exactly the "looks measured, proves nothing" failure this
+                # pipeline exists to prevent.
+                b_props = b.get('properties') or all_props
+                probe_props = [{'attr': p, 'css': css_for.get(p, css_property_for(p))}
+                               for p in b_props]
                 measured = page.evaluate(
-                    PROBE, {'selector': b['selector'], 'prop': prop_css})
+                    PROBE, {'selector': b['selector'], 'props': probe_props})
                 measured['variant'] = b['variant']
                 measured['block'] = b['dir']
+                measured['properties'] = b_props
                 per_block[f'{b["dir"]}::{b["variant"]}'] = measured
 
             html = page.content()
