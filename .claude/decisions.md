@@ -27,6 +27,17 @@ correctly (its comment cites D569/D570); `heading` and the wrapper were simply m
 false, and the tablet/mobile tiers never rendered at all. Bean design-gated this change (Rule 7,
 shared wrapper) and approved the narrow fix: the `minHeight` read only, nothing else touched.
 
+⚠⚠ **CORRECTION, measured after the fix deployed — the coercion is gone but the property still
+does not bind, and this entry must not imply otherwise.** Post-fix capture at all 3 viewports:
+`hero` binds correctly (64/32/8px); **`cta-section`, `site-header`, `trust-bar` and `container`
+all still read `0px`** despite an explicitly set per-tier value. All four declare
+`containerKind: 'section'` except `container` (which declares none), so `$is_section` alone does
+not explain it. **Root cause NOT established — do not theorise it into the fix.** What IS
+established: the fix removed 73 invalid declarations (verified 73→0) and restored the tier
+READS; whether these blocks route min-height through the shared wrapper at all is a separate,
+open question. Fixing the emitter is a second shared-wrapper change and needs its own Rule 7
+gate.
+
 **Why the census said "0 RAW findings" — two defects in the detector, not bad luck:**
 1. **`migrate-tier-object.py --survey` scans only `src/blocks/*/render.php`.** Shared includes
    are never scanned — so the single highest-blast-radius consumer of every migrated property
