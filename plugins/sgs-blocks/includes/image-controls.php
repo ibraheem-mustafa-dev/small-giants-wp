@@ -62,22 +62,17 @@ function inject_image_controls( string $block_content, array $block ): string {
 	$allowed_units = array( 'px', 'vh', 'em', '%' );
 
 	// sgsObjectPosition is a FocalPointPicker {x,y} object (floats 0-1). Resolve
-	// to an "X% Y%" object-position pair server-side. A legacy free-text string
+	// to an "X% Y%" object-position pair server-side via the shared helper
+	// (helpers-media-position.php) so this injector and any block using the
+	// explicit mechanism (c) round identically for the same stored value
+	// (Spec 35 capability-routing doctrine, Part 9). A legacy free-text string
 	// (pre-T3.5 shape) is not round-tripped here — CLEAN RESHAPE policy — but is
 	// handled gracefully (treated as absent) rather than fatally, since WP
 	// silently coerces a shape mismatch against the block.json `type: 'object'`
 	// default back to `{}` on save/load, so a stored legacy string cannot
 	// actually reach this filter once a block re-saves under the new schema.
-	$object_position_raw = $attrs['sgsObjectPosition'] ?? array();
-	$object_position     = '';
-	if ( is_array( $object_position_raw ) && isset( $object_position_raw['x'], $object_position_raw['y'] ) ) {
-		$focal_x = max( 0.0, min( 1.0, (float) $object_position_raw['x'] ) );
-		$focal_y = max( 0.0, min( 1.0, (float) $object_position_raw['y'] ) );
-		// Only emit when it differs from the CSS default (center center / 50% 50%).
-		if ( 0.5 !== $focal_x || 0.5 !== $focal_y ) {
-			$object_position = round( $focal_x * 100, 2 ) . '% ' . round( $focal_y * 100, 2 ) . '%';
-		}
-	}
+	require_once __DIR__ . '/helpers-media-position.php';
+	$object_position = sgs_media_position_focal_to_css( $attrs['sgsObjectPosition'] ?? null );
 
 	$allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
 	$object_fit_raw      = $attrs['sgsObjectFit'] ?? '';
