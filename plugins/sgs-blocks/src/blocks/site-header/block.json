@@ -46,7 +46,7 @@
 				"fx"
 			],
 			"boxFamilies": {
-				"contentBandPadding": [ "contentBandPadding", "contentBandPaddingTablet", "contentBandPaddingMobile" ],
+				"contentBandPadding": [ "contentBandPadding" ],
 				"padding": [
 					"paddingTablet",
 					"paddingMobile"
@@ -136,11 +136,11 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {"desktop": "full"}
-		},
+		},
 		"paddingTablet": {
 			"type": "object",
 			"default": {}
@@ -215,10 +215,6 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
-		},
-		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 50
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -310,22 +306,14 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
+		},
 		"contentBandBackground": {
 			"type": "string",
 			"default": ""
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingTablet": {
-			"type": "object",
-			"default": {}
+			"default": { "desktop": {} }
 		},
 		"flexDirection": {
 			"type": "string",
@@ -364,7 +352,7 @@
 		"minHeight": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"overlayGradient": {
 			"type": "boolean",
 			"default": false

@@ -61,6 +61,8 @@
 import { __ } from '@wordpress/i18n';
 import {
 	Button,
+	Card,
+	CardBody,
 	ColorIndicator,
 	Dropdown,
 	GradientPicker,
@@ -224,90 +226,94 @@ export default function GradientOverlayControl( {
 	const swatchValue = gradientEnabled ? gradientValue : solidColour;
 
 	return (
-		<Dropdown
-			className="sgs-gradient-overlay-control"
-			contentClassName="sgs-gradient-overlay-control__popover"
-			popoverProps={ { placement: 'left-start', offset: 36, shift: true } }
-			renderToggle={ ( { isOpen, onToggle } ) => (
-				<Button
-					__next40pxDefaultSize
-					onClick={ onToggle }
-					aria-expanded={ isOpen }
-					className="sgs-gradient-overlay-control__toggle"
-				>
-					<HStack justify="flex-start">
-						<ColorIndicator colorValue={ swatchValue } />
-						<span>{ solidLabel }</span>
-					</HStack>
-				</Button>
-			) }
-			renderContent={ () => (
-				<div className="sgs-gradient-overlay-control__content">
-					<ToggleGroupControl
-						label={ __( 'Overlay type', 'sgs-blocks' ) }
-						value={ gradientEnabled ? 'gradient' : 'solid' }
-						onChange={ ( val ) =>
-							setAttributes( {
-								[ attrNames.gradient ]: val === 'gradient',
-							} )
-						}
-						isBlock
-						__nextHasNoMarginBottom
-					>
-						<ToggleGroupControlOption
-							value="solid"
-							label={ __( 'Solid', 'sgs-blocks' ) }
-						/>
-						<ToggleGroupControlOption
-							value="gradient"
-							label={ __( 'Gradient', 'sgs-blocks' ) }
-						/>
-					</ToggleGroupControl>
-
-					{ gradientEnabled ? (
-						<>
-							<GradientPicker
-								value={ gradientValue }
-								onChange={ ( newGradient ) => {
-									if ( ! newGradient ) {
-										setAttributes( {
-											[ attrNames.from ]: '',
-											[ attrNames.to ]: '',
-										} );
-										return;
-									}
-									const parsed = parseLinearGradient(
-										newGradient,
-										gradientAngle
-									);
-									setAttributes( {
-										[ attrNames.angle ]: parsed.angle,
-										[ attrNames.from ]: parsed.from,
-										[ attrNames.to ]: parsed.to,
-									} );
-								} }
-								clearable
-								disableCustomGradients={ false }
-								__nextHasNoMargin
-							/>
-							<p className="components-base-control__help">
-								{ __(
-									'Only a linear, two-stop gradient is saved (angle + start/end colour). A radial gradient or extra stops are collapsed to their first and last colour. Gradient stop colours use the native WordPress picker, so global/theme palette colours are not selectable per stop.',
-									'sgs-blocks'
-								) }
-							</p>
-						</>
-					) : (
-						<DesignTokenPicker
-							label={ solidLabel }
-							value={ solidColour }
-							onChange={ ( val ) =>
-								setAttributes( { [ attrNames.solid ]: val } )
-							}
-						/>
+		<Card size="small" className="sgs-gradient-overlay-control__card">
+			<CardBody size="small">
+				<Dropdown
+					className="sgs-gradient-overlay-control"
+					contentClassName="sgs-gradient-overlay-control__popover"
+					popoverProps={ { placement: 'left-start', offset: 36, shift: true } }
+					renderToggle={ ( { isOpen, onToggle } ) => (
+						<Button
+							__next40pxDefaultSize
+							onClick={ onToggle }
+							aria-expanded={ isOpen }
+							className="sgs-gradient-overlay-control__toggle"
+						>
+							<HStack justify="flex-start">
+								<ColorIndicator colorValue={ swatchValue } />
+								<span>{ solidLabel }</span>
+							</HStack>
+						</Button>
 					) }
-				</div>
-			) }
-		/>
+					renderContent={ () => (
+						<div className="sgs-gradient-overlay-control__content">
+							<ToggleGroupControl
+								label={ __( 'Overlay type', 'sgs-blocks' ) }
+								value={ gradientEnabled ? 'gradient' : 'solid' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										[ attrNames.gradient ]: val === 'gradient',
+									} )
+								}
+								isBlock
+								__nextHasNoMarginBottom
+							>
+								<ToggleGroupControlOption
+									value="solid"
+									label={ __( 'Solid', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="gradient"
+									label={ __( 'Gradient', 'sgs-blocks' ) }
+								/>
+							</ToggleGroupControl>
+
+							{ gradientEnabled ? (
+								<>
+									<GradientPicker
+										value={ gradientValue }
+										onChange={ ( newGradient ) => {
+											if ( ! newGradient ) {
+												setAttributes( {
+													[ attrNames.from ]: '',
+													[ attrNames.to ]: '',
+												} );
+												return;
+											}
+											const parsed = parseLinearGradient(
+												newGradient,
+												gradientAngle
+											);
+											setAttributes( {
+												[ attrNames.angle ]: parsed.angle,
+												[ attrNames.from ]: parsed.from,
+												[ attrNames.to ]: parsed.to,
+											} );
+										} }
+										clearable
+										disableCustomGradients={ false }
+										__nextHasNoMargin
+									/>
+									<p className="components-base-control__help">
+										{ __(
+											'Only a linear, two-stop gradient is saved (angle + start/end colour). A radial gradient or extra stops are collapsed to their first and last colour. Gradient stop colours use the native WordPress picker, so global/theme palette colours are not selectable per stop.',
+											'sgs-blocks'
+										) }
+									</p>
+								</>
+							) : (
+								<DesignTokenPicker
+									label={ solidLabel }
+									value={ solidColour }
+									onChange={ ( val ) =>
+										setAttributes( { [ attrNames.solid ]: val } )
+									}
+								/>
+							) }
+						</div>
+					) }
+				/>
+			</CardBody>
+		</Card>
 	);
 }

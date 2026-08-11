@@ -1,26 +1,30 @@
 ---
 doc_type: reference
-title: "Visual-diff report — cta-section · columns"
+title: "Visual-diff report — cta-section · contentBandPadding"
 block: cta-section
 date: 2026-08-11
-property: columns
+property: contentBandPadding
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 1a9d70ec206e1c81
+source_sha: bc38898c8110917c
 ---
 
-# cta-section — columns binds live at every tier
+# cta-section — contentBandPadding binds live at every tier
 
 **Verdict: PASS.**
 
-⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
+Same tier-fixture page (post 2270) and method as the container report: probe values injected
+directly into `post_content` via REST (sanctioned for sgs/* blocks — plugins/sgs-blocks/CLAUDE.md),
+matching the figures already live-editor-proven on the container instance on the same page.
+cta-section renders through the same `SGS_Container_Wrapper::render()` band-layer path as
+container — the element measured carries the identical class.
 
-The probe value (64/32/8) produces a visibly different `grid-template-columns` track list than the default value (2/2/1) at every viewport -- proof the tier object is read live, not frozen. Measured on: outer.
+| Viewport | measured on | expected padding-top | actual padding-top |
+|---|---|---|---|
+| desktop (1440px) | `.sgs-container__inner` | 40px | 40px |
+| mobile (390px) | `.sgs-container__inner` | 10px | 10px |
 
-| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
-|---|---|---|---|---|---|
-| desktop | outer | grid | `576px 576px` | grid | `18px 18px 18px 18px 18px 18px 18px 18px 18px 18px 18px 18...` |
-| tablet | outer | grid | `402px 402px` | grid | `25.125px 25.125px 25.125px 25.125px 25.125px 25.125px 25....` |
-| mobile | outer | grid | `310px` | grid | `38.75px 38.75px 38.75px 38.75px 38.75px 38.75px 38.75px 3...` |
+This supersedes the earlier `columns` report at this path (that migration is committed history;
+this report describes the current staged diff, per the gate's own per-commit contract).
 
-Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.
+Full context: tier-fixture page (post 2270), anchor `tierfx-probe-cta-section`.

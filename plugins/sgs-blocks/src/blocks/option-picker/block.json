@@ -112,9 +112,7 @@
 					"borderRadiusMobile"
 				],
 				"pillPadding": [
-					"pillPadding",
-					"pillPaddingTablet",
-					"pillPaddingMobile"
+					"pillPadding"
 				]
 			}
 		}
@@ -263,15 +261,7 @@
 		},
 		"pillPadding": {
 			"type": "object",
-			"default": {}
-		},
-		"pillPaddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"pillPaddingMobile": {
-			"type": "object",
-			"default": {}
+			"default": {"desktop": {}}
 		},
 		"paddingTablet": {
 			"type": "object",

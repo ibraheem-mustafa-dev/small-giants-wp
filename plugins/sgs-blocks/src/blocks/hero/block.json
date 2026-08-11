@@ -23,9 +23,7 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
 			"text": true,
-			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -76,9 +74,7 @@
 			},
 			"boxFamilies": {
 				"contentPadding": [
-					"contentPadding",
-					"contentPaddingTablet",
-					"contentPaddingMobile"
+					"contentPadding"
 				],
 				"mediaPadding": [
 					"mediaPadding",
@@ -99,9 +95,7 @@
 					"imageBorderRadiusMobile"
 				],
 				"contentBandPadding": [
-					"contentBandPadding",
-					"contentBandPaddingTablet",
-					"contentBandPaddingMobile"
+					"contentBandPadding"
 				],
 				"padding": [
 					"paddingTablet",
@@ -297,10 +291,6 @@
 			"type": "string",
 			"default": "text"
 		},
-		"overlayOpacity": {
-			"type": "number",
-			"default": 50
-		},
 		"splitImage": {
 			"type": "object"
 		},
@@ -482,15 +472,7 @@
 		},
 		"contentPadding": {
 			"type": "object",
-			"default": {}
-		},
-		"contentPaddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"contentPaddingMobile": {
-			"type": "object",
-			"default": {}
+			"default": {"desktop": {}}
 		},
 		"mediaPadding": {
 			"type": "object",
@@ -599,10 +581,6 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
-		},
-		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 50
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -818,15 +796,7 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingMobile": {
-			"type": "object",
-			"default": {}
+			"default": { "desktop": {} }
 		},
 		"paddingTablet": {
 			"type": "object",

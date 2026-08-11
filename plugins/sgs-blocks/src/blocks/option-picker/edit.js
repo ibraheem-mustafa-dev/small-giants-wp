@@ -183,9 +183,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillSelectedBorderRadius,
 		borderRadiusTablet,
 		borderRadiusMobile,
+		// pillPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
+		// box-tier migration) — the pillPaddingTablet/pillPaddingMobile sibling
+		// attrs no longer exist in this block's schema.
 		pillPadding,
-		pillPaddingTablet,
-		pillPaddingMobile,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -605,23 +606,27 @@ export default function Edit( { attributes, setAttributes } ) {
 						help={ __( 'Leave blank for the default. Set 0 for square corners.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
-					{ /* Pill padding — SGS custom box-object family (base + tiers) —
-					   the pill is a content CHILD, not the block root, so there is
-					   no WP-native spacing support to route through. Empty object =
+					{ /* Pill padding — SGS custom TIER-OF-BOXES object family
+					   {desktop,tablet,mobile} (Spec 35 box-tier migration) — the
+					   pill is a content CHILD, not the block root, so there is no
+					   WP-native spacing support to route through. Empty object =
 					   the per-size default padding in style.css governs unchanged. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Pill padding', 'sgs-blocks' ) }
 						values={ {
-							base: pillPadding ?? {},
-							tablet: pillPaddingTablet ?? {},
-							mobile: pillPaddingMobile ?? {},
+							base: pillPadding?.desktop ?? {},
+							tablet: pillPadding?.tablet ?? {},
+							mobile: pillPadding?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { pillPadding: next } );
-							} else {
-								setAttributes( { [ `pillPadding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const tierKey = {
+								base: 'desktop',
+								tablet: 'tablet',
+								mobile: 'mobile',
+							}[ tier ];
+							setAttributes( {
+								pillPadding: { ...pillPadding, [ tierKey ]: next },
+							} );
 						} }
 					/>
 				</PanelBody>

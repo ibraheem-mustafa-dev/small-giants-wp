@@ -53,9 +53,7 @@
 					"marginMobile"
 				],
 				"contentBandPadding": [
-					"contentBandPadding",
-					"contentBandPaddingTablet",
-					"contentBandPaddingMobile"
+					"contentBandPadding"
 				]
 			},
 			"elements": {
@@ -100,19 +98,17 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"minHeight": {
 			"type": "object",
 			"default": {"desktop": "480px", "mobile": "320px"}
-		},
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {"desktop": "full"}
-		},
+		},
 		"contentBandBackground": { "type": "string", "default": "" },
-		"contentBandPadding": { "type": "object", "default": {} },
-		"contentBandPaddingTablet": { "type": "object", "default": {} },
-		"contentBandPaddingMobile": { "type": "object", "default": {} },
+		"contentBandPadding": { "type": "object", "default": { "desktop": {} } },
 		"paddingTablet": { "type": "object", "default": {} },
 		"paddingMobile": { "type": "object", "default": {} },
 		"marginTablet": { "type": "object", "default": {} },

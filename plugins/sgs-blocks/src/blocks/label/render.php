@@ -102,12 +102,18 @@ $extra_classes     = isset( $attributes['className'] ) ? $attributes['className'
 $has_style_variant = ( false !== strpos( $extra_classes, 'is-style-' ) );
 $full_width        = ! empty( $attributes['fullWidth'] );
 
-// Padding — SGS custom object attr { top, right, bottom, left }, base + tiers.
-// Ungated 2026-07-12 (value-presence): padding paints whenever a value is set,
-// emitted via the shared sgs_label_box_css_rule() helper below.
-$padding_obj        = is_array( $attributes['padding'] ?? null ) ? $attributes['padding'] : array();
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+// Padding — SGS custom TIER-OF-BOXES object attr {desktop,tablet,mobile}, each
+// tier a { top, right, bottom, left } box (Spec 35 box-tier migration,
+// 2026-08-11 — the paddingTablet/paddingMobile sibling attrs no longer exist
+// in this block's schema). sgs_responsive_normalise_object() is the canonical
+// reader (helpers-responsive.php:273), box=true so an unset/legacy value never
+// mis-resolves as a flat side (D328 defence). Ungated 2026-07-12
+// (value-presence): padding paints whenever a value is set, emitted via the
+// shared sgs_label_box_css_rule() helper below.
+$padding_tiers      = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$padding_obj        = is_array( $padding_tiers['desktop'] ) ? $padding_tiers['desktop'] : array();
+$padding_tablet_obj = is_array( $padding_tiers['tablet'] ) ? $padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $padding_tiers['mobile'] ) ? $padding_tiers['mobile'] : array();
 
 // Margin — WP-native style.spacing.margin object (skip-serialised → emitted
 // scoped via the style engine below), NOT pill-gated. Tiers are SGS custom

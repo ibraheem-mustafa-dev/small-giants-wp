@@ -15,6 +15,7 @@ import {
 	TextareaControl,
 	ToggleControl,
 	Notice,
+	BoxControl,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -24,9 +25,12 @@ import {
 	ResponsiveBorderRadiusControl,
 	ShadowControl,
 	GradientOverlayControl,
+	buildGradientCss,
+	BOX_UNITS,
+	normaliseResponsiveBox,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { resolveShadowPreview } from '../../utils';
+import { resolveShadowPreview, colourVar } from '../../utils';
 // No-inline migration (2026-07-09): hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // per-grid-area panels write to LEGACY FLAT attrs, which would become dead
@@ -190,7 +194,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		alignment,
 		backgroundImage,
 		overlayColour,
-		overlayOpacity,
+		backgroundOverlayColour,
+		overlayGradient,
+		overlayGradientAngle = 180,
+		overlayGradientFrom,
+		overlayGradientTo,
 		splitImage,
 		splitImageTablet,
 		splitImageMobile,
@@ -209,7 +217,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		bgParallax,
 		bgKenBurns,
 		bgVideo,
-		bgVideoMobile,
 		// Phase 1 — image display.
 		imageObjectFit,
 		imageWidth,
@@ -232,16 +239,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		imagePaddingMobile,
 		contentBackground,
 		contentBackgroundGradient,
+		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
+		// box-tier migration, 2026-08-11) — the contentPaddingTablet/Mobile sibling
+		// attrs no longer exist in this block's schema.
 		contentPadding,
-		contentPaddingTablet,
-		contentPaddingMobile,
 		mediaPadding,
 		mediaPaddingTablet,
 		mediaPaddingMobile,
 		contentBandBackground,
+		// contentBandPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
+		// (Spec 35 box-tier pass, 2026-08-11) — the contentBandPaddingTablet/
+		// Mobile sibling attrs no longer exist in this block's schema.
 		contentBandPadding,
-		contentBandPaddingTablet,
-		contentBandPaddingMobile,
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
 		gridTemplateColumns,
@@ -317,72 +326,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{/* ── Image (media selection only — appearance/styling controls for
-				   the same image live in the "Image" panel on the Styles tab). ── */}
-				<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
-					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
-						<>
-							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Background image', 'sgs-blocks' ) }</p>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											backgroundImage: {
-												id: media.id,
-												url: media.url,
-												alt: media.alt,
-											},
-										} )
-									}
-									allowedTypes={ [ 'image' ] }
-									value={ backgroundImage?.id }
-									render={ ( { open } ) => (
-										<div>
-											{ backgroundImage?.url ? (
-												<>
-													<img
-														src={ backgroundImage.url }
-														alt=""
-														style={ {
-															maxWidth: '100%',
-															marginBottom: '8px',
-														} }
-													/>
-													<Button
-														variant="secondary"
-														onClick={ () =>
-															setAttributes( {
-																backgroundImage:
-																	undefined,
-															} )
-														}
-														isDestructive
-													>
-														{ __(
-															'Remove image',
-															'sgs-blocks'
-														) }
-													</Button>
-												</>
-											) : (
-												<Button
-													variant="secondary"
-													onClick={ open }
-												>
-													{ __(
-														'Select background image',
-														'sgs-blocks'
-													) }
-												</Button>
-											) }
-										</div>
-									) }
-								/>
-							</MediaUploadCheck>
-						</>
-					) }
-
-					{ isSplit && (
+				{/* ── Image (SPLIT VARIANT ONLY — its own media source, not covered by the
+				   shared Background panel on the Styles tab). Unified 2026-08-11: the
+				   standard-variant background image and the background-video picker that
+				   used to live here were REMOVED — they duplicated the Styles tab's
+				   Background panel (Image/Video tabs), which is a strict superset (it also
+				   handles tablet/mobile art-direction). One media-selection UI per
+				   attribute, not two. ── */}
+				{ isSplit && (
+					<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
 						<>
 							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split media source', 'sgs-blocks' ) }</p>
 							<MediaPicker
@@ -475,119 +427,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								} }
 							</ResponsiveControl>
 						</>
-					) }
-
-					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
-						<ResponsiveControl label={ __( 'Background video', 'sgs-blocks' ) }>
-							{ ( breakpoint ) => {
-								const isDesktop = breakpoint !== 'mobile';
-								const videoAttr   = isDesktop ? bgVideo   : bgVideoMobile;
-								const attrKey     = isDesktop ? 'bgVideo' : 'bgVideoMobile';
-								return (
-									<MediaUploadCheck>
-										<MediaUpload
-											onSelect={ ( media ) =>
-												setAttributes( {
-													[ attrKey ]: { id: media.id, url: media.url },
-												} )
-											}
-											allowedTypes={ [ 'video' ] }
-											value={ videoAttr?.id }
-											render={ ( { open } ) => (
-												<div>
-													{ videoAttr?.url ? (
-														<>
-															<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
-																{ videoAttr.url.split( '/' ).pop() }
-															</p>
-															<Button
-																variant="secondary"
-																isDestructive
-																onClick={ () =>
-																	setAttributes( { [ attrKey ]: undefined } )
-																}
-															>
-																{ __( 'Remove', 'sgs-blocks' ) }
-															</Button>
-														</>
-													) : (
-														<Button variant="secondary" onClick={ open }>
-															{ isDesktop
-																? __( 'Select video', 'sgs-blocks' )
-																: __( 'Select mobile video', 'sgs-blocks' ) }
-														</Button>
-													) }
-												</div>
-											) }
-										/>
-									</MediaUploadCheck>
-								);
-							} }
-						</ResponsiveControl>
-					) }
-				</PanelBody>
-
-				{/* ── Video Background (video variant only — media selection) ── */}
-				{ isVideo && (
-					<PanelBody
-						title={ __( 'Background Video', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										bgVideo: {
-											id: media.id,
-											url: media.url,
-										},
-									} )
-								}
-								allowedTypes={ [ 'video' ] }
-								value={ bgVideo?.id }
-								render={ ( { open } ) => (
-									<div>
-										{ bgVideo?.url ? (
-											<>
-												<video
-													src={ bgVideo.url }
-													controls
-													style={ {
-														maxWidth: '100%',
-														marginBottom: '8px',
-													} }
-												/>
-												<Button
-													variant="secondary"
-													onClick={ () =>
-														setAttributes( {
-															bgVideo:
-																undefined,
-														} )
-													}
-													isDestructive
-												>
-													{ __(
-														'Remove video',
-														'sgs-blocks'
-													) }
-												</Button>
-											</>
-										) : (
-											<Button
-												variant="secondary"
-												onClick={ open }
-											>
-												{ __(
-													'Select background video (MP4/WebM)',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
 					</PanelBody>
 				) }
 
@@ -652,9 +491,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								textAlignMobile: '',
 								minHeight: { mobile: '360px' },
 								contentBackground: '',
-								contentPadding: {},
-								contentPaddingTablet: {},
-								contentPaddingMobile: {},
+								contentPadding: { desktop: {} },
 								...( isSplit && {
 									gridTemplateColumns: '',
 									splitContentOrder: { mobile: 'media-first' },
@@ -811,9 +648,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							hasValue={ () =>
 								!! contentBackground ||
 								!! contentBackgroundGradient ||
-								Object.keys( contentPadding ?? {} ).length > 0 ||
-								Object.keys( contentPaddingTablet ?? {} ).length > 0 ||
-								Object.keys( contentPaddingMobile ?? {} ).length > 0
+								Object.keys( contentPadding?.desktop ?? {} ).length > 0 ||
+								Object.keys( contentPadding?.tablet ?? {} ).length > 0 ||
+								Object.keys( contentPadding?.mobile ?? {} ).length > 0
 							}
 							onDeselect={ () =>
 								setAttributes( {
@@ -822,9 +659,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									contentBackgroundGradientAngle: 180,
 									contentBackgroundGradientFrom: '',
 									contentBackgroundGradientTo: '',
-									contentPadding: {},
-									contentPaddingTablet: {},
-									contentPaddingMobile: {},
+									contentPadding: { desktop: {} },
 								} )
 							}
 						>
@@ -842,20 +677,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								} }
 								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
 							/>
+							{ /* contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
+							     (Spec 35 box-tier migration) — ONE attr; each tier holds the
+							     4-side box, unchanged in shape from the old sibling attrs. */ }
 							<ResponsiveBoxControl
 								label={ __( 'Content padding', 'sgs-blocks' ) }
 								values={ {
-									base: contentPadding ?? {},
-									tablet: contentPaddingTablet ?? {},
-									mobile: contentPaddingMobile ?? {},
+									base: contentPadding?.desktop ?? {},
+									tablet: contentPadding?.tablet ?? {},
+									mobile: contentPadding?.mobile ?? {},
 								} }
 								onChange={ ( tier, next ) => {
-									const attrMap = {
-										base: 'contentPadding',
-										tablet: 'contentPaddingTablet',
-										mobile: 'contentPaddingMobile',
-									};
-									setAttributes( { [ attrMap[ tier ] ]: next } );
+									const tierKey = {
+										base: 'desktop',
+										tablet: 'tablet',
+										mobile: 'mobile',
+									}[ tier ];
+									setAttributes( {
+										contentPadding: { ...contentPadding, [ tierKey ]: next },
+									} );
 								} }
 							/>
 						</ToolsPanelItem>
@@ -1081,16 +921,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) =>
 									setAttributes( { overlayColour: val } )
 								}
-							/>
-							<RangeControl
-								label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
-								value={ overlayOpacity }
-								onChange={ ( val ) =>
-									setAttributes( { overlayOpacity: val } )
-								}
-								min={ 0 }
-								max={ 100 }
-								__nextHasNoMarginBottom
 							/>
 						</>
 					) }
@@ -1324,16 +1154,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { overlayColour: val } )
 							}
 						/>
-						<RangeControl
-							label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
-							value={ overlayOpacity }
-							onChange={ ( val ) =>
-								setAttributes( { overlayOpacity: val } )
-							}
-							min={ 0 }
-							max={ 100 }
-							__nextHasNoMarginBottom
-						/>
 					</PanelBody>
 				) }
 
@@ -1350,16 +1170,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) =>
 								setAttributes( { overlayColour: val } )
 							}
-						/>
-						<RangeControl
-							label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
-							value={ overlayOpacity }
-							onChange={ ( val ) =>
-								setAttributes( { overlayOpacity: val } )
-							}
-							min={ 0 }
-							max={ 100 }
-							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
 				) }
@@ -1390,22 +1200,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ contentBandBackground || '' }
 						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
 					/>
-					<ResponsiveBoxControl
+					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
+						{desktop,tablet,mobile}, each tier itself a
+						{top,right,bottom,left} box (Spec 35 box-shaped pass,
+						2026-08-11). Uses ResponsiveOverride, not the flat-sibling
+						ResponsiveBoxControl — contentBandPaddingTablet/Mobile are
+						no longer declared by block.json, so writing through the
+						old attrMap would silently discard both tiers (D338).
+						Mirrors sgs/container's own edit.js. */ }
+					<ResponsiveOverride
 						label={ __( 'Band padding', 'sgs-blocks' ) }
-						values={ {
-							base: contentBandPadding ?? {},
-							tablet: contentBandPaddingTablet ?? {},
-							mobile: contentBandPaddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const attrMap = {
-								base: 'contentBandPadding',
-								tablet: 'contentBandPaddingTablet',
-								mobile: 'contentBandPaddingMobile',
-							};
-							setAttributes( { [ attrMap[ tier ] ]: next } );
-						} }
-					/>
+						value={ contentBandPadding }
+						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<BoxControl
+								label={ __( 'Band padding', 'sgs-blocks' ) }
+								hideLabelFromVision
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								splitOnAxis={ false }
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Root padding & margin — box-object interface contract (mirrors
@@ -1505,27 +1323,44 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				) }
 
-				{ ( ! isSplit && ! isVideo && ! isSvgAnimated && backgroundImage?.url ) && (
-					<span
-						className="sgs-hero__overlay"
-						style={ {
-							backgroundColor: overlayColour,
-							opacity: overlayOpacity / 100,
-						} }
-						aria-hidden="true"
-					/>
-				) }
-
-				{ ( isVideo || isSvgAnimated ) && (
-					<span
-						className="sgs-hero__overlay"
-						style={ {
-							backgroundColor: overlayColour,
-							opacity: overlayOpacity / 100,
-						} }
-						aria-hidden="true"
-					/>
-				) }
+				{ /* Mirrors hero/render.php's overlay gate + gradient/solid branch
+				   (D5 + the 2026-08-11 gradient-render bug fix) — a colour or
+				   gradient with no background media now renders too, and the
+				   editor preview must agree with the frontend. */ }
+				{ ( () => {
+					// Raw (undefaulted) — decides WHETHER an overlay was explicitly
+					// set. 'text' below is a PAINT default only, applied once the
+					// span already exists for another reason (media present); it
+					// must never itself trigger the span.
+					const resolvedColourRaw = backgroundOverlayColour || overlayColour || '';
+					const hasOverlayColour =
+						!! resolvedColourRaw || ( overlayGradient && !! overlayGradientFrom );
+					const showsOverlay =
+						( ! isSplit && !! backgroundImage?.url ) ||
+						isVideo ||
+						isSvgAnimated ||
+						hasOverlayColour;
+					if ( ! showsOverlay ) {
+						return null;
+					}
+					return (
+						<span
+							className="sgs-hero__overlay"
+							style={
+								overlayGradient && overlayGradientFrom
+									? {
+											backgroundImage: buildGradientCss(
+												overlayGradientAngle,
+												overlayGradientFrom,
+												overlayGradientTo
+											),
+									  }
+									: { backgroundColor: resolvedColourRaw || colourVar( 'text' ) }
+							}
+							aria-hidden="true"
+						/>
+					);
+				} )() }
 
 				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons). */ }
 				<div { ...innerBlocksProps } />

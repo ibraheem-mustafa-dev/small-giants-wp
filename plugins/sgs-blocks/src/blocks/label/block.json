@@ -34,9 +34,7 @@
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"padding",
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
 					"marginTablet",
@@ -152,15 +150,7 @@
 		},
 		"padding": {
 			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
+			"default": {"desktop": {}}
 		},
 		"marginTablet": {
 			"type": "object",

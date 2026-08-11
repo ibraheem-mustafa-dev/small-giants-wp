@@ -138,7 +138,9 @@ function buildStyle( attributes ) {
 	} = attributes;
 
 	const marginPreview = boxShorthand( style?.spacing?.margin );
-	const paddingPreview = boxShorthand( padding );
+	// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
+	// box-tier migration) — the canvas preview always shows the desktop tier.
+	const paddingPreview = boxShorthand( padding?.desktop );
 
 	// fontSize is OBJECT-typed {desktop,tablet,mobile} (Spec 35 tier-object
 	// migration) — the canvas preview always shows the desktop tier.
@@ -211,9 +213,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		textDecoration,
 		fontStyle,
 		textAlign,
+		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
+		// box-tier migration) — the paddingTablet/paddingMobile sibling attrs no
+		// longer exist in this block's schema.
 		padding,
-		paddingTablet,
-		paddingMobile,
 		marginTablet,
 		marginMobile,
 		borderRadius,
@@ -455,19 +458,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 1 }
 						__nextHasNoMarginBottom
 					/>
+					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
+					     (Spec 35 box-tier migration) — ONE attr; each tier holds the
+					     4-side box, unchanged in shape from the old sibling attrs. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ {
-							base: padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+							base: padding?.desktop ?? {},
+							tablet: padding?.tablet ?? {},
+							mobile: padding?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { padding: next } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const tierKey = {
+								base: 'desktop',
+								tablet: 'tablet',
+								mobile: 'mobile',
+							}[ tier ];
+							setAttributes( {
+								padding: { ...padding, [ tierKey ]: next },
+							} );
 						} }
 					/>
 				</PanelBody>

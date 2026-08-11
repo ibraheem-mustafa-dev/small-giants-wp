@@ -4,12 +4,14 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, SelectControl, Notice } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl, Notice, BoxControl } from '@wordpress/components';
 import {
 	DesignTokenPicker,
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	ShadowControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
 } from '../../components';
 // Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
@@ -226,22 +228,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ attributes.contentBandBackground || '' }
 						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
 					/>
-					<ResponsiveBoxControl
+					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
+						{desktop,tablet,mobile}, each tier itself a
+						{top,right,bottom,left} box (Spec 35 box-shaped pass,
+						2026-08-11). Uses ResponsiveOverride, not the flat-sibling
+						ResponsiveBoxControl — contentBandPaddingTablet/Mobile are
+						no longer declared by block.json, so writing through the
+						old attrMap would silently discard both tiers (D338).
+						Mirrors sgs/container's own edit.js. */ }
+					<ResponsiveOverride
 						label={ __( 'Band padding', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.contentBandPadding ?? {},
-							tablet: attributes.contentBandPaddingTablet ?? {},
-							mobile: attributes.contentBandPaddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const attrMap = {
-								base: 'contentBandPadding',
-								tablet: 'contentBandPaddingTablet',
-								mobile: 'contentBandPaddingMobile',
-							};
-							setAttributes( { [ attrMap[ tier ] ]: next } );
-						} }
-					/>
+						value={ attributes.contentBandPadding }
+						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<BoxControl
+								label={ __( 'Band padding', 'sgs-blocks' ) }
+								hideLabelFromVision
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								splitOnAxis={ false }
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw

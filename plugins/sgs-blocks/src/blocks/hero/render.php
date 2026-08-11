@@ -119,8 +119,25 @@ $bg_image            = $attributes['backgroundImage'] ?? null;
 // Raw here; sanitised via sgs_colour_value() at the scoped-CSS concat site (matches the
 // sibling colour pattern — media/content/image-border — so the sanitiser is locally
 // obvious at every concatenation point and never double-applied to a resolved var()).
-$overlay_colour      = $attributes['backgroundOverlayColour'] ?? ( $attributes['overlayColour'] ?? 'text' );
-$overlay_opacity     = $attributes['backgroundOverlayOpacity'] ?? ( $attributes['overlayOpacity'] ?? 50 );
+// Raw (undefaulted) value — used to decide WHETHER an overlay colour was
+// explicitly set (the ungate condition below). 'text' is a real PAINT
+// default applied only once the span is already going to exist for some
+// other reason (media present); it must never itself trigger the span, or
+// every hero with no media and no configured overlay would render an opaque
+// full-bleed layer (caught live, 2026-08-11 — same session as the ungate).
+$overlay_colour_raw  = $attributes['backgroundOverlayColour'] ?? ( $attributes['overlayColour'] ?? '' );
+$overlay_colour      = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text';
+// D5 (Background panel redesign, 2026-08-11): `backgroundOverlayOpacity` no
+// longer exists as an attribute — the colour/gradient picker's own alpha is
+// the one dimming mechanism now, matching SGS_Container_Wrapper's overlay.
+// Bug fix 2026-08-11: these three were never read here at all, so the
+// GradientOverlayControl UI could write a gradient and it would silently
+// never render — the overlay's own CSS rule (below) only ever emitted a
+// flat background-color. Same read pattern SGS_Container_Wrapper uses.
+$overlay_gradient       = ! empty( $attributes['overlayGradient'] );
+$overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
+$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
+$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
 $split_image         = $attributes['splitImage'] ?? null;
 // splitMedia (added 2026-05-05) is the unified image-or-video slot. For
 // back-compat, when only the legacy splitImage is set, synthesise a
@@ -251,10 +268,16 @@ $media_padding_obj         = is_array( $attributes['mediaPadding'] ?? null ) ? $
 $media_padding_tablet_obj  = is_array( $attributes['mediaPaddingTablet'] ?? null ) ? $attributes['mediaPaddingTablet'] : array();
 $media_padding_mobile_obj  = is_array( $attributes['mediaPaddingMobile'] ?? null ) ? $attributes['mediaPaddingMobile'] : array();
 
-// contentPadding — padding on the .sgs-hero__content wrapper.
-$content_padding_obj        = is_array( $attributes['contentPadding'] ?? null ) ? $attributes['contentPadding'] : array();
-$content_padding_tablet_obj = is_array( $attributes['contentPaddingTablet'] ?? null ) ? $attributes['contentPaddingTablet'] : array();
-$content_padding_mobile_obj = is_array( $attributes['contentPaddingMobile'] ?? null ) ? $attributes['contentPaddingMobile'] : array();
+// contentPadding — padding on the .sgs-hero__content wrapper. TIER-OF-BOXES
+// OBJECT {desktop,tablet,mobile} as of Spec 35 box-tier migration (2026-08-11)
+// — the contentPaddingTablet/contentPaddingMobile sibling attrs no longer
+// exist in this block's schema; sgs_responsive_normalise_object() is the
+// canonical reader (helpers-responsive.php:273), box=true so an unset/legacy
+// value never mis-resolves as a flat side (D328 defence).
+$content_padding_tiers       = sgs_responsive_normalise_object( $attributes['contentPadding'] ?? null, true );
+$content_padding_obj         = is_array( $content_padding_tiers['desktop'] ) ? $content_padding_tiers['desktop'] : array();
+$content_padding_tablet_obj  = is_array( $content_padding_tiers['tablet'] ) ? $content_padding_tiers['tablet'] : array();
+$content_padding_mobile_obj  = is_array( $content_padding_tiers['mobile'] ) ? $content_padding_tiers['mobile'] : array();
 
 // HC2: per-breakpoint text-align on .sgs-hero__content. Desktop = base rule
 // (no @media), tablet/mobile via the scoped <style> @media mechanism — mirrors
@@ -869,29 +892,26 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 }
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
-// has-*-color / has-*-background-color classes onto the wrapper — re-add them
-// manually (mirrors sgs/quote) so preset palette colours still resolve visually.
+// has-*-color class onto the wrapper — re-add it manually (mirrors sgs/quote)
+// so preset palette text colours still resolve visually.
 $hero_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$hero_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 if ( '' !== $hero_preset_text_slug ) {
 	$classes[] = 'has-text-color';
 	$classes[] = 'has-' . $hero_preset_text_slug . '-color';
 }
-if ( '' !== $hero_preset_bg_slug ) {
-	$classes[] = 'has-background';
-	$classes[] = 'has-' . $hero_preset_bg_slug . '-background-color';
-}
-// A CUSTOM background-colour or gradient (style.color.background / .gradient) also needs the
-// `has-background` marker so the style.css default-gradient suppression
-// (`.sgs-hero:not(.has-background)`, style.css line ~50) fires. Before the no-inline migration
-// this was covered by the inline `[style*="background-color"]` selector; skip-serialisation moved
-// the value to a scoped #uid <style> rule, so the inline selector no longer matches — re-add the
-// class explicitly. Without this the framework's default primary-dark→primary gradient paints OVER
-// a faithfully-transferred flat background (e.g. Mama's draft surface-pink #F5C2C8 read as dark
-// pink). measurement-vs-eye recurrence (2026-05-05 hero-gradient incident); Bean-reported 2026-07-10.
-$hero_custom_bg = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$hero_gradient  = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
-if ( ( '' !== $hero_custom_bg || '' !== $hero_gradient ) && ! in_array( 'has-background', $classes, true ) ) {
+// D6 (capability-routing doctrine, 2026-08-11): native `supports.color`
+// background/gradients REMOVED — it competed with this block's own overlay
+// mechanism (GradientOverlayControl / overlayGradient / backgroundOverlayColour)
+// and, being wired up first, silently won, making the working overlay control
+// look broken. The overlay is now the ONLY background-colour concept.
+//
+// `has-background` still needs setting here (not just left to the overlay's
+// own render) so the style.css default-gradient suppression
+// (`.sgs-hero:not(.has-background)`, style.css line ~50) fires — without it
+// the framework's default primary-dark→primary gradient shows through a
+// translucent overlay colour. measurement-vs-eye recurrence (2026-05-05 hero
+// -gradient incident); Bean-reported 2026-07-10.
+if ( ( '' !== $overlay_colour_raw || ( $overlay_gradient && '' !== $overlay_gradient_from ) ) && ! in_array( 'has-background', $classes, true ) ) {
 	$classes[] = 'has-background';
 }
 
@@ -989,10 +1009,27 @@ if ( $is_svg_animated && ! empty( $svg_content ) ) {
 // Build overlay. No-inline contract (§A): background-color/opacity move to the
 // scoped <style> ($responsive_css, appended below) — the element carries only
 // its class, no style="" attribute.
-$overlay_html = '';
-if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_animated ) {
-	$overlay_html    = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
-	$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-color:' . sgs_colour_value( $overlay_colour ) . ';opacity:' . esc_attr( $overlay_opacity / 100 ) . '}';
+//
+// Bug fix 2026-08-11: mirrors SGS_Container_Wrapper's own overlay fix
+// (`class-sgs-container-wrapper.php`, "UNGATED 2026-08-08" comment) which
+// this private copy never received. Two bugs, same root cause (hero renders
+// its own overlay instead of the shared wrapper's, per the C3 double-emit
+// guard above — so a fix to the shared version never reaches here):
+// (a) a colour/gradient with no background image rendered NOTHING at all
+// (the old gate required an image/video/SVG background to exist first);
+// (b) `overlayGradient`/`overlayGradientFrom/To/Angle` were never read into
+// this file at all, so the CSS rule could only ever emit a flat colour.
+$overlay_html        = '';
+$has_overlay_colour  = $overlay_colour_raw || ( $overlay_gradient && $overlay_gradient_from );
+if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_animated || $has_overlay_colour ) {
+	$overlay_html = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
+	if ( $overlay_gradient && $overlay_gradient_from ) {
+		$grad_from       = sgs_colour_value( $overlay_gradient_from );
+		$grad_to         = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
+		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-image:linear-gradient(' . $overlay_gradient_angle . 'deg,' . $grad_from . ',' . $grad_to . ')}';
+	} else {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-color:' . sgs_colour_value( $overlay_colour ) . '}';
+	}
 }
 
 // FR-22-6: all content (label, headline, sub-headline, CTAs) is rendered via

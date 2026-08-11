@@ -256,11 +256,17 @@ $style_colour_gradient = isset( $attributes['style']['color']['gradient'] ) ? (s
 $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug        = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-// Pill custom padding object (SGS custom — the pill is a content CHILD, not
-// the block root, so there is no WP-native support to route through).
-$pill_padding_obj        = is_array( $attributes['pillPadding'] ?? null ) ? $attributes['pillPadding'] : array();
-$pill_padding_tablet_obj = is_array( $attributes['pillPaddingTablet'] ?? null ) ? $attributes['pillPaddingTablet'] : array();
-$pill_padding_mobile_obj = is_array( $attributes['pillPaddingMobile'] ?? null ) ? $attributes['pillPaddingMobile'] : array();
+// Pill custom padding — SGS custom TIER-OF-BOXES object attr
+// {desktop,tablet,mobile} (Spec 35 box-tier migration, 2026-08-11 — the
+// pillPaddingTablet/pillPaddingMobile sibling attrs no longer exist in this
+// block's schema). The pill is a content CHILD, not the block root, so there
+// is no WP-native support to route through. sgs_responsive_normalise_object()
+// is the canonical reader (helpers-responsive.php:273), box=true so an
+// unset/legacy value never mis-resolves as a flat side (D328 defence).
+$pill_padding_tiers      = sgs_responsive_normalise_object( $attributes['pillPadding'] ?? null, true );
+$pill_padding_obj        = is_array( $pill_padding_tiers['desktop'] ) ? $pill_padding_tiers['desktop'] : array();
+$pill_padding_tablet_obj = is_array( $pill_padding_tiers['tablet'] ) ? $pill_padding_tiers['tablet'] : array();
+$pill_padding_mobile_obj = is_array( $pill_padding_tiers['mobile'] ) ? $pill_padding_tiers['mobile'] : array();
 
 // ---------------------------------------------------------------------------
 // 6. Scoped CSS custom-PROPERTY VALUES (never property declarations, never

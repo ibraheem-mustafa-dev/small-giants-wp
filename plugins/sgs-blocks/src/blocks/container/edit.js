@@ -7,9 +7,10 @@ import {
 import {
   PanelBody,
   SelectControl,
+  BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from "../../components";
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, DesignTokenPicker, ShadowControl, BOX_UNITS, normaliseResponsiveBox } from "../../components";
 import { resolveShadowPreview, resolveResponsiveTier } from "../../utils";
 import {
   LayoutPanel,
@@ -127,9 +128,6 @@ export default function Edit({ attributes, setAttributes }) {
     ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
     // Media is handed to a ::before layer via custom properties rather than
     // painted on the element, MIRRORING the frontend (Phase 1, 2026-08-08).
-    // Painting it on the element here made `backgroundMediaOpacity` invisible in
-    // the editor — a client could set 35% and still see the image at full
-    // strength, because `opacity` on the element would dim their content too.
     // The editor is the surface clients actually work in, so it has to agree.
     ...(hasBgImage && !hasBgVideo && {
       "--sgs-ed-bg-image": `url(${backgroundImage.url})`,
@@ -138,10 +136,6 @@ export default function Edit({ attributes, setAttributes }) {
       "--sgs-ed-bg-repeat": attributes.backgroundRepeat || "no-repeat",
       "--sgs-ed-bg-attachment":
         attributes.backgroundAttachment === "fixed" ? "fixed" : "scroll",
-      "--sgs-ed-bg-opacity":
-        typeof attributes.backgroundMediaOpacity === "number"
-          ? Math.max( 0, Math.min( 100, attributes.backgroundMediaOpacity ) ) / 100
-          : 1,
     }),
     ...(hasBgVideo && {
       // Show a teal placeholder in editor when video is set
@@ -340,26 +334,35 @@ export default function Edit({ attributes, setAttributes }) {
             value={ attributes.contentBandBackground || "" }
             onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
           />
-          <ResponsiveBoxControl
+          {/* contentBandPadding is a TIER OBJECT — ONE attr holding
+              {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
+              box (Spec 35 box-shaped pass, 2026-08-11). It therefore uses
+              ResponsiveOverride, which reads and writes the object, NOT the
+              flat-sibling ResponsiveBoxControl. Do NOT revert to an attrMap of
+              {base:'contentBandPadding', tablet:'contentBandPaddingTablet',
+              mobile:'contentBandPaddingMobile'} — those two siblings are no
+              longer declared by any block.json, and WordPress SILENTLY
+              DISCARDS an attribute a block does not declare (D338), so both
+              tiers would save nothing while the desktop branch wrote a plain
+              object into the SAME shape as before by coincidence only — the
+              real risk is a stale flat write landing on a deleted attr.
+              Mirrors ResponsiveBoxControls.js's Padding block exactly. */}
+          <ResponsiveOverride
             label={ __( "Band padding", "sgs-blocks" ) }
-            values={ {
-              base: attributes.contentBandPadding ?? {},
-              tablet: attributes.contentBandPaddingTablet ?? {},
-              mobile: attributes.contentBandPaddingMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              // Explicit tablet:/mobile: literal map (matches the canonical
-              // ResponsiveControl idiom used elsewhere in this file — see the
-              // Min height attrMap above) so the control-ux static gate
-              // recognises this as a compliant responsive-family write.
-              const attrMap = {
-                base: "contentBandPadding",
-                tablet: "contentBandPaddingTablet",
-                mobile: "contentBandPaddingMobile",
-              };
-              setAttributes( { [ attrMap[ tier ] ]: next } );
-            } }
-          />
+            value={ attributes.contentBandPadding }
+            onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <BoxControl
+                label={ __( "Band padding", "sgs-blocks" ) }
+                hideLabelFromVision
+                values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
+                units={ BOX_UNITS }
+                splitOnAxis={ false }
+                onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              />
+            ) }
+          </ResponsiveOverride>
         </PanelBody>
 
         {/* Grid item defaults — only shown when layout is grid. */}

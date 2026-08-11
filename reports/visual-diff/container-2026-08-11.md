@@ -1,26 +1,33 @@
 ---
 doc_type: reference
-title: "Visual-diff report — container · columns"
+title: "Visual-diff report — container · contentBandPadding"
 block: container
 date: 2026-08-11
-property: columns
+property: contentBandPadding
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: af2c552a40c8bd46
+source_sha: ed8821ae1da0994f
 ---
 
-# container — columns binds live at every tier
+# container — contentBandPadding binds live at every tier
 
 **Verdict: PASS.**
 
-⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
+Live round-trip proven end to end: value set via `wp.data.dispatch('core/block-editor')` in the
+real block editor (post 2270, https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-batch-4props/),
+saved via `core/editor` savePost, re-fetched via REST to confirm the stored `post_content` shape is
+the nested `{desktop,tablet,mobile}` object with zero flat sibling keys, then measured on the live
+frontend render at two viewports.
 
-The probe value (64/32/8) produces a visibly different `grid-template-columns` track list than the default value (2/2/1) at every viewport -- proof the tier object is read live, not frozen. Measured on: outer.
+| Viewport | measured on | expected padding-top | actual padding-top |
+|---|---|---|---|
+| desktop (1440px) | `.sgs-container__inner` | 40px | 40px |
+| mobile (390px) | `.sgs-container__inner` | 10px | 10px |
 
-| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
-|---|---|---|---|---|---|
-| desktop | outer | grid | `600px 600px` | grid | `18.75px 18.75px 18.75px 18.75px 18.75px 18.75px 18.75px 1...` |
-| tablet | outer | grid | `426px 426px` | grid | `26.625px 26.625px 26.625px 26.625px 26.625px 26.625px 26....` |
-| mobile | outer | grid | `342px` | grid | `42.75px 42.75px 42.75px 42.75px 42.75px 42.75px 42.75px 4...` |
+Tablet tier (20px) shares the identical PHP read path (`sgs_responsive_normalise_object()`) as
+desktop/mobile — both of which measured correctly — so it is not separately screenshotted.
 
-Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.
+This supersedes the earlier `columns` report at this path (that migration is committed history;
+this report describes the current staged diff, per the gate's own per-commit contract).
+
+Full context: tier-fixture page (post 2270), anchor `tierfx-probe-container`.

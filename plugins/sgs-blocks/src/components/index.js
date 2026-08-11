@@ -5,6 +5,8 @@ export { default as DeviceTabs } from './DeviceTabs';
 export {
 	default as ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
 } from './ResponsiveBoxControl';
 export { default as ResponsiveBoxControls } from './ResponsiveBoxControls';
 export {

@@ -54,9 +54,7 @@
 					"marginMobile"
 				],
 				"contentBandPadding": [
-					"contentBandPadding",
-					"contentBandPaddingTablet",
-					"contentBandPaddingMobile"
+					"contentBandPadding"
 				],
 				"gridItemPadding": [
 					"gridItemPadding"
@@ -158,9 +156,7 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
 			"text": true,
-			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
@@ -280,7 +276,7 @@
 		"titleFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"titleFontWeight": {
 			"type": "string",
 			"default": ""
@@ -307,7 +303,7 @@
 		"labelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"labelFontWeight": {
 			"type": "string",
 			"default": ""
@@ -398,11 +394,11 @@
 		"layout": {
 			"type": "string",
 			"default": "grid"
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {"desktop": "repeat(4, 1fr)", "tablet": "repeat(4, 1fr)", "mobile": "1fr 1fr"}
-		},
+		},
 		"backgroundImage": {
 			"type": "object"
 		},
@@ -445,10 +441,6 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
-		},
-		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 50
 		},
 		"overlayGradient": {
 			"type": "boolean",
@@ -497,7 +489,7 @@
 		"minHeight": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"verticalAlign": {
 			"type": "string",
 			"default": "start"
@@ -608,7 +600,7 @@
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -701,16 +693,8 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": {}
+			"default": { "desktop": {} }
 		},
-		"contentBandPaddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"tagName": {
 			"type": "string",
 			"enum": [

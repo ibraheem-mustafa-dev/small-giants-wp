@@ -259,62 +259,46 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$gap_tablet           = $attributes['gapTablet'] ?? '';
 			$gap_mobile           = $attributes['gapMobile'] ?? '';
 
-			// Section-only bg attrs.
-			if ( $is_section ) {
-				$bg_image         = $attributes['backgroundImage'] ?? null;
-				$bg_image_tablet  = $attributes['backgroundImageTablet'] ?? null;
-				$bg_image_mobile  = $attributes['backgroundImageMobile'] ?? null;
-				$bg_size          = $attributes['backgroundSize'] ?? 'cover';
-				$allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
-				if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
-					$bg_size = 'cover';
-				}
-				$bg_position        = $attributes['backgroundPosition'] ?? 'center center';
-				$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', $bg_position );
-				$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
-				$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
-				if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
-					$bg_repeat = 'no-repeat';
-				}
-				$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
-				$allowed_attachments = array( 'scroll', 'fixed' );
-				if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
-					$bg_attachment = 'scroll';
-				}
-				$overlay_colour         = $attributes['backgroundOverlayColour'] ?? '';
-				$overlay_opacity        = $attributes['backgroundOverlayOpacity'] ?? 50;
-				$overlay_gradient       = ! empty( $attributes['overlayGradient'] );
-				$overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
-				$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
-				$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
-				$bg_video               = $attributes['bgVideo'] ?? null;
-				$bg_video_tablet        = $attributes['bgVideoTablet'] ?? null;
-				$bg_video_mobile        = $attributes['bgVideoMobile'] ?? null;
-				$bg_parallax            = ! empty( $attributes['bgParallax'] );
-				$bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
-				$bg_animation_duration  = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
-			} else {
-				// Zero out section-only vars for layout/content kinds.
-				$bg_image               = null;
-				$bg_image_tablet        = null;
-				$bg_image_mobile        = null;
-				$bg_size                = 'cover';
-				$bg_position            = 'center center';
-				$bg_repeat              = 'no-repeat';
-				$bg_attachment          = 'scroll';
-				$overlay_colour         = '';
-				$overlay_opacity        = 50;
-				$overlay_gradient       = false;
-				$overlay_gradient_angle = 180;
-				$overlay_gradient_from  = '';
-				$overlay_gradient_to    = '';
-				$bg_video               = null;
-				$bg_video_tablet        = null;
-				$bg_video_mobile        = null;
-				$bg_parallax            = false;
-				$bg_ken_burns           = false;
-				$bg_animation_duration  = 20;
+			// D6 (2026-08-11, Bean-decided): background/overlay attrs are no longer
+			// gated on container_kind==='section'. They now read universally — a
+			// layout/content-kind block only gets a working background if it also
+			// DECLARES these attrs in its own block.json (undeclared attrs are
+			// never passed by WordPress, so this is safe by construction, not by
+			// a runtime check). The old zero-out branch existed because these were
+			// architecturally "section-only concepts" (Spec 31 KIND doctrine); Bean
+			// overruled that scope restriction directly rather than leaving it as
+			// a control that can't apply on some blocks.
+			$bg_image         = $attributes['backgroundImage'] ?? null;
+			$bg_image_tablet  = $attributes['backgroundImageTablet'] ?? null;
+			$bg_image_mobile  = $attributes['backgroundImageMobile'] ?? null;
+			$bg_size          = $attributes['backgroundSize'] ?? 'cover';
+			$allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
+			if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
+				$bg_size = 'cover';
 			}
+			$bg_position        = $attributes['backgroundPosition'] ?? 'center center';
+			$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', $bg_position );
+			$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
+			$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
+			if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
+				$bg_repeat = 'no-repeat';
+			}
+			$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
+			$allowed_attachments = array( 'scroll', 'fixed' );
+			if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
+				$bg_attachment = 'scroll';
+			}
+			$overlay_colour         = $attributes['backgroundOverlayColour'] ?? '';
+			$overlay_gradient       = ! empty( $attributes['overlayGradient'] );
+			$overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
+			$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
+			$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
+			$bg_video               = $attributes['bgVideo'] ?? null;
+			$bg_video_tablet        = $attributes['bgVideoTablet'] ?? null;
+			$bg_video_mobile        = $attributes['bgVideoMobile'] ?? null;
+			$bg_parallax            = ! empty( $attributes['bgParallax'] );
+			$bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
+			$bg_animation_duration  = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -466,18 +450,25 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Content-band (Layer 2: __inner) attrs — section + layout kinds only, since
 			// those are the only kinds that can emit the __inner wrapper (content kind
 			// uses contentWidth/padding natively; no __inner layer is emitted).
-			// Box-object interface contract §2: contentBandPadding/Tablet/Mobile are
-			// per-area OBJECT attrs { top, right, bottom, left } (SGS custom attrs, not
-			// WP-native style.*). Tablet/mobile stay gated to section+layout kinds — a
-			// content-kind composite has no __inner band to apply them to.
-			$band_padding_obj    = is_array( $attributes['contentBandPadding'] ?? null ) ? $attributes['contentBandPadding'] : array();
+			// Box-object interface contract §2: contentBandPadding is a TIER-of-BOXES
+			// object { desktop: {top,right,bottom,left}, tablet: {...}, mobile: {...} }
+			// (SGS custom attr, not WP-native style.*) — migrated from 3 sibling flat-box
+			// attrs to 1 nested attr, same shape as the $columns_obj / $min_height_obj
+			// precedent above: read once via sgs_responsive_normalise_object(), every
+			// downstream variable name/type is unchanged. $is_box=true so a legacy
+			// un-migrated instance whose raw value is still a flat box (no tier keys)
+			// is treated as the desktop tier rather than discarded. Tablet/mobile stay
+			// gated to section+layout kinds — a content-kind composite has no __inner
+			// band to apply them to.
+			$band_padding_tiers      = sgs_responsive_normalise_object( $attributes['contentBandPadding'] ?? null, true );
+			$band_padding_obj        = is_array( $band_padding_tiers['desktop'] ?? null ) ? $band_padding_tiers['desktop'] : array();
 			$band_padding_top    = $sgs_css_length( $band_padding_obj['top'] ?? '' );
 			$band_padding_right  = $sgs_css_length( $band_padding_obj['right'] ?? '' );
 			$band_padding_bottom = $sgs_css_length( $band_padding_obj['bottom'] ?? '' );
 			$band_padding_left   = $sgs_css_length( $band_padding_obj['left'] ?? '' );
 
-			$band_padding_tablet_obj = ( $is_section || $is_layout ) && is_array( $attributes['contentBandPaddingTablet'] ?? null ) ? $attributes['contentBandPaddingTablet'] : array();
-			$band_padding_mobile_obj = ( $is_section || $is_layout ) && is_array( $attributes['contentBandPaddingMobile'] ?? null ) ? $attributes['contentBandPaddingMobile'] : array();
+			$band_padding_tablet_obj = ( $is_section || $is_layout ) && is_array( $band_padding_tiers['tablet'] ?? null ) ? $band_padding_tiers['tablet'] : array();
+			$band_padding_mobile_obj = ( $is_section || $is_layout ) && is_array( $band_padding_tiers['mobile'] ?? null ) ? $band_padding_tiers['mobile'] : array();
 
 			$band_padding_top_tablet    = $sgs_css_length( $band_padding_tablet_obj['top'] ?? '' );
 			$band_padding_right_tablet  = $sgs_css_length( $band_padding_tablet_obj['right'] ?? '' );
@@ -662,38 +653,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$flex_wrap = '';
 			}
 
-			// SVG background attrs (section kind only).
-			if ( $is_section ) {
-				$bg_svg_content        = $attributes['bgSvgContent'] ?? '';
-				$bg_svg_position       = $attributes['bgSvgPosition'] ?? 'background';
-				$allowed_svg_positions = array( 'background', 'foreground' );
-				if ( ! in_array( $bg_svg_position, $allowed_svg_positions, true ) ) {
-					$bg_svg_position = 'background';
-				}
-				$bg_svg_animation       = $attributes['bgSvgAnimation'] ?? 'none';
-				$allowed_svg_animations = array( 'none', 'pulse', 'float', 'wave' );
-				if ( ! in_array( $bg_svg_animation, $allowed_svg_animations, true ) ) {
-					$bg_svg_animation = 'none';
-				}
-				$bg_svg_speed       = $attributes['bgSvgAnimationSpeed'] ?? 'medium';
-				$allowed_svg_speeds = array( 'slow', 'medium', 'fast' );
-				if ( ! in_array( $bg_svg_speed, $allowed_svg_speeds, true ) ) {
-					$bg_svg_speed = 'medium';
-				}
-				$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
-				$bg_svg_min_height  = $attributes['bgSvgMinHeight'] ?? '';
-				$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
-				$has_bg_svg         = ! empty( $bg_svg_content );
-			} else {
-				$bg_svg_content     = '';
-				$bg_svg_position    = 'background';
-				$bg_svg_animation   = 'none';
-				$bg_svg_speed       = 'medium';
-				$bg_svg_opacity     = 100;
-				$bg_svg_min_height  = '';
-				$bg_svg_text_shadow = false;
-				$has_bg_svg         = false;
+			// D6: SVG background attrs, universal (see the equivalent note above the
+			// main bg-attrs block).
+			$bg_svg_content        = $attributes['bgSvgContent'] ?? '';
+			$bg_svg_position       = $attributes['bgSvgPosition'] ?? 'background';
+			$allowed_svg_positions = array( 'background', 'foreground' );
+			if ( ! in_array( $bg_svg_position, $allowed_svg_positions, true ) ) {
+				$bg_svg_position = 'background';
 			}
+			$bg_svg_animation       = $attributes['bgSvgAnimation'] ?? 'none';
+			$allowed_svg_animations = array( 'none', 'pulse', 'float', 'wave' );
+			if ( ! in_array( $bg_svg_animation, $allowed_svg_animations, true ) ) {
+				$bg_svg_animation = 'none';
+			}
+			$bg_svg_speed       = $attributes['bgSvgAnimationSpeed'] ?? 'medium';
+			$allowed_svg_speeds = array( 'slow', 'medium', 'fast' );
+			if ( ! in_array( $bg_svg_speed, $allowed_svg_speeds, true ) ) {
+				$bg_svg_speed = 'medium';
+			}
+			$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
+			$bg_svg_min_height  = $attributes['bgSvgMinHeight'] ?? '';
+			$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
+			$has_bg_svg         = ! empty( $bg_svg_content );
 
 			// ----------------------------------------------------------------
 			// Derived booleans.
@@ -802,7 +783,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// is initialised to '' below, which would silently discard anything
 			// appended here.
 			$sgs_media_layer_decls = array();
-			if ( $is_section && $has_bg_image && ! $has_bg_video ) {
+			if ( $has_bg_image && ! $has_bg_video ) { // D6: universal, was section-only.
 				// The layer's own box properties are emitted HERE rather than as a
 				// blanket `.sgs-container::before` rule in style.css, so the
 				// pseudo-element only becomes a box on containers that actually have
@@ -821,19 +802,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$sgs_media_layer_decls[] = 'background-size:' . esc_attr( $bg_size );
 				$sgs_media_layer_decls[] = 'background-position:' . esc_attr( $bg_position );
 				$sgs_media_layer_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
-				if ( 'fixed' === $bg_attachment ) {
+				// D4 (2026-08-11): `bgParallax` was declared, controlled and given a
+				// CSS class marker + a touch-device disable mechanism
+				// (`sgs-container--parallax` / `.no-parallax`, `view.js`) — but
+				// nothing ever actually turned parallax ON. Fixed here: parallax
+				// implies fixed attachment structurally, so it wins over the
+				// separate manual "Attachment" dropdown when both are set.
+				if ( 'fixed' === $bg_attachment || $bg_parallax ) {
 					$sgs_media_layer_decls[] = 'background-attachment:fixed';
 				}
-				$sgs_media_opacity = isset( $attributes['backgroundMediaOpacity'] )
-					? max( 0, min( 100, (int) $attributes['backgroundMediaOpacity'] ) )
-					: 100;
-				if ( 100 !== $sgs_media_opacity ) {
-					$sgs_media_layer_decls[] = 'opacity:' . esc_attr( $sgs_media_opacity / 100 );
-				}
+				// D5 (Background panel redesign, 2026-08-11): the media-opacity
+				// control is REMOVED — `backgroundMediaOpacity` no longer exists
+				// as an attribute (see container/block.json). The colour/gradient
+				// overlay's own alpha is the one dimming mechanism now.
 			}
 
 			// Ken-burns duration.
-			if ( $is_section && $bg_ken_burns && $has_bg_image ) {
+			if ( $bg_ken_burns && $has_bg_image ) { // D6: universal, was section-only.
 				$styles[] = '--sgs-ken-burns-duration:' . absint( $bg_animation_duration ) . 's';
 			}
 
@@ -907,7 +892,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			// SVG min-height custom property — section kind only.
-			if ( $is_section && $has_bg_svg && ! empty( $bg_svg_min_height ) ) {
+			if ( $has_bg_svg && ! empty( $bg_svg_min_height ) ) { // D6: universal, was section-only.
 				$styles[] = '--sgs-svg-min-height:' . esc_attr( $bg_svg_min_height );
 			}
 
@@ -1043,8 +1028,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--has-min-height';
 			}
 
-			// Background mode classes — section kind only.
-			if ( $is_section ) {
+			// D6: universal, was section-only.
+			if ( true ) {
 				if ( $has_bg_image && ! $has_bg_video ) {
 					$classes[] = 'sgs-container--has-bg-image';
 					if ( $bg_parallax ) {
@@ -1137,7 +1122,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Video HTML — section kind only.
 			// ----------------------------------------------------------------
 			$video_html = '';
-			if ( $is_section && $has_bg_video ) {
+			if ( $has_bg_video ) { // D6: universal, was section-only.
 				$has_bg_video_tablet = ! empty( $bg_video_tablet['url'] );
 				$desktop_src         = esc_url( $bg_video['url'] );
 				// Fall back upward when a tier has no override: tablet falls back to
@@ -1176,7 +1161,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$overlay_html  = '';
 			$overlay_decls = ''; // Emitted scoped on .{uid} .sgs-container__overlay below (no-inline).
-			if ( $is_section && ! $opt_no_overlay ) {
+			if ( ! $opt_no_overlay ) { // D6: universal, was section-only.
 				$has_overlay_colour = $overlay_colour || ( $overlay_gradient && $overlay_gradient_from );
 
 				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
@@ -1187,21 +1172,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// lets the image through and it reads as an overlay; with no media it
 				// simply IS the background. Same control, same attribute, one model.
 				if ( $has_overlay_colour ) {
+					// D5 (Background panel redesign, 2026-08-11): the separate
+					// opacity-percentage control is REMOVED — the colour/gradient
+					// picker's own alpha channel is the one place transparency is
+					// set now. `backgroundOverlayOpacity` no longer exists as an
+					// attribute (see block.json); do not reintroduce it here.
 					if ( $overlay_gradient && $overlay_gradient_from ) {
 						$grad_from     = sgs_colour_value( $overlay_gradient_from );
 						$grad_to       = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
 						$overlay_decls = sprintf(
-							'background-image:linear-gradient(%ddeg,%s,%s);opacity:%s',
+							'background-image:linear-gradient(%ddeg,%s,%s)',
 							$overlay_gradient_angle,
 							$grad_from,
-							$grad_to,
-							esc_attr( $overlay_opacity / 100 )
+							$grad_to
 						);
 					} else {
 						$overlay_decls = sprintf(
-							'background-color:%s;opacity:%s',
-							sgs_colour_value( $overlay_colour ),
-							esc_attr( $overlay_opacity / 100 )
+							'background-color:%s',
+							sgs_colour_value( $overlay_colour )
 						);
 					}
 					// No-inline contract (Spec 32): the overlay paint is emitted as a
@@ -1316,7 +1304,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
 			$responsive_css    = '';
-			$has_responsive_bg = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
+			$has_responsive_bg = ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) ); // D6: universal.
 			// A per-tier COLUMN COUNT (columnsTablet/columnsMobile) also needs the
 			// responsive block to run — that is where the count is emitted as a scoped
 			// per-tier `grid-template-columns` rule at $grid_sel (QB-2 tier-count
@@ -1351,8 +1339,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_base_outer
 				|| $container_queries
 				|| '' !== $overlay_decls
-				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
-				|| ( $is_section && $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) )
+				|| ( $bg_parallax || $bg_ken_burns ) // D6: universal.
+				|| ( $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) ) // D6: universal.
 				// An SVG background emits `--sgs-svg-opacity` as a scoped rule on the
 				// `.sgs-container__svg-bg` layer (FR-32-4 / D345 — it used to ride inline
 				// on that div). Without a uid there is nowhere to scope it, so the SVG
@@ -1683,7 +1671,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// SAME ::before media layer as the base tier (Phase 1, 2026-08-08);
 				// targeting .$uid here while the base painted ::before would leave the
 				// desktop image showing through underneath on tablet/mobile.
-				if ( $is_section ) {
+				if ( true ) { // D6: universal, was section-only.
 					if ( ! empty( $bg_image_tablet['url'] ) ) {
 						$responsive_css .= '@media (max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 					}
@@ -1861,7 +1849,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// SVG background HTML — section kind only.
 			// ----------------------------------------------------------------
 			$svg_html = '';
-			if ( $is_section && $has_bg_svg ) {
+			if ( $has_bg_svg ) { // D6: universal, was section-only.
 				$allowed_svg_tags = array(
 					'svg'      => array(
 						'xmlns'               => true,

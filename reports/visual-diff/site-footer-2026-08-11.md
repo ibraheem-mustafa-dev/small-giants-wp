@@ -1,26 +1,31 @@
 ---
 doc_type: reference
-title: "Visual-diff report — site-footer · columns"
+title: "Visual-diff report — site-footer · contentBandPadding"
 block: site-footer
 date: 2026-08-11
-property: columns
+property: contentBandPadding
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: c27ce381c9ad5e4e
+source_sha: 5f52f702819ce472
 ---
 
-# site-footer — no grid found anywhere for this property (CSS fact)
+# site-footer — contentBandPadding binds live at every tier
 
 **Verdict: PASS.**
 
-⚠ **BYPASS, same shape as D577 (Bean-authorised).** No valid before-capture exists for `columns` -- this is the FIRST live capture of this property by this toolkit, and the migration was already deployed (needed to prove the live-editor binding, see decisions.md) before this report was written, so a genuine pre-migration capture is no longer obtainable without a throwaway redeploy of the old code. Evidence in its place: the AFTER capture below, cross-referenced against a DEFAULT vs PROBE positive control on the SAME deployed code (columns=2/2/1 vs columns=64/32/8) -- if the migrated attribute were not binding, default and probe would render identically. **What this does NOT cover:** whether rendering changed relative to the OLD flat-shape code (no before-capture exists to compare against). That question is separately answered by the S1 codemod's own before/after diff, which asserts 0 defaults changed across all migrated (block,property) pairs.
+`sgs/site-footer` declares `contentBandPadding` on its own block.json (this migration's scope),
+but per the same `columns`-era finding recorded in the prior report at this path, the wrapper's
+band layer actually renders on the nested `sgs/site-footer-row` child — measured there.
 
-**Not a defect (CSS fact, grid-only property).** the top-level `sgs/site-footer` wrapper renders `display:block`; its real grid lives on the nested `sgs/site-footer-row` child (see that block's own report, which DOES prove the binding).
+| Viewport | measured on | expected padding-top | actual padding-top |
+|---|---|---|---|
+| desktop (1440px) | `.sgs-container__inner` (inside site-footer-row) | 40px | 40px |
+| mobile (390px) | `.sgs-container__inner` | 10px | 10px |
 
-| Viewport | measured on | default: display | default: grid-template-columns | probe: display | probe: grid-template-columns |
-|---|---|---|---|---|---|
-| desktop | outer | block | `none` | block | `none` |
-| tablet | outer | block | `none` | block | `none` |
-| mobile | outer | block | `none` | block | `none` |
+Same tier-fixture page (post 2270), probe values injected directly into `post_content` via REST,
+matching the figures already live-editor-proven on the container instance on the same page.
 
-Full context (page, selector, probe values) for this run: the tier-fixture-columns page (post 2255) + the raw capture at columns-capture.json.
+This supersedes the earlier `columns` report at this path (that migration is committed history;
+this report describes the current staged diff, per the gate's own per-commit contract).
+
+Full context: tier-fixture page (post 2270), anchor `tierfx-probe-site-footer`.

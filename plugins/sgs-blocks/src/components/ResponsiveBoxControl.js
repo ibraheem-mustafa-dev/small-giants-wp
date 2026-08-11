@@ -79,13 +79,34 @@ const TIER_BY_BREAKPOINT = {
 };
 
 /** Units offered in the BoxControl side inputs (mirrors SpacingControl's free-input set). */
-const BOX_UNITS = [
+export const BOX_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
 	{ value: 'em', label: 'em', default: 0 },
 	{ value: '%', label: '%', default: 0 },
 	{ value: 'vw', label: 'vw', default: 0 },
 ];
+
+/**
+ * Collapse an all-empty BoxControl object to '' so a tier is cleared
+ * (→ inherits the tier above via ResponsiveOverride) rather than storing an
+ * empty `{}` that would still count as an override. Shared by every
+ * object-typed BOX-family tier control (contract §1) that pairs BoxControl
+ * with ResponsiveOverride — mirrors ResponsiveBoxControls.js's local
+ * `normaliseBox` so the same rule lives in one place for new callers.
+ *
+ * @param {Object|undefined} box BoxControl value.
+ * @return {Object|string} The box object, or '' when every side is empty.
+ */
+export const normaliseResponsiveBox = ( box ) => {
+	if ( ! box || typeof box !== 'object' ) {
+		return '';
+	}
+	const hasAny = Object.values( box ).some(
+		( v ) => v !== undefined && v !== null && v !== ''
+	);
+	return hasAny ? box : '';
+};
 
 /**
  * ResponsiveBoxControl — 4-SIDE family (padding / margin / border-width) editor.

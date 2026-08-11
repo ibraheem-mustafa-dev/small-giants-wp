@@ -31,9 +31,7 @@
 					"marginMobile"
 				],
 				"contentBandPadding": [
-					"contentBandPadding",
-					"contentBandPaddingTablet",
-					"contentBandPaddingMobile"
+					"contentBandPadding"
 				],
 				"gridItemPadding": [
 					"gridItemPadding"
@@ -160,9 +158,7 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
 			"text": true,
-			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -351,10 +347,6 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
-		},
-		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 50
 		},
 		"overlayGradient": {
 			"type": "boolean",
@@ -611,15 +603,7 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"contentBandPaddingMobile": {
-			"type": "object",
-			"default": {}
+			"default": { "desktop": {} }
 		},
 		"tagName": {
 			"type": "string",
