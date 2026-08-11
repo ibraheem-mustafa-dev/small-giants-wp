@@ -71,11 +71,13 @@ thing that proves it works turned out to be broken and I fixed that instead.**
   with no text). The test tool correctly refuses to score them. That's a small, contained fix.
 
 **Earlier narrative:** `memory/session-2026-08-08.md`; sessions 2-7 in commit messages +
-`decisions.md` D546-D573.
+`decisions.md` D546-D575.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D573**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D575** (corrected
+> 2026-08-11; the cached value read D573 while this same file already cited D574 and D575 below —
+> the stale number was sitting on the line that says never to cache it).
 
 ### ✅ SHIPPED + PUSHED this session (6 commits)
 
