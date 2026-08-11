@@ -331,6 +331,9 @@ default true) · gradient → `GradientPicker` · angle/direction → `AnglePick
 choice → `ToggleGroupControl` · long/searchable list → `ComboboxControl` · multi-value tags →
 `FormTokenField` · link/CTA → **`SgsLinkControl`** (wraps `LinkControl`) · font size → `FontSizePicker` · weight+style →
 `FontAppearanceControl` · line-height → `LineHeightControl` · focal point → `FocalPointPicker` ·
+**object-position → `FocalPointPicker`** (same component; responsive tiers required — added
+2026-08-11, previously absent despite Parts B and C both listing object-fit/position as table
+stakes) · **object-fit → `SelectControl`** (closed enum: cover/contain/fill/none/scale-down) ·
 date → `DateTimePicker` · optional-controls group → `ToolsPanel`/`ToolsPanelItem` · in-row layout →
 `HStack`/`VStack`/`Flex`/`Spacer`/`Divider` · swatch preview → `ColorIndicator` · inline hint →
 `Tip`/`Notice` · greyed prerequisite → `Disabled` · compact secondary → `Dropdown`/`DropdownMenu` ·
@@ -349,7 +352,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | **Shadow builder** | `ShadowControl` **BUILT + ROLLED OUT** (X/Y/blur/spread/colour+alpha/inset + theme presets; `src/components/ShadowControl.js`) — consumers now incl. testimonial `shadowHover`, trust-bar `iconCircleShadow`/`badgeImageShadow` (`b9c5f6d1`, 2026-07-28) | DONE (Wave 1) |
 | **Link/CTA** | `SgsLinkControl` **BUILT + ROLLED OUT** (`src/components/SgsLinkControl.js`) — card-grid, media (4 fields), product-card (3 CTAs), trust-bar item links migrated (`ac0c30eb`, 2026-07-28); raw-url-link WARNs 40→0 (2 reasoned EXC exemptions remain) | DONE (Wave 1) |
 | **Bulk media/gallery** | **BUILT** — `MediaGalleryPicker` extracted from `gallery/edit.js`, both call sites swapped (`07c67642`, 2026-07-28) | DONE (Wave 2) |
-| **Focal point / image size / aspect-ratio** | **BUILT** — FocalPointPicker `{x,y}`, object-fit via scoped var; image-size dropdown ruled NOT-FORCIBLE at extension level (no universal attachment ID, documented) (`07c67642`) | DONE (Wave 2) |
+| **Focal point / image size / aspect-ratio** | ⛔ **NOT DONE — corrected 2026-08-11. This row read "BUILT … DONE (Wave 2)" and was FALSE.** The control is BUILT and attaches to all 15 blocks declaring `supports.sgs.imageControls: true`, but it **functionally reaches 2 of them**. The extension injects `sgs-has-image-controls` on the block ROOT and the CSS then guesses where the image is (`> img`, `figure > img`) — so it only matches when the image happens to sit in one of those positions. `decorative-image` matches **nothing** (its root IS the `<img>`, so the class lands on the element itself); `info-box` declares the capability with **no media surface at all**. The client drags a crosshair and nothing happens: no error, no warning. ⚠ The "NOT-FORCIBLE at extension level" note applied only to the *size dropdown*, on data-availability grounds — the deeper limit is DOM-shape inference, which defeats focal-point and object-fit too. **Governing fix + the routing rule that prevents a repeat: `plans/spec-35-capability-routing-doctrine.md`.** Original claim: (`07c67642`) | ⛔ **REOPENED (Wave 2 claim withdrawn)** |
 | **Gradient / bg overlay** | **BUILT** — `GradientOverlayControl`, one shared `BackgroundPanel` covers container/cta-section/hero (`07c67642`) | DONE (Wave 2) |
 | **Spacing token control** | raw units | still open — not part of the 2026-07-28 waves; not gated by Part K |
 | ToolsPanel disclosure | **BUILT + ROLLED OUT** — 23 panels converted across 19 blocks, 8 skip-reasoned in-code (`07c67642`+`f5fac495`) | DONE (Wave 2) |
@@ -462,6 +465,11 @@ component layer.**
 - ~~Confirmed Part-B failure live in the wrapper: `sgs/container` band-width "custom"~~ **RESOLVED
   2026-07-23** — not reproduced (Playwright 20/20); already fixed at `d5416ae8`; Bean's report was a
   stale cached editor bundle. Parking entry archived (`memory/parking-archive.md`).
+
+⛔ **PARTIALLY WITHDRAWN 2026-08-11 — see Part I's focal-point row.** "COMPLETE" holds for
+`MediaGalleryPicker`, `ShadowControl` and `SgsLinkControl` (all three verified in live use). It does
+**NOT** hold for the `imageControls` extension: built and attached, but functionally reaching 2 of
+the 15 blocks that declare it. Built ≠ reaching. See `plans/spec-35-capability-routing-doctrine.md`.
 
 **Roadmap (Part J) — BUILD status: COMPLETE (2026-07-28, `07c67642` → `64f5080e`).** All three
 waves shipped same day; the plan referenced in earlier revisions
