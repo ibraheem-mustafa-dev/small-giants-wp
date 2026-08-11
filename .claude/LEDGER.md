@@ -9,6 +9,28 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+**2026-08-11 (session 8). The 7 blank blocks are FIXED — the test page went from 42 blind
+spots to 0. But fixing them uncovered that the measuring tool was pointed at the wrong part
+of each block, so the migration still can't be committed. One commit pushed (`a33c87ce`).**
+
+- **The 7 blocks now render, proven on the real page, not in a test.** Their "minimum to look
+  like themselves" recipe was already written in each block's own file — I read it rather than
+  inventing one, so it maintains itself as blocks change.
+- **The bigger find: last session fixed WHICH SETTING was measured; this session found it was
+  measuring the WRONG PART OF THE BLOCK.** 22 of the 41 settings style an inner piece — the
+  little label under a trust badge, a card's title, a price — but the tool read the outer box.
+  It got a real number back every time, from an element the setting never touches.
+- **Two browser traps sat inside that fix, both producing confident blank answers.** One made
+  the tool examine 64 stylesheets and 0 rules while reporting "this block has no styling". The
+  other made a button's *icon* width answer for the *button's* width, because one class name
+  is a prefix of the other. Both found by running it.
+- **Where it stands:** after deploying, 29 settings now measure correctly. 34 still don't, in
+  three clearly separated groups — and none of them pass silently, they all fail loudly. The
+  biggest group isn't a bug at all: the test writes "64px" into settings like "align items"
+  and "row direction", where a pixel value is meaningless, so they can never match.
+- **A test page (1593) was blocking the deploy** with an old setting the migration removed.
+  Fixed. ⚠ The tool the error message told me to use for that doesn't exist in the repo.
+
 **2026-08-11 (session 7). The whole remaining long tail migrated in one pass — 41 settings
 across 35 blocks. Six commits pushed. The migration itself is NOT committed yet, because the
 thing that proves it works turned out to be broken and I fixed that instead.**
@@ -109,9 +131,34 @@ modifier; `maxResults` is a REST query limit).
 hyphenated) — which `label-font-size` satisfies perfectly while measuring nothing. It now
 asserts the REAL target per attribute. 34 assertions, proven able to fail.
 
-### ⭐ NEXT SESSION — one contained fix, then the commit lands
+### ⭐ NEXT SESSION — clear the 34 non-binding properties, then the commit lands
 
-#### A. Fix the 7 non-rendering fixture blocks (the ONLY thing blocking the commit)
+**Task A below is DONE (D574, `a33c87ce`) — 42 NOT-FOUND → 0. Kept for context only.**
+The fixture page (2248) is published with the new content, the migration IS deployed to the
+canary, and before/after captures exist. What blocks the commit now is that **34 of 63
+probe measurements do not bind**, in three separated classes. Full detail in D574; order:
+
+1. **(a) FIRST — probe values are the wrong TYPE.** `PROBE_TIERS` writes `64px` into keyword
+   properties (`alignItems`, `flexDirection`, `flexWrap`, `justifyContent`), integers
+   (`order`, `splitContentOrder`), a transform (`rotation`) and an enum (`widthType`).
+   Invalid CSS cannot bind, so these can NEVER pass. Needs a per-property-type probe value —
+   derive the type from the property, do not hand-list blocks. Biggest group, cheapest fix,
+   and it must go first or it buries the real signal.
+2. **(b) THEN — the element is absent for want of content.** `trust-bar.titleFontSize`,
+   `quote.attributionFontSize`, `brand-strip.name*`, `product-card.tagFontSize` report
+   target `None`: the BLOCK paints but the ELEMENT does not. Same shape as task A one level
+   down — extend the render minimums so each measured element has content.
+3. **(c) LAST — what remains may be REAL regressions.** `sgs/container` + `sgs/cta-section`
+   emit no root `min-height` for a set value while `sgs/hero` does; `sgs/heading` `fontSize`
+   reads 16px against a set 64px. ⛔ UNPROVEN in both directions — do not fix or dismiss
+   before (a) and (b) are cleared.
+
+⛔ **Do NOT re-run task A's fix.** And note `--payload` is required to deploy with the tree
+deliberately dirty: `build-deploy.py --target sandybrown --payload plugins/sgs-blocks/src/
+--payload plugins/sgs-blocks/includes/ --payload plugins/sgs-blocks/scripts/ --payload
+theme/sgs-theme/`.
+
+#### A. Fix the 7 non-rendering fixture blocks — ✅ DONE (D574). Context only.
 
 `before-after, collapsible-text, decorative-image, media, option-picker, text, whatsapp-cta`
 render as empty shells on the fixture page, so the capture reports 42 NOT-FOUND
@@ -155,6 +202,19 @@ A -> B -> commit -> C (separate session)
 
 ### Methodology guardrails (earned; do not skip)
 
+- ⛔ **The right property read off the wrong ELEMENT is the same bug as the wrong property.**
+  D573 fixed `labelFontSize`→`font-size`; D574 found it was still being read from the block
+  root while the rule sits on a descendant. Both return a real, plausible number.
+- ⛔ **Recurse on `.length`, never on truthiness.** Chrome's `CSSStyleRule` exposes an empty
+  `cssRules` since CSS Nesting: a truthiness guard skipped every style rule, walking 64
+  stylesheets and examining 0.
+- ⛔ **`.includes()` on a class name is a substring test** — every BEM element class starts
+  with its block class, so `.sgs-button__icon` matches `.sgs-button`. Anchor to a boundary.
+- ⛔ **No fallback to a plausible target.** When the attribute's own rule is absent, return
+  "no target" — a fallback handed back the neighbouring element and read perfectly cleanly.
+- ⛔ **`git commit --amend` IGNORES the original pathspec** and commits the WHOLE index. Used
+  to fix a subject line, it swept all 89 deliberately-staged migration files into the commit.
+  Caught by reading `--stat`; undone with `reset --soft` + re-commit by path.
 - ⛔ **A mapping that LOOKS right can measure nothing.** `getPropertyValue()` returns `''` for
   an unknown property silently. Assert the REAL target, never the shape of the name. Twice now
   this class of bug has produced confident reports off blank readings.
@@ -251,4 +311,3 @@ A -> B -> commit -> C (separate session)
 - **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
 - **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
   toggle; needs its own design gate. Not started.
-- **blub :5050 is DOWN** (HTTP 000) — re-POST pending lessons to `/api/learning`.

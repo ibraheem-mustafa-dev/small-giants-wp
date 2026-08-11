@@ -1,5 +1,89 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D574 — D573 fixed WHICH PROPERTY; this fixes WHICH ELEMENT. The fixture measured the block root while 22 of 41 properties are styled on a descendant [INCIDENT]
+
+**2026-08-11.** Commit `a33c87ce`. Task A (the 7 non-rendering fixture blocks) is DONE and
+verified live — **42 NOT-FOUND → 0** across 56 block/variant pairs × 3 viewports. Getting
+there surfaced three further instrument faults, each found by RUNNING it, none by self-test.
+
+**1. Render minimums, read from `block.json` `example.attributes`.** Seven blocks rendered as
+empty shells. The minimum that makes a block paint is already declared by its own author as
+`example.attributes`, so it is read, never invented. Three filters, each answering a recorded
+silent failure: an **undeclared** key (WP discards it, D338); a property **under test** (would
+convert the default variant's regression surface into a second probe and mask the very change
+the gate looks for — `sgs/text`'s example sets `fontSize`, which IS one of the 41); a **flat
+value on an object-typed attr** (silently coerced to the default). Probe values are written
+LAST so scaffolding can never displace them. `TYPED_ITEMS` is deleted — `sgs/card-grid`'s
+example already carries its `items`, so the hand-written map was redundant.
+⛔ `sgs/whatsapp-cta` overrides its example's `variant: floating` for a MEASUREMENT reason:
+render.php:338 emits the `.sgs-whatsapp-cta__label` span only when NOT floating, and
+`labelFontSize` is scoped to exactly that span (render.php:248). Left floating the block
+renders, the selector matches, and the reading is taken off an element the property does not
+style.
+
+**2. A hand-built root carries no `wp-block-` class.** `sgs/decorative-image` emits its `<img>`
+AS the block root (`class="sgs-decorative-image sgs-di-<uid>"`), so the convention-only
+selector matched nothing at all three viewports. The selector now accepts either the WP
+convention class or the block's own BEM root class. **Same lesson as `supports.anchor`:
+declaring a convention is not honouring it.**
+
+**3. THE ELEMENT (the headline).** D573 fixed `labelFontSize` → `font-size` rather than the
+non-existent `label-font-size`. But the probe read that value off the **block root**, while
+**22 of the 41** are emitted onto a DESCENDANT — `sgs_typography_css_rule( $attributes,
+'label', '.{uid} .sgs-trust-bar__label' )` and its siblings across trust-bar, card-grid,
+product-card, brand-strip, counter, icon-list, nav-menu, option-picker, quote, separator,
+whatsapp-cta. The root returns the inherited base (16px/18px): a real number, from an element
+the rule never touches. The target is now derived from the EMITTED CSS (a rule is "this
+block's" when its selector mentions a class the root carries), disambiguated by each
+attribute's own `sgs_typography_css_rule` selector — necessary because `labelFontSize` and
+`titleFontSize` are BOTH `font-size`, and the rule search alone returned `__label` for both.
+**No fallback when a hint exists:** a fallback was built, and on the default variant (where
+`titleFontSize` emits no rule) it returned `.sgs-trust-bar__label` — a plausible element is
+not the right element.
+
+**Two measured browser traps inside that fix, both of which produced confident blank results:**
+- **Chrome's `CSSStyleRule` exposes an empty `cssRules` list** since CSS Nesting shipped, so
+  `if ( rule.cssRules ) { recurse; continue; }` treats EVERY ordinary style rule as a group
+  and skips it. Measured: 64 stylesheets walked, **0 rules examined**, "no rule emitted"
+  reported for all 130 measurements. Recurse on `.length`, never on truthiness.
+- **`.includes()` is a substring test, and every BEM element class starts with its block
+  class.** `.sgs-button__icon svg` contains `.sgs-button`, so the icon's `width:15px` was
+  returned as the button's own `customWidth`. Matching is now class-boundary anchored.
+
+**Also fixed:** `make-visual-diff-reports.py` read `after['property']`, absent on a batch
+capture, raising `KeyError` **after** every report was written — turning a completed run into
+a traceback that hid its real pass/fail.
+
+**Verification:** `build-tier-fixture-page.py` gains `--self-test` (34 assertions); every one
+was proven able to fail by breaking the thing it guards. ⛔ A redundant `'layout' not in props`
+guard was written and then REMOVED: its removal changed no assertion, because the write
+ordering already covered it — two overlapping fixes for one failure are unfalsifiable.
+
+**STILL OPEN (does not block this commit; blocks the 89-file migration commit).** Post-deploy,
+29 properties bind their per-tier probe value on the correct element and **34 do not**, in
+three distinct classes — all now visible, none silently passing:
+- **(a) The probe value is the wrong TYPE.** `PROBE_TIERS` is a length (`64px`) written into
+  `alignItems`/`flexDirection`/`flexWrap`/`justifyContent` (keywords), `order`/
+  `splitContentOrder` (integers), `rotation` (a transform) and `widthType` (an enum). Invalid
+  CSS cannot bind, so their positive control can NEVER pass. Pre-existing since D572's batch
+  mode; needs a per-property-type probe value.
+- **(b) The element is absent because the fixture instance has no content for it** —
+  `trust-bar.titleFontSize`, `quote.attributionFontSize`, `brand-strip.name*`,
+  `product-card.tagFontSize` etc. report target `None`. This is the 7-blocks problem one level
+  deeper: the BLOCK paints, the ELEMENT does not.
+- **(c) Genuine candidates for a real regression** — `sgs/container` and `sgs/cta-section`
+  emit no root `min-height` rule for an explicitly set value while `sgs/hero` does;
+  `sgs/heading` `fontSize` reads 16px against a set 64px. **Unproven either way** — these need
+  the before/after comparison read properly, and (a) and (b) must be cleared first so the
+  signal is not buried.
+
+**Canary housekeeping:** page 1593 ("F3 Oracle sgs-hero") stored a `fontSizeMobile` the
+migration removed; the oldshape audit correctly refused to deploy. Folded to
+`{"desktop":40,"mobile":28}` (the shape the theme codemod produces), verified by re-reading
+the stored content. ⚠ The remedy script that gate's own error message names,
+`scripts/wp-migrate-oldshape-blocks.js`, **does not exist in the repo** — a gate pointing at a
+missing tool.
+
 ## D573 — The fixture instrument was blind on 29 of 41 properties; the attr→CSS mapping is now DERIVED from source, and refuses rather than blanks [INCIDENT]
 
 **2026-08-11.** `capture-tier-fixture.py` derived each property's CSS name by
