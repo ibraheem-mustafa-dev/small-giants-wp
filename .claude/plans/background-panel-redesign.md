@@ -1,7 +1,7 @@
 ---
 doc_type: design
 title: "Background panel — native colour/gradient, four tabs, and the section-kind gate"
-status: SHIPPED 2026-08-11 — D1/D2/D3/D4/D5/D6 all built; live-verification pending on D4/D6 (deploy blocked by an unrelated Track 1b migration issue at session close). D579-D582, D585.
+status: SHIPPED 2026-08-11 — D1/D2/D3/D4/D5/D6 all built; live-verification pending on D4/D6 (deploy blocked by an unrelated Track 1b migration issue at session close). D579-D582. The universal-extension follow-up (Track A/B, colour/gradient census + gate) is CLOSED — see `go-track-1b-playful-hamster.md` Phase 4 "Background, part 2".
 date: 2026-08-11
 scope: SHARED WRAPPER (ContainerWrapperControls / BackgroundPanel) — container, cta-section, hero, trust-bar
 ---
@@ -58,37 +58,21 @@ scope: SHARED WRAPPER (ContainerWrapperControls / BackgroundPanel) — container
 > own status update for the corrected number (0 of 15 for the UNRELATED `image-controls.php`
 > mechanism; this doc's hero overlay is a separate mechanism entirely, now fixed).
 >
-> ### ⭐ NEXT SESSION — fresh-session prompt for the "background as universal extension" question
+> ### ✅ CLOSED 2026-08-11 (same day, later session) — "background as universal extension" question
 >
-> Raised by Bean at session close, deliberately NOT explored inline (this session was already
-> very long). Copy the block below to open a new session:
+> Was a fresh-session prompt for later exploration; answered same day instead. Worked through
+> `/brainstorming` design mode against `spec-35-capability-routing-doctrine.md` Parts 1-2. Full
+> record, including the live census, the two false-positive corrections, Bean's Track B scope
+> ruling, and the two shipped artefacts (the `gradients:true` completion fix + the
+> `survey-background-colour-support.py` census/gate): **`go-track-1b-playful-hamster.md` Phase 4,
+> "Background, part 2"** — that is now the canonical record, not this doc.
 >
-> > Invoke /autopilot before doing anything else.
-> >
-> > Read `.claude/plans/background-panel-redesign.md` in full (small, self-contained) — it's
-> > the background/overlay/gradient panel just shipped for hero/container/cta-section/trust-bar
-> > (D579-D582, D585 in `.claude/decisions.md`).
-> >
-> > Open question from Bean, to explore via `/brainstorming` (design mode, not straight to
-> > code): could the colour/gradient part of this system — or MORE of it, gated per-block —
-> > become a universal extension (the `render_block`-filter auto-injection pattern, mechanism
-> > (b) in `.claude/plans/spec-35-capability-routing-doctrine.md` Part 1) reachable by ANY
-> > block, not just the four container-family composites that own it today? Bean specifically
-> > pushed back on "just colour/gradient, nothing else" as too narrow a scope — asked whether
-> > OTHER pieces of the system could also be made available per-block via a gating/capability
-> > declaration, not a blanket yes/no per feature.
-> >
-> > Read `.claude/plans/spec-35-capability-routing-doctrine.md` Part 1 (the 5-mechanism decision
-> > procedure) and Part 2 (the legitimate-auto-injection tests) in full before proposing a shape —
-> > this is EXACTLY the kind of question that doctrine was built to answer, and the prior
-> > investigation already worked out: colour/gradient targets a block's own root directly (passes
-> > the tests cleanly), but image/video/parallax/ken-burns/SVG/responsive-art-direction assume a
-> > real box/grid layout (a `::before` media layer, a content band) that a single-element block
-> > like `sgs/text`/`sgs/button` doesn't have — so a capability-by-capability gating question, not
-> > an all-or-nothing one.
-> >
-> > Do NOT start coding until a design is agreed via `/brainstorming` + a `/strategic-plan` if it's
-> > more than a few files.
+> One-line answer: NOT a new `render_block` auto-injection mechanism. Colour/gradient for
+> single-element blocks was already mechanism (a) native WP support, already live on ~40 blocks —
+> the only real work was completing a 17-block gap and building the effect-verification gate. The
+> full image/video/overlay/parallax panel (mechanism (c)) stays scoped to blocks with a real
+> content box; census found no blocks that both need it and lack it after Bean's scope ruling on
+> `notice-banner`/`product-faq-item`.
 
 ## Context — what Bean found, testing the canary
 

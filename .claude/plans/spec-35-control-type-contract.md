@@ -625,7 +625,13 @@ its element's panel (TIER 1) regardless of this field.)*
    from each component's own source, exactly as `wrapsImage` already works for rule 18. This
    resolves indirect/shared-component cases transitively and catches lookalikes by semantic.
 8. **Open** — do gradient stops fall under this contract or their own? Settings vs native
-   `group="color"`?
+   `group="color"`? ⚠ Partially informed by a Bean ruling since this was written
+   (`background-panel-redesign.md` D3, 2026-08-11): native `GradientPicker` was deliberately KEPT
+   as-is for the 4 wrapper blocks — no per-stop theme-palette selection exists in Gutenberg core to
+   build against, and Bean ruled a bespoke stop editor "not worth the time" once shown the real
+   cost. So today, gradient stops do NOT route through this contract's canonical
+   `DesignTokenPicker` anywhere in the codebase — native only. The Settings-vs-Styles tab-placement
+   half of this question is still genuinely open.
 
 ## 2. LINK
 

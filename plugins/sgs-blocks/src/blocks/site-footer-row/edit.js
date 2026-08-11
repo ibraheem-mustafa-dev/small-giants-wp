@@ -20,6 +20,7 @@ import {
 	RowQuickInsertAppender,
 	RowScrollBehaviourControls,
 } from '../../components';
+import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveResponsiveTier } from '../../utils';
 
 // Promoted common footer elements (Spec 37 §3.5 / FR-37-34). Steering, not
@@ -283,6 +284,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<InspectorControls>
+				<ContainerWrapperControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					kind="layout"
+				/>
 				<PanelBody title={ __( 'Footer row', 'sgs-blocks' ) }>
 					{ rowSlot && (
 						<p className="components-base-control__help">

@@ -79,6 +79,7 @@
 		"html": false,
 		"color": {
 			"background": true,
+			"gradients": true,
 			"text": true,
 			"link": true,
 			"__experimentalSkipSerialization": true

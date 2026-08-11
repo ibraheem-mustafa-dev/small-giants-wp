@@ -23,6 +23,7 @@
 		"color": {
 			"text": true,
 			"background": true,
+			"gradients": true,
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},

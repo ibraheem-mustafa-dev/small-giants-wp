@@ -13,6 +13,14 @@ date: 2026-08-11
 supersedes: "spec-35-media-positioning-standard-design.md (b202f965) — same session, narrower framing, FOUR factual errors corrected here"
 ---
 
+> ⚠ **Status line correction (2026-08-11, later session still):** "the Part 6 automated
+> effect-verification gate (never built)" is now only true for `imageControls` specifically. A first
+> instance of that gate class shipped same day for a DIFFERENT capability —
+> `scripts/surveys/survey-background-colour-support.py --check`, wired into `prebuild`, verifies
+> native `color.background`/`gradients` support is both complete and actually rendered (not just
+> declared). Full record: `go-track-1b-playful-hamster.md` Phase 4 "Background, part 2". The
+> `imageControls`-specific gate this doctrine originally scoped is still not built.
+
 # Capability routing doctrine
 
 ## Context — what this is, and why it is not a media doc

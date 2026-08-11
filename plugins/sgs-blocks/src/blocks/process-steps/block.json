@@ -24,6 +24,7 @@
 		"html": false,
 		"color": {
 			"background": true,
+			"gradients": true,
 			"text": true,
 			"__experimentalSkipSerialization": true
 		},

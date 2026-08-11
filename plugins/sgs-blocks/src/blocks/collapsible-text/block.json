@@ -29,6 +29,7 @@
 		"color": {
 			"text": true,
 			"background": true,
+			"gradients": true,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {

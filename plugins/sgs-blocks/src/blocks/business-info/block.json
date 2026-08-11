@@ -182,6 +182,7 @@
 		"color": {
 			"text": true,
 			"background": true,
+			"gradients": true,
 			"link": true,
 			"__experimentalSkipSerialization": true
 		},
