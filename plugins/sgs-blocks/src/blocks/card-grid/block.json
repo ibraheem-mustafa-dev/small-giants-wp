@@ -477,12 +477,12 @@
 			"default": 0
 		},
 		"contentWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"maxWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"layout": {
 			"type": "string",
