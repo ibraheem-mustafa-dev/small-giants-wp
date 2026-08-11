@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D572 — S4 (theme pattern/template folding) promoted to `scripts/migrate-theme-tier-scalars.py`, proven against real git history; caught a real false-positive before it shipped [ROUTINE]
+
+**2026-08-11.** Bean's follow-up after D571 ("why not promote S4 by testing it against ANOTHER
+property that DID have real theme instances, instead of waiting?") — correct, and better than the
+deferral D571 recorded. `gridTemplateColumns` (pass 3a, commit `7b272d81`) folded 15 real theme
+values across 13 `patterns/*.php` files plus `templates/single.html`. That history is real ground
+truth sitting in git; no need to wait for a live case.
+
+**Built `plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py`** — a standalone script (JSON
+inside an HTML comment is a different parsing primitive from a schema file, so it doesn't share
+code with `migrate-tier-object.py`, but mirrors its triad and refuse-rather-than-guess
+philosophy exactly). Parses each `wp:sgs/*` block comment's attributes via
+`json.JSONDecoder().raw_decode()` — robust against nested objects (`spacing`/`padding`) without
+hand-rolling brace matching — folds the base value + Tablet/Mobile siblings into one object per
+`property_suffixes`-style tier keys, and writes back the minimal diff.
+
+**`--self-test` replays `7b272d81` itself**, not an invented fixture: the real pre-migration
+state of 4 real files, fed through the fold, must byte-match the real committed post-migration
+state. It does, across both `patterns/*.php` and `templates/*.html`.
+
+**A real bug found and fixed BEFORE this shipped, precisely because it was tested against real
+data instead of a synthetic guess:** the first version classified any scalar `prop` value in a
+theme file as a migration target, with no check against the block's own schema. Run for real
+against `gap`, it reported 7 false findings — every one an `sgs/nav-menu` instance in a header
+pattern. `sgs/nav-menu` declares `gap` as plain `"type":"string"`, never grew Tablet/Mobile
+siblings, and was never part of Spec 35's migration. Folding it would have wrapped a value into a
+shape the block's own schema doesn't declare — WordPress silently discards a value whose shape
+contradicts its declared type (the exact D338 mechanism), so `--apply` would have SILENTLY
+DELETED every nav-menu gap value on the live site. Fixed by gating every classification on
+`_object_typed_blocks(prop)` — a live scan confirming the specific block has already moved that
+attr to `"type":"object"` at the schema level — with a dedicated self-test regression control
+naming this exact case, so it can never silently reappear.
+
+**Verification:** `--self-test` (7 assertions: 4 real-commit byte-matches, 3 negative controls
+including the nav-menu regression) all pass. `--check` re-run clean against the live theme tree
+for all five properties migrated so far (`gap`, `gridTemplateColumns`, `gridTemplateRows`,
+`maxWidth`, `contentWidth`).
+
+Full documentation: `plugins/sgs-blocks/CLAUDE.md` §"S4 (theme pattern/template folding)".
+LEDGER B1 updated — all four shapes (S1-S4) are now automated; S3 remains the sole deliberate
+exception, for the reasons recorded in D571.
+
 ## D571 — `migrate-tier-object.py` survey now classifies edit.js/render.php state, not just counts; S2 gets a proven auto-fixer, S3 stays detect-only by design [ROUTINE]
 
 **2026-08-11.** Bean's question after D570 ("weren't these mechanical? what took so long?")

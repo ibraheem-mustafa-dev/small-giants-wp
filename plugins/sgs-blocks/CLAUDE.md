@@ -148,6 +148,45 @@ different, stricter style config — caught only because `git status` was checke
 Python code now handles its own re-indentation (dedent-by-one-level + explicit newline
 normalisation) precisely so it never needs an external formatter pass.
 
+### S4 (theme pattern/template folding) — `scripts/migrate-theme-tier-scalars.py` (D571)
+
+The FOURTH place a flat scalar can hide, alongside block.json (S1)/edit.js (S2)/render.php (S3):
+hand-authored `wp:sgs/*` block comments in `theme/sgs-theme/{patterns,templates,parts}`. Same
+triad, same refuse-rather-than-guess discipline, as a standalone script (different parsing
+primitives — JSON inside an HTML comment, not a schema file, so it doesn't share code with
+`migrate-tier-object.py`, but the shape philosophy is identical on purpose):
+
+```bash
+python plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py --property <prop> --survey
+python plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py --property <prop> --fix --apply
+python plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py --property <prop> --check
+python plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py --self-test    # 7 assertions
+```
+
+**Full triad, auto-applied — but gated on the block's OWN schema, not just the theme text.** A
+scalar `"prop":"V"` in a theme file is only a migration target when that block's `block.json`
+has ALREADY moved `prop` to `"type":"object"` (S1 runs before S4, by design). Parses each
+`wp:sgs/*` comment's JSON via `json.JSONDecoder().raw_decode()` (robust against nested objects
+like `spacing`/`padding` — no hand-rolled brace matching), folds the base value + any Tablet/
+Mobile siblings into one object, drops the orphan sibling keys, and writes back the minimal JSON
+diff so everything else in the attributes object stays byte-identical.
+
+**Proven against REAL git history, not an invented fixture (D571, 2026-08-11):** `--self-test`
+replays commit `7b272d81` (pass 3a's real theme fold) — the actual pre-migration state of 4 real
+files (3 `patterns/*.php` + `templates/single.html`), fed through the fold, must byte-match the
+actual committed post-migration state. It does.
+
+⛔ **A real false-positive this exact ground-truth testing caught before shipping:** the first
+version classified ANY scalar value for `prop` as a migration target, with no cross-check against
+the block's own schema. Run for real against `gap`, it reported **7 false findings** on
+`sgs/nav-menu` instances in header patterns — but `sgs/nav-menu` declares `gap` as plain
+`"type":"string"`, never grew Tablet/Mobile siblings, and was never part of this migration at
+all. Folding it would have wrapped a value into a shape the block's own schema doesn't declare,
+and WordPress would have silently discarded it on load — the exact "quiet loss" this whole
+toolchain exists to prevent. Fixed by gating every classification on
+`_object_typed_blocks(prop)` (a live scan of every block.json), with a dedicated self-test
+regression control so this specific case can never silently regress.
+
 The `--experimental-modules` flag is required for `viewScriptModule` in block.json. Check if stabilised in the installed @wordpress/scripts version.
 
 The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — dynamic blocks won't render without this.

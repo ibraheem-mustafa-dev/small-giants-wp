@@ -144,11 +144,13 @@ Target: `~/.claude/plans/go-track-1b-playful-hamster.md` §Phase 1.6 and its est
   is no `--fix`: what matters is what the surrounding code DOES with the value afterwards
   (`trim()`? cast? `is_array()`?) — exactly where D569/D570's real regressions lived. Auto-writing
   this risks reintroducing that exact bug class. Stays a flagged judgement call.
-- **S4** theme pattern/template scalar → object, folding orphan siblings in — a working codemod
-  exists at `scratchpad/migrate_theme_tier_scalars.py` (handled 49 values, then 15 more,
-  converging to 0 on a second run both times) but is **still unpromoted** — 0 theme instances
-  existed for `gridTemplateRows` so pass 3b had nothing to prove it against. Promote on the next
-  pass that actually has theme instances to migrate.
+- **S4** theme pattern/template scalar → object, folding orphan siblings in — **NOW PROMOTED
+  (D571).** `scripts/migrate-theme-tier-scalars.py`, full triad, proven against REAL git history
+  (replays pass 3a's actual commit `7b272d81` byte-for-byte, not an invented fixture) rather than
+  gridTemplateRows's own (empty) instances. Caught a real bug in the process: a scalar `prop` in
+  theme JSON is only a migration target when the block's OWN block.json has already moved that
+  attr to `"type":"object"` — without that gate it reported 7 false findings on `sgs/nav-menu`'s
+  `gap` (never tiered, plain string, would have been silently discarded by WP if folded).
 ⭐ Full documentation of the triad + why S3 stays manual: `plugins/sgs-blocks/CLAUDE.md` §"Tier-
 object migration triad".
 
