@@ -1,5 +1,122 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D581 — Background/overlay panel: root render bug fixed, a CSS collision fixed, native colour support removed (conflict), D1-D6 of the redesign shipped [INCIDENT]
+
+**2026-08-11, this track. Combined into one entry — see `.claude/plans/background-panel-redesign.md` for
+full narrative detail; kept short here because decisions.md is a shared, concurrently-written file
+and a prior version of this entry was already lost once to a write collision with Track 1b.**
+
+1. **Root cause of "the gradient controls don't work":** `hero/render.php` never read
+   `overlayGradient`/`overlayGradientFrom/To/Angle` at all — fixed, mirrors the shared wrapper's
+   own pattern. Also ungated the overlay span on colour/gradient being set (previously required a
+   background image/video/SVG to exist first) — caught a real regression before shipping: the
+   naive copy of the wrapper's ungate condition used hero's OWN default (`'text'`, always truthy)
+   instead of the raw undefaulted value, which would have painted an opaque layer over every hero
+   with no configured overlay.
+2. **CSS specificity collision:** `.sgs-container > *:not(.sgs-container__overlay)` (the shared
+   wrapper's generic child-stacking rule) collapsed hero's and cta-section's own private overlay
+   spans (`.sgs-hero__overlay`, `.sgs-cta-section__overlay`) to 0×0 — correct CSS, invisible
+   anyway. Fixed by naming both classes in the exclusion.
+3. **Native `supports.color` background/gradients REMOVED** from hero/container/cta-section/
+   trust-bar (`text` support kept) — it was live and silently winning a conflict with this
+   block's own overlay mechanism (found by Bean testing directly). Hero's `has-background` class
+   toggle re-keyed to the overlay's own attrs.
+4. **Background panel redesign D1-D6, all shipped:** D1 (swatch+popover in a bordered
+   `Card`/`CardBody`, above the tabs) · D2 (Anim tab rename) · D3 (native `GradientPicker` kept —
+   Bean ruled a bespoke palette-per-stop editor not worth building, no WP extension point exists)
+   · D5 (both opacity controls removed end-to-end, control+attr+render, 6 blocks + shared wrapper
+   + hero's private copy + editor CSS/JS; only 3 QA-probe pages had non-default values, migrated
+   via scoped WP-CLI, no client content affected) · D4 (parallax — was fully wired except the one
+   CSS declaration that turns it on; fixed in 3 places: wrapper image, wrapper video [NEW,
+   `position:fixed` since `background-attachment` doesn't apply to `<video>`], hero's own private
+   image+video copy [same bug independently, `<img>` has the same no-op problem]) · D6 (removed
+   the section-kind gate entirely — background/overlay/parallax/ken-burns/SVG now read
+   universally in the shared wrapper; safe by construction since undeclared attrs are never
+   passed by WordPress).
+5. **Also removed:** three redundant Settings-tab media-picker panels on hero, duplicating what
+   the Styles-tab Background panel already provides for the same attributes.
+6. **Deferred to a fresh session (Bean's call):** whether colour/gradient (or more, gated
+   per-block) should become a universal `render_block`-injection extension reachable by
+   single-element blocks like `sgs/text`/`sgs/button`. Handoff prompt is in
+   `background-panel-redesign.md`'s status box.
+7. **Operational lesson:** a hand-deploy of a single fixed file (bypassing the full pipeline)
+   did not take effect for ~30 minutes despite every plausible cache layer showing a genuine
+   miss — this plugin's CSS-inline cache gates on `SGS_BLOCKS_VERSION + filemtime(sgs-blocks.php)`,
+   which only changes on a FULL deploy. A full `build-deploy.py` run resolved it immediately.
+   Don't hand-deploy a single file as a time-pressure shortcut.
+8. **Second operational lesson, earned writing THIS entry:** decisions.md is a shared file with
+   no write coordination between concurrent tracks — a 5-entry version of this writeup was lost
+   whole to a same-second collision with Track 1b's own commits. Prefer ONE combined entry over
+   several when working concurrently with another track, and re-read the file immediately before
+   every write, even if read minutes earlier.
+
+## D580 — flat-to-object migration CLOSES (box-tier pass): contentBandPadding + 3 block-private box properties [ROUTINE]
+
+**2026-08-11.** Shipped the real remaining scope the previous session's plan mis-scoped as
+"font-size families" (that was already done — verified directly against every block's `block.json`
+before starting). The actual gap: 4 properties still storing a 4-sided box **per device tier** as 3
+separate sibling attributes instead of 1 nested object — a 5th shape the original 6-pass plan never
+named. `contentPadding` (hero), `pillPadding` (option-picker), `padding` (label) — all block-private
+— plus `contentBandPadding` (container, cta-section, hero, physics-canvas, site-footer, site-header,
+trust-bar), the one property touching the shared wrapper. Same target shape as the proven
+gap/maxWidth/gridTemplateColumns/columns precedent (D563/D568/D569/D570/D578): `{desktop, tablet,
+mobile}`, each tier itself the existing `{top,right,bottom,left}` box.
+
+**Shared wrapper** (`class-sgs-container-wrapper.php`): `contentBandPadding` now reads via
+`sgs_responsive_normalise_object( $attributes['contentBandPadding'] ?? null, true )` — identical
+calling convention to the existing `columns`/`minHeight` reads, `is_box=true` so a legacy un-migrated
+flat-box instance is treated as the desktop tier rather than discarded.
+
+**Verification, not self-assertion.** Live-editor round-trip proven on `container`/`contentBandPadding`
+(set via `wp.data.dispatch`, saved, reloaded, confirmed nested stored shape). All 10 (block, property)
+pairs then probed via REST-injected `post_content` on one shared tier-fixture page (post 2270,
+sandybrown) and measured on the live frontend at desktop (1440px) and mobile (390px) — every value
+matched exactly. Two blocks (option-picker, hero) initially "failed" a naive selector check; both were
+corrected against the real element `render.php` targets (`.sgs-option-picker__pill`,
+`.sgs-hero__content`) before concluding pass — the querySelector-first-match trap, again.
+
+**Post-migration survey re-run found ONE unrelated residual, correctly out of scope:**
+`sgs/team-member`'s `photo`/`photoTablet`/`photoMobile` — a `cascading_value`-hint media
+art-direction attribute (same shape as the already-documented `avatarMedia`/`decorMedia` tier
+pattern), not a box-padding property. Not touched this session; flagged, not silently dropped.
+`card-grid`'s `maxWidth`/`contentWidth` residual from pass 2 (D568) also remains, unrelated,
+unscheduled.
+
+**Operational incidents this session, captured because they will recur on any shared-worktree
+session and none of the existing STOP entries covered them:**
+
+1. **A shared checkout's branch can change under you mid-session with no signal but `git status`
+   showing unfamiliar diffs.** A concurrent session (`feat/extension-opt-in-hover-blocklink`, D579)
+   checked out its own branch in this same working directory partway through this session, silently
+   carrying this session's uncommitted work along with it. `git branch --show-current` had not been
+   re-checked since session start. Caught only because the pre-commit gate's file list looked wrong;
+   `main` itself was untouched throughout, so the recovery (`git checkout main`) was safe and lossless
+   — but it could easily not have been. **Extends STOP-CATALOGUE §C: re-check branch immediately
+   before ANY commit AND immediately before trusting `git status` output after a long tool-heavy
+   stretch, not just before the commit itself.**
+2. **`git commit -m "..." -- <pathspec>` re-reads the CURRENT working tree at commit time, not
+   whatever was last `git add`-ed.** Assumed (wrongly) that an earlier `git add` locked in a
+   snapshot immune to further edits. With a concurrent session actively rewriting `hero/edit.js` for
+   unrelated background-panel work, two consecutive commit attempts picked up two different live
+   states of that file, and the visual-diff gate's `source_sha` staleness check caught both —
+   correctly refusing to let a report describe content that had since moved. The fix in the moment:
+   compute the SHA from the INDEX (`git diff --cached`), not the working tree, immediately before
+   the commit, in the same shell step. **The visual-diff gate's per-commit `source_sha` binding did
+   exactly the job D-corrected-instrument work it was built for (2026-08-07) — it is not a fossil
+   check, it is load-bearing on a genuinely busy shared repo.**
+3. **A test/fixture page published to the shared canary can look like a schema regression to a
+   different session's deploy-time content audit.** Publishing post 2270 with the new nested
+   `contentBandPadding` shape ahead of committing meant a concurrent session's local (pre-migration)
+   schema saw that stored content as "stranded" during its own deploy pre-flight. Resolved by
+   finishing the commit promptly so `main` matched the live canary state; no data was lost, but the
+   sequencing (deploy before commit, to prove the round-trip, is itself normal practice per the
+   `columns` D578 precedent) creates a real cross-track collision window worth naming.
+
+None of these three blocked the work — all were caught by existing structural defences (the
+pre-commit gate, the visual-diff SHA check) or resolved with Bean's explicit sign-off at each
+decision point, per the incident-response protocol. Recorded so the next session recognises the
+pattern immediately rather than re-diagnosing it.
+
 ## D579 — Phase 2.1 opt-in inversion: hover + block-link flipped (D551 executed); animation/clickEffects/parallax deliberately NOT flipped [ROUTINE]
 
 **2026-08-11.** Executed D551's hover/block-link ruling in code, then evaluated whether the same

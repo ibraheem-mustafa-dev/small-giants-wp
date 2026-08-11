@@ -4,17 +4,19 @@ title: "Flat tier siblings → tier objects: the migration sequencing"
 spec_ref: .claude/plans/spec-35-control-type-contract.md §12 (governing) · D549 · D552
 date: 2026-08-10
 updated: 2026-08-11
-status: ACTIVE — signed off. P1 + P2 built and green. Passes 1-4 of 6 CLOSED 2026-08-11 — Pass 1
-  `gap` (D563), Pass 2 `maxWidth`+`contentWidth` (D568), Pass 3 `gridTemplateColumns`+
-  `gridTemplateRows` (D569/D570), Pass 4 `columns` (D578) — the last pass touching the shared
-  wrapper. ⛔ **"Pass 5 = font-size families" is FALSE — verified directly against every block's
-  `block.json` 2026-08-11 (later same day): every font-size family is already object-shaped,
-  folded in earlier. The real remaining work is 4 BOX-shaped properties this 6-pass plan never
-  named** (`contentBandPadding` [7 blocks, shared wrapper], `contentPadding`, `pillPadding`,
-  `padding` on `label`) — a genuinely different shape (a 4-side box per tier, not a scalar per
-  tier) that `migrate-tier-object.py`'s S1 classifier currently misreports as "0 to migrate".
-  Full detail + orchestration plan: `.claude/LEDGER.md`. ⛔ Read "Per-pass definition of done"
-  items 0a-0d FIRST — they recur on every remaining pass.
+status: COMPLETE — 2026-08-11 (D580). The original 6-pass plan never named the real terminal
+  shape (a 4-side box per tier, not a scalar per tier), but every property that shape covers is
+  now migrated: `gap` (D563), `maxWidth`+`contentWidth` (D568), `gridTemplateColumns`+
+  `gridTemplateRows` (D569/D570), `columns` (D578), and the box-tier close —
+  `contentBandPadding`/`contentPadding`/`pillPadding`/`padding` (D580). Font-size families were
+  never part of this migration (already object-shaped, folded in an earlier unrelated batch —
+  verified 2026-08-11). Post-migration survey re-run found exactly 1 unrelated residual
+  (`sgs/team-member.photo`, a media art-direction tier, different shape, different migration —
+  not scheduled here) plus the known `card-grid.maxWidth`/`contentWidth` string residual from
+  Pass 2 (D568, unrelated, unscheduled). `migrate-tier-object.py`'s box-typed-but-flat-tier
+  classifier gap (documented below) was hand-worked around for this migration's 10-block scope
+  rather than fixed generically — revisit only if a 6th shape surfaces. Full detail:
+  `.claude/LEDGER.md` + `.claude/decisions.md` D580.
 ---
 
 # Flat → object migration — how it happens

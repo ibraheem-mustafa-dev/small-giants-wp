@@ -410,18 +410,18 @@ use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 
 ## PART M — Implementation status (living; updated 2026-08-11)
 
-> ### Phase 1.6 passes 1-4 of 6 — CLOSED 2026-08-11
+> ### Flat-to-object migration — COMPLETE 2026-08-11 (D580)
 >
 > `gap` (D563, `fa638cea`+`0cd1c314`), `maxWidth`+`contentWidth` (D568), `gridTemplateColumns`+
 > `gridTemplateRows` (D569/D570), `columns` (D578) — all four properties that route through
-> `class-sgs-container-wrapper.php`, so this closes the shared-wrapper portion of the migration.
-> Per-block evidence in `reports/visual-diff/*-2026-08-11.md`. ⛔ **"Passes 5-6 = font-size
-> families + long tail" is FALSE, corrected 2026-08-11 (later same day): every font-size family
-> is already object-shaped, verified directly against `block.json`.** The real remaining work is
-> a 5th SHAPE this migration's own tooling doesn't yet classify correctly — 4 BOX-per-tier
-> properties (`contentBandPadding` [7 blocks, shared wrapper], `contentPadding`, `pillPadding`,
-> `padding`) — programme detail + orchestration plan lives in `.claude/LEDGER.md`. Do not
-> duplicate that content here.
+> `class-sgs-container-wrapper.php`. ⛔ **"Passes 5-6 = font-size families + long tail" was FALSE**
+> — every font-size family was already object-shaped, verified directly against `block.json`. The
+> real remaining work turned out to be a 5th SHAPE this migration's tooling didn't classify
+> correctly — 4 BOX-per-tier properties (`contentBandPadding` [7 blocks, shared wrapper],
+> `contentPadding`, `pillPadding`, `padding`) — closed same-session (D580). Per-block evidence in
+> `reports/visual-diff/*-2026-08-11.md`. Post-close survey re-run found exactly 1 unrelated
+> residual (`sgs/team-member.photo`, a media art-direction tier — different shape, not scheduled).
+> Full detail: `.claude/LEDGER.md` + `decisions.md` D580. Do not duplicate that content here.
 >
 > **One rule from that pass is a STANDARD-level rule and belongs in this document, not only in the
 > plans:** a responsive family's **control primitive must match its STORAGE SHAPE**, and the two
