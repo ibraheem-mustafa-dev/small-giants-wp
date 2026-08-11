@@ -189,7 +189,7 @@ never "out of scope" (STOP-29).
 
 ---
 
-## Task 2 — Make `build-deploy.py` verify the DEPLOYED schema, not just HTTP 200
+## Task 2 — ✅ DONE this session (`86ba56a0` + `410dba41`). Kept for context only.
 
 **What:** after deploying, ask WordPress what schema it actually registered and compare against
 local `build/`. Fail the deploy on mismatch.
