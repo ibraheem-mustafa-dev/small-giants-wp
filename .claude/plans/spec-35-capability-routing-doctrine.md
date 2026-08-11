@@ -522,6 +522,33 @@ established pattern, not a carve-out.
 - The 2 known-good paths reproduce their rendered CSS **byte-for-byte** post-conversion.
 - Per-block visual-diff report bound to `source_sha` (existing gate already enforces this).
 
+## ⛔ Deploying from a worktree onto a SHARED canary — the D576 incident
+
+**Caused by this track, 2026-08-11. Read before any verification deploy.**
+
+To verify the gradient work I deployed from an isolated worktree — chosen deliberately, because the
+main tree held ~90 staged files belonging to a concurrent session and deploying those would have
+shipped someone else's unfinished work. The worktree sat at `HEAD` + my 4 files.
+
+**The failure:** `HEAD` predated the concurrent session's 41-property migration, so the deployed
+`block.json` files carried the **pre-migration schema**. WordPress then discarded every migrated
+per-device attribute *before any block code ran* — the values were gone upstream, so no amount of PHP
+debugging on their side could have found it. It became **D576** for them, cost real diagnostic time,
+and contributed to their needing a visual-diff gate bypass (D577).
+
+**The rule:** the canary is **shared, single, and stateful**. A worktree gives you an isolated *tree*;
+it does **not** give you an isolated *deploy target*. Deploying `HEAD`+mine is not neutral — it is an
+active rollback of anything committed or staged elsewhere since that `HEAD`.
+
+Before any verification deploy while another track is live:
+1. **Check whether another session is mid-flight** (`git status` for foreign staged files; file mtimes).
+2. If yes, the deploy is a **cross-track action** — it needs their state included, or their agreement,
+   or it waits. `--payload` scopes the *dirty gate*; it does **not** scope what the tarball overwrites.
+3. If you deploy anyway, **say so to the other track immediately** — a silent schema rollback presents
+   as an unrelated, unfalsifiable bug at the far end.
+
+Sibling rule: `a-shared-db-reseed-is-a-cross-track-action`. This is the same shape, one layer down.
+
 ## Provenance
 
 Council 2026-08-11: 5 raters (code-path trace, quote verification, SGS-architecture adversary,
