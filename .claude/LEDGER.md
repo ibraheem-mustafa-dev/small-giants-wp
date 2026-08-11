@@ -9,7 +9,7 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Where 2026-08-11 (session 5) left things — Phase 0 is done bar one item:**
+**Where 2026-08-11 (session 5) left things — Phase 0 is COMPLETE:**
 
 - **Most of what was "open" was already finished.** Of the three open Phase 0 questions, one had been
   answered by code **two days earlier** while the notes still called it a blocker holding up a whole
@@ -27,14 +27,16 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
   it had matched an attribute name mentioned in a *comment* and blamed the nearest control. I checked
   each one by reading it before changing anything. That same tool feeds another planned task, which
   is exactly why that task is a decision rather than a job.
-- **One thing you should know about, and it's bigger than today's work.** The safety checks that run
-  before every commit — the visual check, the secrets scanner, several others — exist **only on this
-  machine**. They were never committed to the project. Anyone else cloning it, or any second copy of
-  the folder, gets none of them and would think the short 71-line file they *can* see is the whole
-  thing. I have not touched it: merging the two properly needs your say-so and a careful read, not a
-  copy-paste. It's written up as D562.
-- **The last Phase 0 item (0d) is deferred to its own session, as you asked** — it edits 56 files at
-  once, and the tree still holds last session's uncommitted work that it would tangle with.
+- **The safety checks now exist for everyone, not just this machine.** The visual check, the secrets
+  scanner and four others lived only in an uncommitted file here — anyone else cloning the project got
+  none of them. Now committed. Reading them across turned up **three faults that only ever hurt other
+  machines**, the worst being a check that would have reported PASS on a genuine failure. Fixed.
+- **The last Phase 0 item is done.** Every WordPress building block this project borrows is marked
+  "experimental" by WordPress — meaning they can rename or delete it without warning, which would have
+  broken 50 files at once. All 115 uses now go through one small file, so that becomes a one-line fix.
+- **My own tool caught my own miscount.** I'd counted 47 files by hand; the tool found 50. And the
+  first version of the tool damaged a comment while rewriting a file — caught by the build, fixed, and
+  the tool now refuses to save anything it can't read back.
 
 **Where 2026-08-11 (session 4) left things:**
 
@@ -68,35 +70,40 @@ recorded in the commit messages + `decisions.md` D546-D559.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D562**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D565**.
 
-### Shipped 2026-08-11 session 5 — Phase 0 CLOSED except 0d
+### ✅ PHASE 0 IS CLOSED — 2026-08-11 session 5
 
 | What | Commit |
 |---|---|
 | 0b ruled + 0c corrected + §14 conformance measured (D560/D561) | `7c396b61` |
 | 3 raw-`TextControl` radius boxes → `UnitControl` + `check-editor-only.py` (D562) | `9fda666f` |
+| SGS commit gates version-controlled + 3 portability defects (D564) | `17e5bbf6` |
+| **0d — `__experimental*` compat boundary, migrated + gated (D565)** | `5d84324b` |
 
-**Phase 0 is done bar 0d.** Two of its three open items turned out to be decisions, not builds, and
-**0c was already shipped on 2026-08-09 while the record called it a blocker on Phase 4** — that is
-now corrected in place and **Phase 4's Background item is UNBLOCKED**.
+**All four Phase 0 items are done.** 0a measured, 0b ruled, 0c closed (it had already shipped), 0d
+built, migrated and gated. Phase 4's Background item is UNBLOCKED.
 
-⛔ **Two measurement lessons, both earned here:**
-- **A survey leg is a candidate list, not a defect list.** §14's census named 5 violations; **2 were
-  false positives** of the comment-match class (`button`, `product-card` — both already canonical,
-  the scanner having attributed an attribute name from a nearby *comment* to the next control it
-  saw). The approved scope was "fix the 5" and was corrected to 3 *before* any edit ran. Same defect
-  already known in the LENGTH survey — which is why 3.2a is a decision, not a build.
-- **A `⛔ Open` in a decision entry has a shelf life.** Close it in the commit that closes the code,
-  or it becomes a false blocker that costs a planned session.
+⛔ **A D-NUMBER COLLISION HAPPENED — read this before assuming numbering is safe.** A co-active
+session took **D563** for pass 1 while this work was in flight, so the hook restructure became D564
+and 0d became D565, and every in-code citation had to be renumbered. **On a shared `main`, re-run the
+D-ceiling command immediately before writing an entry, not at the start of the work.**
 
-⛔ **NEW, and bigger than the work that found it: the enforcing pre-commit hook is UNTRACKED.**
-`core.hooksPath` → `.git/hooks`, whose `pre-commit` is **316 lines** carrying the visual-diff gate,
-gitleaks, the wp-* pre-merge gate, cheat-gate, F5 and F6 — **none of it in git**. The *tracked*
-`.githooks/pre-commit` is **71 lines**, carries none of them, and calls itself "activated repo-wide".
-So every one of those gates exists **only in this clone**; a fresh clone or second worktree commits
-with none of them. Flagged, not fixed (D562) — needs its own design gate, and ⚠ must not be fixed by
-copying the 316-line hook across unread.
+### Phase 0 detail — the two measurement lessons
+
+⛔ **A survey leg is a candidate list, not a defect list.** §14's census named 5 violations; **2 were
+false positives** of the comment-match class (`button`, `product-card` — both already canonical, the
+scanner having attributed an attribute name from a nearby *comment* to the next control it saw). The
+approved scope was "fix the 5" and was corrected to 3 *before* any edit ran. Same defect already known
+in the LENGTH survey — which is why 3.2a is a decision, not a build.
+
+⛔ **A `⛔ Open` in a decision entry has a shelf life.** Close it in the commit that closes the code, or
+it becomes a false blocker that costs a planned session (0c cost one).
+
+⛔ **A codemod must check its own output.** The 0d transform split an import on commas and shredded a
+comma-bearing comment into bare code — a SyntaxError written to disk, caught only by the build. `--fix`
+now refuses to write anything `@babel/parser` cannot read back, and a regression fixture asserts the
+output PARSES; every string assertion had passed on the broken version.
 
 ### Shipped 2026-08-11 session 4
 
@@ -192,18 +199,16 @@ it is a decision, not a build.
 ### Programme scope — done vs remaining (measured 2026-08-11, re-derive rather than trust)
 
 **Phase level** (`go-track-1b-playful-hamster.md`): of 9 phases, **2 CLOSED** (Phase 1 the responsive
-model; **Phase 0 as of 2026-08-11, bar item 0d**), **1 IN PROGRESS** (1.6, this migration), **6
-OPEN** — 0d, 1.5, 2.1, 2.2/3.2b, 3.2a, 3.3, 4.
+model; **Phase 0 FULLY, as of 2026-08-11**), **1 IN PROGRESS** (1.6, this migration), **5 OPEN** —
+1.5, 2.1, 2.2/3.2b, 3.2a, 3.3, 4.
 
 **Phase 4 is no longer blocked** — 0c was its blocker and was already shipped (D561). 3.3 is still
 blocked on replacing a hardcoded 16-name tuple, and 3.2a is ⛔ **a decision, not a build** — its
 input has a measured false-positive rate, now confirmed a second time by §14's own census.
 
-**0d is the only Phase 0 item left** and is scoped, measured and ready: the `__experimental*` compat
-boundary — 56 files, ~113 import lines, 10 component symbols (full breakdown + the three
-NOT-in-scope symbols + the two-package trap are in the plan's 0d box). Bean ruled **barrel AND
-import migration**, deferred to its own session **on a clean tree** because a tree-wide rewrite would
-contaminate the 4 `edit.js` files pass 1 still needs to commit.
+**0d shipped** (D565): 115 imports across **50** files (not the 47 a line-anchored grep claimed — the
+detector caught its own author's undercount), 10 symbols, now behind `src/components/primitives/`
+with the gate wired into `prebuild`.
 
 **Phase 1.6 (the migration) — roughly 12% done.** `npm run survey:responsive-shape` at HEAD:
 
@@ -293,8 +298,14 @@ alone account for **~56 of the 141**, and pass 4 (`columns`) another 21.
   of its 21, so most still need real captures — but **triage them first**; any that turn out
   editor-only need no report at all. ⛔ Do not stretch the branch to cover them: it refuses
   `block.json` deliberately, because attribute data moves pixels.
-- **0d (Phase 0's last item) is deferred to a CLEAN tree** — it rewrites imports across 56 files and
-  would tangle with pass 1's uncommitted 4 `edit.js` files. Sequence: T1 lands → 0d.
+- ~~0d deferred~~ ✅ **DONE** — pass 1 landed (`fa638cea`, co-active session), the tree went clean,
+  and 0d shipped the same session. 115 imports across 50 files now route through
+  `src/components/primitives/`, with `check:experimental-imports` wired into `prebuild`.
+- ⚠ **A line-keyed baseline is a live hazard for any future codemod.** `inspector-scan`'s
+  `08-raw-url-link` keys entries on `file:LINE`, so a 2-line import shift turned an accepted
+  exemption into a gating finding. Re-anchored (D565) with a `_meta` warning. **Passes 2-6 of the
+  tier-object migration will hit this again** — expect it, and re-anchor only when nothing but the
+  line moved.
 
 ## Open — carried, not ours to close
 
