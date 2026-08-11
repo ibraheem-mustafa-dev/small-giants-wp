@@ -193,25 +193,85 @@ def collect(cap: dict, block: str, variant: str) -> dict:
 
 
 def tier_binds(a_meas: dict, probe_tiers: dict,
-               prop_name: str | None = None) -> tuple[bool, list[str]]:
+               prop_name: str | None = None,
+               d_meas: dict | None = None) -> tuple[bool, list[str]]:
     """Does the explicitly-set value actually bind, at each viewport's own tier?
 
     This is what makes the after-side control POSITIVE rather than vacuous:
     identical numbers prove nothing if nothing could ever have moved them.
+
+    TWO acceptance paths, because the question is "can this attribute move the
+    rendered value?" — not "does the authored string equal the computed one":
+
+      1. EXACT — the authored value appears in the computed value. Holds for
+         any property whose authored form survives computation (`64px`).
+
+      2. MOVED — the probe variant's computed value DIFFERS from the default
+         variant's at the same viewport. ⚠ This is not a weaker test, it is the
+         RIGHT test for every property whose authored form CANNOT survive
+         computation, and there are many: `rotation: 64` renders
+         `matrix(0.438371, 0.898794, …)`; `widthType: 'full'` renders `1200px`;
+         `positionX: 64` (a percentage) renders `768px`; `splitContentOrder:
+         'media-first'` renders `order: 0`. Every one of those binds perfectly
+         and no authored string could ever match. Scoring them "does NOT bind"
+         reported a fault in the CODE that was really a limit of the COMPARISON.
+
+    The two fixture variants are byte-identical except for the probed
+    properties, so a difference between them IS attributable to the property —
+    which is what makes path 2 sound rather than merely convenient. Path 2
+    needs the default-variant measurement; without it only path 1 applies, and
+    the note says so rather than silently passing.
     """
     notes, ok = [], True
+    d_meas = d_meas or {}
     for vp, m in sorted(a_meas.items()):
         if not m or not m.get('found'):
             ok = False
             notes.append(f'{vp}: not found')
             continue
-        want = probe_tiers.get(vp)
+        # PER-PROPERTY expected value first. `probe_tiers` is ONE length-shaped
+        # dict ('64px'/'32px'/'8px') applied to every property in the batch —
+        # correct only where the value IS a length. Since the fixture began
+        # deriving a type-correct probe per property (a keyword for
+        # `alignItems`, a bare number for `order`), comparing those against
+        # '64px' reported "does NOT bind" for properties that bound perfectly.
+        # Falls back to the flat dict for pre-existing captures that predate
+        # per-property values, so an older measurements file still reads the
+        # same as it did before.
+        per_prop = (m.get('probe_values') or {}).get(prop_name) if prop_name else None
+        want = (per_prop or {}).get(vp) if per_prop else probe_tiers.get(vp)
         got_outer = node_prop(m.get('outer') or {}, prop_name)
         got_inner = node_prop(m.get('inner') or {}, prop_name)
-        hit = want and (want in str(got_outer) or want in str(got_inner))
+        # ⚠ `want` is str(...)-ed, not assumed to be a string. Since the fixture
+        # began deriving type-correct probes it can be an INT (`order: 64`,
+        # `rotation: 64`), and `int in str` raises TypeError — which would abort
+        # the whole report run rather than mis-score one property.
+        want_s = '' if want is None else str(want)
+        exact = bool(want_s) and (want_s in str(got_outer) or want_s in str(got_inner))
+
+        # Path 2 — did setting the property MOVE the rendered value?
+        moved, how = False, 'exact'
+        dm = d_meas.get(vp) if d_meas else None
+        if not exact and dm and dm.get('found'):
+            d_outer = node_prop(dm.get('outer') or {}, prop_name)
+            d_inner = node_prop(dm.get('inner') or {}, prop_name)
+            # Compared against the DEFAULT variant of the same block at the same
+            # viewport. An empty probe reading is never a move: '' is what an
+            # unresolvable measurement looks like, and treating it as evidence
+            # is the blank-reading failure this pipeline exists to prevent.
+            if str(got_outer) and str(got_outer) != str(d_outer):
+                moved, how = True, f'moved from `{d_outer or "(empty)"}`'
+            elif str(got_inner) and str(got_inner) != str(d_inner):
+                moved, how = True, f'inner moved from `{d_inner or "(empty)"}`'
+
+        hit = exact or moved
+        why = ('  ✅ binds' if exact else
+               f'  ✅ binds ({how} — authored form cannot survive computation)'
+               if moved else
+               '  ⚠ does NOT bind' + ('' if dm else ' (no default-variant measurement '
+                                      'to compare against — exact match only)'))
         notes.append(f'{vp}: set `{want}` → outer `{got_outer or "(empty)"}`'
-                     + (f', inner `{got_inner}`' if m.get('inner') else '')
-                     + ('  ✅ binds' if hit else '  ⚠ does NOT bind'))
+                     + (f', inner `{got_inner}`' if m.get('inner') else '') + why)
         ok = ok and bool(hit)
     return ok, notes
 
@@ -375,7 +435,8 @@ def generate_reports(before: dict, after: dict, change: str, expected: dict,
         bind_notes: list[str] = []
         per_prop_binds: dict[str | None, bool] = {}
         for pn in prop_names:
-            p_ok, p_notes = tier_binds(p_meas, after.get('probe_tiers') or {}, pn)
+            p_ok, p_notes = tier_binds(p_meas, after.get('probe_tiers') or {}, pn,
+                                       a_meas)
             per_prop_binds[pn] = p_ok
             binds = binds and p_ok
             label = f'`{pn}` ' if pn else ''
@@ -532,7 +593,8 @@ def _write_full_report(out_dir, block, block_title, date, prop, css_prop,
         f'{json.dumps(after.get("probe_tiers"))}, and each viewport is checked\n'
         'for the tier that should bind:\n\n'
         + '\n'.join('- ' + n for n in tier_binds(
-            collect(after, block, 'probe'), after.get('probe_tiers') or {})[1])
+            collect(after, block, 'probe'), after.get('probe_tiers') or {},
+            None, collect(after, block, 'default'))[1])
         + '\n\nThe value demonstrably applies, so "nothing moved" above means\n'
           '*nothing moved*, not *nothing could move*.\n\n'
           '⚠ This control is measured on the AFTER build only, and deliberately\n'

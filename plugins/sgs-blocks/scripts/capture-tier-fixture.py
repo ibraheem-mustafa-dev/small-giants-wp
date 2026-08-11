@@ -706,6 +706,20 @@ def main() -> int:
                 measured['variant'] = b['variant']
                 measured['block'] = b['dir']
                 measured['properties'] = b_props
+                # PER-PROPERTY expected probe values, carried through from the
+                # manifest so the report can compare each property against the
+                # value that was actually WRITTEN for it.
+                # ⚠ The top-level `probe_tiers` is a single length-shaped dict
+                # ('64px'/'32px'/'8px') applied to everything. That is correct
+                # only for length-valued properties; a keyword property is now
+                # probed with a keyword ('flex-start') and an unitless one with
+                # a bare number, so comparing either against '64px' reports "does
+                # NOT bind" for a property that bound perfectly. Absent for the
+                # default variant, which writes no probe value at all.
+                if b.get('probe_values'):
+                    measured['probe_values'] = b['probe_values']
+                if b.get('probe_refused'):
+                    measured['probe_refused'] = b['probe_refused']
                 per_block[f'{b["dir"]}::{b["variant"]}'] = measured
 
             html = page.content()
