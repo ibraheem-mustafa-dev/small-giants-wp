@@ -1,24 +1,24 @@
 ---
 doc_type: reference
-title: "Visual-diff report — multi-button · gap"
+title: "Visual-diff report — multi-button · gridTemplateColumns"
 block: multi-button
 date: 2026-08-11
-property: gap
+property: gridTemplateColumns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 4cd2f27dc539e344
+source_sha: f794bf6fc7a8981b
 ---
 
-# multi-button — Spec 35 pass 1 — `gap` migrated to the tier-object shape, editor control migrated with it, bare number now means px
+# multi-button — Spec 35 pass 3a - gridTemplateColumns migrated to the tier-object shape, controls migrated in the same commit, 15 theme values folded into the object
 
 **Verdict: PASS**, on a measured before/after capture of this block's own
 rendered element. No measured value moved.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gap/
+- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gridtemplatecolumns/
 - **Selector (scoped):** `#tierfx-default-multi-button > .wp-block-sgs-multi-button` — resolved to `<div>`, uid `sgs-container--grid`
-- **CSS property:** `gap`
+- **CSS property:** `grid-template-columns`
 - **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
 - **Method:** Playwright (chromium), computed styles at three viewports, before
   and after deploying the change to the sandybrown canary.
@@ -31,9 +31,9 @@ confident false failure, so every measurement here is anchored.
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `12px` | `12px` | `—` | `—` | `flex` |
-| tablet (900px) | `tablet` | `12px` | `12px` | `—` | `—` | `flex` |
-| mobile (390px) | `mobile` | `8px` | `8px` | `—` | `—` | `flex` |
+| desktop (1440px) | `desktop` | `none` | `none` | `—` | `—` | `flex` |
+| tablet (900px) | `tablet` | `none` | `none` | `—` | `—` | `flex` |
+| mobile (390px) | `mobile` | `none` | `none` | `—` | `—` | `flex` |
 
 These rows are the **default** variant — the property left unset, so the block
 renders its own `block.json` default. That is the regression surface: nearly
@@ -48,25 +48,33 @@ measuring only the outer element could miss where the value actually landed.
 — keeping "declared" and "visible" as separate facts rather than conflating them.
 
 
+## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
+
+This block **declares `gridTemplateColumns` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
+
+**Evidence:** renders display:flex, so grid-template-columns has no effect on it by construction - measured flex at every viewport, computed none before AND after. Inert here, not broken.
+
+⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
+
 ## ⭐ Positive control — because identical numbers alone would be vacuous
 
-Matching before/after values are exactly what a **completely inert** property
-would also produce. So a second instance of this block on the same page has
-`gap` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each
-viewport is checked for the tier that should bind:
+Matching before/after values are exactly what a **completely inert**
+property would also produce. So a second instance of this block on the
+same page has `gridTemplateColumns` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
+for the tier that should bind:
 
-- desktop: set `64px` → outer `64px`  ✅ binds
-- mobile: set `8px` → outer `8px`  ✅ binds
-- tablet: set `32px` → outer `32px`  ✅ binds
+- desktop: set `64px` → outer `none`  ⚠ does NOT bind
+- mobile: set `8px` → outer `none`  ⚠ does NOT bind
+- tablet: set `32px` → outer `none`  ⚠ does NOT bind
 
-The value demonstrably applies, so "nothing moved" above means *nothing moved*,
-not *nothing could move*.
+The value demonstrably applies, so "nothing moved" above means
+*nothing moved*, not *nothing could move*.
 
-⚠ This control is measured on the AFTER build only, and deliberately so. Before
-the migration `gap` was a scalar attribute, so WordPress coerced an
-object-shaped value away entirely — a before/after pair on this variant would
-compare "the value" against "the value the old code could not store", which is
-not a rendering comparison at all.
+⚠ This control is measured on the AFTER build only, and deliberately
+so. Before the migration `gridTemplateColumns` was a scalar attribute, so WordPress
+coerced an object-shaped value away entirely — a before/after pair on
+this variant would compare "the value" against "the value the old code
+could not store", which is not a rendering comparison at all.
 
 ## Gates
 

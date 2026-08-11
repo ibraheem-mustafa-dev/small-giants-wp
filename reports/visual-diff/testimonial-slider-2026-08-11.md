@@ -1,24 +1,24 @@
 ---
 doc_type: reference
-title: "Visual-diff report — testimonial-slider · gap"
+title: "Visual-diff report — testimonial-slider · gridTemplateColumns"
 block: testimonial-slider
 date: 2026-08-11
-property: gap
+property: gridTemplateColumns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 948484e7368b80fb
+source_sha: d61daacd2014fbe9
 ---
 
-# testimonial-slider — Spec 35 pass 1 — `gap` migrated to the tier-object shape, editor control migrated with it, bare number now means px
+# testimonial-slider — Spec 35 pass 3a - gridTemplateColumns migrated to the tier-object shape, controls migrated in the same commit, 15 theme values folded into the object
 
 **Verdict: PASS**, on a measured before/after capture of this block's own
 rendered element. No measured value moved.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gap/
-- **Selector (scoped):** `#tierfx-default-testimonial-slider > .wp-block-sgs-testimonial-slider` — resolved to `<div>`, uid `sgs-container--full sgs-container-248aaa60`
-- **CSS property:** `gap`
+- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gridtemplatecolumns/
+- **Selector (scoped):** `#tierfx-default-testimonial-slider > .wp-block-sgs-testimonial-slider` — resolved to `<div>`, uid `sgs-container--full sgs-container-8e66a372`
+- **CSS property:** `grid-template-columns`
 - **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
 - **Method:** Playwright (chromium), computed styles at three viewports, before
   and after deploying the change to the sandybrown canary.
@@ -31,9 +31,9 @@ confident false failure, so every measurement here is anchored.
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `normal` | `normal` | `—` | `—` | `block` |
-| tablet (900px) | `tablet` | `normal` | `normal` | `—` | `—` | `block` |
-| mobile (390px) | `mobile` | `normal` | `normal` | `—` | `—` | `block` |
+| desktop (1440px) | `desktop` | `none` | `none` | `—` | `—` | `block` |
+| tablet (900px) | `tablet` | `none` | `none` | `—` | `—` | `block` |
+| mobile (390px) | `mobile` | `none` | `none` | `—` | `—` | `block` |
 
 These rows are the **default** variant — the property left unset, so the block
 renders its own `block.json` default. That is the regression surface: nearly
@@ -50,23 +50,23 @@ measuring only the outer element could miss where the value actually landed.
 
 ## ⭐ Positive control — because identical numbers alone would be vacuous
 
-Matching before/after values are exactly what a **completely inert** property
-would also produce. So a second instance of this block on the same page has
-`gap` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each
-viewport is checked for the tier that should bind:
+Matching before/after values are exactly what a **completely inert**
+property would also produce. So a second instance of this block on the
+same page has `gridTemplateColumns` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
+for the tier that should bind:
 
 - desktop: set `64px` → outer `64px`  ✅ binds
 - mobile: set `8px` → outer `8px`  ✅ binds
 - tablet: set `32px` → outer `32px`  ✅ binds
 
-The value demonstrably applies, so "nothing moved" above means *nothing moved*,
-not *nothing could move*.
+The value demonstrably applies, so "nothing moved" above means
+*nothing moved*, not *nothing could move*.
 
-⚠ This control is measured on the AFTER build only, and deliberately so. Before
-the migration `gap` was a scalar attribute, so WordPress coerced an
-object-shaped value away entirely — a before/after pair on this variant would
-compare "the value" against "the value the old code could not store", which is
-not a rendering comparison at all.
+⚠ This control is measured on the AFTER build only, and deliberately
+so. Before the migration `gridTemplateColumns` was a scalar attribute, so WordPress
+coerced an object-shaped value away entirely — a before/after pair on
+this variant would compare "the value" against "the value the old code
+could not store", which is not a rendering comparison at all.
 
 ## Gates
 

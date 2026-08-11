@@ -167,17 +167,9 @@
 			"default": ""
 		},
 		"gridTemplateColumns": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsTablet": {
-			"type": "string",
-			"default": ""
-		},
+			"type": "object",
+			"default": {}
+		},
 		"gridTemplateRows": {
 			"type": "string",
 			"default": ""

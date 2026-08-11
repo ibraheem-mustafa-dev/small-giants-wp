@@ -1,5 +1,66 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D569 — Pass 3a (`gridTemplateColumns`): two silent regressions and one editor crash, all found by the same two checks [INCIDENT]
+
+**2026-08-11.** 19 targets (18 FLAT + 1 BLENDED) migrated to the tier object, controls migrated in
+the same commit, 15 theme values folded. **The storage-shape gate reached 0 and is now WIRED INTO
+`prebuild`** — its named promotion trigger — and was proven able to fail by injecting a violation on
+the real tree, watching it exit 1, reverting, and confirming the file was restored byte-identical.
+
+### `is_array()` is TRUE for an unset object attr — and it silently deleted two grids
+
+`class-sgs-container-wrapper.php` gated its object-grid path on
+`$container_queries && is_array( $attributes['gridTemplateColumns'] )`. An UNSET object attr arrives
+as an EMPTY PHP ARRAY (`"default": {}` → `array()`), so the flag flipped TRUE for every
+container-query block the instant the default changed from `""` to `{}` — suppressing the legacy
+column emission at `:798` / `:1257` / `:1655` with an empty object and nothing to emit in its place.
+
+**Measured:** `sgs/gallery`'s 3-column grid collapsed to one 1200px column; `sgs/feature-grid`'s 4
+columns became 2. The comment directly above the line stated the intent correctly — *"gridTemplateColumns
+is actually present"* — while the code tested something else. Now tests for a real tier value.
+⚠ The design doc WARNED about exactly this (*"is_array() cannot tell unset from set"*) and it was
+still walked into, because the trap was documented for NEW guards and this was an EXISTING one.
+
+`sgs/feature-grid/render.php` had the same shape: `trim( (string) $attr )` yields `"Array"`, which is
+non-empty, so `$has_explicit_grid` went true unconditionally and suppressed auto-flex mode.
+
+### The editor crashed, and only opening the editor found it
+
+`container/edit.js` called `gridTemplateColumns?.trim()` → **`TypeError: p?.trim is not a function`**,
+killing the canvas preview. `feature-grid/edit.js` called `String( gridTemplateColumns )` → the
+non-empty `"[object Object]"`, silently setting a bogus track list. Both resolve the desktop tier now.
+**Every static gate was green throughout** — same class as D567, found the same way: by opening it.
+
+### ⛔ CARRIED, NOT FIXED — a PASS 1 residue that is LIVE
+
+`gap` is object-typed on `sgs/feature-grid`, `sgs/gallery` and `sgs/trust-bar`, and their editor
+previews still do `/^\d+$/.test( String( gap ) ) ? … : gap || '16px'` — `String(object)` fails the
+test, so the OBJECT is handed to a React style value. Editor-preview only (no crash, frontend
+unaffected), but it shipped with pass 1 and is the same defect class this entry documents.
+**`feature-grid/edit.js:78`, `gallery/edit.js:264,295`, `trust-bar/edit.js:49`.**
+
+### A FOURTH instrument defect — the fixture's skip condition was nonsense
+
+Bean challenged my phrase "needs a migrated parent". It does not hold. The fixture
+skipped any child whose parent had "not migrated the property", but a `parent`
+constraint is WordPress asking *may this block be placed here* — nothing to do with
+the property under test. `sgs/site-header` / `sgs/site-footer` declare **no**
+`gridTemplateColumns` and **no** `layout`: they are empty shells whose job is to
+house rows, so the condition could never become true and their rows were
+PERMANENTLY unmeasurable. **I repeated the tool's own wrong reasoning back to Bean
+without checking it** — the exact failure this session kept catching elsewhere.
+Parents are now loaded as HOSTS (property unset, excluded from the manifest, since
+scaffolding owns nothing to measure). Reports 17 → 19.
+⚠ Adjacent, not fixed: the host lookup reads `parent[0]` only, and the
+`form-field-*` blocks declare two parents. Harmless this pass (their first parent
+is the migrated one) but a latent narrowing.
+
+**Evidence:** 19 reports at `reports/visual-diff/*-2026-08-11.md`. Two carry `--known-dead` with
+measured reasons: `sgs/multi-button` renders `display:flex`, so `grid-template-columns` cannot apply
+to it by construction; `sgs/form-field-tiles` binds on desktop and tablet but its MOBILE track list
+comes from the column-count path, which is pass 4's property. **Live editor: typing on the Mobile
+tier stores `{mobile:"1fr 2fr"}`, no flat siblings, 0 console errors.**
+
 ## D568 — Pass 2 (`maxWidth` + `contentWidth`) — and the measuring instrument was blind to both [INCIDENT]
 
 **2026-08-11.** Spec 35 pass 2 migrated `maxWidth` (11 blocks) and `contentWidth` (7 blocks) — 18

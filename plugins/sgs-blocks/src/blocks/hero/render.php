@@ -261,12 +261,17 @@ $allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify
 // block.json defaults gridTemplateColumns to '' (unlike the retired
 // splitColumnRatio whose default was '1fr 1fr') — ?? alone would let the
 // empty string through, so default explicitly.
-$split_col_ratio = $attributes['gridTemplateColumns'] ?? '';
+// `gridTemplateColumns` is a TIER OBJECT as of Spec 35 pass 3a (2026-08-11) —
+// ONE attr holding {desktop,tablet,mobile}, read through the shared normaliser.
+// A `(string)` cast on the object would raise PHP "Array to string conversion"
+// on EVERY render of a split hero and emit a garbage track list.
+$split_col_tiers = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] ?? null );
+$split_col_ratio = $split_col_tiers['desktop'] ?? '';
 if ( '' === trim( (string) $split_col_ratio ) ) {
 	$split_col_ratio = '1fr 1fr';
 }
-$split_col_ratio_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
-$split_col_ratio_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
+$split_col_ratio_tablet = $split_col_tiers['tablet'] ?? '';
+$split_col_ratio_mobile = $split_col_tiers['mobile'] ?? '';
 // splitGap* REMOVED (de-duped 2026-07-06) — the split grid gap now reads the
 // shared gap/gapTablet/gapMobile (see the gap emission below).
 $split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';

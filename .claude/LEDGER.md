@@ -40,7 +40,7 @@ commit messages + `decisions.md` D546-D567.
 
 ## CURRENT FRONTS
 
-> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D568**.
+> **D-ceiling: RUN THE COMMAND (State Snapshot) — never cache it.** Latest: **D569**.
 
 ### ✅ PHASE 0 IS CLOSED — 2026-08-11
 
@@ -130,9 +130,29 @@ mirror capability gap; needs a Rule 7 design gate, not a migration edit.
 same day REPLACES the first's file. Pass 1's reports live at `fa638cea`; the file is a per-day
 artefact tied to the staged `source_sha`. Know this before 3a/3b run today.
 
-### ⭐ NEXT — pass 3a, then 3b, then Wave 3
+### ✅ PASS 3a (`gridTemplateColumns`, 19 targets) — CLOSED 2026-08-11
 
-**Pass 2 is done. 3a/3b/Wave 3 remain.**
+**Record: D569.** Controls migrated in the same commit; 15 theme values folded (siblings merged INTO
+the object, so the mobile single-column collapse survived). **The storage-shape gate reached 0 and is
+WIRED INTO `prebuild`** — promotion trigger met, and proven able to fail on the real tree
+(inject → exit 1 → revert → byte-identical). **Live editor: Mobile tier stores `{mobile:"1fr 2fr"}`,
+no flat siblings, 0 console errors.** Evidence: 17 reports at `reports/visual-diff/*-2026-08-11.md`.
+
+⛔ **Three defects it caught that NO static gate could:**
+1. **`is_array()` is TRUE for an unset object attr** (`{}` → `array()`), so the wrapper's object-grid
+   flag flipped on for every container-query block and DELETED their grids — gallery 3 cols → 1,
+   feature-grid 4 → 2. The design doc warned about this trap for NEW guards; this was an EXISTING one.
+2. `feature-grid/render.php` `trim((string)$attr)` → `"Array"`, non-empty, suppressing auto-flex.
+3. **Editor crash** — `container/edit.js` `gridTemplateColumns?.trim()` → `TypeError`. Same class as
+   D567. Every gate green throughout.
+
+⛔ **CARRIED — a LIVE pass-1 residue, editor-preview only, NOT fixed:** `gap` is object-typed on
+feature-grid / gallery / trust-bar but their previews still do `String(gap)` and hand the OBJECT to a
+React style value. Sites: `feature-grid/edit.js:78`, `gallery/edit.js:264,295`, `trust-bar/edit.js:49`.
+
+### ⭐ NEXT — pass 3b, then Wave 3
+
+**Passes 2 and 3a are done. 3b + Wave 3 remain, plus the `gap`-preview residue above.**
 
 #### READING GATE — Spec 35 order. ⛔ Do NOT open Spec 31 end-to-end.
 

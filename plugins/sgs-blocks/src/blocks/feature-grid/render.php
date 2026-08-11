@@ -114,8 +114,16 @@ $uid = wp_unique_id( 'sgs-fg-' );
  * competing grid rule, or it would override the wrapper's faithful template (the
  * bug this structure fixes — the forced auto-flex 3-across on cloned grids).
  */
-$grid_template     = isset( $attributes['gridTemplateColumns'] ) ? trim( (string) $attributes['gridTemplateColumns'] ) : '';
-$has_explicit_grid = '' !== $grid_template;
+// `gridTemplateColumns` is a TIER OBJECT as of Spec 35 pass 3a (2026-08-11).
+// A `(string)` cast on it yields the literal "Array" (plus a PHP notice on every
+// render), which is non-empty — so `$has_explicit_grid` went TRUE for every
+// block whether or not a template was set, and auto-flex mode was suppressed.
+// Measured before this fix: the fixture's 4-column grid rendered as 2 columns.
+// Only the DESKTOP tier decides whether an explicit template exists; the wrapper
+// emits the per-tier rules itself, so this flag must not consider tablet/mobile.
+$grid_template_tiers = sgs_responsive_normalise_object( $attributes['gridTemplateColumns'] ?? null );
+$grid_template       = trim( (string) ( $grid_template_tiers['desktop'] ?? '' ) );
+$has_explicit_grid   = '' !== $grid_template;
 $use_auto_flex     = ( 'auto-flex' === $layout_mode ) && ! $has_explicit_grid;
 
 $mode_class = 'sgs-feature-grid--' . $layout_mode;

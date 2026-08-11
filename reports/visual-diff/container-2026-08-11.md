@@ -1,24 +1,24 @@
 ---
 doc_type: reference
-title: "Visual-diff report — container · maxWidth"
+title: "Visual-diff report — container · gridTemplateColumns"
 block: container
 date: 2026-08-11
-property: maxWidth
+property: gridTemplateColumns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: fad1d3c2119aefae
+source_sha: 3c2a7269dc16eeb7
 ---
 
-# container — Spec 35 pass 2 - maxWidth + contentWidth migrated to the tier-object shape, editor controls migrated in the same commit
+# container — Spec 35 pass 3a - gridTemplateColumns migrated to the tier-object shape, controls migrated in the same commit, 15 theme values folded into the object
 
 **Verdict: PASS**, on a measured before/after capture of this block's own
 rendered element. No measured value moved.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-maxwidth/
-- **Selector (scoped):** `#tierfx-default-container > .wp-block-sgs-container` — resolved to `<section>`, uid `sgs-container--grid sgs-container-7b2c85d3`
-- **CSS property:** `max-width`
+- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gridtemplatecolumns/
+- **Selector (scoped):** `#tierfx-default-container > .wp-block-sgs-container` — resolved to `<section>`, uid `sgs-container--grid sgs-container-70c9f782`
+- **CSS property:** `grid-template-columns`
 - **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
 - **Method:** Playwright (chromium), computed styles at three viewports, before
   and after deploying the change to the sandybrown canary.
@@ -31,9 +31,9 @@ confident false failure, so every measurement here is anchored.
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `none` | `none` | `—` | `—` | `grid` |
-| tablet (900px) | `tablet` | `none` | `none` | `—` | `—` | `grid` |
-| mobile (390px) | `mobile` | `none` | `none` | `—` | `—` | `grid` |
+| desktop (1440px) | `desktop` | `600px 600px` | `600px 600px` | `—` | `—` | `grid` |
+| tablet (900px) | `tablet` | `426px 426px` | `426px 426px` | `—` | `—` | `grid` |
+| mobile (390px) | `mobile` | `342px` | `342px` | `—` | `—` | `grid` |
 
 These rows are the **default** variant — the property left unset, so the block
 renders its own `block.json` default. That is the regression surface: nearly
@@ -52,7 +52,7 @@ measuring only the outer element could miss where the value actually landed.
 
 Matching before/after values are exactly what a **completely inert**
 property would also produce. So a second instance of this block on the
-same page has `maxWidth` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
+same page has `gridTemplateColumns` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
 for the tier that should bind:
 
 - desktop: set `64px` → outer `64px`  ✅ binds
@@ -63,7 +63,7 @@ The value demonstrably applies, so "nothing moved" above means
 *nothing moved*, not *nothing could move*.
 
 ⚠ This control is measured on the AFTER build only, and deliberately
-so. Before the migration `maxWidth` was a scalar attribute, so WordPress
+so. Before the migration `gridTemplateColumns` was a scalar attribute, so WordPress
 coerced an object-shaped value away entirely — a before/after pair on
 this variant would compare "the value" against "the value the old code
 could not store", which is not a rendering comparison at all.

@@ -471,9 +471,9 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 		columns = 2,
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
-		gridTemplateColumns = '',
-		gridTemplateColumnsTablet = '',
-		gridTemplateColumnsMobile = '',
+		// gridTemplateColumns is a TIER OBJECT (pass 3a) and is read via
+		// `attributes.gridTemplateColumns` at its control below, not destructured
+		// with a scalar '' default — which would mask the object.
 		gridTemplateRows = '',
 		gridTemplateRowsTablet = '',
 		gridTemplateRowsMobile = '',
@@ -610,34 +610,33 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						{ __( 'Advanced grid layout', 'sgs-blocks' ) }
 					</p>
 
-					<ResponsiveControl label={ __( 'Custom column template', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'gridTemplateColumns',
-								tablet: 'gridTemplateColumnsTablet',
-								mobile: 'gridTemplateColumnsMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							return (
-								<TextControl
-									value={ attributes[ attr ] || '' }
-									onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-									help={
-										breakpoint === 'desktop'
-											? __(
-												"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above.",
-												'sgs-blocks'
-											)
-											: __(
-												"CSS grid-template-columns for this breakpoint. Leave empty to inherit the desktop template above — or the column count, if no desktop template is set.",
-												'sgs-blocks'
-											)
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /*
+						  `gridTemplateColumns` is a TIER OBJECT (Spec 35 pass 3a) — ONE
+						  attr holding {desktop,tablet,mobile}, so it uses
+						  ResponsiveOverride. The `gridTemplateColumnsTablet` /
+						  `…Mobile` siblings are no longer declared by any block.json;
+						  writing them through ResponsiveControl would save nothing
+						  (D338) while the desktop branch wrote a string into an
+						  object-typed attr and destroyed the setting (D563).
+						*/ }
+					<ResponsiveOverride
+						label={ __( 'Custom column template', 'sgs-blocks' ) }
+						value={ attributes.gridTemplateColumns }
+						onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<TextControl
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								onChange={ ( val ) => setOwnValue( val ) }
+								help={ __(
+									"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 
 					<ResponsiveControl label={ __( 'Row template', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => {

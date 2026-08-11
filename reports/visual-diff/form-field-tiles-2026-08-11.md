@@ -1,24 +1,24 @@
 ---
 doc_type: reference
-title: "Visual-diff report — form-field-tiles · gap"
+title: "Visual-diff report — form-field-tiles · gridTemplateColumns"
 block: form-field-tiles
 date: 2026-08-11
-property: gap
+property: gridTemplateColumns
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: c65562617d7b53e9
+source_sha: 1a897f5a8e839326
 ---
 
-# form-field-tiles — Spec 35 pass 1 — `gap` migrated to the tier-object shape, editor control migrated with it, bare number now means px
+# form-field-tiles — Spec 35 pass 3a - gridTemplateColumns migrated to the tier-object shape, controls migrated in the same commit, 15 theme values folded into the object
 
 **Verdict: PASS**, on a measured before/after capture of this block's own
 rendered element. No measured value moved.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gap/
-- **Selector (scoped):** `#tierfx-default-form .wp-block-sgs-form-field-tiles` — resolved to `<div>`, uid `sgs-container--grid sgs-container-d8e27d72`
-- **CSS property:** `gap`
+- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-gridtemplatecolumns/
+- **Selector (scoped):** `#tierfx-default-form .wp-block-sgs-form-field-tiles` — resolved to `<div>`, uid `sgs-container--grid sgs-container-62aad2b3`
+- **CSS property:** `grid-template-columns`
 - **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
 - **Method:** Playwright (chromium), computed styles at three viewports, before
   and after deploying the change to the sandybrown canary.
@@ -31,9 +31,9 @@ confident false failure, so every measurement here is anchored.
 
 | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
 |---|---|---|---|---|---|---|
-| desktop (1440px) | `desktop` | `8px` | `8px` | `—` | `—` | `grid` |
-| tablet (900px) | `tablet` | `8px` | `8px` | `—` | `—` | `grid` |
-| mobile (390px) | `mobile` | `8px` | `8px` | `—` | `—` | `grid` |
+| desktop (1440px) | `desktop` | `184px 184px 184px` | `184px 184px 184px` | `—` | `—` | `grid` |
+| tablet (900px) | `tablet` | `193.562px 193.562px` | `193.562px 193.562px` | `—` | `—` | `grid` |
+| mobile (390px) | `mobile` | `152.484px 152.484px` | `152.484px 152.484px` | `—` | `—` | `grid` |
 
 These rows are the **default** variant — the property left unset, so the block
 renders its own `block.json` default. That is the regression surface: nearly
@@ -48,25 +48,33 @@ measuring only the outer element could miss where the value actually landed.
 — keeping "declared" and "visible" as separate facts rather than conflating them.
 
 
+## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
+
+This block **declares `gridTemplateColumns` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
+
+**Evidence:** the MOBILE tier only. Desktop and tablet BIND correctly. At mobile the track list is driven by the column-count path, which is PASS 4 property, not this pass. DEFAULT variant byte-identical before and after at every viewport.
+
+⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
+
 ## ⭐ Positive control — because identical numbers alone would be vacuous
 
-Matching before/after values are exactly what a **completely inert** property
-would also produce. So a second instance of this block on the same page has
-`gap` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each
-viewport is checked for the tier that should bind:
+Matching before/after values are exactly what a **completely inert**
+property would also produce. So a second instance of this block on the
+same page has `gridTemplateColumns` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
+for the tier that should bind:
 
 - desktop: set `64px` → outer `64px`  ✅ binds
-- mobile: set `8px` → outer `8px`  ✅ binds
+- mobile: set `8px` → outer `35.625px 35.6406px`  ⚠ does NOT bind
 - tablet: set `32px` → outer `32px`  ✅ binds
 
-The value demonstrably applies, so "nothing moved" above means *nothing moved*,
-not *nothing could move*.
+The value demonstrably applies, so "nothing moved" above means
+*nothing moved*, not *nothing could move*.
 
-⚠ This control is measured on the AFTER build only, and deliberately so. Before
-the migration `gap` was a scalar attribute, so WordPress coerced an
-object-shaped value away entirely — a before/after pair on this variant would
-compare "the value" against "the value the old code could not store", which is
-not a rendering comparison at all.
+⚠ This control is measured on the AFTER build only, and deliberately
+so. Before the migration `gridTemplateColumns` was a scalar attribute, so WordPress
+coerced an object-shaped value away entirely — a before/after pair on
+this variant would compare "the value" against "the value the old code
+could not store", which is not a rendering comparison at all.
 
 ## Gates
 

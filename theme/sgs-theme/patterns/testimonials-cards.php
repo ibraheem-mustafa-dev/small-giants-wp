@@ -13,7 +13,7 @@
 
 	<!-- wp:sgs/heading {"content":"What Our Clients Say","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"1fr 1fr 1fr","gridTemplateColumnsMobile":"1fr","align":"wide","gap":{"desktop":"var:preset|spacing|40"}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"}} -->
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface"} -->

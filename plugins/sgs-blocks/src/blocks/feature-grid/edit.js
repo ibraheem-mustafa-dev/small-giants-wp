@@ -12,6 +12,7 @@ import {
 } from '@wordpress/components';
 import { ResponsiveControl } from '../../components';
 import { UnitControl } from '../../components/primitives';
+import { resolveResponsiveTier } from '../../utils';
 
 const LAYOUT_MODE_OPTIONS = [
 	{
@@ -92,8 +93,13 @@ function buildGridStyle( attributes ) {
 	// (e.g. a faithful clone transfer, including asymmetric ratios like '1fr 2fr')
 	// is delegated verbatim to the shared grid engine on the frontend, so preview
 	// it here too; otherwise fall back to the desktop column count.
-	const templateCols = gridTemplateColumns && String( gridTemplateColumns ).trim()
-		? String( gridTemplateColumns ).trim()
+	// gridTemplateColumns is a TIER OBJECT (Spec 35 pass 3a). String() on the
+	// object yields "[object Object]", which is a NON-EMPTY string — so the
+	// preview would have set a bogus track list instead of falling back to the
+	// column count. Resolve the DESKTOP tier, which is what the canvas shows.
+	const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
+	const templateCols = String( gtcDesktop ?? '' ).trim()
+		? String( gtcDesktop ).trim()
 		: `repeat(${ columnsDesktop }, 1fr)`;
 
 	return {

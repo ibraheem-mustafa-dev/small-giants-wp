@@ -195,7 +195,11 @@ def block_markup(blk: dict, prop: str, variant: str, inner: str = '') -> str:
         report must say so rather than present it as a matched pair.
     """
     attrs: dict = {}
-    if variant == 'probe':
+    # `prop` is None for a HOST block — scaffolding that exists only so WordPress
+    # will accept its child (a shell parent like sgs/site-header, which does not
+    # own the property at all). Without this guard the probe variant would write
+    # a literal "null" attribute key onto the host.
+    if variant == 'probe' and prop:
         attrs[prop] = dict(PROBE_TIERS)
     lay = layout_value(blk['attrs'])
     if lay:
@@ -290,14 +294,55 @@ def build_content(prop: str) -> tuple[str, list[dict]]:
     by_name = {b['name']: b for b in blocks}
     children: dict[str, list[dict]] = {}
     top: list[dict] = []
+    hosts: dict[str, dict] = {}
     for b in blocks:
         if b['parent'] and b['parent'] in by_name:
             children.setdefault(b['parent'], []).append(b)
         elif b['parent']:
-            # Parent exists but has not migrated this property, so it is not on
-            # the page. Reported, never silently dropped (rule 4: no skipping).
-            b['skipped'] = f"needs parent {b['parent']}, which has not migrated `{prop}`"
-            top.append(b)
+            # ⛔ CORRECTED 2026-08-11. This branch used to SKIP the child with
+            # "needs parent X, which has not migrated <prop>" — reasoning that is
+            # simply wrong, and it blocked pass 3a's commit for two blocks that
+            # were perfectly measurable.
+            #
+            # A `parent` constraint is WordPress asking "may this block be placed
+            # here". It has nothing to do with the property under test. A shell
+            # parent like sgs/site-header declares NO gridTemplateColumns and no
+            # `layout` at all — it is an empty skeleton whose whole job is to
+            # house rows — so it will NEVER "migrate the property", and the old
+            # condition could never become true. Its rows, which DO own the grid,
+            # were therefore permanently unmeasurable.
+            #
+            # The parent only has to EXIST and be able to host the child. So load
+            # it as a HOST and render it with the property UNSET, then nest the
+            # measured child inside. The host is never measured and never appears
+            # in the manifest; it is scaffolding.
+            host = hosts.get(b['parent'])
+            if host is None:
+                host_dir = BLOCKS_DIR / b['parent'].split('/', 1)[-1]
+                host_meta = read_block(host_dir) if host_dir.is_dir() else None
+                if host_meta is not None:
+                    # Same record shape migrated_blocks() builds — read_block()
+                    # returns the RAW block.json, which has no 'dir'/'parent'
+                    # keys, and every downstream helper expects them.
+                    host = {
+                        'dir': host_dir.name,
+                        'name': host_meta.get('name'),
+                        'parent': (host_meta.get('parent') or [None])[0],
+                        'attrs': host_meta.get('attributes') or {},
+                        'anchorable': supports_anchor(host_meta),
+                        'allowed': host_meta.get('allowedBlocks'),
+                        'is_host': True,
+                    }
+                    hosts[b['parent']] = host
+                    top.append(host)
+            if host is not None:
+                children.setdefault(b['parent'], []).append(b)
+            else:
+                # Genuinely unhostable — the parent block does not exist on disk.
+                # Reported, never silently dropped (rule 4: no skipping).
+                b['skipped'] = (f"parent {b['parent']} does not exist on disk, so this "
+                                f"block cannot be placed anywhere WordPress will accept")
+                top.append(b)
         else:
             top.append(b)
 
@@ -327,8 +372,15 @@ def build_content(prop: str) -> tuple[str, list[dict]]:
                                  'nested_in': b['name']})
             if not inner:
                 inner = children_markup(child_block(b['name'], b['allowed']))
-            parts.append(wrap_anchored(block_markup(b, prop, variant, inner.strip()),
+            # A HOST is scaffolding: it exists only so WordPress will accept its
+            # child. It does not own the property, is rendered with it UNSET, and
+            # is never measured — so it must not enter the manifest, or the report
+            # generator would demand evidence for a block that has none to give.
+            host_prop = None if b.get('is_host') else prop
+            parts.append(wrap_anchored(block_markup(b, host_prop, variant, inner.strip()),
                                        b['dir'], variant))
+            if b.get('is_host'):
+                continue
             sel, basis = selector_for(b, None, variant)
             manifest.append({'dir': b['dir'], 'name': b['name'], 'variant': variant,
                              'selector': sel, 'selector_basis': basis, 'nested_in': None})

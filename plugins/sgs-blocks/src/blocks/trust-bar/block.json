@@ -418,17 +418,9 @@
 			"default": 4
 		},
 		"gridTemplateColumns": {
-			"type": "string",
-			"default": "repeat(4, 1fr)"
-		},
-		"gridTemplateColumnsTablet": {
-			"type": "string",
-			"default": "repeat(4, 1fr)"
-		},
-		"gridTemplateColumnsMobile": {
-			"type": "string",
-			"default": "1fr 1fr"
-		},
+			"type": "object",
+			"default": {"desktop": "repeat(4, 1fr)", "tablet": "repeat(4, 1fr)", "mobile": "1fr 1fr"}
+		},
 		"backgroundImage": {
 			"type": "object"
 		},

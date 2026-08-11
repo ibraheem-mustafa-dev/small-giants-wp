@@ -202,15 +202,7 @@
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
-		},
-		"gridTemplateColumnsMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsTablet": {
-			"type": "string",
-			"default": ""
-		},
+		},
 		"gridTemplateRows": {
 			"type": "string",
 			"default": ""

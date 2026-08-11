@@ -241,8 +241,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
 		gridTemplateColumns,
-		gridTemplateColumnsTablet,
-		gridTemplateColumnsMobile,
 		splitContentOrderMobile,
 		splitContentOrder,
 		splitContentOrderTablet,
@@ -657,8 +655,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								contentPaddingMobile: {},
 								...( isSplit && {
 									gridTemplateColumns: '',
-									gridTemplateColumnsTablet: '',
-									gridTemplateColumnsMobile: '',
 									splitContentOrder: '',
 									splitContentOrderTablet: '',
 									splitContentOrderMobile: 'media-first',
@@ -867,9 +863,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								label={ __( 'Split layout grid', 'sgs-blocks' ) }
 								hasValue={ () =>
 									!! gridTemplateColumns ||
-									!! attributes.gridTemplateColumnsTablet ||
-									!! attributes.gridTemplateColumnsMobile ||
-									!! splitContentOrder ||
+										!! splitContentOrder ||
 									!! splitContentOrderTablet ||
 									splitContentOrderMobile !== 'media-first' ||
 									!! splitImageBleed
@@ -877,8 +871,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								onDeselect={ () =>
 									setAttributes( {
 										gridTemplateColumns: '',
-										gridTemplateColumnsTablet: '',
-										gridTemplateColumnsMobile: '',
 										splitContentOrder: '',
 										splitContentOrderTablet: '',
 										splitContentOrderMobile: 'media-first',
@@ -887,33 +879,44 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 							>
 								<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
-								<ResponsiveControl label={ __( 'Column ratio', 'sgs-blocks' ) }>
-									{ ( breakpoint ) => {
-										const colAttrMap = {
-											desktop: 'gridTemplateColumns',
-											tablet: 'gridTemplateColumnsTablet',
-											mobile: 'gridTemplateColumnsMobile',
-										};
-										const colAttr = colAttrMap[ breakpoint ];
-										if ( breakpoint === 'desktop' ) {
+								{ /*
+								     `gridTemplateColumns` is a TIER OBJECT (Spec 35 pass 3a) —
+								     ONE attr holding {desktop,tablet,mobile}. ResponsiveOverride
+								     owns the active tier, so the old per-tier attr map is gone;
+								     the desktop PRESET picker is preserved by keying it on the
+								     desktop tier's own value rather than on a separate attr.
+								*/ }
+								<ResponsiveOverride
+									label={ __( 'Column ratio', 'sgs-blocks' ) }
+									value={ gridTemplateColumns }
+									onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) => {
+										// The preset picker is a DESKTOP affordance: the presets are
+										// whole-layout ratios, while a tablet/mobile override is a
+										// free-text refinement of the inherited desktop choice.
+										// `tier` comes straight from ResponsiveOverride's render-prop
+										// payload (ResponsiveOverride.js:116) — the active tier from
+										// the ONE global device toggle.
+										if ( 'desktop' === tier ) {
 											const isCustom = ! COLUMN_RATIO_PRESETS.some(
-												( p ) => p.value !== 'custom' && p.value === gridTemplateColumns
+												( p ) => p.value !== 'custom' && p.value === ownValue
 											);
 											return (
 												<>
 													<SelectControl
 														label={ __( 'Preset', 'sgs-blocks' ) }
-														value={ isCustom ? 'custom' : gridTemplateColumns }
+														value={ isCustom ? 'custom' : ownValue }
 														options={ COLUMN_RATIO_PRESETS }
-														onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { gridTemplateColumns: val } ); } } }
+														onChange={ ( val ) => { if ( val !== 'custom' ) { setOwnValue( val ); } } }
 														__nextHasNoMarginBottom
 													/>
 													{ isCustom && (
 														<TextControl
 															label={ __( 'Custom ratio', 'sgs-blocks' ) }
 															help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
-															value={ gridTemplateColumns || '' }
-															onChange={ ( val ) => setAttributes( { gridTemplateColumns: val } ) }
+															value={ ownValue || '' }
+															onChange={ ( val ) => setOwnValue( val ) }
 															__nextHasNoMarginBottom
 														/>
 													) }
@@ -922,16 +925,15 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 										return (
 											<TextControl
-												help={ breakpoint === 'tablet'
-													? __( 'Blank = inherit desktop ratio.', 'sgs-blocks' )
-													: __( 'Blank = single column (1fr).', 'sgs-blocks' ) }
-												value={ attributes[ colAttr ] || '' }
-												onChange={ ( val ) => setAttributes( { [ colAttr ]: val } ) }
+												help={ __( 'Blank = inherit the tier above.', 'sgs-blocks' ) }
+												value={ ownValue || '' }
+												placeholder={ inherited ? effectiveValue || '' : '' }
+												onChange={ ( val ) => setOwnValue( val ) }
 												__nextHasNoMarginBottom
 											/>
 										);
 									} }
-								</ResponsiveControl>
+								</ResponsiveOverride>
 								{ /* Column gap de-duped 2026-07-06 — the split grid gap is
 								     the container gap, controlled by the shared "Gap" control
 								     (ContainerWrapperControls, gap/gapTablet/gapMobile). The

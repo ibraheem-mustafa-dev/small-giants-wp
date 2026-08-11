@@ -153,8 +153,14 @@ export default function Edit({ attributes, setAttributes }) {
     style.display = "grid";
     // SB-2: use the gridTemplateColumns string attr when set so the editor preview
     // matches render.php output for asymmetric grids (e.g. "5fr 3fr", "60% 40%").
-    style.gridTemplateColumns = gridTemplateColumns?.trim()
-      ? gridTemplateColumns.trim()
+    // gridTemplateColumns is a TIER OBJECT (Spec 35 pass 3a) — calling .trim()
+    // on it threw `p?.trim is not a function` and CRASHED the editor canvas.
+    // The canvas preview represents the DESKTOP tier, so resolve that tier.
+    // ⛔ Found only by opening the editor: no static gate in this repo can see
+    // a type error inside an edit component (D567, same class).
+    const gtcDesktop = resolveResponsiveTier( gridTemplateColumns, 'desktop' )?.value;
+    style.gridTemplateColumns = String( gtcDesktop ?? '' ).trim()
+      ? String( gtcDesktop ).trim()
       : `repeat(${attributes.columns}, 1fr)`;
     style.alignItems = verticalAlign;
     if ( justifyItems && justifyItems !== "stretch" ) {

@@ -13,7 +13,7 @@
 
 	<!-- wp:sgs/heading {"content":"Why Choose Us","textAlign":"center","textColour":"text","fontSize":"xx-large"} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"1fr 1fr 1fr 1fr","gridTemplateColumnsMobile":"1fr","align":"wide","gap":{"desktop":"var:preset|spacing|40"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr 1fr","mobile":"1fr"},"align":"wide","gap":{"desktop":"var:preset|spacing|40"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/heading {"content":"01","level":"h3","textColour":"text","fontSize":"hero"} /-->
 			<!-- wp:sgs/heading {"content":"Fast Delivery","level":"h4","textColour":"text","fontSize":"large"} /-->

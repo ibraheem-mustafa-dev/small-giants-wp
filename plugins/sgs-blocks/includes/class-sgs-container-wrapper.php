@@ -179,7 +179,35 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// stored instance still carries flat grid attrs (migration pending, D270
 			// re-clone) keeps rendering its grid via the legacy path until re-saved —
 			// so flipping the flag never breaks an un-migrated instance's columns.
-			$object_grid = $container_queries && is_array( $attributes['gridTemplateColumns'] ?? null );
+			// ⛔ MUST test for a REAL TIER VALUE, not bare is_array() (Spec 35 pass 3a,
+			// 2026-08-11). An UNSET object attr arrives as an empty PHP array
+			// (block.json `"default": {}` → array() → JSON []), so `is_array()` is
+			// TRUE for a block that has no template at all. The comment above states
+			// the intent correctly — "gridTemplateColumns is actually present" — but
+			// is_array() does not test presence.
+			//
+			// MEASURED REGRESSION this caught: the moment pass 3a changed the default
+			// from "" to {}, $object_grid went true for every container-query block,
+			// which suppresses the legacy column emission at :798 / :1257 / :1655 —
+			// and with an EMPTY object there was nothing to emit in its place.
+			// sgs/gallery's 3-column grid collapsed to a single 1200px column, and
+			// sgs/feature-grid's 4 columns became 2. Both were caught by the
+			// visual-diff positive control, not by any static gate.
+			//
+			// $sgs_tier_object_has_value is defined further down (~:1974), after this
+			// point, so the same test is inlined here rather than moved — moving it
+			// would reorder a closure several hundred lines of logic already depend on.
+			$sgs_grid_obj = $attributes['gridTemplateColumns'] ?? null;
+			$object_grid  = false;
+			if ( $container_queries && is_array( $sgs_grid_obj ) ) {
+				foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_grid_tier ) {
+					$sgs_grid_val = $sgs_grid_obj[ $sgs_grid_tier ] ?? null;
+					if ( null !== $sgs_grid_val && '' !== $sgs_grid_val && array() !== $sgs_grid_val ) {
+						$object_grid = true;
+						break;
+					}
+				}
+			}
 
 			// D456 — content-aware column collapse, declared per block type via
 			// supports.sgs.intrinsicColumns. Resolved ONCE here, unconditionally,
@@ -205,6 +233,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$columns_tablet       = is_array( $columns_tablet ) ? 2 : $columns_tablet;
 			$grid_template        = $attributes['gridTemplateColumns'] ?? '';
 			$grid_template        = is_array( $grid_template ) ? '' : $grid_template;
+			// ⚠ LEGACY FLAT PATH, now UNREACHABLE (Spec 35 pass 3a, 2026-08-11) —
+			// the gridTemplateColumns twin of the maxWidth note at :338 and the
+			// contentWidth note at :454. Neither sibling is declared by any
+			// block.json any more, so both reads resolve to '' on every render and
+			// every downstream guard is permanently false. The tiers travel inside
+			// the `gridTemplateColumns` OBJECT and are emitted at ~:2057.
+			// Same removal trigger: one gated shared-wrapper commit once passes 2-6
+			// are all closed.
 			$grid_template_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
 			$grid_template_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
 			$gap                  = $attributes['gap'] ?? '';

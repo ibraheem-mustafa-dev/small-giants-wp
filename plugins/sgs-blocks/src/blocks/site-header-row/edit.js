@@ -147,19 +147,13 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-// Bridge the three flat gridTemplateColumns* string attrs (block.json:210-221 —
-// all plain strings on THIS block, unlike site-footer-row where the desktop
-// tier is an object) to the {desktop,tablet,mobile} shape ResponsiveOverride
-// expects. Consumed unconditionally by the wrapper's legacy responsive-grid
-// path (class-sgs-container-wrapper.php:1485-1500) — not gated behind the
-// object-model flag, so this bridge is safe either way.
-const GRID_TEMPLATE_COLUMNS_ATTR = {
-	desktop: 'gridTemplateColumns',
-	tablet: 'gridTemplateColumnsTablet',
-	mobile: 'gridTemplateColumnsMobile',
-};
+// The gridTemplateColumns bridge that used to live here is GONE (Spec 35 pass
+// 3a, 2026-08-11): the attr IS the {desktop,tablet,mobile} object now, so
+// ResponsiveOverride reads and writes it directly and there is nothing to
+// bridge. Keeping a bridge would have re-created the D563 defect in reverse —
+// writing three flat attrs that no block.json declares any more.
 
-// Same bridge for gridTemplateRows* — plain strings on both row blocks
+// Bridge for gridTemplateRows* — still plain strings on both row blocks
 // (block.json:222-233), read at class-sgs-container-wrapper.php:426-428 and
 // emitted at :751-753 (base) / :1492-1493, 1542-1547 (responsive tiers).
 const GRID_TEMPLATE_ROWS_ATTR = {
@@ -183,8 +177,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		alignContent,
 		gridAutoRows,
 		gridTemplateColumns,
-		gridTemplateColumnsTablet,
-		gridTemplateColumnsMobile,
 		gridTemplateRows,
 		gridTemplateRowsTablet,
 		gridTemplateRowsMobile,
@@ -244,21 +236,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			[ COUNT_ATTR.mobile ]: obj.mobile,
 		} );
 
-	const gridTemplateColumnsValue = {
-		...( gridTemplateColumns ? { desktop: gridTemplateColumns } : {} ),
-		...( gridTemplateColumnsTablet
-			? { tablet: gridTemplateColumnsTablet }
-			: {} ),
-		...( gridTemplateColumnsMobile
-			? { mobile: gridTemplateColumnsMobile }
-			: {} ),
-	};
+	// The attr IS the tier object now — pass it straight through, and write it
+	// straight back. No per-tier fan-out: those sibling attrs no longer exist.
+	const gridTemplateColumnsValue = gridTemplateColumns;
 	const onGridTemplateColumnsChange = ( obj ) =>
-		setAttributes( {
-			[ GRID_TEMPLATE_COLUMNS_ATTR.desktop ]: obj.desktop || '',
-			[ GRID_TEMPLATE_COLUMNS_ATTR.tablet ]: obj.tablet || '',
-			[ GRID_TEMPLATE_COLUMNS_ATTR.mobile ]: obj.mobile || '',
-		} );
+		setAttributes( { gridTemplateColumns: obj } );
 
 	const gridTemplateRowsValue = {
 		...( gridTemplateRows ? { desktop: gridTemplateRows } : {} ),
