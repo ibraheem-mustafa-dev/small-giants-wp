@@ -110,7 +110,7 @@
 					"label": "Icon / media",
 					"order": 3,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus mediaType/iconPosition selects — outside the Text/Fill/Layout style clusters."
+					"_note": "Governed by its own mediaType/iconPosition selects — outside the Text/Fill/Layout style clusters. supports.sgs.imageControls removed 2026-08-11 (Spec 35 capability-routing doctrine): this block never renders an <img>/<video>/sgs_render_media() itself (media is InnerBlocks child content), so the declaration was fully dead."
 				}
 			}
 		}
