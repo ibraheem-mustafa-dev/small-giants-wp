@@ -16,6 +16,7 @@ import {
 	ToggleControl,
 	Notice,
 	BoxControl,
+	FocalPointPicker,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -30,7 +31,12 @@ import {
 	normaliseResponsiveBox,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { resolveShadowPreview, colourVar } from '../../utils';
+import {
+	resolveShadowPreview,
+	colourVar,
+	objectPositionToFocalPoint,
+	focalPointToObjectPosition,
+} from '../../utils';
 // No-inline migration (2026-07-09): hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // per-grid-area panels write to LEGACY FLAT attrs, which would become dead
@@ -938,6 +944,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							     px. Its render is now UNGATED so it keeps this control's reach. */ }
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
 							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom />
+							{ /* Upgraded from a free-text "center 20%" TextControl to a
+							     crosshair 2026-08-11 (Spec 35 capability-routing doctrine,
+							     Part 9) — this control was the ONLY known-good, already-
+							     responsive object-position path in the whole framework, so
+							     the tier structure (desktop/tablet/mobile, three distinct
+							     attrs) is kept exactly as-is; only the INPUT WIDGET changes.
+							     Conversion is via the shared objectPositionToFocalPoint /
+							     focalPointToObjectPosition maths (src/utils/objectPosition.js),
+							     same rounding contract as the universal imageControls
+							     extension's PHP side, so a legacy free-text value round-trips
+							     losslessly the first time the crosshair is touched. */ }
 							<ResponsiveControl label={ __( 'Object position', 'sgs-blocks' ) }>
 								{ ( breakpoint ) => {
 									const posAttrMap = {
@@ -952,16 +969,31 @@ export default function Edit( { attributes, setAttributes } ) {
 										mobile: 'center 20%',
 									}[ breakpoint ];
 									const posHelpMap = {
-										desktop: __( 'CSS object-position (e.g. "center 20%"). Applies to tablet too unless overridden below.', 'sgs-blocks' ),
-										tablet: __( 'Blank = inherit the desktop position above.', 'sgs-blocks' ),
+										desktop: __( 'Drag the crosshair to control which part of the image stays visible when it is cropped. Applies to tablet too unless overridden below.', 'sgs-blocks' ),
+										tablet: __( 'Leave centred to inherit the desktop position above.', 'sgs-blocks' ),
 										mobile: __( 'Only used when a separate mobile image is set above.', 'sgs-blocks' ),
 									};
+									const posValue = attributes[ posKey ];
+									// Tablet's "blank = inherit desktop" contract can't be
+									// expressed by a crosshair (it has no empty state) — an
+									// unset tablet override is shown at the desktop position
+									// so dragging it always starts from what's actually
+									// rendering, and is written explicitly the moment it's
+									// touched (same as every other breakpoint here).
+									const effectiveValue =
+										'tablet' === breakpoint && ! posValue
+											? attributes.imageObjectPosition ?? posDefault
+											: posValue ?? posDefault;
 									return (
-										<TextControl
+										<FocalPointPicker
 											help={ posHelpMap[ breakpoint ] }
-											value={ attributes[ posKey ] ?? posDefault }
-											onChange={ ( val ) => setAttributes( { [ posKey ]: val } ) }
-											__nextHasNoMarginBottom
+											url={ splitMedia?.url || splitImage?.url || '' }
+											value={ objectPositionToFocalPoint( effectiveValue ) }
+											onChange={ ( val ) =>
+												setAttributes( {
+													[ posKey ]: focalPointToObjectPosition( val ),
+												} )
+											}
 										/>
 									);
 								} }
