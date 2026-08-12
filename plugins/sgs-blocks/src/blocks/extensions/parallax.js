@@ -31,6 +31,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType, getBlockSupport } from '@wordpress/blocks';
 import { isExtensionHidden } from './hide-extensions';
+import { SgsStyleTabDestination } from './inspector-tab-routing';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -209,7 +210,7 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason
 				 * only.
 				 */ }
-				<InspectorControls group="styles">
+				<SgsStyleTabDestination name={ name }>
 					<PanelBody
 						title={ __( 'Element parallax', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -261,7 +262,7 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</Notice>
 						) }
 					</PanelBody>
-				</InspectorControls>
+				</SgsStyleTabDestination>
 			</>
 		);
 	};

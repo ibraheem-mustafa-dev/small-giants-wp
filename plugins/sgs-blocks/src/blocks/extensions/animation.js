@@ -8,11 +8,11 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { AnimationControl } from '../../components';
 import { isExtensionHidden } from './hide-extensions';
+import { SgsStyleTabDestination } from './inspector-tab-routing';
 
 /**
  * Human-readable labels for each animation type.
@@ -156,7 +156,7 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * Styles" — that rule was RETIRED 2026-08-08. The routing
 				 * below is unchanged; only its reason is.
 				 */ }
-				<InspectorControls group="styles">
+				<SgsStyleTabDestination name={ props.name }>
 					<PanelBody
 						title={ __( 'Animation', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -215,7 +215,7 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 							}
 						/>
 					</PanelBody>
-				</InspectorControls>
+				</SgsStyleTabDestination>
 			</>
 		);
 	};
