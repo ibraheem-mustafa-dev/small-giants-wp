@@ -26,13 +26,12 @@ then found a real, deeper problem underneath it that's NOT yet fixed.**
   not real content), and removed the generic "Layout" panel + a repeater-grid panel that don't apply
   to Hero at all.
 - **While proving the max-width fix actually works live, found something bigger: fixing the
-  "setting gets thrown away" bug doesn't fully fix it.** The value now saves correctly, but it still
-  doesn't show up on the page for some blocks — traced to a genuine bug in the shared engine that
-  decides when to generate the styling code, which was written before this "structured value"
-  system existed and never got updated for it. This is NOT fixed yet — it touches the single most
-  shared, highest-risk file in the whole framework, and figuring out the right fix needs a proper
-  look, not a rushed patch at the end of a long session. Full detail below and in `decisions.md`
-  D587 — this is the top priority for next session.
+  "setting gets thrown away" bug didn't fully fix it.** The value saved correctly but still wasn't
+  showing up on the page for some blocks — traced to a genuine bug in the shared engine that decides
+  when to generate the styling code, written before this "structured value" system existed and never
+  updated for it. **Fixed and live-verified same session** (Bean's call — reversible via git, no need
+  to wait): re-ran the exact test that proved the bug broken, confirmed it now renders correctly.
+  Full detail: `decisions.md` D588.
 - Built a permanent automated check for the "shared control vs. what the block actually declares"
   bug class (the same shape as last session's crop-control bug and this session's max-width bug) —
   it immediately found 26 more real instances across 13 blocks that were NOT fixed this session
@@ -152,9 +151,8 @@ the junction before removing the worktree** — this project's memory already na
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD to be set by this session's final commit (D587 — 15-block maxWidth/
-  contentWidth fix + feature-grid columns + hero Phase 2.3 + the new check-shared-panel-schema.js
-  gate). ⛔ **This will drift — run `git log -1` AND
+- **Branch:** `main`, HEAD `a637e984` at session end (D588 — the wrapper uid-minting fix, shipped
+  same session). ⛔ **This will drift — run `git log -1` AND
   `git status` AND `git branch --show-current`, don't trust this line.** Local and `origin/main`
   are in sync as of this HEAD (verified via `git push`, fast-forward, no force needed).
   Commit by EXACT PATH — this checkout is shared with at least one other concurrent session.
@@ -170,7 +168,7 @@ the junction before removing the worktree** — this project's memory already na
   glob. Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (currently 587) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
+  (currently 588) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
   "SHIPPED" claim in this doc or decisions.md.
 
 ---
@@ -191,23 +189,24 @@ the junction before removing the worktree** — this project's memory already na
 
 ## Blockers
 
-- None for this session's shipped work (attribute storage fix, feature-grid, hero Phase 2.3) — all
-  deployed and live-verified. The wrapper CSS-emission bug below is a separate, NOT-yet-fixed item.
+- None. All this session's shipped work (attribute storage fix, feature-grid, hero Phase 2.3, AND
+  the wrapper `$needs_uid` fix below) is deployed and live-verified.
 
-## Open — TOP PRIORITY for next session
+## ✅ Wrapper uid-minting bug — SHIPPED same session (D588)
 
-- **`$needs_uid` in `class-sgs-container-wrapper.php` doesn't recognise object-model tier attributes
-  as a reason to mint a scoped CSS selector.** Confirmed live: a client-set `maxWidth`/`contentWidth`
-  now correctly SAVES (this session's fix) but still doesn't PAINT for a block with no other
-  uid-triggering condition — the correctly-written emission code at lines ~2030-2445 never runs.
-  Same structural gap confirmed for `gap` (currently masked on some blocks by an unrelated per-block
-  `container_queries` opt-in flag that happens to force uid-minting for other reasons). **True blast
-  radius unmeasured** — potentially affects every object-model property (`gap`, `maxWidth`,
-  `contentWidth`, `gridTemplateColumns`, `gridTemplateRows`, `columns`, `contentBandPadding`,
-  `contentPadding`, `pillPadding`, `padding`) on any block whose ONLY set tier property is one of
-  these. Needs a design decision (make `container_queries` universal for object-model blocks vs. add
-  explicit per-property checks) before any fix — highest-blast-radius file in the framework. Full
-  mechanism + evidence: `decisions.md` D587.
+`$needs_uid` in `class-sgs-container-wrapper.php` didn't recognise object-model tier attributes
+(`maxWidth`/`contentWidth`/`gap`/`gridTemplateColumns`/`gridTemplateRows`/`columns`/
+`contentBandPadding`) as a reason to mint a scoped CSS selector — a client-set value SAVED correctly
+but never PAINTED for a block with no other uid-triggering condition. Fixed with a new
+`$has_object_tier_value` check, live-verified via the exact REST test that proved the bug (before:
+no CSS rule anywhere; after: `.sgs-container-<uid>{max-width:600px}` + `{max-width:780px}` both
+emit, byte-exact). Commit `a637e984`, deployed. Bean's call to ship same-session rather than park —
+reversible via git. **Not yet done:** a live spot-check across the canary's REAL existing content
+(not just the synthetic test) for any post whose only set tier property was previously silently
+inert — this fix means such a post's rendering may now change (correctly), worth confirming nothing
+surprising shows up. Full mechanism: `decisions.md` D587 (diagnosis) + D588 (fix + verification).
+
+## Open — next priority
 - **26 findings from the new `check-shared-panel-schema.js` gate, untriaged.** `contentBandBackground`
   undeclared on 12 `kind="layout"` blocks, `verticalAlign` undeclared on the same 12 + `gallery`,
   `trust-bar.gridItemBorder` undeclared, and `product-card.contentWidth` (a re-surfacing of the

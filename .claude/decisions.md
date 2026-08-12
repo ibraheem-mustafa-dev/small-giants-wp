@@ -1,5 +1,43 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D588 — The D587 wrapper bug is SHIPPED, same session (Bean: "we can always roll it back, just do it") [ROUTINE]
+
+**2026-08-12, immediately following D587.** Bean overrode the "park for a fresh session" recommendation
+— reversibility via git makes the shared-wrapper blast radius manageable, and the fix was already
+fully scoped. Fixed `$needs_uid` in `includes/class-sgs-container-wrapper.php`: added
+`$has_object_tier_value`, a new check (inlined at the computation site, following the exact
+"inline rather than move the closure" precedent already used one function up for `$object_grid`)
+that replicates `$sgs_tier_object_has_value`'s tier-resolution logic against every object-shaped
+property the object-model emission block (~line 2030 onward) actually reads —
+`maxWidth`/`contentWidth`/`gap`/`gridTemplateColumns`/`gridTemplateRows`/`columns`/
+`contentBandPadding`. Matches the object-model section's own already-stated design intent
+("universal by data, not by flag").
+
+**Verified live, not just built-and-hoped:** re-ran the exact same throwaway REST test that proved
+the bug (`sgs/pricing-table` with `maxWidth:{desktop:"780px"},contentWidth:{desktop:"600px"}`).
+Before the fix: neither rule existed anywhere in the rendered output. After: the wrapper element now
+correctly carries a `sgs-container-<uid>` class it didn't before, and the lifted CSS contains
+`.sgs-container-5a7440a8{max-width:600px}` + `.sgs-container-5a7440a8{max-width:780px}` (plus their
+`margin-inline:auto` pairings) — byte-exact match to the input. Test page deleted after use.
+
+Build green (`npm run build` exit 0, motion-bundle-budget gate passed), `php -l` clean,
+21 phpcbf-auto-fixed formatting warnings (2 pre-existing remain, unrelated). Committed `a637e984`
+— visual-diff gate passed on its own auto-skip logic this time (a pure PHP conditional change,
+correctly classified as markup-neutral by `check-markup-neutral.py`, no `--no-verify` needed).
+Pushed + deployed to the canary.
+
+**Consequence — every property this touches may now paint differently on any LIVE post whose only
+set tier-object property was previously silently inert.** This is the intended, corrective effect
+(broken → correct), not a regression, but it is a real behaviour change on any such post and hasn't
+been swept for one. Worth a live spot-check across the canary's real content next session, not
+just the synthetic test case above.
+
+**Still open, deliberately not touched this pass:** the 26 `check-shared-panel-schema.js` findings
+from D587 (unrelated defect class — declared-vs-consumed shape mismatches, not the uid-minting gap)
+and whether `$container_queries`'s existing per-block opt-in should now be retired in favour of this
+universal check (it's now redundant for object-tier purposes but may still gate other DOM/containment
+behaviour — not investigated).
+
 ## D587 — Full-plan Track 1b audit: 15-block maxWidth/contentWidth fix, feature-grid columns, hero Phase 2.3 cleanup, a new standing gate, and a real unresolved wrapper bug [INCIDENT]
 
 **2026-08-12, later session (Track 1b continuation).** Asked to audit every non-superseded claim in
