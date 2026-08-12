@@ -85,12 +85,6 @@ export default function SgsInspectorTabs( { content, style, advanced } ) {
 						<>
 							{ advanced || null }
 							<Slot name={ SGS_ADVANCED_TAB_SLOT } bubblesVirtually />
-							{ /* Native WordPress "advanced" group — HTML anchor / CSS
-							     class, auto-populated by core supports.anchor/
-							     customClassName. Pulled in here so it sits inside the
-							     tab instead of leaking out as a separate collapsed
-							     panel underneath the whole tab strip. */ }
-							<InspectorControls.Slot group="advanced" bubblesVirtually />
 							<Slot name={ SGS_ADVANCED_TAB_BOTTOM_SLOT } bubblesVirtually />
 						</>
 					);
