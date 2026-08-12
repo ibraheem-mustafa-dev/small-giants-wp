@@ -56,7 +56,8 @@
 		"survey:responsive-shape": "python scripts/surveys/survey-responsive-shape.py",
 		"survey:dead-css": "python scripts/surveys/survey-dead-css.py",
 		"survey:experimental-imports": "node scripts/surveys/survey-experimental-imports.js",
-		"check:experimental-imports": "node scripts/surveys/survey-experimental-imports.js --check"
+		"check:experimental-imports": "node scripts/surveys/survey-experimental-imports.js --check",
+		"survey:native-supports": "python scripts/surveys/survey-native-supports.py --survey"
 	},
 	"devDependencies": {
 		"@wordpress/icons": "^11.6.0",
