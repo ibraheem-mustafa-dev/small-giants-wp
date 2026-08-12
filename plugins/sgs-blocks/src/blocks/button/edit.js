@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, URLInput, useSettings } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
@@ -18,6 +18,7 @@ import {
 	DesignTokenPicker,
 	StateToggleControl,
 	resolveColorToken,
+	SgsLinkControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
@@ -331,15 +332,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
 					/>
-					<div style={ { marginTop: '8px', marginBottom: '8px' } }>
-						<label className="components-base-control__label" style={ { display: 'block', marginBottom: '4px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', color: '#1e1e1e' } }>
-							{ __( 'URL', 'sgs-blocks' ) }
-						</label>
-						<URLInput
-							value={ url }
-							onChange={ ( val ) => setAttributes( { url: val } ) }
-						/>
-					</div>
+					<SgsLinkControl
+						label={ __( 'URL', 'sgs-blocks' ) }
+						value={ { url: url || '' } }
+						onChange={ ( val ) => setAttributes( { url: val } ) }
+						searchOnly
+					/>
 					<SelectControl
 						label={ __( 'Open in', 'sgs-blocks' ) }
 						value={ linkTarget }
