@@ -267,7 +267,7 @@ these apart from the data:
 |---|---|---|---|---|---|
 | 1 | flat-sibling trio | `sgs/hero.imagePadding` (+`Tablet`/`Mobile`) | **YES** | three separate array reads | **flat — already correct today** |
 | 2 | migrated tier-object | `contentBandPadding`, `gap`, `maxWidth`, `columns`, `fontSize`, `sgs/media.order`, `decorative-image.positionX/Y` | no | `sgs_responsive_normalise_object(...)` → `.desktop/.tablet/.mobile` | **object — R1's actual target** |
-| 3 | base-only box, **NO tier support** | `sgs/text.borderWidth` | no | its `render.php` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()` — a **FLAT read, no tier call anywhere** | **flat — folding it renders NOTHING** |
+| 3 | base-only box, **NO tier support** | `sgs/text.borderWidth` | no | its `render.php:141` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()`, then decomposes it into `['top']`/`['right']`/`['bottom']`/`['left']` — a **BOX, never tiers**. ⚠ Be precise when re-checking: that file DOES contain 4 tier calls (`:58` `fontSize`, `:62` `lineHeight`, `:67` `letterSpacing`, `:329` the emit) — **none carries `borderWidth`**. A bare `grep sgs_responsive_normalise_object` on this file returns 4 hits and would wrongly look like a refutation | **flat — folding it renders NOTHING** |
 
 ⛔ **CORRECTION 2026-08-12 (same day): `sgs/container.gridItemPadding` was cited here as the canonical
 Shape 3 example and that is WRONG — it is Shape 2.** `class-sgs-container-wrapper.php:2279-2296` feeds

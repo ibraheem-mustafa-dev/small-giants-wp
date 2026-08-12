@@ -75,7 +75,7 @@ migrated properties — but silently, via resolver gaps and red tests, instead o
    |---|---|---|---|---|---|
    | 1 · flat-sibling trio | `sgs/hero.imagePadding`(+Tablet/Mobile) | **yes** | 3 separate array reads | leave alone | ✅ |
    | 2 · migrated tier-of-boxes | `contentBandPadding`, `contentPadding` | no | `sgs_responsive_normalise_object(...)` then `.desktop/.tablet/.mobile` | fold | ✅ |
-   | 3 · **base-only box, NO tier support** | `sgs/text.borderWidth` | **no** | its `render.php` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()` — a **FLAT read, no tier call anywhere** | fold ⇠ **WRONG** | ❌ |
+   | 3 · **base-only box, NO tier support** | `sgs/text.borderWidth` | **no** | its `render.php:141` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()`, then decomposes it into `['top']`/`['right']`/`['bottom']`/`['left']` — a **BOX, never tiers**. ⚠ Be precise when re-checking: that file DOES contain 4 tier calls (`:58` `fontSize`, `:62` `lineHeight`, `:67` `letterSpacing`, `:329` the emit) — **none carries `borderWidth`**. A bare `grep sgs_responsive_normalise_object` on this file returns 4 hits and would wrongly look like a refutation | fold ⇠ **WRONG** | ❌ |
 
    Shape 3 is indistinguishable from shape 2 by sibling-existence *or* by `attr_type`. Folding it to
    `{desktop:{…}}` makes the PHP find no `top`/`right`/… keys and **render nothing — regressing a
@@ -257,3 +257,4 @@ during builds and is unrelated to this deliberate removal. Chasing it would have
 - The runtime/PHP. Already handles both flat and tier-object shapes.
 - The D589 inspector work. It shipped, deployed and live-verified on a green build **before** the
   reseed; none of the 14 failures touch the attributes it changed.
+
