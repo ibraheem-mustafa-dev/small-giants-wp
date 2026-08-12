@@ -29,6 +29,7 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import {
+	InspectorControls,
 	MediaUpload,
 	MediaUploadCheck,
 } from '@wordpress/block-editor';
@@ -45,7 +46,6 @@ import { useSelect } from '@wordpress/data';
 import { useState, useEffect } from '@wordpress/element';
 import { DesignTokenPicker } from '../../components';
 import { isExtensionHidden } from './hide-extensions';
-import { SgsStyleTabDestination } from './inspector-tab-routing';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
 import fxPresets from './fx-presets.json';
@@ -1223,7 +1223,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		return (
 			<>
 				<BlockEdit { ...props } />
-				<SgsStyleTabDestination name={ name }>
+				<InspectorControls group="styles">
 					<ToolsPanel
 						label={ __( 'Scroll & effects', 'sgs-blocks' ) }
 						resetAll={ resetAll }
@@ -2393,7 +2393,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
-				</SgsStyleTabDestination>
+				</InspectorControls>
 			</>
 		);
 	};

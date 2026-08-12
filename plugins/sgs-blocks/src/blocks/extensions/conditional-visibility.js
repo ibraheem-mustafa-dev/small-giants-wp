@@ -43,9 +43,6 @@ import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
 import { mobile, tablet, desktop } from '@wordpress/icons';
-import { isTabBarEligible } from './hide-extensions';
-import { Fill } from '@wordpress/components';
-import { SGS_ADVANCED_TAB_SLOT } from '../../components/SgsInspectorTabs';
 import {
 	PanelBody,
 	SelectControl,
@@ -299,26 +296,10 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 				attributes.sgsHideOnTablet ||
 				attributes.sgsHideOnDesktop;
 
-			// D4 rule 2's own named example ("the responsive/device-tier
-			// panel" → Advanced) applies ONLY once a block has the SGS tab
-			// bar at all. For every other (still-native-tabbed) block this
-			// panel's ORIGINAL placement — its own bare default-group
-			// InspectorControls panel, per this file's header comment and
-			// Bean's own prior decision — must be preserved unchanged.
-			// Routing it through the Advanced-panel-shaped destination used
-			// by custom-css.js/block-defaults.js was wrong for THIS file:
-			// those two originated in native InspectorAdvancedControls, this
-			// one never did — confirmed as a live regression on sgs/container
-			// 2026-08-12 (Visibility conditions buried inside the collapsed
-			// native "Advanced" drawer on every non-pilot block).
-			const eligible = isTabBarEligible( name );
-			const Destination = eligible ? Fill : InspectorControls;
-			const destinationProps = eligible ? { name: SGS_ADVANCED_TAB_SLOT } : {};
-
 			return (
 				<>
 					<BlockEdit { ...props } />
-					<Destination { ...destinationProps }>
+					<InspectorControls>
 						<PanelBody
 							title={ __( 'Visibility conditions', 'sgs-blocks' ) }
 							initialOpen={ false }
@@ -592,7 +573,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 								/>
 							</div>
 						</PanelBody>
-					</Destination>
+					</InspectorControls>
 				</>
 			);
 		};

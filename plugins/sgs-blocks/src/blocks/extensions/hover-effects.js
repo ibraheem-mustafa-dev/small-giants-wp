@@ -40,7 +40,6 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isExtensionHidden, isExtensionEnabled } from './hide-extensions';
-import { SgsStyleTabDestination } from './inspector-tab-routing';
 
 // Lazy-import DesignTokenPicker if available, fallback to nothing.
 let DesignTokenPicker;
@@ -322,7 +321,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * a universal filter. 48 blocks rely on it SOLELY, so the
 				 * element-hover capability lands BEFORE any deletion.
 				 */ }
-				<SgsStyleTabDestination name={ name }>
+				<InspectorControls group="styles">
 					{ ! hideHover && (
 					<PanelBody
 						title={ __( 'Hover Effects', 'sgs-blocks' ) }
@@ -426,7 +425,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						/>
 					</PanelBody>
 					) }
-					</SgsStyleTabDestination>
+					</InspectorControls>
 					{ /*
 					 * Block Link is BEHAVIOUR (turns the block into a link) —
 					 * it belongs in the default (Settings) tab, not Styles.
@@ -472,7 +471,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 					 * interaction — back in the Styles tab alongside Hover
 					 * Effects above.
 					 */ }
-					<SgsStyleTabDestination name={ name }>
+					<InspectorControls group="styles">
 					{ ! hideClick && (
 					<PanelBody
 						title={ __( 'Click Effects', 'sgs-blocks' ) }
@@ -512,7 +511,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						) }
 					</PanelBody>
 					) }
-				</SgsStyleTabDestination>
+				</InspectorControls>
 			</>
 		);
 	};

@@ -41,12 +41,12 @@ addFilter(
 	'sgs/apply-block-defaults',
 	applyBlockDefaults
 );
-import { Button, PanelBody } from '@wordpress/components';
+import { InspectorAdvancedControls } from '@wordpress/block-editor';
+import { Button } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { SgsAdvancedTabDestination } from './inspector-tab-routing';
 
 const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
@@ -85,31 +85,20 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				{ isSelected && (
-					<SgsAdvancedTabDestination name={ name }>
-						<PanelBody
-							title={ __( 'Save as Default', 'sgs-blocks' ) }
-							initialOpen={ false }
+					<InspectorAdvancedControls>
+						<Button
+							variant="secondary"
+							onClick={ handleSave }
+							isBusy={ status === 'saving' }
+							disabled={ status === 'saving' }
+							style={ {
+								width: '100%',
+								justifyContent: 'center',
+							} }
 						>
-							<p className="components-base-control__help">
-								{ __(
-									'Saves this block’s current settings as the starting point for every new instance of this block you add from now on.',
-									'sgs-blocks'
-								) }
-							</p>
-							<Button
-								variant="secondary"
-								onClick={ handleSave }
-								isBusy={ status === 'saving' }
-								disabled={ status === 'saving' }
-								style={ {
-									width: '100%',
-									justifyContent: 'center',
-								} }
-							>
-								{ statusLabel }
-							</Button>
-						</PanelBody>
-					</SgsAdvancedTabDestination>
+							{ statusLabel }
+						</Button>
+					</InspectorAdvancedControls>
 				) }
 			</>
 		);
