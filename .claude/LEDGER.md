@@ -9,9 +9,20 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-12 (session 16, follow-up to Track 1b evening). Both items the previous session left
-"ruled/built but not shipped" are now live: the new inspector tab bar is built and proven on one
-block, and the FX fix is deployed. Branch merged and deleted.**
+**2026-08-12 (same evening, immediately after session 16). The new inspector tab bar described just
+below is REVERTED — your call, and the right one.** After watching the full build, the live fixes,
+and the QC council pass, you said it plainly: "this is actually a really bad idea... it doesn't
+actually add any functionality or bring us closer to our uniformity or cloning goals." Every file
+the tab-bar work touched was restored to its exact pre-session state (`47576545`), the 3 new files
+deleted, and the revert deployed to the canary. **The FX route-box fix below is NOT part of this
+revert** — you named it explicitly as unrelated, a real bug fix, and it's still shipped and live.
+The design + the two defects the build found along the way are parked, not lost — see `decisions.md`
+D593 for the full record and where to pick it back up if it's revisited later.
+
+**2026-08-12 (session 16, follow-up to Track 1b evening — HISTORICAL, see the revert note above).
+Both items the previous session left "ruled/built but not shipped" went live for a few hours: the
+new inspector tab bar was built and proven on one block, and the FX fix was deployed. Branch merged
+and deleted. The tab bar was reverted later the same evening — see above.**
 
 - **The three-tab inspector bar (Content / Style / Advanced) is real, working code now** — piloted
   on `sgs/decorative-image`, verified live in the block editor on the canary: exactly one tab strip,
@@ -253,7 +264,7 @@ the junction before removing the worktree** — this project's memory already na
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `2b6ec9d7` (merge of `feat/sgs-inspector-tab-bar` — D592, this session).
+- **Branch:** `main`, HEAD `47576545` (D593 — inspector tab bar reverted, this session).
   ⛔ **This will drift — run `git log -1` AND `git status` AND `git branch --show-current`, don't
   trust this line.** Local and `origin/main` are in sync as of this HEAD (verified via `git push`).
   Commit by EXACT PATH — this checkout is shared with at least one other concurrent session (proven
@@ -278,7 +289,7 @@ the junction before removing the worktree** — this project's memory already na
   (always available; do not ask).
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (currently 592) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
+  (currently 593) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
   "SHIPPED" claim in this doc or decisions.md.
 
 ---
@@ -292,7 +303,7 @@ the junction before removing the worktree** — this project's memory already na
 | Governing programme plan (phases, N-items, live status) | `~/.claude/plans/go-track-1b-playful-hamster.md` (updated this session — N3, Phase 4) |
 | THE migration triad — survey/fix/gate | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
 | THE GOVERNING SPEC for this track | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| Decisions (D-numbered) | `decisions.md` — D592 is this session; D591/D590/D589 are recent siblings |
+| Decisions (D-numbered) | `decisions.md` — D593 is this session (reverts D592); D591/D590/D589 are recent siblings |
 | The new shared-panel-schema gate | `plugins/sgs-blocks/scripts/check-shared-panel-schema.js` — `--survey`/`--check`/`--self-test`, BLOCKING in `prebuild` since D589, 0 findings |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
@@ -309,12 +320,13 @@ the junction before removing the worktree** — this project's memory already na
   InnerBlocks list, CSS grid-column placement, delete-not-fallback on the legacy attrs) is NOT what
   failed and doesn't need re-deciding — only the grid-item wrapper structure was wrong. A cold-start
   prompt incorporating the exact diagnosis was handed to Bean directly for a fresh session.
-- **FX route-box fix — SHIPPED (D592).** No longer open.
-- **The bespoke Advanced inspector tab (D4) — SHIPPED, piloted on `sgs/decorative-image` (D592).**
-  Scope note, still true: this was NOT a one-session job for all 83 blocks. Rolling it out to the
-  other 82 — mostly by retiring each block's own native colour/border/typography/spacing supports
-  in favour of SGS's own equivalents (`DesignTokenPicker`/`BorderBoxControl`/`TypographyControls`/
-  `ResponsiveBoxControl`) — is the next pass, not started.
+- **FX route-box fix — SHIPPED (D592), still live.** No longer open.
+- **The bespoke Advanced inspector tab (D4) — REVERTED (D593), parked.** Built, piloted, live-
+  verified, and QC-councilled — then reverted the same evening on Bean's call: no functionality
+  gain, doesn't serve the uniformity/cloning-pipeline goals, real ongoing maintenance cost. Full
+  design + the two open items (native-supports-rollout gap, native Anchor/CSS-class panel residual)
+  are preserved in `go-track-1b-playful-hamster.md` D4 row + `lets-build-the-advanced-functional-
+  puddle.md` if this is revisited later. Not an active work item.
 
 ## ✅ Wrapper uid-minting bug — SHIPPED same session (D588)
 

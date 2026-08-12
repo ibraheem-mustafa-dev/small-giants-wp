@@ -1,6 +1,35 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D593 — SGS inspector tab bar REVERTED — Bean's call, not worth the maintenance cost for a cosmetic change [ROUTINE]
+
+**2026-08-12, same evening as D592.** After the tab bar (D4/D592) was built, piloted, live-verified,
+and QC-councilled, Bean reviewed it end to end and called it off: **"this is actually a really bad
+idea... This is an extra, it doesn't actually add any functionality or bring us closer to our
+uniformity or cloning goals."** Correct call — CLAUDE.md's SUCCESS definition is the cloning
+pipeline + framework uniformity, and this was pure inspector-UI reorganisation with no capability
+gain, carrying real ongoing cost (routing 8 shared universal extensions through a native/custom
+eligibility split, plus a native-supports-retirement dependency to roll out past the single pilot).
+
+**Reverted cleanly (`47576545`):** every file the tab-bar work touched restored to its exact
+pre-session state (baseline `8598ac73`, the commit before this whole session began); the 3 new files
+(`SgsInspectorTabs.js`/`.css`, `inspector-tab-routing.js`) deleted outright. Deployed to the canary.
+**The FX route-box fix (D442 follow-up, `d70d1f85`) is explicitly NOT part of this revert** — Bean
+named it as unrelated, a real rendering-bug fix, not "this". It remains shipped and live.
+
+**D592 below is now historical** — read it for the build record and the two genuine defects it
+found and fixed along the way (both real lessons, still valid: don't reuse a routing helper across
+files with different ORIGINAL destinations without checking each one's actual prior placement; a
+"revert" commit message needs to state precisely which lines it touches so a worried re-read can
+verify the blast radius directly). The mechanism itself is parked, not deleted from memory — if the
+tab bar is revisited later, `go-track-1b-playful-hamster.md`'s D4 row and `lets-build-the-advanced-
+functional-puddle.md` still hold the full design + the two open items (native supports rollout gap,
+native Anchor/CSS-class panel residual) that were never resolved.
+
 ## D592 — SGS inspector tab bar built + piloted, FX route-box fix shipped, follow-up session to D591
+
+> ⛔ **REVERTED same evening — see D593 above.** This entry is kept as the build record; the tab bar
+> described below is no longer live on `main`. The FX route-box fix described here IS still shipped
+> (D593 did not touch it).
 
 **2026-08-12, follow-up session.** Executed the two items D591 left "ruled/built but not yet
 shipped": the D4 inspector tab bar and the FX route-box fix. Full plan + build record:
