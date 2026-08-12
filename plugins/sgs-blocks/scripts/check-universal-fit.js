@@ -709,6 +709,49 @@ function main() {
 				`${ totalBaselined } baselined — see --json / full report for the matrix, no longer the headline.)\n` +
 				'  Run without --check for the full breakdown.\n'
 		);
+
+		// --------------------------------------------------------------------
+		// GATE (promoted 2026-08-12, Track 1b item A5). Until now `--check` was
+		// WARN-ONLY and exited 0 unconditionally, so this script ran in
+		// `prebuild` and COULD NOT FAIL — the exact "declared defence that
+		// enforces nothing" shape Spec 35's capability-routing doctrine Part 6
+		// exists to close. The 2.1 opt-in inversion was required to ship with
+		// this flip "in the same commit" (doctrine Part 7 acceptance test); it
+		// did not, so this closes overdue debt.
+		//
+		// ⛔ IT GATES ON THE TWO HEADLINE SIGNALS ONLY — deliberately NOT on
+		// `totalFlagged`. That raw block x extension matrix count is 454 today
+		// and this file's own header states it "over-counts by design" and is
+		// "no longer the headline": the flagged condition is true for nearly
+		// every block x globally-rendered-universal pair BY DESIGN, because a
+		// shared PHP filter consumes the attribute rather than the block's own
+		// render.php. Gating on it would red-light every build for a condition
+		// that is not a defect. Measured immediately before promotion:
+		// inappropriateFit 0, noOptOutExtensions 0 — a genuine zero on both,
+		// and both are semantic signals derived from roster.json
+		// (`category` + `surfaces.styling`) rather than a hardcoded slug list.
+		// The 3 utility extensions with no opt-out (conditionalVisibility,
+		// customCss, responsiveVisibility) are excluded upstream as
+		// universal-by-design and are NOT part of the gated count.
+		// --------------------------------------------------------------------
+		const gatingCount = inappropriateFit.length + noOptOutExtensions.length;
+		if ( gatingCount > 0 ) {
+			process.stderr.write(
+				`\n[check-universal-fit] FAIL — ${ gatingCount } headline finding(s): ` +
+					`${ inappropriateFit.length } inappropriate-fit, ` +
+					`${ noOptOutExtensions.length } no-opt-out architectural gap(s).\n` +
+					'  FIX inappropriate-fit: add the extension slug to that block\'s ' +
+					'`supports.sgs.hideExtensions` (opt-out) or drop it from ' +
+					'`supports.sgs.enabledExtensions` (opt-in), per Spec 35 A7.\n' +
+					'  FIX a no-opt-out gap: give the styling/interaction extension a real ' +
+					'`hideExtensions` slug in source — a hand-rolled denylist inside the ' +
+					'extension is not an opt-out mechanism.\n' +
+					'  ⛔ Do NOT silence either by editing this script or by adding matrix ' +
+					'entries to scripts/universal-fit-baseline.json — that baseline covers the ' +
+					'raw matrix, which this gate deliberately does not read.\n'
+			);
+			process.exit( 1 );
+		}
 		process.exit( 0 );
 	}
 
