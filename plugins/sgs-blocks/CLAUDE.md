@@ -87,8 +87,12 @@ mode. Putting a non-gating script in a gate chain is enforcement theatre.
 recorded failure mode, the same one D493 caught running for three weeks. **Never assume a built
 detector is reachable: grep `package.json` before believing it runs.**
 ⚠ **`survey-inspector-surface.js` counts DECLARED rows**, while D544's live-editor figures count
-DEFAULT-VISIBLE ones. Trust its OWN-vs-EXTENSION split (which matches the live measurement exactly);
-do not quote its row totals as "what the client sees".
+DEFAULT-VISIBLE ones. **Corrected 2026-08-13 — the OWN-vs-EXTENSION split does NOT reproduce live
+measurement** (the script's own D544 calibration table says "Ordering (row-count) MATCHES live:
+false"; re-verified live across 4 blocks with a declared:live ratio ranging 1.15x–3.2x, not
+constant). Only OWN *panel*-count (not row-count, not the EXTENSION split) has been verified to
+match live measurement. Do not quote ANY of its totals — panel-count included, once beyond a single
+verified block — as "what the client sees" without a fresh live check.
 
 ### Tier-object migration triad — `scripts/migrate-tier-object.py` (Spec 35 / D549 / D554 / D571)
 

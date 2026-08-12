@@ -92,7 +92,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 | Shadow | real X/Y/blur/spread/colour+alpha/inset builder (+ presets on top; multi-layer ideal) | **None/Small/Medium only** |
 | Selection | `ToggleGroupControl` (2–5 short); `ComboboxControl` (>~10, searchable); `FormTokenField` (multi-value) | comma-text; giant Select |
 | Media/gallery | `multiple="add"` + `gallery` + array attr + `MediaUploadCheck` + drag-drop | scalar attr + single MediaUpload |
-| Link/CTA | **`LinkControl`** (internal search + new-tab + rel nofollow/sponsored via `settings`) | raw URL `TextControl` |
+| Link/CTA | **`SgsLinkControl`** (wraps `LinkControl` — internal search + new-tab + rel nofollow/sponsored via `settings`) | raw URL `TextControl` |
 | Typography | full set: `FontSizePicker` (presets+fluid) + `FontAppearanceControl` + `LineHeightControl` + letter-spacing/transform/decoration | fontSize only |
 | Image | size dropdown (attachment `sizes`) + aspectRatio + object-fit/`FocalPointPicker` | hardcoded full-size `src`, centre-crop only |
 | Spacing | token-based `__experimentalSpacingSizesControl` (S/M/L, theme.json) OR UnitControl | raw px RangeControl (breaks token system) |
@@ -251,7 +251,7 @@ Essential control only in sidebar · sidebar as home for every option · no head
 **incomplete option sets (Small/Medium, no Custom)** · bespoke panel duplicating a native supports
 panel · no reset · colour-only focus/selected · help not `aria-describedby`-linked · bespoke
 "Custom CSS" field on the block · re-implementing box-side unlink per block · duplicate hover panels /
-hover split from resting · everything in the Settings group · **raw URL field instead of LinkControl** ·
+hover split from resting · everything in the Settings group · **raw URL field instead of `SgsLinkControl`** ·
 **hand-rolling duotone/aspect-ratio/lightbox/sticky/dynamic-content when a native support exists** ·
 animation with no reduced-motion gate · raw-px spacing instead of the token scale.
 
@@ -321,9 +321,18 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 > *inside* the canonical wrappers. (Repo-wide they also appear in `scripts/inspector-scan/fixtures/**`
 > and in `rules/04-colour-alpha.js`'s own matcher list, which is expected.)
 >
-> ⚠ **Part H is not the only place in this spec naming the raw components** — `:90`, `:101`, `:102`,
-> `:249`, `:283`, `:356`, `:376`, `:384` still list `LinkControl`. The sweep is owed; correcting Part
-> H alone relocated the contradiction rather than removing it.
+> ⚠ **Part H sweep DONE, 2026-08-12** — narrower than the line list this box used to carry (those
+> cached line numbers had already drifted; re-derived by reading every bare `LinkControl` mention in
+> this file). Two genuine instruction-to-a-developer sites fixed: Part B's completeness-parity table
+> (was "Link/CTA | `LinkControl`", now "**`SgsLinkControl`** (wraps `LinkControl`)") and Part F's
+> anti-pattern list (was "raw URL field instead of `LinkControl`", now "instead of `SgsLinkControl`").
+> The REMAINING bare `LinkControl` mentions in this file (Part C's "N: LinkControl" feature-parity
+> annotations, the "Native mechanism" table's `LinkControl | raw URL text fields` row, this box's own
+> comparison table, Part I's "wraps `LinkControl`" note) are deliberately unchanged — they correctly
+> name the underlying WP-NATIVE primitive SGS's own `SgsLinkControl` wraps, not an instruction to
+> reach for it directly. Conflating "names the native mechanism" with "tells you what to build with"
+> was the actual defect; fixing every bare mention indiscriminately would have made those rows
+> factually wrong (there is no WP-native "SgsLinkControl" mechanism to point to).
 >
 > ⚠ The other ~23 assignments below are **not yet reconciled against the contract**. `BorderBoxControl`
 > agrees with contract §14. Treat the rest as indicative until swept.
