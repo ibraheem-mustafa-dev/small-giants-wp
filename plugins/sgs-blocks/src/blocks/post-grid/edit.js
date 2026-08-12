@@ -959,10 +959,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				</ToolsPanel>
 
 				{ /* Panel: Container wrapper (WS-4 mirror) */ }
+				{ /* showLayout={false}: this block owns its own Layout control
+				     above (Grid / List / Masonry / Carousel). The shared one
+				     writes stack/flex/grid into the same `layout` attr, so
+				     "list"/"masonry"/"carousel" were unreachable from it and a
+				     "flex"/"stack" write was silently coerced back to "grid" by
+				     WordPress. render.php:539 already unsets `layout` before
+				     handing attributes to the wrapper for the same collision —
+				     this closes the editor half. Same fix as sgs/gallery. */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="layout"
+					showLayout={ false }
 				/>
 
 				{ /* Panel 8: Carousel (conditional) */ }

@@ -489,7 +489,7 @@
 			"type": "object",
 			"default": {}
 		},
-		"verticalAlign": {
+		"alignItems": {
 			"type": "string",
 			"default": "start"
 		},
@@ -581,6 +581,10 @@
 			"default": {}
 		},
 		"gridItemBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"gridItemBorder": {
 			"type": "string",
 			"default": ""
 		},
@@ -685,10 +689,6 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
-		},
-		"contentBandBackground": {
-			"type": "string",
-			"default": ""
 		},
 		"contentBandPadding": {
 			"type": "object",

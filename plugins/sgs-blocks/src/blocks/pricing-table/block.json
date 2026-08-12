@@ -432,6 +432,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
 		"gap": {
 			"type": "object",
 			"default": {}

@@ -83,7 +83,6 @@
 					"clusters": [ "fill", "layout" ],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:background-color": "contentBandBackground",
 						"css:width": "contentWidth"
 					},
 					"_note": "The __inner band IS the physics arena — its rendered box is what view.js reads as Draggable's bounds and the Physics2D floor/wall geometry."
@@ -107,7 +106,6 @@
 			"type": "object",
 			"default": {"desktop": "full"}
 		},
-		"contentBandBackground": { "type": "string", "default": "" },
 		"contentBandPadding": { "type": "object", "default": { "desktop": {} } },
 		"paddingTablet": { "type": "object", "default": {} },
 		"paddingMobile": { "type": "object", "default": {} },

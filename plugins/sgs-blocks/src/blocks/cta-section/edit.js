@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreview } from '../../utils/tokens';
-import { ResponsiveBoxControl, ResponsiveOverride, DesignTokenPicker, ShadowControl, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
 // ContentBandPanel sub-panels still write to LEGACY FLAT attrs
@@ -291,11 +291,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<DesignTokenPicker
-						label={ __( 'Band background colour', 'sgs-blocks' ) }
-						value={ attributes.contentBandBackground || '' }
-						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
-					/>
+					{ /* ⛔ "Band background colour" (contentBandBackground) REMOVED
+						2026-08-12, attribute retired framework-wide — a background
+						fills its CONTAINER's max-width and is never clipped to the
+						inner content layer (Bean-ruled). Use BackgroundPanel on the
+						block itself. Do NOT re-add a band-scoped background. */ }
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 						{desktop,tablet,mobile}, each tier itself a
 						{top,right,bottom,left} box (Spec 35 box-shaped pass,

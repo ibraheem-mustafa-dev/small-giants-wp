@@ -201,6 +201,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}

@@ -313,10 +313,19 @@ select.sgs-form-field__input {
 :where(.sgs-form-tile) {
 	flex-direction: column;
 	gap: 0.5rem;
+	/* align-items moved here from the (0,1,0) rule below on 2026-08-12, when
+	   sgs/form gained the wrapper-level `alignItems` attribute and the F3 guard
+	   correctly started governing this property for the block. The literal is a
+	   FALSE POSITIVE in substance — `.sgs-form-tile` is an inner tile, whereas
+	   `alignItems` drives the block ROOT through SGS_Container_Wrapper — but the
+	   fix is free and the guard should stay strict rather than gain an
+	   exemption. Behaviour-identical: this is the ONLY rule setting align-items
+	   on .sgs-form-tile at any specificity, so nothing competes with it and
+	   dropping to specificity 0 changes no computed value. */
+	align-items: center;
 }
 .sgs-form-tile {
 	display: flex;
-	align-items: center;
 	padding: 1rem;
 	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);

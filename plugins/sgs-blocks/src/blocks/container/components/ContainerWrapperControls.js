@@ -316,9 +316,30 @@ function contentWidthPreset( v ) {
  * Breakout (alignwide / alignfull) is handled by WP-native supports.align
  * toolbar — NO custom control is rendered here.
  *
+ * `showContentBand` (default true) suppresses the "Content band width" control
+ * for a block that CANNOT render a band, added 2026-08-12. Exact sibling of
+ * LayoutPanel's `showLayout` below, and added for the same reason: a shared
+ * panel offering a control the consuming block cannot honour is a control that
+ * silently does nothing.
+ *
+ * The measured case is sgs/product-card: it passes `wrap_inner => false` on
+ * EVERY render branch, so `.sgs-container__inner` never exists there, and
+ * `contentWidth` was DELETED from its block.json at D540 precisely because the
+ * attribute was dead. That deletion fixed the storage but left this control
+ * still rendering and still writing — WordPress then discarded the write
+ * (D338), so the bug simply moved rather than closing. Re-declaring the
+ * attribute would have moved it back.
+ *
+ * ⛔ Do NOT drive this off `kind === 'content'` instead. That was checked and
+ * REJECTED on evidence 2026-08-12: accordion-item, form-step, multi-button and
+ * tab are all content-kind AND declare object-shaped `contentWidth`, with
+ * accordion-item and multi-button consuming it in render.php. Suppressing the
+ * whole kind would have removed a working control from four blocks. The flag is
+ * per-mount because the capability is per-block.
+ *
  * Used by all three kinds.
  */
-export function WidthPanel( { attributes, setAttributes } ) {
+export function WidthPanel( { attributes, setAttributes, showContentBand = true } ) {
 	// ── ONE control per property family, all three tiers ──────────────────
 	//
 	// Both families previously rendered a standalone DESKTOP control plus a
@@ -380,6 +401,8 @@ export function WidthPanel( { attributes, setAttributes } ) {
 				) }
 			</ResponsiveOverride>
 
+			{ showContentBand && (
+				<>
 			<hr style={ { margin: '16px 0' } } />
 
 			{ /* ---- CONTENT BAND width — one control, all three tiers ---- */ }
@@ -445,6 +468,8 @@ export function WidthPanel( { attributes, setAttributes } ) {
 			<p className="components-base-control__help">
 				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size), Wide ≈ 1400px (wide-size), Full = no cap (default).', 'sgs-blocks' ) }
 			</p>
+				</>
+			) }
 		</>
 	);
 }
@@ -467,7 +492,7 @@ export function WidthPanel( { attributes, setAttributes } ) {
 export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) {
 	const {
 		layout = 'stack',
-		verticalAlign = 'start',
+		alignItems = 'start',
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
 		// columns, gridTemplateColumns and gridTemplateRows are TIER OBJECTS
@@ -565,9 +590,9 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 			{ ( layout === 'flex' || layout === 'grid' ) && (
 				<SelectControl
 					label={ __( 'Vertical alignment', 'sgs-blocks' ) }
-					value={ verticalAlign }
+					value={ alignItems }
 					options={ ALIGN_OPTIONS }
-					onChange={ ( val ) => setAttributes( { verticalAlign: val } ) }
+					onChange={ ( val ) => setAttributes( { alignItems: val } ) }
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -1319,71 +1344,45 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 // the same commit; site-header-row / site-footer-row / nav-menu were already
 // there. ⛔ Do not reintroduce a flat per-side tier panel.
 // ---------------------------------------------------------------------------
-// Content band panel — exported for use in container/edit.js too.
+// ContentBandPanel — DELETED 2026-08-12 (Spec 35, check-shared-panel-schema
+// triage). EVERY ONE of its 13 controls was dead, on EVERY block that mounted
+// it. Measured, not assumed:
+//
+//  1. Band padding (12 controls) wrote FLAT `contentBandPaddingTop` /
+//     `…TopTablet` / `…TopMobile` etc. The D580 box-tier migration moved every
+//     block to ONE object-typed `contentBandPadding`, so as of that commit
+//     ZERO block.json anywhere declares a single flat key this panel wrote —
+//     and WordPress SILENTLY DISCARDS a write to an undeclared attribute
+//     (D338). `cta-section/edit.js:20` already carried a comment recording
+//     exactly this ("ContentBandPanel sub-panels still write to LEGACY FLAT
+//     attrs"), which is WHY that block refused to mount the aggregator. Known,
+//     never fixed, invisible to every gate: `check-shared-panel-schema.js`
+//     cannot see these keys because they are COMPUTED (`side[breakpoint]`),
+//     not literals.
+//
+//  2. Band background wrote `contentBandBackground`, undeclared on all 12
+//     blocks that mounted this panel (it reached the inspector only through
+//     KIND_PANELS.layout). The capability itself is now RETIRED framework-wide
+//     — Bean-ruled 2026-08-12: a background colour or media fills the max-width
+//     of its CONTAINER and is never clipped to the inner content layer, so a
+//     band-scoped background was a design error, not a missing declaration.
+//     Zero stored instances existed on the canary (verified by DB query before
+//     deletion), so nothing to migrate.
+//
+// The blocks that genuinely HAVE a content band (container, cta-section, hero,
+// physics-canvas, site-header, site-footer, trust-bar) never mounted this panel
+// — each controls its own `contentBandPadding` locally with the canonical
+// <ResponsiveBoxControl> against the object-shaped attr. That is the working
+// path and it is untouched.
+//
+// ⛔ Do not reintroduce a shared band panel writing flat per-side tier keys.
+// If band padding is ever wanted on a layout-kind composite, the additive fix
+// is a <ResponsiveBoxControl> against a declared object-typed
+// `contentBandPadding` — same shape those seven blocks already use.
+//
+// Same defect class + same remedy as `sgs/gallery`'s mount (D586, `69d1a3d8`)
+// and ResponsiveSpacingPanel's tombstone above.
 // ---------------------------------------------------------------------------
-
-/**
- * ContentBandPanel
- *
- * Controls for the Layer-2 content band (__inner wrapper) — background colour,
- * base padding (4 sides, desktop), and responsive padding overrides (tablet /
- * mobile). Band width (the single tier-object attr `contentWidth`) is owned by
- * WidthPanel — not duplicated here.
- *
- * Gating: section + layout kinds only — these are the only kinds whose PHP
- * render path can emit the __inner wrapper. The 'content' kind uses WP-native
- * padding controls directly; it has no __inner layer.
- *
- * Attr → control mapping:
- *   contentBandBackground         → Background colour (DesignTokenPicker)
- *   contentBandPaddingTop         → Padding › Desktop › Top
- *   contentBandPaddingRight       → Padding › Desktop › Right
- *   contentBandPaddingBottom      → Padding › Desktop › Bottom
- *   contentBandPaddingLeft        → Padding › Desktop › Left
- *   contentBandPaddingTopTablet   → Padding › Tablet › Top
- *   contentBandPaddingRightTablet → Padding › Tablet › Right
- *   ...etc.
- *   (the `contentWidth` tier object → owned by WidthPanel, not rendered here)
- */
-export function ContentBandPanel( { attributes, setAttributes } ) {
-	const BAND_PADDING_SIDES = [
-		{ label: __( 'Top', 'sgs-blocks' ), desktop: 'contentBandPaddingTop', tablet: 'contentBandPaddingTopTablet', mobile: 'contentBandPaddingTopMobile' },
-		{ label: __( 'Right', 'sgs-blocks' ), desktop: 'contentBandPaddingRight', tablet: 'contentBandPaddingRightTablet', mobile: 'contentBandPaddingRightMobile' },
-		{ label: __( 'Bottom', 'sgs-blocks' ), desktop: 'contentBandPaddingBottom', tablet: 'contentBandPaddingBottomTablet', mobile: 'contentBandPaddingBottomMobile' },
-		{ label: __( 'Left', 'sgs-blocks' ), desktop: 'contentBandPaddingLeft', tablet: 'contentBandPaddingLeftTablet', mobile: 'contentBandPaddingLeftMobile' },
-	];
-
-	return (
-		<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
-			<p className="components-base-control__help">
-				{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
-			</p>
-
-			<DesignTokenPicker
-				label={ __( 'Band background colour', 'sgs-blocks' ) }
-				value={ attributes.contentBandBackground || '' }
-				onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
-			/>
-
-			<ResponsiveControl label={ __( 'Band padding', 'sgs-blocks' ) }>
-				{ ( breakpoint ) => (
-					<>
-						{ BAND_PADDING_SIDES.map( ( side ) => (
-							<SpacingControl
-								key={ side[ breakpoint ] }
-								freeInput
-								label={ side.label }
-								value={ attributes[ side[ breakpoint ] ] || '' }
-								onChange={ ( val ) => setAttributes( { [ side[ breakpoint ] ]: val } ) }
-							/>
-						) ) }
-					</>
-				) }
-			</ResponsiveControl>
-
-		</PanelBody>
-	);
-}
 
 // ---------------------------------------------------------------------------
 // Per-area panel (Grid areas — decision 5)
@@ -1513,8 +1512,12 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
-		// 2. Inner band (content band).
-		( props ) => <ContentBandPanel { ...props } />,
+		// 2. Inner band (content band) — REMOVED 2026-08-12 with ContentBandPanel
+		//    itself (see its tombstone above): all 13 of its controls wrote
+		//    attributes no block.json declares, so every value a client set was
+		//    silently discarded. Band WIDTH survives — it is `contentWidth`,
+		//    owned by WidthPanel at entry 1 above, and genuinely declared +
+		//    consumed. Only the dead background/padding controls are gone.
 		// 3. Responsive spacing — REMOVED 2026-08-11. ResponsiveSpacingPanel was
 		//    deleted on 2026-08-10 (see its tombstone above) but these registry
 		//    entries still called it, so EVERY section/layout/content-kind block
@@ -1570,7 +1573,13 @@ const KIND_PANELS = {
 				<WidthPanel { ...props } />
 			</PanelBody>
 		),
-		( props ) => <ContentBandPanel { ...props } />,
+		// ContentBandPanel mount REMOVED 2026-08-12 — this registry entry was
+		// the ONLY route by which the panel reached an inspector, and all 12
+		// blocks reaching it through this `layout` kind (accordion, card-grid,
+		// feature-grid, form, form-field-tiles, google-reviews, post-grid,
+		// pricing-table, site-footer-row, tabs, testimonial-slider,
+		// trustpilot-reviews) declared NONE of the attributes it wrote. See the
+		// ContentBandPanel tombstone above for the measurement.
 	],
 
 	content: [
@@ -1601,8 +1610,27 @@ const KIND_PANELS = {
  *                                       When provided, the section kind renders one GridAreaPanel per entry
  *                                       under the Grid items section. Consumers that pass no areas get
  *                                       behaviour-identical output to before this prop existed.
+ * @param {boolean}  [props.showLayout]  Forwarded to LayoutPanel. Pass false when the block owns its OWN
+ *                                       layout control — rendering both is silent DATA LOSS, because this
+ *                                       panel writes stack/flex/grid into a `layout` attr whose block.json
+ *                                       enum may not contain them and WordPress coerces the write back to
+ *                                       the default. Previously only reachable via a DIRECT <LayoutPanel>
+ *                                       mount (sgs/gallery's fix), so aggregator consumers had no way to
+ *                                       opt out; threaded here 2026-08-12 for sgs/post-grid
+ *                                       (enum grid|list|masonry|carousel) and sgs/testimonial-slider
+ *                                       (enum full|split), both of which own their control and were
+ *                                       silently losing writes.
+ * @param {boolean}  [props.showContentBand] Forwarded to WidthPanel. Pass false for a block that cannot
+ *                                       render a content band (see WidthPanel's docblock).
  */
-export default function ContainerWrapperControls( { attributes, setAttributes, kind = 'section', gridAreas } ) {
+export default function ContainerWrapperControls( {
+	attributes,
+	setAttributes,
+	kind = 'section',
+	gridAreas,
+	showLayout,
+	showContentBand,
+} ) {
 	// Guard: fall back gracefully for unknown kind values.
 	const panels = KIND_PANELS[ kind ] ?? KIND_PANELS.section;
 
@@ -1614,7 +1642,16 @@ export default function ContainerWrapperControls( { attributes, setAttributes, k
 				// array children unkeyed → React duplicate-key warnings).
 				// eslint-disable-next-line react/no-array-index-key
 				<Fragment key={ index }>
-					{ renderPanel( { attributes, setAttributes, gridAreas } ) }
+					{ renderPanel( {
+						attributes,
+						setAttributes,
+						gridAreas,
+						// Undefined stays undefined so each panel's own default
+						// (both true) applies — passing `false` explicitly is the
+						// only way to suppress a control.
+						showLayout,
+						showContentBand,
+					} ) }
 				</Fragment>
 			) ) }
 		</InspectorControls>

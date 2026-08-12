@@ -100,7 +100,7 @@ const ROW_LABELS = {
 // block.json.
 
 // Cross-axis alignment of this row's children (align-items on the wrapper's
-// grid/flex track) — read directly by SGS_Container_Wrapper as `verticalAlign`
+// grid/flex track) — read directly by SGS_Container_Wrapper as `alignItems`
 // (class-sgs-container-wrapper.php:247, 668-669/681-682). Mirrors sgs/container's
 // ALIGN_OPTIONS (ContainerWrapperControls.js) exactly for a consistent operator
 // vocabulary across the framework. No block.json enum on this attr, so any of
@@ -163,7 +163,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent,
 		gap,
 		columns,
-		verticalAlign,
+		alignItems,
 		flexDirection,
 		justifyItems,
 		alignContent,
@@ -376,10 +376,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<SelectControl
 						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
-						value={ verticalAlign || 'center' }
+						value={ alignItems || 'center' }
 						options={ VERTICAL_ALIGN_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { verticalAlign: val } )
+							setAttributes( { alignItems: val } )
 						}
 						help={ __(
 							'How elements of different heights (e.g. a logo next to a shorter nav) line up across the row.',

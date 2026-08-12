@@ -35,7 +35,7 @@
 
 <!-- wp:sgs/site-footer {"align":"full","backgroundColor":"footer-bg","contentWidth":{"desktop":"normal"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|70","right":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
 
-	<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","gridTemplateColumns":{"desktop":"2fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"48px","mobile":"32px"},"verticalAlign":"top"} -->
+	<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","gridTemplateColumns":{"desktop":"2fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"48px","mobile":"32px"},"alignItems":"top"} -->
 
 		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
 

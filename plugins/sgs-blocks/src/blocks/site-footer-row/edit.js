@@ -117,7 +117,7 @@ const ROW_LABELS = {
 // as an advanced override by setting gridTemplateColumns directly.
 
 // Cross-axis alignment — read directly by SGS_Container_Wrapper as
-// `verticalAlign` (class-sgs-container-wrapper.php:247, 668-669/681-682).
+// `alignItems` (class-sgs-container-wrapper.php:247, 668-669/681-682).
 // Mirrors sgs/container's ALIGN_OPTIONS exactly. No block.json enum on this
 // attr, so all four values are always valid explicit choices.
 const VERTICAL_ALIGN_OPTIONS = [
@@ -173,7 +173,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gap,
 		columns,
 		justifyContent,
-		verticalAlign,
+		alignItems,
 		flexDirection,
 		justifyItems,
 		alignContent,
@@ -388,10 +388,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<SelectControl
 						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
-						value={ verticalAlign || 'start' }
+						value={ alignItems || 'start' }
 						options={ VERTICAL_ALIGN_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { verticalAlign: val } )
+							setAttributes( { alignItems: val } )
 						}
 						help={ __(
 							'How elements of different heights line up across the row.',

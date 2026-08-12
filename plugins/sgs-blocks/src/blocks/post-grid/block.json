@@ -219,6 +219,10 @@
 				"carousel"
 			]
 		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
 		"cardStyle": {
 			"type": "string",
 			"default": "card",

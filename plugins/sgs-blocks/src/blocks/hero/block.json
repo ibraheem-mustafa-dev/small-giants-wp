@@ -159,7 +159,6 @@
 					"clusters": [ "fill", "layout" ],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:background-color": "contentBandBackground",
 						"css:width": "contentWidth"
 					},
 					"_note": "Mirrors sgs/container's content-band — the content-width constraining band, independent of the `content` grid-area below. Padding resolves via the default {prefix}{Suffix} convention (contentBandPadding)."
@@ -762,11 +761,7 @@
 				"card-grid"
 			]
 		},
-		"verticalAlign": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandBackground": {
+		"alignItems": {
 			"type": "string",
 			"default": ""
 		},

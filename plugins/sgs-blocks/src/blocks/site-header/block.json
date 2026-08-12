@@ -100,11 +100,11 @@
 						"css:grid-template-columns": "columns",
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
-						"css:align-items": "verticalAlign",
+						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `verticalAlign` (class-sgs-container-wrapper.php:247 reads verticalAlign||alignItems). display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
+					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247 reads alignItems||alignItems). display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
 				},
 				"content-band": {
 					"label": "Content band",
@@ -116,7 +116,6 @@
 					],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:background-color": "contentBandBackground",
 						"css:width": "contentWidth"
 					}
 				},
@@ -307,10 +306,6 @@
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
 		},
-		"contentBandBackground": {
-			"type": "string",
-			"default": ""
-		},
 		"contentBandPadding": {
 			"type": "object",
 			"default": { "desktop": {} }
@@ -429,7 +424,7 @@
 				"card-grid"
 			]
 		},
-		"verticalAlign": {
+		"alignItems": {
 			"type": "string",
 			"default": ""
 		}

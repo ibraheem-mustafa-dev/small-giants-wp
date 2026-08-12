@@ -495,10 +495,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			{ /* showLayout={false}: this block owns its own Layout control above
+			     (Full / Split). The shared one writes stack/flex/grid into the
+			     same `layout` attr, whose enum here is full|split — so every
+			     write from it was accepted in the editor, stored, then SILENTLY
+			     reverted to "full" by WordPress enum coercion. Same defect and
+			     same fix as sgs/gallery. */ }
 			<ContainerWrapperControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				kind="layout"
+				showLayout={ false }
 			/>
 
 			<div { ...blockProps }>

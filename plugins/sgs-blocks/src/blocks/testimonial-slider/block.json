@@ -141,6 +141,10 @@
 				"split"
 			]
 		},
+		"alignItems": {
+			"type": "string",
+			"default": ""
+		},
 		"sideImage": {
 			"type": "object"
 		},

@@ -337,17 +337,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$min_height        = $min_height_obj['desktop'] ?? '';
 			$min_height_tablet = $min_height_obj['tablet'] ?? '';
 			$min_height_mobile = $min_height_obj['mobile'] ?? '';
-			// WS-A dual-key fallback (2026-06-12): read EITHER align attr name —
-			// `verticalAlign` (container/hero/cta/trust-bar) or `alignItems` (grid-
-			// mirror blocks: feature-grid/card-grid/gallery). verticalAlign wins when
-			// both set (back-compat). Default flipped `start`→'' (D306, 2026-07-11):
+			// ⛔ The WS-A DUAL-KEY FALLBACK IS GONE (2026-08-12). This used to read
+			// EITHER `verticalAlign` (container/hero/cta/trust-bar) or `alignItems`
+			// (grid-mirror blocks: feature-grid/card-grid/gallery), with
+			// verticalAlign winning when both were set. Two names for ONE CSS
+			// property is what let the shared LayoutPanel ship a "Vertical
+			// alignment" control on 12 blocks that declared only the OTHER name —
+			// WordPress silently discarded every value a client set there.
+			//
+			// UNIFIED ON `alignItems` (Bean-ruled 2026-08-12): it is the actual CSS
+			// property this drives (`align-items`), whereas `verticalAlign` invited
+			// confusion with CSS's unrelated `vertical-align`. Every block now
+			// declares `alignItems` and nothing declares `verticalAlign`; the 7
+			// stored instances (all `tc-*` visual-diff fixture pages) and the 2
+			// theme patterns were migrated in the same change.
+			//
+			// Default flipped `start`→'' (D306, 2026-07-11):
 			// a blank align falls to the CSS-initial `stretch` (see the guards below),
 			// so a cloned grid/flex with NO draft `align-items` renders equal-height
 			// columns like the draft (FR-31-5.1 absent→initial). The injected `start`
 			// default was the cause of unequal product/gift cards + the brand button
 			// not stretching full-width. Blast-radius verified: on page 8 every
 			// container relying on the old `start` default wants `stretch`.
-			$vertical_align = $attributes['verticalAlign'] ?? $attributes['alignItems'] ?? '';
+			$vertical_align = $attributes['alignItems'] ?? '';
 
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
@@ -480,26 +492,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$band_padding_bottom_mobile = $sgs_css_length( $band_padding_mobile_obj['bottom'] ?? '' );
 			$band_padding_left_mobile   = $sgs_css_length( $band_padding_mobile_obj['left'] ?? '' );
 
-			// Band background — ALL kinds (Bean-locked 2026-06-16: band-level CSS must
-			// survive cloning regardless of block kind; the content-kind carve-out
-			// dropped content-band background on content composites). Sanitise via
-			// sgs_colour_value (returns a CSS-safe string or empty; reuse the same
-			// sanitiser as gridItemBackground).
-			$band_background = $attributes['contentBandBackground'] ?? '';
-			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): contentBandBackground is
-			// being made tier-capable below. A tiered {desktop,tablet,mobile} object
-			// reaching this LEGACY scalar var would TypeError-fatal
-			// sgs_colour_value( ?string $slug_or_value ) at the two call sites below
-			// (:1315/:1619) — arrays never coerce to a scalar type-hint. Same shape
-			// as the $grid_auto_rows guard at :448.
-			// $band_background_is_tiered is captured BEFORE the guard nulls the
-			// array out, so $has_band_props below (which decides whether the
-			// __inner band element renders at all) still sees a tiered value as
-			// "band background is set" — without this a tiered band background
-			// would silently render NO __inner element and the tiered CSS below
-			// would target a selector that doesn't exist in the markup.
-			$band_background_is_tiered = is_array( $band_background );
-			$band_background           = $band_background_is_tiered ? '' : $band_background;
+			// ⛔ BAND BACKGROUND — CAPABILITY RETIRED 2026-08-12 (Bean-ruled).
+			// `contentBandBackground` and every line that emitted it are GONE, and
+			// the attribute is no longer declared by any block.json. The rule: a
+			// background colour or media fills the max-width of its CONTAINER and
+			// is never clipped to the inner content layer, so a band-scoped
+			// background was a design error rather than a capability worth
+			// keeping. It also superseded the earlier Bean-lock of 2026-06-16
+			// ("band-level CSS must survive cloning regardless of block kind"),
+			// which was about which KINDS got the band background — not about
+			// whether a band background should exist at all.
+			//
+			// Verified before deletion: 0 posts on the canary stored the attribute
+			// (DB query, not inference), and its only editor control reached just
+			// 12 blocks that never declared it (see the ContentBandPanel tombstone
+			// in ContainerWrapperControls.js). Nothing to migrate.
+			//
+			// Band PADDING and band WIDTH are untouched — they are real, declared,
+			// consumed capabilities. Do NOT reintroduce a band-scoped background.
 
 			// Responsive content-width overrides for the band (tablet / mobile).
 			// Use the token-or-literal resolver (same as the base) so 'narrow'/'default'/
@@ -705,9 +715,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'' !== $band_padding_top ||
 				'' !== $band_padding_right ||
 				'' !== $band_padding_bottom ||
-				'' !== $band_padding_left ||
-				'' !== $band_background ||
-				$band_background_is_tiered
+				'' !== $band_padding_left
 			);
 
 			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
@@ -857,7 +865,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$gd[] = 'grid-template-columns:' . $gtc_base;
 					}
 					// D288: only impose align-items when a value is set — a blank
-					// verticalAlign falls back to the browser default (stretch), so
+					// alignItems falls back to the browser default (stretch), so
 					// grid columns fill the row height and match an untouched draft
 					// (fixes the cloned hero content pinned to the top).
 					if ( '' !== $vertical_align ) {
@@ -872,7 +880,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				} elseif ( 'flex' === $layout ) {
 					$gd[] = 'display:flex';
 					$gd[] = 'flex-wrap:' . esc_attr( '' !== $flex_wrap ? $flex_wrap : 'wrap' );
-					// D288: blank verticalAlign → browser default (see grid branch above).
+					// D288: blank alignItems → browser default (see grid branch above).
 					if ( '' !== $vertical_align ) {
 						$gd[] = 'align-items:' . esc_attr( $vertical_align );
 					}
@@ -1020,7 +1028,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// $inner_grid_decls. Single mechanism — see the __inner emission below.
 
 			// Min-height flex-centring class — ONLY when the design asks for centring
-			// (verticalAlign === 'center'). A min-height section with default/start/
+			// (alignItems === 'center'). A min-height section with default/start/
 			// stretch alignment must NOT be force-centred: doing so overrides grid
 			// stretch / top alignment (e.g. a hero grid whose columns should fill the
 			// row, not float vertically). MF-B, Method-2 converter-lift 2026-06-04.
@@ -1516,9 +1524,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( '' !== $band_padding_left ) {
 					$base_band_decls[] = 'padding-left:' . $band_padding_left;
 				}
-				if ( '' !== $band_background ) {
-					$base_band_decls[] = 'background-color:' . sgs_colour_value( $band_background );
-				}
+				// (band background-color emission removed 2026-08-12 — capability retired)
 				if ( $base_band_decls ) {
 					$responsive_css .= '.' . $uid . '>.sgs-container__inner{' . implode( ';', $base_band_decls ) . '}';
 				}
@@ -1820,9 +1826,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( '' !== $band_padding_left ) {
 						$band_base_decls[] = 'padding-left:' . $band_padding_left;
 					}
-					if ( '' !== $band_background ) {
-						$band_base_decls[] = 'background-color:' . sgs_colour_value( $band_background );
-					}
+					// (band background-color emission removed 2026-08-12 — capability retired)
 					if ( $band_base_decls ) {
 						$responsive_css .= $band_sel . '{' . implode( ';', $band_base_decls ) . '}';
 					}
@@ -2402,31 +2406,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// Content-band background — tier-capable (Spec 35 Phase 1.4b, STAGE 2).
 				// VERIFIED selector: BOTH legacy band-background emission sites
 				// (~:1343 base-band, ~:1647 responsive-band) write
-				// `background-color` on the identical selector
-				// `.$uid>.sgs-container__inner` — built fresh here rather than
-				// reusing the local `$band_sel` variable defined inside the
-				// `if ( $has_band_responsive )` block above, because that variable
-				// is UNSET whenever $has_band_responsive is false (PHP has no block
-				// scoping — referencing it here would warn/notice on every render
-				// where no band padding/content-width tier exists, which is the
-				// common case for a block using ONLY a tiered band background).
-				// Gated on the RAW attribute (not $band_background, already nulled
-				// to '' by the is_array guard above) so this only fires for a
-				// tiered value; $band_background_is_tiered mirrors the same check
-				// and already feeds $has_band_props so __inner still renders.
-				if ( $band_background_is_tiered ) {
-					$responsive_css .= sgs_emit_responsive_css(
-						'.' . $uid . '>.sgs-container__inner',
-						array(
-							array(
-								'value'     => $attributes['contentBandBackground'],
-								'css'       => 'background-color',
-								'transform' => 'sgs_colour_value',
-							),
-						),
-						array( 'container' => false )
-					);
-				}
+				// The tiered band background-color emitter that stood here was
+				// REMOVED 2026-08-12 with the rest of the capability — see the
+				// retirement note at the top of this method. It was the only
+				// consumer of $band_background_is_tiered.
 
 				$obj_outer_props = array();
 				if ( isset( $attributes['maxWidth'] ) && is_array( $attributes['maxWidth'] ) ) {

@@ -29,8 +29,9 @@
  * MECHANISM
  * ---------
  *  1. Statically parse ContainerWrapperControls.js: for every exported panel
- *     function (WidthPanel, ContentBandPanel, LayoutPanel, BackgroundPanel,
- *     ShapeDividersPanel, GridItemDefaultsPanel — GridAreaPanel is
+ *     function (WidthPanel, LayoutPanel, BackgroundPanel,
+ *     ShapeDividersPanel, GridItemDefaultsPanel — ContentBandPanel was DELETED
+ *     2026-08-12, every control in it was dead; GridAreaPanel is
  *     DELIBERATELY excluded, its attr names are template-literal-derived from
  *     a runtime `areaName` prop, not static keys), extract every attribute
  *     key it writes via setAttributes({...}) and classify the write as
@@ -98,12 +99,69 @@ const SHARED_CONTROLS_JS = path.join(
 // against `export function` names in --self-test, so an omission is caught).
 const PANEL_NAMES = [
 	'WidthPanel',
-	'ContentBandPanel',
+	// ContentBandPanel REMOVED 2026-08-12 — the panel itself was DELETED (all 13
+	// of its controls wrote attributes no block.json declares; see its tombstone
+	// in ContainerWrapperControls.js). Kept out of this list deliberately: the
+	// --self-test asserts every name here has a matching `export function`, so a
+	// stale entry would fail the build rather than silently no-op.
 	'LayoutPanel',
 	'BackgroundPanel',
 	'ShapeDividersPanel',
 	'GridItemDefaultsPanel',
 ];
+
+// Per-panel props that SUPPRESS a sub-control, and the attribute keys that
+// sub-control is the only writer of. When a mount passes `flag={ false }`, the
+// listed attrs are NOT written by that mount and must not be required of the
+// consuming block.
+//
+// Without this the guard reports the exact bug it exists to prevent, backwards:
+// sgs/product-card cannot render a content band (`wrap_inner => false` on every
+// branch), so `contentWidth` was deleted from its block.json at D540 AND the
+// control suppressed with showContentBand={false} — yet the guard still
+// demanded the attribute be declared, which would have reinstated the dead
+// control. A guard that can only be satisfied by re-adding a dead attribute is
+// pushing you toward the defect.
+//
+// ⚠ SMALL AND NAMED ON PURPOSE, and it must stay honest: each flag lists ONLY
+// the attrs whose SOLE writer is behind that flag. `showLayout` gates both the
+// Layout-type control and the Columns control in LayoutPanel (both are inside
+// `showLayout && …`), so both keys are listed. `alignItems` is NOT listed under
+// showLayout: it sits behind a SEPARATE `layout === 'flex' || 'grid'` runtime
+// condition, not behind showLayout, so a block passing showLayout={false} can
+// still reach it by other means and must still declare it.
+const PANEL_SUPPRESSION_FLAGS = {
+	WidthPanel: { showContentBand: [ 'contentWidth' ] },
+	LayoutPanel: { showLayout: [ 'layout', 'columns' ] },
+};
+
+/**
+ * Attribute keys suppressed for one mount, given its JSX attribute text.
+ *
+ * Only an explicit `flag={ false }` suppresses. `flag={ someExpr }` is NOT
+ * treated as suppression — this script refuses to evaluate expressions, the
+ * same refuse-rather-than-guess rule the dynamic-`kind` path already follows.
+ *
+ * @param {string}   attrText   Raw JSX attribute text of the mount tag.
+ * @param {string[]} panelNames Panels this mount resolves to.
+ * @returns {Set<string>}
+ */
+function parseSuppressedAttrs( attrText, panelNames ) {
+	const suppressed = new Set();
+	for ( const panel of panelNames ) {
+		const flags = PANEL_SUPPRESSION_FLAGS[ panel ];
+		if ( ! flags ) {
+			continue;
+		}
+		for ( const [ flag, attrs ] of Object.entries( flags ) ) {
+			const re = new RegExp( `\\b${ flag }\\s*=\\s*\\{\\s*false\\s*\\}` );
+			if ( re.test( attrText ) ) {
+				attrs.forEach( ( a ) => suppressed.add( a ) );
+			}
+		}
+	}
+	return suppressed;
+}
 
 // Control components whose onChange hands setAttributes a whole OBJECT
 // (a {desktop,tablet,mobile} tier object, a BoxControl {top,right,...} value,
@@ -606,22 +664,28 @@ function findMounts( blockDir, blockName, kindPanels ) {
 			const panels = kindPanels.has( kind )
 				? Array.from( kindPanels.get( kind ) )
 				: Array.from( kindPanels.get( 'section' ) || [] );
-			mounts.push( { block: blockName, file: editPath, line, kindOf: 'aggregator', panels, unclear: false, rawKind: kind } );
+			mounts.push( { block: blockName, file: editPath, line, kindOf: 'aggregator', panels, unclear: false, rawKind: kind, suppressed: parseSuppressedAttrs( tag.attrText, panels ) } );
 		} else if ( kindDynamicMatch ) {
-			mounts.push( { block: blockName, file: editPath, line, kindOf: 'aggregator', panels: [], unclear: true, rawKind: '(dynamic)' } );
+			mounts.push( { block: blockName, file: editPath, line, kindOf: 'aggregator', panels: [], unclear: true, rawKind: '(dynamic)', suppressed: new Set() } );
 		} else {
 			// No `kind` prop at all → component default is 'section'.
 			const panels = Array.from( kindPanels.get( 'section' ) || [] );
-			mounts.push( { block: blockName, file: editPath, line, kindOf: 'aggregator', panels, unclear: false, rawKind: '(default: section)' } );
+			mounts.push( { block: blockName, file: editPath, line, kindOf: 'aggregator', panels, unclear: false, rawKind: '(default: section)', suppressed: parseSuppressedAttrs( tag.attrText, panels ) } );
 		}
 	}
 
-	// Direct named-panel mounts: <WidthPanel ... />, <ContentBandPanel ... />, etc.
+	// Direct named-panel mounts: <WidthPanel ... />, <LayoutPanel ... />, etc.
 	for ( const name of PANEL_NAMES ) {
 		const tagRe = new RegExp( `<${ name }\\b`, 'g' );
 		while ( ( m = tagRe.exec( src ) ) ) {
 			const line = lineAt( raw, m.index );
-			mounts.push( { block: blockName, file: editPath, line, kindOf: 'direct', panels: [ name ], unclear: false } );
+			// A direct mount can carry a suppression flag too — sgs/gallery's
+			// <LayoutPanel showLayout={ false } /> is the live example.
+			const tag = extractTagAttrs( src, tagRe.lastIndex );
+			const suppressed = tag
+				? parseSuppressedAttrs( tag.attrText, [ name ] )
+				: new Set();
+			mounts.push( { block: blockName, file: editPath, line, kindOf: 'direct', panels: [ name ], unclear: false, suppressed } );
 		}
 	}
 
@@ -686,6 +750,11 @@ function runDetection( panelAttrShape, kindPanels ) {
 					continue;
 				}
 				for ( const [ attr, info ] of attrShape ) {
+					// This mount suppresses the only control that writes `attr`,
+					// so the consuming block is not required to declare it.
+					if ( mount.suppressed && mount.suppressed.has( attr ) ) {
+						continue;
+					}
 					const decl = declared[ attr ];
 					if ( ! decl ) {
 						findings.push( {
@@ -828,27 +897,61 @@ function runSelfTest() {
 		failures
 	);
 
+	// Registry parse, positive + negative. Re-pointed 2026-08-12 from
+	// ContentBandPanel (deleted) to LayoutPanel, which preserves BOTH shapes of
+	// the original assertion: a panel the `layout` kind DOES pull in, and one
+	// the `content` kind does NOT. Without the negative half, a parser that
+	// returned "every kind has every panel" would still pass.
 	assert(
-		realKindPanels.get( 'layout' )?.has( 'ContentBandPanel' ) === true,
-		'KIND_PANELS.layout includes ContentBandPanel (parsed from the registry, not assumed)',
+		realKindPanels.get( 'layout' )?.has( 'LayoutPanel' ) === true,
+		'KIND_PANELS.layout includes LayoutPanel (parsed from the registry, not assumed)',
 		failures
 	);
 	assert(
-		realKindPanels.get( 'content' )?.has( 'ContentBandPanel' ) !== true,
-		'KIND_PANELS.content does NOT include ContentBandPanel',
+		realKindPanels.get( 'content' )?.has( 'LayoutPanel' ) !== true,
+		'KIND_PANELS.content does NOT include LayoutPanel',
 		failures
 	);
 
 	// -------------------------------------------------------------------
-	// Real negative control 1 — cta-section/edit.js's ContentBandPanel
-	// mentions are COMMENTS ONLY (lines 20 + 225 in the file as authored).
-	// This is the project's own recorded false-positive class
+	// Real negative control 1 — comment-only panel mentions must NOT read as
+	// a mount. This is the project's own recorded false-positive class
 	// (`a-grep-for-a-class-name-is-not-a-usage-census`).
+	//
+	// Re-pointed 2026-08-12: the original control used cta-section's
+	// ContentBandPanel comments, which would go VACUOUS the moment
+	// ContentBandPanel left PANEL_NAMES — findMounts() only ever searches for
+	// names in that list, so the assertion could no longer fail for any
+	// reason. Replaced with a REAL ROW that is still live (N-6: prefer a real
+	// row over a fixture): product-faq/edit.js:14 mentions `WidthPanel` in a
+	// docblock ("only ever added WidthPanel + the old flat-attr
+	// ResponsiveSpacingPanel for…") and mounts neither it nor the aggregator.
 	// -------------------------------------------------------------------
-	const ctaMounts = findMounts( path.join( BLOCKS_DIR, 'cta-section' ), 'sgs/cta-section', realKindPanels );
+	const faqMounts = findMounts( path.join( BLOCKS_DIR, 'product-faq' ), 'sgs/product-faq', realKindPanels );
 	assert(
-		! ctaMounts.some( ( mnt ) => mnt.panels.includes( 'ContentBandPanel' ) ),
-		'cta-section/edit.js: comment-only "ContentBandPanel" mentions are NOT read as a mount',
+		! faqMounts.some( ( mnt ) => mnt.panels.includes( 'WidthPanel' ) ),
+		'product-faq/edit.js: comment-only "WidthPanel" mention is NOT read as a mount',
+		failures
+	);
+	// Prove the control above is NOT vacuous: the same scan MUST still find a
+	// REAL direct panel mount. Without this, "no mount found" could mean the
+	// matcher is broken rather than the comment being correctly skipped
+	// (`a-negative-control-has-its-own-vacuity-mode`).
+	//
+	// ⚠ gallery/edit.js:343 ALSO mentions `<WidthPanel>` inside a docblock and
+	// mounts it nowhere — a second comment-only case, and the reason this
+	// assertion is anchored on LayoutPanel (a genuine mount at
+	// gallery/edit.js:326) rather than WidthPanel. Caught by this very control
+	// failing on its first run, 2026-08-12.
+	const galleryMounts = findMounts( path.join( BLOCKS_DIR, 'gallery' ), 'sgs/gallery', realKindPanels );
+	assert(
+		galleryMounts.some( ( mnt ) => mnt.panels.includes( 'LayoutPanel' ) ),
+		'gallery/edit.js: the REAL <LayoutPanel> mount IS still detected (proves the control above is not vacuous)',
+		failures
+	);
+	assert(
+		! galleryMounts.some( ( mnt ) => mnt.panels.includes( 'WidthPanel' ) ),
+		'gallery/edit.js: its comment-only "<WidthPanel>" docblock mention is NOT read as a mount either',
 		failures
 	);
 
@@ -1013,6 +1116,49 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 		assert(
 			! fixtureFindings.some( ( f ) => f.block === 'sgs/fake-default-kind' ),
 			'negative control: aggregator mount with NO kind prop resolves to section default and passes clean',
+			failures
+		);
+
+		// -------------------------------------------------------------------
+		// Suppression flags (PANEL_SUPPRESSION_FLAGS). Both directions asserted
+		// on the SAME undeclared attribute, so neither result can be an
+		// artefact of the fixture: without the flag it MUST flag, with the flag
+		// it MUST NOT. A one-sided test here would pass just as happily against
+		// a parseSuppressedAttrs() that suppressed everything.
+		// -------------------------------------------------------------------
+		assert(
+			parseSuppressedAttrs( ' attributes={x} showContentBand={ false } ', [ 'WidthPanel' ] ).has( 'contentWidth' ),
+			'suppression: showContentBand={ false } suppresses contentWidth on WidthPanel',
+			failures
+		);
+		assert(
+			! parseSuppressedAttrs( ' attributes={x} ', [ 'WidthPanel' ] ).has( 'contentWidth' ),
+			'suppression: an unflagged WidthPanel mount suppresses nothing (the flag is what does it)',
+			failures
+		);
+		assert(
+			! parseSuppressedAttrs( ' showContentBand={ someRuntimeExpr } ', [ 'WidthPanel' ] ).has( 'contentWidth' ),
+			'suppression: a non-literal flag value is NOT treated as suppression (refuse to evaluate expressions)',
+			failures
+		);
+		const layoutSuppressed = parseSuppressedAttrs( ' showLayout={ false } ', [ 'LayoutPanel' ] );
+		assert(
+			layoutSuppressed.has( 'layout' ) && layoutSuppressed.has( 'columns' ),
+			'suppression: showLayout={ false } suppresses BOTH layout and columns (both sit behind that flag)',
+			failures
+		);
+		assert(
+			! layoutSuppressed.has( 'alignItems' ),
+			'suppression: showLayout={ false } does NOT suppress alignItems (it sits behind a separate runtime condition)',
+			failures
+		);
+
+		// Real-row end-to-end: sgs/product-card passes showContentBand={false}
+		// and deliberately does NOT declare contentWidth (deleted at D540 — the
+		// block sets wrap_inner=>false on every branch, so a band never renders).
+		assert(
+			! realFindings.some( ( f ) => f.block === 'sgs/product-card' && f.attr === 'contentWidth' ),
+			'sgs/product-card: suppressed contentWidth is NOT demanded back (the D540 deletion stays valid)',
 			failures
 		);
 	} finally {

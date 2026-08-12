@@ -244,7 +244,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		mediaPadding,
 		mediaPaddingTablet,
 		mediaPaddingMobile,
-		contentBandBackground,
 		// contentBandPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
 		// (Spec 35 box-tier pass, 2026-08-11) — the contentBandPaddingTablet/
 		// Mobile sibling attrs no longer exist in this block's schema.
@@ -1152,11 +1151,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p className="components-base-control__help">
 						{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
 					</p>
-					<DesignTokenPicker
-						label={ __( 'Band background colour', 'sgs-blocks' ) }
-						value={ contentBandBackground || '' }
-						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
-					/>
+					{ /* ⛔ "Band background colour" (contentBandBackground) REMOVED
+						2026-08-12, attribute retired framework-wide — a background
+						fills its CONTAINER's max-width and is never clipped to the
+						inner content layer (Bean-ruled). Use the hero's own
+						media/content background controls instead. Do NOT re-add a
+						band-scoped background. */ }
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 						{desktop,tablet,mobile}, each tier itself a
 						{top,right,bottom,left} box (Spec 35 box-shaped pass,

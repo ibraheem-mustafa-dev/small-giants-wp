@@ -1233,10 +1233,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<InspectorControls group="styles">
+				{ /* showContentBand={false}: this block passes `wrap_inner => false`
+				     on every render branch, so `.sgs-container__inner` never
+				     exists and a band width could never paint. `contentWidth` was
+				     deleted from block.json at D540 for exactly that reason; this
+				     suppresses the control that was still writing to it. */ }
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					kind="content"
+					showContentBand={ false }
 				/>
 				<PanelBody
 					title={ __( 'Card padding', 'sgs-blocks' ) }

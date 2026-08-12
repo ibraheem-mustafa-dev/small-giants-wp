@@ -127,7 +127,6 @@
 					"clusters": [ "fill", "layout" ],
 					"prefix": "contentBand",
 					"attrMap": {
-						"css:background-color": "contentBandBackground",
 						"css:width": "contentWidth"
 					}
 				},
@@ -273,7 +272,7 @@
 			"type": "object",
 			"default": {}
 		},
-		"verticalAlign": {
+		"alignItems": {
 			"type": "string",
 			"default": ""
 		},
@@ -481,10 +480,6 @@
 		"contentBandPadding": {
 			"type": "object",
 			"default": { "desktop": {} }
-		},
-		"contentBandBackground": {
-			"type": "string",
-			"default": ""
 		}
 	},
 	"providesContext": {

@@ -11,7 +11,7 @@
 
 <!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","contentWidth":{"desktop":"800px"}} -->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"65% 35%","mobile":"1fr"},"verticalAlign":"center","gap":{"desktop":"var:preset|spacing|40"}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"65% 35%","mobile":"1fr"},"alignItems":"center","gap":{"desktop":"var:preset|spacing|40"}} -->
 
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
 			<!-- wp:sgs/heading {"content":"Ready to Transform Your Business?","textColour":"surface","fontSize":{"desktop":"x-large"},"fx":"split-reveal","fxStart":"top 70%","fxDuration":0.8,"fxStagger":0.05,"fxSplit":"words"} /-->
