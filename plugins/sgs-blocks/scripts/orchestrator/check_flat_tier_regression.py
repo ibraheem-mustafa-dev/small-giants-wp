@@ -22,25 +22,78 @@ grandfathering here: D554-C explicitly rejects a shim, so every emission of
 a flat tier for an already-migrated property is a regression, not a known
 legacy debt to tolerate.
 
-WHAT "ALREADY MIGRATED" MEANS (Spec 35 P1 design, block.json-only signal)
-==========================================================================
-A property's phase is keyed on block.json's attribute `type`, and NOTHING
-ELSE — never render.php, never the DB, never a runtime switch such as
-`responsive_model`/`container_queries` (an earlier draft got this wrong;
-sgs/gallery opts into container queries yet is still mid-migration on other
-properties).
+WHAT "ALREADY MIGRATED" MEANS (Spec 35 P1 design + 2026-08-12 PHP-evidence fix)
+================================================================================
+A property's phase starts from block.json's attribute `type` — never the DB,
+never a runtime switch such as `responsive_model`/`container_queries` (an
+earlier draft got this wrong; sgs/gallery opts into container queries yet is
+still mid-migration on other properties) — but block.json ALONE is NOT
+sufficient, per a 2026-08-12 fix described below.
 
-  OBJECT (migrated) = the base attribute is declared `"type": "object"` in
-                       block.json, with NO `<attr>Tablet` / `<attr>Mobile`
-                       sibling attributes also declared.
-  FLAT   (not yet)   = the base attribute is declared as a scalar type
-                       (string/number/boolean/etc.) WITH those siblings
-                       declared.
+  OBJECT (candidate) = the base attribute is declared `"type": "object"` in
+                        block.json, with NO `<attr>Tablet` / `<attr>Mobile`
+                        sibling attributes also declared, AND the attribute's
+                        own name does not itself end in a breakpoint suffix
+                        (see BUG 1 below).
+  FLAT   (not yet)    = the base attribute is declared as a scalar type
+                        (string/number/boolean/etc.) WITH those siblings
+                        declared.
 
 A base attribute typed `"object"` that DOES still have Tablet/Mobile
 siblings (e.g. an object-shaped media picker with per-tier variants) is
 NOT the migrated single-object-attr shape this gate is about — it's left
 alone.
+
+⛔ BUG 1 (fixed 2026-08-12) — SUFFIX-NAMED SIBLINGS WERE SELF-PROMOTED.
+An attribute whose OWN name ends in a breakpoint suffix (`marginTablet`,
+`paddingMobile`) is itself a per-tier SIBLING of some other (possibly
+undeclared) base property — never a migrated base property in its own
+right. The original block.json-only scan wrongly added `marginTablet` /
+`marginMobile` / `paddingTablet` / `paddingMobile` themselves to the
+migrated set on `sgs/text`, purely because EACH has no further
+Tablet/Mobile sibling OF ITS OWN (verified live: `sgs/text` declares
+`marginTablet`/`marginMobile` as real, still-active object-typed box
+overrides with NO base `margin` attribute at all). Fixed by excluding any
+OBJECT candidate whose own name ends in a DB-derived breakpoint suffix
+(`_breakpoint_suffixes()`, R-31-1 — never a hardcoded `{Tablet,Mobile,...}`
+dict).
+
+⛔ BUG 2 (fixed 2026-08-12) — THE OBJECT-TYPED-CANDIDATE TEST CANNOT TELL A
+MIGRATED TIER-OBJECT (SHAPE 2) FROM A BASE-ONLY BOX WITH NO TIER DESTINATION
+AT ALL (SHAPE 3). Both are declared `"type":"object"` with no Tablet/Mobile
+siblings; both can carry an IDENTICAL `box_family` column value and an
+IDENTICAL `{}` default_value (verified live against sgs-framework.db
+2026-08-12 — `sgs/container.gridItemPadding` [Shape 2, confirmed migrated —
+see below] and `sgs/text.borderWidth` [Shape 3] are indistinguishable on
+`attr_type`, `box_family`, `is_responsive` AND `default_value` alike). Only
+the property's REAL PHP consumer tells them apart:
+
+  SHAPE 2 (genuinely migrated) — the attribute's value reaches
+  `sgs_responsive_normalise_object()` (directly, or indirectly via a
+  `'value' => $attributes['<attr>']` entry collected into an
+  `sgs_emit_responsive_css()` prop-map, or via the shared
+  `sgs_typography_css_rule( $attributes, '<prefix>', … )` helper for a
+  `<prefix>{FontSize,LineHeight,LetterSpacing,…}` attribute). Confirmed
+  live for `sgs/container.gridItemPadding`: `class-sgs-container-wrapper.php`
+  ~:2279-2287 collects it into `$obj_inner_props` and emits it via
+  `sgs_emit_responsive_css()` (Spec 35 Phase 1.4b "STAGE 2", landed
+  2026-08-10 — a comment a few lines above, ~:2204-2213, calls this same
+  work "deferred", but that comment is now STALE: the code beneath it, at
+  ~:2250, explicitly says so — "the STAGE 2 deferral comment above
+  speculated [wrongly]" — and was verified by reading the merge branches).
+
+  SHAPE 3 (base-only box, no tier destination) — the attribute's ONLY PHP
+  read is a flat, direct one, e.g. `sgs/text.borderWidth`:
+  `$border_width_obj = is_array( $attributes['borderWidth'] ?? null )
+  ? $attributes['borderWidth'] : array();` (text/render.php:141) — never
+  routed through the tier-normalisation pipeline anywhere.
+
+`_attr_tier_consumer_evidence()` below implements this PHP-evidence check
+by scanning the block's own render.php PLUS the shared
+`class-sgs-container-wrapper.php`. A candidate that fails this check is
+EXCLUDED from the migrated set — conservative by design: an honest narrower
+gate beats a wrong broader one (a false positive here would hard-halt a
+correct clone for a property the gate misunderstands).
 
 WHAT THIS CHECKS
 ================
@@ -107,6 +160,7 @@ UK English in all output.
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import re
 import sys
@@ -118,9 +172,13 @@ sys.stdout.reconfigure(encoding="utf-8")
 # Paths
 # ---------------------------------------------------------------------------
 HERE = Path(__file__).parent
+_SCRIPTS_ROOT = HERE.parent  # .../plugins/sgs-blocks/scripts
 REPO_ROOT = HERE.parent.parent.parent.parent  # plugins/sgs-blocks/scripts/orchestrator -> repo root
 PIPELINE_STATE_DIR = REPO_ROOT / "pipeline-state"
 BLOCKS_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
+INCLUDES_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "includes"
+WRAPPER_PHP = INCLUDES_DIR / "class-sgs-container-wrapper.php"
+HELPERS_TYPOGRAPHY_PHP = INCLUDES_DIR / "helpers-typography.php"
 FIXTURES_DIR = HERE.parent / "fixtures" / "flat-tier-gate"
 
 # Reuse the structural (never comment-text) block-markup parser + loader from
@@ -135,22 +193,256 @@ FLAT_TIER_SUFFIX_RE = re.compile(r"^(.+)(Tablet|Mobile)$")
 
 
 # ---------------------------------------------------------------------------
+# DB-backed breakpoint suffix vocabulary (R-31-1 — never a hardcoded dict)
+# ---------------------------------------------------------------------------
+
+def _get_db_lookup():
+    """Lazy-import converter.db.db_lookup (same pattern as css_router.py's
+    _get_db()), so this module still loads without the converter package on
+    sys.path (test isolation)."""
+    if str(_SCRIPTS_ROOT) not in sys.path:
+        sys.path.insert(0, str(_SCRIPTS_ROOT))
+    from converter.db import db_lookup
+    return db_lookup
+
+
+@functools.lru_cache(maxsize=None)
+def _breakpoint_suffixes() -> tuple[str, ...]:
+    """{'Mobile', 'Tablet', 'Desktop'} from modifier_suffixes WHERE kind='breakpoint'.
+
+    R-31-1: the breakpoint suffix vocabulary is DB-owned; hardcoding it here
+    would be exactly the violation tier_suffix.py's own docstring records
+    against its retired `_TIER_SUFFIX` literal dict.
+    """
+    return _get_db_lookup().modifier_suffixes("breakpoint")
+
+
+# ---------------------------------------------------------------------------
+# PHP-consumer evidence (2026-08-12 fix — see module docstring "BUG 2")
+# ---------------------------------------------------------------------------
+
+@functools.lru_cache(maxsize=None)
+def _read_text_cached(path_str: str) -> str:
+    try:
+        return Path(path_str).read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+
+@functools.lru_cache(maxsize=None)
+def _typography_property_suffixes(helpers_path: Path = HELPERS_TYPOGRAPHY_PHP) -> frozenset[str]:
+    """Derive the typography sub-property suffix vocabulary (FontSize,
+    LineHeight, LetterSpacing, …) from helpers-typography.php itself —
+    the ONE shared `sgs_typography_attr( $prefix, '<Suffix>' )` helper's own
+    call sites inside `sgs_typography_css_rule()` ARE the source of truth,
+    so this is code-derived, not a hardcoded property-name dict (R-31-1
+    targets the DB-owned MODIFIER suffix grammar specifically; this is a
+    different vocabulary — the shared PHP helper's own fixed parameter
+    names — with no DB table of its own, so deriving it from the one place
+    it is defined is the R-31-1-consistent choice over inventing either a
+    literal list or a DB table for a two-file convention).
+
+    Scan is bounded to `sgs_typography_css_rule()`'s own body (up to the
+    next top-level `function `) so an unrelated later use of
+    `sgs_typography_attr()` elsewhere in the file cannot smuggle in an
+    unrelated suffix.
+    """
+    text = _read_text_cached(str(helpers_path))
+    start = text.find("function sgs_typography_css_rule")
+    if start == -1:
+        return frozenset()
+    end = text.find("\nfunction ", start + 1)
+    if end == -1:
+        end = len(text)
+    body = text[start:end]
+    return frozenset(re.findall(r"sgs_typography_attr\(\s*\$prefix\s*,\s*['\"]([A-Za-z]+)['\"]", body))
+
+
+def _lcfirst(value: str) -> str:
+    return value[:1].lower() + value[1:] if value else value
+
+
+def _attr_tier_consumer_evidence(
+    block_slug: str,
+    attr_name: str,
+    blocks_dir: Path = BLOCKS_DIR,
+    wrapper_path: Path = WRAPPER_PHP,
+) -> bool:
+    """Return True when real PHP evidence shows `attr_name` on `block_slug`
+    is genuinely read through the tier-normalisation pipeline
+    (`sgs_responsive_normalise_object()` — directly, indirectly via a
+    `'value' => $attributes['<attr>']` entry collected into an
+    `sgs_emit_responsive_css()` prop-map, indirectly via a
+    `'<attr>' => '<css-prop>'` array driving a `foreach ( … as $sgs_attr =>
+    $sgs_css_prop )` DYNAMIC-KEY dispatch into the same prop-map (the
+    class-sgs-container-wrapper.php "LAYOUT properties" loop —
+    `gridTemplateRows` is the live example: its `'value' => $attributes[
+    $sgs_attr ]` never contains the literal string 'gridTemplateRows', only
+    the array key does), or via the shared `sgs_typography_css_rule()`
+    helper) — i.e. is truly Shape 2 (a migrated tier-object), never merely
+    Shape 3 (an object-typed, sibling-free box attribute with NO
+    device-tier destination at all — see module docstring "BUG 2"). Scans
+    the block's own render.php PLUS the shared
+    class-sgs-container-wrapper.php, since composite blocks (container,
+    hero, cta-section, trust-bar, accordion, …) delegate wrapper-level
+    properties like `gap`/`gridItemPadding` to that one shared file rather
+    than reading them inline. Also covers the sibling tier-boolean pair
+    `sgs_resolve_on_tiers()` / `sgs_emit_tier_rules()` (helpers-responsive.php,
+    same file as `sgs_responsive_normalise_object()`) — live example:
+    `sgs/site-header.headerHideOnScroll` assigns `$sh_hide =
+    $attributes['headerHideOnScroll']` then calls
+    `sgs_resolve_on_tiers( $sh_hide, … )` several lines later, so the attr
+    name never appears as a literal argument to the tier function itself —
+    traced via the assigned variable name, not a literal-string match.
+    """
+    block_dir_name = block_slug.split("/")[-1]
+    candidate_paths = [blocks_dir / block_dir_name / "render.php", wrapper_path]
+
+    direct_re = re.compile(
+        r"sgs_responsive_normalise_object\(\s*\$attributes\[\s*['\"]"
+        + re.escape(attr_name) + r"['\"]\s*\]"
+    )
+    collected_re = re.compile(
+        r"'value'\s*=>\s*\$attributes\[\s*['\"]" + re.escape(attr_name) + r"['\"]\s*\]"
+    )
+    dynamic_key_array_re = re.compile(
+        r"['\"]" + re.escape(attr_name) + r"['\"]\s*=>\s*['\"][^'\"]*['\"]\s*,"
+    )
+    dynamic_key_dispatch_re = re.compile(r"'value'\s*=>\s*\$attributes\[\s*\$\w+\s*\]")
+    emit_re = re.compile(r"sgs_emit_responsive_css\(")
+    # $var = [is_array(]?[isset(]? $attributes['<attr>'] ... — captures the
+    # variable name a value is assigned into, regardless of the guard idiom
+    # wrapping it (is_array(...?...), isset(...)?...:, or a bare assignment).
+    var_assign_re = re.compile(
+        r"\$(\w+)\s*=[^;]*\$attributes\[\s*['\"]" + re.escape(attr_name) + r"['\"]\s*\]"
+    )
+    tier_fn_call_re = re.compile(r"sgs_(?:resolve_on_tiers|emit_tier_rules)\(")
+
+    typo_suffixes = _typography_property_suffixes()
+    # Longest suffix first so e.g. 'LineHeightUnit' is tried before 'LineHeight'.
+    prefixed_matches = sorted(
+        (s for s in typo_suffixes if attr_name.endswith(s) and attr_name != s),
+        key=len, reverse=True,
+    )
+    # prefix='' case: sgs_typography_attr('', 'FontSize') === lcfirst('FontSize')
+    # === 'fontSize' — the suffix's own casing doesn't appear as a literal
+    # tail on the attr name here, so it needs its own equality check.
+    base_level_suffix = next(
+        (s for s in typo_suffixes if attr_name == _lcfirst(s)), None
+    )
+
+    for path in candidate_paths:
+        if not path.is_file():
+            continue
+        text = _read_text_cached(str(path))
+        if direct_re.search(text):
+            return True
+        if collected_re.search(text) and emit_re.search(text):
+            return True
+        if (
+            dynamic_key_array_re.search(text)
+            and dynamic_key_dispatch_re.search(text)
+            and emit_re.search(text)
+        ):
+            return True
+        for suffix in prefixed_matches:
+            prefix = attr_name[: -len(suffix)]
+            typo_re = re.compile(
+                r"sgs_typography_css_rule\(\s*\$attributes\s*,\s*['\"]"
+                + re.escape(prefix) + r"['\"]"
+            )
+            if typo_re.search(text):
+                return True
+        if base_level_suffix is not None:
+            typo_re = re.compile(r"sgs_typography_css_rule\(\s*\$attributes\s*,\s*(''|\"\")")
+            if typo_re.search(text):
+                return True
+
+        var_match = var_assign_re.search(text)
+        if var_match:
+            var_name = var_match.group(1)
+            var_use_re = re.compile(r"\$" + re.escape(var_name) + r"\b")
+
+            # sgs_resolve_on_tiers()/sgs_emit_tier_rules() — the tier-boolean
+            # pair (helpers-responsive.php, same file as
+            # sgs_responsive_normalise_object()). Live example:
+            # sgs/site-header.headerHideOnScroll assigns $sh_hide then calls
+            # sgs_resolve_on_tiers( $sh_hide, … ) several lines later.
+            tier_fn_match = tier_fn_call_re.search(text)
+            if tier_fn_match and var_use_re.search(text, tier_fn_match.start()):
+                return True
+
+            # 'value' => $var — the SAME collected-prop-map pattern as
+            # `collected_re` above, but through an intermediate variable
+            # (usually one carrying its own tier-shaped default, e.g.
+            # sgs/mega-panel.groupGap: `$group_gap_obj = ... ?: array(
+            # 'desktop' => '44px' ); … 'value' => $group_gap_obj`) rather
+            # than the literal $attributes['<attr>'] expression.
+            collected_var_re = re.compile(r"'value'\s*=>\s*\$" + re.escape(var_name) + r"\b")
+            if collected_var_re.search(text) and emit_re.search(text):
+                return True
+
+    return False
+
+
+# ---------------------------------------------------------------------------
 # Migrated-property map (block.json is the ONLY source, per Spec 35 P1)
 # ---------------------------------------------------------------------------
+
+def _naive_object_candidates(attrs: dict, breakpoint_suffixes: tuple[str, ...]) -> set[str]:
+    """Block.json-only candidate set — BEFORE the PHP-evidence filter.
+
+    A property is a naive candidate when it is declared `"type": "object"`
+    (or a type list containing "object"), has NO `<attr>Tablet` /
+    `<attr>Mobile` sibling attribute, AND its own name does not itself end
+    in a breakpoint suffix (BUG 1 — see module docstring). Exposed
+    separately from `build_migrated_property_map()` so the self-test can
+    derive "what WOULD naively qualify" without hardcoding a property name.
+    """
+    candidates: set[str] = set()
+    for prop_name, prop_schema in attrs.items():
+        if not isinstance(prop_schema, dict):
+            continue
+        prop_type = prop_schema.get("type")
+        type_list = prop_type if isinstance(prop_type, list) else [prop_type]
+        if "object" not in type_list:
+            continue
+
+        # BUG 1: a name ending in a breakpoint suffix IS itself a per-tier
+        # sibling attribute (e.g. 'marginTablet') — never a migrated base
+        # property in its own right, regardless of what siblings IT has.
+        if any(
+            prop_name.endswith(suf) and prop_name[: -len(suf)]
+            for suf in breakpoint_suffixes
+        ):
+            continue
+
+        has_tablet = f"{prop_name}Tablet" in attrs
+        has_mobile = f"{prop_name}Mobile" in attrs
+        if has_tablet or has_mobile:
+            # Object-typed WITH siblings is not the migrated shape this
+            # gate is about (e.g. a per-tier media-object attribute).
+            continue
+        candidates.add(prop_name)
+    return candidates
+
 
 def build_migrated_property_map(blocks_dir: Path = BLOCKS_DIR) -> dict[str, set[str]]:
     """Return {block_slug: {migrated_base_property_names}}.
 
-    Scans every plugins/sgs-blocks/src/blocks/*/block.json. A base attribute
-    counts as MIGRATED for a block when block.json declares it
-    `"type": "object"` (or a type list containing "object") AND the block
-    does NOT also declare a `<attr>Tablet` or `<attr>Mobile` sibling
-    attribute. This is the block.json-only signal from Spec 35 P1 — never
-    render.php, never the DB, never a runtime switch.
+    Scans every plugins/sgs-blocks/src/blocks/*/block.json for the naive
+    OBJECT-typed, sibling-free, non-suffix-named candidates
+    (`_naive_object_candidates()`), then keeps only those with real PHP
+    evidence of tier consumption (`_attr_tier_consumer_evidence()` — BUG 2,
+    see module docstring). block.json alone is NECESSARY but not
+    SUFFICIENT: never render.php-blind, never the DB, never a runtime
+    switch such as `responsive_model`/`container_queries`.
     """
     migrated: dict[str, set[str]] = {}
     if not blocks_dir.is_dir():
         return migrated
+
+    breakpoint_suffixes = _breakpoint_suffixes()
 
     for block_json_path in sorted(blocks_dir.glob("*/block.json")):
         try:
@@ -163,18 +455,8 @@ def build_migrated_property_map(blocks_dir: Path = BLOCKS_DIR) -> dict[str, set[
             continue
 
         migrated_props: set[str] = set()
-        for prop_name, prop_schema in attrs.items():
-            if not isinstance(prop_schema, dict):
-                continue
-            prop_type = prop_schema.get("type")
-            type_list = prop_type if isinstance(prop_type, list) else [prop_type]
-            if "object" not in type_list:
-                continue
-            has_tablet = f"{prop_name}Tablet" in attrs
-            has_mobile = f"{prop_name}Mobile" in attrs
-            if has_tablet or has_mobile:
-                # Object-typed WITH siblings is not the migrated shape this
-                # gate is about (e.g. a per-tier media-object attribute).
+        for prop_name in _naive_object_candidates(attrs, breakpoint_suffixes):
+            if not _attr_tier_consumer_evidence(slug, prop_name, blocks_dir=blocks_dir):
                 continue
             migrated_props.add(prop_name)
 
@@ -483,6 +765,164 @@ def run_self_test() -> int:
     except Exception as exc:  # noqa: BLE001
         failures.append(f"SCALAR-BASE CONTROL raised an exception: {exc}")
 
+    # --- 5. SHAPE-3 EXCLUSION CONTROL (added 2026-08-12): an object-typed,
+    # sibling-free property with NO real PHP tier-consumer evidence — a
+    # base-only box property such as sgs/text.borderWidth — must be EXCLUDED
+    # from migrated_map altogether, and emitting it as a flat scalar must
+    # NOT trigger a violation: it has no device-tier destination to be "out
+    # of step" with. This is the exact false positive the naive
+    # attr_type/box_family-only signal could not avoid — verified live
+    # 2026-08-12 against sgs-framework.db that `box_family`/`attr_type`/
+    # `default_value` are IDENTICAL for this property and a genuinely
+    # migrated one (see module docstring "BUG 2"). The subject property is
+    # derived from the fixture + the live block.json's NAIVE candidate set
+    # (`_naive_object_candidates()`, i.e. the pre-PHP-evidence signal) —
+    # never hardcoded.
+    try:
+        shape3_blocks = _load_fixture_blocks("shape3-exclusion")
+        if not shape3_blocks:
+            raise AssertionError("shape3-exclusion fixture parsed to zero block instances")
+        shape3_slug, shape3_attrs = shape3_blocks[0]
+
+        block_json_path = BLOCKS_DIR / shape3_slug.split("/")[-1] / "block.json"
+        block_json_attrs = json.loads(block_json_path.read_text(encoding="utf-8")).get("attributes", {})
+        naive_candidates = _naive_object_candidates(block_json_attrs, _breakpoint_suffixes())
+        shape3_subject_props = {
+            base for base in naive_candidates
+            if base in shape3_attrs and not isinstance(shape3_attrs[base], dict)
+        }
+        if not shape3_subject_props:
+            raise AssertionError(
+                f"shape3-exclusion fixture's block ({shape3_slug}) carries no "
+                f"NAIVE-candidate property (object-typed, no Tablet/Mobile "
+                f"siblings) emitted as a flat scalar to test the PHP-evidence "
+                f"exclusion against"
+            )
+        still_migrated = shape3_subject_props & migrated_map.get(shape3_slug, set())
+        if still_migrated:
+            failures.append(
+                f"SHAPE-3 EXCLUSION CONTROL FAILED: {shape3_slug}'s "
+                f"{sorted(still_migrated)} is STILL classified as migrated "
+                f"despite having no PHP tier-consumer evidence — the naive "
+                f"block.json-only false positive (BUG 2) has regressed."
+            )
+        shape3_violations = check_flat_tier_violations(shape3_blocks, migrated_map)
+        if shape3_violations:
+            failures.append(
+                f"SHAPE-3 EXCLUSION CONTROL FAILED: fixtures/flat-tier-gate/"
+                f"shape3-exclusion/extract.json emits a Shape-3 (no tier "
+                f"destination) property as a flat scalar, which is CORRECT "
+                f"behaviour for that property, but the gate raised "
+                f"{len(shape3_violations)} violation(s) anyway: "
+                f"{shape3_violations!r}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        failures.append(f"SHAPE-3 EXCLUSION CONTROL raised an exception: {exc}")
+
+    # --- 6. SUFFIX-SELF-MATCH EXCLUSION CONTROL (added 2026-08-12, BUG 1):
+    # no entry in migrated_map may itself be named with a trailing
+    # breakpoint suffix (e.g. 'marginTablet', 'paddingMobile') — such a name
+    # IS a per-tier SIBLING attribute of some other (possibly undeclared)
+    # base property, never a migrated base property in its own right. A
+    # regression here previously promoted sgs/text's marginTablet/
+    # marginMobile/paddingTablet/paddingMobile (real, still-active box
+    # overrides with NO base 'margin'/'padding' attr at all) to first-class
+    # "migrated property" status, purely because each individually has no
+    # Tablet/Mobile sibling OF ITS OWN. Live-tree check, no fixture needed.
+    try:
+        breakpoint_suffixes = _breakpoint_suffixes()
+        self_matched = [
+            (blk, prop)
+            for blk, props in migrated_map.items()
+            for prop in props
+            for suf in breakpoint_suffixes
+            if prop.endswith(suf) and prop[: -len(suf)]
+        ]
+        if self_matched:
+            failures.append(
+                "SUFFIX-SELF-MATCH EXCLUSION CONTROL FAILED: migrated_map "
+                f"contains {len(self_matched)} entr{'y' if len(self_matched) == 1 else 'ies'} "
+                f"whose property NAME itself ends in a breakpoint suffix (a "
+                f"per-tier sibling attribute mistaken for a migrated base "
+                f"property): {self_matched!r}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        failures.append(f"SUFFIX-SELF-MATCH EXCLUSION CONTROL raised an exception: {exc}")
+
+    # --- 7. CONTAINER SHAPE-2 REGRESSION + INJECT/REVERT PROOF (added
+    # 2026-08-12): proves the stricter PHP-evidence filter does NOT
+    # over-exclude a genuinely migrated tier-of-box property, using the REAL
+    # historical sgs/container clone-run fixture
+    # (real-tree-injection/extract.json, landed 2026-08-11 alongside this
+    # gate's first version but never wired into a runnable test until now —
+    # its own `_fixture_purpose` already asserts gap/gridItemBorderRadius/
+    # gridItemPadding are migrated on the live block.json). Confirmed live
+    # 2026-08-12: `class-sgs-container-wrapper.php` ~:2279-2287 collects
+    # gridItemPadding into `$obj_inner_props` and emits it via
+    # `sgs_emit_responsive_css()` (Spec 35 Phase 1.4b "STAGE 2", landed
+    # 2026-08-10) — genuine PHP tier-consumer evidence.
+    try:
+        real_tree_blocks = _load_fixture_blocks("real-tree-injection")
+        if not real_tree_blocks:
+            raise AssertionError("real-tree-injection fixture parsed to zero block instances")
+        rt_slug, rt_attrs = real_tree_blocks[0]
+
+        rt_dict_props = {
+            k for k, v in rt_attrs.items()
+            if isinstance(v, dict) and k in migrated_map.get(rt_slug, set())
+        }
+        if not rt_dict_props:
+            failures.append(
+                f"PRECONDITION FAILED: real-tree-injection fixture's block "
+                f"({rt_slug}) carries no object-shaped property recognised as "
+                f"migrated — either the fixture regressed or the PHP-evidence "
+                f"filter is now too strict (over-excluding a real Shape 2 "
+                f"property)."
+            )
+        else:
+            clean_violations = check_flat_tier_violations(real_tree_blocks, migrated_map)
+            if clean_violations:
+                failures.append(
+                    "CONTAINER SHAPE-2 REGRESSION: the real-tree-injection "
+                    f"fixture (a CLEAN, correctly object-shaped historical "
+                    f"clone) now raises {len(clean_violations)} violation(s): "
+                    f"{clean_violations!r}"
+                )
+
+            # INJECT: flip one genuinely-migrated property to a flat scalar
+            # and prove the gate fires — the fail-injection proof named in
+            # the D554-C commit message, but never actually automated until
+            # now.
+            inject_prop = sorted(rt_dict_props)[0]
+            injected_blocks = [(blk, dict(attrs)) for blk, attrs in real_tree_blocks]
+            for blk, attrs in injected_blocks:
+                if blk == rt_slug and inject_prop in attrs:
+                    attrs[inject_prop] = "24px"  # flat scalar injection
+            injected_violations = check_flat_tier_violations(injected_blocks, migrated_map)
+            if not any(
+                v["block"] == rt_slug and v["property"] == inject_prop
+                for v in injected_violations
+            ):
+                failures.append(
+                    f"INJECT/REVERT PROOF FAILED: flipping {rt_slug}'s "
+                    f"'{inject_prop}' to a flat scalar did not trigger a "
+                    f"violation — the gate cannot fire on a real historical "
+                    f"clone run's migrated property."
+                )
+
+            # REVERT: re-checking the ORIGINAL (unmutated) blocks must still
+            # be clean — proves the injection probe copied rather than
+            # mutated shared state.
+            revert_violations = check_flat_tier_violations(real_tree_blocks, migrated_map)
+            if revert_violations:
+                failures.append(
+                    "INJECT/REVERT PROOF FAILED: the original fixture is no "
+                    f"longer clean after the injection probe (mutation "
+                    f"leaked): {revert_violations!r}"
+                )
+    except Exception as exc:  # noqa: BLE001
+        failures.append(f"CONTAINER SHAPE-2 REGRESSION control raised an exception: {exc}")
+
     print(_hr("═"))
     print("  check_flat_tier_regression.py — self-test")
     print(_hr("═"))
@@ -502,6 +942,9 @@ def run_self_test() -> int:
     print("  - negative control stays silent on a clean object-shaped emission")
     print("  - comment-safety control ignores a string VALUE match, keys structurally only")
     print("  - scalar-base control fires on a flat base value for a migrated property")
+    print("  - shape-3 exclusion control: a base-only box with no tier destination is never flagged")
+    print("  - suffix-self-match exclusion: no migrated-property name is itself a tier sibling")
+    print("  - container shape-2 regression + inject/revert proof on a REAL historical clone run")
     print(_hr("─"))
     print("  RESULT: PASS")
     print(_hr("─"))
