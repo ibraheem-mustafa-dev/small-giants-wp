@@ -107,6 +107,12 @@ _CSS_PROPERTY_OVERRIDES = {
     'iconSize': '--sgs-btn-icon-size',
     # separator/render.php prop_map: 'thickness' => 'border-bottom-width'.
     'thickness': 'border-bottom-width',
+    # gridItemPadding rides a CUSTOM PROPERTY, not the padding shorthand
+    # directly (class-sgs-container-wrapper.php's sgs_emit_responsive_css()
+    # emits --sgs-gi-padding, consumed elsewhere by the grid-item rule that
+    # applies it as padding — the CUSTOM PROPERTY is what the attribute's own
+    # tier values land on).
+    'gridItemPadding': '--sgs-gi-padding',
 }
 
 # Attributes that are deliberately NOT CSS-measurable. Naming them is the point:
