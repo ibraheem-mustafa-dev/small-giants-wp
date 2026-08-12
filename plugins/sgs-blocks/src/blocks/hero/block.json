@@ -63,7 +63,8 @@
 					"backgroundImage"
 				],
 				"split": [
-					"gridTemplateColumns"
+					"splitImage",
+					"splitImageMobile"
 				],
 				"video": [
 					"bgVideo"
@@ -277,6 +278,24 @@
 		"overlayColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"splitImage": {
+			"type": "object"
+		},
+		"splitImageTablet": {
+			"type": "object"
+		},
+		"_comment_splitMedia": "Migrated 2026-05-05 — splitImage retained for deprecation. New instances should use splitMedia.",
+		"splitMedia": {
+			"type": "object",
+			"default": null
+		},
+		"splitImageMobile": {
+			"type": "object"
+		},
+		"splitImageMobileObjectPosition": {
+			"type": "string",
+			"default": "center 20%"
 		},
 		"imageObjectPositionTablet": {
 			"type": "string",
