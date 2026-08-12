@@ -939,8 +939,11 @@ its element's panel (TIER 1) regardless of this field.)*
 > different resource per device, not a cascade — `sgs/media`'s tiers are a deliberate runtime
 > swap, D521) and 7 `flag_like` (conjunctive per-device flags the operator must see together).
 >
-> ⛔ **STAGE 2 still open:** the six `gridItem*` properties plus `shadow`/`contentBandBackground`
-> emit as CSS CUSTOM PROPERTIES on a different selector and need their own tier plumbing.
+> ⛔ **STAGE 2 still open:** the six `gridItem*` properties plus `shadow` emit as CSS CUSTOM
+> PROPERTIES on a different selector and need their own tier plumbing.
+> ⚠ **AMENDED 2026-08-12 (D589):** `contentBandBackground` was in this list and is now **RETIRED,
+> not pending** — Bean ruled a background fills its CONTAINER and is never clipped to the inner
+> band, so the whole capability is deleted rather than made tier-capable. Seven properties remain.
 >
 > ⚠ **Landmine, guarded once, will recur:** a tier object reaching a LEGACY scalar read causes a
 > PHP "Array to string conversion" on every render. `gridAutoRows` is guarded; five siblings were

@@ -1,5 +1,59 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D590 — `/sgs-update` full reseed: the DB is now correct, and that red-lit the build by exposing converter drift the stale data was hiding [INCIDENT]
+
+**2026-08-12, immediately after D589.** Bean asked for a full `/sgs-update` run plus a doc sweep. The
+reseed did exactly what it should and the result is a NET IMPROVEMENT — but it left `npm run build`
+RED, and the reason matters more than the redness.
+
+**The DB is now exactly right.** Headline swing: `block_attributes` **3218 → 2751 (−467, −15%)**,
+the largest single-run drop on record, with `role` −452, `canonical_slot` −229, `css_property` −199.
+That reads alarming and was NOT accepted on faith. Verified by set-difference against ground truth:
+**2245 `sgs/*` rows vs 2261 attributes declared across all 83 `block.json`**, where the entire
+16-row gap is `_comment_*`/`_note_*` DOCUMENTATION pseudo-attributes that are deliberately not DB
+rows — and **0 rows in the DB that no block declares**. So Stage 9's aggressive prune removed 467
+genuinely stale rows and the DB now matches the code exactly. `verticalAlign` 0 rows,
+`contentBandBackground` 0 rows, `gridItemBorder` present on `trust-bar` — D589 propagated cleanly.
+
+**⛔ THE CONSEQUENCE: 14 cloning-converter tests fail that passed before the reseed.**
+(`test_css_resolvers` ×5, `test_outer_box_step12_properties` ×3, `test_l4_area_wiring`,
+`test_pseudo_overlay_lift`, `test_state_value_lift`, others.) **They were green only BECAUSE of the
+467 stale rows.** Two failures were traced to root cause rather than generalised from one:
+- `test_typography_font_size_number_plus_unit` expects the resolver to split `58px` into
+  `fontSize` + a `fontSizeUnit` companion. `sgs/heading` declares `fontSize` as **`"object"`**
+  (post-D563/D580 migration) and the DB now says so, so the resolver returns a single write. The
+  converter still encodes the PRE-migration numeric shape.
+- `test_order_written_to_media_order_as_int` expects a write to an `order` attribute. **`sgs/hero`
+  has no `order` attribute at all** — only `splitContentOrder`. It was deleted at D539/D540 and the
+  DB was still carrying the orphan row.
+
+So the converter is behind BOTH the D539/D540 attribute deletions and the D563–D580 object-model
+migrations, and the stale DB had been masking it. **This is a pre-existing defect made visible, not
+a new one introduced.** The memory rule `a-shared-db-reseed-is-a-cross-track-action` fired exactly
+as recorded — but the correct reading is that the reseed is the messenger.
+
+**⛔ DO NOT "fix" this by restoring the pre-reseed DB.** The DB is now correct; rolling back
+re-hides the drift and guarantees it is rediscovered later at higher cost. Scope of the real fix is
+a Bean decision and belongs to the cloning-converter owner, not Track 1b.
+
+**Also fixed here (6 db-consistency violations the reseed surfaced, all `sgs/hero` gradients).**
+`extract-signatures.py` reads `hero/render.php`, sees `…GradientAngle`/`From`/`To` composing ONE
+`linear-gradient()`, and gives all three `css_property='background-image'` on the same
+element/state/tier — a compound value split across N attrs, which the one-attr-per-slot routing
+model cannot express. db-consistency Checks #1/#8 flagged it and the column-first resolver raises
+`AmbiguousLayerAttrError` **at clone time**, so this was a latent crash, not cosmetic. **Every other
+block declaring the same gradient triple** (container, cta-section, site-header, site-footer,
+trust-bar) **already carries `css_property=NULL` here and clones fine** — hero was the lone outlier.
+Fixed in the sanctioned reseed-durable override layer (`attr-classification-overrides.json`, 9
+entries with rationale), aligning hero with the established norm rather than inventing a rule. The
+media trio additionally restates `css_layer='GRID_AREA'` because Check #8 compares the OVERRIDE's
+declared pair against the DB and an unstated column reads as a declared NULL. F6 now passes.
+⛔ Do NOT give one of the three the property back to break the tie — a gradient needs all three.
+
+**Method note worth keeping:** the −467 swing was investigated by measuring the DB against the
+`block.json` corpus, not by reasoning about whether a prune "seemed" right. A 15% drop that turns
+out to be a correction and a 15% drop that is data loss look identical in a summary line.
+
 ## D589 — All 26 shared-panel-schema findings closed: `alignItems` unified, content-band background retired, ContentBandPanel deleted [INCIDENT]
 
 **2026-08-12, following D587/D588.** Triaged the 26 findings D587 left untriaged. Gate now BLOCKING

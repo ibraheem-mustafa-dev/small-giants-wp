@@ -1,4 +1,4 @@
-# Slot Synonym Auto-Seed Proposals — 2026-08-07 20:57:15 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-08-12 01:11:25 UTC
 
 ## Summary
 Unmapped rows: 64 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 3 | No match (low confidence): 61
@@ -11,7 +11,7 @@ _(none)_
 
 - slot='drawer' → sgs/nav-drawer (contains match — review before accepting)
 - slot='feature' → sgs/feature-grid (prefix match — review before accepting)
-- slot='content' → sgs/content-collection (prefix match — review before accepting)
+- slot='content' → sgs/table-of-contents (contains match — review before accepting)
 
 ## Low confidence (no clear match)
 

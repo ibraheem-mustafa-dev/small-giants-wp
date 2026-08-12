@@ -1,13 +1,45 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-08-11
+last_updated: 2026-08-12
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
 ## Human Summary — FOR BEAN, plain English (read this first)
+
+**2026-08-12 (session 14). Closed all 26 findings from the new automated check — but two of your
+rulings turned it into something bigger than tidying up, and running `/sgs-update` afterwards has
+left the build RED for a reason that isn't ours.**
+
+- **The 26 are done, and the check is now a real gate** (it fails the build if this bug class ever
+  comes back, rather than just printing a warning). Deployed to the canary, pushed, live-verified.
+- **Your first ruling changed the shape of the fix.** You said a background colour always fills the
+  whole container and never gets clipped to the inner content band. That made "band background" a
+  design mistake rather than a missing setting, so I removed the capability entirely — the control,
+  the setting on 7 blocks, and the code that painted it. Nothing on the site used it (checked the
+  database before deleting).
+- **Your second ruling was a rename.** `verticalAlign` → `alignItems` everywhere, because that IS
+  the real CSS property name and having two names for one thing is what caused the original bug.
+  34 places across 14 files. Nothing stored on the site used the old name.
+- **While doing it I found the panel was worse than the check could see.** The whole "Content band"
+  panel — 13 controls — was dead on every block that showed it, not just the 1 control the check
+  flagged. Its padding controls have been writing to settings no block has declared since an earlier
+  migration. Deleted.
+- **Two more real bugs fixed on the way:** Post Grid and Testimonial Slider each had TWO layout
+  dropdowns fighting over one setting, so anything a client picked in the shared one was silently
+  thrown away by WordPress. Fixed.
+- ⛔ **Then I ran `/sgs-update` as you asked, and it red-lit the build.** The refresh corrected the
+  database — it had been carrying 467 stale leftover rows, and now matches the real code exactly.
+  That's a genuine improvement. **But 14 cloning-converter tests were only passing BECAUSE of that
+  stale data**, and now fail. The converter is behind changes made on 9–11 Aug (deleted settings and
+  the structured-value migration); the stale database was hiding it. **This is not a new bug I
+  introduced — it's an old one that was invisible.** It needs a decision from you (options below);
+  I did not paper over it, and deliberately did NOT restore the old database, because that would
+  re-hide the problem.
+- Fixed 6 database-consistency failures the refresh also surfaced on Hero's gradients, using the
+  proper override file rather than a workaround.
 
 **2026-08-12 (session 13, Track 1b continuation). Full audit of every claim in the governing plan
 doc, not just the two LEDGER flagged. Found and fixed a much bigger version of the same bug class —
@@ -189,8 +221,19 @@ the junction before removing the worktree** — this project's memory already na
 
 ## Blockers
 
-- None. All this session's shipped work (attribute storage fix, feature-grid, hero Phase 2.3, AND
-  the wrapper `$needs_uid` fix below) is deployed and live-verified.
+- ⛔ **`npm run build` is RED — 14 cloning-converter tests fail after the 2026-08-12 `/sgs-update`
+  reseed.** NOT caused by the D589 inspector work (that shipped, deployed and live-verified with a
+  green build BEFORE the reseed). **Proven cause:** the reseed pruned 467 stale `block_attributes`
+  rows, leaving the DB matching ground truth exactly (2245 `sgs/*` rows vs 2261 declared — the 16
+  difference is `_comment_*`/`_note_*` doc pseudo-attrs; **0 extras**). Those tests were green only
+  because of the stale rows. Two examples, both re-derived not inferred: the typography resolver
+  splits `sgs/heading.fontSize` into number+unit when `block.json` declares it `"object"`; an outer-box
+  test expects a write to an `order` attr `sgs/hero` no longer declares. So the CONVERTER is behind
+  the D539/D540 attribute deletions and the D563–D580 object migrations.
+  ⛔ **Do NOT fix by restoring the pre-reseed DB** — the DB is now correct and rolling back re-hides
+  the drift. Needs a Bean decision on scope; belongs to the cloning-converter owner, not Track 1b.
+  Detail: plan doc §3.3 last row.
+- Everything else shipped this session and last is deployed and live-verified.
 
 ## ✅ Wrapper uid-minting bug — SHIPPED same session (D588)
 
@@ -206,13 +249,25 @@ reversible via git. **Not yet done:** a live spot-check across the canary's REAL
 inert — this fix means such a post's rendering may now change (correctly), worth confirming nothing
 surprising shows up. Full mechanism: `decisions.md` D587 (diagnosis) + D588 (fix + verification).
 
+## ✅ All 26 shared-panel-schema findings — CLOSED (D589, `6c4b5087`)
+
+Gate promoted advisory → **BLOCKING** in `prebuild`, reporting **0 findings**. Two Bean rulings
+reshaped it: **content-band background RETIRED framework-wide** (a background fills its CONTAINER,
+never the inner band — 0 stored instances, verified before deletion) and **`verticalAlign` →
+`alignItems`** (one name for one CSS property; the wrapper's dual-key fallback deleted; 0 stored
+instances of the SGS attr — the 7 rows a substring query first matched were core `wp:column`
+`verticalAlignment`). `ContentBandPanel` **deleted** — dead in all 13 controls on every mounting
+block, its padding half writing flat keys undeclared since D580 and invisible to the gate because
+they are computed. `product-card.contentWidth` NOT re-added — `WidthPanel` gained `showContentBand`;
+driving it off `kind="content"` was checked and rejected (4 content-kind blocks genuinely declare
+it). Two silent enum-coercion bugs fixed in passing (`post-grid`/`testimonial-slider` shared-vs-own
+`layout` control). Live-verified on the canary: `align-items:center` paints from the renamed attr,
+a deliberately-set band background paints nothing, and `sgs/pricing-table` — which had no align attr
+at all before — renders `align-items:end`. Full record: `decisions.md` D589 + D590.
+
 ## Open — next priority
-- **26 findings from the new `check-shared-panel-schema.js` gate, untriaged.** `contentBandBackground`
-  undeclared on 12 `kind="layout"` blocks, `verticalAlign` undeclared on the same 12 + `gallery`,
-  `trust-bar.gridItemBorder` undeclared, and `product-card.contentWidth` (a re-surfacing of the
-  already-correctly-resolved D540 case — do NOT re-add the attribute; the real fix is making
-  `WidthPanel` itself skip the "Content band width" sub-control for blocks that can't use it, a
-  shared-component change). Gate is advisory (non-blocking) until these are triaged.
+- **Decide the converter-drift scope** (see Blockers). Until then no Track 1b item can close through
+  a green build.
 
 ## Open — carried, not ours to close
 

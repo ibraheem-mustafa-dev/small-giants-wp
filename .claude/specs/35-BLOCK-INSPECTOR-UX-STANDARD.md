@@ -611,6 +611,13 @@ custom-property split, the four measurement controls): **`plans/spec-35-control-
   shipped as data-driven `prop_map` rows (layout set), 8 named as Stage 2 (the `gridItem*` custom-
   property set plus `shadow`/`contentBandBackground`, STILL OPEN per D549's STOP-29 flag — do not
   treat these as shipped).
+  ⚠ **AMENDED 2026-08-12 (D589): Stage 2 is now SEVEN properties, not eight.**
+  `contentBandBackground` left the list permanently — the **capability is RETIRED, not pending**.
+  Bean-ruled: a background colour or media fills the max-width of its CONTAINER and is never clipped
+  to the inner content layer, so a band-scoped background was a design error rather than a
+  tier-plumbing task. The attribute, its 5 editor controls, its element-manifest mappings and all
+  four wrapper emission sites are deleted (0 stored instances anywhere on the canary, verified by DB
+  query first). Do not re-derive the old 8-property list from D549's prose.
 - A live `max-width:Array` bug in `sgs_responsive_normalise_object()` was fixed (an un-normalised
   object leaking into a scalar-only code path).
 
