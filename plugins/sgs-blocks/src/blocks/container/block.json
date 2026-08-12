@@ -23,12 +23,7 @@
 		],
 		"anchor": true,
 		"html": false,
-		"color": {
-			"text": true,
-			"link": true,
-			"heading": true,
-			"__experimentalSkipSerialization": true
-		},
+		"color": false,
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,

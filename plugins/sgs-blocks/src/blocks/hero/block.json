@@ -24,6 +24,8 @@
 		"html": false,
 		"color": {
 			"text": true,
+			"background": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -61,8 +63,7 @@
 					"backgroundImage"
 				],
 				"split": [
-					"splitImage",
-					"splitImageMobile"
+					"gridTemplateColumns"
 				],
 				"video": [
 					"bgVideo"
@@ -238,7 +239,6 @@
 		"root": ".wp-block-sgs-hero",
 		"border": ".wp-block-sgs-hero",
 		"color": {
-			"background": ".wp-block-sgs-hero",
 			"text": ".wp-block-sgs-hero"
 		},
 		"spacing": {
@@ -277,24 +277,6 @@
 		"overlayColour": {
 			"type": "string",
 			"default": "text"
-		},
-		"splitImage": {
-			"type": "object"
-		},
-		"splitImageTablet": {
-			"type": "object"
-		},
-		"_comment_splitMedia": "Migrated 2026-05-05 â€” splitImage retained for deprecation. New instances should use splitMedia.",
-		"splitMedia": {
-			"type": "object",
-			"default": null
-		},
-		"splitImageMobile": {
-			"type": "object"
-		},
-		"splitImageMobileObjectPosition": {
-			"type": "string",
-			"default": "center 20%"
 		},
 		"imageObjectPositionTablet": {
 			"type": "string",

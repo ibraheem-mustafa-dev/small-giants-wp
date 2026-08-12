@@ -388,6 +388,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<InspectorControls group="styles">
 
+				{ /* Background (image/video/svg tabs + ken-burns/parallax) — root-level
+					appearance, kept first in the Styles tab (mirrors sgs/container). */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+
 				{ /* ── Section (outer): width + min-height ──────────────────── */ }
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
@@ -514,9 +518,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* ── Grid item defaults ─────────────────────────────────────── */ }
 				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
-
-				{ /* ── Background (image/video/svg/overlay) ──────────────────── */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
 					box-shadow CSS string built by ShadowControl), resolved by

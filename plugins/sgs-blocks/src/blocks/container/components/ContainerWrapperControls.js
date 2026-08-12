@@ -786,7 +786,6 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 				tabs={ [
 					{ name: 'image', title: __( 'Image', 'sgs-blocks' ) },
 					{ name: 'video', title: __( 'Video', 'sgs-blocks' ) },
-					{ name: 'animation', title: __( 'Anim', 'sgs-blocks' ) },
 					{ name: 'svg', title: __( 'SVG', 'sgs-blocks' ) },
 				] }
 			>
@@ -1000,46 +999,6 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 						);
 					}
 
-					// ---- Animation tab ----
-					if ( tab.name === 'animation' ) {
-						return (
-							<>
-								<p className="components-base-control__help">
-									{ __( 'Requires a background image. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.', 'sgs-blocks' ) }
-								</p>
-								<ToggleControl
-									label={ __( 'Ken-burns zoom', 'sgs-blocks' ) }
-									help={ __( 'Slow zoom animation on the background image.', 'sgs-blocks' ) }
-									checked={ bgKenBurns }
-									onChange={ ( val ) =>
-										setAttributes( { bgKenBurns: val, bgParallax: val ? false : bgParallax } )
-									}
-									__nextHasNoMarginBottom
-								/>
-								<ToggleControl
-									label={ __( 'Parallax scroll', 'sgs-blocks' ) }
-									help={ __( 'Fixed background-attachment parallax effect. Disabled on touch devices.', 'sgs-blocks' ) }
-									checked={ bgParallax }
-									onChange={ ( val ) =>
-										setAttributes( { bgParallax: val, bgKenBurns: val ? false : bgKenBurns } )
-									}
-									__nextHasNoMarginBottom
-								/>
-								{ bgKenBurns && (
-									<RangeControl
-										label={ __( 'Animation duration (seconds)', 'sgs-blocks' ) }
-										value={ bgAnimationDuration }
-										onChange={ ( val ) => setAttributes( { bgAnimationDuration: val } ) }
-										min={ 5 }
-										max={ 60 }
-										step={ 1 }
-										__nextHasNoMarginBottom
-									/>
-								) }
-							</>
-						);
-					}
-
 					// ---- SVG tab ----
 					if ( tab.name === 'svg' ) {
 						return (
@@ -1116,6 +1075,44 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 					return null;
 				} }
 			</TabPanel>
+
+			{ /* Ken-burns/parallax are MODIFIERS on whichever media source is active
+			    above (image/video), not a media source themselves — so they sit
+			    below the tabs rather than as a peer "Anim" tab. Same relocation
+			    technique as the Overlay colour/gradient row above the tabs. */ }
+			<hr style={ { margin: '16px 0' } } />
+			<p className="components-base-control__help">
+				{ __( 'Requires a background image. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.', 'sgs-blocks' ) }
+			</p>
+			<ToggleControl
+				label={ __( 'Ken-burns zoom', 'sgs-blocks' ) }
+				help={ __( 'Slow zoom animation on the background image.', 'sgs-blocks' ) }
+				checked={ bgKenBurns }
+				onChange={ ( val ) =>
+					setAttributes( { bgKenBurns: val, bgParallax: val ? false : bgParallax } )
+				}
+				__nextHasNoMarginBottom
+			/>
+			<ToggleControl
+				label={ __( 'Parallax scroll', 'sgs-blocks' ) }
+				help={ __( 'Fixed background-attachment parallax effect. Disabled on touch devices.', 'sgs-blocks' ) }
+				checked={ bgParallax }
+				onChange={ ( val ) =>
+					setAttributes( { bgParallax: val, bgKenBurns: val ? false : bgKenBurns } )
+				}
+				__nextHasNoMarginBottom
+			/>
+			{ bgKenBurns && (
+				<RangeControl
+					label={ __( 'Animation duration (seconds)', 'sgs-blocks' ) }
+					value={ bgAnimationDuration }
+					onChange={ ( val ) => setAttributes( { bgAnimationDuration: val } ) }
+					min={ 5 }
+					max={ 60 }
+					step={ 1 }
+					__nextHasNoMarginBottom
+				/>
+			) }
 		</PanelBody>
 	);
 }

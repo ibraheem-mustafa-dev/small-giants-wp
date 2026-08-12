@@ -231,6 +231,11 @@ export default function Edit({ attributes, setAttributes }) {
     <>
       <InspectorControls>
 
+        {/* Background (image/video/svg tabs + ken-burns/parallax) — root-level
+            appearance, kept first so it isn't buried under content-scoped
+            panels (container has no separate Styles tab yet). */}
+        <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+
         {/* Layout panel — shared LayoutPanel + WidthPanel + container-specific controls
             (HTML tag, min-height ×3). Kept as a single "Layout" PanelBody to preserve
             the pre-refactor inspector order and label for container users. */}
@@ -388,9 +393,6 @@ export default function Edit({ attributes, setAttributes }) {
             __nextHasNoMarginBottom
           />
         </PanelBody>
-
-        {/* Background (image/video/overlay/svg/animation tabs). */}
-        <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
         {/* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
           CSS string built by ShadowControl), resolved by sgs_shadow_value()

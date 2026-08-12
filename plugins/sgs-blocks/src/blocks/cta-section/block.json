@@ -158,6 +158,8 @@
 		"html": false,
 		"color": {
 			"text": true,
+			"background": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -190,7 +192,6 @@
 		"root": ".wp-block-sgs-cta-section",
 		"border": ".wp-block-sgs-cta-section",
 		"color": {
-			"background": ".wp-block-sgs-cta-section",
 			"text": ".wp-block-sgs-cta-section"
 		},
 		"spacing": {

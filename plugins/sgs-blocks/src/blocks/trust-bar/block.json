@@ -156,6 +156,8 @@
 		"html": false,
 		"color": {
 			"text": true,
+			"background": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
