@@ -19,9 +19,13 @@ owner: cloning converter (NOT Track 1b)
 | **G2** (1) | `validated-shipped` | Removed the `backgroundOverlayOpacity` write from `services/pseudo_overlay.py` (attr retired at D581; declared by 0 blocks; alpha already rides in the `rgba()` colour). Test now asserts its ABSENCE. **Negative control run:** re-injecting the write makes the test fail, so the assertion is not vacuous. |
 | **G3** (1) | `falsified` → stale test | Rewrote `test_natively_consumed_property_does_not_double_emit` onto `padding-top` (still genuinely native) and added a guard that fails if anyone restores `supports.color.background`. |
 
-⛔ **The 12 xfails are NOT "done".** They are the D554-accepted consequence — cloning stays blocked for
-migrated properties until Spec 39. The still-owed work is **the D554 clone-output gate, never built**
-(see below), which would make that blockage loud at clone time instead of only in pytest.
+⛔ **The 12 xfails are NOT "done".** They are the D554-accepted consequence — cloning stays blocked
+for migrated properties until Spec 39.
+
+✅ **The D554 clone-output gate that makes this loud at CLONE time already existed and is now FIXED**
+(`4ec6ed83`) — it had Shape-2/3 confusion AND was self-promoting per-tier siblings into "migrated"
+status (259 false positives). See §G9a of `spec-39-seed-requirements.md`. An earlier revision of this
+doc reported it as "never built"; that was my search error, corrected below.
 
 ## ⛔ COUNCIL VERDICT — READ BEFORE ANYTHING ELSE
 
@@ -38,9 +42,15 @@ not a bug to fix now. `.claude/plans/spec-39-seed-requirements.md:14-16`: *"the 
 the cloning pipeline is reworked afterwards… The converter's inability to emit the new shape is
 scheduled work, never a precondition."* **Spec 39 does not exist yet** (verified: no `.claude/specs/39-*`).
 
-**What D554 asked for and NOBODY BUILT: the clone-output gate.** A check that FAILS a clone run when it
-emits a flat tier for a property already migrated on the target block, so divergence is loud. Verified
-absent. The design doc (`spec-35-flat-to-object-migration-design.md:216-241`) already specifies the slot
+**What D554 asked for — ⛔ I WRONGLY REPORTED THIS AS NEVER BUILT (corrected 2026-08-12): the
+clone-output gate HAS existed since 2026-08-11** (`fa638cea`,
+`scripts/orchestrator/check_flat_tier_regression.py`, wired into `pipeline-stage-gate.py` +
+`sgs-clone-orchestrator.py`). My check missed it twice over — grepped `"flat tier"` (space)
+against a `flat_tier` (underscore) filename, AND looked in `.claude/hooks/` when the live file is
+in `scripts/orchestrator/`. It WAS broken, though (Shape-2/3 confusion + 259 false positives from
+per-tier siblings self-promoting); both fixed at `4ec6ed83`. Detail: seed doc §G9a.
+**The gate as originally described:** A check that FAILS a clone run when it
+emits a flat tier for a property already migrated on the target block, so divergence is loud. The design doc (`spec-35-flat-to-object-migration-design.md:216-241`) already specifies the slot
 (`sgs-clone-orchestrator.py:2053`, beside the existing R-31-15 gate) **and** warns its retirement
 criterion needs a **positive control** — a fixture clone that provably triggers it — or it goes
 vacuously green, the same shape as `empty-section-false-pixel-diff-win`.
@@ -65,14 +75,24 @@ migrated properties — but silently, via resolver gaps and red tests, instead o
    |---|---|---|---|---|---|
    | 1 · flat-sibling trio | `sgs/hero.imagePadding`(+Tablet/Mobile) | **yes** | 3 separate array reads | leave alone | ✅ |
    | 2 · migrated tier-of-boxes | `contentBandPadding`, `contentPadding` | no | `sgs_responsive_normalise_object(...)` then `.desktop/.tablet/.mobile` | fold | ✅ |
-   | 3 · **base-only box, NO tier support** | `container.gridItemPadding`, `text.borderWidth` | **no** | `class-sgs-container-wrapper.php:579` — `sgs_serialise_box_sides($attributes['gridItemPadding'] ?? array())`, a **FLAT read, no tier normalisation** | fold ⇠ **WRONG** | ❌ |
+   | 3 · **base-only box, NO tier support** | `sgs/text.borderWidth` | **no** | its `render.php` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()` — a **FLAT read, no tier call anywhere** | fold ⇠ **WRONG** | ❌ |
 
    Shape 3 is indistinguishable from shape 2 by sibling-existence *or* by `attr_type`. Folding it to
    `{desktop:{…}}` makes the PHP find no `top`/`right`/… keys and **render nothing — regressing a
-   currently-working path.** `class-sgs-container-wrapper.php:2263-2278` states the `gridItem*` tier
-   plumbing was **deliberately deferred (D549 STAGE 2, not built)** — the same Stage 2 list amended at
-   D589. Any future Spec 39 work needs a **genuine DB-backed signal** for "tier-object to fold" vs
-   "box attr with no tier support"; neither `attr_type` nor `box_family_for` provides one today.
+   currently-working path.**
+
+   ⛔ **CORRECTION: `container.gridItemPadding` was cited here as the Shape 3 example and is actually
+   Shape 2** — `class-sgs-container-wrapper.php:2279-2296` feeds it into `$obj_inner_props[]`, the
+   tier-OBJECT emitter. It ALSO has a flat `sgs_serialise_box_sides` read elsewhere in the same file,
+   and citing only that produced the misclassification; the `//` comment above `:2279` calling the
+   plumbing "deferred" is itself stale and contradicted by the code beneath it. ⚑ **A property can have
+   TWO reads in one file — a flat read does not prove there is no tier read.** The three-shape
+   CONSTRAINT is unaffected; only the example was wrong.
+
+   The signal that DOES work (built at `4ec6ed83`): **PHP-consumer evidence** — does the value
+   demonstrably reach `sgs_responsive_normalise_object()` / `sgs_emit_responsive_css()` /
+   `sgs_typography_css_rule()` / `sgs_resolve_on_tiers()`. Neither `attr_type` nor `box_family_for`
+   can do it; both are identical for Shape 2 and Shape 3.
 
 4. **"16 call sites" was wrong — there are 15.** `services/state_value_lift.py` only *mentions*
    `tier_state_suffix` in a docstring; it resolves via `db_lookup.attr_for_state_property` instead.

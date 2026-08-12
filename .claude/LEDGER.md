@@ -285,11 +285,25 @@ still fail.
 `sgs/media` (declared `object`), not a deleted `sgs/hero.order`. Struck through in `decisions.md`
 rather than quietly replaced.
 
+## ✅ D554 clone-output gate — it ALREADY EXISTED, was BROKEN, now FIXED (`4ec6ed83`)
+
+⛔ **I reported this as "never built". That was wrong** — `check_flat_tier_regression.py` has existed
+since 2026-08-11 (`fa638cea`), wired into both `pipeline-stage-gate.py` and `sgs-clone-orchestrator.py`.
+My check missed it twice: grepped `"flat tier"` (space) against a `flat_tier` (underscore) filename,
+and searched `.claude/hooks/` when the live file is in `scripts/orchestrator/`.
+
+**It was genuinely broken, in two ways, both now fixed:** (1) it could not tell a genuinely-migrated
+property from one with no tier destination; (2) worse and unanticipated — per-tier SIBLING attrs
+(`marginTablet`, `paddingMobile`) were self-promoting into "migrated" status because each has no
+sibling of its own, giving **259 false positives** across nearly every block. It now discriminates on
+**PHP-consumer evidence** (does the value actually reach `sgs_responsive_normalise_object()` /
+`sgs_emit_responsive_css()` / `sgs_typography_css_rule()` / `sgs_resolve_on_tiers()`), which
+`attr_type` and `box_family` provably cannot do. 260 properties re-classified, **0 additions** — the
+fix only narrows. Build unchanged: 915 passed, 12 xfailed.
+
 ## Open — next priority
-- **The D554 clone-output gate — specified at D554, never built.** A check that FAILS a clone run
-  emitting a flat tier for an already-migrated property, so the divergence is loud at CLONE time
-  instead of only in pytest. Slot + a mandatory positive control are already specified in
-  `plans/spec-35-flat-to-object-migration-design.md:216-241`. Delegated to a Sonnet agent 2026-08-12.
+- **Nothing blocking.** Spec 35's remaining register is in `~/.claude/plans/go-track-1b-playful-hamster.md`
+  (29 open); Spec 39's inputs are seeded in `plans/spec-39-seed-requirements.md` (§G5–G10 added today).
 
 ## Open — carried, not ours to close
 

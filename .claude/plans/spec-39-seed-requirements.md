@@ -267,7 +267,16 @@ these apart from the data:
 |---|---|---|---|---|---|
 | 1 | flat-sibling trio | `sgs/hero.imagePadding` (+`Tablet`/`Mobile`) | **YES** | three separate array reads | **flat — already correct today** |
 | 2 | migrated tier-object | `contentBandPadding`, `gap`, `maxWidth`, `columns`, `fontSize`, `sgs/media.order`, `decorative-image.positionX/Y` | no | `sgs_responsive_normalise_object(...)` → `.desktop/.tablet/.mobile` | **object — R1's actual target** |
-| 3 | base-only box, **NO tier support** | `sgs/container.gridItemPadding`, `sgs/text.borderWidth` | no | `class-sgs-container-wrapper.php` — `sgs_serialise_box_sides($attributes[...] ?? array())`, a **FLAT read, no tier normalisation**; tier plumbing deliberately deferred (D549 Stage 2) | **flat — folding it renders NOTHING** |
+| 3 | base-only box, **NO tier support** | `sgs/text.borderWidth` | no | its `render.php` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()` — a **FLAT read, no tier call anywhere** | **flat — folding it renders NOTHING** |
+
+⛔ **CORRECTION 2026-08-12 (same day): `sgs/container.gridItemPadding` was cited here as the canonical
+Shape 3 example and that is WRONG — it is Shape 2.** `class-sgs-container-wrapper.php:2279-2296` feeds
+it into `$obj_inner_props[]`, i.e. the tier-OBJECT emission path. The block ALSO has a flat
+`sgs_serialise_box_sides(...)` read elsewhere in the same file, and citing only that one produced the
+misclassification. ⚑ **Transferable:** a property can have TWO reads in one file — finding a flat read
+does not establish there is no tier read. The `//` comment just above `:2279` calling this plumbing
+"deferred" is itself stale and is contradicted by the code beneath it. The three-shape CONSTRAINT
+stands unchanged; only the example was wrong.
 
 - Testing `attr_type == 'object'` conflates all three.
 - Testing "does `{base}{Tier}` exist as its own row" separates 1 from {2,3} — **but NOT 2 from 3.**
@@ -318,6 +327,39 @@ writes a **preset-slug string**, so base-tier box-shadow on that block is *alrea
 a rich-descriptor object). **An object-collapse rule that doesn't condition on tier would widen that
 existing bug from Base-only to Tablet/Mobile+Hover.** Zero `%TabletHover`/`%MobileHover` rows exist
 anywhere, so the correct behaviour is to keep gapping.
+
+### G9a — ⛔ R6's gate was ALREADY BUILT; it was BROKEN, and is now fixed (2026-08-12)
+
+**Correcting this file's own R6 and a 2026-08-12 claim of mine that it was "never built".** The D554
+clone-output gate has existed since **2026-08-11** (`fa638cea`) as
+`scripts/orchestrator/check_flat_tier_regression.py`, wired into BOTH
+`scripts/orchestrator/pipeline-stage-gate.py` and `sgs-clone-orchestrator.py`, with a fixture suite.
+
+⚑ **Why it was reported missing — a method warning worth more than the fact:** the search used
+`grep "flat tier"` (space) against a file named `flat_tier` (underscore), and looked in
+`.claude/hooks/pipeline-stage-gate.py` when the live file is at
+`scripts/orchestrator/pipeline-stage-gate.py`. **Two independent wrong-shape errors in one check**,
+each sufficient to produce a confident false "does not exist". Project rule
+`a-greps-blind-spot-is-the-shape-of-the-grep`.
+
+**But it was genuinely broken in two ways, both now fixed (`4ec6ed83`):**
+1. **Shape-2-vs-3 confusion** — it used the naive "object-typed with no Tablet/Mobile siblings" signal
+   that G5 above proves cannot separate them.
+2. **⚠ Worse, and not anticipated: per-tier SIBLING attrs were self-promoting into "migrated" status.**
+   `marginTablet`/`paddingMobile` are real attrs with no base `margin`/`padding`, and each has no
+   sibling *of its own*, so the naive rule classified them as migrated on nearly every block —
+   **259 false positives.** Fixed by excluding any candidate whose own name ends in a DB-derived
+   breakpoint suffix (`modifier_suffixes('breakpoint')`, R-31-1).
+
+**The discriminator it now uses — this is G5's answer, and Spec 39 should reuse it rather than
+re-derive:** a property counts as migrated only when its value **demonstrably reaches** one of
+`sgs_responsive_normalise_object()`, `sgs_emit_responsive_css()`, `sgs_typography_css_rule()` or
+`sgs_resolve_on_tiers()`, scanned across the block's own `render.php` **and** the shared
+`class-sgs-container-wrapper.php`, covering three indirection patterns (collected prop-map entries,
+dynamic-key dispatch loops, intermediate-variable assignment). i.e. **PHP-consumer evidence, not
+`attr_type` and not `box_family`** — both of which were confirmed identical for Shape 2 and Shape 3.
+
+Net effect: 260 properties re-classified across 83 blocks, **0 additions** — the fix only narrows.
 
 ### G9 — ⭐ R6's missing POSITIVE CONTROL now EXISTS: 12 `xfail(strict=True)` tests
 
