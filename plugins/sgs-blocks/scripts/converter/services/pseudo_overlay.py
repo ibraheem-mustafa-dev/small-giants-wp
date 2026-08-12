@@ -282,12 +282,26 @@ def parse_overlay_background(value: str) -> dict[str, Any] | None:
         return None
 
     # Treat as a solid colour.
-    result = {_OVERLAY_SOLID_COLOUR: v}
-    rgba_match = _RGBA_RE.match(v)
-    if rgba_match:
-        alpha = float(rgba_match.group("alpha"))
-        result[_OVERLAY_SOLID_OPACITY] = round(alpha * 100)
-    return result
+    #
+    # ⛔ The companion `backgroundOverlayOpacity` write was REMOVED 2026-08-12.
+    # That attribute was RETIRED at D581 (Background/overlay panel redesign,
+    # 2026-08-11) — deleted from container/hero/cta-section/trust-bar in
+    # `1ccbdbe1`, i.e. declared by ZERO blocks. `hero/render.php:130-134`
+    # (mirrored at `class-sgs-container-wrapper.php:1186`) states it:
+    # "backgroundOverlayOpacity no longer exists as an attribute — the
+    # colour/gradient picker's own alpha is the one dimming mechanism now."
+    #
+    # Emitting it was pure loss: WordPress SILENTLY DISCARDS a write to an
+    # attribute a block does not declare (D338), so the value never landed —
+    # it only made the converter look like it had transferred the dimming.
+    # NOTHING is lost by dropping it: the alpha is ALREADY carried in the
+    # rgba() colour written below (rgba(10,10,10,0.6) transfers verbatim,
+    # alpha included), which is exactly what the replacement mechanism reads.
+    #
+    # ⛔ Do NOT reinstate this as a "derived" convenience value. If a future
+    # block reintroduces a separate opacity attr, route it through the DB
+    # (`db_lookup`) like every other destination — never a hardcoded name.
+    return {_OVERLAY_SOLID_COLOUR: v}
 
 
 # ---------------------------------------------------------------------------

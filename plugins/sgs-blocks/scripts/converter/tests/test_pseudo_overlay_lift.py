@@ -143,10 +143,22 @@ def test_parse_solid_colour():
     assert out == {"backgroundOverlayColour": "#1a1a2e"}
 
 
-def test_parse_solid_rgba_derives_opacity():
+def test_parse_solid_rgba_keeps_alpha_in_the_colour_not_a_separate_attr():
+    """D581 (2026-08-11) RETIRED `backgroundOverlayOpacity` — the colour's own
+    alpha is the single dimming mechanism now, so the alpha must ride inside the
+    rgba() value and NO separate opacity attr may be written.
+
+    This test previously asserted `out["backgroundOverlayOpacity"] == 40`. That
+    attribute is declared by ZERO blocks since `1ccbdbe1`, so the write was
+    silently discarded by WordPress (D338) while still looking like a transfer.
+    Asserting its ABSENCE is what stops it being reintroduced as a "derived
+    convenience" value.
+    """
     out = parse_overlay_background("rgba(0, 0, 0, 0.4)")
     assert out["backgroundOverlayColour"] == "rgba(0, 0, 0, 0.4)"
-    assert out["backgroundOverlayOpacity"] == 40
+    assert "backgroundOverlayOpacity" not in out
+    # The alpha is not lost — it is carried verbatim inside the colour above.
+    assert "0.4" in out["backgroundOverlayColour"]
 
 
 def test_parse_unmappable_returns_none():
@@ -204,7 +216,8 @@ def test_resolve_solid_colour_onto_container():
         pseudo_decls = {"before": {"background": "rgba(10, 10, 10, 0.6)"}}
         attrs = resolve_pseudo_overlay("sgs/container", pseudo_decls, ".sgs-info-box")
         assert attrs["backgroundOverlayColour"] == "rgba(10, 10, 10, 0.6)"
-        assert attrs["backgroundOverlayOpacity"] == 60
+        # D581: no separate opacity attr — the 0.6 alpha rides in the colour.
+        assert "backgroundOverlayOpacity" not in attrs
     finally:
         _cleanup_gap_rows("sgs/container")
 

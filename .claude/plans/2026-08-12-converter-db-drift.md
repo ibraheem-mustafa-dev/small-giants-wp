@@ -2,11 +2,83 @@
 
 ```
 doc_type: plan
-status: OPEN — diagnosed, designed, NOT built
+status: BUILD GREEN — G2 + G3 FIXED; G1 (12 tests) xfail(strict) pending Spec 39 per D554
 opened: 2026-08-12
+revised: 2026-08-12 (QC council — 3 raters; the original G1 design was FALSIFIED)
 origin: D590 (the /sgs-update reseed that exposed it)
 owner: cloning converter (NOT Track 1b)
 ```
+
+## OUTCOME (2026-08-12, post-council)
+
+**Build restored to GREEN** — `npm run build` exit 0; 915 passed, 2 skipped, **12 xfailed**.
+
+| Group | Verdict | Action taken |
+|---|---|---|
+| **G1** (12) | `validated-rejected` — **do not build** | Tests marked `xfail(strict=True)` citing D554. **strict** so they FAIL LOUD the moment the converter starts emitting tier objects — a live Spec 39 checklist, not silenced tests. Converter code UNTOUCHED. |
+| **G2** (1) | `validated-shipped` | Removed the `backgroundOverlayOpacity` write from `services/pseudo_overlay.py` (attr retired at D581; declared by 0 blocks; alpha already rides in the `rgba()` colour). Test now asserts its ABSENCE. **Negative control run:** re-injecting the write makes the test fail, so the assertion is not vacuous. |
+| **G3** (1) | `falsified` → stale test | Rewrote `test_natively_consumed_property_does_not_double_emit` onto `padding-top` (still genuinely native) and added a guard that fails if anyone restores `supports.color.background`. |
+
+⛔ **The 12 xfails are NOT "done".** They are the D554-accepted consequence — cloning stays blocked for
+migrated properties until Spec 39. The still-owed work is **the D554 clone-output gate, never built**
+(see below), which would make that blockage loud at clone time instead of only in pytest.
+
+## ⛔ COUNCIL VERDICT — READ BEFORE ANYTHING ELSE
+
+A QC council (Stage 1.5 structural gates + 3 raters) **falsified the central proposal of this plan.**
+
+**G1 must NOT be built. D554 ruling C already decided the opposite**, verbatim:
+*"**C — The converter stays flat; its output gets gated.** … Accepted consequence: cloning is blocked
+for migrated properties until the Spec 39 rework lands… ⛔ **Rejected: a temporary converter shim.** It
+would make the pipeline pace the standard (inverting the ordering ruling), and a shim written under
+time pressure becomes the permanent implementation."*
+
+So "teach the converter to emit tier objects" is **named future work (Spec 39), explicitly deferred** —
+not a bug to fix now. `.claude/plans/spec-39-seed-requirements.md:14-16`: *"the block standard leads,
+the cloning pipeline is reworked afterwards… The converter's inability to emit the new shape is
+scheduled work, never a precondition."* **Spec 39 does not exist yet** (verified: no `.claude/specs/39-*`).
+
+**What D554 asked for and NOBODY BUILT: the clone-output gate.** A check that FAILS a clone run when it
+emits a flat tier for a property already migrated on the target block, so divergence is loud. Verified
+absent. The design doc (`spec-35-flat-to-object-migration-design.md:216-241`) already specifies the slot
+(`sgs-clone-orchestrator.py:2053`, beside the existing R-31-15 gate) **and** warns its retirement
+criterion needs a **positive control** — a fixture clone that provably triggers it — or it goes
+vacuously green, the same shape as `empty-section-false-pixel-diff-win`.
+
+⚠ **The reseed accidentally delivered D554's outcome by the wrong route:** cloning IS now blocked for
+migrated properties — but silently, via resolver gaps and red tests, instead of via the loud named gate.
+
+### Two design errors this plan originally contained (kept so they are not repeated)
+
+1. **"One normalisation pass over the collected writes"** — impossible. `resolvers/grid.py:174-179`
+   calls `validate()` on the *suffixed* name and `return`s a GAP before any `Write` exists, so a
+   post-pass has nothing to normalise. Any future Spec 39 work must act at attr-resolution, not after.
+2. **"`attr_type=='object'` ⇒ wrap the value in `{tier: value}`"** — would have corrupted live data.
+   `object`-typed ≠ tier-object: `paddingTablet` (38 blocks), `marginMobile` (41), `backgroundImageTablet`
+   (6) are **flat siblings whose VALUE is an object** (a box / a media object).
+
+3. ⛔ **"Does `{base}{Tier}` exist?" is NECESSARY BUT NOT SUFFICIENT — my own corrected discriminator
+   was still wrong, caught by Rater D.** There are **THREE** shapes under `attr_type='object'`, and that
+   test only separates two of them:
+
+   | Shape | Example | Siblings? | PHP consumer | My rule | Correct? |
+   |---|---|---|---|---|---|
+   | 1 · flat-sibling trio | `sgs/hero.imagePadding`(+Tablet/Mobile) | **yes** | 3 separate array reads | leave alone | ✅ |
+   | 2 · migrated tier-of-boxes | `contentBandPadding`, `contentPadding` | no | `sgs_responsive_normalise_object(...)` then `.desktop/.tablet/.mobile` | fold | ✅ |
+   | 3 · **base-only box, NO tier support** | `container.gridItemPadding`, `text.borderWidth` | **no** | `class-sgs-container-wrapper.php:579` — `sgs_serialise_box_sides($attributes['gridItemPadding'] ?? array())`, a **FLAT read, no tier normalisation** | fold ⇠ **WRONG** | ❌ |
+
+   Shape 3 is indistinguishable from shape 2 by sibling-existence *or* by `attr_type`. Folding it to
+   `{desktop:{…}}` makes the PHP find no `top`/`right`/… keys and **render nothing — regressing a
+   currently-working path.** `class-sgs-container-wrapper.php:2263-2278` states the `gridItem*` tier
+   plumbing was **deliberately deferred (D549 STAGE 2, not built)** — the same Stage 2 list amended at
+   D589. Any future Spec 39 work needs a **genuine DB-backed signal** for "tier-object to fold" vs
+   "box attr with no tier support"; neither `attr_type` nor `box_family_for` provides one today.
+
+4. **"16 call sites" was wrong — there are 15.** `services/state_value_lift.py` only *mentions*
+   `tier_state_suffix` in a docstring; it resolves via `db_lookup.attr_for_state_property` instead.
+   And **6 of the 15 never call `validate()` at all** — they gate solely on `box_family_for`, so
+   mechanism (a)'s whole rationale ("return the base so `validate()` passes") does not even apply
+   there. That is precisely the path that produces the shape-3 regression above.
 
 ## The one-paragraph version
 
@@ -45,7 +117,19 @@ So the DB is authoritative and correct. Every fix below moves the CONVERTER towa
 
 ## The three groups (four failure shapes; two fold together)
 
-### G1 — tier-object emission *(largest; 10 of the 14)*
+### G1 — tier-object emission *(**12** of the 14 — ⛔ DO NOT BUILD, see the council verdict above)*
+
+⚠ **Count corrected by the council: 12, not 10.** The original "10" was self-inconsistent — this
+section's own itemisation summed to 11, and it omitted `test_grid_area_tier_suffix`
+(`test_css_resolvers.py:202-211`, fails because `contentPaddingTablet` no longer exists —
+`box_family_for('sgs/hero','contentPaddingTablet')` → `None`). `test_css_resolvers.py` has **6**
+failures, not 5. With G2 and G3 as singletons the split is **12 / 1 / 1 = 14**, which now accounts for
+every failure; the original 10/1/1 accounted for only 12.
+
+⭐ Also council-corrected: the three `order` failures are on **`sgs/media`**, whose `order` attr IS
+declared as `"type":"object"` (`src/blocks/media/block.json:361-364`) — same object drift as the rest
+of G1. D590's original claim that they concerned a deleted `sgs/hero.order` was wrong and has been
+struck through in `decisions.md`.
 
 `test_css_resolvers` ×5, `test_outer_box_step12_properties` ×3, `test_l4_area_wiring`,
 `test_css_pass_partition::…flows_through`, `test_state_value_lift`.
@@ -94,17 +178,46 @@ Miss this and the fix trades silent data loss for a hard crash.
 
 `test_pseudo_overlay_lift::test_resolve_solid_colour_onto_container` → `KeyError`.
 `services/pseudo_overlay.py:66` hardcodes `_OVERLAY_SOLID_OPACITY = "backgroundOverlayOpacity"`.
-**Zero blocks declare that attribute.** Independent of G1: a hardcoded attr name that outlived its
-schema. Find what replaced it (or whether the capability was retired, as `contentBandBackground`
-was at D589) before rewiring — do not assume a rename.
+**Zero blocks declare that attribute.** ✅ **COUNCIL-CONFIRMED: RETIRED, not renamed — safe to fix now,
+independent of D554.** Removed from container/hero/cta-section/trust-bar in `1ccbdbe1` (2026-08-11),
+and **deliberate + documented**: `hero/render.php:130-134`, mirrored at
+`class-sgs-container-wrapper.php:1186` — *"D5 (Background panel redesign, 2026-08-11):
+`backgroundOverlayOpacity` no longer exists as an attribute — the colour/gradient picker's own alpha is
+the one dimming mechanism now."* The capability was **folded into the colour's alpha channel**, which
+the failing test's own fixture proves: `backgroundOverlayColour == "rgba(10,10,10,0.6)"`, alpha already
+embedded. Fix = stop writing the retired attr; the alpha already rides in the colour.
 
-### G3 — natively-consumed colour routes nowhere *(1 test)*
+### G3 — container lost `supports.color.background` ⚠ *(1 test — ESCALATE; NOT the reseed)*
 
-`test_css_pass_partition::test_natively_consumed_property_does_not_double_emit` — expects a
-`background-color` to appear exactly once as `style.color.background`; got **0** occurrences, and
-the emitted container carries only `style.spacing.padding`. So the native-colour route is not firing
-at all. Likely a `css_property`/`role` classification change from the same reseed
-(`css_property` rows fell 1056 → 857). Diagnose from the classification data before touching code.
+⛔ **This plan's original hypothesis ("likely a `css_property`/`role` classification change from the
+reseed") is REFUTED by the council.** Real cause: `sgs/container`'s `block.json` no longer declares
+`"background": true` (nor `"gradients": true`) under `supports.color` — only `text`/`link`/`heading`.
+`root_supports.py:100` maps `background-color → supports_top='color', supports_sub='background'`, so
+with that sub-support gone the native lift cannot consume the declaration, and container declares no
+custom plain-background-colour attr either. It gaps silently → 0 occurrences.
+
+**Removed in `1ccbdbe1`, 2026-08-11 — the commit MESSAGE does not mention it ("migrate 4 box-per-tier
+properties"), which is why it looks like scope-creep at first glance.** This is a **different table**
+(`block_supports`) from the reseed's `block_attributes` prune, and `test_css_pass_partition.py` was
+last touched 2026-07-11 — so its premise was correct when written and was invalidated by that Aug-11
+commit, **not by the Aug-12 reseed**.
+
+✅ **NOT A REGRESSION — DELIBERATE AND D-NUMBERED. Rater C's "there is no documenting note" is REFUTED,
+and an earlier revision of this section wrongly escalated it as a possible live client-facing bug.**
+The note exists; it is just in `decisions.md`, not the commit message. **D581** — title: *"Background/
+overlay panel: root render bug fixed, a CSS collision fixed, **native colour support removed
+(conflict)**, D1-D6 of the redesign shipped"*, point 3: *"**Native `supports.color` background/gradients
+REMOVED** from hero/container/cta-section/trust-bar (`text` support kept) — it was live and silently
+winning a conflict with this panel."* The four blocks with `background:false` are exactly the four that
+mount `BackgroundPanel`; removing the native support is what stopped it overriding the redesigned panel.
+
+**So G3 is a STALE TEST, not a bug.** `test_natively_consumed_property_does_not_double_emit` asserts
+that `sgs/container` natively consumes `background-color` into `style.color.background` — behaviour
+D581 deliberately ended. Fix = update the test to the post-D581 contract. ⛔ Do **not** "fix" it by
+restoring `"background": true`; that reinstates the exact conflict D581 removed.
+
+⚠ Discard the earlier "gradients-mutator" lead recorded here — that mutator ADDS `"gradients": true`
+during builds and is unrelated to this deliberate removal. Chasing it would have been a dead end.
 
 ## Verification bar (this project's standard, non-negotiable)
 

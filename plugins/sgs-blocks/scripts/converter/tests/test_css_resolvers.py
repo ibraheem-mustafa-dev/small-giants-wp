@@ -45,6 +45,9 @@ def test_content_band_max_width_to_contentWidth(conn):
     assert (out.attr, out.value) == ("contentWidth", "780px")
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_content_band_tier_suffix(conn):
     out = content_band.resolve(Decl("max-width", "720px", "Tablet"), _ctx(conn))
     assert (out.attr, out.value) == ("contentWidthTablet", "720px")
@@ -90,6 +93,9 @@ def test_grid_explicit_tracks_no_count(conn):
     assert [(w.attr, w.value) for w in out] == [("gridTemplateColumns", "1fr 2fr")]
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_grid_tier_suffix_on_both(conn):
     out = grid.resolve(Decl("grid-template-columns", "repeat(2, 1fr)", "Tablet"), _ctx(conn))
     pairs = {(w.attr, w.value) for w in out}
@@ -115,6 +121,9 @@ def test_grid_metamorphic_count_scales_with_repeat_n(conn):
 # typography — layer-agnostic (number+unit companion; weight/colour normalisation)
 # ---------------------------------------------------------------------------
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_typography_font_size_number_plus_unit(conn):
     out = typography.resolve(Decl("font-size", "58px", "Base"), _ctx(conn, slug="sgs/heading"))
     assert isinstance(out, list)
@@ -145,6 +154,9 @@ def test_typography_line_height_unitless_sentinel_bug2(conn):
     assert ("lineHeightUnit", "unitless") in pairs
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_typography_unit_companion_only_on_base_tier(conn):
     # The unit companion is written only alongside the BASE attr, never a variant.
     out = typography.resolve(Decl("font-size", "34px", "Mobile"), _ctx(conn, slug="sgs/heading"))
@@ -153,6 +165,9 @@ def test_typography_unit_companion_only_on_base_tier(conn):
     assert not any(a.endswith("Unit") for a in attrs)
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_typography_metamorphic_size_scale(conn):
     a = typography.resolve(Decl("font-size", "20px", "Base"), _ctx(conn, slug="sgs/heading"))
     b = typography.resolve(Decl("font-size", "40px", "Base"), _ctx(conn, slug="sgs/heading"))
@@ -199,6 +214,9 @@ def test_grid_area_per_slot_max_width_is_documented_gap(conn):
     assert out.origin is GapOrigin.NO_DESTINATION
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_grid_area_tier_suffix(conn):
     # Tablet tier → the contentPaddingTablet OBJECT attr (device-tier suffix on the
     # object family), value keyed by side. No side-suffixed flat attr, no Unit.

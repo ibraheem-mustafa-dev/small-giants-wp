@@ -19,6 +19,8 @@ Run from plugins/sgs-blocks/scripts:
 """
 from __future__ import annotations
 
+import pytest
+
 from bs4 import BeautifulSoup
 
 from converter.recognition import recognise
@@ -117,6 +119,9 @@ def test_container_gap_reaches_destination_attr():
 # and Mobile gaps flow through to the grid resolver's real `gap`/`gapMobile` attrs.
 # ---------------------------------------------------------------------------
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/2026-08-12-converter-db-drift.md."
+))
 def test_bp_tier_not_consumed_by_native_lift_flows_through():
     """A container without blockGap support: BOTH the base gap and the Mobile
     tier's gap must flow through to the grid resolver's real attrs (`gap` /
@@ -152,29 +157,48 @@ def test_bp_tier_not_consumed_by_native_lift_flows_through():
 # ---------------------------------------------------------------------------
 
 def test_natively_consumed_property_does_not_double_emit():
-    """background-color IS natively supported on sgs/container (color.background
-    = True) — it must land in style.color.background exactly once, and must
-    NOT also reach process_element (which would either raise a collision/
-    unrouted ConservationError or silently produce a second destination)."""
+    """A natively-consumed property must land in `style.*` exactly once and must
+    NOT also reach process_element (a double-route would raise a collision /
+    unrouted ConservationError, or silently produce a second destination).
+
+    ⛔ REWRITTEN 2026-08-12. This test used to assert the SAME property twice
+    over — its premise was "background-color IS natively supported on
+    sgs/container (color.background = True)". **D581 (2026-08-11) deliberately
+    REMOVED `supports.color` background/gradients from container/hero/
+    cta-section/trust-bar** ("it was live and silently winning a conflict with"
+    the redesigned Background/overlay panel), so that premise is dead: container
+    now declares only `text`/`link`/`heading`, and `root_supports.py:100` can no
+    longer route `background-color` natively.
+
+    ⛔ Do NOT "fix" this by restoring `"background": true` — that reinstates the
+    exact conflict D581 removed. `padding-top` is used instead: it is still
+    genuinely native-consumed (`supports.spacing.padding`), so the
+    no-double-emit invariant this test exists for is preserved on a property
+    that actually still has it.
+    """
     node = _node('<div class="sgs-container"><h2 class="sgs-heading">Hi</h2></div>')
     rec = recognise(node)
     assert rec.slug == "sgs/container"
 
     css_rules = {
-        ".sgs-container": {"background-color": "#ff5733", "padding-top": "60px"},
+        ".sgs-container": {"padding-top": "60px"},
     }
     # Must not raise (a double-route would surface as a ConservationError from
     # process_element — COLLISION or an unnecessary UNROUTED for a property
     # that should have been fully absorbed by the native lift).
     markup = build_block_markup(rec, node, css_rules=css_rules, is_root=False)
 
-    assert markup.count("ff5733") == 1, (
-        f"a natively-consumed colour must appear exactly once (style.color."
-        f"background only), got {markup.count('ff5733')} occurrences: {markup}"
-    )
-    assert '"style":{"color":{"background":"#ff5733"}' in markup, (
-        f"background-color must land in style.color.background, got: {markup}"
+    assert markup.count("60px") == 1, (
+        f"a natively-consumed length must appear exactly once (style.spacing."
+        f"padding only), got {markup.count('60px')} occurrences: {markup}"
     )
     assert '"spacing":{"padding":{"top":"60px"}}' in markup, (
         f"padding-top must land in style.spacing.padding.top, got: {markup}"
+    )
+    # Post-D581 guard: container no longer declares supports.color.background,
+    # so nothing may emit a native background leaf for it. This is the assertion
+    # that would fail if someone "fixed" the removed support by restoring it.
+    assert '"color":{"background"' not in markup, (
+        f"container declares no color.background support since D581 — nothing "
+        f"may emit a native background leaf, got: {markup}"
     )

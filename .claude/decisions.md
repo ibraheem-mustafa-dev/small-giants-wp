@@ -23,9 +23,18 @@ genuinely stale rows and the DB now matches the code exactly. `verticalAlign` 0 
   `fontSize` + a `fontSizeUnit` companion. `sgs/heading` declares `fontSize` as **`"object"`**
   (post-D563/D580 migration) and the DB now says so, so the resolver returns a single write. The
   converter still encodes the PRE-migration numeric shape.
-- `test_order_written_to_media_order_as_int` expects a write to an `order` attribute. **`sgs/hero`
-  has no `order` attribute at all** — only `splitContentOrder`. It was deleted at D539/D540 and the
-  DB was still carrying the orphan row.
+- ⛔ **CORRECTED 2026-08-12 by a QC council (Rater C) — the original text here was WRONG and is kept
+  struck through so the error is not silently laundered.** It read: *"`test_order_written_to_media_order_as_int`
+  expects a write to an `order` attribute. `sgs/hero` has no `order` attribute at all — only
+  `splitContentOrder`. It was deleted at D539/D540 and the DB was still carrying the orphan row."*
+  **Every load-bearing clause of that is false.** The test calls
+  `outer_box.resolve(Decl("order","3","Base"), _ctx(conn, "sgs/media"))`
+  (`test_outer_box_step12_properties.py:72`) — the block is **`sgs/media`, not `sgs/hero`** — and
+  `sgs/media.order` **IS declared**, as `"type":"object"` (`src/blocks/media/block.json:361-364`;
+  DB row `('sgs/media','order','object')`). Nothing was deleted at D539/D540 here. The real cause is
+  the SAME object-type drift as the rest of G1. I reached the wrong block by grepping `sgs/hero` for
+  `order` (it legitimately has none) and never checking which block the test actually used — the
+  project's own "fact-check your own diagnostic output" rule, missed in the very entry that cites it.
 
 So the converter is behind BOTH the D539/D540 attribute deletions and the D563–D580 object-model
 migrations, and the stale DB had been masking it. **This is a pre-existing defect made visible, not
