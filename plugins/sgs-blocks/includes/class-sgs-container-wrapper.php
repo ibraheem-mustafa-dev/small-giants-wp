@@ -224,7 +224,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// For a flat scalar (every existing block) is_array()===false → the value
 			// passes through unchanged → byte-identical. Columns keep their NUMERIC
 			// defaults (2/2/1) — absint('') would render repeat(0,1fr)/sgs-cols-0.
-			$layout               = $attributes['layout'] ?? '';
+			$layout = $attributes['layout'] ?? '';
 			// Spec 35 pass 4 (2026-08-11) — `columns` migrated flat trio -> tier
 			// object. Same shape as the $min_height_obj precedent at ~:341: read
 			// once via sgs_responsive_normalise_object() (which already returns
@@ -235,15 +235,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// (:852-854 base fallback track, :1319-1321 tier-count gate,
 			// :1727-1737 per-tier fallback track) reads these three vars
 			// unchanged — this is a read-shape change only, not a logic change.
-			$columns_obj          = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-			$columns              = $columns_obj['desktop'] ?? 2;
-			$columns              = is_array( $columns ) ? 2 : $columns;
-			$columns_mobile       = $columns_obj['mobile'] ?? 1;
-			$columns_mobile       = is_array( $columns_mobile ) ? 1 : $columns_mobile;
-			$columns_tablet       = $columns_obj['tablet'] ?? 2;
-			$columns_tablet       = is_array( $columns_tablet ) ? 2 : $columns_tablet;
-			$grid_template        = $attributes['gridTemplateColumns'] ?? '';
-			$grid_template        = is_array( $grid_template ) ? '' : $grid_template;
+			$columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+			$columns        = $columns_obj['desktop'] ?? 2;
+			$columns        = is_array( $columns ) ? 2 : $columns;
+			$columns_mobile = $columns_obj['mobile'] ?? 1;
+			$columns_mobile = is_array( $columns_mobile ) ? 1 : $columns_mobile;
+			$columns_tablet = $columns_obj['tablet'] ?? 2;
+			$columns_tablet = is_array( $columns_tablet ) ? 2 : $columns_tablet;
+			$grid_template  = $attributes['gridTemplateColumns'] ?? '';
+			$grid_template  = is_array( $grid_template ) ? '' : $grid_template;
 			// ⚠ LEGACY FLAT PATH, now UNREACHABLE (Spec 35 pass 3a, 2026-08-11) —
 			// the gridTemplateColumns twin of the maxWidth note at :338 and the
 			// contentWidth note at :454. Neither sibling is declared by any
@@ -313,8 +313,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$max_width = $attributes['maxWidth'] ?? '';
 			$max_width = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
-			$content_width     = $attributes['contentWidth'] ?? '';
-			$content_width     = is_array( $content_width ) ? '' : $content_width;
+			$content_width = $attributes['contentWidth'] ?? '';
+			$content_width = is_array( $content_width ) ? '' : $content_width;
 			// minHeight is a TIER OBJECT {desktop,tablet,mobile} (Spec 35 migration,
 			// 2026-08-11); `minHeightTablet` / `minHeightMobile` are no longer
 			// declared by any block.json.
@@ -460,8 +460,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// is treated as the desktop tier rather than discarded. Tablet/mobile stay
 			// gated to section+layout kinds — a content-kind composite has no __inner
 			// band to apply them to.
-			$band_padding_tiers      = sgs_responsive_normalise_object( $attributes['contentBandPadding'] ?? null, true );
-			$band_padding_obj        = is_array( $band_padding_tiers['desktop'] ?? null ) ? $band_padding_tiers['desktop'] : array();
+			$band_padding_tiers  = sgs_responsive_normalise_object( $attributes['contentBandPadding'] ?? null, true );
+			$band_padding_obj    = is_array( $band_padding_tiers['desktop'] ?? null ) ? $band_padding_tiers['desktop'] : array();
 			$band_padding_top    = $sgs_css_length( $band_padding_obj['top'] ?? '' );
 			$band_padding_right  = $sgs_css_length( $band_padding_obj['right'] ?? '' );
 			$band_padding_bottom = $sgs_css_length( $band_padding_obj['bottom'] ?? '' );
@@ -1323,6 +1323,47 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) )
 				|| $has_tier_column_count;
 
+			// uid also needed whenever an OBJECT-MODEL tier property (Spec 37 FR-37-16)
+			// carries a real value — maxWidth / contentWidth / gap / gridTemplateColumns /
+			// gridTemplateRows / columns / contentBandPadding, the properties the
+			// object-model emission block below (`if ( $uid ) { … }`) actually reads.
+			// ⛔ BUG FIX (2026-08-12, D587): none of the flags above cover this case on
+			// their own. $has_base_max_width/$has_responsive_attr's gap/max-width legs
+			// still read the OLD FLAT sibling variables ($max_width_tablet, $gap_tablet,
+			// …), which no longer exist on any migrated block.json — so a block whose
+			// ONLY set property is an object-shaped maxWidth/contentWidth/gap never got a
+			// uid, and the correctly-written object-model CSS below silently never ran.
+			// Proven live: a throwaway test page set `maxWidth:{desktop:"780px"}` on
+			// sgs/pricing-table — the value SAVED (this session's separate block.json
+			// type-migration fix) but never PAINTED, because $uid stayed ''. $container_queries
+			// (below) already forced a uid for whichever blocks happen to opt into it, which is
+			// exactly why some blocks "looked" verified already — this check is the honest,
+			// property-driven version of that, not gated on a per-block opt-in flag, matching
+			// the object-model section's own stated intent a few lines below: "an object-shaped
+			// attribute must be emitted by whichever block carries one... universal by data, not
+			// by flag." Mirrors $sgs_tier_object_has_value (defined later, ~:2062) inline rather
+			// than moved — same precedent as $object_grid above (~:197-210).
+			$sgs_needs_uid_object_tier = static function ( $raw ) {
+				if ( ! is_array( $raw ) || array() === $raw ) {
+					return false;
+				}
+				$obj = sgs_responsive_normalise_object( $raw );
+				foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+					$val = $obj[ $tier ] ?? null;
+					if ( null !== $val && '' !== $val && array() !== $val ) {
+						return true;
+					}
+				}
+				return false;
+			};
+			$has_object_tier_value     = $sgs_needs_uid_object_tier( $attributes['maxWidth'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['contentWidth'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['gap'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null );
+
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
 			// base padding/margin needs a scoped (non-inline) home, a base outer
 			// max-width needs a scoped home ($has_base_max_width), a base content-band
@@ -1332,6 +1373,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// D293) so these OUTER/BAND/GRID box properties never emit inline for a
 			// block with no responsive tiers.
 			$needs_uid = $has_responsive_attr
+				|| $has_object_tier_value
 				|| $has_base_spacing
 				|| $has_base_max_width
 				|| $has_base_band
@@ -2166,12 +2208,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// eight guessed ones — a wrong selector is silently dead CSS, which
 				// is the exact bug class this session already found twice.
 				foreach ( array(
-					'alignContent'   => 'align-content',
-					'justifyContent' => 'justify-content',
-					'justifyItems'   => 'justify-items',
-					'flexDirection'  => 'flex-direction',
-					'flexWrap'       => 'flex-wrap',
-					'gridAutoRows'   => 'grid-auto-rows',
+					'alignContent'     => 'align-content',
+					'justifyContent'   => 'justify-content',
+					'justifyItems'     => 'justify-items',
+					'flexDirection'    => 'flex-direction',
+					'flexWrap'         => 'flex-wrap',
+					'gridAutoRows'     => 'grid-auto-rows',
 					// gridTemplateRows (Spec 35 pass 3b, 2026-08-11) — mirrors
 					// gridTemplateColumns' object-tier emission at ~:2057 for the
 					// row axis. Reuses the SAME grid-template transform already
