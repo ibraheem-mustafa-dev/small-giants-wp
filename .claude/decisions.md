@@ -1,5 +1,83 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D589 — All 26 shared-panel-schema findings closed: `alignItems` unified, content-band background retired, ContentBandPanel deleted [INCIDENT]
+
+**2026-08-12, following D587/D588.** Triaged the 26 findings D587 left untriaged. Gate now BLOCKING
+in `prebuild` (the `|| echo [ADVISORY]` wrapper removed) and reporting **0 findings**. Commit
+`6c4b5087`, 32 files, deployed + live-verified on the canary.
+
+**Two Bean rulings reshaped this from a declare-the-missing-attribute pass into two capability changes.**
+
+**1. There is NO content-band background (Bean-ruled).** "Bg colours and media always fill the max
+width of a container and don't get limited to the inner content layer." `contentBandBackground` was
+therefore a DESIGN ERROR, not a missing declaration — retired framework-wide: 7 `block.json`
+declarations, 5 local editor controls, the `css:background-color` element-manifest mappings, and all
+four wrapper emission sites (incl. its contribution to `$has_band_props` and the tiered emitter).
+**0 stored instances existed** in `wp_posts`/`wp_options`/`wp_postmeta` — queried before deleting.
+
+**2. One name for one CSS property (Bean-ruled).** `verticalAlign` → **`alignItems`** everywhere (34
+occurrences, 14 files) — it is the actual property being driven, and the old name collided
+conceptually with CSS's unrelated `vertical-align`. The wrapper's dual-key
+`verticalAlign ?? alignItems` fallback is DELETED. Two names for one property is precisely what let
+the shared `LayoutPanel` ship a "Vertical alignment" control on 12 blocks declaring only the other
+name. Word-boundary rename with an asserted guard: `sgs/hero`'s separate `verticalAlignment` attr is
+untouched.
+
+**A 27th finding the gate cannot see — `ContentBandPanel` was dead in ALL 13 of its controls, on
+every block that mounted it. DELETED.** Its padding half wrote FLAT `contentBandPaddingTop`/
+`…Tablet`/`…Mobile` keys that **no block.json has declared since the D580 box-tier migration**, so WP
+silently discarded them. `cta-section/edit.js:20` already recorded this and is why that block refused
+to mount the aggregator — known, never fixed, and invisible to the gate because those keys are
+COMPUTED (`side[breakpoint]`), not literals. The blocks with a genuine band (container, cta-section,
+hero, physics-canvas, site-header/footer, trust-bar) control it LOCALLY with `ResponsiveBoxControl`
+and never mounted this panel. Same defect + remedy as `sgs/gallery` (D586).
+
+**Remaining findings, per-block:**
+- `alignItems` declared on `form`/`form-field-tiles`/`pricing-table`/`tabs`/`post-grid`/
+  `testimonial-slider` (the 6 declaring neither name).
+- **`feature-grid` KEEPS its bespoke control — the planned removal was DROPPED on evidence.**
+  `render.php:156` forces `layout='grid'` at render time while the STORED `layout` stays `''`, so the
+  shared control is HIDDEN in the editor and the bespoke one is the client's only reachable route.
+- `trust-bar.gridItemBorder` declared (wrapper already read it at `:572`/`:2319`).
+- **`product-card.contentWidth` NOT re-added.** `WidthPanel` gains `showContentBand` (default true);
+  product-card's mount passes false. Re-declaring would have RELOCATED the D540 bug. Driving it off
+  `kind="content"` was checked and **rejected**: `accordion-item`/`form-step`/`multi-button`/`tab` are
+  all content-kind AND declare object-shaped `contentWidth`, two of them consuming it.
+
+**Two silent-data-loss bugs found + fixed in passing (same family, outside the 26).** `post-grid` and
+`testimonial-slider` each own a `layout` control AND mounted the shared one, which writes
+stack/flex/grid into a `layout` attr whose enum is `grid|list|masonry|carousel` and `full|split`
+respectively — every write from the shared control was stored then **silently reverted by WP enum
+coercion**. `showLayout` is now threaded through the aggregator (it previously existed only on a
+DIRECT `LayoutPanel` mount, gallery's fix) and both pass false.
+
+**Gate hardening.** `PANEL_SUPPRESSION_FLAGS` teaches it that `showContentBand`/`showLayout` remove
+specific keys from a mount's write set — otherwise the gate DEMANDS BACK the attribute whose deletion
+was the fix, pushing you toward the defect. Self-test **14 → 22 assertions**, each suppression
+asserted in BOTH directions on the same attribute. Two negative controls were re-pointed off the
+deleted panel and given an explicit vacuity check — **which failed on first run and caught a wrong
+assumption**: `gallery/edit.js:343`'s `<WidthPanel>` is inside a comment; it mounts `LayoutPanel`.
+
+**Live-verified on the canary (throwaway page 2286, deleted after).** POSITIVE:
+`.sgs-container-b5d6aa0f{display:grid;grid-template-columns:repeat(2,1fr);align-items:center}` — the
+renamed attr paints. NEGATIVE: `contentBandBackground:"primary"` set in the same probe produced ZERO
+`__inner` band rules and no `background-color`. NEW-DECLARATION proof: `sgs/pricing-table`, which had
+no align attr at all before this change, rendered `.sgs-container-a7c23c57{…;align-items:end}`. Uid
+resolved as the class NEAREST-PRECEDING the probe text, never first-in-document — the page carried 14
+container uids from header/footer chrome.
+
+**⚠ A substring query misled me mid-task and is worth remembering.** `LIKE '%verticalAlign%'` returned
+7 canary rows which I first read as stored SGS values; they were core `wp:column`
+**`verticalAlignment`** attributes. The precise `"verticalAlign":` form returns **0**. Had I run the
+planned migration replace, it would have corrupted 7 core blocks. Same class as
+`a-substring-match-is-not-a-word-match`, committed in my own diagnostic.
+
+**Owed follow-up (deliberately not done):** three generated data files (`attr-role-map.json`,
+`setting-types.json`, `css-property-classifications.json`) still carry rows for the deleted/renamed
+attrs. They are `/sgs-update` generator outputs, clear on the next regeneration, and reseeding the
+shared DB is a cross-track action; no gate fails on them today.
+
+
 ## D588 — The D587 wrapper bug is SHIPPED, same session (Bean: "we can always roll it back, just do it") [ROUTINE]
 
 **2026-08-12, immediately following D587.** Bean overrode the "park for a fresh session" recommendation
