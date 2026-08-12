@@ -23,7 +23,7 @@
  * the native support here, not deleting our own control.
  */
 import { addFilter } from '@wordpress/hooks';
-import { TextareaControl } from '@wordpress/components';
+import { PanelBody, TextareaControl } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { SgsAdvancedTabDestination } from './inspector-tab-routing';
@@ -64,19 +64,25 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 				<BlockEdit { ...props } />
 				{ isSelected && (
 					<SgsAdvancedTabDestination name={ name }>
-						<TextareaControl
-							label={ __( 'Custom CSS', 'sgs-blocks' ) }
-							help={ __(
-								'CSS rules applied to this block only. Use &selector to target the block wrapper.',
-								'sgs-blocks'
-							) }
-							value={ sgsCustomCss || '' }
-							onChange={ ( val ) =>
-								setAttributes( { sgsCustomCss: val } )
-							}
-							rows={ 6 }
-							__nextHasNoMarginBottom
-						/>
+						<PanelBody
+							title={ __( 'Custom CSS', 'sgs-blocks' ) }
+							initialOpen={ false }
+						>
+							<TextareaControl
+								label={ __( 'Custom CSS', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __(
+									'CSS rules applied to this block only. Use & selector to target the block wrapper.',
+									'sgs-blocks'
+								) }
+								value={ sgsCustomCss || '' }
+								onChange={ ( val ) =>
+									setAttributes( { sgsCustomCss: val } )
+								}
+								rows={ 6 }
+								__nextHasNoMarginBottom
+							/>
+						</PanelBody>
 					</SgsAdvancedTabDestination>
 				) }
 			</>

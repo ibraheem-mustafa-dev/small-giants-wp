@@ -41,8 +41,8 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
-import { InspectorControls } from '@wordpress/block-editor';
 import { mobile, tablet, desktop } from '@wordpress/icons';
+import { SgsAdvancedTabDestination } from './inspector-tab-routing';
 import {
 	PanelBody,
 	SelectControl,
@@ -299,7 +299,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 			return (
 				<>
 					<BlockEdit { ...props } />
-					<InspectorControls>
+					<SgsAdvancedTabDestination name={ name }>
 						<PanelBody
 							title={ __( 'Visibility conditions', 'sgs-blocks' ) }
 							initialOpen={ false }
@@ -573,7 +573,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 								/>
 							</div>
 						</PanelBody>
-					</InspectorControls>
+					</SgsAdvancedTabDestination>
 				</>
 			);
 		};

@@ -26,6 +26,8 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { TabPanel, Slot } from '@wordpress/components';
+import { cog, styles, tool } from '@wordpress/icons';
+import './SgsInspectorTabs.css';
 
 export const SGS_STYLE_TAB_SLOT = 'sgs-inspector-tabs-style';
 export const SGS_ADVANCED_TAB_SLOT = 'sgs-inspector-tabs-advanced';
@@ -34,16 +36,19 @@ const TABS = [
 	{
 		name: 'content',
 		title: __( 'Content', 'sgs-blocks' ),
+		icon: cog,
 		className: 'sgs-inspector-tabs__tab-content',
 	},
 	{
 		name: 'style',
 		title: __( 'Style', 'sgs-blocks' ),
+		icon: styles,
 		className: 'sgs-inspector-tabs__tab-style',
 	},
 	{
 		name: 'advanced',
 		title: __( 'Advanced', 'sgs-blocks' ),
+		icon: tool,
 		className: 'sgs-inspector-tabs__tab-advanced',
 	},
 ];
