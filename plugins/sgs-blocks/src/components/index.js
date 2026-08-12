@@ -34,3 +34,8 @@ export {
 	SGS_FONT_WEIGHT_OPTIONS,
 	SGS_FONT_STYLE_OPTIONS,
 } from './TypographyControls';
+export {
+	default as SgsInspectorTabs,
+	SGS_STYLE_TAB_SLOT,
+	SGS_ADVANCED_TAB_SLOT,
+} from './SgsInspectorTabs';

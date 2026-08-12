@@ -23,10 +23,10 @@
  * the native support here, not deleting our own control.
  */
 import { addFilter } from '@wordpress/hooks';
-import { InspectorAdvancedControls } from '@wordpress/block-editor';
 import { TextareaControl } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
+import { SgsAdvancedTabDestination } from './inspector-tab-routing';
 
 // Add `sgsCustomCss` attribute to every block, and disable WP core's own
 // native `customCSS` block support (see file header) so only one CSS control
@@ -56,14 +56,14 @@ addFilter(
 // Add the textarea to every block's inspector Advanced panel.
 const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-		const { attributes, setAttributes, isSelected } = props;
+		const { name, attributes, setAttributes, isSelected } = props;
 		const { sgsCustomCss } = attributes;
 
 		return (
 			<>
 				<BlockEdit { ...props } />
 				{ isSelected && (
-					<InspectorAdvancedControls>
+					<SgsAdvancedTabDestination name={ name }>
 						<TextareaControl
 							label={ __( 'Custom CSS', 'sgs-blocks' ) }
 							help={ __(
@@ -77,7 +77,7 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 							rows={ 6 }
 							__nextHasNoMarginBottom
 						/>
-					</InspectorAdvancedControls>
+					</SgsAdvancedTabDestination>
 				) }
 			</>
 		);

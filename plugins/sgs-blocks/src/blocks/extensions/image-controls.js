@@ -25,7 +25,7 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
-import { InspectorControls } from '@wordpress/block-editor';
+import { SgsStyleTabDestination } from './inspector-tab-routing';
 import {
 	FocalPointPicker,
 	PanelBody,
@@ -175,7 +175,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * ⛔ NOT justified by "behaviour → Settings; appearance →
 				 * Styles" — RETIRED 2026-08-08. Routing unchanged, reason only.
 				 */ }
-				<InspectorControls group="styles">
+				<SgsStyleTabDestination name={ name }>
 					<PanelBody
 						title={ __( 'Image Controls', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -280,7 +280,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
-				</InspectorControls>
+				</SgsStyleTabDestination>
 			</>
 		);
 	};

@@ -41,12 +41,12 @@ addFilter(
 	'sgs/apply-block-defaults',
 	applyBlockDefaults
 );
-import { InspectorAdvancedControls } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
+import { SgsAdvancedTabDestination } from './inspector-tab-routing';
 
 const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
@@ -85,7 +85,7 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				{ isSelected && (
-					<InspectorAdvancedControls>
+					<SgsAdvancedTabDestination name={ name }>
 						<Button
 							variant="secondary"
 							onClick={ handleSave }
@@ -98,7 +98,7 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 						>
 							{ statusLabel }
 						</Button>
-					</InspectorAdvancedControls>
+					</SgsAdvancedTabDestination>
 				) }
 			</>
 		);

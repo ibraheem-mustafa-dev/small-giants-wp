@@ -1,15 +1,16 @@
 import { __ } from '@wordpress/i18n';
-import {
-	useBlockProps,
-	InspectorControls,
-} from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride } from '../../components';
+import {
+	ResponsiveControl,
+	ResponsiveOverride,
+	SgsInspectorTabs,
+} from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -113,76 +114,81 @@ export default function Edit( { attributes, setAttributes } ) {
 			.join( ' ' ),
 	};
 
-	return (
-		<>
-			<InspectorControls>
-				{ /* Art direction (2026-08-07). Same device-switched shape as sgs/media
-				     and sgs/hero, so a client meets ONE interaction for "a different crop
-				     on narrow screens" wherever images appear. Rendered ONLY for image
-				     media: the render.php video branch returns before the tier siblings
-				     are built, so showing this for a video would be a dead control.
-				     This is the block's ONLY Settings-tab panel (content/media selection
-				     is behaviour, not appearance), so it is left open by default — it is
-				     the sole panel in this tab and there is nothing else to compete with. */ }
-				{ effectiveMedia && 'image' === effectiveMedia.type && (
-					<PanelBody title={ __( 'Art direction', 'sgs-blocks' ) }>
-						<ResponsiveControl
-							label={ __( 'Image for this screen size', 'sgs-blocks' ) }
-						>
-							{ ( bp ) => {
-								if ( 'desktop' === bp ) {
-									return (
-										<p style={ { margin: 0, fontStyle: 'italic' } }>
-											{ __(
-												'The image chosen for this block is used on desktop. Switch to tablet or mobile to set a different crop.',
-												'sgs-blocks'
-											) }
-										</p>
-									);
+	// D4 placement (`.claude/plans/go-track-1b-playful-hamster.md`, corrected
+	// via /qc-council 2026-08-12): Content = media/art-direction selection
+	// (behaviour, not appearance). Style = root-level appearance + motion
+	// (size/transform/effects/path-draw — matching the shared animation/fx/
+	// parallax extensions, which route the same families to Style). Advanced
+	// = the responsive/device-tier overrides panel, D4's own named example.
+	const contentTab = (
+		// Art direction (2026-08-07). Same device-switched shape as sgs/media
+		// and sgs/hero, so a client meets ONE interaction for "a different crop
+		// on narrow screens" wherever images appear. Rendered ONLY for image
+		// media: the render.php video branch returns before the tier siblings
+		// are built, so showing this for a video would be a dead control.
+		// This is the block's only Content-tab panel, so it is left open by
+		// default — it is the sole panel in this tab and there is nothing else
+		// to compete with.
+		effectiveMedia && 'image' === effectiveMedia.type && (
+			<PanelBody title={ __( 'Art direction', 'sgs-blocks' ) }>
+				<ResponsiveControl
+					label={ __( 'Image for this screen size', 'sgs-blocks' ) }
+				>
+					{ ( bp ) => {
+						if ( 'desktop' === bp ) {
+							return (
+								<p style={ { margin: 0, fontStyle: 'italic' } }>
+									{ __(
+										'The image chosen for this block is used on desktop. Switch to tablet or mobile to set a different crop.',
+										'sgs-blocks'
+									) }
+								</p>
+							);
+						}
+						const idKey =
+							'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
+						const urlKey =
+							'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
+						const tierValue = attributes[ urlKey ]
+							? {
+									url: attributes[ urlKey ],
+									type: 'image',
+									id: attributes[ idKey ] || 0,
+									alt: '',
+									mime: 'image/jpeg',
+							  }
+							: null;
+						return (
+							<MediaPicker
+								value={ tierValue }
+								allowedTypes={ [ 'image' ] }
+								onChange={ ( media ) =>
+									setAttributes( {
+										[ idKey ]: media ? media.id : undefined,
+										[ urlKey ]: media ? media.url : '',
+									} )
 								}
-								const idKey =
-									'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
-								const urlKey =
-									'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
-								const tierValue = attributes[ urlKey ]
-									? {
-											url: attributes[ urlKey ],
-											type: 'image',
-											id: attributes[ idKey ] || 0,
-											alt: '',
-											mime: 'image/jpeg',
-									  }
-									: null;
-								return (
-									<MediaPicker
-										value={ tierValue }
-										allowedTypes={ [ 'image' ] }
-										onChange={ ( media ) =>
-											setAttributes( {
-												[ idKey ]: media ? media.id : undefined,
-												[ urlKey ]: media ? media.url : '',
-											} )
-										}
-										onRemove={ () =>
-											setAttributes( {
-												[ idKey ]: undefined,
-												[ urlKey ]: '',
-											} )
-										}
-										label={ __( 'Set image', 'sgs-blocks' ) }
-										instructionsImage={ __(
-											'Optional. Leave empty to reuse the desktop image at this width.',
-											'sgs-blocks'
-										) }
-									/>
-								);
-							} }
-						</ResponsiveControl>
-					</PanelBody>
-				) }
-			</InspectorControls>
+								onRemove={ () =>
+									setAttributes( {
+										[ idKey ]: undefined,
+										[ urlKey ]: '',
+									} )
+								}
+								label={ __( 'Set image', 'sgs-blocks' ) }
+								instructionsImage={ __(
+									'Optional. Leave empty to reuse the desktop image at this width.',
+									'sgs-blocks'
+								) }
+							/>
+						);
+					} }
+				</ResponsiveControl>
+			</PanelBody>
+		)
+	);
 
-			<InspectorControls group="styles">
+	const styleTab = (
+		<>
 				{ /* The old bare desktop-only "Position" panel (Position X / Y) was
 				     deleted here — it duplicated the tier-aware ResponsiveOverride
 				     controls in the "Responsive Overrides" panel below, which cover
@@ -323,7 +329,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
+		</>
+	);
 
+	// D4 rule 2's own named example: "the responsive/device-tier panel" goes
+	// in Advanced, not Style — even though the values it overrides (position/
+	// width/rotation) are Style-tab attributes.
+	const advancedTab = (
+		<>
 				<PanelBody
 					title={ __( 'Responsive Overrides', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -496,7 +509,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
-			</InspectorControls>
+		</>
+	);
+
+	return (
+		<>
+			<SgsInspectorTabs
+				content={ contentTab }
+				style={ styleTab }
+				advanced={ advancedTab }
+			/>
 
 			<div { ...blockProps }>
 				{ ! effectiveMedia ? (
