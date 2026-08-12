@@ -20,11 +20,6 @@ def test_split_modifier_matches():
     assert detect_variant_for_node(node, "sgs/hero") == ("variant", "split")
 
 
-def test_video_modifier_matches():
-    node = _node('<section class="sgs-hero sgs-hero--video"></section>')
-    assert detect_variant_for_node(node, "sgs/hero") == ("variant", "video")
-
-
 def test_no_modifier_leaves_default():
     node = _node('<section class="sgs-hero"></section>')
     assert detect_variant_for_node(node, "sgs/hero") == ("variant", None)
@@ -37,9 +32,13 @@ def test_non_variant_modifier_ignored():
 
 
 def test_two_distinct_variant_modifiers_is_ambiguous_not_guessed():
-    node = _node('<section class="sgs-hero sgs-hero--split sgs-hero--video"></section>')
+    # sgs/hero's 'video' and 'svg-animated' variants were retired 2026-08-12 (dead-variant
+    # purge — no shipped draft used them; the shared wrapper already provides video/SVG
+    # backgrounds on every variant via bgVideo/bgSvg*). sgs/trust-bar still carries >=2
+    # distinct BEM-modifier variants, so it exercises the same ambiguity-detection path.
+    node = _node('<div class="sgs-trust-bar sgs-trust-bar--text-only sgs-trust-bar--image-badge"></div>')
     # >=2 distinct variant matches -> None (never guess one), variant_attr still known.
-    assert detect_variant_for_node(node, "sgs/hero") == ("variant", None)
+    assert detect_variant_for_node(node, "sgs/trust-bar") == ("badgeStyle", None)
 
 
 def test_non_variant_block_returns_none_none():

@@ -13,7 +13,7 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
- *   imageObjectPositionTablet, svgContent, minHeight*, background/text/border
+ *   imageObjectPositionTablet, minHeight*, background/text/border
  *   colourHover, transitionDuration, transitionEasing, bgParallax, bgKenBurns,
  *   bgVideo*, splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
@@ -174,7 +174,6 @@ $split_image_mobile_object_position = $attributes['splitImageMobileObjectPositio
 // promoted from a mobile-only orphan). Desktop tier is $image_object_position
 // below (imageObjectPosition, already wired); '' = inherit desktop.
 $image_object_position_tablet = $attributes['imageObjectPositionTablet'] ?? '';
-$svg_content         = $attributes['svgContent'] ?? '';
 // Free-text embedded length strings (e.g. "600px") — sanitised before reaching
 // the scoped <style> rule below (was esc_attr()-only, which does not strip
 // ;{}() and so cannot prevent CSS-rule breakout).
@@ -321,8 +320,6 @@ $vertical_alignment      = $attributes['verticalAlignment'] ?? 'center';
 // 2026-06-01 data-presence band-aid (`|| ! empty( $split_image['url'] )`) is
 // reverted per D133 — it mis-fired on stale data; variant detection replaces it.
 $is_split        = ( 'split' === $variant );
-$is_video        = 'video' === $variant;
-$is_svg_animated = 'svg-animated' === $variant;
 
 // Build wrapper styles.
 $styles = array();
@@ -346,8 +343,7 @@ if ( $hover_border_colour ) {
 
 // Standard variant: use <img> instead of CSS background-image so the browser can
 // discover the LCP resource early and apply fetchpriority="high".
-$has_standard_bg_image = ! $is_split && ! $is_video && ! $is_svg_animated
-	&& ! empty( $bg_image['url'] );
+$has_standard_bg_image = ! $is_split && ! empty( $bg_image['url'] );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/quote/heading convention): the
@@ -764,20 +760,6 @@ if ( $split_image_bleed ) {
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$hero_style_engine_args = array();
 
-	$color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $color_args ) ) {
-		$hero_style_engine_args['color'] = $color_args;
-	}
-
 	$border_args = array();
 	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
 		$border_args['color'] = (string) $attributes['style']['border']['color'];
@@ -884,7 +866,10 @@ if ( ( '' !== $overlay_colour_raw || ( $overlay_gradient && '' !== $overlay_grad
 
 // Build video background.
 // bgVideo / bgVideoMobile override the background image on their respective viewports.
-// These attributes work independently of the 'video' variant — any variant can have a video bg.
+// These attributes are NOT gated by $variant — any variant (standard/split) can carry a
+// video background. The dedicated 'video' variant was retired 2026-08-12 — it was a dead
+// duplicate: the shared BackgroundPanel already exposes this same bgVideo* family on
+// every variant, and hero has always rendered it unconditionally, as below.
 $video_html     = '';
 $has_attr_video = ! empty( $bg_video_attr['url'] );
 
@@ -962,12 +947,6 @@ if ( $has_standard_bg_image ) {
 	);
 }
 
-// Build SVG background.
-$svg_html = '';
-if ( $is_svg_animated && ! empty( $svg_content ) ) {
-	$svg_html = '<div class="sgs-hero__svg-bg" aria-hidden="true">' . wp_kses_post( $svg_content ) . '</div>';
-}
-
 // Build overlay. No-inline contract (§A): background-color/opacity move to the
 // scoped <style> ($responsive_css, appended below) — the element carries only
 // its class, no style="" attribute.
@@ -983,7 +962,7 @@ if ( $is_svg_animated && ! empty( $svg_content ) ) {
 // this file at all, so the CSS rule could only ever emit a flat colour.
 $overlay_html        = '';
 $has_overlay_colour  = $overlay_colour_raw || ( $overlay_gradient && $overlay_gradient_from );
-if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_animated || $has_overlay_colour ) {
+if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $has_overlay_colour ) {
 	$overlay_html = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
 	if ( $overlay_gradient && $overlay_gradient_from ) {
 		$grad_from       = sgs_colour_value( $overlay_gradient_from );
@@ -1174,7 +1153,7 @@ if ( $responsive_css ) {
 // copy (C3 double-emit guard) and no_overlay is passed. In split mode wrap_inner
 // is false so a stray contentWidth can never inject an __inner div that would sit
 // between the section grid and its __content/__media grid items.
-$hero_inner_html = $bg_img_html . $video_html . $svg_html . $overlay_html
+$hero_inner_html = $bg_img_html . $video_html . $overlay_html
 	. $content_html . $media_html;
 
 $hero_helper_attrs = $attributes;

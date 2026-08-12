@@ -47,26 +47,6 @@ function sgs_register_hero_variations( array $variations, \WP_Block_Type $block_
 				'variant' => 'split',
 			),
 		),
-		array(
-			'name'        => 'hero-video',
-			'title'       => __( 'Video Background Hero', 'sgs-blocks' ),
-			'description' => __( 'Full-bleed hero with a looping background video.', 'sgs-blocks' ),
-			'icon'        => 'video-alt2',
-			'scope'       => array( 'inserter' ),
-			'attributes'  => array(
-				'variant' => 'video',
-			),
-		),
-		array(
-			'name'        => 'hero-animated',
-			'title'       => __( 'Animated SVG Hero', 'sgs-blocks' ),
-			'description' => __( 'Hero with an inline SVG animation as the background or media element.', 'sgs-blocks' ),
-			'icon'        => 'admin-appearance',
-			'scope'       => array( 'inserter' ),
-			'attributes'  => array(
-				'variant' => 'svg-animated',
-			),
-		),
 	);
 
 	return array_merge( $variations, $sgs_variations );

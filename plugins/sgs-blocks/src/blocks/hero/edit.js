@@ -12,9 +12,7 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
-	TextareaControl,
 	ToggleControl,
-	Notice,
 	BoxControl,
 	FocalPointPicker,
 } from '@wordpress/components';
@@ -167,8 +165,6 @@ const HERO_CONTENT_TEMPLATE = [
 const VARIANT_OPTIONS = [
 	{ label: __( 'Standard', 'sgs-blocks' ), value: 'standard' },
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
-	{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
-	{ label: __( 'SVG Animated', 'sgs-blocks' ), value: 'svg-animated' },
 ];
 
 const ALIGN_OPTIONS = [
@@ -207,14 +203,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitImageTablet,
 		splitImageMobile,
 		splitMedia,
-		svgContent,
 		// minHeight is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35 pass 3b
 		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
 		shadow,
 		bgParallax,
 		bgKenBurns,
-		bgVideo,
 		// Phase 1 — image display.
 		imageObjectFit,
 		imageWidth,
@@ -263,11 +257,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const isSplit = variant === 'split';
-	const isVideo = variant === 'video';
-	const isSvgAnimated = variant === 'svg-animated';
 
 	const wrapperStyle = {};
-	if ( ! isSplit && ! isVideo && ! isSvgAnimated && backgroundImage?.url ) {
+	if ( ! isSplit && backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
@@ -426,38 +418,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					</PanelBody>
 				) }
-
-				{/* ── SVG Background (svg-animated variant only — content markup) ── */}
-				{ isSvgAnimated && (
-					<PanelBody
-						title={ __( 'SVG Background', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<TextareaControl
-							label={ __( 'SVG markup', 'sgs-blocks' ) }
-							value={ svgContent || '' }
-							onChange={ ( val ) =>
-								setAttributes( { svgContent: val } )
-							}
-							rows={ 10 }
-							help={ __(
-								'Paste your SVG code here. Animation will be handled by the SVG itself.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
-				) }
-
-				{/* ── Buttons ── */}
-				<PanelBody
-					title={ __( 'Buttons', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<Notice status="info" isDismissible={ false }>
-						{ __( 'Buttons are now managed using the SGS Button Group block inside the hero. Click on a button in the editor to configure its style, colour, and link.', 'sgs-blocks' ) }
-					</Notice>
-				</PanelBody>
 			</InspectorControls>
 
 			{/* ── Styles tab — appearance: colour, spacing, borders, shadows,
@@ -836,14 +796,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				   image lives in the "Image" panel on the Settings tab). ── */}
 				{ /* SKIP-REASON (Spec 35 T4.1 tail, audit-inspector-conformance dense-panel-candidate):
 				     this panel is a MODE-WIZARD, not a flat control set. Its content branches on
-				     three mutually-exclusive variant states (!isSplit&&!isVideo&&!isSvgAnimated /
-				     isSplit / the shared "Background effects" tail) into entirely different control
-				     groups. ToolsPanelItem's contract (one hasValue/onDeselect per independently-
-				     resettable "property") doesn't fit a set of controls that only exist under a
-				     specific variant. Left as PanelBody per the task's mode-wizard escape hatch —
-				     see the original (fuller) rationale preserved on the Settings-tab "Image" panel. */ }
+				     two mutually-exclusive variant states (!isSplit / isSplit) into entirely
+				     different control groups. ToolsPanelItem's contract (one hasValue/onDeselect per
+				     independently-resettable "property") doesn't fit a set of controls that only
+				     exist under a specific variant. Left as PanelBody per the task's mode-wizard
+				     escape hatch — see the original (fuller) rationale preserved on the Settings-tab
+				     "Image" panel. */ }
 				<PanelBody title={ __( 'Image styling', 'sgs-blocks' ) } initialOpen={ false }>
-					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
+					{ ! isSplit && (
 						<>
 							<DesignTokenPicker
 								label={ __( 'Overlay colour', 'sgs-blocks' ) }
@@ -1065,7 +1025,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 
-					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
+					{ ! isSplit && (
 						<>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background effects', 'sgs-blocks' ) }</p>
 							<ToggleControl
@@ -1095,40 +1055,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
-
-				{/* ── Video Background styling (video variant only — overlay
-				   appearance; the video FILE selection lives on the Settings tab). ── */}
-				{ isVideo && (
-					<PanelBody
-						title={ __( 'Background Video', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<DesignTokenPicker
-							label={ __( 'Overlay colour', 'sgs-blocks' ) }
-							value={ overlayColour }
-							onChange={ ( val ) =>
-								setAttributes( { overlayColour: val } )
-							}
-						/>
-					</PanelBody>
-				) }
-
-				{/* ── SVG Background styling (svg-animated variant only — overlay
-				   appearance; the SVG markup itself lives on the Settings tab). ── */}
-				{ isSvgAnimated && (
-					<PanelBody
-						title={ __( 'SVG Background', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<DesignTokenPicker
-							label={ __( 'Overlay colour', 'sgs-blocks' ) }
-							value={ overlayColour }
-							onChange={ ( val ) =>
-								setAttributes( { overlayColour: val } )
-							}
-						/>
-					</PanelBody>
-				) }
 
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
 				   Legacy "Overlay colour" control above writes overlayColour; this
@@ -1254,26 +1180,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ isVideo && bgVideo?.url && (
-					<video
-						className="sgs-hero__video-bg"
-						src={ bgVideo.url }
-						autoPlay
-						loop
-						muted
-						playsInline
-						aria-hidden="true"
-					/>
-				) }
-
-				{ isSvgAnimated && svgContent && (
-					<div
-						className="sgs-hero__svg-bg"
-						dangerouslySetInnerHTML={ { __html: svgContent } }
-						aria-hidden="true"
-					/>
-				) }
-
 				{ /* Mirrors hero/render.php's overlay gate + gradient/solid branch
 				   (D5 + the 2026-08-11 gradient-render bug fix) — a colour or
 				   gradient with no background media now renders too, and the
@@ -1288,8 +1194,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						!! resolvedColourRaw || ( overlayGradient && !! overlayGradientFrom );
 					const showsOverlay =
 						( ! isSplit && !! backgroundImage?.url ) ||
-						isVideo ||
-						isSvgAnimated ||
 						hasOverlayColour;
 					if ( ! showsOverlay ) {
 						return null;

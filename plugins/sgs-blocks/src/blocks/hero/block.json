@@ -22,12 +22,6 @@
 		],
 		"anchor": true,
 		"html": false,
-		"color": {
-			"text": true,
-			"background": false,
-			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,
@@ -36,11 +30,6 @@
 			"textTransform": true,
 			"fontWeight": true,
 			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
@@ -65,12 +54,6 @@
 				"split": [
 					"splitImage",
 					"splitImageMobile"
-				],
-				"video": [
-					"bgVideo"
-				],
-				"svg-animated": [
-					"svgContent"
 				]
 			},
 			"boxFamilies": {
@@ -239,13 +222,6 @@
 	"selectors": {
 		"root": ".wp-block-sgs-hero",
 		"border": ".wp-block-sgs-hero",
-		"color": {
-			"text": ".wp-block-sgs-hero"
-		},
-		"spacing": {
-			"padding": ".wp-block-sgs-hero",
-			"margin": ".wp-block-sgs-hero"
-		},
 		"typography": {
 			"root": ".sgs-hero__headline",
 			"fontSize": ".sgs-hero__headline",
@@ -263,9 +239,7 @@
 			"default": "standard",
 			"enum": [
 				"standard",
-				"split",
-				"video",
-				"svg-animated"
+				"split"
 			]
 		},
 		"alignment": {
@@ -305,9 +279,6 @@
 			"type": "string",
 			"default": "",
 			"role": "content"
-		},
-		"svgContent": {
-			"type": "string"
 		},
 		"minHeight": {
 			"type": "object",
