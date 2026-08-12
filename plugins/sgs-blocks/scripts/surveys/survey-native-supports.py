@@ -228,6 +228,70 @@ ALIGN_LAYOUT_NOTE = (
     'skip-serialization model — always root by construction'
 )
 
+# ---------------------------------------------------------------------------
+# `filter.duotone` special case (fixed 2026-08-12, false-positive found live
+# on sgs/gallery + sgs/media).
+#
+# The generic decision procedure above assumes a native support needs
+# `__experimentalSkipSerialization` + manual re-emission to avoid landing on
+# the block root — true for color/__experimentalBorder/spacing/typography
+# (all of which render as an inline `style=""` attribute unless skip-
+# serialised), but NOT true for filter.duotone. Verified directly against WP
+# core source (`wp-includes/class-wp-duotone.php`,
+# `WP_Duotone::render_duotone_support()` / `get_selector()`): duotone has
+# NEVER been an inline-style support. It always generates a scoped `<style>`
+# block via a `render_block` filter + `wp_footer` asset output, and its CSS
+# selector is resolved via `wp_get_block_css_selector( $block_type,
+# ['filter','duotone'], true )`, which reads block.json's own
+# `selectors.filter.duotone` value DIRECTLY — completely independent of
+# `__experimentalSkipSerialization`. A block that declares
+# `selectors.filter.duotone` pointing at a non-root inner selector is
+# therefore ALREADY correctly routed, with no render.php involvement needed
+# at all; there is nothing for the skip-serialization heuristic to check.
+#
+# The fix below does NOT delete the NEEDS-INNER-ROUTING check for filter — a
+# FUTURE block that declares `supports.filter.duotone` WITHOUT a
+# `selectors.filter.duotone` entry (or with one that still points at the
+# block root) falls straight through to the generic decision procedure
+# unchanged, so it can still be correctly flagged.
+# ---------------------------------------------------------------------------
+
+FILTER_DUOTONE_SELECTOR_MECHANISM = (
+    "WP core resolves block.json selectors.filter.duotone DIRECTLY "
+    "(wp_get_block_css_selector() -> WP_Duotone::get_selector()) — duotone "
+    "has never been an inline-style support; WP_Duotone::render_duotone_support() "
+    "always emits a scoped <style> block via wp_footer, independent of "
+    "__experimentalSkipSerialization. Declared here as {sel!r}, a non-root inner "
+    "selector — already correctly routed, no render.php involvement needed."
+)
+
+
+def _block_root_selector(bj, slug):
+    """The selector WP treats as this block's root: block.json's own
+    `selectors.root` if declared, else WP's own default-derived selector
+    (`.wp-block-{namespace}-{name}`, dashes replacing the `/`)."""
+    selectors = bj.get('selectors')
+    if isinstance(selectors, dict):
+        root = selectors.get('root')
+        if isinstance(root, str) and root.strip():
+            return root.strip()
+    return '.wp-block-' + slug.replace('/', '-')
+
+
+def _filter_duotone_selector(bj):
+    """The declared `selectors.filter.duotone` value, or None if absent /
+    not a non-empty string."""
+    selectors = bj.get('selectors')
+    if not isinstance(selectors, dict):
+        return None
+    filter_sel = selectors.get('filter')
+    if not isinstance(filter_sel, dict):
+        return None
+    duotone_sel = filter_sel.get('duotone')
+    if isinstance(duotone_sel, str) and duotone_sel.strip():
+        return duotone_sel.strip()
+    return None
+
 
 # ---------------------------------------------------------------------------
 # PHP comment stripping (hard rule 1: "a grep is not a measurement" — see
@@ -491,7 +555,26 @@ def survey_block(block_dir):
         inner_evid = _inner_routing_evidence(style_css_text, base_slug, family)
         line_no = _family_line_number(raw_json, family)
 
-        if not is_dynamic:
+        # `filter.duotone` special case — see the block comment above
+        # FILTER_DUOTONE_SELECTOR_MECHANISM. Bypasses the generic skip-
+        # serialization decision procedure entirely when block.json declares
+        # a proper non-root `selectors.filter.duotone` — that IS correct
+        # routing for duotone, regardless of dynamic/static or skip status.
+        # Falls through unchanged (to the generic procedure below, which can
+        # still flag NEEDS-INNER-ROUTING) when no such selector is declared,
+        # or when it resolves to the block root.
+        filter_duotone_bypass = None
+        if family == 'filter':
+            duotone_sel = _filter_duotone_selector(bj)
+            if duotone_sel is not None:
+                root_sel = _block_root_selector(bj, slug)
+                if duotone_sel != root_sel:
+                    filter_duotone_bypass = duotone_sel
+
+        if filter_duotone_bypass is not None:
+            classification = 'SKIP-SELFAPPLIED'
+            mechanism = FILTER_DUOTONE_SELECTOR_MECHANISM.format(sel=filter_duotone_bypass)
+        elif not is_dynamic:
             classification = 'UNCLEAR' if inner_evid else 'ROOT-OK'
             mechanism = (
                 'static block (no render.php) — WP core save-time '
@@ -735,13 +818,16 @@ def self_test():
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
 
-        def make_block(name, bj_supports, render_php=None, style_css=None, static=False):
+        def make_block(name, bj_supports, render_php=None, style_css=None, static=False, selectors=None):
             d = tmp_path / name
             d.mkdir()
-            (d / 'block.json').write_text(json.dumps({
+            bj_content = {
                 'name': f'sgs/{name}',
                 'supports': bj_supports,
-            }))
+            }
+            if selectors is not None:
+                bj_content['selectors'] = selectors
+            (d / 'block.json').write_text(json.dumps(bj_content))
             if not static and render_php is not None:
                 (d / 'render.php').write_text(render_php)
             if style_css is not None:
@@ -888,6 +974,74 @@ def self_test():
         check('UNCLEAR fixture: detected as static', result and result['is_static'] is True)
         check('UNCLEAR fixture: classification',
               result and result['families']['color']['classification'] == 'UNCLEAR')
+
+        # --- Regression guard (mustNotFlag/mustFlag pair): the exact false
+        #     positive found live on sgs/gallery + sgs/media, 2026-08-12.
+        #     `filter.duotone` is NOT an inline-style support — WP core
+        #     resolves block.json's own `selectors.filter.duotone` directly
+        #     (WP_Duotone::get_selector()), independent of
+        #     __experimentalSkipSerialization. A block declaring a proper
+        #     non-root selector must NEVER classify NEEDS-INNER-ROUTING even
+        #     though it is not skip-serialised and its own style.css also
+        #     shows inner-element CSS for a 'filter' property — that inner
+        #     CSS is legitimate (WP core's generated duotone <style> targets
+        #     the identical selector), not evidence of a routing mismatch.
+        #
+        #     mustNotFlag half: correct selectors.filter.duotone declared,
+        #     pointing at a non-root inner element.
+        d = make_block('filter-duotone-ok-block', {
+            'filter': {'duotone': True},
+        }, render_php=(
+            "<?php $attrs = get_block_wrapper_attributes(); "
+            "echo '<figure ' . $attrs . '><img class=\"sgs-filter-duotone-ok-block__img\" /></figure>';"
+        ), style_css=(
+            ".sgs-filter-duotone-ok-block__img { filter: none; }"
+        ), selectors={
+            'filter': {'duotone': '.sgs-filter-duotone-ok-block__img'},
+        })
+        result = survey_block(d)
+        check('filter.duotone mustNotFlag fixture: detected',
+              result is not None and 'filter' in result['families'])
+        check('filter.duotone mustNotFlag fixture: NOT classified NEEDS-INNER-ROUTING',
+              result and result['families']['filter']['classification'] != 'NEEDS-INNER-ROUTING')
+        check('filter.duotone mustNotFlag fixture: classified SKIP-SELFAPPLIED (correctly routed)',
+              result and result['families']['filter']['classification'] == 'SKIP-SELFAPPLIED')
+
+        #     mustFlag half A: `supports.filter.duotone` declared but NO
+        #     `selectors.filter.duotone` entry at all — a future block that
+        #     forgets the selector must still be caught. Own style.css shows
+        #     inner-element evidence for the 'filter' CSS property, so the
+        #     generic decision procedure (unaffected by the bypass) correctly
+        #     flags NEEDS-INNER-ROUTING.
+        d = make_block('filter-duotone-missing-selector-block', {
+            'filter': {'duotone': True},
+        }, render_php=(
+            "<?php $attrs = get_block_wrapper_attributes(); "
+            "echo '<figure ' . $attrs . '><img class=\"sgs-filter-duotone-missing-selector-block__img\" /></figure>';"
+        ), style_css=(
+            ".sgs-filter-duotone-missing-selector-block__img { filter: none; }"
+        ))
+        result = survey_block(d)
+        check('filter.duotone mustFlag (no selector) fixture: still flagged NEEDS-INNER-ROUTING',
+              result and result['families']['filter']['classification'] == 'NEEDS-INNER-ROUTING')
+
+        #     mustFlag half B: `selectors.filter.duotone` declared but it
+        #     resolves to the block ROOT (same as `selectors.root`) — not a
+        #     real inner-routing fix, must still fall through and be caught.
+        d = make_block('filter-duotone-root-selector-block', {
+            'filter': {'duotone': True},
+        }, render_php=(
+            "<?php $attrs = get_block_wrapper_attributes(); "
+            "echo '<figure ' . $attrs . '><img class=\"sgs-filter-duotone-root-selector-block__img\" /></figure>';"
+        ), style_css=(
+            ".sgs-filter-duotone-root-selector-block__img { filter: none; }"
+        ), selectors={
+            'root': '.wp-block-sgs-filter-duotone-root-selector-block',
+            'filter': {'duotone': '.wp-block-sgs-filter-duotone-root-selector-block'},
+        })
+        result = survey_block(d)
+        check('filter.duotone mustFlag (root selector) fixture: still flagged NEEDS-INNER-ROUTING',
+              result and result['families']['filter']['classification'] == 'NEEDS-INNER-ROUTING')
 
         # --- Negative control: plain static block, no inner evidence — must
         #     be ROOT-OK, not UNCLEAR. Proves UNCLEAR isn't the default for
