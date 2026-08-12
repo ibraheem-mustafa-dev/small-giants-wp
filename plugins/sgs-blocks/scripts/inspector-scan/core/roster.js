@@ -21,10 +21,53 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { spawnSync } = require( 'child_process' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..', '..' );
 const ROSTER_PATH = path.resolve( PLUGIN_ROOT, 'scripts', 'consistency', 'roster.json' );
+const BUILD_ROSTER_PATH = path.resolve( PLUGIN_ROOT, 'scripts', 'consistency', 'build-roster.py' );
 const BLOCKS_DIR = path.resolve( PLUGIN_ROOT, 'src', 'blocks' );
+
+// GROUND-TRUTH: spec=task brief 2026-08-12 (roster-freshness gate) — nothing enforced that
+// roster.json actually reflects the CURRENT DB state at the moment a standalone consumer
+// (e.g. `npm run inspector-scan`) reads it. `prebuild` already regenerates roster.json fresh
+// every build via `python scripts/consistency/build-roster.py`, but a standalone invocation
+// of this scanner bypasses that chain entirely and can silently read a stale file left over
+// from an earlier build or a DB write made mid-session (e.g. via /sgs-update). D523 (a
+// flipped `surfaces.link` value) and the 2026-07-30 18-block false-positive WARN incident
+// both went unnoticed via exactly this path.
+//
+// `build-roster.py --check` is the freshness gate: it re-queries the SAME DB columns the
+// generator reads (a full payload recompute + compare — a strict superset of a hash/
+// fingerprint check, since it also names what drifted) and is itself proven by its own
+// `--self-test`. Shelling out to it here rather than re-deriving a JS-side check avoids a
+// second, parallel definition of "fresh" that could drift from the generator's own
+// definition — exactly the failure class this gate exists to close.
+function checkRosterFreshness() {
+	const result = spawnSync( 'python', [ BUILD_ROSTER_PATH, '--check' ], {
+		encoding: 'utf8',
+		cwd: PLUGIN_ROOT,
+	} );
+	if ( result.error ) {
+		// python itself could not be spawned — every other prebuild/check script in this
+		// project already depends on a working `python` on PATH, so this is not a NEW
+		// dependency; report it plainly rather than silently skipping the freshness gate.
+		return {
+			fresh: false,
+			message: `[inspector-scan] could not run the roster-freshness gate (python not runnable: ${ result.error.message }). ` +
+				'Run `python scripts/consistency/build-roster.py --check` by hand to verify roster.json is current.',
+		};
+	}
+	const output = `${ result.stdout || '' }${ result.stderr || '' }`.trim();
+	if ( result.status !== 0 ) {
+		return {
+			fresh: false,
+			message: `[inspector-scan] roster.json is STALE — ${ output || 'python scripts/consistency/build-roster.py --check exited ' + result.status }\n` +
+				'  Run: python scripts/consistency/build-roster.py',
+		};
+	}
+	return { fresh: true, message: output };
+}
 
 function loadRosterRaw() {
 	if ( ! fs.existsSync( ROSTER_PATH ) ) {
@@ -150,4 +193,4 @@ function reconcile() {
 	};
 }
 
-module.exports = { reconcile, loadRosterRaw, scanDisk, slugTail, ROSTER_PATH, BLOCKS_DIR };
+module.exports = { reconcile, loadRosterRaw, scanDisk, slugTail, checkRosterFreshness, ROSTER_PATH, BLOCKS_DIR };

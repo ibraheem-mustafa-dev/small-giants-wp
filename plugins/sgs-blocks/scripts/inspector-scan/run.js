@@ -13,7 +13,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 
 const { SourceCache } = require( './core/sources' );
-const { reconcile, BLOCKS_DIR } = require( './core/roster' );
+const { reconcile, checkRosterFreshness, BLOCKS_DIR } = require( './core/roster' );
 const { applyBaseline } = require( './core/baseline' );
 const { makeFinding } = require( './core/finding' );
 const { printHuman, printJson } = require( './core/report' );
@@ -320,6 +320,18 @@ function main() {
 		}
 		process.exit( 0 );
 		return;
+	}
+
+	// Roster-freshness gate — this is the standalone entry point that bypasses `prebuild`'s
+	// own fresh `build-roster.py` regeneration (see core/roster.js `checkRosterFreshness`
+	// for the incident history: D523 + the 2026-07-30 18-block false-positive). A stale
+	// roster.json here is not a scanner finding to report gracefully alongside everything
+	// else — it invalidates the denominator every rule below depends on, so fail loud and
+	// fail first, before spending time computing findings against data that may be wrong.
+	const freshness = checkRosterFreshness();
+	if ( ! freshness.fresh ) {
+		console.error( freshness.message );
+		process.exit( 1 );
 	}
 
 	const cache = new SourceCache();
