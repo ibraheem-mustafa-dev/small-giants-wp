@@ -288,7 +288,7 @@ Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.a
 
 1. **parking entries** carry `**Status:** OPEN|PARTIAL|BLOCKED|DEFERRED` + one of 6 taxonomy buckets
 2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-31-3`)
-3. **mistakes.md** is a keyword-stub index only — body links to `feedback_*.md` + blub.db row
+3. **mistakes.md** entries carry their rule directly inline (not just a keyword + external link — the "pure stub, look it up in blub.db" convention was retired 2026-08-12, since blub.db is no longer relied on for lookup). Target ~30 active entries; prune the oldest by date to `memory/mistakes-archive.md` when it grows past that
 4. **plans** use strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
 5. **Handoff docs carry forward structural defences — never SUBTRACT** (D101 rule, captured 2026-05-29 / blub.db 290 / pattern_key `handoff-docs-carry-forward-structural-defences`). When overwriting `.claude/STOP-CATALOGUE.md` (or, on other projects, any handoff doc) with structural-defence sections (anti-pattern STOP catalogue, pre-flight self-attestation ritual, tiered mandatory reading list, "READ THIS BEFORE ANYTHING ELSE" boxes), READ THE PREVIOUS VERSION FIRST end-to-end. Carry every structural-defence section forward verbatim or extended. Only ADD based on this session's new learnings; never SUBTRACT without a recorded justification. After writing, COUNT: STOP entries ≥ previous + new; reading items ≥ previous + new; ritual questions ≥ previous + new. If any count went down without justification, the new doc is a regression — revise before commit. Captured because 2026-05-29 D93-D100 session-close prompt dropped 7-entry STOP catalogue + 5-question ritual + collapsed 16→5 reading list; Bean caught before next session ran. Sparser prompts let captured failure patterns recur (meta-lesson `feedback_lessons_must_be_operationally_surfaced_not_just_archived` — captured lessons sitting in memory files only prevent failures when operationally surfaced at session start; STOP catalogue at top of handoff IS the operational surfacing).
 
@@ -304,6 +304,6 @@ Per-client design context lives in `sites/<client>/CLAUDE.md`. Active clients:
 
 - `sites/mamas-munches/` — current pipeline canary
 - `sites/indus-foods/` — Heritage / Partnership / Ambition; teal+gold palette; B2B trade buyers
-- `sites/helping-doctors/` — green palette; medical sector
+- `sites/helping-doctors/` — green palette; medical sector. **PAUSED** (2026-08-12) — build stalled, no CLAUDE.md written yet, last touched 2026-05-21.
 
 Do NOT inline client-specific design context into framework CLAUDE.md. Always read the client's own CLAUDE.md when working on that client.

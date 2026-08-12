@@ -32,15 +32,18 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 ## Cloning pipeline + converter
 
 ### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-08-12
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-08-01
 `sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
-sections fail recognition as `unrecognised` and never reach the converter. Needs a decision: is this
-draft meant to convert yet, or is it pre-SGS-BEM by design? Unlike the homepage folder it has no
-TRUTH-SPEC.md. Relevant to the Phase-5 section-annihilation bug, which fires on non-BEM markup.
+sections fail recognition as `unrecognised` and never reach the converter — Stage 0 hard-rejects
+non-`sgs-`-prefixed BEM on production runs. Needs a decision: is this draft meant to convert yet, or
+is it pre-SGS-BEM by design? Unlike the homepage folder it has no TRUTH-SPEC.md. Relevant to the
+Phase-5 section-annihilation bug, which fires on non-BEM markup. Once resolved, migration is an
+HTML-only edit (no code change) so the page can clone to `sgs/option-picker` blocks.
 
-**⚠ Possible duplicate — flagged 2026-08-12 doc-audit, not yet merged:** `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM` (below) describes what looks like the same underlying defect on the same file with a conflicting framing (that entry reads as a decided mechanical fix; this one reads as an open decision). Needs Bean's call on which framing survives before merging — see `.claude/reports/2026-08-12-doc-audit-register.md` §5.
+*(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
+same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
 
-*60 entries total (measured 2026-08-12 via `grep -c "^### P-"`, excluding the fenced template example). Re-measure, do not trust this line.*
+*59 entries total (measured 2026-08-12 via `grep -c "^### P-"`, excluding the fenced template example). Re-measure, do not trust this line.*
 
 ### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 9,476 lines / 819,478 bytes against a 600-line / 262,144-byte cap
 **Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30 · **Re-measured:** 2026-08-12
@@ -688,14 +691,6 @@ The framework's `archive-product.html` ships its two collapsible-text SEO slots 
 
 The nav-drawer variant POC fixtures and seeded variation copy are exact clones of reference-site content, deliberately, so visual differences are attributable to the block rather than the copy. Before any client or production use, the seeded copy must be genericised and any reference-site wording stripped out. A named pre-production step — must not be lost or skipped.
 
-### P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM — Migrate product mockup to SGS-BEM
-**Status:** OPEN · **Bucket:** content · **Parked:** 2026-06-03
-
-`sites/mamas-munches/mockups/product/index.html` uses bare (non-`sgs-`-prefixed) BEM classes,
-which Stage 0 hard-rejects on production runs. Must be migrated to SGS-BEM before the product page
-can clone to `sgs/option-picker` blocks. HTML-only edit, no code change required.
-
-**⚠ Possible duplicate — flagged 2026-08-12 doc-audit, not yet merged:** see `P-MAMAS-PRODUCT-DRAFT-NOT-BEM` above (same file, conflicting framing — that entry reads as an open decision, this one as a decided mechanical fix). Needs Bean's call before merging.
 
 **Trigger:** Before the next product-page clone run.
 

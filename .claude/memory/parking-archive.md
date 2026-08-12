@@ -7,6 +7,19 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-08-12 — doc-audit: 1 entry superseded by a merge
+
+> **P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM** — Migrate product mockup to SGS-BEM
+> **Status: SUPERSEDED BY MERGE — 2026-08-12.** Duplicate of `P-MAMAS-PRODUCT-DRAFT-NOT-BEM` (parked
+> 2026-08-01, same underlying issue on the same file). Bean's ruling: keep the newer entry, fold in
+> this entry's unique mechanism detail (Stage 0 hard-rejects on production runs; downstream target
+> is `sgs/option-picker` blocks). Residual scope survives verbatim inside the surviving entry, still
+> open in `parking.md`. · **Bucket:** content
+>
+> Original body: `sites/mamas-munches/mockups/product/index.html` uses bare (non-`sgs-`-prefixed) BEM
+> classes, which Stage 0 hard-rejects on production runs. Must be migrated to SGS-BEM before the
+> product page can clone to `sgs/option-picker` blocks. HTML-only edit, no code change required.
+
 ## 2026-07-31 (seventh pass) — doc-reconciliation: 4 closed on verified evidence, 3 superseded by a merge
 
 **Method.** Bean-ruled session: nothing new added to parking.md, existing entries only archived or
