@@ -41,7 +41,7 @@ addFilter(
 	'sgs/apply-block-defaults',
 	applyBlockDefaults
 );
-import { Button } from '@wordpress/components';
+import { Button, PanelBody } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
@@ -86,18 +86,29 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 				<BlockEdit { ...props } />
 				{ isSelected && (
 					<SgsAdvancedTabDestination name={ name }>
-						<Button
-							variant="secondary"
-							onClick={ handleSave }
-							isBusy={ status === 'saving' }
-							disabled={ status === 'saving' }
-							style={ {
-								width: '100%',
-								justifyContent: 'center',
-							} }
+						<PanelBody
+							title={ __( 'Save as Default', 'sgs-blocks' ) }
+							initialOpen={ false }
 						>
-							{ statusLabel }
-						</Button>
+							<p className="components-base-control__help">
+								{ __(
+									'Saves this block’s current settings as the starting point for every new instance of this block you add from now on.',
+									'sgs-blocks'
+								) }
+							</p>
+							<Button
+								variant="secondary"
+								onClick={ handleSave }
+								isBusy={ status === 'saving' }
+								disabled={ status === 'saving' }
+								style={ {
+									width: '100%',
+									justifyContent: 'center',
+								} }
+							>
+								{ statusLabel }
+							</Button>
+						</PanelBody>
 					</SgsAdvancedTabDestination>
 				) }
 			</>

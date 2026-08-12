@@ -31,6 +31,12 @@ import './SgsInspectorTabs.css';
 
 export const SGS_STYLE_TAB_SLOT = 'sgs-inspector-tabs-style';
 export const SGS_ADVANCED_TAB_SLOT = 'sgs-inspector-tabs-advanced';
+// A SECOND, dedicated Advanced-tab slot that always renders LAST — Custom
+// CSS (custom-css.js) targets this one specifically so it reliably sits at
+// the bottom of the Advanced tab regardless of extension-file registration
+// order, rather than racing Save as Default / Visibility conditions for
+// Fill-mount order in the shared SGS_ADVANCED_TAB_SLOT.
+export const SGS_ADVANCED_TAB_BOTTOM_SLOT = 'sgs-inspector-tabs-advanced-bottom';
 
 const TABS = [
 	{
@@ -79,6 +85,13 @@ export default function SgsInspectorTabs( { content, style, advanced } ) {
 						<>
 							{ advanced || null }
 							<Slot name={ SGS_ADVANCED_TAB_SLOT } bubblesVirtually />
+							{ /* Native WordPress "advanced" group — HTML anchor / CSS
+							     class, auto-populated by core supports.anchor/
+							     customClassName. Pulled in here so it sits inside the
+							     tab instead of leaking out as a separate collapsed
+							     panel underneath the whole tab strip. */ }
+							<InspectorControls.Slot group="advanced" bubblesVirtually />
+							<Slot name={ SGS_ADVANCED_TAB_BOTTOM_SLOT } bubblesVirtually />
 						</>
 					);
 				} }

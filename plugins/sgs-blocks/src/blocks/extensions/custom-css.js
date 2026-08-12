@@ -26,7 +26,7 @@ import { addFilter } from '@wordpress/hooks';
 import { PanelBody, TextareaControl } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { SgsAdvancedTabDestination } from './inspector-tab-routing';
+import { SgsAdvancedTabBottomDestination } from './inspector-tab-routing';
 
 // Add `sgsCustomCss` attribute to every block, and disable WP core's own
 // native `customCSS` block support (see file header) so only one CSS control
@@ -63,7 +63,7 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				{ isSelected && (
-					<SgsAdvancedTabDestination name={ name }>
+					<SgsAdvancedTabBottomDestination name={ name }>
 						<PanelBody
 							title={ __( 'Custom CSS', 'sgs-blocks' ) }
 							initialOpen={ false }
@@ -83,7 +83,7 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 								__nextHasNoMarginBottom
 							/>
 						</PanelBody>
-					</SgsAdvancedTabDestination>
+					</SgsAdvancedTabBottomDestination>
 				) }
 			</>
 		);

@@ -21,6 +21,7 @@ import { isTabBarEligible } from './hide-extensions';
 import {
 	SGS_STYLE_TAB_SLOT,
 	SGS_ADVANCED_TAB_SLOT,
+	SGS_ADVANCED_TAB_BOTTOM_SLOT,
 } from '../../components/SgsInspectorTabs';
 
 /**
@@ -43,6 +44,22 @@ export function SgsStyleTabDestination( { name, children } ) {
 export function SgsAdvancedTabDestination( { name, children } ) {
 	if ( isTabBarEligible( name ) ) {
 		return <Fill name={ SGS_ADVANCED_TAB_SLOT }>{ children }</Fill>;
+	}
+	return <InspectorAdvancedControls>{ children }</InspectorAdvancedControls>;
+}
+
+/**
+ * Same as {@link SgsAdvancedTabDestination}, but for content that must
+ * render at the very BOTTOM of the Advanced tab (e.g. Custom CSS), rather
+ * than racing other extensions for Fill-mount order in the shared slot.
+ *
+ * @param {Object} props
+ * @param {string} props.name     Block name, e.g. 'sgs/decorative-image'.
+ * @param {import('react').ReactNode} props.children
+ */
+export function SgsAdvancedTabBottomDestination( { name, children } ) {
+	if ( isTabBarEligible( name ) ) {
+		return <Fill name={ SGS_ADVANCED_TAB_BOTTOM_SLOT }>{ children }</Fill>;
 	}
 	return <InspectorAdvancedControls>{ children }</InspectorAdvancedControls>;
 }
