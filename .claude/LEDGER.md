@@ -9,9 +9,10 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-12 (session 14). Closed all 26 findings from the new automated check — but two of your
-rulings turned it into something bigger than tidying up, and running `/sgs-update` afterwards has
-left the build RED for a reason that isn't ours.**
+**2026-08-12 (session 14). Closed all 26 findings from the new automated check; two of your rulings
+turned it into something bigger than tidying up; then `/sgs-update` exposed a hidden problem in the
+cloning converter — which a multi-rater review showed you had already ruled on, so it was closed the
+RIGHT way rather than patched. Build green, everything pushed.**
 
 - **The 26 are done, and the check is now a real gate** (it fails the build if this bug class ever
   comes back, rather than just printing a warning). Deployed to the canary, pushed, live-verified.
@@ -30,14 +31,18 @@ left the build RED for a reason that isn't ours.**
 - **Two more real bugs fixed on the way:** Post Grid and Testimonial Slider each had TWO layout
   dropdowns fighting over one setting, so anything a client picked in the shared one was silently
   thrown away by WordPress. Fixed.
-- ⛔ **Then I ran `/sgs-update` as you asked, and it red-lit the build.** The refresh corrected the
+- **I ran `/sgs-update` as you asked. It red-lit the build — and that turned out to be the most
+  useful thing that happened all session.** The refresh corrected the
   database — it had been carrying 467 stale leftover rows, and now matches the real code exactly.
   That's a genuine improvement. **But 14 cloning-converter tests were only passing BECAUSE of that
   stale data**, and now fail. The converter is behind changes made on 9–11 Aug (deleted settings and
   the structured-value migration); the stale database was hiding it. **This is not a new bug I
-  introduced — it's an old one that was invisible.** It needs a decision from you (options below);
-  I did not paper over it, and deliberately did NOT restore the old database, because that would
-  re-hide the problem.
+  introduced — it's an old one that was invisible.** ✅ **Now resolved, and the build is GREEN again.**
+  A multi-rater review found you had ALREADY decided this two days ago (D554): the converter stays as
+  it is until the Spec 39 rework, and a quick patch was rejected by name. So 12 of the 14 are marked
+  "expected to fail until Spec 39" — deliberately in a mode that breaks the build the moment someone
+  DOES change the converter, so it can't be forgotten. The other 2 were genuinely broken and are
+  fixed. I did not paper over anything and did not restore the old database.
 - Fixed 6 database-consistency failures the refresh also surfaced on Hero's gradients, using the
   proper override file rather than a workaround.
 
@@ -221,19 +226,9 @@ the junction before removing the worktree** — this project's memory already na
 
 ## Blockers
 
-- ⛔ **`npm run build` is RED — 14 cloning-converter tests fail after the 2026-08-12 `/sgs-update`
-  reseed.** NOT caused by the D589 inspector work (that shipped, deployed and live-verified with a
-  green build BEFORE the reseed). **Proven cause:** the reseed pruned 467 stale `block_attributes`
-  rows, leaving the DB matching ground truth exactly (2245 `sgs/*` rows vs 2261 declared — the 16
-  difference is `_comment_*`/`_note_*` doc pseudo-attrs; **0 extras**). Those tests were green only
-  because of the stale rows. Two examples, both re-derived not inferred: the typography resolver
-  splits `sgs/heading.fontSize` into number+unit when `block.json` declares it `"object"`; an outer-box
-  test expects a write to an `order` attr `sgs/hero` no longer declares. So the CONVERTER is behind
-  the D539/D540 attribute deletions and the D563–D580 object migrations.
-  ⛔ **Do NOT fix by restoring the pre-reseed DB** — the DB is now correct and rolling back re-hides
-  the drift. Needs a Bean decision on scope; belongs to the cloning-converter owner, not Track 1b.
-  Detail: plan doc §3.3 last row.
-- Everything else shipped this session and last is deployed and live-verified.
+- **None.** The build went RED mid-session and is **GREEN again** (`npm run build` exit 0; 915 passed,
+  2 skipped, 12 xfailed). See the converter-drift entry below for why 12 xfails are the CORRECT state
+  rather than deferred work.
 
 ## ✅ Wrapper uid-minting bug — SHIPPED same session (D588)
 
@@ -265,9 +260,36 @@ it). Two silent enum-coercion bugs fixed in passing (`post-grid`/`testimonial-sl
 a deliberately-set band background paints nothing, and `sgs/pricing-table` — which had no align attr
 at all before — renders `align-items:end`. Full record: `decisions.md` D589 + D590.
 
+## ✅ Converter drift — RESOLVED by NOT fixing it (QC council, `79d13366`)
+
+The reseed exposed drift the 467 stale rows had masked; 14 converter tests failed. A `/qc-council`
+(3 raters + structural pre-gates) **falsified the obvious fix twice**, so the converter's emission
+code is untouched:
+1. **D554 ruling C already decided the opposite** — *"the converter stays flat; its output gets
+   gated… ⛔ Rejected: a temporary converter shim… a shim written under time pressure becomes the
+   permanent implementation."* Tier-object emission is named **Spec 39** work (Spec 39 doesn't exist
+   yet). Building it would invert D552's ordering rule (standard leads, pipeline follows).
+2. **The design was unsound anyway** — THREE shapes hide under `attr_type='object'` and neither
+   `attr_type` nor `box_family_for` separates them. The rule would have regressed
+   `container.gridItemPadding` (PHP reads it FLAT) from working to painting nothing.
+
+**Outcome:** 12 tests `xfail(strict=True)` citing D554 — strict so they fail loud the moment the
+converter starts emitting tier objects, making them Spec 39's executable work-list rather than
+silenced tests. 2 were genuinely real and fixed: the converter was writing `backgroundOverlayOpacity`
+(retired at D581, declared by 0 blocks — WP silently discarded it while it *looked* like a transfer),
+and a stale test asserting `container` still natively consumes `background-color` (D581 removed that
+support deliberately). Both verified, the first with a negative control proving the new assertion can
+still fail.
+
+⚠ **The council also caught a factual error in my own D590 entry** — the `order` failures are on
+`sgs/media` (declared `object`), not a deleted `sgs/hero.order`. Struck through in `decisions.md`
+rather than quietly replaced.
+
 ## Open — next priority
-- **Decide the converter-drift scope** (see Blockers). Until then no Track 1b item can close through
-  a green build.
+- **The D554 clone-output gate — specified at D554, never built.** A check that FAILS a clone run
+  emitting a flat tier for an already-migrated property, so the divergence is loud at CLONE time
+  instead of only in pytest. Slot + a mandatory positive control are already specified in
+  `plans/spec-35-flat-to-object-migration-design.md:216-241`. Delegated to a Sonnet agent 2026-08-12.
 
 ## Open — carried, not ours to close
 

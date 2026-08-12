@@ -250,7 +250,111 @@ both) — never collapse them into one axis or key one off the other's vocabular
 storage-shape gate rule-attempts that got this wrong are the reason it's called out again here; no new
 file:line evidence was gathered for this item beyond what R5 already cites.
 
-### UNVERIFIED
+## 2026-08-12 — QC-council findings that CONSTRAIN R1's design (three of these were paid for by being wrong first)
+
+**Provenance.** A `/qc-council` (3 raters + structural pre-gates) ran against a proposed R1-shaped fix
+on 2026-08-12 and **falsified it twice over**. The fix was NOT built (D554 ruling C forbids the shim);
+what survives is the evidence below. Full record: `.claude/plans/2026-08-12-converter-db-drift.md`,
+`decisions.md` D590. **These are inputs, not decisions** — same status as the rest of this file.
+
+### G5 — ⛔ THREE shapes hide under `attr_type='object'`, and NOTHING in the schema separates them
+
+This is the single hardest constraint on R1 and it is **not** the same statement as R5/G4's
+BOX-vs-TIER orthogonality. Even once you know the two axes are independent, you still cannot tell
+these apart from the data:
+
+| # | Shape | Example | `{base}Tablet` declared? | PHP consumer | Correct emission |
+|---|---|---|---|---|---|
+| 1 | flat-sibling trio | `sgs/hero.imagePadding` (+`Tablet`/`Mobile`) | **YES** | three separate array reads | **flat — already correct today** |
+| 2 | migrated tier-object | `contentBandPadding`, `gap`, `maxWidth`, `columns`, `fontSize`, `sgs/media.order`, `decorative-image.positionX/Y` | no | `sgs_responsive_normalise_object(...)` → `.desktop/.tablet/.mobile` | **object — R1's actual target** |
+| 3 | base-only box, **NO tier support** | `sgs/container.gridItemPadding`, `sgs/text.borderWidth` | no | `class-sgs-container-wrapper.php` — `sgs_serialise_box_sides($attributes[...] ?? array())`, a **FLAT read, no tier normalisation**; tier plumbing deliberately deferred (D549 Stage 2) | **flat — folding it renders NOTHING** |
+
+- Testing `attr_type == 'object'` conflates all three.
+- Testing "does `{base}{Tier}` exist as its own row" separates 1 from {2,3} — **but NOT 2 from 3.**
+- `box_family_for()` also conflates them.
+
+**A rule that folds shape 3 is a REGRESSION on a currently-working path**, not a fix. Spec 39 must
+find a genuine signal for 2-vs-3 (leads, each UNVERIFIED: the `default_value` carrying a `"desktop"`
+key; whether the PHP consumer calls `sgs_responsive_normalise_object` for that attr) — or scope R1 to
+an explicit DB-derived allow-list of known-migrated properties. **An honest narrow rule beats a wrong
+broad one.**
+
+### G6 — G2's open question is ANSWERED: the fix cannot be a post-hoc pass over emitted writes
+
+G2 asks *"whether the fix belongs at that one function or has to unwind at each call site."* Partly
+settled, by reading the control flow rather than the string-building:
+
+**The resolvers GAP OUT before any `Write` exists.** The shape at the call sites is
+`attr = tier_state_suffix(base, decl, conn)` → `if not validate(ctx, attr, value): return gap_writer(...)`.
+For a migrated property the suffixed name (`gapMobile`) is undeclared, so `validate()` fails and the
+resolver returns a GAP — **no `Write` is ever produced**. Any design that normalises *collected writes*
+therefore has nothing to normalise. R1 must act at or before the attr-resolution/validate seam.
+
+⚠ **And the 15 call sites are not uniform: 6 of them never call `validate()` at all** — they gate
+solely on `box_family_for()` (the box/border forks in `grid.py`, `content_band.py`, `grid_area.py`,
+`services/border_side.py`). So "make `tier_suffix()` return the base name so `validate()` passes" does
+not even apply to those six — and they are precisely the path that produces the shape-3 regression in
+G5. G2's count of 15 is right; its implied uniformity is not.
+
+*(Also: G2 lists `services/state_value_lift.py` among the callers. It only MENTIONS `tier_state_suffix`
+in a docstring — it resolves via `db_lookup.attr_for_state_property` instead. 15 real call sites stands,
+but that file is not one of them.)*
+
+### G7 — Two positive findings R1 can rely on
+
+- **`Write.tier` is reliably populated** at every construction site (`Base`/`Tablet`/`Mobile`/`Desktop`).
+  Every site gates on `decl.is_device_tier` first, filtering `Other:<cond>` out before a Write is built;
+  the one hardcoded case (the synthetic `align_finalise` write) sets `Base` explicitly. So a tier key is
+  always available at emission time without re-deriving it.
+- **Collapsing `Desktop` into the same bucket as `Base` has precedent** — `content_attr_for_element`
+  already does it, with test coverage. A `{Base,Desktop} → desktop` mapping is consistent, not novel.
+
+### G8 — One live landmine R1 must not widen: `sgs/button.boxShadowHover`
+
+The ONLY block declaring `{base}Hover` where the base is `attr_type='object'`. `boxShadow` there is a
+**fixed-schema descriptor** (`{colour,hOffset,vOffset,blur,spread,inset}`) — neither a box-of-sides nor
+a tier object — and its PHP consumer `array_merge`s it expecting those keys. The box-shadow resolver
+writes a **preset-slug string**, so base-tier box-shadow on that block is *already* broken (string into
+a rich-descriptor object). **An object-collapse rule that doesn't condition on tier would widen that
+existing bug from Base-only to Tablet/Mobile+Hover.** Zero `%TabletHover`/`%MobileHover` rows exist
+anywhere, so the correct behaviour is to keep gapping.
+
+### G9 — ⭐ R6's missing POSITIVE CONTROL now EXISTS: 12 `xfail(strict=True)` tests
+
+R6 correctly warns that *"when the gate stops firing, R1 is done"* is vacuously satisfiable. As of
+2026-08-12 there is a concrete, non-vacuous acceptance signal that does not depend on any clone run
+happening:
+
+**12 converter tests are marked `@pytest.mark.xfail(strict=True)` citing D554.** They assert the
+pre-migration flat shape for properties that are now tier objects. Because `strict=True`, they **FAIL
+THE BUILD the moment the converter starts emitting tier objects** — they cannot silently pass.
+
+- **They are R1's work-list, enumerated and executable**: `test_css_resolvers.py` (6),
+  `test_outer_box_step12_properties.py` (3), `test_css_pass_partition.py` (1), `test_l4_area_wiring.py`
+  (1), `test_state_value_lift.py` (1).
+- **The R1 completion ritual:** flip each from `xfail` to a normal test asserting the OBJECT shape, in
+  the same commit as the resolver change that makes it pass. A test that goes from xfail to xpass
+  without being rewritten means the emission changed **without** anyone updating the contract — the
+  strict marker turns that into a build failure rather than a silent green.
+- ⛔ **Do not delete or unmark these to "clean up" before R1 lands.** They are the only thing currently
+  making the flat/object divergence loud in CI.
+
+### G10 — Two native-lift inputs changed under R1's feet (2026-08-11/12)
+
+Both alter what the converter can natively consume, so R1's baseline is not what R1's table describes:
+
+- **`supports.color` background/gradients REMOVED from `container`/`hero`/`cta-section`/`trust-bar`**
+  (D581 — it was "live and silently winning a conflict with" the redesigned Background panel). So
+  `root_supports`' `background-color → style.color.background` route no longer applies to those four
+  blocks, and a `background-color` on them now gaps. ⛔ Do NOT restore the support to make a test pass.
+- **`backgroundOverlayOpacity` RETIRED** (D581) and the converter's write of it removed 2026-08-12. The
+  alpha now rides inside the `rgba()` colour. Any Spec 39 overlay work reads the colour's alpha, never a
+  separate opacity attr.
+
+### UNVERIFIED — carried from the 2026-08-11 groundwork (G1–G4), plus 2026-08-12 additions
+
+⚠ Heading scope: the two bullets immediately below belong to the **2026-08-11** groundwork section
+above; the 2026-08-12 council items are listed after them.
 
 - **Whether `columns` and `gridTemplateRows` behave identically to `gridTemplateColumns` once
   migrated** (i.e. whether Spec 35 pass 3a's approach transfers directly) — not checked here; this is
@@ -258,3 +362,18 @@ file:line evidence was gathered for this item beyond what R5 already cites.
 - **Total count of `.update()`-style shallow-merge sites elsewhere in the converter** beyond
   `css_pass.py`'s four — only the one file named in the task was checked; a full sweep wasn't run
   (would risk exactly the "cached count" trap R7.2 warns against).
+
+**From the 2026-08-12 council (G5–G10):**
+
+- **The 2-vs-3 discriminating signal (G5) — genuinely unsolved.** Both leads (`default_value` carrying
+  a `"desktop"` key; whether the PHP consumer calls `sgs_responsive_normalise_object`) were identified
+  but NEITHER was verified across the full corpus. This is R1's first design task, not a detail.
+- **Whether the 6 `box_family_for`-only call sites (G6) need a different fix shape from the 9
+  `validate()`-gated ones** — the split is confirmed; the consequence for R1's design is not worked out.
+- **Whether any block other than `sgs/button` will grow a state suffix on an object-typed base (G8)** —
+  true today (1 case, 0 `%TabletHover` rows anywhere), but nothing prevents a new one; no gate guards it.
+- **What SHOULD paint a plain background colour on the 4 blocks that lost `supports.color.background`
+  (G10)** — `BackgroundPanel` provides image/video/SVG but **no colour picker**, and those blocks declare
+  no plain `backgroundColour` attr. D581 records the removal as fixing a conflict; it does not record
+  what replaced it. Worth settling before Spec 39 designs colour routing for them. ⚠ Not a regression
+  claim — an unanswered question.
