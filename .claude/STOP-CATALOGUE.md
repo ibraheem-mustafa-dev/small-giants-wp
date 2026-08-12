@@ -3,7 +3,7 @@ doc_type: reference
 project: small-giants-wp
 title: STOP catalogue + pre-flight self-attestation ritual (structural defences)
 note: "UNCAPPED by design (D101 — never force-drop a defence to fit a byte cap). Split out of next-session-prompt.md/state.md/handoff.md when they collapsed to LEDGER.md (P4, 2026-07-17). Entries carry forward VERBATIM across sessions; new sessions ADD, never SUBTRACT without a recorded justification. Count-check: new unique-STOP count >= previous, every /handoff."
-last_updated: 2026-07-17
+last_updated: 2026-08-11
 ---
 
 # STOP catalogue — anti-pattern defences (carry forward, never subtract)
@@ -265,8 +265,9 @@ points here. Neither ever silently drops a STOP.
 - **STOP-A-GATE-CAN-BE-BLIND-TO-THE-FILE-IT-PROTECTS** — NEW 2026-07-29. An audit can run cleanly
   for months while never once looking at the file it exists to protect, because gates bind to a
   doc's NAME, TYPE or SHAPE and any reorganisation severs that binding **with no diff to show it**.
-  Proven: the D101 carry-forward audit in `docscore.py` was written when the STOP catalogue lived
-  inside `next-session-prompt.md`; after the P4 split to `STOP-CATALOGUE.md` it kept passing on a
+  Proven: the D101 carry-forward audit (at the time, in a script named `docscore.py` — since
+  superseded by `.claude/hooks/handoff-preflight.py`, see CLAUDE.md) was written when the STOP
+  catalogue lived inside `next-session-prompt.md`; after the P4 split to `STOP-CATALOGUE.md` it kept passing on a
   file containing no catalogue. Two independent mismatches — it gated on `doc_type` (this file
   declares `doc_type: reference`, and **frontmatter beats the filename map**), and its row detector
   matched markdown TABLE rows while this file uses bullets. **After moving, splitting, renaming or
@@ -1008,8 +1009,11 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
   `sgs/nav-menu` offered a client Block Link (wrap the whole nav in one `<a>`), Element parallax on a
   sticky bar, Click Effects, and a Hover Effects panel duplicating its own per-element hover controls
   — **13 inspector panels on a navigation menu.** Worse, the Spacing panel was **silently DEAD**: its
-  fields write `sgsMarginTop/…`, which `custom-spacing.js` never registers when a block declares
-  native spacing, so every value a client set was discarded on save. **Rule: a new block must
+  fields write `sgsMarginTop/…`, which `custom-spacing.js` never registered when a block declared
+  native spacing, so every value a client set was discarded on save. *(`custom-spacing.js` itself was
+  since deleted, `d54e41db` 2026-08-03, "purge a dead spacing panel" — the panel this entry describes
+  no longer exists; the bug was fixed by removal, not by fixing registration. The general lesson below
+  still applies to any future extension panel.)* **Rule: a new block must
   declare `hideExtensions` deliberately — inheriting all four is a decision, not a default. And an
   extension panel rendering is NOT evidence its attributes are registered.**
 

@@ -116,11 +116,10 @@ The build uses `--experimental-modules` to support `viewScriptModule` (the Inter
 
 A `prebuild` / `prestart` hook runs `scripts/generate-icons.js` automatically. This generates `includes/lucide-icons.php` from the `lucide-static` package — a flat PHP array of 1,900+ SVG icons. Do not edit `lucide-icons.php` directly.
 
-The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-controls.js --check`, D192). **PLANNED addition (D193, approved 2026-06-09, NOT yet wired):** `scripts/check-hardcoded-render-defaults.js` (design in `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`).
+The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-controls.js --check`, D192) and `scripts/check-hardcoded-render-defaults.js` (D193) — both wired and BLOCKING via `--check`, not planned. `prebuild` actually chains roughly 40 gates in total (consistency gates, roster build, motion-fx generators, dead-pattern-attrs, `check-shared-panel-schema.js`, background-colour-support survey, control-ux, schema-drift, value-identity, db-consistency, tier-storage-shape, cheat-gate, no-inline checks, the pytest oracle/converter suites, inspector-scan, feature-parity audit, block-uniformity, and more) — read `plugins/sgs-blocks/package.json`'s `prebuild` script directly for the current, authoritative list rather than trusting a hand-maintained summary here.
 
-**Two converter conformance suites (run BOTH — D222 lesson):**
-- **Gate A (golden-fixture harness):** `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` — 43 fixtures, run manually with `pytest plugins/sgs-blocks/scripts/tests/`. This is the pre-commit gating harness. **A subagent claiming "conformance passed" may mean only `converter_v2/tests/` ran, NOT Gate A.**
-- **Unit tests:** `plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/` — per-mechanism unit tests. Run with `pytest plugins/sgs-blocks/scripts/orchestrator/converter_v2/tests/`.
+**Converter conformance (D222 lesson — the `converter_v2/` unit-test suite this section used to also name was deleted at D276, 2026-07-05; Gate A below is the only live suite now):**
+- **Gate A (golden-fixture harness):** `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` — fixture count is DB/dir-authoritative (`scripts/tests/fixtures/conformance/`, drifts — do not hard-code a number), run manually with `pytest plugins/sgs-blocks/scripts/tests/`. This is the pre-commit gating harness.
 
 **Dated migration pattern (D222, mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` beside the existing siblings — never a module-load side-effect in `db_lookup.py`. Example: `migrations/2026-06-13-property-suffixes-align-items.py`.
 
@@ -486,6 +485,10 @@ if it is broken**. Deploy to the canary first; only then the client site.
 | `--allow-dirty` | The gate that would have stopped the 2026-07-14 outage. Only use when you have READ the listed paths and know each one is safe. |
 | `--skip-verify` | The only check that catches a deploy which breaks the site. |
 
+**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--dry-run` previews without deploying; `--verify-url`, `--audit-scoped-page`, `--skip-oldshape-audit`, `--self-test` exist for narrower workflows — read the script's `--help` for current usage.
+
+**Ownership check (load-bearing, not optional):** the canary is a shared checkout. `build-deploy.py` checks whether the deploy would overwrite live work not in your HEAD's ancestry and **refuses if so** — this is correct behaviour, not a bug. `--takeover` overrides it; only use when you've confirmed with whoever else is working on the canary that it's safe to overwrite their state.
+
 **Rollback (if a deploy breaks the site):**
 
 ```bash
@@ -562,7 +565,7 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 # --apply to write detected wraps_block + container_kind values into block_composition
 ```
 
-29-block container roster confirmed (D167, 2026-06-04 — content-collection added as the 29th; modal + mobile-nav excluded). Re-run via `/sgs-update` Stage (auto) or manually whenever block.json `supports.sgs.containerKind` changes.
+Container roster confirmed at D167 (2026-06-04 — content-collection added, modal + mobile-nav excluded). **Roster size is DB-authoritative — query `/sgs-db`, do not cache a count (architecture.md separately cited 28; both were stale).** Re-run via `/sgs-update` Stage (auto) or manually whenever block.json `supports.sgs.containerKind` changes.
 
 ### PowerShell equivalents (dev machine)
 
@@ -656,7 +659,7 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 ### DB schema notes (post-D99 + D107-D113)
 
 - **`blocks.tier`** (new D107) — TEXT column, CHECK constraint `IN ('block', 'class-section', 'pattern')`. Populated by `/sgs-update` Stage 1 from each block's `supports.sgs.is_section_root` flag in `block.json`. Operator-set per block, not algorithmically inferred.
-- **`block_composition`** (new D108; updated D152/D167) — 189+ rows. 29-block container roster has `wraps_block` + `container_kind` populated (D167, 2026-06-04; values `section|layout|content`; modal + mobile-nav excluded). Walker consumption DEFERRED — data layer LIVE only.
+- **`block_composition`** (new D108; updated D152/D167) — 189+ rows at D167 (2026-06-04), drifts since — query `/sgs-db`. Container roster has `wraps_block` + `container_kind` populated (values `section|layout|content`; modal + mobile-nav excluded). Walker consumption DEFERRED — data layer LIVE only.
 - **`slots`** (D99) — composite PK on `(slot_name, scope)`. Post-D111 (2026-05-30): 92 element-scope + 4 section-scope = 96 total. Replaces retired `slot_synonyms` + `legacy_role_lookup`. XS-5 cleanup retired 12 wrong/dead section-scope rows + re-inserted testimonial/testimonial-slider at element scope; `inner` passthrough element row added.
 - **`roles`** (D99/D128) — 21 rows (20 base + `scalar-media` added D128 2026-06-01). Replaces `slot_synonyms.role_classification` column. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
 - **`html_tag_to_core_block`** (D99) — 14 rows, idempotent migration at module load. Replaces hardcoded `_HTML_TAG_TO_CORE_SLUG` dict. `INSERT OR REPLACE`.
@@ -666,7 +669,7 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 `assign-canonical.py` was ported to the D99 `slots` + `roles` schema. Current canonical_slot coverage = 31.8% of attrs. Re-run after every slot-vocabulary addition:
 
 ```bash
-python plugins/sgs-blocks/scripts/assign-canonical.py
+python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py
 ```
 
 - **It writes the one physical `sgs-framework.db`.** uimax holds neither `block_attributes` nor `slots`; the `.claude` and `.agents` DB paths are the *same file* via an NTFS junction (not two copies) — so a single write reaches every path.

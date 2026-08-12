@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-07-29
+last_updated: 2026-08-12
 note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose. Normalised 2026-07-29: 296KB -> this, one layout, one Status syntax, shipped history stripped to residual scope. Pre-normalise copy: memory/archived-2026-07-28-parking-pre-normalise.md."
 ---
 
@@ -32,24 +32,26 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 ## Cloning pipeline + converter
 
 ### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
-**Status:** OPEN
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-08-12
 `sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
 sections fail recognition as `unrecognised` and never reach the converter. Needs a decision: is this
 draft meant to convert yet, or is it pre-SGS-BEM by design? Unlike the homepage folder it has no
 TRUTH-SPEC.md. Relevant to the Phase-5 section-annihilation bug, which fires on non-BEM markup.
 
+**⚠ Possible duplicate — flagged 2026-08-12 doc-audit, not yet merged:** `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM` (below) describes what looks like the same underlying defect on the same file with a conflicting framing (that entry reads as a decided mechanical fix; this one reads as an open decision). Needs Bean's call on which framing survives before merging — see `.claude/reports/2026-08-12-doc-audit-register.md` §5.
 
-*61 entries total (measured 2026-08-07 via `grep -c "^### P-"`). The previous "52 open entries" was a `**Bucket:** pipeline` count, which is 19 — it never counted the file. Re-measure, do not trust this line.*
+*60 entries total (measured 2026-08-12 via `grep -c "^### P-"`, excluding the fenced template example). Re-measure, do not trust this line.*
 
-### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 6,961 lines against a 600 cap
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30 · **Re-measured:** 2026-08-09
+### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 9,476 lines / 819,478 bytes against a 600-line / 262,144-byte cap
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30 · **Re-measured:** 2026-08-12
 
-**Re-measured 2026-08-09 and the trend REVERSED — the entry's own figures had drifted, downward.**
-Live: **6,961 lines**, `docscore` **86.3% (B+)** — not the 7,263 lines / 67.3% (C) this entry carried.
-A sweep has happened since it was parked (`handoff-preflight` reports the file *shrinking*:
-"grown −409,822 of 65,536 budget"), so the "still growing, ~1 doc-grade point lost per session" claim
-is no longer true and is struck. Length remains the **only genuine failure** (the other three are
-scorer false positives, itemised below).
+**Re-measured 2026-08-12 — the trend reversed again, upward, sharply.** Live: **9,476 lines /
+819,478 bytes** (3.1x the byte fallback cap per `handoff-preflight.py --check`) — up from 6,961
+lines when last re-measured 2026-08-09, a +36% jump in 3 days. The archive-on-resolve remedy
+(sweep retired/superseded/non-load-bearing entries into `memory/decisions-archive.md`) still has
+not been run. This is the file's third stale-figure cycle on this entry — re-measuring without
+running the sweep just produces a new stale number next time. Length remains the **only genuine
+failure** (the other three are scorer false positives, itemised below).
 
 ~~`docscore` grades `decisions.md` at 67.3% (C) … 2,634 when parked 2026-07-30; 3,097 after D424;
 3,604 after D432 — it is still growing~~. The project already has the remedy — archive-on-resolve
@@ -73,7 +75,7 @@ D-range; do not delete.
 
 ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
 
-**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-07-31
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-31
 
 An `sgs/nav-menu` placed inside PAGE CONTENT has its open dropdown painted over by the sticky header
 and by the footer. Measured on canary 2091, five sample points, every one returning a rival element.
@@ -692,6 +694,8 @@ The nav-drawer variant POC fixtures and seeded variation copy are exact clones o
 `sites/mamas-munches/mockups/product/index.html` uses bare (non-`sgs-`-prefixed) BEM classes,
 which Stage 0 hard-rejects on production runs. Must be migrated to SGS-BEM before the product page
 can clone to `sgs/option-picker` blocks. HTML-only edit, no code change required.
+
+**⚠ Possible duplicate — flagged 2026-08-12 doc-audit, not yet merged:** see `P-MAMAS-PRODUCT-DRAFT-NOT-BEM` above (same file, conflicting framing — that entry reads as an open decision, this one as a decided mechanical fix). Needs Bean's call before merging.
 
 **Trigger:** Before the next product-page clone run.
 

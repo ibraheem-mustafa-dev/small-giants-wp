@@ -122,7 +122,7 @@
 
 ### [2026-06-06] Clone verification on a real homepage render, not just emitted markup inspection
 - **Pattern key:** `verify-clone-on-real-homepage-not-emit`
-- **Feedback file:** [memory/llm-eyeball-clone-verification-unreliable.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/llm-eyeball-clone-verification-unreliable.md)
+- **Feedback file:** [feedback_llm_eyeball_clone_verification_unreliable.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_llm_eyeball_clone_verification_unreliable.md)
 - **Findings:** [reports/2026-06-06-doc-council-findings.md](.claude/reports/2026-06-06-doc-council-findings.md)
 - **Rule:** Inspecting emitted `wp:` markup to declare "clone works" is not sufficient — an echoed `$content` can look structurally correct in markup but render incorrectly (or identically to a mirror) on the live homepage. Verification MUST be against the live-rendered homepage (Playwright + per-section pixel-diff + Bean R-22-13 sign-off).
 

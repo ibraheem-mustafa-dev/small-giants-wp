@@ -188,7 +188,7 @@ the junction before removing the worktree** — this project's memory already na
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `a637e984` at session end (D588 — the wrapper uid-minting fix, shipped
+- **Branch:** `main`, HEAD `dfc16d06` (D590 — converter-drift QC-council resolution, shipped
   same session). ⛔ **This will drift — run `git log -1` AND
   `git status` AND `git branch --show-current`, don't trust this line.** Local and `origin/main`
   are in sync as of this HEAD (verified via `git push`, fast-forward, no force needed).
@@ -205,7 +205,7 @@ the junction before removing the worktree** — this project's memory already na
   glob. Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (currently 588) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
+  (currently 590) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
   "SHIPPED" claim in this doc or decisions.md.
 
 ---
@@ -219,8 +219,8 @@ the junction before removing the worktree** — this project's memory already na
 | Governing programme plan (phases, N-items, live status) | `~/.claude/plans/go-track-1b-playful-hamster.md` (updated this session — N3, Phase 4) |
 | THE migration triad — survey/fix/gate | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
 | THE GOVERNING SPEC for this track | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| Decisions (D-numbered) | `decisions.md` — D587 is this session; D586/D585/D584/D583 are recent siblings |
-| The new shared-panel-schema gate | `plugins/sgs-blocks/scripts/check-shared-panel-schema.js` — `--survey`/`--check`/`--self-test`, advisory in `prebuild`, 26 untriaged findings |
+| Decisions (D-numbered) | `decisions.md` — D590 is this session; D589/D588/D587 are recent siblings |
+| The new shared-panel-schema gate | `plugins/sgs-blocks/scripts/check-shared-panel-schema.js` — `--survey`/`--check`/`--self-test`, BLOCKING in `prebuild` since D589, 0 findings |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
