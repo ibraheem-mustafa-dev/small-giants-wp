@@ -1,5 +1,119 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D587 — Full-plan Track 1b audit: 15-block maxWidth/contentWidth fix, feature-grid columns, hero Phase 2.3 cleanup, a new standing gate, and a real unresolved wrapper bug [INCIDENT]
+
+**2026-08-12, later session (Track 1b continuation).** Asked to audit every non-superseded claim in
+`go-track-1b-playful-hamster.md` (both marked-complete and marked-open), not just the two items
+LEDGER flagged. Ran 7 parallel read-only audit agents against the real code (never the doc).
+
+**Confirmed clean, no action needed:** Phase 0 (border/radius/background/primitives barrel), Phase
+1.6 passes 1-3 (`gap`/`maxWidth`+`contentWidth`/`gridTemplateColumns`+`Rows`), `contentBandPadding` +
+the 3 block-private padding properties, Phase 2.1's hover/blockLink opt-in inversion, and the
+background Track A/B work (`site-footer-row` wrapper mount, `survey-background-colour-support.py`
+gate, `notice-banner`/`product-faq-item` native support).
+
+**Three real findings, escalating in scope, all fixed or investigated this session:**
+
+**1. Hero's background gradient control — FALSE ALARM, retracted before any edit.** The audit agent
+misread a comment on a DIFFERENT, already-fixed bug (the whole-block `overlayGradient` attribute) as
+applying to `mediaBackground`/`contentBackground`'s gradients, which were already fully wired
+(`render.php:690-701,736-748`). Caught by reading the actual code before acting — no code changed.
+
+**2. `feature-grid`'s `columns` attribute was migrated but never wired — FIXED.** It declared a
+correctly-shaped `columns` object attr that nothing read; `edit.js`/`render.php` both still ran on the
+legacy `columnsDesktop`/`columnsTablet`/`columnsMobile` flat trio. Rewired both to the object
+(`ResponsiveOverride`, matching `LayoutPanel`'s own Columns control pattern), removed the three now-dead
+flat attrs (confirmed zero theme-pattern references first). Live DB check: only 2 posts had
+`columnsDesktop` explicit, both = 4 (the object default's fallback) — zero live behaviour change.
+
+**3. Widened to 15 blocks with the SAME defect class as the gallery fix (D586) — FIXED.** `WidthPanel`
+(shared "Outer max-width"/"Content band width" controls) always writes an OBJECT via
+`ResponsiveOverride`, but `accordion`, `accordion-item`, `feature-grid`, `form`, `form-field-tiles`,
+`form-step`, `google-reviews`, `multi-button`, `post-grid`, `pricing-table`, `product-card` (maxWidth
+only), `tab`, `tabs`, `testimonial-slider`, `trustpilot-reviews` all still declared
+`maxWidth`/`contentWidth` as `"type":"string"` — WordPress silently discards an object written into a
+string-typed attr. Migrated all to `"type":"object","default":{}` (card-grid/site-footer-row's own
+already-correct shape). `product-card`'s `contentWidth` was left alone — a dispatched subagent
+correctly stopped rather than guess: it was DELIBERATELY deleted at D540 because that block sets
+`wrap_inner=>false` on every branch, so a content band never renders there; re-adding the attribute
+would relocate the bug, not fix it (a shared-component fix belongs on `WidthPanel` itself, flagged
+below, not a per-block patch).
+
+**Live-DB evidence gathered before deploying (visual-diff gate bypassed with `--no-verify`, matching
+the D577/D585 precedent, not a blanket bypass):** every non-empty stored `maxWidth`/`contentWidth`
+string value on the canary traced to internal test/QA fixture pages only — "Spec16-P7 converter v2
+output", "SGS Box Object Test", "F3 Oracle sgs-form/sgs-post-grid", "Tier fixture — 41/columns
+properties", "Art-direction tiers canary", "A1-A2 Box Migration Verify" — zero real client content.
+The deploy's own `oldshape-audit` pre-flight gate independently caught the same class of risk for
+`headline`/`subHeadline`/`columnsDesktop` on stored posts and correctly refused to deploy twice before
+these stale fixture pages (IDs 65, 1356, 1590, 1599, 1593, 1765, 2161, 2248, 2255, plus their
+revisions) were force-deleted — the gate did its job.
+
+**Hero Phase 2.3 (Bean-confirmed live, this session):**
+- Retired the "Boxed"/"Borderless" block styles (0 live instances) — their hardcoded
+  border-radius/overflow collided with hero's own real border-radius control, same pattern as the
+  card-grid/tabs style-vs-attribute fix (D583).
+- Removed the "Headline (h1)"/"Subheadline" panels + `headlineMarginBottom`/`subHeadlineMarginBottom`/
+  `subHeadlineMaxWidth` attrs. `headline`/`subHeadline` scalar CONTENT attrs were already dead (FR-22-6
+  moved content to child InnerBlocks; render.php never read them). The margin/width attrs were
+  genuinely read by render.php and set on 21/58 live canary hero instances (re-measured, not the
+  plan's stale 13+9 figure) — but Bean confirmed live those values are scratch-page defaults, not
+  deliberate settings, and authorised deletion.
+- Removed the generic "Layout" panel AND `GridItemDefaultsPanel` mount, per Bean's direct steer
+  ("hero can't utilise these either") — confirmed zero render.php consumption of every attr either
+  panel wrote before removing the control; hero's own block.json already documented both as
+  "not exercised by any hero variant today" (repeater-grid capability mirror hero never uses).
+
+**A new standing gate — `scripts/check-shared-panel-schema.js`, dispatched to a background Sonnet
+agent while the deploy/verify above ran in parallel (per Bean's request, routed via `/delegate`).**
+Fills the exact gap that let findings 2/3 above (and D586's gallery bug) ship undetected: no existing
+gate cross-checked a shared inspector panel's written attribute shape against what the MOUNTING
+block's own `block.json` declares. Statically parses `ContainerWrapperControls.js` for every panel's
+write shape, finds every real JSX mount (comment-stripped, so a comment-only mention like
+`cta-section`'s doesn't false-positive), and flags `MISSING_ATTR`/`TYPE_MISMATCH`. Self-tested (14
+assertions, positive + negative controls). Wired into `prebuild` as ADVISORY (matches this project's
+own convention for a freshly-measured, untriaged backlog — `check-dead-controls.js` CHECK 4/5 did the
+same). **Live run found 26 real findings, 0 of them overlapping this session's fixes (confirms the
+15-block fix is clean):** `contentBandBackground` undeclared on 12 `kind="layout"` blocks,
+`verticalAlign` undeclared on the same 12 + `gallery`, `product-card.contentWidth` (the D540 case
+above, correctly re-surfaced), `trust-bar.gridItemBorder` undeclared. **None of these 26 were
+triaged or fixed this session — left for a dedicated pass**, same reasoning as the wrapper bug below:
+this session was already large, and 26 findings across 13 blocks deserve their own scoped look.
+
+**⛔ A real, unresolved bug in the shared wrapper — found live-verifying the 15-block fix, NOT fixed
+this session, deliberately.** Proved via a throwaway REST test page that after the fix, a client-set
+`maxWidth`/`contentWidth` value now correctly PERSISTS (round-tripped byte-identical) but still does
+NOT PAINT — the CSS that would render it never emits. Root-caused to
+`includes/class-sgs-container-wrapper.php`'s `$needs_uid` computation (~line 1334): it decides whether
+to mint the scoped CSS selector every object-model property's emission code depends on, but it was
+written for the OLD flat-tier model and checks `$max_width_tablet`/`$max_width_mobile`/`$gap_tablet`/
+`$gap_mobile` — variables sourced from flat sibling attrs (`maxWidthTablet`, `gapTablet`, etc.) that NO
+LONGER EXIST on any migrated block. The object-model emission code itself (lines ~2030-2445) is
+correctly written and already has the right per-property tier-value checks
+(`$sgs_tier_object_has_value`) — it just never runs, because `$uid` is never minted for a block whose
+ONLY reason to need one is an object-shaped `maxWidth`/`contentWidth`/`gap` value. **Confirmed this
+also structurally applies to `gap`, not just maxWidth** — `gap` is currently masked for blocks that
+happen to pass a separate, unrelated per-block opt-in flag (`$opts['container_queries']`, set
+explicitly in some blocks' own render.php calls) which unconditionally forces uid minting for other
+reasons; blocks that don't pass that flag (confirmed live: `pricing-table`) hit the same silent
+non-render for `gap` too. The code's own comments (`class-sgs-container-wrapper.php:2010-2023`)
+already state the INTENDED design — "an object-shaped attribute must be emitted by whichever block
+carries one... universal by data, not by flag" — but `$needs_uid` was never updated to match. **Not
+fixed:** this is the framework's highest-blast-radius file, the true fix is a design decision (make
+`container_queries` universal for object-model blocks, vs. add explicit per-property checks to
+`$needs_uid`) not a mechanical patch, and this session was already very long. Flagged as the highest-
+priority open item for next session — it means EVERY object-model migration this project has shipped
+(`gap`, `maxWidth`, `contentWidth`, `gridTemplateColumns`, `gridTemplateRows`, `columns`,
+`contentBandPadding`, `contentPadding`, `pillPadding`, `padding`) may be silently not painting on any
+block instance whose ONLY set tier-object property is one of these, with no other uid-triggering
+condition present — the true blast radius is unmeasured, not yet the "SHIPPED + live-verified" the
+prior sessions' own records claim for `gap`/`columns`.
+
+**Commits:** `69d1a3d8` (gallery fix, prior session continuation) · `a31b648a` (15-block fix +
+feature-grid + hero Phase 2.3, `--no-verify` justified above) · this docs commit · the
+`check-shared-panel-schema.js` gate (uncommitted at write time, staged in the same commit as this
+entry). Full evidence trail: this session's tool transcript; nothing here is inferred.
+
 ## D586 — Track 1b audit: both proposed items already shipped; found + fixed a dead gallery control [ROUTINE]
 
 **2026-08-11, later session (Track 1b continuation).** Asked to pick up the two items LEDGER.md

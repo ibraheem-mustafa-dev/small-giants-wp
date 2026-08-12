@@ -9,17 +9,36 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-11 (session 12, Track 1b continuation). Audited the plan's remaining open items — both
-were already done by a concurrent session. Found and fixed one new dead control along the way.**
+**2026-08-12 (session 13, Track 1b continuation). Full audit of every claim in the governing plan
+doc, not just the two LEDGER flagged. Found and fixed a much bigger version of the same bug class —
+then found a real, deeper problem underneath it that's NOT yet fixed.**
 
-- Checked the two things LEDGER said were still open for this track (card-grid's storage shape,
-  contentBandPadding + 3 padding properties). Both were already shipped — verified directly
-  against the block files, not against the doc, which is what the doc itself asks for.
-- While checking, found a real bug of the same kind as last session's photo-crop fix: the Gallery
-  block's "Content band" panel (background colour + padding, ~13 fields) wrote to settings that
-  don't exist on that block, so every value a client entered there silently vanished. Removed it —
-  it never applied to Gallery in the first place. Full detail: `decisions.md` D586.
-- Deployed to the canary, pushed to `main`.
+- Ran 7 parallel checks against every claim in the plan (both "done" and "still open") straight
+  against the real code, not the doc. Most of it held up clean.
+- Found the SAME "control writes to a setting that doesn't work" bug from last session, but on 15
+  blocks at once, not 1: the shared "Outer max-width"/"Content band width" control writes a
+  structured value, but 15 blocks (Tabs, Pricing Table, Forms, Post Grid, and 11 others) still
+  declared that setting in the OLD flat shape — so WordPress silently threw away anything a client
+  set there. Fixed all 15, plus a near-identical bug on Feature Grid's column-count setting.
+- Cleaned up three things on the Hero block per your direct steer: retired the unused
+  "Boxed"/"Borderless" style choice (nothing live used it), removed the Headline/Subheadline margin
+  controls (their values on 21 live pages turned out to be scratch-page defaults, confirmed by you,
+  not real content), and removed the generic "Layout" panel + a repeater-grid panel that don't apply
+  to Hero at all.
+- **While proving the max-width fix actually works live, found something bigger: fixing the
+  "setting gets thrown away" bug doesn't fully fix it.** The value now saves correctly, but it still
+  doesn't show up on the page for some blocks — traced to a genuine bug in the shared engine that
+  decides when to generate the styling code, which was written before this "structured value"
+  system existed and never got updated for it. This is NOT fixed yet — it touches the single most
+  shared, highest-risk file in the whole framework, and figuring out the right fix needs a proper
+  look, not a rushed patch at the end of a long session. Full detail below and in `decisions.md`
+  D587 — this is the top priority for next session.
+- Built a permanent automated check for the "shared control vs. what the block actually declares"
+  bug class (the same shape as last session's crop-control bug and this session's max-width bug) —
+  it immediately found 26 more real instances across 13 blocks that were NOT fixed this session
+  (deliberately left for their own pass; the check is advisory, not blocking, until they're triaged).
+- Deployed to the canary (after cleaning up 10 leftover internal test pages the deploy's own safety
+  check correctly caught as being in the way), pushed to `main`.
 
 **2026-08-11 (session 11, Track 1b continuation). The broken photo-crop control is fixed.**
 
@@ -133,7 +152,9 @@ the junction before removing the worktree** — this project's memory already na
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `69d1a3d8` at session end (D586, gallery ContentBandPanel fix). ⛔ **This will drift — run `git log -1` AND
+- **Branch:** `main`, HEAD to be set by this session's final commit (D587 — 15-block maxWidth/
+  contentWidth fix + feature-grid columns + hero Phase 2.3 + the new check-shared-panel-schema.js
+  gate). ⛔ **This will drift — run `git log -1` AND
   `git status` AND `git branch --show-current`, don't trust this line.** Local and `origin/main`
   are in sync as of this HEAD (verified via `git push`, fast-forward, no force needed).
   Commit by EXACT PATH — this checkout is shared with at least one other concurrent session.
@@ -149,7 +170,7 @@ the junction before removing the worktree** — this project's memory already na
   glob. Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (currently 586) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
+  (currently 587) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before trusting any
   "SHIPPED" claim in this doc or decisions.md.
 
 ---
@@ -163,26 +184,43 @@ the junction before removing the worktree** — this project's memory already na
 | Governing programme plan (phases, N-items, live status) | `~/.claude/plans/go-track-1b-playful-hamster.md` (updated this session — N3, Phase 4) |
 | THE migration triad — survey/fix/gate | `plugins/sgs-blocks/CLAUDE.md` §"Tier-object migration triad" + §"S4" |
 | THE GOVERNING SPEC for this track | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| Decisions (D-numbered) | `decisions.md` — D585 is this session; D584/D583/D581/D580/D579 are recent siblings |
+| Decisions (D-numbered) | `decisions.md` — D587 is this session; D586/D585/D584/D583 are recent siblings |
+| The new shared-panel-schema gate | `plugins/sgs-blocks/scripts/check-shared-panel-schema.js` — `--survey`/`--check`/`--self-test`, advisory in `prebuild`, 26 untriaged findings |
 | Spec roster + DEAD-never-cite list | `specs/README.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Blockers
 
-- None for this track's own work — the imageControls fix is closed and shipped.
+- None for this session's shipped work (attribute storage fix, feature-grid, hero Phase 2.3) — all
+  deployed and live-verified. The wrapper CSS-emission bug below is a separate, NOT-yet-fixed item.
+
+## Open — TOP PRIORITY for next session
+
+- **`$needs_uid` in `class-sgs-container-wrapper.php` doesn't recognise object-model tier attributes
+  as a reason to mint a scoped CSS selector.** Confirmed live: a client-set `maxWidth`/`contentWidth`
+  now correctly SAVES (this session's fix) but still doesn't PAINT for a block with no other
+  uid-triggering condition — the correctly-written emission code at lines ~2030-2445 never runs.
+  Same structural gap confirmed for `gap` (currently masked on some blocks by an unrelated per-block
+  `container_queries` opt-in flag that happens to force uid-minting for other reasons). **True blast
+  radius unmeasured** — potentially affects every object-model property (`gap`, `maxWidth`,
+  `contentWidth`, `gridTemplateColumns`, `gridTemplateRows`, `columns`, `contentBandPadding`,
+  `contentPadding`, `pillPadding`, `padding`) on any block whose ONLY set tier property is one of
+  these. Needs a design decision (make `container_queries` universal for object-model blocks vs. add
+  explicit per-property checks) before any fix — highest-blast-radius file in the framework. Full
+  mechanism + evidence: `decisions.md` D587.
+- **26 findings from the new `check-shared-panel-schema.js` gate, untriaged.** `contentBandBackground`
+  undeclared on 12 `kind="layout"` blocks, `verticalAlign` undeclared on the same 12 + `gallery`,
+  `trust-bar.gridItemBorder` undeclared, and `product-card.contentWidth` (a re-surfacing of the
+  already-correctly-resolved D540 case — do NOT re-add the attribute; the real fix is making
+  `WidthPanel` itself skip the "Content band width" sub-control for blocks that can't use it, a
+  shared-component change). Gate is advisory (non-blocking) until these are triaged.
 
 ## Open — carried, not ours to close
 
 - **`testimonial`/`image-sequence`'s `imageControls` declarations** — real crop scenario, not
   converted (each needs its own per-item design decision — testimonial has 4 simultaneous media
   roles, image-sequence's crop target is a canvas, not an `<img>`). Not scheduled.
-- **The `imageControls`-specific effect-verification gate** (doctrine Part 6) — still never built;
-  this session's fix was a manual sweep. **Not the same as the general gate class itself** — a first
-  instance shipped same day for a different capability (`survey-background-colour-support.py`, see
-  above and `go-track-1b-playful-hamster.md` Phase 4) — worth checking whether that script's pattern
-  can be reused/extended for `imageControls` rather than building a second one from scratch.
-- **The `npm run build` gradients-mutator effect** — hit 3 times this session; likely lead
-  (`survey-background-colour-support.py`) named above, not yet confirmed as the actual writer.
+- **The `imageControls`-specific effect-verification gate** (doctrine Part 6) — still never built.
 - **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
 - **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation
   toggle; needs its own design gate. Not started.
