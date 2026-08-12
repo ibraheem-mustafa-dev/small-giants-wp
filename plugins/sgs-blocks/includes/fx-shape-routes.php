@@ -343,6 +343,27 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 
 	$target_id = \wp_unique_id( 'sgs-fx-shape-' );
 
+	/*
+	 * ANCHOR POSITIONING (D442 follow-up, 2026-08-12) — the same fix as
+	 * `fx-path-routes.php`'s route SVG, applied here. Both the visible FROM
+	 * shape and the hidden TO shape were sized via `position:absolute;
+	 * inset:0` against their DOM PARENT, never against the decorated
+	 * block's own box — see this file's docblock's "NOT SHARED" note for why
+	 * the fix is duplicated rather than imported. `sgs_scope_class_for_root()`
+	 * reuses a uid class another injector already minted on this root this
+	 * render (hover-effects / parallax / image-controls) or mints a fresh
+	 * one, so the anchor name is unique per block instance.
+	 */
+	$root_tag_html = sgs_extract_root_opening_tag( $rest );
+	$scope_class   = sgs_scope_class_for_root( $root_tag_html, 'sgs-fxshape' );
+	$anchor_name   = '--sgs-fx-anchor-' . $scope_class;
+	$target_class  = 'sgs-fx-anchor-target-' . \substr( \md5( $scope_class ), 0, 8 );
+
+	if ( ! \preg_match( '/(?:^|\s)' . \preg_quote( $scope_class, '/' ) . '(?:\s|$)/', (string) $processor->get_attribute( 'class' ) ) ) {
+		$existing_class = (string) $processor->get_attribute( 'class' );
+		$processor->set_attribute( 'class', \trim( $existing_class . ' ' . $scope_class ) );
+	}
+
 	$visual_attrs = ' data-sgs-fx="morph" data-sgs-fx-morph-target="#' . \esc_attr( $target_id ) . '"';
 	if ( '' !== $trigger ) {
 		$visual_attrs .= ' data-sgs-fx-trigger="' . \esc_attr( $trigger ) . '"';
@@ -374,18 +395,30 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 	 * `<path id="…">`, which is why only the source end was broken.
 	 */
 	$visual_svg = \sprintf(
-		'<svg class="sgs-fx-shape-visual" viewBox="%s" aria-hidden="true" focusable="false"><path%s d="%s"></path></svg>',
+		'<svg class="sgs-fx-shape-visual %s" viewBox="%s" aria-hidden="true" focusable="false"><path%s d="%s"></path></svg>',
+		\esc_attr( $target_class ),
 		\esc_attr( FX_SHAPE_VIEWBOX ),
 		$visual_attrs,
 		\esc_attr( $resolved['from']['d'] )
 	);
 
 	$target_svg = \sprintf(
-		'<svg class="sgs-fx-shape-target" aria-hidden="true" focusable="false" viewBox="%s"><path id="%s" d="%s"></path></svg>',
+		'<svg class="sgs-fx-shape-target %s" aria-hidden="true" focusable="false" viewBox="%s"><path id="%s" d="%s"></path></svg>',
+		\esc_attr( $target_class ),
 		\esc_attr( FX_SHAPE_VIEWBOX ),
 		\esc_attr( $target_id ),
 		\esc_attr( $resolved['to']['d'] )
 	);
+
+	$content = $head . $processor->get_updated_html() . $visual_svg . $target_svg;
+
+	// Per-instance anchor VALUES via the shared no-inline mechanism (Spec 32
+	// FR-32-11) — see fx-path-routes.php's identical comment for the full
+	// rationale. Both the visual and target SVGs share ONE position-anchor
+	// value (they both anchor to the same block box), so one target class
+	// covers both elements.
+	$content = sgs_append_scoped_var_style( $content, $scope_class, array( 'anchor-name:' . $anchor_name ) );
+	$content = sgs_append_scoped_var_style( $content, $target_class, array( 'position-anchor:' . $anchor_name ) );
 
 	/*
 	 * Appended AFTER the block's root element, as siblings — never wrapped
@@ -393,10 +426,10 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 	 * `fx-path-routes.php` appends rather than wraps: inserting into the
 	 * block's own grid/flex relationship with its parent would change the
 	 * layout of a page that only asked for an effect. The visible shape is
-	 * positioned to cover the block's own box via
-	 * `assets/css/fx-shape-routes.css`, which uses the same `:has()`
-	 * local-positioned-ancestor fix `fx-motion-path.css` established.
+	 * positioned to cover the block's own box via CSS Anchor Positioning
+	 * (`assets/css/fx-shape-routes.css`) — see that file for the mechanism
+	 * and the `@supports` fallback for browsers without it.
 	 */
-	return $head . $processor->get_updated_html() . $visual_svg . $target_svg;
+	return $content;
 }
 \add_filter( 'render_block', __NAMESPACE__ . '\\sgs_expand_fx_shape_pair', 11, 1 );

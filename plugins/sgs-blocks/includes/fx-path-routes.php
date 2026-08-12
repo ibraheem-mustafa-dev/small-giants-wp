@@ -320,18 +320,60 @@ function sgs_expand_fx_path_route( string $block_content ): string {
 
 	$processor->set_attribute( 'data-sgs-fx-motion-path-target', '#' . $id );
 
+	/*
+	 * ANCHOR POSITIONING (D442 follow-up, 2026-08-12) — closes the
+	 * oversized-route-box defect this file's docblock has carried as
+	 * "known-open" since D442. The route SVG was sized via
+	 * `position:absolute; inset:0` against its DOM PARENT (whatever the
+	 * block happens to sit inside — `.entry-content`, a container's shared
+	 * child area…), never against the travelling block's OWN box. CSS
+	 * Anchor Positioning lets the SVG size itself against the block's box
+	 * directly, with no DOM-ancestry requirement (the SVG does not need to
+	 * be a descendant of the block it anchors to — it already isn't, it's
+	 * appended as a sibling below).
+	 *
+	 * `sgs_scope_class_for_root()` (helpers-scoped-instance-vars.php) is the
+	 * existing reuse-or-mint mechanism: if another injector already gave
+	 * this root a `sgs-<slug>-<8hex>` uid class this render (hover-effects /
+	 * parallax / image-controls), it's reused rather than minting a second
+	 * one. The anchor name is derived from that class, so it is unique PER
+	 * BLOCK INSTANCE — two travelling blocks on the same page never collide.
+	 */
+	$root_tag_html = sgs_extract_root_opening_tag( $rest );
+	$scope_class   = sgs_scope_class_for_root( $root_tag_html, 'sgs-fxpath' );
+	$anchor_name   = '--sgs-fx-anchor-' . $scope_class;
+	$target_class  = 'sgs-fx-anchor-target-' . \substr( \md5( $scope_class ), 0, 8 );
+
+	if ( ! \preg_match( '/(?:^|\s)' . \preg_quote( $scope_class, '/' ) . '(?:\s|$)/', (string) $processor->get_attribute( 'class' ) ) ) {
+		$existing_class = (string) $processor->get_attribute( 'class' );
+		$processor->set_attribute( 'class', \trim( $existing_class . ' ' . $scope_class ) );
+	}
+
 	$svg = \sprintf(
 		// preserveAspectRatio="none" REMOVED 2026-08-01 (D442). It stretched the route's
 		// authored viewBox independently on each axis, so the traveller inherited a skewed,
 		// non-uniform scale — measured live as transform matrix coefficients a=0.0937 / d=0.0937
 		// against b=-0.9956 / c=0.9956 on the canary. Omitting the attribute restores the SVG
-		// default (xMidYMid meet): uniform scale, no skew. This fixes the SKEW only; the
-		// separate oversized-route-box defect is tracked as its own open item.
-		'<svg class="sgs-fx-path-route" aria-hidden="true" focusable="false" viewBox="%s"><path id="%s" d="%s"></path></svg>',
+		// default (xMidYMid meet): uniform scale, no skew.
+		'<svg class="sgs-fx-path-route %s" aria-hidden="true" focusable="false" viewBox="%s"><path id="%s" d="%s"></path></svg>',
+		\esc_attr( $target_class ),
 		\esc_attr( $resolved['view_box'] ),
 		\esc_attr( $id ),
 		\esc_attr( $resolved['d'] )
 	);
+
+	$content = $head . $processor->get_updated_html() . $svg;
+
+	// The anchor-name/position-anchor VALUES are per-instance (the whole
+	// point — see above), so they cannot live in the static stylesheet.
+	// Sized via the shared no-inline mechanism (Spec 32 FR-32-11): a scoped
+	// `<style>` tag, never an inline `style=""` attribute. The generic
+	// `top:anchor(top)` / `width:anchor-size(width)` rules (identical across
+	// every instance) stay in assets/css/fx-motion-path.css, gated behind
+	// `@supports (anchor-name: …)` with a hide-cleanly fallback for browsers
+	// without support.
+	$content = sgs_append_scoped_var_style( $content, $scope_class, array( 'anchor-name:' . $anchor_name ) );
+	$content = sgs_append_scoped_var_style( $content, $target_class, array( 'position-anchor:' . $anchor_name ) );
 
 	/*
 	 * Appended AFTER the block's root element, as a sibling — never wrapped
@@ -341,6 +383,6 @@ function sgs_expand_fx_path_route( string $block_content ): string {
 	 * absolutely positioned out of flow (assets/css/fx-motion-path.css) and
 	 * costs the layout nothing.
 	 */
-	return $head . $processor->get_updated_html() . $svg;
+	return $content;
 }
 \add_filter( 'render_block', __NAMESPACE__ . '\\sgs_expand_fx_path_route', 11, 1 );

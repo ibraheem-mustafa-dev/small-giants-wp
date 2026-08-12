@@ -29,13 +29,17 @@
  * (b=-0.9956, c=0.9956). The SVG now uses the default `xMidYMid meet`:
  * uniform scale, no skew.
  *
- * ⚠ KNOWN-OPEN, DO NOT ASSUME FIXED: the ancestor-sizing model above is only
- * correct when the nearest positioned ancestor IS the intended section. On the
- * Wave C canary the traveller is NOT inside an `.sgs-container`, so the route
- * resolved against `.entry-content` and measured 1200 x 7471.66px — a route box
- * the height of the whole page, which is the separate ~2,705px initial-jump
- * defect. Removing the stretch did NOT fix that, and was never expected to.
- * The two defects share a file, not a cause.
+ * ⚠ FIXED 2026-08-12 (D442 follow-up) — the ancestor-sizing model this
+ * paragraph originally described (`position:absolute; inset:0` against the
+ * SVG's DOM PARENT) is GONE. On the Wave C canary the traveller was NOT
+ * inside an `.sgs-container`, so the route resolved against `.entry-content`
+ * and measured 1200 x 7471.66px — a route box the height of the whole page.
+ * Removing the stretch (this docblock's D442 entry above) did NOT fix that,
+ * and was never expected to — the two defects shared a file, not a cause.
+ * THIS defect is now closed via CSS Anchor Positioning — see the rule below
+ * for the mechanism and the `@supports` fallback. Left in place as the
+ * historical record of what was measured and ruled out; do not re-attempt
+ * the two CSS-only mitigations logged further down, they were proven no-ops.
  *
  * ⚠ AMENDED 2026-08-01 (post-D442) — MEASURED: this IS the same root cause as
  * the owner's separately-reported "the travelling text ends up hidden below
@@ -269,11 +273,32 @@
 	}
 }
 
+/*
+ * ── ROUTE-BOX SIZING (D442 follow-up, 2026-08-12) ───────────────────────────
+ *
+ * REPLACES the `position:absolute; inset:0; width:100%; height:100%` sizing
+ * this rule carried until now. That sized the SVG against its DOM PARENT —
+ * whatever the travelling block happens to sit inside (`.entry-content`, a
+ * container's shared child area) — never against the block's OWN box. This
+ * is the "known-open" defect the docblock above has carried since D442,
+ * measured live at 1200x7934px against a traveller's real ~1200x42px box.
+ *
+ * FIXED via CSS Anchor Positioning: `includes/fx-path-routes.php` mints an
+ * `anchor-name` on the travelling block's own root (via a scoped `<style>`
+ * tag, Spec 32 FR-32-11 — never inline) and a matching `position-anchor` on
+ * this SVG. `anchor()`/`anchor-size()` then resolve this element's box
+ * directly against THAT anchor, with no DOM-ancestry requirement — the SVG
+ * does not need to be inside the block it anchors to (it is appended as a
+ * sibling, per the file docblock's wrap-vs-append rule).
+ *
+ * `position-anchor` and `anchor-name` are harmless no-ops in a browser that
+ * doesn't understand them, so they can stay unconditional. The properties
+ * that actually SIZE the box (`top`/`left`/`anchor-size()`) are gated behind
+ * `@supports`, because an unsupported browser must not fall back to the
+ * legacy full-ancestor sizing this replaced — see the fallback block below.
+ */
 .sgs-fx-path-route {
 	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
 	overflow: visible;
 	visibility: hidden;
 	pointer-events: none;
@@ -282,4 +307,29 @@
 .sgs-fx-path-route path {
 	fill: none;
 	stroke: none;
+}
+
+@supports ( anchor-name: --sgs-fx-anchor-support-probe ) {
+	.sgs-fx-path-route {
+		top: anchor( top );
+		left: anchor( left );
+		width: anchor-size( width );
+		height: anchor-size( height );
+	}
+}
+
+/*
+ * Fallback for browsers without CSS Anchor Positioning support (~16-19% of
+ * traffic at time of writing, caniuse "css-anchor-positioning" — verify live
+ * before relying on this figure). A missing decorative traveller is strictly
+ * better than the oversized/skewed box this file shipped before D442, or the
+ * broken sizing an unsupported `anchor()` would otherwise resolve to. Only
+ * the decorative SVG disappears — the block's own real content (heading,
+ * image, whatever it decorates) is untouched by this rule and keeps
+ * rendering normally.
+ */
+@supports not ( anchor-name: --sgs-fx-anchor-support-probe ) {
+	.sgs-fx-path-route {
+		display: none;
+	}
 }

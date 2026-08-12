@@ -21,15 +21,16 @@
  * scales uniformly and centres, so a circle stays a circle regardless of the
  * box it fills.
  *
- * WHY `:has(> .sgs-fx-shape-visual)` gets `position: relative` — the D435
- * cause-2 fix, restated for this file: the shape is appended as a plain
- * sibling with no positioning of its own, so `position: absolute` resolves
- * against the nearest ANCESTOR that already has one. For an `sgs/container`
- * (or any SGS wrapper) that ancestor is already positioned and correct; for a
- * block dropped straight into `.entry-content` with none, the browser would
- * otherwise climb to a page-length ancestor and produce a huge false shape
- * box. This rule gives the shape's own DOM parent a LOCAL positioned context
- * — a no-op for anything already positioned, load-bearing for anything not.
+ * ⚠ REMOVED 2026-08-12 (D442 follow-up) — this docblock previously claimed
+ * `:has(> .sgs-fx-shape-visual){position:relative}` was "load-bearing" for
+ * sizing the shape against its parent. MEASURED FALSE: `decisions.md` D442
+ * proved the identical mitigation a no-op on `fx-path-routes.php`'s route
+ * box, because the SVG's parent is ALREADY `.entry-content` (or whatever
+ * ancestor the block sits in) — forcing it to `position:relative` doesn't
+ * shrink the box, it only changes WHICH oversized element becomes the
+ * reference box. The rule never fixed the actual defect (sizing against the
+ * block's own box, not an ancestor); it is deleted rather than kept as inert
+ * dead weight. Sizing now uses CSS Anchor Positioning instead — see below.
  *
  * WHY THE VISIBLE SHAPE PAINTS ON TOP OF THE BLOCK'S OWN CONTENT — the
  * multiple-SVG rule (PHP docblock): this file never hides or searches the
@@ -39,11 +40,20 @@
  * flourish (matches the `logo-icon` preset's own framing).
  */
 
+/*
+ * ── SHAPE-BOX SIZING (D442 follow-up, 2026-08-12) ───────────────────────────
+ *
+ * REPLACES `position:absolute; inset:0; width:100%; height:100%`, which sized
+ * both SVGs against their DOM PARENT — never against the decorated block's
+ * own box. Same defect, same fix, as `fx-motion-path.css`'s route box: CSS
+ * Anchor Positioning, minted per-instance by `includes/fx-shape-routes.php`
+ * via a scoped `<style>` tag (Spec 32 FR-32-11 — never inline). `anchor-name`
+ * / `position-anchor` are harmless no-ops on browsers that don't understand
+ * them; the properties that actually size the box are gated behind
+ * `@supports`, with a hide-cleanly fallback below.
+ */
 .sgs-fx-shape-visual {
 	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
 	overflow: visible;
 	pointer-events: none;
 }
@@ -53,15 +63,8 @@
 	stroke: none;
 }
 
-:has(> .sgs-fx-shape-visual) {
-	position: relative;
-}
-
 .sgs-fx-shape-target {
 	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
 	overflow: visible;
 	visibility: hidden;
 	pointer-events: none;
@@ -70,4 +73,27 @@
 .sgs-fx-shape-target path {
 	fill: none;
 	stroke: none;
+}
+
+@supports ( anchor-name: --sgs-fx-anchor-support-probe ) {
+	.sgs-fx-shape-visual,
+	.sgs-fx-shape-target {
+		top: anchor( top );
+		left: anchor( left );
+		width: anchor-size( width );
+		height: anchor-size( height );
+	}
+}
+
+/*
+ * Fallback for browsers without CSS Anchor Positioning support. A missing
+ * decorative shape is strictly better than the oversized/mispositioned box
+ * this file shipped before D442 — only the decoration disappears, the
+ * block's own real content is untouched by this rule.
+ */
+@supports not ( anchor-name: --sgs-fx-anchor-support-probe ) {
+	.sgs-fx-shape-visual,
+	.sgs-fx-shape-target {
+		display: none;
+	}
 }
