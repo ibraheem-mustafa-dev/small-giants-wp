@@ -350,20 +350,6 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 
 *61 open entries (re-derived 2026-07-31 from a `**Bucket:** framework` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
-### P-NAV-DRAWER-MEGA-MENU-INLINE — mega-menu items inside the drawer still degrade to a plain link
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-14
-
-The 2026-08-13/14 nav-drawer submenu build (D616) gave nested menu items real accordion/drill-down
-behaviour, but a MEGA-MENU item specifically (`sgs/mega-panel` content, not a plain nested link)
-still collapses to a single top-level link inside the drawer — desktop already renders the real
-mega panel inline via `sgs/nav-menu`'s bar renderer; the drawer needs its own equivalent (FR-36-5).
-Deliberately scoped OUT of the submenu build, not silently dropped — the submenu build's own report
-names it. Touches `sgs/nav-menu`, a shared render surface on every header/drawer on every site — per
-this project's binding rules, needs its own design gate before building (Bean-confirmed 2026-08-14:
-do NOT rush this at session-close).
-
-**Trigger:** Its own scoped session, design-gated first per the shared-render-surface rule.
-
 ### P-9 — Remaining bucket-2 blocks + timeline rework
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-05-07
 

@@ -49,7 +49,7 @@ quoted about it here or in a prior LEDGER snapshot.
 | `df8573ac` | `sgs/testimonial.ratingSize` + `sgs/table-of-contents.activeLinkColour` real editor preview |
 | `3e86f696` | `sgs/modal.overlayColour`/`overlayOpacity`, `sgs/mega-panel.viewAllPlacement`, `sgs/product-faq-item.isOpen` real editor preview |
 | `6e82ae9c` | `sgs/collapsible-text.collapsedLines` real editor preview (line-clamp) |
-| `d5baa113` | D615/D616 recorded; `P-NAV-DRAWER-MEGA-MENU-INLINE` parked; 4 untracked ledger-rotate snapshots swept in |
+| `d5baa113` | D615/D616 recorded; 4 untracked ledger-rotate snapshots swept in (a parking entry added in this commit was removed in a follow-up per Bean — see "Open" below) |
 | `f4ac832d` | `sgs/button.iconGap` ghost DB row pruned (root cause of the 3 stale manifests); manifests regenerated clean |
 | `c5501395` | `sgs/modal.triggerColour`/`triggerBackground` + `sgs/nav-drawer.drawerBg` colourVar()→resolveColorToken() fix, live-verified with real custom colours |
 
@@ -64,9 +64,10 @@ quoted about it here or in a prior LEDGER snapshot.
   logic; this project's own doctrine is never promote a detector on the run that changed it.
   Promote on the NEXT session that runs it untouched and still gets 0. Bean confirmed 2026-08-14:
   keep it advisory for now.
-- **`P-NAV-DRAWER-MEGA-MENU-INLINE`** (parking.md) — a mega-menu item inside the drawer still
-  degrades to a plain link instead of rendering its panel inline (FR-36-5). Needs its own
-  design-gated session (shared render surface, `sgs/nav-menu`) — do not rush it.
+- **A mega-menu item inside the drawer still degrades to a plain link** instead of rendering its
+  panel inline (FR-36-5) — not tracked in parking.md (Bean: not approved for parking, will be
+  built properly when that track is reached). Touches `sgs/nav-menu`, a shared render surface —
+  needs its own design gate whenever it's picked up.
 - **2 candidate detector signals considered, not built** — a "no-ServerSideRender + no-CSS-mirror"
   block-wide exemption (built, then REVERTED — unsafe, see decisions.md D615/D616 commit message
   and the captured lesson `an-exemption-heuristic-needs-a-negative-control-proving-it-doesnt-
