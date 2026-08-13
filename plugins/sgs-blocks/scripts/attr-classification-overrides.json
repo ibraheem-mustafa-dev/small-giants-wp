@@ -2106,13 +2106,6 @@
       }
     },
     {
-      "slug": "sgs/star-rating",
-      "attr": "schemaReviewCount",
-      "fields": {
-        "role": "technical"
-      }
-    },
-    {
       "slug": "sgs/testimonial",
       "attr": "schemaEnabled",
       "fields": {
@@ -2670,6 +2663,27 @@
       "attr": "contentImpact",
       "fields": {
         "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaItemName",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "showSchema",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaReviewCount",
+      "fields": {
+        "role": "content"
       }
     }
   ]
