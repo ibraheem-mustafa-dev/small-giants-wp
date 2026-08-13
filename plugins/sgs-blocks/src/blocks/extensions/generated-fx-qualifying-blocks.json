@@ -6,6 +6,13 @@
 		"motion-path",
 		"scrub"
 	],
+	"sgs/button": [
+		"morph",
+		"motion-path",
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
 	"sgs/buybox": [
 		"carousel-loop",
 		"morph",
