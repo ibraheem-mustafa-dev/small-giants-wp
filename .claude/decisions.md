@@ -1,5 +1,62 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D616 — nav-drawer submenu build merged direct to main, not via PR [ROUTINE]
+
+**2026-08-13/14.** A Sonnet subagent built real accordion + drill-down submenu behaviour for
+`sgs/nav-drawer` (giving the previously-dormant `submenuModel` attribute real effect) on branch
+`feat/nav-drawer-submenu-accordion-drilldown`, in an isolated worktree, live-verified on
+sandybrown. This touches `sgs/nav-menu`, a shared render surface used on every header and drawer
+across every site — this project's own convention would normally route that to a PR, not a direct
+push. Bean explicitly overrode that: "this is just a temp solution and it worked, merge to main."
+Merged via `git merge --no-ff` (no conflicts — no other commit had touched nav-drawer/nav-menu
+since the branch diverged), then two follow-up fixes landed on top: `closeStyle` (a genuine
+editor-canvas gap — the preview always showed the × icon regardless of the 3-way style control)
+and `animateFrom` (baselined — animation-direction-only, no static resting state to preview).
+Residual gap, declared not silently dropped: a mega-menu item inside the drawer still degrades to
+a plain link rather than rendering its panel inline (FR-36-5, out of this build's scope).
+
+## D615 — check-editor-render-parity.js (Check A) made accurate: 50 → 0 net-new findings [ROUTINE]
+
+**2026-08-13/14.** Bean's session goal: make the editor-canvas-desync detector "100% accurate,
+fix every error it comes across." Dispatched 4 parallel agents (per-block investigation, not
+per-attribute) to read the real render.php/edit.js for all 50 net-new findings across 26 blocks
+and classify each as a genuine gap, a detector false-positive, or genuinely non-visual by design.
+
+**9 real editor-preview gaps fixed** across 10 blocks (sgs/accordion `defaultOpen`,
+sgs/collapsible-text `collapsedLines`, sgs/modal `overlayColour`/`overlayOpacity`,
+sgs/mega-panel `viewAllPlacement`, sgs/product-faq-item `isOpen`, sgs/testimonial `ratingSize`,
+sgs/table-of-contents `activeLinkColour`, sgs/form `submitColour`/`submitBackground`/
+`progressBarColour`, sgs/nav-drawer `closeStyle`) — each verified live on sandybrown before
+committing, matching this session's established pattern of proving the fix rather than trusting
+the code read.
+
+**8 real detector bugs found and fixed** (all proven against real code, not invented): (1)
+`collectAttrUsageOffsets()` wasn't comment-aware, so a variable merely MENTIONED in a
+`// phpcs:ignore` comment counted as a real usage site — fixed with a new `buildCommentMask()`,
+deliberately distinct from the existing string mask (which also masks genuine string-interpolated
+reads that must NOT be skipped — this distinction was caught by the detector's own Signal-1
+negative-control self-test regressing when the fix first used the wrong mask). (2)
+`collectDerivedVarMap()` `break`s on the first attribute match in a multi-variable RHS, so a var
+derived from two attributes only ever attributed to one — replaced with `collectDerivedVarMapAll()`
+(multi-attribute, two derivation hops), used only by Check A. (3) The CSS-declaration classifier
+required the usage offset inside a masked string literal, missing the bare-concat-after-dot shape
+(`'--x:' . $var`, optionally through nested helper-function wrappers). (4)/(5) Two attribute-write
+regexes didn't tolerate a scalar cast in between (`esc_attr((string)$var)`, `'key' => (string)$var`).
+(6) The direct-read map didn't recognise a helper-function wrapper directly around
+`$attributes['X']`. (7) `NATIVE_FUNCTIONAL_ATTR_NAMES` was missing `alt`/`accept`.
+
+**31 findings baselined** with a specific, verified reason each (not a blanket exemption) —
+scroll/drag/physics runtime effects with no static resting frame, post-submission-only form
+state, sprintf()-positional-argument HTML attributes, cross-file helper consumption, URL-encoded
+values never rendered as text, animation-direction-only attributes. `sgs/audio.spectrumColour`
+(feeds a live AnalyserNode canvas draw loop) stays genuinely un-fixable the simple way, per Bean's
+2026-08-13 call.
+
+**Gate promotion: deliberately NOT flipped.** This session rewrote 8 pieces of the detector's own
+logic — this project's own doctrine is never promote a detector to build-blocking on the run that
+changed the detector. Stays advisory in `prebuild` until a future clean session runs it untouched
+and still gets 0 findings. Bean confirmed (2026-08-14): "keep it advisory."
+
 ## D614 — /qc-council on the closed 70-item backlog: 1 real bug found and fixed, Signal 4 built [ROUTINE]
 
 **2026-08-13.** Ran a 4-rater `/qc-council` against D613's just-shipped work before trusting it
