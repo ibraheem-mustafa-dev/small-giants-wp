@@ -73,8 +73,15 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes, context } ) {
 	const { question, isOpen } = attributes;
-	// Items start open in the editor so the answer is always editable.
-	const [ editorOpen, setEditorOpen ] = useState( true );
+	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
+	// useState( true ) with a comment justifying it as "always editable" —
+	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
+	// effect in the editor regardless of its value, while it correctly drove
+	// the real frontend <details open> state. Mirrors sgs/accordion-item's
+	// own `useState( isOpen )` pattern (accordion-item/edit.js) — the item
+	// still starts open/closed per the operator's setting, and remains
+	// click-to-toggle for editing either way.
+	const [ editorOpen, setEditorOpen ] = useState( isOpen );
 
 	const iconPosition = context[ 'sgs/productFaqIconPosition' ] || 'right';
 

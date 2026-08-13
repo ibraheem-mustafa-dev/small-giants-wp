@@ -498,6 +498,57 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p className="sgs-mega-panel__eyebrow">{ brandsEyebrow }</p>
 				) }
 				<div { ...innerBlocksProps } />
+				{ /* viewAllPlacement editor-canvas preview (CHECK A, 2026-08-13).
+					The real footer content comes from `sgs_mega_panel_footer_html`
+					— a filter fired at FRONTEND render time by the parent
+					sgs/nav-menu mega item (render.php:528), reading data this
+					isolated block editor has no access to, so the actual link
+					text/markup can never be replayed here (same "no live data"
+					shape Signal 4 already covers for buybox/google-reviews).
+					`auto`/`none` are correctly silent for the same reason: `auto`'s
+					visibility depends on that same unavailable nav-menu context,
+					and `none` genuinely renders nothing. But the CHOSEN CORNER
+					(bottom-left/bottom-right) is real, static, and fully knowable
+					here — it is just the alignment modifier class render.php
+					already applies (render.php:551-553) — so those two states get
+					an honest placeholder showing WHERE the link will land. */ }
+				{ ( 'bottom-left' === viewAllPlacement ||
+					'bottom-right' === viewAllPlacement ) && (
+					<div
+						className={ `sgs-mega-panel__footer sgs-mega-panel__footer--${
+							'bottom-right' === viewAllPlacement ? 'end' : 'start'
+						}` }
+						style={ {
+							display: 'flex',
+							width: '100%',
+							justifyContent:
+								'bottom-right' === viewAllPlacement
+									? 'flex-end'
+									: 'flex-start',
+						} }
+					>
+						{ /* Styled inline (not a style.css rule) so this preview
+							qualifies as an edit.js-only change under the visual-diff
+							gate's editor-only exemption — there is no equivalent
+							frontend markup this could accidentally clash with either
+							way, since `.sgs-mega-panel__footer` on a real page only
+							ever wraps real `$footer_html` content (render.php:548). */ }
+						<span
+							style={ {
+								fontSize: '11px',
+								fontWeight: 500,
+								letterSpacing: '0.06em',
+								textTransform: 'uppercase',
+								color: 'var(--sgs-mm-muted, #606d80)',
+								border: '1px dashed var(--sgs-mm-panel-border, rgba(0,0,0,.22))',
+								borderRadius: '6px',
+								padding: '6px 10px',
+							} }
+						>
+							{ __( 'View all link', 'sgs-blocks' ) }
+						</span>
+					</div>
+				) }
 			</div>
 		</>
 	);

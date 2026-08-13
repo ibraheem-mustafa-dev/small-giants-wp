@@ -219,6 +219,50 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ triggerText }
 				</button>
 
+				{ /* Overlay colour/opacity are only visible on a real OPEN <dialog>
+					(native ::backdrop), which the editor canvas never shows — there
+					is no "open modal" preview here, only the trigger + an inline
+					content preview. Rather than leaving overlayColour/overlayOpacity
+					with zero editor representation, this swatch reproduces the exact
+					same maths render.php uses for the backdrop (colour resolved via
+					resolveColorToken, opacity/100) so an operator can see what the
+					dimmed backdrop will look like without it needing to visually BE
+					an open dialog.
+
+					Sizing/layout is set INLINE (not left to editor.css alone) —
+					this project's own mega-panel/editor.css header documents that
+					WP 7.0's iframed canvas does not always load a block's
+					editorStyle, so a class-only box could render at 0x0 and stay
+					invisible; editor.css still supplies the border/radius/colour
+					polish on top when it does load. */ }
+				<div
+					className="sgs-modal__overlay-preview-row"
+					style={ { display: 'flex', alignItems: 'center', gap: '8px' } }
+				>
+					<span
+						className="sgs-modal__overlay-preview-swatch"
+						style={ {
+							display: 'inline-block',
+							width: '28px',
+							height: '28px',
+							flexShrink: 0,
+							borderRadius: '4px',
+							border: '1px solid #e5e5e5',
+							backgroundColor:
+								resolveColorToken( overlayColour, palette ) ||
+								undefined,
+							opacity: ( overlayOpacity ?? 50 ) / 100,
+						} }
+						aria-hidden="true"
+					/>
+					<span
+						className="sgs-modal__overlay-preview-label"
+						style={ { fontSize: '0.8125rem', color: '#6b6b6b' } }
+					>
+						{ __( 'Overlay preview', 'sgs-blocks' ) }
+					</span>
+				</div>
+
 				<div className="sgs-modal__editor-preview">
 					<p className="sgs-modal__editor-hint">
 						{ __(
