@@ -1501,6 +1501,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							} );
 						} }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ ( cta2Text || '' ) !== '' && (
 						<SelectControl

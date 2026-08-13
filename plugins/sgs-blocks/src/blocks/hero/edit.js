@@ -815,6 +815,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										] }
 										onChange={ ( val ) => setOwnValue( val ) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>

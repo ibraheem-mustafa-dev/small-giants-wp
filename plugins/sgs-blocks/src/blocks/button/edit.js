@@ -446,6 +446,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
 									help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						</ToolsPanel>

@@ -201,6 +201,17 @@ STATUS_MISSING = "MISSING"
 STATUS_OK = "OK"
 STATUS_AMBIGUOUS = "AMBIGUOUS"
 
+# Self-test fixture kept at module level: it mixes quote styles and a
+# line comment, which is exactly the thing that is painful to inline.
+APOSTROPHE_FIXTURE = "\n".join(
+    [
+        "<SelectControl",
+        "\t// the block's own default isn't in the shared list",
+        "\tvalue={ x }",
+        "/>",
+    ]
+)
+
 
 def _base():
     """Root that reported paths are relative to.
@@ -244,6 +255,13 @@ def _find_opening_tags(text, name):
         i = m.end()
         depth = 0
         quote = None
+        # A '<' that appears OUTSIDE a string is a real nested element and means
+        # the scan lost its bearings. A '<' INSIDE a string is ordinary text —
+        # e.g. button/edit.js's help copy "Used as the SVG <title> for screen
+        # readers". Flagging that as ambiguous made three perfectly fixable
+        # controls unfixable, so the two cases are distinguished here rather
+        # than by a blunt `'<' in props` test on the extracted slice.
+        saw_bare_lt = False
         n = len(text)
         while i < n:
             ch = text[i]
@@ -253,18 +271,35 @@ def _find_opening_tags(text, name):
                     continue
                 if ch == quote:
                     quote = None
+            # COMMENTS ARE SKIPPED WHOLE, before quote handling. JS comments
+            # routinely contain apostrophes ("isn't", "doesn't"), and treating
+            # one as a string opener leaves the scanner stuck in a quote state
+            # that never closes — it then swallows the rest of the tag and the
+            # element reads as AMBIGUOUS. Real case: hero/edit.js's minHeight
+            # SelectControl, whose rationale comment contains "isn't"
+            # (caught 2026-08-13, the last false ambiguity of the pass).
+            elif ch == "/" and i + 1 < n and text[i + 1] == "/":
+                nl = text.find("\n", i)
+                i = n if nl == -1 else nl
+                continue
+            elif ch == "/" and i + 1 < n and text[i + 1] == "*":
+                close = text.find("*/", i + 2)
+                i = n if close == -1 else close + 2
+                continue
             elif ch in "\"'`":
                 quote = ch
+            elif ch == "<":
+                saw_bare_lt = True
             elif ch in "{(":
                 depth += 1
             elif ch in "})":
                 depth -= 1
             elif depth == 0:
                 if ch == "/" and i + 1 < n and text[i + 1] == ">":
-                    yield m.start(), i + 2, text[m.end():i], True
+                    yield m.start(), i + 2, text[m.end():i], True, saw_bare_lt
                     break
                 if ch == ">":
-                    yield m.start(), i + 1, text[m.end():i], False
+                    yield m.start(), i + 1, text[m.end():i], False, saw_bare_lt
                     break
             i += 1
 
@@ -275,13 +310,15 @@ def scan_axis_a(exclude):
     for path, rel in _iter_js_files(exclude):
         text = path.read_text(encoding="utf-8", errors="replace")
         for name in SIZED_COMPONENTS:
-            for start, end, props, self_closing in _find_opening_tags(text, name):
+            for start, end, props, self_closing, saw_bare_lt in _find_opening_tags(
+                text, name
+            ):
                 line = text[:start].count("\n") + 1
                 if PROP in props:
                     status = STATUS_OK
-                elif "<" in props:
-                    # A nested element still inside the opening tag means the
-                    # scanner lost its bearings. Report, never rewrite.
+                elif saw_bare_lt:
+                    # A '<' outside any string = a real nested element, so the
+                    # scan lost its bearings. Report, never rewrite.
                     status = STATUS_AMBIGUOUS
                 else:
                     status = STATUS_MISSING
@@ -508,6 +545,22 @@ def self_test():
         # NEGATIVE - substring trap: 'MyUnitControl' is NOT 'UnitControl'.
         (root / "substring.js").write_text("<MyUnitControl value={ x } />", encoding="utf-8")
 
+        # REGRESSION - a '<' inside a STRING is ordinary text, NOT nested JSX.
+        # Real case: button/edit.js help copy "Used as the SVG <title> for
+        # screen readers". A blunt `'<' in props` test called this ambiguous
+        # and made 3 fixable controls unfixable (caught 2026-08-13).
+        (root / "lt_in_string.js").write_text(
+            '<TextControl\n\thelp={ __( "the SVG <title> element" ) }\n/>',
+            encoding="utf-8",
+        )
+
+        # REGRESSION - a JS comment containing an APOSTROPHE must not put
+        # the scanner into a stuck quote state. Real case: hero/edit.js
+        # minHeight SelectControl, rationale comment says "isn't".
+        (root / "apostrophe_comment.js").write_text(
+            APOSTROPHE_FIXTURE, encoding="utf-8"
+        )
+
         # REGRESSION - nested JSX in a prop must be AMBIGUOUS, never fixed.
         # A naive non-greedy match ends at the inner '/>' and would rewrite the
         # wrong span; this fixture locks that.
@@ -528,6 +581,10 @@ def self_test():
         check("ok.js was actually scanned (non-vacuous)", len(by.get("ok.js", [])) > 0)
         check("unrelated component not flagged", "unrelated.js" not in by)
         check("substring name not matched", "substring.js" not in by)
+        check("'<' inside a STRING stays FIXABLE (not ambiguous)",
+              [f["status"] for f in by.get("lt_in_string.js", [])] == [STATUS_MISSING])
+        check("apostrophe in a // comment stays FIXABLE",
+              [f["status"] for f in by.get("apostrophe_comment.js", [])] == [STATUS_MISSING])
         check("nested JSX classified AMBIGUOUS",
               [f["status"] for f in by.get("nested.js", [])] == [STATUS_AMBIGUOUS])
 
