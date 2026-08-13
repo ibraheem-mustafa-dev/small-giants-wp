@@ -112,12 +112,12 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## Open — ready to pick up
 
-- **Hero: 2 items still open from Track 1b, unrelated to effects, not touched this session:**
-  (a) stray WP toolbar text-align button on the headline (C3) — confirmed inert, needs a ruling
-  (leave as cosmetic debt, or ~45-60 min custom `BlockControls` filter, no precedent in this repo);
-  (b) split-media → `sgs/media` child block (D6(b)) — twice reverted (D591, D594), server-side
-  mechanism proven, editor-canvas half still needs a new idea before a third attempt. Hero split-image
-  bleed CSS (was item c) — still latent, 0 live instances, parked, see "Open — carried" below.
+- **Hero: both prior Track 1b open items now closed.** (a) Stray WP toolbar text-align button on
+  the headline (C3) — Bean confirmed 2026-08-13: "Stray button toolbar is gone." (b) Split-media →
+  `sgs/media` child block (D6(b)) — Bean DROPPED this entirely 2026-08-13, not deferred (D599 in
+  `decisions.md`); the per-device image/video/SVG type-picker already delivers most of the practical
+  benefit. Hero split-image bleed CSS — still latent, 0 live instances, parked, see "Open — carried"
+  below.
 - **NEW this session, not caused by it:** `db-consistency` Check #1/#8 flags `sgs/hero`'s
   `mediaOverlayGradientAngle`/`From`/`To` (from `89857e39`) as routing-ambiguous — all 3 resolve to
   `background-image` on the same element/state/tier with no distinguishing mechanism, so the clone
@@ -136,9 +136,6 @@ fatalled every page. Both halves landed together (`079abbae`).
   canonical `media/edit.js:236` pattern; the rule cannot see it because its corpus is
   `*/components/*.js` + `extensions/*.js`, never `*/edit.js`. Fix the detector; do NOT baseline it,
   and do NOT "fix" the controls — that reintroduces a UX defect (see D596).
-- **Hero split-media → `sgs/media` CHILD BLOCK.** Still twice-reverted (D591, D594), still unsolved
-  on the editor-canvas half. ⚠ This session did NOT attempt it — the hero work shipped was
-  attribute-based, a different mechanism entirely. Needs its own design session.
 - **Track 1b's own open register** — re-derive from `go-track-1b-playful-hamster.md` directly; never
   carry forward a total quoted here or there without recounting the rows.
 

@@ -1,5 +1,31 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D599 — hero split-media → `sgs/media` child-block rework DROPPED, not deferred [ROUTINE]
+
+**2026-08-13.** Bean's explicit call: "child block rework is dropped." This closes the question
+formally — distinct from "still parked, might revisit" — after two built-and-reverted attempts:
+
+- **D591** (first attempt) — built the mechanism (single InnerBlocks list, `sgs/media` appended to
+  `HERO_CONTENT_TEMPLATE`, legacy attrs deleted outright). Reverted same evening: the live result
+  lost the two grid-item wrappers content and media need — children were placed directly on the
+  grid rather than each grouped under its own wrapper.
+- **D594** (second attempt) — retried with the diagnosed fix (server-side `render.php` partitioning
+  of `parsed_block['innerBlocks']` into two real wrapper divs) — proven to work server-side. Reverted
+  again: the live editor broke differently (split squashed to quarter-width, background bleeding
+  through, content/media inspector controls inert). The unsolved half was precisely diagnosed as the
+  editor canvas: WordPress gives a block exactly one InnerBlocks list with one client-side rendering
+  surface — there is no client-side equivalent of `render_block()`-based server partitioning.
+
+Hero's per-device image/video/SVG type-picker (`4fe39e6d`, 2026-08-13 — `splitImage*`/`splitVideo*`/
+`splitSvg*` families + `splitMediaType` discriminator) already delivers most of the practical benefit
+the child-block approach was chasing: per-device art-direction on the split media column, natively,
+with full inspector controls, live-verified. The child-block approach's remaining genuine merits
+(swappability to a different block type entirely, e.g. `sgs/audio`; single-source maintenance against
+`sgs/media`'s wider attribute set) are real but no longer urgent enough to justify a third attempt at
+an unsolved editor-canvas problem. Not parked for later — dropped. See `decisions.md` D591/D594 for
+the full build/revert history; `go-track-1b-playful-hamster.md` row D1/D6(b) for the standing-plan
+side of this closure.
+
 ## D598 — hero's split-order editor preview was silently inert; a stale gate broke `npm run build` for everyone [INCIDENT]
 
 **2026-08-13.** Follow-up to D597, same session. Bean spot-checked the hero editor after D597 shipped
