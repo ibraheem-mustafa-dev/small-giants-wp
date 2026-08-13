@@ -1,5 +1,75 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D613 — editor-render-parity Phase 2 CLOSED: all 70 REAL-GAP findings fixed and shipped [ROUTINE]
+
+**2026-08-13.** Fixed the entire 70-item REAL-GAP backlog from D605's fresh triage (7 commits,
+all via an isolated worktree, live-verified on sandybrown after every batch — not
+detector-only).
+
+**Priority 0 (`c67660e9`):** `sgs/heading.inheritStyle` was an inverted-direction bug, not a
+missing preview — render.php suppresses wrapper background/border/shadow when `inheritStyle`
+is true; `edit.js`'s `buildWrapperStyle()` applied them unconditionally, so the editor showed
+the OPPOSITE of what saved. Fixed to gate the same properties render.php gates. Live-verified:
+toggling the control now hides the canvas background exactly as publishing already did.
+
+**Batch 1 (`3765eab0`, 16 blocks):** mechanical — mirror render.php's CSS onto the existing
+editor preview-style builder. 47 of 49 assigned findings fixed directly; `sgs/button.iconGap`
+resolved by DELETION instead (`9947a9db`, see below), not guessed at.
+`sgs/audio.spectrumColour` surfaced mid-batch as the same shape as the `accentColour` fix — a
+bonus finding outside the original 70, not investigated here, tracked separately.
+
+**Batch 2 (`b36b8f42` + `1f7d9bb8`, 5 blocks):** structural — needed new canvas markup, not a
+style tweak (`sgs/form`'s missing submit button, `sgs/pricing-table`'s missing billing-toggle +
+CTA, `sgs/table-of-contents`'s flat-vs-`<details>/<summary>` switch, `sgs/testimonial`'s missing
+rating-led meta row, `sgs/text`'s `::first-letter` drop-cap). `sgs/text` needed an `editor.css`
+change (a `::first-letter` pseudo-element can't be reached via inline `style`) — followed the
+house convention `sgs/container` already uses for its `::before` background-media layer: a
+gated CSS rule reading custom properties `edit.js` sets per-instance.
+
+**Batch 3 (`efde6044`, 2 blocks):** the last 2 genuine bugs. Both needed re-deriving the real
+mechanism past what the triage assumed, not just following the attribute name — `sgs/hero
+.contentBandPadding` only wraps a real `.sgs-container__inner` band for the STANDARD variant
+(render.php forces `wrap_inner=>false` for split), so the canvas fix is conditional, not
+unconditional; `sgs/trust-bar.columns` isn't actually what wins on the frontend — the shared
+wrapper always emits a SECOND, later `grid-template-columns` rule from the object-shaped
+`gridTemplateColumns` attribute (which trust-bar always declares with a real default), so the
+canvas fix mirrors that exact precedence rather than the `columns` attribute alone. Both
+live-verified: the padded inner band and the real 5-column grid both render correctly.
+
+**`sgs/button.iconGap` (`9947a9db`) — deleted, not fixed.** Investigation proved it dead on
+BOTH sides: render.php only ever wrote it into an unused CSS custom property
+(`--sgs-btn-icon-gap`); plugin-wide grep confirms zero consumers, ever. Deleted the control,
+attribute, Block Selectors API attrMap entry, and the render.php write — no deprecation needed
+(D270 policy). This is the correct closure for a REAL-GAP finding that isn't a missing preview
+at all, just a dead setting.
+
+**`--no-verify` used TWICE, both with Bean's explicit authorisation (`9947a9db`, `1f7d9bb8`)**,
+each bypassing ONLY the visual-diff gate. Both changes touch a render-surface file (render.php
+or editor.css) the gate correctly wants before/after capture evidence for — but the project's
+capture tooling (`build-tier-fixture-page.py`/`capture-tier-fixture.py`) is purpose-built for
+bulk tier-object property migrations, a different shape of change than a dead-code deletion or
+a one-off pseudo-element CSS addition. Verified the bypass token some other gates honour
+(`[gates-ok:...]`) does NOT apply to this gate before reaching for `--no-verify` — checked
+`.githooks/sgs-gates.sh` directly rather than assuming. Every OTHER gate (gitleaks, wp-*
+pre-merge, cheat-gate, F5, F6) ran clean on both changes in the same attempt each `--no-verify`
+commit superseded. Both changes were independently live-verified via Playwright against the
+real deployed canary before either commit.
+
+**Net result: 143 net-new Check A findings → 75, all from the 70-item original backlog closed**
+(69 fixed, 1 deleted). The 75 remaining are the previously-triaged INTERACTION-ONLY (50) +
+OTHER-SHAPE (23) buckets, plus `sgs/audio.spectrumColour` (1 bonus finding, out of scope) and
+`sgs/mega-panel.viewAllPlacement`-shaped edge cases already documented in D605 as not REAL-GAP.
+`npm run build` green throughout. Ran
+entirely in an isolated worktree (`EnterWorktree`) to avoid the shared checkout's concurrent
+uncommitted `sgs/icon`/`DesignTokenPicker` work — no collision occurred at merge time since
+`origin/main` never moved (that other track's work was never pushed), so the worktree branch
+fast-forwarded onto `main` cleanly with zero reconciliation needed.
+
+**Not done this session:** the `sgs/text` visual-diff report (parking, see parking.md);
+Check A promotion to gate mode (LEDGER's own doctrine: never promote on the run that
+introduces/changes a rule — revisit once `sgs/text` closes and this becomes a genuinely clean
+run); the 469-row DB `role` NULL-seeding pass (unrelated, pre-existing parking item).
+
 ## D612 — /adversarial-council on D611's two flagged follow-ons: both PARKED with a revised premise; measure-first found 3 real bugs the follow-ons wouldn't have caught [ROUTINE]
 
 **2026-08-13.** D611 named two structural opportunities it deliberately did not build:
