@@ -177,6 +177,137 @@
  * BASELINE: editor-render-parity-baseline.json, same shape and discipline as
  * dead-controls-baseline.json — findings NOT listed there are "net-new".
  *
+ * THREE EXEMPTION SIGNALS (2026-08-13 refinement) — a full manual triage of
+ * all 257 CHECK A findings (reading every actual render.php consumption site,
+ * three independent passes) found ~105 were false positives sharing ONE
+ * property: every render.php consumption site for the attribute writes into a
+ * non-paint-affecting output sink — genuinely no static visual difference to
+ * preview. ~121 are genuine gaps. The rest are their own shapes. All three
+ * signals below are STRUCTURAL (no hardcoded per-block lists) so they
+ * generalise to any future block.
+ *
+ * SIGNAL 1 — NON-PAINT OUTPUT-SINK CLASSIFICATION (the big one).
+ *   For an attribute, resolve every render.php PHP variable that traces back
+ *   to it (direct `$var = $attributes['X']` reads, one-hop derived vars — the
+ *   same two-hop-capable dataflow already built for CHECK B, reused
+ *   unmodified since it is attribute-agnostic) plus every INLINE
+ *   `$attributes['X']` occurrence. For every occurrence ("usage site") of
+ *   those, classifyUsageSite() below determines whether it lands in a
+ *   non-paint sink:
+ *     - aria- / data- HTML attribute value (raw `name="...(echoed)..."`
+ *       or a PHP array `'data-foo' => $var` wrapper-attrs shape)
+ *     - a small closed NATIVE_FUNCTIONAL_ATTR_NAMES set (rel/target/download/
+ *       id/name/for/preload/controls/loop/autoplay/muted/playsinline/
+ *       disabled/readonly/required/checked/selected/multiple/autofocus/
+ *       tabindex/role) as an attribute NAME, or as a bare boolean-attribute
+ *       KEYWORD string literal near the usage (e.g. `$loop ? ' loop' : ''`
+ *       echoed raw into an `<audio>` tag — sgs/audio's real shape)
+ *     - inside a `wp_json_encode(...)` call's argument span (covers both
+ *       JSON-LD schema arrays AND Interactivity-API `data-wp-context` state
+ *       blobs — both are non-paint, verified against sgs/google-reviews'
+ *       autoplaySpeed/showDots/showArrows real shape)
+ *     - the CONDITION of an `if (...)` whose braced body contains a
+ *       data-, aria-, or wp_json_encode marker (covers sgs/accordion's
+ *       `$faq_schema` gating an `if(){ ...wp_json_encode... }` block, and
+ *       sgs/google-reviews' `$sgs_gr_drag_to_scroll` gating an
+ *       `if(){ $x = ' data-sgs-fx="draggable"'; }` block — the var itself is
+ *       never textually inside the quoted attribute value, only the
+ *       CONDITION, so this needed its own detector distinct from the direct
+ *       attribute-value lookback above)
+ *     - a CSS custom property (`--name`) whose name contains "hover"/"focus"
+ *       (sgs/button's `--sgs-btn-color-hover`, unconditionally declared in
+ *       PHP but only ever CONSUMED by a `:hover` rule in the compiled
+ *       style.css — the render.php emission site alone can't see that
+ *       consumer, so the naming convention is the signal)
+ *     - a CSS declaration whose SELECTOR contains `:hover`/`:focus`/
+ *       `:focus-visible` (never a base/unconditional selector — live-verified
+ *       this session that editor-canvas `:hover` genuinely works)
+ *     - a CSS declaration under `@media (prefers-reduced-motion...)`
+ *     - a CSS declaration whose PROPERTY is a motion-timing property
+ *       (transition/transition-duration/transition-delay/
+ *       transition-timing-function/transition-property/animation/
+ *       animation-duration/animation-delay/animation-timing-function/
+ *       animation-iteration-count/animation-name) — generalises the
+ *       reduced-motion reasoning: a timing spec has zero visible effect on a
+ *       STATIC (non-animating) capture regardless of selector. Real shape:
+ *       sgs/button's `.uid.sgs-button{transition:all {$duration}ms
+ *       {$easing};}` (double-quote `{$var}` interpolation, not CHECK B's
+ *       single-quote-concat shape — precedingCssPropertyName() below handles
+ *       BOTH styles by scanning backward for the nearest unclosed
+ *       `property:` rather than requiring immediate adjacency, since a
+ *       `transition` value has multiple tokens before the variable).
+ *   If EVERY usage site classifies into one of these, exempt. If even one
+ *   site is unclassified (a genuine unconditional CSS property, visible text,
+ *   a media src/url, or anything this detector doesn't recognise), the
+ *   attribute STAYS FLAGGED — the default is conservative, never a silent
+ *   swallow of a real candidate.
+ *   String-literal-embedded braces (render.php builds CSS via PHP string
+ *   concatenation, and CSS text has its OWN `{`/`}` that would corrupt a
+ *   naive PHP-code brace counter) are handled by buildStringMask() — a linear
+ *   single/double-quote-aware scan that masks positions inside PHP string
+ *   literals so `findMatchingParen`/`findMatchingBrace` only count REAL PHP
+ *   control-flow braces/parens, never ones sitting inside a quoted CSS rule.
+ *   BLIND SPOTS: heredoc/nowdoc PHP strings are not masked (grepped
+ *   2026-08-13 — zero render.php in this tree uses `<<<`, so this is
+ *   currently inert, not a live gap). The `if (...)` gating-body scan is
+ *   whole-body TEXT search, same "not scoped control-flow proof" caveat as
+ *   CHECK B's own isValueIntercepted(). classifyCssDeclarationSink()'s
+ *   "nearest preceding selector" is a backward text scan assuming each CSS
+ *   rule is authored as one self-contained, brace-balanced PHP string
+ *   segment (true everywhere observed in this codebase 2026-08-13) — a rule
+ *   split across multiple concatenated PHP statements would not resolve
+ *   correctly.
+ *
+ * SIGNAL 2 — COMPANION-ID / ATOMIC CO-WRITE EXEMPTION.
+ *   If attribute X is always set in the SAME `setAttributes({...})`
+ *   call-site object literal as attribute Y, and Y itself already passes
+ *   CHECK A cleanly (referenced outside InspectorControls/BlockControls),
+ *   exempt X — its visual effect is already represented via its sibling.
+ *   Real shape: sgs/media's `imageId`/`imageUrl` are always co-written
+ *   (`setAttributes({ imageId: media.id, imageUrl: media.url })`); imageUrl
+ *   feeds the canvas `<img src={imageUrl}>`, so imageId is exempt.
+ *   sgs/media's `thumbnailId`/`thumbnail` are ALSO always co-written, but
+ *   `thumbnail` itself never appears outside InspectorControls (its only JSX
+ *   use is inside the MediaUpload picker panel) — so thumbnail does NOT pass
+ *   CHECK A cleanly, and thumbnailId correctly stays UNEXEMPTED by this
+ *   signal (both remain a genuine gap: the video poster is never shown in
+ *   the canvas preview).
+ *
+ * SIGNAL 3 — EXPLICIT NO-PREVIEW <Notice> BRANCH EXEMPTION.
+ *   Real shape (sgs/media/edit.js ~1601-1623): the Edit function is a
+ *   sequence of early-return guards — `if ( isImage ) { ...; return (...); }`
+ *   then `if ( isSvg ) { ...; return (...); }` — followed by a FINAL fallback
+ *   `return (...)` (reached only when isVideo is true, but not itself wrapped
+ *   in a textual `{ isVideo && ... }` JSX gate — it's the function's own
+ *   return, not an embedded subtree) that renders a `<Notice>` containing
+ *   "Preview not available in editor. ... handled by server." That fallback
+ *   also renders `{ inspectorControls }`, a shared JSX const containing a
+ *   `{ isVideo && (<PanelBody>...<RangeControl value={videoAutoplay}.../>...
+ *   </PanelBody>) }` block covering videoAutoplay/videoLoop/videoMuted/
+ *   videoControls/videoPlaysInline/videoLazyLoad.
+ *   Detection: (a) find every `<Notice>`-named element whose text matches a
+ *   no-preview phrase; walk up to its enclosing ReturnStatement. (b) collect
+ *   every top-level `if ( FLAG )` / `if ( ! FLAG )` early-return guard flag in
+ *   the same function (isImage, isSvg here) — these are flags the FALLBACK
+ *   branch is reached WITHOUT. (c) collect every `const FLAG = 'x' === y` /
+ *   `y === 'x'` boolean-flag declaration in the file. (d) collect every
+ *   `{ FLAG && (<jsx>) }` JSX-gate group. (e) for each declared flag NOT in
+ *   the early-return guard set (isVideo, by elimination), union the spans of
+ *   every JSX-gate group using that flag, and exempt every block.json-
+ *   declared attribute referenced (as a real Identifier read) anywhere in
+ *   that union.
+ *   BLIND SPOTS: scoped to exactly this "sequence of `if (FLAG) return`
+ *   early-return guards, then one fallback return" shape — a switch
+ *   statement, nested early returns, or a Notice wrapped directly in its own
+ *   `{ FLAG && (<Notice>) }` (a DIFFERENT, narrower flag than the branch's
+ *   reachability flag) are not handled and would conservatively find nothing
+ *   (never a false exemption, only a missed one). If more than one
+ *   non-guard flag exists with no way to disambiguate which is the
+ *   fallback's true reachability flag, ALL of them are tried (their
+ *   JSX-gated attributes are unioned) — a rare over-exemption risk, accepted
+ *   as this file's other checks already accept comparable whole-file
+ *   text-search imprecision (see CHECK B blind spot 1).
+ *
  * Usage:
  *   node scripts/check-editor-render-parity.js               # survey (report, exit 0)
  *   node scripts/check-editor-render-parity.js --survey       # same, explicit
@@ -311,6 +442,1176 @@ function jsxAttrValueNode( openingElement, attrName ) {
 		( a ) => a.type === 'JSXAttribute' && a.name && a.name.name === attrName
 	);
 	return attr ? attr.value : null;
+}
+
+// ---------------------------------------------------------------------------
+// Exemption signal shared plumbing — string-aware brace/paren matching
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a same-length boolean mask marking every position inside a PHP
+ * single- or double-quoted string literal. render.php builds CSS via PHP
+ * string concatenation, and that CSS text has its OWN `{`/`}` — a naive
+ * brace counter over the raw source would get corrupted by those. Masked
+ * positions are skipped by findMatchingParen()/findMatchingBrace() so only
+ * REAL PHP control-flow braces/parens are counted. Heredoc/nowdoc is not
+ * masked (grepped 2026-08-13 — zero render.php in this tree uses `<<<`).
+ *
+ * @param {string} src PHP source.
+ * @return {Array<boolean>} inString[i] === true when position i is inside a quoted PHP string.
+ */
+function buildStringMask( src ) {
+	const inStr = new Array( src.length ).fill( false );
+	let state = 'code';
+	for ( let i = 0; i < src.length; i++ ) {
+		const c = src[ i ];
+		if ( state === 'code' ) {
+			if ( c === "'" ) {
+				inStr[ i ] = true;
+				state = 'squote';
+			} else if ( c === '"' ) {
+				inStr[ i ] = true;
+				state = 'dquote';
+			} else if ( c === '/' && src[ i + 1 ] === '/' ) {
+				// `//` line comment — an apostrophe in prose ("ACCORDION'S OWN")
+				// must NOT be mistaken for the start of a real PHP string, or
+				// every subsequent quote/brace in the file desyncs. Mask the
+				// whole comment (through end of line) as non-code, same as a
+				// real string — it must never contribute a real brace/paren.
+				while ( i < src.length && src[ i ] !== '\n' ) {
+					inStr[ i ] = true;
+					i++;
+				}
+			} else if ( c === '#' && src[ i + 1 ] !== '[' ) {
+				// `#` line comment (not a PHP 8 `#[Attribute]`, which this
+				// codebase doesn't use in render.php but is excluded defensively).
+				while ( i < src.length && src[ i ] !== '\n' ) {
+					inStr[ i ] = true;
+					i++;
+				}
+			} else if ( c === '/' && src[ i + 1 ] === '*' ) {
+				// `/* ... */` block/doc comment — same reasoning as `//` above.
+				inStr[ i ] = true;
+				inStr[ i + 1 ] = true;
+				i += 2;
+				while ( i < src.length && ! ( src[ i ] === '*' && src[ i + 1 ] === '/' ) ) {
+					inStr[ i ] = true;
+					i++;
+				}
+				if ( i < src.length ) {
+					inStr[ i ] = true;
+					if ( i + 1 < src.length ) {
+						inStr[ i + 1 ] = true;
+					}
+					i++;
+				}
+			}
+			continue;
+		}
+		inStr[ i ] = true;
+		if ( c === '\\' && i + 1 < src.length ) {
+			inStr[ i + 1 ] = true;
+			i++;
+			continue;
+		}
+		if ( state === 'squote' && c === "'" ) {
+			state = 'code';
+		} else if ( state === 'dquote' && c === '"' ) {
+			state = 'code';
+		}
+	}
+	return inStr;
+}
+
+/**
+ * String-aware forward paren match: given the index of an opening `(`,
+ * return the index of its matching `)`, skipping any `(`/`)` inside a
+ * masked (quoted-string) position.
+ *
+ * @param {string}          src    Source text.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          openIdx Index of the opening `(`.
+ * @return {number} Index of the matching `)`, or -1.
+ */
+function findMatchingParen( src, mask, openIdx ) {
+	let depth = 0;
+	for ( let i = openIdx; i < src.length; i++ ) {
+		if ( mask[ i ] ) {
+			continue;
+		}
+		if ( src[ i ] === '(' ) {
+			depth++;
+		} else if ( src[ i ] === ')' ) {
+			depth--;
+			if ( depth === 0 ) {
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
+/**
+ * String-aware forward brace match — same shape as findMatchingParen() but
+ * for `{`/`}`.
+ *
+ * @param {string}          src     Source text.
+ * @param {Array<boolean>}  mask    From buildStringMask().
+ * @param {number}          openIdx Index of the opening `{`.
+ * @return {number} Index of the matching `}`, or -1.
+ */
+function findMatchingBrace( src, mask, openIdx ) {
+	let depth = 0;
+	for ( let i = openIdx; i < src.length; i++ ) {
+		if ( mask[ i ] ) {
+			continue;
+		}
+		if ( src[ i ] === '{' ) {
+			depth++;
+		} else if ( src[ i ] === '}' ) {
+			depth--;
+			if ( depth === 0 ) {
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
+// ---------------------------------------------------------------------------
+// SIGNAL 1 — non-paint output-sink classification
+// ---------------------------------------------------------------------------
+
+// A native functional/behavioural HTML attribute NAME is never a paint sink.
+// Kept tiny and closed, same discipline as this file's other allowlists.
+const NATIVE_FUNCTIONAL_ATTR_NAMES = new Set( [
+	'rel', 'target', 'download', 'id', 'name', 'for', 'type',
+	'preload', 'controls', 'loop', 'autoplay', 'muted', 'playsinline',
+	'disabled', 'readonly', 'required', 'checked', 'selected', 'multiple',
+	'autofocus', 'tabindex', 'role',
+] );
+
+// A bare native boolean-attribute KEYWORD, appended as a literal string
+// (e.g. sgs/audio's `$audio_bool .= $loop ? ' loop' : '';`, later echoed raw
+// into the `<audio>` tag) rather than assigned to a named HTML attribute.
+const BOOLEAN_ATTR_KEYWORDS = new Set( [
+	'loop', 'autoplay', 'controls', 'muted', 'playsinline', 'disabled',
+	'readonly', 'required', 'checked', 'selected', 'multiple', 'autofocus', 'download',
+] );
+
+// A CSS property whose VALUE is a timing/duration spec, not a paintable
+// state — zero visible effect on a static (non-animating) capture,
+// regardless of selector. Generalises the reduced-motion reasoning.
+const MOTION_TIMING_PROPERTIES = new Set( [
+	'transition', 'transition-duration', 'transition-delay',
+	'transition-timing-function', 'transition-property',
+	'animation', 'animation-duration', 'animation-delay',
+	'animation-timing-function', 'animation-iteration-count', 'animation-name',
+] );
+
+const NON_PAINT_SINK_CLASSES = new Set( [
+	'hover-css', 'reduced-motion-css', 'motion-timing', 'aria', 'data', 'native-functional', 'json-ld',
+] );
+
+/**
+ * Find the start offset of the contiguous quoted-PHP-string region ending
+ * immediately before `offset` (i.e. `offset` sits inside a PHP string
+ * literal that starts there), or null if `offset` is not inside a string at
+ * all. CSS text only ever exists as PHP string CONTENT in this codebase, so
+ * every CSS-declaration/selector scan below is clamped to this boundary —
+ * without it, a scan can walk backward straight through the string's own
+ * opening quote into REAL PHP CODE (a `//`/`/* *&#47; comment with a stray `:`
+ * like `// phpcs:enable ...`, a switch `case 'x':`, a ternary `? 'a' : 'b'`)
+ * and misread an unrelated colon as a CSS property separator. Real bug hit
+ * live 2026-08-13: sgs/accordion's `if ( $faq_schema ...)` sits right after
+ * a `// phpcs:enable WordPress...` comment line, and an unclamped scan read
+ * that comment's colon as if it were `phpcs:enable-the-property`.
+ *
+ * @param {Array<boolean>} mask   From buildStringMask().
+ * @param {number}         offset Usage-site offset.
+ * @return {number|null}
+ */
+function findEnclosingStringStart( mask, offset ) {
+	if ( offset === 0 || ! mask[ offset - 1 ] ) {
+		return null;
+	}
+	let i = offset - 1;
+	while ( i > 0 && mask[ i - 1 ] ) {
+		i--;
+	}
+	return i;
+}
+
+/**
+ * Backward-scan from a usage offset for the CSS property name currently
+ * being declared, if the offset sits inside an unclosed `property:` value.
+ * Handles BOTH the single-quote-concat shape CHECK B already knows
+ * (`'property:'.$var.'`) AND double-quote `{$var}` interpolation
+ * (`"transition:all {$duration}ms {$easing};"`) where the variable is not
+ * immediately adjacent to the colon — by scanning backward for the nearest
+ * unclosed `:` (bailing out on a `;`/`{`/`}` boundary first, which means no
+ * declaration is open here at all) then reading the property-name token
+ * before that colon. The scan is clamped to the CURRENT PHP string literal
+ * (via findEnclosingStringStart()) — if `offset` isn't inside a string at
+ * all, there's no CSS declaration here full stop.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null} Lower-cased property name, or null if not inside a CSS declaration value.
+ */
+function precedingCssPropertyName( phpSrc, mask, offset ) {
+	const stringStart = findEnclosingStringStart( mask, offset );
+	if ( stringStart === null ) {
+		return null;
+	}
+	const windowStart = Math.max( stringStart, offset - 200 );
+	let slice = phpSrc.slice( windowStart, offset );
+	// PHP double-quote interpolation (`"transition:all {$duration}ms
+	// {$easing};"` — sgs/button's real shape) puts `{`/`}` around each
+	// variable that are interpolation delimiters, not CSS rule boundaries.
+	// A FULLY CONTAINED `{$word}` earlier in the slice (an already-finished
+	// interpolation for a PRIOR variable, e.g. `{$transition_duration}` when
+	// scanning for `{$transition_easing}`) is blanked out entirely so its
+	// braces don't falsely look like a closed declaration/rule. The variable
+	// currently being scanned FOR has its own interpolation-open `{`
+	// trailing the slice (its closing `}` is after `offset`, invisible to a
+	// backward-only slice) — that trailing `{` is stripped too.
+	slice = slice.replace( /\{\$[A-Za-z_]\w*\}/g, ( s ) => ' '.repeat( s.length ) );
+	if ( slice.endsWith( '{' ) && phpSrc[ offset ] === '$' ) {
+		slice = slice.slice( 0, -1 );
+	}
+	let colonIdx = -1;
+	for ( let i = slice.length - 1; i >= 0; i-- ) {
+		const c = slice[ i ];
+		if ( c === ':' && slice[ i - 1 ] !== ':' && slice[ i + 1 ] !== ':' ) {
+			colonIdx = i;
+			break;
+		}
+		if ( c === ';' || c === '{' || c === '}' ) {
+			return null;
+		}
+	}
+	if ( colonIdx === -1 ) {
+		return null;
+	}
+	const before = slice.slice( 0, colonIdx );
+	const m = /([\w-]+)\s*$/.exec( before );
+	return m ? m[ 1 ].toLowerCase() : null;
+}
+
+/**
+ * Find the CSS selector text of the rule currently open at `offset` — the
+ * text between the nearest still-unclosed `{` and the previous `}` (or the
+ * start of the current PHP string literal — see findEnclosingStringStart()).
+ * Assumes each CSS rule is authored as one self-contained, brace-balanced
+ * PHP string segment (true everywhere observed in this codebase 2026-08-13
+ * — see file-header blind-spot note).
+ *
+ * @param {string}          phpSrc  render.php source.
+ * @param {Array<boolean>}  mask    From buildStringMask().
+ * @param {number}          offset  Usage-site offset.
+ * @param {number}          [window] Backward scan window in characters.
+ * @return {string|null} Lower-cased selector text, or null if no unclosed rule found.
+ */
+function nearestPrecedingSelectorText( phpSrc, mask, offset, window ) {
+	window = window || 300;
+	const stringStart = findEnclosingStringStart( mask, offset );
+	if ( stringStart === null ) {
+		return null;
+	}
+	const windowStart = Math.max( stringStart, offset - window );
+	const slice = phpSrc.slice( windowStart, offset );
+	const lastOpen = slice.lastIndexOf( '{' );
+	if ( lastOpen === -1 ) {
+		return null;
+	}
+	const afterOpen = slice.slice( lastOpen + 1 );
+	if ( afterOpen.includes( '}' ) ) {
+		return null;
+	}
+	const beforeOpenSlice = slice.slice( 0, lastOpen );
+	const prevClose = beforeOpenSlice.lastIndexOf( '}' );
+	const selectorStart = prevClose === -1 ? 0 : prevClose + 1;
+	return slice.slice( selectorStart, lastOpen ).toLowerCase();
+}
+
+/**
+ * True if `offset` sits inside an `@media (prefers-reduced-motion...) { }`
+ * block — raw brace counting over the literal CSS text (safe here since a
+ * media block's CSS content is naturally brace-balanced, unlike PHP code
+ * mixed with quoted CSS strings), clamped to the current PHP string literal
+ * (see findEnclosingStringStart()).
+ *
+ * @param {string}          phpSrc  render.php source.
+ * @param {Array<boolean>}  mask    From buildStringMask().
+ * @param {number}          offset  Usage-site offset.
+ * @param {number}          [window] Backward scan window in characters.
+ * @return {boolean}
+ */
+function isReducedMotionScoped( phpSrc, mask, offset, window ) {
+	window = window || 2000;
+	const stringStart = findEnclosingStringStart( mask, offset );
+	if ( stringStart === null ) {
+		return false;
+	}
+	const windowStart = Math.max( stringStart, offset - window );
+	const slice = phpSrc.slice( windowStart, offset );
+	const mediaRe = /@media\s*\([^)]*prefers-reduced-motion[^)]*\)\s*\{/gi;
+	let lastMatch = null;
+	let m;
+	while ( ( m = mediaRe.exec( slice ) ) !== null ) {
+		lastMatch = m;
+	}
+	if ( ! lastMatch ) {
+		return false;
+	}
+	const afterMedia = slice.slice( lastMatch.index + lastMatch[ 0 ].length );
+	let depth = 1;
+	for ( let i = 0; i < afterMedia.length; i++ ) {
+		if ( afterMedia[ i ] === '{' ) {
+			depth++;
+		} else if ( afterMedia[ i ] === '}' ) {
+			depth--;
+			if ( depth === 0 ) {
+				return false;
+			}
+		}
+	}
+	return depth > 0;
+}
+
+/**
+ * Classify a usage site that sits inside a CSS declaration value.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null} 'hover-css' | 'reduced-motion-css' | 'motion-timing' | 'paint' (a real, unconditional CSS declaration) | null (not a CSS declaration context at all).
+ */
+function classifyCssDeclarationSink( phpSrc, mask, offset ) {
+	const propName = precedingCssPropertyName( phpSrc, mask, offset );
+	if ( ! propName ) {
+		return null;
+	}
+	if ( propName.startsWith( '--' ) && /hover|focus/i.test( propName ) ) {
+		return 'hover-css';
+	}
+	if ( MOTION_TIMING_PROPERTIES.has( propName ) ) {
+		return 'motion-timing';
+	}
+	const selector = nearestPrecedingSelectorText( phpSrc, mask, offset );
+	if ( selector && /:hover|:focus-visible|:focus\b/.test( selector ) ) {
+		return 'hover-css';
+	}
+	if ( isReducedMotionScoped( phpSrc, mask, offset ) ) {
+		return 'reduced-motion-css';
+	}
+	// The selector and the declaration are sometimes built in SEPARATE PHP
+	// string literals joined later (real shape: sgs/button's
+	// `$hover_rules[] = "box-shadow:{$bsh_inset}...";` builds a bare
+	// declaration with no selector in sight — the `:hover,:focus-visible{}`
+	// wrapper is only added several statements later via
+	// `implode( ';', $hover_rules )`), so nearestPrecedingSelectorText() can
+	// see nothing to scope against. Fall back to the CONTAINER variable's own
+	// name (the array/string being appended to) — the same naming-convention
+	// trust already used above for `--x-hover` custom properties.
+	const containerName = precedingAssignmentTargetName( phpSrc, mask, offset );
+	if ( containerName && /hover|focus/i.test( containerName ) ) {
+		return 'hover-css';
+	}
+	if ( containerName && /reduced.?motion/i.test( containerName ) ) {
+		return 'reduced-motion-css';
+	}
+	return 'paint';
+}
+
+/**
+ * Given `offset` sits inside a PHP string literal (see
+ * findEnclosingStringStart()), find the variable NAME the enclosing
+ * statement assigns/appends that string INTO — `$hover_rules[] = "..."` or
+ * `$css .= "..."` — by looking just before the string's own opening quote.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null}
+ */
+function precedingAssignmentTargetName( phpSrc, mask, offset ) {
+	const stringStart = findEnclosingStringStart( mask, offset );
+	if ( stringStart === null ) {
+		return null;
+	}
+	const windowStart = Math.max( 0, stringStart - 80 );
+	const before = phpSrc.slice( windowStart, stringStart );
+	const m = /\$([A-Za-z_]\w*)\s*(?:\[\s*\])?\s*\.?=\s*$/.exec( before );
+	return m ? m[ 1 ] : null;
+}
+
+/**
+ * Find the assignment TARGET variable of the CURRENT PHP statement
+ * containing `offset` — regardless of whether `offset` itself sits inside a
+ * string or in real code (a function-call argument). Scans backward for the
+ * nearest un-masked statement boundary (`;`/`{`/`}`, real code only, strings
+ * skipped via `mask`), then looks for an assignment LHS right after it.
+ * Real shape: sgs/quote's `$hover_rules[] = 'box-shadow:' .
+ * sgs_shadow_value( $sgs_css_safe_value( $box_shadow_hover ) );` — the
+ * variable is several function-call layers deep in real PHP code, never
+ * inside a string at all, so precedingAssignmentTargetName() (string-scoped)
+ * can't see it; this statement-scoped version can.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null}
+ */
+function enclosingStatementAssignmentTargetName( phpSrc, mask, offset ) {
+	let boundary = -1;
+	for ( let i = offset - 1; i >= 0; i-- ) {
+		if ( mask[ i ] ) {
+			continue;
+		}
+		if ( phpSrc[ i ] === ';' || phpSrc[ i ] === '{' || phpSrc[ i ] === '}' ) {
+			boundary = i;
+			break;
+		}
+	}
+	const segment = phpSrc.slice( boundary + 1, offset );
+	const m = /^\s*\$([A-Za-z_]\w*)\s*(?:\[\s*\])?\s*\.?=(?!=)/.exec( segment );
+	return m ? m[ 1 ] : null;
+}
+
+/**
+ * Backward-scan for the HTML/PHP-array attribute NAME whose value is
+ * currently being built at `offset` — either raw HTML
+ * (`name="...<?php echo esc_attr(...`) or a PHP wrapper-attrs array literal
+ * (`'name' => ...`).
+ *
+ * @param {string} phpSrc  render.php source.
+ * @param {number} offset  Usage-site offset.
+ * @param {number} [window] Backward scan window in characters.
+ * @return {string|null} Lower-cased attribute name, or null.
+ */
+/**
+ * Same lookback as precedingHtmlAttributeName() but ONLY the raw-HTML
+ * `name="..."` shape — used where an unrecognised name should be treated as
+ * an explicit paint blocker (a real HTML attribute IS being written, we
+ * just don't safelist that particular name).
+ *
+ * @param {string} phpSrc  render.php source.
+ * @param {number} offset  Usage-site offset.
+ * @param {number} [window] Backward scan window in characters.
+ * @return {string|null} Lower-cased attribute name, or null.
+ */
+function precedingRawHtmlAttributeName( phpSrc, offset, window ) {
+	window = window || 150;
+	const windowStart = Math.max( 0, offset - window );
+	const slice = phpSrc.slice( windowStart, offset );
+	// Shape A: markup with embedded PHP echo — `name="...<?php echo esc_attr(`.
+	const m = /([\w-]+)\s*=\s*"(?:[^"]*<\?php\s+echo\s+)?(?:esc_attr\(\s*)?$/.exec( slice );
+	if ( m ) {
+		return m[ 1 ].toLowerCase();
+	}
+	// Shape B: the whole tag built via PHP string CONCATENATION — real shape:
+	// sgs/button's `$rel_attr = ' rel="' . esc_attr( $rel ) . '"';` — the
+	// attribute's opening `name="` sits inside its OWN small single-quoted
+	// PHP string, closed immediately, then `.`-concatenated with the value.
+	const m2 = /([\w-]+)\s*=\s*"'\s*\.\s*(?:esc_attr\(\s*)?$/.exec( slice );
+	if ( m2 ) {
+		return m2[ 1 ].toLowerCase();
+	}
+	return null;
+}
+
+/**
+ * Backward-scan for the HTML/PHP-array attribute NAME whose value is
+ * currently being built at `offset` — either raw HTML
+ * (`name="...(echoed)..."`) or a PHP wrapper-attrs array literal
+ * (`'name' => ...`). UNLIKE precedingRawHtmlAttributeName(), a PHP
+ * array-key match is only meaningful when the key ITSELF looks like an
+ * HTML/data attribute name — an arbitrary array key (e.g.
+ * `'autoplaySpeed' => $autoplay_speed` inside a `wp_json_encode()` payload
+ * array, sgs/google-reviews' real shape) is NOT evidence of an HTML
+ * attribute at all, so an unrecognised array key returns null here (never a
+ * blocker) rather than being mistaken for a paint-relevant HTML write.
+ *
+ * @param {string} phpSrc  render.php source.
+ * @param {number} offset  Usage-site offset.
+ * @param {number} [window] Backward scan window in characters.
+ * @return {string|null} Lower-cased attribute name, or null.
+ */
+function precedingHtmlAttributeName( phpSrc, offset, window ) {
+	const rawName = precedingRawHtmlAttributeName( phpSrc, offset, window );
+	if ( rawName ) {
+		return rawName;
+	}
+	window = window || 150;
+	const windowStart = Math.max( 0, offset - window );
+	const slice = phpSrc.slice( windowStart, offset );
+	// `'key' => $var` array-literal shape.
+	const m2 = /['"]([\w-]+)['"]\s*=>\s*$/.exec( slice );
+	// `$arr['key'] = $var` array-ELEMENT-assignment shape — real shape:
+	// sgs/decorative-image's `$img_attrs['data-parallax'] = esc_attr(
+	// $parallax_strength );`.
+	const m3 = /\$\w+\[\s*['"]([\w-]+)['"]\s*\]\s*=\s*(?:esc_attr\(\s*)?$/.exec( slice );
+	const key = ( m2 && m2[ 1 ] ) || ( m3 && m3[ 1 ] );
+	if ( key ) {
+		const lower = key.toLowerCase();
+		if ( lower.startsWith( 'aria-' ) || lower.startsWith( 'data-' ) || NATIVE_FUNCTIONAL_ATTR_NAMES.has( lower ) ) {
+			return lower;
+		}
+	}
+	return null;
+}
+
+/**
+ * True if `offset` sits inside the argument span of a `wp_json_encode(...)`
+ * call — covers both JSON-LD schema arrays AND Interactivity-API
+ * `data-wp-context` state blobs (real shape: sgs/google-reviews'
+ * autoplaySpeed/showDots/showArrows are array VALUES fed straight into
+ * `'data-wp-context' => wp_json_encode( array( 'autoplaySpeed' =>
+ * $autoplay_speed, ... ) )`) — both are non-paint.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {boolean}
+ */
+function isInsideJsonEncodeArgument( phpSrc, mask, offset ) {
+	const callRe = /wp_json_encode\s*\(/g;
+	let m;
+	while ( ( m = callRe.exec( phpSrc ) ) !== null ) {
+		if ( mask[ m.index ] ) {
+			continue;
+		}
+		const openParenIdx = m.index + m[ 0 ].length - 1;
+		if ( openParenIdx >= offset ) {
+			continue;
+		}
+		const closeIdx = findMatchingParen( phpSrc, mask, openParenIdx );
+		if ( closeIdx === -1 ) {
+			continue;
+		}
+		if ( offset > openParenIdx && offset < closeIdx ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Find the innermost `if ( ... ) { ... }` whose CONDITION span contains
+ * `offset` (i.e. this usage IS part of the if-test itself, not its body).
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {{bodyStart:number, bodyEnd:number}|null}
+ */
+function findEnclosingIfConditionAndBody( phpSrc, mask, offset ) {
+	const ifRe = /\bif\s*\(/g;
+	let best = null;
+	let m;
+	while ( ( m = ifRe.exec( phpSrc ) ) !== null ) {
+		if ( mask[ m.index ] ) {
+			continue;
+		}
+		const openParenIdx = m.index + m[ 0 ].length - 1;
+		const closeParenIdx = findMatchingParen( phpSrc, mask, openParenIdx );
+		if ( closeParenIdx === -1 ) {
+			continue;
+		}
+		if ( offset <= openParenIdx || offset >= closeParenIdx ) {
+			continue;
+		}
+		let bodyOpen = -1;
+		for ( let i = closeParenIdx + 1; i < phpSrc.length; i++ ) {
+			if ( mask[ i ] ) {
+				continue;
+			}
+			if ( /\s/.test( phpSrc[ i ] ) ) {
+				continue;
+			}
+			if ( phpSrc[ i ] === '{' ) {
+				bodyOpen = i;
+			}
+			break;
+		}
+		if ( bodyOpen === -1 ) {
+			continue;
+		}
+		const bodyClose = findMatchingBrace( phpSrc, mask, bodyOpen );
+		if ( bodyClose === -1 ) {
+			continue;
+		}
+		if ( ! best || bodyClose - bodyOpen < best.bodyEnd - best.bodyStart ) {
+			best = { bodyStart: bodyOpen, bodyEnd: bodyClose };
+		}
+	}
+	return best;
+}
+
+/**
+ * Classify a usage site that is the CONDITION of an `if (...)` whose braced
+ * BODY textually contains a data-, aria-, or JSON-LD marker (real shape:
+ * sgs/accordion's `$faq_schema` gating `if(){ ...wp_json_encode... }`;
+ * sgs/google-reviews' `$sgs_gr_drag_to_scroll` gating
+ * `if(){ $x = ' data-sgs-fx="draggable"'; }`).
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null} 'json-ld' | 'data' | 'aria' | null.
+ */
+function classifyIfConditionGate( phpSrc, mask, offset ) {
+	const enclosing = findEnclosingIfConditionAndBody( phpSrc, mask, offset );
+	if ( ! enclosing ) {
+		return null;
+	}
+	const bodyText = phpSrc.slice( enclosing.bodyStart, enclosing.bodyEnd );
+	if ( /wp_json_encode\s*\(|application\/ld\+json/.test( bodyText ) ) {
+		return 'json-ld';
+	}
+	if ( /data-[\w-]+\s*=|['"]data-[\w-]+['"]\s*=>/.test( bodyText ) ) {
+		return 'data';
+	}
+	if ( /aria-[\w-]+\s*=|['"]aria-[\w-]+['"]\s*=>/.test( bodyText ) ) {
+		return 'aria';
+	}
+	return null;
+}
+
+/**
+ * True if a native boolean-attribute keyword literal (loop/autoplay/etc.)
+ * sits within a small window of `offset` — the shape used when a var GATES
+ * appending a bare keyword string rather than being assigned to a named
+ * attribute (sgs/audio's `$audio_bool .= $loop ? ' loop' : '';`).
+ *
+ * @param {string} phpSrc render.php source.
+ * @param {number} offset Usage-site offset.
+ * @param {number} [window] Scan window in characters, each side.
+ * @return {boolean}
+ */
+function nearbyBooleanKeywordLiteral( phpSrc, offset, window ) {
+	window = window || 200;
+	const start = Math.max( 0, offset - window );
+	const end = Math.min( phpSrc.length, offset + window );
+	const slice = phpSrc.slice( start, end );
+	const re = /['"]\s*([a-zA-Z-]+)\s*['"]/g;
+	let m;
+	while ( ( m = re.exec( slice ) ) !== null ) {
+		if ( BOOLEAN_ATTR_KEYWORDS.has( m[ 1 ].toLowerCase() ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Classify one usage-site offset into a non-paint sink category, or null
+ * (unclassified — conservatively treated as paint-relevant).
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null}
+ */
+/**
+ * Classify one usage-site offset.
+ *
+ * Returns 'paint' for an EXPLICIT blocker — a real, recognised output-affecting
+ * context (an unconditional CSS declaration, or a real HTML attribute name
+ * that isn't on the non-paint safelist, e.g. `src`/`class`/`style`/`href`).
+ * Returns one of NON_PAINT_SINK_CLASSES for a recognised non-paint sink.
+ * Returns null when the offset doesn't match ANY recognised sink SHAPE at
+ * all — a pure control-flow/computation read (an `if`/ternary numeric or
+ * boolean comparison, a `round()`/`abs()`/`in_array()` argument that feeds a
+ * LATER derived variable rather than being an output sink itself). null is
+ * NOT a blocker — attributeIsNonPaintSinkOnly() below skips it rather than
+ * treating it as paint, since it isn't evidence of anything either way.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset.
+ * @return {string|null}
+ */
+function classifyUsageSite( phpSrc, mask, offset ) {
+	// Real shape: sgs/quote's `$hover_rules[] = 'box-shadow:' . sgs_shadow_value(
+	// $sgs_css_safe_value( $box_shadow_hover ) );` — the variable is a
+	// function-call ARGUMENT (real PHP code, not inside a string at all), so
+	// classifyCssDeclarationSink()'s string-boundary-scoped scan can't see it.
+	// Checked FIRST, naming-convention-only (same trust already used for
+	// `--x-hover` custom properties and the $hover_rules container fallback
+	// inside classifyCssDeclarationSink) — low risk given this codebase's
+	// locked hover/focus/reduced-motion naming discipline.
+	const statementTarget = enclosingStatementAssignmentTargetName( phpSrc, mask, offset );
+	if ( statementTarget && /hover|focus/i.test( statementTarget ) ) {
+		return 'hover-css';
+	}
+	if ( statementTarget && /reduced.?motion/i.test( statementTarget ) ) {
+		return 'reduced-motion-css';
+	}
+
+	const cssClass = classifyCssDeclarationSink( phpSrc, mask, offset );
+	if ( cssClass === 'hover-css' || cssClass === 'reduced-motion-css' || cssClass === 'motion-timing' ) {
+		return cssClass;
+	}
+	if ( cssClass === 'paint' ) {
+		return 'paint';
+	}
+
+	const attrName = precedingHtmlAttributeName( phpSrc, offset );
+	if ( attrName ) {
+		if ( attrName.startsWith( 'aria-' ) ) {
+			return 'aria';
+		}
+		if ( attrName.startsWith( 'data-' ) ) {
+			return 'data';
+		}
+		if ( NATIVE_FUNCTIONAL_ATTR_NAMES.has( attrName ) ) {
+			return 'native-functional';
+		}
+		return 'paint'; // a recognised-but-not-safelisted attribute name (src, class, style, href...).
+	}
+
+	if ( isInsideJsonEncodeArgument( phpSrc, mask, offset ) ) {
+		return 'json-ld';
+	}
+
+	const gateClass = classifyIfConditionGate( phpSrc, mask, offset );
+	if ( gateClass ) {
+		return gateClass;
+	}
+
+	if ( nearbyBooleanKeywordLiteral( phpSrc, offset ) ) {
+		return 'native-functional';
+	}
+
+	return null;
+}
+
+// Broader than CHECK B's own ATTR_READ_RE (kept untouched there to avoid any
+// behaviour change to that check): a direct `$attributes['X']` read is
+// frequently wrapped in `! empty()`, `empty()`, `isset()`, or a scalar cast
+// before assignment — real shape: sgs/audio's
+// `$loop = ! empty( $attributes['audioLoop'] );` and
+// `$controls = isset( $attributes['audioControls'] ) ? (bool) $attributes['audioControls'] : true;`.
+// Signal 1 needs to resolve these to trace the var's REAL downstream usage
+// sites, so it uses its own broader wrapper-tolerant pattern.
+const ATTR_READ_WRAPPER_RE_SOURCE =
+	"(?:!\\s*|\\(\\s*bool\\s*\\)\\s*|\\(\\s*int\\s*\\)\\s*|\\(\\s*string\\s*\\)\\s*|\\(\\s*float\\s*\\)\\s*|\\(\\s*array\\s*\\)\\s*|empty\\(\\s*|isset\\(\\s*)*";
+
+/**
+ * Signal-1-specific direct-read map: `$var = [wrappers] $attributes['X']`,
+ * tolerant of `!empty()`/`empty()`/`isset()`/scalar-cast wrapping (see
+ * ATTR_READ_WRAPPER_RE_SOURCE doc comment above).
+ *
+ * @param {string} phpSrc render.php source.
+ * @return {Map<string,string>} localVar -> attrName.
+ */
+function collectAttrVarMapBroad( phpSrc ) {
+	const map = new Map();
+	const re = new RegExp(
+		'\\$([A-Za-z_]\\w*)\\s*=\\s*' + ATTR_READ_WRAPPER_RE_SOURCE + "\\(?\\s*\\$attributes\\[\\s*['\"]([A-Za-z0-9_]+)['\"]\\s*\\]",
+		'g'
+	);
+	let m;
+	while ( ( m = re.exec( phpSrc ) ) !== null ) {
+		map.set( m[ 1 ], m[ 2 ] );
+	}
+	return map;
+}
+
+/**
+ * Collect every "usage site" offset for an attribute in render.php: inline
+ * `$attributes['X']` occurrences (excluding ones that are part of a
+ * `$var = ... $attributes['X'] ...;` definition STATEMENT — the whole
+ * statement, not just the first match, so a repeated inline read within the
+ * same ternary/ `isset()` check, as in sgs/audio's `$controls` example
+ * above, doesn't double-count as an independent usage site) plus every real
+ * READ of every PHP variable that resolves back to X (direct, via
+ * collectAttrVarMapBroad(), + one-hop derived via CHECK B's
+ * attribute-agnostic collectDerivedVarMap(), reused unmodified).
+ *
+ * @param {string}              phpSrc        render.php source.
+ * @param {string}              attrName      Attribute name.
+ * @param {Map<string,string>}  attrVarMap    From collectAttrVarMapBroad().
+ * @param {Map<string,string>}  derivedVarMap From collectDerivedVarMap().
+ * @return {Array<number>} Usage-site offsets.
+ */
+function collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap ) {
+	const offsets = [];
+	const definitionSpans = [];
+	const defRe = new RegExp(
+		'\\$([A-Za-z_]\\w*)\\s*=\\s*' + ATTR_READ_WRAPPER_RE_SOURCE + "\\(?\\s*\\$attributes\\[\\s*['\"]" + attrName + "['\"]\\s*\\]",
+		'g'
+	);
+	let dm;
+	while ( ( dm = defRe.exec( phpSrc ) ) !== null ) {
+		const semiIdx = phpSrc.indexOf( ';', dm.index );
+		const end = semiIdx === -1 ? phpSrc.length : semiIdx + 1;
+		definitionSpans.push( [ dm.index, end ] );
+	}
+	const inlineRe = new RegExp( "\\$attributes\\[\\s*['\"]" + attrName + "['\"]\\s*\\]", 'g' );
+	let im;
+	while ( ( im = inlineRe.exec( phpSrc ) ) !== null ) {
+		const pos = im.index;
+		const insideDef = definitionSpans.some( ( [ s, e ] ) => pos >= s && pos < e );
+		if ( ! insideDef ) {
+			offsets.push( pos );
+		}
+	}
+
+	const varNames = new Set();
+	for ( const [ v, a ] of attrVarMap ) {
+		if ( a === attrName ) {
+			varNames.add( v );
+		}
+	}
+	for ( const [ v, a ] of derivedVarMap ) {
+		if ( a !== attrName ) {
+			continue;
+		}
+		// A derived var whose OWN definition is an array literal is a
+		// multi-attribute CONTAINER, not a scalar alias of `attrName` — real
+		// shape: sgs/accordion's `$extra_attrs = array( 'data-allow-multiple'
+		// => $allow_multi ? ... , 'data-default-open' => ... );` derives from
+		// BOTH allowMultiple and defaultOpen at once, then gets passed along
+		// wholesale (`'extra_attrs' => $extra_attrs`) elsewhere — that
+		// pass-along site says nothing about allowMultiple specifically (the
+		// real per-attribute site is the `$allow_multi`/`$default_open`
+		// occurrence already captured directly above), so it must NOT be
+		// expanded into a second, generic usage site for every attribute
+		// that fed the container.
+		const containerDefRe = new RegExp( '\\$' + v + '\\s*=\\s*(?:array\\(|\\[)' );
+		if ( containerDefRe.test( phpSrc ) ) {
+			continue;
+		}
+		varNames.add( v );
+	}
+	for ( const v of varNames ) {
+		const varRe = new RegExp( '\\$' + v + '\\b', 'g' );
+		let vm;
+		while ( ( vm = varRe.exec( phpSrc ) ) !== null ) {
+			const pos = vm.index;
+			const after = phpSrc.slice( pos + vm[ 0 ].length );
+			if ( /^\s*=(?!=)/.test( after ) ) {
+				continue; // this var's OWN assignment LHS, not a read
+			}
+			offsets.push( pos );
+		}
+	}
+	return offsets;
+}
+
+/**
+ * SIGNAL 1 driver: true if every render.php consumption site for `attrName`
+ * classifies as a non-paint sink. False (no exemption) if render.php has no
+ * resolvable consumption at all — that is a candidate true-dead-attribute,
+ * out of scope here (check-dead-controls.js's job), so this signal stays
+ * conservative rather than exempting on absence of evidence.
+ *
+ * @param {string}              phpSrc        render.php source.
+ * @param {Array<boolean>}      mask          From buildStringMask().
+ * @param {string}              attrName      Attribute name.
+ * @param {Map<string,string>}  attrVarMap    From collectAttrVarMap().
+ * @param {Map<string,string>}  derivedVarMap From collectDerivedVarMap().
+ * @return {boolean}
+ */
+function attributeIsNonPaintSinkOnly( phpSrc, mask, attrName, attrVarMap, derivedVarMap ) {
+	const offsets = collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap );
+	if ( ! offsets.length ) {
+		return false;
+	}
+	let sawNonPaintSink = false;
+	for ( const offset of offsets ) {
+		const cls = classifyUsageSite( phpSrc, mask, offset );
+		if ( cls === 'paint' ) {
+			return false; // an explicit, recognised paint-relevant sink — real candidate, not noise.
+		}
+		if ( NON_PAINT_SINK_CLASSES.has( cls ) ) {
+			sawNonPaintSink = true;
+		}
+		// cls === null: not a recognised sink SHAPE at all (pure control-flow/
+		// computation, e.g. an `if`/ternary comparison or a round()/abs()/
+		// in_array() argument feeding a later derived variable) — neither
+		// evidence for nor against; skipped rather than blocking.
+	}
+	return sawNonPaintSink;
+}
+
+// ---------------------------------------------------------------------------
+// SIGNAL 2 — companion-ID / atomic co-write exemption
+// ---------------------------------------------------------------------------
+
+/**
+ * Group every `setAttributes({...})` call-site's WRITTEN keys, per call-site
+ * (not flattened, unlike collectSetAttributesWrites() — signal 2 needs to
+ * know which attributes were written TOGETHER in the same object literal).
+ *
+ * @param {string} src Raw edit.js source.
+ * @return {Array<Set<string>>} One Set of co-written attribute names per call-site with 2+ keys.
+ */
+function collectSetAttributesGroups( src ) {
+	const groups = [];
+	if ( ! src ) {
+		return groups;
+	}
+	const setAttrRe = /setAttributes\(\s*\{\s*([^}]*)\}/g;
+	let m;
+	while ( ( m = setAttrRe.exec( src ) ) !== null ) {
+		const body = m[ 1 ];
+		const keyRe = /(?:^|[\s,])(?:['"]?)([A-Za-z_$][\w$]*)(?:['"]?)\s*:/g;
+		const keys = new Set();
+		let k;
+		while ( ( k = keyRe.exec( body ) ) !== null ) {
+			keys.add( k[ 1 ] );
+		}
+		if ( keys.size > 1 ) {
+			groups.push( keys );
+		}
+	}
+	return groups;
+}
+
+/**
+ * SIGNAL 2 driver: true if `attr` is always co-written (same setAttributes
+ * call-site object literal) with some companion attribute that itself
+ * already passes CHECK A cleanly (used outside InspectorControls/
+ * BlockControls).
+ *
+ * @param {string}              attr               Attribute name.
+ * @param {Array<Set<string>>}  setAttributeGroups From collectSetAttributesGroups().
+ * @param {Set<string>}         usedOutsideControls From collectUsedIdentifiersOutsideExcluded().
+ * @return {boolean}
+ */
+function checkCompanionExemption( attr, setAttributeGroups, usedOutsideControls ) {
+	for ( const group of setAttributeGroups ) {
+		if ( ! group.has( attr ) ) {
+			continue;
+		}
+		for ( const companion of group ) {
+			if ( companion !== attr && usedOutsideControls.has( companion ) ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// ---------------------------------------------------------------------------
+// SIGNAL 3 — explicit no-preview <Notice> branch exemption
+// ---------------------------------------------------------------------------
+
+const NOTICE_COMPONENT_NAMES = new Set( [ 'Notice' ] );
+const NO_PREVIEW_TEXT_RE = /not available in (?:the )?editor|handled by (?:the )?server|no (?:live )?preview|preview (?:is )?not available/i;
+
+/**
+ * Collect every top-level `const NAME = <BinaryExpression ===/== >` boolean
+ * flag declaration in the file (e.g. `const isVideo = 'video' === mediaType;`).
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @return {Set<string>} Flag names.
+ */
+function collectBooleanFlagDeclarations( ast ) {
+	const flags = new Set();
+	traverse( ast, {
+		VariableDeclarator( nodePath ) {
+			const node = nodePath.node;
+			if ( node.id.type !== 'Identifier' || ! node.init ) {
+				return;
+			}
+			if ( node.init.type === 'BinaryExpression' && ( node.init.operator === '===' || node.init.operator === '==' ) ) {
+				flags.add( node.id.name );
+			}
+		},
+	} );
+	return flags;
+}
+
+/**
+ * Collect every flag used as the bare (optionally negated) test of an
+ * `if ( FLAG )` / `if ( ! FLAG )` whose consequent contains a
+ * ReturnStatement — an early-return guard. The FINAL fallback branch (this
+ * signal's target) is reached only when none of these guard flags apply.
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @return {Set<string>} Guard flag names.
+ */
+function collectEarlyReturnGuardFlags( ast ) {
+	const guards = new Set();
+	traverse( ast, {
+		IfStatement( nodePath ) {
+			const test = nodePath.node.test;
+			let ident = null;
+			if ( test.type === 'Identifier' ) {
+				ident = test.name;
+			} else if ( test.type === 'UnaryExpression' && test.operator === '!' && test.argument.type === 'Identifier' ) {
+				ident = test.argument.name;
+			}
+			if ( ! ident ) {
+				return;
+			}
+			let hasReturn = false;
+			nodePath.get( 'consequent' ).traverse( {
+				ReturnStatement() {
+					hasReturn = true;
+				},
+			} );
+			if ( hasReturn ) {
+				guards.add( ident );
+			}
+		},
+	} );
+	return guards;
+}
+
+/**
+ * Collect every `{ FLAG && (<jsx>) }` JSX-gate group: a JSXExpressionContainer
+ * whose expression is a `&&` LogicalExpression with a bare Identifier left
+ * operand and a JSX right operand.
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @return {Array<{flag:string, start:number, end:number}>}
+ */
+function collectFlagGatedJsxGroups( ast ) {
+	const groups = [];
+	traverse( ast, {
+		LogicalExpression( nodePath ) {
+			const node = nodePath.node;
+			if ( node.operator !== '&&' || node.left.type !== 'Identifier' ) {
+				return;
+			}
+			if ( node.right.type !== 'JSXElement' && node.right.type !== 'JSXFragment' ) {
+				return;
+			}
+			groups.push( { flag: node.left.name, start: node.right.start, end: node.right.end } );
+		},
+	} );
+	return groups;
+}
+
+/**
+ * Find every `<Notice>`-named element whose text matches a no-preview
+ * phrase, and return the source span of its enclosing ReturnStatement.
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @param {string} src Raw edit.js source.
+ * @return {Array<{start:number, end:number}>}
+ */
+function findNoticeNoPreviewReturnSpans( ast, src ) {
+	const spans = [];
+	traverse( ast, {
+		JSXElement( nodePath ) {
+			const name = jsxOpeningName( nodePath.node.openingElement );
+			if ( ! NOTICE_COMPONENT_NAMES.has( name ) ) {
+				return;
+			}
+			const text = src.slice( nodePath.node.start, nodePath.node.end );
+			if ( ! NO_PREVIEW_TEXT_RE.test( text ) ) {
+				return;
+			}
+			let p = nodePath;
+			while ( p && p.node.type !== 'ReturnStatement' ) {
+				p = p.parentPath;
+			}
+			if ( p ) {
+				spans.push( { start: p.node.start, end: p.node.end } );
+			}
+		},
+	} );
+	return spans;
+}
+
+/**
+ * Collect every genuine Identifier READ within [start,end) — same exclusion
+ * rules as collectUsedIdentifiersOutsideExcluded() (destructuring bindings,
+ * plain object-literal keys, JSX tag/attribute names, import specifiers are
+ * not reads) but scoped to a source RANGE rather than an exclusion set.
+ *
+ * @param {Object} ast   Parsed edit.js AST.
+ * @param {number} start Range start (inclusive).
+ * @param {number} end   Range end (exclusive).
+ * @return {Set<string>}
+ */
+function collectIdentifiersInRange( ast, start, end ) {
+	const found = new Set();
+	traverse( ast, {
+		Identifier( nodePath ) {
+			const node = nodePath.node;
+			if ( node.start < start || node.start >= end ) {
+				return;
+			}
+			const parent = nodePath.parent;
+			if ( parent.type === 'JSXAttribute' && parent.name === node ) {
+				return;
+			}
+			if ( ( parent.type === 'JSXOpeningElement' || parent.type === 'JSXClosingElement' ) && parent.name === node ) {
+				return;
+			}
+			if ( parent.type === 'JSXMemberExpression' ) {
+				return;
+			}
+			if (
+				parent.type === 'ImportSpecifier' ||
+				parent.type === 'ImportDefaultSpecifier' ||
+				parent.type === 'ImportNamespaceSpecifier'
+			) {
+				return;
+			}
+			if ( parent.type === 'ObjectProperty' ) {
+				const container = nodePath.parentPath.parentPath.node;
+				if ( container.type === 'ObjectPattern' ) {
+					return;
+				}
+				if ( container.type === 'ObjectExpression' && parent.key === node && ! parent.computed ) {
+					return;
+				}
+			}
+			found.add( node.name );
+		},
+	} );
+	return found;
+}
+
+/**
+ * SIGNAL 3 driver: attributes gated by the same branch condition as an
+ * explicit no-preview `<Notice>`.
+ *
+ * @param {Object} ast           Parsed edit.js AST.
+ * @param {string} src           Raw edit.js source.
+ * @param {Set<string>} declaredAttrs Attribute names declared in block.json.
+ * @return {Set<string>} Exempt attribute names.
+ */
+function checkNoPreviewNoticeExemption( ast, src, declaredAttrs ) {
+	const noticeSpans = findNoticeNoPreviewReturnSpans( ast, src );
+	if ( ! noticeSpans.length ) {
+		return new Set();
+	}
+	const guardFlags = collectEarlyReturnGuardFlags( ast );
+	const allFlags = collectBooleanFlagDeclarations( ast );
+	const flagGroups = collectFlagGatedJsxGroups( ast );
+	const exempt = new Set();
+	// noticeSpans existing proves at least one fallback branch renders a
+	// no-preview Notice; every declared flag NOT used as an early-return
+	// guard is a candidate reachability flag for that fallback (see file
+	// header blind-spot note on ambiguity when more than one remains).
+	for ( const flagName of allFlags ) {
+		if ( guardFlags.has( flagName ) ) {
+			continue;
+		}
+		for ( const group of flagGroups ) {
+			if ( group.flag !== flagName ) {
+				continue;
+			}
+			for ( const idName of collectIdentifiersInRange( ast, group.start, group.end ) ) {
+				if ( declaredAttrs.has( idName ) ) {
+					exempt.add( idName );
+				}
+			}
+		}
+	}
+	return exempt;
 }
 
 // ---------------------------------------------------------------------------
@@ -582,6 +1883,14 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const excludedRanges = collectExcludedRanges( ast );
 	const usedOutsideControls = collectUsedIdentifiersOutsideExcluded( ast, excludedRanges );
 
+	// Exemption-signal plumbing (2026-08-13 refinement — see file header).
+	const phpSrc = readIfExists( path.join( dir, 'render.php' ) );
+	const phpMask = phpSrc ? buildStringMask( phpSrc ) : null;
+	const attrVarMap = phpSrc ? collectAttrVarMapBroad( phpSrc ) : new Map();
+	const derivedVarMap = phpSrc ? collectDerivedVarMap( phpSrc, attrVarMap ) : new Map();
+	const setAttributeGroups = collectSetAttributesGroups( src );
+	const noticeExemptSet = checkNoPreviewNoticeExemption( ast, src, declaredAttrs );
+
 	const findings = [];
 	for ( const attr of destructured ) {
 		if ( ! declaredAttrs.has( attr ) ) {
@@ -598,6 +1907,15 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 		}
 		if ( usedOutsideControls.has( attr ) ) {
 			continue;
+		}
+		if ( phpSrc && attributeIsNonPaintSinkOnly( phpSrc, phpMask, attr, attrVarMap, derivedVarMap ) ) {
+			continue; // SIGNAL 1 — every render.php consumption site is a non-paint sink
+		}
+		if ( checkCompanionExemption( attr, setAttributeGroups, usedOutsideControls ) ) {
+			continue; // SIGNAL 2 — co-written with a companion attribute already visible in canvas
+		}
+		if ( noticeExemptSet.has( attr ) ) {
+			continue; // SIGNAL 3 — gated by the same branch condition as an explicit no-preview Notice
 		}
 		findings.push( {
 			check: 'editor-canvas-desync',
@@ -1245,6 +2563,229 @@ function runSelfTest() {
 		log( 'CHECK B — PASS (positive control flagged, negative + intercepted controls clear)' );
 	}
 
+	log( '\n[check-editor-render-parity --self-test] SIGNAL 1 (non-paint output-sink)\n' );
+	const failuresS1 = [];
+
+	const s1EditJs = [
+		"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+		"import { PanelBody, TextControl } from '@wordpress/components';",
+		'export default function Edit( { attributes, setAttributes } ) {',
+		'\tconst { iconAriaLabel } = attributes;',
+		'\treturn (',
+		'\t\t<div { ...useBlockProps() }>',
+		'\t\t\t<InspectorControls>',
+		'\t\t\t\t<PanelBody>',
+		'\t\t\t\t\t<TextControl value={ iconAriaLabel } onChange={ ( v ) => setAttributes( { iconAriaLabel: v } ) } />',
+		'\t\t\t\t</PanelBody>',
+		'\t\t\t</InspectorControls>',
+		'\t\t\t<div className="preview">Hello</div>',
+		'\t\t</div>',
+		'\t);',
+		'}',
+	].join( '\n' );
+
+	const s1PosDir = writeBlock( 'signal1-positive', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-signal1-positive',
+			attributes: { iconAriaLabel: { type: 'string' } },
+		} ),
+		'edit.js': s1EditJs,
+		// Every consumption site is a non-paint sink (aria-label attribute value only).
+		'render.php': [
+			'<?php',
+			"$icon_aria_label = $attributes['iconAriaLabel'] ?? '';",
+			"echo '<span aria-label=\"' . esc_attr( $icon_aria_label ) . '\"></span>';",
+		].join( '\n' ),
+	} );
+	const s1PosMeta = readDeclaredAttrs( s1PosDir );
+	const s1PosFindings = checkEditorCanvasDesync( s1PosMeta.name, s1PosDir, s1PosMeta.attrs );
+	assertTrue(
+		! s1PosFindings.some( ( f ) => f.attr === 'iconAriaLabel' ),
+		'SIGNAL 1 positive fixture: iconAriaLabel (aria-label-only consumption) should be exempted, but was flagged',
+		failuresS1
+	);
+
+	const s1NegDir = writeBlock( 'signal1-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-signal1-negative',
+			attributes: { iconAriaLabel: { type: 'string' } },
+		} ),
+		'edit.js': s1EditJs.replace( /fixture-signal1-positive/g, 'fixture-signal1-negative' ),
+		// Same aria-label site PLUS an unconditional (base-rule) CSS declaration —
+		// one real paint site must block the exemption.
+		'render.php': [
+			'<?php',
+			"$icon_aria_label = $attributes['iconAriaLabel'] ?? '';",
+			"echo '<span aria-label=\"' . esc_attr( $icon_aria_label ) . '\"></span>';",
+			'echo "<style>.sgs-icon{content:\'{$icon_aria_label}\'}</style>";',
+		].join( '\n' ),
+	} );
+	const s1NegMeta = readDeclaredAttrs( s1NegDir );
+	const s1NegFindings = checkEditorCanvasDesync( s1NegMeta.name, s1NegDir, s1NegMeta.attrs );
+	assertTrue(
+		s1NegFindings.some( ( f ) => f.attr === 'iconAriaLabel' ),
+		'SIGNAL 1 negative fixture: iconAriaLabel also has an unconditional CSS declaration (real paint site) — should stay flagged, but was exempted',
+		failuresS1
+	);
+
+	if ( failuresS1.length ) {
+		pass = false;
+		log( 'SIGNAL 1 — FAIL' );
+		failuresS1.forEach( ( f ) => log( '  - ' + f ) );
+	} else {
+		log( 'SIGNAL 1 — PASS (aria-only-sink exempted, same site + a real CSS declaration stays flagged)' );
+	}
+
+	log( '\n[check-editor-render-parity --self-test] SIGNAL 2 (companion-ID co-write)\n' );
+	const failuresS2 = [];
+
+	const s2PosDir = writeBlock( 'signal2-positive', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-signal2-positive',
+			attributes: { mediaId: { type: 'number' }, mediaUrl: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { MediaUpload } from '@wordpress/block-editor';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { mediaId, mediaUrl } = attributes;',
+			'\tconst onSelect = ( media ) => setAttributes( { mediaId: media.id, mediaUrl: media.url } );',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<MediaUpload onSelect={ onSelect } render={ () => null } />',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<img src={ mediaUrl } alt="" />',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const s2PosMeta = readDeclaredAttrs( s2PosDir );
+	const s2PosFindings = checkEditorCanvasDesync( s2PosMeta.name, s2PosDir, s2PosMeta.attrs );
+	assertTrue(
+		! s2PosFindings.some( ( f ) => f.attr === 'mediaId' ),
+		'SIGNAL 2 positive fixture: mediaId co-written with mediaUrl (which passes CHECK A via <img src={mediaUrl}>) should be exempted, but was flagged',
+		failuresS2
+	);
+
+	const s2NegDir = writeBlock( 'signal2-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-signal2-negative',
+			attributes: { mediaId: { type: 'number' }, mediaIdBackup: { type: 'number' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { MediaUpload } from '@wordpress/block-editor';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { mediaId, mediaIdBackup } = attributes;',
+			'\tconst onSelect = ( media ) => setAttributes( { mediaId: media.id, mediaIdBackup: media.id } );',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<MediaUpload onSelect={ onSelect } render={ () => null } />',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const s2NegMeta = readDeclaredAttrs( s2NegDir );
+	const s2NegFindings = checkEditorCanvasDesync( s2NegMeta.name, s2NegDir, s2NegMeta.attrs );
+	assertTrue(
+		s2NegFindings.some( ( f ) => f.attr === 'mediaId' ),
+		'SIGNAL 2 negative fixture: mediaId co-written with mediaIdBackup, but NEITHER passes CHECK A on its own — mediaId should stay flagged, but was exempted',
+		failuresS2
+	);
+
+	if ( failuresS2.length ) {
+		pass = false;
+		log( 'SIGNAL 2 — FAIL' );
+		failuresS2.forEach( ( f ) => log( '  - ' + f ) );
+	} else {
+		log( 'SIGNAL 2 — PASS (companion visible in canvas exempts; companion also invisible does not)' );
+	}
+
+	log( '\n[check-editor-render-parity --self-test] SIGNAL 3 (no-preview Notice branch)\n' );
+	const failuresS3 = [];
+
+	// Mirrors the real sgs/media/edit.js shape: an early-return guard
+	// (`if ( isImage ) { ...; return (...); }`), a shared `inspectorControls`
+	// JSX const with a `{ isVideo && (<PanelBody>...) }` gate, and a fallback
+	// return rendering both `{ inspectorControls }` and a no-preview <Notice>.
+	const s3EditJs = [
+		"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+		"import { PanelBody, RangeControl, Notice } from '@wordpress/components';",
+		"import { __ } from '@wordpress/i18n';",
+		'export default function Edit( { attributes, setAttributes } ) {',
+		'\tconst { videoAutoplay, imageAlt } = attributes;',
+		"\tconst isImage = 'image' === attributes.mediaType;",
+		"\tconst isVideo = 'video' === attributes.mediaType;",
+		'\tconst inspectorControls = (',
+		'\t\t<InspectorControls>',
+		'\t\t\t{ isImage && (',
+		'\t\t\t\t<PanelBody title="Image">',
+		'\t\t\t\t\t<RangeControl value={ imageAlt } onChange={ ( v ) => setAttributes( { imageAlt: v } ) } />',
+		'\t\t\t\t</PanelBody>',
+		'\t\t\t) }',
+		'\t\t\t{ isVideo && (',
+		'\t\t\t\t<PanelBody title="Video">',
+		'\t\t\t\t\t<RangeControl value={ videoAutoplay } onChange={ ( v ) => setAttributes( { videoAutoplay: v } ) } />',
+		'\t\t\t\t</PanelBody>',
+		'\t\t\t) }',
+		'\t\t</InspectorControls>',
+		'\t);',
+		'\tif ( isImage ) {',
+		'\t\treturn (',
+		'\t\t\t<div { ...useBlockProps() }>',
+		'\t\t\t\t{ inspectorControls }',
+		'\t\t\t\t<img src="x" alt="" />',
+		'\t\t\t</div>',
+		'\t\t);',
+		'\t}',
+		'\treturn (',
+		'\t\t<div { ...useBlockProps() }>',
+		'\t\t\t{ inspectorControls }',
+		'\t\t\t<Notice status="info" isDismissible={ false }>',
+		"\t\t\t\t{ __( 'Preview not available in editor. Handled by server.', 'sgs-blocks' ) }",
+		'\t\t\t</Notice>',
+		'\t\t</div>',
+		'\t);',
+		'}',
+	].join( '\n' );
+
+	const s3Dir = writeBlock( 'signal3', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-signal3',
+			attributes: {
+				videoAutoplay: { type: 'boolean' },
+				imageAlt: { type: 'string' },
+			},
+		} ),
+		'edit.js': s3EditJs,
+	} );
+	const s3Meta = readDeclaredAttrs( s3Dir );
+	const s3Findings = checkEditorCanvasDesync( s3Meta.name, s3Dir, s3Meta.attrs );
+	assertTrue(
+		! s3Findings.some( ( f ) => f.attr === 'videoAutoplay' ),
+		'SIGNAL 3 positive: videoAutoplay is gated by the SAME flag (isVideo) as the branch rendering the no-preview Notice — should be exempted, but was flagged',
+		failuresS3
+	);
+	assertTrue(
+		s3Findings.some( ( f ) => f.attr === 'imageAlt' ),
+		'SIGNAL 3 negative: imageAlt is gated by isImage — an EARLY-RETURN GUARD flag, not the fallback branch’s own reachability flag — should stay flagged, but was exempted',
+		failuresS3
+	);
+
+	if ( failuresS3.length ) {
+		pass = false;
+		log( 'SIGNAL 3 — FAIL' );
+		failuresS3.forEach( ( f ) => log( '  - ' + f ) );
+	} else {
+		log( 'SIGNAL 3 — PASS (fallback-branch attribute exempted, early-return-guard attribute stays flagged)' );
+	}
+
 	fs.rmSync( tmpRoot, { recursive: true, force: true } );
 
 	return pass ? 0 : 1;
@@ -1302,4 +2843,32 @@ function main() {
 	process.exit( 0 );
 }
 
-main();
+if ( require.main === module ) {
+	main();
+}
+
+module.exports = {
+	buildStringMask,
+	findMatchingParen,
+	findMatchingBrace,
+	precedingCssPropertyName,
+	nearestPrecedingSelectorText,
+	isReducedMotionScoped,
+	classifyCssDeclarationSink,
+	precedingHtmlAttributeName,
+	isInsideJsonEncodeArgument,
+	findEnclosingIfConditionAndBody,
+	classifyIfConditionGate,
+	nearbyBooleanKeywordLiteral,
+	classifyUsageSite,
+	collectAttrUsageOffsets,
+	attributeIsNonPaintSinkOnly,
+	collectAttrVarMap,
+	collectAttrVarMapBroad,
+	collectDerivedVarMap,
+	collectSetAttributesGroups,
+	checkCompanionExemption,
+	checkNoPreviewNoticeExemption,
+	checkEditorCanvasDesync,
+	readDeclaredAttrs,
+};
