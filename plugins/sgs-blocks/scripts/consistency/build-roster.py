@@ -5,6 +5,11 @@ Spec 35 UNIT A0 — enumerate the block roster + per-block surface flags from th
 This is the audit DENOMINATOR: every later "0 findings across the roster" claim is keyed to
 roster.json's block set. DB-first (R-31-1) — never hardcode the count. Re-run after /sgs-update.
 
+Modes: (no args) write roster.json | --check freshness gate (DB vs on-disk, full payload
+compare — the roster-freshness gate closing the gap behind D523 + the 2026-07-30 18-block
+false-positive incident) | --self-test proves --check genuinely fails on stale input and
+clears on regen (temp copy only — never touches the real roster.json or the DB).
+
 Surface flags (a block is "in scope" for an audit dimension if the flag is true):
   styling   — declares any of color/spacing/__experimentalBorder/typography/shadow support
   colour    — declares the `color` support (component colour pickers are the enableAlpha target)
@@ -35,10 +40,14 @@ def q(sql: str):
     return [dict(r) for r in rows]
 
 
-def main():
-    # Parse command-line args
-    check_mode = "--check" in sys.argv
+def build_payload() -> dict:
+    """Query the live DB and build the roster payload exactly as `main()` would write it.
 
+    Factored out of `main()` (2026-08-12, closing the roster-freshness gap behind
+    D523 + the 2026-07-30 18-block false-positive incident) so `--check`, the normal
+    write path, and `--self-test` all share ONE query, never three copies that could
+    silently drift apart from each other.
+    """
     blocks = q(
         "SELECT slug, title, category, tier, replaces, has_render_php "
         "FROM blocks WHERE source='sgs' AND status='built' AND is_stale=0 ORDER BY slug;"
@@ -124,36 +133,122 @@ def main():
         },
         "blocks": roster,
     }
+    return payload
 
-    # Summary helper
+
+def check_against(out_path: Path, payload: dict) -> bool:
+    """Compare a live-computed `payload` against whatever's on disk at `out_path`.
+
+    This IS the freshness gate: a full payload comparison is a strict superset of a
+    hash/fingerprint check (it also tells you what to fix, not just that something
+    drifted), computed from the exact same query `build_payload()` uses for the
+    normal write path — so there is no second parallel definition of "fresh" to let
+    drift between itself and the generator (the class of bug this whole gate exists
+    to close). Returns True on PASS, False on FAIL/missing/malformed; never raises.
+    """
+    if not out_path.exists():
+        print(f"[FAIL] roster.json does not exist at {out_path}")
+        return False
+    try:
+        current = json.loads(out_path.read_text(encoding="utf-8"))
+    except (ValueError, OSError) as exc:
+        print(f"[FAIL] roster.json at {out_path} is unreadable/malformed: {exc}")
+        return False
+
+    if current == payload:
+        print(f"[PASS] roster.json is in sync with DB ({payload['_meta']['count']} blocks)")
+        return True
+
+    print(f"[FAIL] roster.json is STALE (DB: {payload['_meta']['count']} blocks, "
+          f"File: {current.get('_meta', {}).get('count', '?')} blocks)")
+    print("  roster.json is stale — run `python scripts/consistency/build-roster.py` before continuing.")
+    return False
+
+
+def self_test() -> int:
+    """Prove the freshness gate can genuinely fail, and clears on regeneration.
+
+    Never touches the real roster.json or the DB — reads the DB once (read-only,
+    same as every other mode) to get a real live payload, then does all mutation
+    against a throwaway temp copy. Modelled on this project's other --self-test
+    scripts (e.g. check-fx-list-drift.py): perturb a known-good state, assert the
+    gate catches it, then assert a fresh write clears it.
+    """
+    import tempfile
+
+    payload = build_payload()
+    ok = True
+
+    with tempfile.TemporaryDirectory(prefix="roster-freshness-selftest-") as tmp:
+        tmp_out = Path(tmp) / "roster.json"
+
+        # Case 1: no file at all -> FAIL.
+        if check_against(tmp_out, payload):
+            print("[self-test] FAIL — missing roster.json was not caught as stale")
+            ok = False
+        else:
+            print("[self-test] case 1/3 (missing file) — correctly caught as FAIL")
+
+        # Case 2: a fresh, correct write -> PASS.
+        tmp_out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        if not check_against(tmp_out, payload):
+            print("[self-test] FAIL — a byte-for-byte-fresh roster.json was reported stale")
+            ok = False
+        else:
+            print("[self-test] case 2/3 (fresh write) — correctly PASSED")
+
+        # Case 3: simulate the real incident shape — the DB has moved on (one more
+        # block, a flipped surfaces.link flag) but the on-disk file is the OLD state.
+        stale = json.loads(json.dumps(payload))  # deep copy
+        stale["_meta"]["count"] = stale["_meta"]["count"] - 1
+        if stale["blocks"]:
+            stale["blocks"][0]["surfaces"]["link"] = not stale["blocks"][0]["surfaces"]["link"]
+            stale["blocks"].pop()
+        tmp_out.write_text(json.dumps(stale, indent=2), encoding="utf-8")
+        if check_against(tmp_out, payload):
+            print("[self-test] FAIL — a stale roster.json (flipped flag + dropped block) was reported PASS")
+            ok = False
+        else:
+            print("[self-test] case 3/3 (stale: flipped flag + missing block) — correctly caught as FAIL")
+
+        # Regeneration clears it — write the live payload back and confirm PASS again.
+        tmp_out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        if not check_against(tmp_out, payload):
+            print("[self-test] FAIL — regenerating did not clear the stale finding")
+            ok = False
+        else:
+            print("[self-test] case 2b (regenerated) — correctly cleared back to PASS")
+
+    if ok:
+        print("[self-test] ALL PASS — the freshness gate genuinely detects staleness and clears on regen.")
+    return 0 if ok else 1
+
+
+def main():
+    args = sys.argv[1:]
+    check_mode = "--check" in args
+    self_test_mode = "--self-test" in args
+
+    if self_test_mode:
+        sys.exit(self_test())
+
+    payload = build_payload()
+    roster = payload["blocks"]
+
+    if check_mode:
+        sys.exit(0 if check_against(OUT, payload) else 1)
+
+    # Normal mode: write roster
+    OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
     def cnt(flag):
         return sum(1 for b in roster if b["surfaces"][flag])
 
-    if check_mode:
-        # Drift check: compare on-disk roster against what would be generated
-        if not OUT.exists():
-            print(f"[FAIL] roster.json does not exist at {OUT}")
-            sys.exit(1)
-
-        current = json.loads(OUT.read_text(encoding="utf-8"))
-        # Compare payloads (ignore formatting differences)
-        if current == payload:
-            print(f"[PASS] roster.json is in sync with DB ({len(roster)} blocks)")
-            sys.exit(0)
-        else:
-            print(f"[FAIL] roster.json is STALE (DB: {len(roster)} blocks, "
-                  f"File: {current.get('_meta', {}).get('count', '?')} blocks)")
-            print(f"  Run: python scripts/consistency/build-roster.py")
-            sys.exit(1)
-    else:
-        # Normal mode: write roster
-        OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-
-        print(f"roster.json written: {len(roster)} SGS built blocks")
-        print(f"  styling={cnt('styling')} colour={cnt('colour')} link={cnt('link')} "
-              f"media={cnt('media')} animation={cnt('animation')}")
-        with_replaces = sum(1 for b in roster if b["replaces"])
-        print(f"  with a `replaces` map (feature-parity scope): {with_replaces}")
+    print(f"roster.json written: {len(roster)} SGS built blocks")
+    print(f"  styling={cnt('styling')} colour={cnt('colour')} link={cnt('link')} "
+          f"media={cnt('media')} animation={cnt('animation')}")
+    with_replaces = sum(1 for b in roster if b["replaces"])
+    print(f"  with a `replaces` map (feature-parity scope): {with_replaces}")
 
 
 if __name__ == "__main__":

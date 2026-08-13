@@ -485,7 +485,7 @@
 		},
 		"gridItemPadding": {
 			"type": "object",
-			"default": {}
+			"default": {"desktop": {}}
 		},
 		"gridItemBackground": {
 			"type": "string",

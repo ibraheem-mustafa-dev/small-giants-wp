@@ -60,6 +60,7 @@ import {
 	ShadowControl,
 	GradientOverlayControl,
 	ResponsiveBorderRadiusControl,
+	normaliseResponsiveBox,
 } from '../../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
 
@@ -1236,13 +1237,34 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 			</p>
-			<BoxControl
+			{ /* gridItemPadding is a TIER OBJECT — ONE attr holding
+			     {desktop,tablet,mobile}, each tier itself a
+			     {top,right,bottom,left} box (brought in line with
+			     contentBandPadding's shape, 2026-08-13 — it was the one
+			     tiered box-object property in this wrapper with no
+			     tablet/mobile variant). It therefore uses ResponsiveOverride,
+			     which reads and writes the object, NOT a plain BoxControl
+			     writing one flat attr. Do NOT revert to a flat BoxControl —
+			     WordPress SILENTLY DISCARDS an attribute a block does not
+			     declare (D338), and the block.json default is now
+			     {desktop:{}}, not {}. Mirrors container/edit.js's
+			     contentBandPadding control exactly. */ }
+			<ResponsiveOverride
 				label={ __( 'Padding', 'sgs-blocks' ) }
-				values={ gridItemPadding ?? {} }
-				splitOnAxis={ false }
-				units={ GRID_ITEM_BOX_UNITS }
-				onChange={ ( next ) => setAttributes( { gridItemPadding: next } ) }
-			/>
+				value={ gridItemPadding }
+				onChange={ ( obj ) => setAttributes( { gridItemPadding: obj } ) }
+			>
+				{ ( { ownValue, setOwnValue } ) => (
+					<BoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						hideLabelFromVision
+						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+						splitOnAxis={ false }
+						units={ GRID_ITEM_BOX_UNITS }
+						onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+					/>
+				) }
+			</ResponsiveOverride>
 			<DesignTokenPicker
 				label={ __( 'Background colour', 'sgs-blocks' ) }
 				value={ gridItemBackground }

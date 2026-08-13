@@ -38,6 +38,11 @@
 			"style": true,
 			"__experimentalSkipSerialization": true
 		},
+		"spacing": {
+			"margin": true,
+			"padding": false,
+			"__experimentalSkipSerialization": true
+		},
 		"sgs": {
 			"elements": {
 				"group": {
@@ -64,7 +69,7 @@
 						"css:justify-content": "justifyContent",
 						"css:align-items": "alignItems"
 					},
-					"_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. No `spacing` or `typography` support is declared in block.json (padding/margin/font members are honest gaps). `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
+					"_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. `spacing.margin` IS declared (2026-08-13, D-pending — 9 theme pattern instances were silently discarding style.spacing.margin.top before this fix). `padding`/`typography` remain honest gaps. `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
 				},
 				"button": {
 					"label": "Button",
@@ -79,23 +84,23 @@
 		"flexDirection": {
 			"type": "object",
 			"default": {"desktop": "row", "mobile": "column"}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "12px", "mobile": "8px"}
-		},
+		},
 		"justifyContent": {
 			"type": "object",
 			"default": {"desktop": "flex-start"}
-		},
+		},
 		"flexWrap": {
 			"type": "object",
 			"default": {"desktop": "nowrap", "mobile": "nowrap"}
-		},
+		},
 		"alignItems": {
 			"type": "object",
 			"default": {"desktop": "center", "mobile": "stretch"}
-		},
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}
@@ -120,7 +125,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -128,11 +133,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"justifyItems": {
 			"type": "string",
 			"default": "stretch",

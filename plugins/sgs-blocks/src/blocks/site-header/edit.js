@@ -26,6 +26,24 @@ import {
 } from '../container/components/ContainerWrapperControls';
 import { ResponsiveTriStateControl, ResponsiveBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { resolveTier } from '../../utils/responsive';
+
+/**
+ * Does a tri-state {desktop,tablet,mobile} behaviour object resolve 'on' at
+ * ANY tier? Mirrors render.php's `sgs_resolve_on_tiers( $raw, 'on', 'off' )`
+ * on the JS side, via the same shared `resolveTier()` cascade
+ * (ResponsiveTriStateControl and the PHP resolver both already depend on the
+ * identical inherit semantics — this just asks the question across all three
+ * tiers instead of one).
+ *
+ * @param {Object} raw Tri-state value, e.g. `attributes.headerSticky`.
+ * @return {boolean}
+ */
+function isOnAtAnyTier( raw ) {
+	return [ 'desktop', 'tablet', 'mobile' ].some(
+		( tier ) => resolveTier( raw, tier, 'off' ).value === 'on'
+	);
+}
 
 // FR-37-28 — Layout preset (Centred / Split / Minimal). A preset is a
 // convenience action that WRITES the block's EXISTING layout attributes
@@ -398,6 +416,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		style,
 	} = attributes;
 
+	// P-HEADER-SIMPLICITY-FINDINGS finding 2 follow-up (2026-08-13, Bean's
+	// design note): Shrink on scroll is CONCEPTUALLY a sub-behaviour of
+	// Sticky on scroll, not an independent toggle. Proven, not assumed:
+	// render.php's shrink animation (`animation-timeline:
+	// scroll(root block); animation-range: 0 200px`, render.php:238) and its
+	// legacy `.is-header-shrunk` fallback both key off document scrollY —
+	// NEITHER checks headerSticky. But a header that is not sticky/fixed
+	// scrolls out of the viewport in normal document flow well before that
+	// 200px range completes (the header's own rendered height is ~97px,
+	// measured live on the sandybrown canary), and view.js's
+	// `initScrollBehaviours()` toggles `is-header-shrunk` purely off
+	// `window.scrollY > 50` (view.js:285) with no visibility/pinned check —
+	// so a non-sticky header's shrink animation runs mostly (or entirely)
+	// off-screen. The effect is real in code but invisible to the visitor
+	// without Sticky, which is exactly Bean's framing. Hiding the control
+	// until Sticky is on (rather than a flat ToolsPanel "+" disclosure
+	// alongside it) stops a client enabling a setting that visibly does
+	// nothing. Precedent for this shape: sgs/button's `edit.js` conditionally
+	// renders its "Collapse label to icon" ToolsPanelItem on
+	// `iconPosition !== 'only'` — same pattern, copied here.
+	const isStickyOn = isOnAtAnyTier( headerSticky );
+
+	// Contrast safety over hero is similarly a sub-behaviour, but of
+	// TRANSPARENT, not Sticky — confirmed in
+	// includes/class-sgs-header-behaviours.php:234-239, which auto-upgrades
+	// `contrastSafe` from 'none' to 'scrim' whenever Transparent resolves on
+	// at the desktop tier (a WCAG 1.4.3 safety net for exactly this
+	// combination). The control only has a decision to make once Transparent
+	// is on; hidden otherwise for the same reason Shrink is hidden until
+	// Sticky is on.
+	const isTransparentOn = isOnAtAnyTier( headerTransparent );
+
 	// Check contrast ratio on attribute changes
 	const [ contrastNotice, setContrastNotice ] = useState( null );
 
@@ -440,6 +490,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ contrastNotice }
 					</Notice>
 				) }
+				{ /* P-HEADER-SIMPLICITY-FINDINGS finding 2 (2026-08-12): the Settings
+				     tab previously always-showed 3 full panels here (Header width,
+				     Padding & margin, Background) plus 4 more in "Header behaviour"
+				     below — 7 default-visible controls against a target of 2.
+				     "Header width" is the one layout choice most clients touch
+				     (contained vs full-bleed), so it stays a plain always-visible
+				     panel. Padding & margin (fine-tuning spacing) and Background
+				     (image/video/SVG/overlay — a rich, situational panel) move
+				     behind a ToolsPanel "+ Add" disclosure — still one click away,
+				     never removed, just not shown until asked for. */ }
 				<PanelBody title={ __( 'Header width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
@@ -447,69 +507,190 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Responsive spacing (padding + margin) — box-object interface
-				     contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-				     §5). Base tier writes to the WP-native style.spacing object (also
-				     visible in the Styles > Dimensions panel); tablet/mobile write to
-				     the paddingTablet/paddingMobile and marginTablet/marginMobile
-				     object attrs read by the wrapper's @media tiers. */ }
-				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
+				<ToolsPanel
+					label={ __( 'Advanced layout', 'sgs-blocks' ) }
+					resetAll={ () => {
+						setAttributes( {
+							style: {
+								...attributes.style,
+								spacing: {
+									...attributes.style?.spacing,
+									padding: undefined,
+									margin: undefined,
+								},
+							},
+							paddingTablet: {},
+							paddingMobile: {},
+							marginTablet: {},
+							marginMobile: {},
+							backgroundImage: undefined,
+							backgroundImageTablet: undefined,
+							backgroundImageMobile: undefined,
+							backgroundOverlayColour: undefined,
+							backgroundAttachment: 'scroll',
+							backgroundPosition: 'center center',
+							backgroundRepeat: 'no-repeat',
+							backgroundSize: 'cover',
+							bgVideo: undefined,
+							bgVideoTablet: undefined,
+							bgVideoMobile: undefined,
+							bgParallax: false,
+							bgKenBurns: false,
+							bgAnimationDuration: 20,
+							bgSvgContent: '',
+							bgSvgPosition: 'background',
+							bgSvgAnimation: 'none',
+							bgSvgAnimationSpeed: 'medium',
+							bgSvgOpacity: 100,
+							bgSvgMinHeight: '',
+							bgSvgTextShadow: false,
+							overlayGradient: false,
+							overlayGradientAngle: 180,
+							overlayGradientFrom: '',
+							overlayGradientTo: '',
+						} );
+					} }
+				>
+					{ /* Responsive spacing (padding + margin) — box-object interface
+					     contract (.claude/plans/2026-07-09-box-object-interface-contract.md
+					     §5). Base tier writes to the WP-native style.spacing object (also
+					     visible in the Styles > Dimensions panel); tablet/mobile write to
+					     the paddingTablet/paddingMobile and marginTablet/marginMobile
+					     object attrs read by the wrapper's @media tiers. */ }
+					<ToolsPanelItem
+						label={ __( 'Padding & margin', 'sgs-blocks' ) }
+						hasValue={ () =>
+							Object.keys( attributes.style?.spacing?.padding ?? {} ).length > 0 ||
+							Object.keys( attributes.style?.spacing?.margin ?? {} ).length > 0 ||
+							Object.keys( attributes.paddingTablet ?? {} ).length > 0 ||
+							Object.keys( attributes.paddingMobile ?? {} ).length > 0 ||
+							Object.keys( attributes.marginTablet ?? {} ).length > 0 ||
+							Object.keys( attributes.marginMobile ?? {} ).length > 0
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								style: {
+									...attributes.style,
+									spacing: {
+										...attributes.style?.spacing,
+										padding: undefined,
+										margin: undefined,
 									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
-						} }
-					/>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
-						} }
-					/>
-				</PanelBody>
+								},
+								paddingTablet: {},
+								paddingMobile: {},
+								marginTablet: {},
+								marginMobile: {},
+							} )
+						}
+					>
+						<ResponsiveBoxControl
+							label={ __( 'Padding', 'sgs-blocks' ) }
+							values={ {
+								base: attributes.style?.spacing?.padding ?? {},
+								tablet: attributes.paddingTablet ?? {},
+								mobile: attributes.paddingMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( tier === 'base' ) {
+									setAttributes( {
+										style: {
+											...attributes.style,
+											spacing: { ...attributes.style?.spacing, padding: next },
+										},
+									} );
+								} else {
+									setAttributes( {
+										[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+									} );
+								}
+							} }
+						/>
+						<hr style={ { margin: '16px 0' } } />
+						<ResponsiveBoxControl
+							label={ __( 'Margin', 'sgs-blocks' ) }
+							values={ {
+								base: attributes.style?.spacing?.margin ?? {},
+								tablet: attributes.marginTablet ?? {},
+								mobile: attributes.marginMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( tier === 'base' ) {
+									setAttributes( {
+										style: {
+											...attributes.style,
+											spacing: { ...attributes.style?.spacing, margin: next },
+										},
+									} );
+								} else {
+									setAttributes( {
+										[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
+									} );
+								}
+							} }
+						/>
+					</ToolsPanelItem>
 
-				{ /* Background/overlay panel — same shared component + default
-				     attrNames used by sgs/container, sgs/cta-section and sgs/hero
-				     (ContainerWrapperControls.js's BackgroundPanel, which wraps
-				     GradientOverlayControl). site-header declares the identical
-				     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
-				     overlayGradientFrom and overlayGradientTo attrs
-				     (block.json:216,356-368) but had no
-				     control mounted — inspector-scan rule 21-render-without-control. */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+					{ /* Background/overlay panel — same shared component + default
+					     attrNames used by sgs/container, sgs/cta-section and sgs/hero
+					     (ContainerWrapperControls.js's BackgroundPanel, which wraps
+					     GradientOverlayControl). site-header declares the identical
+					     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
+					     overlayGradientFrom and overlayGradientTo attrs
+					     (block.json:216,356-368) but had no
+					     control mounted — inspector-scan rule 21-render-without-control. */ }
+					<ToolsPanelItem
+						label={ __( 'Background', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! attributes.backgroundImage?.url ||
+							!! attributes.backgroundImageTablet?.url ||
+							!! attributes.backgroundImageMobile?.url ||
+							!! attributes.bgVideo?.url ||
+							!! attributes.bgVideoTablet?.url ||
+							!! attributes.bgVideoMobile?.url ||
+							!! attributes.bgSvgContent ||
+							!! attributes.backgroundOverlayColour ||
+							!! attributes.overlayGradient ||
+							( attributes.backgroundAttachment ?? 'scroll' ) !== 'scroll' ||
+							( attributes.backgroundPosition ?? 'center center' ) !== 'center center' ||
+							( attributes.backgroundRepeat ?? 'no-repeat' ) !== 'no-repeat' ||
+							( attributes.backgroundSize ?? 'cover' ) !== 'cover' ||
+							!! attributes.bgParallax ||
+							!! attributes.bgKenBurns
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								backgroundImage: undefined,
+								backgroundImageTablet: undefined,
+								backgroundImageMobile: undefined,
+								backgroundOverlayColour: undefined,
+								backgroundAttachment: 'scroll',
+								backgroundPosition: 'center center',
+								backgroundRepeat: 'no-repeat',
+								backgroundSize: 'cover',
+								bgVideo: undefined,
+								bgVideoTablet: undefined,
+								bgVideoMobile: undefined,
+								bgParallax: false,
+								bgKenBurns: false,
+								bgAnimationDuration: 20,
+								bgSvgContent: '',
+								bgSvgPosition: 'background',
+								bgSvgAnimation: 'none',
+								bgSvgAnimationSpeed: 'medium',
+								bgSvgOpacity: 100,
+								bgSvgMinHeight: '',
+								bgSvgTextShadow: false,
+								overlayGradient: false,
+								overlayGradientAngle: 180,
+								overlayGradientFrom: '',
+								overlayGradientTo: '',
+							} )
+						}
+					>
+						<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+					</ToolsPanelItem>
+				</ToolsPanel>
 			</InspectorControls>
 
 			<InspectorControls group="settings">
@@ -560,7 +741,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onDeselect={ () =>
 							setAttributes( { headerTransparent: {} } )
 						}
-						isShownByDefault
 					>
 						<ResponsiveTriStateControl
 							label={ __(
@@ -579,29 +759,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToolsPanelItem>
 
-					<ToolsPanelItem
-						label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
-						hasValue={ () =>
-							Object.keys( headerShrink || {} ).length > 0
-						}
-						onDeselect={ () =>
-							setAttributes( { headerShrink: {} } )
-						}
-						isShownByDefault
-					>
-						<ResponsiveTriStateControl
+					{ /* Conditionally rendered, not just disclosure-hidden — see the
+					     isStickyOn docblock above. Only appears once Sticky on
+					     scroll is on at some tier; a non-sticky header cannot show
+					     a meaningful shrink. */ }
+					{ isStickyOn && (
+						<ToolsPanelItem
 							label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
-							help={ __(
-								'Reduces the header height as the visitor scrolls down the page.',
-								'sgs-blocks'
-							) }
-							value={ headerShrink }
-							onChange={ ( value ) =>
-								setAttributes( { headerShrink: value } )
+							hasValue={ () =>
+								Object.keys( headerShrink || {} ).length > 0
 							}
-							defaultValue="off"
-						/>
-					</ToolsPanelItem>
+							onDeselect={ () =>
+								setAttributes( { headerShrink: {} } )
+							}
+						>
+							<ResponsiveTriStateControl
+								label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
+								help={ __(
+									'Reduces the header height as the visitor scrolls down the page. Only visible while the header is pinned via Sticky on scroll — a header that scrolls away normally never stays on screen long enough to shrink.',
+									'sgs-blocks'
+								) }
+								value={ headerShrink }
+								onChange={ ( value ) =>
+									setAttributes( { headerShrink: value } )
+								}
+								defaultValue="off"
+							/>
+						</ToolsPanelItem>
+					) }
 
 					<ToolsPanelItem
 						label={ __( 'Hide on scroll', 'sgs-blocks' ) }
@@ -626,35 +811,42 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToolsPanelItem>
 
-					<ToolsPanelItem
-						label={ __(
-							'Contrast safety over hero',
-							'sgs-blocks'
-						) }
-						hasValue={ () => contrastSafe !== 'none' }
-						onDeselect={ () =>
-							setAttributes( { contrastSafe: 'none' } )
-						}
-						isShownByDefault
-					>
-						<SelectControl
+					{ /* Conditionally rendered — see the isTransparentOn docblock
+					     above. A non-transparent header already has a solid resting
+					     background (nothing to protect contrast against), and
+					     class-sgs-header-behaviours.php auto-upgrades this to
+					     'scrim' the moment Transparent switches on, so the control
+					     has nothing to decide until then. */ }
+					{ isTransparentOn && (
+						<ToolsPanelItem
 							label={ __(
 								'Contrast safety over hero',
 								'sgs-blocks'
 							) }
-							value={ contrastSafe || 'none' }
-							options={ CONTRAST_SAFE_OPTIONS }
-							onChange={ ( value ) =>
-								setAttributes( { contrastSafe: value } )
+							hasValue={ () => contrastSafe !== 'none' }
+							onDeselect={ () =>
+								setAttributes( { contrastSafe: 'none' } )
 							}
-							help={ __(
-								'Keeps header text readable when it sits over a hero image (used with Transparent until scrolled).',
-								'sgs-blocks'
-							) }
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-						/>
-					</ToolsPanelItem>
+						>
+							<SelectControl
+								label={ __(
+									'Contrast safety over hero',
+									'sgs-blocks'
+								) }
+								value={ contrastSafe || 'none' }
+								options={ CONTRAST_SAFE_OPTIONS }
+								onChange={ ( value ) =>
+									setAttributes( { contrastSafe: value } )
+								}
+								help={ __(
+									'Keeps header text readable when it sits over a hero image (used with Transparent until scrolled).',
+									'sgs-blocks'
+								) }
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					) }
 				</ToolsPanel>
 			</InspectorControls>
 

@@ -34,6 +34,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { ResponsiveControl } from '../../components';
 
 /**
  * Return true if the given block supports image controls.
@@ -116,15 +117,8 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 			return <BlockEdit { ...props } />;
 		}
 
-		const {
-			sgsObjectPosition,
-			sgsObjectFit,
-			sgsMaxWidth,
-			sgsHeightDesktop,
-			sgsHeightTablet,
-			sgsHeightMobile,
-			sgsHeightUnit,
-		} = attributes;
+		const { sgsObjectPosition, sgsObjectFit, sgsMaxWidth, sgsHeightUnit } =
+			attributes;
 
 		// Heuristic image-url lookup for the FocalPointPicker preview. The
 		// extension has no per-block schema knowledge of which attribute holds
@@ -139,6 +133,23 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 			attributes.backgroundImage ||
 			attributes.src ||
 			'';
+
+		// Responsive breakpoint -> attr key map for the height controls,
+		// mirroring the shared TypographyControls fontSizeAttrMap idiom
+		// (components/TypographyControls.js) — sgsHeight is a flat scalar trio,
+		// not a tier OBJECT, so the map picks the right sibling attr per
+		// breakpoint rather than indexing into an object.
+		const heightAttrMap = {
+			desktop: 'sgsHeightDesktop',
+			tablet: 'sgsHeightTablet',
+			mobile: 'sgsHeightMobile',
+		};
+
+		const heightHelp = {
+			desktop: __( '0 = auto (natural image height).', 'sgs-blocks' ),
+			tablet: __( '0 = inherit from desktop.', 'sgs-blocks' ),
+			mobile: __( '0 = inherit from desktop.', 'sgs-blocks' ),
+		};
 
 		const focalPointValue = {
 			x:
@@ -234,51 +245,32 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 							}
 							__nextHasNoMarginBottom
 						/>
-						<RangeControl
-							label={ __( 'Height — desktop', 'sgs-blocks' ) }
-							help={ __(
-								'0 = auto (natural image height).',
-								'sgs-blocks'
+						<ResponsiveControl
+							label={ __( 'Height', 'sgs-blocks' ) }
+						>
+							{ ( breakpoint ) => (
+								<RangeControl
+									label={ __( 'Height', 'sgs-blocks' ) }
+									hideLabelFromVision
+									help={ heightHelp[ breakpoint ] }
+									value={
+										attributes[
+											heightAttrMap[ breakpoint ]
+										]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ heightAttrMap[ breakpoint ] ]:
+												val ?? 0,
+										} )
+									}
+									min={ 0 }
+									max={ 800 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+								/>
 							) }
-							value={ sgsHeightDesktop }
-							onChange={ ( val ) =>
-								setAttributes( { sgsHeightDesktop: val ?? 0 } )
-							}
-							min={ 0 }
-							max={ 800 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Height — tablet', 'sgs-blocks' ) }
-							help={ __(
-								'0 = inherit from desktop.',
-								'sgs-blocks'
-							) }
-							value={ sgsHeightTablet }
-							onChange={ ( val ) =>
-								setAttributes( { sgsHeightTablet: val ?? 0 } )
-							}
-							min={ 0 }
-							max={ 800 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Height — mobile', 'sgs-blocks' ) }
-							help={ __(
-								'0 = inherit from desktop.',
-								'sgs-blocks'
-							) }
-							value={ sgsHeightMobile }
-							onChange={ ( val ) =>
-								setAttributes( { sgsHeightMobile: val ?? 0 } )
-							}
-							min={ 0 }
-							max={ 800 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
+						</ResponsiveControl>
 					</PanelBody>
 				</InspectorControls>
 			</>
