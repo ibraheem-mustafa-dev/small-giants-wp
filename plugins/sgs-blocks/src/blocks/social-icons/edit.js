@@ -7,11 +7,9 @@ import {
 	RangeControl,
 	Button,
 	Flex,
-	FlexItem,
-	FlexBlock,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, SgsLinkControl, resolveColorToken } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColorToken } from '../../components';
 import { spacingVar } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -48,6 +46,28 @@ const PLATFORM_LABELS = {
 	youtube: 'YouTube', tiktok: 'TikTok', github: 'GitHub', whatsapp: 'WhatsApp', email: 'Email',
 	website: 'Website', pinterest: 'Pinterest', snapchat: 'Snapchat', telegram: 'Telegram',
 	discord: 'Discord', google: 'Google', custom: 'Custom',
+};
+
+// Fix 1 (Spec 35 A2/Part B): mirrors render.php's $platform_icons EXACTLY —
+// the editor canvas resolves the SAME Lucide slug render.php does, via the
+// shared IconPreview component (src/components/IconPicker/IconPreview.js),
+// instead of reinventing icon-name resolution a second time.
+const PLATFORM_ICONS = {
+	facebook: 'facebook',
+	twitter: 'twitter',
+	linkedin: 'linkedin',
+	instagram: 'instagram',
+	youtube: 'youtube',
+	tiktok: 'music',
+	github: 'github',
+	whatsapp: 'message-circle',
+	email: 'mail',
+	website: 'globe',
+	pinterest: 'pin',
+	snapchat: 'ghost',
+	telegram: 'send',
+	discord: 'message-square',
+	google: 'star',
 };
 
 // Mirrors render.php's sgs_social_icons_default_label() — editor-preview only
@@ -150,6 +170,26 @@ export default function Edit( { attributes, setAttributes } ) {
 		// colourVar(), which is slug-only) is the correct resolver.
 		previewStyle[ '--sgs-social-colour' ] = resolveColorToken( iconColour, palette );
 	}
+	// Fix 3: hover colour was destructured + written by its DesignTokenPicker
+	// but never reached the canvas — render.php emits `--sgs-social-hover`
+	// UNCONDITIONALLY (independent of colourMode, matching style.css's
+	// `.sgs-social-icons__item:hover{color:var(--sgs-social-hover)}` rule).
+	// Setting the same custom property here means a real mouse hover on the
+	// editor canvas (a live DOM, not a static screenshot) now shows the same
+	// colour the frontend does.
+	if ( iconColourHover ) {
+		previewStyle[ '--sgs-social-hover' ] = resolveColorToken( iconColourHover, palette );
+	}
+
+	// Fix 1/2: mirrors render.php's $item_size — the clickable hit area is
+	// floored at 44px (WCAG 2.5.8) and grows past the glyph size for the
+	// filled/outlined/pill variants (extra padding), while the glyph itself
+	// always renders at the operator-chosen iconSize. Using the real value
+	// here (not a fixed box) is what stops the filled/outlined/pill variants
+	// visually "clipping" the preview — a real SVG at iconSize always fits
+	// inside a box floored at 44px, where the old raw platform-slug TEXT could
+	// overflow a small circular badge with no overflow guard.
+	const itemSize = Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-social-icons sgs-social-icons--${ iconStyle }`,
@@ -210,70 +250,83 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) : (
 				<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
+					{ /* Fix 4 (Bean: inspector "horrendous") — each control now runs
+					   FULL-WIDTH, stacked vertically, instead of squeezed 3-across
+					   inside a ~248px sidebar (previously ~110px per control, help
+					   text wrapping 6 lines). Only the small icon-button row at the
+					   bottom stays horizontal — those don't need full width. */ }
 					{ icons.map( ( icon, index ) => (
-						<Flex key={ index } align="flex-start" style={ { marginBottom: '12px', borderBottom: '1px solid #e0e0e0', paddingBottom: '12px' } }>
-							<FlexItem>
-								<SelectControl
-									value={ icon.platform }
-									options={ PLATFORMS.map( ( p ) => ( { label: PLATFORM_LABELS[ p ] || p, value: p } ) ) }
-									onChange={ ( val ) => updateIcon( index, 'platform', val ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</FlexItem>
-							<FlexBlock>
-								<SgsLinkControl
-									label={ __( 'Link', 'sgs-blocks' ) }
-									value={ {
-										url: icon.url || '',
-										opensInNewTab: icon.opensInNewTab !== false,
-										rel: icon.rel || '',
-									} }
-									onChange={ ( next ) => {
-										const updated = [ ...icons ];
-										updated[ index ] = {
-											...updated[ index ],
-											url: next.url || '',
-											opensInNewTab: next.opensInNewTab,
-											rel: next.rel || '',
-										};
-										setAttributes( { icons: updated } );
-									} }
-								/>
-								<TextControl
-									value={ icon.label || '' }
-									onChange={ ( val ) => updateIcon( index, 'label', val ) }
-									placeholder={ defaultAccessibleLabel( icon.platform ) }
-									help={ __( 'Accessible name (aria-label), auto-generated. Edit to override — leave empty to keep the auto default shown above.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-								{ 'custom' === icon.platform && (
-									<MediaUploadCheck>
-										<MediaUpload
-											onSelect={ ( media ) => {
-												updateIcon( index, 'customIconId', media.id );
-												updateIcon( index, 'customIconUrl', media.url );
-											} }
-											allowedTypes={ [ 'image/svg+xml', 'image' ] }
-											value={ icon.customIconId }
-											render={ ( { open } ) => (
-												<Button variant="secondary" onClick={ open } style={ { marginTop: '4px' } }>
-													{ icon.customIconUrl ? __( 'Replace icon', 'sgs-blocks' ) : __( 'Upload custom icon (SVG)', 'sgs-blocks' ) }
-												</Button>
-											) }
-										/>
-									</MediaUploadCheck>
-								) }
-							</FlexBlock>
-							<FlexItem>
-								<Flex direction="column" gap={ 1 }>
-									<Button icon="arrow-up-alt2" onClick={ () => moveIcon( index, -1 ) } disabled={ 0 === index } label={ __( 'Move up', 'sgs-blocks' ) } />
-									<Button icon="arrow-down-alt2" onClick={ () => moveIcon( index, 1 ) } disabled={ index === icons.length - 1 } label={ __( 'Move down', 'sgs-blocks' ) } />
-									<Button icon="trash" isDestructive onClick={ () => removeIcon( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />
-								</Flex>
-							</FlexItem>
-						</Flex>
+						<div key={ index } className="sgs-social-icons-editor__item">
+							<SelectControl
+								label={ __( 'Platform', 'sgs-blocks' ) }
+								value={ icon.platform }
+								options={ PLATFORMS.map( ( p ) => ( { label: PLATFORM_LABELS[ p ] || p, value: p } ) ) }
+								onChange={ ( val ) => updateIcon( index, 'platform', val ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ /* Fix 5 (Spec 35 §2 LINK, Bean-ruled 2026-08-13): the
+							   canonical popover LINK control, replacing the retired
+							   inline SgsLinkControl mount. targetMode="boolean" maps
+							   this block's stored `opensInNewTab` boolean onto
+							   LinkPopoverField's linkTarget shape. */ }
+							<LinkPopoverField
+								label={ __( 'Link', 'sgs-blocks' ) }
+								value={ {
+									url: icon.url || '',
+									linkTarget: icon.opensInNewTab !== false ? '_blank' : '_self',
+									rel: icon.rel || '',
+								} }
+								targetMode="boolean"
+								showDownload={ false }
+								onChange={ ( next ) => {
+									const updated = [ ...icons ];
+									const item = { ...updated[ index ] };
+									if ( undefined !== next.url ) {
+										item.url = next.url || '';
+									}
+									if ( undefined !== next.linkTarget ) {
+										item.opensInNewTab = '_blank' === next.linkTarget;
+									}
+									if ( undefined !== next.rel ) {
+										item.rel = next.rel || '';
+									}
+									updated[ index ] = item;
+									setAttributes( { icons: updated } );
+								} }
+							/>
+							<TextControl
+								label={ __( 'Accessible label', 'sgs-blocks' ) }
+								value={ icon.label || '' }
+								onChange={ ( val ) => updateIcon( index, 'label', val ) }
+								placeholder={ defaultAccessibleLabel( icon.platform ) }
+								help={ __( 'Accessible name (aria-label), auto-generated. Edit to override — leave empty to keep the auto default shown above.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ 'custom' === icon.platform && (
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={ ( media ) => {
+											updateIcon( index, 'customIconId', media.id );
+											updateIcon( index, 'customIconUrl', media.url );
+										} }
+										allowedTypes={ [ 'image/svg+xml', 'image' ] }
+										value={ icon.customIconId }
+										render={ ( { open } ) => (
+											<Button variant="secondary" onClick={ open } className="sgs-social-icons-editor__upload">
+												{ icon.customIconUrl ? __( 'Replace icon', 'sgs-blocks' ) : __( 'Upload custom icon (SVG)', 'sgs-blocks' ) }
+											</Button>
+										) }
+									/>
+								</MediaUploadCheck>
+							) }
+							<Flex justify="flex-end" gap={ 1 } className="sgs-social-icons-editor__actions">
+								<Button icon="arrow-up-alt2" onClick={ () => moveIcon( index, -1 ) } disabled={ 0 === index } label={ __( 'Move up', 'sgs-blocks' ) } />
+								<Button icon="arrow-down-alt2" onClick={ () => moveIcon( index, 1 ) } disabled={ index === icons.length - 1 } label={ __( 'Move down', 'sgs-blocks' ) } />
+								<Button icon="trash" isDestructive onClick={ () => removeIcon( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />
+							</Flex>
+						</div>
 					) ) }
 					<Button variant="secondary" onClick={ addIcon }>
 						{ __( 'Add social link', 'sgs-blocks' ) }
@@ -379,14 +432,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							key={ platform }
 							className="sgs-social-icons__item"
 							style={ {
-								width: iconSize,
-								height: iconSize,
+								width: itemSize,
+								height: itemSize,
 								color: 'brand' === colourMode
 									? ( PLATFORM_BRAND_COLOURS[ platform ] || PLATFORM_BRAND_COLOURS.custom )
 									: undefined,
 							} }
 						>
-							{ platform }
+							<span className="sgs-social-icons__icon" aria-hidden="true">
+								<IconPreview source="lucide" name={ PLATFORM_ICONS[ platform ] || 'link' } size={ iconSize } />
+							</span>
 						</span>
 					) )
 				) : icons.length === 0 ? (
@@ -397,14 +452,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							key={ i }
 							className="sgs-social-icons__item"
 							style={ {
-								width: iconSize,
-								height: iconSize,
+								width: itemSize,
+								height: itemSize,
 								color: 'brand' === colourMode
 									? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
 									: undefined,
 							} }
 						>
-							{ icon.platform }
+							<span className="sgs-social-icons__icon" aria-hidden="true">
+								{ 'custom' === icon.platform && icon.customIconUrl ? (
+									<img src={ icon.customIconUrl } alt="" width={ iconSize } height={ iconSize } />
+								) : (
+									<IconPreview source="lucide" name={ PLATFORM_ICONS[ icon.platform ] || 'link' } size={ iconSize } />
+								) }
+							</span>
 						</span>
 					) )
 				) }

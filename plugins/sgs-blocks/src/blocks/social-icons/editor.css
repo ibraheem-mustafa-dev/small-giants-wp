@@ -1,1 +1,21 @@
 /* Social Icons — editor-only */
+
+/* Fix 4 (Spec 35 — inspector UX): repeater item controls run full-width and
+ * stacked, not squeezed 3-across in the sidebar. */
+.sgs-social-icons-editor__item {
+	margin-bottom: 16px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.sgs-social-icons-editor__item > * + * {
+	margin-top: 8px;
+}
+
+.sgs-social-icons-editor__upload {
+	margin-top: 4px;
+}
+
+.sgs-social-icons-editor__actions {
+	margin-top: 8px;
+}
