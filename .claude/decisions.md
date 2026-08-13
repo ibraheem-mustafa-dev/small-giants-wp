@@ -1,5 +1,66 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D596 — hero's background is a ROOT setting; one overlay per element; the local duplicate controls were wired to a dead attribute [INCIDENT]
+
+**2026-08-13.** Three fix-shapes on `sgs/hero`, council-validated then built via
+`/subagent-driven-development` (implementer + cross-model reviewer per task, separate
+commits): `0917bcf3`, `89857e39`, `0c270af7`. Evidence:
+`reports/visual-diff/hero-2026-08-13.md`.
+
+**1 — the background could not paint on split at all.** `render.php` nulls a list of
+attrs before `SGS_Container_Wrapper::render()`. That is a double-emit guard: STANDARD
+paints its own private `<img class="sgs-hero__bg-img">` (fetchpriority/loading/decoding
+for LCP) so the wrapper must not paint a second. The loop was never gated on variant,
+and split has no private `<img>` — so split's background attrs were discarded before
+the only component that could render them ever saw them. Now gated `! $is_split`.
+Measured: split went `anyBackgroundPainted:false` → `::before: url(...)`; standard
+unchanged (private `<img>`=1, `::before` still none — the double-paint check).
+**Origin, by git blame:** the guard arrived in `bacbde57` (2026-06-04, WS-4) when hero
+adopted the wrapper and wrapper backgrounds were still section-kind gated; **D6
+(2026-08-11) made them universal and nobody revisited it.** No decision anywhere says
+split should go without a background — it was a stale guard, not a design call.
+
+**2 — one overlay per element.** The section had `backgroundOverlayColour`; the split
+media column had none. Added `mediaOverlay*` + a `.sgs-hero__media-overlay` span.
+⚠ `mediaBackground*` could NOT be reused — it paints a background-colour on the media
+wrapper, BEHIND an `object-fit:cover` image, so it is invisible whenever media exists.
+`z-index:1` on the overlay is load-bearing, not cosmetic:
+`.sgs-hero--ken-burns .sgs-hero__media` is raised to `z-index:1` (`style.css:453-457`),
+so an overlay at `0` renders BEHIND the media on those heroes.
+
+**3 — the duplicate controls were worse than duplicates.** Hero carried local "Overlay
+colour", "Parallax scroll" and "Ken Burns animation" controls while the shared,
+ungated `<BackgroundPanel>` already provided all three. The local overlay control wrote
+the LEGACY `overlayColour`; the shared one wrote the canonical
+`backgroundOverlayColour` — **two knobs for one visual property, the more prominent one
+wired to a dead attribute.** Local copies deleted, `overlayColour` deleted outright
+(no deprecation, D270). Net −35 lines.
+
+**The scoping estimate was WRONG and a council falsified it.** This was first called a
+whole separate session, on the reasoning that ungating the background needed an
+LCP-mechanism decision. A `/qc-council` code-path rater proved otherwise: the wrapper
+already paints backgrounds universally (D6), and **the two lines cited as the fix site
+were the wrong ones entirely** — `:352`/`:971` gate only STANDARD's private `<img>` and
+its overlay span. Editing there would have given split a SECOND painter over the
+wrapper's, plausibly reproducing D594's "background bleeding through", and would have
+looked correct on any page with no wrapper background set. Measured scope: ~15-18 edit
+sites, 4 files, zero cross-block impact.
+
+**⛔ The recurring failure this session was the CONTROLLER's own verification, not the
+implementers'.** Four false negatives, each of which read as a real defect:
+`grep … | head -8` hid a rule that was the 10th match (producing a confident, wrong
+"this comment is fabricated" claim); reading only VISIBLE sidebar text reported a
+control missing that a collapsed panel was hiding; `/Ken Burns/i` did not match the
+real label `"Ken-burns zoom"`; and identical `innerText` lengths across two blocks
+exposed a stale element handle re-reading the same block. A truncated, unexpanded or
+loosely-matched check does not report "unknown" — it reports a confident absence.
+
+**Found but NOT built (Bean, unprompted):** the effect toggles target only the section
+background — the split MEDIA element has none, the same asymmetry the overlay had.
+Related: **`bgParallax` is a dead control on split** (it attaches only to the
+standard-only private `<img>`, yet the ungated panel offers the toggle on split), and
+whether P1 silently made Ken Burns animate on split is UNMEASURED.
+
 ## D595 — SVG gains per-device tiers, and BOTH media families' tier cascade was wrong [INCIDENT]
 
 **2026-08-13.** `sgs/media` could already art-direct images and video per device; SVG was the one
