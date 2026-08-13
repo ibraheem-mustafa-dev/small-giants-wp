@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D604 — editor-render-parity DB role remediation, first pass: 13 wrong/missing `role` values fixed [ROUTINE]
+
+**2026-08-13.** `block_attributes.role` is a DIFFERENT, older taxonomy from the detector's
+output-sink categories (D603) and was measured live to be both incomplete and, in places, actively
+wrong. Live counts at measurement time (never cache these — this project has been burned by cached
+counts repeatedly): 2767 total attributes, 482 with `role IS NULL` (17.4% — NOT the 257/11.4%
+quoted in the prior session's report; that number had already drifted).
+
+**4 confirmed-wrong/missing examples from the prior session, verified still live, fixed:**
+`sgs/accordion.faqSchema` (`boolean-visibility` → `technical` — it toggles an invisible JSON-LD
+block, not visibility of anything), `sgs/accordion.allowMultiple`/`defaultOpen` (`NULL` →
+`behaviour` — confirmed interaction-only by this session's Check-A triage).
+
+**Widened during verification, same shape, not scope creep:** querying for the `dragMomentum`/
+`loopCarousel` pattern found it wrong on **5 blocks**, not the 1 (`sgs/google-reviews`) originally
+cited — `sgs/buybox`, `sgs/gallery`, `sgs/post-grid`, `sgs/trustpilot-reviews` carried the identical
+wrong `role='styling'` for the identical pure-JS-behaviour carousel flags. Fixed all 5 identically
+(`role='behaviour'`) rather than fixing only the cited one and leaving 4 duplicates of the same bug.
+
+**Mechanism:** added 13 entries to `plugins/sgs-blocks/scripts/attr-classification-overrides.json`
+(the existing reseed-durable override layer, applied after the derived classifier and winning on
+conflict — the correct place per its own docstring, not a one-off hand-edit that a future
+`/sgs-update` would silently discard) + applied the identical 13 UPDATEs directly to the live
+`sgs-framework.db` (snapshotted first to `.claude/scratch/sgs-framework.db.pre-role-remediation-
+2026-08-13.bak`) rather than running a full pipeline reseed — this checkout is shared with
+concurrent sessions (LEDGER) and a full `/sgs-update` re-derive is a cross-track action with a wider
+blast radius than 13 known rows needed. `db-consistency/run.py` re-run clean after: 0 NEW violations.
+
+**Deliberately NOT done this session:** the broader NULL-role seeding pass (482 rows) — that
+requires cross-referencing this session's full Check-A triage output (INTERACTION-ONLY/REAL-GAP/
+OTHER-SHAPE classifications) against each attribute's current `role`, which depends on the triage
+completing first. Tracked as residual scope, not dropped.
+
+## D603 — check-editor-render-parity's cross-file consumption blind spot: measured, documented, NOT extended into an AST walk [ROUTINE]
+
+**2026-08-13.** `check-editor-render-parity.js` (shipped `b47bc24b`, refined `c749662d` +
+`9ae07f22` — none of the three were D-numbered until now) is a structural guard that catches a
+block attribute the editor's live preview never reflects, even though a real control writes it and
+render.php correctly consumes it on the frontend. Its Signal 1 (non-paint output-sink
+classification) traces an attribute's dataflow through the block's OWN `render.php` only — it can't
+follow a PHP function call into a SHARED helper defined in another file (`field_id()`/
+`field_label()` in `includes/forms/field-render-helpers.php`; `sgs_transition_vars()` in
+`includes/helpers-tokens.php`).
+
+**Measured, not assumed:** exactly 9 of the then-152 findings are this shape (7× `fieldName` across
+the form-field-* family via `field_id()`, plus `sgs/post-grid`'s `transitionDuration`/
+`transitionEasing` via `sgs_transition_vars()`) — 5.9% of the backlog. Both call sites verified by
+hand: `field_id()`/`field_label()` build a non-paint `id`/`for` HTML-attribute pair;
+`sgs_transition_vars()` emits `--sgs-transition-*` custom properties consumed only by a
+`:hover`/`transition` rule — the same non-paint categories Signal 1 already exempts when the
+consumption is in-file.
+
+**Ruling: documented as a scanner limitation, not extended into a cross-file AST walk.** At 9/152,
+hand-verifying each call site and baselining it (done, same commit) is faster and lower-risk than
+building a call-graph resolver — following `use function` imports, parsing the target file, and
+re-running Signal 1's classifyUsageSite() logic recursively across files is real complexity for a
+single-digit finding count. The limitation is now documented directly in the script's own docblock
+so it doesn't need rediscovering. Revisit only if a future survey finds this shape at a volume where
+hand-classification stops being the cheaper path. Backlog after this fix: 152 → 143.
+
 ## D602 — "EXPECTED" is defined as what the pipeline must route, PLUS the seeded blast radius [ROUTINE]
 
 **2026-08-13. Bean-ruled.** This answers the question that had blocked Programme B (schema

@@ -257,6 +257,31 @@
  *   segment (true everywhere observed in this codebase 2026-08-13) — a rule
  *   split across multiple concatenated PHP statements would not resolve
  *   correctly.
+ *   CROSS-FILE CONSUMPTION (measured, not extended — 2026-08-13 refinement
+ *   2). The dataflow trace in signal 1 is scoped to the block's OWN
+ *   render.php — it does not follow a PHP function call into a SHARED
+ *   helper defined in another file (e.g. `field_id()`/`field_label()`/
+ *   `field_input_attrs()` in `includes/forms/field-render-helpers.php`,
+ *   `sgs_transition_vars()` in `includes/helpers-tokens.php`). When the
+ *   attribute's only render.php appearance is as an ARGUMENT to one of
+ *   these (`field_id( $attributes['fieldName'] ?? 'unnamed' )`,
+ *   `sgs_transition_vars( $attributes )`), the classifier can't see that
+ *   the callee ultimately lands the value in a non-paint sink (an `id`/
+ *   `for` HTML attribute; a `--sgs-transition-*` custom property consumed
+ *   only by a `:hover`/`transition` rule) — so it stays flagged even though
+ *   it is, by the same non-paint reasoning signal 1 already applies
+ *   elsewhere, a false positive. Measured live 2026-08-13 against the
+ *   152-finding backlog: exactly 9 findings are this shape (7x
+ *   `fieldName` across the form-field-* family via `field_id()`, plus
+ *   `sgs/post-grid`'s `transitionDuration`/`transitionEasing` via
+ *   `sgs_transition_vars()`) — 5.9% of the backlog. DELIBERATELY NOT
+ *   extended into a real cross-file AST walk: at this volume, hand-
+ *   verifying each call site and baselining it is faster and lower-risk
+ *   than building a call-graph resolver (which would need to follow `use
+ *   function` imports, parse the target file, and re-run the SAME
+ *   classifyUsageSite() logic recursively — real complexity for ~9
+ *   findings). Revisit if a future survey run finds this shape at a volume
+ *   where hand-classification stops being the cheaper path.
  *
  * SIGNAL 2 — COMPANION-ID / ATOMIC CO-WRITE EXEMPTION.
  *   If attribute X is always set in the SAME `setAttributes({...})`

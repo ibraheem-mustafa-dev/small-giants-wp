@@ -1676,6 +1676,110 @@
         "css_property": null,
         "_reason": "css_property NULLed 2026-08-12. The derived layer (extract-signatures.py) reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier. That is a compound value split across N attrs, which the one-attr-per-slot routing model cannot express: db-consistency Check #1/#8 flag it as an ambiguous slot and the column-first resolver raises AmbiguousLayerAttrError at CLONE TIME. Every other block declaring the same gradient triple (container, cta-section, site-header, site-footer, trust-bar) already carries css_property=NULL here and clones fine — hero was the lone outlier, so this aligns it with the established norm rather than inventing a rule. Surfaced by the 2026-08-12 reseed re-deriving css_property (not caused by that session's edits; hero's gradients shipped at D579-D582). ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three, so routing a draft's background-image to any single one of them would be wrong in a different way."
       }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "faqSchema",
+      "fields": {
+        "role": "technical",
+        "_reason": "2026-08-13 (D603 inspector-uniformity role remediation). Was 'boolean-visibility' — wrong direction: this toggles whether an invisible JSON-LD FAQPage schema block is emitted (render.php wraps a wp_json_encode() call), not whether any element becomes visible. 'technical' already covers non-visual, machine-facing config (sgs/button.rel, sgs/form.successRedirect, form-field-*.fieldName) — same shape."
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "allowMultiple",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was NULL (unclassified). Pure interaction-behaviour flag (whether multiple accordion panels can be open at once) — no property_suffixes suffix match, confirmed interaction-only by this session's editor-render-parity triage. 'behaviour' is the established role for pure-configuration flags with zero visual/content effect (precedent: sgs/star-rating.maxRating, sgs/google-reviews.minRating, sgs/testimonial.showRating)."
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "defaultOpen",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was NULL. Sets which panel starts open — an interaction/initial-state flag, confirmed interaction-only by this session's editor-render-parity triage. Same 'behaviour' precedent as allowMultiple."
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was 'styling' — wrong: pure carousel drag-physics JS behaviour flag (view.js), zero CSS/visual output. Same fix applied identically across all 5 blocks that declare this attr (sgs/buybox, sgs/gallery, sgs/google-reviews, sgs/post-grid, sgs/trustpilot-reviews) — one shared shape, not a per-block judgement call."
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Was 'styling' — wrong: pure carousel-looping JS behaviour flag, zero CSS/visual output. Same fix applied identically across all 5 blocks that declare this attr."
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603, the originally cited example). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603, the originally cited example). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "dragMomentum",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.dragMomentum — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "loopCarousel",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
+      }
     }
   ]
 }
