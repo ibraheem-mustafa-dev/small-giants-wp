@@ -897,6 +897,7 @@ def run() -> None:
         f"styling-upgraded={_rd['styling_upgraded']} "
         f"icon-family-corrected={_rd['icon_family_corrected']} "
         f"fx-styling-corrected={_rd['fx_styling_corrected']} "
+        f"native-wp-seeded={_rd['native_wp_seeded']} "
         f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
         f"link-content={_rd['link_filled']} "
         f"boolean-swept={_rd['boolean_swept']} | "
@@ -2269,6 +2270,56 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         )
         fx_styling_corrected += 1
 
+    # TIER 3.18 -- NATIVE-WP SOURCE SEED (2026-08-13, Bean, DB role remediation part 2).
+    # NOT an overwrite pass like 3.15/3.16/3.17 -- a fresh SEED for rows this classifier
+    # was never going to reach any other way, closer in shape to TIER 3's own backstop.
+    #
+    # THE PROBLEM IT CLOSES: `source = 'native_wp'` rows (WP core-block reference data --
+    # core/image, core/latest-posts, core/media-text, core/cover, ~70 other core blocks --
+    # seeded by the dbschema/ WP-reference-archive tooling, never by the SGS block-scanning
+    # side) sit outside the content/styling taxonomy this file's other tiers all reason
+    # about: they aren't a converter-routing signal, so no content tier, no css_property
+    # backstop, and no name-regex ever assigns them a role. MEASURED 2026-08-13: every
+    # `source='native_wp'` row with `role IS NULL` also has `css_property IS NULL` (0
+    # exceptions) -- confirming this population is invisible to every css_property-keyed
+    # tier by construction, not by an accident this tier happens to dodge.
+    #
+    # WHY THIS MATTERS: `role IS NULL` is supposed to mean exactly one thing -- "no
+    # seeding mechanism reached this row" (TIER 3.5's own docstring makes the identical
+    # argument for the enum backstop). Without this tier, a genuinely-out-of-taxonomy
+    # `native_wp` row is indistinguishable in a `role IS NULL` count from an `sgs/*` row
+    # nobody has classified yet -- exactly what inflated the "469 rows remain" estimate
+    # this session re-verified as 479, of which 225 (47%) turned out to be this shape.
+    #
+    # THE GUARD: keyed on `source`, the column this DB uses to partition WP-native
+    # reference rows from SGS's own block catalogue everywhere else
+    # (`feature-parity-exceptions.json`, `sgs-update-v2.py`, `dbschema/`) -- never a name
+    # or block-slug guess. `role IS NULL` in the WHERE clause makes this idempotent and
+    # incapable of overwriting any role a future mechanism assigns a native_wp row.
+    #
+    # WHY 'core' AND NOT AN EXISTING ROLE: every existing role belongs to one of two
+    # `roles.classification` buckets, `content-bearing` or `styling-behaviour` -- both
+    # describe how an SGS-cloned attribute is CONSUMED by the converter. A native_wp
+    # reference-data row is consumed by neither; it is comparison data for
+    # `audit-feature-parity.py`, not a cloning-pipeline input. `core` is registered in the
+    # `roles` table (migration `2026-08-13-register-core-role.py`) under the schema's own
+    # third, previously-unused `classification` bucket, `unclassified` (see
+    # `dbschema/schema.sql`'s CHECK constraint) -- the schema already anticipated a role
+    # that isn't content-bearing or styling-behaviour; this is the first role to use it.
+    #
+    # EXPECTED POPULATION at the time this tier was written: 225 (measured live,
+    # 2026-08-13, before this tier existed). A non-zero count on a later reseed means a
+    # new WP-core attribute landed in the reference tables -- exactly the case this tier
+    # exists to catch automatically.
+    native_wp_seeded = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes WHERE role IS NULL AND source = 'native_wp'"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'core' WHERE id = ?", (row_id,)
+        )
+        native_wp_seeded += 1
+
     # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
     # CSS unit for `<base>`; it is the same styling fact, split across two columns
     # because CSS needs the number and the unit separately. So its ROLE is its base's
@@ -2516,6 +2567,11 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # steady-state count is 0 (D604/D607 hand-corrected every existing instance);
         # non-zero on a later reseed means a NEW fx:* attribute landed and needs a look.
         "fx_styling_corrected": fx_styling_corrected,
+        # TIER 3.18 -- fresh seed for `source='native_wp'` rows onto the new 'core' role.
+        # Expected steady-state count is 0 once the live DB has been seeded once (this
+        # tier's own WHERE clause is `role IS NULL`, so it is idempotent); non-zero on a
+        # later reseed means a new WP-core reference attribute needs the same seed.
+        "native_wp_seeded": native_wp_seeded,
         "unit_inherited": unit_inherited,
         "enum_filled": enum_filled,
         "link_filled": link_filled,
@@ -3460,6 +3516,84 @@ def _self_test_fx_styling_correction() -> int:
     return 0
 
 
+def _self_test_native_wp_seed() -> int:
+    """Prove TIER 3.18 (native-wp source seed) claims exactly the rows it should and
+    never the rows its guard protects, on a throwaway in-memory DB.
+
+    Four planted rows, each a distinct way the tier could be wrong:
+      1. a row it MUST claim -- role IS NULL AND source='native_wp'
+      2. a row it MUST NOT claim -- role IS NULL but source='sgs'; proves the tier never
+         reaches into the population the rest of this file's tiers are responsible for
+      3. a row it MUST NOT claim -- source='native_wp' but role is ALREADY SET (e.g. a
+         future mechanism assigned it something specific); must never overwrite
+      4. a row already 'core' with source='native_wp' -- idempotence: re-running the tier
+         on an already-seeded row must be a no-op, not an error
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, source TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, source) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "core/plant", "plantedNativeWpUnclaimed", None, "native_wp"),
+            (2, "sgs/plant", "plantedSgsUnclaimed", None, "sgs"),
+            (3, "core/plant", "plantedNativeWpAlreadyRoled", "technical", "native_wp"),
+            (4, "core/plant", "plantedNativeWpAlreadyCorrect", "core", "native_wp"),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    seeded = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes WHERE role IS NULL AND source = 'native_wp'"
+    ).fetchall():
+        cur.execute("UPDATE block_attributes SET role = 'core' WHERE id = ?", (row_id,))
+        seeded += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if seeded == 0:
+        failures.append("tier seeded ZERO rows against a planted set -- it cannot "
+                        "fail, so it proves nothing")
+    if got.get("plantedNativeWpUnclaimed") != "core":
+        failures.append(
+            f"plantedNativeWpUnclaimed -> {got.get('plantedNativeWpUnclaimed')!r}, "
+            "expected 'core'"
+        )
+    if got.get("plantedSgsUnclaimed") is not None:
+        failures.append(
+            f"plantedSgsUnclaimed -> {got.get('plantedSgsUnclaimed')!r}: an sgs-sourced "
+            "row was touched. This tier must only seed source='native_wp' rows."
+        )
+    if got.get("plantedNativeWpAlreadyRoled") != "technical":
+        failures.append(
+            f"plantedNativeWpAlreadyRoled -> {got.get('plantedNativeWpAlreadyRoled')!r}: "
+            "the tier OVERWROTE an already-assigned role. It must only touch role IS NULL."
+        )
+    if got.get("plantedNativeWpAlreadyCorrect") != "core":
+        failures.append(
+            f"plantedNativeWpAlreadyCorrect -> "
+            f"{got.get('plantedNativeWpAlreadyCorrect')!r}: an already-seeded row "
+            "changed on re-run. This tier must be idempotent."
+        )
+    conn.close()
+
+    if failures:
+        print(f"NATIVE-WP-SEED SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"NATIVE-WP-SEED SELF-TEST PASSED -- {seeded} row(s) seeded, 4 checks green.")
+    return 0
+
+
 def _self_test_unit_inheritance() -> int:
     """Prove the TIER 3.4 unit-inheritance pass can FAIL, on a throwaway in-memory DB.
 
@@ -4383,5 +4517,6 @@ if __name__ == "__main__":
                  or _self_test_link_fragment_tier()
                  or _self_test_styling_upgrade()
                  or _self_test_icon_family_correction()
-                 or _self_test_fx_styling_correction())
+                 or _self_test_fx_styling_correction()
+                 or _self_test_native_wp_seed())
     main()
