@@ -1,0 +1,38 @@
+/**
+ * Editor-only styles for the shared LINK popover control (`LinkPopoverControl.js`).
+ * Promoted from `sgs/button/link-popover.css` 2026-08-13 — same rules, renamed
+ * selectors (`.sgs-button__link-*` -> `.sgs-link-popover*`) now that every
+ * consumer shares one component. Compiled into each consuming block's
+ * editorStyle bundle by @wordpress/scripts (imported directly by the
+ * component, never inline — Spec 32 no-inline-style contract).
+ *
+ * Root causes fixed here (2026-08-13, Bean live-editor review on sgs/button,
+ * generalised on promotion):
+ * 1. `.sgs-link-popover__row` — the row rendered the raw URL as one unbroken
+ *    string with no width constraint, so it ran past the panel's padding.
+ *    NOT core's LinkControl 350px floor (that component isn't mounted here —
+ *    this is our own trigger `Button`). Fixed with the standard shrink-to-fit
+ *    shape: a flex child allowed to shrink (`min-width: 0`) truncated with
+ *    ellipsis, full URL still reachable via the `title` attribute.
+ * 2. `.sgs-link-popover__inner` — both `.components-popover__content` and
+ *    `.block-editor-link-control` compute to `padding: 0` (verified live via
+ *    getComputedStyle) — core expects the MOUNTING consumer to supply popover
+ *    padding, exactly as `core/button` does for its own link popover. We were
+ *    the consumer and had supplied none.
+ */
+
+.sgs-link-popover__row {
+	display: flex;
+	width: 100%;
+}
+
+.sgs-link-popover__row-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.sgs-link-popover__inner {
+	padding: 16px;
+}

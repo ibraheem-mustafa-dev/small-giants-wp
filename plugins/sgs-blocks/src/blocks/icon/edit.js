@@ -11,7 +11,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField } from '../../components';
 import { colourVar } from '../../utils';
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
@@ -212,10 +212,52 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* D609 pilot (Spec 35 §1 field 9): one row, states inside the
+					   popover — replaces the separate "Icon colour on hover"
+					   field that used to live in the "Hover effects" panel
+					   below. Same two attrs, same storage shape, new control
+					   shape only. */ }
 					<DesignTokenPicker
 						label={ __( 'Icon colour', 'sgs-blocks' ) }
-						value={ iconColour }
-						onChange={ ( val ) => setAttributes( { iconColour: val } ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) =>
+									setAttributes( { iconColour: val } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) =>
+									setAttributes( { iconColourHover: val } ),
+							},
+						] }
+					/>
+
+					{ /* A4 (Spec 35 Part A — one element = one panel): the icon's
+					   link belongs IN the Icon panel, not its own top-level
+					   panel — Bean: "the link option should be in the icon
+					   panel and not in its own panel". Folded in from the old
+					   standalone "Link" PanelBody below; the LinkPopoverField
+					   mount itself (Spec 35 §2 LINK standard) is unchanged. */ }
+					<LinkPopoverField
+						label={ __( 'Link', 'sgs-blocks' ) }
+						help={ __(
+							'Search your site or paste a URL to make this icon clickable.',
+							'sgs-blocks'
+						) }
+						value={ { url: linkUrl, linkTarget, rel: linkRel } }
+						targetMode="boolean"
+						onChange={ ( next ) => {
+							const patch = {};
+							if ( undefined !== next.url ) patch.linkUrl = next.url;
+							if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
+							if ( undefined !== next.rel ) patch.linkRel = next.rel;
+							setAttributes( patch );
+						} }
 					/>
 				</PanelBody>
 
@@ -230,12 +272,31 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ backgroundShape !== 'none' && (
 						<>
+							{ /* D609 pilot — same pairing for the shape's own
+							   colour + its hover twin (`shapeColourHover`
+							   previously lived in "Hover effects" too). */ }
 							<DesignTokenPicker
 								label={ __( 'Background colour', 'sgs-blocks' ) }
-								value={ backgroundColour }
-								onChange={ ( val ) =>
-									setAttributes( { backgroundColour: val } )
-								}
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: backgroundColour,
+										onChange: ( val ) =>
+											setAttributes( {
+												backgroundColour: val,
+											} ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: shapeColourHover,
+										onChange: ( val ) =>
+											setAttributes( {
+												shapeColourHover: val,
+											} ),
+									},
+								] }
 							/>
 							<TextControl
 								label={ __( 'Shape padding', 'sgs-blocks' ) }
@@ -254,45 +315,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
-					<SgsLinkControl
-						label={ __( 'Link', 'sgs-blocks' ) }
-						help={ __(
-							'Search your site or paste a URL to make this icon clickable.',
-							'sgs-blocks'
-						) }
-						value={ {
-							url: linkUrl,
-							opensInNewTab: linkTarget === '_blank',
-							rel: linkRel,
-						} }
-						onChange={ ( next ) => {
-							setAttributes( {
-								linkUrl: next.url || '',
-								linkTarget: next.opensInNewTab ? '_blank' : '_self',
-								linkRel: next.rel || '',
-							} );
-						} }
-					/>
-				</PanelBody>
-
 				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Icon colour on hover', 'sgs-blocks' ) }
-						value={ iconColourHover }
-						onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
-					/>
-					{ backgroundShape !== 'none' && (
-						<DesignTokenPicker
-							label={ __( 'Shape colour on hover', 'sgs-blocks' ) }
-							help={ __(
-								'Background (or border for Outline) colour when hovered. Leave empty to keep unchanged.',
-								'sgs-blocks'
-							) }
-							value={ shapeColourHover }
-							onChange={ ( val ) => setAttributes( { shapeColourHover: val } ) }
-						/>
-					) }
+					{ /* D609: the hover colours moved into the Icon/Background
+					   panels' own colour rows (Normal/Hover tab inside the
+					   popover) — this panel keeps only the hover behaviour
+					   that has no colour of its own. */ }
 					<RangeControl
 						label={ __( 'Scale on hover', 'sgs-blocks' ) }
 						value={ scaleHover }

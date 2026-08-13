@@ -120,6 +120,16 @@
 			"default": "",
 			"role": "content"
 		},
+		"linkId": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"linkKind": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
 		"linkTarget": {
 			"type": "string",
 			"default": "_self"
@@ -157,7 +167,10 @@
 		"customWidthUnit": {
 			"type": "object",
 			"default": {"desktop": "px", "tablet": "px", "mobile": "px"}
-		},
+		},
+
+
+
 		"minHeight": {
 			"type": "object",
 			"default": {}

@@ -15,7 +15,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker, SgsLinkControl, resolveColorToken } from '../../components';
+import { DesignTokenPicker, IconPicker, LinkPopoverField, resolveColorToken } from '../../components';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -681,24 +681,29 @@ export default function Edit( { attributes, setAttributes } ) {
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
-									<SgsLinkControl
+									{ /* Spec 35 §2 LINK standard — replaces the superseded
+									   inline `SgsLinkControl` mount. `plan.ctaTarget` is a
+									   boolean-shaped enum ('_self'/'_blank' only per
+									   block.json), so targetMode="boolean" matches the
+									   declared schema exactly. */ }
+									<LinkPopoverField
 										label={ __(
 											'CTA link',
 											'sgs-blocks'
 										) }
 										value={ {
-											url: plan.ctaUrl,
-											opensInNewTab: plan.ctaTarget === '_blank',
+											url: plan.ctaUrl || '',
+											linkTarget: plan.ctaTarget || '_self',
 											rel: plan.ctaRel || '',
 										} }
+										targetMode="boolean"
 										onChange={ ( next ) => {
 											const newPlans = [ ...plans ];
-											newPlans[ planIndex ] = {
-												...newPlans[ planIndex ],
-												ctaUrl: next.url || '',
-												ctaTarget: next.opensInNewTab ? '_blank' : '_self',
-												ctaRel: next.rel || '',
-											};
+											const patch = { ...newPlans[ planIndex ] };
+											if ( undefined !== next.url ) patch.ctaUrl = next.url;
+											if ( undefined !== next.linkTarget ) patch.ctaTarget = next.linkTarget;
+											if ( undefined !== next.rel ) patch.ctaRel = next.rel;
+											newPlans[ planIndex ] = patch;
 											setAttributes( { plans: newPlans } );
 										} }
 									/>

@@ -13,7 +13,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, LinkPopoverField } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
@@ -121,17 +121,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						rows={ 3 }
 						__nextHasNoMarginBottom
 					/>
-					<SgsLinkControl
+					{ /* Spec 35 §2 LINK standard — replaces the superseded inline
+					   `SgsLinkControl` mount. `successRedirect` is a plain
+					   URL string with no target/rel concept, so `searchOnly`
+					   matches its existing contract exactly. */ }
+					<LinkPopoverField
 						label={ __( 'Success Redirect URL', 'sgs-blocks' ) }
-						value={ { url: successRedirect } }
-						onChange={ ( url ) =>
-							setAttributes( { successRedirect: url } )
-						}
 						help={ __(
 							'Optional. Redirect to this URL after successful submission.',
 							'sgs-blocks'
 						) }
+						value={ successRedirect || '' }
 						searchOnly
+						onChange={ ( url ) =>
+							setAttributes( { successRedirect: url } )
+						}
 					/>
 					<p className="components-base-control__help">
 						{ __(

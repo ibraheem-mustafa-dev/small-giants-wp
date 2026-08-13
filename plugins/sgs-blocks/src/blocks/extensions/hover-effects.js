@@ -38,6 +38,7 @@ import {
 	ToggleControl,
 	TextControl,
 } from '@wordpress/components';
+import { LinkPopoverField } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { isExtensionHidden, isExtensionEnabled } from './hide-extensions';
 
@@ -444,18 +445,39 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						title={ __( 'Block Link', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<TextControl
+						{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
+						   Bean-approved popover 2026-08-13) — replaces the raw
+						   TextControl (type url) this panel used to render
+						   (67-block reach via this ONE extension; the highest-
+						   leverage single fix in the LINK rollout). `showRel`
+						   stays off + `enableInternalResolution` stays off:
+						   `sgsBlockLink` has no rel attribute and no ID-resolution
+						   consumer in `includes/hover-effects.php` — only
+						   `url`/`linkTarget` exist on the wire. The accessible-
+						   label field is this extension's OWN bespoke field (no
+						   other consumer has one), passed via `renderExtraFields`
+						   rather than forcing a new field onto the shared
+						   component's contract. */ }
+						<LinkPopoverField
 							label={ __( 'Link URL', 'sgs-blocks' ) }
 							help={ __( 'Makes the whole card clickable. Any link/button already inside the block stays clickable too. Leave empty to disable.', 'sgs-blocks' ) }
-							value={ sgsBlockLink }
-							onChange={ ( val ) => setAttributes( { sgsBlockLink: val || '' } ) }
-							type="url"
-							placeholder="https://"
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						{ sgsBlockLink && (
-							<>
+							value={ {
+								url: sgsBlockLink,
+								linkTarget: sgsBlockLinkTarget ? '_blank' : '_self',
+							} }
+							targetMode="boolean"
+							showRel={ false }
+							onChange={ ( next ) => {
+								const patch = {};
+								if ( undefined !== next.url ) {
+									patch.sgsBlockLink = next.url;
+								}
+								if ( undefined !== next.linkTarget ) {
+									patch.sgsBlockLinkTarget = '_blank' === next.linkTarget;
+								}
+								setAttributes( patch );
+							} }
+							renderExtraFields={ () => (
 								<TextControl
 									label={ __( 'Accessible label for the card link', 'sgs-blocks' ) }
 									help={ __( 'Read by screen readers — the card link has no visible text of its own. Leave empty to fall back to the link’s domain.', 'sgs-blocks' ) }
@@ -464,13 +486,8 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
-								<ToggleControl
-									label={ __( 'Open in new tab', 'sgs-blocks' ) }
-									checked={ sgsBlockLinkTarget }
-									onChange={ ( val ) => setAttributes( { sgsBlockLinkTarget: val } ) }
-								/>
-							</>
-						) }
+							) }
+						/>
 					</PanelBody>
 					) }
 					</InspectorControls>

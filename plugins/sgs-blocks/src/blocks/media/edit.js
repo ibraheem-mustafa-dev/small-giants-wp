@@ -21,7 +21,7 @@ import {
 	ResponsiveControl,
 	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
-	SgsLinkControl,
+	LinkPopoverField,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -715,7 +715,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 					{ isImage && (
-						<SgsLinkControl
+						/* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
+						   Bean-approved popover 2026-08-13) — replaces the old
+						   `SgsLinkControl` inline mount. `linkOpensNewTab` is a
+						   plain boolean (not a `linkTarget` enum), so it's mapped
+						   to/from the shared component's `linkTarget` field here
+						   at the edge, matching `targetMode="boolean"`. */
+						<LinkPopoverField
 							label={ __( 'Link', 'sgs-blocks' ) }
 							help={ __(
 								'Search your site or paste a URL to wrap the image in a link. Leave empty for no link.',
@@ -723,15 +729,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 							value={ {
 								url: attributes.linkUrl || '',
-								opensInNewTab: !! attributes.linkOpensNewTab,
+								linkTarget: attributes.linkOpensNewTab ? '_blank' : '_self',
 								rel: attributes.linkRel || '',
 							} }
+							targetMode="boolean"
 							onChange={ ( next ) => {
-								setAttributes( {
-									linkUrl: next.url || '',
-									linkOpensNewTab: !! next.opensInNewTab,
-									linkRel: next.rel || '',
-								} );
+								const patch = {};
+								if ( undefined !== next.url ) patch.linkUrl = next.url;
+								if ( undefined !== next.linkTarget ) {
+									patch.linkOpensNewTab = '_blank' === next.linkTarget;
+								}
+								if ( undefined !== next.rel ) patch.linkRel = next.rel;
+								setAttributes( patch );
 							} }
 						/>
 					) }

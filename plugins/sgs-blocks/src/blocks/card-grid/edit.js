@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
 import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
@@ -169,7 +169,11 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<SgsLinkControl
+			{ /* Spec 35 §2 LINK standard — replaces the superseded inline
+			   `SgsLinkControl` mount. `item.linkTarget` is a boolean-shaped
+			   enum ('_self'/'_blank' only per block.json), so
+			   targetMode="boolean" matches the declared schema exactly. */ }
+			<LinkPopoverField
 				label={ __( 'Link', 'sgs-blocks' ) }
 				help={ __(
 					'Search your site or paste a URL to make this card clickable.',
@@ -177,16 +181,16 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				) }
 				value={ {
 					url: item.link || '',
-					opensInNewTab: item.linkTarget === '_blank',
+					linkTarget: item.linkTarget || '_self',
 					rel: item.linkRel || '',
 				} }
+				targetMode="boolean"
 				onChange={ ( next ) => {
-					onChange( {
-						...item,
-						link: next.url || '',
-						linkTarget: next.opensInNewTab ? '_blank' : '_self',
-						linkRel: next.rel || '',
-					} );
+					const patch = { ...item };
+					if ( undefined !== next.url ) patch.link = next.url;
+					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
+					if ( undefined !== next.rel ) patch.linkRel = next.rel;
+					onChange( patch );
 				} }
 			/>
 			<Button
