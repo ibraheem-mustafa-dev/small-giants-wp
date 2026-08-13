@@ -972,3 +972,130 @@ table.
 - **An editor-only commit passes every gate unlooked-at** (`check-editor-only.py`, §2.1).
 - **Prove the cause before the fix** — Q12 has two causes wanting different fixes.
 - **`npm ci` / fresh clone / worktree**: undeclared deps make a gate pass by not running.
+
+---
+
+# PART 12 — /qc-COUNCIL VALIDATION GATE (run last, 2026-08-13)
+
+Three raters: cold-session executor, citation/number verifier, fix-shape gate. Structural
+pre-gate passed (all 9 cited paths resolve). **This part overrides PART 11 where they differ.**
+
+## 12.1 ⛔ HEADLINE — ZERO of 24 proposals are dispatchable
+
+**Not one proposal in this document carries all four gate elements** (predicted outcome ·
+measured baseline · validation command · commit gate). **Not one states a validation command
+or a commit gate at all** — including the proposals whose entire purpose is to BE a gate
+(S1, S6a, the `check-duplicate-controls` flip, the AST rules).
+
+Score: **0 SPEC · 19 HYPOTHESIS · 1 UNVERIFIABLE-by-design · 4 KILLED** (all four kills
+re-verified and holding).
+
+⚠ *A document about enforcement that specifies no enforcement threshold for its own fixes is
+the failure it diagnoses, at a third level.*
+
+## 12.2 ⭐ THE ENTIRE DISPATCHABLE SURFACE — 2 items, both one line from SPEC
+
+Both baselines **independently verified**. Add the three missing elements and dispatch:
+
+| Proposal | Baseline (verified) | Predicted | Validation command | Commit gate |
+|---|---|---|---|---|
+| **Retire `LineHeightControl`** (D6) | **exactly 2 hits**, Spec 35 `:96` + `:384` | 0 | `grep -c LineHeightControl .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` | do not commit if ≠ 0 |
+| **Clear stale `BorderBoxControl`** (D566/E10) | **exactly 3 hits**, Spec 35 `:91`, `:374`, `:380` | 0 | `grep -c BorderBoxControl .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` | do not commit if ≠ 0 |
+
+⚠ **`:91` and `:96` are table cells describing what NATIVE WordPress offers vs what SGS has.**
+Deleting the component name there would make the table misdescribe core. **Supply replacement
+text, do not blank-delete. Apply bottom-up (`:384` → `:380` → `:374` → `:96` → `:91`) so line
+numbers do not shift under you.**
+
+## 12.3 ⛔ FIVE MORE DANGEROUS PROPOSALS — cheap-framed, unbaselined, high blast radius
+
+The doc caught two (E5 `info-box`, E1 wrapper). It stopped there. These five were not caught:
+
+| # | Proposal | Why dangerous |
+|---|---|---|
+| 1 | **D2 — "stop rendering the wrapper `<span>` when a labelled child is present"** | ⛔ **The replacement has E1's defect.** The wrapper renders its label **before** `children()` is called — it cannot know whether the child renders one without calling the function early and introspecting the returned tree, which is the reflection E1 declared impossible. **D2 does not escape the 119-call-site codemod.** Recorded as "5/5 outcome; split on mechanism" — the split is *unresolved*, and the endorsed mechanism is not viable |
+| 2 | **S3c de-dup `BooleanResponsiveControl.js`** | ⛔ **"code-identical" is FALSE** — diffed: labels, `help` text and docblocks differ. Merging silently changes `sgs/media`'s Autoplay label and drops its help text. A visible client-facing regression, and it serves **neither** programme |
+| 3 | **D4 "~20 min, a deletion, cannot regress"** | Baseline contested three ways (16 / 17 / "16-18 across 15 files"), and removing a `PanelBody` changes `initialOpen` collapse state. **"Cannot regress" is exactly the cheap framing this gate exists to reject** |
+| 4 | **S6a shadow structural check** | ⛔ **Self-blocked**: the fix needs the 3-vs-7 baseline, and §9.6 **kills the measurement**. Could red-line up to 17 blocks on flip |
+| 5 | **S4 `npm i -D @wordpress/components`** | "does not change the bundle" is asserted with **zero bundle measurement**, across all 84 blocks |
+
+## 12.4 ⛔ §9.8 IS AN UNDISCLOSED COLLISION — correct the framing
+
+§9.8 presents the converter tier-object break as *"Found by the Pipeline Engineer… mechanism
+verified in the main thread"*, citing no prior record. **It was documented three days earlier
+with more file:line evidence:**
+
+- **`.claude/plans/spec-39-seed-requirements.md` R1** (2026-08-10) — *"Object-shape tier
+  emission (the load-bearing item)… the converter does lift per-device values and always has
+  — in the flat shape… it lacks an object emitter"*, with evidence across `fold_helpers.py`,
+  `extraction.py`, `grid.py`, `grid_area.py`, `styling_content.py`.
+- **D552** already ruled the sequencing: *"the block standard leads, the cloning pipeline is
+  reworked afterwards… the converter's inability to emit the new shape is **scheduled work,
+  never a precondition**."*
+- **D554 ruling C** + 12 `xfail(strict=True)` tests encode it.
+
+**It is still worth doing one thing — R1 has no failing fixture.** Re-frame TASK 1 as
+*"produce R1's missing falsifiable test"*, **not** a discovery. And §9.1's *"confirm with Bean
+whether this is a fix or a requirement"* **is already answered by D552: requirement.**
+
+## 12.5 THE PROGRAMME SPLIT IS LEAKY
+
+§9.1 says *"Programme B is what Bean actually asked for."* The proposal list that follows is
+**~80% Programme A.**
+
+- **Programme B: 4 items** (S5-Storage, S6b-in-substance, TASK 1, TASK 4) — only TASK 4 is
+  real work, and it is gated on TASK 0.
+- **Programme A: ~18**, mostly killed by the council.
+- **3 sit in NEITHER** — S3b (delete `DeviceTabs`), S3c, S4. Chores and tooling, present
+  because they surfaced in the census, not because either programme needs them.
+- ⛔ **S5-Storage — the ONLY Programme-B fix-shape in PART 6 — is filed as a sub-bullet of a
+  grouping-UI section.** Structurally invisible.
+- ⛔ **S6b (`info-box`) is Programme B in substance** (one storage system vs two) but filed
+  under "cheapest enforcement wins". *Its B-ness is exactly why it touches live data* — which
+  is what E5 caught.
+
+*The reframe was written; the backlog was never rewritten to match. Same shape as §2.2's own
+finding, committed by this document about itself, one section later.*
+
+## 12.6 ⛔ PART 10's PREAMBLE IS FALSE — and it is doing the most damage
+
+*"Nothing below is answerable from the repo"* is **false for 8 of 21 questions, including two
+of the three marked BLOCKING.**
+
+| Q | Verdict | Where the answer is |
+|---|---|---|
+| **Q1** | ⛔ **DO NOT ASK BEAN** | `2026-08-05-pipeline-rearchitecture-design.md` (*"shape approved by Bean… becomes Spec 39. Open decisions in §12"*) + `spec-39-seed-requirements.md` (*"inputs, not decisions"*). **Answer: OPEN → the deliverable IS the target schema** |
+| **Q2** | ⛔ **DO NOT ASK BEAN** | Same design doc §7/§9/§10/§12 + **D552**. **Answer: big-bang replace, delete-don't-demote; the converter is scheduled work, not a precondition** |
+| **Q3** | ✅ **THE ONE REAL BLOCKER** | Genuinely Bean's. It is Programme B's denominator |
+| Q12, Q13, Q16 | 2-5 min each | TASK 3 |
+| Q15, Q17, Q18-Q21 | answerable now | `git worktree list` settles Q17 in one command |
+
+**TASK 0 hard-wires the false preamble** — it converts a 10-minute reading task into a gate
+on Bean's attention.
+
+## 12.7 ⭐ THE MISSING QUESTION THAT MAY RETIRE MOST OF THIS DOCUMENT
+
+**Does Bean's D593 kill-reason generalise?** He killed the built-and-shipped Advanced tab
+with: *"it doesn't actually add any functionality or bring us closer to our uniformity or
+cloning goals."*
+
+That is **a general acceptance criterion**, not a one-off. Applied as a rule it would retire
+most of Programme A without anyone measuring anything. The document uses it only as a
+*precedent* (§9.6) and never puts it to Bean as a **rule**.
+
+**Ask this before the other five decisions. It may make them moot.**
+
+## 12.8 ⛔ REVISED DISPATCH ORDER — replaces PART 11's
+
+1. **E12 first** — `npm i -D playwright` pinned, or delete `check-control-parity-live.js`.
+   It is the only verification standing behind a **merged** 724-site codemod, and it
+   currently degrades to a pass.
+2. **The two near-SPECs** (§12.2), with their grep gates added.
+3. **TASK 3's three measurements** (Q12, Q13, Q16) — ~30 min, converts four hypotheses into
+   scorable proposals and may collapse D1 entirely.
+4. **Read** `spec-39-seed-requirements.md` + the re-architecture design §12 — answers Q1/Q2
+   **without Bean**.
+5. **Then ask Bean: Q3 + the D593-generalisation question (§12.7) only.**
+
+**Do NOT dispatch** the five in §12.3 without a measured baseline. Three are currently
+presented as cheap.
