@@ -102,6 +102,14 @@ fatalled every page. Both halves landed together (`079abbae`).
   (b) split-media → `sgs/media` child block (D6(b)) — twice reverted (D591, D594), server-side
   mechanism proven, editor-canvas half still needs a new idea before a third attempt; (c) hero
   split-image bleed CSS — latent, 0 live instances, parked.
+- **NEW this session, not caused by it:** `db-consistency` Check #1/#8 flags `sgs/hero`'s
+  `mediaOverlayGradientAngle`/`From`/`To` (from `89857e39`) as routing-ambiguous — all 3 resolve to
+  `background-image` on the same element/state/tier with no distinguishing mechanism, so the clone
+  resolver picks one by rowid order. First surfaced by this session's `/sgs-update` reseed (this is
+  the first run since `89857e39` shipped), not something this session's hero-effect-toggle work
+  touched. Bypassed via `[gates-ok:...]` on the doc-only commit rather than scope-creeping a fix in.
+  Needs its own small session: give each attr a distinguishing `css_element`/`css_state`/`css_tier`,
+  or restructure however the SECTION's own `overlayGradient*` trio avoids the same collision.
 - **`sgs/container` background pickers — the tier-OBJECT question is NOT open.** ⛔ Do NOT "finish"
   the migration by folding `backgroundImage`/`Tablet`/`Mobile` into a tier object. That flat suffix
   triple is load-bearing for the cloning pipeline: `test_family_modifier_scan.py:111-116` asserts the
