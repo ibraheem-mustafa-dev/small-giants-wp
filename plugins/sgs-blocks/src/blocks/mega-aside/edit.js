@@ -25,12 +25,34 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, resolveColorToken } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+
+/**
+ * Build a CSS box shorthand ("top right bottom left") from a
+ * { top, right, bottom, left } box object, or undefined when nothing is
+ * set — mirrors sgs/button's own `boxShorthand` editor-preview helper
+ * (same house pattern, kept local rather than shared since each block's
+ * box shape/keys differ slightly).
+ *
+ * @param {Object} box  Box object.
+ * @param {Array}  keys Ordered side keys to read.
+ * @return {string|undefined} CSS shorthand value or undefined.
+ */
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) {
+		return undefined;
+	}
+	if ( ! keys.some( ( key ) => box[ key ] ) ) {
+		return undefined;
+	}
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
 
 const TEMPLATE = [
 	[ 'sgs/media', {} ],
@@ -66,8 +88,44 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const format = asideFormat || 'feature';
 
+	// Editor-canvas preview style — mirrors render.php's fill logic (§2:
+	// background / border / radius / padding) exactly, so a change to any of
+	// these 5 controls shows live in the canvas instead of only on the
+	// published page. GROUND-TRUTH: render.php:82-122 — asideBg resolves via
+	// sgs_colour_value() (here: resolveColorToken against the live palette,
+	// the same slug-or-raw-CSS resolution used by sgs/button's own preview);
+	// asideRadius is already a unit-bearing string from UnitControl; the
+	// border only paints when at least one side of asideBorderWidth is
+	// non-zero, falling back to the inherited --sgs-mm-panel-border custom
+	// property when no explicit border colour is set (same fallback
+	// render.php uses); asidePadding is a TIER object — the editor preview
+	// always shows the desktop tier, matching sgs/button's own preview
+	// convention for tier-object attrs.
+	const [ palette ] = useSettings( 'color.palette' );
+
+	const previewStyle = {};
+	if ( asideBg ) {
+		previewStyle.backgroundColor = resolveColorToken( asideBg, palette );
+	}
+	if ( asideRadius ) {
+		previewStyle.borderRadius = asideRadius;
+	}
+	const borderWidthPreview = boxShorthand( asideBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderWidthPreview ) {
+		previewStyle.borderWidth = borderWidthPreview;
+		previewStyle.borderStyle = 'solid';
+		previewStyle.borderColor = asideBorderColour
+			? resolveColorToken( asideBorderColour, palette )
+			: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
+	}
+	const paddingPreview = boxShorthand( asidePadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		previewStyle.padding = paddingPreview;
+	}
+
 	const blockProps = useBlockProps( {
 		className: 'sgs-mega-aside',
+		style: previewStyle,
 		'data-aside-format': format,
 	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {

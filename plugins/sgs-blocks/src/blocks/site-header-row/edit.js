@@ -237,6 +237,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? {
 				display: 'grid',
 				gridTemplateColumns: `repeat(${ columnsDesktop }, 1fr)`,
+				...( gridAutoRows ? { gridAutoRows } : {} ),
+				// Blank alignItems/justifyItems/alignContent fall to the
+				// CSS-initial `stretch` — mirrors SGS_Container_Wrapper::render()'s
+				// own defaults (D306 for alignItems), not a hardcoded editor-only
+				// fallback.
+				alignItems: alignItems || 'stretch',
+				justifyItems: justifyItems || 'stretch',
+				alignContent: alignContent || 'stretch',
 				gap: ( gap && gap.desktop ) || '16px',
 		  }
 		: {
@@ -244,7 +252,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// D455 — mirrors the frontend lock. The row never wraps or
 				// stacks; it yields by shrinking its children instead.
 				flexWrap: 'nowrap',
-				alignItems: 'center',
+				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
+				// SGS_Container_Wrapper::render()'s own default (D306), not a
+				// hardcoded editor-only fallback.
+				alignItems: alignItems || 'stretch',
+				...( flexDirection ? { flexDirection } : {} ),
 				// Matches block.json's gap default. This previously fell back to
 				// `clamp(0.5rem, 2vw, 1.5rem)` while block.json said `16px`, so
 				// the editor preview and the front end disagreed by up to 8px.

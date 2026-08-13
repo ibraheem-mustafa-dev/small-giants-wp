@@ -255,6 +255,10 @@ export default function Edit( { attributes, setAttributes, context } ) {
 				? `${ transitionDuration }ms`
 				: undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
+			// Outer width (kept-scalar family, contract §C — no tiers on this
+			// block). Mirrors render.php's `max-width` + `margin-inline:auto`
+			// pair emitted together on the root scoped rule.
+			...( maxWidth && { maxWidth, marginInline: 'auto' } ),
 		},
 	} );
 

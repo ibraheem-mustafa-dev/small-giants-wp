@@ -237,20 +237,47 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// editor surface had exactly this divergence before D455; do not
 	// reintroduce it here by "simplifying" this back to repeat().
 	// Kept in step with sgs_intrinsic_columns_track() (helpers-container.php).
+	// gridTemplateColumns/gridTemplateRows are TIER OBJECTS ({desktop,tablet,mobile}) —
+	// resolve the desktop tier, same pattern as `columns`/`gap` above. An explicit
+	// custom template always wins over the auto-fit ceiling track, mirroring
+	// SGS_Container_Wrapper's own precedence (an explicit gridTemplateColumns always
+	// wins over the columns-count-derived track).
+	const gridTemplateColumnsDesktop = resolveResponsiveTier(
+		gridTemplateColumns,
+		'desktop'
+	)?.value;
+	const gridTemplateRowsDesktop = resolveResponsiveTier(
+		gridTemplateRows,
+		'desktop'
+	)?.value;
+
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
-				gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis, 16rem), calc((100% - (${
-					columnsDesktop - 1
-				} * ${ ( gap && gap.desktop ) || '48px' })) / ${
-					columnsDesktop
-				}))), 1fr))`,
+				gridTemplateColumns:
+					gridTemplateColumnsDesktop ||
+					`repeat(auto-fit, minmax(min(100%, max(var(--sgs-col-basis, 16rem), calc((100% - (${
+						columnsDesktop - 1
+					} * ${ ( gap && gap.desktop ) || '48px' })) / ${
+						columnsDesktop
+					}))), 1fr))`,
+				...( gridTemplateRowsDesktop
+					? { gridTemplateRows: gridTemplateRowsDesktop }
+					: {} ),
+				...( gridAutoRows ? { gridAutoRows } : {} ),
+				alignItems: alignItems || 'stretch',
+				justifyItems: justifyItems || 'stretch',
+				alignContent: alignContent || 'stretch',
 				gap: ( gap && gap.desktop ) || '48px',
 		  }
 		: {
 				display: 'flex',
 				flexWrap: 'wrap',
-				alignItems: 'center',
+				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
+				// SGS_Container_Wrapper::render()'s own default (D306), not a
+				// hardcoded editor-only fallback.
+				alignItems: alignItems || 'stretch',
+				...( flexDirection ? { flexDirection } : {} ),
 				gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
 				justifyContent: justifyContent || 'flex-start',
 		  };

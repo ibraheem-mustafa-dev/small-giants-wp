@@ -265,6 +265,30 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( fontStyle ) previewStyle.fontStyle = fontStyle;
 	if ( textTransform ) previewStyle.textTransform = textTransform;
 	if ( textDecoration ) previewStyle.textDecoration = textDecoration;
+	// lineHeight / letterSpacing are TIER OBJECTS (Spec 35 migration) — the
+	// editor preview always shows the DESKTOP tier, mirroring render.php's
+	// sgs_responsive_css_rule() base-rule output (line-height/letter-spacing on
+	// `.{uid}.sgs-button`). Units: lineHeightUnit ('' = unitless, matching the
+	// PHP helper's 'unitless' sentinel decode), letterSpacingUnit defaults 'px'.
+	if ( lineHeight?.desktop !== undefined && lineHeight?.desktop !== null && lineHeight?.desktop !== '' ) {
+		const lhUnit = attributes.lineHeightUnit !== undefined ? attributes.lineHeightUnit : 'em';
+		previewStyle.lineHeight = `${ lineHeight.desktop }${ 'unitless' === lhUnit ? '' : lhUnit }`;
+	}
+	if ( letterSpacing?.desktop !== undefined && letterSpacing?.desktop !== null && letterSpacing?.desktop !== '' ) {
+		const lsUnit = attributes.letterSpacingUnit !== undefined ? attributes.letterSpacingUnit : 'px';
+		previewStyle.letterSpacing = `${ letterSpacing.desktop }${ lsUnit }`;
+	}
+	// Box shadow — mirrors render.php step 3's base-state shadow declaration
+	// (`box-shadow:{inset}{h}px {v}px {blur}px {spread}px {colour}`). Only the
+	// NORMAL state previews (hover can't be shown on a static canvas element).
+	// Colour is a design-token slug or custom hex (D288), so it must resolve via
+	// the live palette exactly like the other colour previews above — otherwise
+	// a token slug renders as invalid CSS and the shadow silently disappears.
+	if ( boxShadow?.colour ) {
+		const bsColour = resolveColorToken( boxShadow.colour, palette );
+		const bsInset = boxShadow.inset ? 'inset ' : '';
+		previewStyle.boxShadow = `${ bsInset }${ boxShadow.hOffset || 0 }px ${ boxShadow.vOffset || 0 }px ${ boxShadow.blur || 0 }px ${ boxShadow.spread || 0 }px ${ bsColour }`;
+	}
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
 	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );

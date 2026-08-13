@@ -307,11 +307,94 @@ export default function Edit( { attributes, setAttributes } ) {
 		contentPreviewStyle.order = 2;
 	}
 
+	// Box-object interface contract §1 helper (mirrors the same local
+	// boxShorthand() already used by button/heading/text/quote/etc. edit.js —
+	// see src/blocks/button/edit.js:247) — builds a CSS shorthand string from
+	// a {top,right,bottom,left} object, matching render.php's
+	// sgs_box_shorthand() so the canvas preview agrees with the frontend.
+	const boxShorthand = ( box, keys ) => {
+		if ( ! box || 'object' !== typeof box ) return undefined;
+		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+	};
+
+	// Split-image preview style — mirrors render.php's scoped `.sgs-hero__split-image`
+	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
+	// attributes so the editor canvas stops silently disagreeing with the
+	// frontend. Desktop tier only, matching every other preview builder in
+	// this file (imageWidthTablet/imageWidthMobile stay editor-only-inert
+	// here, same as the other *Tablet/*Mobile pairs above).
+	const imagePreviewStyle = {};
+	// object-fit — render.php:577-580 (gated OFF when imageObjectFit==='custom',
+	// which switches to explicit width/height below instead).
+	if ( 'custom' !== imageObjectFit ) {
+		imagePreviewStyle.objectFit = imageObjectFit || 'cover';
+	}
+	// width — render.php:597-599, gated behind imageObjectFit==='custom'.
+	// imageWidth itself has no dedicated ticket item here, but imageWidthUnit
+	// is meaningless without it (same CSS declaration), so both are applied
+	// together, desktop tier only.
+	if ( 'custom' === imageObjectFit && imageWidth ) {
+		imagePreviewStyle.width = `${ imageWidth }${ imageWidthUnit || '%' }`;
+	}
+	// height — render.php:618-619, deliberately UNGATED (not tied to
+	// imageObjectFit==='custom' — see render.php's "UNGATED reach" comment
+	// at line 609-615).
+	if ( imageHeight?.desktop ) {
+		imagePreviewStyle.height = `${ imageHeight.desktop }${ imageHeightUnit || 'px' }`;
+	}
+	// border style/width/colour — render.php:561-573 (box-object family,
+	// base only, no tiers). Entry condition matches render.php exactly:
+	// emit when style isn't 'none' OR a width is set.
+	const imageBorderWidthPreview = boxShorthand( imageBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( 'none' !== imageBorderStyle || imageBorderWidthPreview ) {
+		imagePreviewStyle.borderStyle = imageBorderStyle;
+		if ( imageBorderWidthPreview ) {
+			imagePreviewStyle.borderWidth = imageBorderWidthPreview;
+		}
+		if ( imageBorderColour ) {
+			imagePreviewStyle.borderColor = imageBorderColour;
+		}
+	}
+
+	// Media-wrapper (`.sgs-hero__media`) class + style preview — mirrors
+	// render.php:1141-1161 (`sgs-hero__media--bleed` / `--ken-burns` modifier
+	// classes + the ken-burns duration custom property) and the split-image
+	// element's own `--bleed` modifier (render.php:1129-1132). mediaKenBurns
+	// is mutually exclusive with mediaParallax, matching render.php:686's
+	// `$media_ken_burns = ! empty( $attributes['mediaKenBurns'] ) && ! $media_parallax;`
+	const mediaKenBurnsActive = !! mediaKenBurns && ! mediaParallax;
+	const mediaWrapperClassName = [
+		'sgs-hero__media',
+		splitImageBleed ? 'sgs-hero__media--bleed' : null,
+		mediaKenBurnsActive ? 'sgs-hero__media--ken-burns' : null,
+	]
+		.filter( Boolean )
+		.join( ' ' );
+	const mediaWrapperStyle = {};
+	if ( isMediaFirstDesktop ) {
+		mediaWrapperStyle.order = 1;
+	}
+	if ( mediaKenBurnsActive ) {
+		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ mediaAnimationDuration }s`;
+	}
+	const splitImageClassName = [
+		'sgs-hero__split-image',
+		splitImageBleed ? 'sgs-hero__split-image--bleed' : null,
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
 	const className = [
 		'sgs-hero',
 		`sgs-hero--${ variant }`,
 		`sgs-hero--align-${ alignment }`,
-	].join( ' ' );
+		// splitImageBleed root modifier — mirrors render.php:775-777
+		// ($classes[] = 'sgs-hero--split-bleed').
+		splitImageBleed ? 'sgs-hero--split-bleed' : null,
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const blockProps = useBlockProps( { className, style: wrapperStyle } );
 
@@ -1434,13 +1517,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						splitVideo?.url ||
 						splitSvg ) && (
 						<div
-							className="sgs-hero__media"
-							style={ isMediaFirstDesktop ? { order: 1 } : undefined }
+							className={ mediaWrapperClassName }
+							style={
+								Object.keys( mediaWrapperStyle ).length
+									? mediaWrapperStyle
+									: undefined
+							}
 						>
 							{ splitMediaType === 'video' && splitVideo?.url && (
 								<video
 									src={ splitVideo.url }
-									className="sgs-hero__split-image"
+									className={ splitImageClassName }
+									style={ imagePreviewStyle }
 									autoPlay
 									muted
 									loop
@@ -1456,7 +1544,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								   media's treatment — the preview is decorative. */
 								/* eslint-disable-next-line react/no-danger */
 								<div
-									className="sgs-hero__split-image"
+									className={ splitImageClassName }
+									style={ imagePreviewStyle }
 									aria-hidden="true"
 									dangerouslySetInnerHTML={ {
 										__html: splitSvg,
@@ -1469,7 +1558,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									<img
 										src={ splitImage.url }
 										alt={ splitImage.alt || '' }
-										className="sgs-hero__split-image"
+										className={ splitImageClassName }
+										style={ imagePreviewStyle }
 									/>
 								) }
 						</div>

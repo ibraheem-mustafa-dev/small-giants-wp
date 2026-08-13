@@ -9,6 +9,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { colourVar } from '../../utils';
 
 const STYLE_OPTIONS = [
 	{ value: 'minimal', label: __( 'Minimal Pill', 'sgs-blocks' ), hint: __( 'Quiet: play + progress + timecode', 'sgs-blocks' ) },
@@ -40,7 +41,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: `sgs-audio sgs-audio--${ playerStyle }` } );
+	// --sgs-audio-accent mirrors render.php's brand-accent custom property
+	// (the player-brand colour driving the play button / seek thumb / progress
+	// arc via style.css) — empty falls back to the theme primary token, same
+	// default render.php uses.
+	const blockProps = useBlockProps( {
+		className: `sgs-audio sgs-audio--${ playerStyle }`,
+		style: {
+			'--sgs-audio-accent': accentColour
+				? colourVar( accentColour )
+				: 'var(--wp--preset--color--primary, #c9821f)',
+		},
+	} );
 	const hasAudio = audioUrl || audioId;
 	const isReactive = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse' ].includes( playerStyle );
 

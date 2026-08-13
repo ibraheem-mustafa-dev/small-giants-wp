@@ -41,7 +41,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar } from '../../utils';
+import { colourVar, resolveShadowPreview } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 const CARD_STYLES = [
@@ -151,8 +151,16 @@ function boxShorthand( box, keys ) {
 // Editor preview style builder — desktop styles only; responsive tiers +
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
-	const { style, textColor, backgroundColor, maxWidth } = attributes;
+	const { style, textColor, backgroundColor, maxWidth, cardShadow } = attributes;
 	const wrapperStyle = {};
+
+	// Resting-state card shadow (FR-35-5 Task 4c) — render.php emits this as a
+	// custom-property VALUE (`--sgs-card-shadow`) on the root scoped rule,
+	// consumed by style.css's static shadow rule; never a real `box-shadow`
+	// declaration here (mirrors render.php step 6/12).
+	if ( cardShadow ) {
+		wrapperStyle[ '--sgs-card-shadow' ] = resolveShadowPreview( cardShadow );
+	}
 
 	const textPreview = style?.color?.text || ( textColor ? colourVar( textColor ) : '' );
 	if ( textPreview ) {

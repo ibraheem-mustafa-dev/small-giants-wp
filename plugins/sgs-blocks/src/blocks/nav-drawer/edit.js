@@ -395,7 +395,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<span className="sgs-nav-drawer__close-preview" aria-hidden="true">
+				<span
+					className="sgs-nav-drawer__close-preview"
+					aria-hidden="true"
+					style={ { color: toggleCloseColour ? colourVar( toggleCloseColour ) : undefined } }
+				>
 					<Icon icon={ close } />
 				</span>
 				<div { ...innerBlocksProps } />

@@ -12,6 +12,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, SgsLinkControl } from '../../components';
+import { colourVar, spacingVar } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -79,6 +80,27 @@ const COLOUR_MODE_OPTIONS = [
 	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
 ];
 
+// Mirrors render.php's $platform_brand_colours — used for the editor-preview
+// per-item colour when colourMode='brand'.
+const PLATFORM_BRAND_COLOURS = {
+	facebook: '#1877F2',
+	twitter: '#000000',
+	linkedin: '#0A66C2',
+	instagram: '#E4405F',
+	youtube: '#FF0000',
+	tiktok: '#000000',
+	github: '#181717',
+	whatsapp: '#25D366',
+	email: '#6B7280',
+	website: '#6B7280',
+	pinterest: '#E60023',
+	snapchat: '#FFFC00',
+	telegram: '#26A5E4',
+	discord: '#5865F2',
+	google: '#4285F4',
+	custom: '#6B7280',
+};
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		source,
@@ -114,6 +136,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const marginPreview = boxShorthand( baseMargin );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
+	}
+	if ( gap ) {
+		previewStyle.gap = spacingVar( gap );
+	}
+	// 'theme' mode drives every item's resting colour via this custom property
+	// (style.css .sgs-social-icons__item{color:var(--sgs-social-colour)});
+	// 'brand' mode overrides per item instead (applied on each item below).
+	if ( 'theme' === colourMode && iconColour ) {
+		previewStyle[ '--sgs-social-colour' ] = colourVar( iconColour );
 	}
 
 	const blockProps = useBlockProps( {
@@ -340,7 +371,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					// this canvas preview shows every possible network rather than
 					// guessing which ones currently have a URL saved.
 					SITE_INFO_NETWORKS.map( ( platform ) => (
-						<span key={ platform } className="sgs-social-icons__item" style={ { width: iconSize, height: iconSize } }>
+						<span
+							key={ platform }
+							className="sgs-social-icons__item"
+							style={ {
+								width: iconSize,
+								height: iconSize,
+								color: 'brand' === colourMode
+									? ( PLATFORM_BRAND_COLOURS[ platform ] || PLATFORM_BRAND_COLOURS.custom )
+									: undefined,
+							} }
+						>
 							{ platform }
 						</span>
 					) )
@@ -348,7 +389,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p style={ { opacity: 0.5 } }>{ __( 'Add social links in the sidebar…', 'sgs-blocks' ) }</p>
 				) : (
 					icons.map( ( icon, i ) => (
-						<span key={ i } className="sgs-social-icons__item" style={ { width: iconSize, height: iconSize } }>
+						<span
+							key={ i }
+							className="sgs-social-icons__item"
+							style={ {
+								width: iconSize,
+								height: iconSize,
+								color: 'brand' === colourMode
+									? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
+									: undefined,
+							} }
+						>
 							{ icon.platform }
 						</span>
 					) )

@@ -27,6 +27,14 @@ const MAX_WIDTH_OPTIONS = [
 	{ label: __( 'Full Width', 'sgs-blocks' ), value: 'full' },
 ];
 
+// Mirrors the `.sgs-modal__dialog--{maxWidth}` width variants in style.css.
+const MAX_WIDTH_VALUES = {
+	small: '480px',
+	medium: '640px',
+	large: '800px',
+	full: '95vw',
+};
+
 const TEMPLATE = [
 	[
 		'sgs/heading',
@@ -63,9 +71,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		className: 'sgs-modal',
 	} );
 
+	// Mirrors render.php's dialog rules: max-width variant class + the
+	// modalBackground colour rule on `.sgs-modal__dialog`.
+	const contentPreviewStyle = {
+		maxWidth: MAX_WIDTH_VALUES[ maxWidth ] || undefined,
+		backgroundColor: colourVar( modalBackground ) || undefined,
+	};
+
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'sgs-modal__content-preview',
+			style: contentPreviewStyle,
 		},
 		{
 			template: TEMPLATE,

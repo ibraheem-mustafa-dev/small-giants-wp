@@ -103,6 +103,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxWidth: `${ maxWidthPercent }%`,
 		opacity: opacity / 100,
 		zIndex,
+		overflow,
 		pointerEvents: 'none',
 		transform: [
 			'translate(-50%, -50%)',

@@ -274,6 +274,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			.map( ( it ) => ( { label: it.label || it.key, value: it.key } ) ),
 	];
 
+	// Pill padding — box-object interface contract §1: mirrors render.php's
+	// desktop-tier `.sgs-option-picker__pill{padding:…}` scoped rule (§7).
+	// pillPadding is a TIER-OF-BOXES object {desktop,tablet,mobile}; the canvas
+	// preview always shows the desktop tier, same as every other tier-object
+	// preview in this component.
+	const pillPaddingPreview = boxShorthand( pillPadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+
 	/* ── Canvas preview pills ── */
 	const renderPills = () => {
 		if ( optionItems.length === 0 ) {
@@ -298,7 +305,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			return (
 				<span key={ index } className={ pillClass }>
-					<span className="sgs-option-picker__pill">
+					<span
+						className="sgs-option-picker__pill"
+						style={ pillPaddingPreview ? { padding: pillPaddingPreview } : undefined }
+					>
 						{ item.label || item.key || `Option ${ index + 1 }` }
 					</span>
 				</span>

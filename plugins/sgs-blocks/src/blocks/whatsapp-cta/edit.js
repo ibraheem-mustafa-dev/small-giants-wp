@@ -75,11 +75,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		rootStyle.borderRadius = radiusPreview;
 	}
 
+	// Mirrors render.php's visibility classes (sgs-whatsapp-cta--hide-mobile /
+	// --hide-desktop), driven by the SAME style.css @media rules — the editor
+	// canvas is a real viewport (device-preview toggle resizes it), so these
+	// classes hide/show the preview exactly as they do on the frontend.
 	const rootClassName = [
 		'sgs-whatsapp-cta',
 		`sgs-whatsapp-cta--${ variant }`,
 		'sgs-whatsapp-cta__btn',
-	].join( ' ' );
+		! showOnMobile ? 'sgs-whatsapp-cta--hide-mobile' : '',
+		! showOnDesktop ? 'sgs-whatsapp-cta--hide-desktop' : '',
+	].filter( Boolean ).join( ' ' );
 
 	const blockProps = useBlockProps( {
 		className: rootClassName,

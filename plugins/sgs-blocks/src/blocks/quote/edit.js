@@ -245,7 +245,8 @@ function buildWrapperStyle( attributes ) {
 function buildAttribStyle( attributes ) {
 	const {
 		attributionColour, attributionFontSize, attributionFontSizeUnit,
-		attributionFontWeight, attributionFontStyle,
+		attributionFontWeight, attributionFontFamily, attributionFontStyle,
+		attributionTextDecoration, attributionTextTransform,
 		attributionLineHeight, attributionLineHeightUnit,
 		attributionMarginTop, attributionMarginUnit,
 	} = attributes;
@@ -260,7 +261,10 @@ function buildAttribStyle( attributes ) {
 	// desktop tier.
 	if ( attributionFontSize?.desktop ) { style.fontSize = `${ attributionFontSize.desktop }${ attributionFontSizeUnit }`; }
 	if ( attributionFontWeight ) { style.fontWeight = attributionFontWeight; }
+	if ( attributionFontFamily ) { style.fontFamily = attributionFontFamily; }
 	if ( attributionFontStyle ) { style.fontStyle = attributionFontStyle; }
+	if ( attributionTextDecoration ) { style.textDecoration = attributionTextDecoration; }
+	if ( attributionTextTransform ) { style.textTransform = attributionTextTransform; }
 	if ( attributionLineHeight != null ) {
 		style.lineHeight = `${ attributionLineHeight }${ attributionLineHeightUnit }`;
 	}

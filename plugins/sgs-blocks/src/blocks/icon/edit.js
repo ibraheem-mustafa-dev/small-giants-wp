@@ -23,6 +23,26 @@ function boxShorthand( box, keys ) {
 	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
 
+/**
+ * Resolve a shape-padding value to a valid CSS string for editor preview.
+ * Mirrors PHP sgs_container_gap_value() (→ sgs_css_length_value()):
+ *  - Bare digit slug (e.g. "30") → var(--wp--preset--spacing--30)
+ *  - Raw CSS length (e.g. "12px", "0.75rem") → pass through as-is
+ *  - Empty / nullish → '' (custom property omitted)
+ *
+ * @param {string} value Raw backgroundPadding attribute value.
+ * @return {string} Resolved CSS length, or '' when nothing is set.
+ */
+function shapePaddingCssValue( value ) {
+	if ( ! value ) {
+		return '';
+	}
+	if ( /^\d+$/.test( String( value ) ) ) {
+		return `var(--wp--preset--spacing--${ value })`;
+	}
+	return String( value );
+}
+
 const BG_SHAPES = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
@@ -127,6 +147,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-icon-hover-shape-colour':
 			shapeColourHover ? colourVar( shapeColourHover ) : undefined,
 		'--sgs-icon-hover-scale': scaleHover || undefined,
+		'--sgs-icon-shape-padding':
+			backgroundShape !== 'none' && backgroundPadding
+				? shapePaddingCssValue( backgroundPadding )
+				: undefined,
 	};
 
 	// Base padding/margin preview — WP-native style.spacing.* objects
