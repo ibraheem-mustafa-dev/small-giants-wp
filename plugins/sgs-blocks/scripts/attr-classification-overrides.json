@@ -1780,6 +1780,38 @@
         "role": "behaviour",
         "_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
       }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxStart",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607, /qc-council follow-up on D604). Was 'styling'. SAME root cause as dragMomentum/loopCarousel, missed in the first pass because that pass searched by attribute NAME rather than by the structural signal: css_property already carries the fx:* pseudo-namespace marker (seed-motion-fx-registry.py) which assign-canonical.py's TIER 3 generic-styling-backstop (WHERE role IS NULL AND css_property IS NOT NULL -> 'styling') does not special-case — it treats ANY non-null css_property as CSS paint, including the fx:* markers. ⛔ This override is a STOPGAP, not the real fix — the real fix is a TIER 3.15-shaped upgrade pass in assign-canonical.py (css_property LIKE 'fx:%' AND role='styling' -> 'behaviour'), which would self-correct this row AND every future fx:* attribute without needing an override entry per instance. Flagged to Bean 2026-08-13, not built (shared classifier mechanism, design-gate per CLAUDE.md Rule 7)."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxEnd",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxScrub",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "fxPin",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-08-13 (D607). Was NULL (css_property also NULL — not yet seeded into the fx:* namespace by seed-motion-fx-registry.py, unlike its siblings fxStart/fxEnd/fxScrub). Same family, same confirmed INTERACTION-ONLY classification from this session's editor-render-parity triage — seeded here for consistency with its siblings rather than left as an unexplained gap."
+      }
     }
   ]
 }
