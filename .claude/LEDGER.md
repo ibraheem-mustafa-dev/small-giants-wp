@@ -13,39 +13,32 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 the block below it ("part 7") is the editor-render-parity thread. Both pushed to `main`. Neither
 replaced the other — do not read either as the whole day.
 
-**2026-08-13 (uniformity thread). One link control everywhere, and the colour control rebuilt from
-core's own source.** Commits `802ceeec` + `e073ca42`, pushed, rebased over the other thread's seven.
+**2026-08-13 (uniformity thread). One link control everywhere; colour control rebuilt from core's
+own source.** Commits `802ceeec` + `e073ca42`, rebased over the other thread's seven. Full narrative:
+`memory/session-2026-08-13-swept-parts-4-5.md`.
 
-**What you can now do that you couldn't.** Type a button's text straight on the canvas and set its
-link from the toolbar, exactly like core's button — search your own pages, pick one, and if that page's
-slug is renamed later the link follows it instead of breaking. The same link control is now on 11
-blocks plus the whole-card link extension, so a hyperlink looks and behaves the same everywhere.
+**What you can now do.** Type a button's text on the canvas and set its link from the toolbar, like
+core's button — search your own pages, and if that page's slug is renamed the link follows instead of
+breaking. Same control on 11 blocks + the whole-card-link extension.
 
-**The finding that mattered most.** The old link control mounted WordPress's own `LinkControl` inline
-in the sidebar. Core only ever intends that component for a popover — it cancels its own 350px minimum
-width in exactly one place, `.components-popover__content`. So it painted 350px in a 248px panel and
-ran 86px off the edge, which is the escaping URL box you photographed. Two competitors were read at
-source (Kadence, Otter): neither mounts it inline either. The fix wasn't a width override — it was
-mounting it where core intends.
+**The finding that mattered.** The old control mounted core's `LinkControl` INLINE in the sidebar.
+Core only ever intends it for a popover — it cancels its own 350px min-width in exactly one place,
+`.components-popover__content`. So it painted 350px in a 248px panel and ran 86px off the edge (the
+URL box Bean photographed). Kadence and Otter were read at source: neither mounts it inline either.
+The fix was moving it, not overriding core's CSS. A second bug shared that cause: inline, the control
+only commits on Submit, so a flipped new-tab toggle was silently discarded — the separate "Open in"
+and "Rel attribute" fields existed ONLY as a workaround for that.
 
-**A second bug fell out of the same cause.** Because that control only commits its settings on
-"Submit", a new-tab toggle flipped inline was silently discarded — so SGS had hand-rolled separate
-"Open in" and "Rel attribute" fields as a workaround. Those extra fields existed only because the
-component was in the wrong place.
+**Three things I got wrong, each caught by Bean or by re-measuring:** (1) said the 7 remaining blocks
+weren't repeater-shaped — false, 5 of 6 mount inside a per-row loop; my grep counted source
+occurrences, not renders. (2) called two dirty files "another session's" — they were my own agent's,
+and the mislabel propagated into two subagent briefs. (3) reported the parity guard at "0 net-new" —
+it was 139; I read CHECK B's summary and attributed it to CHECK A.
 
-**Three things I got wrong, each caught by you or by re-measuring:**
-1. Told you the 7 remaining blocks weren't repeater-shaped. **False** — 5 of 6 mount inside a per-row
-   loop. My grep counted occurrences in source, not renders.
-2. Called two dirty files "another session's work". **They were my own agent's**, from earlier the same
-   session. That mislabelling then propagated into two subagent briefs.
-3. Reported the editor-parity guard as finding "0 net-new". **It was 139** — I read CHECK B's summary
-   line and attributed it to CHECK A. (That whole backlog is the other thread's, now closed by them.)
-
-**The colour control was rebuilt but is NOT finished.** Bean: *"the difference between your colour
-control and the native one is huge."* Core's actual row was pulled from source and copied — swatch
-left, ONE label, rows grouped in a panel. The first attempt had printed the label twice, which a
-seven-point verification missed because it never checked label uniqueness. **One open question: core
-conveys "2 states" by overlapping the swatches; you originally asked for a count badge. Not ruled.**
+**Colour control rebuilt but NOT finished.** Bean: *"the difference between your colour control and
+the native one is huge."* Core's row copied from source — swatch left, ONE label, rows grouped.
+⚠ **Open, unruled: core conveys "2 states" by overlapping swatches; Bean originally asked for a count
+badge.**
 
 **2026-08-13 (latest session, part 7 — new thread). Fixed and shipped the ENTIRE 70-item "editor
 preview doesn't match what the client actually gets" backlog from part 4/5's triage. All 70
@@ -82,76 +75,6 @@ with nothing to reconcile.
   `/qc-council` afterwards to stress-test that claim rather than take the detector's word for it
   — see below.
 
-**2026-08-13 (earlier session, part 6, retained). Finished the DB role-classifier
-remediation part 4's own "open" items — closed 479 blank labels to 0, then had a
-6-persona adversarial council stress-test the two follow-on ideas before building
-either.** Commits `b3107413`–`56b41a7e`, decisions D611–D612.
-
-- **The remaining ~469 blank labels closed to zero**, in three permanent, self-fixing
-  rules (not hand-patches): one for settings that belong to plain WordPress, not this
-  framework (225 of them); one for any yes/no toggle that has no visual effect of its
-  own (127); one for a device-specific copy of a setting inheriting its sibling's label
-  automatically (6). The rest (121) were genuine one-by-one judgement calls, each
-  confirmed by actually reading the relevant code, not guessed from the setting's name.
-- **Two ideas for closing the last gaps further were flagged but deliberately NOT
-  built** — so I ran a full adversarial council (6 independent reviewers, each trying to
-  break the idea from a different angle) on both before deciding. The most important
-  thing it found: **assigning either of these settings a more specific label would not
-  actually have changed anything on a cloned client site** — the part of the system that
-  reads these labels only ever acts on ones marked "this is real content", and both
-  ideas were about settings that are decoration or config either way. So both stay
-  parked, not because they're risky, but because they wouldn't have moved the needle.
-- **What the council DID turn up something real for**: it recommended actually counting
-  how many settings feed invisible SEO markup, instead of guessing. Real count was 6, not
-  4 — and 2 of those 6 turned out to be mislabelled RIGHT NOW (not just "could be
-  automated later"), plus a 3rd one I'd trusted from last session as "definitely SEO-only"
-  turned out to also show up as a normal number on the page — meaning a clone of it could
-  have silently dropped a visible count. All 3 fixed. Commit `56b41a7e`.
-- **A "dead control" I flagged turned out not to be dead.** Delegated a fix for 3
-  card-grid filters (show only featured/on-sale/in-stock products) that looked unused —
-  turned out they DO work, wired through a helper file my search hadn't checked. Verified
-  live on the sandbox site by actually changing product stock/featured status and
-  confirming the grid responded correctly, then undid the test changes. No code needed
-  changing — my earlier "this is broken" claim was the bug, not the code.
-
-**2026-08-13 (earlier session, part 5, condensed — superseded by part 6 above).** Validated the
-part-4 database fix wasn't a one-off patch job: found the classifier had a systemic blind spot
-(a motion-marker it wasn't reading), fixed 3 more instances the same bug caused, then built the
-permanent classifier fix so the whole category self-corrects going forward. Commits
-`3267384f`–`12007c67`, decision D610 (full narrative there).
-
-**2026-08-13 (latest session, part 4 — new thread). Continued the "does the editor preview match
-what the client actually gets" checker (the tool the hero work surfaced). Cleaned up a known blind
-spot, fixed 13 wrong entries in the framework's internal database, then had 3 reviewers read every
-one of the 143 remaining findings by hand.** Commit `9d827d63`, decisions D603–D606.
-
-- **The checker missed cases where a setting only affects something through a shared helper file**
-  (e.g. a form field's machine name, or a hover-transition timing value) rather than directly. Only
-  9 of 152 findings were this shape — not worth building a bigger cross-file tracer for, so I
-  verified them by hand and documented the limitation directly in the tool instead.
-- **Found and fixed 13 wrong labels in the framework's internal settings database** — a toggle that
-  emits invisible SEO markup was wrongly tagged as "controls visibility," and a carousel drag-speed
-  flag was wrongly tagged as "styling" in 5 blocks (not just the 1 originally flagged).
-- **Had 3 people (well, agents) independently read the actual code behind all 143 remaining
-  findings** rather than trusting the checker's guess. Result: **70 are real bugs** (settings the
-  client can change but never sees change in the editor), 50 are correctly not previewable (things
-  like hover effects or scroll animations that genuinely can't show on a still screen), and 23 are
-  a different, understood shape (2 blocks that need live data — reviews from Google, live product
-  stock — the editor simply doesn't have). Full breakdown:
-  `.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md`.
-- **Checked whether to build a tool that auto-fixes those 70 bugs** rather than fixing them by
-  hand — concluded no: about 20 of the 70 need a missing piece of the editor preview built from
-  scratch (a button that doesn't exist yet, a different HTML structure), which a generator can't
-  safely do. Fixing the other ~50 by hand is faster than building and testing a generator for a
-  one-off batch this size.
-- **Found one genuine bug while triaging, not just a missing preview**: on `sgs/hero`, a "match the
-  theme's default style" toggle does the OPPOSITE of what it's supposed to in the editor versus
-  what actually saves — the editor keeps showing a background/border that the live page correctly
-  hides. Flagged as the top-priority item in the 70-bug list.
-- **Not done yet, and not started without asking:** actually fixing those 70 bugs is real build
-  work across ~25 blocks. See the menu at the end of this session's reply rather than me just
-  running ahead with it.
-
 **2026-08-13 (parts 1-3, earlier session, swept to memory).** Hero split-image bleed close-out,
 hero editor spot-check fixes, hero Ken-Burns/parallax pair + per-device SVG/media cascade fix,
 plus the session-wide false-negative postmortem (truncated grep, stale element handle, etc.) and
@@ -178,26 +101,92 @@ the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2
 | `3170943a` | `sgs/hero`: `splitImageBleed` tested (not dead), defaulted to full-bleed (D600) |
 | `beab47a4` | `sgs/hero`: bleed extended to reach video/SVG tiers, not just image (D600) |
 
-## Shipped earlier session (retained)
-
-| Commit | What |
-|---|---|
-| `5727825e` | `sgs/media` per-device SVG + **cascade fix for BOTH media families** |
-| `b6ccb320` | D595 + Spec 35 D5 amended at source (the cascade rule) |
-| `079abbae` | `helpers-tier-media.php` landed WITH its `require_once` (fatal cleared) |
-| `f5fdf7e6` | SVG `<style>` finding CLOSED as not-a-vulnerability, on evidence |
-| `efa2f0be` | `sgs/container`: 3 stacked background pickers → one `ResponsiveControl` |
-| `4fe39e6d` | `sgs/hero`: split media gains per-device TYPE; legacy `splitMedia` deleted |
-| `0917bcf3` | `sgs/hero`: background is a ROOT setting — split heroes paint one |
-| `89857e39` | `sgs/hero`: second overlay targeting the split MEDIA element |
-| `0c270af7` | `sgs/hero`: media panels consolidated, legacy `overlayColour` deleted |
-| `b2ffcd40` | D596 |
-
 ## Blockers
 
 - **None repo-wide.**
 
 ## Open — ready to pick up
+
+### ⭐ NEXT SESSION — the uniformity thread's orchestration plan (2026-08-13)
+
+**State recap, plain English.** A block's inspector is the sidebar of settings a client uses. Two
+programmes are converging on it: the **uniformity report** (make the same property behave identically
+on every block) and **Track 1b** (make the enforcement structural, not remembered). Today the LINK
+control was standardised across 11 blocks + the whole-card-link extension and gated (rule 27), and the
+COLOUR control was rebuilt from WordPress core's own source. Both landed on `main`. Neither programme
+is finished, and the plan doc that governs Track 1b does not yet contain the report's work at all.
+
+**T1 — Fold the report's work into the Track 1b plan, and strike the 9 stale entries.**
+Bean approved this and it has not been done. `~/.claude/plans/go-track-1b-playful-hamster.md` has no
+rows for any report-derived work, and carries 9 identified stale entries (G3 closed; W1-a's A3 done;
+W1-e dangerous as written; §3.3's `BorderBoxControl` row superseded; C4 reads open under a CLOSED
+banner; §1.2's counts; Wave 0 formatted as a work list; D3 resolved by C5).
+· Execution: **inline** (DOCS cluster is main-thread-only, and two sessions share this checkout)
+· Depends on: none · Parallel with: none · /qc gate after: no (doc-only)
+· **Acceptance:** every report-derived item appears as a plan row, and re-reading §2.7/G3/G4/W1-e
+finds nothing that would misdirect a fresh session. Est. 30 min.
+
+**T2 — `sgs/social-icons` repair (5 fixes, one job).** Queued deliberately; Bean called its inspector
+"horrendous" and sent a screenshot. It is NOT a control swap: (1) the editor canvas prints the platform
+SLUG where `render.php` draws a Lucide SVG (`edit.js:343-352` vs `render.php:438-439`); (2) style
+variants (`filled`/`outlined`/`pill`) clip that text away, which is why picking one makes the icon
+"disappear"; (3) four attributes never reach the canvas (`iconColour`, `iconColourHover`, `colourMode`,
+`gap`); (4) the repeater lays controls out horizontally in a 248px panel so each gets ~110px, and its
+help text runs six wrapped lines; (5) it is the last block on the superseded `SgsLinkControl`.
+· Execution: **delegated**, Sonnet via `/delegate` · single agent (all five touch one block)
+· Brief: fix the canvas to share `render.php`'s icon resolution, make variants + the four attributes
+apply in the canvas, stack the repeater item's controls full-width, then migrate the link control.
+· Context it needs: rule 27's backlog is 7→1 and this is the 1; `check-editor-render-parity.js`
+already flags the four attributes; the other thread closed its own 70-item parity backlog, so do not
+re-triage that. · Depends on: none · /qc gate after: **yes** — `/qc-inline`, live editor + frontend
+· **Acceptance:** the icon renders as an SVG in the canvas at every style variant, all four attributes
+visibly affect the preview, rule 27 reports **0 flagged**, and Bean's eye passes it (R-31-13). Est. 1 h.
+
+**T3 — Rule 27 promotion.** Once T2 lands, flip `27-superseded-link-control` from advisory to `gate`.
+Its promotion trigger is already recorded in `rules.json`: 0 FLAGGED on a live run.
+· Execution: inline · Depends on: **T2** · /qc gate after: no
+· **Acceptance:** `rules.json` reads `"mode": "gate"`, a live run reports 0, and a deliberately
+reintroduced `<SgsLinkControl>` fails the build (proven, then reverted). Est. 10 min.
+
+**T4 — Colour control: close the one open ruling, then finish the panel.** Core conveys "2 states" by
+overlapping swatches (`ZStack`, `global-styles/color-panel.js:163-176`); Bean originally asked for a
+count badge. **Unruled — ask before building.** Then the remaining piece of D609's amended intent: the
+grouped Colour panel at the top of Styles that replaces native's.
+· Execution: ruling **inline** (Bean picks), build **delegated** Sonnet
+· Depends on: the ruling · /qc gate after: yes — `/qc-inline`
+· **Acceptance:** rows grouped in one panel at the top of Styles; the visible label renders **exactly
+once** (asserted, with a positive control proving the counter can return ≠1). Est. 45 min after ruling.
+
+**T5 — `pricing-table/block.json` schema bug.** Found in passing, unrelated to links, live today:
+`plans.items.properties.features` is declared `"string"` but holds an array, and `.highlighted` is
+declared `"string"` but holds a boolean. Supplying correct types makes WP silently revert the WHOLE
+`plans` array to its default — the D338 silent-discard class.
+· Execution: delegated, Haiku · Depends on: none · /qc gate after: yes — stored-content round-trip
+· **Acceptance:** types corrected AND a live round-trip proves an existing `plans` array survives a
+save/reload unchanged. Est. 20 min.
+
+```
+T1 (inline, docs) ──┐
+T5 (haiku)  ────────┤  all independent, run in parallel
+T2 (sonnet) ────────┘
+      ↓ /qc-inline
+T3 (inline, gate promotion — needs T2)
+T4 (ruling first, then sonnet)
+```
+
+**Methodology guardrails — earned today, do not skip**
+- ⛔ **Assert label UNIQUENESS on any inspector control change**, with a positive control proving the
+  counter can return ≠1. Today's colour control shipped the duplicate-label defect that 9 sites were
+  fixed for that morning, through a 7-point check that never counted labels.
+- ⛔ **A zero from a check you wrote is not an absence.** A probe called the colour control "missing"
+  on a wrong selector; the code was in the deployed bundle. Prove detectability before believing gone.
+- ⛔ **Source-text counts ≠ render counts.** `grep -c '<Component'` returns 1 for a component mounted
+  once per repeater row inside a child. That error caused a wrong scoping decision.
+- ⛔ **Fact-check your own tool output as hard as a subagent's.** Four claims today rested on misread
+  output of my own commands, incl. attributing one check's summary line to another's.
+- ⛔ **Never run parallel agents against one canary browser session** — two hijacked each other's tab.
+- ⛔ **`--allow-dirty` deploys the WHOLE tree.** Used 3× today because nothing was committed; each
+  time it pushed another track's in-flight work live. Commit first, then deploy.
 
 - **editor-render-parity Phase 2 — FULLY CLOSED, all 70 REAL-GAP findings (D613).** 7 commits
   `c67660e9`→`1f7d9bb8` on `main`, live-verified on sandybrown after every batch (not
