@@ -1,5 +1,65 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D595 — SVG gains per-device tiers, and BOTH media families' tier cascade was wrong [INCIDENT]
+
+**2026-08-13.** `sgs/media` could already art-direct images and video per device; SVG was the one
+media type left on a single flat paste field. Added `svgContentTablet`/`svgContentMobile` (string,
+matching the base attr type), one `<ResponsiveControl>` picker gated on the base SVG existing, and
+sibling `<div>` tiers toggled by scoped `@media` CSS — the images pattern, not the video runtime
+swap, because inline SVG costs no extra fetch. Every tier passes the SAME `wp_kses()` allowlist as
+the base; a tier stripped to nothing is dropped rather than emitted as a blank box. Commit
+`5727825e`; live proof `reports/visual-diff/media-2026-08-13.md`.
+
+**The real find — a cascade bug in the ALREADY-SHIPPED image tiers.** With a TABLET tier set and
+MOBILE empty, both media families hid the tablet element below 768px and left desktop visible: mobile
+fell back to DESKTOP, skipping the tablet value it should have inherited. That contradicts
+`sgs_resolve_tier()` (`helpers-responsive.php:685-694`), whose mobile branch recurses to tablet, and
+Spec 35 D3/D5's stated "falls back UP: mobile → tablet → desktop". **Proven, not inferred:** the old
+rules replayed through a 12-case assertion set fail exactly one case (tablet-only at 375px) and pass
+the other eleven; the new logic passes 12/12. That single failure is also the negative control
+proving the assertions bite. Confirmed on the live canary (fixture B: `pb-tablet` VISIBLE at 375px).
+
+**Root cause is a SHAPE, not a typo.** The old code emitted each tier's rules INDEPENDENTLY, so the
+combinations were enumerated by hand and one of four was missed. Both families now call ONE closure
+that COMPUTES band ownership, so a fourth combination cannot be missed the same way and the two
+families cannot drift apart again.
+
+**The same bug existed a third time.** The concurrent session's untracked
+`includes/helpers-tier-media.php` carried a byte-equivalent copy — its own docblock described the
+defect as intended behaviour ("degrades UP to the base"), but the base is not the next widest tier
+when a tablet value exists. Fixed there too at Bean's direction (12/12 against the real function).
+⚠ It has NO live coverage yet — nothing calls it until hero is wired in Track 3.
+
+**Two smaller things worth keeping.** (1) Hide rules must be COMPOUND (`.base.base--tier`, 0,3,0):
+block stylesheets set `display:block` on these BEM bases at 0,2,0 and a bare modifier rule is also
+0,2,0, so the winner would be decided by source order — not ours to guarantee once block CSS is
+lifted into `uploads/sgs-css/`. (2) A cross-model reviewer's "id collision between sibling SVGs"
+finding was **refuted by checking the allowlist**: it contains no `use`/`linearGradient`/
+`radialGradient`/`stop`/`clipPath`/`mask`/`pattern`, so nothing is referenceable by id. A finding's
+severity is a function of the specific allowlist, not the general pattern.
+
+**CONFIRMED residual, deliberately not fixed here:** `style` IS allowlisted, and `wp_kses()` does not
+filter the text content of an allowed `<style>` — so operator CSS is unfiltered, and a nested
+`<style>` applies document-wide regardless of the `display:none` on its wrapper. **Pre-existing on
+the base field**; this change widens it 1 → 3 insertion points. Removing it changes how the existing
+base field renders and could break live operator SVG (own scope); stripping it from tiers only would
+be a per-block carve-out (Rule 3).
+
+**Process note.** Committed with `--no-verify` on Bean's explicit authorisation, bypassing ONLY the
+visual-diff gate: that gate needs a first-paint capture, the capture needs a live deploy, and
+`build-deploy.py` correctly refuses to deploy while another track's work is dirty in deploy scope
+(`--payload` cannot cover it — it is presumptively someone else's unfinished work, exactly as D336
+requires). Every other gate passed in the same run, verified in the log. The deploy itself then ran
+from an **isolated worktree** at `5727825e`, so the other track's dirty `hero/*` +
+`includes/render-helpers.php` could not ship. ⚠ Consequence: the visual-diff report DOCUMENTS this
+change rather than having gated it, and its `source_sha` was reproduced from `HEAD:` blobs using the
+gate's own algorithm rather than emitted by the gate.
+
+⛔ **Live hazard found, NOT ours to fix:** `includes/render-helpers.php` carries an uncommitted
+`require_once __DIR__ . '/helpers-tier-media.php';` pointing at an UNTRACKED file. Committing that
+line without the helper file — or a fresh checkout — fatals every page. Both halves must land in the
+same commit.
+
 ## D594 — Hero split-media rework (2nd attempt) REVERTED — real progress, real lessons for attempt 3 [ROUTINE]
 
 **2026-08-12.** Second attempt at replacing the split variant's hand-built image/video with a real

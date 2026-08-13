@@ -206,6 +206,39 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
   - **Alt text is NOT tiered.** A different crop of the same subject describes the same thing; a
     per-device alt is a second place for the description to drift.
 
+  - **⛔ "Falls back UP" means the next WIDEST tier that HAS a value — NOT the base (D595,
+    2026-08-13).** Emitting each tier's toggle rules INDEPENDENTLY gets one of the four combinations
+    wrong: with a TABLET tier set and MOBILE empty it hides `--tablet` below 768px and leaves
+    `--desktop` visible, so mobile falls back to DESKTOP and skips the tablet value it should
+    inherit. That contradicts `sgs_resolve_tier()` (`helpers-responsive.php:685-694`), whose mobile
+    branch recurses to tablet. **This shipped in `sgs/media`'s image tiers and in a third copy in
+    `includes/helpers-tier-media.php`, whose docblock described the defect as intended.** COMPUTE
+    band ownership; never enumerate the rules by hand:
+
+    | tiers set | ≤767px | 768-1023px | ≥1024px |
+    |---|---|---|---|
+    | none | desktop | desktop | desktop |
+    | mobile | mobile | desktop | desktop |
+    | tablet | **tablet** | tablet | desktop |
+    | both | mobile | tablet | desktop |
+
+    Proven, not asserted: the old rules fail exactly 1 of 12 assertion cases, the computed form
+    passes 12/12, and fixture B in `reports/visual-diff/media-2026-08-13.md` confirms it live.
+
+  - **⛔ Tier hide rules must be COMPOUND — `.{uid} .base.base--tier` (0,3,0), not
+    `.{uid} .base--tier` (0,2,0).** Block stylesheets set `display:block` on these BEM bases at
+    (0,2,0), so a bare modifier rule TIES and the winner is decided by source order — which is not
+    ours to guarantee once block CSS is lifted into `uploads/sgs-css/`.
+
+  - **SVG tiers by MARKUP, same as images (D595).** `svgContent`/`Tablet`/`Mobile`, string-typed to
+    match the base. Inline SVG costs no extra fetch, so it takes the sibling pattern, NOT the video
+    runtime swap. **Every tier MUST pass the same `wp_kses()` allowlist as the base** — the allowlist
+    is the whole defence and cannot apply to one of three sources. A tier the allowlist strips to
+    nothing must be DROPPED, not emitted, or it blanks that width behind an empty box.
+    ⚠ Known residual: `style` is allowlisted and `wp_kses()` does not filter an allowed `<style>`'s
+    text content, so operator CSS is unfiltered — and a nested `<style>` applies document-wide
+    regardless of `display:none` on its wrapper. Pre-existing on the base field; tiers widen it 1→3.
+
   - **IMAGES tier by MARKUP.** Emit all tiers as sibling elements carrying a BEM tier modifier and
     toggle them with breakpoint rules in the block's own scoped `<style>`. Three `<img>`s cost
     nothing meaningful, it needs no JS, and the BEM modifier is the vocabulary the cloning pipeline
