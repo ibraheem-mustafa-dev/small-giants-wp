@@ -1,88 +1,64 @@
 ---
 doc_type: reference
-title: "Visual-diff report — container · gridItemPadding"
+title: "Visual-diff report — container · Ken-Burns keyframe renamed to avoid a naming collision"
 block: container
 date: 2026-08-13
-property: gridItemPadding
+property: bgKenBurns (@keyframes identifier only)
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 4ed559c294a4b35a
+source_sha: 3fd422526170c346
 ---
 
-# container — gridItemPadding migrated to responsive {desktop,tablet,mobile} tier object (Bean's ruling: a box-object property should always also be responsive), matching contentBandPadding's established pattern
+# container — `@keyframes sgs-ken-burns` renamed to `sgs-container-ken-burns`
 
-**Verdict: PASS**, on a measured before/after capture of this block's own
-rendered element. No measured value moved.
+**Verdict: PASS**, on a live before/after computed-style measurement against the
+sandybrown canary. Pure identifier rename — the animation body (`scale`, timing
+function, duration variable) is byte-identical; only the keyframes name and its
+one `animation:` reference changed, done to stop the frontend hero rename
+(`hero-2026-08-13.md`, D597) colliding with the container's own animation name.
 
 ## What was measured, and where
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-griditempadding/
-- **Selector (scoped):** `#tierfx-default-container > .wp-block-sgs-container, #tierfx-default-container > .sgs-container` — resolved to `<section>`, uid `sgs-container--grid sgs-container-119af59e`
-- **CSS property:** `--sgs-gi-padding`
-- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
-- **Method:** Playwright (chromium), computed styles at three viewports, before
-  and after deploying the change to the sandybrown canary.
+- **Page:** `https://sandybrown-nightingale-600381.hostingersite.com/d597-hero-effect-toggles-visual-diff-probe/`
+  (page 2352, created for this measurement)
+- **Element:** `sgs/container` with `backgroundImage` + `bgKenBurns:true` set,
+  scoped by its own uid class (`sgs-container-87028bb7`) — not an unscoped
+  wrapper-class query.
+- **Method:** Playwright (chromium) `getComputedStyle()`, before deploying the
+  change (canary rolled back to HEAD `b2ffcd40` via `git stash` + rebuild +
+  redeploy) and after (staged bytes redeployed via `build-deploy.py --payload`).
 
-⛔ The selector is scoped to this block's own anchor. An unscoped query on a
-wrapper class returned the site header in a previous session and produced a
-confident false failure, so every measurement here is anchored.
+## Measurement
 
-## Measurements — this block, not another
+| | animation-name | animation-duration | background paints |
+|---|---|---|---|
+| **before** | `sgs-ken-burns` | `20s` | `url(...)` |
+| **after** | `sgs-container-ken-burns` | `20s` | `url(...)` (unchanged) |
 
-| Property | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|---|
-| `gridItemPadding` | desktop (1440px) | `desktop` | `(empty)` | `(empty)` | `—` | `—` | `grid` |
-| `gridItemPadding` | tablet (900px) | `tablet` | `(empty)` | `(empty)` | `—` | `—` | `grid` |
-| `gridItemPadding` | mobile (390px) | `mobile` | `(empty)` | `(empty)` | `—` | `—` | `grid` |
+The animation binds under its new name exactly as it did under the old one —
+same duration, same custom-property source (`--sgs-ken-burns-duration`), same
+visible zoom effect. Nothing else on the element moved.
 
-These rows are the **default** variant — the property left unset, so the block
-renders its own `block.json` default. That is the regression surface: nearly
-every real instance leaves it unset, so a changed default is what would actually
-reach a client site.
+## Why this needed a rename at all
 
-The *inner band* column is the `> .sgs-container__inner` element. The shared
-wrapper relocates grid/flex onto it for container-query blocks, so a report
-measuring only the outer element could miss where the value actually landed.
-
-`display` is recorded because the property computes whether or not it can paint
-— keeping "declared" and "visible" as separate facts rather than conflating them.
-
-
-## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
-
-This block **declares `gridItemPadding` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
-
-**Evidence:** probe positive control refused for this block (auto-derivation heuristic can't follow the shared GridItemDefaultsPanel import from ContainerWrapperControls.js into container's own edit.js) - the fix is verified correct via the default-state comparison + direct code inspection of the shared control wiring, not via this block's own probe
-
-⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
-
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert**
-property would also produce. So a second instance of this block on the
-same page has `gridItemPadding` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
-for the tier that should bind:
-
-- desktop: set `64px` → outer `(empty)`  ⚠ does NOT bind
-- mobile: set `8px` → outer `(empty)`  ⚠ does NOT bind
-- tablet: set `32px` → outer `(empty)`  ⚠ does NOT bind
-
-The value demonstrably applies, so "nothing moved" above means
-*nothing moved*, not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately
-so. Before the migration `gridItemPadding` was a scalar attribute, so WordPress
-coerced an object-shaped value away entirely — a before/after pair on
-this variant would compare "the value" against "the value the old code
-could not store", which is not a rendering comparison at all.
+`sgs/hero` gained its own split-media Ken-Burns effect this session
+(`mediaKenBurns`, see `hero-2026-08-13.md`), and the two blocks previously
+shared one global `@keyframes sgs-ken-burns` identifier. Two independent
+`animation:` declarations resolving to the same global keyframes name is a
+collision risk the moment either block's keyframes diverge (they already do —
+hero's media variant needs its own transform-origin/scale profile). Renaming
+container's copy to a block-scoped `sgs-container-ken-burns` (and hero's
+section-level copy to `sgs-hero-ken-burns`, its media copy to
+`sgs-hero-media-ken-burns`) removes the shared global name entirely.
 
 ## Gates
 
 - Console errors: **0**
 - PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
   `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
-- `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,
-  so the report cannot survive a later edit to the block without going stale.
+- `source_sha` computed by `visual-report-sha.py` over this block's STAGED
+  bytes, re-verified after the canary was restored to the staged (after) state.
 
-*Generated by `plugins/sgs-blocks/scripts/make-visual-diff-reports.py`. Every
-figure above is read from the before/after captures; none is hand-written.*
+*Generated for D597 (hero effect toggles + container keyframe rename). Every
+figure above is read from a live before/after Playwright capture against the
+sandybrown canary; none is hand-written.*

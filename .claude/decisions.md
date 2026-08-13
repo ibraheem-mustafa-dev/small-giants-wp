@@ -1,5 +1,291 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D600 — hero split-image bleed tested, defaulted on, and extended to video/SVG [ROUTINE]
+
+**2026-08-13.** Closes the last of Track 1b's three carried-forward hero items (the other two closed
+by D599). `splitImageBleed` had sat "latent, 0 live instances, parked" for weeks — nobody knew for
+sure whether it was reachable, useful, or dead. Bean asked for it to be tested first, then acted on.
+Two commits: `3170943a` (toggle + default), `beab47a4` (video/SVG reach).
+
+**1 — tested, not dead, not redundant.** The editor `ToggleControl` already existed (shipped that
+same morning in `6cd683d9`) — the control itself was never the problem. Confirmed the effect is
+genuinely distinct from `imageBorderRadius`/`imagePadding`: it negative-margins the media column past
+the block's own padding to the true container edge, drops `aspect-ratio`/`max-height`, and zeroes
+border-radius — three things those controls can't do together in one toggle. Live census: only 2
+published split-hero pages exist on the canary, both dev/QA fixtures — safe to change the default.
+
+**2 — default flipped `false` → `true`.** Full-bleed is now the standard split-hero look, not
+opt-in — most real split-hero designs want the image flush to the block edge. `block.json` default
++ `edit.js`'s `resetAll`/`onDeselect`/`hasValue` logic all updated to match (previously checked
+`!!splitImageBleed`, now checks `false === splitImageBleed` since `true` is the new baseline).
+
+**3 — a real gap found testing with an actual video, not assumed.** Bean asked directly whether
+bleed reaches the OTHER media types hero can insert (video/SVG, per `4fe39e6d`'s per-device type
+picker) — it didn't. The column-level bleed (`.sgs-hero__media--bleed`) was already type-agnostic,
+but the element-level half only ever targeted `.sgs-hero__split-image`, the class `render.php` only
+ever attaches to the image type — the ENTIRE `imageBorderRadius`/`imageWidth`/`imageHeight`/
+`imagePadding`/`imageObjectFit` control family is image-only by design (`render.php:528-625`). A bled
+video kept default rounded corners and its native aspect ratio, overflowing its wrapper — measured
+live with a real uploaded clip (media 2180) BEFORE the fix: `object-fit:contain`, box `1280×720`
+inside a `652×727` wrapper. Fixed by targeting the type-modifier class `sgs_tier_media_render()`
+always emits (`.sgs-hero__split-media--video`/`--svg`) under the existing bleed wrapper — no
+`render.php` change needed. AFTER: `object-fit:cover`, box exactly matches wrapper.
+
+**Not fixed, flagged instead:** video/SVG tiers have NO width/height/border/padding/object-fit
+controls at all, bled or not — the whole "Image styling" panel is image-only by design, predating
+this session. A bigger, separate decision if client work ever needs it — not silently absorbed into
+this fix.
+
+## D599 — hero split-media → `sgs/media` child-block rework DROPPED, not deferred [ROUTINE]
+
+**2026-08-13.** Bean's explicit call: "child block rework is dropped." This closes the question
+formally — distinct from "still parked, might revisit" — after two built-and-reverted attempts:
+
+- **D591** (first attempt) — built the mechanism (single InnerBlocks list, `sgs/media` appended to
+  `HERO_CONTENT_TEMPLATE`, legacy attrs deleted outright). Reverted same evening: the live result
+  lost the two grid-item wrappers content and media need — children were placed directly on the
+  grid rather than each grouped under its own wrapper.
+- **D594** (second attempt) — retried with the diagnosed fix (server-side `render.php` partitioning
+  of `parsed_block['innerBlocks']` into two real wrapper divs) — proven to work server-side. Reverted
+  again: the live editor broke differently (split squashed to quarter-width, background bleeding
+  through, content/media inspector controls inert). The unsolved half was precisely diagnosed as the
+  editor canvas: WordPress gives a block exactly one InnerBlocks list with one client-side rendering
+  surface — there is no client-side equivalent of `render_block()`-based server partitioning.
+
+Hero's per-device image/video/SVG type-picker (`4fe39e6d`, 2026-08-13 — `splitImage*`/`splitVideo*`/
+`splitSvg*` families + `splitMediaType` discriminator) already delivers most of the practical benefit
+the child-block approach was chasing: per-device art-direction on the split media column, natively,
+with full inspector controls, live-verified. The child-block approach's remaining genuine merits
+(swappability to a different block type entirely, e.g. `sgs/audio`; single-source maintenance against
+`sgs/media`'s wider attribute set) are real but no longer urgent enough to justify a third attempt at
+an unsolved editor-canvas problem. Not parked for later — dropped. See `decisions.md` D591/D594 for
+the full build/revert history; `go-track-1b-playful-hamster.md` row D1/D6(b) for the standing-plan
+side of this closure.
+
+## D598 — hero's split-order editor preview was silently inert; a stale gate broke `npm run build` for everyone [INCIDENT]
+
+**2026-08-13.** Follow-up to D597, same session. Bean spot-checked the hero editor after D597 shipped
+and found three more things. Commit `6cd683d9`.
+
+**1 — `splitContentOrder` worked on the frontend and did nothing in the editor.** `render.php:493-520`
+correctly emits `order:1`/`order:2` CSS when the control changes. `edit.js`'s hand-built canvas
+preview had no equivalent logic at all — toggling the control silently did nothing visible until the
+page was saved and viewed live. Fixed by mirroring render.php's exact desktop-tier condition in the
+JSX preview (content + media div `style.order`). Frontend was never broken; only the canvas lied.
+
+**2 — "split media only allows an image" was already fixed.** Bean's report described the block's
+state before `4fe39e6d` (earlier the same day), which shipped the full per-device image/video/SVG
+type picker + a shared render helper. Live-verified: image/video/SVG per device tier all render
+correctly. No code change needed.
+
+**3 — `npm run build` was broken for anyone touching this repo, not just this session.** Proven via
+`git stash` against the already-pushed tree before diagnosing further — not caused by the
+splitContentOrder fix. Two causes, both leftover from D597's own work earlier the same session:
+- `db-consistency` Check #8 flagged `mediaOverlayColour`/`mediaParallax`/`mediaAnimationDuration` as
+  "rogue" seeds — a correct `attrMap` declaration existed in `block.json`, but the derived classifier
+  snapshot (`css-property-classifications.json`) was never regenerated to match. Fixed:
+  `extract-signatures.py --task-a-only`.
+- `audit-feature-parity`'s gate flagged `sgs/hero:overlayColor` (vs `core/cover`) as an unexplained
+  gap. Core pairs `overlayColor` (theme-preset slug) with `customOverlayColor` (raw hex); hero's
+  existing exception only covered the hex half, under the now-deleted `overlayColour` attribute name
+  (D596 renamed it to `backgroundOverlayColour`). Confirmed hero's `DesignTokenPicker` already covers
+  both cases in one control (`disableCustomColors={false}`) and added the missing exception, reworded
+  the stale one. Also removed a duplicate, factually wrong `overlayColor` entry a concurrent
+  investigation had added in parallel — it cited `overlayGradientFrom` (the gradient's colour-stop
+  attr) rather than `solid: 'backgroundOverlayColour'` (`GradientOverlayControl.js:201`, the control's
+  actual default).
+
+**Process note.** Two subagents ran concurrently on the same `hero/edit.js` + shared JSON config
+files this session (split-order fix, split-media investigation). Both correctly stashed/restored
+around each other's uncommitted work with no loss — but one concurrent JSON edit still produced a
+genuine duplicate-key collision (the `overlayColor` entry above), caught only by cross-checking the
+actual component source before trusting either agent's reasoning. `npm run build` exits 0 clean as
+of this commit; deployed and payload-checksum-verified.
+
+## D597 — hero's split media gets its own effect toggles; a global `@keyframes sgs-ken-burns` naming collision found and fixed [INCIDENT]
+
+**2026-08-13.** Closed the three items D596 flagged "found but not built". Commit `9b8511cf`,
+visual-diff evidence `reports/visual-diff/{container,hero}-2026-08-13.md`.
+
+**1 — `bgParallax` was NOT dead on split.** D596 recorded it as a dead control. Live measurement
+this session showed the wrapper's own `background-attachment:fixed` mechanism already applies to
+its `::before` paint layer whenever a root `backgroundImage` is set alongside `splitImage` — no
+code change needed. It's only inert when a split hero has no root background configured at all
+(the common case, since split heroes normally use `splitImage` only), which is the same limitation
+Ken Burns has — there's genuinely nothing to apply the effect to, not a wiring bug.
+
+**2 — a real, previously-undocumented bug: two DIFFERENT `@keyframes sgs-ken-burns`.** `hero/
+style.css` (transform `scale()`/`translate()`) and `container/style.css` (`background-position`/
+`background-size`) each declared an animation under the identical name. CSS keyframe names are
+global, not scoped to a selector or file, so whichever stylesheet the browser parsed last silently
+overwrote the other's animation body — for every block mounting `SGS_Container_Wrapper`, not just
+hero. Live-measured on the deployed (pre-fix) build: hero's transform-based body was winning.
+Renamed to `sgs-hero-ken-burns` / `sgs-container-ken-burns`; a third, hero-media-scoped keyframe
+(`sgs-hero-media-ken-burns`) added for item 4 below, deliberately non-colliding.
+
+**3 — a phantom animation, found by the same live measurement.** On a split hero with `bgKenBurns`
+on and NO root background configured, hero's own `.sgs-hero--ken-burns::before` pseudo-element
+still generated its box and ran the animation with `background-image:none` — wasted, invisible.
+Compound-gated the selector on the wrapper's own `.sgs-container--has-bg-image` class
+(`.sgs-hero--ken-burns.sgs-container--has-bg-image::before`) so it only generates when there's
+something to paint. Verified this doesn't regress standard heroes (their Ken Burns was already
+producing zero visible effect — standard paints its own private `<img>`, not a CSS
+`background-image`) or video-only heroes (Ken Burns was never wired to `bgVideo`).
+
+**4 — new capability: `mediaParallax`/`mediaKenBurns`/`mediaAnimationDuration` on the split
+media element.** The visible foreground `.sgs-hero__media` column had never had a motion control
+of its own — only the section background did. Mirrors the `mediaOverlay*` precedent D596 §2 set in
+the same file, kept hero-private rather than folded into `SGS_Container_Wrapper` (no other
+composite has an equivalent second, independently-positioned foreground element — checked directly
+against cta-section/trust-bar/card-grid/post-grid/pricing-table/site-header/site-footer, none has
+one; composite-mirror rule, D152, doesn't apply where there's nothing to mirror to). Parallax is
+Tier V (`animation-timeline:scroll(root)`, `@supports`-gated, matching the existing
+`.sgs-parallax-element` extension precedent and Spec 38 FR-38-7's single-property-scrub boundary);
+Ken Burns animates the child `.sgs-hero__split-media` element, clipped by `overflow:hidden` so it
+respects the column's own border-radius/bleed settings.
+
+**Verification.** Live-verified via Playwright on both surfaces (editor + frontend), default/unset
+state, mutual exclusivity between the new toggles, and every regression case named above. Validated
+via `/qc-council` against three specific risk questions before commit — bgVideo-without-
+backgroundImage edge case on the compound gate, Tier V motion-doctrine compliance, and composite-
+mirror (D152) compliance — all three PASS with file:line + live-DOM evidence, not reasoning alone.
+
+**Not touched this session (Track 1b's own open register, unrelated to effects):** the stray WP
+toolbar text-align button on hero's headline (C3, needs a ruling not effort); the split-media →
+`sgs/media` child block rework (D6(b), twice reverted, blocked on a new idea for the editor-canvas
+half); hero's split-image bleed CSS (latent, 0 live instances, parked).
+
+## D596 — hero's background is a ROOT setting; one overlay per element; the local duplicate controls were wired to a dead attribute [INCIDENT]
+
+**2026-08-13.** Three fix-shapes on `sgs/hero`, council-validated then built via
+`/subagent-driven-development` (implementer + cross-model reviewer per task, separate
+commits): `0917bcf3`, `89857e39`, `0c270af7`. Evidence:
+`reports/visual-diff/hero-2026-08-13.md`.
+
+**1 — the background could not paint on split at all.** `render.php` nulls a list of
+attrs before `SGS_Container_Wrapper::render()`. That is a double-emit guard: STANDARD
+paints its own private `<img class="sgs-hero__bg-img">` (fetchpriority/loading/decoding
+for LCP) so the wrapper must not paint a second. The loop was never gated on variant,
+and split has no private `<img>` — so split's background attrs were discarded before
+the only component that could render them ever saw them. Now gated `! $is_split`.
+Measured: split went `anyBackgroundPainted:false` → `::before: url(...)`; standard
+unchanged (private `<img>`=1, `::before` still none — the double-paint check).
+**Origin, by git blame:** the guard arrived in `bacbde57` (2026-06-04, WS-4) when hero
+adopted the wrapper and wrapper backgrounds were still section-kind gated; **D6
+(2026-08-11) made them universal and nobody revisited it.** No decision anywhere says
+split should go without a background — it was a stale guard, not a design call.
+
+**2 — one overlay per element.** The section had `backgroundOverlayColour`; the split
+media column had none. Added `mediaOverlay*` + a `.sgs-hero__media-overlay` span.
+⚠ `mediaBackground*` could NOT be reused — it paints a background-colour on the media
+wrapper, BEHIND an `object-fit:cover` image, so it is invisible whenever media exists.
+`z-index:1` on the overlay is load-bearing, not cosmetic:
+`.sgs-hero--ken-burns .sgs-hero__media` is raised to `z-index:1` (`style.css:453-457`),
+so an overlay at `0` renders BEHIND the media on those heroes.
+
+**3 — the duplicate controls were worse than duplicates.** Hero carried local "Overlay
+colour", "Parallax scroll" and "Ken Burns animation" controls while the shared,
+ungated `<BackgroundPanel>` already provided all three. The local overlay control wrote
+the LEGACY `overlayColour`; the shared one wrote the canonical
+`backgroundOverlayColour` — **two knobs for one visual property, the more prominent one
+wired to a dead attribute.** Local copies deleted, `overlayColour` deleted outright
+(no deprecation, D270). Net −35 lines.
+
+**The scoping estimate was WRONG and a council falsified it.** This was first called a
+whole separate session, on the reasoning that ungating the background needed an
+LCP-mechanism decision. A `/qc-council` code-path rater proved otherwise: the wrapper
+already paints backgrounds universally (D6), and **the two lines cited as the fix site
+were the wrong ones entirely** — `:352`/`:971` gate only STANDARD's private `<img>` and
+its overlay span. Editing there would have given split a SECOND painter over the
+wrapper's, plausibly reproducing D594's "background bleeding through", and would have
+looked correct on any page with no wrapper background set. Measured scope: ~15-18 edit
+sites, 4 files, zero cross-block impact.
+
+**⛔ The recurring failure this session was the CONTROLLER's own verification, not the
+implementers'.** Four false negatives, each of which read as a real defect:
+`grep … | head -8` hid a rule that was the 10th match (producing a confident, wrong
+"this comment is fabricated" claim); reading only VISIBLE sidebar text reported a
+control missing that a collapsed panel was hiding; `/Ken Burns/i` did not match the
+real label `"Ken-burns zoom"`; and identical `innerText` lengths across two blocks
+exposed a stale element handle re-reading the same block. A truncated, unexpanded or
+loosely-matched check does not report "unknown" — it reports a confident absence.
+
+**Found but NOT built (Bean, unprompted):** the effect toggles target only the section
+background — the split MEDIA element has none, the same asymmetry the overlay had.
+Related: **`bgParallax` is a dead control on split** (it attaches only to the
+standard-only private `<img>`, yet the ungated panel offers the toggle on split), and
+whether P1 silently made Ken Burns animate on split is UNMEASURED.
+
+## D595 — SVG gains per-device tiers, and BOTH media families' tier cascade was wrong [INCIDENT]
+
+**2026-08-13.** `sgs/media` could already art-direct images and video per device; SVG was the one
+media type left on a single flat paste field. Added `svgContentTablet`/`svgContentMobile` (string,
+matching the base attr type), one `<ResponsiveControl>` picker gated on the base SVG existing, and
+sibling `<div>` tiers toggled by scoped `@media` CSS — the images pattern, not the video runtime
+swap, because inline SVG costs no extra fetch. Every tier passes the SAME `wp_kses()` allowlist as
+the base; a tier stripped to nothing is dropped rather than emitted as a blank box. Commit
+`5727825e`; live proof `reports/visual-diff/media-2026-08-13.md`.
+
+**The real find — a cascade bug in the ALREADY-SHIPPED image tiers.** With a TABLET tier set and
+MOBILE empty, both media families hid the tablet element below 768px and left desktop visible: mobile
+fell back to DESKTOP, skipping the tablet value it should have inherited. That contradicts
+`sgs_resolve_tier()` (`helpers-responsive.php:685-694`), whose mobile branch recurses to tablet, and
+Spec 35 D3/D5's stated "falls back UP: mobile → tablet → desktop". **Proven, not inferred:** the old
+rules replayed through a 12-case assertion set fail exactly one case (tablet-only at 375px) and pass
+the other eleven; the new logic passes 12/12. That single failure is also the negative control
+proving the assertions bite. Confirmed on the live canary (fixture B: `pb-tablet` VISIBLE at 375px).
+
+**Root cause is a SHAPE, not a typo.** The old code emitted each tier's rules INDEPENDENTLY, so the
+combinations were enumerated by hand and one of four was missed. Both families now call ONE closure
+that COMPUTES band ownership, so a fourth combination cannot be missed the same way and the two
+families cannot drift apart again.
+
+**The same bug existed a third time.** The concurrent session's untracked
+`includes/helpers-tier-media.php` carried a byte-equivalent copy — its own docblock described the
+defect as intended behaviour ("degrades UP to the base"), but the base is not the next widest tier
+when a tablet value exists. Fixed there too at Bean's direction (12/12 against the real function).
+⚠ It has NO live coverage yet — nothing calls it until hero is wired in Track 3.
+
+**Two smaller things worth keeping.** (1) Hide rules must be COMPOUND (`.base.base--tier`, 0,3,0):
+block stylesheets set `display:block` on these BEM bases at 0,2,0 and a bare modifier rule is also
+0,2,0, so the winner would be decided by source order — not ours to guarantee once block CSS is
+lifted into `uploads/sgs-css/`. (2) A cross-model reviewer's "id collision between sibling SVGs"
+finding was **refuted by checking the allowlist**: it contains no `use`/`linearGradient`/
+`radialGradient`/`stop`/`clipPath`/`mask`/`pattern`, so nothing is referenceable by id. A finding's
+severity is a function of the specific allowlist, not the general pattern.
+
+**A reported `<style>` CSS-injection finding was CLOSED as not-a-vulnerability — after checking, not
+by assertion.** `style` IS allowlisted and `wp_kses()` does not filter an allowed `<style>`'s text
+content, so operator CSS is genuinely unfiltered and a nested `<style>` applies document-wide
+regardless of the `display:none` on its wrapper. All true — and irrelevant, because **the framework
+already ships an equivalent sanctioned channel**: `sgsCustomCss` is registered on every block
+(`extension-attributes.generated.php:53`), emitted as a raw server-side `<style>`
+(`custom-css.php:25`, `class-sgs-css-registry.php:25`), and is load-bearing and undeletable
+(Spec 31 FR-31-5.2). Same actor, same privilege, same output shape — so SVG `<style>` is no
+escalation. Removing it would break design-tool SVG exports (Figma/Illustrator routinely emit
+`<style>` + classes) for zero security gain.
+
+**The process lesson is the point.** This was first parked as a "confirmed residual" on the strength
+of *"removing it could break live operator SVG"* — an assertion never checked. Checked: 1332 live
+posts, **0** using `<style>` inside SVG, on a query carrying its own positive control. The stated
+blocker was false, and the real answer was one grep away in the opposite direction. A blocker
+asserted without reading is not a blocker.
+
+**Process note.** Committed with `--no-verify` on Bean's explicit authorisation, bypassing ONLY the
+visual-diff gate: that gate needs a first-paint capture, the capture needs a live deploy, and
+`build-deploy.py` correctly refuses to deploy while another track's work is dirty in deploy scope
+(`--payload` cannot cover it — it is presumptively someone else's unfinished work, exactly as D336
+requires). Every other gate passed in the same run, verified in the log. The deploy itself then ran
+from an **isolated worktree** at `5727825e`, so the other track's dirty `hero/*` +
+`includes/render-helpers.php` could not ship. ⚠ Consequence: the visual-diff report DOCUMENTS this
+change rather than having gated it, and its `source_sha` was reproduced from `HEAD:` blobs using the
+gate's own algorithm rather than emitted by the gate.
+
+⛔ **Live hazard found, NOT ours to fix:** `includes/render-helpers.php` carries an uncommitted
+`require_once __DIR__ . '/helpers-tier-media.php';` pointing at an UNTRACKED file. Committing that
+line without the helper file — or a fresh checkout — fatals every page. Both halves must land in the
+same commit.
+
 ## D594 — Hero split-media rework (2nd attempt) REVERTED — real progress, real lessons for attempt 3 [ROUTINE]
 
 **2026-08-12.** Second attempt at replacing the split variant's hand-built image/video with a real

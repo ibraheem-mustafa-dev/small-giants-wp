@@ -1631,6 +1631,30 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "mediaOverlayGradientAngle",
+      "fields": {
+        "css_property": null,
+        "_reason": "css_property NULLed 2026-08-13 (D597 follow-up). Same auto-classifier bug as overlayGradientAngle/From/To (2026-08-12 override, this file) and mediaBackgroundGradientAngle/From/To (also this file) — extract-signatures.py reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier, which the one-attr-per-slot routing model cannot express. mediaOverlayGradient* shipped in 89857e39 (2026-08-13), AFTER the 2026-08-12 override pass, so it never received the equivalent entry and reproduced the already-fixed bug. Surfaced by db-consistency Check #1/#8 on the 2026-08-13 reseed, not caused by that session's mediaParallax/mediaKenBurns work. ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three."
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayGradientFrom",
+      "fields": {
+        "css_property": null,
+        "_reason": "css_property NULLed 2026-08-13 (D597 follow-up). Same auto-classifier bug as overlayGradientAngle/From/To (2026-08-12 override, this file) and mediaBackgroundGradientAngle/From/To (also this file) — extract-signatures.py reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier, which the one-attr-per-slot routing model cannot express. mediaOverlayGradient* shipped in 89857e39 (2026-08-13), AFTER the 2026-08-12 override pass, so it never received the equivalent entry and reproduced the already-fixed bug. Surfaced by db-consistency Check #1/#8 on the 2026-08-13 reseed, not caused by that session's mediaParallax/mediaKenBurns work. ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three."
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayGradientTo",
+      "fields": {
+        "css_property": null,
+        "_reason": "css_property NULLed 2026-08-13 (D597 follow-up). Same auto-classifier bug as overlayGradientAngle/From/To (2026-08-12 override, this file) and mediaBackgroundGradientAngle/From/To (also this file) — extract-signatures.py reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier, which the one-attr-per-slot routing model cannot express. mediaOverlayGradient* shipped in 89857e39 (2026-08-13), AFTER the 2026-08-12 override pass, so it never received the equivalent entry and reproduced the already-fixed bug. Surfaced by db-consistency Check #1/#8 on the 2026-08-13 reseed, not caused by that session's mediaParallax/mediaKenBurns work. ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three."
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "contentBackgroundGradientAngle",
       "fields": {
         "css_property": null,
