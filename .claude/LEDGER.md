@@ -43,39 +43,11 @@ built the thing part 6's session had already flagged as a good next step.** Comm
 - **Net result: the flagged-issues count is now 143 → 54** — the drop from 75 is 21 issues the
   detector now understands and correctly skips on its own, not issues that were ignored.
 
-**2026-08-13 (uniformity thread — a SEPARATE, concurrent session, not this one). One link control everywhere, and the colour control rebuilt from
-core's own source.** Commits `802ceeec` + `e073ca42`, pushed, rebased over the other thread's seven.
-
-**What you can now do that you couldn't.** Type a button's text straight on the canvas and set its
-link from the toolbar, exactly like core's button — search your own pages, pick one, and if that page's
-slug is renamed later the link follows it instead of breaking. The same link control is now on 11
-blocks plus the whole-card link extension, so a hyperlink looks and behaves the same everywhere.
-
-**The finding that mattered most.** The old link control mounted WordPress's own `LinkControl` inline
-in the sidebar. Core only ever intends that component for a popover — it cancels its own 350px minimum
-width in exactly one place, `.components-popover__content`. So it painted 350px in a 248px panel and
-ran 86px off the edge, which is the escaping URL box you photographed. Two competitors were read at
-source (Kadence, Otter): neither mounts it inline either. The fix wasn't a width override — it was
-mounting it where core intends.
-
-**A second bug fell out of the same cause.** Because that control only commits its settings on
-"Submit", a new-tab toggle flipped inline was silently discarded — so SGS had hand-rolled separate
-"Open in" and "Rel attribute" fields as a workaround. Those extra fields existed only because the
-component was in the wrong place.
-
-**Three things I got wrong, each caught by you or by re-measuring:**
-1. Told you the 7 remaining blocks weren't repeater-shaped. **False** — 5 of 6 mount inside a per-row
-   loop. My grep counted occurrences in source, not renders.
-2. Called two dirty files "another session's work". **They were my own agent's**, from earlier the same
-   session. That mislabelling then propagated into two subagent briefs.
-3. Reported the editor-parity guard as finding "0 net-new". **It was 139** — I read CHECK B's summary
-   line and attributed it to CHECK A. (That whole backlog is the other thread's, now closed by them.)
-
-**The colour control was rebuilt but is NOT finished.** Bean: *"the difference between your colour
-control and the native one is huge."* Core's actual row was pulled from source and copied — swatch
-left, ONE label, rows grouped in a panel. The first attempt had printed the label twice, which a
-seven-point verification missed because it never checked label uniqueness. **One open question: core
-conveys "2 states" by overlapping the swatches; you originally asked for a count badge. Not ruled.**
+**2026-08-13 (uniformity thread — a SEPARATE, concurrent session, not this one). One link control
+everywhere; colour control rebuilt from core's own source.** Commits `802ceeec` + `e073ca42`,
+rebased over the other thread's seven. Full narrative: `memory/session-2026-08-13-swept-parts-4-5.md`.
+⚠ Open, unruled per that session's own note: core conveys "2 states" by overlapping swatches; Bean
+originally asked for a count badge.
 
 **2026-08-13 (latest session, part 7 — new thread). Fixed and shipped the ENTIRE 70-item "editor
 preview doesn't match what the client actually gets" backlog from part 4/5's triage. All 70
@@ -116,8 +88,12 @@ with nothing to reconcile.
 closed (479 blank labels to 0, self-fixing rules not hand-patches), a 6-persona adversarial
 council on two follow-on ideas (both correctly parked -- no fidelity impact), and the original
 editor-render-parity triage that produced the 70-item REAL-GAP backlog part 7/8 closed above.
-Commits `f4153da4`-`56b41a7e`, decisions D603-D612. Full narrative: `memory/session-2026-08-13.md`.
+Commits `f4153da4`-`56b41a7e`, decisions D603-D612.
 
+**2026-08-13 (parts 1-3, earlier session, swept to memory).** Hero split-image bleed close-out,
+hero editor spot-check fixes, hero Ken-Burns/parallax pair + per-device SVG/media cascade fix,
+plus the session-wide false-negative postmortem (truncated grep, stale element handle, etc.) and
+the render-helpers.php fatal-in-waiting catch. Full narrative (both sets): `memory/session-2026-08-13.md`.
 
 ## Shipped this session
 
@@ -141,21 +117,6 @@ Commits `f4153da4`-`56b41a7e`, decisions D603-D612. Full narrative: `memory/sess
 | `9b8511cf` | `sgs/hero`: split media gets its own Ken-Burns/parallax pair, D596's bgParallax/Ken-Burns questions answered, global `@keyframes` collision fixed (D597) |
 | `3170943a` | `sgs/hero`: `splitImageBleed` tested (not dead), defaulted to full-bleed (D600) |
 | `beab47a4` | `sgs/hero`: bleed extended to reach video/SVG tiers, not just image (D600) |
-
-## Shipped earlier session (retained)
-
-| Commit | What |
-|---|---|
-| `5727825e` | `sgs/media` per-device SVG + **cascade fix for BOTH media families** |
-| `b6ccb320` | D595 + Spec 35 D5 amended at source (the cascade rule) |
-| `079abbae` | `helpers-tier-media.php` landed WITH its `require_once` (fatal cleared) |
-| `f5fdf7e6` | SVG `<style>` finding CLOSED as not-a-vulnerability, on evidence |
-| `efa2f0be` | `sgs/container`: 3 stacked background pickers → one `ResponsiveControl` |
-| `4fe39e6d` | `sgs/hero`: split media gains per-device TYPE; legacy `splitMedia` deleted |
-| `0917bcf3` | `sgs/hero`: background is a ROOT setting — split heroes paint one |
-| `89857e39` | `sgs/hero`: second overlay targeting the split MEDIA element |
-| `0c270af7` | `sgs/hero`: media panels consolidated, legacy `overlayColour` deleted |
-| `b2ffcd40` | D596 |
 
 ## Blockers
 
@@ -193,22 +154,95 @@ Commits `f4153da4`-`56b41a7e`, decisions D603-D612. Full narrative: `memory/sess
     (custom-property-only, no `editor.css` consumer) but genuinely un-fixable the simple way — it
     feeds a live `AnalyserNode` canvas draw loop, categorically un-previewable statically.
     Reconfirmed correct by `/qc-council`. Not part of the closed backlog (never was REAL-GAP).
+
+### ⭐ NEXT SESSION — the uniformity thread's orchestration plan (2026-08-13)
+
+**State recap, plain English.** A block's inspector is the sidebar of settings a client uses. Two
+programmes are converging on it: the **uniformity report** (make the same property behave identically
+on every block) and **Track 1b** (make the enforcement structural, not remembered). Today the LINK
+control was standardised across 11 blocks + the whole-card-link extension and gated (rule 27), and the
+COLOUR control was rebuilt from WordPress core's own source. Both landed on `main`. Neither programme
+is finished, and the plan doc that governs Track 1b does not yet contain the report's work at all.
+
+**T1 — Fold the report's work into the Track 1b plan, and strike the 9 stale entries.**
+Bean approved this and it has not been done. `~/.claude/plans/go-track-1b-playful-hamster.md` has no
+rows for any report-derived work, and carries 9 identified stale entries (G3 closed; W1-a's A3 done;
+W1-e dangerous as written; §3.3's `BorderBoxControl` row superseded; C4 reads open under a CLOSED
+banner; §1.2's counts; Wave 0 formatted as a work list; D3 resolved by C5).
+· Execution: **inline** (DOCS cluster is main-thread-only, and two sessions share this checkout)
+· Depends on: none · Parallel with: none · /qc gate after: no (doc-only)
+· **Acceptance:** every report-derived item appears as a plan row, and re-reading §2.7/G3/G4/W1-e
+finds nothing that would misdirect a fresh session. Est. 30 min.
+
+**T2 — `sgs/social-icons` repair (5 fixes, one job).** Queued deliberately; Bean called its inspector
+"horrendous" and sent a screenshot. It is NOT a control swap: (1) the editor canvas prints the platform
+SLUG where `render.php` draws a Lucide SVG (`edit.js:343-352` vs `render.php:438-439`); (2) style
+variants (`filled`/`outlined`/`pill`) clip that text away, which is why picking one makes the icon
+"disappear"; (3) four attributes never reach the canvas (`iconColour`, `iconColourHover`, `colourMode`,
+`gap`); (4) the repeater lays controls out horizontally in a 248px panel so each gets ~110px, and its
+help text runs six wrapped lines; (5) it is the last block on the superseded `SgsLinkControl`.
+· Execution: **delegated**, Sonnet via `/delegate` · single agent (all five touch one block)
+· Brief: fix the canvas to share `render.php`'s icon resolution, make variants + the four attributes
+apply in the canvas, stack the repeater item's controls full-width, then migrate the link control.
+· Context it needs: rule 27's backlog is 7→1 and this is the 1; `check-editor-render-parity.js`
+already flags the four attributes; the other thread closed its own 70-item parity backlog, so do not
+re-triage that. · Depends on: none · /qc gate after: **yes** — `/qc-inline`, live editor + frontend
+· **Acceptance:** the icon renders as an SVG in the canvas at every style variant, all four attributes
+visibly affect the preview, rule 27 reports **0 flagged**, and Bean's eye passes it (R-31-13). Est. 1 h.
+
+**T3 — Rule 27 promotion.** Once T2 lands, flip `27-superseded-link-control` from advisory to `gate`.
+Its promotion trigger is already recorded in `rules.json`: 0 FLAGGED on a live run.
+· Execution: inline · Depends on: **T2** · /qc gate after: no
+· **Acceptance:** `rules.json` reads `"mode": "gate"`, a live run reports 0, and a deliberately
+reintroduced `<SgsLinkControl>` fails the build (proven, then reverted). Est. 10 min.
+
+**T4 — Colour control: close the one open ruling, then finish the panel.** Core conveys "2 states" by
+overlapping swatches (`ZStack`, `global-styles/color-panel.js:163-176`); Bean originally asked for a
+count badge. **Unruled — ask before building.** Then the remaining piece of D609's amended intent: the
+grouped Colour panel at the top of Styles that replaces native's.
+· Execution: ruling **inline** (Bean picks), build **delegated** Sonnet
+· Depends on: the ruling · /qc gate after: yes — `/qc-inline`
+· **Acceptance:** rows grouped in one panel at the top of Styles; the visible label renders **exactly
+once** (asserted, with a positive control proving the counter can return ≠1). Est. 45 min after ruling.
+
+**T5 — `pricing-table/block.json` schema bug.** Found in passing, unrelated to links, live today:
+`plans.items.properties.features` is declared `"string"` but holds an array, and `.highlighted` is
+declared `"string"` but holds a boolean. Supplying correct types makes WP silently revert the WHOLE
+`plans` array to its default — the D338 silent-discard class.
+· Execution: delegated, Haiku · Depends on: none · /qc gate after: yes — stored-content round-trip
+· **Acceptance:** types corrected AND a live round-trip proves an existing `plans` array survives a
+save/reload unchanged. Est. 20 min.
+
+```
+T1 (inline, docs) ──┐
+T5 (haiku)  ────────┤  all independent, run in parallel
+T2 (sonnet) ────────┘
+      ↓ /qc-inline
+T3 (inline, gate promotion — needs T2)
+T4 (ruling first, then sonnet)
+```
+
+**Methodology guardrails — earned today, do not skip**
+- ⛔ **Assert label UNIQUENESS on any inspector control change**, with a positive control proving the
+  counter can return ≠1. Today's colour control shipped the duplicate-label defect that 9 sites were
+  fixed for that morning, through a 7-point check that never counted labels.
+- ⛔ **A zero from a check you wrote is not an absence.** A probe called the colour control "missing"
+  on a wrong selector; the code was in the deployed bundle. Prove detectability before believing gone.
+- ⛔ **Source-text counts ≠ render counts.** `grep -c '<Component'` returns 1 for a component mounted
+  once per repeater row inside a child. That error caused a wrong scoping decision.
+- ⛔ **Fact-check your own tool output as hard as a subagent's.** Four claims today rested on misread
+  output of my own commands, incl. attributing one check's summary line to another's.
+- ⛔ **Never run parallel agents against one canary browser session** — two hijacked each other's tab.
+- ⛔ **`--allow-dirty` deploys the WHOLE tree.** Used 3× today because nothing was committed; each
+  time it pushed another track's in-flight work live. Commit first, then deploy.
+
 - **DB `role`-column remediation part 2 — CLOSED (D611); both flagged follow-ons COUNCILLED,
-  PARKED with a revised premise (D612).** 479 `role IS NULL` rows → 0 (358 structural TIERs, 121
-  investigated overrides). A 6-persona `/adversarial-council` then reviewed D611's two named
-  follow-ons: (1) widening `eligible_pool()` to admit booleans — killed, not by risk but because
-  `styling`/`behaviour` roles are converter-INVISIBLE so it buys zero fidelity either way; safer
-  narrow form named (`boolean_pool()` scoped to D4 alone) if ever revisited. (2) porting the
-  JSON-LD Signal-1 detector into Python — the council's recommended "measure first" step found the
-  real population (6, not 4) and 3 ACTUAL wrong classifications, all fixed directly (`56b41a7e`,
-  no parser needed). Also cleared a false "dead control" alarm on `sgs/card-grid` (a shared-helper
-  blind spot, same class as D603) — live-verified already working, no code changed. Full detail +
-  all 6 persona verdicts: `decisions.md` D612.
-- **editor-render-parity Signal 4 candidate (D605), not built.** 21 of 23 OTHER-SHAPE findings are
-  one of two "editor can't have the live data, deliberate static placeholder" shapes
-  (`sgs/buybox`, `sgs/google-reviews`). Structurally same as Signal 3 — worth its own exemption
-  signal if this detector gets revisited, not urgent (no false-positive volume currently hiding
-  behind it).
+  PARKED with a revised premise (D612).** 479 `role IS NULL` rows → 0. Both follow-ons killed/
+  redirected on evidence, not risk — full 6-persona verdicts + the `56b41a7e` JSON-LD fixes:
+  `decisions.md` D611-D612.
+- **editor-render-parity Signal 4 — BUILT + SHIPPED (D614, `7265a066`).** The D605 candidate (21 of
+  23 OTHER-SHAPE findings sharing a live-data-placeholder shape, `sgs/buybox` + `sgs/google-reviews`)
+  is now a real structural detector signal, not a documented-but-undetected pattern. See D614.
 - **Check A promotion to gate mode: ready to decide, still not decided (deliberately — this is a
   Bean decision, not an automatic next step).** All 70 REAL-GAP findings are closed on `main`, a
   4-rater `/qc-council` independently re-checked the fix quality AND the remaining findings'
@@ -216,13 +250,9 @@ Commits `f4153da4`-`56b41a7e`, decisions D603-D612. Full narrative: `memory/sess
   now built and shipped. This project's own E6-point-9 doctrine (never promote on the run that
   introduces/changes a rule) is satisfied — Signal 4 shipped this session, so THIS clean run
   doesn't count; the NEXT clean run does. Revisit at the next session that touches this detector.
-- **Hero: all three Track 1b carried-forward items now closed.** (a) Stray WP toolbar text-align
-  button on the headline (C3) — Bean confirmed 2026-08-13: "Stray button toolbar is gone." (b)
-  Split-media → `sgs/media` child block (D6(b)) — Bean DROPPED this entirely 2026-08-13, not
-  deferred (D599); the per-device image/video/SVG type-picker already delivers most of the
-  practical benefit. (c) Split-image bleed CSS — tested (not dead, not redundant), default flipped
-  to full-bleed, and extended to video/SVG after Bean caught it only working on image (D600,
-  `3170943a` + `beab47a4`).
+- **Hero: all three Track 1b carried-forward items now closed** (stray toolbar button gone;
+  split-media child-block idea DROPPED by Bean D599; split-image bleed CSS fixed + extended to
+  video/SVG D600). Detail: `memory/session-2026-08-13.md`.
 - **NEW this session, not caused by it:** `db-consistency` Check #1/#8 flags `sgs/hero`'s
   `mediaOverlayGradientAngle`/`From`/`To` (from `89857e39`) as routing-ambiguous — all 3 resolve to
   `background-image` on the same element/state/tier with no distinguishing mechanism, so the clone
