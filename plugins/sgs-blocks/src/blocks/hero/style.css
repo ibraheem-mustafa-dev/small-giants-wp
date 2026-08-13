@@ -331,6 +331,33 @@ section.sgs-hero {
 	max-width: calc(50% + var(--wp--preset--spacing--40, 2rem));
 }
 
+/* Video/SVG tiers get the column-level bleed above (the .sgs-hero__media--bleed
+ * rule is type-agnostic) but were missing the element-level half: the whole
+ * imageBorderRadius/imageWidth/imageHeight/imagePadding/imageObjectFit control
+ * family is scoped ONLY to `.sgs-hero__split-image` (render.php:528-625), so a
+ * bled VIDEO or SVG tier kept its default rounded corners and never filled the
+ * bled column's height — a pre-existing gap, not something this rule alone can
+ * fully close (video/svg have no width/height/border/padding controls AT ALL,
+ * bled or not). This narrower fix only makes BLEED itself work symmetrically:
+ * `sgs_tier_media_render()` always emits a `{base}--{type}` class
+ * (`sgs-hero__split-media--video`/`--svg`), so target those directly rather
+ * than needing a render.php change. */
+.sgs-hero__media--bleed .sgs-hero__split-media--video,
+.sgs-hero__media--bleed .sgs-hero__split-media--svg {
+	border-radius: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-hero__media--bleed .sgs-hero__split-media--video {
+	object-fit: cover;
+}
+
+.sgs-hero__media--bleed .sgs-hero__split-media--svg svg {
+	width: 100%;
+	height: 100%;
+}
+
 .sgs-hero__split-image--bleed {
 	border-radius: 0;
 	max-height: none;
