@@ -2,14 +2,14 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A+ Phase 1 \u2014 attributes deduped to unique semantic settings.",
     "dedup_key": "property_suffixes CSS property (primary) > canonical_slot > role+base; multi-evidence, flagged-not-decided.",
-    "total_attr_instances": 2245,
-    "distinct_attr_names": 986,
-    "unique_settings": 538,
+    "total_attr_instances": 2260,
+    "distinct_attr_names": 1003,
+    "unique_settings": 544,
     "dedup_high_confidence": 99,
-    "dedup_needs_review": 439,
+    "dedup_needs_review": 445,
     "conformance_consistent": 356,
     "conformance_divergent": 43,
-    "conformance_unknown": 139
+    "conformance_unknown": 145
   },
   "settings": [
     {
@@ -52,6 +52,7 @@
         "labelColour",
         "linkColour",
         "linkHoverColour",
+        "mediaOverlayColour",
         "metaColour",
         "nameColour",
         "navColour",
@@ -93,7 +94,7 @@
         "triggerColour",
         "underlineColour"
       ],
-      "attr_name_count": 75,
+      "attr_name_count": 76,
       "instance_count": 128,
       "blocks": [
         "sgs/accordion",
@@ -561,6 +562,7 @@
         "sgs/whatsapp-cta"
       ],
       "observed_roles": [
+        "boolean-visibility",
         "link-content",
         "technical",
         "text-content"
@@ -922,6 +924,58 @@
       ]
     },
     {
+      "setting_key": "css:transition-duration",
+      "css_property": "transition-duration",
+      "basis": "css-property",
+      "distinct_attr_names": [
+        "bgAnimationDuration",
+        "duration",
+        "mediaAnimationDuration",
+        "sgsAnimationDuration",
+        "transitionDuration"
+      ],
+      "attr_name_count": 5,
+      "instance_count": 34,
+      "blocks": [
+        "sgs/brand-strip",
+        "sgs/button",
+        "sgs/card-grid",
+        "sgs/container",
+        "sgs/counter",
+        "sgs/cta-section",
+        "sgs/gallery",
+        "sgs/google-reviews",
+        "sgs/heading",
+        "sgs/hero",
+        "sgs/info-box",
+        "sgs/post-grid",
+        "sgs/pricing-table",
+        "sgs/process-steps",
+        "sgs/quote",
+        "sgs/site-footer",
+        "sgs/site-header",
+        "sgs/tabs",
+        "sgs/team-member",
+        "sgs/testimonial",
+        "sgs/testimonial-slider",
+        "sgs/text",
+        "sgs/trust-bar",
+        "sgs/trustpilot-reviews"
+      ],
+      "observed_roles": [
+        "motion"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [
+        "RangeControl",
+        "TextControl"
+      ],
+      "observed_box_families": [],
+      "dedup_confidence": "high",
+      "conformance": "divergent",
+      "dedup_flags": []
+    },
+    {
       "setting_key": "css:line-height",
       "css_property": "line-height",
       "basis": "css-property",
@@ -973,57 +1027,6 @@
         "SelectControl",
         "TextControl",
         "UnitControl"
-      ],
-      "observed_box_families": [],
-      "dedup_confidence": "high",
-      "conformance": "divergent",
-      "dedup_flags": []
-    },
-    {
-      "setting_key": "css:transition-duration",
-      "css_property": "transition-duration",
-      "basis": "css-property",
-      "distinct_attr_names": [
-        "bgAnimationDuration",
-        "duration",
-        "sgsAnimationDuration",
-        "transitionDuration"
-      ],
-      "attr_name_count": 4,
-      "instance_count": 33,
-      "blocks": [
-        "sgs/brand-strip",
-        "sgs/button",
-        "sgs/card-grid",
-        "sgs/container",
-        "sgs/counter",
-        "sgs/cta-section",
-        "sgs/gallery",
-        "sgs/google-reviews",
-        "sgs/heading",
-        "sgs/hero",
-        "sgs/info-box",
-        "sgs/post-grid",
-        "sgs/pricing-table",
-        "sgs/process-steps",
-        "sgs/quote",
-        "sgs/site-footer",
-        "sgs/site-header",
-        "sgs/tabs",
-        "sgs/team-member",
-        "sgs/testimonial",
-        "sgs/testimonial-slider",
-        "sgs/text",
-        "sgs/trust-bar",
-        "sgs/trustpilot-reviews"
-      ],
-      "observed_roles": [
-        "motion"
-      ],
-      "observed_emit_shapes": [],
-      "observed_control_types": [
-        "RangeControl",
-        "TextControl"
       ],
       "observed_box_families": [],
       "dedup_confidence": "high",
@@ -1103,10 +1106,12 @@
         "splitImage",
         "splitImageBleed",
         "splitImageMobile",
-        "splitMedia"
+        "splitMediaType",
+        "splitMediaTypeMobile",
+        "splitMediaTypeTablet"
       ],
-      "attr_name_count": 18,
-      "instance_count": 26,
+      "attr_name_count": 20,
+      "instance_count": 28,
       "blocks": [
         "sgs/brand-strip",
         "sgs/decorative-image",
@@ -1120,11 +1125,13 @@
         "sgs/testimonial-slider"
       ],
       "observed_roles": [
+        "boolean-visibility",
         "content",
         "enum-class-probe",
         "image-object",
         "scalar-media",
-        "select-from-enum"
+        "select-from-enum",
+        "styling"
       ],
       "observed_emit_shapes": [
         "child",
@@ -1143,62 +1150,6 @@
         "MULTI_SHAPE:['child', 'nested']",
         "POSSIBLE_SPLIT:splitImage~['slot:split']"
       ]
-    },
-    {
-      "setting_key": "css:gap",
-      "css_property": "gap",
-      "basis": "css-property",
-      "distinct_attr_names": [
-        "drawerGap",
-        "gap",
-        "groupGap",
-        "iconGap",
-        "logoGap"
-      ],
-      "attr_name_count": 5,
-      "instance_count": 26,
-      "blocks": [
-        "sgs/accordion",
-        "sgs/brand-strip",
-        "sgs/button",
-        "sgs/card-grid",
-        "sgs/container",
-        "sgs/cta-section",
-        "sgs/feature-grid",
-        "sgs/form",
-        "sgs/form-field-tiles",
-        "sgs/gallery",
-        "sgs/google-reviews",
-        "sgs/hero",
-        "sgs/icon-list",
-        "sgs/mega-panel",
-        "sgs/multi-button",
-        "sgs/nav-drawer",
-        "sgs/nav-menu",
-        "sgs/post-grid",
-        "sgs/pricing-table",
-        "sgs/site-footer-row",
-        "sgs/site-header-row",
-        "sgs/social-icons",
-        "sgs/tabs",
-        "sgs/testimonial-slider",
-        "sgs/trust-bar",
-        "sgs/trustpilot-reviews"
-      ],
-      "observed_roles": [
-        "layout"
-      ],
-      "observed_emit_shapes": [],
-      "observed_control_types": [
-        "RangeControl",
-        "SelectControl",
-        "SpacingControl",
-        "UnitControl"
-      ],
-      "observed_box_families": [],
-      "dedup_confidence": "high",
-      "conformance": "divergent",
-      "dedup_flags": []
     },
     {
       "setting_key": "css:transition-timing-function",
@@ -1242,6 +1193,60 @@
       "observed_box_families": [],
       "dedup_confidence": "high",
       "conformance": "consistent",
+      "dedup_flags": []
+    },
+    {
+      "setting_key": "css:gap",
+      "css_property": "gap",
+      "basis": "css-property",
+      "distinct_attr_names": [
+        "drawerGap",
+        "gap",
+        "groupGap",
+        "logoGap"
+      ],
+      "attr_name_count": 4,
+      "instance_count": 25,
+      "blocks": [
+        "sgs/accordion",
+        "sgs/brand-strip",
+        "sgs/card-grid",
+        "sgs/container",
+        "sgs/cta-section",
+        "sgs/feature-grid",
+        "sgs/form",
+        "sgs/form-field-tiles",
+        "sgs/gallery",
+        "sgs/google-reviews",
+        "sgs/hero",
+        "sgs/icon-list",
+        "sgs/mega-panel",
+        "sgs/multi-button",
+        "sgs/nav-drawer",
+        "sgs/nav-menu",
+        "sgs/post-grid",
+        "sgs/pricing-table",
+        "sgs/site-footer-row",
+        "sgs/site-header-row",
+        "sgs/social-icons",
+        "sgs/tabs",
+        "sgs/testimonial-slider",
+        "sgs/trust-bar",
+        "sgs/trustpilot-reviews"
+      ],
+      "observed_roles": [
+        "layout"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [
+        "RangeControl",
+        "SelectControl",
+        "SpacingControl",
+        "UnitControl"
+      ],
+      "observed_box_families": [],
+      "dedup_confidence": "high",
+      "conformance": "divergent",
       "dedup_flags": []
     },
     {
@@ -1673,6 +1678,7 @@
       "observed_roles": [
         "behaviour",
         "color",
+        "content",
         "enum-class-probe",
         "select-from-enum",
         "text-content"
@@ -1719,7 +1725,9 @@
       ],
       "observed_roles": [
         "behaviour",
+        "boolean-visibility",
         "color",
+        "styling",
         "text-content"
       ],
       "observed_emit_shapes": [
@@ -1734,7 +1742,7 @@
       "dedup_confidence": "review",
       "conformance": "divergent",
       "dedup_flags": [
-        "POSSIBLE_SPLIT:shapeDividerBottomFlip~['unresolved:shapedividerbottomflip']"
+        "POSSIBLE_SPLIT:shapeDividerBottomFlip~['role:styling:shapedividerbottomflip']"
       ]
     },
     {
@@ -1940,6 +1948,7 @@
       ],
       "observed_roles": [
         "behaviour",
+        "css-gate",
         "motion"
       ],
       "observed_emit_shapes": [],
@@ -1951,7 +1960,7 @@
       "dedup_confidence": "review",
       "conformance": "divergent",
       "dedup_flags": [
-        "POSSIBLE_SPLIT:bgKenBurns~['unresolved:bgkenburns']"
+        "POSSIBLE_SPLIT:bgKenBurns~['role:css-gate:bgkenburns']"
       ]
     },
     {
@@ -2274,7 +2283,7 @@
       "dedup_confidence": "review",
       "conformance": "consistent",
       "dedup_flags": [
-        "POSSIBLE_SPLIT:overlayGradientAngle~['unresolved:overlaygradientangle']"
+        "POSSIBLE_SPLIT:overlayGradientAngle~['role:styling:overlaygradientangle']"
       ]
     },
     {
@@ -2714,6 +2723,7 @@
       ],
       "observed_roles": [
         "boolean-visibility",
+        "content",
         "link-href",
         "styling",
         "technical"
@@ -2722,10 +2732,10 @@
         "nested"
       ],
       "observed_control_types": [
+        "SgsLinkControl",
         "TextControl",
         "ToggleControl",
-        "ToggleGroupControl",
-        "URLInput"
+        "ToggleGroupControl"
       ],
       "observed_box_families": [],
       "dedup_confidence": "high",
@@ -2773,10 +2783,11 @@
       "distinct_attr_names": [
         "contentBackgroundGradient",
         "mediaBackgroundGradient",
+        "mediaOverlayGradient",
         "overlayGradient"
       ],
-      "attr_name_count": 3,
-      "instance_count": 8,
+      "attr_name_count": 4,
+      "instance_count": 9,
       "blocks": [
         "sgs/container",
         "sgs/cta-section",
@@ -2794,7 +2805,7 @@
       "dedup_confidence": "review",
       "conformance": "unknown",
       "dedup_flags": [
-        "SUSPECT_MISKEY:['contentBackgroundGradient', 'mediaBackgroundGradient', 'overlayGradient']"
+        "SUSPECT_MISKEY:['contentBackgroundGradient', 'mediaBackgroundGradient', 'mediaOverlayGradient', 'overlayGradient']"
       ]
     },
     {
@@ -3164,9 +3175,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:dragtoscroll",
+      "setting_key": "role:behaviour:dragtoscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "dragToScroll"
       ],
@@ -3180,7 +3191,9 @@
         "sgs/testimonial-slider",
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -3279,9 +3292,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:videoautoplay",
+      "setting_key": "role:boolean-visibility:videoautoplay",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "videoAutoplay",
         "videoAutoplayMobile",
@@ -3293,7 +3306,9 @@
         "sgs/before-after",
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -3436,7 +3451,7 @@
       ]
     },
     {
-      "setting_key": "role:styling:dragmomentum",
+      "setting_key": "role:behaviour:dragmomentum",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -3452,7 +3467,7 @@
         "sgs/trustpilot-reviews"
       ],
       "observed_roles": [
-        "styling"
+        "behaviour"
       ],
       "observed_emit_shapes": [],
       "observed_control_types": [
@@ -3501,7 +3516,7 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "role:styling:loopcarousel",
+      "setting_key": "role:behaviour:loopcarousel",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -3517,7 +3532,7 @@
         "sgs/trustpilot-reviews"
       ],
       "observed_roles": [
-        "styling"
+        "behaviour"
       ],
       "observed_emit_shapes": [],
       "observed_control_types": [
@@ -3665,6 +3680,7 @@
         "sgs/trust-bar"
       ],
       "observed_roles": [
+        "boolean-visibility",
         "styling"
       ],
       "observed_emit_shapes": [],
@@ -3791,7 +3807,9 @@
         "sgs/process-steps"
       ],
       "observed_roles": [
-        "behaviour"
+        "behaviour",
+        "content",
+        "technical"
       ],
       "observed_emit_shapes": [],
       "observed_control_types": [
@@ -3985,6 +4003,35 @@
       "dedup_flags": []
     },
     {
+      "setting_key": "slot:split",
+      "css_property": null,
+      "basis": "canonical-slot",
+      "distinct_attr_names": [
+        "splitImageTablet",
+        "splitVideo",
+        "splitVideoMobile",
+        "splitVideoTablet"
+      ],
+      "attr_name_count": 4,
+      "instance_count": 4,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "image-object"
+      ],
+      "observed_emit_shapes": [
+        "nested"
+      ],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "POSSIBLE_SPLIT:splitImage~['slot:image']"
+      ]
+    },
+    {
       "setting_key": "role:image-object:thumbnail",
       "css_property": null,
       "basis": "role+base",
@@ -4079,7 +4126,9 @@
         "sgs/testimonial-slider",
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4327,7 +4376,9 @@
         "sgs/form-field-radio",
         "sgs/form-field-select"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -4376,7 +4427,9 @@
         "sgs/testimonial-slider",
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4428,7 +4481,9 @@
         "sgs/testimonial-slider",
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4439,9 +4494,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:showladder",
+      "setting_key": "role:boolean-visibility:showladder",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showLadder"
       ],
@@ -4452,7 +4507,9 @@
         "sgs/card-grid",
         "sgs/product-card"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4493,9 +4550,65 @@
       ]
     },
     {
-      "setting_key": "unresolved:videocontrols",
+      "setting_key": "role:svg:splitsvg",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "splitSvg",
+        "splitSvgMobile",
+        "splitSvgTablet"
+      ],
+      "attr_name_count": 3,
+      "instance_count": 3,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "svg"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:svg:svgcontent",
+      "css_property": null,
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "svgContent",
+        "svgContentMobile",
+        "svgContentTablet"
+      ],
+      "attr_name_count": 3,
+      "instance_count": 3,
+      "blocks": [
+        "sgs/media"
+      ],
+      "observed_roles": [
+        "svg"
+      ],
+      "observed_emit_shapes": [
+        "nested"
+      ],
+      "observed_control_types": [
+        "TextareaControl"
+      ],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "consistent",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:boolean-visibility:videocontrols",
+      "css_property": null,
+      "basis": "role+base",
       "distinct_attr_names": [
         "videoControls",
         "videoControlsMobile",
@@ -4506,7 +4619,9 @@
       "blocks": [
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4519,9 +4634,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:videolazyload",
+      "setting_key": "role:boolean-visibility:videolazyload",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "videoLazyLoad",
         "videoLazyLoadMobile",
@@ -4532,7 +4647,9 @@
       "blocks": [
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4545,9 +4662,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:videoloop",
+      "setting_key": "role:boolean-visibility:videoloop",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "videoLoop",
         "videoLoopMobile",
@@ -4558,7 +4675,9 @@
       "blocks": [
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4571,9 +4690,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:videomuted",
+      "setting_key": "role:boolean-visibility:videomuted",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "videoMuted",
         "videoMutedMobile",
@@ -4584,7 +4703,9 @@
       "blocks": [
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4597,9 +4718,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:videoplaysinline",
+      "setting_key": "role:boolean-visibility:videoplaysinline",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "videoPlaysInline",
         "videoPlaysInlineMobile",
@@ -4610,7 +4731,9 @@
       "blocks": [
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4735,9 +4858,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:bgkenburns",
+      "setting_key": "role:css-gate:bgkenburns",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "bgKenBurns"
       ],
@@ -4747,7 +4870,9 @@
         "sgs/site-footer",
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "css-gate"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -4811,9 +4936,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:carouselautoplay",
+      "setting_key": "role:boolean-visibility:carouselautoplay",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "carouselAutoplay"
       ],
@@ -4823,7 +4948,9 @@
         "sgs/gallery",
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4836,9 +4963,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:carouselshowarrows",
+      "setting_key": "role:boolean-visibility:carouselshowarrows",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "carouselShowArrows"
       ],
@@ -4848,7 +4975,9 @@
         "sgs/gallery",
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4861,9 +4990,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:carouselshowdots",
+      "setting_key": "role:boolean-visibility:carouselshowdots",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "carouselShowDots"
       ],
@@ -4873,7 +5002,9 @@
         "sgs/gallery",
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -4927,6 +5058,7 @@
         "sgs/team-member"
       ],
       "observed_roles": [
+        "technical",
         "text-content"
       ],
       "observed_emit_shapes": [
@@ -4939,9 +5071,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:collapsible",
+      "setting_key": "role:boolean-visibility:collapsible",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "collapsible"
       ],
@@ -4951,7 +5083,9 @@
         "sgs/collapsible-text",
         "sgs/table-of-contents"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -5018,9 +5152,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:decoyenabled",
+      "setting_key": "role:boolean-visibility:decoyenabled",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "decoyEnabled"
       ],
@@ -5030,7 +5164,9 @@
         "sgs/buybox",
         "sgs/product-card"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -5137,7 +5273,9 @@
       "blocks": [
         "sgs/decorative-image"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -5273,6 +5411,7 @@
         "sgs/media"
       ],
       "observed_roles": [
+        "boolean-visibility",
         "text-content"
       ],
       "observed_emit_shapes": [
@@ -5398,9 +5537,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:overlaygradientangle",
+      "setting_key": "role:styling:overlaygradientangle",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "overlayGradientAngle"
       ],
@@ -5410,7 +5549,9 @@
         "sgs/site-footer",
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5501,9 +5642,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:rowhideonscroll",
+      "setting_key": "role:behaviour:rowhideonscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "rowHideOnScroll"
       ],
@@ -5513,7 +5654,9 @@
         "sgs/site-footer-row",
         "sgs/site-header-row"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5524,9 +5667,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:rowshrink",
+      "setting_key": "role:behaviour:rowshrink",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "rowShrink"
       ],
@@ -5536,7 +5679,9 @@
         "sgs/site-footer-row",
         "sgs/site-header-row"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5597,9 +5742,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:rowtransparent",
+      "setting_key": "role:behaviour:rowtransparent",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "rowTransparent"
       ],
@@ -5609,7 +5754,9 @@
         "sgs/site-footer-row",
         "sgs/site-header-row"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5620,9 +5767,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:schemaenabled",
+      "setting_key": "role:technical:schemaenabled",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "schemaEnabled"
       ],
@@ -5632,7 +5779,9 @@
         "sgs/star-rating",
         "sgs/testimonial"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -5670,9 +5819,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:shapedividerbottomflip",
+      "setting_key": "role:styling:shapedividerbottomflip",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "shapeDividerBottomFlip"
       ],
@@ -5682,7 +5831,9 @@
         "sgs/site-footer",
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5694,9 +5845,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:shapedividerbottominvert",
+      "setting_key": "role:styling:shapedividerbottominvert",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "shapeDividerBottomInvert"
       ],
@@ -5706,7 +5857,9 @@
         "sgs/site-footer",
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5718,9 +5871,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:shapedividertopflip",
+      "setting_key": "role:styling:shapedividertopflip",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "shapeDividerTopFlip"
       ],
@@ -5730,7 +5883,9 @@
         "sgs/site-footer",
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5742,9 +5897,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:shapedividertopinvert",
+      "setting_key": "role:styling:shapedividertopinvert",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "shapeDividerTopInvert"
       ],
@@ -5754,7 +5909,9 @@
         "sgs/site-footer",
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -5766,9 +5923,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showauthor",
+      "setting_key": "role:boolean-visibility:showauthor",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showAuthor"
       ],
@@ -5778,7 +5935,9 @@
         "sgs/post-grid",
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -5818,9 +5977,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showon",
+      "setting_key": "role:boolean-visibility:showon",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showOnDesktop",
         "showOnMobile"
@@ -5830,7 +5989,9 @@
       "blocks": [
         "sgs/whatsapp-cta"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -5843,9 +6004,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showpickers",
+      "setting_key": "role:boolean-visibility:showpickers",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showPickers"
       ],
@@ -5855,41 +6016,14 @@
         "sgs/card-grid",
         "sgs/product-card"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
       "dedup_confidence": "review",
       "conformance": "unknown",
-      "dedup_flags": [
-        "NO_PROPERTY_MATCH"
-      ]
-    },
-    {
-      "setting_key": "role:svg:svgcontent",
-      "css_property": null,
-      "basis": "role+base",
-      "distinct_attr_names": [
-        "svgContent"
-      ],
-      "attr_name_count": 1,
-      "instance_count": 2,
-      "blocks": [
-        "sgs/hero",
-        "sgs/media"
-      ],
-      "observed_roles": [
-        "svg"
-      ],
-      "observed_emit_shapes": [
-        "nested"
-      ],
-      "observed_control_types": [
-        "TextareaControl"
-      ],
-      "observed_box_families": [],
-      "dedup_confidence": "review",
-      "conformance": "consistent",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ]
@@ -6256,9 +6390,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:allowmultiple",
+      "setting_key": "role:behaviour:allowmultiple",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "allowMultiple"
       ],
@@ -6267,7 +6401,9 @@
       "blocks": [
         "sgs/accordion"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -6280,9 +6416,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:allowedtypes",
+      "setting_key": "role:content:allowedtypes",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "allowedTypes"
       ],
@@ -6291,7 +6427,9 @@
       "blocks": [
         "sgs/form-field-file"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "TextControl"
@@ -6382,9 +6520,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:asideseparator",
+      "setting_key": "role:styling:asideseparator",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "asideSeparator"
       ],
@@ -6393,7 +6531,9 @@
       "blocks": [
         "sgs/mega-panel"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleGroupControl"
@@ -6456,9 +6596,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:attributionenabled",
+      "setting_key": "role:boolean-visibility:attributionenabled",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "attributionEnabled"
       ],
@@ -6467,7 +6607,9 @@
       "blocks": [
         "sgs/quote"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -6528,9 +6670,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:audioautoplay",
+      "setting_key": "role:boolean-visibility:audioautoplay",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "audioAutoplay"
       ],
@@ -6539,7 +6681,9 @@
       "blocks": [
         "sgs/audio"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -6552,9 +6696,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:audiocontrols",
+      "setting_key": "role:boolean-visibility:audiocontrols",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "audioControls"
       ],
@@ -6563,7 +6707,9 @@
       "blocks": [
         "sgs/audio"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -6602,9 +6748,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:audioloop",
+      "setting_key": "role:boolean-visibility:audioloop",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "audioLoop"
       ],
@@ -6613,7 +6759,9 @@
       "blocks": [
         "sgs/audio"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -6730,9 +6878,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:autoopenonadd",
+      "setting_key": "role:boolean-visibility:autoopenonadd",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "autoOpenOnAdd"
       ],
@@ -6741,7 +6889,9 @@
       "blocks": [
         "sgs/cart"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -6752,9 +6902,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:autoscroll",
+      "setting_key": "role:boolean-visibility:autoscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "autoScroll"
       ],
@@ -6763,7 +6913,9 @@
       "blocks": [
         "sgs/trust-bar"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -6776,9 +6928,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:autoscrollpauseonhover",
+      "setting_key": "role:boolean-visibility:autoscrollpauseonhover",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "autoScrollPauseOnHover"
       ],
@@ -6787,7 +6939,9 @@
       "blocks": [
         "sgs/trust-bar"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -7310,7 +7464,9 @@
       "blocks": [
         "sgs/cta-section"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -7345,9 +7501,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:captionreveal",
+      "setting_key": "role:boolean-visibility:captionreveal",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "captionReveal"
       ],
@@ -7356,7 +7512,9 @@
       "blocks": [
         "sgs/gallery"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -7395,9 +7553,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:categoryterm",
+      "setting_key": "role:technical:categoryterm",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "categoryTerm"
       ],
@@ -7406,7 +7564,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -8063,9 +8223,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:contentimpact",
+      "setting_key": "role:technical:contentimpact",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "contentImpact"
       ],
@@ -8074,7 +8234,9 @@
       "blocks": [
         "sgs/option-picker"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "TextControl"
@@ -8401,9 +8563,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:defaultcollapsed",
+      "setting_key": "role:boolean-visibility:defaultcollapsed",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "defaultCollapsed"
       ],
@@ -8412,7 +8574,9 @@
       "blocks": [
         "sgs/table-of-contents"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -8451,9 +8615,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:defaultopen",
+      "setting_key": "role:behaviour:defaultopen",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "defaultOpen"
       ],
@@ -8462,7 +8626,9 @@
       "blocks": [
         "sgs/accordion"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -8501,9 +8667,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:desktopframecount",
+      "setting_key": "role:technical:desktopframecount",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "desktopFrameCount"
       ],
@@ -8512,7 +8678,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -8547,9 +8715,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:desktopframepad",
+      "setting_key": "role:technical:desktopframepad",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "desktopFramePad"
       ],
@@ -8558,7 +8726,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -8647,9 +8817,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:dismissible",
+      "setting_key": "role:boolean-visibility:dismissible",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "dismissible"
       ],
@@ -8658,7 +8828,9 @@
       "blocks": [
         "sgs/notice-banner"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -8697,9 +8869,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:dividers",
+      "setting_key": "role:boolean-visibility:dividers",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "dividers"
       ],
@@ -8708,7 +8880,9 @@
       "blocks": [
         "sgs/icon-list"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -8719,9 +8893,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:download",
+      "setting_key": "role:boolean-visibility:download",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "download"
       ],
@@ -8730,7 +8904,9 @@
       "blocks": [
         "sgs/button"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -8769,9 +8945,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:dropcap",
+      "setting_key": "role:boolean-visibility:dropcap",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "dropCap"
       ],
@@ -8780,7 +8956,9 @@
       "blocks": [
         "sgs/text"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -8923,9 +9101,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:enablelightbox",
+      "setting_key": "role:boolean-visibility:enablelightbox",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "enableLightbox"
       ],
@@ -8934,7 +9112,9 @@
       "blocks": [
         "sgs/gallery"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -8947,9 +9127,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:enablelookup",
+      "setting_key": "role:boolean-visibility:enablelookup",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "enableLookup"
       ],
@@ -8958,7 +9138,9 @@
       "blocks": [
         "sgs/form-field-address"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -8971,9 +9153,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:evergreenhours",
+      "setting_key": "role:behaviour:evergreenhours",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "evergreenHours"
       ],
@@ -8982,7 +9164,9 @@
       "blocks": [
         "sgs/countdown-timer"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -8995,9 +9179,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:evergreenminutes",
+      "setting_key": "role:behaviour:evergreenminutes",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "evergreenMinutes"
       ],
@@ -9006,7 +9190,9 @@
       "blocks": [
         "sgs/countdown-timer"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -9045,9 +9231,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:excerptlength",
+      "setting_key": "role:technical:excerptlength",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "excerptLength"
       ],
@@ -9056,7 +9242,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -9069,9 +9257,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:excludecurrent",
+      "setting_key": "role:boolean-visibility:excludecurrent",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "excludeCurrent"
       ],
@@ -9080,7 +9268,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9147,9 +9337,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:fadeedges",
+      "setting_key": "role:boolean-visibility:fadeedges",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "fadeEdges"
       ],
@@ -9158,7 +9348,9 @@
       "blocks": [
         "sgs/brand-strip"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9171,9 +9363,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:fadeonscroll",
+      "setting_key": "role:boolean-visibility:fadeonscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "fadeOnScroll"
       ],
@@ -9182,7 +9374,9 @@
       "blocks": [
         "sgs/decorative-image"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9195,7 +9389,7 @@
       ]
     },
     {
-      "setting_key": "role:boolean-visibility:faqschema",
+      "setting_key": "role:technical:faqschema",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -9207,7 +9401,7 @@
         "sgs/accordion"
       ],
       "observed_roles": [
-        "boolean-visibility"
+        "technical"
       ],
       "observed_emit_shapes": [
         "nested"
@@ -9345,9 +9539,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:fields",
+      "setting_key": "role:content:fields",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "fields"
       ],
@@ -9356,7 +9550,9 @@
       "blocks": [
         "sgs/form-field-address"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "CheckboxControl"
@@ -9395,9 +9591,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:flipx",
+      "setting_key": "role:boolean-visibility:flipx",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "flipX"
       ],
@@ -9406,7 +9602,9 @@
       "blocks": [
         "sgs/decorative-image"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9497,9 +9695,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:fxdraggable",
+      "setting_key": "role:boolean-visibility:fxdraggable",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "fxDraggable"
       ],
@@ -9508,7 +9706,9 @@
       "blocks": [
         "sgs/before-after"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9521,7 +9721,7 @@
       ]
     },
     {
-      "setting_key": "role:styling:fxend",
+      "setting_key": "role:behaviour:fxend",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -9533,7 +9733,7 @@
         "sgs/image-sequence"
       ],
       "observed_roles": [
-        "styling"
+        "behaviour"
       ],
       "observed_emit_shapes": [],
       "observed_control_types": [
@@ -9547,9 +9747,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:fxpin",
+      "setting_key": "role:behaviour:fxpin",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "fxPin"
       ],
@@ -9558,7 +9758,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9571,7 +9773,7 @@
       ]
     },
     {
-      "setting_key": "role:styling:fxscrub",
+      "setting_key": "role:behaviour:fxscrub",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -9583,7 +9785,7 @@
         "sgs/image-sequence"
       ],
       "observed_roles": [
-        "styling"
+        "behaviour"
       ],
       "observed_emit_shapes": [],
       "observed_control_types": [
@@ -9597,7 +9799,7 @@
       ]
     },
     {
-      "setting_key": "role:styling:fxstart",
+      "setting_key": "role:behaviour:fxstart",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -9609,7 +9811,7 @@
         "sgs/image-sequence"
       ],
       "observed_roles": [
-        "styling"
+        "behaviour"
       ],
       "observed_emit_shapes": [],
       "observed_control_types": [
@@ -9623,9 +9825,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:gradientangle",
+      "setting_key": "role:styling:gradientangle",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "gradientAngle"
       ],
@@ -9634,7 +9836,9 @@
       "blocks": [
         "sgs/separator"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -9699,9 +9903,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:gradientenabled",
+      "setting_key": "role:boolean-visibility:gradientenabled",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "gradientEnabled"
       ],
@@ -9710,7 +9914,9 @@
       "blocks": [
         "sgs/separator"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -9774,9 +9980,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:handpickedids",
+      "setting_key": "role:technical:handpickedids",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "handpickedIds"
       ],
@@ -9785,7 +9991,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -9796,9 +10004,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:headerhideonscroll",
+      "setting_key": "role:behaviour:headerhideonscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "headerHideOnScroll"
       ],
@@ -9807,7 +10015,9 @@
       "blocks": [
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ResponsiveTriStateControl"
@@ -9820,9 +10030,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:headershrink",
+      "setting_key": "role:behaviour:headershrink",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "headerShrink"
       ],
@@ -9831,7 +10041,9 @@
       "blocks": [
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ResponsiveTriStateControl"
@@ -9844,9 +10056,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:headersticky",
+      "setting_key": "role:behaviour:headersticky",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "headerSticky"
       ],
@@ -9855,7 +10067,9 @@
       "blocks": [
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ResponsiveTriStateControl"
@@ -9868,9 +10082,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:headertransparent",
+      "setting_key": "role:behaviour:headertransparent",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "headerTransparent"
       ],
@@ -9879,7 +10093,9 @@
       "blocks": [
         "sgs/site-header"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ResponsiveTriStateControl"
@@ -9919,9 +10135,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:headinglevels",
+      "setting_key": "role:content:headinglevels",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "headingLevels"
       ],
@@ -9930,7 +10146,9 @@
       "blocks": [
         "sgs/table-of-contents"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "CheckboxControl"
@@ -9969,9 +10187,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:headings",
+      "setting_key": "role:boolean-visibility:headings",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "headings"
       ],
@@ -9980,7 +10198,9 @@
       "blocks": [
         "sgs/mega-panel"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10017,9 +10237,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:hidewhenempty",
+      "setting_key": "role:boolean-visibility:hidewhenempty",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "hideWhenEmpty"
       ],
@@ -10028,7 +10248,9 @@
       "blocks": [
         "sgs/cart"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10069,9 +10291,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:honeypot",
+      "setting_key": "role:boolean-visibility:honeypot",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "honeypot"
       ],
@@ -10080,7 +10302,9 @@
       "blocks": [
         "sgs/form"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10194,9 +10418,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:imageisdecorative",
+      "setting_key": "role:boolean-visibility:imageisdecorative",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "imageIsDecorative"
       ],
@@ -10205,7 +10429,9 @@
       "blocks": [
         "sgs/media"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10272,9 +10498,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:issubmit",
+      "setting_key": "role:boolean-visibility:issubmit",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "isSubmit"
       ],
@@ -10283,7 +10509,9 @@
       "blocks": [
         "sgs/button"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10296,9 +10524,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:itemmagnetenabled",
+      "setting_key": "role:boolean-visibility:itemmagnetenabled",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "itemMagnetEnabled"
       ],
@@ -10307,7 +10535,9 @@
       "blocks": [
         "sgs/nav-menu"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10370,9 +10600,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:linktohome",
+      "setting_key": "role:boolean-visibility:linktohome",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "linkToHome"
       ],
@@ -10381,7 +10611,9 @@
       "blocks": [
         "sgs/responsive-logo"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10420,9 +10652,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:logoswitchcustompx",
+      "setting_key": "role:styling:logoswitchcustompx",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "logoSwitchCustomPx"
       ],
@@ -10431,7 +10663,9 @@
       "blocks": [
         "sgs/responsive-logo"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -10496,9 +10730,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:maxresults",
+      "setting_key": "role:technical:maxresults",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "maxResults"
       ],
@@ -10507,7 +10741,9 @@
       "blocks": [
         "sgs/product-search"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "NumberControl"
@@ -10520,9 +10756,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:maxreviews",
+      "setting_key": "role:behaviour:maxreviews",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "maxReviews"
       ],
@@ -10531,7 +10767,9 @@
       "blocks": [
         "sgs/google-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -10640,9 +10878,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:mediaitems",
+      "setting_key": "role:content:mediaitems",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "mediaItems"
       ],
@@ -10651,7 +10889,9 @@
       "blocks": [
         "sgs/gallery"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "MediaUpload"
@@ -10664,9 +10904,129 @@
       ]
     },
     {
-      "setting_key": "unresolved:menuref",
+      "setting_key": "role:boolean-visibility:mediakenburns",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "mediaKenBurns"
+      ],
+      "attr_name_count": 1,
+      "instance_count": 1,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:styling:mediaoverlaygradientangle",
+      "css_property": null,
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "mediaOverlayGradientAngle"
+      ],
+      "attr_name_count": 1,
+      "instance_count": 1,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "styling"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:color:mediaoverlaygradientfrom",
+      "css_property": null,
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "mediaOverlayGradientFrom"
+      ],
+      "attr_name_count": 1,
+      "instance_count": 1,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "color"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:color:mediaoverlaygradientto",
+      "css_property": null,
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "mediaOverlayGradientTo"
+      ],
+      "attr_name_count": 1,
+      "instance_count": 1,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "color"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:styling:mediaparallax",
+      "css_property": null,
+      "basis": "role+base",
+      "distinct_attr_names": [
+        "mediaParallax"
+      ],
+      "attr_name_count": 1,
+      "instance_count": 1,
+      "blocks": [
+        "sgs/hero"
+      ],
+      "observed_roles": [
+        "styling"
+      ],
+      "observed_emit_shapes": [],
+      "observed_control_types": [],
+      "observed_box_families": [],
+      "dedup_confidence": "review",
+      "conformance": "unknown",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ]
+    },
+    {
+      "setting_key": "role:technical:menuref",
+      "css_property": null,
+      "basis": "role+base",
       "distinct_attr_names": [
         "menuRef"
       ],
@@ -10675,7 +11035,9 @@
       "blocks": [
         "sgs/icon-list"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "SelectControl"
@@ -10688,9 +11050,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:mobileframecount",
+      "setting_key": "role:technical:mobileframecount",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "mobileFrameCount"
       ],
@@ -10699,7 +11061,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -10734,9 +11098,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:mobileframepad",
+      "setting_key": "role:technical:mobileframepad",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "mobileFramePad"
       ],
@@ -10745,7 +11109,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -10782,9 +11148,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:multiselect",
+      "setting_key": "role:boolean-visibility:multiselect",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "multiSelect"
       ],
@@ -10793,7 +11159,9 @@
       "blocks": [
         "sgs/form-field-tiles"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10832,9 +11200,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:notifyenabled",
+      "setting_key": "role:boolean-visibility:notifyenabled",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "notifyEnabled"
       ],
@@ -10843,7 +11211,9 @@
       "blocks": [
         "sgs/buybox"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -10884,9 +11254,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:offset",
+      "setting_key": "role:technical:offset",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "offset"
       ],
@@ -10895,7 +11265,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -10934,9 +11306,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:optionitems",
+      "setting_key": "role:content:optionitems",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "optionItems"
       ],
@@ -10945,7 +11317,9 @@
       "blocks": [
         "sgs/option-picker"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -11111,9 +11485,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:overrideelements",
+      "setting_key": "role:technical:overrideelements",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "overrideElements"
       ],
@@ -11122,7 +11496,9 @@
       "blocks": [
         "sgs/product-card"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -11285,9 +11661,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:pathdrawtriggeroffset",
+      "setting_key": "role:behaviour:pathdrawtriggeroffset",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "pathDrawTriggerOffset"
       ],
@@ -11296,7 +11672,9 @@
       "blocks": [
         "sgs/decorative-image"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -11309,9 +11687,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:pauseonhover",
+      "setting_key": "role:boolean-visibility:pauseonhover",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "pauseOnHover"
       ],
@@ -11320,7 +11698,9 @@
       "blocks": [
         "sgs/brand-strip"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -11415,9 +11795,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:physicsbounce",
+      "setting_key": "role:behaviour:physicsbounce",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "physicsBounce"
       ],
@@ -11426,7 +11806,9 @@
       "blocks": [
         "sgs/physics-canvas"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -11439,9 +11821,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:physicsedgeresistance",
+      "setting_key": "role:behaviour:physicsedgeresistance",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "physicsEdgeResistance"
       ],
@@ -11450,7 +11832,9 @@
       "blocks": [
         "sgs/physics-canvas"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -11463,9 +11847,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:physicsgravity",
+      "setting_key": "role:behaviour:physicsgravity",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "physicsGravity"
       ],
@@ -11474,7 +11858,9 @@
       "blocks": [
         "sgs/physics-canvas"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -11513,9 +11899,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:pickershowselectedtick",
+      "setting_key": "role:boolean-visibility:pickershowselectedtick",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "pickerShowSelectedTick"
       ],
@@ -11524,7 +11910,9 @@
       "blocks": [
         "sgs/product-card"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -11689,9 +12077,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:postsperpage",
+      "setting_key": "role:technical:postsperpage",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "postsPerPage"
       ],
@@ -11700,7 +12088,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -11795,9 +12185,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productcategories",
+      "setting_key": "role:technical:productcategories",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productCategories"
       ],
@@ -11806,7 +12196,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -11871,9 +12263,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productfeatured",
+      "setting_key": "role:boolean-visibility:productfeatured",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productFeatured"
       ],
@@ -11882,7 +12274,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "SelectControl"
@@ -11919,9 +12313,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productids",
+      "setting_key": "role:technical:productids",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productIds"
       ],
@@ -11930,7 +12324,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -11941,9 +12337,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productinstock",
+      "setting_key": "role:boolean-visibility:productinstock",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productInStock"
       ],
@@ -11952,7 +12348,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "SelectControl"
@@ -11965,9 +12363,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productlimit",
+      "setting_key": "role:technical:productlimit",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productLimit"
       ],
@@ -11976,7 +12374,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -11989,9 +12389,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productonsale",
+      "setting_key": "role:boolean-visibility:productonsale",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productOnSale"
       ],
@@ -12000,7 +12400,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "SelectControl"
@@ -12013,9 +12415,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:productshowladder",
+      "setting_key": "role:boolean-visibility:productshowladder",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productShowLadder"
       ],
@@ -12024,7 +12426,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12063,9 +12467,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:producttags",
+      "setting_key": "role:technical:producttags",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "productTags"
       ],
@@ -12074,7 +12478,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -12085,9 +12491,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:querycategory",
+      "setting_key": "role:technical:querycategory",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "queryCategory"
       ],
@@ -12096,7 +12502,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "TextControl"
@@ -12135,9 +12543,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:querypostsperpage",
+      "setting_key": "role:technical:querypostsperpage",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "queryPostsPerPage"
       ],
@@ -12146,7 +12554,9 @@
       "blocks": [
         "sgs/card-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12209,9 +12619,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:ratelimit",
+      "setting_key": "role:behaviour:ratelimit",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "rateLimit"
       ],
@@ -12220,7 +12630,9 @@
       "blocks": [
         "sgs/form"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -12257,9 +12669,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:ratingstars",
+      "setting_key": "role:rating:ratingstars",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "ratingStars"
       ],
@@ -12268,7 +12680,9 @@
       "blocks": [
         "sgs/testimonial"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "rating"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12281,9 +12695,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:ref",
+      "setting_key": "role:technical:ref",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "ref"
       ],
@@ -12292,7 +12706,9 @@
       "blocks": [
         "sgs/nav-menu"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "SelectControl"
@@ -12331,9 +12747,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:renderlandmark",
+      "setting_key": "role:boolean-visibility:renderlandmark",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "renderLandmark"
       ],
@@ -12342,7 +12758,9 @@
       "blocks": [
         "sgs/icon-list"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12355,9 +12773,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:requirelogin",
+      "setting_key": "role:boolean-visibility:requirelogin",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "requireLogin"
       ],
@@ -12366,7 +12784,9 @@
       "blocks": [
         "sgs/form"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -12377,9 +12797,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:revealonscroll",
+      "setting_key": "role:boolean-visibility:revealonscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "revealOnScroll"
       ],
@@ -12388,7 +12808,9 @@
       "blocks": [
         "sgs/timeline"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12401,9 +12823,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:revealstagger",
+      "setting_key": "role:behaviour:revealstagger",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "revealStagger"
       ],
@@ -12412,7 +12834,9 @@
       "blocks": [
         "sgs/timeline"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12425,9 +12849,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:reversedirection",
+      "setting_key": "role:boolean-visibility:reversedirection",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "reverseDirection"
       ],
@@ -12436,7 +12860,9 @@
       "blocks": [
         "sgs/before-after"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12503,9 +12929,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:reviewsaverage",
+      "setting_key": "role:content:reviewsaverage",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "reviewsAverage"
       ],
@@ -12514,7 +12940,9 @@
       "blocks": [
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -12562,7 +12990,9 @@
       "blocks": [
         "sgs/decorative-image"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12573,9 +13003,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:rows",
+      "setting_key": "role:technical:rows",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "rows"
       ],
@@ -12584,7 +13014,9 @@
       "blocks": [
         "sgs/form-field-textarea"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12597,7 +13029,7 @@
       ]
     },
     {
-      "setting_key": "role:identity:schemaitemname",
+      "setting_key": "role:technical:schemaitemname",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -12609,7 +13041,7 @@
         "sgs/star-rating"
       ],
       "observed_roles": [
-        "identity"
+        "technical"
       ],
       "observed_emit_shapes": [
         "nested"
@@ -12625,9 +13057,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:schemareviewcount",
+      "setting_key": "role:content:schemareviewcount",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "schemaReviewCount"
       ],
@@ -12636,7 +13068,9 @@
       "blocks": [
         "sgs/star-rating"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12675,9 +13109,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:scrolloffset",
+      "setting_key": "role:styling:scrolloffset",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "scrollOffset"
       ],
@@ -12686,7 +13120,9 @@
       "blocks": [
         "sgs/table-of-contents"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "styling"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -12725,9 +13161,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:scrollspy",
+      "setting_key": "role:boolean-visibility:scrollspy",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "scrollSpy"
       ],
@@ -12736,7 +13172,9 @@
       "blocks": [
         "sgs/table-of-contents"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12749,9 +13187,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:scrolling",
+      "setting_key": "role:boolean-visibility:scrolling",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "scrolling"
       ],
@@ -12760,7 +13198,9 @@
       "blocks": [
         "sgs/brand-strip"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12847,9 +13287,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:sgsblocklinktarget",
+      "setting_key": "role:boolean-visibility:sgsblocklinktarget",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "sgsBlockLinkTarget"
       ],
@@ -12858,7 +13298,9 @@
       "blocks": [
         "sgs/team-member"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -12869,9 +13311,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showaggregate",
+      "setting_key": "role:boolean-visibility:showaggregate",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showAggregate"
       ],
@@ -12880,7 +13322,9 @@
       "blocks": [
         "sgs/google-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12893,9 +13337,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showavatar",
+      "setting_key": "role:boolean-visibility:showavatar",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showAvatar"
       ],
@@ -12904,7 +13348,9 @@
       "blocks": [
         "sgs/google-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12917,9 +13363,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showbreakdown",
+      "setting_key": "role:boolean-visibility:showbreakdown",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showBreakdown"
       ],
@@ -12928,7 +13374,9 @@
       "blocks": [
         "sgs/google-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12941,9 +13389,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showcaptions",
+      "setting_key": "role:boolean-visibility:showcaptions",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showCaptions"
       ],
@@ -12952,7 +13400,9 @@
       "blocks": [
         "sgs/gallery"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12965,9 +13415,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showcategory",
+      "setting_key": "role:boolean-visibility:showcategory",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showCategory"
       ],
@@ -12976,7 +13426,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -12989,9 +13441,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showdays",
+      "setting_key": "role:boolean-visibility:showdays",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showDays"
       ],
@@ -13000,7 +13452,9 @@
       "blocks": [
         "sgs/countdown-timer"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13013,9 +13467,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showexcerpt",
+      "setting_key": "role:boolean-visibility:showexcerpt",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showExcerpt"
       ],
@@ -13024,7 +13478,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13037,9 +13493,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showfilters",
+      "setting_key": "role:boolean-visibility:showfilters",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showFilters"
       ],
@@ -13048,7 +13504,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13061,9 +13519,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showgooglelogo",
+      "setting_key": "role:boolean-visibility:showgooglelogo",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showGoogleLogo"
       ],
@@ -13072,7 +13530,9 @@
       "blocks": [
         "sgs/google-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13085,9 +13545,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showhome",
+      "setting_key": "role:boolean-visibility:showhome",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showHome"
       ],
@@ -13096,7 +13556,9 @@
       "blocks": [
         "sgs/breadcrumbs"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13109,9 +13571,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showhours",
+      "setting_key": "role:boolean-visibility:showhours",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showHours"
       ],
@@ -13120,7 +13582,9 @@
       "blocks": [
         "sgs/countdown-timer"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13161,9 +13625,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showlabel",
+      "setting_key": "role:boolean-visibility:showlabel",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showLabel"
       ],
@@ -13172,7 +13636,9 @@
       "blocks": [
         "sgs/option-picker"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13185,9 +13651,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showlabels",
+      "setting_key": "role:boolean-visibility:showlabels",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showLabels"
       ],
@@ -13196,7 +13662,9 @@
       "blocks": [
         "sgs/before-after"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13209,9 +13677,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showminutes",
+      "setting_key": "role:boolean-visibility:showminutes",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showMinutes"
       ],
@@ -13220,7 +13688,9 @@
       "blocks": [
         "sgs/countdown-timer"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13233,9 +13703,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:shownames",
+      "setting_key": "role:boolean-visibility:shownames",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showNames"
       ],
@@ -13244,7 +13714,9 @@
       "blocks": [
         "sgs/brand-strip"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13257,9 +13729,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:shownumeric",
+      "setting_key": "role:boolean-visibility:shownumeric",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showNumeric"
       ],
@@ -13268,7 +13740,9 @@
       "blocks": [
         "sgs/star-rating"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13307,9 +13781,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showreadmore",
+      "setting_key": "role:boolean-visibility:showreadmore",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showReadMore"
       ],
@@ -13318,7 +13792,9 @@
       "blocks": [
         "sgs/post-grid"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13331,7 +13807,7 @@
       ]
     },
     {
-      "setting_key": "role:boolean-visibility:showschema",
+      "setting_key": "role:technical:showschema",
       "css_property": null,
       "basis": "role+base",
       "distinct_attr_names": [
@@ -13343,7 +13819,7 @@
         "sgs/trustpilot-reviews"
       ],
       "observed_roles": [
-        "boolean-visibility"
+        "technical"
       ],
       "observed_emit_shapes": [
         "nested"
@@ -13359,9 +13835,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showseconds",
+      "setting_key": "role:boolean-visibility:showseconds",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showSeconds"
       ],
@@ -13370,7 +13846,9 @@
       "blocks": [
         "sgs/countdown-timer"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13383,9 +13861,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showselectedtick",
+      "setting_key": "role:boolean-visibility:showselectedtick",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showSelectedTick"
       ],
@@ -13394,7 +13872,9 @@
       "blocks": [
         "sgs/option-picker"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13407,9 +13887,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showsourceheader",
+      "setting_key": "role:boolean-visibility:showsourceheader",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showSourceHeader"
       ],
@@ -13418,7 +13898,9 @@
       "blocks": [
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13487,9 +13969,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showtrustpilotlogo",
+      "setting_key": "role:boolean-visibility:showtrustpilotlogo",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showTrustpilotLogo"
       ],
@@ -13498,7 +13980,9 @@
       "blocks": [
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13511,9 +13995,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showverifiedbadge",
+      "setting_key": "role:boolean-visibility:showverifiedbadge",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showVerifiedBadge"
       ],
@@ -13522,7 +14006,9 @@
       "blocks": [
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13535,9 +14021,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:showzero",
+      "setting_key": "role:boolean-visibility:showzero",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "showZero"
       ],
@@ -13546,7 +14032,9 @@
       "blocks": [
         "sgs/cart"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13585,9 +14073,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:smoothscroll",
+      "setting_key": "role:boolean-visibility:smoothscroll",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "smoothScroll"
       ],
@@ -13596,7 +14084,9 @@
       "blocks": [
         "sgs/table-of-contents"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13715,35 +14205,9 @@
       ]
     },
     {
-      "setting_key": "slot:split",
+      "setting_key": "role:boolean-visibility:staggeronopen",
       "css_property": null,
-      "basis": "canonical-slot",
-      "distinct_attr_names": [
-        "splitImageTablet"
-      ],
-      "attr_name_count": 1,
-      "instance_count": 1,
-      "blocks": [
-        "sgs/hero"
-      ],
-      "observed_roles": [
-        "image-object"
-      ],
-      "observed_emit_shapes": [
-        "nested"
-      ],
-      "observed_control_types": [],
-      "observed_box_families": [],
-      "dedup_confidence": "review",
-      "conformance": "unknown",
-      "dedup_flags": [
-        "POSSIBLE_SPLIT:splitImage~['slot:image']"
-      ]
-    },
-    {
-      "setting_key": "unresolved:staggeronopen",
-      "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "staggerOnOpen"
       ],
@@ -13752,7 +14216,9 @@
       "blocks": [
         "sgs/mega-panel"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13867,9 +14333,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:storesubmissions",
+      "setting_key": "role:boolean-visibility:storesubmissions",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "storeSubmissions"
       ],
@@ -13878,7 +14344,9 @@
       "blocks": [
         "sgs/form"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13943,9 +14411,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:submenucaret",
+      "setting_key": "role:boolean-visibility:submenucaret",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "submenuCaret"
       ],
@@ -13954,7 +14422,9 @@
       "blocks": [
         "sgs/nav-menu"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -13967,9 +14437,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:submenuclosegrace",
+      "setting_key": "role:behaviour:submenuclosegrace",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "submenuCloseGrace"
       ],
@@ -13978,7 +14448,9 @@
       "blocks": [
         "sgs/nav-menu"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "behaviour"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "RangeControl"
@@ -14255,9 +14727,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:svganimationsource",
+      "setting_key": "role:technical:svganimationsource",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "svgAnimationSource"
       ],
@@ -14266,7 +14738,9 @@
       "blocks": [
         "sgs/responsive-logo"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "MediaUpload"
@@ -14305,9 +14779,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:tabletframecount",
+      "setting_key": "role:technical:tabletframecount",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "tabletFrameCount"
       ],
@@ -14316,7 +14790,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -14351,9 +14827,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:tabletframepad",
+      "setting_key": "role:technical:tabletframepad",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "tabletFramePad"
       ],
@@ -14362,7 +14838,9 @@
       "blocks": [
         "sgs/image-sequence"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -14475,9 +14953,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:textonly",
+      "setting_key": "role:boolean-visibility:textonly",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "textOnly"
       ],
@@ -14486,7 +14964,9 @@
       "blocks": [
         "sgs/google-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "boolean-visibility"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "ToggleControl"
@@ -14521,9 +15001,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:threshold",
+      "setting_key": "role:technical:threshold",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "threshold"
       ],
@@ -14532,7 +15012,9 @@
       "blocks": [
         "sgs/filter-search"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "NumberControl"
@@ -14599,9 +15081,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:tiles",
+      "setting_key": "role:content:tiles",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "tiles"
       ],
@@ -14610,7 +15092,9 @@
       "blocks": [
         "sgs/form-field-tiles"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -14673,9 +15157,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:totalreviews",
+      "setting_key": "role:content:totalreviews",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "totalReviews"
       ],
@@ -14684,7 +15168,9 @@
       "blocks": [
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "NumberControl"
@@ -14751,9 +15237,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:trustscore",
+      "setting_key": "role:content:trustscore",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "trustScore"
       ],
@@ -14762,7 +15248,9 @@
       "blocks": [
         "sgs/trustpilot-reviews"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "content"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [
         "NumberControl"
@@ -15089,9 +15577,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:visibleaxes",
+      "setting_key": "role:technical:visibleaxes",
       "css_property": null,
-      "basis": "unresolved",
+      "basis": "role+base",
       "distinct_attr_names": [
         "visibleAxes"
       ],
@@ -15100,7 +15588,9 @@
       "blocks": [
         "sgs/product-card"
       ],
-      "observed_roles": [],
+      "observed_roles": [
+        "technical"
+      ],
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
@@ -15295,7 +15785,7 @@
         "imageSize",
         "imageUrl"
       ],
-      "count": 18
+      "count": 20
     },
     {
       "setting_key": "role:select-from-enum:templatemode",
@@ -15310,7 +15800,7 @@
     {
       "setting_key": "slot:separator",
       "dedup_flags": [
-        "POSSIBLE_SPLIT:shapeDividerBottomFlip~['unresolved:shapedividerbottomflip']"
+        "POSSIBLE_SPLIT:shapeDividerBottomFlip~['role:styling:shapedividerbottomflip']"
       ],
       "sample_attrs": [
         "lineStyle",
@@ -15326,7 +15816,7 @@
     {
       "setting_key": "slot:animation",
       "dedup_flags": [
-        "POSSIBLE_SPLIT:bgKenBurns~['unresolved:bgkenburns']"
+        "POSSIBLE_SPLIT:bgKenBurns~['role:css-gate:bgkenburns']"
       ],
       "sample_attrs": [
         "animationStyle",
@@ -15349,7 +15839,7 @@
     {
       "setting_key": "slot:overlay",
       "dedup_flags": [
-        "POSSIBLE_SPLIT:overlayGradientAngle~['unresolved:overlaygradientangle']"
+        "POSSIBLE_SPLIT:overlayGradientAngle~['role:styling:overlaygradientangle']"
       ],
       "sample_attrs": [
         "overlayColourHover",
@@ -15450,14 +15940,15 @@
     {
       "setting_key": "css:background-image",
       "dedup_flags": [
-        "SUSPECT_MISKEY:['contentBackgroundGradient', 'mediaBackgroundGradient', 'overlayGradient']"
+        "SUSPECT_MISKEY:['contentBackgroundGradient', 'mediaBackgroundGradient', 'mediaOverlayGradient', 'overlayGradient']"
       ],
       "sample_attrs": [
         "contentBackgroundGradient",
         "mediaBackgroundGradient",
+        "mediaOverlayGradient",
         "overlayGradient"
       ],
-      "count": 3
+      "count": 4
     },
     {
       "setting_key": "role:select-from-enum:effecthover",
@@ -15516,7 +16007,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:dragtoscroll",
+      "setting_key": "role:behaviour:dragtoscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15536,7 +16027,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:videoautoplay",
+      "setting_key": "role:boolean-visibility:videoautoplay",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15573,7 +16064,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:styling:dragmomentum",
+      "setting_key": "role:behaviour:dragmomentum",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15583,7 +16074,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:styling:loopcarousel",
+      "setting_key": "role:behaviour:loopcarousel",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15677,6 +16168,19 @@
       "count": 1
     },
     {
+      "setting_key": "slot:split",
+      "dedup_flags": [
+        "POSSIBLE_SPLIT:splitImage~['slot:image']"
+      ],
+      "sample_attrs": [
+        "splitImageTablet",
+        "splitVideo",
+        "splitVideoMobile",
+        "splitVideoTablet"
+      ],
+      "count": 4
+    },
+    {
       "setting_key": "role:image-object:thumbnail",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
@@ -15724,7 +16228,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showladder",
+      "setting_key": "role:boolean-visibility:showladder",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15744,7 +16248,31 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:videocontrols",
+      "setting_key": "role:svg:splitsvg",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "splitSvg",
+        "splitSvgMobile",
+        "splitSvgTablet"
+      ],
+      "count": 3
+    },
+    {
+      "setting_key": "role:svg:svgcontent",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "svgContent",
+        "svgContentMobile",
+        "svgContentTablet"
+      ],
+      "count": 3
+    },
+    {
+      "setting_key": "role:boolean-visibility:videocontrols",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15756,7 +16284,7 @@
       "count": 3
     },
     {
-      "setting_key": "unresolved:videolazyload",
+      "setting_key": "role:boolean-visibility:videolazyload",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15768,7 +16296,7 @@
       "count": 3
     },
     {
-      "setting_key": "unresolved:videoloop",
+      "setting_key": "role:boolean-visibility:videoloop",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15780,7 +16308,7 @@
       "count": 3
     },
     {
-      "setting_key": "unresolved:videomuted",
+      "setting_key": "role:boolean-visibility:videomuted",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15792,7 +16320,7 @@
       "count": 3
     },
     {
-      "setting_key": "unresolved:videoplaysinline",
+      "setting_key": "role:boolean-visibility:videoplaysinline",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15839,7 +16367,7 @@
       "count": 2
     },
     {
-      "setting_key": "unresolved:bgkenburns",
+      "setting_key": "role:css-gate:bgkenburns",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
         "POSSIBLE_SPLIT:bgKenBurns~['slot:animation']"
@@ -15872,7 +16400,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:carouselautoplay",
+      "setting_key": "role:boolean-visibility:carouselautoplay",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15882,7 +16410,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:carouselshowarrows",
+      "setting_key": "role:boolean-visibility:carouselshowarrows",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15892,7 +16420,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:carouselshowdots",
+      "setting_key": "role:boolean-visibility:carouselshowdots",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15912,7 +16440,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:collapsible",
+      "setting_key": "role:boolean-visibility:collapsible",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -15942,7 +16470,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:decoyenabled",
+      "setting_key": "role:boolean-visibility:decoyenabled",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16045,7 +16573,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:overlaygradientangle",
+      "setting_key": "role:styling:overlaygradientangle",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
         "POSSIBLE_SPLIT:overlayGradientAngle~['slot:overlay']"
@@ -16088,7 +16616,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:rowhideonscroll",
+      "setting_key": "role:behaviour:rowhideonscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16098,7 +16626,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:rowshrink",
+      "setting_key": "role:behaviour:rowshrink",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16128,7 +16656,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:rowtransparent",
+      "setting_key": "role:behaviour:rowtransparent",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16138,7 +16666,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:schemaenabled",
+      "setting_key": "role:technical:schemaenabled",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16158,7 +16686,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:shapedividerbottomflip",
+      "setting_key": "role:styling:shapedividerbottomflip",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
         "POSSIBLE_SPLIT:shapeDividerBottomFlip~['slot:separator']"
@@ -16169,7 +16697,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:shapedividerbottominvert",
+      "setting_key": "role:styling:shapedividerbottominvert",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
         "POSSIBLE_SPLIT:shapeDividerBottomInvert~['slot:separator']"
@@ -16180,7 +16708,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:shapedividertopflip",
+      "setting_key": "role:styling:shapedividertopflip",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
         "POSSIBLE_SPLIT:shapeDividerTopFlip~['slot:separator']"
@@ -16191,7 +16719,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:shapedividertopinvert",
+      "setting_key": "role:styling:shapedividertopinvert",
       "dedup_flags": [
         "NO_PROPERTY_MATCH",
         "POSSIBLE_SPLIT:shapeDividerTopInvert~['slot:separator']"
@@ -16202,7 +16730,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showauthor",
+      "setting_key": "role:boolean-visibility:showauthor",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16222,7 +16750,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showon",
+      "setting_key": "role:boolean-visibility:showon",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16233,22 +16761,12 @@
       "count": 2
     },
     {
-      "setting_key": "unresolved:showpickers",
+      "setting_key": "role:boolean-visibility:showpickers",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
       "sample_attrs": [
         "showPickers"
-      ],
-      "count": 1
-    },
-    {
-      "setting_key": "role:svg:svgcontent",
-      "dedup_flags": [
-        "NO_PROPERTY_MATCH"
-      ],
-      "sample_attrs": [
-        "svgContent"
       ],
       "count": 1
     },
@@ -16385,7 +16903,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:allowmultiple",
+      "setting_key": "role:behaviour:allowmultiple",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16395,7 +16913,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:allowedtypes",
+      "setting_key": "role:content:allowedtypes",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16425,7 +16943,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:asideseparator",
+      "setting_key": "role:styling:asideseparator",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16445,7 +16963,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:attributionenabled",
+      "setting_key": "role:boolean-visibility:attributionenabled",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16465,7 +16983,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:audioautoplay",
+      "setting_key": "role:boolean-visibility:audioautoplay",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16475,7 +16993,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:audiocontrols",
+      "setting_key": "role:boolean-visibility:audiocontrols",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16495,7 +17013,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:audioloop",
+      "setting_key": "role:boolean-visibility:audioloop",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16545,7 +17063,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:autoopenonadd",
+      "setting_key": "role:boolean-visibility:autoopenonadd",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16555,7 +17073,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:autoscroll",
+      "setting_key": "role:boolean-visibility:autoscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16565,7 +17083,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:autoscrollpauseonhover",
+      "setting_key": "role:boolean-visibility:autoscrollpauseonhover",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16766,7 +17284,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:captionreveal",
+      "setting_key": "role:boolean-visibility:captionreveal",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -16786,7 +17304,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:categoryterm",
+      "setting_key": "role:technical:categoryterm",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17046,7 +17564,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:contentimpact",
+      "setting_key": "role:technical:contentimpact",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17176,7 +17694,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:defaultcollapsed",
+      "setting_key": "role:boolean-visibility:defaultcollapsed",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17196,7 +17714,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:defaultopen",
+      "setting_key": "role:behaviour:defaultopen",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17216,7 +17734,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:desktopframecount",
+      "setting_key": "role:technical:desktopframecount",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17236,7 +17754,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:desktopframepad",
+      "setting_key": "role:technical:desktopframepad",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17276,7 +17794,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:dismissible",
+      "setting_key": "role:boolean-visibility:dismissible",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17296,7 +17814,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:dividers",
+      "setting_key": "role:boolean-visibility:dividers",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17306,7 +17824,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:download",
+      "setting_key": "role:boolean-visibility:download",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17326,7 +17844,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:dropcap",
+      "setting_key": "role:boolean-visibility:dropcap",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17386,7 +17904,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:enablelightbox",
+      "setting_key": "role:boolean-visibility:enablelightbox",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17396,7 +17914,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:enablelookup",
+      "setting_key": "role:boolean-visibility:enablelookup",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17406,7 +17924,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:evergreenhours",
+      "setting_key": "role:behaviour:evergreenhours",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17416,7 +17934,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:evergreenminutes",
+      "setting_key": "role:behaviour:evergreenminutes",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17436,7 +17954,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:excerptlength",
+      "setting_key": "role:technical:excerptlength",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17446,7 +17964,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:excludecurrent",
+      "setting_key": "role:boolean-visibility:excludecurrent",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17476,7 +17994,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:fadeedges",
+      "setting_key": "role:boolean-visibility:fadeedges",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17486,7 +18004,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:fadeonscroll",
+      "setting_key": "role:boolean-visibility:fadeonscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17496,7 +18014,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:boolean-visibility:faqschema",
+      "setting_key": "role:technical:faqschema",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17556,7 +18074,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:fields",
+      "setting_key": "role:content:fields",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17576,7 +18094,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:flipx",
+      "setting_key": "role:boolean-visibility:flipx",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17616,7 +18134,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:fxdraggable",
+      "setting_key": "role:boolean-visibility:fxdraggable",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17626,7 +18144,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:styling:fxend",
+      "setting_key": "role:behaviour:fxend",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17636,7 +18154,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:fxpin",
+      "setting_key": "role:behaviour:fxpin",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17646,7 +18164,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:styling:fxscrub",
+      "setting_key": "role:behaviour:fxscrub",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17656,7 +18174,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:styling:fxstart",
+      "setting_key": "role:behaviour:fxstart",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17666,7 +18184,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:gradientangle",
+      "setting_key": "role:styling:gradientangle",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17696,7 +18214,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:gradientenabled",
+      "setting_key": "role:boolean-visibility:gradientenabled",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17727,7 +18245,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:handpickedids",
+      "setting_key": "role:technical:handpickedids",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17737,7 +18255,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:headerhideonscroll",
+      "setting_key": "role:behaviour:headerhideonscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17747,7 +18265,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:headershrink",
+      "setting_key": "role:behaviour:headershrink",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17757,7 +18275,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:headersticky",
+      "setting_key": "role:behaviour:headersticky",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17767,7 +18285,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:headertransparent",
+      "setting_key": "role:behaviour:headertransparent",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17788,7 +18306,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:headinglevels",
+      "setting_key": "role:content:headinglevels",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17808,7 +18326,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:headings",
+      "setting_key": "role:boolean-visibility:headings",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17828,7 +18346,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:hidewhenempty",
+      "setting_key": "role:boolean-visibility:hidewhenempty",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17848,7 +18366,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:honeypot",
+      "setting_key": "role:boolean-visibility:honeypot",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17889,7 +18407,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:imageisdecorative",
+      "setting_key": "role:boolean-visibility:imageisdecorative",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17919,7 +18437,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:issubmit",
+      "setting_key": "role:boolean-visibility:issubmit",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17929,7 +18447,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:itemmagnetenabled",
+      "setting_key": "role:boolean-visibility:itemmagnetenabled",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17949,7 +18467,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:linktohome",
+      "setting_key": "role:boolean-visibility:linktohome",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17969,7 +18487,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:logoswitchcustompx",
+      "setting_key": "role:styling:logoswitchcustompx",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -17999,7 +18517,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:maxresults",
+      "setting_key": "role:technical:maxresults",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18009,7 +18527,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:maxreviews",
+      "setting_key": "role:behaviour:maxreviews",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18049,7 +18567,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:mediaitems",
+      "setting_key": "role:content:mediaitems",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18059,7 +18577,57 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:menuref",
+      "setting_key": "role:boolean-visibility:mediakenburns",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "mediaKenBurns"
+      ],
+      "count": 1
+    },
+    {
+      "setting_key": "role:styling:mediaoverlaygradientangle",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "mediaOverlayGradientAngle"
+      ],
+      "count": 1
+    },
+    {
+      "setting_key": "role:color:mediaoverlaygradientfrom",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "mediaOverlayGradientFrom"
+      ],
+      "count": 1
+    },
+    {
+      "setting_key": "role:color:mediaoverlaygradientto",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "mediaOverlayGradientTo"
+      ],
+      "count": 1
+    },
+    {
+      "setting_key": "role:styling:mediaparallax",
+      "dedup_flags": [
+        "NO_PROPERTY_MATCH"
+      ],
+      "sample_attrs": [
+        "mediaParallax"
+      ],
+      "count": 1
+    },
+    {
+      "setting_key": "role:technical:menuref",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18069,7 +18637,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:mobileframecount",
+      "setting_key": "role:technical:mobileframecount",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18089,7 +18657,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:mobileframepad",
+      "setting_key": "role:technical:mobileframepad",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18109,7 +18677,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:multiselect",
+      "setting_key": "role:boolean-visibility:multiselect",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18129,7 +18697,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:notifyenabled",
+      "setting_key": "role:boolean-visibility:notifyenabled",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18149,7 +18717,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:offset",
+      "setting_key": "role:technical:offset",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18169,7 +18737,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:optionitems",
+      "setting_key": "role:content:optionitems",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18230,7 +18798,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:overrideelements",
+      "setting_key": "role:technical:overrideelements",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18280,7 +18848,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:pathdrawtriggeroffset",
+      "setting_key": "role:behaviour:pathdrawtriggeroffset",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18290,7 +18858,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:pauseonhover",
+      "setting_key": "role:boolean-visibility:pauseonhover",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18330,7 +18898,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:physicsbounce",
+      "setting_key": "role:behaviour:physicsbounce",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18340,7 +18908,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:physicsedgeresistance",
+      "setting_key": "role:behaviour:physicsedgeresistance",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18350,7 +18918,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:physicsgravity",
+      "setting_key": "role:behaviour:physicsgravity",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18370,7 +18938,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:pickershowselectedtick",
+      "setting_key": "role:boolean-visibility:pickershowselectedtick",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18420,7 +18988,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:postsperpage",
+      "setting_key": "role:technical:postsperpage",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18450,7 +19018,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productcategories",
+      "setting_key": "role:technical:productcategories",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18480,7 +19048,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productfeatured",
+      "setting_key": "role:boolean-visibility:productfeatured",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18500,7 +19068,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productids",
+      "setting_key": "role:technical:productids",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18510,7 +19078,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productinstock",
+      "setting_key": "role:boolean-visibility:productinstock",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18520,7 +19088,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productlimit",
+      "setting_key": "role:technical:productlimit",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18530,7 +19098,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productonsale",
+      "setting_key": "role:boolean-visibility:productonsale",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18540,7 +19108,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:productshowladder",
+      "setting_key": "role:boolean-visibility:productshowladder",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18560,7 +19128,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:producttags",
+      "setting_key": "role:technical:producttags",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18570,7 +19138,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:querycategory",
+      "setting_key": "role:technical:querycategory",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18590,7 +19158,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:querypostsperpage",
+      "setting_key": "role:technical:querypostsperpage",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18610,7 +19178,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:ratelimit",
+      "setting_key": "role:behaviour:ratelimit",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18630,7 +19198,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:ratingstars",
+      "setting_key": "role:rating:ratingstars",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18640,7 +19208,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:ref",
+      "setting_key": "role:technical:ref",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18660,7 +19228,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:renderlandmark",
+      "setting_key": "role:boolean-visibility:renderlandmark",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18670,7 +19238,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:requirelogin",
+      "setting_key": "role:boolean-visibility:requirelogin",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18680,7 +19248,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:revealonscroll",
+      "setting_key": "role:boolean-visibility:revealonscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18690,7 +19258,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:revealstagger",
+      "setting_key": "role:behaviour:revealstagger",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18700,7 +19268,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:reversedirection",
+      "setting_key": "role:boolean-visibility:reversedirection",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18730,7 +19298,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:reviewsaverage",
+      "setting_key": "role:content:reviewsaverage",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18740,7 +19308,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:rows",
+      "setting_key": "role:technical:rows",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18750,7 +19318,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:identity:schemaitemname",
+      "setting_key": "role:technical:schemaitemname",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18760,7 +19328,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:schemareviewcount",
+      "setting_key": "role:content:schemareviewcount",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18780,7 +19348,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:scrolloffset",
+      "setting_key": "role:styling:scrolloffset",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18800,7 +19368,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:scrollspy",
+      "setting_key": "role:boolean-visibility:scrollspy",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18810,7 +19378,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:scrolling",
+      "setting_key": "role:boolean-visibility:scrolling",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18850,7 +19418,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:sgsblocklinktarget",
+      "setting_key": "role:boolean-visibility:sgsblocklinktarget",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18860,7 +19428,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showaggregate",
+      "setting_key": "role:boolean-visibility:showaggregate",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18870,7 +19438,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showavatar",
+      "setting_key": "role:boolean-visibility:showavatar",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18880,7 +19448,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showbreakdown",
+      "setting_key": "role:boolean-visibility:showbreakdown",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18890,7 +19458,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showcaptions",
+      "setting_key": "role:boolean-visibility:showcaptions",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18900,7 +19468,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showcategory",
+      "setting_key": "role:boolean-visibility:showcategory",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18910,7 +19478,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showdays",
+      "setting_key": "role:boolean-visibility:showdays",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18920,7 +19488,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showexcerpt",
+      "setting_key": "role:boolean-visibility:showexcerpt",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18930,7 +19498,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showfilters",
+      "setting_key": "role:boolean-visibility:showfilters",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18940,7 +19508,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showgooglelogo",
+      "setting_key": "role:boolean-visibility:showgooglelogo",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18950,7 +19518,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showhome",
+      "setting_key": "role:boolean-visibility:showhome",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18960,7 +19528,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showhours",
+      "setting_key": "role:boolean-visibility:showhours",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18980,7 +19548,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showlabel",
+      "setting_key": "role:boolean-visibility:showlabel",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -18990,7 +19558,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showlabels",
+      "setting_key": "role:boolean-visibility:showlabels",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19000,7 +19568,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showminutes",
+      "setting_key": "role:boolean-visibility:showminutes",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19010,7 +19578,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:shownames",
+      "setting_key": "role:boolean-visibility:shownames",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19020,7 +19588,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:shownumeric",
+      "setting_key": "role:boolean-visibility:shownumeric",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19040,7 +19608,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showreadmore",
+      "setting_key": "role:boolean-visibility:showreadmore",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19050,7 +19618,7 @@
       "count": 1
     },
     {
-      "setting_key": "role:boolean-visibility:showschema",
+      "setting_key": "role:technical:showschema",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19060,7 +19628,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showseconds",
+      "setting_key": "role:boolean-visibility:showseconds",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19070,7 +19638,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showselectedtick",
+      "setting_key": "role:boolean-visibility:showselectedtick",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19080,7 +19648,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showsourceheader",
+      "setting_key": "role:boolean-visibility:showsourceheader",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19110,7 +19678,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showtrustpilotlogo",
+      "setting_key": "role:boolean-visibility:showtrustpilotlogo",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19120,7 +19688,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showverifiedbadge",
+      "setting_key": "role:boolean-visibility:showverifiedbadge",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19130,7 +19698,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:showzero",
+      "setting_key": "role:boolean-visibility:showzero",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19150,7 +19718,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:smoothscroll",
+      "setting_key": "role:boolean-visibility:smoothscroll",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19200,17 +19768,7 @@
       "count": 1
     },
     {
-      "setting_key": "slot:split",
-      "dedup_flags": [
-        "POSSIBLE_SPLIT:splitImage~['slot:image']"
-      ],
-      "sample_attrs": [
-        "splitImageTablet"
-      ],
-      "count": 1
-    },
-    {
-      "setting_key": "unresolved:staggeronopen",
+      "setting_key": "role:boolean-visibility:staggeronopen",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19250,7 +19808,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:storesubmissions",
+      "setting_key": "role:boolean-visibility:storesubmissions",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19280,7 +19838,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:submenucaret",
+      "setting_key": "role:boolean-visibility:submenucaret",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19290,7 +19848,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:submenuclosegrace",
+      "setting_key": "role:behaviour:submenuclosegrace",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19380,7 +19938,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:svganimationsource",
+      "setting_key": "role:technical:svganimationsource",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19400,7 +19958,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:tabletframecount",
+      "setting_key": "role:technical:tabletframecount",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19420,7 +19978,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:tabletframepad",
+      "setting_key": "role:technical:tabletframepad",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19460,7 +20018,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:textonly",
+      "setting_key": "role:boolean-visibility:textonly",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19470,7 +20028,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:threshold",
+      "setting_key": "role:technical:threshold",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19500,7 +20058,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:tiles",
+      "setting_key": "role:content:tiles",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19530,7 +20088,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:totalreviews",
+      "setting_key": "role:content:totalreviews",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19560,7 +20118,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:trustscore",
+      "setting_key": "role:content:trustscore",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],
@@ -19690,7 +20248,7 @@
       "count": 1
     },
     {
-      "setting_key": "unresolved:visibleaxes",
+      "setting_key": "role:technical:visibleaxes",
       "dedup_flags": [
         "NO_PROPERTY_MATCH"
       ],

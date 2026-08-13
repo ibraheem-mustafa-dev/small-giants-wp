@@ -4204,15 +4204,6 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "iconGap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "GRID",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing",
