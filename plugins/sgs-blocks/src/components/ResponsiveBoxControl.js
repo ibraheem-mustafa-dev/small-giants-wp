@@ -150,13 +150,18 @@ export default function ResponsiveBoxControl( {
 	}
 
 	return (
-		<ResponsiveControl label={ label }>
+		/* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the BoxControl.
+		   Core's BoxControl ignores that prop and always renders its own label via
+		   <BaseControl.VisualLabel> — verified in core source at the SHA WP 7.0.4 pins.
+		   With both set, two labels painted: the wrapper's plain <span> in sentence case
+		   and BoxControl's in WP's uppercase styling. Keep BoxControl's — BaseControl
+		   associates it with the inputs. 9 sites tree-wide carried this; fixed 2026-08-13. */
+		<ResponsiveControl>
 			{ ( breakpoint ) => {
 				const tier = TIER_BY_BREAKPOINT[ breakpoint ];
 				return (
 					<BoxControl
 						label={ label }
-						hideLabelFromVision
 						values={ tierValues[ tier ] }
 						sides={ sides }
 						units={ BOX_UNITS }

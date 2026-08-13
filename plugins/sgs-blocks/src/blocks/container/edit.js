@@ -357,15 +357,18 @@ export default function Edit({ attributes, setAttributes }) {
               object into the SAME shape as before by coincidence only — the
               real risk is a stale flat write landing on a deleted attr.
               Mirrors ResponsiveBoxControls.js's Padding block exactly. */}
+          {/* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
+              BoxControl — core's BoxControl ignores that prop and always renders its
+              own label, so both painted (sentence case + WP's uppercase). Keep
+              BoxControl's; BaseControl associates it with the inputs. Full reasoning
+              at components/ResponsiveBoxControls.js. */}
           <ResponsiveOverride
-            label={ __( "Band padding", "sgs-blocks" ) }
             value={ attributes.contentBandPadding }
             onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
           >
             { ( { ownValue, setOwnValue } ) => (
               <BoxControl
                 label={ __( "Band padding", "sgs-blocks" ) }
-                hideLabelFromVision
                 values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
                 units={ BOX_UNITS }
                 splitOnAxis={ false }

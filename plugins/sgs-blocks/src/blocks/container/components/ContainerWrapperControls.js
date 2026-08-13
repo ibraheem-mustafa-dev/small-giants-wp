@@ -1293,15 +1293,18 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     declare (D338), and the block.json default is now
 			     {desktop:{}}, not {}. Mirrors container/edit.js's
 			     contentBandPadding control exactly. */ }
+			{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
+			     BoxControl — core's BoxControl ignores that prop and always renders
+			     its own label, so both painted. Keep BoxControl's (BaseControl
+			     associates it with the inputs). Full reasoning at
+			     components/ResponsiveBoxControls.js. */ }
 			<ResponsiveOverride
-				label={ __( 'Padding', 'sgs-blocks' ) }
 				value={ gridItemPadding }
 				onChange={ ( obj ) => setAttributes( { gridItemPadding: obj } ) }
 			>
 				{ ( { ownValue, setOwnValue } ) => (
 					<BoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
-						hideLabelFromVision
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						splitOnAxis={ false }
 						units={ GRID_ITEM_BOX_UNITS }

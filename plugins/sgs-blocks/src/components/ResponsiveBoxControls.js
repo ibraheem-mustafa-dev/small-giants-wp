@@ -82,15 +82,22 @@ export default function ResponsiveBoxControls( {
 			title={ __( 'Spacing & width (per device)', 'sgs-blocks' ) }
 			initialOpen={ initialOpen }
 		>
+			{ /* ⛔ NO `label` on the wrapper, and NO `hideLabelFromVision` on the
+			     BoxControl. Core's BoxControl renders its label UNCONDITIONALLY via
+			     <BaseControl.VisualLabel> and has no hideLabelFromVision handling at
+			     all — verified in core source at the SHA WP 7.0.4 pins
+			     (packages/components/src/box-control/index.tsx). So the prop was a
+			     no-op and BOTH labels painted: the wrapper's plain <span> in sentence
+			     case, and BoxControl's own in WP's uppercase styling. Keep
+			     BoxControl's — it is the one BaseControl associates with the inputs.
+			     Measured 2026-08-13: 8 sites tree-wide had this exact defect. */ }
 			<ResponsiveOverride
-				label={ __( 'Padding', 'sgs-blocks' ) }
 				value={ padding }
 				onChange={ ( obj ) => setAttributes( { padding: obj } ) }
 			>
 				{ ( { ownValue, setOwnValue } ) => (
 					<BoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
-						hideLabelFromVision
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						units={ LENGTH_UNITS }
 						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
@@ -99,15 +106,14 @@ export default function ResponsiveBoxControls( {
 				) }
 			</ResponsiveOverride>
 
+			{ /* Same rule as the Padding block above — see that comment. */ }
 			<ResponsiveOverride
-				label={ __( 'Margin', 'sgs-blocks' ) }
 				value={ margin }
 				onChange={ ( obj ) => setAttributes( { margin: obj } ) }
 			>
 				{ ( { ownValue, setOwnValue } ) => (
 					<BoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
-						hideLabelFromVision
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						units={ LENGTH_UNITS }
 						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
