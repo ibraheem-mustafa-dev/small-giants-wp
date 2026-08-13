@@ -97,11 +97,31 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* Editor always shows full text — no visual collapse. */ }
+			{ /*
+			 * When collapsible, preview the CSS line-clamp so the operator can see
+			 * the effect of "Collapsed line count" — mirrors the frontend's
+			 * collapsed state (style.css .is-collapsed, driven by the same
+			 * --sgs-collapsible-text-collapsed-lines custom property view.js
+			 * applies there). Still fully editable; line-clamp only clips the
+			 * box visually, it never hides or locks the RichText.
+			 */ }
 			<div { ...blockProps }>
 				<RichText
 					tagName="div"
-					className="sgs-collapsible-text__body"
+					className={ [
+						'sgs-collapsible-text__body',
+						collapsible ? 'is-collapsed' : '',
+					]
+						.filter( Boolean )
+						.join( ' ' ) }
+					style={
+						collapsible
+							? {
+									'--sgs-collapsible-text-collapsed-lines':
+										collapsedLines,
+							  }
+							: undefined
+					}
 					multiline="p"
 					value={ text }
 					onChange={ ( val ) => setAttributes( { text: val } ) }
