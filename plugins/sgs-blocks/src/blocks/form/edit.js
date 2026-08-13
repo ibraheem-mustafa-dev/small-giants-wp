@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -13,7 +14,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { DesignTokenPicker, ResponsiveBoxControl, LinkPopoverField } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, LinkPopoverField, resolveColorToken } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
@@ -49,6 +50,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			} );
 		}
 	}, [ formId, clientId, setAttributes ] );
+
+	// submitColour/submitBackground/progressBarColour's DesignTokenPickers
+	// have no `linked` prop, so they always store a raw CSS value, never a
+	// slug -- resolveColorToken() (not colourVar(), which is slug-only) is
+	// the correct resolver. Mirrors render.php's scoped `.sgs-form__button
+	// --submit`/`.sgs-form__progress` rules (render.php:211-241).
+	const [ palette ] = useSettings( 'color.palette' );
+	const submitButtonStyle = {
+		color: resolveColorToken( submitColour, palette ) || undefined,
+		backgroundColor: resolveColorToken( submitBackground, palette ) || undefined,
+	};
+	const progressBarStyle = {
+		backgroundColor: resolveColorToken( progressBarColour, palette ) || undefined,
+	};
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-form',
@@ -338,15 +353,39 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					There is no real <form> in the editor canvas, so without this
 					element neither submitLabel nor submitStyle showed any visible
 					effect while editing (see render.php:351-360 for the frontend
-					equivalent). type="button" so it can never submit anything. */ }
+					equivalent). type="button" so it can never submit anything.
+					submitColour/submitBackground added 2026-08-13 — render.php:
+					211-228 emits a real, unconditional `color`/`background-color`
+					rule on this exact element; the preview had never carried it. */ }
 				<div className="sgs-form__actions">
 					<button
 						type="button"
 						className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
+						style={ submitButtonStyle }
 					>
 						{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
 					</button>
 				</div>
+				{ /* progressBarColour preview (2026-08-13) — render.php:230-241
+					drives `--sgs-progress-colour` on `.sgs-form__progress`, but the
+					real progress bar only renders once real sgs/form-step
+					InnerBlocks children resolve their step list (Interactivity-API
+					state, frontend only). A REPRESENTATIVE sample swatch — not the
+					full stepped UI — is the honest editor-canvas equivalent, same
+					pattern as this session's table-of-contents active-link preview. */ }
+				{ progressBarColour && (
+					<div
+						className="sgs-form__progress-wrapper"
+						style={ { marginTop: '12px' } }
+					>
+						<div className="sgs-form__progress">
+							<div
+								className="sgs-form__progress-bar"
+								style={ { ...progressBarStyle, width: '40%' } }
+							/>
+						</div>
+					</div>
+				) }
 			</div>
 		</>
 	);
