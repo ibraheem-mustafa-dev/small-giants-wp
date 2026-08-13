@@ -588,6 +588,96 @@ function buildStringMask( src ) {
 }
 
 /**
+ * Build a same-length boolean mask marking ONLY comment spans (`//`, `#`,
+ * `/* *&#47;`) — deliberately NOT quoted-string content, unlike
+ * buildStringMask() above (which masks strings AND comments together for
+ * its own brace-counting purpose). A bare `\$var\b` regex scan for usage
+ * offsets (collectAttrUsageOffsets()) needs to exclude a variable NAME
+ * merely MENTIONED in a comment ("`$aria_str` built with esc_attr()") while
+ * still counting a variable genuinely INTERPOLATED inside a double-quoted
+ * PHP string (`"...{$var}..."` — the very shape classifyCssDeclarationSink()
+ * exists to classify) as a real usage site. buildStringMask() masks BOTH
+ * cases identically, so it cannot make that distinction — this sibling mask
+ * can. Real regression this fixed (2026-08-13, caught by this file's own
+ * SIGNAL 1 negative-control self-test): naively using buildStringMask()'s
+ * mask to skip "masked" offsets wrongly skipped the negative fixture's real
+ * `{$icon_aria_label}` CSS-interpolation paint site along with the intended
+ * comment-only exclusion, exempting an attribute that should have stayed
+ * flagged.
+ *
+ * @param {string} src PHP source.
+ * @return {Array<boolean>} commentMask[i] === true when position i is inside a `//`/`#`/`/* *&#47;` comment.
+ */
+function buildCommentMask( src ) {
+	const mask = new Array( src.length ).fill( false );
+	let inSquote = false;
+	let inDquote = false;
+	for ( let i = 0; i < src.length; i++ ) {
+		const c = src[ i ];
+		if ( inSquote ) {
+			if ( c === '\\' && i + 1 < src.length ) {
+				i++;
+				continue;
+			}
+			if ( c === "'" ) {
+				inSquote = false;
+			}
+			continue;
+		}
+		if ( inDquote ) {
+			if ( c === '\\' && i + 1 < src.length ) {
+				i++;
+				continue;
+			}
+			if ( c === '"' ) {
+				inDquote = false;
+			}
+			continue;
+		}
+		if ( c === "'" ) {
+			inSquote = true;
+			continue;
+		}
+		if ( c === '"' ) {
+			inDquote = true;
+			continue;
+		}
+		if ( c === '/' && src[ i + 1 ] === '/' ) {
+			while ( i < src.length && src[ i ] !== '\n' ) {
+				mask[ i ] = true;
+				i++;
+			}
+			continue;
+		}
+		if ( c === '#' && src[ i + 1 ] !== '[' ) {
+			while ( i < src.length && src[ i ] !== '\n' ) {
+				mask[ i ] = true;
+				i++;
+			}
+			continue;
+		}
+		if ( c === '/' && src[ i + 1 ] === '*' ) {
+			mask[ i ] = true;
+			mask[ i + 1 ] = true;
+			i += 2;
+			while ( i < src.length && ! ( src[ i ] === '*' && src[ i + 1 ] === '/' ) ) {
+				mask[ i ] = true;
+				i++;
+			}
+			if ( i < src.length ) {
+				mask[ i ] = true;
+				if ( i + 1 < src.length ) {
+					mask[ i + 1 ] = true;
+				}
+				i++;
+			}
+			continue;
+		}
+	}
+	return mask;
+}
+
+/**
  * String-aware forward paren match: given the index of an opening `(`,
  * return the index of its matching `)`, skipping any `(`/`)` inside a
  * masked (quoted-string) position.
@@ -653,6 +743,11 @@ const NATIVE_FUNCTIONAL_ATTR_NAMES = new Set( [
 	'preload', 'controls', 'loop', 'autoplay', 'muted', 'playsinline',
 	'disabled', 'readonly', 'required', 'checked', 'selected', 'multiple',
 	'autofocus', 'tabindex', 'role',
+	// alt: real accessibility text with zero visual paint by definition
+	// (sgs/image-sequence's thumbnailAlt, 2026-08-13 audit).
+	// accept: a native file-picker filter attribute (browser dialog only),
+	// zero rendered paint (sgs/form-field-file's allowedTypes, 2026-08-13 audit).
+	'alt', 'accept',
 ] );
 
 // A bare native boolean-attribute KEYWORD, appended as a literal string
@@ -846,6 +941,84 @@ function isReducedMotionScoped( phpSrc, mask, offset, window ) {
 }
 
 /**
+ * BARE-CONCAT-AFTER-DOT resolution (2026-08-13 audit). precedingCssPropertyName()
+ * requires `offset` to sit INSIDE a masked PHP string literal (via
+ * findEnclosingStringStart()) — true for double-quote `{$var}` interpolation
+ * and the three-piece single-quote shape `'x:'.$var.'y'`. It is FALSE for the
+ * real shape found live in sgs/form/post-grid:
+ * `'--sgs-hover-bg:' . $hover_bg` — the variable sits AFTER the `.`
+ * concatenation operator, as bare PHP code, not inside any string at all.
+ * This walks backward from `offset` over whitespace + the `.` operator to
+ * find the CLOSING QUOTE of the immediately-preceding string literal, then
+ * returns that quote's own index — feeding THAT back into
+ * precedingCssPropertyName() as if it were the offset gives an identical
+ * slice-ending-at-the-real-last-content-character result (the quote index
+ * satisfies findEnclosingStringStart()'s `mask[offset-1]` check because the
+ * whole string body up to the quote is masked). ALSO tolerates ONE enclosing
+ * helper-function-call wrapper around the variable before the dot — real
+ * shape: sgs/social-icons' `'--sgs-social-hover:' . sgs_colour_value(
+ * $hover_colour_token )` — the variable is the function's argument, not
+ * directly concatenated, so the dot sits before `sgs_colour_value(`, not
+ * immediately before `$hover_colour_token`. Returns null if, after
+ * optionally skipping one such wrapper, the immediately-preceding token is
+ * still not a real closing quote of a masked string.
+ *
+ * @param {string}          phpSrc render.php source.
+ * @param {Array<boolean>}  mask   From buildStringMask().
+ * @param {number}          offset Usage-site offset (bare PHP code, not in a string).
+ * @return {number|null} A virtual offset suitable for precedingCssPropertyName(), or null.
+ */
+function bareConcatStringEndOffset( phpSrc, mask, offset ) {
+	let i = offset;
+	while ( i > 0 && /\s/.test( phpSrc[ i - 1 ] ) ) {
+		i--;
+	}
+	// Optionally skip MULTIPLE nested enclosing `identifier(` function-call
+	// wrappers immediately preceding — real shape: sgs/form's
+	// `'--sgs-focus-ring-colour:' . esc_attr( sgs_colour_value(
+	// $focus_ring_colour ) )`, TWO layers (esc_attr then sgs_colour_value)
+	// around the variable, vs. sgs/social-icons' single-layer
+	// `sgs_colour_value( $hover_colour_token )`. Bounded by the loop only
+	// finding real `identifier(` tokens — stops the moment one isn't found.
+	for ( ;; ) {
+		if ( i === 0 || phpSrc[ i - 1 ] !== '(' ) {
+			break;
+		}
+		let j = i - 1;
+		while ( j > 0 && /\s/.test( phpSrc[ j - 1 ] ) ) {
+			j--;
+		}
+		let k = j;
+		while ( k > 0 && /[A-Za-z0-9_]/.test( phpSrc[ k - 1 ] ) ) {
+			k--;
+		}
+		if ( k === j ) {
+			break; // no identifier immediately before the '(' — stop unwrapping.
+		}
+		i = k;
+		while ( i > 0 && /\s/.test( phpSrc[ i - 1 ] ) ) {
+			i--;
+		}
+	}
+	if ( i === 0 || phpSrc[ i - 1 ] !== '.' ) {
+		return null;
+	}
+	i--; // consume the '.' concatenation operator.
+	while ( i > 0 && /\s/.test( phpSrc[ i - 1 ] ) ) {
+		i--;
+	}
+	if ( i === 0 ) {
+		return null;
+	}
+	const closingQuoteIdx = i - 1;
+	const quoteChar = phpSrc[ closingQuoteIdx ];
+	if ( ( quoteChar !== "'" && quoteChar !== '"' ) || ! mask[ closingQuoteIdx ] ) {
+		return null;
+	}
+	return closingQuoteIdx;
+}
+
+/**
  * Classify a usage site that sits inside a CSS declaration value.
  *
  * @param {string}          phpSrc render.php source.
@@ -854,7 +1027,18 @@ function isReducedMotionScoped( phpSrc, mask, offset, window ) {
  * @return {string|null} 'hover-css' | 'reduced-motion-css' | 'motion-timing' | 'paint' (a real, unconditional CSS declaration) | null (not a CSS declaration context at all).
  */
 function classifyCssDeclarationSink( phpSrc, mask, offset ) {
-	const propName = precedingCssPropertyName( phpSrc, mask, offset );
+	let effectiveOffset = offset;
+	let propName = precedingCssPropertyName( phpSrc, mask, offset );
+	if ( ! propName ) {
+		const bareConcatOffset = bareConcatStringEndOffset( phpSrc, mask, offset );
+		if ( bareConcatOffset !== null ) {
+			const bareConcatPropName = precedingCssPropertyName( phpSrc, mask, bareConcatOffset );
+			if ( bareConcatPropName ) {
+				propName = bareConcatPropName;
+				effectiveOffset = bareConcatOffset;
+			}
+		}
+	}
 	if ( ! propName ) {
 		return null;
 	}
@@ -864,11 +1048,11 @@ function classifyCssDeclarationSink( phpSrc, mask, offset ) {
 	if ( MOTION_TIMING_PROPERTIES.has( propName ) ) {
 		return 'motion-timing';
 	}
-	const selector = nearestPrecedingSelectorText( phpSrc, mask, offset );
+	const selector = nearestPrecedingSelectorText( phpSrc, mask, effectiveOffset );
 	if ( selector && /:hover|:focus-visible|:focus\b/.test( selector ) ) {
 		return 'hover-css';
 	}
-	if ( isReducedMotionScoped( phpSrc, mask, offset ) ) {
+	if ( isReducedMotionScoped( phpSrc, mask, effectiveOffset ) ) {
 		return 'reduced-motion-css';
 	}
 	// The selector and the declaration are sometimes built in SEPARATE PHP
@@ -880,7 +1064,7 @@ function classifyCssDeclarationSink( phpSrc, mask, offset ) {
 	// see nothing to scope against. Fall back to the CONTAINER variable's own
 	// name (the array/string being appended to) — the same naming-convention
 	// trust already used above for `--x-hover` custom properties.
-	const containerName = precedingAssignmentTargetName( phpSrc, mask, offset );
+	const containerName = precedingAssignmentTargetName( phpSrc, mask, effectiveOffset );
 	if ( containerName && /hover|focus/i.test( containerName ) ) {
 		return 'hover-css';
 	}
@@ -967,12 +1151,21 @@ function enclosingStatementAssignmentTargetName( phpSrc, mask, offset ) {
  * @param {number} [window] Backward scan window in characters.
  * @return {string|null} Lower-cased attribute name, or null.
  */
+// Optional scalar cast directly before a usage-site offset — real shape:
+// sgs/counter's `esc_attr( (string) $duration )`. Tolerated the same way
+// ATTR_READ_WRAPPER_RE_SOURCE already tolerates a cast on the READ side;
+// this is the equivalent on the WRITE/emission side (2026-08-13 audit).
+const OPTIONAL_SCALAR_CAST_RE_SOURCE =
+	'(?:\\(\\s*(?:string|int|float|bool)\\s*\\)\\s*)?';
+
 function precedingRawHtmlAttributeName( phpSrc, offset, window ) {
 	window = window || 150;
 	const windowStart = Math.max( 0, offset - window );
 	const slice = phpSrc.slice( windowStart, offset );
 	// Shape A: markup with embedded PHP echo — `name="...<?php echo esc_attr(`.
-	const m = /([\w-]+)\s*=\s*"(?:[^"]*<\?php\s+echo\s+)?(?:esc_attr\(\s*)?$/.exec( slice );
+	const m = new RegExp(
+		'([\\w-]+)\\s*=\\s*"(?:[^"]*<\\?php\\s+echo\\s+)?(?:esc_attr\\(\\s*)?' + OPTIONAL_SCALAR_CAST_RE_SOURCE + '$'
+	).exec( slice );
 	if ( m ) {
 		return m[ 1 ].toLowerCase();
 	}
@@ -980,7 +1173,9 @@ function precedingRawHtmlAttributeName( phpSrc, offset, window ) {
 	// sgs/button's `$rel_attr = ' rel="' . esc_attr( $rel ) . '"';` — the
 	// attribute's opening `name="` sits inside its OWN small single-quoted
 	// PHP string, closed immediately, then `.`-concatenated with the value.
-	const m2 = /([\w-]+)\s*=\s*"'\s*\.\s*(?:esc_attr\(\s*)?$/.exec( slice );
+	const m2 = new RegExp(
+		'([\\w-]+)\\s*=\\s*"\'\\s*\\.\\s*(?:esc_attr\\(\\s*)?' + OPTIONAL_SCALAR_CAST_RE_SOURCE + '$'
+	).exec( slice );
 	if ( m2 ) {
 		return m2[ 1 ].toLowerCase();
 	}
@@ -1012,12 +1207,20 @@ function precedingHtmlAttributeName( phpSrc, offset, window ) {
 	window = window || 150;
 	const windowStart = Math.max( 0, offset - window );
 	const slice = phpSrc.slice( windowStart, offset );
-	// `'key' => $var` array-literal shape.
-	const m2 = /['"]([\w-]+)['"]\s*=>\s*$/.exec( slice );
+	// `'key' => $var` array-literal shape — tolerant of an optional `esc_attr(`
+	// wrapper AND a scalar cast between `=>` and the value (real shapes:
+	// sgs/table-of-contents' `'data-scroll-offset' => (string) $scroll_offset`
+	// and sgs/product-search's `'data-max-results' => esc_attr( (string)
+	// $max_results )`, 2026-08-13 audit).
+	const m2 = new RegExp(
+		'[\'"]([\\w-]+)[\'"]\\s*=>\\s*(?:esc_attr\\(\\s*)?' + OPTIONAL_SCALAR_CAST_RE_SOURCE + '$'
+	).exec( slice );
 	// `$arr['key'] = $var` array-ELEMENT-assignment shape — real shape:
 	// sgs/decorative-image's `$img_attrs['data-parallax'] = esc_attr(
 	// $parallax_strength );`.
-	const m3 = /\$\w+\[\s*['"]([\w-]+)['"]\s*\]\s*=\s*(?:esc_attr\(\s*)?$/.exec( slice );
+	const m3 = new RegExp(
+		'\\$\\w+\\[\\s*[\'"]([\\w-]+)[\'"]\\s*\\]\\s*=\\s*(?:esc_attr\\(\\s*)?' + OPTIONAL_SCALAR_CAST_RE_SOURCE + '$'
+	).exec( slice );
 	const key = ( m2 && m2[ 1 ] ) || ( m3 && m3[ 1 ] );
 	if ( key ) {
 		const lower = key.toLowerCase();
@@ -1265,10 +1468,29 @@ function classifyUsageSite( phpSrc, mask, offset ) {
 const ATTR_READ_WRAPPER_RE_SOURCE =
 	"(?:!\\s*|\\(\\s*bool\\s*\\)\\s*|\\(\\s*int\\s*\\)\\s*|\\(\\s*string\\s*\\)\\s*|\\(\\s*float\\s*\\)\\s*|\\(\\s*array\\s*\\)\\s*|empty\\(\\s*|isset\\(\\s*)*";
 
+// A single arbitrary HELPER-FUNCTION-call wrapper DIRECTLY around
+// `$attributes['X']` (optionally followed by `?? default` before the
+// closing paren) — real shape: sgs/product-search's `$max_results_tiers =
+// sgs_responsive_normalise_object( $attributes['maxResults'] ?? null );`.
+// ATTR_READ_WRAPPER_RE_SOURCE only tolerates a small CLOSED set of
+// cast/empty/isset wrappers (deliberately, to avoid over-matching arbitrary
+// call chains), so a genuine one-hop helper-function wrapper never lands in
+// the main direct-read map at all — measured live 2026-08-13: the resulting
+// var (`max_results_tiers`) then has no attrVarMap entry, so
+// collectDerivedVarMapAll()'s hop-1/hop-2 tracing has nothing to chain from,
+// and `maxResults` stays wrongly flagged despite its only real usage site
+// being a plain `data-max-results` non-paint sink. Deliberately a SEPARATE,
+// narrower regex (single function layer, first argument only) rather than
+// broadening ATTR_READ_WRAPPER_RE_SOURCE itself.
+const FUNCTION_WRAPPED_ATTR_READ_RE_SOURCE =
+	'[A-Za-z_]\\w*\\(\\s*\\$attributes\\[\\s*[\'"]([A-Za-z0-9_]+)[\'"]\\s*\\]';
+
 /**
  * Signal-1-specific direct-read map: `$var = [wrappers] $attributes['X']`,
  * tolerant of `!empty()`/`empty()`/`isset()`/scalar-cast wrapping (see
- * ATTR_READ_WRAPPER_RE_SOURCE doc comment above).
+ * ATTR_READ_WRAPPER_RE_SOURCE doc comment above), PLUS a single
+ * helper-function-call wrapper (see FUNCTION_WRAPPED_ATTR_READ_RE_SOURCE
+ * doc comment above).
  *
  * @param {string} phpSrc render.php source.
  * @return {Map<string,string>} localVar -> attrName.
@@ -1283,6 +1505,16 @@ function collectAttrVarMapBroad( phpSrc ) {
 	while ( ( m = re.exec( phpSrc ) ) !== null ) {
 		map.set( m[ 1 ], m[ 2 ] );
 	}
+	const funcWrappedRe = new RegExp(
+		'\\$([A-Za-z_]\\w*)\\s*=\\s*' + FUNCTION_WRAPPED_ATTR_READ_RE_SOURCE,
+		'g'
+	);
+	let fm;
+	while ( ( fm = funcWrappedRe.exec( phpSrc ) ) !== null ) {
+		if ( ! map.has( fm[ 1 ] ) ) {
+			map.set( fm[ 1 ], fm[ 2 ] );
+		}
+	}
 	return map;
 }
 
@@ -1294,16 +1526,33 @@ function collectAttrVarMapBroad( phpSrc ) {
  * same ternary/ `isset()` check, as in sgs/audio's `$controls` example
  * above, doesn't double-count as an independent usage site) plus every real
  * READ of every PHP variable that resolves back to X (direct, via
- * collectAttrVarMapBroad(), + one-hop derived via CHECK B's
- * attribute-agnostic collectDerivedVarMap(), reused unmodified).
+ * collectAttrVarMapBroad(), + derived via collectDerivedVarMapAll(), which
+ * unlike CHECK B's single-hop/single-attr collectDerivedVarMap() follows up
+ * to two hops and records EVERY attribute a derived var traces back to).
  *
- * @param {string}              phpSrc        render.php source.
- * @param {string}              attrName      Attribute name.
- * @param {Map<string,string>}  attrVarMap    From collectAttrVarMapBroad().
- * @param {Map<string,string>}  derivedVarMap From collectDerivedVarMap().
+ * COMMENT-AWARE (2026-08-13 audit fix): every match is checked against
+ * `commentMask` (from buildCommentMask() — comment spans ONLY, NOT quoted
+ * strings) and skipped when true — a bare `\$var\b`/attribute-key regex
+ * match has no way to tell a real PHP read from a `// phpcs:ignore ...
+ * $var built with esc_attr()`-style comment MENTIONING the variable name in
+ * prose. Deliberately NOT buildStringMask()'s mask here: that one ALSO
+ * marks a genuinely-interpolated `{$var}` inside a double-quoted PHP string
+ * as masked, and that IS a real usage site (the exact shape
+ * classifyCssDeclarationSink() exists to classify) — using it here would
+ * skip real CSS-interpolation paint sites right along with comment mentions.
+ * Real bug this fixes: sgs/button's `ariaLabel` usage sites at
+ * render.php:998/:1015 were both inside phpcs-ignore comments, which wrongly
+ * classified as a real `paint` sink and blocked the otherwise-correct
+ * aria-only exemption.
+ *
+ * @param {string}                  phpSrc        render.php source.
+ * @param {Array<boolean>}          commentMask   From buildCommentMask().
+ * @param {string}                  attrName      Attribute name.
+ * @param {Map<string,string>}      attrVarMap    From collectAttrVarMapBroad().
+ * @param {Map<string,Set<string>>} derivedVarMap From collectDerivedVarMapAll().
  * @return {Array<number>} Usage-site offsets.
  */
-function collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap ) {
+function collectAttrUsageOffsets( phpSrc, commentMask, attrName, attrVarMap, derivedVarMap ) {
 	const offsets = [];
 	const definitionSpans = [];
 	const defRe = new RegExp(
@@ -1320,6 +1569,9 @@ function collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap ) 
 	let im;
 	while ( ( im = inlineRe.exec( phpSrc ) ) !== null ) {
 		const pos = im.index;
+		if ( commentMask[ pos ] ) {
+			continue; // inside a comment — not a real PHP read.
+		}
 		const insideDef = definitionSpans.some( ( [ s, e ] ) => pos >= s && pos < e );
 		if ( ! insideDef ) {
 			offsets.push( pos );
@@ -1332,8 +1584,8 @@ function collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap ) 
 			varNames.add( v );
 		}
 	}
-	for ( const [ v, a ] of derivedVarMap ) {
-		if ( a !== attrName ) {
+	for ( const [ v, attrSet ] of derivedVarMap ) {
+		if ( ! attrSet.has( attrName ) ) {
 			continue;
 		}
 		// A derived var whose OWN definition is an array literal is a
@@ -1358,6 +1610,9 @@ function collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap ) 
 		let vm;
 		while ( ( vm = varRe.exec( phpSrc ) ) !== null ) {
 			const pos = vm.index;
+			if ( commentMask[ pos ] ) {
+				continue; // inside a comment — not a real PHP read.
+			}
 			const after = phpSrc.slice( pos + vm[ 0 ].length );
 			if ( /^\s*=(?!=)/.test( after ) ) {
 				continue; // this var's OWN assignment LHS, not a read
@@ -1375,15 +1630,16 @@ function collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap ) 
  * out of scope here (check-dead-controls.js's job), so this signal stays
  * conservative rather than exempting on absence of evidence.
  *
- * @param {string}              phpSrc        render.php source.
- * @param {Array<boolean>}      mask          From buildStringMask().
- * @param {string}              attrName      Attribute name.
- * @param {Map<string,string>}  attrVarMap    From collectAttrVarMap().
- * @param {Map<string,string>}  derivedVarMap From collectDerivedVarMap().
+ * @param {string}                  phpSrc        render.php source.
+ * @param {Array<boolean>}          mask          From buildStringMask() — for classifyUsageSite().
+ * @param {Array<boolean>}          commentMask   From buildCommentMask() — for collectAttrUsageOffsets().
+ * @param {string}                  attrName      Attribute name.
+ * @param {Map<string,string>}      attrVarMap    From collectAttrVarMap().
+ * @param {Map<string,Set<string>>} derivedVarMap From collectDerivedVarMapAll().
  * @return {boolean}
  */
-function attributeIsNonPaintSinkOnly( phpSrc, mask, attrName, attrVarMap, derivedVarMap ) {
-	const offsets = collectAttrUsageOffsets( phpSrc, attrName, attrVarMap, derivedVarMap );
+function attributeIsNonPaintSinkOnly( phpSrc, mask, commentMask, attrName, attrVarMap, derivedVarMap ) {
+	const offsets = collectAttrUsageOffsets( phpSrc, commentMask, attrName, attrVarMap, derivedVarMap );
 	if ( ! offsets.length ) {
 		return false;
 	}
@@ -2103,8 +2359,9 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	// Exemption-signal plumbing (2026-08-13 refinement — see file header).
 	const phpSrc = readIfExists( path.join( dir, 'render.php' ) );
 	const phpMask = phpSrc ? buildStringMask( phpSrc ) : null;
+	const phpCommentMask = phpSrc ? buildCommentMask( phpSrc ) : null;
 	const attrVarMap = phpSrc ? collectAttrVarMapBroad( phpSrc ) : new Map();
-	const derivedVarMap = phpSrc ? collectDerivedVarMap( phpSrc, attrVarMap ) : new Map();
+	const derivedVarMap = phpSrc ? collectDerivedVarMapAll( phpSrc, attrVarMap ) : new Map();
 	const setAttributeGroups = collectSetAttributesGroups( src );
 	const noticeExemptSet = checkNoPreviewNoticeExemption( ast, src, declaredAttrs );
 	const liveDataPlaceholderExempt = checkLiveDataPlaceholderExemption( phpSrc, src );
@@ -2126,7 +2383,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 		if ( usedOutsideControls.has( attr ) ) {
 			continue;
 		}
-		if ( phpSrc && attributeIsNonPaintSinkOnly( phpSrc, phpMask, attr, attrVarMap, derivedVarMap ) ) {
+		if ( phpSrc && attributeIsNonPaintSinkOnly( phpSrc, phpMask, phpCommentMask, attr, attrVarMap, derivedVarMap ) ) {
 			continue; // SIGNAL 1 — every render.php consumption site is a non-paint sink
 		}
 		if ( checkCompanionExemption( attr, setAttributeGroups, usedOutsideControls ) ) {
@@ -2203,6 +2460,90 @@ function collectDerivedVarMap( phpSrc, attrVarMap ) {
 			}
 		}
 	}
+	return derived;
+}
+
+/**
+ * SIGNAL 1's own derived-variable trace (2026-08-13 audit fix) — used ONLY by
+ * CHECK A (attributeIsNonPaintSinkOnly/collectAttrUsageOffsets), NOT by CHECK B
+ * (which keeps using collectDerivedVarMap() above, unmodified, per the file
+ * header's documented scoping decision). Two differences from
+ * collectDerivedVarMap(), both real bugs measured live 2026-08-13:
+ *
+ * 1. MULTI-ATTRIBUTE, not `break`-on-first-match. A derived var can
+ *    legitimately trace back to MORE THAN ONE attribute in the same
+ *    right-hand-side expression (real shape: sgs/countdown-timer's
+ *    `$total_seconds = ($evergreen_hours*3600) + ($evergreen_mins*60);` —
+ *    the old single-value collectDerivedVarMap() `break`s on the FIRST
+ *    origVar match found during Map iteration, so `total_seconds` was
+ *    attributed only to `evergreenHours`, never `evergreenMinutes` — the
+ *    exact reason `evergreenMinutes` stayed wrongly flagged even though its
+ *    only real usage site is the same non-paint `data-evergreen` sink as its
+ *    sibling). Returns a Set of every attribute name whose var appears
+ *    anywhere in the RHS, not just the first one found.
+ * 2. TWO derivation hops, not one. A var derived from an ALREADY-derived var
+ *    (real shape: sgs/product-search's `$max_results_tiers =
+ *    sgs_responsive_normalise_object($attributes['maxResults'] ?? null);`
+ *    then, later, `$max_results = clamp($max_results_tiers['desktop']);` —
+ *    `max_results` is two hops from the attribute, past the single-hop
+ *    ceiling the file header's own blind-spot note already documented as
+ *    "not observed live... as of 2026-08-13" — it has now been observed).
+ *    Scoped to exactly two hops (not unbounded) — matches this file's own
+ *    stated preference for hand-verified bounded extensions over an
+ *    unbounded dataflow engine (see file header, Signal 1 cross-file
+ *    consumption note) until a THIRD hop is observed live.
+ *
+ * @param {string}              phpSrc     render.php source.
+ * @param {Map<string,string>}  attrVarMap Direct-read map (localVar -> attrName).
+ * @return {Map<string,Set<string>>} derivedVar -> Set of every attrName it traces back to.
+ */
+function collectDerivedVarMapAll( phpSrc, attrVarMap ) {
+	const derived = new Map();
+	const assignRe = /\$([A-Za-z_]\w*)\s*=([^;]*);/g;
+
+	function addAttr( varName, attrName ) {
+		if ( ! derived.has( varName ) ) {
+			derived.set( varName, new Set() );
+		}
+		derived.get( varName ).add( attrName );
+	}
+
+	// Hop 1: direct reference to an attrVarMap var, anywhere in the RHS
+	// (never `break`s — every matching origVar contributes).
+	let m;
+	assignRe.lastIndex = 0;
+	while ( ( m = assignRe.exec( phpSrc ) ) !== null ) {
+		const lhs = m[ 1 ];
+		const rhs = m[ 2 ];
+		if ( attrVarMap.has( lhs ) ) {
+			continue; // that IS a direct-read assignment, not a derivation
+		}
+		for ( const [ origVar, attrName ] of attrVarMap ) {
+			const re = new RegExp( '\\$' + origVar + '\\b' );
+			if ( re.test( rhs ) ) {
+				addAttr( lhs, attrName );
+			}
+		}
+	}
+
+	// Hop 2: a var derived from a HOP-1 derived var.
+	assignRe.lastIndex = 0;
+	while ( ( m = assignRe.exec( phpSrc ) ) !== null ) {
+		const lhs = m[ 1 ];
+		const rhs = m[ 2 ];
+		if ( attrVarMap.has( lhs ) || derived.has( lhs ) ) {
+			continue;
+		}
+		for ( const [ hop1Var, attrNames ] of derived ) {
+			const re = new RegExp( '\\$' + hop1Var + '\\b' );
+			if ( re.test( rhs ) ) {
+				for ( const attrName of attrNames ) {
+					addAttr( lhs, attrName );
+				}
+			}
+		}
+	}
+
 	return derived;
 }
 
@@ -3179,12 +3520,14 @@ if ( require.main === module ) {
 
 module.exports = {
 	buildStringMask,
+	buildCommentMask,
 	findMatchingParen,
 	findMatchingBrace,
 	precedingCssPropertyName,
 	nearestPrecedingSelectorText,
 	isReducedMotionScoped,
 	classifyCssDeclarationSink,
+	bareConcatStringEndOffset,
 	precedingHtmlAttributeName,
 	isInsideJsonEncodeArgument,
 	findEnclosingIfConditionAndBody,
@@ -3196,6 +3539,7 @@ module.exports = {
 	collectAttrVarMap,
 	collectAttrVarMapBroad,
 	collectDerivedVarMap,
+	collectDerivedVarMapAll,
 	collectSetAttributesGroups,
 	checkCompanionExemption,
 	checkNoPreviewNoticeExemption,
