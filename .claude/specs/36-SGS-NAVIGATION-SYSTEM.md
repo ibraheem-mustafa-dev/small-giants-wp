@@ -206,13 +206,38 @@ toggle:** PER-ROW (a checkbox per header row, not a single all-or-nothing toggle
 per-element intent); inserts the chosen header rows as blocks at the top, burger becomes the × (the
 header-at-top look, no non-modal complexity). **Menu source:** its own picker (FR-36-1; defaults to
 inherit-from-bar); the inspector shows *which menu is bound* (bar vs drawer). **Geometry:** `edge`
-(`full-screen` default | `left`/`right`/`top` partial, still modal) + `width`. **Submenu:** accordion
-(default) or drill-down (Back + Close + breadcrumb); split parent-link from expander; no-JS fallback = a
-`<details name>` exclusive accordion (⚠VERIFY; degrades to non-exclusive `<details>`). **Dialog a11y (absorbs
-FR-S9-5):** focus INTO on open; Tab contained; Escape closes; focus returns to the burger; body-scroll-lock
-(incl. iOS fix); swipe-close is enhancement-over-the-×; animation reduced-motion-gated. **PORT (do not
-re-derive): D323** — the drawer's body-reparent so it escapes a transformed/filtered ancestor — and **D340** —
-scrollbar-bounce compensation — are EXISTING fixes carried forward verbatim.
+(`full-screen` default | `left`/`right`/`top` partial, still modal) + `width`. **Submenu — BUILT** (this
+session, superseding the "wired but Phase-1-inert" note that stood here previously): `sgs/nav-drawer`
+publishes its `submenuModel` attribute to descendants via block.json `providesContext`
+(`sgs/navDrawerSubmenuModel`), which `sgs/nav-menu` declares via `usesContext` and reads in render.php to
+select a SECOND renderer (`SGS_Nav_Menu_Bar_Renderer::render_items_drawer()`) distinct from the flat bar's
+`render_items()` — the header/footer bar's existing dropdown/mega markup is completely untouched. Both
+`accordion` and `drill-down` share IDENTICAL server markup: a real nested `<details name="sgs-nav-menu-
+accordion-{uid}">` **exclusive accordion** per item with children (✅VERIFIED — Chrome/Edge/Firefox/Safari 17+
+all honour `<details name>` exclusivity; degrades to independent, still-functional `<details>` on older
+engines, never to a broken menu), split parent-link from expander (a real `<a>` beside the `<summary>` toggle
+when the parent has its own URL; a plain label when it does not). `drill-down` layers a JS-only progressive
+enhancement (`src/shared/effects/nav-drilldown.js`, wired from `nav-menu/view.js`'s existing
+`initBarEffects()`) that intercepts the `<summary>` click, slides the tapped submenu in as a full-size
+sub-panel over the top-level list (CSS `transform`, `nav-menu/style.css`), injects a Back button (its label
+read from a `data-sgs-nav-back-label` attribute render.php already translated server-side — the JS module
+carries no hardcoded English), and returns focus to the `<summary>` on Back. With NO JS, `drill-down`'s
+fallback IS the accordion, exactly as this line originally specified — now proven, not just declared.
+**Residual gap, declared not silently dropped:** a mega-menu item inside the drawer degrades to a plain link
+(its own URL, else `#`) rather than rendering the mega CPT panel inline — FR-36-5's "the same panel renders
+inside the drawer" mega-in-drawer capability is NOT built by this session; the desktop hover-disclosure
+markup the bar uses for a mega trigger has no touch equivalent and would need its own JS-driven build.
+**Dialog a11y (absorbs FR-S9-5):** focus INTO on open; Tab contained; Escape closes; focus returns to the
+burger; body-scroll-lock (incl. iOS fix); swipe-close is enhancement-over-the-×; animation reduced-motion-
+gated. **This session's drill-down focus management is layered on top, not a replacement:** opening a
+sub-panel moves focus to its Back button; closing it (via Back) returns focus to the `<summary>` that opened
+it; the top-level list is marked `inert` while a panel is open (Tab cannot land on an invisible link) — a
+small, additive fix in the shared `store.js`'s `getFocusable()` (`![inert]` exclusion) makes the drawer's
+EXISTING Tab-trap correctly skip anything `inert` covers, which the drill-down's own `inert` use depends on.
+Escape/× still close the WHOLE drawer via the pre-existing `store('sgs/nav')` dialog-level behaviour —
+untouched by this build, deliberately: no Escape handling was added inside the drill-down module. **PORT (do
+not re-derive): D323** — the drawer's body-reparent so it escapes a transformed/filtered ancestor — and
+**D340** — scrollbar-bounce compensation — are EXISTING fixes carried forward verbatim.
 
 **⭐ DESKTOP VARIANTS — BUILT + council-fixed + canary-deployed 2026-07-28 session 2 (D403 design
 gate approved by Bean, D404 ship record; commits `faa14924`/`cab1b916`/`69dfbaf9`). The canonical

@@ -284,7 +284,17 @@ function getFocusable( container ) {
 				el.offsetWidth ||
 				el.offsetHeight ||
 				el.getClientRects().length
-			)
+			) &&
+			// `inert` (freezeBackground, or the drill-down submenu's own use of
+			// it on the top-level list — nav-drilldown.js) removes an element
+			// from focus/hit-testing/the a11y tree WITHOUT changing its layout
+			// box, so the offsetWidth/getClientRects() check above cannot see
+			// it. Without this, the drawer's own Tab-trap (below) could still
+			// list an inert element as "focusable", wrap Tab onto it, and call
+			// .focus() on something the browser silently refuses to focus —
+			// leaving Tab appearing to do nothing rather than genuinely
+			// cycling the drawer's live controls.
+			! el.closest( '[inert]' )
 	);
 }
 

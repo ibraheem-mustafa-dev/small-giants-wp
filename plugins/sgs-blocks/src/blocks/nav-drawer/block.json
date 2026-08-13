@@ -85,6 +85,9 @@
 		"root": ".wp-block-sgs-nav-drawer",
 		"border": ".wp-block-sgs-nav-drawer"
 	},
+	"providesContext": {
+		"sgs/navDrawerSubmenuModel": "submenuModel"
+	},
 	"attributes": {
 		"drawerRef": {
 			"type": "string",
