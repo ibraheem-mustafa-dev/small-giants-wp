@@ -8,6 +8,7 @@ import {
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 import { colourVar } from '../../utils';
 
 const CHEVRON_SVG = (
@@ -29,9 +30,32 @@ const CHEVRON_SVG = (
 	</svg>
 );
 
-export default function Edit( { attributes, setAttributes, context } ) {
+export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const { title, isOpen } = attributes;
-	const [ editorOpen, setEditorOpen ] = useState( isOpen );
+
+	// Position of this item among its accordion siblings — mirrors sgs/tab's
+	// index derivation, needed to compare against the parent's `defaultOpen`
+	// (index-based) attribute so the editor canvas can preview it.
+	const itemIndex = useSelect(
+		( select ) => {
+			const { getBlockRootClientId, getBlockIndex } =
+				select( 'core/block-editor' );
+			const parentId = getBlockRootClientId( clientId );
+			return getBlockIndex( clientId, parentId );
+		},
+		[ clientId ]
+	);
+
+	const defaultOpenIndex = context[ 'sgs/accordionDefaultOpen' ];
+	const isDefaultOpenItem =
+		typeof defaultOpenIndex === 'number' &&
+		defaultOpenIndex >= 0 &&
+		defaultOpenIndex === itemIndex;
+
+	// null = no manual click override yet this session — follow isOpen/defaultOpen.
+	const [ manualOpen, setManualOpen ] = useState( null );
+	const editorOpen =
+		manualOpen !== null ? manualOpen : isOpen || isDefaultOpenItem;
 
 	const accordionStyle = context[ 'sgs/accordionStyle' ] || 'bordered';
 	const iconPosition = context[ 'sgs/accordionIconPosition' ] || 'right';
@@ -104,7 +128,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 			<div
 				className="sgs-accordion-item__header"
 				style={ headerStyle }
-				onClick={ () => setEditorOpen( ! editorOpen ) }
+				onClick={ () => setManualOpen( ! editorOpen ) }
 			>
 				{ iconPosition === 'left' && chevron }
 				<RichText

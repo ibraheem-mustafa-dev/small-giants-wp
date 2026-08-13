@@ -193,11 +193,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -205,7 +205,7 @@
 		"gap": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"justifyContent": {
 			"type": "string",
 			"default": ""
@@ -240,7 +240,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
+		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",
@@ -283,7 +283,8 @@
 		"sgs/accordionHeaderBackground": "headerBackground",
 		"sgs/accordionIconColour": "iconColour",
 		"sgs/accordionOpenIcon": "openIcon",
-		"sgs/accordionCloseIcon": "closeIcon"
+		"sgs/accordionCloseIcon": "closeIcon",
+		"sgs/accordionDefaultOpen": "defaultOpen"
 	},
 	"allowedBlocks": [
 		"sgs/accordion-item"

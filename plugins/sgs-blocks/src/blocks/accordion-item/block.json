@@ -82,7 +82,8 @@
 		"sgs/accordionHeaderBackground",
 		"sgs/accordionIconColour",
 		"sgs/accordionOpenIcon",
-		"sgs/accordionCloseIcon"
+		"sgs/accordionCloseIcon",
+		"sgs/accordionDefaultOpen"
 	],
 	"attributes": {
 		"title": {
