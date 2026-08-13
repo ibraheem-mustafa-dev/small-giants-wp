@@ -16,6 +16,9 @@
 		"burger"
 	],
 	"textdomain": "sgs-blocks",
+	"usesContext": [
+		"sgs/navDrawerSubmenuModel"
+	],
 	"supports": {
 		"anchor": true,
 		"customClassName": true,

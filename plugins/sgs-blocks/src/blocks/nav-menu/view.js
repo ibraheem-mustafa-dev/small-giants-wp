@@ -37,6 +37,7 @@ import '../../shared/nav-interactivity/store';
 import '../../shared/nav-interactivity/mega-disclosure';
 import { initNavIndicator } from '../../shared/effects/nav-indicator';
 import { initMagnet } from '../../shared/effects/magnet';
+import { initDrillDown } from '../../shared/effects/nav-drilldown';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,
@@ -107,6 +108,15 @@ function initBarEffects( root ) {
 		bar.querySelectorAll( '.sgs-nav-menu__magnet-target' ).forEach(
 			( el ) => activeCleanups.push( initMagnet( el ) )
 		);
+	}
+
+	// In-drawer drill-down (FR-36-6): only the drawer's OWN nav-menu instance
+	// ever carries this data attribute (render.php's render_items_drawer()
+	// fork), and only when the operator picked "Drill-down" over the default
+	// "Accordion" — an accordion drawer needs no JS at all beyond the native
+	// <details>, so this never runs for it.
+	if ( 'drill-down' === bar.dataset.sgsNavSubmenuModel ) {
+		activeCleanups.push( initDrillDown( bar ) );
 	}
 }
 

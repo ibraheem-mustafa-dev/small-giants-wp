@@ -191,3 +191,172 @@
 		outline-color: Highlight;
 	}
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * IN-DRAWER NESTED SUBMENU — accordion (native) + drill-down (JS-enhanced).
+ * Spec 36 FR-36-6. Markup: nav-menu/render.php's render_items_drawer().
+ * Structural only — colour/fill/hover/current-page/featured styling for
+ * `.sgs-nav-menu__submenu` / `-sublink` reuses the SAME rules the flat bar's
+ * dropdown already has (render.php's #uid-scoped <style>), because the
+ * accordion's nested <ul> is that identical class, not a new one.
+ * ═══════════════════════════════════════════════════════════════════════
+ */
+
+.sgs-nav-menu__item--drawer {
+	width: 100%;
+}
+
+.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer {
+	border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+
+/* Split parent-link from expander (FR-36-6): a full-width row, link takes the
+ * free space, the expander is a distinct 44px touch target at the end. */
+.sgs-nav-menu__accordion-row {
+	align-items: center;
+	display: flex;
+	width: 100%;
+}
+
+.sgs-nav-menu__accordion-row > .sgs-nav-menu__link {
+	flex: 1 1 auto;
+}
+
+.sgs-nav-menu__accordion {
+	flex: 0 0 auto;
+}
+
+/* `<summary>` is the native, no-JS-safe toggle — an icon-only 44px target
+ * (its accessible name comes from `aria-label`, not visible text, since the
+ * adjacent link already carries the visible label). */
+.sgs-nav-menu__accordion-summary {
+	align-items: center;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	min-height: 44px;
+	min-width: 44px;
+}
+
+.sgs-nav-menu__accordion-summary::-webkit-details-marker {
+	display: none;
+}
+
+.sgs-nav-menu__accordion-summary::marker {
+	content: "";
+}
+
+.sgs-nav-menu__accordion[open] > .sgs-nav-menu__accordion-summary .sgs-nav-menu__caret {
+	transform: rotate(180deg);
+}
+
+.sgs-nav-menu__accordion-summary:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentColor);
+	outline-offset: -2px;
+}
+
+/* Accordion mode (default): the submenu <ul> simply flows open/closed with
+ * native <details> — no extra CSS needed beyond the shared submenu/sublink
+ * rules it already inherits from the bar's own #uid-scoped <style>. */
+
+/*
+ * Drill-down mode: `nav-drilldown.js` marks the bar `[data-drill-enhanced]`
+ * once it has actually wired up the slide behaviour — everything below is
+ * gated on that flag so the plain `<details>` accordion (this file's rules
+ * above) is the WHOLE experience with no JS, exactly matching FR-36-6's
+ * stated no-JS fallback.
+ */
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] {
+	overflow: hidden;
+	position: relative;
+}
+
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-menu__item {
+	transition: transform var(--wp--custom--transition--medium, 250ms) ease;
+}
+
+/*
+ * `:not(:has(… [open]))` is deliberate, not decorative — a real, live-caught
+ * bug without it. `transform` on an element creates a NEW CONTAINING BLOCK
+ * for any `position: absolute` descendant (CSS Transforms §Rendering Model),
+ * so translating EVERY top-level item — including the one whose own
+ * `<details>` is open — would drag its child `.sgs-nav-menu__submenu` (also
+ * `position: absolute`, meant to be positioned against `.sgs-nav-menu__bar`)
+ * off screen by the SAME -100% alongside it. Caught by a genuine Playwright
+ * pointer click failing ("element intercepts pointer events" — the Back
+ * button had scrolled to `left: -279px`), not by measurement of computed
+ * properties alone, which had reported the submenu's OWN transform as
+ * correctly `translateX(0)` throughout. Excluding the active item leaves its
+ * row in normal flow — harmless, since its own absolutely-positioned panel
+ * (`inset: 0` against the untouched `.bar`) fully covers it visually anyway.
+ */
+.sgs-nav-menu__bar--drawer[data-drill-enhanced].sgs-nav-menu__bar--drill-active > .sgs-nav-menu__item:not(:has(.sgs-nav-menu__accordion[open])) {
+	transform: translateX(-100%);
+}
+
+/* The sub-panel becomes a full-size overlay sliding in from the right, over
+ * the same physical space the top-level list occupies (the bar is already
+ * `position:relative` — see `.sgs-nav-menu__bar` above). */
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu {
+	background: var(--sgs-nm-submenu-bg, inherit);
+	inset: 0;
+	overflow-y: auto;
+	position: absolute;
+	transform: translateX(100%);
+	transition: transform var(--wp--custom--transition--medium, 250ms) ease;
+	z-index: 2;
+}
+
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu.is-active {
+	transform: translateX(0);
+}
+
+/* The Back row — JS-injected only (drill-down mode), first child of the
+ * now-visible sub-panel. Absent entirely in accordion mode / no-JS. */
+.sgs-nav-menu__drill-back {
+	margin: 0;
+}
+
+.sgs-nav-menu__drill-back-btn {
+	align-items: center;
+	background: none;
+	border: 0;
+	border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	font: inherit;
+	font-weight: 600;
+	min-height: 44px;
+	padding: 0 16px;
+	text-align: start;
+	width: 100%;
+}
+
+/*
+ * The decorative arrow is a real DOM element (nav-drilldown.js prepends an
+ * `aria-hidden` span), NOT CSS `content` — live-verified against Chrome's
+ * accessibility tree that generated `::before` content on a closed/hidden
+ * `<details>` subtree can still surface in an a11y snapshot even though the
+ * element itself measures zero-size and is genuinely unreachable, which is
+ * not a risk worth taking on a real screen reader for a purely decorative
+ * glyph. `margin-inline-end` on the span keeps the same visual gap as the
+ * pseudo-element approach would have given.
+ */
+.sgs-nav-menu__drill-back-btn__arrow {
+	margin-inline-end: 8px;
+}
+
+.sgs-nav-menu__drill-back-btn:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentColor);
+	outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-menu__item,
+	.sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__submenu {
+		transition-duration: 0.01ms !important;
+	}
+}

@@ -525,6 +525,143 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 			}
 			return $html;
 		}
+
+		/**
+		 * Render the flat items as a REAL nested vertical list for the drawer
+		 * (Spec 36 FR-36-6 — the flat-bar collapse to one link, above, is
+		 * deliberately Phase-1-only for the desktop/burger bar; the drawer gets
+		 * a genuine nested submenu).
+		 *
+		 * Both `accordion` and `drill-down` share IDENTICAL server markup — a
+		 * `<details name>` exclusive accordion (the spec's own stated no-JS
+		 * fallback for drill-down). `drill-down`'s extra behaviour (sliding to a
+		 * full sub-panel with Back) is a JS-only progressive enhancement layered
+		 * on top by `nav-drilldown.js`; nothing here differs between the two
+		 * models except the `data-sgs-nav-submenu-model` flag consumed by that
+		 * script and by style.css.
+		 *
+		 * A mega-menu item degrades to a plain link inside the drawer (its own
+		 * `url`, else '#') rather than emitting the desktop hover-disclosure
+		 * markup `render_items()` builds — that markup has no touch equivalent
+		 * and dragging it into a `<details>` would need its own JS-driven mega-
+		 * in-drawer build. Declared here, not silently dropped: FR-36-5 already
+		 * names "the same panel renders inside the drawer" as a FUTURE item this
+		 * task does not build.
+		 *
+		 * @param array  $items Flattened items from flatten().
+		 * @param string $model 'accordion' or 'drill-down' (validated by caller).
+		 * @param string $uid   The block instance's uid (accordion `name=` scope
+		 *                      + sub-panel DOM id namespace, mirrors the mega
+		 *                      panel's own instance-scoping).
+		 * @return string HTML <li> elements.
+		 */
+		public function render_items_drawer( array $items, string $model, string $uid ): string {
+			$html = '';
+			foreach ( $items as $item ) {
+				$is_featured = in_array( $item['identifier'], $this->featured_ids, true );
+				$li_class    = 'sgs-nav-menu__item sgs-nav-menu__item--drawer' . ( $is_featured ? ' sgs-nav-menu__item--featured' : '' );
+
+				// Mega item — documented degrade (see docblock above).
+				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
+					$html .= sprintf(
+						'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+						esc_attr( $li_class ),
+						esc_url( $item['url'] ),
+						esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+						esc_html( $item['label'] )
+					);
+					continue;
+				}
+
+				$children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
+				if ( $children ) {
+					$child_html = '';
+					foreach ( $children as $child ) {
+						if ( '' === (string) ( $child['label'] ?? '' ) ) {
+							continue;
+						}
+						$child_featured = in_array( $child['identifier'], $this->featured_ids, true );
+						$child_html    .= sprintf(
+							'<li class="sgs-nav-menu__subitem%1$s"><a class="sgs-nav-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s</a></li>',
+							$child_featured ? ' sgs-nav-menu__subitem--featured' : '',
+							esc_url( $child['url'] ),
+							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
+							esc_html( $child['label'] )
+						);
+					}
+
+					// Every child had an empty label — degrade to a plain link
+					// (mirrors render_items()'s own null-panel/empty-children degrade).
+					if ( '' === $child_html ) {
+						$html .= sprintf(
+							'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+							esc_attr( $li_class ),
+							esc_url( $item['url'] ),
+							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+							esc_html( $item['label'] )
+						);
+						continue;
+					}
+
+					$details_id = $uid . '-drill-' . substr( md5( $item['identifier'] ), 0, 8 );
+					$caret      = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
+
+					/*
+					 * Split parent-link from expander (FR-36-6 — "split parent-link
+					 * from expander"). A parent WITH a URL keeps a real, separately
+					 * clickable link AND an adjacent expander toggle (mirrors the
+					 * bar's own `sgs-nav-menu__subtoggle` split); a parent with NO
+					 * URL of its own has nothing to link to, so its label renders as
+					 * plain text next to the expander instead of a dead `href="#"`.
+					 */
+					if ( ! empty( $item['has_url'] ) ) {
+						$label_html = sprintf(
+							'<a class="sgs-nav-menu__link" href="%1$s" data-sgs-nav-path="%2$s"><span class="sgs-nav-menu__link-text">%3$s</span></a>',
+							esc_url( $item['url'] ),
+							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+							esc_html( $item['label'] )
+						);
+					} else {
+						$label_html = sprintf(
+							'<span class="sgs-nav-menu__link sgs-nav-menu__link--label"><span class="sgs-nav-menu__link-text">%s</span></span>',
+							esc_html( $item['label'] )
+						);
+					}
+
+					$html .= sprintf(
+						'<li class="%1$s sgs-nav-menu__item--has-submenu">'
+						. '<div class="sgs-nav-menu__accordion-row">'
+						. '%2$s'
+						. '<details class="sgs-nav-menu__accordion" name="sgs-nav-menu-accordion-%3$s" id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
+						. '<summary class="sgs-nav-menu__accordion-summary" aria-label="%7$s"><span class="sgs-nav-menu__caret" aria-hidden="true">%8$s</span></summary>'
+						. '<ul class="sgs-nav-menu__submenu" data-sgs-drill-panel>%9$s</ul>'
+						. '</details>'
+						. '</div></li>',
+						esc_attr( $li_class ),
+						$label_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
+						esc_attr( $uid ),
+						esc_attr( $details_id ),
+						esc_attr( $item['label'] ),
+						/* translators: %s is the parent menu item's label — the drill-down mode's Back button text (JS-injected; nav-drilldown.js reads this attribute rather than hardcoding English). */
+						esc_attr( sprintf( __( 'Back to %s', 'sgs-blocks' ), $item['label'] ) ),
+						/* translators: %s is the parent menu item's label. */
+						esc_attr( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $item['label'] ) ),
+						$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+						$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
+					);
+					continue;
+				}
+
+				$html .= sprintf(
+					'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+					esc_attr( $li_class ),
+					esc_url( $item['url'] ),
+					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+					esc_html( $item['label'] )
+				);
+			}
+			return $html;
+		}
 	}
 }
 
@@ -556,7 +693,34 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 	)
 );
 $flat_items   = $bar_renderer->flatten( $menu_blocks );
-$items_html   = $bar_renderer->render_items( $flat_items );
+
+/*
+ * ── Bar vs drawer rendering fork (Spec 36 FR-36-6). ─────────────────────────
+ *
+ * `sgs/nav-drawer` provides `sgs/navDrawerSubmenuModel` (block.json
+ * `providesContext`, mapped from its own `submenuModel` attribute) to every
+ * descendant — this is standard WP block-context propagation, resolved by
+ * `WP_Block::render()` BEFORE a child's render callback runs, so it works
+ * identically whether the drawer is rendered as normal page content OR via
+ * the Active-drawer `do_blocks()` route (`class-sgs-drawer-render.php`):
+ * both routes parse the drawer's stored block markup through the same
+ * `render_block()`/`WP_Block` machinery, so context is computed from the
+ * PARSED BLOCK TREE, not from any assumption about which post it lives in.
+ *
+ * A `sgs/nav-menu` with no `sgs/nav-drawer` ancestor never receives this
+ * context key at all (absent from `$block->context`), so the flat bar
+ * (`render_items()`, unchanged, dropdowns/mega intact) stays the default for
+ * every existing header/footer instance.
+ */
+$submenu_model_ctx = $block->context['sgs/navDrawerSubmenuModel'] ?? null;
+if ( is_string( $submenu_model_ctx ) && in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) ) {
+	$items_html    = $bar_renderer->render_items_drawer( $flat_items, $submenu_model_ctx, $uid );
+	$sgs_nm_is_drawer_list = true;
+} else {
+	$items_html    = $bar_renderer->render_items( $flat_items );
+	$sgs_nm_is_drawer_list = false;
+	$submenu_model_ctx     = '';
+}
 
 if ( '' === $items_html ) {
 	return '';
@@ -683,10 +847,21 @@ $bar_data_attrs    = '';
 $bar_data_attrs   .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
 $bar_data_attrs   .= $magnet_enabled ? ' data-magnet' : '';
 
+// In-drawer nested list (FR-36-6): a distinct BEM modifier class + the
+// resolved submenu model as a data attribute — style.css's structural
+// accordion/drill-down rules key off both, and nav-drilldown.js (view.js)
+// reads the data attribute to decide whether to enhance at all.
+$bar_class = 'sgs-nav-menu__bar';
+if ( $sgs_nm_is_drawer_list ) {
+	$bar_class       .= ' sgs-nav-menu__bar--drawer';
+	$bar_data_attrs  .= ' data-sgs-nav-submenu-model="' . esc_attr( $submenu_model_ctx ) . '"';
+}
+
 $bar_html = sprintf(
-	'<ul class="sgs-nav-menu__bar"%2$s>%1$s</ul>',
+	'<ul class="%3$s"%2$s>%1$s</ul>',
 	$items_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $items_html built from esc_url/esc_html/esc_attr fragments.
-	$bar_data_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from two fixed literal strings above, no user input.
+	$bar_data_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from fixed literal strings + esc_attr()'d submenu model, no unescaped user input.
+	esc_attr( $bar_class )
 );
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
@@ -1260,36 +1435,27 @@ $css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid cu
  */
 
 /*
- * IN-DRAWER SUBMENU — rebuilt 2026-07-31 after Bean opened the real drawer.
+ * IN-DRAWER SUBMENU — real nested accordion/drill-down markup (rebuilt again,
+ * this session, for the "wired but inert" submenuModel fix).
  *
- * Two regressions I shipped, both from rules that are right for a FLOATING
- * header panel and wrong the moment the panel joins the normal flow:
+ * `.sgs-nav-menu__submenu-root` / `-wrap` no longer render inside a drawer at
+ * all — `render_items_drawer()` above emits `.sgs-nav-menu__accordion(-row)`
+ * / `-summary` instead (a real `<details name>` exclusive accordion, per
+ * FR-36-6), so the CSS that used to reflow those hover-disclosure classes for
+ * the drawer context is gone with them. The structural accordion/drill-down
+ * rules now live in nav-menu/style.css (they are NOT attribute-driven, so
+ * they don't belong in this per-instance scoped block); `nav-drilldown.js`
+ * layers the drill-down slide-to-sub-panel behaviour on top as progressive
+ * enhancement over the identical no-JS accordion markup.
  *
- *  1. OPENED TO THE RIGHT. `.sgs-nav-menu__submenu-root{display:flex}` makes the
- *     root a flex ROW. In the header the wrap is `position:absolute`, out of
- *     flow, so the row never applied to it; in the drawer the wrap is
- *     `position:static`, so it became a flex SIBLING and sat beside the trigger.
- *  2. INVISIBLE TEXT. The old rule forced `background:transparent`, deleting the
- *     surface the link colour was chosen against — pink text on a pink drawer.
- *     In the drawer, colour must come from the DRAWER's own cascade: its
- *     background is operator-chosen per variant and unknowable from here.
- *
- * Everything below derives from `currentColor` so it works on ANY drawer
- * background — light, dark or brand — instead of assuming one.
+ * Everything below still derives from `currentColor` so it works on ANY
+ * drawer background — light, dark or brand — instead of assuming one; these
+ * three rules survive because `.sgs-nav-menu__submenu` / `-sublink` /
+ * `-subtoggle` are the SAME class names the new accordion markup reuses for
+ * its own nested `<ul>`/`<a>` (the subtoggle rule is inert for a drawer
+ * instance specifically — the bar's subtoggle split has no drawer
+ * equivalent — but still serves the flat bar's own dropdowns, so it stays).
  */
-
-/*
- * FLEX-WRAP, not block (Bean's eye, second pass): `display:block` stacked the
- * caret onto its own line under the label. The row must stay a row — label
- * left, toggle right — with the panel WRAPPING to the next line beneath it,
- * which is what `flex-wrap:wrap` + a full-width wrap gives. The link takes the
- * free space so the toggle sits at the drawer's right edge, the standard
- * accordion affordance and a bigger touch target than a caret hugging the text.
- */
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-root'
-	. '{display:flex;flex-wrap:wrap;align-items:center;width:100%;}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-root > .sgs-nav-menu__link{flex:1 1 auto;}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:static;width:100%;}';
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;border:0;min-width:0;'
 	. 'background:color-mix(in srgb, currentColor 6%, transparent);border-radius:0;padding:0;margin:0;}';
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{color:inherit;padding:0 16px 0 32px;'
@@ -1314,14 +1480,13 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link[aria-current="page
 	. '{border-left:3px solid currentColor;background:color-mix(in srgb, currentColor 8%, transparent);}';
 
 /*
- * In-drawer accordion (FR-36-5/-6: "the same panel renders inside the
- * drawer, inline-expanded"). Measured 2026-07-28: the absolute wrap inside
- * the open drawer OVERLAID the menu items below it (Recipes stayed at
- * y=152 under a 1264px-tall panel) instead of pushing them down. Inside a
- * drawer the wrap flows statically at full width so opening the panel
- * pushes the following items down like an accordion.
+ * A mega-menu item degrades to a plain link inside the drawer
+ * (render_items_drawer(), see its docblock) rather than rendering the mega
+ * panel — so `.sgs-nav-menu__mega-panel-wrap` never appears inside a drawer's
+ * OWN nav-menu instance and needs no in-drawer override here. (FR-36-5's
+ * "the same panel renders inside the drawer" mega-in-drawer capability
+ * remains a declared future item, not built by this session.)
  */
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:static;transform:none;width:100%;}';
 
 /*
  * In-drawer width discipline (Bean, 2026-07-28): a vertical drawer menu must

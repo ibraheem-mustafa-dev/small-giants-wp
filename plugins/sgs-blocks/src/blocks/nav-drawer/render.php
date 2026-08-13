@@ -180,8 +180,18 @@ $drawer_fg_hex  = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $draw
 // computed foreground (style.css sets the × to color:inherit).
 $close_colour_slug = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
 
-// ── Submenu model (wired but Phase-1-inert: the flat Phase-1 menu has no
-// submenus, so accordion/drill-down is not exercised until Phase 2).
+// ── Submenu model — LIVE (FR-36-6). Published to the drawer's descendants via
+// block.json `providesContext` (`sgs/navDrawerSubmenuModel`, mapped from this
+// same attribute below) so any `sgs/nav-menu` inside this drawer's InnerBlocks
+// content renders a REAL nested list — a native `<details name>` exclusive
+// accordion for both models; `drill-down` layers a JS slide-to-sub-panel
+// enhancement on top (nav-menu/render.php's render_items_drawer() +
+// src/shared/effects/nav-drilldown.js). Standard WP block-context resolution
+// (WP_Block::render(), computed from the parsed block tree before a child's
+// render callback runs) means this works identically whether the drawer
+// renders as ordinary page content or via the Active-drawer do_blocks() route
+// (class-sgs-drawer-render.php) — both parse the SAME stored block markup
+// through the same render_block() machinery.
 $submenu_model = in_array( $attributes['submenuModel'] ?? 'accordion', array( 'accordion', 'drill-down' ), true )
 	? (string) $attributes['submenuModel']
 	: 'accordion';
