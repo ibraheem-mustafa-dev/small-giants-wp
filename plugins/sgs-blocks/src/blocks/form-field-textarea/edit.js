@@ -30,7 +30,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Field Settings', 'sgs-blocks' ) }>
+				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
+				   ToolsPanel's own "Field settings" title with no
+				   initialOpen, so the client saw the same words twice for
+				   no collapse benefit (Spec 35 A5 note). */ }
 					<ToolsPanel
 						label={ __( 'Field settings', 'sgs-blocks' ) }
 						resetAll={ () =>
@@ -154,7 +157,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
-				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>

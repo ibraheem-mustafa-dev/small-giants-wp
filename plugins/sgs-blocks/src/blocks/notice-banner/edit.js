@@ -223,7 +223,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 				) }
-				<PanelBody title={ __( 'Banner Settings', 'sgs-blocks' ) }>
+				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
+				   ToolsPanel's own "Banner settings" title with no
+				   initialOpen, so the client saw the same words twice for
+				   no collapse benefit (Spec 35 A5 note). */ }
 					<ToolsPanel
 						label={ __( 'Banner settings', 'sgs-blocks' ) }
 						resetAll={ () =>
@@ -393,7 +396,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
-				</PanelBody>
 			</InspectorControls>
 
 			{ /* FR-22-6: the notice text is now an InnerBlocks child (sgs/text).

@@ -388,68 +388,176 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { icon: val ? val.name : '' } ) }
 					/>
 					{ hasIcon && (
-						<ToolsPanel
-							label={ __( 'Icon settings', 'sgs-blocks' ) }
-							resetAll={ () =>
-								setAttributes( {
-									iconPosition: 'after',
-									labelCollapse: 'none',
-									iconTitle: '',
-								} )
-							}
-						>
-							<ToolsPanelItem
-								label={ __( 'Icon position', 'sgs-blocks' ) }
-								hasValue={ () => iconPosition !== 'after' }
-								onDeselect={ () => setAttributes( { iconPosition: 'after' } ) }
-								isShownByDefault
+						<>
+							<ToolsPanel
+								label={ __( 'Icon settings', 'sgs-blocks' ) }
+								resetAll={ () =>
+									setAttributes( {
+										iconPosition: 'after',
+										labelCollapse: 'none',
+										iconTitle: '',
+									} )
+								}
 							>
-								<SelectControl
-									label={ __( 'Icon position', 'sgs-blocks' ) }
-									value={ iconPosition }
-									options={ ICON_POSITION_OPTIONS }
-									onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							{ iconPosition !== 'only' && (
 								<ToolsPanelItem
-									label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
-									hasValue={ () => ( labelCollapse || 'none' ) !== 'none' }
-									onDeselect={ () => setAttributes( { labelCollapse: 'none' } ) }
+									label={ __( 'Icon position', 'sgs-blocks' ) }
+									hasValue={ () => iconPosition !== 'after' }
+									onDeselect={ () => setAttributes( { iconPosition: 'after' } ) }
+									isShownByDefault
 								>
 									<SelectControl
-										label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
-										value={ labelCollapse || 'none' }
-										options={ [
-											{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
-											{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
-											{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
-											{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
-										] }
-										onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
-										help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
+										label={ __( 'Icon position', 'sgs-blocks' ) }
+										value={ iconPosition }
+										options={ ICON_POSITION_OPTIONS }
+										onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
-							) }
-							<ToolsPanelItem
-								label={ __( 'Icon title', 'sgs-blocks' ) }
-								hasValue={ () => !! iconTitle }
-								onDeselect={ () => setAttributes( { iconTitle: '' } ) }
+								{ iconPosition !== 'only' && (
+									<ToolsPanelItem
+										label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+										hasValue={ () => ( labelCollapse || 'none' ) !== 'none' }
+										onDeselect={ () => setAttributes( { labelCollapse: 'none' } ) }
+									>
+										<SelectControl
+											label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+											value={ labelCollapse || 'none' }
+											options={ [
+												{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
+												{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
+												{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
+												{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
+											] }
+											onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
+											help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									</ToolsPanelItem>
+								) }
+								<ToolsPanelItem
+									label={ __( 'Icon title', 'sgs-blocks' ) }
+									hasValue={ () => !! iconTitle }
+									onDeselect={ () => setAttributes( { iconTitle: '' } ) }
+								>
+									<TextControl
+										label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
+										value={ iconTitle }
+										onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
+										help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							</ToolsPanel>
+							{ /* Icon appearance — size/gap/colour. Merged into this same
+							   element panel 2026-08-13 (Spec 35 A4: one element = one
+							   panel, holding content + style clusters + states together).
+							   Previously a second "Icon" PanelBody lived in the Styles
+							   tab — a client browsing tabs met "Icon" twice with no way
+							   to tell which held what. The icon's hover colour is a
+							   STATE of the icon's colour, not a separate hover concept,
+							   so it stays grouped here rather than in a generic Colours
+							   panel. Kept as its own ToolsPanel (distinct reset group —
+							   resets appearance without touching position/collapse/title). */ }
+							<ToolsPanel
+								label={ __( 'Icon appearance', 'sgs-blocks' ) }
+								resetAll={ () =>
+									setAttributes( {
+										iconSize: {},
+										iconGap: 8,
+										iconColour: '',
+										iconColourHover: '',
+									} )
+								}
 							>
-								<TextControl
-									label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
-									value={ iconTitle }
-									onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
-									help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-						</ToolsPanel>
+								{ /* iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) —
+								   one attr holding {desktop,tablet,mobile}. */ }
+								<ToolsPanelItem
+									label={ __( 'Icon size', 'sgs-blocks' ) }
+									hasValue={ () => !! iconSize?.desktop && iconSize.desktop !== 16 }
+									onDeselect={ () => setAttributes( { iconSize: {} } ) }
+									isShownByDefault
+								>
+									<ResponsiveOverride
+										label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+										value={ iconSize }
+										onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+									>
+										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+											<RangeControl
+												label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+												value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
+												onChange={ ( val ) => setOwnValue( val ) }
+												min={ 8 }
+												max={ 100 }
+												step={ 1 }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										) }
+									</ResponsiveOverride>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
+									hasValue={ () => iconGap !== 8 }
+									onDeselect={ () => setAttributes( { iconGap: 8 } ) }
+								>
+									<RangeControl
+										label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
+										value={ iconGap }
+										onChange={ ( val ) => setAttributes( { iconGap: val } ) }
+										min={ 0 }
+										max={ 40 }
+										step={ 1 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+								{ /* Element-scoped colour states. Spec 35 keeps every control
+								     for an element INSIDE that element's own panel — the
+								     icon's hover colour is a STATE of the icon's colour, not
+								     a separate hover concept, so it belongs here rather than
+								     in a hover panel elsewhere in the sidebar. Swatches stay
+								     visible in both states so a set hover colour is never
+								     hidden (council mitigation 2026-07-18). */ }
+								<ToolsPanelItem
+									label={ __( 'Icon colours', 'sgs-blocks' ) }
+									hasValue={ () => !! iconColour || !! iconColourHover }
+									onDeselect={ () =>
+										setAttributes( { iconColour: '', iconColourHover: '' } )
+									}
+									isShownByDefault
+								>
+									<StateToggleControl
+										label={ __( 'Icon colours', 'sgs-blocks' ) }
+										swatches={ [
+											{ label: __( 'Normal', 'sgs-blocks' ), value: iconColour },
+											{ label: __( 'Hover', 'sgs-blocks' ), value: iconColourHover },
+										] }
+									>
+										{ ( state ) =>
+											state === 'normal' ? (
+												<DesignTokenPicker
+													linked
+													label={ __( 'Icon colour', 'sgs-blocks' ) }
+													value={ iconColour }
+													onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
+												/>
+											) : (
+												<DesignTokenPicker
+													linked
+													label={ __( 'Icon colour', 'sgs-blocks' ) }
+													value={ iconColourHover }
+													onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
+												/>
+											)
+										}
+									</StateToggleControl>
+								</ToolsPanelItem>
+							</ToolsPanel>
+						</>
 					) }
 				</PanelBody>
 
@@ -457,115 +565,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-
-				{ /* Icon appearance — size/gap/colour. Spec 35 keeps every control
-				   for an element INSIDE that element's own panel — the icon's
-				   hover colour is a STATE of the icon's colour, not a separate
-				   hover concept elsewhere in the sidebar, so it stays grouped
-				   with the icon's own panel (here, under Styles) rather than a
-				   generic Colours panel. WHICH icon + its structural position
-				   live in Settings → Icon; this panel only covers how the
-				   chosen icon looks. */ }
-				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
-					{ hasIcon && (
-						<ToolsPanel
-							label={ __( 'Icon appearance', 'sgs-blocks' ) }
-							resetAll={ () =>
-								setAttributes( {
-									iconSize: {},
-									iconGap: 8,
-									iconColour: '',
-									iconColourHover: '',
-								} )
-							}
-						>
-							{ /* iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) —
-							   one attr holding {desktop,tablet,mobile}. */ }
-							<ToolsPanelItem
-								label={ __( 'Icon size', 'sgs-blocks' ) }
-								hasValue={ () => !! iconSize?.desktop && iconSize.desktop !== 16 }
-								onDeselect={ () => setAttributes( { iconSize: {} } ) }
-								isShownByDefault
-							>
-								<ResponsiveOverride
-									label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-									value={ iconSize }
-									onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
-								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-										<RangeControl
-											label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-											value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
-											onChange={ ( val ) => setOwnValue( val ) }
-											min={ 8 }
-											max={ 100 }
-											step={ 1 }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									) }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
-								hasValue={ () => iconGap !== 8 }
-								onDeselect={ () => setAttributes( { iconGap: 8 } ) }
-							>
-								<RangeControl
-									label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
-									value={ iconGap }
-									onChange={ ( val ) => setAttributes( { iconGap: val } ) }
-									min={ 0 }
-									max={ 40 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							{ /* Element-scoped colour states. Spec 35 keeps every control
-							     for an element INSIDE that element's own panel — the
-							     icon's hover colour is a STATE of the icon's colour, not
-							     a separate hover concept, so it belongs here rather than
-							     in a hover panel elsewhere in the sidebar. Swatches stay
-							     visible in both states so a set hover colour is never
-							     hidden (council mitigation 2026-07-18). */ }
-							<ToolsPanelItem
-								label={ __( 'Icon colours', 'sgs-blocks' ) }
-								hasValue={ () => !! iconColour || !! iconColourHover }
-								onDeselect={ () =>
-									setAttributes( { iconColour: '', iconColourHover: '' } )
-								}
-								isShownByDefault
-							>
-								<StateToggleControl
-									label={ __( 'Icon colours', 'sgs-blocks' ) }
-									swatches={ [
-										{ label: __( 'Normal', 'sgs-blocks' ), value: iconColour },
-										{ label: __( 'Hover', 'sgs-blocks' ), value: iconColourHover },
-									] }
-								>
-									{ ( state ) =>
-										state === 'normal' ? (
-											<DesignTokenPicker
-												linked
-												label={ __( 'Icon colour', 'sgs-blocks' ) }
-												value={ iconColour }
-												onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
-											/>
-										) : (
-											<DesignTokenPicker
-												linked
-												label={ __( 'Icon colour', 'sgs-blocks' ) }
-												value={ iconColourHover }
-												onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
-											/>
-										)
-									}
-								</StateToggleControl>
-							</ToolsPanelItem>
-						</ToolsPanel>
-					) }
-				</PanelBody>
 
 				{ /* Layout */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
