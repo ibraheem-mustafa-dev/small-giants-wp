@@ -1,5 +1,69 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D614 — /qc-council on the closed 70-item backlog: 1 real bug found and fixed, Signal 4 built [ROUTINE]
+
+**2026-08-13.** Ran a 4-rater `/qc-council` against D613's just-shipped work before trusting it
+closed — thoroughness, control-type reliability, side-effects/collisions, and remaining-findings
+classification, each independently re-deriving from current code rather than trusting the
+session's own commit messages.
+
+**Thoroughness (8 blocks sampled):** 8/8 PASS — every sampled fix genuinely mirrors render.php's
+real gating/units/conditionals, not a shallow "attribute referenced somewhere" fix. ~90% overall
+confidence.
+
+**Control-type reliability (15 blocks, all 3 shape-batches) — found ONE real bug.** Box/spacing,
+tier-responsive, structural-markup, and pseudo-element fixes were reliable across every sampled
+instance. **Colour-picker resolution was not**: `DesignTokenPicker` without a `linked` prop always
+stores a raw CSS value (never a slug), but 5 of Batch 1/2's colour fixes wrapped the value in
+`colourVar()` (slug-only — builds `var(--wp--preset--color--X)`, invalid CSS for a raw hex, silently
+drops the colour) instead of `resolveColorToken()` (handles both). Root cause: the fixer copied
+whichever helper was locally convenient per file rather than checking each picker's actual contract.
+**Fixed (`a96a491a`):** `sgs/audio.accentColour`, `sgs/social-icons.iconColour`,
+`sgs/pricing-table.ctaColour`/`ctaBackground` (also fixed a real gating bug found in the same
+review — the new CTA preview rendered unconditionally where render.php only emits it when `ctaText`
+is explicitly non-empty), `sgs/modal.modalBackground`, `sgs/nav-drawer.toggleCloseColour`.
+Live-verified via Playwright with genuinely custom (non-default) colours — before the fix these
+silently disappeared; after, they render correctly. **Deliberately NOT fixed** (pre-existing, not
+part of this session's diff): `modal.triggerColour`/`triggerBackground` and `nav-drawer.drawerBg`
+use the identical `colourVar()`-on-a-raw-value pattern — flagged in LEDGER as a follow-up, not
+silently fixed while investigating something else.
+
+**Side-effects/collisions:** clean. No collisions across the 3 files two independent rounds of
+work touched (`hero`, `testimonial`, `button`); the desktop-tier-only editor preview convention is
+pre-existing house style, not a session-introduced gap; no CSS-specificity conflicts found;
+`npm run build` re-verified green independently. Two minor follow-ups noted: stale `iconGap`
+references remain in 3 auxiliary manifest/classification JSON files (cosmetic, not functional —
+needs a `/sgs-update` pass) and the LEDGER/decisions.md headline read as more complete than the
+body at the time of review (fixed same session once `sgs/text` + `iconGap` landed).
+
+**Remaining findings (16 sampled of 75):** 13/16 have a genuine structural signal a smarter
+detector could use without a hardcoded allowlist (`:hover`/`::backdrop` CSS gating, a `block.json`
+`anim:*` declarative mapping, `view.js`-only runtime consumers, live-data `WP_Query`/API gating).
+3/16 rest on a human-readable code comment (an intentional "show full content for editability"
+tradeoff) rather than clean structure — legitimate exclusions, just not detector-automatable today.
+`sgs/nav-drawer.submenuModel` flagged as dormant-everywhere-today-not-just-editor — will become a
+real gap once Phase-2 submenus ship; needs a tracked trigger, not silent indefinite bucketing.
+`sgs/audio.spectrumColour` and `sgs/button.iconGap`'s deletion both reconfirmed correct. **Zero of
+the 16 sampled findings should be reopened as REAL-GAP.**
+
+**Signal 4 built same session (`7265a066`)**, turning D605's own "21 of 23 OTHER-SHAPE findings
+share a live-external-data-placeholder shape" observation into a real structural detector signal
+rather than leaving it as a documented-but-undetected pattern. Two conditions (render.php reaches
+a canonical WP/WC live-data function — directly or one hop through a `use`-imported class it
+actually calls — AND edit.js's own canvas self-declares a `placeholder` className): both real,
+neither name-based. Two bugs caught and fixed during build before shipping: the placeholder-regex's
+leading `\b` never matched this codebase's own `__placeholder` BEM convention (underscore-to-letter
+is not a word boundary in regex — silently matched nothing until tested against real source), and
+without a precision guard the signal also fired on `sgs/post-grid` (a real `WP_Query()` + an
+unrelated empty-state className), blanket-exempting 3 genuinely-different hover findings for the
+wrong reason — fixed with a `useEntityRecords`/`useEntityRecord` guard (a block already fetching
+live data client-side is a different shape). 3-fixture self-test added; all 4 signals' self-tests
+pass.
+
+**Final numbers:** 143 raw findings → 76 after D613's 70-item fix pass and the iconGap deletion →
+75 after the colour-bug fix (correctness only, same count) → 54 after Signal 4. `npm run build`
+green throughout every commit in this decision.
+
 ## D613 — editor-render-parity Phase 2 CLOSED: all 70 REAL-GAP findings fixed and shipped [ROUTINE]
 
 **2026-08-13.** Fixed the entire 70-item REAL-GAP backlog from D605's fresh triage (7 commits,

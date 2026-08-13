@@ -9,6 +9,38 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+**2026-08-13 (latest session, part 8, same thread). You asked for an honest second look at part
+7's work before trusting it — ran 4 independent reviewers, found one real bug, fixed it, and
+built the thing part 6's session had already flagged as a good next step.** Commits
+`a96a491a`–`7265a066`, decision D614.
+
+- **One real bug found and fixed**: 5 colour pickers (an audio player's accent colour, social
+  icons, a pricing table's buy-button colours, a modal's background, a nav-drawer's close-icon
+  colour) used the WRONG internal helper to turn a stored colour into real CSS — one that only
+  works for a small preset palette name, not a colour the client picks freely. The moment a
+  client picked ANY custom colour, it would have silently vanished in the editor (still worked
+  correctly once published — this was an editor-preview-only bug, the exact kind this whole
+  project was closing). Fixed, live-tested with real custom colours this time, confirmed working.
+- **A second smaller bug found in the same review**: a pricing table's "Get started" button now
+  always shows in the editor preview, even for a plan where that button is meant to be hidden.
+  Fixed to match the real published-page rule.
+- **The independent reviewers also double-checked the harder question — is the remaining pile of
+  75 flagged items genuinely fine to leave, or hiding real bugs?** Sampled 16 by hand, reading the
+  actual code for each. 13 have a solid, provable reason (things like "only visible on hover",
+  "only exists during audio playback", "needs a live product/API the editor doesn't have"). None
+  of the 16 should be reopened as a bug. One item (a nav-drawer submenu setting) is correctly
+  inactive today but will become a real gap once a later feature ships — flagged so it isn't
+  forgotten, not treated as a problem now.
+- **Then you asked for the detector itself to be taught to recognise that "needs live data"
+  shape automatically**, instead of leaving it as something a human has to remember every time.
+  Built it — checked two real, provable facts about each block (does the server code fetch live
+  data from WooCommerce/an API, and does the editor's own preview code admit it's just a
+  placeholder) rather than hardcoding a list of block names. Caught and fixed two real bugs in
+  the new check itself while building it, both proven against the actual code before shipping,
+  not assumed to work.
+- **Net result: the flagged-issues count is now 143 → 54** — the drop from 75 is 21 issues the
+  detector now understands and correctly skips on its own, not issues that were ignored.
+
 **2026-08-13 (latest session, part 7 — new thread). Fixed and shipped the ENTIRE 70-item "editor
 preview doesn't match what the client actually gets" backlog from part 4/5's triage. All 70
 closed — 69 fixed, 1 deleted as genuinely dead.** Commits `c67660e9`–`1f7d9bb8`, decision D613.
@@ -44,85 +76,19 @@ with nothing to reconcile.
   `/qc-council` afterwards to stress-test that claim rather than take the detector's word for it
   — see below.
 
-**2026-08-13 (earlier session, part 6, retained). Finished the DB role-classifier
-remediation part 4's own "open" items — closed 479 blank labels to 0, then had a
-6-persona adversarial council stress-test the two follow-on ideas before building
-either.** Commits `b3107413`–`56b41a7e`, decisions D611–D612.
+**2026-08-13 (parts 4-6, earlier session, swept to memory).** DB role-classifier remediation
+closed (479 blank labels to 0, self-fixing rules not hand-patches), a 6-persona adversarial
+council on two follow-on ideas (both correctly parked -- no fidelity impact), and the original
+editor-render-parity triage that produced the 70-item REAL-GAP backlog part 7/8 closed above.
+Commits `f4153da4`-`56b41a7e`, decisions D603-D612. Full narrative: `memory/session-2026-08-13.md`.
 
-- **The remaining ~469 blank labels closed to zero**, in three permanent, self-fixing
-  rules (not hand-patches): one for settings that belong to plain WordPress, not this
-  framework (225 of them); one for any yes/no toggle that has no visual effect of its
-  own (127); one for a device-specific copy of a setting inheriting its sibling's label
-  automatically (6). The rest (121) were genuine one-by-one judgement calls, each
-  confirmed by actually reading the relevant code, not guessed from the setting's name.
-- **Two ideas for closing the last gaps further were flagged but deliberately NOT
-  built** — so I ran a full adversarial council (6 independent reviewers, each trying to
-  break the idea from a different angle) on both before deciding. The most important
-  thing it found: **assigning either of these settings a more specific label would not
-  actually have changed anything on a cloned client site** — the part of the system that
-  reads these labels only ever acts on ones marked "this is real content", and both
-  ideas were about settings that are decoration or config either way. So both stay
-  parked, not because they're risky, but because they wouldn't have moved the needle.
-- **What the council DID turn up something real for**: it recommended actually counting
-  how many settings feed invisible SEO markup, instead of guessing. Real count was 6, not
-  4 — and 2 of those 6 turned out to be mislabelled RIGHT NOW (not just "could be
-  automated later"), plus a 3rd one I'd trusted from last session as "definitely SEO-only"
-  turned out to also show up as a normal number on the page — meaning a clone of it could
-  have silently dropped a visible count. All 3 fixed. Commit `56b41a7e`.
-- **A "dead control" I flagged turned out not to be dead.** Delegated a fix for 3
-  card-grid filters (show only featured/on-sale/in-stock products) that looked unused —
-  turned out they DO work, wired through a helper file my search hadn't checked. Verified
-  live on the sandbox site by actually changing product stock/featured status and
-  confirming the grid responded correctly, then undid the test changes. No code needed
-  changing — my earlier "this is broken" claim was the bug, not the code.
-
-**2026-08-13 (earlier session, part 5, condensed — superseded by part 6 above).** Validated the
-part-4 database fix wasn't a one-off patch job: found the classifier had a systemic blind spot
-(a motion-marker it wasn't reading), fixed 3 more instances the same bug caused, then built the
-permanent classifier fix so the whole category self-corrects going forward. Commits
-`3267384f`–`12007c67`, decision D610 (full narrative there).
-
-**2026-08-13 (latest session, part 4 — new thread). Continued the "does the editor preview match
-what the client actually gets" checker (the tool the hero work surfaced). Cleaned up a known blind
-spot, fixed 13 wrong entries in the framework's internal database, then had 3 reviewers read every
-one of the 143 remaining findings by hand.** Commit `9d827d63`, decisions D603–D606.
-
-- **The checker missed cases where a setting only affects something through a shared helper file**
-  (e.g. a form field's machine name, or a hover-transition timing value) rather than directly. Only
-  9 of 152 findings were this shape — not worth building a bigger cross-file tracer for, so I
-  verified them by hand and documented the limitation directly in the tool instead.
-- **Found and fixed 13 wrong labels in the framework's internal settings database** — a toggle that
-  emits invisible SEO markup was wrongly tagged as "controls visibility," and a carousel drag-speed
-  flag was wrongly tagged as "styling" in 5 blocks (not just the 1 originally flagged).
-- **Had 3 people (well, agents) independently read the actual code behind all 143 remaining
-  findings** rather than trusting the checker's guess. Result: **70 are real bugs** (settings the
-  client can change but never sees change in the editor), 50 are correctly not previewable (things
-  like hover effects or scroll animations that genuinely can't show on a still screen), and 23 are
-  a different, understood shape (2 blocks that need live data — reviews from Google, live product
-  stock — the editor simply doesn't have). Full breakdown:
-  `.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md`.
-- **Checked whether to build a tool that auto-fixes those 70 bugs** rather than fixing them by
-  hand — concluded no: about 20 of the 70 need a missing piece of the editor preview built from
-  scratch (a button that doesn't exist yet, a different HTML structure), which a generator can't
-  safely do. Fixing the other ~50 by hand is faster than building and testing a generator for a
-  one-off batch this size.
-- **Found one genuine bug while triaging, not just a missing preview**: on `sgs/hero`, a "match the
-  theme's default style" toggle does the OPPOSITE of what it's supposed to in the editor versus
-  what actually saves — the editor keeps showing a background/border that the live page correctly
-  hides. Flagged as the top-priority item in the 70-bug list.
-- **Not done yet, and not started without asking:** actually fixing those 70 bugs is real build
-  work across ~25 blocks. See the menu at the end of this session's reply rather than me just
-  running ahead with it.
-
-**2026-08-13 (parts 1-3, earlier session, swept to memory).** Hero split-image bleed close-out,
-hero editor spot-check fixes, hero Ken-Burns/parallax pair + per-device SVG/media cascade fix,
-plus the session-wide false-negative postmortem (truncated grep, stale element handle, etc.) and
-the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2026-08-13.md`.
 
 ## Shipped this session
 
 | Commit | What |
 |---|---|
+| `7265a066` | editor-render-parity: Signal 4 — auto-classify live-external-data placeholders (buybox/google-reviews), 21 findings now correctly auto-excluded (D614, `[gates-ok:...]` — F5 hook resolves the wrong worktree, verified clean directly) |
+| `a96a491a` | editor-render-parity: colour-resolver bug in 5 blocks + a pricing-table CTA gating bug, both found by `/qc-council` (D614) |
 | `1f7d9bb8` | editor-render-parity: `sgs/text` drop-cap `::first-letter` preview, the last Batch 2 block (D613, `--no-verify` authorised) |
 | `9947a9db` | editor-render-parity: `sgs/button.iconGap` deleted — confirmed dead on both sides (D613, `--no-verify` authorised) |
 | `efde6044` | editor-render-parity Batch 3: `sgs/hero.contentBandPadding` + `sgs/trust-bar.columns`, both re-derived past the triage's name-shaped assumption (D613) |
@@ -161,18 +127,36 @@ the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2
 
 ## Open — ready to pick up
 
-- **editor-render-parity Phase 2 — FULLY CLOSED, all 70 REAL-GAP findings (D613).** 7 commits
-  `c67660e9`→`1f7d9bb8` on `main`, live-verified on sandybrown after every batch (not
-  detector-only). Full evidence + fix-shape groupings still in
-  `.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md` + D605/D613.
+- **editor-render-parity Phase 2 — FULLY CLOSED + independently reviewed (D613 + D614).** 9
+  commits `c67660e9`→`7265a066` on `main`, live-verified on sandybrown after every batch (not
+  detector-only), THEN a 4-rater `/qc-council` re-derived everything from current code rather
+  than trusting the commit messages. Full evidence: `.claude/reports/2026-08-13-editor-render-
+  parity-fresh-triage.md` + D605/D613/D614.
   - `sgs/text` (5 first-letter/drop-cap attrs) — fixed, detector-verified, live-verified,
     committed (`1f7d9bb8`, `--no-verify` authorised — see D613 for why).
   - `sgs/button.iconGap` — confirmed dead on BOTH sides, deleted rather than fixed (`9947a9db`,
     `--no-verify` authorised — see D613).
+  - `/qc-council` found + fixed a real bug: 5 colour pickers used the wrong resolver, silently
+    dropping any custom (non-default) colour in the editor preview (`a96a491a`). Also fixed a
+    pricing-table CTA gating bug in the same commit. Live-verified with real custom colours.
+  - Signal 4 built (`7265a066`): the detector now auto-classifies the 21 buybox/google-reviews
+    "needs live data" findings structurally, no hardcoded allowlist.
+  - **Still open, flagged not fixed:** `sgs/modal.triggerColour`/`triggerBackground` and
+    `sgs/nav-drawer.drawerBg` likely carry the IDENTICAL colourVar()-on-a-raw-value bug as the 5
+    just fixed — pre-existing, not part of this session's diff, deliberately not touched while
+    fixing something else. Worth a dedicated small pass.
+  - **Cosmetic, not functional:** 3 auxiliary manifest/classification JSON files
+    (`scripts/behavioural-analyser/css-property-classifications.json`,
+    `scripts/consistency/attr-role-map.json`, `scripts/consistency/setting-types.json`) still
+    reference the deleted `sgs/button.iconGap` attribute. A `/sgs-update` pass would resync them.
+  - `sgs/nav-drawer.submenuModel` — correctly INTERACTION-ONLY today (dormant on both surfaces,
+    per render.php's own "Phase-1-inert" comment), but will become a real editor-render-parity
+    gap the moment Phase-2 submenus ship. Nothing currently tracks that trigger — needs a parking
+    entry or a comment near the Phase-2 submenu work itself once that's scheduled.
   - `sgs/audio.spectrumColour` — surfaced mid-Batch-1 as the same shape as the `accentColour` fix
-    (custom-property-only, no `editor.css` consumer). A bonus finding outside the original 70,
-    not investigated — needs its own look. Not part of the closed backlog.
-  - Post-closure `/qc-council` review — see this section's own entry below once run.
+    (custom-property-only, no `editor.css` consumer) but genuinely un-fixable the simple way — it
+    feeds a live `AnalyserNode` canvas draw loop, categorically un-previewable statically.
+    Reconfirmed correct by `/qc-council`. Not part of the closed backlog (never was REAL-GAP).
 - **DB `role`-column remediation part 2 — CLOSED (D611); both flagged follow-ons COUNCILLED,
   PARKED with a revised premise (D612).** 479 `role IS NULL` rows → 0 (358 structural TIERs, 121
   investigated overrides). A 6-persona `/adversarial-council` then reviewed D611's two named
@@ -189,12 +173,13 @@ the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2
   (`sgs/buybox`, `sgs/google-reviews`). Structurally same as Signal 3 — worth its own exemption
   signal if this detector gets revisited, not urgent (no false-positive volume currently hiding
   behind it).
-- **Check A promotion to gate mode: ready to decide, not yet decided.** All 70 REAL-GAP findings
-  are closed and on `main`. Only the Signal 4 gap (buybox/google-reviews OTHER-SHAPE exemption,
-  cosmetic, no false-positive volume) stands between this and "a full cycle run clean on real
-  code" (this project's own E6-point-9 doctrine — never promote on the run that
-  introduces/changes a rule). This IS that later, clean run — see `/qc-council` verdict below
-  for whether the remaining 75 findings can be trusted as correctly-classified before promoting.
+- **Check A promotion to gate mode: ready to decide, still not decided (deliberately — this is a
+  Bean decision, not an automatic next step).** All 70 REAL-GAP findings are closed on `main`, a
+  4-rater `/qc-council` independently re-checked the fix quality AND the remaining findings'
+  classifications (D614 — 0 reopened as REAL-GAP), and Signal 4 (the one gap named in D605) is
+  now built and shipped. This project's own E6-point-9 doctrine (never promote on the run that
+  introduces/changes a rule) is satisfied — Signal 4 shipped this session, so THIS clean run
+  doesn't count; the NEXT clean run does. Revisit at the next session that touches this detector.
 - **Hero: all three Track 1b carried-forward items now closed.** (a) Stray WP toolbar text-align
   button on the headline (C3) — Bean confirmed 2026-08-13: "Stray button toolbar is gone." (b)
   Split-media → `sgs/media` child block (D6(b)) — Bean DROPPED this entirely 2026-08-13, not
@@ -225,7 +210,7 @@ the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `1f7d9bb8`. ⛔ **This will drift immediately** — run `git log -1` AND
+- **Branch:** `main`, HEAD `7265a066`. ⛔ **This will drift immediately** — run `git log -1` AND
   `git status` AND `git branch --show-current`; do not trust this line.
 - **Part 7 ran entirely in an isolated worktree** (`EnterWorktree`, branch
   `worktree-editor-render-parity-phase2`) specifically to avoid the shared checkout's concurrent
@@ -249,7 +234,7 @@ the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2
   instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was **613** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  (was **614** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
   any "SHIPPED" claim here or in `decisions.md`.
 
 ## Gates that EARNED their keep this session (do not weaken them)
@@ -273,7 +258,7 @@ the render-helpers.php fatal-in-waiting catch. Full narrative: `memory/session-2
 | Governing programme plan (Track 1b) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
 | Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` (hero + container re-measured this session) |
 | THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 |
-| Decisions | `decisions.md` — **D613** is newest as of this write; re-verify |
+| Decisions | `decisions.md` — **D614** is newest as of this write; re-verify |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
