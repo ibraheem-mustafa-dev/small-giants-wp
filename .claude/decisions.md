@@ -1,5 +1,59 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D606 — editor-render-parity 3-way JSX-mirror auto-generator: investigated, NOT built [ROUTINE]
+
+**2026-08-13.** Phase 2's speculative idea (auto-generate the missing JSX preview logic for a
+Check-A REAL-GAP finding, rather than hand-fixing each one) was investigated against the actual
+70-item REAL-GAP backlog (D605) before any code was written, per the instruction not to build this
+speculatively.
+
+**Finding:** ~50 of 70 are the same mechanical shape (add one already-identified CSS property to
+an existing preview-style-builder object) — genuinely generator-friendly. The other ~20 need new
+markup a generator can't safely produce: a missing `<button>` element (`sgs/form`,
+`sgs/pricing-table`), a structural swap to `<details>/<summary>` (`sgs/table-of-contents`), a
+scoped `::first-letter` style block (`sgs/text`), or an actual behavioural-bug fix
+(`sgs/heading.inheritStyle`'s inverted gate).
+
+**Ruling: not built.** The triage agents already did the expensive part — exact file:line
+consumption sites and the exact missing property, for every one of the 70 findings (see
+`.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md`). Building, testing, and
+trusting a code generator to safely apply ~50 of those is slower than a fix pass working directly
+from the already-precise triage evidence, for a ONE-TIME, well-specified 70-item backlog. A
+generator pays off on a SECOND detector of this exact shape finding a comparable backlog on a
+different codebase — it doesn't pay off here.
+
+## D605 — editor-render-parity fresh triage complete: 70 REAL-GAP / 50 INTERACTION-ONLY / 23 OTHER-SHAPE [ROUTINE]
+
+**2026-08-13.** Phase 1 close. 3 parallel background agents re-triaged all 143 post-D603 findings
+by reading the actual edit.js/render.php/style.css consumption site for each — never pattern-
+matching on attribute names. Full breakdown, evidence and fix-shape groupings:
+`.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md`.
+
+**Stop criterion met (per this session's own instruction: "stop refining once a fresh triage
+sample comes back mostly REAL-GAP rather than mostly a new false-positive shape").** 70/143 (49%)
+is REAL-GAP — the largest single bucket. The other two buckets (INTERACTION-ONLY 50, OTHER-SHAPE
+23) are legitimate non-bug classifications, not evidence the detector itself is noisy.
+
+**One real, structural refinement candidate surfaced, not acted on:** 21 of the 23 OTHER-SHAPE
+findings are one of two shapes — `sgs/buybox` (6 attrs) and `sgs/google-reviews` (15 attrs) both
+deliberately render a static placeholder because the editor cannot have the live
+WooCommerce/Google-API data the real preview would need. Structurally identical to Signal 3's own
+no-preview-`<Notice>`-branch shape — a genuine Signal 4 candidate for a future revisit of this
+detector, not built this session (no new false-positive volume to justify it now — it's a
+classification-cleanliness improvement, not a bug the current census is hiding).
+
+**One genuine detector-adjacent bug found BY the triage, not the detector itself:**
+`sgs/heading.inheritStyle` is an inverted-direction desync — render.php SUPPRESSES background/
+border/shadow when `inheritStyle` is true, but `buildWrapperStyle()` in edit.js always applies
+them regardless of the flag. Check A correctly flagged `inheritStyle` as unreferenced-in-preview,
+but the underlying defect is a behavioural bug (editor shows the OPPOSITE of what saves), not
+merely a missing mirror — flagged as the highest-priority item in the REAL-GAP backlog.
+
+**Not this session: fixing the 70-item REAL-GAP backlog itself (Phase 2).** That is real,
+substantial build work across ~25 blocks — see the report for the fix-shape groupings (~50
+mechanical style-property additions, ~14 needing new preview markup, ~6 genuine bugs). Presented
+to Bean as a menu rather than run unbidden, per session-sprawl-prevention.
+
 ## D604 — editor-render-parity DB role remediation, first pass: 13 wrong/missing `role` values fixed [ROUTINE]
 
 **2026-08-13.** `block_attributes.role` is a DIFFERENT, older taxonomy from the detector's

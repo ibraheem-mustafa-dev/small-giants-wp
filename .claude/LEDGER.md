@@ -9,6 +9,38 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+**2026-08-13 (latest session, part 4 — new thread). Continued the "does the editor preview match
+what the client actually gets" checker (the tool the hero work surfaced). Cleaned up a known blind
+spot, fixed 13 wrong entries in the framework's internal database, then had 3 reviewers read every
+one of the 143 remaining findings by hand.** Commit `9d827d63`, decisions D603–D606.
+
+- **The checker missed cases where a setting only affects something through a shared helper file**
+  (e.g. a form field's machine name, or a hover-transition timing value) rather than directly. Only
+  9 of 152 findings were this shape — not worth building a bigger cross-file tracer for, so I
+  verified them by hand and documented the limitation directly in the tool instead.
+- **Found and fixed 13 wrong labels in the framework's internal settings database** — a toggle that
+  emits invisible SEO markup was wrongly tagged as "controls visibility," and a carousel drag-speed
+  flag was wrongly tagged as "styling" in 5 blocks (not just the 1 originally flagged).
+- **Had 3 people (well, agents) independently read the actual code behind all 143 remaining
+  findings** rather than trusting the checker's guess. Result: **70 are real bugs** (settings the
+  client can change but never sees change in the editor), 50 are correctly not previewable (things
+  like hover effects or scroll animations that genuinely can't show on a still screen), and 23 are
+  a different, understood shape (2 blocks that need live data — reviews from Google, live product
+  stock — the editor simply doesn't have). Full breakdown:
+  `.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md`.
+- **Checked whether to build a tool that auto-fixes those 70 bugs** rather than fixing them by
+  hand — concluded no: about 20 of the 70 need a missing piece of the editor preview built from
+  scratch (a button that doesn't exist yet, a different HTML structure), which a generator can't
+  safely do. Fixing the other ~50 by hand is faster than building and testing a generator for a
+  one-off batch this size.
+- **Found one genuine bug while triaging, not just a missing preview**: on `sgs/hero`, a "match the
+  theme's default style" toggle does the OPPOSITE of what it's supposed to in the editor versus
+  what actually saves — the editor keeps showing a background/border that the live page correctly
+  hides. Flagged as the top-priority item in the 70-bug list.
+- **Not done yet, and not started without asking:** actually fixing those 70 bugs is real build
+  work across ~25 blocks. See the menu at the end of this session's reply rather than me just
+  running ahead with it.
+
 **2026-08-13 (latest session, part 3). Closed the last carried-forward hero item — split-image
 bleed — by testing it first, then acting on what the test showed.** Commits `3170943a`, `beab47a4`.
 
@@ -103,6 +135,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 | Commit | What |
 |---|---|
+| `9d827d63` | editor-render-parity: cross-file blind spot resolved (152→143), 13 DB `role` fixes (D603/D604) |
 | `9b8511cf` | `sgs/hero`: split media gets its own Ken-Burns/parallax pair, D596's bgParallax/Ken-Burns questions answered, global `@keyframes` collision fixed (D597) |
 | `3170943a` | `sgs/hero`: `splitImageBleed` tested (not dead), defaulted to full-bleed (D600) |
 | `beab47a4` | `sgs/hero`: bleed extended to reach video/SVG tiers, not just image (D600) |
@@ -128,6 +161,25 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## Open — ready to pick up
 
+- **editor-render-parity Phase 2: 70 confirmed REAL-GAP findings, not yet fixed.** Full list +
+  fix-shape groupings (mechanical/needs-new-markup/genuine-bug) in
+  `.claude/reports/2026-08-13-editor-render-parity-fresh-triage.md` + D605. Top priority:
+  `sgs/heading.inheritStyle` is an inverted-direction bug (editor shows the opposite of what
+  saves), not just a missing preview. Auto-generator investigated and rejected (D606) — this is
+  hand/agent-fix work, batched by block, dispatched in parallel where blocks are independent.
+- **DB `role`-column remediation part 2, not started.** 469 `role IS NULL` rows remain (482 minus
+  the 2 fixed at D604) — re-verify live, don't trust this number. Cross-reference the fresh triage
+  (D605, INTERACTION-ONLY/REAL-GAP/OTHER-SHAPE) against each attribute's current `role` once Phase
+  2 fixing starts touching those blocks; seed NULLs using the output-sink categories this session
+  built (aria/data/rel-target-download-id-name-for/JSON-LD/hover-CSS) rather than guessing.
+- **editor-render-parity Signal 4 candidate (D605), not built.** 21 of 23 OTHER-SHAPE findings are
+  one of two "editor can't have the live data, deliberate static placeholder" shapes
+  (`sgs/buybox`, `sgs/google-reviews`). Structurally same as Signal 3 — worth its own exemption
+  signal if this detector gets revisited, not urgent (no false-positive volume currently hiding
+  behind it).
+- **Check A promotion to gate mode: NOT ready.** 70 unfixed REAL-GAP findings + the Signal 4 gap
+  mean this hasn't had "a full cycle run clean on real code" yet (this project's own E6-point-9
+  doctrine — never promote on the run that introduces/changes a rule). Revisit after Phase 2 closes.
 - **Hero: all three Track 1b carried-forward items now closed.** (a) Stray WP toolbar text-align
   button on the headline (C3) — Bean confirmed 2026-08-13: "Stray button toolbar is gone." (b)
   Split-media → `sgs/media` child block (D6(b)) — Bean DROPPED this entirely 2026-08-13, not
@@ -158,7 +210,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `beab47a4`. ⛔ **This will drift immediately** — run `git log -1` AND
+- **Branch:** `main`, HEAD `9d827d63`. ⛔ **This will drift immediately** — run `git log -1` AND
   `git status` AND `git branch --show-current`; do not trust this line.
 - **This checkout is SHARED with concurrent sessions — proven again this session.** A whole
   `helpers-tier-media.php` (11KB) plus hero edits appeared mid-session from another track. Commit by
@@ -172,7 +224,7 @@ fatalled every page. Both halves landed together (`079abbae`).
   (leftover D594 QC draft) was TRASHED on Bean's instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was **600** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  (was **606** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
   any "SHIPPED" claim here or in `decisions.md`.
 
 ## Gates that EARNED their keep this session (do not weaken them)
