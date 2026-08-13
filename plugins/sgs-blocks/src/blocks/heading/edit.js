@@ -183,31 +183,37 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, style } = attributes;
+	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, style, inheritStyle } = attributes;
 	const wrapperStyle = {};
-	if ( textAlign ) {
-		wrapperStyle.textAlign = textAlign;
-	}
-	if ( backgroundColour ) {
-		wrapperStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
+	// styling (background/border/text-align) and inherits from the parent —
+	// mirrored here so the canvas doesn't show the OPPOSITE of what saves.
+	if ( ! inheritStyle ) {
+		if ( textAlign ) {
+			wrapperStyle.textAlign = textAlign;
+		}
+		if ( backgroundColour ) {
+			wrapperStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+		}
+		// Border-width preview — SGS custom object attr (base only, no tiers).
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+			if ( borderStyle && 'none' !== borderStyle ) {
+				wrapperStyle.borderStyle = borderStyle;
+			}
+			if ( borderColour ) {
+				wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
+			}
+		}
 	}
 	// Border-radius base preview — Box-object interface contract §1/§5: base
 	// radius is WP-native style.border.radius (CSS shorthand order top-left
-	// top-right bottom-right bottom-left).
+	// top-right bottom-right bottom-left). NOT part of Contract §A — render.php
+	// doesn't gate this on inheritStyle either, so neither does the preview.
 	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) {
 		wrapperStyle.borderRadius = borderRadiusPreview;
-	}
-	// Border-width preview — SGS custom object attr (base only, no tiers).
-	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( borderWidthPreview ) {
-		wrapperStyle.borderWidth = borderWidthPreview;
-		if ( borderStyle && 'none' !== borderStyle ) {
-			wrapperStyle.borderStyle = borderStyle;
-		}
-		if ( borderColour ) {
-			wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
-		}
 	}
 	// Base padding/margin preview — WP-native style.spacing.* objects
 	// (contract §B; box-model order top/right/bottom/left).
