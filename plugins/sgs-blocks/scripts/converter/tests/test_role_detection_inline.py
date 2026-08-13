@@ -48,6 +48,12 @@ def _make_db(rows):
         " id INTEGER PRIMARY KEY, block_slug TEXT, attr_name TEXT, role TEXT,"
         " attr_type TEXT, enum_values TEXT, description TEXT,"
         " css_property TEXT, canonical_slot TEXT,"
+        # TIER 3.18 (native_wp -> role='core', b3107413, 2026-08-13) reads `source`.
+        # Added for the same reason as output_signature below: the fixture must carry
+        # every column the real function READS, or the gate fires on schema drift
+        # rather than on a real defect. It fired correctly here — this line is the
+        # fixture catching up to the classifier, not a weakening of the check.
+        " source TEXT,"
         # TIER 3.45 (link-fragment, 2026-08-06) reads output_signature to find the
         # `link_template` render.php assembles around a URL fragment. Added here
         # because the fixture must carry every column the real function READS --

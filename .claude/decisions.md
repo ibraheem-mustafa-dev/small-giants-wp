@@ -1,5 +1,107 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D611 — DB role remediation part 2 CLOSED: 479 → 0, structural TIERs first, overrides last [ROUTINE]
+
+**2026-08-13.** Continuation of D604/D607/D610's method: find the structural signal, teach
+the classifier, self-test, only fall back to a hand-authored override for a genuine
+one-off. LEDGER's "469 rows remain" estimate re-verified live as **479** (never trust a
+cached count) before touching anything; snapshotted `sgs-framework.db` to
+`.claude/scratch/sgs-framework.db.pre-role-remediation-part2-2026-08-13.bak` first.
+
+**Live count now: 0.** Closed in three structural TIERs (permanent, self-correcting) plus
+one bounded override pass (genuine judgement calls):
+
+- **TIER 3.18 (`source='native_wp'` → `role='core'`), 225 rows.** Every `role IS NULL` row
+  on a WP-core reference block (`core/image`, `core/latest-posts`, ~70 others — comparison
+  data for `audit-feature-parity.py`, never a cloning-pipeline input) was permanently NULL
+  because no content/styling tier in this file reasons about that population at all.
+  Registered `core` in `roles.json` under the schema's third, previously-unused
+  `classification` bucket `unclassified` (the CHECK constraint already anticipated a role
+  that is neither content-bearing nor styling-behaviour). Migration:
+  `migrations/2026-08-13-register-core-role-and-seed-native-wp.py`. Shipped + pushed
+  separately (`b3107413`) ahead of the rest of this session's work.
+- **TIER 3.19 (generic boolean backstop), 127 rows.** A boolean with no `css_property` can
+  never itself be a CSS value, so once every specific mechanism has declined a row, the
+  only honest verdict left is the existing `boolean-visibility` role (already documented,
+  already used by TIER 3.6's reclassification path — this tier just closes the "never
+  assigned anything at all" half of the same gap). A parallel investigation agent sampled
+  20 of the then-117 candidates, read the actual render.php/edit.js for each, and found
+  zero exceptions — including two that looked CSS-adjacent (`sgs/text.dropCap`,
+  `sgs/separator.gradientEnabled`), both confirmed to be the same "toggle gates a whole
+  conditional declaration" shape the existing `overlayGradient` precedent already covers.
+- **TIER 3.41 (breakpoint/device-tier role inheritance), 6 rows.** `<base>Tablet`/
+  `<base>Mobile` is the SAME semantic value as `<base>` at a different device tier — not a
+  derived fact like a Unit sibling, the identical fact repeated. Deliberately a SEPARATE
+  tier from TIER 3.4 (unit inheritance), not a shared loop: TIER 3.4 must EXCLUDE a
+  content-bearing base ("a content role on a bare 'px' would walk it into the content
+  lift"); TIER 3.41 must ACCEPT one (a device-tier image sibling like
+  `sgs/testimonial.avatarMediaMobile` IS content, exactly as its base `avatarMedia` is).
+  Closed `avatarMediaMobile`/`avatarMediaTablet`, `svgContentMobile`/`svgContentTablet`
+  (bases already classified) and `splitSvgMobile`/`splitSvgTablet` (base `splitSvg` given
+  a one-off `role='svg'` override first, then inherited automatically).
+
+**Override layer, 121 rows — genuine one-offs, not classifier accuracy bugs (per that
+file's own docstring boundary).** Investigated via 5 parallel agents (`/dispatching-
+parallel-agents`), each reading real render.php/edit.js consumption sites, never
+inferring from attribute names. Full grouping in
+`migrations/2026-08-13-role-remediation-part2-overrides.py`:
+
+- `dragToScroll` (6 blocks) → `behaviour`, AND the real "at source" fix: added to
+  `seed-motion-fx-registry.py`'s `FX_ATTR_CSS_PROPERTY` map (`"dragToScroll": "fx:draggable"`,
+  confirmed against `gallery/render.php:101,113-114`'s `data-sgs-fx="draggable"` emission) —
+  a registry-completeness gap, not a new assign-canonical.py tier; TIER 3.17 now
+  self-corrects it on any future reseed.
+- `bgKenBurns` (6) → `css-gate` (real CSS `animation` paint, gated boolean, same shape as
+  `imageZoomHover`/`grayscaleHover`); `autoplay` (3) → `behaviour` (plain `setInterval`
+  carousel advance, not part of the Spec 38 fx grammar).
+- `shapeDivider{Top,Bottom}{Flip,Invert}` (24, 6 blocks) + `overlayGradientAngle` (5) →
+  `styling`. **Root cause identified but NOT fixed this session:**
+  `fingerprint_content_roles.eligible_pool()` hard-filters `attr_type = 'string'`,
+  excluding EVERY boolean-typed attribute from the whole D1-D7/TIER 2.4 wrapper-paint
+  pipeline, project-wide — not a shapeDivider-specific gap. Widening that filter to
+  `IN ('string','boolean')` is the real fix (confirmed: D4's own type-agnostic bracket
+  regex would classify these rows identically to their already-`styling` string siblings
+  the moment it ever sees them) but touches a shared cross-cutting detector with an
+  unverified blast radius on D1/D2/D3 (never exercised against boolean rows) — per
+  CLAUDE.md Rule 7 this needs a design-gate + Bean's approval, not a unilateral mid-session
+  edit. Flagged as the largest remaining structural opportunity in this whole remediation.
+- JSON-LD/schema toggles (`sgs/star-rating.schemaEnabled`/`schemaReviewCount`,
+  `sgs/testimonial.schemaEnabled`, 3 rows) → `technical`, matching the `faqSchema`
+  precedent (D604/D607). **D610's flagged idea — porting `check-editor-render-parity.js`'s
+  Signal 1 (`wp_json_encode()` non-paint-sink detection) into `assign-canonical.py` —
+  investigated and found NOT directly portable**: `assign-canonical.py` never parses
+  render.php at all (it works purely off name-decomposition against DB tables); the
+  signal would need a NEW extraction pass in `extract-signatures.py` (which already owns
+  render.php parsing) writing a new `output_signature` key, before any TIER could key off
+  it. Bigger, separate piece of work — still not attempted.
+- Remaining ~83 rows: recurring shapes hand-classified by family (10 responsive tri-state
+  header/footer/row objects → `behaviour`; 18 query/filter arrays → `technical`; 13
+  repeater/option arrays → `content`; 7 motion/physics numerics → `behaviour`; 6
+  image-sequence frame-count/pad numerics → `technical`; `sgs/testimonial.ratingStars` →
+  the EXISTING `rating` role, whose own roles.json entry already names this exact
+  attribute as its exemplar — a pre-existing structural home missed until now, not a new
+  judgement call; ~16 further singletons per block).
+
+**Verification, same discipline as D610:** `assign-canonical.py --self-test` green (23
+self-tests, including the 3 new ones, `_self_test_native_wp_seed`,
+`_self_test_boolean_visibility_backstop`, `_self_test_breakpoint_inheritance` — each the
+same 4-6-case shape as `_self_test_fx_styling_correction`). `db-consistency/run.py`: 0 NEW
+violations throughout (only the pre-existing baselined `sgs/nav-drawer` finding). Applied
+directly to the live (snapshotted) DB rather than a full `/sgs-update` reseed — this
+checkout is shared with a concurrent session (its own uncommitted `sgs/button` work was
+never touched). Also regenerated `generated-fx-qualifying-blocks.{php,json}` (unrelated
+pre-existing staleness the commit gate surfaced, caused by that concurrent session's
+in-flight button edits — regenerated per the gate's own fix instruction, no button source
+touched).
+
+**Final tally: 358/479 (75%) closed by a genuine structural, self-correcting TIER; 121/479
+(25%) as bounded, investigated override-layer judgement calls** (of which 6 also got a
+real "at source" registry fix, and 1 unlocked 2 further rows via inheritance). Two
+concrete future structural opportunities named above (boolean-type widening in
+`eligible_pool()`; `wp_json_encode()` signal port into `extract-signatures.py`) would
+close a further ~29 + a currently-unknown long-tail of `faqSchema`-shaped rows on any
+later session, if built.
+
 ## D610 — fx:* namespace styling bug fixed at source: TIER 3.17 in assign-canonical.py [ROUTINE]
 
 **2026-08-13.** Closes the gap D607 (`/qc-council`) named but deliberately didn't build

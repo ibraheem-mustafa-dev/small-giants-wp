@@ -898,7 +898,10 @@ def run() -> None:
         f"icon-family-corrected={_rd['icon_family_corrected']} "
         f"fx-styling-corrected={_rd['fx_styling_corrected']} "
         f"native-wp-seeded={_rd['native_wp_seeded']} "
-        f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
+        f"boolean-visibility-seeded={_rd['boolean_visibility_seeded']} "
+        f"unit-inherited={_rd['unit_inherited']} "
+        f"breakpoint-inherited={_rd['breakpoint_inherited']} "
+        f"enum={_rd['enum_filled']} "
         f"link-content={_rd['link_filled']} "
         f"boolean-swept={_rd['boolean_swept']} | "
         f"companion-image={_rd['companion_image_filled']} "
@@ -2320,6 +2323,59 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         )
         native_wp_seeded += 1
 
+    # TIER 3.19 -- GENERIC BOOLEAN BACKSTOP (2026-08-13, Bean, DB role remediation part
+    # 2). Same shape as TIER 3's own "generic styling backstop" above, for the ONE type
+    # where "no CSS signal" is a structural certainty rather than empirical luck: a
+    # boolean attribute has exactly two states, so it can never itself BE a CSS value
+    # (that is a string/number's job) -- if it also carries no css_property, every
+    # mechanism this file has for finding a more specific role has already been offered
+    # the row and declined. `boolean-visibility` already exists for precisely this shape
+    # (roles.json: "a plain editor-only toggle... no consumer... a draft's HTML/CSS
+    # carries no signal a boolean toggle could be lifted from"), and TIER 3.6 already
+    # reclassifies a boolean OFF a wrongly-assigned CONTENT role onto it -- this tier
+    # closes the other half of the same gap: a boolean that was simply never assigned
+    # anything at all.
+    #
+    # INVESTIGATED, NOT ASSUMED: dispatched a parallel investigation agent
+    # (2026-08-13) to sample 20 of the then-117 `role IS NULL AND attr_type='boolean'
+    # AND css_property IS NULL` rows and read each one's actual render.php/edit.js
+    # consumption site. Two rows that looked like they might secretly gate real CSS
+    # (`sgs/text.dropCap` -- a conditional `::first-letter` block; `sgs/separator.
+    # gradientEnabled` -- a conditional `border-image:linear-gradient()`) both turned
+    # out to be the SAME "toggle gates a whole conditional declaration" shape as any
+    # visibility toggle, not a value-carrying attribute -- structurally identical to the
+    # `overlayGradient` precedent already filed under `boolean-visibility` (see that
+    # role's own `excludes_reason` in roles.json). No exception was found in the sample.
+    #
+    # THE GUARD: `role IS NULL AND attr_type = 'boolean' AND css_property IS NULL`.
+    # Idempotent and can never overwrite an existing role, a content verdict, or a row a
+    # more specific mechanism (TIER 3.7's css-gate route, an fx:* registry entry, a
+    # hand override) has already claimed -- those all set a non-NULL role or a non-NULL
+    # css_property before this tier runs, and this tier's WHERE clause requires both to
+    # still be NULL/empty. ORDERED LAST among the boolean-touching tiers (after 3.6/3.7,
+    # and after any override-layer application in the reseed pipeline's Stage 1
+    # sub-step C, which runs AFTER assign-canonical.py entirely) so a row a human
+    # deliberately classified differently (e.g. `bgKenBurns` -> 'css-gate', `autoplay`
+    # -> 'behaviour', per this session's investigation) is never silently reclaimed here
+    # UNLESS an override hasn't been written for it yet -- exactly the same backstop
+    # relationship TIER 3's generic styling backstop has with TIER 3.15's upgrades.
+    #
+    # EXPECTED POPULATION at the time this tier was written: ~117 (measured live,
+    # 2026-08-13, on the subset of NULL booleans NOT already claimed by a same-session
+    # override for a more specific shape). A non-zero count on a later reseed means a
+    # new boolean attribute landed with no CSS signal -- exactly the case this tier
+    # exists to catch automatically.
+    boolean_visibility_seeded = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes "
+        "WHERE role IS NULL AND attr_type = 'boolean' AND css_property IS NULL"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'boolean-visibility' WHERE id = ?",
+            (row_id,),
+        )
+        boolean_visibility_seeded += 1
+
     # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
     # CSS unit for `<base>`; it is the same styling fact, split across two columns
     # because CSS needs the number and the unit separately. So its ROLE is its base's
@@ -2377,6 +2433,74 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
                 "UPDATE block_attributes SET role = ? WHERE id = ?", (base_row[0], row_id)
             )
             unit_inherited += 1
+
+    # TIER 3.41 -- BREAKPOINT/DEVICE-TIER INHERITANCE (2026-08-13, Bean, DB role
+    # remediation part 2). A `<base>Tablet`/`<base>Mobile` attr is the SAME semantic
+    # value as `<base>`, at a different device tier -- not a derived fact split across
+    # two columns the way a Unit sibling is, but the identical fact, repeated. This
+    # tier's own docstring reference at TIER 3.4 above name-drops "the device-tier
+    # inheritance rule (extract-signatures.py, 2026-08-05)" as already existing --
+    # investigated 2026-08-13 and confirmed that mechanism seeds attribute SHAPE
+    # (object-typed, matching the base) at extraction time, not `role`; nothing wires
+    # role inheritance for the breakpoint axis into this file until now.
+    #
+    # DELIBERATELY A SEPARATE TIER FROM 3.4, NOT A SHARED LOOP -- the two axes need
+    # OPPOSITE base-role guards. TIER 3.4 above states its own reason for excluding a
+    # CONTENT-bearing base: "that would walk a bare 'px' into the content lift" -- true
+    # for a Unit sibling, which is never itself content. It is FALSE for a breakpoint
+    # sibling: `sgs/testimonial.avatarMediaMobile` is a per-device IMAGE, exactly as
+    # content-bearing as its base `avatarMedia` (role='image-object', classification
+    # content-bearing) -- refusing to inherit a content-bearing base here would leave
+    # every art-directed device-tier image sibling permanently NULL, which is the
+    # actual gap this tier closes (measured live 2026-08-13: `sgs/testimonial.
+    # avatarMediaMobile`/`avatarMediaTablet`, `sgs/media.svgContentMobile`/`Tablet`).
+    # So this tier's guard is simply "the base has SOME role, any role" -- not filtered
+    # by classification -- because a device-tier sibling always inherits its base's
+    # exact category, content or styling, by construction.
+    #
+    # The breakpoint suffix comes from `modifier_suffixes` (kind='breakpoint': Tablet,
+    # Mobile, Desktop), never a hardcoded literal -- R-31-1. 'Desktop' is included for
+    # completeness but never matches in practice (the desktop tier IS the unsuffixed
+    # base attr in this framework's own naming convention).
+    #
+    # RUNS AFTER TIER 3.4, so a row that is BOTH a unit AND a breakpoint sibling (e.g.
+    # a hypothetical `paddingMobileUnit`) resolves via the more specific unit rule
+    # first; this tier's own `role IS NULL` guard then finds nothing left to do for it.
+    #
+    # EXPECTED POPULATION at the time this tier was written: 4 (measured live,
+    # 2026-08-13) -- `sgs/testimonial.avatarMediaMobile`/`avatarMediaTablet` (base
+    # already role='image-object') and `sgs/media.svgContentMobile`/`svgContentTablet`
+    # (base already role='svg'). `sgs/hero.splitSvgMobile`/`splitSvgTablet` are NOT
+    # claimed -- their base `splitSvg` is itself role IS NULL, so there is nothing to
+    # inherit; that is TIER 3.41 working correctly, not a gap in it (the base needs its
+    # own classification first, a separate one-off judgement call).
+    breakpoint_suffixes = sorted(
+        (sfx for sfx, kind in load_modifier_suffixes(conn).items() if kind == "breakpoint"),
+        key=len,
+        reverse=True,
+    )
+    breakpoint_inherited = 0
+    if breakpoint_suffixes:
+        for row_id, block_slug, attr_name in conn.execute(
+            "SELECT id, block_slug, attr_name FROM block_attributes WHERE role IS NULL"
+        ).fetchall():
+            base = None
+            for sfx in breakpoint_suffixes:
+                if attr_name.endswith(sfx) and len(attr_name) > len(sfx):
+                    base = attr_name[: -len(sfx)]
+                    break
+            if not base:
+                continue
+            base_row = conn.execute(
+                "SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+                (block_slug, base),
+            ).fetchone()
+            if not base_row or base_row[0] is None:
+                continue
+            cur.execute(
+                "UPDATE block_attributes SET role = ? WHERE id = ?", (base_row[0], row_id)
+            )
+            breakpoint_inherited += 1
 
     # TIER 3.45 -- LINK-FRAGMENT (2026-08-06, Task A5). A row whose output_signature
     # carries a `link_template` is one the block assembles a URL AROUND: the operator
@@ -2572,7 +2696,15 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # tier's own WHERE clause is `role IS NULL`, so it is idempotent); non-zero on a
         # later reseed means a new WP-core reference attribute needs the same seed.
         "native_wp_seeded": native_wp_seeded,
+        # TIER 3.19 -- generic backstop for a boolean with no CSS signal at all. Expected
+        # steady-state count is 0 once the live DB has been seeded once (idempotent);
+        # non-zero on a later reseed means a new boolean attribute needs the same seed.
+        "boolean_visibility_seeded": boolean_visibility_seeded,
         "unit_inherited": unit_inherited,
+        # TIER 3.41 -- device-tier (Tablet/Mobile) sibling inherits its base's role
+        # verbatim, content or styling. Non-zero on a later reseed means a new
+        # per-device attribute pair landed with the base already classified.
+        "breakpoint_inherited": breakpoint_inherited,
         "enum_filled": enum_filled,
         "link_filled": link_filled,
         # TIER 3.6 -- boolean attrs whose role was content-bearing, reclassified to
@@ -3594,6 +3726,101 @@ def _self_test_native_wp_seed() -> int:
     return 0
 
 
+def _self_test_boolean_visibility_backstop() -> int:
+    """Prove TIER 3.19 (generic boolean backstop) claims exactly the rows it should and
+    never the rows its guard protects, on a throwaway in-memory DB.
+
+    Five planted rows, each a distinct way the tier could be wrong:
+      1. a row it MUST claim -- role IS NULL, attr_type='boolean', css_property IS NULL
+      2. a row it MUST NOT claim -- role IS NULL, attr_type='boolean', but css_property
+         IS SET (a css-gate/fx-registry candidate already routed elsewhere -- this tier
+         is the LAST-resort backstop, never a pre-empt)
+      3. a row it MUST NOT claim -- role IS NULL but attr_type='string' (wrong shape;
+         proves the `attr_type = 'boolean'` half of the guard)
+      4. a row it MUST NOT claim -- attr_type='boolean', css_property IS NULL, but role
+         is ALREADY SET (e.g. an override already classified it 'behaviour'); must never
+         overwrite
+      5. a row already 'boolean-visibility' with the matching shape -- idempotence:
+         re-running the tier on an already-seeded row must be a no-op, not an error
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, attr_type TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, attr_type, "
+        "css_property) VALUES (?,?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "plantedBooleanUnclaimed", None, "boolean", None),
+            (2, "sgs/plant", "plantedBooleanCssGated", None, "boolean", "fx:draggable"),
+            (3, "sgs/plant", "plantedStringUnclaimed", None, "string", None),
+            (4, "sgs/plant", "plantedBooleanAlreadyRoled", "behaviour", "boolean", None),
+            (5, "sgs/plant", "plantedBooleanAlreadyCorrect", "boolean-visibility",
+             "boolean", None),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    seeded = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes "
+        "WHERE role IS NULL AND attr_type = 'boolean' AND css_property IS NULL"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'boolean-visibility' WHERE id = ?",
+            (row_id,),
+        )
+        seeded += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if seeded == 0:
+        failures.append("tier seeded ZERO rows against a planted set -- it cannot "
+                        "fail, so it proves nothing")
+    if got.get("plantedBooleanUnclaimed") != "boolean-visibility":
+        failures.append(
+            f"plantedBooleanUnclaimed -> {got.get('plantedBooleanUnclaimed')!r}, "
+            "expected 'boolean-visibility'"
+        )
+    if got.get("plantedBooleanCssGated") is not None:
+        failures.append(
+            f"plantedBooleanCssGated -> {got.get('plantedBooleanCssGated')!r}: a "
+            "boolean with a REAL css_property signal was claimed. This tier is a "
+            "LAST-resort backstop, never a pre-empt of a more specific mechanism."
+        )
+    if got.get("plantedStringUnclaimed") is not None:
+        failures.append(
+            f"plantedStringUnclaimed -> {got.get('plantedStringUnclaimed')!r}: a "
+            "non-boolean row was touched. The `attr_type = 'boolean'` guard must hold."
+        )
+    if got.get("plantedBooleanAlreadyRoled") != "behaviour":
+        failures.append(
+            f"plantedBooleanAlreadyRoled -> {got.get('plantedBooleanAlreadyRoled')!r}: "
+            "the tier OVERWROTE an already-assigned role. It must only touch role IS NULL."
+        )
+    if got.get("plantedBooleanAlreadyCorrect") != "boolean-visibility":
+        failures.append(
+            f"plantedBooleanAlreadyCorrect -> "
+            f"{got.get('plantedBooleanAlreadyCorrect')!r}: an already-seeded row "
+            "changed on re-run. This tier must be idempotent."
+        )
+    conn.close()
+
+    if failures:
+        print(f"BOOLEAN-VISIBILITY-BACKSTOP SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"BOOLEAN-VISIBILITY-BACKSTOP SELF-TEST PASSED -- {seeded} row(s) seeded, "
+          f"5 checks green.")
+    return 0
+
+
 def _self_test_unit_inheritance() -> int:
     """Prove the TIER 3.4 unit-inheritance pass can FAIL, on a throwaway in-memory DB.
 
@@ -3704,6 +3931,117 @@ def _self_test_unit_inheritance() -> int:
             print(f"  - {f}")
         return 1
     print(f"UNIT-INHERITANCE SELF-TEST PASSED -- {claimed} rows claimed, 6 checks green.")
+    return 0
+
+
+def _self_test_breakpoint_inheritance() -> int:
+    """Prove the TIER 3.41 breakpoint-inheritance pass can FAIL, on a throwaway
+    in-memory DB.
+
+    Planted rows, each one a way the pass could be wrong:
+      1. a Mobile sibling whose base is STYLING-BEHAVIOUR -> MUST inherit
+      2. a Tablet sibling whose base is CONTENT-BEARING    -> MUST inherit too (the
+         opposite guard from TIER 3.4's unit inheritance -- a device-tier sibling is
+         the SAME content at a different tier, not a bare unit)
+      3. a Mobile sibling whose base is itself unclassified -> MUST NOT inherit
+         (nothing to inherit)
+      4. a Mobile sibling with NO base attr at all          -> MUST NOT inherit
+      5. a Mobile sibling that ALREADY has a role           -> MUST NOT be overwritten
+      6. a non-breakpoint attr                              -> MUST be untouched
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT)"
+    )
+    conn.execute("CREATE TABLE modifier_suffixes (suffix TEXT, kind TEXT)")
+    conn.executemany(
+        "INSERT INTO modifier_suffixes (suffix, kind) VALUES (?,?)",
+        [("Mobile", "breakpoint"), ("Tablet", "breakpoint"), ("Desktop", "breakpoint")],
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role) VALUES (?,?,?,?)",
+        [
+            (1, "sgs/plant", "gap", "layout"),
+            (2, "sgs/plant", "gapMobile", None),
+            (3, "sgs/plant", "avatarMedia", "image-object"),
+            (4, "sgs/plant", "avatarMediaTablet", None),
+            (5, "sgs/plant", "mystery", None),
+            (6, "sgs/plant", "mysteryMobile", None),
+            (7, "sgs/plant", "orphanMobile", None),
+            (8, "sgs/plant", "thicknessMobile", "typography"),
+            (9, "sgs/plant", "thickness", "layout"),
+            (10, "sgs/plant", "plainAttr", None),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    bp_suffixes = sorted(
+        (s for s, k in conn.execute("SELECT suffix, kind FROM modifier_suffixes").fetchall()
+         if k == "breakpoint"),
+        key=len, reverse=True,
+    )
+    claimed = 0
+    for row_id, block_slug, attr_name in conn.execute(
+        "SELECT id, block_slug, attr_name FROM block_attributes WHERE role IS NULL"
+    ).fetchall():
+        base = None
+        for sfx in bp_suffixes:
+            if attr_name.endswith(sfx) and len(attr_name) > len(sfx):
+                base = attr_name[: -len(sfx)]
+                break
+        if not base:
+            continue
+        base_row = conn.execute(
+            "SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, base),
+        ).fetchone()
+        if not base_row or base_row[0] is None:
+            continue
+        cur.execute("UPDATE block_attributes SET role = ? WHERE id = ?", (base_row[0], row_id))
+        claimed += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if claimed == 0:
+        failures.append("breakpoint inheritance claimed ZERO rows against a planted set "
+                        "-- it cannot fire, so it proves nothing")
+    if got.get("gapMobile") != "layout":
+        failures.append(f"gapMobile -> {got.get('gapMobile')!r}, expected 'layout' "
+                        "inherited from its base")
+    if got.get("avatarMediaTablet") != "image-object":
+        failures.append(
+            f"avatarMediaTablet -> {got.get('avatarMediaTablet')!r}: did NOT inherit a "
+            "CONTENT-bearing base role. Unlike TIER 3.4's unit inheritance, a "
+            "breakpoint sibling IS the same content at a different tier and MUST "
+            "inherit a content-bearing base."
+        )
+    if got.get("mysteryMobile") is not None:
+        failures.append(f"mysteryMobile -> {got.get('mysteryMobile')!r}: inherited from "
+                        "an UNCLASSIFIED base. Two unknowns are not a classification.")
+    if got.get("orphanMobile") is not None:
+        failures.append(f"orphanMobile -> {got.get('orphanMobile')!r}: claimed with no "
+                        "base attr present at all.")
+    if got.get("thicknessMobile") != "typography":
+        failures.append(
+            f"thicknessMobile -> {got.get('thicknessMobile')!r}: an EXISTING role was "
+            "overwritten. This row proves the `role IS NULL` guard."
+        )
+    if got.get("plainAttr") is not None:
+        failures.append(f"plainAttr -> {got.get('plainAttr')!r}: a non-breakpoint attr "
+                        "was claimed.")
+    conn.close()
+
+    if failures:
+        print(f"BREAKPOINT-INHERITANCE SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"BREAKPOINT-INHERITANCE SELF-TEST PASSED -- {claimed} rows claimed, 6 checks green.")
     return 0
 
 
@@ -4511,6 +4849,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] == "--self-test":
         sys.exit(_self_test_role_detection() or _self_test_styling_backstop()
                  or _self_test_technical_veto() or _self_test_unit_inheritance()
+                 or _self_test_breakpoint_inheritance()
                  or _self_test_enum_backstop() or _self_test_companion_tier()
                  or _self_test_boolean_sweep() or _self_test_suffix_role_revive()
                  or _self_test_type_sweep() or _self_test_wrapper_styling_tier()
@@ -4518,5 +4857,6 @@ if __name__ == "__main__":
                  or _self_test_styling_upgrade()
                  or _self_test_icon_family_correction()
                  or _self_test_fx_styling_correction()
-                 or _self_test_native_wp_seed())
+                 or _self_test_native_wp_seed()
+                 or _self_test_boolean_visibility_backstop())
     main()

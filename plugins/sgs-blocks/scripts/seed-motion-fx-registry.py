@@ -762,6 +762,19 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     # grammar keeps them as two separate mappable attributes.
     "loopCarousel": "fx:loop",
     #
+    # `dragToScroll` -> fx:draggable (2026-08-13, DB role-remediation part 2). Same
+    # shape as `dragMomentum`/`loopCarousel` above: a real BLOCK attribute (not an fx
+    # extension attribute), the master gate `sgs/gallery/render.php:101,113-114` reads
+    # to decide whether to emit `data-sgs-fx="draggable"` at all (the SAME grammar
+    # `dragMomentum` rides — that attribute only ever matters once `dragToScroll` has
+    # already turned the feature on). Found by a parallel investigation agent
+    # confirming that TIER 3.17's `css_property LIKE 'fx:%'` rescue could never reach
+    # `dragToScroll` because it had no fx:* marker at all -- this registry row is the
+    # actual "at source" fix (registry-completeness gap), not a new assign-canonical.py
+    # tier: once this row exists, TIER 3.17 self-corrects `dragToScroll` -> 'behaviour'
+    # on any future reseed with no further action needed.
+    "dragToScroll": "fx:draggable",
+    #
     # `fxPath` -> fx:path. The curated motion-path route (s11.2, D427). This is
     # the AUTHORING surface; `data-sgs-fx-motion-path-target` is render-layer
     # OUTPUT and deliberately gets no row - a draft never writes it, and the

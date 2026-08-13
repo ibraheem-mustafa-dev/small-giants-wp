@@ -1812,6 +1812,865 @@
         "role": "behaviour",
         "_reason": "2026-08-13 (D607). Was NULL (css_property also NULL — not yet seeded into the fx:* namespace by seed-motion-fx-registry.py, unlike its siblings fxStart/fxEnd/fxScrub). Same family, same confirmed INTERACTION-ONLY classification from this session's editor-render-parity triage — seeded here for consistency with its siblings rather than left as an unexplained gap."
       }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "bgKenBurns",
+      "fields": {
+        "role": "css-gate",
+        "css_property": "animation"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "dragToScroll",
+      "fields": {
+        "role": "behaviour",
+        "css_property": "fx:draggable"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "autoplay",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "autoplay",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "autoplay",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerTopFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerTopInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerBottomFlip",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "shapeDividerBottomInvert",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaEnabled",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "schemaReviewCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "schemaEnabled",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "overlayGradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerHideOnScroll",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerShrink",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerSticky",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "headerTransparent",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "rowHideOnScroll",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "rowShrink",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "rowTransparent",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "rowHideOnScroll",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "rowShrink",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "rowTransparent",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "categoryTerm",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "count",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "handpickedIds",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productCategories",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productIds",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productLimit",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "productTags",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "queryCategory",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "queryPostsPerPage",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categories",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptLength",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "offset",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "postsPerPage",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "tags",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "overrideElements",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "visibleAxes",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "maxResults",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "attr": "threshold",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "buttons",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "stats",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-address",
+      "attr": "fields",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "options",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-file",
+      "attr": "allowedTypes",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-radio",
+      "attr": "options",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-select",
+      "attr": "options",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tiles",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "optionItems",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "mediaItems",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "icons",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinks",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "headingLevels",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "physicsBounce",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "physicsEdgeResistance",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "physicsGravity",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "revealStagger",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "pathDrawTriggerOffset",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuCloseGrace",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "rateLimit",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "desktopFrameCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "desktopFramePad",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "mobileFrameCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "mobileFramePad",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "tabletFrameCount",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/image-sequence",
+      "attr": "tabletFramePad",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "number",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "evergreenHours",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "evergreenMinutes",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "maxReviews",
+      "fields": {
+        "role": "behaviour"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "menuRef",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "ref",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "logoSwitchCustomPx",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "svgAnimationSource",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "gradientAngle",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "scrollOffset",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingStars",
+      "fields": {
+        "role": "rating"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "reviewsAverage",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "totalReviews",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "trustScore",
+      "fields": {
+        "role": "content"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "decorMedia",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "rotation",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "asideSeparator",
+      "fields": {
+        "role": "styling"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitSvg",
+      "fields": {
+        "role": "svg"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "rows",
+      "fields": {
+        "role": "technical"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "contentImpact",
+      "fields": {
+        "role": "technical"
+      }
     }
   ]
 }

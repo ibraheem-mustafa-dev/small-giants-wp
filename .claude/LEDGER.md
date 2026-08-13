@@ -156,6 +156,8 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 | Commit | What |
 |---|---|
+| (pending) | DB role remediation part 2 CLOSED: 479 → 0 `role IS NULL` rows. TIER 3.18/3.19/3.41 (358 rows, structural) + 121-row investigated override pass + `dragToScroll` fx-registry fix (D611) |
+| `b3107413` | `assign-canonical.py` TIER 3.18: `source='native_wp'` rows seed to `role='core'` (D611) |
 | (pending) | `assign-canonical.py` TIER 3.17: `fx:*` namespace styling bug fixed at source, self-correcting (D610) |
 | `3267384f` | 4 more `fx:*` attrs found + fixed by `/qc-council` re-checking D604 structurally (D607) |
 | `9d827d63` | editor-render-parity: cross-file blind spot resolved (152→143), 13 DB `role` fixes (D603/D604) |
@@ -190,16 +192,18 @@ fatalled every page. Both halves landed together (`079abbae`).
   `sgs/heading.inheritStyle` is an inverted-direction bug (editor shows the opposite of what
   saves), not just a missing preview. Auto-generator investigated and rejected (D606) — this is
   hand/agent-fix work, batched by block, dispatched in parallel where blocks are independent.
-- **DB `role`-column remediation part 2, not started.** 469 `role IS NULL` rows remain (482 minus
-  the 2 fixed at D604) — re-verify live, don't trust this number. Cross-reference the fresh triage
-  (D605, INTERACTION-ONLY/REAL-GAP/OTHER-SHAPE) against each attribute's current `role` once Phase
-  2 fixing starts touching those blocks; seed NULLs using the output-sink categories this session
-  built (aria/data/rel-target-download-id-name-for/JSON-LD/hover-CSS) rather than guessing. **The
-  `fx:*` motion-namespace family is CLOSED (D610) — self-corrects via TIER 3.17 now, do not
-  re-open.** `faqSchema`/`allowMultiple`/`defaultOpen` still need either a genuine judgement call
-  or a new structural signal (D610 flags `wp_json_encode()` detection — already built for
-  `check-editor-render-parity.js`'s Signal 1 — as a plausible future unification for `faqSchema`'s
-  shape specifically; not attempted, cross-tool scope).
+- **DB `role`-column remediation part 2 — CLOSED (D611).** 479 `role IS NULL` rows (re-verified
+  live, not the stale "469") → 0. 358 rows (75%) via three self-correcting structural TIERs
+  (3.18 native_wp→core, 3.19 generic boolean backstop, 3.41 breakpoint inheritance); 121 rows via
+  an investigated override pass (5 parallel agents, real render.php/edit.js reads). Two concrete
+  future structural opportunities named, not built: (1) `fingerprint_content_roles.eligible_pool()`
+  hard-filters `attr_type='string'`, excluding every boolean from the whole D1-D7/TIER 2.4
+  wrapper-paint pipeline — widening it to include boolean would close `shapeDivider*`/
+  `overlayGradientAngle` (29 rows) structurally instead of by name-list override, but is a
+  cross-cutting change needing a design-gate first (CLAUDE.md Rule 7). (2) `wp_json_encode()`
+  Signal-1 port for `faqSchema`-shaped JSON-LD toggles needs a NEW extraction pass in
+  `extract-signatures.py` (assign-canonical.py never parses render.php at all) — bigger, separate
+  work, still not attempted. Full detail: `decisions.md` D611.
 - **editor-render-parity Signal 4 candidate (D605), not built.** 21 of 23 OTHER-SHAPE findings are
   one of two "editor can't have the live data, deliberate static placeholder" shapes
   (`sgs/buybox`, `sgs/google-reviews`). Structurally same as Signal 3 — worth its own exemption
