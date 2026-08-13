@@ -402,7 +402,7 @@
 		},
 		"splitImageBleed": {
 			"type": "boolean",
-			"default": false
+			"default": true
 		},
 		"imageObjectFit": {
 			"type": "string",

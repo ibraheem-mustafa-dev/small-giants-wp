@@ -646,7 +646,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				     the DECLARED block.json defaults (D328): alignment='left', verticalAlignment='center',
 				     textAlign{Desktop,Tablet,Mobile}='', minHeight='' / minHeightTablet='' / minHeightMobile='360px',
 				     contentBackground='', contentPadding{,Tablet,Mobile}={}, gridTemplateColumns{,Tablet,Mobile}='',
-				     splitContentOrderMobile='media-first', splitImageBleed=false. Text/vertical alignment are
+				     splitContentOrderMobile='media-first', splitImageBleed=true (flipped 2026-08-13 — full-bleed
+				     is now the default per Bean; most real split-hero designs want the image flush to the
+				     block edge, not inset). Text/vertical alignment are
 				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
 				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) }>
 					{ /* The ToolsPanel label deliberately does NOT repeat the
@@ -669,7 +671,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								...( isSplit && {
 									gridTemplateColumns: '',
 									splitContentOrder: { mobile: 'media-first' },
-									splitImageBleed: false,
+									splitImageBleed: true,
 								} ),
 							} );
 						} }
@@ -882,13 +884,13 @@ export default function Edit( { attributes, setAttributes } ) {
 										!! splitContentOrder?.desktop ||
 									!! splitContentOrder?.tablet ||
 									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first' ||
-									!! splitImageBleed
+									false === splitImageBleed
 								}
 								onDeselect={ () =>
 									setAttributes( {
 										gridTemplateColumns: '',
 										splitContentOrder: { mobile: 'media-first' },
-										splitImageBleed: false,
+										splitImageBleed: true,
 									} )
 								}
 							>
