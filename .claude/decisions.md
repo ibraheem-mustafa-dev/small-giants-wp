@@ -1,5 +1,136 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D612 — /adversarial-council on D611's two flagged follow-ons: both PARKED with a revised premise; measure-first found 3 real bugs the follow-ons wouldn't have caught [ROUTINE]
+
+**2026-08-13.** D611 named two structural opportunities it deliberately did not build:
+widening `eligible_pool()` to admit booleans (would close `shapeDivider*`/
+`overlayGradientAngle`, 29 rows), and porting `check-editor-render-parity.js`'s Signal 1
+(`wp_json_encode()` non-paint detection) into a new Python extraction pass (would close
+`faqSchema`-shaped JSON-LD rows, "4 known, possibly more"). Bean asked for both to go
+through `/adversarial-council` (6 personas, parallel, blind to each other — Cynic,
+Ship-PM, Spec-Lawyer, a pipeline-focused Abuse Red-Teamer, a Support Realist reframed as
+"the person who fields a broken-clone report three weeks later", and a Downstream
+Consumer advocate reframed as "the converter maintainer who lives with whatever role
+gets assigned") before either was built or dismissed.
+
+### The headline finding, independently discovered by the Downstream-Consumer persona
+
+**Neither proposal could ever have improved cloning fidelity, regardless of how safely
+it was built.** Read live: `converter/db/db_lookup.py:3903,5573` gate every content walk
+on `roles.classification = 'content-bearing'` — `role='styling'`, `'behaviour'`,
+`'technical'`, `'boolean-visibility'`, and `role IS NULL` are all handled **identically:
+excluded**. Both proposals' target rows resolve to `styling-behaviour` roles either way.
+Classifying them correctly changes nothing downstream; it is DB hygiene wearing a
+fidelity fix's clothes. The same persona also inverted the assumed risk direction: `NULL`
+is the LOUD state (`recogniser/leftover-bucket-router.py:286` still surfaces it in a
+leftover-coverage diagnostic); a **wrongly**-assigned non-NULL role is what goes silent.
+
+### Proposal 1 — widen `eligible_pool()` to `attr_type IN ('string','boolean')`
+
+**5 of 6 personas independently rejected the shared-filter form.** Convergent findings,
+each with live code evidence, not speculation:
+- The pool feeds a 7-stage CASCADE (`fingerprint_content_roles.py:564`,
+  `d4_candidates = pool - claimed`), not 7 parallel checks — widening the root perturbs
+  every downstream stage's input partition, not just the one detector that benefits.
+- D2 (edit.js control detection) is structurally blind to booleans: it resolves controls
+  via `value={...}` bindings; WordPress `ToggleControl` binds via `checked={...}`. Counted
+  live: 143 `ToggleControl` sites use `checked=`, 2 use `value=`. D2 would contribute
+  nothing for ~98.6% of the admitted rows — most of the claimed 7-detector benefit is
+  illusory; only D4/TIER 2.4 genuinely gains anything.
+- A LIVE counter-example pattern was found for the failure mode the guard doesn't cover:
+  a boolean that's a label-SELECTOR (chooses between two different visible strings) not
+  a plain visibility gate would be misfiled by D1's `TRUSTED_ALONE` no-corroboration path.
+  (The specific example cited turned out, on direct verification, NOT to be this shape —
+  `sgs/testimonial.verified` is a plain fixed-badge gate, `render.php:127,515-517` — but
+  the PATTERN itself remains a real, uncovered gap the self-test has zero coverage for.)
+- The real target population is 5 CONCEPTS (4 shape-divider names × 6 mirrored blocks +
+  1 gradient-angle), not 29 independent judgement calls — future growth arrives in
+  predictable batches of 4 exactly when a block already gains divider support, not as a
+  surprise trickle.
+- The module's own `POOL_AT_REDECLARATION` tripwire (expected `ASSIGNABLE=0` at the
+  current pool size) would fire on every run forever once genuinely-unassignable boolean
+  rows are added, unless the tripwire's denominator excludes them — an unstated
+  consequence of the one-line proposal.
+
+**Verdict: does not get built, in any form, this session** — the headline finding (zero
+fidelity value) makes even the narrower, safer alternative multiple personas converged
+on (a SEPARATE `boolean_pool()` scoped to D4/TIER 2.4 alone, never touching the shared
+filter D1-D3/D5-D7 read) not worth building right now. Recorded here for if the
+calculus changes (e.g. a future block ships a boolean that IS proven content-bearing).
+The 29 rows stay exactly what they already were: `styling` via override entries.
+
+### Proposal 2 — port Signal 1 into a new Python extraction pass
+
+**6 of 6 personas rejected the fresh-port form.** Convergent findings:
+- A Python parsing primitive already exists in this codebase for exactly the hard part
+  (string/comment masking + bracket-matching over PHP source) — `check-jsonld-flags.py`
+  (`_strip_noise`, `_match_call`), a live, `prebuild`-gated security check for a DIFFERENT
+  defect (`JSON_UNESCAPED_SLASHES` without `JSON_HEX_TAG`). Not the same job the proposal
+  needed (an earlier claim that this tool "already does the role-classification job" was
+  wrong), but the exact reusable substrate — a fresh port would build a second one.
+- The proposal's own description conflates TWO distinct mechanisms in the JS original
+  (`isInsideJsonEncodeArgument` — literal containment — vs `classifyIfConditionGate` —
+  if-body dataflow) into one collapsed sentence; an implementer following only the
+  brief would likely build one and silently miss the other.
+- The genuinely hard part isn't the bracket-matcher, it's a SEPARATE one-hop
+  dataflow-tracing layer (`collectAttrVarMapBroad`-shaped) the brief never mentions
+  porting. Skipping it reproduces exactly the "mixed-use" failure the whole exercise
+  exists to prevent, and multiple reviewers independently flagged that this shape
+  (a value read into a variable before reaching `wp_json_encode()`) is this codebase's
+  EVERYDAY render.php style, not an edge case.
+- Unbounded/unmeasured claimed population ("4 known, possibly more") vs. `override
+  entries already number 367` (verified live) — the hand-path is proven, working
+  infrastructure at scale, and automating a handful of rows onto it does not reduce
+  risk enough to justify a second parser with its own maintenance surface.
+
+**The council's own recommended next step — measure the real population before deciding
+anything — was run immediately** (a follow-up investigation agent, not a full council
+round): grepped every `render.php` for `wp_json_encode`/`json_encode`, traced which
+attrs feed each call, cross-referenced current `role` against live DB.
+
+**Real result: 6 JSON-LD-only attributes, not 4 — and the measurement itself surfaced 3
+CURRENT wrong classifications**, not just unclassified rows:
+- `sgs/star-rating.schemaItemName` — was `role='identity'` (content-bearing). Feeds ONLY
+  the invisible JSON-LD `name` field (`render.php:36,286-297`), never rendered. → `technical`.
+- `sgs/trustpilot-reviews.showSchema` — was `role='boolean-visibility'`. Gates ONLY the
+  JSON-LD `<script>` block (`render.php:61,569`), same shape as the already-correct
+  `schemaEnabled` on other blocks. → `technical`.
+- `sgs/star-rating.schemaReviewCount` — one of the ORIGINAL 4 "known good" rows
+  (hand-classified `technical` at D604/D607) — turned out itself wrong. NOT JSON-LD-only:
+  `render.php:274-281` also renders it as a visible "(N reviews)" count span. Filing it
+  purely `technical` risked exactly the silent visible-content-drop-on-clone failure this
+  entire remediation exists to prevent. → `content`.
+
+All 3 fixed directly (commit `56b41a7e`) via the same override-layer mechanism as D611,
+after removing a stale duplicate override key the fix's first pass introduced (caught
+live by `attr-classification-overrides.json`'s own duplicate-key guard in
+`sgs-update-v2.py`, not by inspection — the guard did its job).
+
+**Verdict: the parser stays unbuilt.** The council's prediction ("probably under 10 rows")
+held; measuring-and-overriding closed the real gap in minutes, for a fraction of the cost
+and risk of a second hand-rolled PHP scanner. If the population is later shown to be much
+larger (a future audit, not assumed), revisit — and if it's ever built, extract
+`check-jsonld-flags.py`'s masking/bracket-matching primitives into a shared module rather
+than re-inventing them, and port the dataflow-tracing layer alongside the bracket-matcher,
+not instead of it.
+
+### A related false-positive, cleared the same session
+
+The measure-first pass that found the above also flagged `sgs/card-grid.productFeatured`/
+`productOnSale`/`productInStock` as declared-but-dead (zero occurrences in `render.php`
+directly). Delegated to `wp-sgs-developer` (routed via `/delegate`) to wire them into the
+WooCommerce product query per Bean's stated intent ("a filter to say what category of
+product should show in the grid"). **Investigation found no bug existed**: all three are
+consumed via a shared helper file, `includes/class-card-grid-products.php`
+(`Card_Grid_Products::get_product_ids()`, called from `render.php:378` when
+`source='wc-product'`), which the original single-file grep never checked — the exact
+same blind-spot CLASS D603 already named this session (a signal that only reaches an
+attribute through a shared helper reads as absent to a search scoped to one file).
+Verified live on the sandybrown canary: toggled each filter against real WooCommerce
+product state (featured/on-sale/out-of-stock), confirmed the rendered product set changed
+correctly in all cases, reverted the test mutations. No code changed, nothing committed —
+correcting the earlier "dead control" claim is the whole finding.
+
 ## D611 — DB role remediation part 2 CLOSED: 479 → 0, structural TIERs first, overrides last [ROUTINE]
 
 **2026-08-13.** Continuation of D604/D607/D610's method: find the structural signal, teach

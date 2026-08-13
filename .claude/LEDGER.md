@@ -9,26 +9,43 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-13 (latest session, part 5). You asked a sharp question about the database fix from
-part 4 — was patching individual wrong entries really the right move, when the data looked clean
-enough to derive automatically? Checked it, you were right, and fixed it properly.** Commits
-`3267384f`–`12007c67` (the check), plus the real fix below.
+**2026-08-13 (latest session, part 6 — new thread). Finished the DB role-classifier
+remediation part 4's own "open" items — closed 479 blank labels to 0, then had a
+6-persona adversarial council stress-test the two follow-on ideas before building
+either.** Commits `b3107413`–`56b41a7e`, decisions D611–D612.
 
-- Ran a multi-angle validation check on my own earlier fix. It found the answer immediately: the
-  framework already tags every motion/interaction setting with a hidden marker (so it can tell
-  "this is a JS behaviour flag" apart from "this is real CSS") — but the automatic classifier
-  wasn't reading that marker, so it defaulted those settings to the wrong category every time.
-  Proof it was systemic, not a one-off: the check found **3 more settings with the identical bug**
-  on a block I hadn't touched.
-- Fixed those 3 immediately the same safe way as before.
-- Then built the actual permanent fix — taught the classifier itself to recognise that marker, so
-  this whole category of setting labels itself correctly from now on, automatically, on every
-  future block, with no more hand-patching needed. Verified with a dedicated automated test before
-  trusting it, not against the live data (nothing there needs fixing anymore — the test proves the
-  logic on a scratch copy instead).
-- This is now closed. `faqSchema`/`allowMultiple`/`defaultOpen` (the other 2 database labels fixed
-  in part 4) are a genuinely different situation — no equivalent hidden marker exists for those yet
-  — and stay as intentional hand-corrections for now.
+- **The remaining ~469 blank labels closed to zero**, in three permanent, self-fixing
+  rules (not hand-patches): one for settings that belong to plain WordPress, not this
+  framework (225 of them); one for any yes/no toggle that has no visual effect of its
+  own (127); one for a device-specific copy of a setting inheriting its sibling's label
+  automatically (6). The rest (121) were genuine one-by-one judgement calls, each
+  confirmed by actually reading the relevant code, not guessed from the setting's name.
+- **Two ideas for closing the last gaps further were flagged but deliberately NOT
+  built** — so I ran a full adversarial council (6 independent reviewers, each trying to
+  break the idea from a different angle) on both before deciding. The most important
+  thing it found: **assigning either of these settings a more specific label would not
+  actually have changed anything on a cloned client site** — the part of the system that
+  reads these labels only ever acts on ones marked "this is real content", and both
+  ideas were about settings that are decoration or config either way. So both stay
+  parked, not because they're risky, but because they wouldn't have moved the needle.
+- **What the council DID turn up something real for**: it recommended actually counting
+  how many settings feed invisible SEO markup, instead of guessing. Real count was 6, not
+  4 — and 2 of those 6 turned out to be mislabelled RIGHT NOW (not just "could be
+  automated later"), plus a 3rd one I'd trusted from last session as "definitely SEO-only"
+  turned out to also show up as a normal number on the page — meaning a clone of it could
+  have silently dropped a visible count. All 3 fixed. Commit `56b41a7e`.
+- **A "dead control" I flagged turned out not to be dead.** Delegated a fix for 3
+  card-grid filters (show only featured/on-sale/in-stock products) that looked unused —
+  turned out they DO work, wired through a helper file my search hadn't checked. Verified
+  live on the sandbox site by actually changing product stock/featured status and
+  confirming the grid responded correctly, then undid the test changes. No code needed
+  changing — my earlier "this is broken" claim was the bug, not the code.
+
+**2026-08-13 (earlier session, part 5, condensed — superseded by part 6 above).** Validated the
+part-4 database fix wasn't a one-off patch job: found the classifier had a systemic blind spot
+(a motion-marker it wasn't reading), fixed 3 more instances the same bug caused, then built the
+permanent classifier fix so the whole category self-corrects going forward. Commits
+`3267384f`–`12007c67`, decision D610 (full narrative there).
 
 **2026-08-13 (latest session, part 4 — new thread). Continued the "does the editor preview match
 what the client actually gets" checker (the tool the hero work surfaced). Cleaned up a known blind
@@ -156,7 +173,8 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 | Commit | What |
 |---|---|
-| (pending) | DB role remediation part 2 CLOSED: 479 → 0 `role IS NULL` rows. TIER 3.18/3.19/3.41 (358 rows, structural) + 121-row investigated override pass + `dragToScroll` fx-registry fix (D611) |
+| `56b41a7e` | 3 JSON-LD role fixes found by adversarial-council follow-up measurement (`schemaItemName`/`showSchema`/`schemaReviewCount`) (D612) |
+| `5170859c` | DB role remediation part 2 CLOSED: 479 → 0 `role IS NULL` rows. TIER 3.19/3.41 + 121-row investigated override pass + `dragToScroll` fx-registry fix (D611) |
 | `b3107413` | `assign-canonical.py` TIER 3.18: `source='native_wp'` rows seed to `role='core'` (D611) |
 | (pending) | `assign-canonical.py` TIER 3.17: `fx:*` namespace styling bug fixed at source, self-correcting (D610) |
 | `3267384f` | 4 more `fx:*` attrs found + fixed by `/qc-council` re-checking D604 structurally (D607) |
@@ -192,18 +210,17 @@ fatalled every page. Both halves landed together (`079abbae`).
   `sgs/heading.inheritStyle` is an inverted-direction bug (editor shows the opposite of what
   saves), not just a missing preview. Auto-generator investigated and rejected (D606) — this is
   hand/agent-fix work, batched by block, dispatched in parallel where blocks are independent.
-- **DB `role`-column remediation part 2 — CLOSED (D611).** 479 `role IS NULL` rows (re-verified
-  live, not the stale "469") → 0. 358 rows (75%) via three self-correcting structural TIERs
-  (3.18 native_wp→core, 3.19 generic boolean backstop, 3.41 breakpoint inheritance); 121 rows via
-  an investigated override pass (5 parallel agents, real render.php/edit.js reads). Two concrete
-  future structural opportunities named, not built: (1) `fingerprint_content_roles.eligible_pool()`
-  hard-filters `attr_type='string'`, excluding every boolean from the whole D1-D7/TIER 2.4
-  wrapper-paint pipeline — widening it to include boolean would close `shapeDivider*`/
-  `overlayGradientAngle` (29 rows) structurally instead of by name-list override, but is a
-  cross-cutting change needing a design-gate first (CLAUDE.md Rule 7). (2) `wp_json_encode()`
-  Signal-1 port for `faqSchema`-shaped JSON-LD toggles needs a NEW extraction pass in
-  `extract-signatures.py` (assign-canonical.py never parses render.php at all) — bigger, separate
-  work, still not attempted. Full detail: `decisions.md` D611.
+- **DB `role`-column remediation part 2 — CLOSED (D611); both flagged follow-ons COUNCILLED,
+  PARKED with a revised premise (D612).** 479 `role IS NULL` rows → 0 (358 structural TIERs, 121
+  investigated overrides). A 6-persona `/adversarial-council` then reviewed D611's two named
+  follow-ons: (1) widening `eligible_pool()` to admit booleans — killed, not by risk but because
+  `styling`/`behaviour` roles are converter-INVISIBLE so it buys zero fidelity either way; safer
+  narrow form named (`boolean_pool()` scoped to D4 alone) if ever revisited. (2) porting the
+  JSON-LD Signal-1 detector into Python — the council's recommended "measure first" step found the
+  real population (6, not 4) and 3 ACTUAL wrong classifications, all fixed directly (`56b41a7e`,
+  no parser needed). Also cleared a false "dead control" alarm on `sgs/card-grid` (a shared-helper
+  blind spot, same class as D603) — live-verified already working, no code changed. Full detail +
+  all 6 persona verdicts: `decisions.md` D612.
 - **editor-render-parity Signal 4 candidate (D605), not built.** 21 of 23 OTHER-SHAPE findings are
   one of two "editor can't have the live data, deliberate static placeholder" shapes
   (`sgs/buybox`, `sgs/google-reviews`). Structurally same as Signal 3 — worth its own exemption
@@ -242,12 +259,13 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `9d827d63`. ⛔ **This will drift immediately** — run `git log -1` AND
+- **Branch:** `main`, HEAD `56b41a7e`. ⛔ **This will drift immediately** — run `git log -1` AND
   `git status` AND `git branch --show-current`; do not trust this line.
-- **This checkout is SHARED with concurrent sessions — proven again this session.** A whole
-  `helpers-tier-media.php` (11KB) plus hero edits appeared mid-session from another track. Commit by
-  EXACT PATH (`git commit -- <paths>`); a path-scoped-commit gate now enforces this. Before treating
-  another session's uncommitted work as abandoned, check for live git activity.
+- **This checkout is SHARED with concurrent sessions — proven AGAIN this session (part 6).** A
+  growing set of button/icon/media/product-card/DesignTokenPicker edits appeared mid-session from
+  another track, unrelated to the role-classifier work — never touched. Commit by EXACT PATH
+  (`git commit -- <paths>`); a path-scoped-commit gate now enforces this. Before treating another
+  session's uncommitted work as abandoned, check for live git activity.
 - **Deploy deadlock-breaker:** `build-deploy.py --payload <prefix>` lets you deploy your own
   uncommitted payload while another track's dirty files still (correctly) block. Used repeatedly this
   session — no `--allow-dirty`, no hand-rolled tar.
@@ -256,7 +274,7 @@ fatalled every page. Both halves landed together (`079abbae`).
   (leftover D594 QC draft) was TRASHED on Bean's instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was **606** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  (was **612** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
   any "SHIPPED" claim here or in `decisions.md`.
 
 ## Gates that EARNED their keep this session (do not weaken them)
@@ -280,7 +298,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 | Governing programme plan (Track 1b) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
 | Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` (hero + container re-measured this session) |
 | THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 |
-| Decisions | `decisions.md` — **D600** is newest as of this write; re-verify |
+| Decisions | `decisions.md` — **D612** is newest as of this write; re-verify |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close

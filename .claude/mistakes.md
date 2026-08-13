@@ -4,6 +4,22 @@
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-13] I grepped one file, found nothing, and reported a real feature as dead
+- **Pattern key:** `a-single-file-grep-cannot-prove-an-attribute-is-unconsumed`
+- **Evidence (D612):** reported `sgs/card-grid.productFeatured`/`productOnSale`/`productInStock`
+  as dead controls because a grep of `render.php` alone found zero occurrences. All three ARE
+  consumed — through a shared helper, `includes/class-card-grid-products.php`, which `render.php`
+  calls conditionally (`source === 'wc-product'`) at line 378. A dispatched agent built a
+  "fix" before discovering, via a live functional test on the canary (not another grep), that
+  the feature already worked correctly. Same blind-spot CLASS as D603 (a different tool, an
+  editor-preview checker, missed attrs reaching output only through a shared PHP helper) —
+  recurring independently in a THIRD context now (a general research grep, not a built detector).
+- **Rule:** before reporting "X is unused"/"dead"/"never consumed" from a grep, either search the
+  WHOLE consuming surface (every file the block's render path can call into, not just its own
+  render.php) or run a live functional test proving absence of effect. A single-file textual
+  search proves the file doesn't reference the name; it proves nothing about whether the
+  attribute is consumed.
+
 ### [2026-08-11] querySelector grabbed the site header's container instead of my test block, and I nearly reported a working migration as broken
 - **Pattern key:** `queryselector-returns-first-document-match-not-your-test-instance`
 - **Feedback file:** [feedback_queryselector_first_match_not_test_instance.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_queryselector_first_match_not_test_instance.md)
