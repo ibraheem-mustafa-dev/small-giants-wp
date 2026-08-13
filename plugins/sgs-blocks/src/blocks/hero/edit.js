@@ -194,7 +194,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitImageBleed,
 		alignment,
 		backgroundImage,
-		overlayColour,
 		backgroundOverlayColour,
 		overlayGradient,
 		overlayGradientAngle = 180,
@@ -220,8 +219,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
 		shadow,
-		bgParallax,
-		bgKenBurns,
 		// Phase 1 — image display.
 		imageObjectFit,
 		imageWidth,
@@ -328,15 +325,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{/* ── Image (SPLIT VARIANT ONLY — its own media source, not covered by the
-				   shared Background panel on the Styles tab). Unified 2026-08-11: the
+				{/* ── Split image (SPLIT VARIANT ONLY — its own media source, not covered by
+				   the shared Background panel on the Styles tab). Unified 2026-08-11: the
 				   standard-variant background image and the background-video picker that
 				   used to live here were REMOVED — they duplicated the Styles tab's
 				   Background panel (Image/Video tabs), which is a strict superset (it also
 				   handles tablet/mobile art-direction). One media-selection UI per
-				   attribute, not two. ── */}
+				   attribute, not two.
+				   Title renamed from "Image" to "Split image" (media-panel consolidation
+				   task) so it reads honestly as split-only — the standard variant's
+				   background media, overlay colour/gradient, and Parallax/Ken Burns effects
+				   all live in the shared "Background" panel on the Styles tab, which is
+				   reachable for BOTH variants (see that panel for why). ── */}
 				{ isSplit && (
-					<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody title={ __( 'Split image', 'sgs-blocks' ) } initialOpen={ false }>
 						<>
 							{ /* ⛔ The "Split media source" picker (attribute `splitMedia`) was
 							     DELETED here 2026-08-13. It was the pre-typed unified
@@ -946,32 +948,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanel>
 				</PanelBody>
 
-				{/* ── 4. Image styling (appearance only — media SELECTION for this
-				   image lives in the "Image" panel on the Settings tab). ── */}
-				{ /* SKIP-REASON (Spec 35 T4.1 tail, audit-inspector-conformance dense-panel-candidate):
-				     this panel is a MODE-WIZARD, not a flat control set. Its content branches on
-				     two mutually-exclusive variant states (!isSplit / isSplit) into entirely
-				     different control groups. ToolsPanelItem's contract (one hasValue/onDeselect per
-				     independently-resettable "property") doesn't fit a set of controls that only
-				     exist under a specific variant. Left as PanelBody per the task's mode-wizard
-				     escape hatch — see the original (fuller) rationale preserved on the Settings-tab
-				     "Image" panel. */ }
-				<PanelBody title={ __( 'Image styling', 'sgs-blocks' ) } initialOpen={ false }>
-					{ ! isSplit && (
-						<>
-							<DesignTokenPicker
-								label={ __( 'Overlay colour', 'sgs-blocks' ) }
-								value={ overlayColour }
-								onChange={ ( val ) =>
-									setAttributes( { overlayColour: val } )
-								}
-							/>
-						</>
-					) }
-
-					{ isSplit && (
-						<>
-							{ /* The "Split image height" control was REMOVED 2026-08-10. It wrote
+				{/* ── 4. Split image styling (SPLIT VARIANT ONLY — appearance for the split
+				   media column; media SELECTION for this image lives in the "Split image"
+				   panel on the Settings tab).
+				   Media-panel consolidation (this task): this panel used to also carry
+				   !isSplit-only content — a legacy "Overlay colour" control writing the
+				   deleted `overlayColour` attribute, and duplicate "Parallax scroll"/
+				   "Ken Burns animation" toggles. Both are REMOVED, not moved: the shared
+				   <BackgroundPanel> mounted further down this same Styles tab (see the
+				   "Background" panel below) already provides the canonical overlay
+				   colour/gradient control (writing `backgroundOverlayColour`) and the
+				   canonical Parallax/Ken Burns toggles (writing `bgParallax`/`bgKenBurns`)
+				   — and that panel is UNGATED, so it was always reachable on both variants,
+				   including split (which the deleted local toggles here never were — they
+				   were `!isSplit`-only, so a split hero could only reach Parallax/Ken Burns
+				   through the shared panel anyway). Keeping both would have shown the
+				   client two knobs for the same setting; the shared panel is the one that
+				   already covers every variant, so it is the one that stays. This panel is
+				   now entirely split-specific, so it is gated + retitled to say so. */ }
+				{ isSplit && (
+					<PanelBody title={ __( 'Split image styling', 'sgs-blocks' ) } initialOpen={ false }>
+						{ /* The "Split image height" control was REMOVED 2026-08-10. It wrote
 							     the splitImageHeight/…Tablet/splitImageMobileHeight trio, which set
 							     `height` on `.sgs-hero__split-image` — the SAME property on the SAME
 							     element as the "Height" control further down this panel. Two controls
@@ -1176,44 +1173,16 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { [ attrMap[ tier ] ]: next } );
 								} }
 							/>
-						</>
-					) }
-
-					{ ! isSplit && (
-						<>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background effects', 'sgs-blocks' ) }</p>
-							<ToggleControl
-								label={ __( 'Parallax scroll', 'sgs-blocks' ) }
-								help={ __(
-									'Background scrolls slower than content. Disabled automatically on touch devices.',
-									'sgs-blocks'
-								) }
-								checked={ !! bgParallax }
-								onChange={ ( val ) =>
-									setAttributes( { bgParallax: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __( 'Ken Burns animation', 'sgs-blocks' ) }
-								help={ __(
-									'Slow pan and zoom on the background image. Respects reduced-motion preference.',
-									'sgs-blocks'
-								) }
-								checked={ !! bgKenBurns }
-								onChange={ ( val ) =>
-									setAttributes( { bgKenBurns: val } )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</>
-					) }
-				</PanelBody>
+					</PanelBody>
+				) }
 
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).
-				   Legacy "Overlay colour" control above writes overlayColour; this
-				   panel writes backgroundOverlayColour, which render.php prefers
-				   (backgroundOverlayColour ?? overlayColour).
+				   Overlay colour/gradient + Parallax/Ken Burns for BOTH variants now live
+				   solely in the shared "Background" panel (<BackgroundPanel>, mounted
+				   further down this Styles tab) — see the "Split image styling" panel's
+				   comment above for why the old local duplicates were removed rather than
+				   repointed. This "Section (outer)" panel only ever wrote width/max-width,
+				   unrelated to overlay.
 				   No-inline migration (2026-07-09): the default <ContainerWrapperControls>
 				   aggregator is no longer used (see the import comment above) — its
 				   "Content band" + per-grid-area panels wrote to legacy FLAT attrs
@@ -1343,7 +1312,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					// set. 'text' below is a PAINT default only, applied once the
 					// span already exists for another reason (media present); it
 					// must never itself trigger the span.
-					const resolvedColourRaw = backgroundOverlayColour || overlayColour || '';
+					const resolvedColourRaw = backgroundOverlayColour || '';
 					const hasOverlayColour =
 						!! resolvedColourRaw || ( overlayGradient && !! overlayGradientFrom );
 					const showsOverlay =

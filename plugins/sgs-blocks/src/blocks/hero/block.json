@@ -270,10 +270,6 @@
 		"backgroundImage": {
 			"type": "object"
 		},
-		"overlayColour": {
-			"type": "string",
-			"default": "text"
-		},
 		"splitImage": {
 			"type": "object"
 		},

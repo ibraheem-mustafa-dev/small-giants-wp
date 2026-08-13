@@ -11,7 +11,7 @@
  * R-22-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
- *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
+ *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
  *   splitImage, splitImageMobile, splitImageMobileObjectPosition,
  *   imageObjectPositionTablet, minHeight*, background/text/border
  *   colourHover, transitionDuration, transitionEasing, bgParallax, bgKenBurns,
@@ -111,11 +111,11 @@ $sgs_radius_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
 $variant             = $attributes['variant'] ?? 'standard';
 $alignment           = $attributes['alignment'] ?? 'left';
 $bg_image            = $attributes['backgroundImage'] ?? null;
-// WS-4: `overlayColour`/`overlayOpacity` renamed to `backgroundOverlayColour`/
-// `backgroundOverlayOpacity` (the shared container owns those names). Read the new
-// name first; fall back to the legacy name for un-migrated posts (belt-and-braces
-// alongside the edit.js fallback). These dynamic blocks save <InnerBlocks.Content/>,
-// so no save-markup deprecation is needed.
+// WS-4: `overlayColour`/`overlayOpacity` were renamed to `backgroundOverlayColour`/
+// `backgroundOverlayOpacity` (the shared container owns those names). The legacy
+// `overlayColour` attribute has since been deleted outright (D270 — pre-production
+// framework, no migration path needed); only the canonical name is read. These
+// dynamic blocks save <InnerBlocks.Content/>, so no save-markup deprecation is needed.
 // Raw here; sanitised via sgs_colour_value() at the scoped-CSS concat site (matches the
 // sibling colour pattern — media/content/image-border — so the sanitiser is locally
 // obvious at every concatenation point and never double-applied to a resolved var()).
@@ -125,7 +125,7 @@ $bg_image            = $attributes['backgroundImage'] ?? null;
 // other reason (media present); it must never itself trigger the span, or
 // every hero with no media and no configured overlay would render an opaque
 // full-bleed layer (caught live, 2026-08-11 — same session as the ungate).
-$overlay_colour_raw  = $attributes['backgroundOverlayColour'] ?? ( $attributes['overlayColour'] ?? '' );
+$overlay_colour_raw  = $attributes['backgroundOverlayColour'] ?? '';
 $overlay_colour      = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text';
 // D5 (Background panel redesign, 2026-08-11): `backgroundOverlayOpacity` no
 // longer exists as an attribute — the colour/gradient picker's own alpha is
