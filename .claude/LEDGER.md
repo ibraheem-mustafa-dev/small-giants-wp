@@ -9,6 +9,20 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+**2026-08-13 (latest session, part 3). Closed the last carried-forward hero item — split-image
+bleed — by testing it first, then acting on what the test showed.** Commits `3170943a`, `beab47a4`.
+
+- Bleed wasn't dead: the toggle already existed and does something real (edge-to-edge image, no
+  three-controls workaround). Only 2 dev/QA pages used split heroes, so the default was safely
+  flipped to full-bleed.
+- You then asked directly whether it worked on the OTHER media types hero can insert. It didn't —
+  tested with a real uploaded video: before the fix, the video kept its native aspect ratio and
+  overflowed its column (`1280×720` box inside a `652×727` wrapper); after, it filled the column
+  exactly, same as image. Fixed without touching `render.php` at all — just CSS, targeting the
+  type-modifier class the shared media-render helper already emits for every tier.
+- Flagged, not fixed: video/SVG have no width/height/border/padding controls of their own at all,
+  bled or not — a bigger, separate gap, predating this session.
+
 **2026-08-13 (latest session, part 2). Spot-checked the hero editor after D597 shipped, found and
 fixed three more real things, plus a `npm run build`-breaking gate.** Commit `6cd683d9`.
 
@@ -90,6 +104,8 @@ fatalled every page. Both halves landed together (`079abbae`).
 | Commit | What |
 |---|---|
 | `9b8511cf` | `sgs/hero`: split media gets its own Ken-Burns/parallax pair, D596's bgParallax/Ken-Burns questions answered, global `@keyframes` collision fixed (D597) |
+| `3170943a` | `sgs/hero`: `splitImageBleed` tested (not dead), defaulted to full-bleed (D600) |
+| `beab47a4` | `sgs/hero`: bleed extended to reach video/SVG tiers, not just image (D600) |
 
 ## Shipped earlier session (retained)
 
@@ -112,12 +128,13 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## Open — ready to pick up
 
-- **Hero: both prior Track 1b open items now closed.** (a) Stray WP toolbar text-align button on
-  the headline (C3) — Bean confirmed 2026-08-13: "Stray button toolbar is gone." (b) Split-media →
-  `sgs/media` child block (D6(b)) — Bean DROPPED this entirely 2026-08-13, not deferred (D599 in
-  `decisions.md`); the per-device image/video/SVG type-picker already delivers most of the practical
-  benefit. Hero split-image bleed CSS — still latent, 0 live instances, parked, see "Open — carried"
-  below.
+- **Hero: all three Track 1b carried-forward items now closed.** (a) Stray WP toolbar text-align
+  button on the headline (C3) — Bean confirmed 2026-08-13: "Stray button toolbar is gone." (b)
+  Split-media → `sgs/media` child block (D6(b)) — Bean DROPPED this entirely 2026-08-13, not
+  deferred (D599); the per-device image/video/SVG type-picker already delivers most of the
+  practical benefit. (c) Split-image bleed CSS — tested (not dead, not redundant), default flipped
+  to full-bleed, and extended to video/SVG after Bean caught it only working on image (D600,
+  `3170943a` + `beab47a4`).
 - **NEW this session, not caused by it:** `db-consistency` Check #1/#8 flags `sgs/hero`'s
   `mediaOverlayGradientAngle`/`From`/`To` (from `89857e39`) as routing-ambiguous — all 3 resolve to
   `background-image` on the same element/state/tier with no distinguishing mechanism, so the clone
@@ -141,7 +158,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `6cd683d9`. ⛔ **This will drift immediately** — run `git log -1` AND
+- **Branch:** `main`, HEAD `beab47a4`. ⛔ **This will drift immediately** — run `git log -1` AND
   `git status` AND `git branch --show-current`; do not trust this line.
 - **This checkout is SHARED with concurrent sessions — proven again this session.** A whole
   `helpers-tier-media.php` (11KB) plus hero edits appeared mid-session from another track. Commit by
@@ -155,7 +172,7 @@ fatalled every page. Both halves landed together (`079abbae`).
   (leftover D594 QC draft) was TRASHED on Bean's instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was **598** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  (was **600** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
   any "SHIPPED" claim here or in `decisions.md`.
 
 ## Gates that EARNED their keep this session (do not weaken them)
@@ -179,14 +196,13 @@ fatalled every page. Both halves landed together (`079abbae`).
 | Governing programme plan (Track 1b) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
 | Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` (hero + container re-measured this session) |
 | THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 |
-| Decisions | `decisions.md` — **D598** is newest as of this write; re-verify |
+| Decisions | `decisions.md` — **D600** is newest as of this write; re-verify |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
 
 - **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design decision
   each. `image-sequence` is the standing (non-blocking) `check-image-controls-support` finding.
-- **`sgs/hero` split-image bleed** — latent only. Parked.
 - **physics-canvas `ALLOWED_BLOCKS`** — approved in principle; needs its own design gate.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.

@@ -1,5 +1,41 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D600 — hero split-image bleed tested, defaulted on, and extended to video/SVG [ROUTINE]
+
+**2026-08-13.** Closes the last of Track 1b's three carried-forward hero items (the other two closed
+by D599). `splitImageBleed` had sat "latent, 0 live instances, parked" for weeks — nobody knew for
+sure whether it was reachable, useful, or dead. Bean asked for it to be tested first, then acted on.
+Two commits: `3170943a` (toggle + default), `beab47a4` (video/SVG reach).
+
+**1 — tested, not dead, not redundant.** The editor `ToggleControl` already existed (shipped that
+same morning in `6cd683d9`) — the control itself was never the problem. Confirmed the effect is
+genuinely distinct from `imageBorderRadius`/`imagePadding`: it negative-margins the media column past
+the block's own padding to the true container edge, drops `aspect-ratio`/`max-height`, and zeroes
+border-radius — three things those controls can't do together in one toggle. Live census: only 2
+published split-hero pages exist on the canary, both dev/QA fixtures — safe to change the default.
+
+**2 — default flipped `false` → `true`.** Full-bleed is now the standard split-hero look, not
+opt-in — most real split-hero designs want the image flush to the block edge. `block.json` default
++ `edit.js`'s `resetAll`/`onDeselect`/`hasValue` logic all updated to match (previously checked
+`!!splitImageBleed`, now checks `false === splitImageBleed` since `true` is the new baseline).
+
+**3 — a real gap found testing with an actual video, not assumed.** Bean asked directly whether
+bleed reaches the OTHER media types hero can insert (video/SVG, per `4fe39e6d`'s per-device type
+picker) — it didn't. The column-level bleed (`.sgs-hero__media--bleed`) was already type-agnostic,
+but the element-level half only ever targeted `.sgs-hero__split-image`, the class `render.php` only
+ever attaches to the image type — the ENTIRE `imageBorderRadius`/`imageWidth`/`imageHeight`/
+`imagePadding`/`imageObjectFit` control family is image-only by design (`render.php:528-625`). A bled
+video kept default rounded corners and its native aspect ratio, overflowing its wrapper — measured
+live with a real uploaded clip (media 2180) BEFORE the fix: `object-fit:contain`, box `1280×720`
+inside a `652×727` wrapper. Fixed by targeting the type-modifier class `sgs_tier_media_render()`
+always emits (`.sgs-hero__split-media--video`/`--svg`) under the existing bleed wrapper — no
+`render.php` change needed. AFTER: `object-fit:cover`, box exactly matches wrapper.
+
+**Not fixed, flagged instead:** video/SVG tiers have NO width/height/border/padding/object-fit
+controls at all, bled or not — the whole "Image styling" panel is image-only by design, predating
+this session. A bigger, separate decision if client work ever needs it — not silently absorbed into
+this fix.
+
 ## D599 — hero split-media → `sgs/media` child-block rework DROPPED, not deferred [ROUTINE]
 
 **2026-08-13.** Bean's explicit call: "child block rework is dropped." This closes the question
