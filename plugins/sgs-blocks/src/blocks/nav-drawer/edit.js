@@ -149,7 +149,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const blockProps = useBlockProps( {
-		className: 'sgs-nav-drawer sgs-nav-drawer__editor',
+		// sgs-nav-drawer--close-{style} mirrors render.php:456 -- without it,
+		// the text-swap/burger-morph CSS (style.css:314-345, scoped under that
+		// modifier class) never applies, and the canvas always shows the
+		// separate-x icon regardless of the closeStyle control.
+		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyle || 'separate-x' }`,
 		style: shellStyle,
 	} );
 
@@ -400,12 +404,29 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ /* closeStyle preview (2026-08-13) -- mirrors render.php:487-493's
+					three real, visually distinct markups. Previously this always
+					rendered the × icon regardless of closeStyle, so the "Close
+					button style" control had zero editor-canvas effect. */ }
 				<span
-					className="sgs-nav-drawer__close-preview"
+					className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
 					aria-hidden="true"
 					style={ { color: toggleCloseColour ? resolveColorToken( toggleCloseColour, palette ) : undefined } }
 				>
-					<Icon icon={ close } />
+					{ closeStyle === 'text-swap' && (
+						<span className="sgs-nav-drawer__close-text">
+							{ __( 'Close', 'sgs-blocks' ) }
+						</span>
+					) }
+					{ closeStyle === 'burger-morph' && (
+						<span className="sgs-nav-drawer__close-bars">
+							<span></span>
+							<span></span>
+						</span>
+					) }
+					{ ( ! closeStyle || closeStyle === 'separate-x' ) && (
+						<Icon icon={ close } />
+					) }
 				</span>
 				<div { ...innerBlocksProps } />
 			</div>
