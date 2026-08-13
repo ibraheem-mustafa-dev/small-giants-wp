@@ -2156,3 +2156,38 @@ occurred this session: an aborted deploy and a dropped `git stash` that both rep
 control primitive that did not match its storage shape and shipped a destructive inspector on 19
 blocks; a frontend check that could not see an editor-only defect; a declared `supports.anchor` that
 was never honoured; and a gate failure that belonged to a co-active session, not to this one.
+
+### E14. Earned 2026-08-13/14 — editor-render-parity detector accuracy session (D615-D616)
+
+- **STOP-AN-EXEMPTION-HEURISTIC-NEEDS-A-NEGATIVE-CONTROL-PROVING-IT-DOESNT-OVERMATCH.** Built a new
+  detector signal (block-wide: "render.php has real CSS but edit.js mirrors none of it → exempt")
+  from ONE observed real case (`sgs/site-header`). Its own self-test suite's Signal-1 negative
+  control — built for a DIFFERENT signal — caught it wrongly exempting a fixture that should stay
+  flagged, because the new signal cannot distinguish "architecturally cannot preview" from "nobody
+  has built the preview yet" — both produce the identical observable shape. **Rule: before shipping
+  ANY new exemption/allowlist heuristic, write a negative-control fixture sharing the heuristic's
+  observable shape that should NOT be exempted, and prove the heuristic doesn't fire on it — not
+  just a positive fixture proving it does fire on the intended case.** Reverted rather than shipped.
+  Full lesson: `feedback_an_exemption_heuristic_needs_a_negative_control_proving_it_doesnt_overmatch.md`.
+
+- **STOP-VISUAL-DIFF-REPORT-SOURCE-SHA-IS-A-CONTENT-HASH-NOT-A-COMMIT-HASH.** Wrote a visual-diff
+  report's `source_sha` frontmatter field as the current git commit's short hash, twice, and the
+  commit gate rejected both — the field must be the output of
+  `python plugins/sgs-blocks/scripts/visual-report-sha.py <block>` run against the STAGED content
+  (a hash of the block's own source bytes, independent of git history). **Rule: read the gate's own
+  error text for the exact expected value rather than guessing which hash it wants — it prints
+  "staged content is X" directly.**
+
+- **STOP-VISUAL-DIFF-REPORT-IS-ONE-FILE-PER-TOUCHED-BLOCK-DIRECTORY-NOT-PER-LOGICAL-CHANGE.** A
+  single fix spanning `sgs/accordion` + `sgs/accordion-item` (parent providesContext + child
+  usesContext) needed TWO report files (`accordion-2026-08-13.md` AND
+  `accordion-item-2026-08-13.md`), each with its own `source_sha` — the gate globs
+  `reports/visual-diff/<block>-<TODAY>.md` per touched block directory name, not per commit or per
+  feature. **Rule: when a fix touches N block directories, expect N report files.**
+
+**D101 carry-forward receipt for E14.** `python .claude/hooks/handoff-preflight.py --check` run
+post-edit — three STOPs added, zero removed. This session's other candidate lesson
+(`invoke-dispatching-parallel-agents-before-ad-hoc-parallel-dispatch`) was captured to CC memory
+only (`feedback_invoke_dispatching_parallel_agents_before_ad_hoc_parallel_dispatch.md`), not added
+here — it is a skill-invocation habit, not a failure this repo's own gates could have caught, so it
+does not fit this catalogue's scope (anti-patterns THIS project's structural defences guard against).
