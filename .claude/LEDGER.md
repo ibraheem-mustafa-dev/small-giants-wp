@@ -9,64 +9,62 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-13. Hero block cleanup — dead variants + dead controls removed, verified live, shipped.**
-Removed the `video`/`svg-animated` hero variants (the shared Background panel already covers
-video/SVG on every variant, so a dedicated variant was a duplicate) and three confirmed-dead
-inspector controls (message-only "Buttons" panel, native text colour that could never reach the
-child heading/sub-headline blocks, native Dimensions panel duplicating the custom responsive
-Padding & margin panel). Everything verified live on sandybrown, not just read in code: legacy
-content still carrying the retired variant renders identically (WordPress coerces the invalid enum
-to default), the padding/margin round-trip survives with native spacing support removed, and the
-block inserter no longer offers the two dead variant options. One real gap the first cleanup pass
-missed was caught by re-testing live: `sgs-hero-variations.php` still advertised "Video Background
-Hero"/"Animated SVG Hero" as insertable options — fixed, redeployed, re-verified. Content-griditem
-and media-griditem padding controls were checked on request and are genuinely fine (different
-elements, not duplicates) — confirmed with real values on the live frontend, including the case
-where no media is selected yet (the media wrapper simply doesn't render, by design). Commit
-`a941dba9`, merged and pushed to `main`.
+**2026-08-13 (later session). Per-device media across three blocks, then three hero fixes.
+Seven commits, all pushed, all live-verified.** `f4153da4 → b2ffcd40`.
 
-**Split-media → `sgs/media` child block — NOT attempted a third time this session, on purpose.**
-Bean asked how to replace hero's raw scalar-attr image/video with a real `sgs/media` InnerBlocks
-child. This has been tried and reverted TWICE already today (D591, D594) — same root symptom both
-times. Server-side partitioning (render.php sorting InnerBlocks children by block name into two
-wrapper divs) is proven to work; the unsolved half is the EDITOR CANVAS, which gives a block exactly
-one InnerBlocks list with no client-side equivalent of server-side partitioning, and Bean has
-explicitly ruled out a second dedicated InnerBlocks slot for media. Full history surfaced to Bean
-before any new attempt; he asked to commit the confirmed cleanup work first rather than open a third
-attempt this session. **Not resumed. Do not attempt without a concrete new idea for the editor-canvas
-half specifically** — see `decisions.md` D594 for the exact diagnosis.
+**What you can now do that you couldn't this morning.** A client can set a different image,
+video **or SVG** per device on `sgs/media`; a split hero can be an image on desktop and an SVG on
+mobile; a split hero can finally have a section background at all; and the split media column has
+its own overlay, separate from the section's.
 
-**A "stopped" session turned out not to be stopped — worth remembering.** Bean asked me to clean up
-what he believed was orphaned uncommitted work in the `t1-t3-t4-mechanical` worktree (site-header
-friction fixes, multi-button spacing fix, gridItemPadding tier-object consistency — all real,
-well-documented Track 1b work). While investigating, that worktree committed 5 times in real time
-in front of me — it was actively running the whole time, not stopped. No collision, no work lost
-(git's index.lock serialised us correctly), but the lesson stands: **a shared-worktree session being
-quiet is not evidence it has stopped — check for live git activity (recent commits, a fresh
-index.lock, a running git.exe) before treating uncommitted state as abandoned.** That work is now
-merged to `main` (`81c33610`) — see "Other tracks" below.
+**The most valuable find was a bug nobody reported.** While adding SVG tiers I traced the existing
+IMAGE tiers and found the cascade was wrong: with a tablet crop set and mobile left empty, mobile
+fell back to **desktop** instead of inheriting **tablet** — contradicting `sgs_resolve_tier()` and
+Spec 35's own stated rule. Proven, not argued: replaying the old rules through a 12-case assertion
+set fails exactly one case and passes eleven; the new logic passes 12/12; confirmed live at 375px.
+Root cause was a *shape* — the rules were enumerated by hand, so one of four combinations was
+missed. Both media families now compute band ownership from one closure. **The same bug existed a
+third time** in a shared helper, where its own docblock described the defect as intended behaviour.
 
-**Git hygiene done alongside the above:** dropped one fully-redundant stash
-(`other-track-decisions-wip-2026-08-11` — all 5 decisions it would have added, D579-D585, were
-already committed via another path; verified before dropping, not assumed). Recorded D594 (the 2nd
-hero split-media revert) to `decisions.md` — it was sitting genuine and uncommitted in the working
-tree. Reconciled two `origin/main` divergences this session via ordinary merges (no conflicts, both
-from the concurrently-running Track 1b work) and pushed.
+**Two things I got wrong, both caught by review rather than by me.**
+1. I estimated the hero work as a whole separate session. A `/qc-council` measured it at ~15-18
+   edit sites and falsified my reasoning — **and the lines I'd cited as the fix site were the wrong
+   ones.** Editing there would have given split a SECOND background painter over the wrapper's,
+   plausibly reproducing D594's "background bleeding through", and it would have looked correct on
+   any page with no wrapper background set.
+2. I called an implementer's code comment "fabricated" after `grep … | head -8` hid the very rule
+   that supported it (10th match). A Haiku reviewer caught me. Had I "fixed" it, I'd have replaced
+   a correct justification with a wrong one on a value that prevents a real rendering bug.
 
-## Other tracks — status
+**The recurring failure mode this session was MY verification, not the implementers' code.** Four
+false negatives, each of which read as a real defect: a truncated grep; a collapsed inspector panel
+reading as a missing control; `/Ken Burns/i` not matching the real label `"Ken-burns zoom"`; and a
+stale element handle re-reading one block while appearing to compare two. **A truncated, unexpanded
+or loosely-matched check does not report "unknown" — it reports a confident absence.**
 
-- **Track 1b (inspector standardisation) — 5 more items closed this session, by a concurrently
-  running session, now on `main`.** Site-header friction fixes (F2: 7→2 default-visible Settings
-  controls, Shrink-on-scroll/Contrast-safety controls now hidden until their parent behaviour is on
-  at any tier), multi-button `supports.spacing.margin` added (C4 — 9 theme pattern instances were
-  silently discarding a stored margin value), `gridItemPadding` default fixed to the tier-object
-  shape `{"desktop":{}}` on container/cta-section/trust-bar, a roster.json freshness gate, and image-
-  controls `sgsHeight` collapsed to one `ResponsiveControl` (A4). Full detail + the register:
-  `~/.claude/plans/go-track-1b-playful-hamster.md` — **re-read it fresh, do not trust a cached open-
-  item count from this doc; it has a documented history of stale cached totals.**
-- **Hero dead-variant/dead-control cleanup — SHIPPED this session.** See Human Summary above.
-  `decisions.md` — record a new D-entry next session if not already done (D-ceiling was 594 as of
-  this write; re-verify, don't trust this number).
+**A duplicate control that was worse than a duplicate.** Hero showed clients TWO "Overlay colour"
+knobs: its own local one wired to the LEGACY `overlayColour`, and the shared panel's wired to the
+canonical `backgroundOverlayColour`. The more prominent one did nothing. Deleted, with the legacy
+attribute, after verifying twice that the shared panel genuinely covers it.
+
+**A fatal-in-waiting, cleared.** `includes/render-helpers.php` carried an uncommitted `require_once`
+pointing at an **untracked** file — committing that line alone, or any fresh checkout, would have
+fatalled every page. Both halves landed together (`079abbae`).
+
+## Shipped this session
+
+| Commit | What |
+|---|---|
+| `5727825e` | `sgs/media` per-device SVG + **cascade fix for BOTH media families** |
+| `b6ccb320` | D595 + Spec 35 D5 amended at source (the cascade rule) |
+| `079abbae` | `helpers-tier-media.php` landed WITH its `require_once` (fatal cleared) |
+| `f5fdf7e6` | SVG `<style>` finding CLOSED as not-a-vulnerability, on evidence |
+| `efa2f0be` | `sgs/container`: 3 stacked background pickers → one `ResponsiveControl` |
+| `4fe39e6d` | `sgs/hero`: split media gains per-device TYPE; legacy `splitMedia` deleted |
+| `0917bcf3` | `sgs/hero`: background is a ROOT setting — split heroes paint one |
+| `89857e39` | `sgs/hero`: second overlay targeting the split MEDIA element |
+| `0c270af7` | `sgs/hero`: media panels consolidated, legacy `overlayColour` deleted |
+| `b2ffcd40` | D596 |
 
 ## Blockers
 
@@ -74,46 +72,78 @@ from the concurrently-running Track 1b work) and pushed.
 
 ## Open — ready to pick up
 
-- **Hero split-media → `sgs/media` child block.** Twice reverted (D591, D594). Server-side mechanism
-  proven; editor-canvas multi-zone InnerBlocks rendering is the specific open problem. Needs a fresh
-  design session (`/brainstorming`) before a third attempt, not a repeat of the same approach.
-- **Track 1b's own open register** — re-derive from `go-track-1b-playful-hamster.md` directly; do
-  not carry forward any total quoted in this LEDGER or that doc without recounting the rows.
+- **Hero effect toggles (Bean spotted this, unprompted — NOT built).** `bgParallax`/`bgKenBurns`
+  target only the SECTION background; the split MEDIA element has none — the same asymmetry the
+  overlay had before `89857e39`. Two things to MEASURE before building: (a) **`bgParallax` is a dead
+  control on split** — it attaches only to the standard-only private `<img>`, yet the ungated panel
+  offers the toggle on split; (b) **whether `0917bcf3` silently made Ken Burns animate on split is
+  UNMEASURED** — it animates `::before`, and split backgrounds now paint there. If it did, that is a
+  behaviour change from that commit nobody asked for.
+- **`sgs/container` background pickers — the tier-OBJECT question is NOT open.** ⛔ Do NOT "finish"
+  the migration by folding `backgroundImage`/`Tablet`/`Mobile` into a tier object. That flat suffix
+  triple is load-bearing for the cloning pipeline: `test_family_modifier_scan.py:111-116` asserts the
+  lift lands on `backgroundImageMobile` and explicitly NOT on `backgroundImage`, and the triple is
+  registered in the DB across 7 blocks. Only the CONTROL was migrated, deliberately.
+- **`inspector-scan` rule 26 — 2 findings are a DETECTOR bug, not debt.** Both are the new container
+  controls, flagged `hollow-tier` because their desktop branch returns explanatory text. That IS the
+  canonical `media/edit.js:236` pattern; the rule cannot see it because its corpus is
+  `*/components/*.js` + `extensions/*.js`, never `*/edit.js`. Fix the detector; do NOT baseline it,
+  and do NOT "fix" the controls — that reintroduces a UX defect (see D596).
+- **Hero split-media → `sgs/media` CHILD BLOCK.** Still twice-reverted (D591, D594), still unsolved
+  on the editor-canvas half. ⚠ This session did NOT attempt it — the hero work shipped was
+  attribute-based, a different mechanism entirely. Needs its own design session.
+- **Track 1b's own open register** — re-derive from `go-track-1b-playful-hamster.md` directly; never
+  carry forward a total quoted here or there without recounting the rows.
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `81c33610` (merge, this session). ⛔ **This will drift immediately** — run
-  `git log -1` AND `git status` AND `git branch --show-current`, don't trust this line. Local and
-  `origin/main` are in sync as of this HEAD (verified via `git push`).
-- **This checkout is shared with at least one other concurrent session, proven again this session**
-  (see Human Summary). Commit by EXACT PATH (`git commit -- <paths>`), never a bare `git commit`, and
-  check for live git activity before treating another session's uncommitted work as abandoned.
-- **Canary:** sandybrown-nightingale-600381.hostingersite.com. Hero cleanup deployed and live-
-  verified there this session. ⚠ 11 WP installs share that server — always name the full path, never
-  glob. Credentials `.claude/secrets/sandybrown.env` (always available; do not ask).
+- **Branch:** `main`, HEAD `b2ffcd40`. ⛔ **This will drift immediately** — run `git log -1` AND
+  `git status` AND `git branch --show-current`; do not trust this line.
+- **This checkout is SHARED with concurrent sessions — proven again this session.** A whole
+  `helpers-tier-media.php` (11KB) plus hero edits appeared mid-session from another track. Commit by
+  EXACT PATH (`git commit -- <paths>`); a path-scoped-commit gate now enforces this. Before treating
+  another session's uncommitted work as abandoned, check for live git activity.
+- **Deploy deadlock-breaker:** `build-deploy.py --payload <prefix>` lets you deploy your own
+  uncommitted payload while another track's dirty files still (correctly) block. Used repeatedly this
+  session — no `--allow-dirty`, no hand-rolled tar.
+- **Canary:** sandybrown. Probe pages created this session: **2332** (media SVG tiers), **2334**
+  (hero split tiers), **2337** (hero background/overlay). Delete when no longer useful. Page 2294
+  (leftover D594 QC draft) was TRASHED on Bean's instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was 594 at this write) · `git merge-base --is-ancestor <claimed-shipped-commit> HEAD` before
-  trusting any "SHIPPED" claim in this doc or `decisions.md`.
+  (was **596** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  any "SHIPPED" claim here or in `decisions.md`.
+
+## Gates that EARNED their keep this session (do not weaken them)
+
+- **`oldshape-audit` ABORTED a deploy** over one stranded attribute on one draft page. It is what
+  stands between removing an attribute and silently deleting stored content on next save (D338).
+- **The visual-diff gate refused a STALE report** — it recomputes the staged hash, so a same-day
+  report describing older bytes is rejected (D520). It reads ONLY `<block>-<date>.md`; a second
+  report file does not satisfy it.
+- **The path-scoped-commit gate** refused a bare `git commit` while two tracks shared `main`.
+- `--no-verify` was used exactly ONCE, with Bean's explicit authorisation, bypassing ONLY the
+  visual-diff gate; every other gate in that run passed and is recorded in the commit message.
 
 ## Pointers
 
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| Governing programme plan (Track 1b — phases, register, live status) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
-| Hero block visual-diff evidence (this session) | `reports/visual-diff/hero-2026-08-13.md` |
-| THE GOVERNING SPEC for Track 1b | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (ACTIVE v2.0) |
-| Decisions (D-numbered) | `decisions.md` — D594 (2nd hero split-media revert) is the newest entry as of this write |
-| Spec roster + DEAD-never-cite list | `specs/README.md` |
+| This session's plan + council verdict | `~/.claude/plans/is-the-sgs-media-block-iterative-stonebraker.md` |
+| Governing programme plan (Track 1b) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
+| Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` |
+| THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 (amended this session) |
+| Decisions | `decisions.md` — **D596** is newest as of this write; re-verify |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
 
-- **`testimonial`/`image-sequence`'s `imageControls` declarations** — real crop scenario, not
-  converted (each needs its own per-item design decision). Not scheduled.
-- **`sgs/hero` split-image bleed** — latent only, 0 live instances. Parked.
-- **physics-canvas `ALLOWED_BLOCKS`** — Bean approved opening it via a physics-participation toggle;
-  needs its own design gate. Not started.
+- **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design decision
+  each. `image-sequence` is the standing (non-blocking) `check-image-controls-support` finding.
+- **`sgs/hero` split-image bleed** — latent only. Parked.
+- **physics-canvas `ALLOWED_BLOCKS`** — approved in principle; needs its own design gate.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.
+- **`cta-section` / `trust-bar`** also host the shared `BackgroundPanel` changed at `efa2f0be`; they
+  were not individually opened in the editor. Low risk (UI-only change) but unverified.
