@@ -359,10 +359,21 @@
 						"role": "icon-slug"
 					},
 					"features": {
-						"type": "string"
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"text": {
+									"type": "string"
+								},
+								"included": {
+									"type": "boolean"
+								}
+							}
+						}
 					},
 					"highlighted": {
-						"type": "string"
+						"type": "boolean"
 					},
 					"period": {
 						"type": "string"
@@ -439,15 +450,15 @@
 		"gap": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -474,7 +485,7 @@
 				"space-around",
 				"space-evenly"
 			]
-		},
+		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",
