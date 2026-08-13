@@ -295,6 +295,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( contentBackground ) {
 		contentPreviewStyle.backgroundColor = contentBackground;
 	}
+	// Column/stacking order preview — mirrors render.php's desktop-tier swap
+	// (render.php:497-499) so the canvas doesn't silently disagree with the
+	// frontend. Desktop tier only, matching the media preview above (the
+	// per-tier order is what WP's own device switcher provides — tablet/
+	// mobile order isn't previewed here any more than tablet/mobile column
+	// ratio is). Blank/'content-first' = natural DOM order (content column
+	// renders first in markup), so no override needed; only 'media-first'
+	// swaps the order.
+	const isMediaFirstDesktop = 'media-first' === splitContentOrder?.desktop;
+	if ( isMediaFirstDesktop ) {
+		contentPreviewStyle.order = 2;
+	}
 
 	const className = [
 		'sgs-hero',
@@ -1402,7 +1414,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					( splitImage?.url ||
 						splitVideo?.url ||
 						splitSvg ) && (
-						<div className="sgs-hero__media">
+						<div
+							className="sgs-hero__media"
+							style={ isMediaFirstDesktop ? { order: 1 } : undefined }
+						>
 							{ splitMediaType === 'video' && splitVideo?.url && (
 								<video
 									src={ splitVideo.url }

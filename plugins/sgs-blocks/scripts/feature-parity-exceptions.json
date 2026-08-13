@@ -309,7 +309,11 @@
         "wave": "over-report"
       },
       "customOverlayColor": {
-        "reason": "Equivalent to `overlayColour`.",
+        "reason": "Equivalent to `backgroundOverlayColour`. Reworded 2026-08-13 — this entry previously named the LEGACY `overlayColour` attribute, deleted outright at D596 (no deprecation, per D270) in favour of the canonical `backgroundOverlayColour`, which the shared BackgroundPanel's DesignTokenPicker writes.",
+        "wave": "over-report"
+      },
+      "overlayColor": {
+        "reason": "core/cover's `overlayColor` (theme-preset colour SLUG) and `customOverlayColor` (raw hex) are BOTH satisfied by the single `backgroundOverlayColour` control — its DesignTokenPicker (`disableCustomColors={false}`, src/components/DesignTokenPicker.js:92) offers theme-palette presets AND a custom hex picker in one UI, matching core's preset+custom pairing without needing two separate attrs. Never had its own exception entry (only `customOverlayColor` did) until surfaced by npm run build's feature-parity gate on 2026-08-13, unrelated to that session's hero effect-toggle work — pre-existing since D596's overlayColour->backgroundOverlayColour rename, first caught here.",
         "wave": "over-report"
       },
       "dimRatio": {

@@ -1453,6 +1453,15 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "mediaAnimationDuration",
+      "fields": {
+        "css_property": "anim:duration",
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "mediaBackground",
       "fields": {
         "css_property": "background-color",
@@ -1486,6 +1495,38 @@
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
         "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayGradientAngle",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayGradientFrom",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaOverlayGradientTo",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "media-overlay"
       }
     },
     {
@@ -1556,7 +1597,7 @@
       "attr": "splitImageMobileObjectPosition",
       "fields": {
         "css_property": "object-position",
-        "css_element": "split-image--mobile"
+        "css_element": "split-media--mobile"
       }
     },
     {
@@ -2660,7 +2701,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "desktop",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -5486,6 +5527,15 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaParallax",
+      "fields": {
+        "css_property": "anim:parallax",
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
