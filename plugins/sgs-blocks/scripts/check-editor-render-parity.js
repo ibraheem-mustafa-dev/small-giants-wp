@@ -320,6 +320,46 @@ function jsxAttrValueNode( openingElement, attrName ) {
 const EXCLUDED_JSX_CONTAINERS = new Set( [ 'InspectorControls', 'BlockControls' ] );
 
 /**
+ * Check if the edit.js file contains a ServerSideRender JSX element with
+ * an attributes prop that passes the attributes object (either
+ * attributes={attributes} or attributes={ attributes }).
+ *
+ * If true, all attributes in this block flow through the REST-rendered
+ * render.php preview, so no attribute can meaningfully be "unused" by the
+ * editor canvas — the whole attributes object is passed as-is to the real
+ * server-rendered output.
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @return {boolean}
+ */
+function hasServerSideRenderWithAttributes( ast ) {
+	let found = false;
+	traverse( ast, {
+		JSXElement( nodePath ) {
+			const name = jsxOpeningName( nodePath.node.openingElement );
+			if ( name !== 'ServerSideRender' ) {
+				return;
+			}
+			const attrsNode = jsxAttrValueNode( nodePath.node.openingElement, 'attributes' );
+			if ( ! attrsNode ) {
+				return;
+			}
+			// Check if the attributes prop is a JSXExpressionContainer with an Identifier 'attributes'
+			if (
+				attrsNode.type === 'JSXExpressionContainer' &&
+				attrsNode.expression &&
+				attrsNode.expression.type === 'Identifier' &&
+				attrsNode.expression.name === 'attributes'
+			) {
+				found = true;
+				nodePath.stop();
+			}
+		},
+	} );
+	return found;
+}
+
+/**
  * Collect every attribute name destructured FROM `attributes`, in either of
  * the two shapes used across this block library.
  *
@@ -527,6 +567,14 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const ast = safeParse( src );
 	if ( ! ast ) {
 		return []; // parse failure is not this check's concern
+	}
+
+	// If this block uses ServerSideRender with attributes={attributes}, the
+	// editor canvas displays the actual render.php output via REST — all
+	// attributes flow into that real render, so none can be "unused" by the
+	// editor preview. Exempt the entire block.
+	if ( hasServerSideRenderWithAttributes( ast ) ) {
+		return [];
 	}
 
 	const destructured = collectDestructuredFromAttributes( ast );
@@ -1025,6 +1073,51 @@ function runSelfTest() {
 		! negA2Findings.some( ( f ) => f.attr === 'iconPosition' ),
 		'negative fixture (pre-return convention): iconPosition should NOT be flagged (used to build ' +
 			'className before the return, then spread via useBlockProps), but was',
+		failuresA
+	);
+
+	// Positive control for ServerSideRender exemption — attributes are
+	// destructured and written, but the editor canvas shows the actual
+	// render.php output via REST, so no attribute is unused. All should be
+	// exempt.
+	const ssrDir = writeBlock( 'check-a-ssr-positive', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-ssr-positive',
+			attributes: {
+				splitContentOrder: { type: 'string' },
+				otherAttr: { type: 'string' },
+			},
+		} ),
+		'edit.js': [
+			"import { ServerSideRender } from '@wordpress/server-side-render';",
+			"import { InspectorControls } from '@wordpress/block-editor';",
+			"import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { splitContentOrder, otherAttr } = attributes;',
+			'\treturn (',
+			'\t\t<div>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<RangeControl value={ splitContentOrder } onChange={ ( v ) => setAttributes( { splitContentOrder: v } ) } />',
+			'\t\t\t\t\t<SelectControl value={ otherAttr } onChange={ ( v ) => setAttributes( { otherAttr: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<ServerSideRender',
+			'\t\t\t\tblock="sgs/fixture-a-ssr-positive"',
+			'\t\t\t\tattributes={ attributes }',
+			'\t\t\t/>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const ssrMeta = readDeclaredAttrs( ssrDir );
+	const ssrFindings = checkEditorCanvasDesync( ssrMeta.name, ssrDir, ssrMeta.attrs );
+	assertTrue(
+		ssrFindings.length === 0,
+		'SSR positive fixture: ServerSideRender with attributes={ attributes } should exempt ALL attributes, ' +
+			'but got ' + ssrFindings.length + ' finding(s): ' +
+			ssrFindings.map( ( f ) => f.attr ).join( ', ' ),
 		failuresA
 	);
 
