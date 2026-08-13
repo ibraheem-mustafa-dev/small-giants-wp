@@ -277,7 +277,15 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	const nameStyle = { color: nameColour || undefined };
 	const roleStyle = { color: roleColour || undefined };
 	const orgStyle = { color: orgColour || undefined };
-	const ratingStyle = { color: ratingColour || undefined };
+	// ratingSize mirrors render.php:487/499, which sets the same pixel value as
+	// the frontend SVG stars' width/height. The canvas renders the rating as a
+	// text glyph ('★'.repeat(...)) rather than SVG, so the equivalent visual
+	// control is font-size — matches block.json's own attrMap
+	// ("css:font-size": "ratingSize", block.json:134).
+	const ratingStyle = {
+		color: ratingColour || undefined,
+		fontSize: ratingSize ? ratingSize + 'px' : undefined,
+	};
 
 	const showSummary =
 		effectiveVariant === 'pull-quote-editorial' || effectiveVariant === 'case-study-media';

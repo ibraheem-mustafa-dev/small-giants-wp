@@ -439,7 +439,24 @@ export default function Edit( { attributes, setAttributes } ) {
 												undefined,
 										} }
 									>
-										<span className="sgs-toc__link">
+										{ /* First item previews the scroll-spy "active" state as a
+										   representative sample — the real active link is determined
+										   by scroll position (view.js IntersectionObserver toggling
+										   .sgs-toc__link--active, render.php:195), which the static
+										   editor canvas cannot replay. */ }
+										<span
+											className={ `sgs-toc__link${ 0 === i ? ' sgs-toc__link--active' : '' }` }
+											style={
+												0 === i
+													? {
+															color:
+																colourVar( activeLinkColour ) ||
+																colourVar( linkColour ) ||
+																undefined,
+													  }
+													: undefined
+											}
+										>
 											{ heading.text }
 										</span>
 									</li>
@@ -479,7 +496,24 @@ export default function Edit( { attributes, setAttributes } ) {
 												undefined,
 										} }
 									>
-										<span className="sgs-toc__link">
+										{ /* First item previews the scroll-spy "active" state as a
+										   representative sample — the real active link is determined
+										   by scroll position (view.js IntersectionObserver toggling
+										   .sgs-toc__link--active, render.php:195), which the static
+										   editor canvas cannot replay. */ }
+										<span
+											className={ `sgs-toc__link${ 0 === i ? ' sgs-toc__link--active' : '' }` }
+											style={
+												0 === i
+													? {
+															color:
+																colourVar( activeLinkColour ) ||
+																colourVar( linkColour ) ||
+																undefined,
+													  }
+													: undefined
+											}
+										>
 											{ heading.text }
 										</span>
 									</li>
