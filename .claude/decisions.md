@@ -1,5 +1,45 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D598 — hero's split-order editor preview was silently inert; a stale gate broke `npm run build` for everyone [INCIDENT]
+
+**2026-08-13.** Follow-up to D597, same session. Bean spot-checked the hero editor after D597 shipped
+and found three more things. Commit `6cd683d9`.
+
+**1 — `splitContentOrder` worked on the frontend and did nothing in the editor.** `render.php:493-520`
+correctly emits `order:1`/`order:2` CSS when the control changes. `edit.js`'s hand-built canvas
+preview had no equivalent logic at all — toggling the control silently did nothing visible until the
+page was saved and viewed live. Fixed by mirroring render.php's exact desktop-tier condition in the
+JSX preview (content + media div `style.order`). Frontend was never broken; only the canvas lied.
+
+**2 — "split media only allows an image" was already fixed.** Bean's report described the block's
+state before `4fe39e6d` (earlier the same day), which shipped the full per-device image/video/SVG
+type picker + a shared render helper. Live-verified: image/video/SVG per device tier all render
+correctly. No code change needed.
+
+**3 — `npm run build` was broken for anyone touching this repo, not just this session.** Proven via
+`git stash` against the already-pushed tree before diagnosing further — not caused by the
+splitContentOrder fix. Two causes, both leftover from D597's own work earlier the same session:
+- `db-consistency` Check #8 flagged `mediaOverlayColour`/`mediaParallax`/`mediaAnimationDuration` as
+  "rogue" seeds — a correct `attrMap` declaration existed in `block.json`, but the derived classifier
+  snapshot (`css-property-classifications.json`) was never regenerated to match. Fixed:
+  `extract-signatures.py --task-a-only`.
+- `audit-feature-parity`'s gate flagged `sgs/hero:overlayColor` (vs `core/cover`) as an unexplained
+  gap. Core pairs `overlayColor` (theme-preset slug) with `customOverlayColor` (raw hex); hero's
+  existing exception only covered the hex half, under the now-deleted `overlayColour` attribute name
+  (D596 renamed it to `backgroundOverlayColour`). Confirmed hero's `DesignTokenPicker` already covers
+  both cases in one control (`disableCustomColors={false}`) and added the missing exception, reworded
+  the stale one. Also removed a duplicate, factually wrong `overlayColor` entry a concurrent
+  investigation had added in parallel — it cited `overlayGradientFrom` (the gradient's colour-stop
+  attr) rather than `solid: 'backgroundOverlayColour'` (`GradientOverlayControl.js:201`, the control's
+  actual default).
+
+**Process note.** Two subagents ran concurrently on the same `hero/edit.js` + shared JSON config
+files this session (split-order fix, split-media investigation). Both correctly stashed/restored
+around each other's uncommitted work with no loss — but one concurrent JSON edit still produced a
+genuine duplicate-key collision (the `overlayColor` entry above), caught only by cross-checking the
+actual component source before trusting either agent's reasoning. `npm run build` exits 0 clean as
+of this commit; deployed and payload-checksum-verified.
+
 ## D597 — hero's split media gets its own effect toggles; a global `@keyframes sgs-ken-burns` naming collision found and fixed [INCIDENT]
 
 **2026-08-13.** Closed the three items D596 flagged "found but not built". Commit `9b8511cf`,

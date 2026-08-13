@@ -9,7 +9,23 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-13 (latest session). D596's three "found but not built" items on hero, closed.**
+**2026-08-13 (latest session, part 2). Spot-checked the hero editor after D597 shipped, found and
+fixed three more real things, plus a `npm run build`-breaking gate.** Commit `6cd683d9`.
+
+- **Split-order control** now actually shows the swap in the editor canvas, not just on the
+  published page — was correct on the frontend the whole time, the editor preview just never
+  applied it.
+- **"Split media only allows an image"** — already fixed by an earlier commit today; verified live,
+  image/video/SVG per device all work.
+- **`npm run build` was broken for everyone**, not something this session caused — proven by
+  stashing and testing the already-pushed tree. Root cause: two loose ends from D597's own work
+  (a stale derived-classifier snapshot, and a feature-parity exception that named a deleted
+  attribute). Both fixed; build is green again.
+- One genuine collision between two concurrent subagents working the same files this session —
+  caught before it shipped, by checking the actual component source rather than trusting either
+  agent's reasoning.
+
+**2026-08-13 (latest session, part 1). D596's three "found but not built" items on hero, closed.**
 One commit, pushed, live-verified, `/sgs-update` re-run. `9b8511cf` on top of `b2ffcd40`.
 
 **What you can now do that you couldn't before.** The split hero's foreground media picture can
@@ -96,12 +112,12 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## Open — ready to pick up
 
-- **Hero: 3 items still open from Track 1b, unrelated to effects, not touched this session:**
+- **Hero: 2 items still open from Track 1b, unrelated to effects, not touched this session:**
   (a) stray WP toolbar text-align button on the headline (C3) — confirmed inert, needs a ruling
   (leave as cosmetic debt, or ~45-60 min custom `BlockControls` filter, no precedent in this repo);
   (b) split-media → `sgs/media` child block (D6(b)) — twice reverted (D591, D594), server-side
-  mechanism proven, editor-canvas half still needs a new idea before a third attempt; (c) hero
-  split-image bleed CSS — latent, 0 live instances, parked.
+  mechanism proven, editor-canvas half still needs a new idea before a third attempt. Hero split-image
+  bleed CSS (was item c) — still latent, 0 live instances, parked, see "Open — carried" below.
 - **NEW this session, not caused by it:** `db-consistency` Check #1/#8 flags `sgs/hero`'s
   `mediaOverlayGradientAngle`/`From`/`To` (from `89857e39`) as routing-ambiguous — all 3 resolve to
   `background-image` on the same element/state/tier with no distinguishing mechanism, so the clone
@@ -128,7 +144,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `9b8511cf`. ⛔ **This will drift immediately** — run `git log -1` AND
+- **Branch:** `main`, HEAD `6cd683d9`. ⛔ **This will drift immediately** — run `git log -1` AND
   `git status` AND `git branch --show-current`; do not trust this line.
 - **This checkout is SHARED with concurrent sessions — proven again this session.** A whole
   `helpers-tier-media.php` (11KB) plus hero edits appeared mid-session from another track. Commit by
@@ -142,7 +158,7 @@ fatalled every page. Both halves landed together (`079abbae`).
   (leftover D594 QC draft) was TRASHED on Bean's instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was **597** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  (was **598** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
   any "SHIPPED" claim here or in `decisions.md`.
 
 ## Gates that EARNED their keep this session (do not weaken them)
@@ -166,7 +182,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 | Governing programme plan (Track 1b) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
 | Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` (hero + container re-measured this session) |
 | THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 |
-| Decisions | `decisions.md` — **D597** is newest as of this write; re-verify |
+| Decisions | `decisions.md` — **D598** is newest as of this write; re-verify |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
