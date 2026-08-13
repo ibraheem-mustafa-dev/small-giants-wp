@@ -1,5 +1,96 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D602 — "EXPECTED" is defined as what the pipeline must route, PLUS the seeded blast radius [ROUTINE]
+
+**2026-08-13. Bean-ruled.** This answers the question that had blocked Programme B (schema
+uniformity) since 2026-08-13's root-cause report — its PART 10 Q3, the one genuinely-unanswerable
+question of the twenty-one. Bean's own framing, at the close of the prior session: *"the uniformity
+doesn't need to mean every detail is usable, just the expected ones."* Nobody had defined "expected",
+so "uniform" had no denominator and no target schema could be written.
+
+**The ruling, in Bean's words: "D + any other columns that are seeded which could be impacted
+negatively by the changes."**
+
+**Leg 1 — the routing set.** EXPECTED = every property the converter must write to produce a
+faithful clone, i.e. the attributes carrying a non-NULL `css_property`. **This is a LIVE QUERY, never
+a cached list** — the count is DB-authoritative (`/sgs-db`), and a number written into any doc is a
+copy that rots. At the time of ruling the report measured 204 destinations, weighted max-width 32 ·
+font-size 25 · grid-template-columns 21 · gap 21 · padding 19 · grid-template-rows 18 · width 14 ·
+border-width 13. **Do not carry those figures forward as the definition** — the *rule* is the
+definition; the figures are one day's reading of it.
+
+**Why this leg and not the three alternatives.** Four candidates were put to Bean with their
+trade-offs. Ruled out:
+- **A fixed list of five families** (colour/spacing/typography/border/shadow) — tidiest and smallest,
+  and **wrong**: it excludes max-width, gap, grid-template-columns and grid-template-rows, i.e. four
+  of the five worst-affected properties. It would have declared uniformity over the wrong set. *(This
+  was the recommendation initially offered and then withdrawn on measuring the weighting — recorded
+  because withdrawing it is the load-bearing part.)*
+- **Derive from `supports.sgs.elements` clusters** — mechanical and staleness-proof, but 13 of 80
+  blocks are unmanifested and would silently carry no expected set at all.
+- **Per block category** — closest to how a client thinks, but the category axis does not exist for
+  all 83 blocks (`block_composition.container_kind` covers composites only), so it is the only option
+  requiring design work before any measurement is possible.
+
+The deciding argument for leg 1: it is **the only definition derived from the stated goal rather than
+from someone's judgement about what matters.** Bean asked for uniformity *so the pipeline could route
+from it*; this makes the pipeline's own needs the definition. It also carries the strongest available
+verification — the pipeline IS the test, so "is it uniform yet" is observed on a real clone rather
+than inferred from a proxy metric.
+
+**Leg 2 — the blast radius is IN SCOPE, not a follow-on.** Bean extended the ruling beyond the
+routing set: any OTHER seeded DB column a schema change could damage is expected too. This is a
+deliberate widening and it is the half most likely to be dropped by a future session reading only
+leg 1. It exists because a schema change here is not additive — the recorded incidents are all of
+this shape: a write with an untraced reader propagating silently, and a column with no writer and no
+reader still looking like data. Any Programme-B migration must therefore enumerate what READS each
+column it touches before it changes one, not after.
+
+**What this unblocks.** Programme B's deliverable is now writable: a target schema of one storage
+shape per expected property family, one state model, one tier model, plus a discriminator for what an
+object-typed attribute actually means. Its hardest constraint is already logged as **G5** in
+`plans/spec-39-seed-requirements.md` — THREE shapes hide under `attr_type='object'` (flat-sibling
+trio / migrated tier-object / base-only box with no tier support) and nothing in the schema separates
+2 from 3. ⛔ A rule that folds shape 3 is a REGRESSION on a currently-working path, not a fix.
+
+**Sequencing unchanged by this.** D552 still governs: the block standard leads, the cloning pipeline
+is reworked afterwards, and the converter's inability to emit the new shape is scheduled work, never
+a precondition. This decision defines Programme B's denominator; it does not re-order it ahead of the
+standard.
+
+## D601 — the D593 kill-reason generalises into a standing acceptance rule [ROUTINE]
+
+**2026-08-13. Bean-ruled.** D593 killed the built-and-shipped Advanced tab with: *"it doesn't
+actually add any functionality or bring us closer to our uniformity or cloning goals."* That was
+being used as a one-off precedent. Asked whether it generalises, Bean ruled **yes — with
+professionalism admitted as a third goal.**
+
+**THE RULE.** Any proposed work must name at least one of:
+1. **functionality it adds**, or
+2. **a uniformity or cloning goal it advances**, or
+3. **a professionalism gain a CLIENT can actually SEE.**
+
+Work naming none of the three does not get built — regardless of how cheap it looks, how many
+instances it touches, or whether a council endorsed it.
+
+**Leg 3 is a real admission, not a loophole, and it cuts both ways.** It keeps alive the defects Bean
+found by eye (duplicate visible labels, redundant nested panels, misaligned controls) — those are
+client-visible and therefore admissible. It does NOT rescue invisible work: the label-casing codemod
+fails leg 3 on its own evidence, because WordPress's own CSS uppercases one label family and the rest
+were never the thing Bean photographed. **"A client can see it" is a measurement, not an assertion** —
+if nobody has opened the editor and looked, leg 3 has not been satisfied.
+
+**Why it earned decision status rather than staying a preference.** A `/qc-council` gate found the
+2026-08-13 root-cause report carried **24 proposals of which ZERO were dispatchable**, and that most
+of them died on exactly this test — while the document itself used D593 only as a precedent about one
+tab and never put it to Bean as a rule. Applied as a rule it retires most of that backlog without
+anyone measuring anything, which is cheaper than measuring first and killing after. Recorded here so
+the next session applies it as an entry gate rather than rediscovering it.
+
+**Immediate consequence.** Three measurements (device-toggle overlap cause, live label casing,
+duplicate-label population) were deliberately NOT run this session: each existed only to inform
+Programme-A decisions this rule may retire. Measure after the rule is applied, not before.
+
 ## D600 — hero split-image bleed tested, defaulted on, and extended to video/SVG [ROUTINE]
 
 **2026-08-13.** Closes the last of Track 1b's three carried-forward hero items (the other two closed
