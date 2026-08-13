@@ -1,88 +1,82 @@
 ---
 doc_type: reference
-title: "Visual-diff report — container · gridItemPadding"
+title: "Visual-diff report — container · background pickers to one ResponsiveControl"
 block: container
 date: 2026-08-13
-property: gridItemPadding
+property: backgroundImage / bgVideo (control shape only)
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: 4ed559c294a4b35a
+source_sha: a808c7a90131ff01
 ---
 
-# container — gridItemPadding migrated to responsive {desktop,tablet,mobile} tier object (Bean's ruling: a box-object property should always also be responsive), matching contentBandPadding's established pattern
+# container — three stacked background pickers replaced by one `ResponsiveControl` (UI only, attribute shape untouched)
 
-**Verdict: PASS**, on a measured before/after capture of this block's own
-rendered element. No measured value moved.
+**Verdict: PASS.** This is an **editor-surface** change with **no rendered-output
+change by construction**, and that claim is proven below rather than asserted.
 
-## What was measured, and where
+## What changed, and what deliberately did NOT
 
-- **Page:** https://sandybrown-nightingale-600381.hostingersite.com/tier-fixture-griditempadding/
-- **Selector (scoped):** `#tierfx-default-container > .wp-block-sgs-container, #tierfx-default-container > .sgs-container` — resolved to `<section>`, uid `sgs-container--grid sgs-container-119af59e`
-- **CSS property:** `--sgs-gi-padding`
-- **Probe values set on the block:** `{"desktop": "64px", "tablet": "32px", "mobile": "8px"}`
-- **Method:** Playwright (chromium), computed styles at three viewports, before
-  and after deploying the change to the sandybrown canary.
+`BackgroundPanel` (`container/components/ContainerWrapperControls.js`) rendered
+three always-visible stacked `MediaUpload` pickers per media family — "Desktop
+image" / "Tablet image (optional)" / "Mobile image (optional)", and the same shape
+again for video. Each family is now ONE base picker plus ONE `<ResponsiveControl>`
+override gated on the base existing.
 
-⛔ The selector is scoped to this block's own anchor. An unscoped query on a
-wrapper class returned the site header in a previous session and produced a
-confident false failure, so every measurement here is anchored.
+⛔ **The attribute shape was NOT touched, and must not be.** It still writes three
+separately-declared flat attrs — `backgroundImage` / `backgroundImageTablet` /
+`backgroundImageMobile` (payload `{id,url,alt}`) and `bgVideo` / `bgVideoTablet` /
+`bgVideoMobile` (payload `{id,url}`). Folding them into a tier object would break
+the cloning pipeline: `scripts/converter/tests/test_family_modifier_scan.py:111-116`
+asserts the lift lands on `backgroundImageMobile` and explicitly
+`assert "backgroundImage" not in lifts`, and the triple is registered in the DB
+across 7 blocks. This file's own comments (~:355-366, ~:518-528) record the rule:
+tier-OBJECT attrs use `ResponsiveOverride`; flat suffix triples use
+`ResponsiveControl`. Ours is the latter.
 
-## Measurements — this block, not another
+## Evidence that render is unchanged
 
-| Property | Viewport | Tier that binds | before (outer) | after (outer) | before (inner band) | after (inner band) | display |
-|---|---|---|---|---|---|---|---|
-| `gridItemPadding` | desktop (1440px) | `desktop` | `(empty)` | `(empty)` | `—` | `—` | `grid` |
-| `gridItemPadding` | tablet (900px) | `tablet` | `(empty)` | `(empty)` | `—` | `—` | `grid` |
-| `gridItemPadding` | mobile (390px) | `mobile` | `(empty)` | `(empty)` | `—` | `—` | `grid` |
+| Check | Result |
+|---|---|
+| `container/block.json` in `git status` | **absent** — attribute shape untouched by construction |
+| Files changed | exactly one: `ContainerWrapperControls.js` |
+| `MediaUpload` elements (word-boundary count) | 6 → **4** (2 base + 2 tier) |
+| Converter guard `test_family_modifier_scan.py` | **3 passed** |
+| Added `setAttributes` writes | `backgroundImage:{id,url,alt}`, `[key]:{id,url,alt}`, `bgVideo:{id,url}`, `[key]:{id,url}` — `key` resolves to the Tablet/Mobile names |
+| `inspector-scan` rule 25 (no own device switcher) | **0 flagged** (GATE) |
+| Live canary after deploy | HTTP 200, `payload-verify` all 83 `block.json` match |
 
-These rows are the **default** variant — the property left unset, so the block
-renders its own `block.json` default. That is the regression surface: nearly
-every real instance leaves it unset, so a changed default is what would actually
-reach a client site.
+⛔ The count was verified with a **word-boundary** pattern. A bare `grep -c
+"<MediaUpload"` returns 8 because it also matches `<MediaUploadCheck` — that
+substring error produced a false discrepancy against the implementer's correct
+report before it was caught.
 
-The *inner band* column is the `> .sgs-container__inner` element. The shared
-wrapper relocates grid/flex onto it for container-query blocks, so a report
-measuring only the outer element could miss where the value actually landed.
+## A defect found and fixed during review
 
-`display` is recorded because the property computes whether or not it can paint
-— keeping "declared" and "visible" as separate facts rather than conflating them.
+The first implementation put the **base** picker inside the `ResponsiveControl`'s
+desktop branch. That hides the primary control whenever the global device toggle
+sits on tablet or mobile — a client previewing narrow could not set the main image
+at all — and the tier gate's copy ("set a desktop image **above**") then pointed at
+nothing. Both tabs now keep the base picker OUTSIDE the switcher, always visible,
+with the tier override below it gated on the base, matching
+`src/blocks/media/edit.js`. The implementer flagged this deviation rather than
+silently resolving it, which is why it was caught before deploy.
 
+## Known advisory finding, deliberately NOT "fixed"
 
-## ⚠ Pre-existing DEAD CONTROL — stated, not hidden
+`inspector-scan` rule 26 drops from 8 flagged to **2**, and the 2 remaining are
+these new controls (`:840`, `:967`), classified `hollow-tier` because the desktop
+branch returns explanatory text. **That is the canonical `media/edit.js:236`
+pattern**, which the rule cannot see: its corpus is `*/components/*.js` +
+`extensions/*.js`, never `*/edit.js`. Satisfying the rule would mean folding the
+base picker back into the desktop branch — reintroducing the exact defect fixed
+above. Left flagged for a DETECTOR fix, not baselined: the rule's own doctrine
+says a false positive is a detector bug, and a baseline records accepted debt.
 
-This block **declares `gridItemPadding` but renders it nowhere**, so the positive control below cannot pass: there is nothing for a set value to bind to.
+## Residual risk
 
-**Evidence:** probe positive control refused for this block (auto-derivation heuristic can't follow the shared GridItemDefaultsPanel import from ContainerWrapperControls.js into container's own edit.js) - the fix is verified correct via the default-state comparison + direct code inspection of the shared control wiring, not via this block's own probe
-
-⚠ This is NOT caused by the change under review, and the change does not fix it. Before and after are identical because the property was inert in both. That is a weaker guarantee than the other reports here carry, and it is recorded as a finding rather than smoothed into a clean PASS — the verdict below covers only "this change moved nothing", not "this control works".
-
-## ⭐ Positive control — because identical numbers alone would be vacuous
-
-Matching before/after values are exactly what a **completely inert**
-property would also produce. So a second instance of this block on the
-same page has `gridItemPadding` set explicitly to {"desktop": "64px", "tablet": "32px", "mobile": "8px"}, and each viewport is checked
-for the tier that should bind:
-
-- desktop: set `64px` → outer `(empty)`  ⚠ does NOT bind
-- mobile: set `8px` → outer `(empty)`  ⚠ does NOT bind
-- tablet: set `32px` → outer `(empty)`  ⚠ does NOT bind
-
-The value demonstrably applies, so "nothing moved" above means
-*nothing moved*, not *nothing could move*.
-
-⚠ This control is measured on the AFTER build only, and deliberately
-so. Before the migration `gridItemPadding` was a scalar attribute, so WordPress
-coerced an object-shaped value away entirely — a before/after pair on
-this variant would compare "the value" against "the value the old code
-could not store", which is not a rendering comparison at all.
-
-## Gates
-
-- Console errors: **0**
-- PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
-  `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
-- `source_sha` computed by `visual-report-sha.py` over this block's STAGED bytes,
-  so the report cannot survive a later edit to the block without going stale.
-
-*Generated by `plugins/sgs-blocks/scripts/make-visual-diff-reports.py`. Every
-figure above is read from the before/after captures; none is hand-written.*
+- `BackgroundPanel` is SHARED by container / hero / cta-section / trust-bar (D591).
+  This change is UI-only and adds no attribute, but the surface is shared — the
+  hero host was exercised live in the same deploy (see
+  `reports/visual-diff/hero-2026-08-13.md`); cta-section and trust-bar were not
+  individually opened in the editor.
+- Rule 26's 2 findings above, pending a detector fix.

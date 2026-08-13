@@ -795,8 +795,16 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 					if ( tab.name === 'image' ) {
 						return (
 							<>
+								{ /* The BASE picker stays OUTSIDE the device switcher, always
+								     visible. It is the primary control: putting it inside the
+								     desktop branch would hide it whenever the global device
+								     toggle sits on tablet/mobile, so a client on a narrow
+								     preview could not set the main image at all — and the
+								     tier gate's "set a desktop image above" would point at
+								     nothing. Matches src/blocks/media/edit.js, where the base
+								     picker precedes the tier control. */ }
 								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
-									{ __( 'Desktop image', 'sgs-blocks' ) }
+									{ __( 'Background image', 'sgs-blocks' ) }
 								</p>
 								<MediaUploadCheck>
 									<MediaUpload
@@ -824,57 +832,59 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 									/>
 								</MediaUploadCheck>
 
-								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px', marginTop: '8px' } }>
-									{ __( 'Tablet image (optional)', 'sgs-blocks' ) }
-								</p>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) =>
-											setAttributes( { backgroundImageTablet: { id: media.id, url: media.url, alt: media.alt } } )
+								{ /* ONE consolidated per-device override (was 2 more always-visible
+								     stacked MediaUpload controls). Gated on the base image
+								     existing — an override for an image that is not there is a
+								     dead control (Spec 35 Part D5). */ }
+								{ hasBgImage && (
+								<ResponsiveControl label={ __( 'Art direction (optional)', 'sgs-blocks' ) }>
+									{ ( bp ) => {
+										if ( 'desktop' === bp ) {
+											return (
+												<p style={ { margin: 0, fontStyle: 'italic' } }>
+													{ __(
+														'The image above is used on desktop. Switch to tablet or mobile to set a different crop.',
+														'sgs-blocks'
+													) }
+												</p>
+											);
 										}
-										allowedTypes={ [ 'image' ] }
-										value={ backgroundImageTablet?.id }
-										render={ ( { open } ) => (
-											<div style={ { marginBottom: '8px' } }>
-												{ backgroundImageTablet?.url ? (
-													<Button variant="secondary" onClick={ () => setAttributes( { backgroundImageTablet: undefined } ) } isDestructive>
-														{ __( 'Remove tablet image', 'sgs-blocks' ) }
-													</Button>
-												) : (
-													<Button variant="secondary" onClick={ open }>
-														{ __( 'Select tablet image', 'sgs-blocks' ) }
-													</Button>
-												) }
-											</div>
-										) }
-									/>
-								</MediaUploadCheck>
 
-								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px', marginTop: '8px' } }>
-									{ __( 'Mobile image (optional)', 'sgs-blocks' ) }
-								</p>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) =>
-											setAttributes( { backgroundImageMobile: { id: media.id, url: media.url, alt: media.alt } } )
-										}
-										allowedTypes={ [ 'image' ] }
-										value={ backgroundImageMobile?.id }
-										render={ ( { open } ) => (
-											<div style={ { marginBottom: '8px' } }>
-												{ backgroundImageMobile?.url ? (
-													<Button variant="secondary" onClick={ () => setAttributes( { backgroundImageMobile: undefined } ) } isDestructive>
-														{ __( 'Remove mobile image', 'sgs-blocks' ) }
-													</Button>
-												) : (
-													<Button variant="secondary" onClick={ open }>
-														{ __( 'Select mobile image', 'sgs-blocks' ) }
+										const key = 'tablet' === bp ? 'backgroundImageTablet' : 'backgroundImageMobile';
+										const tierImage = attributes[ key ];
+										return (
+											<>
+												<MediaUploadCheck>
+													<MediaUpload
+														onSelect={ ( media ) =>
+															setAttributes( { [ key ]: { id: media.id, url: media.url, alt: media.alt } } )
+														}
+														allowedTypes={ [ 'image' ] }
+														value={ tierImage?.id }
+														render={ ( { open } ) => (
+															<Button variant="secondary" onClick={ open }>
+																{ tierImage?.url
+																	? __( 'Replace image', 'sgs-blocks' )
+																	: __( 'Set image', 'sgs-blocks' ) }
+															</Button>
+														) }
+													/>
+												</MediaUploadCheck>
+												{ tierImage?.url && (
+													<Button
+														variant="link"
+														isDestructive
+														onClick={ () => setAttributes( { [ key ]: undefined } ) }
+														style={ { marginTop: '8px', display: 'block' } }
+													>
+														{ __( 'Use the main image here', 'sgs-blocks' ) }
 													</Button>
 												) }
-											</div>
-										) }
-									/>
-								</MediaUploadCheck>
+											</>
+										);
+									} }
+								</ResponsiveControl>
+								) }
 
 								{ hasBgImage && (
 									<>
@@ -919,8 +929,12 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 								<p className="components-base-control__help">
 									{ __( 'Video replaces the background image. Add an image as fallback for browsers that block autoplay.', 'sgs-blocks' ) }
 								</p>
+								{ /* BASE picker OUTSIDE the device switcher, always visible —
+								     same reasoning as the image tab above: the base video is the
+								     primary control and must not disappear when the global device
+								     toggle sits on tablet/mobile. */ }
 								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px' } }>
-									{ __( 'Desktop video', 'sgs-blocks' ) }
+									{ __( 'Background video', 'sgs-blocks' ) }
 								</p>
 								<MediaUploadCheck>
 									<MediaUpload
@@ -946,56 +960,59 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 									/>
 								</MediaUploadCheck>
 
-								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px', marginTop: '8px' } }>
-									{ __( 'Tablet video (optional)', 'sgs-blocks' ) }
-								</p>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) => setAttributes( { bgVideoTablet: { id: media.id, url: media.url } } ) }
-										allowedTypes={ [ 'video' ] }
-										value={ bgVideoTablet?.id }
-										render={ ( { open } ) => (
-											<div style={ { marginBottom: '8px' } }>
-												{ bgVideoTablet?.url ? (
+								{ /* ONE consolidated per-device override, gated on the base video
+								     existing (Spec 35 Part D5). Mirrors src/blocks/media/edit.js's
+								     video art-direction control. */ }
+								{ bgVideo?.url && (
+								<ResponsiveControl label={ __( 'Art direction (optional)', 'sgs-blocks' ) }>
+									{ ( bp ) => {
+										if ( 'desktop' === bp ) {
+											return (
+												<p style={ { margin: 0, fontStyle: 'italic' } }>
+													{ __(
+														'The video above is used on desktop. Switch to tablet or mobile to set a different one.',
+														'sgs-blocks'
+													) }
+												</p>
+											);
+										}
+
+										const key = 'tablet' === bp ? 'bgVideoTablet' : 'bgVideoMobile';
+										const tierVideo = attributes[ key ];
+										return (
+											<>
+												<MediaUploadCheck>
+													<MediaUpload
+														onSelect={ ( media ) => setAttributes( { [ key ]: { id: media.id, url: media.url } } ) }
+														allowedTypes={ [ 'video' ] }
+														value={ tierVideo?.id }
+														render={ ( { open } ) => (
+															<Button variant="secondary" onClick={ open }>
+																{ tierVideo?.url
+																	? __( 'Replace video', 'sgs-blocks' )
+																	: __( 'Set video', 'sgs-blocks' ) }
+															</Button>
+														) }
+													/>
+												</MediaUploadCheck>
+												{ tierVideo?.url && (
 													<>
-														<p style={ { fontSize: '12px', marginBottom: '4px' } }>{ bgVideoTablet.url.split( '/' ).pop() }</p>
-														<Button variant="secondary" onClick={ () => setAttributes( { bgVideoTablet: undefined } ) } isDestructive>
-															{ __( 'Remove video', 'sgs-blocks' ) }
+														<p style={ { fontSize: '12px', marginTop: '4px', marginBottom: '4px' } }>{ tierVideo.url.split( '/' ).pop() }</p>
+														<Button
+															variant="link"
+															isDestructive
+															onClick={ () => setAttributes( { [ key ]: undefined } ) }
+															style={ { marginTop: '4px', display: 'block' } }
+														>
+															{ __( 'Use the main video here', 'sgs-blocks' ) }
 														</Button>
 													</>
-												) : (
-													<Button variant="secondary" onClick={ open }>
-														{ __( 'Select video', 'sgs-blocks' ) }
-													</Button>
 												) }
-											</div>
-										) }
-									/>
-								</MediaUploadCheck>
-
-								<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '4px', marginTop: '8px' } }>
-									{ __( 'Mobile video (optional)', 'sgs-blocks' ) }
-								</p>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) => setAttributes( { bgVideoMobile: { id: media.id, url: media.url } } ) }
-										allowedTypes={ [ 'video' ] }
-										value={ bgVideoMobile?.id }
-										render={ ( { open } ) => (
-											<div style={ { marginBottom: '8px' } }>
-												{ bgVideoMobile?.url ? (
-													<Button variant="secondary" onClick={ () => setAttributes( { bgVideoMobile: undefined } ) } isDestructive>
-														{ __( 'Remove mobile video', 'sgs-blocks' ) }
-													</Button>
-												) : (
-													<Button variant="secondary" onClick={ open }>
-														{ __( 'Select mobile video', 'sgs-blocks' ) }
-													</Button>
-												) }
-											</div>
-										) }
-									/>
-								</MediaUploadCheck>
+											</>
+										);
+									} }
+								</ResponsiveControl>
+								) }
 							</>
 						);
 					}
