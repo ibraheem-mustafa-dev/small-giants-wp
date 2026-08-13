@@ -233,6 +233,49 @@ function buildEditorStyle( attributes ) {
 }
 
 // ---------------------------------------------------------------------------
+// Drop-cap ::first-letter preview — CSS custom properties consumed by the
+// gated ::first-letter rule in editor.css (mirrors sgs/container's ::before
+// media-layer pattern; a pseudo-element cannot be styled via an inline React
+// `style` prop). Mirrors render.php's `$fl_decls` property list + defaults
+// (font-size default 3em; colour/weight unset = inherit) exactly, so the
+// canvas preview matches the frontend. Returns undefined when dropCap is off
+// so the gating class is never added and the rule never applies.
+// ---------------------------------------------------------------------------
+
+function buildDropCapStyle( attributes ) {
+	const {
+		dropCap,
+		firstLetterColour,
+		firstLetterFontSize,
+		firstLetterFontSizeUnit,
+		firstLetterFontWeight,
+	} = attributes;
+
+	if ( ! dropCap ) {
+		return undefined;
+	}
+
+	const dropCapStyle = {};
+
+	dropCapStyle[ '--sgs-ed-first-letter-font-size' ] =
+		firstLetterFontSize !== undefined && firstLetterFontSize !== null && '' !== firstLetterFontSize
+			? `${ firstLetterFontSize }${ firstLetterFontSizeUnit || 'em' }`
+			: '3em';
+
+	if ( firstLetterFontWeight ) {
+		dropCapStyle[ '--sgs-ed-first-letter-font-weight' ] = firstLetterFontWeight;
+	}
+
+	if ( firstLetterColour ) {
+		dropCapStyle[ '--sgs-ed-first-letter-colour' ] = /^#|^rgb|^hsl/.test( firstLetterColour )
+			? firstLetterColour
+			: colourVar( firstLetterColour );
+	}
+
+	return dropCapStyle;
+}
+
+// ---------------------------------------------------------------------------
 // Helpers: UnitControl compose/parse (letter spacing, max width, spacing)
 // ---------------------------------------------------------------------------
 
@@ -297,9 +340,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColour,
 	} = attributes;
 
+	// Drop-cap ::first-letter preview — gate the class only when dropCap is on
+	// (mirrors sgs/container's ::before media-layer gating, editor.css) so no
+	// other sgs/text block in the canvas gains the pseudo-element.
+	const dropCapStyle = buildDropCapStyle( attributes );
+	const editorClassName = dropCap
+		? 'wp-block-sgs-text wp-block-sgs-text--has-drop-cap'
+		: 'wp-block-sgs-text';
+
 	const blockProps = useBlockProps( {
-		className: 'wp-block-sgs-text',
-		style: buildEditorStyle( attributes ),
+		className: editorClassName,
+		style: { ...buildEditorStyle( attributes ), ...dropCapStyle },
 	} );
 
 	return (

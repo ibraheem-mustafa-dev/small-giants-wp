@@ -10,6 +10,24 @@
 	min-height: 1em;
 }
 
+/* ===== Drop-cap ::first-letter preview =====
+   Mirrors render.php's scoped `::first-letter` rule (a pseudo-element cannot
+   be styled via a React inline `style` prop, since it has no real DOM node).
+   Per-instance values are fed through CSS custom properties set inline by
+   edit.js — same mechanism as sgs/container's editor ::before media layer
+   (editor.css:29). Gated on .wp-block-sgs-text--has-drop-cap (added by
+   edit.js only when dropCap is enabled) so no other text block in the canvas
+   gains the pseudo-element. */
+.wp-block-sgs-text--has-drop-cap::first-letter {
+	float: left;
+	font-size: var( --sgs-ed-first-letter-font-size, 3em );
+	line-height: 0.8;
+	margin-right: 0.1em;
+	margin-top: 0.05em;
+	font-weight: var( --sgs-ed-first-letter-font-weight, inherit );
+	color: var( --sgs-ed-first-letter-colour, inherit );
+}
+
 /* Shared inspector row helper — side-by-side controls (value + unit). */
 .sgs-inspector-row {
 	display: flex;
