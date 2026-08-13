@@ -379,6 +379,24 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ showToggle && (
+					<div
+						className={ `sgs-pricing-table__billing-toggle sgs-pricing-table__billing-toggle--style-${ toggleStyle }` }
+						role="group"
+						aria-label={ __( 'Billing period', 'sgs-blocks' ) }
+					>
+						<span className="sgs-pricing-table__toggle-label">
+							{ billingToggleMonthlyLabel }
+						</span>
+						<span className="sgs-pricing-table__toggle-label">
+							{ billingToggleYearlyLabel }
+						</span>
+						<span
+							className="sgs-pricing-table__toggle-track"
+							aria-hidden="true"
+						/>
+					</div>
+				) }
 				<div className="sgs-pricing-table__grid">
 					{ plans.map( ( plan, planIndex ) => {
 						const planClass = [
@@ -696,6 +714,18 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 										__nextHasNoMarginBottom
 									/>
+								</div>
+
+								<div
+									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
+									style={ {
+										color: colourVar( ctaColour ) || undefined,
+										backgroundColor:
+											colourVar( ctaBackground ) || undefined,
+									} }
+								>
+									{ plan.ctaText ||
+										__( 'Get started', 'sgs-blocks' ) }
 								</div>
 
 								<Button

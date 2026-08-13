@@ -406,42 +406,94 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<nav { ...blockProps } aria-label={ title }>
-				{ title && (
-					<p
-						className="sgs-toc__title"
-						style={ {
-							color:
-								colourVar( titleColour ) || undefined,
-						} }
-					>
-						{ title }
-					</p>
-				) }
-				{ headings.length > 0 ? (
-					<ListTag className="sgs-toc__list">
-						{ headings.map( ( heading, i ) => (
-							<li
-								key={ i }
-								className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
+				{ /*
+				 * Mirror render.php's structure switch exactly (contract:
+				 * collapsible=true -> native <details>/<summary>; the
+				 * <details> starts open unless defaultCollapsed is true
+				 * (render.php: `$open_attr = $default_collapsed ? '' : ' open';`).
+				 * collapsible=false -> flat <p class="sgs-toc__title"> title.
+				 */ }
+				{ collapsible ? (
+					<details open={ ! defaultCollapsed }>
+						{ title && (
+							<summary
+								className="sgs-toc__title"
 								style={ {
 									color:
-										colourVar( linkColour ) ||
+										colourVar( titleColour ) ||
 										undefined,
 								} }
 							>
-								<span className="sgs-toc__link">
-									{ heading.text }
-								</span>
-							</li>
-						) ) }
-					</ListTag>
-				) : (
-					<p className="sgs-toc__empty">
-						{ __(
-							'Add heading blocks to generate a table of contents.',
-							'sgs-blocks'
+								{ title }
+							</summary>
 						) }
-					</p>
+						{ headings.length > 0 ? (
+							<ListTag className="sgs-toc__list">
+								{ headings.map( ( heading, i ) => (
+									<li
+										key={ i }
+										className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
+										style={ {
+											color:
+												colourVar( linkColour ) ||
+												undefined,
+										} }
+									>
+										<span className="sgs-toc__link">
+											{ heading.text }
+										</span>
+									</li>
+								) ) }
+							</ListTag>
+						) : (
+							<p className="sgs-toc__empty">
+								{ __(
+									'Add heading blocks to generate a table of contents.',
+									'sgs-blocks'
+								) }
+							</p>
+						) }
+					</details>
+				) : (
+					<>
+						{ title && (
+							<p
+								className="sgs-toc__title"
+								style={ {
+									color:
+										colourVar( titleColour ) || undefined,
+								} }
+							>
+								{ title }
+							</p>
+						) }
+						{ headings.length > 0 ? (
+							<ListTag className="sgs-toc__list">
+								{ headings.map( ( heading, i ) => (
+									<li
+										key={ i }
+										className={ `sgs-toc__item sgs-toc__item--h${ heading.level }` }
+										style={ {
+											color:
+												colourVar( linkColour ) ||
+												undefined,
+										} }
+									>
+										<span className="sgs-toc__link">
+											{ heading.text }
+										</span>
+									</li>
+								) ) }
+							</ListTag>
+						) : (
+							<p className="sgs-toc__empty">
+								{ __(
+									'Add heading blocks to generate a table of contents.',
+									'sgs-blocks'
+								) }
+							</p>
+						) }
+					</>
 				) }
 			</nav>
 		</>

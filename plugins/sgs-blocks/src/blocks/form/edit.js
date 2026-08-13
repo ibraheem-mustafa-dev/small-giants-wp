@@ -330,6 +330,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				<div { ...innerBlocksProps } />
+				{ /* Editor-canvas-only submit button preview — render.php mirror.
+					There is no real <form> in the editor canvas, so without this
+					element neither submitLabel nor submitStyle showed any visible
+					effect while editing (see render.php:351-360 for the frontend
+					equivalent). type="button" so it can never submit anything. */ }
+				<div className="sgs-form__actions">
+					<button
+						type="button"
+						className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
+					>
+						{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
+					</button>
+				</div>
 			</div>
 		</>
 	);

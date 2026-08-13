@@ -1198,6 +1198,27 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					</div>
 				) }
 
+				{ effectiveVariant === 'rating-led' &&
+					( verified || sourcePlatform || reviewDate ) && (
+						<div className="sgs-testimonial__rating-meta">
+							{ verified && (
+								<span className="sgs-testimonial__verified">
+									{ __( 'Verified', 'sgs-blocks' ) }
+								</span>
+							) }
+							{ sourcePlatform && (
+								<span className="sgs-testimonial__source">
+									{ sourcePlatform }
+								</span>
+							) }
+							{ reviewDate && (
+								<span className="sgs-testimonial__date">
+									{ reviewDate }
+								</span>
+							) }
+						</div>
+					) }
+
 				{ showSummary && (
 					<RichText
 						tagName="p"
