@@ -1099,3 +1099,102 @@ most of Programme A without anyone measuring anything. The document uses it only
 
 **Do NOT dispatch** the five in §12.3 without a measured baseline. Three are currently
 presented as cheap.
+
+## 12.9 ⛔ FIVE ERRORS INTRODUCED **BY PART 9 ITSELF** — the corrections needed correcting
+
+Rater B audited PART 9's corrections. Five are wrong. **§12.9-N1 is the most consequential
+error in the whole document.**
+
+### N1 ⛔ §9.4 IS WRONG BY ~15×. D1 DOES NOT COLLAPSE.
+
+§9.4 claimed WP's CSS uppercases control labels, therefore Title-Case-everywhere is invisible
+and D1 shrinks from 1,316 strings to "~50 panel titles".
+
+**The uppercase rule is real but reaches ONE label family.** It lives in
+`packages/components/src/utils/base-label.ts` (PR #42789, still in trunk and in the canary's
+shipped bundle) and applies to **`BaseControl` / `InputControl` labels only**.
+
+**It does NOT reach** — each renders **authored case**:
+
+| Surface | Count in this tree |
+|---|---|
+| `ToggleControl` (182) + Radio (4) + Checkbox (1) | **187** |
+| `ToolsPanelItem` labels (the "+" menu) | **235** |
+| `PanelBody` titles | **352** |
+| **Floor total** | **≈ 774** |
+
+⚠ Rater B flags 235 and 352 as **possible undercounts** from a fixed-width regex window —
+**treat 774 as a floor, not a total.** Even the single most conservative surface (352
+`PanelBody` titles alone) is **7× §9.4's "~50"**.
+
+**Consequences — four places inherit this error and must be re-read:** §9.6's kill list, Q4,
+Q13, and PART 11's "DO NOT DO" entry for the casing codemod.
+
+**What survives:** *"match core"* is still probably the right call — on the native-seam
+argument (SGS panels sitting beside core panels), not on "it's invisible". **What dies:** the
+claim that D1 is nearly free. It is ~774 strings minimum.
+
+### N2 — E2 computes with a figure it disproves in the same sentence
+E2 establishes `nav-menu` has **1** call site (not 12) and `brand-strip` **1** (not 6) — then
+says *"18 of the 51 (35%) are already-conformant"*. 18 = 12 + 6, the very numbers it just
+falsified. **True figure for those two blocks: 2.**
+
+### N3 — E12's mechanism is wrong, and it props up an S1 objection
+*"Throws and degrades to a pass"* is **false**. `check-control-parity-live.js:72` does
+`process.exit( 2 )` with a stderr message — deliberately distinct from `exit(1)` (drift) and
+`exit(0)` (pass). And it has **zero callers**: no reference in `package.json`, `.githooks`, or
+`.claude/hooks`. It cannot degrade to a pass because **no chain runs it.**
+✅ The undeclared-dependency fact stands. ⛔ The fail-silent harm does not.
+⚠ **§9.7 used this as "the live proof" for its second objection to S1** — that objection rests
+on a mechanism that does not exist. **S1's other five objections are unaffected and the kill
+still holds.**
+
+### N4 — §9.10 marked a wrong figure as "re-verified"
+*"101 hand-rolled `*Hover` attrs across 24 blocks"* sits in §9.10's **Stands** list. **Three
+independent sources give 93 across 20 blocks** (block.json AST over 83 files, the
+`block_attributes` DB, and a second worktree). Loosest possible definition = 97/22. Never 101/24.
+⚠ *This is exactly the failure §9.10's own method-note (3) describes — a figure surviving "by
+luck, not method" — recurring inside the correction that names it.*
+
+### N5 — D4's "16 vs 17" has no answer under a single definition
+Depth-aware scan, two agreeing methods:
+
+| Definition | Count |
+|---|---|
+| Exact-case duplicate label | **13 across 10 files** |
+| Case-insensitive duplicate | **17 across 14 files** |
+| Any `PanelBody > ToolsPanel` nesting | **22 across 17 files** |
+
+Four of the 17 differ **only by case** (`Field Settings`/`Field settings` ×2, `Responsive
+Overrides`/`Responsive overrides`, `Banner Settings`/`Banner settings`).
+⛔ **5 of the 22 nestings have genuinely DIFFERENT labels** (`Icon`/`Icon settings`,
+`Video`/`Playback Options`, hero, RowScrollBehaviourControls) — **deleting those enclosing
+`PanelBody`s would lose information.** TASK 2's "a deletion that cannot regress" is false for
+those five. **Define the predicate before dispatching. "16" is wrong under every definition.**
+
+### Other corrections
+- **"84 blocks" → 83** (appears twice in §9.7). 83 `block.json` files; the survey and the
+  duplicate-controls scanner both report 83.
+- **"~12 hover attrs unroutable" → 13.**
+- **§9.8's property breakdown silently omits `grid-template-rows 18`**, which outranks the
+  `width 14` and `border-width 13` it does list. Reads as a top-7; it is a top-8 with #6 cut.
+- **E11's "34-name allowlist" → 33 unique** (the array has 34 entries, `@wordpress/ui`
+  duplicated). Both "44" and "34" were array-length artefacts.
+- **§3.1 vs §9.4 are inverted on the same fact.** §3.1 says the wrapper span is unstyled →
+  sentence case, and the child inherits WP styling → uppercase. §9.4 says the ALL-CAPS *is*
+  the wrapper "failing to inherit". **§3.1 is the correct account.**
+
+### ✅ What Rater B VERIFIED as correct
+`both_shapes 20` (ran the survey itself) · 165-of-204 · 97-of-2767 · E1's render-props and
+119 call sites · E3's seven rules · E5's `info-box` · E6's no-CI · E7's tally · E8's two hits ·
+E10's three hits · the entire §9.8 converter mechanism (all five checks) · the 61.5/6.5 casing
+spread (61.4/6.6) · `__unstableInputWidth` = 0 · 74 `UnitControl` sites · the live scan
+`6 gate / 0 findings / 9 advisory / 201` · 13 baselined findings · `check-duplicate-controls`
+in prebuild with `exit(0)` at `:834-835` and 9 live findings.
+
+### ⚠ Rater B could NOT settle
+The true duplicate-label count (its own 62 is an upper bound from a span heuristic; **neither
+51 nor ~34 confirmed or refuted — Q16 stays open**) · §3.3's census figures and §9.2's 115/14
+(cannot re-run the AST census) · **all core-source line citations** (`@wordpress/components`
+absent from `node_modules` — so §5.1, §3.1 and §3.2 keep ✅ marks that E11's own logic would
+downgrade) · Q12 · Q15.
