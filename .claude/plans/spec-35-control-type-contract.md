@@ -1193,10 +1193,14 @@ its element's panel (TIER 1) regardless of this field.)*
    - **Promotion trigger, if wanted later:** the first block, stored instance, or draft clone that
      actually carries a per-device border width. Until one exists there is nothing to verify a
      build against.
-   - ⛔ **Separately, and NOT resolved by this:** `BorderBoxControl` — §14.1's canonical component
-     for width + style + colour — has **zero source files** tree-wide (only docs, survey allowlists
-     and a Jest mock of `__experimentalBorderControl`). It has never been built or mounted. That is
-     a Phase 3 build, recorded here so field 1 is not read as describing something that exists.
+   - ~~⛔ **Separately, and NOT resolved by this:** `BorderBoxControl` — §14.1's canonical component
+     for width + style + colour — has zero source files tree-wide… That is a Phase 3 build.~~
+     ⛔ **STRUCK 2026-08-13. This bullet was already false when written** — D566 amended field 1 the
+     SAME DAY to remove `BorderBoxControl` as canonical and resolve the debt **by evidence rather
+     than by building it**. Its "zero source files" observation is correct and no longer a defect:
+     nothing is owed, there is no Phase 3 border build. Read field 1, not this bullet. *(Found while
+     clearing the three parallel stale citations in Spec 35 — this was the fourth, and the most
+     dangerous, because it framed a closed decision as outstanding work.)*
 
 ---
 

@@ -88,12 +88,12 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 | `BoxControl` | 4 sides + link/unlink; `units`; `allowReset`; `splitOnAxis` | one linked number |
 | Colour | **`enableAlpha`** (≈always) + `clearable` (alpha-0 ≠ unset); `disableCustomColors` false | no alpha (can't pick transparent — reported bug) |
 | `GradientPicker` | custom builder + alpha stops + `clearable` | preset-only |
-| Border (`BorderBoxControl`) | `enableStyle` + `enableAlpha` + per-side split; radius as separate 4-corner control | one colour+width, no style/per-side |
+| Border (composed builder, contract §14.1) | width `UnitControl` (real `units`) + style `SelectControl` + token-aware colour picker with alpha; radius as a **separate** 4-corner `ResponsiveBorderRadiusControl` | one colour+width, no style; radius folded into the width control; a raw CSS-shorthand `TextControl` |
 | Shadow | real X/Y/blur/spread/colour+alpha/inset builder (+ presets on top; multi-layer ideal) | **None/Small/Medium only** |
 | Selection | `ToggleGroupControl` (2–5 short); `ComboboxControl` (>~10, searchable); `FormTokenField` (multi-value) | comma-text; giant Select |
 | Media/gallery | `multiple="add"` + `gallery` + array attr + `MediaUploadCheck` + drag-drop | scalar attr + single MediaUpload |
 | Link/CTA | **`SgsLinkControl`** (wraps `LinkControl` — internal search + new-tab + rel nofollow/sponsored via `settings`) | raw URL `TextControl` |
-| Typography | full set: `FontSizePicker` (presets+fluid) + `FontAppearanceControl` + `LineHeightControl` + letter-spacing/transform/decoration | fontSize only |
+| Typography | full set: `FontSizePicker` (presets+fluid) + `FontAppearanceControl` + line-height via `ResponsiveControl`+`UnitControl` (contract §4.1) + letter-spacing/transform/decoration | fontSize only |
 | Image | size dropdown (attachment `sizes`) + aspectRatio + object-fit/`FocalPointPicker` | hardcoded full-size `src`, centre-crop only |
 | Spacing | token-based `__experimentalSpacingSizesControl` (S/M/L, theme.json) OR UnitControl | raw px RangeControl (breaks token system) |
 
@@ -371,17 +371,26 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 > was the actual defect; fixing every bare mention indiscriminately would have made those rows
 > factually wrong (there is no WP-native "SgsLinkControl" mechanism to point to).
 >
-> ⚠ The other ~23 assignments below are **not yet reconciled against the contract**. `BorderBoxControl`
-> agrees with contract §14. Treat the rest as indicative until swept.
+> ⚠ The other ~23 assignments below are **not yet reconciled against the contract**. Treat them as
+> indicative until swept. ⛔ **Border and line-height WERE swept, 2026-08-13** — this box used to say
+> core's grouped border-box component "agrees with contract §14", which D566 (2026-08-11) had already
+> made false. Canonical is now stated inline below for both. **Do not reinstate either core component
+> name in this file** — a `grep -c` for each is the commit gate, and the rejection rationale lives at
+> contract §14.1 where it belongs.
 
 Numeric+unit → `UnitControl` · bounded numeric → `RangeControl` (+input+reset) · 4-side box →
 `BoxControl` · colour → **`DesignTokenPicker`** (wraps `ColorPalette`; `enableAlpha`+`clearable`
 default true) · gradient → `GradientPicker` · angle/direction → `AnglePickerControl` · border →
-`BorderBoxControl` · radius →
-`__experimentalBorderRadiusControl` · spacing token → `__experimentalSpacingSizesControl` · segmented
+a **composed builder** (width `UnitControl` + style `SelectControl` + token-aware colour picker) ·
+radius → **`ResponsiveBorderRadiusControl`** *(both per contract §14.1 as amended by D566 — core's
+grouped border-box component was deliberately NOT adopted, rationale at §14.1 field 1)* ·
+spacing token → `__experimentalSpacingSizesControl` · segmented
 choice → `ToggleGroupControl` · long/searchable list → `ComboboxControl` · multi-value tags →
 `FormTokenField` · link/CTA → **`SgsLinkControl`** (wraps `LinkControl`) · font size → `FontSizePicker` · weight+style →
-`FontAppearanceControl` · line-height → `LineHeightControl` · focal point → `FocalPointPicker` ·
+`FontAppearanceControl` · line-height → **`ResponsiveControl` wrapping `UnitControl`** (contract §4.1;
+core's dedicated line-height component is NOT canonical here and has 0 usages tree-wide — retired
+2026-08-13, and a `grep -c` for its name is the commit gate) ·
+focal point → `FocalPointPicker` ·
 **object-position → `FocalPointPicker`** (same component; responsive tiers required — added
 2026-08-11, previously absent despite Parts B and C both listing object-fit/position as table
 stakes) · **object-fit → `SelectControl`** (closed enum: cover/contain/fill/none/scale-down) ·
