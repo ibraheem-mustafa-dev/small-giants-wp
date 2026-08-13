@@ -1160,10 +1160,7 @@ $hero_inner_html = $bg_img_html . $video_html . $overlay_html
 	. $content_html . $media_html;
 
 $hero_helper_attrs = $attributes;
-foreach ( array(
-	'backgroundImage',
-	'backgroundImageTablet',
-	'backgroundImageMobile',
+$sgs_hero_null_attrs = array(
 	'bgVideo',
 	'bgVideoMobile',
 	'bgSvgContent',
@@ -1171,7 +1168,22 @@ foreach ( array(
 	// nulls all three tiers; the old minHeightTablet/minHeightMobile entries
 	// no longer exist as real attribute keys.
 	'minHeight',
-) as $sgs_hero_null_attr ) {
+);
+if ( ! $is_split ) {
+	// C3 double-emit guard, STANDARD-ONLY: standard paints its own private
+	// LCP <img> (fetchpriority/loading/decoding) for backgroundImage, so the
+	// wrapper must not ALSO paint one. Split has no private <img>
+	// ($has_standard_bg_image is gated `! $is_split`), so it must NOT be
+	// nulled here — SGS_Container_Wrapper paints background-image
+	// universally on its `.{uid}::before` layer (the old section-kind gate
+	// was removed at D6), so split can rely on the wrapper for its
+	// background instead of going without one.
+	$sgs_hero_null_attrs = array_merge(
+		$sgs_hero_null_attrs,
+		array( 'backgroundImage', 'backgroundImageTablet', 'backgroundImageMobile' )
+	);
+}
+foreach ( $sgs_hero_null_attrs as $sgs_hero_null_attr ) {
 	$hero_helper_attrs[ $sgs_hero_null_attr ] = null;
 }
 
