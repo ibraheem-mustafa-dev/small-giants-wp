@@ -1,5 +1,41 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D610 — fx:* namespace styling bug fixed at source: TIER 3.17 in assign-canonical.py [ROUTINE]
+
+**2026-08-13.** Closes the gap D607 (`/qc-council`) named but deliberately didn't build
+mid-council: D604/D607's fix for `dragMomentum`/`loopCarousel`/`fxStart`/`fxEnd`/`fxScrub` was
+correct in VALUE but applied via the hand-authored override layer, which does not self-correct a
+FUTURE `fx:*` attribute on a new block. Routed through `/delegate` (returned `inline` — the task
+was flagged `high_complexity`, so the main-thread reasoning tier handled it directly rather than a
+subagent dispatch, per the routing decision).
+
+**The fix: TIER 3.17 in `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`**,
+placed immediately after TIER 3.16 (both are overwrite passes, kept adjacent per that tier's own
+stated convention). `WHERE role = 'styling' AND css_property LIKE 'fx:%'` → `role = 'behaviour'`.
+Mirrors TIER 3.15's exact shape and safety argument (narrow `role = 'styling'` pin; can never touch
+a NULL, a content verdict, or a non-fx styling family). Wired into the tier's return dict + the
+`[role-detection]` summary print line (also added `icon_family_corrected` to that same print line —
+it was computed but never printed, a pre-existing small gap in TIER 3.16's own reporting, fixed in
+passing since the file's own doctrine says every tier's count must be visible).
+
+**Verified via a new isolated self-test (`_self_test_fx_styling_correction`), not against the live
+DB.** 5 planted rows covering every guard: must-claim (styling + fx:*), must-NOT-claim-real-css
+(styling + a genuine CSS property), must-NOT-claim-unclaimed (NULL role + fx:* — this tier corrects
+the backstop's OUTPUT, it doesn't do the backstop's job), must-NOT-claim-content (a content role +
+fx:*), and idempotence (already-`behaviour` + fx:* stays unchanged on re-run). All 5 pass; the
+module's full `--self-test` suite (18 self-tests total) passes clean. **Deliberately did NOT run
+the new tier against the live production DB** — the live table already has 0 rows matching its
+WHERE clause (D604/D607 already hand-corrected every existing instance), so there is nothing to
+verify live, and running the tier's parent function (`apply_role_detection_inline`) touches many
+other unrelated tiers — a bigger reseed action than this fix warrants on a checkout shared with a
+concurrent session.
+
+**What this closes vs what it doesn't:** self-corrects any future block that declares a NEW `fx:*`
+attribute — the exact gap D607 identified. It does NOT touch `faqSchema`
+(css_property IS NULL, never reaches TIER 3's backstop at all) or `allowMultiple`/`defaultOpen`
+(same) — those two remain genuine override-layer judgement calls, unchanged from D604/D607's
+assessment.
+
 ## D609 — ONE colour control everywhere, states inside it, never optional [ROUTINE]
 
 **2026-08-13. Bean-ruled, from a manual inspector review — not from a report.** Reserved D609 rather

@@ -9,6 +9,27 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+**2026-08-13 (latest session, part 5). You asked a sharp question about the database fix from
+part 4 — was patching individual wrong entries really the right move, when the data looked clean
+enough to derive automatically? Checked it, you were right, and fixed it properly.** Commits
+`3267384f`–`12007c67` (the check), plus the real fix below.
+
+- Ran a multi-angle validation check on my own earlier fix. It found the answer immediately: the
+  framework already tags every motion/interaction setting with a hidden marker (so it can tell
+  "this is a JS behaviour flag" apart from "this is real CSS") — but the automatic classifier
+  wasn't reading that marker, so it defaulted those settings to the wrong category every time.
+  Proof it was systemic, not a one-off: the check found **3 more settings with the identical bug**
+  on a block I hadn't touched.
+- Fixed those 3 immediately the same safe way as before.
+- Then built the actual permanent fix — taught the classifier itself to recognise that marker, so
+  this whole category of setting labels itself correctly from now on, automatically, on every
+  future block, with no more hand-patching needed. Verified with a dedicated automated test before
+  trusting it, not against the live data (nothing there needs fixing anymore — the test proves the
+  logic on a scratch copy instead).
+- This is now closed. `faqSchema`/`allowMultiple`/`defaultOpen` (the other 2 database labels fixed
+  in part 4) are a genuinely different situation — no equivalent hidden marker exists for those yet
+  — and stay as intentional hand-corrections for now.
+
 **2026-08-13 (latest session, part 4 — new thread). Continued the "does the editor preview match
 what the client actually gets" checker (the tool the hero work surfaced). Cleaned up a known blind
 spot, fixed 13 wrong entries in the framework's internal database, then had 3 reviewers read every
@@ -135,6 +156,8 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 | Commit | What |
 |---|---|
+| (pending) | `assign-canonical.py` TIER 3.17: `fx:*` namespace styling bug fixed at source, self-correcting (D610) |
+| `3267384f` | 4 more `fx:*` attrs found + fixed by `/qc-council` re-checking D604 structurally (D607) |
 | `9d827d63` | editor-render-parity: cross-file blind spot resolved (152→143), 13 DB `role` fixes (D603/D604) |
 | `9b8511cf` | `sgs/hero`: split media gets its own Ken-Burns/parallax pair, D596's bgParallax/Ken-Burns questions answered, global `@keyframes` collision fixed (D597) |
 | `3170943a` | `sgs/hero`: `splitImageBleed` tested (not dead), defaulted to full-bleed (D600) |
@@ -171,7 +194,12 @@ fatalled every page. Both halves landed together (`079abbae`).
   the 2 fixed at D604) — re-verify live, don't trust this number. Cross-reference the fresh triage
   (D605, INTERACTION-ONLY/REAL-GAP/OTHER-SHAPE) against each attribute's current `role` once Phase
   2 fixing starts touching those blocks; seed NULLs using the output-sink categories this session
-  built (aria/data/rel-target-download-id-name-for/JSON-LD/hover-CSS) rather than guessing.
+  built (aria/data/rel-target-download-id-name-for/JSON-LD/hover-CSS) rather than guessing. **The
+  `fx:*` motion-namespace family is CLOSED (D610) — self-corrects via TIER 3.17 now, do not
+  re-open.** `faqSchema`/`allowMultiple`/`defaultOpen` still need either a genuine judgement call
+  or a new structural signal (D610 flags `wp_json_encode()` detection — already built for
+  `check-editor-render-parity.js`'s Signal 1 — as a plausible future unification for `faqSchema`'s
+  shape specifically; not attempted, cross-tool scope).
 - **editor-render-parity Signal 4 candidate (D605), not built.** 21 of 23 OTHER-SHAPE findings are
   one of two "editor can't have the live data, deliberate static placeholder" shapes
   (`sgs/buybox`, `sgs/google-reviews`). Structurally same as Signal 3 — worth its own exemption

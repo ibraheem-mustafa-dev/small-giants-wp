@@ -895,6 +895,8 @@ def run() -> None:
         f"technical={_rd['technical_filled']} styling={_rd['styling_filled']} "
         f"styling-wrapper={_rd['wrapper_styling_filled']} "
         f"styling-upgraded={_rd['styling_upgraded']} "
+        f"icon-family-corrected={_rd['icon_family_corrected']} "
+        f"fx-styling-corrected={_rd['fx_styling_corrected']} "
         f"unit-inherited={_rd['unit_inherited']} enum={_rd['enum_filled']} "
         f"link-content={_rd['link_filled']} "
         f"boolean-swept={_rd['boolean_swept']} | "
@@ -2208,6 +2210,65 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
             )
             icon_family_corrected += cur.rowcount
 
+    # TIER 3.17 -- FX-NAMESPACE STYLING CORRECTION (2026-08-13, D607). Runs immediately
+    # after TIER 3.16 -- a third overwrite pass, adjacent to the other two for the same
+    # reason TIER 3.16 gives for sitting next to TIER 3.15 ("both are overwrite passes,
+    # so keeping them adjacent means the only places in this file that touch an
+    # already-assigned role sit together").
+    #
+    # THE BUG (measured, real, not speculative): TIER 3's generic-styling backstop
+    # (`role IS NULL AND css_property IS NOT NULL -> 'styling'`, above) treats ANY
+    # non-null `css_property` as CSS paint -- including the `fx:*` pseudo-namespace
+    # `seed-motion-fx-registry.py` writes for pure motion/interaction-behaviour attrs
+    # (`fx:momentum`, `fx:loop`, `fx:start`, `fx:end`, `fx:scrub`, `fx:pin`, `fx:hold`,
+    # `fx:stagger`, `fx:duration`, `fx:ease`, `fx:effect`, `fx:trigger` -- the full
+    # namespace that script's own attr->fx: map declares). An `fx:*` value is
+    # DELIBERATELY not a real CSS property -- that script's own docstring: "sibling of
+    # the existing anim:* ... css_layer='OUTER'|NULL and css_element='wrapper'|
+    # 'behaviour'|'animation'" -- it is a structural marker for pure JS behaviour, never
+    # painted CSS. TIER 3 has no way to tell that apart from a genuine CSS property name,
+    # so every `fx:*` row lands on the generic `styling` backstop, wrong.
+    #
+    # FOUND BY: 2026-08-13, Bean challenged D604's hand-patch of dragMomentum/
+    # loopCarousel (5 blocks, by attribute NAME) as possibly a systemic classifier gap
+    # rather than a genuine judgement call. A `/qc-council` structural re-check --
+    # grouping by the `fx:*` marker instead of by name -- found 3 MORE rows with the
+    # IDENTICAL bug the name-based pass had missed (`sgs/image-sequence`'s
+    # `fxStart`/`fxEnd`/`fxScrub`), proving the point empirically. This tier closes the
+    # whole class instead of the instances a name search happens to find, and
+    # self-corrects any FUTURE block that adds an `fx:*` attribute without needing a
+    # fresh override entry.
+    #
+    # THE GUARD, same shape as TIER 3.15's `role = 'styling'` pin: only touches a row
+    # CURRENTLY holding the generic styling backstop AND carrying an `fx:*` marker. Can
+    # never touch a NULL, a content verdict, or a specific non-fx styling family.
+    #
+    # WHY 'behaviour' AND NOT A NEW ROLE: 'behaviour' is this file's own established role
+    # for pure JS-interaction / configuration attrs with zero visual output -- the exact
+    # precedent the 2026-08-02 Rating/Speed suffix-role fix set (reclassifying
+    # maxRating/minRating/showRating to 'behaviour' for the identical reason:
+    # configuration, not content, not paint). D604/D607 already applied 'behaviour' by
+    # hand to every `fx:*` row found in that session; this tier makes that verdict
+    # self-applying on every future reseed rather than requiring a fresh
+    # attr-classification-overrides.json entry per attribute.
+    #
+    # EXPECTED POPULATION at the time this tier was written: 0 -- D604/D607 already hand-
+    # corrected every `fx:*` row that existed in the DB (verified:
+    # `SELECT COUNT(*) FROM block_attributes WHERE css_property LIKE 'fx:%' AND
+    # role='styling'` returned 0 before this tier was added). A non-zero count on a later
+    # reseed means a NEW `fx:*` attribute landed on a block and hit the backstop before
+    # this tier could correct it -- exactly the case this tier exists to catch
+    # automatically, not a bug in the tier itself.
+    fx_styling_corrected = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes "
+        "WHERE role = 'styling' AND css_property LIKE 'fx:%'"
+    ).fetchall():
+        cur.execute(
+            "UPDATE block_attributes SET role = 'behaviour' WHERE id = ?", (row_id,)
+        )
+        fx_styling_corrected += 1
+
     # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
     # CSS unit for `<base>`; it is the same styling fact, split across two columns
     # because CSS needs the number and the unit separately. So its ROLE is its base's
@@ -2450,6 +2511,11 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # contentIconWpIcon/contentIconDashicon/contentIconEmoji); non-zero on a later
         # reseed means a NEW icon-source-family block landed with mis-roled siblings.
         "icon_family_corrected": icon_family_corrected,
+        # TIER 3.17 -- rows corrected off the generic 'styling' backstop onto 'behaviour'
+        # because their css_property carries the fx:* pseudo-namespace marker. Expected
+        # steady-state count is 0 (D604/D607 hand-corrected every existing instance);
+        # non-zero on a later reseed means a NEW fx:* attribute landed and needs a look.
+        "fx_styling_corrected": fx_styling_corrected,
         "unit_inherited": unit_inherited,
         "enum_filled": enum_filled,
         "link_filled": link_filled,
@@ -3302,6 +3368,95 @@ def _self_test_styling_backstop() -> int:
             print(f"  - {f}")
         return 1
     print(f"STYLING-BACKSTOP SELF-TEST PASSED -- {claimed} rows claimed, 5 checks green.")
+    return 0
+
+
+def _self_test_fx_styling_correction() -> int:
+    """Prove TIER 3.17 (fx:* namespace styling correction) claims exactly the rows it
+    should and never the rows its guard protects, on a throwaway in-memory DB.
+
+    Five planted rows, each a distinct way the tier could be wrong:
+      1. a row it MUST claim -- role='styling' AND an fx:* marker
+      2. a row it MUST NOT claim -- role='styling' but a REAL css_property (not fx:*);
+         proves the `css_property LIKE 'fx:%'` half of the guard
+      3. a row it MUST NOT claim -- role IS NULL with an fx:* marker (this tier only
+         corrects rows the backstop has ALREADY claimed; a NULL row is TIER 3's job,
+         not this one's -- in the real pipeline TIER 3 runs first, so a fresh fx:* row
+         is 'styling' by the time this tier sees it, but this fixture tests TIER 3.17's
+         OWN SQL in isolation, so the NULL case must be planted directly)
+      4. a row it MUST NOT claim -- a CONTENT role with an fx:* marker (must never
+         overwrite a content verdict, same non-negotiable as TIER 3.15's own guard)
+      5. a row already 'behaviour' with an fx:* marker -- idempotence: re-running the
+         tier on an already-correct row must be a no-op, not an error
+    Returns 0 on pass, 1 on fail.
+    """
+    import sqlite3 as _sq
+    conn = _sq.connect(":memory:")
+    conn.execute(
+        "CREATE TABLE block_attributes (id INTEGER PRIMARY KEY, block_slug TEXT, "
+        "attr_name TEXT, role TEXT, css_property TEXT)"
+    )
+    conn.executemany(
+        "INSERT INTO block_attributes (id, block_slug, attr_name, role, css_property) "
+        "VALUES (?,?,?,?,?)",
+        [
+            (1, "sgs/plant", "plantedFxStyling", "styling", "fx:momentum"),
+            (2, "sgs/plant", "plantedRealStyling", "styling", "border-color"),
+            (3, "sgs/plant", "plantedFxUnclaimed", None, "fx:loop"),
+            (4, "sgs/plant", "plantedFxContent", "text-content", "fx:loop"),
+            (5, "sgs/plant", "plantedFxAlreadyCorrect", "behaviour", "fx:scrub"),
+        ],
+    )
+    conn.commit()
+
+    cur = conn.cursor()
+    corrected = 0
+    for (row_id,) in conn.execute(
+        "SELECT id FROM block_attributes WHERE role = 'styling' AND css_property LIKE 'fx:%'"
+    ).fetchall():
+        cur.execute("UPDATE block_attributes SET role = 'behaviour' WHERE id = ?", (row_id,))
+        corrected += 1
+    conn.commit()
+
+    got = dict(conn.execute("SELECT attr_name, role FROM block_attributes").fetchall())
+    failures = []
+    if corrected == 0:
+        failures.append("tier corrected ZERO rows against a planted set -- it cannot "
+                        "fail, so it proves nothing")
+    if got.get("plantedFxStyling") != "behaviour":
+        failures.append(
+            f"plantedFxStyling -> {got.get('plantedFxStyling')!r}, expected 'behaviour'"
+        )
+    if got.get("plantedRealStyling") != "styling":
+        failures.append(
+            f"plantedRealStyling -> {got.get('plantedRealStyling')!r}: a REAL css "
+            "property was reclassified. The `LIKE 'fx:%'` guard must only match the "
+            "fx:* pseudo-namespace, never a genuine CSS property name."
+        )
+    if got.get("plantedFxUnclaimed") is not None:
+        failures.append(
+            f"plantedFxUnclaimed -> {got.get('plantedFxUnclaimed')!r}: a row TIER 3 "
+            "hasn't yet claimed (role IS NULL) was touched. This tier corrects the "
+            "backstop's OUTPUT, it does not do the backstop's job."
+        )
+    if got.get("plantedFxContent") != "text-content":
+        failures.append(
+            f"plantedFxContent -> {got.get('plantedFxContent')!r}: the tier OVERWROTE "
+            "a content role. It must only touch rows currently holding 'styling'."
+        )
+    if got.get("plantedFxAlreadyCorrect") != "behaviour":
+        failures.append(
+            f"plantedFxAlreadyCorrect -> {got.get('plantedFxAlreadyCorrect')!r}: an "
+            "already-correct row changed on re-run. This tier must be idempotent."
+        )
+    conn.close()
+
+    if failures:
+        print(f"FX-STYLING-CORRECTION SELF-TEST FAILED ({len(failures)} checks)")
+        for f in failures:
+            print(f"  - {f}")
+        return 1
+    print(f"FX-STYLING-CORRECTION SELF-TEST PASSED -- {corrected} row(s) corrected, 5 checks green.")
     return 0
 
 
@@ -4227,5 +4382,6 @@ if __name__ == "__main__":
                  or _self_test_type_sweep() or _self_test_wrapper_styling_tier()
                  or _self_test_link_fragment_tier()
                  or _self_test_styling_upgrade()
-                 or _self_test_icon_family_correction())
+                 or _self_test_icon_family_correction()
+                 or _self_test_fx_styling_correction())
     main()
