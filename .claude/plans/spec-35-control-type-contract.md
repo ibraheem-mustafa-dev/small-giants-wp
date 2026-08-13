@@ -633,6 +633,50 @@ its element's panel (TIER 1) regardless of this field.)*
    `DesignTokenPicker` anywhere in the codebase — native only. The Settings-vs-Styles tab-placement
    half of this question is still genuinely open.
 
+9. ⭐ **THE STATE + SHAPE RULE — Bean-ruled 2026-08-13. This is the load-bearing addition to this
+   section and it binds every colour in the framework, wherever it lives.**
+
+   Bean, from a manual inspector review: *"Shadow Colour should be set in the colour section and that
+   way both hover effects are dealt with, the other viable way is a tab toggle in pop up colour picker
+   between states. Never should be set up like that with optional hide or show."* And: *"any element
+   specific colour that ends up staying in its element … should still use the same thin rectangular
+   control that shows the number of states pickable per setting that has its colour picker pop out."*
+
+   Three binding clauses:
+
+   - **9a. ONE CONTROL SHAPE, EVERYWHERE.** Every colour renders as the same thin row: a compact
+     rectangular control carrying its swatch(es), showing **how many states are pickable for that
+     setting**, with the picker itself in a **popover**. This holds regardless of where the control
+     sits — an element-scoped colour that stays in its element's TIER 1 panel (per THE PLACEMENT RULE)
+     uses the identical row. Placement and shape are independent axes; moving a colour must never
+     change what it looks like.
+   - **9b. STATES LIVE INSIDE THE CONTROL, NEVER BESIDE IT.** Normal / hover / active are reached by a
+     tab toggle **within the popover**, not by separate sibling controls and not by a second panel.
+     ⛔ This RETIRES the pattern of a distinct `*Hover` colour control mounted next to its resting
+     twin. It also means a compound property's colour half (shadow colour being the named case) is set
+     **in the colour row**, where the state toggle already handles hover — not as a lone field on the
+     shadow builder.
+   - **9c. ⛔ A COLOUR IS NEVER AN OPTIONAL `ToolsPanelItem`.** It must not sit behind the "+"
+     disclosure menu, and it must not be hideable per instance. Bean, verbatim: *"Never should be set
+     up like that with optional hide or show."* This is a deliberate, named exception to A5's
+     progressive-disclosure guidance — A5 governs control density in general; colour is carved out of
+     it. A client hunting a "+" menu to find a colour is the defect A5 was meant to prevent, arriving
+     by A5's own mechanism.
+
+   **Why it is a contract clause and not a tidy-up.** The framework currently ships several different
+   colour controls and 101 hand-rolled `*Hover` attributes across 24 blocks against a shared state
+   extension with live reach 0 (measured 2026-08-13; ⚠ a competing count of 93/20 exists and the
+   population must be re-measured before any migration — see §9.9-N4 of
+   `reports/2026-08-13-inspector-uniformity-root-cause.md`). Under D602 colour is squarely inside the
+   EXPECTED set, so "the same property behaves identically everywhere" is exactly what this clause
+   makes checkable.
+
+   ⚠ **NOT YET BUILT. This clause is the target, not a description of the tree.** `DesignTokenPicker`
+   today is a labelled `BaseControl` with no state axis and no popover; delivering 9a–9c is a real
+   build on that component plus a rollout, and it must not be read as already satisfied. Its own
+   conformance figure (field 6, 49/50) measures the OLD shape and does not speak to this clause.
+   ⚠ Field 2's missing `id` defect stands and should be fixed in the same work, not after it.
+
 ## 2. LINK
 
 1. **Canonical** — `src/components/SgsLinkControl.js`. Two modes: object (url + newTab + rel) and

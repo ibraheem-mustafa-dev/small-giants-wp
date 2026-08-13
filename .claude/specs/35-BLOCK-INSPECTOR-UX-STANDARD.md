@@ -62,6 +62,23 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls:
   optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
+  - ⛔ **NAMED EXCEPTION — COLOUR IS NEVER OPTIONAL (Bean-ruled 2026-08-13).** A colour control must
+    not sit behind the "+" menu and must not be hideable per instance. Bean: *"Never should be set up
+    like that with optional hide or show."* A client hunting a disclosure menu to find a colour is the
+    very clutter defect A5 exists to prevent, arriving via A5's own mechanism. Colour's states
+    (normal/hover/active) are reached **inside** the control's popover, never as sibling controls or a
+    second panel — which is what removes the density pressure A5 would otherwise be solving for.
+    Full control shape + the three binding clauses: `plans/spec-35-control-type-contract.md` §1 field 9.
+  - ⚠ **A5 is also the mechanism behind a defect measured 2026-08-13**, recorded so the next reader
+    does not repeat the diagnosis: 22 panels tree-wide nest a `ToolsPanel` inside a `PanelBody`, and 17
+    of those repeat the same title twice to the client. ⛔ The obvious fix — delete the outer
+    `PanelBody` — is **not** safe: 11 of them carry `initialOpen={false}`, and `ToolsPanel` has no
+    collapse, so deleting the wrapper turns 11 deliberately-tidy collapsed sections into permanently
+    open ones. Removing the INNER label is not available either: core's `ToolsPanelHeader` returns
+    `null` when `label` is falsy (verified in core source at the SHA WP 7.0.4 pins), which would take
+    the "+" menu and Reset all with it. Only 6 of the 22 are safely deletable (no `initialOpen`, no
+    other children). The remaining 11 want their `isShownByDefault` set reviewed so the outer collapse
+    stops being necessary — a well-configured `ToolsPanel` is already short.
 - **A6. Never duplicate a native `supports` panel** (inspector-UX form of R-31-9).
 - **A7. Per-block universal-extension gating — TWO models (D551/D579, 2026-08-11).** Most
   extensions (`animation`, `clickEffects`, `parallax`) stay **opt-OUT**: universal unless a block

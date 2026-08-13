@@ -1,5 +1,42 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D609 — ONE colour control everywhere, states inside it, never optional [ROUTINE]
+
+**2026-08-13. Bean-ruled, from a manual inspector review — not from a report.** Reserved D609 rather
+than D608 because a concurrent session in this shared checkout was mid-flight on D607/D608 at the time
+of writing (its uncommitted `attr-classification-overrides.json` cites D607).
+
+Bean, verbatim: *"Shadow Colour should be set in the colour section and that way both hover effects
+are dealt with, the other viable way is a tab toggle in pop up colour picker between states. Never
+should be set up like that with optional hide or show."* And: *"any element specific colour that ends
+up staying in its element … should still use the same thin rectangular control that shows the number
+of states pickable per setting that has its colour picker pop out."*
+
+**The rule, in three clauses** (full text: `plans/spec-35-control-type-contract.md` §1 field 9):
+- **One shape everywhere** — a thin row with its swatch(es), showing how many states are pickable,
+  picker in a popover. Placement and shape are independent axes: an element-scoped colour staying in
+  its element's TIER 1 panel uses the identical row. Moving a colour must never change how it looks.
+- **States inside the control** — normal/hover/active via a tab toggle in the popover, never sibling
+  controls and never a second panel. ⛔ RETIRES the separate `*Hover` colour control. A compound
+  property's colour half (shadow colour is the named case) is set in the colour row, where the state
+  toggle already handles hover.
+- **Never an optional `ToolsPanelItem`** — not behind the "+" menu, not hideable per instance. A
+  deliberate named exception to Spec 35 A5, recorded there too.
+
+**Why this is architectural.** The framework ships several different colour controls and a large
+hand-rolled `*Hover` population against a shared state extension with live reach 0. Under **D602**
+colour sits squarely inside the EXPECTED set, so this clause is what makes "the same property behaves
+identically everywhere" checkable rather than aspirational. It also supersedes an earlier proposal
+made in this session to split `sgs/testimonial`'s colours into a separate Colours panel — Bean
+corrected that: the panel IS typography across its full range, and an element's colours belong in
+**that element's** panel wearing the right control, per A4. Grouping follows what the client is
+editing, not the property type.
+
+⚠ **NOT BUILT.** `DesignTokenPicker` today has no state axis and no popover. Delivering this is a real
+build on that component plus a rollout, and the contract's existing 49/50 conformance figure measures
+the OLD shape and says nothing about this clause. Its long-standing missing-`id` accessibility defect
+(contract §1 field 2) should be fixed in the same work.
+
 ## D607 — /qc-council on D604: the override fix was correct but incomplete AND not structural; real fix identified, not yet built [INCIDENT]
 
 **2026-08-13.** Bean challenged D604 directly: the override file's own docstring says it's for
