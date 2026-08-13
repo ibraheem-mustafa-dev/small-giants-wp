@@ -1,5 +1,47 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D607 — /qc-council on D604: the override fix was correct but incomplete AND not structural; real fix identified, not yet built [INCIDENT]
+
+**2026-08-13.** Bean challenged D604 directly: the override file's own docstring says it's for
+genuine judgement calls, "never to correct plain accuracy bugs in the classifier, which should be
+fixed at the classifier itself" — were `dragMomentum`/`loopCarousel` actually a systemic,
+derivable classifier gap rather than isolated judgement calls? `/qc-council` run to check, ground
+truth loaded from `property_suffixes`, `assign-canonical.py`'s TIER 3 backstop, and
+`seed-motion-fx-registry.py`'s `fx:*` pseudo-namespace docs — not from priors.
+
+**Verdict: Bean was right, and the empirical check proved it in the most direct way possible — it
+found 4 more live instances of the exact bug D604 had just "fixed".** `css_property` already
+carries a clean, structural signal for this whole family: `seed-motion-fx-registry.py` writes an
+`fx:*` pseudo-property (`fx:momentum`, `fx:loop`, `fx:start`, `fx:end`, `fx:scrub`, …) for every
+motion/interaction-behaviour attribute, deliberately distinct from real CSS properties.
+`assign-canonical.py`'s TIER 3 "generic styling backstop" (`WHERE role IS NULL AND css_property IS
+NOT NULL → 'styling'`) does not special-case this marker — it treats any non-null `css_property` as
+CSS paint. D604 fixed `dragMomentum`/`loopCarousel` by attribute NAME across 5 blocks (10 rows) —
+correct values, durable mechanism — but because the search was name-based, not signal-based, it
+missed `sgs/image-sequence`'s `fxStart`/`fxEnd`/`fxScrub`, which carry the identical `fx:*` marker
+and the identical wrong `role='styling'`. Fixed the same way (override + live DB;
+`fxPin` seeded too, for family consistency, though it has no `fx:*` marker yet). Verified:
+`SELECT COUNT(*) FROM block_attributes WHERE css_property LIKE 'fx:%' AND role='styling'` → 0.
+
+**The real fix is still not built.** An override entry, however correct, does not self-correct a
+FUTURE `fx:*` attribute on a new block — it only fixes rows that exist today. The actual fix is a
+TIER-3.15-shaped upgrade pass in `assign-canonical.py` (`css_property LIKE 'fx:%' AND
+role='styling' → 'behaviour'`, following the exact precedent TIER 3.15/3.16 already establish in
+that file for "re-examine what the backstop just assigned"). Not built this session — this is a
+change to a shared, self-tested classifier mechanism (`assign-canonical.py`), which per CLAUDE.md
+Rule 7 needs a design-gate + Bean's approval before building, not a unilateral edit mid-council.
+
+**What did NOT get the same treatment, and why:** `faqSchema` (accordion) and
+`allowMultiple`/`defaultOpen` (accordion) were also fixed at D604 but are NOT the same shape — they
+have `css_property IS NULL`, so TIER 3's backstop never touches them at all; there is currently no
+existing structural DB signal distinguishing "toggles JSON-LD" from "toggles visibility", or
+"boolean with no CSS and no content role" from any other boolean. Those two remain genuine
+override-layer judgement calls for now. (A real structural fix for `faqSchema`'s shape exists in
+principle — `check-editor-render-parity.js`'s own Signal 1 already detects `wp_json_encode()`
+non-paint sinks in render.php; teaching `assign-canonical.py` to read the same signal is a
+plausible future unification, not attempted here — different tool, different language, cross-tool
+scope.)
+
 ## D606 — editor-render-parity 3-way JSX-mirror auto-generator: investigated, NOT built [ROUTINE]
 
 **2026-08-13.** Phase 2's speculative idea (auto-generate the missing JSX preview logic for a
