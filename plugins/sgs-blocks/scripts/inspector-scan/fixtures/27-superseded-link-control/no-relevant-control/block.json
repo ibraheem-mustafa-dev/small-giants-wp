@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-relevant-control-27",
+	"title": "Fixture: no link control at all — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

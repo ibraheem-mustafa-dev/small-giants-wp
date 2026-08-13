@@ -20,7 +20,7 @@ import {
 	TypographyControls,
 	StateToggleControl,
 	ShadowControl,
-	SgsLinkControl,
+	LinkPopoverField,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
@@ -122,7 +122,12 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				__next40pxDefaultSize
 			/>
 
-			<SgsLinkControl
+			{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
+			   Bean-approved popover 2026-08-13) — replaces the old
+			   `SgsLinkControl` inline mount. `logo.linkTarget` is a
+			   boolean-shaped enum ('_self'/'_blank' only), so
+			   targetMode="boolean" matches the declared schema exactly. */ }
+			<LinkPopoverField
 				label={ __( 'Link (optional)', 'sgs-blocks' ) }
 				help={ __(
 					'Search your site or paste a URL to make this logo clickable.',
@@ -130,16 +135,16 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				) }
 				value={ {
 					url: logo.linkUrl || '',
-					opensInNewTab: logo.linkTarget === '_blank',
+					linkTarget: logo.linkTarget || '_self',
 					rel: logo.linkRel || '',
 				} }
+				targetMode="boolean"
 				onChange={ ( next ) => {
-					onChange( {
-						...logo,
-						linkUrl: next.url || '',
-						linkTarget: next.opensInNewTab ? '_blank' : '_self',
-						linkRel: next.rel || '',
-					} );
+					const patch = { ...logo };
+					if ( undefined !== next.url ) patch.linkUrl = next.url;
+					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
+					if ( undefined !== next.rel ) patch.linkRel = next.rel;
+					onChange( patch );
 				} }
 			/>
 

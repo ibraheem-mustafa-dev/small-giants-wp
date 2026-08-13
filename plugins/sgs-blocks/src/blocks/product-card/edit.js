@@ -13,7 +13,7 @@ import {
 	TypographyControls,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
-	SgsLinkControl,
+	LinkPopoverField,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -577,9 +577,11 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 					/>
 					{ ( ctaBehaviour || 'learn-more' ) ===
 					'learn-more' ? (
-						<SgsLinkControl
+						/* Spec 35 §2 LINK standard, searchOnly mode — ctaUrl
+						   is a bare string with no target/rel concept. */
+						<LinkPopoverField
 							label={ __( 'Button link', 'sgs-blocks' ) }
-							value={ { url: attributes.ctaUrl || '' } }
+							value={ attributes.ctaUrl || '' }
 							onChange={ ( url ) =>
 								setAttributes( { ctaUrl: url } )
 							}
@@ -1059,9 +1061,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							<SgsLinkControl
+							<LinkPopoverField
 								label={ __( 'Primary button URL', 'sgs-blocks' ) }
-								value={ { url: ctaUrl || '' } }
+								value={ ctaUrl || '' }
 								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
 								searchOnly
 							/>
@@ -1111,12 +1113,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 					{ ( cta2Text || '' ) !== '' && (
-						<SgsLinkControl
+						<LinkPopoverField
 							label={ __(
 								'Secondary button URL',
 								'sgs-blocks'
 							) }
-							value={ { url: cta2Url || '' } }
+							value={ cta2Url || '' }
 							onChange={ ( url ) =>
 								setAttributes( { cta2Url: url } )
 							}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/sgslinkcontrol-raw",
+	"title": "Fixture: raw SgsLinkControl — must flag",
+	"category": "sgs",
+	"attributes": {}
+}

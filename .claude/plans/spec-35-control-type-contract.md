@@ -679,29 +679,58 @@ its element's panel (TIER 1) regardless of this field.)*
 
 ## 2. LINK
 
-1. **Canonical** — `src/components/SgsLinkControl.js`. Two modes: object (url + newTab + rel) and
-   `searchOnly` (bare string).
-2. **Required props** — `label`, `value`, `onChange`, optional `searchOnly`. **`id` REQUIRED and
-   missing** (line 153).
-3. **Banned lookalikes** — `<TextControl type="url">`; **`<URLInput>`** (`button/edit.js:311`, plus
-   a separate `SelectControl` for target and `TextControl` for rel — three raw controls doing one
-   component's job); **`extensions/hover-effects.js:388` raw URL field injected into 67 blocks**
-   (84 − 17 opt-outs; the "~82" this doc first carried is the `customCss` figure, transposed).
-4. **Tab** — `settings`. Placement is already consistent; **component choice is the live problem.**
- *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
-lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
-its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
-its element's panel (TIER 1) regardless of this field.)*
-5. **Scope** — `surfaces.link` (16) is both over- and under-inclusive: 9 of the 16 match on a media
-   URL or a colour token; 6 blocks with genuine repeater-item links are invisible because
-   `build-roster.py` only scans top-level attr names. **True denominator: 14 blocks with a
-   navigational link field, plus the 67-block extension surface which no block-scoped axis can see
-   — see the EXTENSION SURFACE axis added to the scoping table above (council S1).**
-6. **Conformance** — 10 conform. Violators: `sgs/button`, 67 via the extension, 2 baselined.
-7. **Detection** — add `<URLInput>` to the matcher (one line), and **extend rule 08's file set beyond
-   per-block `edit.js` to `src/blocks/extensions/*.js`**. That alone would have caught the 67.
+⚑ **SUPERSEDED 2026-08-13 — Canonical control changed.** Bean reviewed `sgs/button`'s popover-based
+LINK control live and ruled: *"That link control looks perfect. Set this as the standard and look
+for everywhere there is a hyperlink option — then replace it. Also, we should replace the current
+raw link input box in the block link extension with this link setup."* `SgsLinkControl`'s INLINE
+mount is retired as the canonical shape (kept only as a legacy shim for the 7 repeater-item
+consumers not yet migrated — see field 6). Fields below are rewritten to match; the original
+`SgsLinkControl`-as-canonical text is struck through in spirit, not preserved, per this doc's own
+"replace, don't append" convention for a superseded ruling.
+
+1. **Canonical** — `src/components/LinkPopoverControl.js`. Two exports: `LinkPopoverContent` (the
+   `<Popover>` primitive — mount when a block needs MULTIPLE triggers sharing one popover instance,
+   e.g. `sgs/button`'s toolbar button + sidebar row) and `LinkPopoverField` (self-contained
+   trigger-row + popover in one component — the common single-trigger case). Root-caused the same
+   two defects `SgsLinkControl`'s docblock already named (core `LinkControl`'s 350px floor overflowing
+   a ~248px inline panel; staged `settings` toggles with no blur/close commit) by moving off the
+   inline mount onto core's own designed home for `LinkControl` — a popover with a real Submit
+   interaction, matching `core/button`. Neither Kadence nor Otter mount `LinkControl` inline in a
+   sidebar panel either.
+2. **Required props** — `LinkPopoverField`: `label`, `value`, `onChange`. Two value shapes: object
+   `{ url, linkId, linkKind, linkTarget, rel, download }` (default) or bare string (`searchOnly`).
+   `targetMode` ('enum' 4-value _self/_blank/_parent/_top, or 'boolean' open-in-new-tab) selects which
+   target shape a consumer's schema actually declares — **do not default to 'enum' for a boolean-typed
+   schema attr**, that's exactly the "flat value on an object attr" coercion-trap class of bug.
+   `enableInternalResolution` opts a consumer INTO `linkId`/`linkKind` render-time ID resolution — off
+   by default (only `sgs/button`'s `render.php` resolves them today).
+3. **Banned lookalikes** — `<TextControl type="url">`; `<URLInput>`; `SgsLinkControl`'s inline mount
+   for any NEW consumer (existing repeater-item consumers are a migration backlog, not a new
+   violation — see field 6).
+4. **Tab** — unchanged: `settings` when the control styles nothing and lands in the pinned `Settings`
+   panel; an element-scoped link (e.g. `sgs/icon`'s own Link panel) stays in that element's TIER 1
+   panel regardless.
+5. **Scope** — unchanged from the pre-supersession measurement: **14 blocks with a navigational link
+   field, plus the 67-block extension surface** (`hover-effects.js`'s block-link — no block-scoped
+   axis can see this; see the EXTENSION SURFACE axis, council S1).
+6. **Conformance (re-measured 2026-08-13, post-migration)** — Migrated to `LinkPopoverControl`:
+   `sgs/button` (dual-trigger, `LinkPopoverContent` direct), the block-link extension (67-block reach,
+   `LinkPopoverField` + `renderExtraFields` for its bespoke accessible-label field), `sgs/icon`,
+   `sgs/media`, `sgs/product-card` (3 fields, `searchOnly`). **Still on `SgsLinkControl`'s inline
+   mount — 7 blocks the DB's `role='link-href'` scan cannot see (repeater-item links, not top-level
+   attrs):** `brand-strip`, `card-grid`, `form`, `pricing-table`, `social-icons`, `team-member`,
+   `trust-bar`. These are a migration backlog for the same reason field 5 already named them
+   DB-invisible — not newly discovered, but newly PRIORITISED now the canonical shape has changed
+   under them.
+7. **Detection** — `inspector-scan/rules/08-raw-url-link.js` extended 2026-08-13 to also flag
+   `SgsLinkControl` JSX elements (not just `<TextControl type="url">`), scoped ADVISORY (the 7
+   remaining consumers are a known backlog, not a build-breaking regression) with a named promotion
+   trigger: promote to blocking once the 7-block backlog clears.
 8. **Open** — is `google-reviews.reviewRequestUrl` genuinely config, or a link a visitor follows?
-   Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract?
+   Does `whatsapp-cta.phoneNumber` deserve its own PHONE contract? Should the 7 remaining
+   `SgsLinkControl` repeater-item consumers migrate to `LinkPopoverField` in a follow-up pass, or does
+   a repeater ITEM (as opposed to a block-level field) want a different trigger shape (inline, not
+   popover — a popover-per-row could feel heavy in a 6-row repeater)? Flagged, not decided, here.
 
 ## 3. ENUM / MODE
 

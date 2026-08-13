@@ -62,6 +62,10 @@ export {
 	__experimentalBoxControl as BoxControl,
 	__experimentalDivider as Divider,
 	__experimentalHStack as HStack,
+	__experimentalVStack as VStack,
+	__experimentalItemGroup as ItemGroup,
+	__experimentalItem as Item,
+	__experimentalZStack as ZStack,
 } from '@wordpress/components';
 
 // ⚠ block-editor, NOT components. The only one.

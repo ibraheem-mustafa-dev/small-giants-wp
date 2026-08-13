@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/linkpopovercontent-used",
+	"title": "Fixture: canonical LinkPopoverContent only — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

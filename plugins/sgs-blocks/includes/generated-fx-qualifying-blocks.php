@@ -10,7 +10,7 @@
  * values, edit the relevant block.json / stylesheet / seed-motion-fx-
  * registry.py, then re-run this generator.
  *
- * Blocks with at least one qualifying effect: 30
+ * Blocks with at least one qualifying effect: 31
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 + §7.
  *
@@ -39,6 +39,7 @@ function sgs_get_fx_qualifying_blocks() {
 	if ( null === $map ) {
 		$map = array(
 			'sgs/before-after' => array( 'carousel-loop', 'draggable', 'morph', 'motion-path', 'scrub' ),
+			'sgs/button' => array( 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/buybox' => array( 'carousel-loop', 'morph', 'motion-path', 'scrub' ),
 			'sgs/collapsible-text' => array( 'morph', 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/container' => array( 'cursor-field', 'draw', 'horizontal-panel', 'morph', 'motion-path', 'pin-scrub', 'scrub' ),

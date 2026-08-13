@@ -1,12 +1,24 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
+import { useState, useRef } from '@wordpress/element';
+import {
+	useBlockProps,
+	InspectorControls,
+	BlockControls,
+	RichText,
+	useSettings,
+} from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
+import { link as linkIcon } from '@wordpress/icons';
 import {
 	PanelBody,
+	BaseControl,
+	Button,
 	TextControl,
 	SelectControl,
 	RangeControl,
 	ToggleControl,
+	ToolbarGroup,
+	ToolbarButton,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -18,16 +30,9 @@ import {
 	DesignTokenPicker,
 	StateToggleControl,
 	resolveColorToken,
-	SgsLinkControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
-
-const TARGET_OPTIONS = [
-	{ label: __( 'Same tab (_self)', 'sgs-blocks' ), value: '_self' },
-	{ label: __( 'New tab (_blank)', 'sgs-blocks' ), value: '_blank' },
-	{ label: __( 'Parent frame (_parent)', 'sgs-blocks' ), value: '_parent' },
-	{ label: __( 'Full window (_top)', 'sgs-blocks' ), value: '_top' },
-];
+import { LinkPopoverContent } from '../../components';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -156,6 +161,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		label,
 		url,
+		linkId,
+		linkKind,
 		linkTarget,
 		rel,
 		download,
@@ -209,6 +216,29 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const hasIcon = !! icon;
+
+	// LINK contract popover (Spec 35 §2 / D609 row-opens-popover shape) — ONE
+	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`,
+	// the shared standard promoted from this block's own pilot 2026-08-13),
+	// its anchor swapped between the toolbar link button and the sidebar's
+	// compact link row so both triggers open the SAME surface. Button needs
+	// its OWN dual-trigger orchestration (this state) rather than the
+	// self-contained `LinkPopoverField` wrapper, because it has TWO
+	// independently-styled triggers (toolbar icon button + sidebar row) that
+	// must share one popover instance — `LinkPopoverField` only owns a single
+	// trigger. `linkTarget` needs 4 values (_self/_blank/_parent/_top) →
+	// `targetMode="enum"`; `linkId`/`linkKind` internal-resolution is enabled
+	// here (`enableInternalResolution`) because `render.php` resolves them via
+	// `get_permalink()`/`get_term_link()` — the only consumer that does so
+	// today (see Return §3 for why the other targets don't get it yet).
+	const [ isLinkPopoverOpen, setIsLinkPopoverOpen ] = useState( false );
+	const [ linkPopoverAnchor, setLinkPopoverAnchor ] = useState( null );
+	const toolbarLinkRef = useRef();
+	const sidebarLinkRef = useRef();
+	const openLinkPopover = ( triggerRef ) => {
+		setLinkPopoverAnchor( triggerRef.current );
+		setIsLinkPopoverOpen( true );
+	};
 
 	// minHeight's VALUE is a tier object (ResponsiveOverride-driven), but its
 	// UNIT stays a separate flat-per-tier family (minHeightUnit/Tablet/Mobile) —
@@ -349,41 +379,34 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Content */ }
 				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ true }>
-					<TextControl
-						label={ __( 'Label', 'sgs-blocks' ) }
-						value={ label }
-						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SgsLinkControl
-						label={ __( 'URL', 'sgs-blocks' ) }
-						value={ { url: url || '' } }
-						onChange={ ( val ) => setAttributes( { url: val } ) }
-						searchOnly
-					/>
-					<SelectControl
-						label={ __( 'Open in', 'sgs-blocks' ) }
-						value={ linkTarget }
-						options={ TARGET_OPTIONS }
-						onChange={ ( val ) => setAttributes( { linkTarget: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Rel attribute', 'sgs-blocks' ) }
-						value={ rel }
-						onChange={ ( val ) => setAttributes( { rel: val } ) }
-						help={ __( 'e.g. noopener noreferrer nofollow', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __( 'Download link', 'sgs-blocks' ) }
-						checked={ download }
-						onChange={ ( val ) => setAttributes( { download: val } ) }
-						__nextHasNoMarginBottom
-					/>
+					{ /* Text is now edited on-canvas via RichText below, matching
+					   core/button — no sidebar duplicate. Link is the D609
+					   row-opens-popover shape: this compact row and the toolbar
+					   link button (BlockControls below) open the SAME popover
+					   (`../../components/LinkPopoverControl.js`), never an
+					   inline LinkControl here. */ }
+					<BaseControl label={ __( 'Link', 'sgs-blocks' ) } __nextHasNoMarginBottom>
+						{ /* Root cause of the row overflowing the panel (measured
+						   2026-08-13): the URL rendered as one unbroken nowrap
+						   string with nothing to shrink or truncate it — NOT
+						   core LinkControl's 350px floor (that component isn't
+						   mounted here). Fix: the label is a flex child allowed
+						   to shrink (`min-width:0`, `LinkPopoverControl.css`) and
+						   ellipsis-truncated; the full URL stays reachable via
+						   `title` for a mouse/AT tooltip. */ }
+						<Button
+							ref={ sidebarLinkRef }
+							variant="tertiary"
+							className="sgs-link-popover__row"
+							icon={ linkIcon }
+							title={ url || undefined }
+							onClick={ () => openLinkPopover( sidebarLinkRef ) }
+						>
+							<span className="sgs-link-popover__row-label">
+								{ url ? url : __( 'Add link', 'sgs-blocks' ) }
+							</span>
+						</Button>
+					</BaseControl>
 					{ ! url && (
 						<ToggleControl
 							label={ __( 'Submit button (type="submit")', 'sgs-blocks' ) }
@@ -1028,14 +1051,59 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			</InspectorControls>
 
-			{ /* Editor preview — the button element IS the block root (D288, no wrapper div) */ }
+			{ /* Toolbar link button — the other trigger for the SAME popover as the
+			   sidebar's link row (D609 row-opens-popover shape). Matches
+			   core/button's toolbar placement (Spec 35 A1: on-canvas → Block
+			   Toolbar → Inspector). */ }
+			<BlockControls>
+				<ToolbarGroup>
+					<ToolbarButton
+						ref={ toolbarLinkRef }
+						icon={ linkIcon }
+						label={ url ? __( 'Edit link', 'sgs-blocks' ) : __( 'Insert link', 'sgs-blocks' ) }
+						isPressed={ isLinkPopoverOpen }
+						onClick={ () => openLinkPopover( toolbarLinkRef ) }
+					/>
+				</ToolbarGroup>
+			</BlockControls>
+
+			{ /* Editor preview — the button element IS the block root (D288, no wrapper div).
+			   The label is now RichText on-canvas (matching core/button) instead of a
+			   sidebar TextControl. */ }
 			<span { ...blockProps }>
 				{ hasIcon && iconPosition === 'before' && iconPlaceholder }
 				{ iconPosition !== 'only' && (
-					label || __( 'Click Here', 'sgs-blocks' )
+					<RichText
+						tagName="span"
+						className="sgs-button__label"
+						value={ label }
+						onChange={ ( val ) => setAttributes( { label: val } ) }
+						placeholder={ __( 'Click Here', 'sgs-blocks' ) }
+						allowedFormats={ [ 'core/bold', 'core/italic' ] }
+						withoutInteractiveFormatting
+					/>
 				) }
 				{ hasIcon && ( iconPosition === 'after' || iconPosition === 'only' ) && iconPlaceholder }
 			</span>
+
+			{ isLinkPopoverOpen && (
+				<LinkPopoverContent
+					anchor={ linkPopoverAnchor }
+					onClose={ () => setIsLinkPopoverOpen( false ) }
+					url={ url }
+					linkId={ linkId }
+					linkKind={ linkKind }
+					linkTarget={ linkTarget }
+					rel={ rel }
+					download={ download }
+					targetMode="enum"
+					enableInternalResolution
+					onChangeLink={ ( next ) => setAttributes( next ) }
+					onChangeTarget={ ( val ) => setAttributes( { linkTarget: val } ) }
+					onChangeRel={ ( val ) => setAttributes( { rel: val } ) }
+					onChangeDownload={ ( val ) => setAttributes( { download: val } ) }
+				/>
+			) }
 		</>
 	);
 }

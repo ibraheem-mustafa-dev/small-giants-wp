@@ -10,7 +10,7 @@ import {
 	Notice,
 	BoxControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsLinkControl, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview, resolveResponsiveTier } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
@@ -240,21 +240,27 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<SgsLinkControl
+			{ /* Spec 35 §2 LINK standard — replaces the superseded inline
+			   `SgsLinkControl` mount. `item.linkTarget` is a boolean-shaped
+			   enum ('_self'/'_blank' only per block.json) that defaults to
+			   "opens in new tab" when unset — preserved here by defaulting
+			   the passed-in linkTarget to '_blank' rather than falling
+			   through to targetMode="boolean"'s own '_self' fallback. */ }
+			<LinkPopoverField
 				label={ __( 'Link (optional)', 'sgs-blocks' ) }
 				help={ __( 'Search your site or paste a URL to make this badge clickable.', 'sgs-blocks' ) }
 				value={ {
 					url: item.url || '',
-					opensInNewTab: item.linkTarget ? item.linkTarget === '_blank' : true,
+					linkTarget: item.linkTarget || '_blank',
 					rel: item.linkRel || '',
 				} }
+				targetMode="boolean"
 				onChange={ ( next ) => {
-					onChange( {
-						...item,
-						url: next.url || '',
-						linkTarget: next.opensInNewTab ? '_blank' : '_self',
-						linkRel: next.rel || '',
-					} );
+					const patch = { ...item };
+					if ( undefined !== next.url ) patch.url = next.url;
+					if ( undefined !== next.linkTarget ) patch.linkTarget = next.linkTarget;
+					if ( undefined !== next.rel ) patch.linkRel = next.rel;
+					onChange( patch );
 				} }
 			/>
 			<Button variant="secondary" isDestructive onClick={ onRemove } size="small" style={ { marginTop: '8px' } }>

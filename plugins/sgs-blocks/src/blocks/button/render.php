@@ -25,8 +25,37 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // their original preset vs hand-tweaked").
 $inherit_style = isset( $attributes['inheritStyle'] ) ? sanitize_text_field( $attributes['inheritStyle'] ) : 'primary';
 $label         = isset( $attributes['label'] ) ? $attributes['label'] : 'Click Here';
-$has_url       = isset( $attributes['url'] ) && '' !== trim( (string) $attributes['url'] );
-$url           = $has_url ? esc_url( $attributes['url'] ) : '#';
+
+// LINK contract (Spec 35 §2 / D609 row-opens-popover shape) — internal-link
+// resolution. `linkId`/`linkKind` are written by the LinkControl popover
+// (`link-popover.js`) when an operator picks an internal page/post/term from
+// search results; `url` is the plain string a raw pasted URL uses, and is
+// ALSO what LinkControl auto-fills as a preview when an internal result is
+// picked — so `url` alone can't prove which path fired. Resolving the
+// CURRENT permalink from the ID at render time (rather than trusting the
+// stored url string) is what keeps the link correct after the target page's
+// slug changes. `url` stays authoritative whenever there is no id, OR the id
+// no longer resolves (e.g. the target was deleted) — never break an existing
+// stored link.
+// Named $sgs_link_id (not $link_id) — WPCS flags $link_id as a WordPress
+// global override (the legacy Links Manager bookmark API used a global of
+// that exact name).
+$sgs_link_id   = isset( $attributes['linkId'] ) ? absint( $attributes['linkId'] ) : 0;
+$link_kind     = isset( $attributes['linkKind'] ) ? sanitize_text_field( $attributes['linkKind'] ) : '';
+$resolved_url  = '';
+if ( $sgs_link_id ) {
+	if ( 'taxonomy' === $link_kind ) {
+		$term_link    = get_term_link( $sgs_link_id );
+		$resolved_url = is_wp_error( $term_link ) ? '' : $term_link;
+	} else {
+		$permalink    = get_permalink( $sgs_link_id );
+		$resolved_url = $permalink ? $permalink : '';
+	}
+}
+$stored_url    = isset( $attributes['url'] ) ? (string) $attributes['url'] : '';
+$effective_url = $resolved_url ? $resolved_url : $stored_url;
+$has_url       = '' !== trim( $effective_url );
+$url           = $has_url ? esc_url( $effective_url ) : '#';
 $link_target   = isset( $attributes['linkTarget'] ) ? esc_attr( $attributes['linkTarget'] ) : '_self';
 $rel           = isset( $attributes['rel'] ) ? esc_attr( $attributes['rel'] ) : '';
 $download      = ! empty( $attributes['download'] );

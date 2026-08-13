@@ -405,6 +405,42 @@ assessment.
 
 ## D609 — ONE colour control everywhere, states inside it, never optional [ROUTINE]
 
+> ⛔ **AMENDED 2026-08-13, later the same day. THIS RULING AS FIRST WRITTEN WAS INCOMPLETE, and the
+> gap produced a build Bean rejected on sight.** Two corrections, both load-bearing:
+>
+> **1. THE MISSING HALF — colours group into ONE panel that REPLACES native's, at the top of Styles.**
+> 9a below captured the ROW shape and omitted this entirely. Bean had said it; the ruling did not
+> record it. Built to the ruling as written, the result was individual rows scattered inline inside
+> each element's panel — Bean: *"those icon colour controls in the icon panel are ugly. Defo doesn't
+> look like the native setup. And, the colour setup is supposed to replace the native setup at the top
+> of the styles panel."* The omission was the author's, not the implementer's.
+>
+> **2. ⛔ THE STATE-COUNT AFFORDANCE IS NOT A NUMBER — core overlaps the swatches.** 9a says the row
+> *"shows the number of states pickable"*. Read from core source at the SHA WP 7.0.4 pins
+> (`28c0dedc4eaf…`), `global-styles/color-panel.js:163-176`, `LabeledColorIndicators` conveys
+> multiplicity with `<ZStack isLayered={false} offset={-8}>` — one `ColorIndicator` per value,
+> overlapping, and **exactly ONE label. No count badge anywhere.** The sibling
+> `colors-gradients/dropdown.js:65-77` `LabeledColorIndicator` is the single-value form:
+> `HStack justify="flex-start"` → swatch → one `FlexItem` label. ⚠ **Bean has NOT yet ruled between
+> his count badge and core's overlap** — the build currently carries core's overlap. That is the one
+> open item on the row shape.
+>
+> **What the incomplete ruling cost, recorded because it is the reusable part:** the first build
+> rendered the label TWICE (`Icon colour ⚪⚪ Icon colour ②`) — a regression of the exact
+> duplicate-visible-label class fixed across 9 sites that same morning. It passed a seven-point
+> verification (tabs, palette, width, overflow, state count, no "+" menu, unset state) because that
+> checklist never asserted **label uniqueness**. Bean's eye caught in seconds what the measurements
+> were shaped to miss — R-31-13 in action, and §5.5's *"a green result on a too-narrow assertion"*
+> recurring on the control built to end that class. **Any future colour-control verification MUST
+> assert the visible label renders exactly once, with a positive control proving the counter can
+> return ≠1.**
+>
+> **BUILD STATUS:** the reshaped row (`ItemGroup`/`Item`, swatch-left, single label, `ZStack` for
+> multi-state) shipped inside commit `802ceeec` — whose message describes only the LINK programme,
+> because both landed in one commit. Look for `DesignTokenPicker.js` in that diff, not for a colour
+> commit. ⚠ Known unfixed cosmetic gap: an UNSET swatch renders a plain circle where native shows a
+> crossed-out pattern.
+
 **2026-08-13. Bean-ruled, from a manual inspector review — not from a report.** Reserved D609 rather
 than D608 because a concurrent session in this shared checkout was mid-flight on D607/D608 at the time
 of writing (its uncommitted `attr-classification-overrides.json` cites D607).

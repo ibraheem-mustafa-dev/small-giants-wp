@@ -9,6 +9,8 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
+⚠ **TWO CONCURRENT SESSIONS 2026-08-13** — this block + "uniformity thread" below are BOTH newest.
+
 **2026-08-13 (latest session, part 8, same thread). You asked for an honest second look at part
 7's work before trusting it — ran 4 independent reviewers, found one real bug, fixed it, and
 built the thing part 6's session had already flagged as a good next step.** Commits
@@ -40,6 +42,40 @@ built the thing part 6's session had already flagged as a good next step.** Comm
   not assumed to work.
 - **Net result: the flagged-issues count is now 143 → 54** — the drop from 75 is 21 issues the
   detector now understands and correctly skips on its own, not issues that were ignored.
+
+**2026-08-13 (uniformity thread — a SEPARATE, concurrent session, not this one). One link control everywhere, and the colour control rebuilt from
+core's own source.** Commits `802ceeec` + `e073ca42`, pushed, rebased over the other thread's seven.
+
+**What you can now do that you couldn't.** Type a button's text straight on the canvas and set its
+link from the toolbar, exactly like core's button — search your own pages, pick one, and if that page's
+slug is renamed later the link follows it instead of breaking. The same link control is now on 11
+blocks plus the whole-card link extension, so a hyperlink looks and behaves the same everywhere.
+
+**The finding that mattered most.** The old link control mounted WordPress's own `LinkControl` inline
+in the sidebar. Core only ever intends that component for a popover — it cancels its own 350px minimum
+width in exactly one place, `.components-popover__content`. So it painted 350px in a 248px panel and
+ran 86px off the edge, which is the escaping URL box you photographed. Two competitors were read at
+source (Kadence, Otter): neither mounts it inline either. The fix wasn't a width override — it was
+mounting it where core intends.
+
+**A second bug fell out of the same cause.** Because that control only commits its settings on
+"Submit", a new-tab toggle flipped inline was silently discarded — so SGS had hand-rolled separate
+"Open in" and "Rel attribute" fields as a workaround. Those extra fields existed only because the
+component was in the wrong place.
+
+**Three things I got wrong, each caught by you or by re-measuring:**
+1. Told you the 7 remaining blocks weren't repeater-shaped. **False** — 5 of 6 mount inside a per-row
+   loop. My grep counted occurrences in source, not renders.
+2. Called two dirty files "another session's work". **They were my own agent's**, from earlier the same
+   session. That mislabelling then propagated into two subagent briefs.
+3. Reported the editor-parity guard as finding "0 net-new". **It was 139** — I read CHECK B's summary
+   line and attributed it to CHECK A. (That whole backlog is the other thread's, now closed by them.)
+
+**The colour control was rebuilt but is NOT finished.** Bean: *"the difference between your colour
+control and the native one is huge."* Core's actual row was pulled from source and copied — swatch
+left, ONE label, rows grouped in a panel. The first attempt had printed the label twice, which a
+seven-point verification missed because it never checked label uniqueness. **One open question: core
+conveys "2 states" by overlapping the swatches; you originally asked for a count badge. Not ruled.**
 
 **2026-08-13 (latest session, part 7 — new thread). Fixed and shipped the ENTIRE 70-item "editor
 preview doesn't match what the client actually gets" backlog from part 4/5's triage. All 70

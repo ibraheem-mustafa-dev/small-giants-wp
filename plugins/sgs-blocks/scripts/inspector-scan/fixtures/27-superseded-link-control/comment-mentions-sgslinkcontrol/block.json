@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/comment-mentions-sgslinkcontrol",
+	"title": "Fixture: SgsLinkControl only mentioned in a comment — must not flag",
+	"category": "sgs",
+	"attributes": {}
+}

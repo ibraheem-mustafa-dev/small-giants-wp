@@ -39,7 +39,7 @@ import {
 	ToggleControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview } from '../../utils';
 import { UnitControl } from '../../components/primitives';
@@ -105,7 +105,13 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<SgsLinkControl
+			{ /* Spec 35 §2 LINK standard — replaces the superseded inline
+			   `SgsLinkControl` mount. This item's stored shape is
+			   `opensInNewTab` (a plain boolean, not a linkTarget enum
+			   string), so it's mapped to/from the shared component's
+			   `linkTarget` field here at the edge, matching
+			   targetMode="boolean" (mirrors sgs/media's image link field). */ }
+			<LinkPopoverField
 				label={ __( 'Link', 'sgs-blocks' ) }
 				help={
 					item.platform === 'email'
@@ -114,16 +120,16 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 				}
 				value={ {
 					url: item.url || '',
-					opensInNewTab: item.opensInNewTab !== false,
+					linkTarget: item.opensInNewTab !== false ? '_blank' : '_self',
 					rel: item.rel || '',
 				} }
+				targetMode="boolean"
 				onChange={ ( next ) => {
-					onChange( {
-						...item,
-						url: next.url || '',
-						opensInNewTab: next.opensInNewTab,
-						rel: next.rel || '',
-					} );
+					const patch = { ...item };
+					if ( undefined !== next.url ) patch.url = next.url;
+					if ( undefined !== next.linkTarget ) patch.opensInNewTab = '_blank' === next.linkTarget;
+					if ( undefined !== next.rel ) patch.rel = next.rel;
+					onChange( patch );
 				} }
 			/>
 			<Button

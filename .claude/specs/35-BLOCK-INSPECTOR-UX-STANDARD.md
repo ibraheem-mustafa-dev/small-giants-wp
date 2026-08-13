@@ -125,6 +125,16 @@ rel nofollow/sponsored (N: LinkControl `settings`) T · **whole-card/block click
 native — hand-rolled overlay `<a>`) T — *high-impact gap for card-grid/team/product/testimonial* ·
 download attr P.
 
+**PLACEMENT — the LINK control is a POPOVER, never an inline inspector mount (Bean-ruled
+2026-08-13, live review of `sgs/button`'s pilot; canonical component +full rationale:
+`plans/spec-35-control-type-contract.md` §2 LINK).** Mount `LinkPopoverField`
+(`src/components/LinkPopoverControl.js`) for a single trigger, or its `LinkPopoverContent` primitive
+when a block needs more than one trigger (e.g. a toolbar button AND a sidebar row) opening the same
+popover instance. Root cause this fixes: core `LinkControl` floors at `min-width:350px` (cancelled
+only inside `.components-popover__content`) and STAGES its `settings` toggles with no blur/close
+commit — both defects an inline inspector mount cannot avoid. Do not build a new LINK field as an
+inline `<PanelBody>` mount, even via the (superseded) `SgsLinkControl` wrapper.
+
 **Media:** focal point (N: FocalPointPicker) T · aspect-ratio (N: `dimensions.aspectRatio`) T ·
 object-fit/position T · native lightbox (N: `settings.lightbox`, image only, no swipe/keyboard nav) T ·
 srcset/lazy-load (N, automatic) T · video poster/autoplay/loop/mute (N: core video attrs) T ·
