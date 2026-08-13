@@ -1,5 +1,48 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D594 — Hero split-media rework (2nd attempt) REVERTED — real progress, real lessons for attempt 3 [ROUTINE]
+
+**2026-08-12.** Second attempt at replacing the split variant's hand-built image/video with a real
+`sgs/media` child block (1st attempt reverted at `8598ac73`, same root symptom). Reverted again —
+Bean found the live editor broken (split squashed to a quarter-width, background bleeding through,
+content/media inspector controls inert) mid-session, plus a stale test page (2294) still carrying an
+orphaned `sgs/media` block from testing after the code reverted. Cleaned: code reverted to
+pre-session state (`git checkout` on all 5 hero files + supporting DB/test-gate changes), DB resynced
+(`sgs-update-v2.py --stage 1`), page 2294's orphaned block replaced with a proper `splitImage`
+attribute restoring the same picture. Deployed clean.
+
+**What actually got proven this attempt (useful for attempt 3):**
+- **Root cause of attempt 1's regression, confirmed**: putting `sgs/media` in the SAME flat
+  InnerBlocks list as the four text blocks, with no server-side partitioning, lands the picture
+  inside the text wrapper — "ungrouped", exactly as Bean described in the `8598ac73` revert.
+- **A working server-side fix exists**: `render.php` can read `$block->parsed_block['innerBlocks']`
+  directly (not just the pre-rendered `$content` string) and call `render_block()` on each child
+  itself, sorting `sgs/media` into one group and the rest into another — reproducing the original
+  two real wrapper divs (`.sgs-hero__content`/`.sgs-hero__media`) with zero change to their markup,
+  CSS, or content-side behaviour. Bean confirmed this was the right instinct once explained ("just
+  deal with the media block", don't touch content). **This part worked and should be reused.**
+- **The editor canvas is the unsolved half.** WordPress tracks exactly one InnerBlocks list per
+  block client-side — there is no client-side equivalent to `render_block()`-based partitioning, so
+  the editor can't reproduce the frontend's two-real-wrapper-divs structure without either (a) a
+  flat single wrapper approximated with CSS (what this attempt tried — broke because the wrapper's
+  own nested grid stacked inside the ALREADY-2-column outer grid, quartering the layout, and none of
+  `.sgs-hero__content`/`.sgs-hero__media`'s existing padding/background CSS matched the new class),
+  or (b) nested wrapper blocks (rejected outright by Bean — no separate block/InnerBlocks slot for
+  media). Neither option reached parity with the frontend in the time available. **This is the
+  actual blocker for a 3rd attempt** — not the server side, which is solved.
+- **Stored post_content survives a code revert.** Reverting the block's code does NOT undo existing
+  saved block instances — `sgs/media` stays physically saved inside any hero a client/tester touched
+  during the broken window, and old code doesn't know what to do with it. Any future attempt (or
+  abandonment) needs a content-side sweep (`wp db query ... LIKE '%wp:sgs/hero%' AND LIKE
+  '%wp:sgs/media%'`, checked for genuine nesting not just co-occurrence) as a closing step, not an
+  afterthought.
+- **Shared-worktree hazards, twice**: mid-session a concurrent session's git activity transiently
+  masked this session's uncommitted hero changes (a real scare, resolved once their operation
+  finished — nothing was actually lost), and both Playwright and chrome-devtools MCP browser
+  instances were locked by a concurrent session for a stretch. Neither is new information (already
+  flagged in memory), but this session is a second data point that it happens under real load, not
+  just in theory.
+
 ## D593 — SGS inspector tab bar REVERTED — Bean's call, not worth the maintenance cost for a cosmetic change [ROUTINE]
 
 **2026-08-12, same evening as D592.** After the tab bar (D4/D592) was built, piloted, live-verified,
