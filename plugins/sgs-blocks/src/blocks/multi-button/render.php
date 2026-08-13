@@ -142,7 +142,8 @@ $css .= 'justify-content:' . $justify_content_mobile . ';';
 $css .= 'align-items:' . $align_items_mobile . ';';
 $css .= '}}';
 
-// NO-INLINE (2026-07-10): `color` + `__experimentalBorder` supports are declared
+// NO-INLINE (2026-07-10, extended 2026-08-13 for spacing.margin): `color` +
+// `__experimentalBorder` + `spacing` supports are declared
 // `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
 // (called inside SGS_Container_Wrapper::render()) never auto-inlines them as a
 // `style="…"` attribute on the wrapper. Emit them scoped to the SAME
@@ -155,6 +156,9 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
 		$mb_color_border['border'] = $attributes['style']['border'];
+	}
+	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+		$mb_color_border['spacing'] = array( 'margin' => $attributes['style']['spacing']['margin'] );
 	}
 	if ( ! empty( $mb_color_border ) ) {
 		$mb_style_engine_css = wp_style_engine_get_styles(
