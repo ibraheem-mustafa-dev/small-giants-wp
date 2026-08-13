@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -11,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, resolveColorToken } from '../../components';
 import { colourVar } from '../../utils';
 
 const TRIGGER_STYLE_OPTIONS = [
@@ -67,15 +68,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayOpacity,
 	} = attributes;
 
+	const [ palette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: 'sgs-modal',
 	} );
 
 	// Mirrors render.php's dialog rules: max-width variant class + the
-	// modalBackground colour rule on `.sgs-modal__dialog`.
+	// modalBackground colour rule on `.sgs-modal__dialog`. modalBackground's
+	// DesignTokenPicker has no `linked` prop, so it always stores a raw CSS
+	// value, never a slug -- resolveColorToken() (not colourVar(), which is
+	// slug-only) is the correct resolver.
 	const contentPreviewStyle = {
 		maxWidth: MAX_WIDTH_VALUES[ maxWidth ] || undefined,
-		backgroundColor: colourVar( modalBackground ) || undefined,
+		backgroundColor: resolveColorToken( modalBackground, palette ) || undefined,
 	};
 
 	const innerBlocksProps = useInnerBlocksProps(

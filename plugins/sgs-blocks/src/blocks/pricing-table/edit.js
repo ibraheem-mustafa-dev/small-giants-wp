@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -14,7 +15,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker, SgsLinkControl } from '../../components';
+import { DesignTokenPicker, IconPicker, SgsLinkControl, resolveColorToken } from '../../components';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -107,6 +108,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		popularBadgeColour,
 		popularBadgeBackground,
 	} = attributes;
+
+	const [ palette ] = useSettings( 'color.palette' );
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this block only ever
 	// exposes/uses the desktop tier (no per-device columns UI exists), so
@@ -716,17 +719,28 @@ export default function Edit( { attributes, setAttributes } ) {
 									/>
 								</div>
 
+								{ /* render.php only emits the CTA when $plan_cta_text is
+								     non-empty (empty string is a real "no CTA" state --
+								     an unset ctaText defaults to "Get started" via `??`,
+								     but an explicitly-emptied one stays hidden). Mirror
+								     that gate rather than always rendering a placeholder.
+								     ctaColour/ctaBackground's DesignTokenPickers have no
+								     `linked` prop, so they always store a raw CSS value,
+								     never a slug -- resolveColorToken() (not colourVar(),
+								     which is slug-only) is the correct resolver. */ }
+								{ '' !== ( plan.ctaText ?? __( 'Get started', 'sgs-blocks' ) ) && (
 								<div
 									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
 									style={ {
-										color: colourVar( ctaColour ) || undefined,
+										color: resolveColorToken( ctaColour, palette ) || undefined,
 										backgroundColor:
-											colourVar( ctaBackground ) || undefined,
+											resolveColorToken( ctaBackground, palette ) || undefined,
 									} }
 								>
 									{ plan.ctaText ||
 										__( 'Get started', 'sgs-blocks' ) }
 								</div>
+								) }
 
 								<Button
 									icon={ close }

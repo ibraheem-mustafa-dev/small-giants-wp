@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
@@ -11,8 +11,8 @@ import {
 	FlexBlock,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, SgsLinkControl } from '../../components';
-import { colourVar, spacingVar } from '../../utils';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, SgsLinkControl, resolveColorToken } from '../../components';
+import { spacingVar } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -119,6 +119,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const isSiteInfoSource = 'site-info' === source;
+	const [ palette ] = useSettings( 'color.palette' );
 
 	// Box-object interface contract §5: base padding/margin preview mirrors the
 	// WP-native style.spacing.* object read by render.php's style engine call.
@@ -144,7 +145,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	// (style.css .sgs-social-icons__item{color:var(--sgs-social-colour)});
 	// 'brand' mode overrides per item instead (applied on each item below).
 	if ( 'theme' === colourMode && iconColour ) {
-		previewStyle[ '--sgs-social-colour' ] = colourVar( iconColour );
+		// iconColour's DesignTokenPicker has no `linked` prop, so it always
+		// stores a raw CSS value, never a slug -- resolveColorToken() (not
+		// colourVar(), which is slug-only) is the correct resolver.
+		previewStyle[ '--sgs-social-colour' ] = resolveColorToken( iconColour, palette );
 	}
 
 	const blockProps = useBlockProps( {

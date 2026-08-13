@@ -23,6 +23,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -31,7 +32,7 @@ import {
 	Icon,
 } from '@wordpress/components';
 import { close } from '@wordpress/icons';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl, resolveColorToken } from '../../components';
 import { colourVar } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
@@ -116,6 +117,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// operator sees while editing matches what ships.
 	const anchorDesktop = anchor?.desktop || 'full-screen';
 	const isCompact = anchorDesktop === 'trigger' || anchorDesktop === 'centred';
+	const [ palette ] = useSettings( 'color.palette' );
 
 	// Editor-only preview styling (reflects the same attrs render.php reads;
 	// inline style here is editor canvas only — the no-inline contract governs
@@ -398,7 +400,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span
 					className="sgs-nav-drawer__close-preview"
 					aria-hidden="true"
-					style={ { color: toggleCloseColour ? colourVar( toggleCloseColour ) : undefined } }
+					style={ { color: toggleCloseColour ? resolveColorToken( toggleCloseColour, palette ) : undefined } }
 				>
 					<Icon icon={ close } />
 				</span>
