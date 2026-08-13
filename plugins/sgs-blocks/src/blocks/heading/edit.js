@@ -292,6 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ HEADING_LEVEL_OPTIONS }
 							onChange={ ( val ) => setAttributes( { level: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 
@@ -302,6 +303,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ SUB_TAG_OPTIONS }
 							onChange={ ( val ) => setAttributes( { subTag: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -347,6 +349,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ TEXT_TRANSFORM_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textTransform: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Text decoration', 'sgs-blocks' ) }
@@ -354,6 +357,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ TEXT_DECORATION_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
@@ -366,6 +370,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
 						} }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -377,6 +382,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -393,6 +399,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BORDER_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Border colour', 'sgs-blocks' ) }

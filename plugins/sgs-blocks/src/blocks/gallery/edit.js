@@ -456,6 +456,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 1 }
 								max={ 6 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -465,6 +466,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ ASPECT_RATIO_OPTIONS }
 						onChange={ set( 'aspectRatio' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -510,6 +512,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ IMAGE_SIZE_OPTIONS }
 						onChange={ set( 'imageSize' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -549,6 +552,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ HOVER_EFFECT_OPTIONS }
 						onChange={ set( 'effectHover' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Hover scale (card)', 'sgs-blocks' ) }
@@ -560,6 +564,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 1.1 }
 						step={ 0.01 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
@@ -583,6 +588,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 1000 }
 						step={ 50 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
@@ -590,6 +596,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ EASING_OPTIONS }
 						onChange={ set( 'transitionEasing' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -629,6 +636,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 10000 }
 								step={ 500 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 						{ /*

@@ -153,6 +153,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { orientation: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Tab alignment', 'sgs-blocks' ) }
@@ -162,6 +163,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { tabAlignment: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Tab style', 'sgs-blocks' ) }
@@ -171,6 +173,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { tabStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -192,6 +195,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { blockLabel: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -388,6 +392,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						max={ 500 }
 						step={ 50 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

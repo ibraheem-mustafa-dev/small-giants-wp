@@ -61,6 +61,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ TYPE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { displayType: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<Notice
 						isDismissible={ false }
@@ -96,6 +97,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { labelCollapse: val } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</PanelBody>
 				) }

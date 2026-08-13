@@ -91,6 +91,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption
 							value="feature"

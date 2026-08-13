@@ -420,6 +420,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ set( 'postType' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Posts per page', 'sgs-blocks' ) }
@@ -428,6 +429,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 1 }
 						max={ 24 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Order by', 'sgs-blocks' ) }
@@ -435,6 +437,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ ORDER_BY_OPTIONS }
 						onChange={ set( 'orderBy' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Order', 'sgs-blocks' ) }
@@ -442,6 +445,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ ORDER_OPTIONS }
 						onChange={ set( 'order' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<FormTokenField
 						label={ __( 'Categories', 'sgs-blocks' ) }
@@ -464,6 +468,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 50 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Exclude current post', 'sgs-blocks' ) }
@@ -516,6 +521,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									min={ 1 }
 									max={ 6 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							);
 						} }
@@ -527,6 +533,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ ASPECT_RATIO_OPTIONS }
 						onChange={ set( 'aspectRatio' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -567,6 +574,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ IMAGE_SIZE_OPTIONS }
 								onChange={ set( 'imageSize' ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ToolsPanelItem>
@@ -610,6 +618,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 5 }
 								max={ 80 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ToolsPanelItem>
@@ -674,6 +683,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ readMoreText }
 								onChange={ set( 'readMoreText' ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ToolsPanelItem>
@@ -697,6 +707,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ PAGINATION_OPTIONS }
 						onChange={ set( 'pagination' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show filter buttons', 'sgs-blocks' ) }
@@ -711,6 +722,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ FILTER_TAXONOMY_OPTIONS }
 							onChange={ set( 'filterTaxonomy' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -894,6 +906,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 1.1 }
 							step={ 0.01 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -907,6 +920,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ SHADOW_OPTIONS }
 							onChange={ set( 'shadowHover' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -939,6 +953,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 1000 }
 							step={ 50 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -954,6 +969,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ EASING_OPTIONS }
 							onChange={ set( 'transitionEasing' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -1004,6 +1020,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 10000 }
 								step={ 500 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 						{ /*

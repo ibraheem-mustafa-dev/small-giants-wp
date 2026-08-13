@@ -129,6 +129,7 @@ function OptionRow( { option, index, onChange, onRemove } ) {
 				value={ option.key }
 				onChange={ ( val ) => onChange( { ...option, key: val.replace( /\s+/g, '-' ).toLowerCase() } ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TextControl
 				label={ __( 'Label', 'sgs-blocks' ) }
@@ -136,6 +137,7 @@ function OptionRow( { option, index, onChange, onRemove } ) {
 				value={ option.label }
 				onChange={ ( val ) => onChange( { ...option, label: val } ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<Button
 				variant="tertiary"
@@ -283,6 +285,7 @@ function VariationTypeCard( { vt, index, isFirst, isLast, onChange, onRemove, on
 						value={ vt.type_key }
 						onChange={ ( val ) => onChange( { ...vt, type_key: val.replace( /\s+/g, '-' ).toLowerCase() } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ /* Type label */ }
@@ -292,6 +295,7 @@ function VariationTypeCard( { vt, index, isFirst, isLast, onChange, onRemove, on
 						value={ vt.type_label }
 						onChange={ ( val ) => onChange( { ...vt, type_label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ /* Display mode */ }
@@ -301,6 +305,7 @@ function VariationTypeCard( { vt, index, isFirst, isLast, onChange, onRemove, on
 						options={ DISPLAY_AS_OPTIONS }
 						onChange={ ( val ) => onChange( { ...vt, display_as: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ /* Content impact */ }

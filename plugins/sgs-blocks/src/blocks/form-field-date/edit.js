@@ -48,12 +48,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Placeholder', 'sgs-blocks' ) }
@@ -62,6 +64,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { placeholder: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Help text', 'sgs-blocks' ) }
@@ -70,6 +73,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { helpText: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Required', 'sgs-blocks' ) }
@@ -85,6 +89,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ WIDTH_OPTIONS }
 						onChange={ ( val ) => setAttributes( { width: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<PanelBody
@@ -103,6 +108,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Maximum date', 'sgs-blocks' ) }
@@ -116,6 +122,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

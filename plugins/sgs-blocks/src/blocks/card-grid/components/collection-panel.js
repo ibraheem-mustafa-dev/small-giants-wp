@@ -89,6 +89,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					] }
 					onChange={ ( v ) => setAttributes( { contentType: v } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 				<SelectControl
 					label={ __( 'Selection rule', 'sgs-blocks' ) }
@@ -97,6 +98,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					options={ SELECTION_RULE_OPTIONS }
 					onChange={ ( v ) => setAttributes( { selectionRule: v } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 				<RangeControl
 					label={ __( 'Number of items', 'sgs-blocks' ) }
@@ -106,6 +108,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					max={ MAX_COUNT }
 					onChange={ ( v ) => setAttributes( { count: v } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 
 				{ 'handpicked' === selectionRule && (
@@ -135,6 +138,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 						options={ PAGINATION_OPTIONS }
 						onChange={ ( v ) => setAttributes( { pagination: v } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				) }
 
@@ -147,6 +151,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					value={ emptyMessage || '' }
 					onChange={ ( v ) => setAttributes( { emptyMessage: v } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			</PanelBody>
 
@@ -165,6 +170,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					] }
 					onChange={ ( v ) => setAttributes( { ctaBehaviour: v } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 				<ToggleControl
 					label={ __( 'Show option pickers on each card', 'sgs-blocks' ) }

@@ -68,6 +68,7 @@ export default function PanelSettingsControls( {
 						setAttributes( { displayMode: val } )
 					}
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			</PanelBody>
 
@@ -83,6 +84,7 @@ export default function PanelSettingsControls( {
 							setAttributes( { panelHeading: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Empty-cart message', 'sgs-blocks' ) }
@@ -91,6 +93,7 @@ export default function PanelSettingsControls( {
 							setAttributes( { emptyCartMessage: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Empty-cart button text', 'sgs-blocks' ) }
@@ -99,6 +102,7 @@ export default function PanelSettingsControls( {
 							setAttributes( { emptyCartCtaLabel: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( '"View cart" button text', 'sgs-blocks' ) }
@@ -107,6 +111,7 @@ export default function PanelSettingsControls( {
 							setAttributes( { viewCartLabel: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( '"Checkout" button text', 'sgs-blocks' ) }
@@ -115,6 +120,7 @@ export default function PanelSettingsControls( {
 							setAttributes( { checkoutLabel: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Panel background', 'sgs-blocks' ) }

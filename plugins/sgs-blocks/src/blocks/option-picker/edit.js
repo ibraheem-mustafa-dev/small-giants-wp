@@ -323,6 +323,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { label: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show label', 'sgs-blocks' ) }
@@ -372,6 +373,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											)
 										}
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 									<TextControl
 										label={ __( 'Key (unique ID)', 'sgs-blocks' ) }
@@ -393,6 +395,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											)
 										}
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								</FlexBlock>
 								<FlexItem>
@@ -463,6 +466,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { defaultSelected: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -483,6 +487,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { typeKey: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Content-impact slots', 'sgs-blocks' ) }
@@ -500,6 +505,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							} )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -530,6 +536,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { labelMarginBottom: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<DesignTokenPicker
 								label={ __( 'Label colour', 'sgs-blocks' ) }
@@ -563,6 +570,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { pillStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Pill size', 'sgs-blocks' ) }
@@ -572,6 +580,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { pillSize: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Colour preset', 'sgs-blocks' ) }
@@ -585,6 +594,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { colourPreset: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TypographyControls
 						attributes={ attributes }
@@ -605,6 +615,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						help={ __( 'Leave blank for the default. Set 0 for square corners.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ /* Pill padding — SGS custom TIER-OF-BOXES object family
 					   {desktop,tablet,mobile} (Spec 35 box-tier migration) — the
@@ -758,6 +769,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { pillSelectedBorderRadius: val ?? '' } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -825,6 +837,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 400px. Leave blank for natural width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<UnitControl
 						label={ __( 'Max-width', 'sgs-blocks' ) }
@@ -833,6 +846,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -846,6 +860,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BORDER_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ borderStyle !== 'none' && (
 						<DesignTokenPicker

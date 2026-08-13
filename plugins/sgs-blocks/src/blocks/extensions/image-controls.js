@@ -218,6 +218,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 								setAttributes( { sgsObjectFit: val || '' } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<TextControl
 							label={ __( 'Max width', 'sgs-blocks' ) }
@@ -231,6 +232,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 							}
 							placeholder="100%"
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<SelectControl
 							label={ __( 'Height unit', 'sgs-blocks' ) }
@@ -244,6 +246,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 								setAttributes( { sgsHeightUnit: val } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<ResponsiveControl
 							label={ __( 'Height', 'sgs-blocks' ) }
@@ -268,6 +271,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 									max={ 800 }
 									step={ 1 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveControl>

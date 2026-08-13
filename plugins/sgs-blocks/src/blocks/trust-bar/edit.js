@@ -144,6 +144,7 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 				onChange={ ( val ) => update( 'label', val ) }
 				placeholder={ __( 'Badge label…', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<ToggleControl
 				label={ __( 'Filled icon', 'sgs-blocks' ) }
@@ -205,6 +206,7 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 				onChange={ ( val ) => update( 'label', val ) }
 				placeholder={ __( 'BRC Certified', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<SgsLinkControl
 				label={ __( 'Link (optional)', 'sgs-blocks' ) }
@@ -318,6 +320,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BADGE_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { badgeStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -338,6 +341,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ AUTO_SCROLL_SPEED_OPTIONS }
 								onChange={ ( val ) => setAttributes( { autoScrollSpeed: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<ToggleControl
 								label={ __( 'Pause on hover', 'sgs-blocks' ) }
@@ -416,6 +420,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
 									: undefined }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -506,6 +511,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								units={ BOX_UNITS }
 								splitOnAxis={ false }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -547,6 +553,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ BADGE_SIZE_OPTIONS }
 							onChange={ ( val ) => setAttributes( { badgeSize: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<p style={ { fontSize: '12px', fontWeight: 600, marginBottom: '4px' } }>
 							{ __( 'Label typography', 'sgs-blocks' ) }
@@ -590,6 +597,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 64 }
 							step={ 2 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<DesignTokenPicker
 							label={ __( 'Icon circle background', 'sgs-blocks' ) }
@@ -643,6 +651,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 160 }
 							step={ 4 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<SelectControl
 							label={ __( 'Image fit', 'sgs-blocks' ) }
@@ -653,6 +662,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							] }
 							onChange={ ( val ) => setAttributes( { badgeImageObjectFit: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						{ /* §14.3 raw-TextControl violation fixed (D561). Same units
 						     array as the icon circle above — '%' reaches the circle
@@ -731,6 +741,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 6 }
 									step={ 1 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>

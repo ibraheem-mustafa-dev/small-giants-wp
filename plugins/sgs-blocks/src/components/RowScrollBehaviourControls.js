@@ -353,6 +353,7 @@ export default function RowScrollBehaviourControls( {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ !! rowShrinkHideTarget && ! selectedCandidate && (
 						<Notice status="warning" isDismissible={ false }>

@@ -102,6 +102,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						type="tel"
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextareaControl
 						label={ __(
@@ -123,6 +124,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { variant: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

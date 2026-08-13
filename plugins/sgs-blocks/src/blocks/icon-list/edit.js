@@ -139,6 +139,7 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         value={item.text || ""}
         onChange={(val) => onChange({ ...item, text: val })}
         __nextHasNoMarginBottom
+      	__next40pxDefaultSize
       />
       <Button
         variant="secondary"
@@ -345,6 +346,7 @@ export default function Edit({ attributes, setAttributes }) {
               setAttributes(next);
             }}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           >
             {SOURCE_OPTIONS.map((opt) => (
               <ToggleGroupControlOption
@@ -364,6 +366,7 @@ export default function Edit({ attributes, setAttributes }) {
                 disabled={isResolvingMenus}
                 help={__("Manage menus in Appearance → Menus.", "sgs-blocks")}
                 __nextHasNoMarginBottom
+              	__next40pxDefaultSize
               />
               {!menuRef && (
                 <Notice status="info" isDismissible={false}>
@@ -392,6 +395,7 @@ export default function Edit({ attributes, setAttributes }) {
             value={heading || ""}
             onChange={(val) => setAttributes({ heading: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           {(heading || ("menu" === resolvedSource && selectedMenuName)) && (
             <>
@@ -401,6 +405,7 @@ export default function Edit({ attributes, setAttributes }) {
                 options={HEADING_LEVEL_OPTIONS}
                 onChange={(val) => setAttributes({ headingLevel: val })}
                 __nextHasNoMarginBottom
+              	__next40pxDefaultSize
               />
               <TypographyControls
                 attributes={attributes}
@@ -468,6 +473,7 @@ export default function Edit({ attributes, setAttributes }) {
             isBlock
             onChange={(val) => setAttributes({ markerType: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           >
             {MARKER_TYPE_OPTIONS.map((opt) => (
               <ToggleGroupControlOption
@@ -492,6 +498,7 @@ export default function Edit({ attributes, setAttributes }) {
             options={ICON_SIZE_OPTIONS}
             onChange={(val) => setAttributes({ iconSize: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <SelectControl
             label={__("Spacing", "sgs-blocks")}
@@ -499,6 +506,7 @@ export default function Edit({ attributes, setAttributes }) {
             options={GAP_OPTIONS}
             onChange={(val) => setAttributes({ gap: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
         </PanelBody>
 
@@ -570,6 +578,7 @@ export default function Edit({ attributes, setAttributes }) {
             options={BORDER_STYLE_OPTIONS}
             onChange={(val) => setAttributes({ borderStyle: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           {borderStyle !== "none" && (
             <>

@@ -217,6 +217,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 4 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Style', 'sgs-blocks' ) }
@@ -226,6 +227,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { style: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Billing toggle', 'sgs-blocks' ) }
@@ -236,6 +238,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						help={ __( 'Controls whether a monthly/yearly switcher appears and which prices show.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ showToggle && (
 						<>
@@ -246,6 +249,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { billingToggleMonthlyLabel: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<TextControl
 								label={ __( 'Yearly label', 'sgs-blocks' ) }
@@ -254,6 +258,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { billingToggleYearlyLabel: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __( 'Toggle style', 'sgs-blocks' ) }
@@ -263,6 +268,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { toggleStyle: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }
@@ -307,6 +313,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { ctaStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'CTA text colour', 'sgs-blocks' ) }
@@ -345,6 +352,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { popularBadgeText: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Badge text colour', 'sgs-blocks' ) }
@@ -499,6 +507,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													}
 													placeholder={ __( 'e.g. Save 20%', 'sgs-blocks' ) }
 													__nextHasNoMarginBottom
+													__next40pxDefaultSize
 												/>
 											</>
 										) }
@@ -513,6 +522,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												)
 											}
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									</div>
 								</div>
@@ -540,6 +550,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												: undefined
 										}
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 									{ plan.ribbonText && (
 										<DesignTokenPicker
@@ -647,6 +658,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											)
 										}
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 									<SgsLinkControl
 										label={ __(

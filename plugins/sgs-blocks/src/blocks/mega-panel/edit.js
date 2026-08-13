@@ -335,6 +335,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { style: value || 'columns' } ) }
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="columns" label={ __( 'Columns', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="cards" label={ __( 'Cards', 'sgs-blocks' ) } />
@@ -360,6 +361,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { colourScheme: value || 'light' } ) }
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="light" label={ __( 'Light', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
@@ -458,6 +460,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="line" label={ __( 'Line', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="none" label={ __( 'None', 'sgs-blocks' ) } />

@@ -386,6 +386,7 @@ function DeviceTogglePortal() {
 				isBlock
 				__nextHasNoMarginBottom
 				onChange={ ( value ) => setDevice( value ) }
+				__next40pxDefaultSize
 			>
 				{ DEVICES.map( ( { value, label } ) => (
 					<ToggleGroupControlOption

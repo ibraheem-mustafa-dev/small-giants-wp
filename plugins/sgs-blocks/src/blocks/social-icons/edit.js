@@ -163,6 +163,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							: __( 'Add and manage each link below.', 'sgs-blocks' )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -182,6 +183,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ PLATFORMS.map( ( p ) => ( { label: PLATFORM_LABELS[ p ] || p, value: p } ) ) }
 									onChange={ ( val ) => updateIcon( index, 'platform', val ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</FlexItem>
 							<FlexBlock>
@@ -209,6 +211,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									placeholder={ defaultAccessibleLabel( icon.platform ) }
 									help={ __( 'Accessible name (aria-label), auto-generated. Edit to override — leave empty to keep the auto default shown above.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								{ 'custom' === icon.platform && (
 									<MediaUploadCheck>
@@ -250,6 +253,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
@@ -258,6 +262,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 16 }
 						max={ 64 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SpacingControl
 						label={ __( 'Gap', 'sgs-blocks' ) }
@@ -274,6 +279,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							: __( 'Every icon uses the theme colour below at rest.', 'sgs-blocks' )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ 'theme' === colourMode && (
 						<DesignTokenPicker

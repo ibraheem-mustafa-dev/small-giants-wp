@@ -31,7 +31,7 @@
  *
  * Usage:
  *   <ResponsiveControl label="Columns">
- *     { ( breakpoint ) => <RangeControl ... /> }
+ *     { ( breakpoint ) => <RangeControl ... __next40pxDefaultSize /> }
  *   </ResponsiveControl>
  *
  * ── Optional inherit-indicator + reset (Spec 35 T1.2, P2 §4.2) ────────────
@@ -47,7 +47,7 @@
  *       resolvedValue={ ( tier ) => resolveTier( drawerGap, tier, '' ).value }
  *       onReset={ ( tier ) => onChange( { ...drawerGap, [ tier ]: null } ) }
  *   >
- *       { ( breakpoint ) => <UnitControl value={ drawerGap[ breakpoint ] ?? '' } … /> }
+ *       { ( breakpoint ) => <UnitControl value={ drawerGap[ breakpoint ] ?? '' } … __next40pxDefaultSize /> }
  *   </ResponsiveControl>
  *
  * When supplied, `isInherited`/`resolvedValue` drive a visible ghost-text hint

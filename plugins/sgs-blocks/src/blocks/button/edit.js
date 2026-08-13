@@ -331,6 +331,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SgsLinkControl
 						label={ __( 'URL', 'sgs-blocks' ) }
@@ -344,6 +345,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ TARGET_OPTIONS }
 						onChange={ ( val ) => setAttributes( { linkTarget: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Rel attribute', 'sgs-blocks' ) }
@@ -351,6 +353,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { rel: val } ) }
 						help={ __( 'e.g. noopener noreferrer nofollow', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Download link', 'sgs-blocks' ) }
@@ -373,6 +376,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
 						help={ __( 'Overrides the visible label for screen readers. Required for icon-only buttons.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -406,6 +410,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ ICON_POSITION_OPTIONS }
 									onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							{ iconPosition !== 'only' && (
@@ -426,6 +431,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
 										help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 							) }
@@ -440,6 +446,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
 									help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						</ToolsPanel>
@@ -494,6 +501,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											max={ 100 }
 											step={ 1 }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									) }
 								</ResponsiveOverride>
@@ -511,6 +519,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 40 }
 									step={ 1 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							{ /* Element-scoped colour states. Spec 35 keeps every control
@@ -591,6 +600,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										options={ options }
 										onChange={ ( val ) => setOwnValue( val ) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 									{ 'custom' === typeVal && (
 										<UnitControl
@@ -606,6 +616,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											} }
 											__nextHasNoMarginBottom
 											style={ { marginTop: '8px' } }
+											__next40pxDefaultSize
 										/>
 									) }
 								</>
@@ -641,6 +652,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									}
 								} }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -691,6 +703,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											setAttributes( { lineHeightUnit: unit } );
 										} }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								);
 							} }
@@ -701,6 +714,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ TEXT_TRANSFORM_OPTIONS }
 							onChange={ ( val ) => setAttributes( { textTransform: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<SelectControl
 							label={ __( 'Text decoration', 'sgs-blocks' ) }
@@ -708,6 +722,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ TEXT_DECORATION_OPTIONS }
 							onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						{ /* Letter spacing is now a TIER OBJECT (Spec 35 migration,
 						   2026-08-11) — same RangeControl UX as before, wrapped in
@@ -727,6 +742,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 20 }
 									step={ 0.5 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -836,6 +852,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ UNDERLINE_HOVER_OPTIONS }
 								onChange={ ( val ) => setAttributes( { textDecorationHover: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
@@ -856,6 +873,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ BORDER_STYLE_OPTIONS }
 							onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<ResponsiveBoxControl
 							label={ __( 'Border width', 'sgs-blocks' ) }
@@ -926,6 +944,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 1.2 }
 						step={ 0.01 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
@@ -935,6 +954,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 1000 }
 						step={ 50 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
@@ -942,6 +962,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ EASING_OPTIONS }
 						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -971,10 +992,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						>
 							<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Normal state', 'sgs-blocks' ) }</p>
 							<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val ?? '' } } ) } />
-							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadow.vOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadow.blur } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
-							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadow.spread } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadow.vOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadow.blur } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadow.spread } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
 							<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadow.inset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, inset: val } } ) } __nextHasNoMarginBottom />
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -991,10 +1012,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						>
 							<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Hover state', 'sgs-blocks' ) }</p>
 							<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadowHover.colour } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, colour: val ?? '' } } ) } />
-							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.hOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.vOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadowHover.blur } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
-							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadowHover.spread } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.hOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.vOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadowHover.blur } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom __next40pxDefaultSize />
+							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadowHover.spread } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
 							<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadowHover.inset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, inset: val } } ) } __nextHasNoMarginBottom />
 						</ToolsPanelItem>
 					</ToolsPanel>

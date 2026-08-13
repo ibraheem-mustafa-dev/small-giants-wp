@@ -189,6 +189,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<ResponsiveBoxControl
 							label={ __( 'Padding', 'sgs-blocks' ) }
@@ -255,6 +256,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ DISPLAY_MODE_OPTIONS }
 								onChange={ ( val ) => setAttributes( { displayMode: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						{ isAnnouncement && (
@@ -270,6 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										options={ STICKY_POSITION_OPTIONS }
 										onChange={ ( val ) => setAttributes( { stickyPosition: val } ) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
@@ -306,6 +309,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												setAttributes( { dismissBehaviour: val } )
 											}
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									</ToolsPanelItem>
 								) }
@@ -333,6 +337,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ VARIANT_OPTIONS }
 								onChange={ ( val ) => setAttributes( { variant: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

@@ -203,6 +203,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 800 }
 						step={ 10 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Max Width (% of parent)', 'sgs-blocks' ) }
@@ -212,6 +213,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 50 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -237,6 +239,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						step={ 5 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Z-Index', 'sgs-blocks' ) }
@@ -247,6 +250,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 10 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -263,6 +267,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						step={ 5 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Fade on scroll', 'sgs-blocks' ) }
@@ -278,6 +283,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ OVERFLOW_OPTIONS }
 						onChange={ ( val ) => setAttributes( { overflow: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -302,6 +308,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 4000 }
 								step={ 100 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<RangeControl
 								label={ __( 'Trigger offset (%)', 'sgs-blocks' ) }
@@ -312,6 +319,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 80 }
 								step={ 5 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __( 'Draw easing', 'sgs-blocks' ) }
@@ -319,6 +327,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ PATH_DRAW_EASING_OPTIONS }
 								onChange={ ( val ) => setAttributes( { pathDrawEasing: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }
@@ -397,6 +406,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										step={ 1 }
 										allowReset={ inherited }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>
@@ -428,6 +438,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										step={ 1 }
 										allowReset={ inherited }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>
@@ -459,6 +470,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										step={ 10 }
 										allowReset={ inherited }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>
@@ -490,6 +502,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										step={ 5 }
 										allowReset={ inherited }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>

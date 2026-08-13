@@ -101,6 +101,7 @@ export default function Edit({ attributes, setAttributes }) {
             }}
             type="number"
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <TextControl
             label={__("Prefix", "sgs-blocks")}
@@ -108,6 +109,7 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ prefix: val })}
             placeholder={__("e.g. £", "sgs-blocks")}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <TextControl
             label={__("Suffix", "sgs-blocks")}
@@ -115,6 +117,7 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ suffix: val })}
             placeholder={__("e.g. +, %, M", "sgs-blocks")}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <ToggleControl
             label={__("Thousand separator", "sgs-blocks")}
@@ -130,6 +133,7 @@ export default function Edit({ attributes, setAttributes }) {
             max={5000}
             step={100}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
         </PanelBody>
 

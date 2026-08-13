@@ -107,6 +107,7 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				value={ logo.alt || '' }
 				onChange={ ( val ) => update( 'alt', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 
 			<TextControl
@@ -118,6 +119,7 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				value={ logo.name || '' }
 				onChange={ ( val ) => update( 'name', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 
 			<SgsLinkControl
@@ -341,6 +343,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									min={ 1 }
 									max={ cols.max }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							);
 						} }
@@ -358,6 +361,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 24 }
 						max={ 260 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -386,6 +390,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { scrollSpeed: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __( 'Scroll direction', 'sgs-blocks' ) }
@@ -395,6 +400,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { scrollDirection: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<ToggleControl
 								label={ __( 'Pause on hover', 'sgs-blocks' ) }
@@ -432,6 +438,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 20 }
 							max={ 200 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -480,6 +487,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							] }
 							onChange={ ( val ) => setAttributes( { tileShape: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -501,6 +509,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 0 }
 							max={ 60 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -518,6 +527,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 0 }
 							max={ 100 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -553,6 +563,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 0 }
 							max={ 200 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -616,6 +627,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											min={ 0 }
 											max={ 10 }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										<DesignTokenPicker
 											label={ __( 'Border colour', 'sgs-blocks' ) }
@@ -669,6 +681,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { effectHover: val } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -685,6 +698,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							help={ __( 'Speed of the hover colour/greyscale transition. Default: 300.', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -707,6 +721,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { transitionEasing: val } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -727,6 +742,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { imageEffect: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Logo fit', 'sgs-blocks' ) }
@@ -743,6 +759,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { logoFit: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -787,6 +804,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { nameTextAlign: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<DesignTokenPicker
 								label={ __( 'Caption colour', 'sgs-blocks' ) }

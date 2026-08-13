@@ -369,11 +369,15 @@ if ( 'typed' === $source_mode ) {
 	// base `.product-card .sgs-product-card__tag` rule by source order without an
 	// !important and never touches the featured overlay badge. tagFullWidth drives
 	// the full-width display (the converter sets it true for cloned trial tags).
-	$sgs_tag_radius_raw = $attributes['tagBorderRadius'] ?? 0;
+	// floatval, NOT intval (2026-08-13): tagBorderRadius is now a CSS-length
+	// STRING, and intval('0.5rem') is 0 — which would silently DROP every sub-1
+	// rem/em radius. floatval keeps the zero-is-absent guard working for both an
+	// explicit zero length and the legacy bare number. Mirrors sgs/label.
+	$sgs_tag_radius_raw = $attributes['tagBorderRadius'] ?? '';
 	$sgs_tag_box_css    = sgs_label_box_css_rule(
 		array(
 			'padding'    => is_array( $attributes['tagPadding'] ?? null ) ? $attributes['tagPadding'] : array(),
-			'radius'     => ( 0 !== intval( $sgs_tag_radius_raw ) ) ? $sgs_tag_radius_raw : '',
+			'radius'     => ( 0.0 !== floatval( $sgs_tag_radius_raw ) ) ? $sgs_tag_radius_raw : '',
 			'background' => (string) ( $attributes['tagBackgroundColour'] ?? '' ),
 			'fullWidth'  => ! empty( $attributes['tagFullWidth'] ),
 		),

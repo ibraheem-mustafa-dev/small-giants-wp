@@ -162,8 +162,9 @@
 			"default": {}
 		},
 		"borderRadius": {
-			"type": "number",
-			"default": 0
+			"type": [ "string", "number" ],
+			"default": "",
+			"description": "Border radius as a CSS length (e.g. '16px', '1.5rem'). A bare number is treated as px for pre-2026-08-13 instances."
 		},
 		"fullWidth": {
 			"type": "boolean",

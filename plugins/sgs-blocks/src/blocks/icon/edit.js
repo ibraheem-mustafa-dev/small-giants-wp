@@ -186,6 +186,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 128 }
 						step={ 4 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Icon colour', 'sgs-blocks' ) }
@@ -201,6 +202,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BG_SHAPES }
 						onChange={ ( val ) => setAttributes( { backgroundShape: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ backgroundShape !== 'none' && (
 						<>
@@ -222,6 +224,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { backgroundPadding: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }
@@ -274,6 +277,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 1.5 }
 						step={ 0.05 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -332,6 +336,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ ariaLabel }
 						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

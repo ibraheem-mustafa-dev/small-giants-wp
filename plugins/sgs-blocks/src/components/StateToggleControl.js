@@ -95,6 +95,7 @@ export default function StateToggleControl( {
 				onChange={ ( val ) => setState( val || states[ 0 ].key ) }
 				isBlock
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			>
 				{ states.map( ( s ) => (
 					<ToggleGroupControlOption

@@ -52,6 +52,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							min={ 1 }
 							max={ 20 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>

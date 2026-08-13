@@ -135,6 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ maxRating }
 						step={ 0.5 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Max stars', 'sgs-blocks' ) }
@@ -143,6 +144,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 1 }
 						max={ 10 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Star size (px)', 'sgs-blocks' ) }
@@ -151,6 +153,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 12 }
 						max={ 64 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Star colour', 'sgs-blocks' ) }
@@ -158,6 +161,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { starColour: val } ) }
 						type="color"
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Empty colour', 'sgs-blocks' ) }
@@ -165,6 +169,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { emptyColour: val } ) }
 						type="color"
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -213,12 +218,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ DISPLAY_MODE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show numeric value (legacy)', 'sgs-blocks' ) }
@@ -243,6 +250,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ schemaItemName }
 								onChange={ ( val ) => setAttributes( { schemaItemName: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<RangeControl
 								label={ __( 'Review count', 'sgs-blocks' ) }
@@ -251,6 +259,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 1 }
 								max={ 10000 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }

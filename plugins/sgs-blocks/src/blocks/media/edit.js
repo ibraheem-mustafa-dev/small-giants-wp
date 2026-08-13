@@ -330,6 +330,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						disabled={ imageIsDecorative }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			) }
@@ -416,6 +417,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { objectFit: value } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -441,6 +443,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { objectPosition: value } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -473,6 +476,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									placeholder={ inherited ? effectiveValue || '' : '' }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -507,6 +511,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									placeholder={ inherited ? effectiveValue || '' : '' }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -542,6 +547,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									placeholder={ inherited ? effectiveValue || '' : '' }
 									onChange={ ( v ) => setOwnValue( v || '' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -629,6 +635,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { alignment: value } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -647,6 +654,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { opacity: value ?? 1 } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -666,6 +674,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { boxShadow: value } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -684,6 +693,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { caption: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Caption tag', 'sgs-blocks' ) }
@@ -702,6 +712,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { captionTag: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ isImage && (
 						<SgsLinkControl
@@ -851,6 +862,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { svgAnimation: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ svgAnimation && 'none' !== svgAnimation && (
 						<SelectControl
@@ -874,6 +886,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { svgAnimationSpeed: value } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -915,6 +928,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) =>
 							setAttributes( { videoSource: value } )
 						}
+						__next40pxDefaultSize
 					/>
 
 					{ 'external' === ( videoSource || 'external' ) && (
@@ -928,6 +942,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( value ) =>
 								setAttributes( { videoUrl: value } )
 							}
+							__next40pxDefaultSize
 						/>
 					) }
 
@@ -1034,6 +1049,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												[ urlKey ]: value,
 											} )
 										}
+										__next40pxDefaultSize
 									/>
 								);
 							} }

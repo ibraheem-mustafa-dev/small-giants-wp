@@ -141,12 +141,14 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				value={ item.title || '' }
 				onChange={ ( val ) => update( 'title', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TextControl
 				label={ __( 'Subtitle', 'sgs-blocks' ) }
 				value={ item.subtitle || '' }
 				onChange={ ( val ) => update( 'subtitle', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TextControl
 				label={ __( 'Badge text', 'sgs-blocks' ) }
@@ -157,6 +159,7 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 					'sgs-blocks'
 				) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<SelectControl
 				label={ __( 'Badge style', 'sgs-blocks' ) }
@@ -164,6 +167,7 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				options={ BADGE_VARIANT_OPTIONS }
 				onChange={ ( val ) => update( 'badgeVariant', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<SgsLinkControl
 				label={ __( 'Link', 'sgs-blocks' ) }
@@ -324,6 +328,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { source: val } ) }
 						help={ sourceHelp }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ isQueryMode && (
 						<>
@@ -336,6 +341,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								] }
 								onChange={ ( val ) => setAttributes( { queryPostType: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<RangeControl
 								label={ __( 'Number of cards', 'sgs-blocks' ) }
@@ -344,6 +350,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 1 }
 								max={ 24 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<TextControl
 								label={ __( 'Category ID (optional)', 'sgs-blocks' ) }
@@ -352,6 +359,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								type="number"
 								help={ __( 'Filter by category ID. Leave 0 for all categories.', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }
@@ -380,6 +388,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							] }
 							onChange={ ( val ) => setAttributes( { productSource: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 
 						{ ( productSource || 'collection' ) === 'collection' && (
@@ -391,6 +400,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onChange={ ( val ) => setAttributes( { productCollection: val } ) }
 									help={ __( 'One-click preset ordering for your product grid.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<RangeControl
 									label={ __( 'Number of products', 'sgs-blocks' ) }
@@ -400,6 +410,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 24 }
 									help={ __( 'Maximum 24 products.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<p style={ { margin: '12px 0 4px', fontWeight: 600, fontSize: 12 } }>
 									{ __( 'Filters', 'sgs-blocks' ) }
@@ -427,6 +438,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									] }
 									onChange={ ( val ) => setAttributes( { productInStock: val === 'yes' } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<SelectControl
 									label={ __( 'On sale only', 'sgs-blocks' ) }
@@ -437,6 +449,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									] }
 									onChange={ ( val ) => setAttributes( { productOnSale: val === 'yes' } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<SelectControl
 									label={ __( 'Featured only', 'sgs-blocks' ) }
@@ -447,6 +460,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									] }
 									onChange={ ( val ) => setAttributes( { productFeatured: val === 'yes' } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</>
 						) }
@@ -471,6 +485,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { productEmptyMessage: val } ) }
 							help={ __( 'Shown when no products match — never a blank region (FR-24-6).', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</PanelBody>
 				) }
@@ -506,6 +521,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { variant: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ /* Responsive columns (desktop/tablet/mobile) are provided by the
 					     ContainerWrapperControls LayoutPanel above when layout=grid.
@@ -518,6 +534,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { aspectRatio: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
@@ -527,6 +544,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { effectHover: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -591,6 +609,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Background colour', 'sgs-blocks' ) }

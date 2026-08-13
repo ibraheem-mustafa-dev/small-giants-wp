@@ -77,6 +77,7 @@ export default function AnimationControl( {
 				options={ ANIMATIONS }
 				onChange={ onChangeAnimation }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ animation && animation !== 'none' && (
 				<>
@@ -86,6 +87,7 @@ export default function AnimationControl( {
 						options={ DELAYS }
 						onChange={ onChangeDelay }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Duration', 'sgs-blocks' ) }
@@ -93,6 +95,7 @@ export default function AnimationControl( {
 						options={ DURATIONS }
 						onChange={ onChangeDuration }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Easing', 'sgs-blocks' ) }
@@ -100,6 +103,7 @@ export default function AnimationControl( {
 						options={ EASINGS }
 						onChange={ onChangeEasing }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</>
 			) }

@@ -84,6 +84,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Inline bar: always-visible search field. Icon (expand): a small dropdown panel. Icon (full-screen overlay): opens a dimmed full-screen search dialog.',
 							'sgs-blocks'
 						) }
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Input placeholder', 'sgs-blocks' ) }
@@ -95,6 +96,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Placeholder text shown inside the search input.',
 							'sgs-blocks'
 						) }
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Button label', 'sgs-blocks' ) }
@@ -106,6 +108,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Accessible label for the search button (screen readers).',
 							'sgs-blocks'
 						) }
+						__next40pxDefaultSize
 					/>
 					{ /*
 					  `maxResults` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
@@ -174,6 +177,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ max }
 									onChange={ commit }
 									help={ helpText }
+									__next40pxDefaultSize
 								/>
 							) : (
 								<TextControl
@@ -181,6 +185,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									type="number"
 									onChange={ commit }
 									help={ helpText }
+									__next40pxDefaultSize
 								/>
 							);
 						} }

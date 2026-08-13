@@ -89,6 +89,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { triggerText: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Button style', 'sgs-blocks' ) }
@@ -98,6 +99,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { triggerStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Button text colour', 'sgs-blocks' ) }
@@ -129,6 +131,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { maxWidth: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __(
@@ -178,6 +181,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						step={ 5 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -298,6 +298,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { lineStyle: val } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -351,6 +352,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										setAttributes( { thicknessUnit: unit } );
 									} }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</ResponsiveOverride>
@@ -386,6 +388,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 100 }
 							step={ 1 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 
@@ -450,6 +453,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 360 }
 									step={ 1 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</>
 						) }
@@ -490,6 +494,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { widthUnit: unit } );
 								} }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -505,6 +510,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { alignment: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -521,6 +527,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { contentMode: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ 'icon' === contentMode && (
@@ -543,6 +550,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 96 }
 								step={ 2 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<DesignTokenPicker
 								label={ __( 'Icon colour', 'sgs-blocks' ) }
@@ -566,6 +574,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								placeholder={ __( 'OR', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<DesignTokenPicker
 								label={ __( 'Text colour', 'sgs-blocks' ) }

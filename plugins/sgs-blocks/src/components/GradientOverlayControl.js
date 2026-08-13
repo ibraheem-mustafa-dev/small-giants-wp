@@ -257,6 +257,7 @@ export default function GradientOverlayControl( {
 								}
 								isBlock
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							>
 								<ToggleGroupControlOption
 									value="solid"

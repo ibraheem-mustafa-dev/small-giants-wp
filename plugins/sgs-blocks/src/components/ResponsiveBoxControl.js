@@ -144,6 +144,7 @@ export default function ResponsiveBoxControl( {
 				units={ BOX_UNITS }
 				splitOnAxis={ false }
 				onChange={ ( next ) => onChange( 'base', next ) }
+				__next40pxDefaultSize
 			/>
 		);
 	}
@@ -161,6 +162,7 @@ export default function ResponsiveBoxControl( {
 						units={ BOX_UNITS }
 						splitOnAxis={ false }
 						onChange={ ( next ) => onChange( tier, next ) }
+						__next40pxDefaultSize
 					/>
 				);
 			} }

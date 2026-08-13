@@ -247,6 +247,7 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={ ( val ) => setAttributes( { tagName: val } ) }
             help={ __( "Semantic tag for accessibility landmarks and SEO. Use Main / Nav / Aside / Article for their meaning; Div for a plain wrapper.", "sgs-blocks" ) }
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <hr style={ { margin: "16px 0" } } />
           <LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
@@ -268,6 +269,7 @@ export default function Edit({ attributes, setAttributes }) {
                   ? __( "Desktop / base. Tablet and mobile override it at narrower widths.", "sgs-blocks" )
                   : __( "Leave empty to use the tier above.", "sgs-blocks" ) }
                 __nextHasNoMarginBottom
+              	__next40pxDefaultSize
               />
             ) }
           </ResponsiveOverride>
@@ -368,6 +370,7 @@ export default function Edit({ attributes, setAttributes }) {
                 units={ BOX_UNITS }
                 splitOnAxis={ false }
                 onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+              	__next40pxDefaultSize
               />
             ) }
           </ResponsiveOverride>
@@ -391,6 +394,7 @@ export default function Edit({ attributes, setAttributes }) {
               "sgs-blocks"
             ) }
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
         </PanelBody>
 

@@ -61,6 +61,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -74,6 +75,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ label }
 								onChange={ ( val ) => setAttributes( { label: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -88,6 +90,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { placeholder: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -102,6 +105,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { helpText: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -116,6 +120,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 2 }
 								max={ 10 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -145,6 +150,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ WIDTH_OPTIONS }
 								onChange={ ( val ) => setAttributes( { width: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

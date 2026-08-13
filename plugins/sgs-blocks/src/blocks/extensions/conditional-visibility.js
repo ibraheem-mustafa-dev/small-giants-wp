@@ -409,6 +409,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									setAttributes( { sgsConditionLoggedIn: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 
 							{ /* ─── User roles — only visible when logged-in is selected ─── */ }
@@ -480,6 +481,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									}
 									help={ __( 'Block hidden before this date.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<TextControl
 									label={ __( 'Show until', 'sgs-blocks' ) }
@@ -491,6 +493,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									help={ __( 'Block hidden after this date.', 'sgs-blocks' ) }
 									style={ { marginTop: '8px' } }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</div>
 
@@ -553,6 +556,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 										'sgs-blocks'
 									) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</div>
 
@@ -570,6 +574,7 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 										'sgs-blocks'
 									) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</div>
 						</PanelBody>
