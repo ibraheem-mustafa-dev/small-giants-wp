@@ -1,5 +1,58 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D597 — hero's split media gets its own effect toggles; a global `@keyframes sgs-ken-burns` naming collision found and fixed [INCIDENT]
+
+**2026-08-13.** Closed the three items D596 flagged "found but not built". Commit `9b8511cf`,
+visual-diff evidence `reports/visual-diff/{container,hero}-2026-08-13.md`.
+
+**1 — `bgParallax` was NOT dead on split.** D596 recorded it as a dead control. Live measurement
+this session showed the wrapper's own `background-attachment:fixed` mechanism already applies to
+its `::before` paint layer whenever a root `backgroundImage` is set alongside `splitImage` — no
+code change needed. It's only inert when a split hero has no root background configured at all
+(the common case, since split heroes normally use `splitImage` only), which is the same limitation
+Ken Burns has — there's genuinely nothing to apply the effect to, not a wiring bug.
+
+**2 — a real, previously-undocumented bug: two DIFFERENT `@keyframes sgs-ken-burns`.** `hero/
+style.css` (transform `scale()`/`translate()`) and `container/style.css` (`background-position`/
+`background-size`) each declared an animation under the identical name. CSS keyframe names are
+global, not scoped to a selector or file, so whichever stylesheet the browser parsed last silently
+overwrote the other's animation body — for every block mounting `SGS_Container_Wrapper`, not just
+hero. Live-measured on the deployed (pre-fix) build: hero's transform-based body was winning.
+Renamed to `sgs-hero-ken-burns` / `sgs-container-ken-burns`; a third, hero-media-scoped keyframe
+(`sgs-hero-media-ken-burns`) added for item 4 below, deliberately non-colliding.
+
+**3 — a phantom animation, found by the same live measurement.** On a split hero with `bgKenBurns`
+on and NO root background configured, hero's own `.sgs-hero--ken-burns::before` pseudo-element
+still generated its box and ran the animation with `background-image:none` — wasted, invisible.
+Compound-gated the selector on the wrapper's own `.sgs-container--has-bg-image` class
+(`.sgs-hero--ken-burns.sgs-container--has-bg-image::before`) so it only generates when there's
+something to paint. Verified this doesn't regress standard heroes (their Ken Burns was already
+producing zero visible effect — standard paints its own private `<img>`, not a CSS
+`background-image`) or video-only heroes (Ken Burns was never wired to `bgVideo`).
+
+**4 — new capability: `mediaParallax`/`mediaKenBurns`/`mediaAnimationDuration` on the split
+media element.** The visible foreground `.sgs-hero__media` column had never had a motion control
+of its own — only the section background did. Mirrors the `mediaOverlay*` precedent D596 §2 set in
+the same file, kept hero-private rather than folded into `SGS_Container_Wrapper` (no other
+composite has an equivalent second, independently-positioned foreground element — checked directly
+against cta-section/trust-bar/card-grid/post-grid/pricing-table/site-header/site-footer, none has
+one; composite-mirror rule, D152, doesn't apply where there's nothing to mirror to). Parallax is
+Tier V (`animation-timeline:scroll(root)`, `@supports`-gated, matching the existing
+`.sgs-parallax-element` extension precedent and Spec 38 FR-38-7's single-property-scrub boundary);
+Ken Burns animates the child `.sgs-hero__split-media` element, clipped by `overflow:hidden` so it
+respects the column's own border-radius/bleed settings.
+
+**Verification.** Live-verified via Playwright on both surfaces (editor + frontend), default/unset
+state, mutual exclusivity between the new toggles, and every regression case named above. Validated
+via `/qc-council` against three specific risk questions before commit — bgVideo-without-
+backgroundImage edge case on the compound gate, Tier V motion-doctrine compliance, and composite-
+mirror (D152) compliance — all three PASS with file:line + live-DOM evidence, not reasoning alone.
+
+**Not touched this session (Track 1b's own open register, unrelated to effects):** the stray WP
+toolbar text-align button on hero's headline (C3, needs a ruling not effort); the split-media →
+`sgs/media` child block rework (D6(b), twice reverted, blocked on a new idea for the editor-canvas
+half); hero's split-image bleed CSS (latent, 0 live instances, parked).
+
 ## D596 — hero's background is a ROOT setting; one overlay per element; the local duplicate controls were wired to a dead attribute [INCIDENT]
 
 **2026-08-13.** Three fix-shapes on `sgs/hero`, council-validated then built via

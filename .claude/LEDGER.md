@@ -9,8 +9,26 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-13 (later session). Per-device media across three blocks, then three hero fixes.
-Seven commits, all pushed, all live-verified.** `f4153da4 → b2ffcd40`.
+**2026-08-13 (latest session). D596's three "found but not built" items on hero, closed.**
+One commit, pushed, live-verified, `/sgs-update` re-run. `9b8511cf` on top of `b2ffcd40`.
+
+**What you can now do that you couldn't before.** The split hero's foreground media picture can
+have its own Ken-Burns zoom or parallax scroll — a control the section background always had, the
+media column never did. Both are mutually exclusive, same as the section's own pair.
+
+**The two things D596 asked to be MEASURED are now answered, not just fixed.** `bgParallax` on
+split turned out NOT to be dead — it already works via the wrapper's own `background-attachment:
+fixed` once a root background is configured alongside `splitImage`; no code change needed.
+Ken Burns on split, though, uncovered a real bug nobody had caught: `hero/style.css` and
+`container/style.css` each declared a DIFFERENT animation under the identical name
+`@keyframes sgs-ken-burns` — CSS keyframe names are global, so whichever stylesheet loaded last
+was silently overwriting the other's animation, for every block that shares the wrapper, not just
+hero. Renamed both. Also found and fixed in passing: hero's own Ken-Burns effect was running its
+animation on split even when there was no background configured at all — a wasted, invisible
+"phantom" animation — now gated on the wrapper's own has-a-background class.
+
+**2026-08-13 (earlier session, retained context below). Per-device media across three blocks,
+then three hero fixes.** `f4153da4 → b2ffcd40`.
 
 **What you can now do that you couldn't this morning.** A client can set a different image,
 video **or SVG** per device on `sgs/media`; a split hero can be an image on desktop and an SVG on
@@ -55,6 +73,12 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 | Commit | What |
 |---|---|
+| `9b8511cf` | `sgs/hero`: split media gets its own Ken-Burns/parallax pair, D596's bgParallax/Ken-Burns questions answered, global `@keyframes` collision fixed (D597) |
+
+## Shipped earlier session (retained)
+
+| Commit | What |
+|---|---|
 | `5727825e` | `sgs/media` per-device SVG + **cascade fix for BOTH media families** |
 | `b6ccb320` | D595 + Spec 35 D5 amended at source (the cascade rule) |
 | `079abbae` | `helpers-tier-media.php` landed WITH its `require_once` (fatal cleared) |
@@ -72,13 +96,12 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## Open — ready to pick up
 
-- **Hero effect toggles (Bean spotted this, unprompted — NOT built).** `bgParallax`/`bgKenBurns`
-  target only the SECTION background; the split MEDIA element has none — the same asymmetry the
-  overlay had before `89857e39`. Two things to MEASURE before building: (a) **`bgParallax` is a dead
-  control on split** — it attaches only to the standard-only private `<img>`, yet the ungated panel
-  offers the toggle on split; (b) **whether `0917bcf3` silently made Ken Burns animate on split is
-  UNMEASURED** — it animates `::before`, and split backgrounds now paint there. If it did, that is a
-  behaviour change from that commit nobody asked for.
+- **Hero: 3 items still open from Track 1b, unrelated to effects, not touched this session:**
+  (a) stray WP toolbar text-align button on the headline (C3) — confirmed inert, needs a ruling
+  (leave as cosmetic debt, or ~45-60 min custom `BlockControls` filter, no precedent in this repo);
+  (b) split-media → `sgs/media` child block (D6(b)) — twice reverted (D591, D594), server-side
+  mechanism proven, editor-canvas half still needs a new idea before a third attempt; (c) hero
+  split-image bleed CSS — latent, 0 live instances, parked.
 - **`sgs/container` background pickers — the tier-OBJECT question is NOT open.** ⛔ Do NOT "finish"
   the migration by folding `backgroundImage`/`Tablet`/`Mobile` into a tier object. That flat suffix
   triple is load-bearing for the cloning pipeline: `test_family_modifier_scan.py:111-116` asserts the
@@ -97,7 +120,7 @@ fatalled every page. Both halves landed together (`079abbae`).
 
 ## State Snapshot
 
-- **Branch:** `main`, HEAD `b2ffcd40`. ⛔ **This will drift immediately** — run `git log -1` AND
+- **Branch:** `main`, HEAD `9b8511cf`. ⛔ **This will drift immediately** — run `git log -1` AND
   `git status` AND `git branch --show-current`; do not trust this line.
 - **This checkout is SHARED with concurrent sessions — proven again this session.** A whole
   `helpers-tier-media.php` (11KB) plus hero edits appeared mid-session from another track. Commit by
@@ -111,7 +134,7 @@ fatalled every page. Both halves landed together (`079abbae`).
   (leftover D594 QC draft) was TRASHED on Bean's instruction — it was blocking `oldshape-audit`.
 - **Verify every session:** `git log -1 --stat` · `git status` · `git branch --show-current` ·
   D-ceiling `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (was **596** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
+  (was **597** at this write) · `git merge-base --is-ancestor <claimed-commit> HEAD` before trusting
   any "SHIPPED" claim here or in `decisions.md`.
 
 ## Gates that EARNED their keep this session (do not weaken them)
@@ -130,11 +153,12 @@ fatalled every page. Both halves landed together (`079abbae`).
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| This session's plan + council verdict | `~/.claude/plans/is-the-sgs-media-block-iterative-stonebraker.md` |
+| This session's plan + council verdict | `~/.claude/plans/hero-effect-toggles-give-eager-karp.md` |
+| Prior session's plan + council verdict | `~/.claude/plans/is-the-sgs-media-block-iterative-stonebraker.md` |
 | Governing programme plan (Track 1b) | `~/.claude/plans/go-track-1b-playful-hamster.md` |
-| Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` |
-| THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 (amended this session) |
-| Decisions | `decisions.md` — **D596** is newest as of this write; re-verify |
+| Visual-diff evidence (media / container / hero) | `reports/visual-diff/{media,container,hero}-2026-08-13.md` (hero + container re-measured this session) |
+| THE GOVERNING SPEC for per-device media | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part D5 |
+| Decisions | `decisions.md` — **D597** is newest as of this write; re-verify |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
