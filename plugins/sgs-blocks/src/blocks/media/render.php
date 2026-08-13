@@ -413,6 +413,76 @@ if ( '' !== $h_mobile ) {
 }
 
 $responsive_css  = $media_base_css . $border_base_css . $aspect_ratio_css . $wrap_base_css;
+
+/**
+ * Art-direction tier visibility CSS — ONE implementation for every media family
+ * in this block (images §11, SVG §12b), so the two can never drift apart.
+ *
+ * Implements the CANONICAL cascade: a tier with no value of its own inherits
+ * from the next WIDEST tier that has one — mobile -> tablet -> desktop. This
+ * matches `sgs_resolve_tier()` (includes/helpers-responsive.php:685-694) and
+ * Spec 35 D3/D5, which warn against a second inheritance mechanism.
+ *
+ * ⛔ The hand-rolled per-family rules this replaced got ONE case wrong: with a
+ * TABLET tier set and MOBILE empty, they hid the tablet element below 768px and
+ * left desktop visible — i.e. mobile fell back to DESKTOP, skipping the tablet
+ * value it should have inherited. Measured against the canonical resolver, not
+ * assumed. Visible band ownership is now computed, not enumerated by hand:
+ *
+ *   tiers set | <=767px | 768-1023px | >=1024px
+ *   none      | desktop | desktop    | desktop
+ *   mobile    | mobile  | desktop    | desktop
+ *   tablet    | TABLET  | tablet     | desktop
+ *   both      | mobile  | tablet     | desktop
+ *
+ * ⛔ Each hide rule is emitted SEPARATELY rather than comma-joined. A descendant
+ * appended to a multi-member selector list binds to the LAST member only — the
+ * bug that once hid every image at every width in this very file.
+ *
+ * ⛔ The hide selector is COMPOUND (`.base.base--tier`), not just the modifier.
+ * `style.css` sets `display:block` on both `.wp-block-sgs-media .sgs-media__img`
+ * and `.sgs-media__svg` at specificity (0,2,0); a bare `.scope .base--tier` rule
+ * is ALSO (0,2,0), so which one won would be decided purely by source order —
+ * and this block's CSS is LIFTED into uploads/sgs-css/, where enqueue order is
+ * not ours to guarantee. The compound form is (0,3,0) and wins outright.
+ *
+ * @param string   $modifier_base BEM base for the tier elements, e.g. 'sgs-media__img'.
+ * @param string[] $tiers_present Tier keys that actually rendered ('tablet'/'mobile').
+ * @return string CSS, or '' when no tier exists (single element, always visible).
+ */
+$sgs_tier_visibility_css = static function ( $modifier_base, array $tiers_present ) use ( $id_wrap ) {
+	if ( empty( $tiers_present ) ) {
+		return '';
+	}
+	$has = static function ( $t ) use ( $tiers_present ) {
+		return in_array( $t, $tiers_present, true );
+	};
+	// Which element OWNS each width band, per the canonical upward cascade.
+	$owner = array(
+		'mobile'  => $has( 'mobile' ) ? 'mobile' : ( $has( 'tablet' ) ? 'tablet' : 'desktop' ),
+		'tablet'  => $has( 'tablet' ) ? 'tablet' : 'desktop',
+		'desktop' => 'desktop',
+	);
+	$queries  = array(
+		'mobile'  => '@media(max-width:767px)',
+		'tablet'  => '@media(min-width:768px) and (max-width:1023px)',
+		'desktop' => '@media(min-width:1024px)',
+	);
+	$rendered = array_merge( array( 'desktop' ), $tiers_present );
+	$css      = '';
+	foreach ( $queries as $band => $query ) {
+		foreach ( $rendered as $element ) {
+			if ( $element === $owner[ $band ] ) {
+				continue;
+			}
+			// Built from $id_wrap (the BARE scope token), never a selector LIST,
+			// and COMPOUND on the element so it outranks style.css's display rule.
+			$css .= $query . '{' . $id_wrap . ' .' . $modifier_base . '.' . $modifier_base . '--' . $element . '{display:none}}';
+		}
+	}
+	return $css;
+};
+
 if ( $base_rules ) {
 	$responsive_css .= $id_sel . '{' . implode( ';', $base_rules ) . '}';
 }
@@ -623,25 +693,18 @@ if ( 'image' === $media_type ) {
 			esc_attr( $tier_key )
 		);
 	}
-	// ⛔ Build the tier selector from $id_wrap (the BARE scope selector), never from
-	// $id_sel. $id_sel is a three-member selector LIST (:252), and a descendant
-	// appended to a list binds to the LAST member ONLY — so `$id_sel . ' .x--desktop'`
-	// left the first two members as an unqualified `.scope .sgs-media__img{display:none}`
-	// and hid EVERY image at EVERY width. Measured live before this fix: 3 imgs in the
-	// DOM, 0 visible, at all three breakpoints. Same shape as the recorded gotcha
-	// "a pseudo-element appended to a selector list attaches to the last selector only".
-	$sgs_tier_sel = static function ( $tier ) use ( $id_wrap ) {
-		return $id_wrap . ' .sgs-media__img--' . $tier;
-	};
-	if ( isset( $tier_imgs['mobile'] ) ) {
-		$responsive_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$responsive_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
-	}
-	if ( isset( $tier_imgs['tablet'] ) ) {
-		$responsive_css .= '@media(min-width:768px) and (max-width:1023px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$responsive_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
-		$responsive_css .= '@media(min-width:1024px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
-	}
+	// Tier visibility via the SHARED cascade helper (§8) — the same one the SVG
+	// tiers use, so the two families cannot drift apart. It builds every selector
+	// from $id_wrap (the BARE scope token), never from $id_sel: $id_sel is a
+	// three-member selector LIST (:252) and a descendant appended to a list binds
+	// to the LAST member ONLY — which once left an unqualified
+	// `.scope .sgs-media__img{display:none}` and hid EVERY image at EVERY width
+	// (measured live: 3 imgs in the DOM, 0 visible, at all three breakpoints).
+	//
+	// It also fixes a cascade bug these hand-rolled rules carried: with a TABLET
+	// tier set and MOBILE empty, mobile fell back to DESKTOP instead of inheriting
+	// the TABLET value that `sgs_resolve_tier()` resolves to.
+	$responsive_css .= $sgs_tier_visibility_css( 'sgs-media__img', array_keys( $tier_imgs ) );
 
 	$image_html .= sprintf(
 		'<img src="%s" alt="%s"%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
@@ -1131,18 +1194,78 @@ if ( 'svg' === $media_type ) {
 
 	$sanitised_svg = wp_kses( $svg_content_raw, $allowed_svg_tags );
 
-	// Build animation class string.
-	$svg_classes = array( 'sgs-media__svg' );
-	if ( 'none' !== $svg_animation ) {
-		$svg_classes[] = 'sgs-media__svg--' . esc_attr( $svg_animation );
-		$svg_classes[] = 'sgs-media__svg--speed-' . esc_attr( $svg_speed );
+	// ART-DIRECTION TIERS for SVG (Spec 35 Part D5).
+	//
+	// Inline SVG is markup that costs no extra network fetch, so tiers render as
+	// SIBLINGS toggled by scoped @media CSS — the images pattern (§11), NOT the
+	// video runtime swap. Three <div>s cost nothing meaningful, it needs no JS,
+	// and the BEM tier modifier is the vocabulary the cloning pipeline reads.
+	//
+	// EVERY tier goes through the SAME wp_kses() allowlist as the base. A tier
+	// that skipped it would reopen the <script>/on*/external-href hole the base
+	// field is explicitly hardened against — the allowlist is the whole defence,
+	// so it cannot be applied to only one of the three sources.
+	//
+	// An empty tier is simply omitted, so that width falls back UP to the next
+	// widest tier that IS present — degrade to MORE content, never less.
+	$tier_svgs = array();
+	foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
+		$tier_raw = isset( $attributes[ 'svgContent' . $sgs_tier ] ) ? (string) $attributes[ 'svgContent' . $sgs_tier ] : '';
+		if ( '' === trim( $tier_raw ) ) {
+			continue;
+		}
+		$tier_clean = wp_kses( $tier_raw, $allowed_svg_tags );
+		// A tier whose markup was entirely stripped by the allowlist must NOT
+		// emit an empty sibling — that would hide the inherited tier behind a
+		// blank box at that width.
+		if ( '' === trim( $tier_clean ) ) {
+			continue;
+		}
+		$tier_svgs[ strtolower( $sgs_tier ) ] = $tier_clean;
 	}
 
-	$svg_html = sprintf(
+	// Animation classes are shared by every tier, so a tier override changes the
+	// artwork without silently dropping the animation the operator chose.
+	$svg_anim_classes = array();
+	if ( 'none' !== $svg_animation ) {
+		$svg_anim_classes[] = 'sgs-media__svg--' . esc_attr( $svg_animation );
+		$svg_anim_classes[] = 'sgs-media__svg--speed-' . esc_attr( $svg_speed );
+	}
+
+	$svg_classes = array_merge( array( 'sgs-media__svg' ), $svg_anim_classes );
+	if ( ! empty( $tier_svgs ) ) {
+		$svg_classes[] = 'sgs-media__svg--desktop';
+	}
+
+	$svg_html = '';
+	foreach ( $tier_svgs as $tier_key => $tier_markup ) {
+		$tier_classes = array_merge(
+			array( 'sgs-media__svg' ),
+			$svg_anim_classes,
+			array( 'sgs-media__svg--' . $tier_key )
+		);
+		$svg_html .= sprintf(
+			'<div class="%s" aria-hidden="true">%s</div>',
+			esc_attr( implode( ' ', $tier_classes ) ),
+			$tier_markup // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- processed through the SAME wp_kses() allowlist as the base SVG above; no <script>/event-handlers/external-href pass through.
+		);
+	}
+
+	$svg_html .= sprintf(
 		'<div class="%s" aria-hidden="true">%s</div>',
 		esc_attr( implode( ' ', $svg_classes ) ),
 		$sanitised_svg // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- processed through wp_kses() with explicit SVG allowlist above; no <script>/event-handlers/external-href pass through.
 	);
+
+	// Tier visibility via the SHARED cascade helper (§8) — the same call the image
+	// tiers make, so the two families cannot drift apart, and both inherit the
+	// canonical mobile -> tablet -> desktop fallback rather than a second
+	// hand-rolled one. Every selector is built from the BARE scope token.
+	//
+	// This CSS is appended to $responsive_css, which is assembled into the block's
+	// <style> further down. Appending it AFTER that assembly compiles cleanly and
+	// emits nothing — the defect that shipped on sgs/image-sequence.
+	$responsive_css .= $sgs_tier_visibility_css( 'sgs-media__svg', array_keys( $tier_svgs ) );
 }
 
 // ---------------------------------------------------------------------------

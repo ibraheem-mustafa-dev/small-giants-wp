@@ -93,6 +93,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"_comment_svgArtDirection": "Per-device SVG SOURCE (Spec 35 Part D5). Type MATCHES the base attr (string) — a mismatched type is silently coerced to the default and the whole value is dropped. There is no *Desktop sibling: the unsuffixed `svgContent` above IS the desktop tier. An empty tier falls back UP (mobile -> tablet -> desktop) per D3, so a blank tier means 'use the one above', never 'render nothing'. Inline SVG is markup with no extra fetch, so tiers render as SIBLINGS toggled by scoped @media CSS (the images pattern), NOT the video runtime swap.",
+		"svgContentTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"svgContentMobile": {
+			"type": "string",
+			"default": ""
+		},
 		"svgAnimation": {
 			"type": "string",
 			"default": "none",

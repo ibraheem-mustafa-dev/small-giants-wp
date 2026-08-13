@@ -751,6 +751,81 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						rows={ 8 }
 					/>
+					{ /* Art direction for SVG (Spec 35 Part D5). Same device-switched
+					     shape as the image tiers above and the video/thumbnail tiers
+					     below, so a client meets ONE interaction for "something different
+					     on narrow screens" wherever media appears. Gated on the base SVG
+					     existing — a per-device override for media that is not there is a
+					     dead control. Desktop is the markup pasted above; tablet/mobile
+					     are optional overrides that fall back UP when left empty. */ }
+					{ svgContent && (
+						<ResponsiveControl
+							label={ __(
+								'SVG for this screen size',
+								'sgs-blocks'
+							) }
+						>
+							{ ( bp ) => {
+								if ( 'desktop' === bp ) {
+									return (
+										<p
+											style={ {
+												margin: 0,
+												fontStyle: 'italic',
+											} }
+										>
+											{ __(
+												'The SVG above is used on desktop. Switch to tablet or mobile to set different markup.',
+												'sgs-blocks'
+											) }
+										</p>
+									);
+								}
+								const svgKey =
+									'tablet' === bp
+										? 'svgContentTablet'
+										: 'svgContentMobile';
+								return (
+									<>
+										<TextareaControl
+											label={ __(
+												'SVG code',
+												'sgs-blocks'
+											) }
+											value={ attributes[ svgKey ] || '' }
+											onChange={ ( value ) =>
+												setAttributes( {
+													[ svgKey ]: value,
+												} )
+											}
+											help={ __(
+												'Leave empty to use the SVG from the next widest screen size.',
+												'sgs-blocks'
+											) }
+											rows={ 8 }
+										/>
+										{ attributes[ svgKey ] && (
+											<Button
+												variant="link"
+												isDestructive
+												onClick={ () =>
+													setAttributes( {
+														[ svgKey ]: '',
+													} )
+												}
+												style={ { display: 'block' } }
+											>
+												{ __(
+													'Use the main SVG here',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									</>
+								);
+							} }
+						</ResponsiveControl>
+					) }
 					<SelectControl
 						label={ __( 'Animation', 'sgs-blocks' ) }
 						value={ svgAnimation || 'none' }
