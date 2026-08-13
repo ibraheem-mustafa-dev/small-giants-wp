@@ -235,9 +235,13 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     runtime swap. **Every tier MUST pass the same `wp_kses()` allowlist as the base** — the allowlist
     is the whole defence and cannot apply to one of three sources. A tier the allowlist strips to
     nothing must be DROPPED, not emitted, or it blanks that width behind an empty box.
-    ⚠ Known residual: `style` is allowlisted and `wp_kses()` does not filter an allowed `<style>`'s
-    text content, so operator CSS is unfiltered — and a nested `<style>` applies document-wide
-    regardless of `display:none` on its wrapper. Pre-existing on the base field; tiers widen it 1→3.
+    ⚠ `style` is allowlisted and `wp_kses()` does not filter an allowed `<style>`'s text content, so
+    operator CSS is unfiltered and a nested `<style>` applies document-wide regardless of
+    `display:none` on its wrapper. **This is NOT an escalation and must not be "fixed" by stripping
+    the tag** — `sgsCustomCss` already gives every block a sanctioned raw-CSS `<style>` channel
+    (load-bearing, Spec 31 FR-31-5.2, undeletable), so the same actor already has the same
+    capability. Removing `style` would break design-tool SVG exports (which routinely carry `<style>`
+    + classes) for zero security gain. Verified 2026-08-13: 0 of 1332 live posts use it either way.
 
   - **IMAGES tier by MARKUP.** Emit all tiers as sibling elements carrying a BEM tier modifier and
     toggle them with breakpoint rules in the block's own scoped `<style>`. Three `<img>`s cost

@@ -38,12 +38,22 @@ finding was **refuted by checking the allowlist**: it contains no `use`/`linearG
 `radialGradient`/`stop`/`clipPath`/`mask`/`pattern`, so nothing is referenceable by id. A finding's
 severity is a function of the specific allowlist, not the general pattern.
 
-**CONFIRMED residual, deliberately not fixed here:** `style` IS allowlisted, and `wp_kses()` does not
-filter the text content of an allowed `<style>` — so operator CSS is unfiltered, and a nested
-`<style>` applies document-wide regardless of the `display:none` on its wrapper. **Pre-existing on
-the base field**; this change widens it 1 → 3 insertion points. Removing it changes how the existing
-base field renders and could break live operator SVG (own scope); stripping it from tiers only would
-be a per-block carve-out (Rule 3).
+**A reported `<style>` CSS-injection finding was CLOSED as not-a-vulnerability — after checking, not
+by assertion.** `style` IS allowlisted and `wp_kses()` does not filter an allowed `<style>`'s text
+content, so operator CSS is genuinely unfiltered and a nested `<style>` applies document-wide
+regardless of the `display:none` on its wrapper. All true — and irrelevant, because **the framework
+already ships an equivalent sanctioned channel**: `sgsCustomCss` is registered on every block
+(`extension-attributes.generated.php:53`), emitted as a raw server-side `<style>`
+(`custom-css.php:25`, `class-sgs-css-registry.php:25`), and is load-bearing and undeletable
+(Spec 31 FR-31-5.2). Same actor, same privilege, same output shape — so SVG `<style>` is no
+escalation. Removing it would break design-tool SVG exports (Figma/Illustrator routinely emit
+`<style>` + classes) for zero security gain.
+
+**The process lesson is the point.** This was first parked as a "confirmed residual" on the strength
+of *"removing it could break live operator SVG"* — an assertion never checked. Checked: 1332 live
+posts, **0** using `<style>` inside SVG, on a query carrying its own positive control. The stated
+blocker was false, and the real answer was one grep away in the opposite direction. A blocker
+asserted without reading is not a blocker.
 
 **Process note.** Committed with `--no-verify` on Bean's explicit authorisation, bypassing ONLY the
 visual-diff gate: that gate needs a first-paint capture, the capture needs a live deploy, and
