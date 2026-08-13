@@ -1,0 +1,4 @@
+{
+	"_comment": "Accepted findings for check-editor-render-parity.js (CHECK A: editor-canvas desync — a destructured+written attribute never referenced in the preview JSX; CHECK B: invalid CSS keyword passthrough — a SelectControl option value not in the target CSS property's valid keyword set). Same discipline as dead-controls-baseline.json: the guard reports NET-NEW findings only (findings NOT listed here). To accept a finding, add it here with a reason; to fix one, wire the attribute into the preview / correct the SelectControl option, then delete the entry. Empty `accepted` = zero tolerance once/if this is promoted to gate — it ships advisory-only today (2026-08-13), so nothing needs baselining yet; findings are census output, not a blocking backlog.",
+	"accepted": []
+}

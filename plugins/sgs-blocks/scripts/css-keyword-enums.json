@@ -1,0 +1,25 @@
+{
+	"_comment": "Fixed-keyword-enum CSS properties, scoped ONLY to properties this codebase actually emits as a literal PHP-variable-interpolated value in render.php (grepped 2026-08-13 — see check-editor-render-parity.js CHECK B). Versioned JSON data file, not a hardcoded dict buried in script logic (R-31-1 precedent: attr-classification-overrides.json / css-property-classifications.json). property_suffixes (sgs-framework.db) was checked first and does NOT carry this concept — it maps ATTRIBUTE-NAME SUFFIXES to a css_property, not a css_property's VALID VALUE SET, so this is a genuinely new concept, not a duplicate. Deliberately NOT a universal CSS-property table — every entry here was found live in a render.php string-concatenation emission. Add a property here ONLY when a real emission site is found for it; do not pre-populate speculative properties. Values sourced from MDN (author's general CSS knowledge, cross-checked against the MDN property reference pages for each property at build time 2026-08-13) — properties with length/percentage/colour components mixed into their keyword set (e.g. object-position, background-position, flex-basis) are OUT OF SCOPE by design: this table only covers KEYWORD-ONLY value sets Check B can validate with simple set membership.",
+	"properties": {
+		"object-fit": [ "fill", "contain", "cover", "none", "scale-down" ],
+		"display": [
+			"none", "block", "inline", "inline-block", "flex", "inline-flex",
+			"grid", "inline-grid", "contents", "table", "table-row", "table-cell",
+			"table-caption", "flow-root", "list-item"
+		],
+		"text-align": [ "left", "right", "center", "justify", "start", "end" ],
+		"text-transform": [
+			"none", "capitalize", "uppercase", "lowercase", "full-width", "full-size-kana"
+		],
+		"font-style": [ "normal", "italic", "oblique" ],
+		"overflow": [ "visible", "hidden", "scroll", "auto", "clip" ],
+		"flex-direction": [ "row", "row-reverse", "column", "column-reverse" ],
+		"justify-content": [
+			"flex-start", "flex-end", "center", "space-between", "space-around",
+			"space-evenly", "start", "end", "left", "right", "normal"
+		],
+		"align-items": [
+			"flex-start", "flex-end", "center", "baseline", "stretch", "start", "end", "normal"
+		]
+	}
+}
