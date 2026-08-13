@@ -1,82 +1,64 @@
 ---
 doc_type: reference
-title: "Visual-diff report — container · background pickers to one ResponsiveControl"
+title: "Visual-diff report — container · Ken-Burns keyframe renamed to avoid a naming collision"
 block: container
 date: 2026-08-13
-property: backgroundImage / bgVideo (control shape only)
+property: bgKenBurns (@keyframes identifier only)
 verdict: PASS
 first_paint_capture_passed: true
-source_sha: a808c7a90131ff01
+source_sha: 3fd422526170c346
 ---
 
-# container — three stacked background pickers replaced by one `ResponsiveControl` (UI only, attribute shape untouched)
+# container — `@keyframes sgs-ken-burns` renamed to `sgs-container-ken-burns`
 
-**Verdict: PASS.** This is an **editor-surface** change with **no rendered-output
-change by construction**, and that claim is proven below rather than asserted.
+**Verdict: PASS**, on a live before/after computed-style measurement against the
+sandybrown canary. Pure identifier rename — the animation body (`scale`, timing
+function, duration variable) is byte-identical; only the keyframes name and its
+one `animation:` reference changed, done to stop the frontend hero rename
+(`hero-2026-08-13.md`, D597) colliding with the container's own animation name.
 
-## What changed, and what deliberately did NOT
+## What was measured, and where
 
-`BackgroundPanel` (`container/components/ContainerWrapperControls.js`) rendered
-three always-visible stacked `MediaUpload` pickers per media family — "Desktop
-image" / "Tablet image (optional)" / "Mobile image (optional)", and the same shape
-again for video. Each family is now ONE base picker plus ONE `<ResponsiveControl>`
-override gated on the base existing.
+- **Page:** `https://sandybrown-nightingale-600381.hostingersite.com/d597-hero-effect-toggles-visual-diff-probe/`
+  (page 2352, created for this measurement)
+- **Element:** `sgs/container` with `backgroundImage` + `bgKenBurns:true` set,
+  scoped by its own uid class (`sgs-container-87028bb7`) — not an unscoped
+  wrapper-class query.
+- **Method:** Playwright (chromium) `getComputedStyle()`, before deploying the
+  change (canary rolled back to HEAD `b2ffcd40` via `git stash` + rebuild +
+  redeploy) and after (staged bytes redeployed via `build-deploy.py --payload`).
 
-⛔ **The attribute shape was NOT touched, and must not be.** It still writes three
-separately-declared flat attrs — `backgroundImage` / `backgroundImageTablet` /
-`backgroundImageMobile` (payload `{id,url,alt}`) and `bgVideo` / `bgVideoTablet` /
-`bgVideoMobile` (payload `{id,url}`). Folding them into a tier object would break
-the cloning pipeline: `scripts/converter/tests/test_family_modifier_scan.py:111-116`
-asserts the lift lands on `backgroundImageMobile` and explicitly
-`assert "backgroundImage" not in lifts`, and the triple is registered in the DB
-across 7 blocks. This file's own comments (~:355-366, ~:518-528) record the rule:
-tier-OBJECT attrs use `ResponsiveOverride`; flat suffix triples use
-`ResponsiveControl`. Ours is the latter.
+## Measurement
 
-## Evidence that render is unchanged
+| | animation-name | animation-duration | background paints |
+|---|---|---|---|
+| **before** | `sgs-ken-burns` | `20s` | `url(...)` |
+| **after** | `sgs-container-ken-burns` | `20s` | `url(...)` (unchanged) |
 
-| Check | Result |
-|---|---|
-| `container/block.json` in `git status` | **absent** — attribute shape untouched by construction |
-| Files changed | exactly one: `ContainerWrapperControls.js` |
-| `MediaUpload` elements (word-boundary count) | 6 → **4** (2 base + 2 tier) |
-| Converter guard `test_family_modifier_scan.py` | **3 passed** |
-| Added `setAttributes` writes | `backgroundImage:{id,url,alt}`, `[key]:{id,url,alt}`, `bgVideo:{id,url}`, `[key]:{id,url}` — `key` resolves to the Tablet/Mobile names |
-| `inspector-scan` rule 25 (no own device switcher) | **0 flagged** (GATE) |
-| Live canary after deploy | HTTP 200, `payload-verify` all 83 `block.json` match |
+The animation binds under its new name exactly as it did under the old one —
+same duration, same custom-property source (`--sgs-ken-burns-duration`), same
+visible zoom effect. Nothing else on the element moved.
 
-⛔ The count was verified with a **word-boundary** pattern. A bare `grep -c
-"<MediaUpload"` returns 8 because it also matches `<MediaUploadCheck` — that
-substring error produced a false discrepancy against the implementer's correct
-report before it was caught.
+## Why this needed a rename at all
 
-## A defect found and fixed during review
+`sgs/hero` gained its own split-media Ken-Burns effect this session
+(`mediaKenBurns`, see `hero-2026-08-13.md`), and the two blocks previously
+shared one global `@keyframes sgs-ken-burns` identifier. Two independent
+`animation:` declarations resolving to the same global keyframes name is a
+collision risk the moment either block's keyframes diverge (they already do —
+hero's media variant needs its own transform-origin/scale profile). Renaming
+container's copy to a block-scoped `sgs-container-ken-burns` (and hero's
+section-level copy to `sgs-hero-ken-burns`, its media copy to
+`sgs-hero-media-ken-burns`) removes the shared global name entirely.
 
-The first implementation put the **base** picker inside the `ResponsiveControl`'s
-desktop branch. That hides the primary control whenever the global device toggle
-sits on tablet or mobile — a client previewing narrow could not set the main image
-at all — and the tier gate's copy ("set a desktop image **above**") then pointed at
-nothing. Both tabs now keep the base picker OUTSIDE the switcher, always visible,
-with the tier override below it gated on the base, matching
-`src/blocks/media/edit.js`. The implementer flagged this deviation rather than
-silently resolving it, which is why it was caught before deploy.
+## Gates
 
-## Known advisory finding, deliberately NOT "fixed"
+- Console errors: **0**
+- PHP diagnostics in served HTML (`Array to string conversion`, `Fatal error`,
+  `Warning:`, `Notice:`, `Deprecated:`, `Uncaught`): **none**
+- `source_sha` computed by `visual-report-sha.py` over this block's STAGED
+  bytes, re-verified after the canary was restored to the staged (after) state.
 
-`inspector-scan` rule 26 drops from 8 flagged to **2**, and the 2 remaining are
-these new controls (`:840`, `:967`), classified `hollow-tier` because the desktop
-branch returns explanatory text. **That is the canonical `media/edit.js:236`
-pattern**, which the rule cannot see: its corpus is `*/components/*.js` +
-`extensions/*.js`, never `*/edit.js`. Satisfying the rule would mean folding the
-base picker back into the desktop branch — reintroducing the exact defect fixed
-above. Left flagged for a DETECTOR fix, not baselined: the rule's own doctrine
-says a false positive is a detector bug, and a baseline records accepted debt.
-
-## Residual risk
-
-- `BackgroundPanel` is SHARED by container / hero / cta-section / trust-bar (D591).
-  This change is UI-only and adds no attribute, but the surface is shared — the
-  hero host was exercised live in the same deploy (see
-  `reports/visual-diff/hero-2026-08-13.md`); cta-section and trust-bar were not
-  individually opened in the editor.
-- Rule 26's 2 findings above, pending a detector fix.
+*Generated for D597 (hero effect toggles + container keyframe rename). Every
+figure above is read from a live before/after Playwright capture against the
+sandybrown canary; none is hand-written.*

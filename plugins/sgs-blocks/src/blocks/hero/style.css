@@ -416,7 +416,7 @@ section.sgs-hero {
 
 /* ===== Ken-Burns Background ===== */
 
-@keyframes sgs-ken-burns {
+@keyframes sgs-hero-ken-burns {
 	0%   { transform: scale(1)    translate(0, 0); }
 	33%  { transform: scale(1.06) translate(-1%, 0.5%); }
 	66%  { transform: scale(1.04) translate(1%, -0.5%); }
@@ -428,7 +428,24 @@ section.sgs-hero {
 	isolation: isolate;
 }
 
-.sgs-hero--ken-burns::before {
+/* Compound-gated on .sgs-container--has-bg-image (D596 follow-up, 2026-08-13):
+   .sgs-hero--ken-burns is added unconditionally whenever bgKenBurns is true, for
+   BOTH variants, regardless of whether there is actually a background image to
+   animate. STANDARD never carries .sgs-container--has-bg-image (its
+   backgroundImage/Tablet/Mobile attrs are nulled before reaching
+   SGS_Container_Wrapper — the C3 double-emit guard, since standard paints its own
+   private <img> instead), so this pseudo-element never painted anything visible
+   for standard either way: `background-image: inherit` below resolves to the
+   `none !important` the very next rule forces onto the parent, and the real
+   `<img>` sits in front of it regardless — live-measured on the sandybrown canary
+   (probe page 2342, deleted). SPLIT with `splitImage` only (no root
+   `backgroundImage`) also lacks the class, and previously ran this same box/
+   animation for nothing to paint — a wasted compositor layer. Gating on the class
+   the wrapper only emits when `$has_bg_image` is genuinely true removes that
+   phantom case for split while leaving standard's already-invisible state
+   unchanged (nothing to regress). Split WITH a root backgroundImage configured
+   gets the class and keeps animating exactly as before. */
+.sgs-hero--ken-burns.sgs-container--has-bg-image::before {
 	content: '';
 	position: absolute;
 	inset: -5%;
@@ -440,8 +457,8 @@ section.sgs-hero {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	.sgs-hero--ken-burns::before {
-		animation: sgs-ken-burns 20s ease-in-out infinite alternate;
+	.sgs-hero--ken-burns.sgs-container--has-bg-image::before {
+		animation: sgs-hero-ken-burns 20s ease-in-out infinite alternate;
 	}
 }
 
@@ -458,10 +475,87 @@ section.sgs-hero {
 	z-index: 1;
 }
 
+/* ===== Split-media motion (foreground column, NOT the section background) =====
+ * mediaParallax / mediaKenBurns / mediaAnimationDuration (2026-08-13). A
+ * SEPARATE control family from the section's own bgParallax/bgKenBurns above —
+ * these animate `.sgs-hero__media` (the split variant's foreground picture/
+ * video/SVG column), never the section root. Deliberately distinct keyframe
+ * names (`sgs-hero-media-parallax` / `sgs-hero-media-ken-burns`) so they never
+ * collide with the section's own `sgs-hero-ken-burns` keyframe — the exact
+ * collision bug fixed elsewhere in this file this session. */
+
+/* Media parallax — `.sgs-hero__media` is a bounded foreground grid-item
+ * column, not a full-bleed section, so `position: fixed` (the section's own
+ * parallax technique, see `.sgs-hero__bg-img--parallax` above) would break it
+ * out of the grid entirely and detach it from its column. The correct
+ * bounded-element mechanism is the one this codebase already ships for its
+ * universal "element parallax" extension (`assets/css/extensions.css`
+ * `.sgs-parallax-element` + `assets/js/parallax.js`): CSS Scroll-Driven
+ * Animations (`animation-timeline: scroll(root)`) driving a subtle
+ * `translateY`, `@supports`-gated so unsupported browsers simply render the
+ * media static (progressive enhancement — no JS fallback needed here, the
+ * same choice already made for `sgs/card-grid`'s and `sgs/counter`'s own
+ * `animation-timeline: view()` entrances). Kept CSS-only per the Tier V
+ * default in Spec 38 §1 — this effect is fully reachable without GSAP (Tier
+ * G) or a helper library (Tier H). */
+@supports (animation-timeline: scroll()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.sgs-hero__media--parallax {
+			animation: sgs-hero-media-parallax linear both;
+			animation-timeline: scroll(root);
+		}
+
+		@keyframes sgs-hero-media-parallax {
+			from {
+				transform: translateY(-16px);
+			}
+			to {
+				transform: translateY(16px);
+			}
+		}
+	}
+}
+
+/* Media Ken-Burns — clip at `.sgs-hero__media`'s own edges (respects
+ * imageBorderRadius/mediaPadding, matching the existing splitImageBleed
+ * clipping pattern above) and animate the CHILD tier element
+ * (`.sgs-hero__split-media`, the class every image/video/SVG tier carries —
+ * see `sgs_tier_media_render()`), never `.sgs-hero__media` itself. Animating
+ * the wrapper would scale its padding/background box along with the media;
+ * animating the child lets `overflow: hidden` on the wrapper do the clipping
+ * so the zoom never spills past the column's border-radius. Compound
+ * selector (0,3,0) deliberately outranks the existing
+ * `.sgs-hero--split .sgs-hero__media { overflow: visible }` hover-zoom rule
+ * above (0,2,0) — that rule intentionally lets the HOVER zoom spill past the
+ * box; Ken-Burns is a continuous background-style effect and must not. */
+.sgs-hero--split .sgs-hero__media.sgs-hero__media--ken-burns {
+	overflow: hidden;
+}
+
+@keyframes sgs-hero-media-ken-burns {
+	0%   { transform: scale(1)    translate(0, 0); }
+	33%  { transform: scale(1.06) translate(-1%, 0.5%); }
+	66%  { transform: scale(1.04) translate(1%, -0.5%); }
+	100% { transform: scale(1)    translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-hero__media--ken-burns .sgs-hero__split-media {
+		animation: sgs-hero-media-ken-burns var(--sgs-hero-media-ken-burns-duration, 20s) ease-in-out infinite alternate;
+		will-change: transform;
+	}
+}
+
 /* ===== Reduced Motion ===== */
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-hero {
 		transition: none;
+	}
+
+	.sgs-hero__media--parallax,
+	.sgs-hero__media--ken-burns .sgs-hero__split-media {
+		animation: none !important;
+		transform: none !important;
 	}
 }

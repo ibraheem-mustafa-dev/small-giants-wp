@@ -677,6 +677,15 @@ $media_overlay_grad_from   = $attributes['mediaOverlayGradientFrom'] ?? '';
 $media_overlay_grad_to     = $attributes['mediaOverlayGradientTo'] ?? '';
 $media_overlay_has_colour  = '' !== $media_overlay_colour_raw || ( $media_overlay_gradient && '' !== $media_overlay_grad_from );
 
+// Media motion — mediaParallax/mediaKenBurns/mediaAnimationDuration (2026-08-13).
+// A SEPARATE control family from the section's own bgParallax/bgKenBurns
+// (read further below): those animate the SECTION BACKGROUND; these animate
+// the foreground split-media column (`.sgs-hero__media`) itself. Mutually
+// exclusive in the editor (edit.js); Ken-burns wins if somehow both are set.
+$media_parallax           = ! empty( $attributes['mediaParallax'] );
+$media_ken_burns          = ! empty( $attributes['mediaKenBurns'] ) && ! $media_parallax;
+$media_animation_duration = isset( $attributes['mediaAnimationDuration'] ) ? absint( $attributes['mediaAnimationDuration'] ) : 20;
+
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
 $content_pad_base = $sgs_box_shorthand( $content_padding_obj );
 if ( null !== $content_pad_base ) {
@@ -1132,6 +1141,24 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		$media_class = 'sgs-hero__media';
 		if ( $split_image_bleed ) {
 			$media_class .= ' sgs-hero__media--bleed';
+		}
+		// Media motion classes — scoped to `.sgs-hero__media` ONLY (never the
+		// root `<section>`), and gated inside this `'' !== …['html']` branch so
+		// they can only ever land on a media column that genuinely rendered
+		// something (an operator toggling these before picking media leaves
+		// $sgs_hero_tier_result['html'] empty, so $media_html itself never
+		// prints and neither class reaches the page).
+		if ( $media_parallax ) {
+			$media_class .= ' sgs-hero__media--parallax';
+		}
+		if ( $media_ken_burns ) {
+			$media_class .= ' sgs-hero__media--ken-burns';
+			// Distinct custom property from the section's own
+			// `--sgs-ken-burns-duration` (SGS_Container_Wrapper) — this one is
+			// scoped to `.sgs-hero__media`, not the section root, so a hero with
+			// BOTH the section and the media animating at different speeds
+			// never collide on the same variable.
+			$responsive_css .= '.' . $uid . ' .sgs-hero__media{--sgs-hero-media-ken-burns-duration:' . $media_animation_duration . 's}';
 		}
 		// Media overlay — a decorative span layered on top of the tier media,
 		// appended AFTER it in the DOM so it paints above (mirrors the section

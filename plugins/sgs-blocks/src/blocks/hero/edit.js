@@ -192,6 +192,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
 		splitImageBleed,
+		// Split-media motion (2026-08-13) — mirrors the section's own
+		// bgParallax/bgKenBurns/bgAnimationDuration pair, scoped to the
+		// FOREGROUND media column, never the section background.
+		mediaParallax,
+		mediaKenBurns,
+		mediaAnimationDuration = 20,
 		alignment,
 		backgroundImage,
 		backgroundOverlayColour,
@@ -571,6 +577,49 @@ export default function Edit( { attributes, setAttributes } ) {
 								} }
 								solidLabel={ __( 'Media overlay colour', 'sgs-blocks' ) }
 							/>
+
+							{ /* Media motion (2026-08-13) — a SEPARATE toggle pair from the
+							     section's own "Ken-burns zoom"/"Parallax scroll" controls in
+							     the "Container / Entire Block" panel below (which animate the
+							     SECTION BACKGROUND). These animate the foreground split-media
+							     column itself. Labelled "Media …" throughout so an operator
+							     with both panels open never confuses which element a toggle
+							     affects. Same mutual-exclusion pattern as the section's pair
+							     (ContainerWrapperControls.js) — turning one on clears the
+							     other. */ }
+							<hr style={ { margin: '16px 0' } } />
+							<p className="components-base-control__help">
+								{ __( 'Media Ken-burns and parallax are mutually exclusive — Ken-burns takes priority.', 'sgs-blocks' ) }
+							</p>
+							<ToggleControl
+								label={ __( 'Media Ken-burns zoom', 'sgs-blocks' ) }
+								help={ __( 'Slow zoom animation on the split media (image, video, or SVG), not the section background.', 'sgs-blocks' ) }
+								checked={ !! mediaKenBurns }
+								onChange={ ( val ) =>
+									setAttributes( { mediaKenBurns: val, mediaParallax: val ? false : mediaParallax } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Media parallax scroll', 'sgs-blocks' ) }
+								help={ __( 'The split media drifts gently as the visitor scrolls, for a subtle sense of depth.', 'sgs-blocks' ) }
+								checked={ !! mediaParallax }
+								onChange={ ( val ) =>
+									setAttributes( { mediaParallax: val, mediaKenBurns: val ? false : mediaKenBurns } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							{ mediaKenBurns && (
+								<RangeControl
+									label={ __( 'Media animation duration (seconds)', 'sgs-blocks' ) }
+									value={ mediaAnimationDuration }
+									onChange={ ( val ) => setAttributes( { mediaAnimationDuration: val } ) }
+									min={ 5 }
+									max={ 60 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+								/>
+							) }
 						</>
 					</PanelBody>
 				) }

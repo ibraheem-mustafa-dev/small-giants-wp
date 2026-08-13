@@ -188,11 +188,11 @@
    Duration driven by --sgs-ken-burns-duration CSS var (set inline by render.php, default 20s).
    prefers-reduced-motion: disable animation entirely. */
 .sgs-container--ken-burns {
-	animation: sgs-ken-burns var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
+	animation: sgs-container-ken-burns var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
 	background-size: 110% !important; /* start slightly zoomed so the zoom has room */
 }
 
-@keyframes sgs-ken-burns {
+@keyframes sgs-container-ken-burns {
 	from { background-size: 110%; background-position: center center; }
 	to   { background-size: 120%; background-position: 55% 45%; }
 }
