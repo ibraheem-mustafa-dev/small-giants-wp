@@ -318,6 +318,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 	};
 
+	// Content-band (Layer 2 __inner) preview — mirrors
+	// class-sgs-container-wrapper.php's `.$uid>.sgs-container__inner` band.
+	// Split forces `wrap_inner=false` at render.php:1258 ("a stray contentWidth
+	// can never inject an __inner div that would sit between the section grid
+	// and its __content/__media grid items") so the band never renders for the
+	// split variant — the standard variant is the only one where the wrapper
+	// actually emits `.sgs-container__inner` around the content, matching
+	// `$has_band_props` (class-sgs-container-wrapper.php:713-719) being driven
+	// by band padding (this desktop-tier preview) or contentWidth (not yet
+	// previewed here — out of scope for this fix). Desktop tier only, matching
+	// every other preview builder in this file.
+	const bandPaddingPreview = boxShorthand(
+		contentBandPadding?.desktop,
+		[ 'top', 'right', 'bottom', 'left' ]
+	);
+	const showContentBand = ! isSplit && !! bandPaddingPreview;
+
 	// Split-image preview style — mirrors render.php's scoped `.sgs-hero__split-image`
 	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
 	// attributes so the editor canvas stops silently disagreeing with the
@@ -1503,8 +1520,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					);
 				} )() }
 
-				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons). */ }
-				<div { ...innerBlocksProps } />
+				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons).
+				   Standard variant only: wrapped in the content-band preview (mirrors the
+				   frontend's `.sgs-container__inner`) whenever Content band padding is set —
+				   see the `showContentBand` derivation above for why split never wraps. */ }
+				{ showContentBand ? (
+					<div className="sgs-container__inner" style={ { padding: bandPaddingPreview } }>
+						<div { ...innerBlocksProps } />
+					</div>
+				) : (
+					<div { ...innerBlocksProps } />
+				) }
 
 				{ /* Canvas preview of the split column. Reads the TYPED families, the
 				     same ones render.php resolves, so the editor and the front end

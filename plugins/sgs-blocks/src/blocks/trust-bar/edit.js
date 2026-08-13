@@ -58,6 +58,38 @@ function gapCssValue( gap ) {
 	return String( gapDesktop );
 }
 
+/**
+ * Resolve the desktop-tier `grid-template-columns` preview value.
+ *
+ * Mirrors the REAL winning mechanism in class-sgs-container-wrapper.php: an
+ * object-shaped `gridTemplateColumns` attr is ALWAYS emitted (the unconditional
+ * `isset() && is_array()` check at ~:2150, which lands in the responsive CSS
+ * string after — and so overrides in the cascade — the legacy `columns`-based
+ * base rule at ~:865). `columns` only drives the rendered grid when
+ * `gridTemplateColumns`'s own tier is empty (render.php's `$gtc_base` fallback,
+ * ~:854-858) — this is the ONLY case genuinely covered by `columns` any more,
+ * since trust-bar declares `gridTemplateColumns` with a real, always-populated
+ * default ({desktop:"repeat(4, 1fr)", …}), so that fallback rarely fires on a
+ * fresh instance. Preserved anyway for a legacy/edge instance whose
+ * `gridTemplateColumns` tier really is unset.
+ *
+ * @param {Object|null|undefined} gtc     gridTemplateColumns attribute ({desktop,tablet,mobile}).
+ * @param {Object|null|undefined} cols    columns attribute ({desktop,tablet,mobile}).
+ * @returns {string|undefined}
+ */
+function gridTemplateColumnsPreview( gtc, cols ) {
+	const gtcDesktop = resolveResponsiveTier( gtc, 'desktop' )?.value;
+	if ( gtcDesktop ) {
+		return String( gtcDesktop );
+	}
+	const colsDesktop = resolveResponsiveTier( cols, 'desktop' )?.value;
+	const count = colsDesktop ? parseInt( colsDesktop, 10 ) : 4;
+	if ( ! count || count < 1 ) {
+		return undefined;
+	}
+	return `repeat(${ count },1fr)`;
+}
+
 const BADGE_STYLE_OPTIONS = [
 	{ label: __( 'Icon circle (default)', 'sgs-blocks' ), value: 'icon-circle' },
 	{ label: __( 'Text only (pill badge)', 'sgs-blocks' ), value: 'text-only' },
@@ -253,6 +285,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColour,
 		columns,
 		gap,
+		layout,
+		gridTemplateColumns,
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollPauseOnHover,
@@ -275,6 +309,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		: undefined;
 	const circleShadowValue = resolveShadowPreview( iconCircleShadow );
 
+	// Grid preview (icon-circle only — text-only/image-badge always render
+	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,
+	// style.css:111-117/155-158, regardless of layout/columns/gridTemplateColumns;
+	// the "Badges" panel's Columns control is gated to icon-circle only for the
+	// same reason). Ungated on `layout` presence matches render.php: layout
+	// defaults to 'grid' (block.json), and only an explicit 'flex' would fall
+	// back to the natural inline-flex wrap this block already renders without
+	// any style here.
+	const showBadgeGrid = badgeStyle === 'icon-circle' && 'flex' !== layout;
+	const badgeGridTemplateColumns = showBadgeGrid
+		? gridTemplateColumnsPreview( gridTemplateColumns, columns )
+		: undefined;
+
 	const blockProps = useBlockProps( {
 		className: blockClassName,
 		style: {
@@ -287,6 +334,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				'--sgs-trust-badge-text-colour': textColorValue,
 				'--sgs-trust-badge-circle-radius': circleRadiusValue,
 				'--sgs-trust-badge-circle-shadow': circleShadowValue,
+			} : {} ),
+			...( badgeGridTemplateColumns ? {
+				display: 'grid',
+				gridTemplateColumns: badgeGridTemplateColumns,
+				gap: gapCssValue( gap ),
 			} : {} ),
 		},
 	} );
