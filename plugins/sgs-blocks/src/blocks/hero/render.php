@@ -664,6 +664,19 @@ if ( $media_bg_gradient && $media_bg_gradient_from ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-color:' . sgs_colour_value( $media_bg_resolved ) . '}';
 }
 
+// mediaOverlay — a SEPARATE overlay layered on TOP of the split media (image/
+// video/SVG), distinct from mediaBackground above (which paints BEHIND an
+// object-fit:cover image and is therefore invisible whenever media is
+// present). Mirrors the section overlay's own gradient/flat-colour build
+// (~line 969 below) 1:1, scoped to `.sgs-hero__media-overlay` instead of
+// `.sgs-hero__overlay`.
+$media_overlay_colour_raw  = $attributes['mediaOverlayColour'] ?? '';
+$media_overlay_gradient    = ! empty( $attributes['mediaOverlayGradient'] );
+$media_overlay_grad_angle  = isset( $attributes['mediaOverlayGradientAngle'] ) ? absint( $attributes['mediaOverlayGradientAngle'] ) : 180;
+$media_overlay_grad_from   = $attributes['mediaOverlayGradientFrom'] ?? '';
+$media_overlay_grad_to     = $attributes['mediaOverlayGradientTo'] ?? '';
+$media_overlay_has_colour  = '' !== $media_overlay_colour_raw || ( $media_overlay_gradient && '' !== $media_overlay_grad_from );
+
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
 $content_pad_base = $sgs_box_shorthand( $content_padding_obj );
 if ( null !== $content_pad_base ) {
@@ -1120,7 +1133,28 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		if ( $split_image_bleed ) {
 			$media_class .= ' sgs-hero__media--bleed';
 		}
-		$media_html      = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . '</div>';
+		// Media overlay — a decorative span layered on top of the tier media,
+		// appended AFTER it in the DOM so it paints above (mirrors the section
+		// overlay's positioning approach). Emitted only when an overlay colour
+		// or gradient has actually been set (mediaOverlay* read above) — an
+		// empty overlay element must never render.
+		$media_overlay_html = '';
+		if ( $media_overlay_has_colour ) {
+			$media_overlay_html = '<span class="sgs-hero__media-overlay" aria-hidden="true"></span>';
+			if ( $media_overlay_gradient && '' !== $media_overlay_grad_from ) {
+				$media_overlay_grad_from_val = sgs_colour_value( $media_overlay_grad_from );
+				$media_overlay_grad_to_val   = '' !== $media_overlay_grad_to ? sgs_colour_value( $media_overlay_grad_to ) : 'transparent';
+				$responsive_css              .= '.' . $uid . ' .sgs-hero__media-overlay{' . sprintf(
+					'background-image:linear-gradient(%ddeg,%s,%s)',
+					$media_overlay_grad_angle,
+					$media_overlay_grad_from_val,
+					$media_overlay_grad_to_val
+				) . '}';
+			} else {
+				$responsive_css .= '.' . $uid . ' .sgs-hero__media-overlay{background-color:' . sgs_colour_value( $media_overlay_colour_raw ) . '}';
+			}
+		}
+		$media_html      = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . $media_overlay_html . '</div>';
 		// ⛔ CALLER CONTRACT (helpers-tier-media.php): this MUST be appended to
 		// $responsive_css BEFORE it is printed below — it is, at line ~1166.
 		$responsive_css .= $sgs_hero_tier_result['css'];

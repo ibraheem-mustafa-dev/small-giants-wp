@@ -549,6 +549,26 @@ export default function Edit( { attributes, setAttributes } ) {
 									} }
 								</ResponsiveControl>
 							) }
+
+							{ /* Media overlay — a SEPARATE decorative layer on TOP of the split
+							     media, distinct from the "Background" colour set via the
+							     mediaBackground* family in the "Image styling" panel below (that
+							     one paints BEHIND an object-fit:cover image and is invisible
+							     whenever media is present). Mirrors the section overlay's own
+							     GradientOverlayControl usage 1:1, scoped to mediaOverlay*. */ }
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Overlay', 'sgs-blocks' ) }</p>
+							<GradientOverlayControl
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									gradient: 'mediaOverlayGradient',
+									angle: 'mediaOverlayGradientAngle',
+									from: 'mediaOverlayGradientFrom',
+									to: 'mediaOverlayGradientTo',
+									solid: 'mediaOverlayColour',
+								} }
+								solidLabel={ __( 'Media overlay colour', 'sgs-blocks' ) }
+							/>
 						</>
 					</PanelBody>
 				) }

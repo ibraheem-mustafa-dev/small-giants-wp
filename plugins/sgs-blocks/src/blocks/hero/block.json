@@ -493,6 +493,25 @@
 			"type": "string",
 			"default": ""
 		},
+		"mediaOverlayColour": {
+			"type": "string"
+		},
+		"mediaOverlayGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"mediaOverlayGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"mediaOverlayGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"mediaOverlayGradientTo": {
+			"type": "string",
+			"default": ""
+		},
 		"contentPadding": {
 			"type": "object",
 			"default": {
