@@ -47,7 +47,6 @@ $has_explicit_aria = isset( $attributes['ariaLabel'] ) && '' !== trim( (string) 
 // Icon.
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
 $icon_position = isset( $attributes['iconPosition'] ) ? sanitize_text_field( $attributes['iconPosition'] ) : 'after';
-$icon_gap      = isset( $attributes['iconGap'] ) ? absint( $attributes['iconGap'] ) : 8;
 // iconSize is a TIER OBJECT (Spec 35 migration, 2026-08-11) — one attr holding
 // {desktop,tablet,mobile}; the iconSizeTablet/iconSizeMobile sibling attrs are
 // no longer declared by block.json, so reading them directly would read nothing.
@@ -326,9 +325,6 @@ if ( $colour_bg_hover ) {
 if ( $colour_border_hover ) {
 	$inline_styles[] = '--sgs-btn-border-hover:' . sgs_colour_value( $colour_border_hover );
 }
-
-// Icon gap — a CSS custom-property VALUE (consumed by style.css flexbox gap).
-$inline_styles[] = "--sgs-btn-icon-gap:{$icon_gap}px";
 
 // Non-responsive base declarations (border-width/style, font weight/style,
 // text-transform/decoration, box-shadow) go into the id-scoped <style> base rule

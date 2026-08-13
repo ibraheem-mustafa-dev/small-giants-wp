@@ -73,7 +73,6 @@
 						"css:min-height": "minHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:gap": "iconGap",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "colourBorder",
@@ -105,7 +104,7 @@
 							}
 						}
 					},
-					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize/iconGap remain unmapped bespoke icon controls, not Text/Fill/Layout members."
+					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap was deleted (D613) -- confirmed dead on both sides, no consumer anywhere in the plugin."
 				}
 			}
 		}
@@ -158,7 +157,7 @@
 		"customWidthUnit": {
 			"type": "object",
 			"default": {"desktop": "px", "tablet": "px", "mobile": "px"}
-		},
+		},
 		"minHeight": {
 			"type": "object",
 			"default": {}
@@ -166,11 +165,11 @@
 		"minHeightUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"minHeightTabletUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"minHeightMobileUnit": {
 			"type": "string",
 			"default": "px"
@@ -222,7 +221,7 @@
 		"fontSize": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"fontSizeUnit": {
 			"type": "string",
 			"default": "px"
@@ -230,7 +229,7 @@
 		"lineHeight": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"lineHeightUnit": {
 			"type": "string",
 			"default": "em"
@@ -238,7 +237,7 @@
 		"letterSpacing": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"letterSpacingUnit": {
 			"type": "string",
 			"default": "px"
@@ -338,10 +337,6 @@
 		"iconSize": {
 			"type": "object",
 			"default": {}
-		},
-		"iconGap": {
-			"type": "number",
-			"default": 8
 		},
 		"iconColour": {
 			"type": "string",

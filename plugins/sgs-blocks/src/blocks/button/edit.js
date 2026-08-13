@@ -175,7 +175,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconPosition,
 		labelCollapse,
 		iconSize,
-		iconGap,
 		iconColour,
 		iconColourHover,
 		iconTitle,
@@ -490,7 +489,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								resetAll={ () =>
 									setAttributes( {
 										iconSize: {},
-										iconGap: 8,
 										iconColour: '',
 										iconColourHover: '',
 									} )
@@ -522,22 +520,6 @@ export default function Edit( { attributes, setAttributes } ) {
 											/>
 										) }
 									</ResponsiveOverride>
-								</ToolsPanelItem>
-								<ToolsPanelItem
-									label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
-									hasValue={ () => iconGap !== 8 }
-									onDeselect={ () => setAttributes( { iconGap: 8 } ) }
-								>
-									<RangeControl
-										label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
-										value={ iconGap }
-										onChange={ ( val ) => setAttributes( { iconGap: val } ) }
-										min={ 0 }
-										max={ 40 }
-										step={ 1 }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
 								</ToolsPanelItem>
 								{ /* Element-scoped colour states. Spec 35 keeps every control
 								     for an element INSIDE that element's own panel — the
