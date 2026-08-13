@@ -21,7 +21,6 @@ import {
 	SelectControl,
 	TextControl,
 	TextareaControl,
-	RangeControl,
 	ComboboxControl,
 	ToggleControl,
 	CheckboxControl,
@@ -35,6 +34,7 @@ import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
 import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -1326,15 +1326,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										setAttributes( { tagTextColour: v } )
 									}
 								/>
-								<RangeControl
-									label={ __( 'Tag border radius (px)', 'sgs-blocks' ) }
-									value={ attributes.tagBorderRadius }
+								{ /* UnitControl, not a raw-px RangeControl (contract
+								     §4.3). Stored as a CSS-length STRING; a legacy
+								     bare number is treated as px by render.php.
+								     Mirrors sgs/label — both feed the SAME shared
+								     sgs_label_box_css_rule() emitter. */ }
+								<UnitControl
+									label={ __( 'Tag border radius', 'sgs-blocks' ) }
+									value={ attributes.tagBorderRadius ?? '' }
+									units={ SGS_LENGTH_UNITS }
 									onChange={ ( v ) =>
-										setAttributes( { tagBorderRadius: v } )
+										setAttributes( {
+											tagBorderRadius:
+												sgsNormaliseLength( v ),
+										} )
 									}
-									min={ 0 }
-									max={ 50 }
-									step={ 1 }
 									__nextHasNoMarginBottom
 								/>
 								<BoxControl

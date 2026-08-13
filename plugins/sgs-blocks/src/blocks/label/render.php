@@ -243,7 +243,13 @@ $base_padding_shorthand = sgs_box_object_shorthand( $padding_obj );
 // A meaningful (non-zero, present) border-radius. A stored 0 is treated as
 // "no rounding" and not emitted — keeps a bare eyebrow free of a pointless
 // `border-radius:0px` (regression guard: bare eyebrows stay box-free).
-$has_radius   = ( '' !== (string) $border_radius && 0 !== intval( $border_radius ) );
+//
+// floatval, NOT intval (2026-08-13): borderRadius is now a CSS-length STRING,
+// and intval('0.5rem') is 0 — which would silently DROP every sub-1 rem/em
+// radius. floatval('0.5rem') is 0.5, while floatval('0px') is still 0.0, so the
+// zero-is-absent guard above keeps working for both the legacy bare number and
+// an explicit zero length.
+$has_radius   = ( '' !== (string) $border_radius && 0.0 !== floatval( $border_radius ) );
 $radius_value = $has_radius ? $border_radius : '';
 
 // Box-present = either background channel (native style.color.background OR the

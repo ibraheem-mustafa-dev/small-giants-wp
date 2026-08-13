@@ -79,7 +79,8 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 	 *   - padding        array{top,right,bottom,left} base padding.
 	 *   - paddingTablet  array box (scoped @media max-width:1023px).
 	 *   - paddingMobile  array box (scoped @media max-width:767px).
-	 *   - radius         int|string border-radius in px (intval'd).
+	 *   - radius         string a CSS length ('16px', '1.5rem', '50%'). A bare
+	 *                    number is treated as px (legacy pre-2026-08-13 shape).
 	 *   - background     string a resolved colour VALUE (hex / var()) OR a preset
 	 *                    token slug — passed through sgs_colour_value() either way.
 	 *   - display        string a CSS display keyword (e.g. 'inline-block').
@@ -102,9 +103,26 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 			}
 		}
 
-		// Border radius (single uniform value).
+		// Border radius (single uniform value, ANY CSS length unit).
+		//
+		// Was `intval( … ) . 'px'` until 2026-08-13 — that hard-coded px and
+		// silently truncated any other unit (`intval('1.5rem')` is 1, so a rem
+		// value rendered as `1px`). Both callers' attrs are now `type: string`
+		// so the operator can pick px/rem/em/%, matching contract §4.3.
+		//
+		// LEGACY SHAPE: instances stored before that migration hold a BARE
+		// NUMBER (e.g. 16). A bare number is not a valid CSS length, so it gets
+		// `px` appended — identical output to the old intval path, which is what
+		// keeps every existing instance rendering unchanged. Same rule as
+		// SpacingControl.js's normaliseFreeInput(), deliberately.
 		if ( isset( $box['radius'] ) && '' !== $box['radius'] && null !== $box['radius'] ) {
-			$decls[] = 'border-radius:' . intval( $box['radius'] ) . 'px';
+			$radius = sgs_css_length_sanitise( $box['radius'] );
+			if ( '' !== $radius ) {
+				if ( preg_match( '/^\d+(\.\d+)?$/', $radius ) ) {
+					$radius .= 'px';
+				}
+				$decls[] = 'border-radius:' . $radius;
+			}
 		}
 
 		// Background colour (resolved value or preset token → sgs_colour_value).

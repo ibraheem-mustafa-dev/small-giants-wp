@@ -7,12 +7,17 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	RangeControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
-import { colourVar } from '../../utils';
+import {
+	colourVar,
+	SGS_LENGTH_UNITS,
+	sgsNormaliseLength,
+	sgsHasLength,
+	sgsLengthPreview,
+} from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
 const TEXT_TRANSFORM_OPTIONS = [
@@ -169,9 +174,13 @@ function buildStyle( attributes ) {
 	// render.php's ungated helper (no pill gate).
 	previewStyle.padding = paddingPreview;
 	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
-	const hasRadius = borderRadius !== undefined && borderRadius !== null &&
-		borderRadius !== '' && Number( borderRadius ) !== 0;
-	previewStyle.borderRadius = hasRadius ? `${ borderRadius }px` : undefined;
+	// borderRadius is a CSS-length STRING (2026-08-13). The old check used
+	// `Number( borderRadius ) !== 0`, which is NaN for '1.5rem' — and the old
+	// preview appended 'px' unconditionally, so '1.5rem' painted as '1.5rempx'
+	// and silently did nothing. Both now go through the shared helpers so the
+	// canvas matches render.php exactly, legacy bare numbers included.
+	const hasRadius = sgsHasLength( borderRadius );
+	previewStyle.borderRadius = sgsLengthPreview( borderRadius );
 
 	// Display model — mirrors render.php. When an is-style-* variant class owns
 	// display, emit none (the variant CSS decides). Otherwise: fullWidth →
@@ -447,15 +456,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<RangeControl
-						label={ __( 'Border radius (px)', 'sgs-blocks' ) }
-						value={ borderRadius }
+					{ /* UnitControl, not a raw-px RangeControl (contract §4.3) —
+					     the operator picks the unit. Stored as a CSS-length
+					     STRING; a legacy bare number is treated as px by both
+					     render.php and the canvas preview. */ }
+					<UnitControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						value={ borderRadius ?? '' }
+						units={ SGS_LENGTH_UNITS }
 						onChange={ ( val ) =>
-							setAttributes( { borderRadius: val } )
+							setAttributes( {
+								borderRadius: sgsNormaliseLength( val ),
+							} )
 						}
-						min={ 0 }
-						max={ 50 }
-						step={ 1 }
 						__nextHasNoMarginBottom
 					/>
 					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
