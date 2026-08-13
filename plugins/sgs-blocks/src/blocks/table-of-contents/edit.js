@@ -195,6 +195,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { tocStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'List style', 'sgs-blocks' ) }
@@ -204,6 +205,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { listStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Title', 'sgs-blocks' ) }
@@ -212,6 +214,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { title: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<p className="components-base-control__label">
 						{ __( 'Heading levels', 'sgs-blocks' ) }
@@ -289,6 +292,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 200 }
 							step={ 10 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					<ToggleControl

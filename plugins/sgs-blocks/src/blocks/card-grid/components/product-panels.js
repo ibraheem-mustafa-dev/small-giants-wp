@@ -217,6 +217,7 @@ export function ProductHandpickPanel( { productIds, setAttributes } ) {
 				onChange={ onSearchChange }
 				placeholder={ __( 'Type to search…', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ isResolving && <Spinner /> }
 			{ options.length > 0 && (

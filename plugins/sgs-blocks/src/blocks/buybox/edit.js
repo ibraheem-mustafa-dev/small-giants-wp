@@ -48,6 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Per-unit denomination', 'sgs-blocks' ) }
@@ -61,6 +62,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Sold-out label', 'sgs-blocks' ) }
@@ -73,6 +75,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Unavailable label', 'sgs-blocks' ) }
@@ -85,6 +88,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Show back-in-stock notify form', 'sgs-blocks' ) }
@@ -109,6 +113,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<PanelBody

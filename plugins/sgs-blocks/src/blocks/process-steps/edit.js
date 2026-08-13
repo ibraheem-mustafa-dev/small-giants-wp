@@ -73,12 +73,14 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 				onChange={ ( val ) => update( 'number', val ) }
 				placeholder={ String( index + 1 ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ step.title || '' }
 				onChange={ ( val ) => update( 'title', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TextareaControl
 				label={ __( 'Description', 'sgs-blocks' ) }
@@ -249,6 +251,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { connectorStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Number style', 'sgs-blocks' ) }
@@ -258,6 +261,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { numberStyle: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -313,6 +317,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { effectHover: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover background colour', 'sgs-blocks' ) }
@@ -346,6 +351,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
@@ -361,6 +367,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { transitionEasing: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -375,6 +382,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BORDER_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Border colour', 'sgs-blocks' ) }

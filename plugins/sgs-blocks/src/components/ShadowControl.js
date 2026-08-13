@@ -155,6 +155,7 @@ export default function ShadowControl( { label, value, onChange } ) {
 							onChange={ ( v ) => updatePart( 'x', parseFloat( v ) || 0 ) }
 							units={ [ { value: 'px', label: 'px' } ] }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<UnitControl
 							label={ __( 'Offset Y', 'sgs-blocks' ) }
@@ -162,6 +163,7 @@ export default function ShadowControl( { label, value, onChange } ) {
 							onChange={ ( v ) => updatePart( 'y', parseFloat( v ) || 0 ) }
 							units={ [ { value: 'px', label: 'px' } ] }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</div>
 					<div className="sgs-shadow-control__row">
@@ -171,6 +173,7 @@ export default function ShadowControl( { label, value, onChange } ) {
 							onChange={ ( v ) => updatePart( 'blur', Math.max( 0, parseFloat( v ) || 0 ) ) }
 							units={ [ { value: 'px', label: 'px' } ] }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<UnitControl
 							label={ __( 'Spread', 'sgs-blocks' ) }
@@ -178,6 +181,7 @@ export default function ShadowControl( { label, value, onChange } ) {
 							onChange={ ( v ) => updatePart( 'spread', parseFloat( v ) || 0 ) }
 							units={ [ { value: 'px', label: 'px' } ] }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</div>
 					<DesignTokenPicker

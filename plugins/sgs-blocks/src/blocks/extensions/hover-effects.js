@@ -355,6 +355,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							options={ SCALE_PRESET_OPTIONS }
 							onChange={ ( val ) => setAttributes( { sgsHoverScalePreset: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<RangeControl
 							label={ __( 'Hover scale (fine, %)', 'sgs-blocks' ) }
@@ -365,6 +366,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							max={ 120 }
 							step={ 1 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<SelectControl
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
@@ -372,6 +374,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							options={ SHADOW_OPTIONS }
 							onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<ToggleControl
 							label={ __( 'Zoom image on hover', 'sgs-blocks' ) }
@@ -398,6 +401,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							options={ DURATION_OPTIONS }
 							onChange={ ( val ) => setAttributes( { sgsHoverDuration: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<SelectControl
 							label={ __( 'Transition easing', 'sgs-blocks' ) }
@@ -406,6 +410,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							options={ EASING_OPTIONS }
 							onChange={ ( val ) => setAttributes( { sgsHoverEasing: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<RangeControl
 							label={ __( 'Child stagger delay (ms)', 'sgs-blocks' ) }
@@ -416,6 +421,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							max={ 500 }
 							step={ 25 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<ToggleControl
 							label={ __( 'Show focus ring on keyboard focus', 'sgs-blocks' ) }
@@ -446,6 +452,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							type="url"
 							placeholder="https://"
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						{ sgsBlockLink && (
 							<>
@@ -455,6 +462,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 									value={ sgsBlockLinkLabel }
 									onChange={ ( val ) => setAttributes( { sgsBlockLinkLabel: val || '' } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<ToggleControl
 									label={ __( 'Open in new tab', 'sgs-blocks' ) }
@@ -487,6 +495,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							] }
 							onChange={ ( val ) => setAttributes( { sgsClickEffect: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						{ sgsClickEffect === 'ripple' && (
 							<>
@@ -506,6 +515,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 									max={ 1200 }
 									step={ 50 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</>
 						) }

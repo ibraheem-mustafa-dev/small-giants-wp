@@ -176,6 +176,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ DATA_SOURCE_OPTIONS }
 						onChange={ ( value ) => setAttributes( { dataSource: value } ) }
 						help={ __( 'Synced reads from wp_options[sgs_trustpilot_data], populated by Settings > SGS Trustpilot Sync.', 'sgs-blocks' ) }
+						__next40pxDefaultSize
 					/>
 					{ dataSource === 'synced' && (
 						<SelectControl
@@ -184,6 +185,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ EMPTY_STATE_OPTIONS }
 							onChange={ ( value ) => setAttributes( { emptyState: value } ) }
 							help={ __( 'Controls what shows when the synced source is empty or unreachable. "Hide" leaves no gap; "Reviews coming soon" shows a placeholder message.', 'sgs-blocks' ) }
+							__next40pxDefaultSize
 						/>
 					) }
 					<TextControl
@@ -192,6 +194,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { businessUnitUrl: value } ) }
 						placeholder="https://uk.trustpilot.com/review/example.com"
 						type="url"
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -251,6 +254,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								step={ 0.1 }
 								onChange={ ( value ) => setAttributes( { trustScore: parseFloat( value ) || 0 } ) }
 								help={ __( 'Leave 0 to auto-derive from reviews average.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -263,6 +267,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ trustScoreLabel }
 								onChange={ ( value ) => setAttributes( { trustScoreLabel: value } ) }
 								placeholder={ __( 'Auto: Excellent / Great / Good / Average / Poor / Bad', 'sgs-blocks' ) }
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -276,6 +281,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 0 }
 								onChange={ ( value ) => setAttributes( { totalReviews: parseInt( value, 10 ) || 0 } ) }
 								help={ __( 'Leave 0 to auto-derive from the reviews list.', 'sgs-blocks' ) }
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -301,6 +307,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									label={ __( 'Subtitle text', 'sgs-blocks' ) }
 									value={ subtitleText }
 									onChange={ ( value ) => setAttributes( { subtitleText: value } ) }
+									__next40pxDefaultSize
 								/>
 							) }
 						</ToolsPanelItem>
@@ -337,6 +344,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ variant }
 						options={ VARIANT_OPTIONS }
 						onChange={ ( value ) => setAttributes( { variant: value } ) }
+						__next40pxDefaultSize
 					/>
 					{ /*
 						  columns is a TIER OBJECT — ONE attr holding
@@ -372,6 +380,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									min={ 1 }
 									max={ maxMap[ tier ] }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							);
 						} }
@@ -381,12 +390,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ theme }
 						options={ THEME_OPTIONS }
 						onChange={ ( value ) => setAttributes( { theme: value } ) }
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Card style', 'sgs-blocks' ) }
 						value={ cardStyle }
 						options={ CARD_STYLE_OPTIONS }
 						onChange={ ( value ) => setAttributes( { cardStyle: value } ) }
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -415,6 +426,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 2000 }
 								max={ 15000 }
 								step={ 500 }
+								__next40pxDefaultSize
 							/>
 						) }
 						{ /*
@@ -482,6 +494,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									label={ __( 'Author', 'sgs-blocks' ) }
 									value={ r.author || '' }
 									onChange={ ( value ) => updateReview( idx, { author: value } ) }
+									__next40pxDefaultSize
 								/>
 								<NumberControl
 									label={ __( 'Rating (1-5)', 'sgs-blocks' ) }
@@ -490,16 +503,19 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 5 }
 									step={ 0.5 }
 									onChange={ ( value ) => updateReview( idx, { rating: parseFloat( value ) || 5 } ) }
+									__next40pxDefaultSize
 								/>
 								<TextControl
 									label={ __( 'Date (ISO 8601)', 'sgs-blocks' ) }
 									value={ r.datePublished || '' }
 									onChange={ ( value ) => updateReview( idx, { datePublished: value } ) }
+									__next40pxDefaultSize
 								/>
 								<TextControl
 									label={ __( 'Title (optional)', 'sgs-blocks' ) }
 									value={ r.title || '' }
 									onChange={ ( value ) => updateReview( idx, { title: value } ) }
+									__next40pxDefaultSize
 								/>
 								<TextareaControl
 									label={ __( 'Review body', 'sgs-blocks' ) }

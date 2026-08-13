@@ -177,6 +177,7 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</InspectorControls>
@@ -249,6 +250,7 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 

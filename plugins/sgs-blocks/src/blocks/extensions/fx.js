@@ -1283,6 +1283,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									'Scroll effects preview on the live site, not in the editor.',
 									'sgs-blocks'
 								) }
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 
@@ -1418,6 +1419,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 													'sgs-blocks'
 											  )
 									}
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
@@ -1978,6 +1980,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										'How far the visitor needs to scroll before the effect begins.',
 										'sgs-blocks'
 									) }
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
@@ -2005,6 +2008,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										'Hover also responds to keyboard focus, and plays automatically on touch screens where there is no hover.',
 										'sgs-blocks'
 									) }
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
@@ -2058,6 +2062,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 													'sgs-blocks'
 											  )
 									}
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
@@ -2086,6 +2091,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										'How long the section keeps holding still after all its content has arrived, before the page scrolls on.',
 										'sgs-blocks'
 									) }
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
@@ -2108,6 +2114,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										'How the motion speeds up and slows down.',
 										'sgs-blocks'
 									) }
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
@@ -2155,6 +2162,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											'What follows the cursor across this section.',
 											'sgs-blocks'
 										) }
+										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 
@@ -2327,6 +2335,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 												: '',
 										} )
 									}
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }

@@ -155,6 +155,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ setGroupPreset }
 						help={ __( 'Apply a preset style to every button in this group at once.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<Button
 						variant="secondary"
@@ -188,6 +189,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								options={ tier === 'desktop' ? DIRECTION_OPTIONS : DIRECTION_OPTIONS_WITH_INHERIT }
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -237,6 +239,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								options={ tier === 'desktop' ? WRAP_OPTIONS : WRAP_OPTIONS_WITH_INHERIT }
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -263,6 +266,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								options={ tier === 'desktop' ? JUSTIFY_OPTIONS : JUSTIFY_OPTIONS_WITH_INHERIT }
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -286,6 +290,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange={ ( val ) => setOwnValue( val ) }
 								help={ tier === 'mobile' ? __( 'Mobile stacks buttons full-width by default (stretch).', 'sgs-blocks' ) : undefined }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

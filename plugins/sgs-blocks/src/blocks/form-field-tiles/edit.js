@@ -106,6 +106,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -119,6 +120,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ label }
 								onChange={ ( val ) => setAttributes( { label: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -133,6 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { helpText: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -179,6 +182,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 2 }
 								max={ 4 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -192,6 +196,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ WIDTH_OPTIONS }
 								onChange={ ( val ) => setAttributes( { width: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
@@ -224,6 +229,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									updateTile( index, 'value', val )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<TextControl
 								label={ __( 'Label', 'sgs-blocks' ) }
@@ -233,6 +239,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								style={ { marginTop: '8px' } }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<IconPicker
 								label={ __( 'Icon', 'sgs-blocks' ) }

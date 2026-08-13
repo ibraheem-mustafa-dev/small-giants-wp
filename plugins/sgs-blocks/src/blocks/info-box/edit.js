@@ -365,6 +365,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ MEDIA_TYPE_OPTIONS }
 						onChange={ handleMediaTypeChange }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -377,6 +378,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<UnitControl
 						label={ __( 'Width', 'sgs-blocks' ) }
@@ -385,6 +387,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { width: val ?? '' } ) }
 						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -433,6 +436,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ CARD_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
@@ -440,6 +444,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ HOVER_EFFECT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -451,6 +456,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ ICON_POSITION_OPTIONS }
 						onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

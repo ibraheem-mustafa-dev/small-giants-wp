@@ -49,12 +49,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Help text', 'sgs-blocks' ) }
@@ -63,6 +65,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { helpText: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Required', 'sgs-blocks' ) }
@@ -78,6 +81,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ WIDTH_OPTIONS }
 						onChange={ ( val ) => setAttributes( { width: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -96,6 +100,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Maximum file size (MB)', 'sgs-blocks' ) }
@@ -106,6 +111,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 1 }
 						max={ 50 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

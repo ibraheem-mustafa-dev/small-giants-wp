@@ -6,13 +6,13 @@
  *
  * CANONICAL UI (device-icon switcher + integrated UnitControl):
  *   - Font size  → <ResponsiveControl> device-icon switcher wrapping a
- *                  <UnitControl> whose displayed value combines the numeric
+ *                  <UnitControl __next40pxDefaultSize > whose displayed value combines the numeric
  *                  breakpoint attr with the shared FontSizeUnit string
  *                  (e.g. attr 18 + unit 'px' → '18px'). onChange: parse the
  *                  combined string back to number (breakpoint attr) + unit
  *                  (FontSizeUnit). When showResponsive=false, a single UnitControl
  *                  without the switcher wrapper.
- *   - Line height → single <UnitControl> integrating LineHeight (number) +
+ *   - Line height → single <UnitControl __next40pxDefaultSize > integrating LineHeight (number) +
  *                  LineHeightUnit (string). The PHP helper emits the unit verbatim:
  *                  '' = unitless (e.g. 1.5 with no suffix), any string = suffixed.
  *                  UnitControl stores '' for the "—" (unitless) option which maps
@@ -420,6 +420,7 @@ export default function TypographyControls( {
 					options={ fontSizePresetOptions }
 					onChange={ onFontSizePresetChange }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -438,6 +439,7 @@ export default function TypographyControls( {
 							units={ FONT_SIZE_UNITS }
 							onChange={ ( val ) => onFontSizeChangeTiered( setOwnValue, val ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</ResponsiveOverride>
@@ -456,6 +458,7 @@ export default function TypographyControls( {
 							units={ FONT_SIZE_UNITS }
 							onChange={ ( val ) => onFontSizeChange( breakpoint, val ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</ResponsiveControl>
@@ -471,6 +474,7 @@ export default function TypographyControls( {
 					units={ FONT_SIZE_UNITS }
 					onChange={ ( val ) => onFontSizeChange( 'desktop', val ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -481,6 +485,7 @@ export default function TypographyControls( {
 					options={ SGS_FONT_WEIGHT_OPTIONS }
 					onChange={ ( val ) => setAttributes( { [ k.fontWeight ]: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -491,6 +496,7 @@ export default function TypographyControls( {
 					options={ SGS_FONT_STYLE_OPTIONS }
 					onChange={ ( val ) => setAttributes( { [ k.fontStyle ]: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -504,6 +510,7 @@ export default function TypographyControls( {
 					units={ LINE_HEIGHT_UNITS }
 					onChange={ onLineHeightChange }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -517,6 +524,7 @@ export default function TypographyControls( {
 					units={ LETTER_SPACING_UNITS }
 					onChange={ onLetterSpacingChange }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -527,6 +535,7 @@ export default function TypographyControls( {
 					options={ SGS_TEXT_DECORATION_OPTIONS }
 					onChange={ ( val ) => setAttributes( { [ k.textDecoration ]: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -537,6 +546,7 @@ export default function TypographyControls( {
 					options={ SGS_TEXT_TRANSFORM_OPTIONS }
 					onChange={ ( val ) => setAttributes( { [ k.textTransform ]: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -551,6 +561,7 @@ export default function TypographyControls( {
 						options={ SGS_TEXT_DECORATION_OPTIONS }
 						onChange={ ( val ) => setAttributes( { [ k.textDecorationHover ]: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Text transform (hover)', 'sgs-blocks' ) }
@@ -558,6 +569,7 @@ export default function TypographyControls( {
 						options={ SGS_TEXT_TRANSFORM_OPTIONS }
 						onChange={ ( val ) => setAttributes( { [ k.textTransformHover ]: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Font weight (hover)', 'sgs-blocks' ) }
@@ -565,6 +577,7 @@ export default function TypographyControls( {
 						options={ SGS_FONT_WEIGHT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { [ k.fontWeightHover ]: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</>
 			) }

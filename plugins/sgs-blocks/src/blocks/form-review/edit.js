@@ -18,6 +18,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { heading: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

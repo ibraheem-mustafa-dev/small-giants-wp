@@ -69,6 +69,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Wall (Masonry)', 'sgs-blocks' ), value: 'wall' },
 						] }
 						onChange={ ( value ) => setAttributes( { variant: value } ) }
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -78,6 +79,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ placeId }
 						onChange={ ( value ) => setAttributes( { placeId: value } ) }
 						help={ __( 'Leave empty to use default from plugin settings.', 'sgs-blocks' ) }
+						__next40pxDefaultSize
 					/>
 
 					<Notice status="info" isDismissible={ false }>
@@ -122,6 +124,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										min={ 1 }
 										max={ maxMap[ tier ] }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								);
 							} }
@@ -136,6 +139,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { maxReviews: value } ) }
 						min={ 1 }
 						max={ 50 }
+						__next40pxDefaultSize
 					/>
 
 					<RangeControl
@@ -144,6 +148,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { minRating: value } ) }
 						min={ 1 }
 						max={ 5 }
+						__next40pxDefaultSize
 					/>
 
 					<ToggleControl
@@ -158,6 +163,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ excludeKeywords }
 						onChange={ ( value ) => setAttributes( { excludeKeywords: value } ) }
 						help={ __( 'Comma-separated words to hide reviews containing these terms', 'sgs-blocks' ) }
+						__next40pxDefaultSize
 					/>
 
 					<SelectControl
@@ -169,6 +175,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Lowest rated', 'sgs-blocks' ), value: 'lowest' },
 						] }
 						onChange={ ( value ) => setAttributes( { sortBy: value } ) }
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -212,6 +219,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { reviewRequestUrl: value } ) }
 						help={ __( 'Optional: link to Google review submission page', 'sgs-blocks' ) }
 						type="url"
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -225,6 +233,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Transparent', 'sgs-blocks' ), value: 'transparent' },
 						] }
 						onChange={ ( value ) => setAttributes( { theme: value } ) }
+						__next40pxDefaultSize
 					/>
 
 					<SelectControl
@@ -236,6 +245,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
 						] }
 						onChange={ ( value ) => setAttributes( { cardStyle: value } ) }
+						__next40pxDefaultSize
 					/>
 
 					<SelectControl
@@ -247,6 +257,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
 						] }
 						onChange={ ( value ) => setAttributes( { starColour: value } ) }
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -266,6 +277,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 2000 }
 								max={ 10000 }
 								step={ 500 }
+								__next40pxDefaultSize
 							/>
 						) }
 

@@ -377,6 +377,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									step={ 0.05 }
 									allowReset
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							);
 						} }
@@ -396,6 +397,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { textDecoration: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Text transform', 'sgs-blocks' ) }
@@ -405,6 +407,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { textTransform: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Font family', 'sgs-blocks' ) }
@@ -414,6 +417,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -430,6 +434,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { textAlign: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ /* Max width — UnitControl (number + unit in one input) */ }
 					<UnitControl
@@ -441,6 +446,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { maxWidth: num, maxWidthUnit: unit } );
 						} }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -503,6 +509,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BORDER_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
@@ -562,6 +569,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									} );
 								} }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __( 'First-letter weight', 'sgs-blocks' ) }
@@ -573,6 +581,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									} )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }

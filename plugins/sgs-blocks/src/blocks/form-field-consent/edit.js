@@ -48,6 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Consent type', 'sgs-blocks' ) }
@@ -65,6 +66,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								: ''
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextareaControl
 						label={ __( 'Consent text', 'sgs-blocks' ) }
@@ -86,6 +88,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { helpText: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Width', 'sgs-blocks' ) }
@@ -93,6 +96,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ WIDTH_OPTIONS }
 						onChange={ ( val ) => setAttributes( { width: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

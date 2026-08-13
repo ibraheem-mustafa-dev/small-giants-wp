@@ -104,6 +104,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						help={ __( 'Label shown on the tab button.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<ContainerWrapperControls
@@ -120,6 +121,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</div>
 				<div { ...innerBlocksProps } />

@@ -55,12 +55,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Required', 'sgs-blocks' ) }

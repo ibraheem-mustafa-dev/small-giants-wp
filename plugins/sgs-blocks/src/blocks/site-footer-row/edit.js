@@ -306,6 +306,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ isGrid && (
@@ -340,6 +341,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											'sgs-blocks'
 										) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								);
 							} }
@@ -359,6 +361,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 
@@ -398,6 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ ! isGrid && (
 						<SelectControl
@@ -412,6 +416,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					{ isGrid && (
@@ -428,6 +433,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __( 'Align content', 'sgs-blocks' ) }
@@ -441,6 +447,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<ResponsiveOverride
 								label={ __(
@@ -471,6 +478,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											'sgs-blocks'
 										) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>
@@ -500,6 +508,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											'sgs-blocks'
 										) }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								) }
 							</ResponsiveOverride>
@@ -514,6 +523,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }

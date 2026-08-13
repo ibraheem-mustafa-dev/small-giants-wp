@@ -66,6 +66,7 @@ export default function SpacingControl( { label, value, onChange, freeInput = fa
 				units={ FREE_UNITS }
 				onChange={ ( val ) => onChange( normaliseFreeInput( val ) ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 		);
 	}
@@ -86,6 +87,7 @@ export default function SpacingControl( { label, value, onChange, freeInput = fa
 			options={ options }
 			onChange={ onChange }
 			__nextHasNoMarginBottom
+			__next40pxDefaultSize
 		/>
 	);
 }

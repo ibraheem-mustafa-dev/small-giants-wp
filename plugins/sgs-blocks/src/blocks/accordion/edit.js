@@ -123,6 +123,7 @@ export default function Edit({ attributes, setAttributes }) {
             options={STYLE_OPTIONS}
             onChange={(val) => setAttributes({ style: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <SelectControl
             label={__("Icon position", "sgs-blocks")}
@@ -130,6 +131,7 @@ export default function Edit({ attributes, setAttributes }) {
             options={ICON_POSITION_OPTIONS}
             onChange={(val) => setAttributes({ iconPosition: val })}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
           <IconPicker
             label={__("Open icon", "sgs-blocks")}
@@ -165,6 +167,7 @@ export default function Edit({ attributes, setAttributes }) {
             max={20}
             step={1}
             __nextHasNoMarginBottom
+          	__next40pxDefaultSize
           />
         </PanelBody>
 

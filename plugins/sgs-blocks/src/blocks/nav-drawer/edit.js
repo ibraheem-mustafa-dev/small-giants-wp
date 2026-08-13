@@ -190,6 +190,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								isBlock
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							>
 								<ToggleGroupControlOption value="full-screen" label={ __( 'Full screen', 'sgs-blocks' ) } />
 								<ToggleGroupControlOption value="header" label={ __( 'Below header', 'sgs-blocks' ) } />
@@ -251,6 +252,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { closeStyle: value || 'separate-x' } ) }
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
@@ -267,6 +269,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { submenuModel: value || 'accordion' } ) }
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="accordion" label={ __( 'Accordion', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="drill-down" label={ __( 'Drill-down', 'sgs-blocks' ) } />
@@ -324,6 +327,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { drawerAlign: value || 'left' } ) }
 						isBlock
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="left" label={ __( 'Left', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />

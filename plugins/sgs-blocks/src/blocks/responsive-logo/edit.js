@@ -312,6 +312,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { logoSwitchMode: val } ) }
 						help={ __( 'When the compact (tablet/mobile) logo replaces the desktop logo: on mobile, on tablet and below, or at a breakpoint you choose. Only applies once a tablet or mobile logo is set.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ 'custom' === logoSwitchMode && (
@@ -324,6 +325,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							max={ 2000 }
 							step={ 1 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -343,6 +345,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ ANIMATION_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { animationStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					{ hasAnimation && (
@@ -398,6 +401,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 600 }
 						step={ 10 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					<ToggleControl
@@ -443,6 +447,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								units={ MAX_BOX_UNITS }
 								onChange={ ( val ) => onMaxWidthChange( setOwnValue, val ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -464,6 +469,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								units={ MAX_BOX_UNITS }
 								onChange={ ( val ) => onMaxHeightChange( setOwnValue, val ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

@@ -92,6 +92,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ homeLabel }
 							onChange={ ( val ) => setAttributes( { homeLabel: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					<SelectControl
@@ -100,6 +101,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ SEPARATOR_OPTIONS }
 						onChange={ ( val ) => setAttributes( { separator: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

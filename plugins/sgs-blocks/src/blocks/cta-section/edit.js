@@ -169,6 +169,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ LAYOUT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { contentLayout: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Ribbon label', 'sgs-blocks' ) }
@@ -179,6 +180,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ ribbon || '' }
 						onChange={ ( val ) => setAttributes( { ribbon: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -203,6 +205,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<Button
 								icon="trash"
@@ -321,6 +324,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								units={ BOX_UNITS }
 								splitOnAxis={ false }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -381,6 +385,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<MediaPicker
 						value={ activeMedia }
@@ -429,6 +434,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 100 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -233,6 +233,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 							setAttributes( { taxDisplayMode: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ 'ex-plus-vat' === taxDisplayMode && (
 						<Notice
@@ -411,6 +412,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 						setAttributes( { productName: v } )
 					}
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -453,6 +455,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 							setAttributes( { [ badgeAttr ]: v } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				) : (
 					<Notice status="info" isDismissible={ false }>
@@ -570,6 +573,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 							setAttributes( { ctaText: v } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ ( ctaBehaviour || 'learn-more' ) ===
 					'learn-more' ? (
@@ -939,6 +943,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { variantStyle: v } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ isBuiltIn && (
 						<>
@@ -960,6 +965,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									} )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							{ isTrial && (
 								<TextControl
@@ -969,6 +975,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										setAttributes( { trialTag: v } )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 							{ isFeatured && (
@@ -979,6 +986,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										setAttributes( { featuredTag: v } )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</>
@@ -1003,6 +1011,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								setAttributes( { priceLarge: v } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<TextControl
 							label={ __( 'Price note', 'sgs-blocks' ) }
@@ -1015,6 +1024,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								setAttributes( { priceNote: v } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<TextControl
 							label={ __( 'Pack sizes', 'sgs-blocks' ) }
@@ -1025,6 +1035,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							value={ packSizesText }
 							onChange={ onPackSizesChange }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</PanelBody>
 				) }
@@ -1046,6 +1057,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value={ ctaText || '' }
 								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<SgsLinkControl
 								label={ __( 'Primary button URL', 'sgs-blocks' ) }
@@ -1068,6 +1080,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								setAttributes( { ctaBehaviour: v } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) : (
 						<Notice
@@ -1095,6 +1108,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { cta2Text: v } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ ( cta2Text || '' ) !== '' && (
 						<SgsLinkControl
@@ -1193,6 +1207,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								setAttributes( { framingMode: v } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						<ToggleControl
 							label={ __(
@@ -1254,6 +1269,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( next ) =>
 							setAttributes( { cardPadding: next } )
 						}
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -1342,6 +1358,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										} )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<BoxControl
 									label={ __( 'Tag padding', 'sgs-blocks' ) }
@@ -1349,6 +1366,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									onChange={ ( next ) =>
 										setAttributes( { tagPadding: next } )
 									}
+									__next40pxDefaultSize
 								/>
 							</>
 						) }
@@ -1496,6 +1514,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								setAttributes( { cta2Style: v } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -1612,6 +1631,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										setAttributes( { ctaWidthType: v } )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
@@ -1706,6 +1726,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										} )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -1724,6 +1745,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									onChange={ ( next ) =>
 										setAttributes( { ctaPadding: next } )
 									}
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -1791,6 +1813,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						placeholder="380px"
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Image height', 'sgs-blocks' ) }
@@ -1804,6 +1827,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						placeholder="220px"
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -1864,6 +1888,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										} )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -1909,6 +1934,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									] }
 									onChange={ ( v ) => setAttributes( { pickerColourPreset: v } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -1978,6 +2004,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
 									help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -2034,6 +2061,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
 									help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						</ToolsPanel>

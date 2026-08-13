@@ -231,6 +231,7 @@ export default function ResponsiveTriStateControl( {
 						hideLabelFromVision
 						value={ activeOwn }
 						onChange={ onTierChange }
+						__next40pxDefaultSize
 					>
 						{ options.map( ( opt ) => (
 							<ToggleGroupControlOption

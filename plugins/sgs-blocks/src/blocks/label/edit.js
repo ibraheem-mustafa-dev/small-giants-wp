@@ -332,6 +332,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { fontWeight: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -347,6 +348,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { textTransform: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 
@@ -367,6 +369,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { lineHeight: num, lineHeightUnit: unit } );
 								} }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 
@@ -389,6 +392,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
 								} }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 
@@ -405,6 +409,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								placeholder={ __( 'none', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -420,6 +425,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { fontStyle: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -435,6 +441,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { textAlign: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
@@ -470,6 +477,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							} )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ /* padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
 					     (Spec 35 box-tier migration) — ONE attr; each tier holds the

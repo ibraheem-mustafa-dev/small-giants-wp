@@ -135,6 +135,7 @@ export default function BooleanResponsiveControl( {
 											: 'on' === next,
 								} )
 							}
+							__next40pxDefaultSize
 						>
 							<ToggleGroupControlOption
 								value="inherit"

@@ -44,6 +44,7 @@ export default function TriggerSettingsControls( {
 					max={ 64 }
 					step={ 4 }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 				<DesignTokenPicker
 					label={ __( 'Icon colour', 'sgs-blocks' ) }

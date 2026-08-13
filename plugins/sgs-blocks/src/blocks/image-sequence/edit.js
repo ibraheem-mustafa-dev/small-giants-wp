@@ -144,6 +144,7 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 				placeholder="https://example.com/wp-content/uploads/sequence/desktop"
 				onChange={ ( value ) => onChange( { url: value } ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ url && (
 				<>
@@ -155,6 +156,7 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 						max={ MAX_FRAME_COUNT }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ overCap && (
 						<Notice status="warning" isDismissible={ false }>
@@ -175,6 +177,7 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 						options={ EXTENSION_OPTIONS }
 						onChange={ ( value ) => onChange( { ext: value } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Filename zero-padding', 'sgs-blocks' ) }
@@ -188,6 +191,7 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 						max={ 8 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<VerifyFramesButton
 						url={ url }
@@ -335,6 +339,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { thumbnailAlt: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
@@ -344,6 +349,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { aspectRatio: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -541,6 +547,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { fxStart: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'End position', 'sgs-blocks' ) }
@@ -553,6 +560,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { fxEnd: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __(
@@ -571,6 +579,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 3 }
 						step={ 0.1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

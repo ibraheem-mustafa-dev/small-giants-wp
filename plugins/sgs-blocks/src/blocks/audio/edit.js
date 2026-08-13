@@ -83,6 +83,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ ( value ) => setAttributes( { audioSource: value } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ 'internal' === ( audioSource || 'external' ) ? (
 						<MediaUploadCheck>
@@ -104,6 +105,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( value ) => setAttributes( { audioUrl: value, audioSource: 'external', audioId: null } ) }
 							placeholder="https://example.com/audio.mp3"
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					<TextControl
@@ -111,6 +113,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ title || '' }
 						onChange={ ( value ) => setAttributes( { title: value } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -143,6 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ ( value ) => setAttributes( { audioPreload: value } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

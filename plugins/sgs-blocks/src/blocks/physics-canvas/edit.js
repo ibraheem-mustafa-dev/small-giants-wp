@@ -86,6 +86,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 4000 }
 						step={ 50 }
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Bounce', 'sgs-blocks' ) }
@@ -100,6 +101,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 1 }
 						step={ 0.05 }
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Drag resistance', 'sgs-blocks' ) }
@@ -114,6 +116,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 1 }
 						step={ 0.05 }
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -131,6 +134,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { tagName: val } ) }
 						help={ __( 'Semantic tag for accessibility landmarks and SEO. Use Main / Nav / Aside / Article for their meaning; Div for a plain wrapper.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
@@ -155,6 +159,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
 									: undefined }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -248,6 +253,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								units={ BOX_UNITS }
 								splitOnAxis={ false }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

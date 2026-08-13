@@ -94,6 +94,7 @@ export default function ResponsiveBoxControls( {
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						units={ LENGTH_UNITS }
 						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -110,6 +111,7 @@ export default function ResponsiveBoxControls( {
 						values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 						units={ LENGTH_UNITS }
 						onChange={ ( next ) => setOwnValue( normaliseBox( next ) ) }
+						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -127,6 +129,7 @@ export default function ResponsiveBoxControls( {
 						value={ ownValue || '' }
 						placeholder={ inherited ? effectiveValue : '' }
 						onChange={ ( v ) => setOwnValue( v || '' ) }
+						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -151,6 +154,7 @@ export default function ResponsiveBoxControls( {
 						}
 						onChange={ ( v ) => setOwnValue( v ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>

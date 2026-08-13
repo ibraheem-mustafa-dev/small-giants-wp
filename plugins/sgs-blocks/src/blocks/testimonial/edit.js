@@ -401,6 +401,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { ratingType: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 						{ showRating &&
@@ -417,6 +418,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									max={ 5 }
 									step={ 0.5 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						{ showRating &&
@@ -435,6 +437,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 										max={ 10 }
 										step={ 0.1 }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 									<TextControl
 										label={ __(
@@ -448,6 +451,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 											} )
 										}
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								</>
 							) }
@@ -480,6 +484,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 										} )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 								<TextControl
 									label={ __( 'Review date', 'sgs-blocks' ) }
@@ -488,6 +493,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 										setAttributes( { reviewDate: val } )
 									}
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</>
 						) }
@@ -635,6 +641,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								max={ 32 }
 								step={ 1 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</PanelBody>
@@ -682,6 +689,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { quoteFontSize: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -716,6 +724,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { quoteFontStyle: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -736,6 +745,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { quoteLineHeight: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -756,6 +766,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { quoteMarginBottom: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						{ showSummary && (
@@ -777,6 +788,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 											setAttributes( { summaryFontSize: val } )
 										}
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
@@ -830,6 +842,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { nameFontWeight: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -902,6 +915,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { effectHover: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -966,6 +980,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { transitionDuration: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -992,6 +1007,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									setAttributes( { transitionEasing: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -1030,6 +1046,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -1109,6 +1126,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

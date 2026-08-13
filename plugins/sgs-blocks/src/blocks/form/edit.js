@@ -91,6 +91,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Form Name', 'sgs-blocks' ) }
@@ -103,6 +104,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -174,6 +176,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { submitLabel: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Button Style', 'sgs-blocks' ) }
@@ -183,6 +186,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { submitStyle: value } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Text Colour', 'sgs-blocks' ) }
@@ -235,6 +239,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						max={ 6 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Focus ring opacity (%)', 'sgs-blocks' ) }
@@ -247,6 +252,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						max={ 100 }
 						step={ 5 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Focus ring offset (px)', 'sgs-blocks' ) }
@@ -259,6 +265,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						max={ 8 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

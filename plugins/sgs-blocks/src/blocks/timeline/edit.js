@@ -150,12 +150,14 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 				placeholder="YYYY-MM-DD or e.g. January 2024"
 				help={ __( 'Used as the visible label and the datetime attribute.', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ entry.title || '' }
 				onChange={ ( val ) => update( 'title', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<div style={ { marginTop: '8px', marginBottom: '8px' } }>
 				<label
@@ -338,6 +340,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ ORIENTATION_OPTIONS }
 						onChange={ ( val ) => setAttributes( { orientation: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ orientation === 'vertical' && (
 						<SelectControl
@@ -347,6 +350,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { alignment: val } ) }
 							help={ __( 'Alternating flips content left/right on each entry.', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>
@@ -359,6 +363,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ CONNECTOR_OPTIONS }
 						onChange={ ( val ) => setAttributes( { connectorStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Connector colour', 'sgs-blocks' ) }
@@ -415,6 +420,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ BORDER_STYLE_OPTIONS }
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ borderStyle !== 'none' && (
 						<>
@@ -481,6 +487,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</PanelBody>

@@ -42,6 +42,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { attributeId: parseInt( val, 10 ) || 0 } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) : (
 						<TextControl
@@ -57,6 +58,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { attributeId: parseInt( val, 10 ) || 0 } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 
@@ -73,6 +75,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { threshold: Math.max( 2, parseInt( val, 10 ) || 16 ) } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) : (
 						<TextControl
@@ -88,6 +91,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { threshold: Math.max( 2, parseInt( val, 10 ) || 16 ) } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 
@@ -100,6 +104,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ placeholder }
 						onChange={ ( val ) => setAttributes( { placeholder: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 				</PanelBody>

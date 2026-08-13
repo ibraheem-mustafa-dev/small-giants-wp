@@ -411,6 +411,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ ATTRIB_TAG_OPTIONS }
 									onChange={ ( val ) => setAttributes( { attributionTag: val } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -440,6 +441,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ FONT_STYLE_OPTIONS }
 									onChange={ ( val ) => setAttributes( { attributionFontStyle: val } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -455,6 +457,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ FONT_WEIGHT_OPTIONS }
 									onChange={ ( val ) => setAttributes( { attributionFontWeight: val } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 
@@ -494,6 +497,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													setAttributes( { attributionFontSizeUnit: unit } );
 												} }
 												__nextHasNoMarginBottom
+												__next40pxDefaultSize
 											/>
 										);
 									} }
@@ -513,6 +517,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onChange={ ( val ) => setAttributes( { attributionFontFamily: val } ) }
 									placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -528,6 +533,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ TEXT_DECORATION_OPTIONS }
 									onChange={ ( val ) => setAttributes( { attributionTextDecoration: val } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
@@ -543,6 +549,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									options={ TEXT_TRANSFORM_OPTIONS }
 									onChange={ ( val ) => setAttributes( { attributionTextTransform: val } ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 
@@ -563,6 +570,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										setAttributes( { attributionLineHeight: num, attributionLineHeightUnit: unit } );
 									} }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 
@@ -601,6 +609,7 @@ export default function Edit( { attributes, setAttributes } ) {
 														setAttributes( { attributionMarginUnit: unit } );
 													} }
 													__nextHasNoMarginBottom
+													__next40pxDefaultSize
 												/>
 											);
 										}
@@ -614,6 +623,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												onChange={ ( val ) => setOwnValue( val ) }
 												min={ 0 } max={ 80 } step={ 1 } allowReset
 												__nextHasNoMarginBottom
+												__next40pxDefaultSize
 											/>
 										);
 									} }
@@ -677,6 +687,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
 									placeholder={ __( '0 4px 12px rgba(0,0,0,0.1)', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 
@@ -777,6 +788,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											onChange={ ( val ) => setOwnValue( val ?? '' ) }
 											help={ __( 'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.', 'sgs-blocks' ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									) }
 								</ResponsiveOverride>
@@ -798,6 +810,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							options={ BORDER_STYLE_OPTIONS }
 							onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 						{ borderStyle !== 'none' && (
 							<DesignTokenPicker
@@ -832,6 +845,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
 						placeholder="1.03"
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Text colour on hover', 'sgs-blocks' ) }
@@ -849,6 +863,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { boxShadowHover: val } ) }
 						placeholder={ __( '0 8px 24px rgba(0,0,0,0.15)', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
@@ -856,6 +871,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
 						min={ 0 } max={ 1000 } step={ 50 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
@@ -869,6 +885,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

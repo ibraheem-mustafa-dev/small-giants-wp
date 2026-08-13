@@ -110,6 +110,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { ariaLabel: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

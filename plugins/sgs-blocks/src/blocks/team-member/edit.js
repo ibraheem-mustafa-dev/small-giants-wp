@@ -103,6 +103,7 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 				options={ PLATFORM_OPTIONS }
 				onChange={ ( val ) => update( 'platform', val ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<SgsLinkControl
 				label={ __( 'Link', 'sgs-blocks' ) }
@@ -296,6 +297,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ DISPLAY_MODES }
 						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Card style', 'sgs-blocks' ) }
@@ -303,6 +305,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ CARD_STYLES }
 						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Photo shape', 'sgs-blocks' ) }
@@ -310,6 +313,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ PHOTO_SHAPES }
 						onChange={ ( val ) => setAttributes( { photoShape: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ ! isCompact && (
 						<ToggleControl
@@ -417,6 +421,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

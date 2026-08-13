@@ -575,6 +575,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -599,6 +600,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								collapsePoint: BURGER_SCOPE_PX[ value ],
 							} );
 						} }
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption
 							value="always"
@@ -699,6 +701,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -720,6 +723,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					<ResponsiveControl label={ __( 'Panel columns', 'sgs-blocks' ) }>
@@ -857,6 +861,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( val ) =>
 								setAttributes( { gap: val || '8px' } )
 							}
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					{ /*
@@ -986,6 +991,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'Stops a dropdown shrinking to the width of its shortest link.',
 								'sgs-blocks'
 							) }
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -1001,6 +1007,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( val ) =>
 								setAttributes( { submenuRadius: val || '' } )
 							}
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -1036,6 +1043,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							onChange={ ( val ) =>
 								setAttributes( { submenuPadding: val || {} } )
 							}
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -1134,6 +1142,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'How an item reacts on hover — and how the current page is marked. Underline draws a bar beneath the item.',
 							'sgs-blocks'
 						) }
+						__next40pxDefaultSize
 					/>
 
 					<StateToggleControl
@@ -1234,6 +1243,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 														'sgs-blocks'
 												  )
 										}
+										__next40pxDefaultSize
 									/>
 								</>
 							);
@@ -1262,6 +1272,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'A pill that slides beneath the hovered/current item — additional to the hover style above, not a replacement for it.',
 							'sgs-blocks'
 						) }
+						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption
 							value="none"
@@ -1370,6 +1381,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										parseFloat( val ) || 2,
 								} )
 							}
+							__next40pxDefaultSize
 						/>
 						<UnitControl
 							label={ __( 'Distance below text', 'sgs-blocks' ) }
@@ -1382,6 +1394,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									underlineOffset: parseFloat( val ) || 6,
 								} )
 							}
+							__next40pxDefaultSize
 						/>
 						<p className="sgs-nav-menu__inspector-note">
 							{ __(
@@ -1490,6 +1503,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 													  }
 											)
 										}
+										__next40pxDefaultSize
 									/>
 									<SelectControl
 										label={ __(
@@ -1527,6 +1541,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 													  }
 											)
 										}
+										__next40pxDefaultSize
 									/>
 								</>
 							);
@@ -1602,6 +1617,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
 							'sgs-blocks'
 						) }
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

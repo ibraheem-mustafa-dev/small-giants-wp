@@ -145,6 +145,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { targetDate: val } ) }
 							type="datetime-local"
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					{ evergreenMode && (
@@ -156,6 +157,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 0 }
 								max={ 720 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<RangeControl
 								label={ __( 'Minutes', 'sgs-blocks' ) }
@@ -164,6 +166,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 0 }
 								max={ 59 }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</>
 					) }
@@ -172,6 +175,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ expiredMessage }
 						onChange={ ( val ) => setAttributes( { expiredMessage: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -209,6 +213,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ CARD_STYLES }
 						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Digit style', 'sgs-blocks' ) }
@@ -217,6 +222,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ DIGIT_STYLES }
 						onChange={ ( val ) => setAttributes( { digitStyle: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Number colour', 'sgs-blocks' ) }

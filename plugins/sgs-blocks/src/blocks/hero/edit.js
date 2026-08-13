@@ -141,6 +141,7 @@ function RRangeControl( { label, attrDesktop, attrTablet, attrMobile, attributes
 						max={ max }
 						step={ step }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				);
 			} }
@@ -340,6 +341,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { variant: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 
@@ -480,6 +482,7 @@ export default function Edit( { attributes, setAttributes } ) {
 														setAttributes( { [ typeKey ]: value } )
 													}
 													__nextHasNoMarginBottom
+													__next40pxDefaultSize
 												/>
 												{ 'image' === currentType && (
 													<p style={ { margin: 0, fontStyle: 'italic' } }>
@@ -630,6 +633,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									max={ 60 }
 									step={ 1 }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</>
@@ -690,6 +694,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								isBlock
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							>
 								{ ALIGN_OPTIONS.map( ( opt ) => (
 									<ToggleGroupControlOption
@@ -713,6 +718,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ VERTICAL_ALIGN_OPTIONS }
 								onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 
@@ -750,6 +756,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												} )
 											}
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									);
 								} }
@@ -926,6 +933,7 @@ export default function Edit( { attributes, setAttributes } ) {
 														options={ COLUMN_RATIO_PRESETS }
 														onChange={ ( val ) => { if ( val !== 'custom' ) { setOwnValue( val ); } } }
 														__nextHasNoMarginBottom
+														__next40pxDefaultSize
 													/>
 													{ isCustom && (
 														<TextControl
@@ -934,6 +942,7 @@ export default function Edit( { attributes, setAttributes } ) {
 															value={ ownValue || '' }
 															onChange={ ( val ) => setOwnValue( val ) }
 															__nextHasNoMarginBottom
+															__next40pxDefaultSize
 														/>
 													) }
 												</>
@@ -946,6 +955,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												placeholder={ inherited ? effectiveValue || '' : '' }
 												onChange={ ( val ) => setOwnValue( val ) }
 												__nextHasNoMarginBottom
+												__next40pxDefaultSize
 											/>
 										);
 									} }
@@ -993,6 +1003,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												help={ orderHelpMap[ tier ] }
 												onChange={ ( val ) => setOwnValue( val ) }
 												__nextHasNoMarginBottom
+												__next40pxDefaultSize
 											/>
 										);
 									} }
@@ -1041,7 +1052,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							     Height control below, which carries a unit picker instead of hardcoding
 							     px. Its render is now UNGATED so it keeps this control's reach. */ }
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
-							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom />
+							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
 							{ /* Upgraded from a free-text "center 20%" TextControl to a
 							     crosshair 2026-08-11 (Spec 35 capability-routing doctrine,
 							     Part 9) — this control was the ONLY known-good, already-
@@ -1112,6 +1123,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											setAttributes( { imageWidthUnit: unit } );
 										} }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 									{ /* imageHeight is the OBJECT model (Spec 35 / FR-37-16): one attr
 									     holding all three tiers, so this uses ResponsiveOverride rather
@@ -1135,6 +1147,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												max={ 1200 }
 												step={ 1 }
 												__nextHasNoMarginBottom
+												__next40pxDefaultSize
 											/>
 										) }
 									</ResponsiveOverride>
@@ -1150,6 +1163,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											setAttributes( { imageHeightUnit: unit } );
 										} }
 										__nextHasNoMarginBottom
+										__next40pxDefaultSize
 									/>
 								</>
 							) }
@@ -1173,7 +1187,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border', 'sgs-blocks' ) }</p>
-							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom />
+							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom __next40pxDefaultSize />
 							{ imageBorderStyle !== 'none' && (
 								<>
 									<ResponsiveBoxControl
@@ -1290,6 +1304,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								units={ BOX_UNITS }
 								splitOnAxis={ false }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>

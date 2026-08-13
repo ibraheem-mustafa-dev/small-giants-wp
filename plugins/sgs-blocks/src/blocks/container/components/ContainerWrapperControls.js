@@ -398,6 +398,7 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -440,6 +441,7 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 								} }
 								isBlock
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							>
 								{ CONTENT_WIDTH_PRESET_OPTIONS.map( ( opt ) => (
 									<ToggleGroupControlOption
@@ -457,6 +459,7 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 									onChange={ ( val ) => setOwnValue( val ?? '' ) }
 									help={ __( 'Exact CSS length, e.g. 900px or 60rem.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 								/>
 							) }
 						</>
@@ -513,6 +516,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 					options={ LAYOUT_OPTIONS }
 					onChange={ ( val ) => setAttributes( { layout: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -552,6 +556,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 							min={ 1 }
 							max={ tier === 'mobile' ? 3 : 6 }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 				</ResponsiveOverride>
@@ -595,6 +600,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 					options={ ALIGN_OPTIONS }
 					onChange={ ( val ) => setAttributes( { alignItems: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 
@@ -612,6 +618,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						] }
 						onChange={ ( val ) => setAttributes( { flexDirection: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Flex wrap', 'sgs-blocks' ) }
@@ -624,6 +631,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						] }
 						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Justify content', 'sgs-blocks' ) }
@@ -639,6 +647,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						] }
 						onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</>
 			) }
@@ -677,6 +686,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -706,6 +716,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 									'sgs-blocks'
 								) }
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -719,6 +730,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					<SelectControl
@@ -727,6 +739,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						options={ JUSTIFY_ITEMS_OPTIONS }
 						onChange={ ( val ) => setAttributes( { justifyItems: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 
 					<SelectControl
@@ -735,6 +748,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						options={ ALIGN_CONTENT_OPTIONS }
 						onChange={ ( val ) => setAttributes( { alignContent: val } ) }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</>
 			) }
@@ -894,6 +908,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											options={ BG_SIZE_OPTIONS }
 											onChange={ ( val ) => setAttributes( { backgroundSize: val } ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										<SelectControl
 											label={ __( 'Position', 'sgs-blocks' ) }
@@ -901,6 +916,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											options={ BG_POSITION_OPTIONS }
 											onChange={ ( val ) => setAttributes( { backgroundPosition: val } ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										<SelectControl
 											label={ __( 'Repeat', 'sgs-blocks' ) }
@@ -908,6 +924,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											options={ BG_REPEAT_OPTIONS }
 											onChange={ ( val ) => setAttributes( { backgroundRepeat: val } ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										<SelectControl
 											label={ __( 'Attachment', 'sgs-blocks' ) }
@@ -915,6 +932,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											options={ BG_ATTACHMENT_OPTIONS }
 											onChange={ ( val ) => setAttributes( { backgroundAttachment: val } ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									</>
 								) }
@@ -1042,6 +1060,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											] }
 											onChange={ ( val ) => setAttributes( { bgSvgPosition: val } ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										<RangeControl
 											label={ __( 'Opacity (%)', 'sgs-blocks' ) }
@@ -1051,6 +1070,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											max={ 100 }
 											step={ 5 }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										<SelectControl
 											label={ __( 'Animation', 'sgs-blocks' ) }
@@ -1063,6 +1083,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											] }
 											onChange={ ( val ) => setAttributes( { bgSvgAnimation: val } ) }
 											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 										{ bgSvgAnimation !== 'none' && (
 											<SelectControl
@@ -1075,6 +1096,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 												] }
 												onChange={ ( val ) => setAttributes( { bgSvgAnimationSpeed: val } ) }
 												__nextHasNoMarginBottom
+												__next40pxDefaultSize
 											/>
 										) }
 										<ToggleControl
@@ -1129,6 +1151,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 					max={ 60 }
 					step={ 1 }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			) }
 		</PanelBody>
@@ -1151,6 +1174,7 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 				options={ SHAPE_OPTIONS }
 				onChange={ ( val ) => setAttributes( { shapeDividerTop: val } ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ attributes.shapeDividerTop && (
 				<>
@@ -1166,6 +1190,7 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						min={ 20 }
 						max={ 300 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
@@ -1193,6 +1218,7 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 				options={ SHAPE_OPTIONS }
 				onChange={ ( val ) => setAttributes( { shapeDividerBottom: val } ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ attributes.shapeDividerBottom && (
 				<>
@@ -1208,6 +1234,7 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						min={ 20 }
 						max={ 300 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
@@ -1279,6 +1306,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 						splitOnAxis={ false }
 						units={ GRID_ITEM_BOX_UNITS }
 						onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+						__next40pxDefaultSize
 					/>
 				) }
 			</ResponsiveOverride>
@@ -1301,7 +1329,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				values={ { base: gridItemBorderRadius ?? {} } }
 				onChange={ ( _tier, next ) => setAttributes( { gridItemBorderRadius: next } ) }
 			/>
-			{ /* ⛔ WAS a raw <TextControl> taking a CSS border shorthand — the
+			{ /* ⛔ WAS a raw <TextControl __next40pxDefaultSize > taking a CSS border shorthand — the
 			     exact banned lookalike in contract §14.3 ("a TextControl taking a
 			     raw CSS `border` shorthand"). It accepted invalid CSS, offered no
 			     unit affordance and no colour picker, and served FOUR blocks
@@ -1334,6 +1362,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 						gridItemBorder: _gridBorderJoin( { ..._gridBorderParts( gridItemBorder ), style: val } ),
 					} ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 				<DesignTokenPicker
 					label={ __( 'Border colour', 'sgs-blocks' ) }
@@ -1594,6 +1623,7 @@ const KIND_PANELS = {
 					options={ SHADOW_OPTIONS }
 					onChange={ ( val ) => props.setAttributes( { shadow: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			</PanelBody>
 		),

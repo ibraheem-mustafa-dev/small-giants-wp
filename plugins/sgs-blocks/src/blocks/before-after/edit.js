@@ -130,6 +130,7 @@ function ImagePickerRow( {
 							value={ alt }
 							onChange={ onAltChange }
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					) }
 					<Button
@@ -187,6 +188,7 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 					setAttributes( { [ mediaTypeKey ]: val } )
 				}
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 
 			{ 'image' === mediaType && (
@@ -317,6 +319,7 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 							} )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Alt / description', 'sgs-blocks' ) }
@@ -329,6 +332,7 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 							setAttributes( { [ videoAltKey ]: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</div>
 			) }
@@ -461,6 +465,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { orientation: val } )
 						}
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Reverse direction', 'sgs-blocks' ) }
@@ -495,6 +500,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<ToggleControl
 						label={ __( 'Free drag on image', 'sgs-blocks' ) }
@@ -525,6 +531,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 12 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<DesignTokenPicker
 						label={ __( 'Handle colour', 'sgs-blocks' ) }
@@ -563,6 +570,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { beforeLabel: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<TextControl
 								label={ __( 'After label', 'sgs-blocks' ) }
@@ -571,6 +579,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { afterLabel: val } )
 								}
 								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 							/>
 							<DesignTokenPicker
 								label={ __(
@@ -713,6 +722,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { boxShadow: val } )
 							}
 							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

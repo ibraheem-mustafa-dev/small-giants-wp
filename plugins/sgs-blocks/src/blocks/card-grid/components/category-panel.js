@@ -72,6 +72,7 @@ export default function CategoryPanel( { contentType, categoryTerm, setAttribute
 				setAttributes( { categoryTerm: parseInt( v, 10 ) || 0 } )
 			}
 			__nextHasNoMarginBottom
+			__next40pxDefaultSize
 		/>
 	);
 }
