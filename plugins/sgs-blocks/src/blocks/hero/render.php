@@ -575,7 +575,7 @@ if ( $is_split ) {
 
 	// ── object-fit / object-position — moved from inline style="" (contract §A).
 	if ( 'custom' !== $image_object_fit ) {
-		$allowed_fits = array( 'fill', 'contain', 'cover', 'match-height', 'match-width', 'none' );
+		$allowed_fits = array( 'fill', 'contain', 'cover', 'none' );
 		$safe_fit     = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
 		$responsive_css .= '.' . $uid . ' .sgs-hero__split-image{object-fit:' . $safe_fit . '}';
 	}

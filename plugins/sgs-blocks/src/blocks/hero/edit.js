@@ -64,8 +64,6 @@ const IMAGE_FIT_OPTIONS = [
 	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
 	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
 	{ label: __( 'Fill', 'sgs-blocks' ), value: 'fill' },
-	{ label: __( 'Match height', 'sgs-blocks' ), value: 'match-height' },
-	{ label: __( 'Match width', 'sgs-blocks' ), value: 'match-width' },
 	{ label: __( 'Custom (explicit width/height)', 'sgs-blocks' ), value: 'custom' },
 ];
 
