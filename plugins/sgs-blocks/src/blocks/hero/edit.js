@@ -12,6 +12,7 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
+	TextareaControl,
 	ToggleControl,
 	BoxControl,
 	FocalPointPicker,
@@ -202,7 +203,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitImage,
 		splitImageTablet,
 		splitImageMobile,
-		splitMedia,
+		// Per-device split-media TYPE (2026-08-13) — declared + render-consumed
+		// but had no editor control until now (dead controls: splitMediaType,
+		// splitVideo, splitSvg families, all 9 attrs). '' on the tablet/mobile
+		// tier means "inherit the next widest tier that has a value".
+		splitMediaType,
+		splitMediaTypeTablet,
+		splitMediaTypeMobile,
+		splitVideo,
+		splitVideoTablet,
+		splitVideoMobile,
+		splitSvg,
+		splitSvgTablet,
+		splitSvgMobile,
 		// minHeight is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35 pass 3b
 		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
 		minHeight,
@@ -325,42 +338,17 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ isSplit && (
 					<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
 						<>
-							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split media source', 'sgs-blocks' ) }</p>
-							<MediaPicker
-								value={
-									splitMedia ||
-									( splitImage?.url
-										? {
-												url: splitImage.url,
-												type: 'image',
-												id: splitImage.id || 0,
-												alt: splitImage.alt || '',
-												mime: '',
-										  }
-										: null )
-								}
-								onChange={ ( media ) =>
-									setAttributes( {
-										splitMedia: media,
-										splitImage:
-											media && media.type === 'image'
-												? {
-														id: media.id,
-														url: media.url,
-														alt: media.alt,
-												  }
-												: undefined,
-									} )
-								}
-								onRemove={ () =>
-									setAttributes( {
-										splitMedia: null,
-										splitImage: undefined,
-									} )
-								}
-								label={ __( 'Select hero media', 'sgs-blocks' ) }
-								instructionsImage={ __( 'Choose an image or video for the hero', 'sgs-blocks' ) }
-							/>
+							{ /* ⛔ The "Split media source" picker (attribute `splitMedia`) was
+							     DELETED here 2026-08-13. It was the pre-typed unified
+							     image-or-video slot, and it left the client looking at TWO media
+							     pickers for one slot — "Split media source" and "Split image" —
+							     that wrote different attributes and had to be kept in sync by
+							     hand. The typed families replace it outright: splitImage* /
+							     splitVideo* / splitSvg*, selected per tier by splitMediaType*.
+							     No deprecation and no fallback: the framework is pre-production
+							     (D270), and render.php no longer reads `splitMedia` at all, so
+							     leaving the control would have been a dead control writing an
+							     attribute nothing renders. */ }
 
 							{ /* Art direction. `splitImageMobile` was render-consumed and
 							     `splitImageTablet` was declared-but-dead, and NEITHER had an editor
@@ -415,6 +403,152 @@ export default function Edit( { attributes, setAttributes } ) {
 									);
 								} }
 							</ResponsiveControl>
+
+							{ /* Media TYPE per device (2026-08-13). splitMediaType/Tablet/Mobile
+							     + splitVideo/Tablet/Mobile + splitSvg/Tablet/Mobile were all
+							     declared in block.json and read in render.php, but had no editor
+							     control at all — so the split media column could only ever be an
+							     image, on every device, no matter what a client picked here.
+							     Gated on the base split media existing (rule: a per-device override
+							     for media that is not there is a dead control). Desktop defaults to
+							     'image' (the block.json default); tablet/mobile default to '' —
+							     "inherit the next widest tier that has a value", same fall-back-UP
+							     rule as every other tier family on this block. */ }
+							{ splitImage?.url && (
+								<ResponsiveControl label={ __( 'Media type', 'sgs-blocks' ) }>
+									{ ( bp ) => {
+										const typeKey = {
+											desktop: 'splitMediaType',
+											tablet: 'splitMediaTypeTablet',
+											mobile: 'splitMediaTypeMobile',
+										}[ bp ];
+										const videoKey = {
+											desktop: 'splitVideo',
+											tablet: 'splitVideoTablet',
+											mobile: 'splitVideoMobile',
+										}[ bp ];
+										const svgKey = {
+											desktop: 'splitSvg',
+											tablet: 'splitSvgTablet',
+											mobile: 'splitSvgMobile',
+										}[ bp ];
+										const currentType = attributes[ typeKey ] || '';
+										const options =
+											'desktop' === bp
+												? [
+														{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
+														{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
+														{ label: __( 'SVG', 'sgs-blocks' ), value: 'svg' },
+												  ]
+												: [
+														{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
+														{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
+														{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
+														{ label: __( 'SVG', 'sgs-blocks' ), value: 'svg' },
+												  ];
+										return (
+											<>
+												<SelectControl
+													label={
+														'desktop' === bp
+															? __( 'Media type', 'sgs-blocks' )
+															: __( 'Media type for this screen size', 'sgs-blocks' )
+													}
+													value={ currentType }
+													options={ options }
+													onChange={ ( value ) =>
+														setAttributes( { [ typeKey ]: value } )
+													}
+													__nextHasNoMarginBottom
+												/>
+												{ 'image' === currentType && (
+													<p style={ { margin: 0, fontStyle: 'italic' } }>
+														{ __(
+															'Set the image above in "Split image".',
+															'sgs-blocks'
+														) }
+													</p>
+												) }
+												{ 'video' === currentType && (
+													<>
+														<MediaUploadCheck>
+															<MediaUpload
+																onSelect={ ( media ) =>
+																	setAttributes( {
+																		[ videoKey ]: {
+																			id: media.id || 0,
+																			url: media.url,
+																		},
+																	} )
+																}
+																allowedTypes={ [ 'video' ] }
+																value={ attributes[ videoKey ]?.id }
+																render={ ( { open } ) => (
+																	<Button variant="secondary" onClick={ open }>
+																		{ attributes[ videoKey ]?.url
+																			? __( 'Replace video', 'sgs-blocks' )
+																			: __( 'Select video', 'sgs-blocks' ) }
+																	</Button>
+																) }
+															/>
+														</MediaUploadCheck>
+														{ attributes[ videoKey ]?.url && (
+															<Button
+																variant="link"
+																isDestructive
+																onClick={ () =>
+																	setAttributes( { [ videoKey ]: undefined } )
+																}
+																style={ { marginTop: '8px', display: 'block' } }
+															>
+																{ 'desktop' === bp
+																	? __( 'Remove video', 'sgs-blocks' )
+																	: __( 'Use the main media here', 'sgs-blocks' ) }
+															</Button>
+														) }
+													</>
+												) }
+												{ 'svg' === currentType && (
+													<>
+														<TextareaControl
+															label={ __( 'SVG code', 'sgs-blocks' ) }
+															value={ attributes[ svgKey ] || '' }
+															onChange={ ( value ) =>
+																setAttributes( { [ svgKey ]: value } )
+															}
+															help={ __(
+																'Paste your <svg>…</svg> markup here.',
+																'sgs-blocks'
+															) }
+															rows={ 6 }
+														/>
+														{ attributes[ svgKey ] && 'desktop' !== bp && (
+															<Button
+																variant="link"
+																isDestructive
+																onClick={ () =>
+																	setAttributes( { [ svgKey ]: '' } )
+																}
+																style={ { display: 'block' } }
+															>
+																{ __( 'Use the main media here', 'sgs-blocks' ) }
+															</Button>
+														) }
+													</>
+												) }
+												{ '' === currentType && 'desktop' !== bp && (
+													<p style={ { margin: 0, fontStyle: 'italic' } }>
+														{ __(
+															'Inherits the media from the next widest screen size.',
+															'sgs-blocks'
+														) }
+													</p>
+												) }
+											</>
+										);
+									} }
+								</ResponsiveControl>
+							) }
 						</>
 					</PanelBody>
 				) }
@@ -871,7 +1005,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									return (
 										<FocalPointPicker
 											help={ posHelpMap[ breakpoint ] }
-											url={ splitMedia?.url || splitImage?.url || '' }
+											url={ splitImage?.url || '' }
 											value={ objectPositionToFocalPoint( effectiveValue ) }
 											onChange={ ( val ) =>
 												setAttributes( {
@@ -1220,26 +1354,54 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* FR-22-6: content column is the InnerBlocks slot (label + heading + text + buttons). */ }
 				<div { ...innerBlocksProps } />
 
-				{ isSplit && ( splitMedia?.url || splitImage?.url ) && (
-					<div className="sgs-hero__media">
-						{ splitMedia?.type === 'video' ? (
-							<video
-								src={ splitMedia.url }
-								className="sgs-hero__split-image"
-								autoPlay
-								muted
-								loop
-								playsInline
-							/>
-						) : (
-							<img
-								src={ splitMedia?.url || splitImage?.url }
-								alt={ splitMedia?.alt || splitImage?.alt || '' }
-								className="sgs-hero__split-image"
-							/>
-						) }
-					</div>
-				) }
+				{ /* Canvas preview of the split column. Reads the TYPED families, the
+				     same ones render.php resolves, so the editor and the front end
+				     cannot disagree about what this slot holds. Desktop tier only —
+				     the per-tier preview is what WP's own device switcher provides.
+				     The old `splitMedia?.type === 'video'` branch was removed with
+				     that attribute (2026-08-13). */ }
+				{ isSplit &&
+					( splitImage?.url ||
+						splitVideo?.url ||
+						splitSvg ) && (
+						<div className="sgs-hero__media">
+							{ splitMediaType === 'video' && splitVideo?.url && (
+								<video
+									src={ splitVideo.url }
+									className="sgs-hero__split-image"
+									autoPlay
+									muted
+									loop
+									playsInline
+								/>
+							) }
+							{ splitMediaType === 'svg' && splitSvg && (
+								/* Editor-only preview of the operator's own pasted markup,
+								   identical in mechanism and purpose to media/edit.js:1538.
+								   The SERVER is the security boundary: render.php passes every
+								   SVG tier through wp_kses( ..., sgs_allowed_svg_tags() ), so
+								   nothing unsanitised reaches a visitor. aria-hidden matches
+								   media's treatment — the preview is decorative. */
+								/* eslint-disable-next-line react/no-danger */
+								<div
+									className="sgs-hero__split-image"
+									aria-hidden="true"
+									dangerouslySetInnerHTML={ {
+										__html: splitSvg,
+									} }
+								/>
+							) }
+							{ splitMediaType !== 'video' &&
+								splitMediaType !== 'svg' &&
+								splitImage?.url && (
+									<img
+										src={ splitImage.url }
+										alt={ splitImage.alt || '' }
+										className="sgs-hero__split-image"
+									/>
+								) }
+						</div>
+					) }
 			</div>
 		</>
 	);

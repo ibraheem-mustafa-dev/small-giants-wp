@@ -12,7 +12,7 @@
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
- *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
+ *   splitImage, splitImageMobile, splitImageMobileObjectPosition,
  *   imageObjectPositionTablet, minHeight*, background/text/border
  *   colourHover, transitionDuration, transitionEasing, bgParallax, bgKenBurns,
  *   bgVideo*, splitImageBleed,
@@ -138,30 +138,21 @@ $overlay_gradient       = ! empty( $attributes['overlayGradient'] );
 $overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
 $overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
 $overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
+// The split column's sources are TYPED, one family per media kind:
+// splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
+// per-tier splitMediaType* saying which kind that tier uses.
+//
+// ⛔ The `splitMedia` unified image-or-video slot (added 2026-05-05) and the two
+// synthesise/hydrate bridges that kept it in sync with splitImage were DELETED
+// 2026-08-13 (Bean: no legacy elements as fallbacks; the framework is
+// pre-production, so there is nothing to migrate). They also contradicted this
+// file's own R-22-14 contract at the top — "NO legacy scalar fallback" — and
+// R-31-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
+// Verified before deletion, not assumed: across ALL post statuses on the canary
+// the only rows carrying splitMedia/splitImage were one leftover DRAFT from the
+// reverted D594 session and this session's own probe page, plus their revisions
+// — zero real content.
 $split_image         = $attributes['splitImage'] ?? null;
-// splitMedia (added 2026-05-05) is the unified image-or-video slot. For
-// back-compat, when only the legacy splitImage is set, synthesise a
-// splitMedia object so downstream rendering can use sgs_render_media() for
-// video while keeping the rich image pipeline unchanged for images.
-$split_media         = $attributes['splitMedia'] ?? null;
-if ( empty( $split_media ) && ! empty( $split_image['url'] ) ) {
-	$split_media = array(
-		'url'  => $split_image['url'],
-		'type' => 'image',
-		'id'   => isset( $split_image['id'] ) ? absint( $split_image['id'] ) : 0,
-		'alt'  => isset( $split_image['alt'] ) ? (string) $split_image['alt'] : '',
-		'mime' => 'image/jpeg',
-	);
-}
-// When splitMedia carries an image and the legacy splitImage is empty,
-// hydrate splitImage so the existing srcset/responsive pipeline still runs.
-if ( empty( $split_image['url'] ) && ! empty( $split_media['url'] ) && 'image' === ( $split_media['type'] ?? 'image' ) ) {
-	$split_image = array(
-		'url' => $split_media['url'],
-		'id'  => isset( $split_media['id'] ) ? absint( $split_media['id'] ) : 0,
-		'alt' => isset( $split_media['alt'] ) ? (string) $split_media['alt'] : '',
-	);
-}
 // splitImageTablet was DECLARED in block.json (b717717d) but read by nothing —
 // no render, no editor control — so the attribute existed and did nothing. The
 // dead-control gate did not catch it (it treats a responsive-family member as
@@ -169,6 +160,21 @@ if ( empty( $split_image['url'] ) && ! empty( $split_media['url'] ) && 'image' =
 // base says nothing about whether the tablet tier renders). Wired 2026-08-07.
 $split_image_tablet  = $attributes['splitImageTablet'] ?? null;
 $split_image_mobile  = $attributes['splitImageMobile'] ?? null;
+// Per-tier media TYPE (2026-08-13). The split media column may be an image on one
+// device and a video or inline SVG on another, so each tier carries its own type
+// alongside its own source. '' on a narrower tier = inherit the next wider tier,
+// matching the fall-back-UP rule the source tiers already use (Spec 35 D3/D5).
+$split_media_type        = $attributes['splitMediaType'] ?? 'image';
+$split_media_type_tablet = $attributes['splitMediaTypeTablet'] ?? '';
+$split_media_type_mobile = $attributes['splitMediaTypeMobile'] ?? '';
+$split_video             = $attributes['splitVideo'] ?? null;
+$split_video_tablet      = $attributes['splitVideoTablet'] ?? null;
+$split_video_mobile      = $attributes['splitVideoMobile'] ?? null;
+$split_svg               = (string) ( $attributes['splitSvg'] ?? '' );
+$split_svg_tablet        = (string) ( $attributes['splitSvgTablet'] ?? '' );
+$split_svg_mobile        = (string) ( $attributes['splitSvgMobile'] ?? '' );
+// ⛔ The `splitMedia` -> `splitVideo` alias bridge was DELETED here 2026-08-13.
+// `splitVideo*` is the only video source; a video is set through its own control.
 $split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
 // Tablet tier of the object-position triple (Spec 35 Track 1b Phase 1.4c —
 // promoted from a mobile-only orphan). Desktop tier is $image_object_position
@@ -986,152 +992,149 @@ if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $has_overlay_colour ) {
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
 $content_html = '<div class="sgs-hero__content">' . $content . '</div>';
 
-// ── Build split media area ─────────────────────────────────────────────────
-$media_html = '';
-// Video branch: when splitMedia is a video, defer to sgs_render_media() and skip
-// the image pipeline entirely. The image branch below preserves the existing
-// srcset / responsive handling for images (legacy splitImage path).
-if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'video' === $split_media['type'] && ! empty( $split_media['url'] ) ) {
-	$media_class = 'sgs-hero__media';
-	if ( $split_image_bleed ) {
-		$media_class .= ' sgs-hero__media--bleed';
+// ── Build split media area — image / video / SVG, per device tier ─────────
+// 2026-08-13: unified onto the shared sgs_tier_media_render() helper
+// (includes/helpers-tier-media.php) so a device tier can be a DIFFERENT media
+// TYPE (image on desktop, video on tablet, inline SVG on mobile), which the
+// old hand-rolled sibling-<img>-only logic this replaces could never express —
+// splitMediaType*/splitVideo*/splitSvg* were declared + read into local vars
+// above but never reached any output. A tier resolves to an explicit type only
+// when splitMediaType* names one, OR (back-compat) when splitMediaType* is ''
+// ("inherit") and that SAME tier already carries a source of its own — so every
+// pre-2026-08-13 hero, which only ever set splitImage*/, keeps rendering
+// byte-identically. A tier with nothing resolved is simply absent from
+// $split_tiers; the helper's own upward cascade (mobile -> tablet -> desktop,
+// Spec 35 D3/D5) takes over from there, matching every other tier family here.
+$sgs_hero_resolve_split_type = static function ( string $declared_type, $image, $video, string $svg ): string {
+	if ( 'video' === $declared_type ) {
+		return ! empty( $video['url'] ) ? 'video' : '';
 	}
-	$media_html  = '<div class="' . esc_attr( $media_class ) . '">';
-	$media_html .= sgs_render_media( $split_media, 'sgs/hero' );
-	$media_html .= '</div>';
-} elseif ( $is_split && ! empty( $split_image['url'] ) ) {
-	// H13/H14: use responsive image helper for srcset + explicit dimensions.
-	$img_id    = ! empty( $split_image['id'] ) ? absint( $split_image['id'] ) : 0;
+	if ( 'svg' === $declared_type ) {
+		return '' !== trim( $svg ) ? 'svg' : '';
+	}
+	// 'image' is STRICT, exactly like 'video' and 'svg' above. ⛔ It previously
+	// fell through to inference when the tier had no image, to cover a
+	// pre-2026-08-13 hero whose desktop media was a video carried by the legacy
+	// `splitMedia` object. That object and its bridges are deleted, so the
+	// fall-through has nothing left to protect and would only mask a genuine
+	// misconfiguration (type says image, no image set) by silently rendering
+	// something else.
+	if ( 'image' === $declared_type ) {
+		return ! empty( $image['url'] ) ? 'image' : '';
+	}
+	// '' (inherit) — NOT legacy: this is the canonical cascade. A tier that
+	// names no type infers from whichever source it carries, and a tier with
+	// nothing is absent, so the helper's upward cascade supplies it.
+	if ( ! empty( $image['url'] ) ) {
+		return 'image';
+	}
+	if ( ! empty( $video['url'] ) ) {
+		return 'video';
+	}
+	if ( '' !== trim( $svg ) ) {
+		return 'svg';
+	}
+	return '';
+};
 
-	// No-inline contract (§A): object-fit / object-position / border-radius /
-	// border-width/style/colour / imagePadding are ALL emitted scoped
-	// (.uid .sgs-hero__split-image{...}) above — this element carries NO
-	// style="" attribute any more.
-	$img_attrs = array(
-		'class'         => 'sgs-hero__split-image',
-		'loading'       => 'eager',
-		'decoding'      => 'async',
-		'fetchpriority' => 'high',
-	);
-	if ( ! empty( $split_image['width'] ) ) {
-		$img_attrs['width'] = absint( $split_image['width'] );
-	}
-	if ( ! empty( $split_image['height'] ) ) {
-		$img_attrs['height'] = absint( $split_image['height'] );
-	}
+// Alt comes from the base image only. The former `$split_media['alt']` fallback
+// referenced a variable deleted with the legacy bridge above; alt is deliberately
+// NOT tiered (Spec 35 D5 — a different crop of the same subject describes the
+// same thing, and a per-tier alt is a second place for it to drift).
+$sgs_hero_split_alt = (string) ( $split_image['alt'] ?? '' );
 
-	// Fallback: if dimensions still missing, try to resolve them from WordPress
-	// metadata. Prevents CLS when the editor hasn't stored the explicit size.
-	if ( ! isset( $img_attrs['width'] ) || ! isset( $img_attrs['height'] ) ) {
-		$resolve_id = $img_id;
-		// If no ID was stored with the block, try to look up the attachment by URL.
-		if ( 0 === $resolve_id && ! empty( $split_image['url'] ) ) {
-			$resolve_id = absint( attachment_url_to_postid( $split_image['url'] ) );
+$split_tiers = array();
+foreach (
+	array(
+		'desktop' => array( $split_media_type, $split_image, $split_video, $split_svg ),
+		'tablet'  => array( $split_media_type_tablet, $split_image_tablet, $split_video_tablet, $split_svg_tablet ),
+		'mobile'  => array( $split_media_type_mobile, $split_image_mobile, $split_video_mobile, $split_svg_mobile ),
+	) as $sgs_hero_tier_name => $sgs_hero_tier_args
+) {
+	list( $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg ) = $sgs_hero_tier_args;
+	$sgs_hero_resolved_type = $sgs_hero_resolve_split_type( (string) $sgs_hero_tier_type_attr, $sgs_hero_tier_image, $sgs_hero_tier_video, $sgs_hero_tier_svg );
+	if ( '' === $sgs_hero_resolved_type ) {
+		continue;
+	}
+	if ( 'svg' === $sgs_hero_resolved_type ) {
+		$split_tiers[ $sgs_hero_tier_name ] = array(
+			'type' => 'svg',
+			'svg'  => $sgs_hero_tier_svg,
+		);
+		continue;
+	}
+	$sgs_hero_tier_media     = 'video' === $sgs_hero_resolved_type ? $sgs_hero_tier_video : $sgs_hero_tier_image;
+	$sgs_hero_tier_media_id  = ! empty( $sgs_hero_tier_media['id'] ) ? absint( $sgs_hero_tier_media['id'] ) : 0;
+	$sgs_hero_tier_width     = ! empty( $sgs_hero_tier_media['width'] ) ? absint( $sgs_hero_tier_media['width'] ) : 0;
+	$sgs_hero_tier_height    = ! empty( $sgs_hero_tier_media['height'] ) ? absint( $sgs_hero_tier_media['height'] ) : 0;
+	// Image tier only: fall back to WP attachment metadata when the stored
+	// attribute lacks explicit dimensions (prevents CLS) — mirrors the
+	// pre-refactor desktop-image behaviour (tablet/mobile never had this).
+	if ( 'image' === $sgs_hero_resolved_type && ( ! $sgs_hero_tier_width || ! $sgs_hero_tier_height ) ) {
+		$sgs_hero_resolve_id = $sgs_hero_tier_media_id;
+		if ( 0 === $sgs_hero_resolve_id && ! empty( $sgs_hero_tier_media['url'] ) ) {
+			$sgs_hero_resolve_id = absint( attachment_url_to_postid( $sgs_hero_tier_media['url'] ) );
 		}
-		if ( $resolve_id > 0 ) {
-			$src_data = wp_get_attachment_image_src( $resolve_id, 'large' );
-			if ( $src_data && ! empty( $src_data[1] ) && ! empty( $src_data[2] ) ) {
-				$img_attrs['width']  = $img_attrs['width'] ?? (int) $src_data[1];
-				$img_attrs['height'] = $img_attrs['height'] ?? (int) $src_data[2];
+		if ( $sgs_hero_resolve_id > 0 ) {
+			$sgs_hero_src_data = wp_get_attachment_image_src( $sgs_hero_resolve_id, 'large' );
+			if ( $sgs_hero_src_data && ! empty( $sgs_hero_src_data[1] ) && ! empty( $sgs_hero_src_data[2] ) ) {
+				$sgs_hero_tier_width  = $sgs_hero_tier_width ? $sgs_hero_tier_width : (int) $sgs_hero_src_data[1];
+				$sgs_hero_tier_height = $sgs_hero_tier_height ? $sgs_hero_tier_height : (int) $sgs_hero_src_data[2];
 			}
 		}
 	}
-
-	$media_class = 'sgs-hero__media';
-	if ( $split_image_bleed ) {
-		$media_class .= ' sgs-hero__media--bleed';
-		// Also remove the border-radius on the image itself.
-		$img_attrs['class'] .= ' sgs-hero__split-image--bleed';
-	}
-
-	// No-inline contract (§A): mediaBackground + mediaPadding are emitted
-	// scoped (.uid .sgs-hero__media{...}) above — this element carries NO
-	// style="" attribute any more.
-	$media_html = '<div class="' . esc_attr( $media_class ) . '">';
-
-	// If a separate mobile image is set, emit BOTH images and let CSS toggle by breakpoint.
-	if ( ! empty( $split_image_mobile['url'] ) ) {
-		$mobile_img_id    = ! empty( $split_image_mobile['id'] ) ? absint( $split_image_mobile['id'] ) : 0;
-		// No-inline contract (§A): object-position moves to the scoped <style>.
-		$mobile_img_attrs = array(
-			'class'         => 'sgs-hero__split-image sgs-hero__split-image--mobile',
-			'loading'       => 'eager',
-			'decoding'      => 'async',
-			'fetchpriority' => 'high',
-		);
-		$safe_mobile_object_position = $sgs_css_object_position( $split_image_mobile_object_position );
-		if ( '' !== $safe_mobile_object_position ) {
-			$responsive_css .= '.' . $uid . ' .sgs-hero__split-image--mobile{object-position:' . $safe_mobile_object_position . '}';
-		}
-		if ( ! empty( $split_image_mobile['width'] ) ) {
-			$mobile_img_attrs['width'] = absint( $split_image_mobile['width'] );
-		}
-		if ( ! empty( $split_image_mobile['height'] ) ) {
-			$mobile_img_attrs['height'] = absint( $split_image_mobile['height'] );
-		}
-		$media_html .= sgs_responsive_image(
-			$mobile_img_id,
-			$split_image_mobile['url'],
-			$split_image_mobile['alt'] ?? '',
-			'large',
-			$mobile_img_attrs
-		);
-
-		// Append the breakpoint-toggle CSS to the responsive_css output.
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image--desktop{display:none}}';
-		$responsive_css .= '@media (min-width:768px){.' . $uid . ' .sgs-hero__split-image--mobile{display:none}}';
-	}
-
-	// TABLET tier (2026-08-07). Mirrors the mobile arm above; the two compose because
-	// each tier's rules are emitted INDEPENDENTLY rather than as one 3-way switch:
-	// mobile only -> mobile <=767, base above.
-	// tablet only -> tablet 768-1023, base elsewhere (degrades UP to the base image,
-	// never to nothing — "degrade to more content, never less").
-	// both -> mobile <=767, tablet 768-1023, base >=1024.
-	// Device-tier breakpoints are the SGS standard 768/1024, not arbitrary visual ones.
-	if ( ! empty( $split_image_tablet['url'] ) ) {
-		$tablet_img_id    = ! empty( $split_image_tablet['id'] ) ? absint( $split_image_tablet['id'] ) : 0;
-		$tablet_img_attrs = array(
-			'class'         => 'sgs-hero__split-image sgs-hero__split-image--tablet',
-			'loading'       => 'eager',
-			'decoding'      => 'async',
-			'fetchpriority' => 'high',
-		);
-		if ( ! empty( $split_image_tablet['width'] ) ) {
-			$tablet_img_attrs['width'] = absint( $split_image_tablet['width'] );
-		}
-		if ( ! empty( $split_image_tablet['height'] ) ) {
-			$tablet_img_attrs['height'] = absint( $split_image_tablet['height'] );
-		}
-		$media_html .= sgs_responsive_image(
-			$tablet_img_id,
-			$split_image_tablet['url'],
-			$split_image_tablet['alt'] ?? '',
-			'large',
-			$tablet_img_attrs
-		);
-
-		$responsive_css .= '@media (min-width:768px) and (max-width:1023px){.' . $uid . ' .sgs-hero__split-image--desktop{display:none}}';
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image--tablet{display:none}}';
-		$responsive_css .= '@media (min-width:1024px){.' . $uid . ' .sgs-hero__split-image--tablet{display:none}}';
-	}
-
-	// Mark the base image as the DESKTOP tier whenever ANY narrower tier exists.
-	// This was previously done INSIDE the mobile arm, so a tablet-only hero would have
-	// emitted tablet-tier CSS targeting a `--desktop` class that was never written —
-	// the rules would have matched nothing and both images would have shown at once.
-	if ( ! empty( $split_image_mobile['url'] ) || ! empty( $split_image_tablet['url'] ) ) {
-		$img_attrs['class'] .= ' sgs-hero__split-image--desktop';
-	}
-
-	$media_html .= sgs_responsive_image(
-		$img_id,
-		$split_image['url'],
-		$split_image['alt'] ?? '',
-		'large',
-		$img_attrs
+	$split_tiers[ $sgs_hero_tier_name ] = array(
+		'type'  => $sgs_hero_resolved_type,
+		'media' => array(
+			'id'     => $sgs_hero_tier_media_id,
+			'url'    => (string) ( $sgs_hero_tier_media['url'] ?? '' ),
+			'width'  => $sgs_hero_tier_width,
+			'height' => $sgs_hero_tier_height,
+		),
 	);
-	$media_html .= '</div>';
+}
+
+$media_html = '';
+if ( $is_split && ! empty( $split_tiers ) ) {
+	// `sgs-hero__split-image` is kept as the IMAGE type's extra class (bleed
+	// variant folded in) so the pre-existing object-fit/position/border-radius/
+	// border/padding/width/height CSS above — all scoped to `.sgs-hero__split-image`,
+	// none of it tier-specific — keeps applying unchanged. Split-image mobile
+	// object-position (below) targets the compound `.split-image.split-media--mobile`
+	// selector, since the mobile-tier element no longer carries a bare `--mobile`
+	// suffix directly on `sgs-hero__split-image` (that suffix now lands on the
+	// shared base class per sgs_tier_media_render()'s contract).
+	$sgs_hero_split_image_class = 'sgs-hero__split-image';
+	if ( $split_image_bleed ) {
+		$sgs_hero_split_image_class .= ' sgs-hero__split-image--bleed';
+	}
+	$sgs_hero_tier_result = sgs_tier_media_render(
+		$split_tiers,
+		'sgs-hero__split-media',
+		$uid,
+		$sgs_hero_split_alt,
+		array( 'image' => $sgs_hero_split_image_class )
+	);
+	if ( '' !== $sgs_hero_tier_result['html'] ) {
+		$media_class = 'sgs-hero__media';
+		if ( $split_image_bleed ) {
+			$media_class .= ' sgs-hero__media--bleed';
+		}
+		$media_html      = '<div class="' . esc_attr( $media_class ) . '">' . $sgs_hero_tier_result['html'] . '</div>';
+		// ⛔ CALLER CONTRACT (helpers-tier-media.php): this MUST be appended to
+		// $responsive_css BEFORE it is printed below — it is, at line ~1166.
+		$responsive_css .= $sgs_hero_tier_result['css'];
+
+		// Mobile-tier image object-position override — only meaningful when the
+		// mobile tier actually resolved to an IMAGE (a video/SVG mobile tier has
+		// no object-position concept here).
+		if ( isset( $split_tiers['mobile'] ) && 'image' === $split_tiers['mobile']['type'] ) {
+			$safe_mobile_object_position = $sgs_css_object_position( $split_image_mobile_object_position );
+			if ( '' !== $safe_mobile_object_position ) {
+				$responsive_css .= '.' . $uid . ' .sgs-hero__split-image.sgs-hero__split-media--mobile{object-position:' . $safe_mobile_object_position . '}';
+			}
+		}
+	}
 }
 
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a

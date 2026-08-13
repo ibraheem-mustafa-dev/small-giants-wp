@@ -101,7 +101,11 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout", "animation" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -123,7 +127,9 @@
 					"label": "Grid / flex layout",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -141,7 +147,10 @@
 					"label": "Content band",
 					"layer": "CONTENT",
 					"order": 3,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
@@ -152,7 +161,10 @@
 					"label": "Content column",
 					"layer": "GRID_AREA",
 					"order": 4,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "content",
 					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding)."
 				},
@@ -160,7 +172,10 @@
 					"label": "Media column",
 					"layer": "GRID_AREA",
 					"order": 5,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "image",
 					"attrMap": {
 						"css:background-color": "mediaBackground",
@@ -173,7 +188,11 @@
 					"label": "Grid item",
 					"layer": "GRID_AREA",
 					"order": 6,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "gridItem",
 					"attrMap": {
 						"css:background-color": "gridItemBackground",
@@ -190,7 +209,9 @@
 				"headline": {
 					"label": "Headline",
 					"order": 7,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "headline",
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
@@ -259,13 +280,58 @@
 		"splitImageTablet": {
 			"type": "object"
 		},
-		"_comment_splitMedia": "Migrated 2026-05-05 — splitImage retained for deprecation. New instances should use splitMedia.",
-		"splitMedia": {
-			"type": "object",
-			"default": null
-		},
 		"splitImageMobile": {
 			"type": "object"
+		},
+		"splitMediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [
+				"image",
+				"video",
+				"svg"
+			]
+		},
+		"splitMediaTypeTablet": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"image",
+				"video",
+				"svg"
+			]
+		},
+		"splitMediaTypeMobile": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"image",
+				"video",
+				"svg"
+			]
+		},
+		"splitVideo": {
+			"type": "object"
+		},
+		"splitVideoTablet": {
+			"type": "object"
+		},
+		"splitVideoMobile": {
+			"type": "object"
+		},
+		"splitSvg": {
+			"type": "string",
+			"default": ""
+		},
+		"splitSvgTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"splitSvgMobile": {
+			"type": "string",
+			"default": ""
 		},
 		"splitImageMobileObjectPosition": {
 			"type": "string",
@@ -282,7 +348,9 @@
 		},
 		"minHeight": {
 			"type": "object",
-			"default": {"mobile": "360px"}
+			"default": {
+				"mobile": "360px"
+			}
 		},
 		"backgroundColourHover": {
 			"type": "string",
@@ -427,7 +495,9 @@
 		},
 		"contentPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"mediaPadding": {
 			"type": "object",
@@ -463,7 +533,9 @@
 		},
 		"splitContentOrder": {
 			"type": "object",
-			"default": {"mobile": "media-first"}
+			"default": {
+				"mobile": "media-first"
+			}
 		},
 		"verticalAlignment": {
 			"type": "string",
@@ -601,7 +673,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"contentWidth": {
 			"type": "object",
@@ -739,7 +815,9 @@
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"paddingTablet": {
 			"type": "object",
