@@ -33,7 +33,6 @@ import {
 } from '@wordpress/components';
 import { close } from '@wordpress/icons';
 import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl, resolveColorToken } from '../../components';
-import { colourVar } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
@@ -126,15 +125,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	// InnerBlocks content too, unlike render.php's color-mix() which only
 	// affects the panel's own fill. Mirror render.php's color-mix() approach
 	// instead so the preview matches what ships; guard for an empty drawerBg
-	// (colourVar() already returns undefined for '') so a color-mix() string
-	// is never built around an undefined colour.
+	// (resolveColorToken() already returns undefined for '') so a
+	// color-mix() string is never built around an undefined colour.
+	// drawerBg's DesignTokenPicker is `linked`, but linked still stores raw
+	// hex for a custom colour pick (only a palette-swatch pick stores the
+	// slug) -- colourVar() (slug-only) was wrong for that half of its own
+	// contract; resolveColorToken() handles both.
 	const compactWidthFallback =
 		anchorDesktop === 'centred' ? '480px' : '360px';
 	const shellStyle = {
 		backgroundColor:
 			surfaceOpacity < 1 && drawerBg
-				? `color-mix(in srgb, ${ colourVar( drawerBg ) } ${ Math.round( surfaceOpacity * 100 ) }%, transparent)`
-				: colourVar( drawerBg ),
+				? `color-mix(in srgb, ${ resolveColorToken( drawerBg, palette ) } ${ Math.round( surfaceOpacity * 100 ) }%, transparent)`
+				: resolveColorToken( drawerBg, palette ),
 		backdropFilter: surfaceBlur ? `blur( ${ surfaceBlur } )` : undefined,
 		maxWidth: isCompact ? panelSize?.desktop || compactWidthFallback : undefined,
 		marginInline: isCompact ? 'auto' : undefined,

@@ -13,7 +13,6 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, resolveColorToken } from '../../components';
-import { colourVar } from '../../utils';
 
 const TRIGGER_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -94,9 +93,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	);
 
+	// triggerColour/triggerBackground's DesignTokenPickers have no `linked`
+	// prop, so they always store a raw CSS value, never a slug --
+	// resolveColorToken() (not colourVar(), which is slug-only) is the
+	// correct resolver.
 	const triggerButtonStyle = {
-		color: colourVar( triggerColour ) || undefined,
-		backgroundColor: colourVar( triggerBackground ) || undefined,
+		color: resolveColorToken( triggerColour, palette ) || undefined,
+		backgroundColor: resolveColorToken( triggerBackground, palette ) || undefined,
 	};
 
 	return (
