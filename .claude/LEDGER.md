@@ -149,8 +149,9 @@ state where the block has one, flat/gradient if built by then).
 
 - **Branch:** `main`. ⛔ **This will drift immediately** — run `git log -1` AND `git status` AND
   `git branch --show-current`; do not trust this line.
-- **D-ceiling:** D618 as of this write — `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE
-  '[0-9]+' | sort -n | tail -1` to re-verify.
+- **D-ceiling:** D620 as of this write (D619/D620 landed same day as this LEDGER entry — colour
+  token-linking + the decisions.md sweep/compress/auto-sweep-hook programme) — `grep -oE
+  '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` to re-verify.
 - **This checkout is SHARED with concurrent sessions — confirmed AGAIN this session, three times.**
   (1) During wave 1, a concurrent session's git operation wiped a wave-1 agent's uncommitted work
   mid-task; recovered by redoing the edits — confirmed intact in `5ddb4879`. (2) That same session's

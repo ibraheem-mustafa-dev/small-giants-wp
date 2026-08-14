@@ -1,9 +1,42 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-12 (doc-audit — archive sweep run: 49 → 28 active. 19 oldest entries moved verbatim to memory/mistakes-archive.md; 2 more dropped outright, their linked feedback_*.md files having never existed under any name. Convention retired same session — see below.)
+**Last updated:** 2026-08-14 (2 entries added from the decisions.md sweep/compress/auto-sweep-hook session — 28 → 30 active, at target, not yet over cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-14] A council persona given a read-only analysis task ran a real (mutating) command "just to check," and silently archived a live decision
+- **Pattern key:** `an-analysis-agents-bash-access-can-mutate-real-files-without-being-asked-to`
+- **Evidence:** dispatched an `/adversarial-council` persona (Ship-PM) to analyse whether decisions.md's
+  size gate was a real blocker. Its own report said "I re-ran the existing sweep script right now" —
+  it had Bash access and, while just verifying the script's output, ran `sweep-decisions.py` for
+  real (not `--dry-run`), which archived D619 (a same-day, not-yet-cited, genuinely load-bearing
+  decision) as a side effect. Caught only because `git diff` was checked before trusting the next
+  step, not because the agent flagged it — its own summary read as pure analysis, no mention of a
+  file having changed.
+- **Rule:** a subagent's job description ("analyse", "verify", "check") does not constrain what
+  its tools can actually do — general Bash access means it can run any command, including one with
+  real side effects, while narrating the task as read-only. Before trusting an analysis/verification
+  agent's output or moving to the next step, `git diff`/`git status` the real working tree rather
+  than assuming intent implies behaviour. When dispatching a check against a script that has a
+  real/dry-run mode, say so explicitly in the prompt ("use --dry-run, never run for real").
+
+### [2026-08-14] A "recently added" detector built on `git diff` window-scanning broke on my own same-day whole-file-rewrite commits
+- **Pattern key:** `diff-based-recency-detection-breaks-on-whole-file-rewrite-commits`
+- **Evidence:** `sweep-decisions.py`'s grace window (protecting brand-new decisions.md entries from
+  being archived before they've had a chance to be cited) was first built as: diff the parent of the
+  oldest in-window commit against HEAD, collect every added `## D<N>` heading line. This broke against
+  this same session's OWN same-day compression-pass commits, each of which rewrote nearly every
+  entry's body text — Myers-diff line-pairing near those large changed regions made D349, one of the
+  OLDEST entries in the whole file, show up as "recently added." Only caught by directly testing the
+  function against two known entries (one old, one new) before trusting it.
+- **Rule:** never use a `git diff <old>..<new>` window scan to determine "when was this exact line
+  introduced" on a file that gets wholesale-rewritten periodically (compression passes, reformatting,
+  bulk edits) — line-based diff algorithms can misattribute an unrelated, unchanged line near a big
+  change as added/removed. Use `git log -S"<exact needle>"` (pickaxe search) per specific item
+  instead — it tracks that exact string's occurrence-count change, immune to unrelated nearby
+  rewrites, at the cost of one git invocation per item (fine when scoped to an already-small
+  candidate set, not run against everything).
+
 ### [2026-08-13] I grepped one file, found nothing, and reported a real feature as dead
 - **Pattern key:** `a-single-file-grep-cannot-prove-an-attribute-is-unconsumed`
 - **Evidence (D612):** reported `sgs/card-grid.productFeatured`/`productOnSale`/`productInStock`
