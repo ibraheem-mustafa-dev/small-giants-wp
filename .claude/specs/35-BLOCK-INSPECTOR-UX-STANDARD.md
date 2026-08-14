@@ -398,15 +398,26 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 > was the actual defect; fixing every bare mention indiscriminately would have made those rows
 > factually wrong (there is no WP-native "SgsLinkControl" mechanism to point to).
 >
-> ⚠ The other ~23 assignments below are **not yet reconciled against the contract**. Treat them as
-> indicative until swept. ⛔ **Border and line-height WERE swept, 2026-08-13** — this box used to say
+> ⚠ **The remaining ~23 assignments below were SWEPT 2026-08-14 (G4).** Border and line-height were
+> already swept 2026-08-13 (below). One real mismatch found in this pass: **4-side box** was stated
+> as bare `BoxControl` — the contract's §5 canonical is `ResponsiveBoxControl` (raw `BoxControl` is a
+> named banned lookalike, §5 field 3 / contract line 1098, because it bypasses the tier wrapper).
+> Fixed inline below. Every other assignment checked against its contract section (colour §1,
+> length/unit §4.1, ENUM-family `ComboboxControl`/`FormTokenField`/`ToggleGroupControl` §3, media
+> `FocalPointPicker` §7) matches what the contract already names canonical — no other correction
+> needed. Native WP primitives with no dedicated contract clause (`AnglePickerControl`,
+> `DateTimePicker`, `FontSizePicker`, `FontAppearanceControl`, `HStack`/`VStack`/`Flex`/`Spacer`/
+> `Divider`, `ColorIndicator`, `Tip`/`Notice`, `Disabled`, `Dropdown`/`DropdownMenu`, `Modal`,
+> `registerFormatType`, `__experimentalSpacingSizesControl`) are unconflicting native mechanisms, not
+> lookalikes — left as-is. **Border and line-height WERE swept, 2026-08-13** — this box used to say
 > core's grouped border-box component "agrees with contract §14", which D566 (2026-08-11) had already
 > made false. Canonical is now stated inline below for both. **Do not reinstate either core component
 > name in this file** — a `grep -c` for each is the commit gate, and the rejection rationale lives at
 > contract §14.1 where it belongs.
 
 Numeric+unit → `UnitControl` · bounded numeric → `RangeControl` (+input+reset) · 4-side box →
-`BoxControl` · colour → **`DesignTokenPicker`** (wraps `ColorPalette`; `enableAlpha`+`clearable`
+**`ResponsiveBoxControl`** (contract §5 — bare `BoxControl` is a banned lookalike, it bypasses the
+tier wrapper) · colour → **`DesignTokenPicker`** (wraps `ColorPalette`; `enableAlpha`+`clearable`
 default true) · gradient → `GradientPicker` · angle/direction → `AnglePickerControl` · border →
 a **composed builder** (width `UnitControl` + style `SelectControl` + token-aware colour picker) ·
 radius → **`ResponsiveBorderRadiusControl`** *(both per contract §14.1 as amended by D566 — core's

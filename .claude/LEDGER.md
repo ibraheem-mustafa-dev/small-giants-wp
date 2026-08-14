@@ -53,6 +53,24 @@ first pass of real candidates (tabs, breadcrumbs) in Track 1b plan §1.2d.
 
 Full T1-T5 + D609/D617/D618 narrative: `decisions.md` D609/D617/D618, `.claude/plans/spec-35-control-type-contract.md` §1, `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2c-§1.2d.
 
+### Concurrent track (register cleanup + D4), same day — separate session
+
+| Commit | What |
+|---|---|
+| `4a859e42` | **D4 CLOSED** — duplicate `ToolsPanel` title hidden across 7 blocks / 8 instances (`button`, `decorative-image`, `label`, `option-picker`, `quote`, `tabs`, `testimonial`×2). Outer `PanelBody` KEPT (title + `initialOpen` untouched); inner `ToolsPanel` gets `.sgs-nested-tools-panel` + one clip-based hide rule per block's own `editor.css`. Accessible name + reset-all menu both survive. Every instance live-verified by DOM computed-style read on the canary, not extrapolated |
+| `4a859e42` | **New gate branch** — `check-editor-canvas-css.py` (10 self-test cases, both controls per rule) + a `sgs-gates.sh` branch accepting `editor_capture_passed: true` for `edit.js`/`editor.css`-only changes. Not a free skip: real captured evidence still required, just of the surface that actually changed. Bean-approved after the existing gate correctly refused a blanket CSS exemption |
+| `4a859e42` | 7 visual-diff reports, one per block, each citing its own measurement + `source_sha` |
+
+**Register rows closed this session (docs only, `~/.claude/plans/go-track-1b-playful-hamster.md`):**
+**B2** (keep `inspector_control_type` — and my first ruling on it was WRONG, corrected in-place: it
+has a live gate-wired reader chain via `build-roster.py` → `surfaces.animation` →
+`17-reduced-motion-gate.js`, which C7 had already found and I re-derived without reading);
+**B3** (`block_capabilities` "no consumer" claim was stale — real converter consumers exist);
+**D2** (façade classification — R1 had already settled it, row never closed);
+**G2** (Block Bindings scope corrected — read-only for third parties, so inline-edited attrs stay
+bespoke); **G4** (Part H audit done; one real mismatch fixed — 4-side box canonical is
+`ResponsiveBoxControl`, not bare `BoxControl`); **D5 SUPERSEDED** — see next section.
+
 ## Blockers
 
 - **None repo-wide.** Playwright MCP's browser profile got locked by contention (unclear if a
@@ -61,6 +79,24 @@ Full T1-T5 + D609/D617/D618 narrative: `decisions.md` D609/D617/D618, `.claude/p
   not currently blocking anything, just noting the workaround exists if it recurs.
 
 ## Open — ready to pick up
+
+### ⭐ NEW INITIATIVE (Bean, 2026-08-14) — shared-wrapper decomposition into opt-in extensions
+
+**Not started. Needs its own session + a design gate (Rule 7 — shared mechanism, 30 blocks).**
+Full signature already measured and recorded at `~/.claude/plans/go-track-1b-playful-hamster.md`
+**§1.4** — read that section before anything else; do not re-derive it.
+
+Headline facts so nobody re-measures: the wrapper is 1,728 lines JS + 2,599 lines PHP; **the split
+seams already exist** as 6 exported panels (`WidthPanel`/`LayoutPanel`/`BackgroundPanel`/
+`ShapeDividersPanel`/`GridItemDefaultsPanel`/`GridAreaPanel`); a crude opt-in map already exists as
+`KIND_PANELS` keyed on the `kind` prop; `enabledExtensions` (D579) is the shipped opt-in precedent to
+reuse rather than reinvent. **This ABSORBS D5** — D5's per-block audit is this initiative's census
+stage, and D5's blocked precondition (a `common`/`always` schema column) turned out to have no
+recorded justification anywhere in the repo.
+
+⛔ **Do not trust any consumer COUNT until the census script settles it.** A grep for the component
+name matches comments — `sgs/button` was wrongly called a consumer this very session (its only hit
+is prose at `render.php:930`); the in-file comment says 16 live mounts while a naive grep says 30.
 
 ### ⭐ NEXT SESSION — colour-panel standards + rollout continuation
 
