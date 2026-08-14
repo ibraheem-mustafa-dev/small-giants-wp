@@ -1,5 +1,34 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D619 — Colour attributes store the bare theme-palette slug; `linked` goes on everywhere [ROUTINE]
+
+**2026-08-14.** Bean's standing preference was to link colours to palette slugs so that changing a
+client's brand palette re-colours every block, but he ruled *"investigate before ruling"* rather
+than asserting it. Investigated; the preference is correct and is also fixing a live defect.
+
+**Evidence** (full report: `reports/2026-08-14-colour-token-storage-investigation.md`):
+- `sgs_colour_value()` (`includes/helpers-tokens.php:580-622`) resolves slug, hex and `var()` alike
+  — the server constrains nothing.
+- `extract_token_or_hex()` (`converter/services/styling_helpers.py:440-517`) already writes **bare
+  slugs** into SGS colour attributes and always has, independent of any editor setting. The
+  `var(--wp--preset--color--X)` form produced by `_resolve_draft_colour_var` (`:387-410`) is an
+  intermediate rewrite of raw CSS, not an attribute value. ⚠ A first pass of this analysis read that
+  intermediate step and reported it as the stored form — corrected before it was acted on.
+- Live canary: bare slugs outnumber hex **118 to 20** across `sgs/*` colour attributes; **zero**
+  `var()`-form values exist on any of them (scan carried a positive control).
+- ⭐ **Live defect this closes.** `resolveColourToken` (`DesignTokenPicker.js:80-89`) only runs when
+  `linked=true`. No wave-1 row passes it, so the 7 converter-written slugs already on `sgs/button`
+  render their swatch as **unset** in the editor while the block is genuinely coloured.
+
+**Ruling:** every `SgsColourPanel` row sets `linked: true`. This needs a `linked` pass-through added
+to `SgsColourPanel` first (it forwards no per-row props today), then applying to wave 1's 9 migrated
+blocks as well as wave 2's.
+
+⚠ **Pre-existing gap that must not survive the rollout:** `sgs/nav-menu` and `sgs/nav-drawer` ship
+`linked=true` already, and their WCAG-contrast helper `sgs_resolve_palette_hex()` is slug-only with
+no hex fallback — a custom colour there mis-resolves the contrast calculation silently. Not caused
+by this rollout, but wave 2 makes every block slug-capable and therefore able to reach that path.
+
 ## D618 — SgsColourPanel must NOT mount into native's `group="color"` ToolsPanel — own PanelBody instead [INCIDENT]
 
 **2026-08-14.** T4's first build (D609/D617, commit `f9f39bb6`) mounted `SgsColourPanel` into
