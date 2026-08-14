@@ -52,7 +52,7 @@
 		"anchor": true,
 		"className": true,
 		"color": {
-			"background": true,
+			"background": false,
 			"text": false,
 			"gradients": false,
 			"__experimentalSkipSerialization": true

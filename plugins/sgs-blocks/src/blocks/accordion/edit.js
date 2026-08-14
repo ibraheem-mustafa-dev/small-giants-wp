@@ -10,7 +10,7 @@ import {
   ToggleControl,
   RangeControl,
 } from "@wordpress/components";
-import { DesignTokenPicker, IconPicker, ResponsiveBoxControl } from "../../components";
+import { SgsColourPanel, IconPicker, ResponsiveBoxControl } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 
 const STYLE_OPTIONS = [
@@ -58,6 +58,51 @@ export default function Edit({ attributes, setAttributes }) {
 
   return (
     <>
+      {/* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour panel
+          (own PanelBody, default InspectorControls group), rendered FIRST so
+          it sits at the top of the inspector. Replaces the old scattered
+          "Colours" PanelBody below. No hover siblings exist for these three
+          attrs, so each row is single-state. */}
+      <SgsColourPanel
+        rows={ [
+          {
+            key: "headerText",
+            label: __("Header text colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: headerColour,
+                onChange: (val) => setAttributes({ headerColour: val }),
+              },
+            ],
+          },
+          {
+            key: "headerBackground",
+            label: __("Header background colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: headerBackground,
+                onChange: (val) => setAttributes({ headerBackground: val }),
+              },
+            ],
+          },
+          {
+            key: "icon",
+            label: __("Icon colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: iconColour,
+                onChange: (val) => setAttributes({ iconColour: val }),
+              },
+            ],
+          },
+        ] }
+      />
       <InspectorControls>
         <ContainerWrapperControls
           attributes={ attributes }
@@ -187,23 +232,6 @@ export default function Edit({ attributes, setAttributes }) {
           />
         </PanelBody>
 
-        <PanelBody title={__("Colours", "sgs-blocks")} initialOpen={false}>
-          <DesignTokenPicker
-            label={__("Header text colour", "sgs-blocks")}
-            value={headerColour}
-            onChange={(val) => setAttributes({ headerColour: val })}
-          />
-          <DesignTokenPicker
-            label={__("Header background colour", "sgs-blocks")}
-            value={headerBackground}
-            onChange={(val) => setAttributes({ headerBackground: val })}
-          />
-          <DesignTokenPicker
-            label={__("Icon colour", "sgs-blocks")}
-            value={iconColour}
-            onChange={(val) => setAttributes({ iconColour: val })}
-          />
-        </PanelBody>
       </InspectorControls>
 
       <div {...innerBlocksProps} />

@@ -8,7 +8,7 @@ import {
 	Button,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, resolveColourToken } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken } from '../../components';
 
 const STYLE_OPTIONS = [
 	{ value: 'minimal', label: __( 'Minimal Pill', 'sgs-blocks' ), hint: __( 'Quiet: play + progress + timecode', 'sgs-blocks' ) },
@@ -70,6 +70,37 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour
+			   panel, rendered FIRST. Replaces the old scattered "Colours"
+			   PanelBody below. No hover siblings exist for these two attrs. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'accent',
+						label: __( 'Accent colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: accentColour,
+								onChange: ( value ) => setAttributes( { accentColour: value } ),
+							},
+						],
+					},
+					{
+						key: 'spectrum',
+						label: __( 'Spectrum colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: spectrumColour,
+								onChange: ( value ) => setAttributes( { spectrumColour: value } ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Player style', 'sgs-blocks' ) } initialOpen={ true }>
 					<div className="sgs-audio-style-grid">
@@ -162,19 +193,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { audioPreload: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Accent (signal)', 'sgs-blocks' ) }
-						value={ accentColour }
-						onChange={ ( value ) => setAttributes( { accentColour: value } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Spectrum (reactive)', 'sgs-blocks' ) }
-						value={ spectrumColour }
-						onChange={ ( value ) => setAttributes( { spectrumColour: value } ) }
 					/>
 				</PanelBody>
 

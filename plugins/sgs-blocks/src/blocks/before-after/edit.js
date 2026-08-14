@@ -34,7 +34,7 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
-	DesignTokenPicker,
+	SgsColourPanel,
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveOverride,
@@ -407,6 +407,74 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour
+			   panel, rendered FIRST. Replaces the scattered DesignTokenPicker
+			   rows previously inline inside the Divider/Labels panels below.
+			   No hover siblings exist for these five attrs. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'labelText',
+						label: __( 'Label text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: labelColour,
+								onChange: ( val ) => setAttributes( { labelColour: val } ),
+							},
+						],
+					},
+					{
+						key: 'labelBackground',
+						label: __( 'Label background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: labelBackgroundColour,
+								onChange: ( val ) => setAttributes( { labelBackgroundColour: val } ),
+							},
+						],
+					},
+					{
+						key: 'divider',
+						label: __( 'Divider colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dividerColour,
+								onChange: ( val ) => setAttributes( { dividerColour: val } ),
+							},
+						],
+					},
+					{
+						key: 'handle',
+						label: __( 'Handle colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: handleColour,
+								onChange: ( val ) => setAttributes( { handleColour: val } ),
+							},
+						],
+					},
+					{
+						key: 'handleIcon',
+						label: __( 'Handle icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: handleIconColour,
+								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls group="settings">
 				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen>
 					<MediaSlotPicker
@@ -514,13 +582,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<DesignTokenPicker
-						label={ __( 'Divider colour', 'sgs-blocks' ) }
-						value={ dividerColour }
-						onChange={ ( val ) =>
-							setAttributes( { dividerColour: val } )
-						}
-					/>
 					<RangeControl
 						label={ __( 'Divider thickness (px)', 'sgs-blocks' ) }
 						value={ dividerWidth }
@@ -532,20 +593,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 1 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Handle colour', 'sgs-blocks' ) }
-						value={ handleColour }
-						onChange={ ( val ) =>
-							setAttributes( { handleColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Handle icon colour', 'sgs-blocks' ) }
-						value={ handleIconColour }
-						onChange={ ( val ) =>
-							setAttributes( { handleIconColour: val } )
-						}
 					/>
 				</PanelBody>
 
@@ -580,28 +627,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
-							/>
-							<DesignTokenPicker
-								label={ __(
-									'Label text colour',
-									'sgs-blocks'
-								) }
-								value={ labelColour }
-								onChange={ ( val ) =>
-									setAttributes( { labelColour: val } )
-								}
-							/>
-							<DesignTokenPicker
-								label={ __(
-									'Label background colour',
-									'sgs-blocks'
-								) }
-								value={ labelBackgroundColour }
-								onChange={ ( val ) =>
-									setAttributes( {
-										labelBackgroundColour: val,
-									} )
-								}
 							/>
 							<TypographyControls
 								attributes={ attributes }

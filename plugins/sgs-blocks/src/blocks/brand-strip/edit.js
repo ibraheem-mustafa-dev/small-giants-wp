@@ -13,12 +13,11 @@ import {
 	Button,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
+	SgsColourPanel,
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	TypographyControls,
-	StateToggleControl,
 	ShadowControl,
 	LinkPopoverField,
 } from '../../components';
@@ -308,6 +307,73 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour
+			   panel, rendered FIRST. Replaces the scattered DesignTokenPicker
+			   rows previously inline inside the Styles-tab "Tile colours"
+			   StateToggleControl and the Caption panel below. Hover pairs:
+			   tileBackgroundColour⇆backgroundColourHover,
+			   tileBorderColour⇆borderColourHover,
+			   nameColour⇆textColourHover (verified via render.php/style.css —
+			   textColourHover feeds --sgs-tile-hover-text, the hover
+			   counterpart of the caption's nameColour). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'tileBackground',
+						label: __( 'Tile background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileBackgroundColour,
+								onChange: ( val ) => setAttributes( { tileBackgroundColour: val } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val } ),
+							},
+						],
+					},
+					{
+						key: 'tileBorder',
+						label: __( 'Tile border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileBorderColour,
+								onChange: ( val ) => setAttributes( { tileBorderColour: val } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val } ),
+							},
+						],
+					},
+					{
+						key: 'caption',
+						label: __( 'Caption colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nameColour,
+								onChange: ( val ) => setAttributes( { nameColour: val } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val } ),
+							},
+						],
+					},
+				] }
+			/>
 			{ /* ── SETTINGS tab — behaviour / configuration ── */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Logos', 'sgs-blocks' ) } initialOpen={ true }>
@@ -572,107 +638,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 
-					{ /* Normal ⇆ Hover colours, one panel-level toggle (Kadence
-					   pattern). The persistent swatches keep every state's colour
-					   visible so a hover value is never hidden (council mitigation
-					   2026-07-18). Bundles 6 attrs as one ToolsPanelItem — the
-					   toggle itself has no single "value", so hasValue checks
-					   whether ANY of the 6 differs from its default. */ }
+					{ /* Border width — a non-colour numeric control, kept here
+					   (the colour rows themselves moved into the shared
+					   SgsColourPanel at the top of the inspector, D609/D618). */ }
 					<ToolsPanelItem
-						label={ __( 'Tile colours', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! tileBackgroundColour ||
-							tileBorderWidth !== 0 ||
-							!! tileBorderColour ||
-							!! backgroundColourHover ||
-							!! borderColourHover ||
-							!! textColourHover
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								tileBackgroundColour: '',
-								tileBorderWidth: 0,
-								tileBorderColour: '',
-								backgroundColourHover: '',
-								borderColourHover: '',
-								textColourHover: '',
-							} )
-						}
+						label={ __( 'Tile border width', 'sgs-blocks' ) }
+						hasValue={ () => tileBorderWidth !== 0 }
+						onDeselect={ () => setAttributes( { tileBorderWidth: 0 } ) }
 						isShownByDefault
 					>
-						<StateToggleControl
-							label={ __( 'Tile colours', 'sgs-blocks' ) }
-							swatches={ [
-								{ label: __( 'Background', 'sgs-blocks' ), value: tileBackgroundColour },
-								{ label: __( 'Hover bg', 'sgs-blocks' ), value: backgroundColourHover },
-								{ label: __( 'Border', 'sgs-blocks' ), value: tileBorderColour },
-								{ label: __( 'Hover border', 'sgs-blocks' ), value: borderColourHover },
-							] }
-						>
-							{ ( state ) =>
-								state === 'normal' ? (
-									<>
-										<DesignTokenPicker
-											label={ __( 'Background colour', 'sgs-blocks' ) }
-											value={ tileBackgroundColour }
-											onChange={ ( val ) =>
-												setAttributes( { tileBackgroundColour: val } )
-											}
-										/>
-										<RangeControl
-											label={ __( 'Border width (px)', 'sgs-blocks' ) }
-											help={ __(
-												'Static border shown on every tile at rest.',
-												'sgs-blocks'
-											) }
-											value={ tileBorderWidth }
-											onChange={ ( val ) =>
-												setAttributes( { tileBorderWidth: val } )
-											}
-											min={ 0 }
-											max={ 10 }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-										<DesignTokenPicker
-											label={ __( 'Border colour', 'sgs-blocks' ) }
-											value={ tileBorderColour }
-											onChange={ ( val ) =>
-												setAttributes( { tileBorderColour: val } )
-											}
-										/>
-									</>
-								) : (
-									<>
-										<DesignTokenPicker
-											label={ __( 'Hover background colour', 'sgs-blocks' ) }
-											value={ backgroundColourHover }
-											onChange={ ( val ) =>
-												setAttributes( { backgroundColourHover: val } )
-											}
-										/>
-										<DesignTokenPicker
-											label={ __( 'Hover border colour', 'sgs-blocks' ) }
-											value={ borderColourHover }
-											onChange={ ( val ) =>
-												setAttributes( { borderColourHover: val } )
-											}
-										/>
-										<DesignTokenPicker
-											label={ __( 'Hover text colour', 'sgs-blocks' ) }
-											value={ textColourHover }
-											onChange={ ( val ) =>
-												setAttributes( { textColourHover: val } )
-											}
-										/>
-									</>
-								)
+						<RangeControl
+							label={ __( 'Border width (px)', 'sgs-blocks' ) }
+							help={ __(
+								'Static border shown on every tile at rest.',
+								'sgs-blocks'
+							) }
+							value={ tileBorderWidth }
+							onChange={ ( val ) =>
+								setAttributes( { tileBorderWidth: val } )
 							}
-						</StateToggleControl>
+							min={ 0 }
+							max={ 10 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					</ToolsPanelItem>
 
 					{ /* Hover behaviour — motion + timing (applies on hover
-					   regardless of the state toggle above). */ }
+					   regardless of the colour states above). */ }
 					<ToolsPanelItem
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
 						hasValue={ () => effectHover !== 'none' }
@@ -810,13 +803,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
-							/>
-							<DesignTokenPicker
-								label={ __( 'Caption colour', 'sgs-blocks' ) }
-								value={ nameColour }
-								onChange={ ( val ) =>
-									setAttributes( { nameColour: val } )
-								}
 							/>
 						</>
 					) }
