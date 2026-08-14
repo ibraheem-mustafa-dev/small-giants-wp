@@ -11,7 +11,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField } from '../../components';
+import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField } from '../../components';
 import { colourVar } from '../../utils';
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
@@ -191,6 +191,67 @@ export default function Edit( { attributes, setAttributes } ) {
 					}
 				/>
 			</BlockControls>
+			{ /* D609 amendment (decisions.md, 2026-08-13) — ONE grouped
+			   colour panel, mounted into WordPress's own native
+			   `group="color"` slot (Styles tab) — the same slot the
+			   native Color panel occupies for this block's
+			   `supports.color` (kept, skip-serialised, unchanged: the
+			   audit-block-uniformity.py gate requires it present for any
+			   ROOT-element colour attr per the Spec 35 element manifest —
+			   this is a pipeline/DB-contract signal, not a UI toggle, so
+			   it cannot be removed here). Every pickable colour on this
+			   block now renders from THIS one panel instead of being
+			   scattered as inline rows inside "Icon"/"Background" below. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'icon',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) =>
+									setAttributes( { iconColour: val } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										iconColourHover: val,
+									} ),
+							},
+						],
+					},
+					backgroundShape !== 'none' && {
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColour: val,
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: shapeColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										shapeColourHover: val,
+									} ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
 					<IconPicker
@@ -212,31 +273,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ /* D609 pilot (Spec 35 §1 field 9): one row, states inside the
-					   popover — replaces the separate "Icon colour on hover"
-					   field that used to live in the "Hover effects" panel
-					   below. Same two attrs, same storage shape, new control
-					   shape only. */ }
-					<DesignTokenPicker
-						label={ __( 'Icon colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: iconColour,
-								onChange: ( val ) =>
-									setAttributes( { iconColour: val } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: iconColourHover,
-								onChange: ( val ) =>
-									setAttributes( { iconColourHover: val } ),
-							},
-						] }
-					/>
-
 					{ /* A4 (Spec 35 Part A — one element = one panel): the icon's
 					   link belongs IN the Icon panel, not its own top-level
 					   panel — Bean: "the link option should be in the icon
@@ -272,32 +308,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ backgroundShape !== 'none' && (
 						<>
-							{ /* D609 pilot — same pairing for the shape's own
-							   colour + its hover twin (`shapeColourHover`
-							   previously lived in "Hover effects" too). */ }
-							<DesignTokenPicker
-								label={ __( 'Background colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: backgroundColour,
-										onChange: ( val ) =>
-											setAttributes( {
-												backgroundColour: val,
-											} ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: shapeColourHover,
-										onChange: ( val ) =>
-											setAttributes( {
-												shapeColourHover: val,
-											} ),
-									},
-								] }
-							/>
 							<TextControl
 								label={ __( 'Shape padding', 'sgs-blocks' ) }
 								help={ __(

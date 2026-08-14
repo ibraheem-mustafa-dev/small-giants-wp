@@ -13,6 +13,7 @@ export {
 	default as DesignTokenPicker,
 	resolveColorToken,
 } from './DesignTokenPicker';
+export { default as SgsColourPanel } from './SgsColourPanel';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
 export {
 	default as GradientOverlayControl,
