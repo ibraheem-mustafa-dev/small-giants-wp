@@ -34,7 +34,7 @@ import { useState } from '@wordpress/element';
 
 import { useSettings } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
-import { resolveColorToken } from './DesignTokenPicker';
+import { resolveColourToken } from './DesignTokenPicker';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
 /**
@@ -137,7 +137,7 @@ export default function StateToggleControl( {
 									height: '12px',
 									borderRadius: '2px',
 									border: '1px solid rgba(0,0,0,0.2)',
-									// resolveColorToken, not colourVar: a raw hex from
+									// resolveColourToken, not colourVar: a raw hex from
 									// the custom colour picker must pass through
 									// untouched. colourVar() blindly wrapped every
 									// value as var(--wp--preset--color--{value}),
@@ -147,7 +147,7 @@ export default function StateToggleControl( {
 									// colour, showing the client a colour they did not
 									// choose. No console error, no build failure.
 									backgroundColor: sw.value
-										? resolveColorToken( sw.value, palette )
+										? resolveColourToken( sw.value, palette )
 										: 'transparent',
 								} }
 							/>

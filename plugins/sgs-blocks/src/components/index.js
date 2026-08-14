@@ -11,7 +11,7 @@ export {
 export { default as ResponsiveBoxControls } from './ResponsiveBoxControls';
 export {
 	default as DesignTokenPicker,
-	resolveColorToken,
+	resolveColourToken,
 } from './DesignTokenPicker';
 export { default as SgsColourPanel } from './SgsColourPanel';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';

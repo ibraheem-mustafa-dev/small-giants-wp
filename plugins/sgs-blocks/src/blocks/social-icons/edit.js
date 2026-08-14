@@ -9,7 +9,7 @@ import {
 	Flex,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColorToken } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken } from '../../components';
 import { spacingVar } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -166,9 +166,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	// 'brand' mode overrides per item instead (applied on each item below).
 	if ( 'theme' === colourMode && iconColour ) {
 		// iconColour's DesignTokenPicker has no `linked` prop, so it always
-		// stores a raw CSS value, never a slug -- resolveColorToken() (not
+		// stores a raw CSS value, never a slug -- resolveColourToken() (not
 		// colourVar(), which is slug-only) is the correct resolver.
-		previewStyle[ '--sgs-social-colour' ] = resolveColorToken( iconColour, palette );
+		previewStyle[ '--sgs-social-colour' ] = resolveColourToken( iconColour, palette );
 	}
 	// Fix 3: hover colour was destructured + written by its DesignTokenPicker
 	// but never reached the canvas — render.php emits `--sgs-social-hover`
@@ -178,7 +178,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// editor canvas (a live DOM, not a static screenshot) now shows the same
 	// colour the frontend does.
 	if ( iconColourHover ) {
-		previewStyle[ '--sgs-social-hover' ] = resolveColorToken( iconColourHover, palette );
+		previewStyle[ '--sgs-social-hover' ] = resolveColourToken( iconColourHover, palette );
 	}
 
 	// Fix 1/2: mirrors render.php's $item_size — the clickable hit area is

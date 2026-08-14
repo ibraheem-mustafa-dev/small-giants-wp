@@ -32,7 +32,7 @@ import {
 	Icon,
 } from '@wordpress/components';
 import { close } from '@wordpress/icons';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl, resolveColorToken } from '../../components';
+import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl, resolveColourToken } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
@@ -125,19 +125,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	// InnerBlocks content too, unlike render.php's color-mix() which only
 	// affects the panel's own fill. Mirror render.php's color-mix() approach
 	// instead so the preview matches what ships; guard for an empty drawerBg
-	// (resolveColorToken() already returns undefined for '') so a
+	// (resolveColourToken() already returns undefined for '') so a
 	// color-mix() string is never built around an undefined colour.
 	// drawerBg's DesignTokenPicker is `linked`, but linked still stores raw
 	// hex for a custom colour pick (only a palette-swatch pick stores the
 	// slug) -- colourVar() (slug-only) was wrong for that half of its own
-	// contract; resolveColorToken() handles both.
+	// contract; resolveColourToken() handles both.
 	const compactWidthFallback =
 		anchorDesktop === 'centred' ? '480px' : '360px';
 	const shellStyle = {
 		backgroundColor:
 			surfaceOpacity < 1 && drawerBg
-				? `color-mix(in srgb, ${ resolveColorToken( drawerBg, palette ) } ${ Math.round( surfaceOpacity * 100 ) }%, transparent)`
-				: resolveColorToken( drawerBg, palette ),
+				? `color-mix(in srgb, ${ resolveColourToken( drawerBg, palette ) } ${ Math.round( surfaceOpacity * 100 ) }%, transparent)`
+				: resolveColourToken( drawerBg, palette ),
 		backdropFilter: surfaceBlur ? `blur( ${ surfaceBlur } )` : undefined,
 		maxWidth: isCompact ? panelSize?.desktop || compactWidthFallback : undefined,
 		marginInline: isCompact ? 'auto' : undefined,
@@ -411,7 +411,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span
 					className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
 					aria-hidden="true"
-					style={ { color: toggleCloseColour ? resolveColorToken( toggleCloseColour, palette ) : undefined } }
+					style={ { color: toggleCloseColour ? resolveColourToken( toggleCloseColour, palette ) : undefined } }
 				>
 					{ closeStyle === 'text-swap' && (
 						<span className="sgs-nav-drawer__close-text">

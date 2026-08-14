@@ -29,7 +29,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	DesignTokenPicker,
 	StateToggleControl,
-	resolveColorToken,
+	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
@@ -263,7 +263,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// unconditionally, matching render.php.
 	// D288: colours are stored as theme token SLUGS (e.g. 'primary') OR a custom
 	// hex. A slug is invalid CSS, so the preview MUST resolve it to a real colour
-	// (via resolveColorToken against the live palette) — otherwise the preview
+	// (via resolveColourToken against the live palette) — otherwise the preview
 	// shows nothing and applying a preset looks like a no-op (the "Apply does
 	// nothing" bug). render.php resolves the same slugs via sgs_colour_value().
 	const [ palette ] = useSettings( 'color.palette' );
@@ -280,9 +280,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const previewStyle = {};
-	if ( colourText ) previewStyle.color = resolveColorToken( colourText, palette );
-	if ( colourBackground ) previewStyle.backgroundColor = resolveColorToken( colourBackground, palette );
-	if ( colourBorder ) previewStyle.borderColor = resolveColorToken( colourBorder, palette );
+	if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
+	if ( colourBackground ) previewStyle.backgroundColor = resolveColourToken( colourBackground, palette );
+	if ( colourBorder ) previewStyle.borderColor = resolveColourToken( colourBorder, palette );
 	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
@@ -314,7 +314,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// the live palette exactly like the other colour previews above — otherwise
 	// a token slug renders as invalid CSS and the shadow silently disappears.
 	if ( boxShadow?.colour ) {
-		const bsColour = resolveColorToken( boxShadow.colour, palette );
+		const bsColour = resolveColourToken( boxShadow.colour, palette );
 		const bsInset = boxShadow.inset ? 'inset ' : '';
 		previewStyle.boxShadow = `${ bsInset }${ boxShadow.hOffset || 0 }px ${ boxShadow.vOffset || 0 }px ${ boxShadow.blur || 0 }px ${ boxShadow.spread || 0 }px ${ bsColour }`;
 	}

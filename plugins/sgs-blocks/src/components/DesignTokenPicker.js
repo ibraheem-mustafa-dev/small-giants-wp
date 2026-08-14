@@ -77,7 +77,7 @@ import { HStack, Item, ItemGroup, ZStack } from './primitives';
  * @param {Array}  palette Active theme colour palette ([{ slug, color }]).
  * @return {string|undefined} A CSS colour, or undefined when empty.
  */
-export function resolveColorToken( value, palette ) {
+export function resolveColourToken( value, palette ) {
 	if ( ! value ) {
 		return undefined;
 	}
@@ -188,7 +188,7 @@ function SgsColourStateControl( {
 
 	const resolved = states.map( ( s ) => ( {
 		...s,
-		display: s.linked ? resolveColorToken( s.value, colours ) : s.value,
+		display: s.linked ? resolveColourToken( s.value, colours ) : s.value,
 	} ) );
 
 	const renderPalette = ( s ) => (
@@ -367,7 +367,7 @@ export default function DesignTokenPicker( {
 
 	// In linked mode the stored value may be a token slug — resolve it to a CSS
 	// colour so ColorPalette highlights the matching swatch.
-	const displayValue = linked ? resolveColorToken( value, colours ) : value;
+	const displayValue = linked ? resolveColourToken( value, colours ) : value;
 
 	const handleChange = makeChangeHandler( { linked, colours, onChange } );
 

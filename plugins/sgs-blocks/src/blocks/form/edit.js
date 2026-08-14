@@ -14,7 +14,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { DesignTokenPicker, ResponsiveBoxControl, LinkPopoverField, resolveColorToken } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, LinkPopoverField, resolveColourToken } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
@@ -53,16 +53,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// submitColour/submitBackground/progressBarColour's DesignTokenPickers
 	// have no `linked` prop, so they always store a raw CSS value, never a
-	// slug -- resolveColorToken() (not colourVar(), which is slug-only) is
+	// slug -- resolveColourToken() (not colourVar(), which is slug-only) is
 	// the correct resolver. Mirrors render.php's scoped `.sgs-form__button
 	// --submit`/`.sgs-form__progress` rules (render.php:211-241).
 	const [ palette ] = useSettings( 'color.palette' );
 	const submitButtonStyle = {
-		color: resolveColorToken( submitColour, palette ) || undefined,
-		backgroundColor: resolveColorToken( submitBackground, palette ) || undefined,
+		color: resolveColourToken( submitColour, palette ) || undefined,
+		backgroundColor: resolveColourToken( submitBackground, palette ) || undefined,
 	};
 	const progressBarStyle = {
-		backgroundColor: resolveColorToken( progressBarColour, palette ) || undefined,
+		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
 	};
 
 	const blockProps = useBlockProps( {

@@ -8,7 +8,7 @@ import {
 	Button,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, resolveColorToken } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, resolveColourToken } from '../../components';
 
 const STYLE_OPTIONS = [
 	{ value: 'minimal', label: __( 'Minimal Pill', 'sgs-blocks' ), hint: __( 'Quiet: play + progress + timecode', 'sgs-blocks' ) },
@@ -45,14 +45,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	// arc via style.css) — empty falls back to the theme primary token, same
 	// default render.php uses. accentColour's DesignTokenPicker has no
 	// `linked` prop, so it always stores a raw CSS value, never a slug —
-	// resolveColorToken() (not colourVar(), which is slug-only) is the
+	// resolveColourToken() (not colourVar(), which is slug-only) is the
 	// correct resolver here.
 	const [ palette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: `sgs-audio sgs-audio--${ playerStyle }`,
 		style: {
 			'--sgs-audio-accent': accentColour
-				? resolveColorToken( accentColour, palette )
+				? resolveColourToken( accentColour, palette )
 				: 'var(--wp--preset--color--primary, #c9821f)',
 		},
 	} );

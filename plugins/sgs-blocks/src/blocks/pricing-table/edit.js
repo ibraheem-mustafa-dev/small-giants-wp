@@ -15,7 +15,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker, LinkPopoverField, resolveColorToken } from '../../components';
+import { DesignTokenPicker, IconPicker, LinkPopoverField, resolveColourToken } from '../../components';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -731,15 +731,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								     that gate rather than always rendering a placeholder.
 								     ctaColour/ctaBackground's DesignTokenPickers have no
 								     `linked` prop, so they always store a raw CSS value,
-								     never a slug -- resolveColorToken() (not colourVar(),
+								     never a slug -- resolveColourToken() (not colourVar(),
 								     which is slug-only) is the correct resolver. */ }
 								{ '' !== ( plan.ctaText ?? __( 'Get started', 'sgs-blocks' ) ) && (
 								<div
 									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
 									style={ {
-										color: resolveColorToken( ctaColour, palette ) || undefined,
+										color: resolveColourToken( ctaColour, palette ) || undefined,
 										backgroundColor:
-											resolveColorToken( ctaBackground, palette ) || undefined,
+											resolveColourToken( ctaBackground, palette ) || undefined,
 									} }
 								>
 									{ plan.ctaText ||

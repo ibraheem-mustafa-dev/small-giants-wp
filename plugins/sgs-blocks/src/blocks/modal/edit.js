@@ -12,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, resolveColorToken } from '../../components';
+import { DesignTokenPicker, resolveColourToken } from '../../components';
 
 const TRIGGER_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -75,11 +75,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Mirrors render.php's dialog rules: max-width variant class + the
 	// modalBackground colour rule on `.sgs-modal__dialog`. modalBackground's
 	// DesignTokenPicker has no `linked` prop, so it always stores a raw CSS
-	// value, never a slug -- resolveColorToken() (not colourVar(), which is
+	// value, never a slug -- resolveColourToken() (not colourVar(), which is
 	// slug-only) is the correct resolver.
 	const contentPreviewStyle = {
 		maxWidth: MAX_WIDTH_VALUES[ maxWidth ] || undefined,
-		backgroundColor: resolveColorToken( modalBackground, palette ) || undefined,
+		backgroundColor: resolveColourToken( modalBackground, palette ) || undefined,
 	};
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -95,11 +95,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	// triggerColour/triggerBackground's DesignTokenPickers have no `linked`
 	// prop, so they always store a raw CSS value, never a slug --
-	// resolveColorToken() (not colourVar(), which is slug-only) is the
+	// resolveColourToken() (not colourVar(), which is slug-only) is the
 	// correct resolver.
 	const triggerButtonStyle = {
-		color: resolveColorToken( triggerColour, palette ) || undefined,
-		backgroundColor: resolveColorToken( triggerBackground, palette ) || undefined,
+		color: resolveColourToken( triggerColour, palette ) || undefined,
+		backgroundColor: resolveColourToken( triggerBackground, palette ) || undefined,
 	};
 
 	return (
@@ -225,7 +225,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					content preview. Rather than leaving overlayColour/overlayOpacity
 					with zero editor representation, this swatch reproduces the exact
 					same maths render.php uses for the backdrop (colour resolved via
-					resolveColorToken, opacity/100) so an operator can see what the
+					resolveColourToken, opacity/100) so an operator can see what the
 					dimmed backdrop will look like without it needing to visually BE
 					an open dialog.
 
@@ -249,7 +249,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							borderRadius: '4px',
 							border: '1px solid #e5e5e5',
 							backgroundColor:
-								resolveColorToken( overlayColour, palette ) ||
+								resolveColourToken( overlayColour, palette ) ||
 								undefined,
 							opacity: ( overlayOpacity ?? 50 ) / 100,
 						} }

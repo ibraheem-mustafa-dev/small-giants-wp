@@ -30,7 +30,7 @@ import {
 import {
 	PanelBody,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, resolveColorToken } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, resolveColourToken } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
@@ -92,7 +92,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// background / border / radius / padding) exactly, so a change to any of
 	// these 5 controls shows live in the canvas instead of only on the
 	// published page. GROUND-TRUTH: render.php:82-122 — asideBg resolves via
-	// sgs_colour_value() (here: resolveColorToken against the live palette,
+	// sgs_colour_value() (here: resolveColourToken against the live palette,
 	// the same slug-or-raw-CSS resolution used by sgs/button's own preview);
 	// asideRadius is already a unit-bearing string from UnitControl; the
 	// border only paints when at least one side of asideBorderWidth is
@@ -105,7 +105,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const previewStyle = {};
 	if ( asideBg ) {
-		previewStyle.backgroundColor = resolveColorToken( asideBg, palette );
+		previewStyle.backgroundColor = resolveColourToken( asideBg, palette );
 	}
 	if ( asideRadius ) {
 		previewStyle.borderRadius = asideRadius;
@@ -115,7 +115,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		previewStyle.borderWidth = borderWidthPreview;
 		previewStyle.borderStyle = 'solid';
 		previewStyle.borderColor = asideBorderColour
-			? resolveColorToken( asideBorderColour, palette )
+			? resolveColourToken( asideBorderColour, palette )
 			: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
 	}
 	const paddingPreview = boxShorthand( asidePadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );

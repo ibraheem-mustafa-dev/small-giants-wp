@@ -300,8 +300,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
-	const iconColorValue = colourVar( iconColour ) || 'currentColor';
-	const textColorValue = colourVar( textColour ) || undefined;
+	const iconColourValue = colourVar( iconColour ) || 'currentColor';
+	const textColourValue = colourVar( textColour ) || undefined;
 
 	// Build className based on active variant.
 	const blockClassName = [
@@ -336,8 +336,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				'--sgs-trust-bar-gap': gapCssValue( gap ),
 				'--sgs-trust-badge-circle-size': iconCircleSize !== 44 ? `${ iconCircleSize }px` : undefined,
 				'--sgs-trust-badge-circle-bg': circleBgValue,
-				'--sgs-trust-badge-icon-colour': iconColorValue,
-				'--sgs-trust-badge-text-colour': textColorValue,
+				'--sgs-trust-badge-icon-colour': iconColourValue,
+				'--sgs-trust-badge-text-colour': textColourValue,
 				'--sgs-trust-badge-circle-radius': circleRadiusValue,
 				'--sgs-trust-badge-circle-shadow': circleShadowValue,
 			} : {} ),
@@ -850,14 +850,14 @@ export default function Edit( { attributes, setAttributes } ) {
 										<EditorIconCircle
 											size={ iconCircleSize }
 											circleBg={ circleBgValue }
-											iconColour={ iconColorValue }
+											iconColour={ iconColourValue }
 											iconSlug={ item.icon || 'check' }
 											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
 											boxShadow={ circleShadowValue }
 											filled={ item.fillStyle === 'filled' }
 											fillColour={ item.fillColour }
 										/>
-										<span className="sgs-trust-bar__label" style={ { color: textColorValue } }>
+										<span className="sgs-trust-bar__label" style={ { color: textColourValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
 											{ isPending && (
 												<span style={ {
