@@ -3670,3 +3670,55 @@ The pre-commit visual-diff gate requires a PASS report before a visual change ca
 
 
 ---
+
+## 2026-08-14 — decisions.md size resolved: sweep + compress + auto-sweep hook built
+
+> **P-DECISIONS-MD-OVER-LINE-CAP** — decisions.md is 9,476 lines / 819,478 bytes against a 600-line / 262,144-byte cap
+> **Status: RESOLVED — 2026-08-14.** The remedy this entry itself named (archive-on-resolve
+> into `memory/decisions-archive.md`) was run, twice, plus a compression pass: decisions.md
+> went from 921KB (10,798 lines) at the start of the day to 427KB (195 entries) by the end of
+> it — 75 zero-citation entries archived, then all remaining entries compressed from full
+> narratives to short rulings. An `/adversarial-council` review (6 personas) then confirmed no
+> further archiving is safe (a "redundant with citing spec" mechanism targets the WRONG
+> entries — tested against real content, not just discussed) and found real bugs in the sweep
+> tooling itself (missing scope files, no worktree exclusion, a hardcoded range string, and an
+> archive split across two incompatible heading formats with no index) — all fixed. A Stop hook
+> (`.claude/hooks/decisions-sweep-auto.py`) now auto-sweeps + auto-rebaselines whenever the
+> growth budget trips, so this stops being something a human or agent needs to notice and act
+> on manually. The entry's own historical detail (the docscore false-positive itemisation,
+> the re-measurement history) is preserved above verbatim; superseded by the resolution above.
+
+**Original entry (verbatim, for the record):**
+
+### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 9,476 lines / 819,478 bytes against a 600-line / 262,144-byte cap
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30 · **Re-measured:** 2026-08-12
+
+**Re-measured 2026-08-12 — the trend reversed again, upward, sharply.** Live: **9,476 lines /
+819,478 bytes** (3.1x the byte fallback cap per `handoff-preflight.py --check`) — up from 6,961
+lines when last re-measured 2026-08-09, a +36% jump in 3 days. The archive-on-resolve remedy
+(sweep retired/superseded/non-load-bearing entries into `memory/decisions-archive.md`) still has
+not been run. This is the file's third stale-figure cycle on this entry — re-measuring without
+running the sweep just produces a new stale number next time. Length remains the **only genuine
+failure** (the other three are scorer false positives, itemised below).
+
+~~`docscore` grades `decisions.md` at 67.3% (C) … 2,634 when parked 2026-07-30; 3,097 after D424;
+3,604 after D432 — it is still growing~~. The project already has the remedy — archive-on-resolve
+into `memory/decisions-archive.md` for retired/superseded/non-load-bearing entries — it just has
+not been run recently enough to reach the cap.
+
+**The other three docscore failures on this file are SCORER FALSE POSITIVES — do not "fix" them:**
+- `organization` ×10 flagged as US spelling. These are Schema.org type identifiers
+  (`Organization`, `LocalBusiness`) inside JSON-LD discussion. `~/.claude/rules/uk-english.md`
+  exempts third-party/fixed identifiers, and renaming them would break the emitted schema.
+- `TBD` flagged as a stub. It appears in a historical note recording that a bug's cause *was* TBD
+  at the time of writing — prose in a dated record, not an unfilled placeholder.
+- `Maybe` flagged as hedging. It is part of an article title: Roselli, *"Maybe Don't Name That
+  Landmark"* (2024).
+
+Same class applies to `parking.md`'s own 80% (B): its `TODO`/`TBD` markers are quoted inside
+parked-work descriptions, which is what a parking file is for.
+
+**Trigger:** next decisions.md sweep, or when the D-range index is next rebuilt. Archive by
+D-range; do not delete.
+
+---

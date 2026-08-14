@@ -8,8 +8,8 @@ parking, goals, mistakes, architecture.md, dev-setup.md, specs/ and plans/
 excluding their archive/ subfolders, scripts/*.py excluding .claude/worktrees/)
 -- checked both as an exact citation and as part of a D<N1>-D<N2> range citation.
 Entries only present in the uncommitted working tree (not yet in git HEAD), or
-added by the single most recent commit, are never swept -- they haven't had a
-sweep cycle's worth of time to accumulate citations yet.
+added within the last GRACE_DAYS days, are never swept -- they haven't had a
+realistic chance to accumulate citations yet.
 
 2026-08-14 adversarial-council review (4/6 personas independently converged):
 a further "archive because the content is now redundant with its citing spec"
@@ -118,34 +118,62 @@ def committed_dnumbers():
     return set("D" + n for n in re.findall(r"^## D(\d+)", out, re.MULTILINE))
 
 
-def most_recently_committed_dnumbers():
-    """D-numbers added by the single most recent commit that touched decisions.md.
+GRACE_DAYS = 7
+
+
+def recently_added_dnumbers(candidate_headings: dict, grace_days: int = GRACE_DAYS) -> set:
+    """Of the given {D-number: exact heading line} candidates, which were introduced to
+    decisions.md within the last `grace_days` days.
 
     A brand-new decision can be perfectly legitimate and still show zero external
-    citations simply because it hasn't had time to be cited anywhere yet -- being
-    freshly committed isn't proof it's safe to sweep. This gives entries from the
-    latest commit one full sweep cycle of grace before they become eligible.
+    citations simply because nothing has had a chance to cite it yet -- especially one
+    describing not-yet-implemented work, which won't be referenced by a spec until that
+    work actually ships.
+
+    Two implementations were tried and rejected before this one:
+    - Single-most-recent-commit grace: too narrow. This project lands multiple
+      decisions.md-touching commits per day, so an entry added this morning could lose
+      "most recent commit" status by lunchtime and become sweep-eligible on its first
+      birthday. Caught live 2026-08-14: D619 aged out and got swept on the next real run.
+    - A window-diff scan (diff the parent of the oldest in-window commit against HEAD,
+      collect every `+## D<N>` line): broke on the SAME day it was written, against this
+      project's OWN commits. A whole-file rewrite (this project ran two compression
+      passes the same day, each replacing every entry's body) can produce a line-based
+      diff where an untouched heading's `-`/`+` pair gets shuffled apart from its
+      original position by Myers-diff pairing near large changed regions -- D349, one of
+      the OLDEST entries in the file, showed up as "added" this way. Not safe against a
+      doc that gets wholesale-rewritten periodically, which this one now does.
+
+    This implementation is slower but correct regardless of rewrite history: for each
+    CANDIDATE only (already citation-filtered, so normally a handful, not all 195), run
+    `git log -S"<exact heading line>"` -- pickaxe search tracks when that literal
+    string's OCCURRENCE COUNT changed, so a heading present before and after some other
+    commit's body-only rewrite never shows up for that commit at all. The oldest hit is
+    genuinely when the entry was introduced.
     """
-    try:
-        last_commit = subprocess.run(
-            ["git", "log", "-1", "--format=%H", "--", "decisions.md"],
-            cwd=CLAUDE_DIR, capture_output=True, check=True,
-        ).stdout.decode("utf-8", errors="replace").strip()
-        if not last_commit:
-            return set()
-        diff = subprocess.run(
-            ["git", "diff", f"{last_commit}~1", last_commit, "--", "decisions.md"],
-            cwd=CLAUDE_DIR, capture_output=True, check=True,
-        ).stdout.decode("utf-8", errors="replace")
-    except subprocess.CalledProcessError:
+    if not candidate_headings:
         return set()
-    added = set()
-    for line in diff.splitlines():
-        if line.startswith("+## D"):
-            m = re.match(r"\+## D(\d+)", line)
-            if m:
-                added.add("D" + m.group(1))
-    return added
+    recent = set()
+    for dnum, heading_line in candidate_headings.items():
+        needle = heading_line.strip()
+        try:
+            out = subprocess.run(
+                ["git", "log", f"-S{needle}", "--format=%ad", "--date=short", "--", "decisions.md"],
+                cwd=CLAUDE_DIR, capture_output=True, check=True,
+            ).stdout.decode("utf-8", errors="replace").strip().splitlines()
+        except subprocess.CalledProcessError:
+            continue
+        if not out:
+            continue  # never found as a pickaxe hit (shouldn't happen for a live entry) -- not graced
+        introduced = out[-1]  # oldest hit, git log is newest-first
+        try:
+            from datetime import date as _date, timedelta as _timedelta
+            y, m, d = (int(x) for x in introduced.split("-"))
+            if _date(y, m, d) >= _date.today() - _timedelta(days=grace_days):
+                recent.add(dnum)
+        except ValueError:
+            continue
+    return recent
 
 
 def main():
@@ -157,12 +185,16 @@ def main():
 
     cited = build_cited_set()
     committed = committed_dnumbers()
-    just_added = most_recently_committed_dnumbers()
 
-    candidates = [
-        d for d in order
-        if d not in cited and d in committed and d not in just_added
-    ]
+    # Pre-filter: uncited + committed. Only THESE (normally a handful) get the slower
+    # per-entry git-log grace check -- not all 195 entries.
+    pre_candidates = [d for d in order if d not in cited and d in committed]
+    pre_candidate_headings = {
+        d: entries[d].split("\n", 1)[0] for d in pre_candidates
+    }
+    just_added = recently_added_dnumbers(pre_candidate_headings)
+
+    candidates = [d for d in pre_candidates if d not in just_added]
     skipped_uncommitted = [
         d for d in order
         if d not in cited and (d not in committed or d in just_added)
@@ -231,6 +263,14 @@ def main():
 
     print(f"\ndecisions.md: {total_before:,} -> {len(new_decisions.encode('utf-8')):,} bytes")
     print(f"decisions-archive.md: {len(archive_before_bytes):,} -> {len(new_archive.encode('utf-8')):,} bytes")
+
+    # Keep the archive's D-number index current automatically -- a stale index is
+    # worse than no index (it lies about what's findable). build-archive-index.py is
+    # idempotent, so this is safe to call unconditionally after every real sweep.
+    if candidates:
+        index_script = REPO_ROOT / ".claude" / "scripts" / "build-archive-index.py"
+        if index_script.exists():
+            subprocess.run([sys.executable, str(index_script)], cwd=str(REPO_ROOT))
 
 
 if __name__ == "__main__":
