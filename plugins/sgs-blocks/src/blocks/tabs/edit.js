@@ -204,6 +204,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					initialOpen={ false }
 				>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

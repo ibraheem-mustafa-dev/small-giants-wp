@@ -339,6 +339,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen={ false }
 				>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Responsive overrides', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

@@ -201,8 +201,34 @@ if [ -n "$STAGED_BLOCK_SRC" ]; then
             echo "   ⊙ $block_name: editor-only (edit.js) — visual gate N/A"
             continue
         fi
+        # EDITOR-CANVAS-ONLY: the staged files are edit.js and/or editor.css and
+        # nothing else — see check-editor-canvas-css.py. Unlike the branch above,
+        # this does NOT skip the gate: editor.css can have a real visible effect
+        # on the editor sidebar, just never on the frontend, so it still needs a
+        # genuine capture — of the EDITOR CANVAS, not first paint. A report may
+        # satisfy this branch with `editor_capture_passed: true` instead of
+        # `first_paint_capture_passed: true`; the CHANGE_KEYED source_sha check
+        # below applies identically either way.
+        #
+        # Added 2026-08-14 for the D4 ToolsPanel/PanelBody title-dedup fix (7
+        # blocks, edit.js + editor.css only). check-editor-only.py correctly
+        # refuses editor.css by design (its own comment: "an author may
+        # legitimately want [it] captured") and make-visual-diff-reports.py is
+        # built for FRONTEND before/after captures, which cannot answer a
+        # question about the editor sidebar. Bean: "Need diffs to be more
+        # flexible so we're able to actually verify with screenshots that are
+        # legit." This is that path — narrow, deterministic file-scope proof
+        # PLUS a still-required real capture, not a free skip.
+        EDITOR_CANVAS_ONLY=0
+        if python "$REPO_ROOT/plugins/sgs-blocks/scripts/check-editor-canvas-css.py" "$block_name" >/dev/null 2>&1; then
+            EDITOR_CANVAS_ONLY=1
+        fi
         REPORT="$REPO_ROOT/reports/visual-diff/${block_name}-${TODAY}.md"
-        if [ -f "$REPORT" ] && grep -q "verdict: PASS" "$REPORT" && grep -q "first_paint_capture_passed: true" "$REPORT"; then
+        CAPTURE_FIELD="first_paint_capture_passed: true"
+        if [ "$EDITOR_CANVAS_ONLY" = "1" ] && [ -f "$REPORT" ] && grep -q "editor_capture_passed: true" "$REPORT"; then
+            CAPTURE_FIELD="editor_capture_passed: true"
+        fi
+        if [ -f "$REPORT" ] && grep -q "verdict: PASS" "$REPORT" && grep -q "$CAPTURE_FIELD" "$REPORT"; then
             # CHANGE-KEYED, not date-keyed (added 2026-08-07). A PASS report used
             # to be accepted purely because its filename carried today's date —
             # so on a repo where two tracks share main, a report another author
@@ -234,6 +260,8 @@ if [ -n "$STAGED_BLOCK_SRC" ]; then
         echo "   No passing visual diff report for:$MISSING"
         echo "   Create: reports/visual-diff/<block>-${TODAY}.md"
         echo "   Required fields: 'verdict: PASS' AND 'first_paint_capture_passed: true'"
+        echo "   (or, for edit.js/editor.css-only changes: 'editor_capture_passed: true' —"
+        echo "    see check-editor-canvas-css.py)"
         echo "   Genuinely non-visual changes are auto-detected and skipped:"
         echo "     - block.json supports.sgs only  -> check-blockjson-metadata-only.py"
         echo "     - markup-neutral PHP            -> check-markup-neutral.py <block>"

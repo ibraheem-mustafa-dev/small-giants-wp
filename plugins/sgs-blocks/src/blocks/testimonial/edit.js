@@ -665,6 +665,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					initialOpen={ false }
 				>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Typography', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
@@ -892,6 +893,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					initialOpen={ false }
 				>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Hover states', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

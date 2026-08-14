@@ -954,6 +954,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* Box shadow — always editable (preset-as-seed) */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

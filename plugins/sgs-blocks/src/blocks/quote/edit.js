@@ -644,6 +644,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						initialOpen={ false }
 					>
 						<ToolsPanel
+							className="sgs-nested-tools-panel"
 							label={ __( 'Wrapper', 'sgs-blocks' ) }
 							resetAll={ () =>
 								setAttributes( {
