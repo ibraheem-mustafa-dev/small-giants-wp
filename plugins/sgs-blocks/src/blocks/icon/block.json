@@ -26,10 +26,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"gradients": true,
-			"text": true,
-			"__experimentalSkipSerialization": true
+			"background": false,
+			"gradients": false,
+			"text": false
 		},
 		"spacing": {
 			"margin": true,

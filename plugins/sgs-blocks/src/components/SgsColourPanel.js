@@ -1,5 +1,6 @@
 /**
- * THE grouped colour panel — D609's "missing half" (amended 2026-08-13).
+ * THE grouped colour panel — D609's "missing half" (amended 2026-08-13,
+ * corrected 2026-08-14 per Bean's direct challenge — see below).
  *
  * D609's first ruling only captured the ROW SHAPE (§1 field 9a-c: swatch-left
  * row, states in a popover, never optional). Built to that ruling alone, the
@@ -9,24 +10,35 @@
  * like the native setup. And, the colour setup is supposed to replace the
  * native setup at the top of the styles panel." (`decisions.md` D609 amendment.)
  *
- * This component is the fix: ONE panel, every colour on the block in one
- * place, mounted into WordPress's own `group="color"` InspectorControls slot
- * — the exact slot the native "Color" ToolsPanel occupies in the Styles tab
- * (already used for this purpose by `blocks/extensions/parallax.js:147`, the
- * established precedent in this codebase for augmenting/replacing that native
- * slot rather than bolting on a second one).
+ * ⚠ CORRECTED 2026-08-14 — the FIRST fix mounted into WordPress's own
+ * `group="color"` InspectorControls slot (the same slot native's own "Color"
+ * ToolsPanel occupies), reasoning that this matched the block's kept
+ * `supports.color` declaration and an existing precedent
+ * (`blocks/extensions/parallax.js:147`). Bean corrected this directly: "we're
+ * just supposed to be taking the code and using it for our own custom
+ * settings" — i.e. reuse the ROW PATTERN (`DesignTokenPicker` + `states`),
+ * do NOT mount into native's own slot. Sharing that slot meant WP's own
+ * native Text/Background swatches rendered alongside this panel's rows in
+ * the SAME native "Color" ToolsPanel — exactly the confusion D609's
+ * amendment was written to remove, just relocated rather than fixed.
  *
- * ⚠ A block adopting this panel still keeps `supports.color` declared
- * (skip-serialised) if it has a ROOT-element colour attr in its Spec 35
- * element manifest — `scripts/audit-block-uniformity.py`'s
- * `supports_color_missing` check is a pipeline/DB-contract signal (not a UI
- * toggle) that requires it, and it is wired into the shared pre-commit hook.
- * Removing `supports.color` to "fully replace" the native panel was tried and
- * reverted for this reason. In practice this means WP's own native Color
- * rows may still render in the same `group="color"` slot alongside this
- * panel's rows — a pre-existing overlap (they wrote nowhere before this
- * component existed too), not a regression introduced here. Closing that
- * residual overlap needs a mechanism this component does not attempt.
+ * This component is now a fully SGS-OWNED panel: default (unscoped)
+ * `InspectorControls` group, wrapped in its own `PanelBody` titled "Colour",
+ * pinned FIRST in the block's inspector so it renders at the top — per
+ * Bean's standing rule (2026-08-14): "all of the blocks should have the
+ * colour section at the top with all of their colours in that panel", aside
+ * from special exceptions. Consumers must render `<SgsColourPanel>` before
+ * any other `<InspectorControls>` block in their `edit()` return, since
+ * WordPress concatenates same-group Fills in mount order.
+ *
+ * `supports.color` STAYS declared (the `scripts/audit-block-uniformity.py`
+ * `supports_color_missing` gate is a pipeline/DB-contract signal requiring
+ * the KEY be present — verified in the gate's own source, it does not
+ * inspect the sub-flag values). Its sub-flags (`text`/`background`/
+ * `gradients`) must be set to `false` on the consuming block so WordPress
+ * generates NO native colour UI at all — this is what actually closes the
+ * overlap, not the slot choice alone. See the per-block block.json for the
+ * flag change; this component makes no assumption about it.
  *
  * One row per pickable colour setting on the block — each row is exactly the
  * D609 shape (`DesignTokenPicker` with a `states` array), so 9a-c hold
@@ -43,7 +55,9 @@
  *                             (`shape !== 'none' && { … }`) directly in the
  *                             array literal.
  */
+import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
 
 export default function SgsColourPanel( { rows } ) {
@@ -54,14 +68,20 @@ export default function SgsColourPanel( { rows } ) {
 	}
 
 	return (
-		<InspectorControls group="color">
-			{ visible.map( ( row ) => (
-				<DesignTokenPicker
-					key={ row.key }
-					label={ row.label }
-					states={ row.states }
-				/>
-			) ) }
+		<InspectorControls>
+			<PanelBody
+				title={ __( 'Colour', 'sgs-blocks' ) }
+				initialOpen
+				className="sgs-colour-panel"
+			>
+				{ visible.map( ( row ) => (
+					<DesignTokenPicker
+						key={ row.key }
+						label={ row.label }
+						states={ row.states }
+					/>
+				) ) }
+			</PanelBody>
 		</InspectorControls>
 	);
 }

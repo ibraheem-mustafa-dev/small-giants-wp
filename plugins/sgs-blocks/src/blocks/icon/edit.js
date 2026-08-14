@@ -191,17 +191,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					}
 				/>
 			</BlockControls>
-			{ /* D609 amendment (decisions.md, 2026-08-13) — ONE grouped
-			   colour panel, mounted into WordPress's own native
-			   `group="color"` slot (Styles tab) — the same slot the
-			   native Color panel occupies for this block's
-			   `supports.color` (kept, skip-serialised, unchanged: the
-			   audit-block-uniformity.py gate requires it present for any
-			   ROOT-element colour attr per the Spec 35 element manifest —
-			   this is a pipeline/DB-contract signal, not a UI toggle, so
-			   it cannot be removed here). Every pickable colour on this
-			   block now renders from THIS one panel instead of being
-			   scattered as inline rows inside "Icon"/"Background" below. */ }
+			{ /* D609 amendment (decisions.md, 2026-08-13), corrected 2026-08-14
+			   — ONE grouped, SGS-OWNED colour panel (own PanelBody, default
+			   InspectorControls group — NOT native's `group="color"` slot;
+			   see SgsColourPanel.js's docblock for why that first attempt
+			   was wrong). `supports.color` stays declared (the
+			   audit-block-uniformity.py gate requires the KEY present for
+			   any ROOT-element colour attr per the Spec 35 element
+			   manifest — a pipeline/DB-contract signal, not a UI toggle)
+			   but its text/background/gradients sub-flags are now false,
+			   so WordPress generates no native colour UI to overlap with
+			   this panel. Rendered FIRST so it sits at the top of the
+			   inspector. Every pickable colour on this block renders from
+			   THIS one panel instead of being scattered as inline rows
+			   inside "Icon"/"Background" below. */ }
 			<SgsColourPanel
 				rows={ [
 					{

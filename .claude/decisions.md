@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D618 — SgsColourPanel must NOT mount into native's `group="color"` ToolsPanel — own PanelBody instead [INCIDENT]
+
+**2026-08-14.** T4's first build (D609/D617, commit `f9f39bb6`) mounted `SgsColourPanel` into
+WordPress's native `InspectorControls group="color"` slot, reasoning that this was the only way to
+land in the Styles tab and that the block's kept `supports.color` declaration made it the natural
+precedent (`blocks/extensions/parallax.js:147`). Bean corrected this directly: *"why are you using
+the Color panel, we're just supposed to be taking the code and using it for our own custom
+settings."*
+
+**What was actually wrong, proven live (Playwright, sandybrown, page 2422):** mounting into
+`group="color"` doesn't just place content near native's controls — it renders SGS's rows INSIDE
+WordPress's own `ToolsPanel` React component: native's "Color" heading, native's "Color options" `+`
+disclosure button, and (while `supports.color` sub-flags were still true) native's own Text/Background
+buttons, all wrapping our "Icon colour" row in one native-owned container. That is "using the Color
+panel" in the literal sense Bean meant — not just visual proximity to dead swatches (D609's amendment
+diagnosed correctly) but our own control living inside a component we don't own, with a `+` menu
+whose presence directly risks D609 clause 9c ("a colour is never an optional `ToolsPanelItem`").
+
+**The fix:** `SgsColourPanel` now renders a **default-group** `InspectorControls` wrapping its own
+`PanelBody` titled "Colour" — no native ToolsPanel, no `+` disclosure, entirely SGS-owned markup. This
+places it in the **Settings tab** (default group's native destination) rather than the Styles tab —
+a real change from the original D609 amendment's literal wording ("at the top of the styles panel"),
+justified because Spec 35 A3's own interim architecture note already routes SGS-owned panels to
+Settings and reserves the Styles tab for genuine native supports; a panel using zero native machinery
+belongs with the other SGS-owned panels (Icon, Background, etc.), not borrowed into a native tab.
+Rendered FIRST in `sgs/icon`'s `edit()` so it sits at the top, per Bean's separate 2026-08-14 rule:
+*"aside from special exceptions, all of the blocks should have the colour section at the top with
+all of their colours in that panel."*
+
+`sgs/icon`'s `supports.color` sub-flags (`text`/`background`/`gradients`) flipped `true→false` in the
+same commit — the `audit-block-uniformity.py` `supports_color_missing` gate only requires the `color`
+KEY present (verified directly in its source), not the sub-flag values, so this satisfies the
+pipeline/DB-contract signal while stopping WordPress from generating any native colour UI to mount
+into a slot at all. **Live-verified, both directions:** before/after frontend markup on a real
+`sgs/icon` instance (page 2421) is byte-for-byte identical — `__experimentalSkipSerialization: true`
+had already fully suppressed native's className/style output before this change, so the sub-flag flip
+has zero rendered effect (full evidence: `reports/visual-diff/icon-2026-08-14.md`). Editor-side,
+before/after Playwright capture (page 2422) confirms the native ToolsPanel is gone and the Settings
+tab now shows a clean "Colour" panel first, no native chrome, no `+` menu.
+
+**Not yet done:** rollout to the other ~49 blocks with `role='color'` — this session fixed the pilot
+(`sgs/icon`) only, per T4's own instruction not to rush a wider rollout in one pass. Bean's 2026-08-14
+rule ("all blocks... aside from special exceptions") is the standing target; scoping the rollout
+(batching, what counts as a "special exception") is next-step work, not done in this commit.
+
+## D617 — D609's last open question ruled: colour-state affordance is core's overlapping swatches, not a count badge [ROUTINE]
+
+**2026-08-14.** D609's amendment box (2026-08-13) left one question unruled: whether the colour
+row's multi-state affordance should be Bean's originally-requested count badge, or core's own
+`ZStack`-overlapping-swatches shape (`global-styles/color-panel.js:163-176`, WP 7.0.4 SHA
+`28c0dedc4eaf…`) — the build had shipped with core's overlap pending a ruling. **Bean's ruling:
+use core's overlapping swatches. Match native.** This closes D609 clause 9a's row-shape question
+in full — no open items remain under D609. Feeds T4 in the uniformity-thread orchestration plan
+(`~/.claude/plans/go-track-1b-playful-hamster.md`, T4: "close the one open ruling, then finish the
+panel").
+
 ## D616 — nav-drawer submenu build merged direct to main, not via PR [ROUTINE]
 
 **2026-08-13/14.** A Sonnet subagent built real accordion + drill-down submenu behaviour for
