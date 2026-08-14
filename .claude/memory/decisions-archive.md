@@ -2,6 +2,366 @@
 
 Entries moved here are no longer active in the main log. They are ordered chronologically (oldest first within each session). D-numbers preserved; none reused.
 
+## Index — every D-number archived here, sorted ascending
+
+Covers both legacy `**D<N>` and `## D<N>` heading formats in this file. Check here before hunting through thousands of lines chronologically: grep the number below for a one-line title, then grep that same number as a heading (`^## D<N>` or `^\*\*D<N>`) to jump to the full entry. Regenerate with `python .claude/scripts/build-archive-index.py` after archiving more entries.
+
+- D1 — Evidence stack triple: trace + expected-rules + split-metric coverage
+- D2 — 4-rater /qc panel with Cerebras-stall replacement protocol
+- D3 — Suffix-anchored attribute-coverage match
+- D4 — Trace lifetime discipline: try/finally reset in `convert_section`
+- D5 — Attribute-gap promotion is end-of-line cleanup, NOT primary pixel-diff path
+- D6 — Block-variation system uses native WP `register_block_variation()`
+- D21 — WP style-variation overlay system retired (commit `43a93df9`)
+- D22 — Customiser migration shipped (commit `60220b13`)
+- D23 — Customiser paint targets: `header.wp-block-template-part` / `footer.wp-block-tem
+- D24 — Button-presets CSS bridge deleted (commit `60220b13`)
+- D25 — View Transitions wired with WP 7.0 native + WP 6.9 inline fallback (commit `6022
+- D26 — Markup examples seeded for 73 SGS blocks (commit `d307c8b0`)
+- D27 — block_supports audit found ZERO gaps; original 2:1 under-documentation predictio
+- D28 — apiVersion 3: all 69 blocks already at v3 (commit `d307c8b0`)
+- D29 — Lucide REST migration shipped defensively (commit `d307c8b0`)
+- D30 — Device-visibility coexistence documented (commit `d307c8b0`)
+- D31 — WP 6.9.4 → 7.0 upgrade on sandybrown
+- D32 — Two-commit archive-then-delete pattern for safe class retirement
+- D33 — Phase 2 parser strategy: runtime enumeration, not source parsing
+- D34 — Lucide icons refactored to WP 7.0 Icons REST controller (Phase 6)
+- D35 — Customiser migration of header/footer/site-info admin with View Transitions (Pha
+- D37 — Source 2 counter gates on extraction-count, not insert-count
+- D38 — Source 4 calibration threshold tightened (100 → 30)
+- D40 — Council predictions are hypotheses; empirical gate mandatory before treating as 
+- D41 — `core/group` → `sgs/container` as Stage 2 confidence-matrix fallback
+- D42 — Hand-authored patterns deleted; deterministic-only rule enforced
+- D43 — Stage 0.7 CSS dump relocated from `theme/sgs-theme/styles/<client>.css` to `pipe
+- D44 — Stage 10 silent-failure fix: named exit codes 4/5/6
+- D45 — Stage 11 added: per-section pixel-diff against actual deployed page
+- D46 — Walker pre-pass addresses Stage 4 emit shape, not Stage 2 match.json confidence
+- D47 — Structural improvement + visual regression coexist when CSS lift is pending
+- D48 — BEM element name IS canonical signal for block recognition; HTML tag is renderin
+- D49 — Walker code stays universal; data-layer drives recognition
+- D50 — `/sgs-update` Stage 1 tail invokes `assign-canonical.py`
+- D51 — `assign-canonical.py` array-attr fallback: singularise + Tier B registered-block
+- D52 — Transparent-wrapper absorb at section root (one-section-one-container)
+- D53 — Brand mockup BEM renamed for Spec 00 consistency
+- D54 — ARRAY_LIFT_PATTERNS hardcoded dict deletion DEFERRED
+- D55 — `block_compositions` table merged into `patterns.block_composition` JSON column;
+- D56 — Standalone source DBs deleted; data migrated into sgs-framework.db with `source`
+- D57 — Parking.md formatting v2 (Phase 6c)
+- D58 — Spec relocation (Phase 9C')
+- D59 — Per-doc-type retention TTL on `.claude/memory/` (Phase 7 F4)
+- D60 — Phase 13 expanded: U5 + X1 + X5 checks added to docscore.py + 5 doc-type templat
+- D62 — doc_type self-declaration back-door closed in `docscore.py`
+- D63 — Doc-touching skills aligned to Phase 13 standards
+- D64 — 10 SonarLint warnings on docscore.py closed (cognitive complexity + dead-code)
+- D65 — `strategic-plan` and `phase-plan` doc-type templates created
+- D66 — PostToolUse hook `docscore-on-doc-edit.py` shipped
+- D67 — Adoption-surface updates across global + project + working-area
+- D68 — /qc-council triangulated 3 high-confidence template fixes (applied):
+- D70 — Stage 10 (`upload_and_patch.py`) now deploys `variation-d0-d2.css` as an inline 
+- D71 — Step 1.7 G3 reframed: pixel-diff side closed by D70; failure-count side empirica
+- D72 — sgs/trust-bar block retired in favour of universal-nesting via canonical primiti
+- D73 — Phases never ship as single commits (binding rule)
+- D74 — Phase 1 scope = consolidated qc-council recovery plan (universal-extraction back
+- D75 — `/qc-council` 4-rater council validated the consolidated cloning-pipeline recove
+- D78 — Spec 16 (Deterministic Slot-Aware Converter) retires in full
+- D79 — Spec 22 (Universal Block-Equivalent Extraction) lands
+- D80 — `wp-blocks.py` becomes unified data CLI over sgs-framework.db + selected uimax t
+- D81 — Hybrid block render.php migration is empirically scoped (Phase 0.4 audit)
+- D82 — Spec 22 walker rewrite is cold replacement, no feature-flag dual-run
+- D83 — Spec 22 acceptance gate softened to ≤5% Phase 1 + ≤1% Phase 1.5 stretch
+- D84 — Phase 0.1 scope corrected from "backfill 1,214 NULL canonical_slot rows" to "bac
+- D85 — Role-exclusion positive-allowlist closes FR-22-2.2 NULL-role hole
+- D86 — Tier C deleted from equivalent_block_for(); Spec 22 amended to 2-tier system
+- D87 — pixel-diff.py architectural divergence from Spec 22 §7 Commit 0.3 wording
+- D88 — pixel-diff.py brand-375 +2.4pp is REAL methodology shift, NOT flake
+- D89 — Spec 22 §FR-22-2.5 "Phase 0.1 backfill priority list" drift caught + corrected
+- D90 — Phase 1.5 CLOSED with just Fix 1 shipped (walker FR-22-3 #3 ordering, commit `57
+- D91 — Phase reorder: Phase 2 = hybrid block migration BEFORE pixel-diff target; Phase 
+- D92 — R-22-14 binding rule added 2026-05-27: FR-22-6 migrations never carry server-sid
+- D93 — sgs/svg-background retired; SVG background capability merged into sgs/container 
+- D94 — Two changes to `sgs-update-v2.py` Stage 10 (`prune_orphans`)
+- D95 — sgs/certification-bar retired; all capability merged into sgs/trust-bar as badge
+- D96 — block_capabilities first-class pipeline integration: capabilities_for() + blocks
+- D97 — sgs/media extended from image-only to unified image/video block (Bean original i
+- D98 — 5 capability extensions shipped to sgs/container: SB-1 (grid item defaults + pro
+- D99 — slot_synonyms + legacy_role_lookup unified into new `slots` table; new `roles` t
+- D100 — Stage 10 v3 deletes retired blocks from blocks table + phpunit added to inteleph
+- D102 — XS-1 CSS serialiser sentinel leak (`'@media ... :: .selector'` → proper @media n
+- D103 — XS-8 leftover-bucket noise filter (Stage 9 extraction_failed)
+- D105 — XS-10 walker skips bs4 Comment before NavigableString check
+- D106 — XS-11 RETRACTED: subagent false positive on emoji mojibake
+- D107 — XS-2 voter literal-slug-match short-circuit retired; `blocks.tier` column + `is_
+- D108 — XS-3 / XS-6 unified `block_composition` table; walker consumption SHIPPED then R
+- D109 — XS-3 walker code REVERTED (commit c76aa107) due to regression; refined trigger q
+- D110 — XS-4 `assign-canonical.py` ported to post-D99 slots+roles schema; batch backfill
+- D111 — XS-5 wrong/dead section-scope rows in `slots` deleted; testimonial + testimonial
+- D112 — `sync-container-wrapping-blocks.py` inheritance script SHIPPED (commit 062c69d1)
+- D113 — Methodology rule captured: per-row measurement gating on multi-row DB changes
+- D114 — XS-3 reconciled: Spec 23 branch merged to main (eeac99a1)
+- D115 — FR-22-6 hybrid problem is FRACTAL; root cause = walker never runs FR-22-2
+- D116 — Spec 24 (Query-Driven Content Cards) drafted + product CPT Phase A foundation bu
+- D117 — FR-22-2 leaf content-routing (G1) + FR-23-6 depth-2 grid-wrapper preservation (G
+- D118 — §FR-22-4.1 "Universal wrapper/container resolution" added to Spec 22 as the cano
+- D119 — Recursive fold (FR-22-4.1) IMPLEMENTED
+- D120 — Wave 1 shipped + live-DOM verified
+- D121 — A-1 universal responsive per-device lift
+- D122 — `sgs/hero` FR-22-6 migration
+- D123 — `sgs/trust-badges` → `sgs/trust-bar` rename
+- D124 — Spec corrections + FR-22-18 (structural-parity acceptance)
+- D125 — Wave-2/A-1 VERIFIED on live canary (run 223313, committed `0f52a3ba` before this
+- D126 — Hero fix is CONVERTER-side (H-conv), NOT a block thin-shell (H2). qc-council 3-r
+- D127 — Trust-bar is dual-mode, not a naive InnerBlocks migration. Captured as Spec 24 §
+- D128 — §FR-22-19 scalar-media mechanism RESOLVED (DB-audit) + BUILT + emit-proven (NOT 
+- D129 — Product-card variation-sets + `sgs/option-picker` atomic block DESIGNED (researc
+- D130 — Full integration shipped + live-DOM verified on canary 144
+- D131 — qc-council-found gaps fixed (commit b83cd312)
+- D132 — qc-council verdict: code rule-clean; deferred follow-ups catalogued
+- D133 — Universal variant detection (Spec 22 §FR-22-20) specced; the hero `$is_split` fi
+- D134 — FR-22-20 universal variant detection BUILT (Commits 1-4 of 6) + emit-proven + LI
+- D135 — Rollout finding: slot-fingerprint detection (FR-22-20) fits ONLY content-distinc
+- D136 — The cloning pipeline does NOT faithfully transfer the draft's CSS — 4 systemic g
+- D137 — Shared visual IconPicker built + live-verified on sgs/icon + sgs/icon-list (SGS 
+- D138 — notice-banner upgraded to 5 semantic variants, each with an ideal default icon +
+- D139 — team-member gains genuine Compact vs Full display modes (Bean chose Option 1) — 
+- D140 — cta-section inserter variations turned into RICH presets (Task 6); product-card 
+- D141 — The editor errors are TWO distinct issues in two layers; fixed + LIVE-DOM VERIFI
+- D142 — Task 7b: cosmetic `variantStyle` converted to WP block-styles on heading/text/la
+- D143 — Mobile-nav fully fixed: full-screen overlay + populated menu + header-only inser
+- D144 — Product-card / `sgs/option-picker` design ratified (Bean's 6 decisions) — Spec 2
+- D146 — `sgs/button` replaces `core/button` everywhere + WP-mirror `sgs/multi-button` gr
+- D147 — Button presets via a slot-default-attrs mechanism + a BEM-modifier path; video/i
+- D148 — Theme thread wave 1–3 shipped: 12 commits on `feat/theme-blocks-wave1` (not yet 
+- D149 — Product-card data SOURCE is dual-source: WooCommerce-native when present, custom
+- D150 — block_composition container roster validated (28 blocks, 3-KIND role-based model
+- D151 — Product-card Phase C design ratified (Bean-directed, research-gated 2026-06-02).
+- D152 — Workstream A (block_composition container roster + container_kind) SHIPPED to ma
+- D153 — Phase D: converter emits `sgs/option-picker` for draft pill groups (THEME thread
+- D154 — Phase E: `sgs/content-collection` dedicated block (THEME thread; uncommitted)
+- D155 — Task D: `sgs/heading` hero block-style removed (THEME thread; uncommitted)
+- D156 — WCAG global colour + spacing raw-value defaults (THEME thread; uncommitted)
+- D157 — Skip-link theme bug fixed (THEME thread; uncommitted)
+- D158 — SGS global-styles + per-client theming architecture decided (Spec 26 written; bu
+- D159 — WS-1 A1+A2 shipped (`2f86d9e6`, pushed to main); the container/wrapper standardi
+- D160 — The #1-#8 triage was grounded (5 parallel /systematic-debugging investigations +
+- D161 — Spec 27 (SGS Product & WooCommerce Layer) written, consolidated, and re-scoped M
+- D162 — Theme session 9: the committed product-meta IDOR fix was DEPLOYED to the canary 
+- D163 — cloning PM session: three block-quality fixes + the deterministic composite-diff
+- D164 — Theme session 10: the full visible sell-loop (U3 manifest+SSR seed → U4 multi-ax
+- D165 — Theme session 11: two hardening units shipped + live-verified on canary page 589
+- D166 — WS-4 composite-wrapper mirror executed: a shared PHP helper + a byte-identical s
+- D167 — WS-4 composite-wrapper mirror is now BLOCK-SIDE COMPLETE across the whole roster
+- D168 — Theme session 12: Spec 27 Phase 2 build began and shipped its first three units 
+- D169 — The Method-2 converter investigation was grounded against a fresh full `/sgs-clo
+- D170 — The council-validated converter-lift design (D169) was turned into an executable
+- D171 — Spec 27 Phase 2 Cluster A is DONE (B3/A4/C2 + Step-7 demand analytics), all live
+- D172 — The Method-2 converter-lift build executed Phase A (the converter core) + the fi
+- D173 — Spec 27 Phase 2 Cluster B is DONE (E1 ProductGroup+hasVariant JSON-LD, E2 canoni
+- D174 — Spec 28 Smart Bulk Pricing finished to v2 (BUILDABLE)
+- D175 — Spec 28 P1 (value-ladder) phase plan built + grounded (2026-06-04)
+- D176 — Spec 27 Cluster C R1 authoring controller (FR-27-R1) — recorded (was deferred in
+- D177 — Spec 27 Phase 2 is COMPLETE: Cluster C R2 + R3 + PREFLIGHT SHIPPED + QA-AUTHORIN
+- D178 — The recurring clone-fidelity defects (typography too small, grid not lifted, tru
+- D179 — Spec 28 P1 (comparative per-unit value ladder, display-only) is SHIPPED + live-v
+- D180 — The fact-checked adversarial-council backlog (parking `P-SPEC27-28-COUNCIL-MUSTF
+- D181 — Wave 3 #2 of the council backlog is shipped + pushed: the PREFLIGHT publish-bloc
+- D182 — Task 3 (purge trust-bar bound-mode → typed native emission) SHIPPED + live-verif
+- D183 — A new fidelity verifier `parity2` replaces the three over-reporting instruments 
+- D189 — Method-2 (the universal converter CSS→attribute transfer) is UNPAUSED and is aga
+- D193 — The Wave-2 desktop-review clone defects are diagnosed, council-validated, and pl
+- D194 — `canonical_slot` is NOT the structural-CSS routing key; draft wrapper box-CSS ro
+- D195 — The cloning-fidelity gauge for converter work is the DIRECT TRUTH-FILE compariso
+- D196 — Council backlog Wave 3 #17 SHIPPED 2026-06-09 (theme thread). The 24 KB lean-see
+- D197 — Spec 27 v6: FR-27-F2 amended BEFORE its build, on Rule-16 gold-standard research
+- D198 — Spec 28 P2 SHIPPED 2026-06-09 (`bf769cee`)
+- D199 — Spec 28 P3 SHIPPED 2026-06-09 (`aa599097`)
+- D200 — Bean-requested visual pass on the P3 admin UI (3 adversarial raters via the /qc-
+- D201 — Bean's R-22-13 eye caught real admin-UI breakage my visual pass mis-triaged (`fe
+- D202 — FR-27-R4 agency slug-templates (`0d7badb8` + `f5f3449b` language pass) and FR-27
+- D203 — the Stage-1 converter changes do NOT land on the live page; root cause found; ne
+- D204 — FP-H/FP-E full rebuild SHIPPED + live-verified (commits `eccc3fc7` base, `ec084e
+- D205 — Plans folder consolidated: 7 superseded/historical plans archived; 2 clone-fix p
+- D206 — The block-quality programme (A1–E9 + cleanup) is built, deployed to the sandybro
+- D207 — four linked findings this session
+- D208 — The WC page-type solution is DESIGNED + sign-off (post-compact `/brainstorming` 
+- D209 — Bean's R-22-13 review of the block-quality branch surfaced 12 points; all addres
+- D210 — The WC page-type chassis is BUILT, council-gated (MERGE-OK), live-verified, comm
+- D211 — Cross-thread close accepted + priorities re-cut
+- D212 — testimonial slides render empty because `block_composition.has_inner_blocks=1` i
+- D213 — FR-30-3 shop archive complete; root cause of the empty/broken filters was hand-a
+- D214 — FR-30-5 product search + FR-30-6 searchable filter were committed-but-unverified
+- D215 — FR-30-9 structured-data completeness built + live-verified on the canary; the pl
+- D217 — P-WC-NOTIFY-ME-CAPTURE built, live-verified on the canary, and committed on `fea
+- D218 — P-WC-GALLERY-VARIATION-SWAP: Bean reversed the D219 defer (2026-06-12) — "just u
+- D219 — P-WC-GALLERY-VARIATION-SWAP resolved: DEFER the driven gallery swap; keep static
+- D220 — Spec 30 P2 closed and merged to `main` (commit `74f21052`); SGS WooCommerce shop
+- D221 — Two A/B/C universalisation follow-ups closed (commit `e20f0bd5`, pushed `main`)
+- D222 — Three converter-fidelity fixes shipped to `main`, council+gate-gated, live-verif
+- D223 — Two councils, a guard, a verified build, and a ledger-correcting root-cause pass
+- D224 — A long design session that converged on "the routing is already BUILT; the OPEN 
+- D225 — Subagent-driven build run on the council-hardened plan + a doc-consistency pass.
+- D226 — The skipped gate, finally run: live computed-style verification on the real page
+- D227 — The mandated comprehensive doc-read+align ran. The two CRITICAL Bean-decision fi
+- D228 — A long session that recovered a missing-hero bug, reconciled all loose branches 
+- D238 — The smallest remaining F5 piece shipped: the clone orchestrator now wires the R-
+- D239 — Phase-F step F5 (the Spec-31 §12.7 gate cluster) is DONE. All gates exist, are b
+- D240 — Bean directed an `/adversarial-council` on the F5 commits. A 5-persona panel (fa
+- D241 — Bean directed: don't defer the residuals out of habit — fact-check each, then do
+- D242 — Spec 31 §12.6 step 2 (the modular scaffold) was designed inline, red-teamed by a
+- D243 — Spec 31 §12.6 step 2 (the modular scaffold) was BUILT as the D242-gated VERTICAL
+- D244 — Spec 31 §12.6 step 3's FIRST stage (recognition / Method-2) is BUILT in the fres
+- D245 — Spec 31 §12.6 step-3's content/block-equivalent extraction stage (the child-shap
+- D246 — Bean correction (4-point brain-dump, 2026-06-27): the D245 content-extraction bu
+- D247 — Both qc-council gates run on the D246 content-UNIFY (6 raters, cross-model, ever
+- D248 — Bean-directed detour from W3: rebuild the ARRAY path correctly per spec (not cho
+- D249 — Task 1 fact-check of the 2026-06-29 unification merge (`311c120f`, branch unify-
+- D250 — Phase W3 (Spec 31 §12.6 step-3) executed end-to-end this session: the converter'
+- D251 — Building the W3 LANDED proof surfaced engine gaps; fixed the landable ones + des
+- D252 — the W3 keystone built, reviewed, fixed, committed (`df9798a9`); new engine wired
+- D253 — Spec 22 (v1.0 universal block-equivalent extraction) absorbed into Spec 31 §13 +
+- D254 — the #1 engine unblock built, design-gated, QC'd, LANDED, then Bean-reviewed and 
+- D255 — diagnosis correction + the "never-explain-again" spec + the pre-build gate, befo
+- D256 — the §2 build (D255's blueprint) shipped + landed + audited. 4 commits on `main` 
+- D257 — the array/repeater lift (Spec 31 §3.B4 / FR-31-2.5) rebuilt DB-driven. 7 commits
+- D258 — closes the D257 slot-vocabulary gap the right way. Not pushed (builds on the hel
+- D259 — the live CSS-transfer path silently DROPPED `min-width:600` (trust-bar 4-col → r
+- D260 — composition_role: 5 typed-array blocks leaf→content-block (completes D150) + `se
+- D261 — fingerprints.json selector overrides migrated → `ATTR_CLASSIFICATION_OVERRIDES`;
+- D262 — trust-bar per-icon fill control (client + converter)
+- D263 — universal icon-content lift for leaf blocks (Spec 31 §3.B.0)
+- D264 — icon-source lift corrected to `sgs/icon`'s FOUR real sources + refactored to DB 
+- D265 — core→sgs replacement mapping completed + made many-core→one-sgs (Bean-directed)
+- D266 — block features activating 2 D265 replacements: sgs/divider gap variant + sgs/med
+- D267 — universal L2 interior band-CSS fold (the pass-through wrapper drops the whole ba
+- D268 — dedicated `sgs/audio` block (7 player styles + Web Audio visualiser); `core/audi
+- D269 — sgs/media: audio mode REMOVED (moved to sgs/audio) + branded video player re-ski
+- D270 — feature-grid renders through the shared container grid engine (was forced auto-f
+- D271 — the core→SGS block equivalence + atomic-tag routing move out of scattered per-bl
+- D272 — the content-extraction rebuild is scoped end-to-end + its per-attr `emit_shape` 
+- D273 — the D272 scope's documentation-derived claims were fact-checked (Bean-directed) 
+- D274 — Bean approved the converter completion plan's open decisions (delete-last ✓, 6-p
+- D275 — the product-card's legacy child-block capability is deleted at the SOURCE, and t
+- D276 — the D274-approved plan ran end-to-end in one session (18 commits `c85254db^..c86
+- D277 — Bean's mandated post-programme QC ran in full: 4 read-only phase raters + 2 full
+- D279 — Bean's diagnosis flow ran end to end and the agreed groups were cleared same-ses
+- D280 — the 6 residuals (from D279) were investigated fact-first (each a HYPOTHESIS; 8 p
+- D281 — the D280 build sequence executed with an honest mixed outcome. SHIPPED + LANDED:
+- D282 — the diagnosis-first QC batch executed (systematic-debugging + 3 parallel read-on
+- D283 — 6 block-side fixes shipped + LANDED on page 8 (items 4+5 pipeline/DB work deferr
+- D284 — the product-card front from the deferred pipeline/DB prompt; 2 commits, both pus
+- D285 — the two deferred tasks from the block-fixes prompt; 1 commit (`2e702f0b`, pushed
+- D286 — media block converge (`9a4f6ca1` + inline height fold-in, pushed, LANDED page 8)
+- D287 — converter colour-resolution feature (`fff4c475`, pushed to main)
+- D288 — button work (`e5daa6f2`, pushed to main; LANDED page 8 375/1440 + editor)
+- D289 — universal responsive breakpoint router (branch main; LANDED page 8). Bean scoped
+- D290 — L4 GRID-PER-AREA extraction wired (branch main; LANDED page 8). Resolves MF-5 (L
+- D291 — the button styling re-architecture (branch main; button reference LANDED + Bean-
+- D292 — the universal no-inline styling architecture, designed + council-hardened + pilo
+- D293 — the box-object no-inline styling is now PROVEN across four blocks + the shared c
+- D294 — the no-inline rollout advances to quote + media (both LANDED block-private), a s
+- D295 — `sgs/hero` (the biggest block, section-KIND composite) migrated to no-inline + b
+- D296 — the shared wrapper's grid engine no longer emits base grid/flex REAL properties 
+- D297 — no-inline rollout Wave 1: 8 single-element/leaf blocks migrated block-private + 
+- D298 — no-inline rollout Wave 2: all 10 blocks migrated + LANDED across 3 dispatch roun
+- D299 — the styling lift's stale `__hover/__active/__focus` exclusion is removed, and th
+- D300 — the split-edit/serial-land rollout was integrated: 6 branches (Tracks A–E + D299
+- D301 — the styling-lift resolves a colour value by the DB-owned attr `role='color'`, ne
+- D302 — three universal fixes + the pipeline-fidelity diagnosis
+- D303 — the universal, theme-wide fix for the two proven pipeline typography-fidelity ga
+- D304 — the multi-button bug-class (a per-instance scoped rule `.uid.block` whose class 
+- D305 — the hero H1 wrapped "Made for" instead of the draft's "Made for the" at 800px; r
+- D306 — Bean's page-8 visual QC (22 discrepancies) root-caused with live DOM + code + WP
+- D307 — the CSS-layer remainder of the page-8 programme: 4 items fixed + LANDED live (sa
+- D308 — a cloned disclaimer paragraph dropped its background + border; now transfers
+- D309 — a cloned `:hover` declaration now transfers to the block's `{attr}Hover` compani
+- D310 — the cloned product-card CTA now mirrors how a standalone `sgs/button` clones
+- D311 — the gift-card `sgs/label` capsules now paint their padding, and the product-card
+- D312 — the ~100 per-block scoped `<style>` tags (~33KB, page 8) are consolidated into O
+- D313 — the two Lighthouse-flagged page-8 a11y items were fixed by editing the DRAFT moc
+- D314 — proved the page-8 clone is ~95% (not 100%), fixed the one systemic converter gap
+- D315 — rebuilt `computed-parity.js` (Stage 11.6) to the locked Spec 20 v1.1.0 so its nu
+- D316 — the selected pill's ✓ tick + value now have a small space-bar gap and can never 
+- D317 — the header/footer setup pipeline Part 1 is now a build-ready spec
+- D318 — the universal draft→theme global-styles/token extractor is BUILT, tested, and pr
+- D319 — the extractor palette is now additive by construction; the D318 palette-rename r
+- D320 — a `/sgs-clone` run now HALTS unless the deployed theme snapshot was generated by
+- D321 — the extractor now handles dark/preview-shell backgrounds safely and can DERIVE a
+- D322 — the transitional component CSS is out of the Mama's snapshot, the header/footer 
+- D323 — the header/footer/nav work: design-gate approved (Bean sign-off, all recommended
+- D324 — P1 of the header/footer/nav system SHIPPED and live-verified (sub-400px WCAG ove
+- D325 — Track B (parallel to the adaptive-nav track): the footer twin of the header SHIP
+- D326 — Track A: `sgs/adaptive-nav` built + live-verified; using it in the header remove
+- D327 — the foundational §S9 responsive-override engine (FR-S9-6) that no track had buil
+- D328 — Tasks 1+2 of the §S9 close-out: the FR-S9-6 responsive-override model is now COM
+- D329 — Bean-locked (2026-07-14), planning-only (no code this session)
+- D330 — the §S9 checkpoint session: FR-S9-9 built + live-verified, the parallel theme he
+- D331 — the LAST §S9 build. All four FR-S9-8 acceptance bullets live-verified on sandybr
+- D332 — Bean-directed pre-sign-off polish (4 sequenced items). Plugin 0.1.6→0.1.7. Two o
+- D333 — the pre-sign-off gate. 6-persona blind parallel `/adversarial-council` on the wh
+- D334 — cleared the remaining pre-sign-off gate. All 5 deferred D333 council must-fixes 
+- D335 — Bean did NOT sign off §S9; he set a QA gate first (live DOM+CSS, a11y/WCAG, aest
+- D336 — An unfinished, uncommitted edit reached BOTH live client sites and 500'd them fo
+- D340 — drawer logo OFF by default (Bean's instinct, research-confirmed; commit `3badd8d
+- D341 — `sgs/responsive-logo`: removed the unshippable `auto` logo-switch mode (commit `
+- D342 — `sgs/adaptive-nav`: collapse-tier now reads `SGS_Breakpoints` + default `collaps
+- D414 — fx roster is DERIVED from effect scope + target requirement, not a hardcoded lis
+- D415 — pinning effects must clear persistent sticky chrome (shared seam in provider.js)
+- D421 — drawer architecture: shared-header-row proposal REJECTED by Bean; the spec backs
+- D428 — Track 1: two green-forever gates made real, 30 STOPs recovered, C2 made measurab
+- D429 — Oracle measures each cell on ITS OWN element; two false-LANDED paths closed [INC
+- D431 — The eye pass found what every number missed: before/after was labelling the wron
+- D433 — The drawer submenu shipped broken; "INDICATIVE, not proven" is not a ship criter
+- D437 — Bare tags inside a repeater now lift; option-picker could never lift its options
+- D438 — Content gaps are surfaced; two commit gates had been green since June on a file 
+- D442 — Colour-token contract: `surface` was doing two contradictory jobs, and the EXTRA
+- D443 — Motion-path resting position: the header CANNOT fix this, and a runtime clamp is
+- D445 — Consolidation council: retire `sgs/content-collection` into `sgs/card-grid`, POR
+- D448 — Tier G stays exempt from the Spec 02 budget, but the per-page cost becomes VISIB
+- D450 — Motion Wave E: agents own FILES, not steps [ROUTINE]
+- D454 — Focusing a form field dimmed the whole field, including the text being typed [IN
+- D457 — The focus ring defaults to `primary-dark`, and validation green must not outrank
+- D477 — The guard from D476 was itself broken; QC council caught it [INCIDENT]
+- D480 — Routing audit: 8-surface critique + live run + the content tier axis [INCIDENT]
+- D482 — placeholder is content, not behaviour [ROUTINE]
+- D486 — Track B: 3 slot-alias collisions corrected via override channel; alias-removal a
+- D487 — Track C: the "145 tier-sibling NULL rows" premise REFUTED — correct by design, n
+- D488 — Fluid typography PROVEN as the mobile clone-fidelity cause; Bean rules KEEP flui
+- D489 — svg role SHIPPED + D1 forward variable tracking SHIPPED + two aggregator positio
+- D492 — Detector 4 (referenced-not-output) built, then found silently inert inside the s
+- D495 — URL-template groundwork recovered into output_signature; link-content role delib
+- D498 — `sgs/site-footer` emits `<footer>`: the contentinfo landmark was missing, not de
+- D507 — the polymorphic media slots are split; a live video→image mis-route closed; coll
+- D508 — A7: attrMap ARITY decides colour-vs-shorthand; 4 mis-roled colours healed; the 3
+- D509 — A8: the 28-attribute grid surface on site-header/site-footer deleted; it could n
+- D510 — the `Shadow` suffix said a box-shadow is a colour; both cloning-side role defect
+- D511 — `scalar-media` is NOT retirable: phase 3c's premise measured FALSE, the same inf
+- D512 — a variant a draft NAMES outright was unmatchable; 9 variants across 4 blocks clo
+- D513 — STEP 1 answered: the split-image blocker is NOT routing precedence, and NOT only
+- D514 — ⛔ D511 IS WRONG. A self-repairing mechanism silently reverted the test condition
+- D515 — art-direction tiers made REAL on sgs/hero and sgs/media; two bugs only the live 
+- D516 — the dead-control gate could not see a dead TIER attr; and a canary's 5 undeclare
+- D517 — CHECK 1 tightened to match CHECK 4, while its measured exposure was still zero [
+- D519 — SGS shadow presets renamed by effect; both SGS and WP default sets kept [ROUTINE
+- D530 — rule 21 `render-without-control` ships advisory; the contract's "53" is a FLOOR,
+- D531 — CO-28 added: consistent ORDER of panels, clusters and controls is an obligation 
+- D532 — Rule 21's 280 triaged to 262 real; WordPress CORE is a second invisible control 
+- D541 — Rule 23 gates D540 — and finds 3 blocks D540's own census missed [ROUTINE]
+- D564 — The SGS commit gates were version-controlled; three defects that only bit other 
+- D591 — Track 1b evening session: two gates promoted, native-supports census closes Phas
+- D592 — SGS inspector tab bar built + piloted, FX route-box fix shipped, follow-up sessi
+- D593 — SGS inspector tab bar REVERTED — Bean's call, not worth the maintenance cost for
+- D594 — Hero split-media rework (2nd attempt) REVERTED — real progress, real lessons for
+- D599 — hero split-media → `sgs/media` child-block rework DROPPED, not deferred [ROUTINE
+- D601 — the D593 kill-reason generalises into a standing acceptance rule [ROUTINE]
+- D604 — editor-render-parity DB role remediation, first pass: 13 wrong/missing `role` va
+- D605 — editor-render-parity fresh triage complete: 70 REAL-GAP / 50 INTERACTION-ONLY / 
+- D606 — editor-render-parity 3-way JSX-mirror auto-generator: investigated, NOT built [R
+- D607 — /qc-council on D604: the override fix was correct but incomplete AND not structu
+- D610 — fx:* namespace styling bug fixed at source: TIER 3.17 in assign-canonical.py [RO
+- D611 — DB role remediation part 2 CLOSED: 479 → 0, structural TIERs first, overrides la
+- D613 — editor-render-parity Phase 2 CLOSED: all 70 REAL-GAP findings fixed and shipped 
+- D614 — /qc-council on the closed 70-item backlog: 1 real bug found and fixed, Signal 4 
+
+
 ---
 
 ## 2026-05-22 — Session B decisions (D21-D32 Session B)

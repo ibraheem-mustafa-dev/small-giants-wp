@@ -630,8 +630,9 @@ def check_decisions_size(size: int | None = None, baseline: int | None = None) -
     if size <= ceiling:
         note = ""
         if size > DECISIONS_ABS_CAP_BYTES:
-            note = (f"; NOTE a sweep is owed — this is {size / DECISIONS_ABS_CAP_BYTES:.1f}x "
-                    f"the {DECISIONS_ABS_CAP_BYTES:,}-byte fallback cap")
+            note = (f"; informational only — {size / DECISIONS_ABS_CAP_BYTES:.1f}x the "
+                    f"{DECISIONS_ABS_CAP_BYTES:,}-byte fallback cap, which doesn't apply "
+                    f"while a baseline is recorded (not a blocker; see doc-size-baseline.json)")
         return Result("decisions-size", True,
                       f"{size:,} bytes, baseline {baseline:,}, grown {size - baseline:,} "
                       f"of {DECISIONS_GROWTH_BUDGET:,} budget{note}")

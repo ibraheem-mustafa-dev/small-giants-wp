@@ -4,10 +4,20 @@
 Selection rule (matches the 2026-08-08 sweep, documented in
 .claude/hooks/doc-size-baseline.json): an entry qualifies for archiving only if
 its D-number is cited by ZERO live docs (CLAUDE.md files, LEDGER, STOP-CATALOGUE,
-parking, goals, mistakes, specs/ and plans/ excluding their archive/ subfolders,
-scripts/*.py) -- checked both as an exact citation and as part of a D<N1>-D<N2>
-range citation. Entries only present in the uncommitted working tree (not yet in
-git HEAD) are never swept, since they haven't had a chance to be cited yet.
+parking, goals, mistakes, architecture.md, dev-setup.md, specs/ and plans/
+excluding their archive/ subfolders, scripts/*.py excluding .claude/worktrees/)
+-- checked both as an exact citation and as part of a D<N1>-D<N2> range citation.
+Entries only present in the uncommitted working tree (not yet in git HEAD), or
+added by the single most recent commit, are never swept -- they haven't had a
+sweep cycle's worth of time to accumulate citations yet.
+
+2026-08-14 adversarial-council review (4/6 personas independently converged):
+a further "archive because the content is now redundant with its citing spec"
+mechanism is NOT safe to automate -- tested against real entries, it targets
+the WRONG ones (single-citation entries usually hold irreplaceable forensic
+detail a spec deliberately doesn't restate, not duplication). This citation-
+presence sweep is the correct, safe mechanical lever; don't extend it into a
+semantic-redundancy judgment.
 
 Usage: python .claude/scripts/sweep-decisions.py [--dry-run]
 Run from the repo root (small-giants-wp/).
@@ -38,6 +48,8 @@ def scope_files():
         CLAUDE_DIR / "parking.md",
         CLAUDE_DIR / "goals.md",
         CLAUDE_DIR / "mistakes.md",
+        CLAUDE_DIR / "architecture.md",
+        CLAUDE_DIR / "dev-setup.md",
     ]
     for base, pattern in [
         (CLAUDE_DIR / "specs", "*.md"),
@@ -53,7 +65,7 @@ def scope_files():
             files.extend(base.glob("*/CLAUDE.md"))
             files.extend(base.glob("*/*/CLAUDE.md"))
     for base in REPO_ROOT.rglob("scripts"):
-        if "node_modules" in base.parts:
+        if "node_modules" in base.parts or ".claude\\worktrees" in str(base) or ".claude/worktrees" in str(base):
             continue
         files.extend(base.glob("*.py"))
     return [f for f in files if f.exists() and f.is_file()]
@@ -189,9 +201,12 @@ def main():
     # Build archive addition (candidates in ascending D-number order)
     candidates_sorted = sorted(candidates, key=lambda x: int(x[1:]))
     from datetime import date
+    range_desc = (
+        f"{candidates_sorted[0]}-{candidates_sorted[-1]}" if candidates_sorted else "none"
+    )
     header = (
-        f"\n## {date.today().isoformat()} — Sweep 2: uncited D-numbers "
-        f"in the D349-D618 range\n\n"
+        f"\n## {date.today().isoformat()} — Sweep: uncited D-numbers "
+        f"in the {range_desc} span\n\n"
         f"Selection rule: zero citations (exact or range) across CLAUDE.md, LEDGER, "
         f"STOP-CATALOGUE, parking, goals, mistakes, specs/ + plans/ (excl. archive/), "
         f"per-project/client CLAUDE.md files, and scripts/*.py. "
