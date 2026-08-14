@@ -28,7 +28,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	DesignTokenPicker,
-	StateToggleControl,
+	SgsColourPanel,
 	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -374,6 +374,89 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			   default InspectorControls group), rendered FIRST so it sits at
+			   the top of the inspector. Replaces the icon-colour StateToggle
+			   row that used to sit in the "Icon" panel below, and the whole
+			   "Colours" ToolsPanel that used to sit in the Styles tab.
+			   `supports.color` sub-flags are now false so WordPress generates
+			   no native colour UI to overlap with this panel. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: colourText,
+								onChange: ( val ) => setAttributes( { colourText: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: colourTextHover,
+								onChange: ( val ) => setAttributes( { colourTextHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: colourBackground,
+								onChange: ( val ) => setAttributes( { colourBackground: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: colourBackgroundHover,
+								onChange: ( val ) => setAttributes( { colourBackgroundHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: colourBorder,
+								onChange: ( val ) => setAttributes( { colourBorder: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: colourBorderHover,
+								onChange: ( val ) => setAttributes( { colourBorderHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'icon',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
 			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
 
@@ -512,8 +595,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								resetAll={ () =>
 									setAttributes( {
 										iconSize: {},
-										iconColour: '',
-										iconColourHover: '',
 									} )
 								}
 							>
@@ -543,47 +624,6 @@ export default function Edit( { attributes, setAttributes } ) {
 											/>
 										) }
 									</ResponsiveOverride>
-								</ToolsPanelItem>
-								{ /* Element-scoped colour states. Spec 35 keeps every control
-								     for an element INSIDE that element's own panel — the
-								     icon's hover colour is a STATE of the icon's colour, not
-								     a separate hover concept, so it belongs here rather than
-								     in a hover panel elsewhere in the sidebar. Swatches stay
-								     visible in both states so a set hover colour is never
-								     hidden (council mitigation 2026-07-18). */ }
-								<ToolsPanelItem
-									label={ __( 'Icon colours', 'sgs-blocks' ) }
-									hasValue={ () => !! iconColour || !! iconColourHover }
-									onDeselect={ () =>
-										setAttributes( { iconColour: '', iconColourHover: '' } )
-									}
-									isShownByDefault
-								>
-									<StateToggleControl
-										label={ __( 'Icon colours', 'sgs-blocks' ) }
-										swatches={ [
-											{ label: __( 'Normal', 'sgs-blocks' ), value: iconColour },
-											{ label: __( 'Hover', 'sgs-blocks' ), value: iconColourHover },
-										] }
-									>
-										{ ( state ) =>
-											state === 'normal' ? (
-												<DesignTokenPicker
-													linked
-													label={ __( 'Icon colour', 'sgs-blocks' ) }
-													value={ iconColour }
-													onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
-												/>
-											) : (
-												<DesignTokenPicker
-													linked
-													label={ __( 'Icon colour', 'sgs-blocks' ) }
-													value={ iconColourHover }
-													onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
-												/>
-											)
-										}
-									</StateToggleControl>
 								</ToolsPanelItem>
 							</ToolsPanel>
 						</>
@@ -776,103 +816,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					</PanelBody>
 
-				{ /* Colours — always editable (preset-as-seed). D288: DesignTokenPicker
-				   in `linked` mode — pick a global-palette swatch (stores the token
-				   slug so a brand/palette change recolours the button) OR a custom
-				   colour (full picker: spectrum + hex + opacity). */ }
-				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ true }>
-					<ToolsPanel
-						label={ __( 'Colours', 'sgs-blocks' ) }
+				{ /* Hover effects — D609/D618: colours moved to the top-level
+				   SgsColourPanel (Normal/Hover tabs per swatch). This
+				   ToolsPanel now holds only the one hover behaviour with no
+				   colour of its own. */ }
+				<ToolsPanel
+						label={ __( 'Hover effects', 'sgs-blocks' ) }
 						resetAll={ () =>
-							setAttributes( {
-								colourText: '',
-								colourTextHover: '',
-								colourBackground: '',
-								colourBackgroundHover: '',
-								colourBorder: '',
-								colourBorderHover: '',
-								textDecorationHover: 'none',
-							} )
+							setAttributes( { textDecorationHover: 'none' } )
 						}
 					>
-						<ToolsPanelItem
-							label={ __( 'Text colour', 'sgs-blocks' ) }
-							hasValue={ () => !! colourText }
-							onDeselect={ () => setAttributes( { colourText: '' } ) }
-							isShownByDefault
-						>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Text colour', 'sgs-blocks' ) }
-								value={ colourText }
-								onChange={ ( val ) => setAttributes( { colourText: val ?? '' } ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Text colour — hover', 'sgs-blocks' ) }
-							hasValue={ () => !! colourTextHover }
-							onDeselect={ () => setAttributes( { colourTextHover: '' } ) }
-						>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Text colour — hover', 'sgs-blocks' ) }
-								value={ colourTextHover }
-								onChange={ ( val ) => setAttributes( { colourTextHover: val ?? '' } ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Background colour', 'sgs-blocks' ) }
-							hasValue={ () => !! colourBackground }
-							onDeselect={ () => setAttributes( { colourBackground: '' } ) }
-							isShownByDefault
-						>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Background colour', 'sgs-blocks' ) }
-								value={ colourBackground }
-								onChange={ ( val ) => setAttributes( { colourBackground: val ?? '' } ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Background colour — hover', 'sgs-blocks' ) }
-							hasValue={ () => !! colourBackgroundHover }
-							onDeselect={ () => setAttributes( { colourBackgroundHover: '' } ) }
-						>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Background colour — hover', 'sgs-blocks' ) }
-								value={ colourBackgroundHover }
-								onChange={ ( val ) => setAttributes( { colourBackgroundHover: val ?? '' } ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Border colour', 'sgs-blocks' ) }
-							hasValue={ () => !! colourBorder }
-							onDeselect={ () => setAttributes( { colourBorder: '' } ) }
-						>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Border colour', 'sgs-blocks' ) }
-								value={ colourBorder }
-								onChange={ ( val ) => setAttributes( { colourBorder: val ?? '' } ) }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Border colour — hover', 'sgs-blocks' ) }
-							hasValue={ () => !! colourBorderHover }
-							onDeselect={ () => setAttributes( { colourBorderHover: '' } ) }
-						>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Border colour — hover', 'sgs-blocks' ) }
-								value={ colourBorderHover }
-								onChange={ ( val ) => setAttributes( { colourBorderHover: val ?? '' } ) }
-							/>
-						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Underline on hover', 'sgs-blocks' ) }
 							hasValue={ () => ( textDecorationHover || 'none' ) !== 'none' }
 							onDeselect={ () => setAttributes( { textDecorationHover: 'none' } ) }
+							isShownByDefault
 						>
 							<SelectControl
 								label={ __( 'Underline on hover', 'sgs-blocks' ) }
@@ -884,7 +842,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
-				</PanelBody>
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,

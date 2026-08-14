@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
 import { colourVar } from '../../utils';
 
 const CARD_STYLES = [
@@ -108,6 +108,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 		borderRadiusTablet,
 		borderRadiusMobile,
+		numberColour,
+		labelColour,
 	} = attributes;
 
 	const className = [
@@ -128,6 +130,40 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			   default InspectorControls group), rendered FIRST so it sits at
+			   the top of the inspector. Replaces the two DesignTokenPicker
+			   rows that used to sit inline inside "Styling" below;
+			   `supports.color` sub-flags are now false so WordPress generates
+			   no native colour UI to overlap with this panel. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'number',
+						label: __( 'Number colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: numberColour,
+								onChange: ( val ) => setAttributes( { numberColour: val } ),
+							},
+						],
+					},
+					{
+						key: 'label',
+						label: __( 'Label colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: labelColour,
+								onChange: ( val ) => setAttributes( { labelColour: val } ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Timer Settings', 'sgs-blocks' ) }>
 					<ToggleControl
@@ -223,16 +259,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { digitStyle: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Number colour', 'sgs-blocks' ) }
-						value={ attributes.numberColour }
-						onChange={ ( val ) => setAttributes( { numberColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Label colour', 'sgs-blocks' ) }
-						value={ attributes.labelColour }
-						onChange={ ( val ) => setAttributes( { labelColour: val } ) }
 					/>
 				</PanelBody>
 

@@ -180,10 +180,10 @@
 		"html": false,
 		"anchor": true,
 		"color": {
-			"text": true,
-			"background": true,
-			"gradients": true,
-			"link": true,
+			"text": false,
+			"background": false,
+			"gradients": false,
+			"link": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {

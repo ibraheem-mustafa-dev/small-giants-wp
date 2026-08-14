@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
@@ -78,6 +78,52 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			   default InspectorControls group), rendered FIRST so it sits at
+			   the top of the inspector. Replaces the old inline "Colour"
+			   PanelBody below; `supports.color` sub-flags are now false so
+			   WordPress generates no native colour UI to overlap with this
+			   panel. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: linkColour,
+								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'separator',
+						label: __( 'Separator colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: separatorColour,
+								onChange: ( val ) => setAttributes( { separatorColour: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'current',
+						label: __( 'Current page colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: currentColour,
+								onChange: ( val ) => setAttributes( { currentColour: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Breadcrumbs Settings', 'sgs-blocks' ) }>
 					<ToggleControl
@@ -102,28 +148,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { separator: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ /* ── Colour panel ── the SGS custom colour attrs for the link /
-				   separator / current-crumb slots (distinct from the native WP
-				   text/background/link colour supports, which cover the whole
-				   block). ── */ }
-				<PanelBody title={ __( 'Colour', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Link colour', 'sgs-blocks' ) }
-						value={ linkColour }
-						onChange={ ( val ) => setAttributes( { linkColour: val ?? '' } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Separator colour', 'sgs-blocks' ) }
-						value={ separatorColour }
-						onChange={ ( val ) => setAttributes( { separatorColour: val ?? '' } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Current page colour', 'sgs-blocks' ) }
-						value={ currentColour }
-						onChange={ ( val ) => setAttributes( { currentColour: val ?? '' } ) }
 					/>
 				</PanelBody>
 

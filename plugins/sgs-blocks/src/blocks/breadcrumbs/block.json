@@ -22,10 +22,10 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"gradients": true,
-			"text": true,
-			"link": true,
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"link": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {

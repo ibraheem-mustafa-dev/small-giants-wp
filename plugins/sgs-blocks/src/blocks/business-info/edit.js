@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -45,6 +45,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
+		iconColour,
+		textColour,
+		labelColour,
+		linkHoverColour,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -53,6 +57,66 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
+			   default InspectorControls group), rendered FIRST so it sits at
+			   the top of the inspector. `linkHoverColour` has no "normal"
+			   sibling attribute in this block's schema (style.css's own
+			   #e7d768 credit-sweep colour is the implicit normal state), so
+			   it renders as a single-state row rather than a normal/hover
+			   pair. `supports.color` sub-flags are now false so WordPress
+			   generates no native colour UI to overlap with this panel. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'icon',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'label',
+						label: __( 'Label colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: labelColour,
+								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'link-hover',
+						label: __( 'Link hover colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: linkHoverColour,
+								onChange: ( val ) => setAttributes( { linkHoverColour: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Display Type', 'sgs-blocks' ) }>
 					<SelectControl
