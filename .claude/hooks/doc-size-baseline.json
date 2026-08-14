@@ -30,11 +30,16 @@
       "",
       "⚠ Preserve CRLF when rewriting this file's targets. Python's default text mode converts every",
       "CRLF to LF, which would have produced a 7,679-line spurious diff. Caught only because the",
-      "script's byte count disagreed with the gate's by exactly the line count."
+      "script's byte count disagreed with the gate's by exactly the line count.",
+      "",
+      "2026-08-14 (Sweep 2): decisions.md 923,768 -> 696,696 (270 -> 195 entries, 75 moved). Same citation selection rule, now scripted at .claude/scripts/sweep-decisions.py (re-runnable -- it recomputes the live-doc citation scan at run time rather than reusing a cached list). Two fixes found before this sweep ran, both worth keeping in the script for next time:",
+      "(1) RANGE-CITATION BLIND SPOT -- a plain 'D<digits>' substring match misses entries covered by a range citation like 'D579-D590' or 'D323-D333' (29 such ranges exist across goals.md, STOP-CATALOGUE.md, and specs/); the script now expands every range to its full inclusive set before diffing. Without this fix, ~10 entries genuinely covered by a live citation would have been wrongly swept.",
+      "(2) UNCOMMITTED IN-FLIGHT ENTRIES -- the script excludes any D-number not yet present in 'git show HEAD:.claude/decisions.md', so a decision written earlier the same session (uncited only because it hasn't had time to be cited yet) is never swept.",
+      "16 kept entries reference a swept D-number internally (e.g. D612 mentions D604/D607/D611) -- not a problem, the archived entry keeps its number and stays grep-able across both files, but logged rather than left silent, per D101 (never silently drop a reference)."
     ],
-    "sweep_owed": "STILL OWED even after the 2026-08-08 sweep: decisions.md remains ~1.05MB, roughly 4x the 262,144-byte fallback cap. Closing that gap means triaging the 116 legacy entries that live docs cite — retarget or retire each citation first. The growth budget only stops it getting WORSE."
+    "sweep_owed": "PARTIALLY ADDRESSED by the 2026-08-14 sweep: decisions.md is now ~697KB, down from ~4x the 262,144-byte fallback cap to ~2.7x it. Still over the absolute cap -- closing the rest of the gap means either a Phase-2 pass compressing the ~195 remaining (cited, load-bearing) entries down from their current 4-9KB narratives to short summaries, or retargeting/retiring more live citations so more entries qualify for the same citation-based sweep."
   },
   "sizes": {
-    "decisions.md": 1047198
+    "decisions.md": 696696
   }
 }
