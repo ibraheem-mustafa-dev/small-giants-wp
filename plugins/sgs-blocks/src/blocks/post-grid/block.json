@@ -102,11 +102,12 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:transform": "scaleHover"
+								"css:transform": "scaleHover",
+								"css:box-shadow": "shadowHover"
 							}
 						}
 					},
-					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto."
+					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto. shadowHover added to this attrMap 2026-08-16 (shadow-architecture migration off the preset-only picker, matching sgs/card-grid's card-tile 'css:box-shadow':'shadowHover' hover mapping) — shadowHoverColour (the sibling colour attr) is classified via scripts/attr-classification-overrides.json, same pattern as the other shadow-colour companion attrs (D621/D622)."
 				},
 				"image": {
 					"label": "Post image",
@@ -358,6 +359,9 @@
 		"shadowHover": {
 			"type": "string",
 			"default": ""
+		},
+		"shadowHoverColour": {
+			"type": "string"
 		},
 		"imageZoomHover": {
 			"type": "boolean",

@@ -94,9 +94,10 @@ $pagination      = sanitize_key( $attributes['pagination'] ?? 'none' );
 $show_filters    = (bool) ( $attributes['showFilters'] ?? false );
 $filter_taxonomy = sanitize_key( $attributes['filterTaxonomy'] ?? 'category' );
 
-$hover_scale    = sanitize_text_field( $attributes['scaleHover'] ?? '' );
-$hover_shadow   = sanitize_text_field( $attributes['shadowHover'] ?? '' );
-$hover_img_zoom = (bool) ( $attributes['imageZoomHover'] ?? true );
+$hover_scale         = sanitize_text_field( $attributes['scaleHover'] ?? '' );
+$hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
+$hover_shadow_colour = sanitize_text_field( $attributes['shadowHoverColour'] ?? '' );
+$hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
 
 // Hover colour shifts — resolved from token slug or raw CSS colour. Emitted as
 // CSS custom properties on the wrapper (inherited by the card) and consumed by
@@ -192,7 +193,7 @@ $extra_styles = array_filter(
 			'--sgs-gap:' . $gap_css,
 			$card_bg ? '--sgs-card-bg:' . $card_bg : '',
 			$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
-			$hover_shadow ? '--sgs-hover-shadow:' . esc_attr( $hover_shadow ) : '',
+			$hover_shadow ? '--sgs-hover-shadow:' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour ) : '',
 			$hover_bg ? '--sgs-hover-bg:' . $hover_bg : '',
 			$hover_text ? '--sgs-hover-text:' . $hover_text : '',
 			$hover_border ? '--sgs-hover-border:' . $hover_border : '',

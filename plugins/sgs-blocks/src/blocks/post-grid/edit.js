@@ -19,6 +19,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';
+import ShadowControl from '../../components/ShadowControl';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -77,13 +78,6 @@ const IMAGE_SIZE_OPTIONS = [
 	{ label: __( 'Medium large (768w)', 'sgs-blocks' ), value: 'medium_large' },
 	{ label: __( 'Large (1024×1024)', 'sgs-blocks' ), value: 'large' },
 	{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
-];
-
-const SHADOW_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Subtle', 'sgs-blocks' ), value: '0 4px 12px rgba(0,0,0,0.1)' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: '0 8px 24px rgba(0,0,0,0.15)' },
-	{ label: __( 'Strong', 'sgs-blocks' ), value: '0 12px 40px rgba(0,0,0,0.25)' },
 ];
 
 const EASING_OPTIONS = [
@@ -280,6 +274,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColourHover,
 		scaleHover,
 		shadowHover,
+		shadowHoverColour,
 		imageZoomHover,
 		transitionDuration,
 		transitionEasing,
@@ -431,9 +426,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			     has no static border-colour attr — hover-only, matching the
 			     block.json note on the "card" element). Verified: NEITHER
 			     hover attr also touches `background-color`/`box-shadow` as the
-			     DB census suggested — box-shadow is driven separately by the
-			     unrelated `shadowHover` attribute (kept in the non-colour Hover
-			     Effects panel below). */ }
+			     DB census suggested.
+			   - shadowHoverColour (added 2026-08-16, shadow-architecture
+			     migration off the preset-only picker — D621/D622 pattern) is
+			     its OWN hover-only row, same shape as borderColourHover — no
+			     resting/normal shadow-colour attribute (this block has no
+			     static card shadow). Pairs with the shape-only shadowHover
+			     attribute (still in the non-colour Hover Effects panel below
+			     via ShadowControl); render.php composes shape + colour via
+			     sgs_shadow_value_composed(). */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -556,6 +557,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: borderColourHover,
 								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'shadow-hover',
+						label: __( 'Shadow hover colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: shadowHoverColour,
+								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -894,6 +908,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( {
 							scaleHover: '',
 							shadowHover: '',
+							shadowHoverColour: '',
 							imageZoomHover: true,
 							transitionDuration: '300',
 							transitionEasing: 'ease',
@@ -919,15 +934,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Hover shadow', 'sgs-blocks' ) }
 						hasValue={ () => !! shadowHover }
-						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { shadowHover: '', shadowHoverColour: '' } )
+						}
 					>
-						<SelectControl
+						<ShadowControl
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
 							value={ shadowHover }
-							options={ SHADOW_OPTIONS }
-							onChange={ set( 'shadowHover' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
+							colour={ shadowHoverColour }
+							onColourChange={ ( val ) =>
+								setAttributes( { shadowHoverColour: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
