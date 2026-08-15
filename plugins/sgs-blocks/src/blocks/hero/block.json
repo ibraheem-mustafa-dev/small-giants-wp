@@ -123,8 +123,8 @@
 					},
 					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block."
 				},
-				"grid": {
-					"label": "Grid / flex layout",
+				"inner": {
+					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
 					"clusters": [

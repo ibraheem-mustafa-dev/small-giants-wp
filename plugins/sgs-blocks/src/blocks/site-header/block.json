@@ -89,8 +89,8 @@
 					},
 					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour/spacing/border ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
 				},
-				"grid": {
-					"label": "Grid / flex layout",
+				"inner": {
+					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
 					"clusters": [

@@ -81,8 +81,8 @@
 					},
 					"_note": "WS-4 composite-mirror — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
 				},
-				"grid": {
-					"label": "Grid / flex layout",
+				"inner": {
+					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
 					"clusters": [ "layout" ],

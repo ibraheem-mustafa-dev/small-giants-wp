@@ -47,8 +47,8 @@
 					},
 					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container."
 				},
-				"grid": {
-					"label": "Grid / flex layout",
+				"inner": {
+					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
 					"clusters": [ "layout" ],
@@ -179,15 +179,15 @@
 		"gap": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -223,7 +223,7 @@
 				"grid-section",
 				"card-grid"
 			]
-		},
+		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",

@@ -60,10 +60,10 @@
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:max-width": "maxWidth"
 					},
-					"_note": "block.json declares no `typography` support at all on this block — every text-cluster member beyond colour is an honest gap. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `grid` element."
+					"_note": "block.json declares no `typography` support at all on this block — every text-cluster member beyond colour is an honest gap. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
-				"grid": {
-					"label": "Grid / flex layout",
+				"inner": {
+					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
 					"clusters": [ "layout" ],
@@ -209,11 +209,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""
@@ -244,11 +244,11 @@
 		"gap": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
-		},
+		},
 		"flexDirection": {
 			"type": "string",
 			"default": "",

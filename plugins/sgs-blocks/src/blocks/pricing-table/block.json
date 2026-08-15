@@ -64,10 +64,10 @@
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:max-width": "maxWidth"
 					},
-					"_note": "Mirrors sgs/container's wrapper/grid split. Only fontSize+lineHeight are declared under `typography` (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) — the remaining text members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `grid` element."
+					"_note": "Mirrors sgs/container's wrapper/grid split. Only fontSize+lineHeight are declared under `typography` (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) — the remaining text members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
-				"grid": {
-					"label": "Grid / flex layout",
+				"inner": {
+					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
 					"clusters": [ "layout" ],

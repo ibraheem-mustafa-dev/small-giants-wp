@@ -509,7 +509,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "card-tile",
+        "css_element": "item",
         "css_state": "hover"
       }
     },
@@ -519,7 +519,7 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "card-tile",
+        "css_element": "item",
         "css_state": "hover"
       }
     },
@@ -529,7 +529,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "card-tile"
+        "css_element": "item"
       }
     },
     {
@@ -538,7 +538,7 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "card-tile"
+        "css_element": "item"
       }
     },
     {
@@ -546,7 +546,7 @@
       "attr": "cardRadius",
       "fields": {
         "css_property": "border-radius",
-        "css_element": "card-tile"
+        "css_element": "item"
       }
     },
     {
@@ -554,7 +554,7 @@
       "attr": "cardShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "card-tile"
+        "css_element": "item"
       }
     },
     {
@@ -562,7 +562,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "GRID"
       }
     },
@@ -587,7 +587,7 @@
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "card-tile",
+        "css_element": "item",
         "css_state": "hover"
       }
     },
@@ -1004,7 +1004,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "desktop",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -1285,7 +1285,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -1294,7 +1294,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -2711,7 +2711,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "desktop",
+        "css_tier": "tablet",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -3984,7 +3984,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -4036,7 +4036,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4045,7 +4045,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4054,7 +4054,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4063,7 +4063,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4072,7 +4072,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4081,7 +4081,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4090,7 +4090,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4099,7 +4099,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4135,7 +4135,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4144,7 +4144,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4262,7 +4262,7 @@
       "attr": "cardBorderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "card-tile"
+        "css_element": "item"
       }
     },
     {
@@ -4370,7 +4370,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4379,7 +4379,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4415,7 +4415,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4424,7 +4424,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4433,7 +4433,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4442,7 +4442,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4507,7 +4507,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4516,7 +4516,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4525,7 +4525,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4534,7 +4534,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4570,7 +4570,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4579,7 +4579,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4615,7 +4615,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4624,7 +4624,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4633,7 +4633,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4642,7 +4642,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4707,7 +4707,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4716,7 +4716,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4725,7 +4725,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4734,7 +4734,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4892,7 +4892,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4901,7 +4901,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4919,7 +4919,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4928,7 +4928,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4937,7 +4937,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4946,7 +4946,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4955,7 +4955,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4964,7 +4964,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4973,7 +4973,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -4982,7 +4982,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5000,7 +5000,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5009,7 +5009,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5027,7 +5027,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5036,7 +5036,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5045,7 +5045,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5054,7 +5054,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5063,7 +5063,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5072,7 +5072,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5081,7 +5081,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5090,7 +5090,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5261,7 +5261,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5270,7 +5270,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5279,7 +5279,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5288,7 +5288,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5297,7 +5297,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5306,7 +5306,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5315,7 +5315,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5324,7 +5324,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5333,7 +5333,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5342,7 +5342,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5419,7 +5419,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5428,7 +5428,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5464,7 +5464,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5473,7 +5473,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5482,7 +5482,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5547,7 +5547,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5556,7 +5556,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5565,7 +5565,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5925,7 +5925,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5934,7 +5934,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5943,7 +5943,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5952,7 +5952,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5961,7 +5961,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5970,7 +5970,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5979,7 +5979,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5988,7 +5988,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -5997,7 +5997,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6006,7 +6006,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6138,7 +6138,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6147,7 +6147,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6210,7 +6210,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6228,7 +6228,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6237,7 +6237,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6246,7 +6246,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6408,7 +6408,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6417,7 +6417,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6480,7 +6480,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6498,7 +6498,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6507,7 +6507,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6516,7 +6516,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6687,7 +6687,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6696,7 +6696,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6705,7 +6705,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6714,7 +6714,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6723,7 +6723,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6732,7 +6732,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6741,7 +6741,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6750,7 +6750,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6759,7 +6759,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -6768,7 +6768,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7221,7 +7221,7 @@
       "fields": {
         "css_property": "align-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7230,7 +7230,7 @@
       "fields": {
         "css_property": "align-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7239,7 +7239,7 @@
       "fields": {
         "css_property": "flex-direction",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7248,7 +7248,7 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7257,7 +7257,7 @@
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7266,7 +7266,7 @@
       "fields": {
         "css_property": "grid-auto-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7275,7 +7275,7 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7284,7 +7284,7 @@
       "fields": {
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7293,7 +7293,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
@@ -7302,7 +7302,7 @@
       "fields": {
         "css_property": "justify-items",
         "css_layer": "GRID",
-        "css_element": "grid"
+        "css_element": "inner"
       }
     },
     {
