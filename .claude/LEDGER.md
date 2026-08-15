@@ -9,315 +9,262 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-15. The colour-placement question is SETTLED and now enforced; PR #27 merged to `main`
-(`5d43844c`, 4 commits).**
+**2026-08-15 (late session). The colour work is DONE for Track A — every block a client can
+recolour now has one predictable Colour panel, in the Styles tab, and the picker inside it is
+ours rather than WordPress's.** 4 commits on `main` (`aaa91c3e`, `a5b74bd1`, `f6f3c033`,
+`0c287cf6`), plus the doc sweep committed alongside this handoff.
 
-**What we decided, and why it is not what we set out to decide.** We were choosing between "all
-colours in one panel" and "each colour with its element". Two councils (4 seats on placement, 4
-branches on determinism/cost/UX/prior-art) converged on a third answer: **don't invent a
-colour-placement rule at all.** The framework already has one — the D533/D537 resolver places all
-2,262 declared attributes with zero human judgement. **Colour was the only property family still
-being placed by hand.** So colour now follows it: an element-scoped colour sits in its element's
-panel, a colour no element claims falls to its property-family panel. The tab question is settled
-too — **Styles**, because Styles holds root CSS and visuals (D621 supersedes D618's reasoning, which
-rested on a premise Bean corrected: we never use native colour supports, we only borrow their look).
+**What actually shipped, in order.**
 
-⭐ **Leaf blocks group by construction, no exception needed** — `sgs/button`'s text/background/border
-colours all sit on one element, so they render side by side as Bean wanted.
+1. **The reseed** (your Task 2). Drift orphans 3 → 2, zero new violations. It also flagged an
+   "unexpected" `block_selectors` drop that turned out to be a **false alarm** — diffed my own
+   pre-reseed snapshot against the post-reseed DB, zero rows changed either way; the drop
+   predated tonight entirely.
 
-**The other big change: the placement rule is now a real gate.** It ran WARN-ONLY since it was built,
-which is exactly how D537 and D609 came to state *opposite rules inside the same decision entry* with
-nothing catching it. `check-element-manifest-conformance.js --check` is now in `prebuild`.
+2. **You asked mid-session whether we'd actually taken WP core's picker code as our own.** We
+   had taken the popover *shell* (last session) but the picker *inside* it — the swatch grid,
+   hex/RGB/alpha sliders — was still a live import. Now forked: ~29 files from WordPress at a
+   pinned version, converted to plain JS, ours to customise. **One real bug surfaced doing it:**
+   the forked CSS leaked into an unrelated block's *frontend* stylesheet (caught by the
+   anti-cheat gate flagging `sgs/accordion`, a block the commit never touched). Fixed properly —
+   two of the four stylesheets were duplicating CSS WordPress already ships, so they were deleted
+   rather than shipped twice.
 
-**Running the reseed was the most valuable thing this session did.** Bean asked for it to see if it
-moved the drift numbers. It didn't — and that negative result was the bug: the reseed resets
-`css_layer` but never `css_element`, so a stale value survives every reseed **by construction**. It
-then caught **three regressions our own fixes had introduced**, all before they reached `main`:
-a latent build break, a clone-time crash (`AmbiguousLayerAttrError` on breadcrumbs), and a silent
-clone-fidelity loss (post-grid's image hover-zoom would have stopped cloning). Had we merged first
-and reseeded later, all three would have shipped.
+3. **A ruling that was never actually coded.** D621 (last session) said the Colour panel belongs
+   in the **Styles** tab, and the previous LEDGER summarised it as shipped. It wasn't — the
+   component still had no tab setting at all. Caught by reading the code and confirming live in
+   the editor. One-line fix, verified live, **landed before the 33-block rollout** so every block
+   went to the right place first time instead of needing a second pass.
 
-**Numbers:** `css_element` drift **35 → 9**; element-manifest style defects **15 → 7**; contested
-attributes **7 → 0**; converter tests 669 → **674** passing (5 new regression tests added).
+4. **Wave 2 — 33 blocks migrated** via 16 parallel agents. Worklist rebuilt from the live DB
+   rather than the plan doc's cached list, which was wrong twice (`social-icons` listed but has
+   no custom colour attrs at all; `cart` missing despite having 5). Agents caught several places
+   where the DB's own classification disagreed with the real code and were right to. **One real
+   bug from the parallel dispatch itself:** an agent shipped a broken JSX tag that broke the
+   shared build for every other agent — found and fixed directly, and notably that agent's own
+   final report described it as "a transient concurrent-build collision" when it was a genuine
+   syntax error. Its sibling agents reported it correctly.
 
-⚠ **SonarCloud reports Security Rating C on new code and was NOT resolved** — merged on Bean's
-explicit instruction with the gate still red. Worth reading the dashboard before the next merge.
+5. **Task 3 (the schema question) turned out not to need a schema change at all** — and this is
+   the part worth reading. I diagnosed both remaining drift orphans, proposed fixes, and a
+   second-opinion review agent **overturned both diagnoses before anything was built**. My
+   trust-bar diagnosis was factually wrong (I'd conflated two different attributes' CSS emits);
+   my hero one rested on a false premise (a "stale leftover" class that is actually current and
+   intentional). Both real fixes were one-line manifest declarations. Drift orphans: **2 → 0.**
 
-**Full narrative:** `memory/session-2026-08-15.md` (auto-snapshotted at close).
+⚠ **One mistake worth knowing about.** `git commit -- <paths>` re-stages those files from the
+working tree, silently discarding a careful partial staging I'd done minutes earlier — so two of
+the *concurrent* session's uncommitted attribute declarations landed on `main` inside my commit.
+No functional damage (inert declarations, build green) and you ruled to leave it, but it's now a
+STOP entry so it doesn't recur.
 
-## Shipped this session (wrapper-capability census + typography-selector fix, parallel track)
+**Full narrative:** `memory/session-2026-08-15*.md` (auto-snapshotted at close).
 
-**4 commits on `main`: `1882c28e`, `cd49757f`, `18372409`, `bdc56bd8`. Ran concurrently with the
-colour-placement close below — different files, no overlap.**
-
-- **Wrapper-capability census** (`survey-wrapper-capability.js` + `scripts/surveys/lib/*`) measures
-  DECLARED/RENDERED/CONSUMED separately, 39 self-tests, harness proven able to fail. Closed 11
-  orphaned capabilities (declared + painted + no control): `bgSvgMinHeight` (6 blocks, one shared
-  `BackgroundPanel` fix), `minHeight`+`contentBandPadding` (site-header/site-footer). D624.
-- **Dead-selector defect class closed:** `cta-section`/`notice-banner`/`info-box` all had
-  `selectors.typography` pointing at BEM classes FR-22-6 stopped rendering — every native typography
-  control was a silent no-op. Fixed by pointing at the block ROOT (matches core's own pattern;
-  inheritance carries an unset child, a declaration never beats the child's own value). Settled rule
-  + measured font-size limit (theme.json h2 declaration wins) in `specs/35...md` Part F.1, D625.
-  `notice-banner` had a second defect (wrong attribute key read); `info-box` needed one hand-emitted
-  `text-align` alongside its existing passthrough (an interim "no emitter" claim was wrong — see
-  `mistakes.md` 2026-08-15).
-- ⛔ **Not this track's to close:** `image-sequence`/`testimonial` `imageControls` gaps and the
-  shared-wrapper decomposition initiative below are unaffected by this work.
-
-## Shipped this session (colour-placement close)
-
-**PR #27 merged to `main` (`5d43844c`) — 4 commits.**
+## Shipped this session
 
 | Commit | What |
 |---|---|
-| `f78662cd` | **D621 + D622** — colour placement follows the D533/D537 resolver (no bespoke rule); Colour panel → **Styles** tab; contested attributes **7 → 0** (all 7 were one clash: `alignItems`, grid-vs-wrapper); `check-element-manifest-conformance.js` promoted **WARN-ONLY → prebuild gate** with a down-only baseline; 2 new detectors (`audit-css-element-drift.py` 8 assertions, `survey-colour-coverage.py` 19) |
-| `bc24e647` | Closed a **latent build break** the new element attrMaps introduced — gates passed only because the DB predated the change. Rogue seeds cleared by regenerating the classifier; hero's gradient layer conflict fixed by extending the override (**both obvious fixes tested and rejected** — retiring the override reproduces the `AmbiguousLayerAttrError` it exists to prevent, proven via 3-way key collisions in the classifier's raw output) |
-| `c1911506` | **Root-caused the drift in the SCRIPTS, not 12 block manifests** (Bean's push, and correct). Class 1 reseed reset extended to `css_element`+`css_tier` after verifying column ownership; Class 2 fixed in the derivation (helper-call selectors never fed BEM evidence); Class 4 modifier-stripping; Class 3 the only one needing block edits |
-| `69c42c20` | The reseed **proved the fixes AND exposed two regressions they caused** — a clone-time crash and a silent clone-fidelity loss. Both fixed here. See Blockers-avoided below |
-
-### ⭐ What the reseed caught (the case for running it BEFORE merging)
-
-1. **Clone-time crash.** The Class 4 modifier-strip collapsed `breadcrumbs.linkColour` and
-   `.currentColour` into one identical routing key → `AmbiguousLayerAttrError`. Fixed by mapping a
-   modifier that names a **state** into `css_state` — but **not** as a blanket `--current` rule:
-   `price--current` in buybox/product-card is a display variant beside `price--regular`, so a blanket
-   rule would have fabricated a false state. The derivation now scans sibling modifiers and only maps
-   `--current` → `selected` when it is the sole modifier.
-2. **Silent clone-fidelity loss.** The Class 1 reset cleared `post-grid.imageZoomHover`'s
-   `css_element`, so `lift_per_element_state` stopped routing it — post-grid's image hover-zoom would
-   have silently stopped cloning. Caught by `test_per_element_state_lift.py` (669 → 668 passed).
-   ⚠ **Sharper lesson: a column reset is only safe if the derivation can RE-DERIVE every legitimate
-   value.** The danger was not another writer (checked) but the derivation's own incompleteness.
-   Root cause is a naming split inside one block — post-grid's hover rule targets
-   `.sgs-post-grid__img` while 13 other rules use `.sgs-post-grid__image`.
-3. **Stray `cta-section.textAlign` css_property** — the block's own docblock says textAlign is handled
-   by the native support; the bare attribute is vestigial. Pinned to null.
+| `aaa91c3e` | **Colour-picker fork (D627).** WP core's `ColorPalette`/`ColorPicker`/`CircularOptionPicker` (~29 files) forked from Gutenberg at pinned SHA `28c0dedc4eaf…` (WP 7.0.4) into `src/components/colour-picker/`. TS→JS, `@emotion/styled`→SCSS. New MIT deps: `react-colorful`, `colord`, `clsx`. No `framer-motion` (verified unused — no Spec 38 Tier-H conflict). Fixed the CSS-leak-into-frontend-bundle bug it introduced |
+| `a5b74bd1` | **D621 actually coded (D628).** `SgsColourPanel` now `group="styles"`. Was ruled last session, summarised as shipped, never written |
+| `f6f3c033` | **Wave 2 — 33 blocks (D629).** 16 parallel agents. Every colour state sets `linked: true` (D619). 17 blocks got live-captured `intent_capture_passed` visual-diff evidence; 16 auto-passed editor-only |
+| `0c287cf6` | **Last 2 drift orphans closed (D630).** Manifest-only. Both original fix-shapes were wrong and were overturned pre-dispatch by an independent review |
+| (this handoff) | Doc sweep: D627-D631, Spec 35 Parts A3/H/I/M, plan §1.2d, 4 parking entries, 3 STOP entries (221→224), 3 mistakes entries |
 
 ### Numbers
 
 | Metric | Start | End |
 |---|---|---|
-| `css_element` drift orphans | 35 | **3** |
-| Blocks clean of drift | 24 | **59** |
-| Element-manifest style defects | 15 | **7** |
-| Contested attributes | 7 | **0** |
-| Converter tests | 669 pass | **674 pass** (+5 new) |
+| `css_element` drift orphans | 3 | **0** |
+| Blocks on `SgsColourPanel` | ~9 | **~42 of 49 (Track A complete)** |
+| Element-manifest style defects | 7 | 7 (unchanged, at baseline) |
+| STOP catalogue entries | 221 | **224** |
+| D-ceiling | D626 | **D631** |
 
-⚠ **The 3 residual orphans are `card-grid/card-tile` (a pre-reseed stale value — the manifest already
-says `item`), plus `hero/split-media` and `trust-bar/badge-label`, the two known 1:N schema-limit
-cases.** The real remaining count is **2**, and no manifest edit can fix them (see Task 3).
+⚠ **Style defects did NOT drop to 6 as predicted.** Nothing regressed (gate passes at baseline),
+but the prediction was simply not met — recorded honestly rather than quietly dropped.
 
 ## Blockers
 
-- **None repo-wide.** Playwright MCP's browser profile got locked by contention (unclear if a
-  stale leftover or a genuinely live concurrent session) — worked around by switching to Chrome
-  DevTools MCP for the rest of this session's live-editor verification. Not investigated further;
-  not currently blocking anything, just noting the workaround exists if it recurs.
+- **None from this session's own work.** Every gate was green when this session's 4 commits
+  landed (build exit 0, cheat-gate 0 new, element-manifest GATE PASS at baseline).
+- ⛔ **`npm run build` is RED right now (exit 1) — and it is NOT this session's doing.** Caught by
+  the handoff's own QC gate re-running the build *after* my commits, which is exactly why that
+  gate exists. **F6 reports 10 NEW violations, every one a `*ShadowColour` attribute**
+  (`cta-section.shadowColour`, `trust-bar.iconCircleShadowColour`/`badgeImageShadowColour`,
+  `brand-strip.tileShadowColour`, `card-grid.cardShadowColour`/`shadowHoverColour`,
+  `team-member.shadowHoverColour`/`cardShadowColour`, …) — i.e. the **concurrent
+  `feat/universal-shadow-extension` session's** in-flight work, seeded into the SHARED
+  `sgs-framework.db` but not yet declared in the classifier layer. F6 calls them "rogue seeds
+  that would vanish on the next reseed", which is precisely what a mid-flight shadow rollout
+  looks like from outside.
+  **Do NOT try to "fix" these — they are not yours.** The owning session either finishes its
+  `extract-signatures.py` run or reseeds, and they resolve. Verify with
+  `git log --oneline -3` + `git status` first; if that branch has since merged and F6 is still
+  red, THEN it is a real regression worth chasing.
+- ⚠ **A concurrent shared-wrapper session is live in this same checkout** and created branch
+  `feat/universal-shadow-extension` mid-handoff. Its uncommitted work (7+ block `edit.js`/
+  `render.php`, `ShadowControl.js`, `tokens.js`) is in the working tree — **not mine, not
+  touched, do not commit it.** My work is all on `main`.
 
 ## Open — ready to pick up
 
-### ⭐ NEW INITIATIVE (Bean, 2026-08-14) — shared-wrapper decomposition into opt-in extensions
-
-**Not started. Needs its own session + a design gate (Rule 7 — shared mechanism, 30 blocks).**
-Full signature already measured and recorded at `~/.claude/plans/go-track-1b-playful-hamster.md`
-**§1.4** — read that section before anything else; do not re-derive it.
-
-Headline facts so nobody re-measures: the wrapper is 1,728 lines JS + 2,599 lines PHP; **the split
-seams already exist** as 6 exported panels (`WidthPanel`/`LayoutPanel`/`BackgroundPanel`/
-`ShapeDividersPanel`/`GridItemDefaultsPanel`/`GridAreaPanel`); a crude opt-in map already exists as
-`KIND_PANELS` keyed on the `kind` prop; `enabledExtensions` (D579) is the shipped opt-in precedent to
-reuse rather than reinvent. **This ABSORBS D5** — D5's per-block audit is this initiative's census
-stage, and D5's blocked precondition (a `common`/`always` schema column) turned out to have no
-recorded justification anywhere in the repo.
-
-⛔ **Do not trust any consumer COUNT until the census script settles it.** A grep for the component
-name matches comments — `sgs/button` was wrongly called a consumer this very session (its only hit
-is prose at `render.php:930`); the in-file comment says 16 live mounts while a naive grep says 30.
-
-**Step 3 (grouping council) + step 4 (Bean's lock-in) are now DONE, same day.** 6 extensions locked
-(background/width/layout/gridItems/shapeDividers/typography — typography is new), tab placement
-resolved, 2 real cross-extension preconditions found. Full record: `decisions.md` D626, status
-table: `go-track-1b-playful-hamster.md` §1.4. Step 6 (background pilot) now also owns colour's own
-deferred Track B (same file, same 6-7 blocks) — merge, don't run as a separate session.
-
 ### ⭐ NEXT SESSION — orchestration plan
 
-**You are the SGS framework engineer.** The colour-placement architecture is settled and
-gate-enforced; your job is to roll it across the remaining blocks without re-opening settled ground.
-
-**State recap, plain English.** A "colour control" is the swatch a client clicks in the WordPress
-editor sidebar to recolour part of a block. We spent this session deciding WHERE that control lives,
-and the answer turned out to be "the framework already had a rule — colour just wasn't following
-it". That rule is now enforced by a build gate, so it cannot drift again. 9 of 49 blocks are
-migrated. Wave 2 is the next 34. Nothing blocks it.
+**You are the SGS framework engineer.** Track A of the colour programme is complete. The next
+piece is Track B — the same treatment for the six blocks whose colours live in the shared
+wrapper — which Bean ruled must be its own session because it touches every composite at once.
 
 ---
 
-## Task 1 — Wave 2 of the colour-panel rollout (~34 Track-A blocks)
+## Task 1 — Colour-panel Track B (the 6 shared-wrapper blocks)
 
-**What:** Migrate each remaining block's colour controls to `SgsColourPanel`, following D618's recipe
-plus `linked: true` (D619).
-**Why:** One predictable place for colour in every block — the client-facing outcome the whole track
-exists for.
-**Estimated time:** ~4 batches, mostly agent time.
+**What:** Migrate the colours owned by `ContainerWrapperControls.js` (`backgroundOverlayColour`,
+`shapeDividerTopColour`/`BottomColour`, `gridItemBackground`, `gridItemTextColour`) onto
+`SgsColourPanel`, reaching `container`, `cta-section`, `hero`, `trust-bar`, `site-header`,
+`site-footer`.
+**Why:** The last blocks where a client still finds colour in a different place. Completes the
+client-facing outcome the whole track exists for.
+**Estimated time:** ~1 session.
 
 **Orchestration:**
-- Execution: **delegated**
-- Model: re-run `/delegate` per branch (task shape changed since wave 1 — do not assume Sonnet)
-- Dispatch pattern: **parallel** via `/dispatching-parallel-agents`, 2-4 blocks per agent, disjoint
-  block lists (one writer per file)
-- Brief: read D618 + D619 first. Mount `SgsColourPanel` in the **Styles** tab, rendered first, own
-  `PanelBody`, no `+` disclosure. Set `linked: true` on every row. Placement of individual rows now
-  follows the resolver automatically — **do not make a per-block placement decision**.
-- Context they won't have: `sgs/nav-menu` has 19 colour attrs and Track-B-adjacent ones
-  (`navBg`/`submenuBg`) — read it before batching, don't include blindly. The 9 already-migrated
-  blocks need a `linked: true` follow-up pass.
-- Depends on: none · Parallel with: none (shared checkout — confirm no other session is mid-edit)
-- **/qc gate after: yes** — programmatic `wp.data` state-dispatch + DOM assertion, PLUS at least one
-  real click-a-swatch-see-canvas-update cycle per genuinely new mechanism.
+- Execution: **design gate FIRST, then delegated**
+- ⛔ **Do NOT dispatch straight into a rollout.** These 5 attributes are declared once in a
+  SHARED component and reach 6 blocks (~29 wrapper consumers total) — Rule 7 (shared mechanism,
+  high blast radius) requires Bean's approval on the shape before building. Track A's per-block
+  recipe does NOT transfer unexamined: there is no per-block `block.json` to edit for these.
+- Model: re-run `/delegate` after the design gate — shape is not yet known.
+- Brief: read D618/D619/D621/D622 + `parking.md` `P-COLOUR-PANEL-TRACK-B-SHARED-WRAPPER`.
+- Context they won't have: `ContainerWrapperControls.js` is ALSO being actively edited by a
+  concurrent session (the shadow-extension work) — **check `git status` and coordinate before
+  any agent touches that file.** Two writers on it is the known failure mode.
+- Depends on: none · Parallel with: none (single shared file)
+- **/qc gate after: yes** — live swatch-pick per block, not DOM structure alone.
 
-**Acceptance:** panel first in Styles, no `+` menu, label renders exactly once, hover/state pairing
-correct per block, and a **real swatch pick verified live** — DOM structure alone is not acceptance.
+**Acceptance:** all 6 blocks' wrapper colours in the Styles-tab Colour panel, `linked: true`,
+a real swatch pick verified live on at least one composite, zero new element-manifest findings.
 
-## Task 2 — Reseed and confirm the pending corrections land
+## Task 2 — `sgs/social-icons` design decision (Bean picks, small)
 
-**What:** Run `/sgs-update`, then re-measure drift + style defects.
-**Why:** Three fixes are proven at unit level but unproven end-to-end; the reseed is what lands them.
-**Estimated time:** minutes.
+**What:** Decide whether `social-icons` converts to custom colour attributes (joining the panel)
+or stays on native WP colour supports.
+**Why:** It was assumed to be a Track-A block all along; the DB census proved it has no custom
+colour attrs at all, so it silently never migrated.
+**Estimated time:** Bean's ruling, then <1h if it converts.
 
-**Orchestration:** inline (main thread). ⛔ **Snapshot the DB first and name the rollback** — two
-reseeds ran on 2026-08-15 and both exposed regressions. Depends on: none. Parallel with: none —
-a reseed is cross-track.
+**Orchestration:** design gate, inline. Depends on: none. **/qc gate after:** only if it converts.
+**Acceptance:** goal-shaped — either it renders its colours in the shared panel like every other
+block, or `parking.md` records the ruling that it deliberately doesn't.
 
-**Acceptance:** drift orphans 3 → **2**, style defects 7 → **6**, **zero NEW db-consistency
-violations**. A NEW violation means a fix regressed something — investigate before proceeding, do
-not baseline it away.
+## Task 3 — Hero `object-position` element mis-attribution
 
-## Task 3 — The 1:N schema decision (design gate, Bean picks)
+**What:** One CSS property painting on ONE node currently carries **three different**
+`css_element` names across its desktop/tablet/mobile attributes (`media` / `split-image` /
+`split-media`). Hero's own `block.json` already admits part of this in a `_note`.
+**Why:** ⭐ **The bigger point:** `audit-css-element-drift.py` only detects *undeclared* names — a
+**declared-but-wrong** value passes clean. So tonight's "0 orphans" is a floor, not a census, and
+the inspector-placement + colour-panel consumers reading that column are being fed known-wrong
+values on hero.
+**Estimated time:** ruling + ~1h, or longer if the audit is extended.
 
-**What:** Decide whether `css_element` becomes list-valued or gets a join table.
-**Why:** It is the ONLY thing standing between us and zero drift. 2-3 findings are one attribute
-painting elements with different class names (`hero.split-media`, `trust-bar.badge-label`,
-`breadcrumbs.current`) — no manifest edit can fix them.
-**Estimated time:** Bean's ruling, then a scoped build.
+**Orchestration:** design gate first (which name is authoritative per attribute), then inline.
+Depends on: none. **/qc gate after: yes** — plus consider extending the audit to cross-check
+`attrMap` claims against the emitting selector, which is the actual systemic fix.
+**Acceptance:** goal-shaped — one node's one property resolves to one element name, AND either
+the audit catches the declared-but-wrong class or `parking.md` records why it can't.
 
-**Orchestration:** design gate first (Rule 7 — shared mechanism). Menu + ranking to Bean before any
-build. Depends on: none. **/qc gate after: yes** — every `css_element` consumer must handle a set.
+## Task 4 — Custom gradient bar (per-stop palette linking)
 
-**Acceptance:** goal-shaped, not numeric — every consumer handles a set without regression AND the
-converter suite still passes 674.
+**What:** Build the gradient bar with palette-linked stops.
+**Why:** Kadence + Spectra both ship per-stop palette already; this is catch-up, not
+differentiation.
+**Estimated time:** own session.
+
+**Orchestration:** delegated after a design gate. **The prerequisite already landed** — core's own
+gradient bar imports the exact `ColorPicker` module now forked into `src/components/colour-picker/`,
+so the shared dependency is SGS-owned. Note core's bar deliberately offers NO palette swatches for
+stops, so per-stop palette linking is genuinely new work, not a port.
+Depends on: none. **/qc gate after: yes.**
+**Acceptance:** a client can pick a theme palette colour for an individual gradient stop and a
+brand-palette change re-colours it.
 
 ---
 
 ## Dependency graph
 
 ```
-Task 2 (inline, reseed)          Task 1 (parallel agents, 4 batches)
-        |                                  |
-        +----------- /qc gate -------------+
-                          |
-                    Task 3 (design gate — Bean rules first)
+Task 2 (ruling, minutes)     Task 3 (ruling + fix)     Task 4 (own session)
+                    \              |                        /
+                     +---- all independent of each other ---+
+                                   |
+                          Task 1 (Track B) — the main event,
+                          needs its own design gate first
 ```
-Tasks 1 and 2 are independent. Task 3 needs a ruling, not effort.
+All four are independent. Task 1 is the substantive one; 2 and 3 are rulings that unblock small fixes.
 
 ## Methodology guardrails (do not skip)
 
-- **Verify on the real editor, not the DOM alone** — Bean caught two "structurally correct, actually
-  broken" builds this way. A swatch that opens is not a swatch that applies.
-- **A subagent's INFRASTRUCTURE claims need the same verification as its findings** — one reported
-  the shared DB was "missing a core table" this session. It was intact; acting on it would have
-  clobbered a parallel session's work.
-- **Do not chase a number you cannot reseed to.** Prove correctness at unit level and say plainly
-  what is unproven. Running a reseed to make your own figures look better is how three regressions
-  nearly shipped.
-- **A column reset is only safe if the derivation can RE-DERIVE every legitimate value** — the danger
-  is not another writer, it is the derivation's own incompleteness.
-- **Path-scope every commit by exact file list.** This checkout is shared; an unscoped one is
-  blocked by a repo gate for that reason.
-- **Detect by what a thing DOES, not what it is called.** Two bugs this session were name heuristics
-  (the `Max`/`Min` role suffix; the `wrapper` element-name comparison).
+- **A ruling in `decisions.md` + a "shipped" line in a status doc is NOT evidence the code
+  changed.** D621 was ruled, summarised as shipped, and had never been written. Read the code.
+- **Verify what a commit ACTUALLY contains** — `git show --stat HEAD` / `git show HEAD -- <file>`
+  — because `git commit -- <paths>` re-stages the working tree over a partial `git add -p`.
+- **A subagent's explanation of a failure IT caused is the least reliable account of it.** One
+  agent called its own real syntax error "a transient collision"; three siblings reported it
+  correctly. Verify causes independently, not just "fixed" claims.
+- **Dispatch a second opinion BEFORE building a fix-shape, not after.** Tonight's review
+  overturned two of my diagnoses pre-dispatch. A coherent-sounding fix is not a verified one.
+- **This checkout is SHARED and the branch can change under you mid-session.** Re-run
+  `git branch --show-current` + `git status` immediately before every commit.
+- **Verify on the real editor, not the DOM alone** — a swatch that opens is not a swatch that
+  applies.
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
 
 ## State Snapshot
 
-- **Branch:** `main`. ⛔ **This will drift immediately** — run `git log -1` AND `git status` AND
-  `git branch --show-current`; do not trust this line.
-- **D-ceiling:** **D622** as of this write — verify with `grep -oE '^## D[0-9]+' .claude/decisions.md
-  | grep -oE '[0-9]+' | sort -n | tail -1`. ⚠ D620 was claimed by the decisions.md auto-sweep hook
-  mid-write this session; re-check the ceiling immediately before writing an entry, not from memory.
-- **HEAD:** `main` at `5d43844c` (merge of PR #27). ⛔ Verify — this line drifts.
-- **DB snapshots** (pre-reseed, this session): `sgs-framework.db.bak-2026-08-15-pre-reseed` and
-  `...-pre-reseed2`. Rollback is a single `cp`. Two full reseeds ran today.
-- ⚠ **A reseed re-seeds the SHARED DB to match YOUR working tree.** Running one on a branch makes
-  every other session on `main` see mismatches for commits they do not have — that happened this
-  session and cost the parallel session 7 spurious `alignItems` errors until PR #27 merged. If you
-  reseed on a branch, merge promptly or expect to explain it.
-- **This checkout is SHARED with concurrent sessions.** At this write, 7 files are modified by the
-  shared-wrapper session (`ContainerWrapperControls.js`, `cta-section/edit.js`+`render.php`,
-  `site-header/edit.js`, `site-footer/edit.js`, `package-lock.json`, `check-shared-panel-schema.js`).
-  **Not touched, not committed here.** Every commit this session was path-scoped by exact file list;
-  an unscoped one is blocked by a repo gate for exactly this reason.
-- **Worktrees: all cleared** (2026-08-15). 4 registered worktrees removed after verifying each was
-  fully merged — the last one's "406-line diff vs main" was **main being ahead**, not stranded work,
-  confirmed commit-by-commit. Plus 4 orphaned directories from earlier failed removals (~689MB).
-  ⚠ `git worktree remove` fails on Windows with "Filename too long" on deep `node_modules`; it
-  deregisters anyway and leaves files. Use `cmd /c rmdir /s /q` with the `\?\` long-path prefix.
-  **Check for junctions first** — a previous incident emptied the main `node_modules` (962→0).
-  Verified 973 before and after every removal here.
-- ⚠ **8 orphaned `worktree-*` branch refs remain** — harmless, left alone in case they belong to
-  live sessions.
-- **Canary:** sandybrown. Every throwaway test page created this session was deleted after use
-  (2414, 2418, 2420, 2421, 2422, 2423, 2429, 2431 — none left live).
-- **Playwright MCP browser lock:** hit a "Browser is already in use" error late in the session,
-  unresolved cause (stale profile lock vs genuine contention). Chrome DevTools MCP
-  (`mcp__plugin_chrome-devtools-mcp_chrome-devtools__*`) worked as a substitute — same live-editor
-  verification capability, different tool surface (`take_snapshot`/`click`/`fill`/`evaluate_script`
-  instead of Playwright's equivalents). Worth trying Playwright first next session; fall back to
-  Chrome DevTools MCP if the lock recurs rather than force-killing chrome.exe processes on a shared
-  machine.
-
-## Gates that EARNED their keep this session (do not weaken them)
-
-- **The live-editor verification bar itself** — Bean directly caught two places where a
-  DOM-structure check was being treated as sufficient when it wasn't: (1) the first `sgs/icon`
-  colour panel passed structural checks while being mounted inside WordPress's own native panel,
-  not a real defect the DOM alone would have caught without knowing WHICH slot was used; (2) wave
-  1's first Playwright pass confirmed panel structure but not that a real colour pick actually
-  applies — Bean explicitly named "the full native control... popover and colour picker" as the
-  bar, and it took a second pass (swatch click → attribute → canvas, custom hex picker, hover-state
-  independence) to actually clear it.
-- **The shared-checkout discipline (commit-by-exact-path, never `git add -A`, verify branch in the
-  same command)** — caught zero incidents FOR this session's own commits, but the reason two other
-  sessions' concurrent work stayed recoverable/undamaged is that this session never used a broad
-  git operation that could have swept up their staged files.
+- **Branch:** ⛔ **VERIFY — this drifted mid-session.** My work is on `main`; a concurrent session
+  created `feat/universal-shadow-extension` and left HEAD there. Run `git branch --show-current`
+  AND `git status` before anything.
+- **D-ceiling:** **D631** — verify with
+  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+  (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling before).
+- **`main` HEAD:** `0c287cf6` + this handoff's doc commit. ⛔ Verify.
+- **Build:** ⛔ **currently exit 1** — 10 NEW F6 violations, all `*ShadowColour` attrs from the
+  concurrent shadow-extension session's shared-DB seeding (see Blockers; not this session's work,
+  do not chase). **At the time this session's own commits landed it was exit 0**, with cheat-gate
+  18 baselined / 0 new and element-manifest GATE PASS (style-defect 7/7, state-without-base 1/1).
+  `handoff-preflight.py --check` 9/9 pass (doc gates, unaffected).
+- **DB snapshot (pre-reseed, tonight):**
+  `~/.agents/skills/sgs-wp-engine/sgs-framework.db.bak-2026-08-16-pre-reseed`. Rollback is one `cp`.
+  ⚠ The real DB lives at `~/.agents/skills/sgs-wp-engine/` — there is a **0-byte decoy** at the repo
+  root (`sgs-framework.db`); `dev-setup.md` documents the real path. I snapshotted the decoy first.
+- **Canary:** sandybrown. Every throwaway test page created tonight was deleted (2441, 2443, 2445,
+  2446 — none left live).
+- **Playwright MCP:** worked fine tonight. One stuck `beforeunload` dialog blocked navigation twice —
+  `browser_handle_dialog` clears it; no need to fall back to Chrome DevTools MCP.
 
 ## Pointers
 
 | For | Read |
 |---|---|
-| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| Colour-panel rollout — full scope, Track A/B split, wave 1 detail, next-session standards work | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2c-§1.2d |
-| D609/D617/D618 — the colour-control architecture decisions | `decisions.md` |
-| Uniformity-thread T1-T5 orchestration (this session's opening work) | `~/.claude/memory/session-2026-08-14.md` (rotated snapshot — the plan was recovered from here) |
-| Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
+| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101 — 224 entries) |
+| Colour programme — full history, Track A/B split, wave detail | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2d |
+| D627-D631 (this session) + D609/D617-D622 (colour architecture) | `decisions.md` |
+| Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (Parts A3/H/I/M updated tonight) |
 | Control-type contract (colour §1, link §2) | `.claude/plans/spec-35-control-type-contract.md` |
+| Open deferred work (4 entries added tonight) | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
 ## Open — carried, not this session's to close
 
-- **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design
-  decision each. `image-sequence` is the standing (non-blocking) `check-image-controls-support`
-  finding.
+- **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design call each.
+- **7 blocks keep native `supports.color` alongside the SGS panel** (`notice-banner`, `quote`,
+  `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`, `product-card`) — the flags
+  are load-bearing for a root-level `style.color.*` mechanism the migration doesn't replace. Not a
+  defect; not fully single-surface either.
+- **`nav-menu`'s `block.json` manifest comment is stale** — describes a hover/selected defect
+  `render.php` shows was fixed 2026-07-31. Doc debt, not code debt.
 - **physics-canvas `ALLOWED_BLOCKS`** — approved in principle; needs its own design gate.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.
-- **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5) — not tracked in
-  parking.md (Bean: not approved for parking, will be built properly when that track is reached).
-- **Colour-panel Track B** (shared `ContainerWrapperControls.js` wrapper — container, cta-section,
-  hero, trust-bar, site-header, site-footer) — Bean-ruled: separate session, after Track A settles.
-  ⚠ **2026-08-15: merge this into the wrapper-decomposition initiative's step 6, not a standalone
-  session** — same file, same blocks. See D626.
-- **Typography framework-wide rollout** — queued as the next initiative after colour's Track A+B
-  close, same two-track shape (D626). Track A likely smaller than colour's (TypographyControls
-  already exists, R-22-13) — needs its own scope audit before estimating.
+- **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
+- **SonarCloud Security Rating C** on PR #27's new code — never resolved, merged on Bean's
+  instruction with the gate red. Worth reading before the next merge.

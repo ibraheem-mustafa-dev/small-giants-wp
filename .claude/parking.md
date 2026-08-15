@@ -346,6 +346,53 @@ heading `hero` variant.
 
 **Trigger:** Framework design-polish pass.
 
+### P-COLOUR-PANEL-TRACK-B-SHARED-WRAPPER — migrate the shared-wrapper-owned colours onto SgsColourPanel
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
+
+Track A (33 blocks' own custom colour attrs migrated onto `SgsColourPanel`) is COMPLETE (commit
+`f6f3c033`, wave 2 colour-panel rollout). Track B is the remaining slice: the colours owned by the
+shared `ContainerWrapperControls.js` rather than by each block's own attrs — `container`,
+`cta-section`, `hero`, `trust-bar`, `site-header`, `site-footer`. Bean ruled this a separate session
+because it touches the SHARED wrapper control surface (Rule 7 design-gate territory), not a
+per-block swap like Track A. Its precondition ("wait for Track A to settle") is now met.
+
+**Trigger:** a dedicated Track B session — design-gate the `ContainerWrapperControls.js` change
+before building (shared-mechanism blast radius across all 6 consumers), then migrate each of the 6
+onto `SgsColourPanel` using the Track A recipe.
+
+### P-GRADIENT-BAR-PALETTE-STOPS — per-stop palette-linked colours on a custom gradient bar
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
+
+Core's own gradient bar (`custom-gradient-picker/gradient-bar/control-points.tsx`) never offers a
+palette-swatch option for gradient stops — only the free-form picker — so per-stop palette linking
+is genuinely new work, not a port of an existing core capability. The gradient bar itself is not
+built. **Prerequisite now shipped:** the 2026-08-14 colour-picker fork (commit `aaa91c3e`) forked
+core's `ColorPicker`/`CustomColorPickerDropdown` modules into `plugins/sgs-blocks/src/components/
+colour-picker/` — the exact modules core's gradient bar imports — so the shared dependency this
+build needs is already SGS-owned. Bean confirmed mid-session (2026-08-14) this stays a separate
+future session.
+
+**Trigger:** a dedicated gradient-bar build session, using the now-forked colour-picker components
+as its base.
+
+### P-HERO-OBJECTPOSITION-CSS-ELEMENT-MISATTRIBUTION — sgs/hero's object-position attrs disagree on their own css_element
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
+
+Found by a second-opinion code-reviewer agent (2026-08-15) and explicitly parked by Bean rather than
+fixed inline. One CSS property (`object-position`) painting on ONE DOM node gets three different
+`css_element` names across sgs/hero's desktop/tablet/mobile attribute variants: `imageObjectPosition`
+(desktop) is `attrMap`-forced to element `media`; `imageObjectPositionTablet` is `attrMap`-claimed by
+`split-image`; `splitImageMobileObjectPosition` derives `split-media`. Hero's own `block.json`
+already carries a `_note` admitting part of this is wrong and unfixed.
+
+**Wider point worth carrying into the fix:** the drift audit (`audit-css-element-drift.py`) only
+detects *undeclared* element names — a value that is **declared but wrong** passes clean, so
+"zero orphans" is a floor, not a census.
+
+**Trigger:** a design decision on which element name is authoritative per attribute, before any
+code fix — plus possibly extending `audit-css-element-drift.py` to cross-check `attrMap` claims
+against the emitting selector rather than only checking for undeclared names.
+
 ### P-FLOATING-UI-BOTTOM-BARS — extend Spec 18 Floating UI to persistent bottom bars
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-26
 
@@ -461,6 +508,19 @@ now 444 lines (not the 502 originally logged), still 48% over the 300-line cap. 
 notice/dismiss-handling logic to bring it closer.
 
 **Trigger:** Next time anything is added to this file, or Wave 3 starts.
+
+### P-SOCIAL-ICONS-COLOUR-PANEL-DESIGN-DECISION — sgs/social-icons has no custom colour attrs to migrate onto SgsColourPanel
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-15
+
+Found during the 2026-08-15 DB census: `sgs/social-icons` was listed in the prior session's plan as
+a Track-A colour-panel candidate, but it has **no custom colour attributes at all** — it uses native
+WP colour supports (`supports.color`) exclusively. It can't follow the `SgsColourPanel` recipe
+(which migrates custom colour attrs) without first deciding whether/how to convert it to custom
+attrs. This is genuinely a design decision, not an effort estimate.
+
+**Trigger:** a design session deciding whether `sgs/social-icons` gains custom colour attrs (icon
+colour / background per state, etc.) — only once that's decided does it become a colour-panel
+migration candidate.
 
 ### P-SPEC37-OPEN-RESIDUALS — Spec 37 coverage-matrix residuals
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-21

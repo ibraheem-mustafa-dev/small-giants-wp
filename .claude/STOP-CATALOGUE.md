@@ -2255,3 +2255,50 @@ post-edit — three STOPs added, zero removed. This session's other candidate le
 only (`feedback_invoke_dispatching_parallel_agents_before_ad_hoc_parallel_dispatch.md`), not added
 here — it is a skill-invocation habit, not a failure this repo's own gates could have caught, so it
 does not fit this catalogue's scope (anti-patterns THIS project's structural defences guard against).
+
+### E15. Earned 2026-08-15 — shared-worktree commit + subagent-explanation + visual-gate session
+
+- **STOP-A-PATHSPEC-SCOPED-COMMIT-RESTAGES-THE-WORKING-TREE-VERSION-OVER-A-PARTIAL-STAGE.** Passing a
+  pathspec to `git commit -m "..." -- <paths>` re-stages the CURRENT WORKING-TREE version of those
+  exact paths, overriding any prior selective staging — it does not commit only what was already
+  staged for them. A deliberate `git add -p` had excluded two of a concurrent session's uncommitted
+  attribute declarations (`sgs/trust-bar`'s `iconCircleShadowColour`/`badgeImageShadowColour`)
+  minutes earlier; the pathspec-scoped commit put both onto `main` anyway, inside an unrelated commit
+  (`0c287cf6`). No functional damage (inert schema declarations, build stayed green), but on a shared
+  checkout this is exactly how another session's half-finished work escapes. **Rule: after ANY commit
+  on a shared checkout, verify what actually landed with `git show --stat HEAD` and
+  `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.** Sibling
+  of STOP-PATH-SCOPED-COMMIT and STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE, one layer
+  sharper: those two are about the SCOPE of a commit; this one is about pathspec commits silently
+  widening that scope back out even when scoped staging was done correctly beforehand.
+
+- **STOP-A-SUBAGENTS-CAUSAL-EXPLANATION-FOR-A-FAILURE-IT-CAUSED-IS-NOT-EVIDENCE.** A wave-2 agent
+  introduced a real missing `</ToolsPanelItem>` JSX closing tag that broke the shared build for every
+  concurrent agent. Its own final report described the failure as "a transient collision from a
+  concurrent agent's simultaneous build" and claimed a clean isolated re-run — but an isolated
+  `@babel/core` parse of the file showed a genuine, reproducible syntax error at a specific line, and
+  three OTHER agents independently and correctly reported the same real error. **Rule: verify a
+  subagent's causal explanation independently, not just its "fixed"/"resolved" claim — an agent
+  explaining away its own breakage is the least reliable witness to it.** Sibling of
+  STOP-VERIFY-SUBAGENT-FACTS-NOT-JUST-STRUCTURE and STOP-A-WRONG-EXPLANATION-DOES-NOT-MAKE-THE-
+  OBSERVATION-WRONG (both: a stated MECHANISM is a separate claim from the observed EFFECT — verify
+  each independently), sharpened to the case where the agent reporting the mechanism is the same one
+  that caused the effect.
+
+- **STOP-A-DIRECTORY-SCOPED-GATE-CAN-BE-TRIPPED-BY-A-CONCURRENT-SESSIONS-UNRELATED-UNCOMMITTED-FILES.**
+  This repo's visual-diff commit gate decides "did this block change visually?" partly by looking at
+  a block's WHOLE directory rather than only the staged diff. A `sgs/trust-bar/block.json`-only change
+  — provably metadata-only, `check-blockjson-metadata-only.py` exited 0 against the staged content —
+  was still blocked, because a concurrent session had unstaged `edit.js`/`render.php` edits sitting in
+  the same block folder. **Rule: when a gate blocks a change believed exempt, run the gate's OWN
+  standalone checker against only the staged diff before either fabricating evidence or reaching for a
+  bypass — and if bypassing is genuinely right, use the scoped `SGS_VISUAL_GATE_SKIP` + mandatory
+  `SGS_VISUAL_GATE_REASON` (which logs an audit trail to `reports/visual-diff/manual-skips.log`), never
+  `--no-verify` (which disables six unrelated passing gates).** Sibling of
+  STOP-A-A-NEW-ATTRIBUTE-IS-A-VISUAL-CHANGE-EVEN-WHEN-NO-CSS-MOVED, whose 2026-08-15 correction is the
+  scoped-bypass mechanism this entry names directly; extends it to a second false-trip cause
+  (concurrent-session directory contamination, not the block's own genuine attribute additions).
+
+**D101 carry-forward receipt for E15.** `python .claude/hooks/handoff-preflight.py --check` run
+pre-edit reported 221 STOPs; three added here, zero removed, zero reworded. 221 → 224. 224 >= 221.
+PASS.

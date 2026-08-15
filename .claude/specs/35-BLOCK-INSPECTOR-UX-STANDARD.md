@@ -45,7 +45,11 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   ⛔ **A3 previously read "Behaviour/content → Settings; appearance → Styles".** That rule splits an
   element's appearance from the content it modifies; 8 blocks were sorted on it on 2026-08-08 and
   rejected. Full rule: `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
-  ⭐ **COLOUR SETTLED 2026-08-15 (D621 + D622) — it is no longer an open exception to A3/A4.** The
+  ⭐ **COLOUR SETTLED 2026-08-15 (D621 + D622) — it is no longer an open exception to A3/A4.** ⚠
+  **The ruling and the code were two separate events, same day:** `SgsColourPanel.js` had no `group`
+  prop at all until commit `a5b74bd1` (2026-08-15) — a prior status summary had already called D621
+  "shipped" before that fix landed. Genuinely shipped as of `a5b74bd1`; see Part M's dated entry for
+  the same date for the lesson this earned. The
   Colour panel renders in the **Styles** tab (Styles = root CSS + visuals; the framework uses NO
   native colour supports, only their look). **Placement of an individual colour follows A4 and the
   D533/D537 resolver like every other property family** — element-scoped colour sits in its element's
@@ -465,7 +469,12 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 Numeric+unit → `UnitControl` · bounded numeric → `RangeControl` (+input+reset) · 4-side box →
 **`ResponsiveBoxControl`** (contract §5 — bare `BoxControl` is a banned lookalike, it bypasses the
 tier wrapper) · colour → **`DesignTokenPicker`** (wraps `ColorPalette`; `enableAlpha`+`clearable`
-default true) · gradient → `GradientPicker` · angle/direction → `AnglePickerControl` · border →
+default true — ⚠ **as of 2026-08-15 (`aaa91c3e`) `ColorPalette`/`ColorPicker`/`CircularOptionPicker`
+are SGS-OWNED forks** at `src/components/colour-picker/`, forked verbatim-behaviour from
+`WordPress/gutenberg` at pinned SHA `28c0dedc4eaf001a24237a1fbba4b0887698b000` (WP 7.0.4), TS→plain
+JS, `@emotion/styled`→SCSS, new MIT deps `react-colorful`/`colord`/`clsx`; `DesignTokenPicker`
+remains the canonical colour component unchanged — only the dependency it wraps is now local, not
+`@wordpress/components`) · gradient → `GradientPicker` · angle/direction → `AnglePickerControl` · border →
 a **composed builder** (width `UnitControl` + style `SelectControl` + token-aware colour picker) ·
 radius → **`ResponsiveBorderRadiusControl`** *(both per contract §14.1 as amended by D566 — core's
 grouped border-box component was deliberately NOT adopted, rationale at §14.1 field 1)* ·
@@ -491,7 +500,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 |---|---|---|
 | Responsive per-breakpoint | `ResponsiveControl`, `ResponsiveBoxControl` EXIST | audit coverage; use everywhere responsive-worthy |
 | Typography per element | `TypographyControls` EXISTS (R-22-13) | extend to appearance/letter-spacing where missing |
-| Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`) | DONE (Wave 1.1) |
+| Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`). ⭐ **`SgsColourPanel` (the shared per-element colour panel that groups `DesignTokenPicker` instances under D621/D622's Styles-tab placement) — Track A rollout COMPLETE 2026-08-15** (`f6f3c033`, wave 2, on top of wave 1 + the `sgs/icon` pilot): most colour-bearing blocks now route colour through the shared panel — re-derive the exact split via `git log --oneline -- 'plugins/sgs-blocks/src/blocks/*/edit.js'` grepped for `SgsColourPanel`, do not trust a cached count here. **Track B has NOT started** — `container`, `cta-section`, `hero`, `trust-bar`, `site-header`, `site-footer` keep colour inside the shared `ContainerWrapperControls.js` (Bean-ruled separate session). Seven blocks (`notice-banner`, `quote`, `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`, `product-card`) deliberately KEPT native `supports.color` sub-flags `true` alongside the panel — those flags are load-bearing for a root-level `style.color.*` mechanism the migration does not replace, so native colour UI may still appear alongside `SgsColourPanel` for those blocks specifically. `sgs/social-icons` was surveyed and found NOT a Track-A candidate (no custom colour attrs, only native supports) — needs its own design pass, not a migration. | DONE (Wave 1.1); Track A DONE 2026-08-15, Track B OPEN |
 | Normal/Hover state | `StateToggleControl` EXISTS (2026-07-18) | roll out to stateful blocks |
 | Extension gating | `hideExtensions` (opt-out, most extensions) + `enabledExtensions` (opt-in, hover/blockLink only, D579 2026-08-11) EXIST | — |
 | **Shadow builder** | `ShadowControl` **BUILT + ROLLED OUT** (X/Y/blur/spread/colour+alpha/inset + theme presets; `src/components/ShadowControl.js`) — consumers now incl. testimonial `shadowHover`, trust-bar `iconCircleShadow`/`badgeImageShadow` (`b9c5f6d1`, 2026-07-28) | DONE (Wave 1) |
@@ -760,6 +769,22 @@ custom-property split, the four measurement controls): **`plans/spec-35-control-
   query first). Do not re-derive the old 8-property list from D549's prose.
 - A live `max-width:Array` bug in `sgs_responsive_normalise_object()` was fixed (an un-normalised
   object leaking into a scalar-only code path).
+
+**2026-08-15 — `SgsColourPanel` Track A rollout complete + D621's Styles-tab placement genuinely
+shipped (was ruled, not built, until today).** Three commits: `f6f3c033` (Track A wave 2, 33 more
+blocks onto `SgsColourPanel` — see Part I's Colour row for the full split + Track B residual +
+the seven blocks that deliberately keep native `supports.color`), `aaa91c3e` (the colour PICKER
+itself forked from `WordPress/gutenberg` into `src/components/colour-picker/` — see Part H's
+colour row), and `a5b74bd1` (the actual D621 fix: `SgsColourPanel.js` had **no `group` prop at
+all** — Styles-tab placement was a one-line miss).
+⭐ **The general lesson: a design ruling plus a status doc summarising it as "shipped" is not
+evidence the code changed.** D621 was ruled and A3 above (line 48) was updated to say "COLOUR
+SETTLED", and a prior session's status summary called it shipped — but the component itself was
+never touched until a direct file read + a live editor check caught the missing `group` prop
+today. Treat "ruled" and "summarised as done elsewhere" as two separate claims from "verified in
+the component's own source" — this spec has now carried this exact failure mode more than once
+(see the `ShadowControl` precedent at Part M's "Also outstanding across the board" note above:
+crashed on first live render despite 180 passing unit tests).
 
 ## PART N — Role data layer + enforcement rules for Task F (added 2026-08-06)
 

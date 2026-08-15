@@ -1,5 +1,96 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D631 — Shared-worktree staging trap: `commit -m -- <pathspec>` re-stages the working tree, not the index [INCIDENT]
+
+**2026-08-15.** `git commit -m "..." -- <pathspec>` re-stages the CURRENT WORKING TREE version of the
+pathspec'd files, silently discarding any prior selective `git add -p` staging for those exact paths.
+Caused two of a concurrent session's uncommitted attribute declarations (trust-bar's
+`iconCircleShadowColour`/`badgeImageShadowColour`) to land inside commit `0c287cf6` — an unrelated
+commit — despite a deliberate `git add -p` having excluded them minutes earlier. No functional damage
+(inert schema declarations until that session commits its matching `edit.js`/`render.php`; build stayed
+green) and Bean ruled to leave it in place.
+
+**Rule:** on a shared checkout, verify what a commit ACTUALLY contains via `git show --stat HEAD` /
+`git show HEAD -- <file>` AFTER committing — never assume a careful partial staging survived into the
+final commit.
+
+## D630 — Trust-bar/hero `css_element` drift orphans closed — both initial fix-shapes were wrong [ROUTINE]
+
+**2026-08-15.** `sgs/hero.splitImageMobileObjectPosition` and `sgs/trust-bar.labelColour` each carried a
+DB `css_element` value not declared in the block's `supports.sgs.elements` — the last 2 orphans from the
+drift sweep. My first diagnosis was wrong on both, caught by a second-opinion code-reviewer agent BEFORE
+dispatch: (i) hero — `split-media` is not a stale FR-31-generalisation leftover, it's a current class
+`sgs_tier_media_render()` carries alongside `split-image` on the same node; the proposed selector rename
+would have reproduced the identical orphan while weakening specificity (0,3,0) → (0,2,0); (ii) trust-bar
+— "one attribute targets two selectors" conflated the unrelated colour emit (`render.php:281`, one
+selector) with the typography emit (`render.php:476`, two selectors, different attribute); the proposed
+3-way attribute split would have duplicated `textColour` on the icon-circle variant while leaving the
+orphan in place.
+
+Corrected fixes, both manifest-only: declare `split-media` on hero; declare a new `badge-label` element
+on trust-bar (not merged into the existing `label` element — attempted, produced a genuine
+routing-determinism build failure, since `textColour` already legitimately owns `css:color` on `label`
+for the icon-circle variant). Orphans 2 → 0, build exit 0. Commit `0c287cf6`.
+
+**Worth stating:** the review was dispatched specifically because the fixes were about to be delegated;
+it overturned both. A fix-shape that sounds coherent is not a verified one.
+
+## D629 — Colour-panel wave 2: 33 blocks migrated onto `SgsColourPanel` off a live DB census [ROUTINE]
+
+**2026-08-15.** Migrated the remaining Track-A colour-bearing blocks. Worklist built from a live DB
+`role='color'` census, not the prior session's cached plan-doc list, which had drifted: `social-icons`
+correctly dropped (native colour supports, no custom colour attrs); `cart` was missing entirely with 5
+genuine colour attrs. Dispatched as 16 parallel agents (6 batches of straightforward blocks, one agent
+per repeater/composite given shape-verification risk, `nav-menu` alone), briefed to verify the DB list
+against real `render.php`/`edit.js` rather than copy it blind.
+
+Real divergences caught: `mega-panel`'s `accent` (DB claimed a 4-property hover state the block's CSS
+doesn't have a selector for), `option-picker`'s pill colours (DB labelled the second state `hover`;
+`style.css` shows it's `selected`, and the DB-labelled state is actually resting), `nav-menu`'s
+`itemColourHover`/`itemBgHover` (manifest comment described a defect `render.php` shows was already
+fixed 2026-07-31). Also closed a real pre-existing gap: `product-card`'s three `ctaColour*Hover` attrs
+existed in block.json + render.php with zero inspector control.
+
+`notice-banner`, `quote`, `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`,
+`product-card` keep `supports.color` sub-flags `true` — load-bearing for a root-level `style.color.*`
+mechanism this migration doesn't replace, diverging deliberately from the ~26 blocks where disabling was
+correct. One dispatch-induced bug: `sgs/testimonial/edit.js` shipped a missing `</ToolsPanelItem>`,
+breaking the shared build for every concurrent agent until found and fixed directly. Every colour state
+sets `linked: true` (D619). Verified: build exit 0, cheat-gate 0 new, element-manifest GATE PASS at the
+pre-wave baseline. Commit `f6f3c033`.
+
+## D628 — D621 was ruled but never actually coded; fixed before wave 2, not after [ROUTINE]
+
+**2026-08-15.** D621 (prior session) ruled the Colour panel belongs in the Styles tab. The LEDGER's
+shipped-commit summary claimed it landed in `f78662cd`, but that commit's real content was D622's
+placement resolver — `SgsColourPanel.js` still rendered a bare `<InspectorControls>` (default = Settings
+group) with no `group` prop, confirmed by direct file read and live editor verification showing the panel
+under Settings. One-line fix (`group="styles"`), verified live on the sandybrown canary: panel now
+renders first under Styles, no duplicate in Settings. Fixed before wave 2 (D629) dispatched so all 33
+migrated blocks landed correctly positioned rather than needing a second pass. Commit `a5b74bd1`.
+
+**Transferable lesson:** a ruling recorded in `decisions.md` and summarised as shipped in a status doc is
+not evidence the code changed — verify the actual code before building on the claim.
+
+## D627 — WP core colour-picker forked into `sgs-owned` `colour-picker/`, TS→JS, emotion→SCSS [ROUTINE]
+
+**2026-08-15.** D609/D618 follow-up. Forked WP core's `ColorPalette`/`ColorPicker`/
+`CircularOptionPicker` (~29 files) from `WordPress/gutenberg` at pinned SHA
+`28c0dedc4eaf001a24237a1fbba4b0887698b000` (WP 7.0.4) into
+`plugins/sgs-blocks/src/components/colour-picker/`, converted TS→plain JS,
+`@emotion/styled`→SCSS. New MIT deps: `react-colorful`, `colord`, `clsx`; `framer-motion` confirmed
+unused by these three families, not added. Reason: Bean's instruction to take core's picker internals as
+SGS-owned code, starting verbatim, so they can be customised later.
+
+**Real bug found + fixed mid-fork:** importing the forked per-component CSS from a component shared
+across 36 blocks' `edit.js` let webpack's per-entry CSS extraction attribute the compiled CSS to an
+arbitrary block's FRONTEND `style.css` bundle — caught by the Spec-31 F5 anti-cheat gate flagging a new
+`!important` finding on `sgs/accordion`, a block the commit never touched. Fix: two of the four forked
+stylesheets duplicate core's own `.components-*` classnames (already shipped globally via
+`wp-components`) and were deleted rather than double-shipped; the other two carry genuinely new SGS
+classnames and are compiled once from `src/blocks/extensions/index.js` (the entry already global in the
+editor), enqueued editor-only via a new `sgs-colour-picker-editor` handle. Commit `aaa91c3e`.
+
 ## D626 — Wrapper-capability grouping + tab placement locked: 6 extensions, shapeDividers decoupled, typography added [ROUTINE]
 
 **2026-08-15.** Step 3 of the shared-wrapper decomposition's 7-step order (`go-track-1b-playful-hamster.md`

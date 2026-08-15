@@ -1,9 +1,41 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-14 (2 entries added from the decisions.md sweep/compress/auto-sweep-hook session — 28 → 30 active, at target, not yet over cap.)
+**Last updated:** 2026-08-15 (3 entries added from a shared-worktree commit/subagent/visual-gate session; 5 oldest by date archived to keep at target — 32 → 27 → 30 active.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-15] A pathspec-scoped commit re-stages the working-tree version, overriding a deliberate partial stage
+- **Pattern key:** `pathspec-scoped-commit-overrides-partial-staging`
+- **Evidence:** `git commit -m "..." -- <paths>` re-stages the CURRENT WORKING-TREE version of those exact
+  paths, not just what was already staged for them. A deliberate `git add -p` had excluded two of a
+  concurrent session's uncommitted `sgs/trust-bar` attribute declarations minutes earlier; the
+  pathspec-scoped commit put both onto `main` anyway inside an unrelated commit (`0c287cf6`). No
+  functional damage, but on a shared checkout this is how another session's half-finished work escapes.
+- **Rule:** After ANY commit on a shared checkout, verify what actually landed with `git show --stat HEAD`
+  and `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.
+
+### [2026-08-15] A subagent's causal explanation for a failure it caused is not evidence
+- **Pattern key:** `a-subagents-causal-explanation-for-its-own-failure-is-not-evidence`
+- **Evidence:** A wave-2 agent introduced a real missing `</ToolsPanelItem>` JSX closing tag that broke
+  the shared build for every concurrent agent, then reported in its own final report that the failure
+  was "a transient collision from a concurrent agent's simultaneous build" with a clean isolated re-run
+  claimed. An isolated `@babel/core` parse showed a genuine, reproducible syntax error at a specific
+  line; three OTHER agents independently and correctly reported the same real error.
+- **Rule:** Verify a subagent's causal explanation independently, not just its "fixed"/"resolved" claim —
+  an agent explaining away its own breakage is the least reliable witness to it.
+
+### [2026-08-15] A directory-scoped commit gate can be tripped by a concurrent session's unrelated uncommitted files
+- **Pattern key:** `directory-scoped-gate-tripped-by-concurrent-sessions-unrelated-files`
+- **Evidence:** The visual-diff commit gate decides "did this block change visually?" partly by looking at
+  a block's whole directory rather than only the staged diff. A `sgs/trust-bar/block.json`-only change —
+  provably metadata-only, `check-blockjson-metadata-only.py` exited 0 against the staged content — was
+  still blocked, because a concurrent session had unstaged `edit.js`/`render.php` edits sitting in the
+  same block folder.
+- **Rule:** When a gate blocks a change believed exempt, run the gate's own standalone checker against
+  only the staged diff before either fabricating evidence or reaching for a bypass — and if bypassing is
+  genuinely right, use the scoped `SGS_VISUAL_GATE_SKIP` + mandatory `SGS_VISUAL_GATE_REASON` (which
+  logs an audit trail), never `--no-verify` (which disables six unrelated passing gates).
+
 ### [2026-08-15] A grep for a string the style engine never emits is not evidence a block lacks an emitter
 - **Pattern key:** `grep-for-a-literal-emitted-string-is-blind-to-passthrough-emitters`
 - **Evidence:** claimed `sgs/info-box` had "no typography emitter" on `grep -c text-align render.php`
@@ -102,30 +134,6 @@
 - **Pattern key:** `a-gate-firing-is-evidence-about-your-data`
 - **blub.db row:** `408`
 - **Feedback file:** [feedback_a_gate_firing_is_evidence_about_your_data.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_gate_firing_is_evidence_about_your_data.md)
-### [2026-07-17] Validate a grading tool against a gold-standard before trusting its score as a gate (low score can be a scorer bug)
-- **Pattern key:** `validate-grading-tool-against-gold-standard-before-trusting-its-gate`
-- **blub.db row:** `401`
-- **Feedback file:** [feedback_validate_grading_tool_against_gold_standard.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_validate_grading_tool_against_gold_standard.md)
-### [2026-07-17] Fact-check subagent-produced specifics (file paths, dates, versions) — structure-faithful is not fact-faithful
-- **Pattern key:** `verify-subagent-facts-not-just-structure`
-- **blub.db row:** `402`
-- **Feedback file:** [feedback_verify_subagent_facts_not_just_structure.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_subagent_facts_not_just_structure.md)
-### [2026-07-17] Setup go-forward protocol — one LEDGER, structural gates over prose, done=machine-evidence, verify contents not filenames
-- **Pattern key:** `setup-simplification-go-forward-protocol`
-- **blub.db row:** `397`
-- **Feedback file:** [feedback_setup_simplification_go_forward_protocol.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_setup_simplification_go_forward_protocol.md)
-### [2026-06-30] LANDED verification = direct page-source comparison, not the JS parity scripts
-- **Pattern key:** `landed-verification-direct-page-source-compare-not-js-parity-scripts`
-- **blub.db row:** `374`
-- **Feedback file:** [feedback_landed_verification_direct_page_source_compare.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_landed_verification_direct_page_source_compare.md)
-- **Rule:** SGS clone LANDED gate = deploy → copy rendered page-source HTML to a file → direct manual section comparison (tag converted / content moved / every CSS rule migrated / each rule on the CORRECT block-element) + computed-style at 375/768/1440 + Bean's eye. The JS parity scripts (mockup-parity-validator.js, screenshot-diff-helper.js) are unreliable — do NOT rely on them.
-
-### [2026-06-28] Bind definition-of-done to the spec's FULL scope — never ship a minimum increment + call the rest "out of scope"
-- **Pattern key:** `bind-definition-of-done-to-full-spec-scope`
-- **blub.db row:** `<pending sync — dashboard down 2026-06-28>`
-- **Feedback file:** [feedback_bind_done_to_full_spec_scope.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_bind_done_to_full_spec_scope.md)
-- **Rule:** Read a spec'd subsystem's WHOLE spec section before scoping; set done = the spec's full universal scope; map every deferral to a named spec STAGE, never "out of scope". Root cause of repeated half-jobs: DoD set to the increment, not the spec scope (Spec 31 §3 already defined it). Extends STOP-26 to definition-of-done.
-
 ### [2026-07-30] A budget gate globbed two directories and was structurally blind to the module it was meant to govern
 - **Pattern key:** `a-gate-that-globs-a-directory-is-blind-to-everything-outside-it`
 - **Evidence (D422):** `check-motion-bundle-budget.py` scanned `vendor-modules` + `shared/effects/gsap`. A new module at `shared/effects/smooth-scroll.js` — one level up — built, shipped and enqueued while the gate printed `GATE PASSED`, having never measured it. Fixed by adding `shared/effects` to `_WATCHED_SUBDIRS` and baselining at 5,777 bytes gz.

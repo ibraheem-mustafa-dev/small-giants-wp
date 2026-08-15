@@ -6,6 +6,37 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-08-15 — archive sweep (32 → 27 active), oldest 5 by date, moved verbatim, to make room for 3 new entries at cap
+
+### [2026-07-17] Validate a grading tool against a gold-standard before trusting its score as a gate (low score can be a scorer bug)
+- **Pattern key:** `validate-grading-tool-against-gold-standard-before-trusting-its-gate`
+- **blub.db row:** `401`
+- **Feedback file:** [feedback_validate_grading_tool_against_gold_standard.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_validate_grading_tool_against_gold_standard.md)
+
+### [2026-07-17] Fact-check subagent-produced specifics (file paths, dates, versions) — structure-faithful is not fact-faithful
+- **Pattern key:** `verify-subagent-facts-not-just-structure`
+- **blub.db row:** `402`
+- **Feedback file:** [feedback_verify_subagent_facts_not_just_structure.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_subagent_facts_not_just_structure.md)
+
+### [2026-07-17] Setup go-forward protocol — one LEDGER, structural gates over prose, done=machine-evidence, verify contents not filenames
+- **Pattern key:** `setup-simplification-go-forward-protocol`
+- **blub.db row:** `397`
+- **Feedback file:** [feedback_setup_simplification_go_forward_protocol.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_setup_simplification_go_forward_protocol.md)
+
+### [2026-06-30] LANDED verification = direct page-source comparison, not the JS parity scripts
+- **Pattern key:** `landed-verification-direct-page-source-compare-not-js-parity-scripts`
+- **blub.db row:** `374`
+- **Feedback file:** [feedback_landed_verification_direct_page_source_compare.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_landed_verification_direct_page_source_compare.md)
+- **Rule:** SGS clone LANDED gate = deploy → copy rendered page-source HTML to a file → direct manual section comparison (tag converted / content moved / every CSS rule migrated / each rule on the CORRECT block-element) + computed-style at 375/768/1440 + Bean's eye. The JS parity scripts (mockup-parity-validator.js, screenshot-diff-helper.js) are unreliable — do NOT rely on them.
+
+### [2026-06-28] Bind definition-of-done to the spec's FULL scope — never ship a minimum increment + call the rest "out of scope"
+- **Pattern key:** `bind-definition-of-done-to-full-spec-scope`
+- **blub.db row:** `<pending sync — dashboard down 2026-06-28>`
+- **Feedback file:** [feedback_bind_done_to_full_spec_scope.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_bind_done_to_full_spec_scope.md)
+- **Rule:** Read a spec'd subsystem's WHOLE spec section before scoping; set done = the spec's full universal scope; map every deferral to a named spec STAGE, never "out of scope". Root cause of repeated half-jobs: DoD set to the increment, not the spec scope (Spec 31 §3 already defined it). Extends STOP-26 to definition-of-done.
+
+---
+
 ## 2026-08-12 — archive sweep (49 → 30 active), oldest 19 by date, moved verbatim
 
 ### [2026-06-21] Coverage/no-drop gate join must key on the FULL declaration identity (incl. responsive tier/media)
