@@ -182,6 +182,7 @@
 		},
 		"maxWidthUnit": { "type": "string", "default": "px" },
 		"boxShadow": { "type": "string", "default": "" },
+		"boxShadowColour": { "type": "string" },
 		"borderRadiusTablet": { "type": "object", "default": {} },
 		"borderRadiusMobile": { "type": "object", "default": {} }
 	},

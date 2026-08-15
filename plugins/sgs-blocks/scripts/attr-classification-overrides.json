@@ -2831,19 +2831,10 @@
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "frame",
+        "css_layer": "OUTER",
         "derived_selector": ".wp-block-sgs-before-after"
       },
-      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. Element is 'frame' (block.json's own isWrapper:true element for this content-KIND block), scoped to the block's root class since the frame IS the block wrapper — no separate BEM sub-element exists for it."
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_element": "wrapper",
-        "derived_selector": ".wp-block-sgs-media"
-      },
-      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/media's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render time. Scoped to the block's root wrapper class — sgs/media has no built-in container wrapper (block-private, D294), boxShadow always applied to the root media wrapper."
+      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. Element is 'frame' (block.json's own isWrapper:true element for this content-KIND block), scoped to the block's root class since the frame IS the block wrapper — no separate BEM sub-element exists for it. css_layer:OUTER added after the F6 reseed-survival check reported the DB's derived value as ('box-shadow-color','OUTER') — matches the sgs/team-member.cardShadowColour sibling override above, which also carries css_layer:OUTER."
     },
     {
       "slug": "sgs/post-grid",

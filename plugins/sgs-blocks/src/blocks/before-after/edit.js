@@ -35,6 +35,7 @@ import {
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
+	ShadowControl,
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveOverride,
@@ -396,6 +397,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		handleIconColour,
 		heightUnit,
 		boxShadow,
+		boxShadowColour,
 		style,
 		borderRadiusTablet,
 		borderRadiusMobile,
@@ -410,7 +412,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour
 			   panel, rendered FIRST. Replaces the scattered DesignTokenPicker
 			   rows previously inline inside the Divider/Labels panels below.
-			   No hover siblings exist for these five attrs. */ }
+			   No hover siblings exist for these attrs. boxShadow's colour
+			   row (D621/D622) lives here too — the shape stays with
+			   ShadowControl in the Frame styling ToolsPanel below, colour is
+			   externally managed per the shared colour-architecture. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -470,6 +475,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: handleIconColour,
 								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+							},
+						],
+					},
+					{
+						key: 'boxShadow',
+						label: __( 'Frame shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: boxShadowColour,
+								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
 							},
 						],
 					},
@@ -721,6 +738,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					resetAll={ () =>
 						setAttributes( {
 							boxShadow: '',
+							boxShadowColour: '',
 							style: {
 								...style,
 								border: { ...style?.border, radius: {} },
@@ -733,21 +751,21 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						hasValue={ () => !! boxShadow }
-						onDeselect={ () => setAttributes( { boxShadow: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { boxShadow: '', boxShadowColour: '' } )
+						}
 						isShownByDefault
 					>
-						<TextControl
-							label={ __( 'Box shadow', 'sgs-blocks' ) }
-							help={ __(
-								'CSS box-shadow value, e.g. "0 4px 12px rgba(0,0,0,0.15)".',
-								'sgs-blocks'
-							) }
+						<ShadowControl
+							label={ __( 'Shadow', 'sgs-blocks' ) }
 							value={ boxShadow }
 							onChange={ ( val ) =>
 								setAttributes( { boxShadow: val } )
 							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							colour={ boxShadowColour }
+							onColourChange={ ( val ) =>
+								setAttributes( { boxShadowColour: val } )
+							}
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
