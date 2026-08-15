@@ -62,11 +62,12 @@
 					},
 					"_note": "No selectors.typography is declared (only selectors.root), so the block-level typography.fontSize serialises as an inherited default across link/separator/current rather than a per-crumb control — no text cluster claimed here for size."
 				},
-				"link": {
+				"item": {
 					"label": "Crumb link",
 					"order": 2,
 					"clusters": [ "text" ],
-					"prefix": "link"
+					"prefix": "link",
+					"_note": "Renamed from 'link' 2026-08-15 (element-manifest drift fix) — no `.sgs-breadcrumbs__link` class exists anywhere in render.php; the anchor carries no class at all, and its parent `<li>` is `.sgs-breadcrumbs__item` (render.php:347). `linkColour` already resolved to css_element='item' via the markup-fallback derivation before this rename. `prefix` stays 'link' (the attribute-name prefix, e.g. linkColour) — unrelated to the element key."
 				},
 				"separator": {
 					"label": "Separator",
@@ -78,7 +79,8 @@
 					"label": "Current page",
 					"order": 4,
 					"clusters": [ "text" ],
-					"prefix": "current"
+					"prefix": "current",
+					"_note": "NOT renamed (2026-08-15 audit) — its base class is ALSO `.sgs-breadcrumbs__item` (render.php:342, modified `--current`), so `currentColour`'s markup-fallback derivation ALSO resolves to css_element='item', identically to the 'item' element above. Two manifest elements cannot share one JSON key, and 'item' is already claimed by the link element (the more common case). Same single-valued-css_element schema limitation the task brief carves out for sgs/hero and sgs/trust-bar: a real DB orphan against 'current' will persist after reseed, but renaming here would either collide with 'item' or silently merge two distinct semantic controls (crumb link vs. terminal unlinked crumb) under one key. Left as-is deliberately — needs a schema decision (multi-valued css_element or a modifier axis), not a manifest edit."
 				}
 			}
 		}

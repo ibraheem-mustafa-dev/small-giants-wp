@@ -2702,6 +2702,30 @@
         "css_property": null
       },
       "_why": "STRAY css_property cleared 2026-08-15. The attribute is NOT the emitter — the block's own docblock (render.php:14,21) states 'textAlign (native typography support — targets the headline child)' and 'textAlign is handled by the single native textAlign support'. block.json confirms supports.typography.textAlign=true, and the headline element's attrMap routes css:text-align to `native:typography.textAlign`, NOT to this attr. The bare `textAlign` string attribute is a vestigial declaration; its css_property='text-align' was a rogue seed the derived classifier never claims, so db-consistency flagged it as 'would vanish on the next reseed'. Pinning it to null makes the DB state match the truth durably instead of oscillating each reseed."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingScaleMax",
+      "fields": {
+        "role": "rating"
+      },
+      "_why": "2026-08-15 element-manifest style-defect audit. Was role='layout' purely because the attr name ends in the (now REMOVED) property_suffixes 'Max' suffix row -- see that file's own '__why_min_max_removed' note. assign-canonical.py's peel_property_suffix() matched on the NAME ENDING alone with zero check against actual emission. Verified against render.php:125 ($rating_scale_max = trim((string)($attributes['ratingScaleMax'] ?? '10'))), :473 (feeds the displayed 'X out of N' text) and :654 (feeds the Schema.org Review bestRating value) -- ratingScaleMax never reaches CSS. It is the scale denominator for the SAME rating family as sgs/testimonial.ratingStars, which already carries role='rating' (roles.json: 'Star/numeric rating value -- a content-bearing display value, not a styling property'). role='rating' here matches that established, already-verified sibling exactly rather than inventing a new value."
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "attr": "max",
+      "fields": {
+        "role": "technical"
+      },
+      "_why": "2026-08-15 element-manifest style-defect audit. Same property_suffixes 'Max' over-broad match as sgs/testimonial.ratingScaleMax (see that entry + the property-suffixes.json '__why_min_max_removed' note) -- this is the OTHER of the suffix's only 2 real occurrences, and it is also not CSS. Verified against render.php:20 ($max = $attributes['max'] ?? '') and :29-30 (if (!empty($max)) { $extra_attrs[] = 'max=\"' . esc_attr($max) . '\"'; }) -- it renders as the native HTML <input type=number max=\"\"> validation attribute, never a CSS declaration. role='technical' matches roles.json's own definition verbatim: 'a machine-facing value -- a form-processing key, an element id or cross-block reference... EVIDENCE REQUIRED -- assigned ONLY from a Detector-1 VETO: walked every usage site... found NONE content-bearing'. That is exactly what the render.php read above proves for this attr."
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "attr": "min",
+      "fields": {
+        "role": "technical"
+      },
+      "_why": "2026-08-15 element-manifest style-defect audit. Found while checking the blast radius of removing the sibling 'Max' suffix row (property_suffixes had a parallel 'Min' row, same role='layout', same 'Added by Spec 15 P3 §3.8 gap remediation' seed, also now REMOVED -- see property-suffixes.json '__why_min_max_removed'). This is the suffix's ONLY real occurrence. Verified against render.php:19 ($min = $attributes['min'] ?? '') and :25-26 (if (!empty($min)) { $extra_attrs[] = 'min=\"' . esc_attr($min) . '\"'; }) -- renders as the native HTML <input type=number min=\"\"> validation attribute, never CSS. role='technical' for the same reason as its sibling 'max' attr on this block."
     }
   ]
 }
