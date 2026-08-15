@@ -38,7 +38,7 @@ clone-fidelity loss (post-grid's image hover-zoom would have stopped cloning). H
 and reseeded later, all three would have shipped.
 
 **Numbers:** `css_element` drift **35 → 9**; element-manifest style defects **15 → 7**; contested
-attributes **7 → 0**; converter tests 669 passing throughout.
+attributes **7 → 0**; converter tests 669 → **674** passing (5 new regression tests added).
 
 ⚠ **SonarCloud reports Security Rating C on new code and was NOT resolved** — merged on Bean's
 explicit instruction with the gate still red. Worth reading the dashboard before the next merge.
@@ -78,11 +78,15 @@ explicit instruction with the gate still red. Worth reading the dashboard before
 
 | Metric | Start | End |
 |---|---|---|
-| `css_element` drift orphans | 35 | **9** |
-| Blocks clean of drift | 24 | **57** |
+| `css_element` drift orphans | 35 | **3** |
+| Blocks clean of drift | 24 | **59** |
 | Element-manifest style defects | 15 | **7** |
 | Contested attributes | 7 | **0** |
-| Converter tests | 669 pass | **669 pass** |
+| Converter tests | 669 pass | **674 pass** (+5 new) |
+
+⚠ **The 3 residual orphans are `card-grid/card-tile` (a pre-reseed stale value — the manifest already
+says `item`), plus `hero/split-media` and `trust-bar/badge-label`, the two known 1:N schema-limit
+cases.** The real remaining count is **2**, and no manifest edit can fix them (see Task 3).
 
 ## Blockers
 
@@ -111,36 +115,103 @@ recorded justification anywhere in the repo.
 name matches comments — `sgs/button` was wrongly called a consumer this very session (its only hit
 is prose at `render.php:930`); the in-file comment says 16 live mounts while a naive grep says 30.
 
-### ⭐ NEXT SESSION — wave 2 of the colour-panel rollout
+### ⭐ NEXT SESSION — orchestration plan
 
-**Everything that blocked wave 2 is now ruled and enforced.** The three "open standards questions"
-the previous LEDGER listed here are ANSWERED — do not re-open them:
+**You are the SGS framework engineer.** The colour-placement architecture is settled and
+gate-enforced; your job is to roll it across the remaining blocks without re-opening settled ground.
 
-| Was open | Now |
-|---|---|
-| 3rd state ("current"/"selected") | **Answered by mechanism, not by ruling.** A modifier naming a state populates `css_state`; `--current` maps to the existing `selected` **only when it is the sole modifier** on that element (`price--current` is a display variant, not a state). `nav-menu` has a real 3-state defect — it declares `itemColourHover`/`itemBgHover` under BOTH `hover` and `selected`, forcing current-page to look identical to hover |
-| Flat vs gradient on the picker | **Storage settled: ONE attribute holding the complete CSS value, per state** — WP core + Kadence rowlayout + Spectra all converge; Spectra's per-state sibling strings match our state model. `sgs_css_gradient_value()` (helpers-tokens.php:696) is a complete validator already written and **unused**. `gradient-parser` round-trips `var()` stops, so palette-linked stops need NO storage change. Full evidence: `reports/2026-08-14-qc-council-gradient-and-overlay.md` §1b |
-| Per-block element/state audit | **Built**: `survey-colour-coverage.py` (19 assertions). 83 blocks — **88 elements painting a colour with no control at all**, plus 19 genuine hover/active state gaps. ⚠ 16 "focus" findings should stay framework-level, not become 13 per-block controls (WCAG consistency) |
+**State recap, plain English.** A "colour control" is the swatch a client clicks in the WordPress
+editor sidebar to recolour part of a block. We spent this session deciding WHERE that control lives,
+and the answer turned out to be "the framework already had a rule — colour just wasn't following
+it". That rule is now enforced by a build gate, so it cannot drift again. 9 of 49 blocks are
+migrated. Wave 2 is the next 34. Nothing blocks it.
 
-**Wave 2 itself:** ~34 Track-A blocks, delegated via `/dispatching-parallel-agents`, 2-4 blocks per
-agent, same recipe as wave 1 (D618) plus `linked: true` (D619). Placement now follows the resolver
-automatically — no per-block placement decision. Acceptance bar unchanged: a real swatch click →
-attribute → canvas cycle, not DOM structure alone.
+---
 
-### Also ready, lower priority
+## Task 1 — Wave 2 of the colour-panel rollout (~34 Track-A blocks)
 
-- **Gradient build** (Track B session): one-string storage, scale + parallax as ONE feature (scale
-  sets the travel distance, parallax drives it — both plain CSS, `@property`-registered), palette-
-  per-stop (Kadence's 748-line gradient bar is a readable reference), overlay → Colour panel row.
-  ⛔ **`bgParallax` and `sgsParallax` are TWO live parallax systems on the same 6 blocks** — a real
-  duplicate for the wrapper-decomposition initiative.
-- **The 7 remaining style defects** — 5 are documented as by-design in the blocks' own `_note`s;
-  2 are real role-mis-derivations (`product-card.tagFullWidth`, `testimonial.ratingScaleMax` both
-  carry a style role with `css_property=NULL`). Fix belongs in `assign-canonical.py`.
-- **The 9 remaining `css_element` orphans** — 3 are a genuine **schema limitation, not block sloppiness**:
-  `css_element` is single-valued but real attributes are sometimes 1:N (`google-reviews.starColour`
-  paints two elements; `trust-bar`'s label renders under two class names across variants). Fixing
-  needs a list-valued column or a join table — a design gate, not a quick fix.
+**What:** Migrate each remaining block's colour controls to `SgsColourPanel`, following D618's recipe
+plus `linked: true` (D619).
+**Why:** One predictable place for colour in every block — the client-facing outcome the whole track
+exists for.
+**Estimated time:** ~4 batches, mostly agent time.
+
+**Orchestration:**
+- Execution: **delegated**
+- Model: re-run `/delegate` per branch (task shape changed since wave 1 — do not assume Sonnet)
+- Dispatch pattern: **parallel** via `/dispatching-parallel-agents`, 2-4 blocks per agent, disjoint
+  block lists (one writer per file)
+- Brief: read D618 + D619 first. Mount `SgsColourPanel` in the **Styles** tab, rendered first, own
+  `PanelBody`, no `+` disclosure. Set `linked: true` on every row. Placement of individual rows now
+  follows the resolver automatically — **do not make a per-block placement decision**.
+- Context they won't have: `sgs/nav-menu` has 19 colour attrs and Track-B-adjacent ones
+  (`navBg`/`submenuBg`) — read it before batching, don't include blindly. The 9 already-migrated
+  blocks need a `linked: true` follow-up pass.
+- Depends on: none · Parallel with: none (shared checkout — confirm no other session is mid-edit)
+- **/qc gate after: yes** — programmatic `wp.data` state-dispatch + DOM assertion, PLUS at least one
+  real click-a-swatch-see-canvas-update cycle per genuinely new mechanism.
+
+**Acceptance:** panel first in Styles, no `+` menu, label renders exactly once, hover/state pairing
+correct per block, and a **real swatch pick verified live** — DOM structure alone is not acceptance.
+
+## Task 2 — Reseed and confirm the pending corrections land
+
+**What:** Run `/sgs-update`, then re-measure drift + style defects.
+**Why:** Three fixes are proven at unit level but unproven end-to-end; the reseed is what lands them.
+**Estimated time:** minutes.
+
+**Orchestration:** inline (main thread). ⛔ **Snapshot the DB first and name the rollback** — two
+reseeds ran on 2026-08-15 and both exposed regressions. Depends on: none. Parallel with: none —
+a reseed is cross-track.
+
+**Acceptance:** drift orphans 3 → **2**, style defects 7 → **6**, **zero NEW db-consistency
+violations**. A NEW violation means a fix regressed something — investigate before proceeding, do
+not baseline it away.
+
+## Task 3 — The 1:N schema decision (design gate, Bean picks)
+
+**What:** Decide whether `css_element` becomes list-valued or gets a join table.
+**Why:** It is the ONLY thing standing between us and zero drift. 2-3 findings are one attribute
+painting elements with different class names (`hero.split-media`, `trust-bar.badge-label`,
+`breadcrumbs.current`) — no manifest edit can fix them.
+**Estimated time:** Bean's ruling, then a scoped build.
+
+**Orchestration:** design gate first (Rule 7 — shared mechanism). Menu + ranking to Bean before any
+build. Depends on: none. **/qc gate after: yes** — every `css_element` consumer must handle a set.
+
+**Acceptance:** goal-shaped, not numeric — every consumer handles a set without regression AND the
+converter suite still passes 674.
+
+---
+
+## Dependency graph
+
+```
+Task 2 (inline, reseed)          Task 1 (parallel agents, 4 batches)
+        |                                  |
+        +----------- /qc gate -------------+
+                          |
+                    Task 3 (design gate — Bean rules first)
+```
+Tasks 1 and 2 are independent. Task 3 needs a ruling, not effort.
+
+## Methodology guardrails (do not skip)
+
+- **Verify on the real editor, not the DOM alone** — Bean caught two "structurally correct, actually
+  broken" builds this way. A swatch that opens is not a swatch that applies.
+- **A subagent's INFRASTRUCTURE claims need the same verification as its findings** — one reported
+  the shared DB was "missing a core table" this session. It was intact; acting on it would have
+  clobbered a parallel session's work.
+- **Do not chase a number you cannot reseed to.** Prove correctness at unit level and say plainly
+  what is unproven. Running a reseed to make your own figures look better is how three regressions
+  nearly shipped.
+- **A column reset is only safe if the derivation can RE-DERIVE every legitimate value** — the danger
+  is not another writer, it is the derivation's own incompleteness.
+- **Path-scope every commit by exact file list.** This checkout is shared; an unscoped one is
+  blocked by a repo gate for that reason.
+- **Detect by what a thing DOES, not what it is called.** Two bugs this session were name heuristics
+  (the `Max`/`Min` role suffix; the `wrapper` element-name comparison).
+- **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
 
 ## State Snapshot
 

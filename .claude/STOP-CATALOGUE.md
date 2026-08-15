@@ -789,6 +789,55 @@ points here. Neither ever silently drops a STOP.
   story into proof.**
 
 
+### A13 - Session 2026-08-15: three false alarms, all from my own measurement
+
+**STOP-A13a — A subagent's INFRASTRUCTURE claim needs the same verification as its findings.**
+An agent reported "the shared `sgs-framework.db` is missing the `property_suffixes` table entirely;
+the DB is mid-migration under another agent's hands." **False** — 36 tables, 156 rows, both gates
+running clean. It hit a transient read during another session's write. Acting on that report meant
+restoring a snapshot over a parallel session's live work. We verify subagents' *findings* by habit;
+this one was about the environment and slipped straight through.
+
+**STOP-A13b — Changing measurement TOOL or COMMAND SHAPE mid-comparison manufactures a false
+regression.** Three in one session, every one self-caught only because the number was re-measured
+the same way as the baseline:
+1. `ls -1 | wc -l` reported `node_modules` at 970 against a PowerShell `-Force` baseline of 973 —
+   bash excludes dotfiles (`.bin`, `.cache`, `.package-lock.json`). Read as deletion damage.
+2. `cd X && … && node gate ; echo $?` reported a gate failing with exit 1. The `cd` failed, the
+   `&&` chain short-circuited, **the gate never ran**, and `$?` captured the cd's exit.
+3. A scope control read "the `Width` suffix was deleted too" — the parser used `row.get('suffix')`
+   on rows that are **arrays**, so every lookup returned nothing and every suffix read as absent.
+**Rule:** re-measure with the *identical* command that produced the baseline before reporting any
+delta. A tool swap is a different instrument.
+
+**STOP-A13c — A column reset is only safe if the derivation can RE-DERIVE every legitimate value.**
+Extending a reseed's `NULL`-reset to `css_element` looked safe (ownership was checked — no other
+writer). It still destroyed correct routing data, because the *derivation itself* could not
+re-derive one block's value. The danger is not a competing writer; it is the derivation's
+incompleteness. Result would have been `post-grid`'s image hover-zoom silently dropping on every
+clone. Caught only by a converter test that existed for exactly that defect.
+
+**STOP-A13d — A reseed re-seeds the SHARED DB to YOUR working tree.** Running `/sgs-update` on a
+branch makes every other session on `main` see mismatches for commits they do not have — it cost a
+parallel session 7 spurious errors until the branch merged. Snapshot first, name the rollback, and
+merge promptly or expect to explain it.
+
+**STOP-A13e — Do not chase a number you cannot reseed to, and never reseed to make your own figures
+look better.** Two agents were explicitly told the DB would keep old values until the next reseed
+and to prove correctness at unit level instead. Both complied and stated their gap plainly. The
+prior round, running the reseed to "confirm" numbers is what surfaced three regressions late.
+
+**STOP-A13f — Windows worktree removal: check for junctions BEFORE removing, and expect long-path
+failure.** `git worktree remove` fails with "Filename too long" on deep `node_modules` but
+**deregisters the worktree anyway**, leaving orphaned files. Use `cmd /c rmdir /s /q` with the
+long-path prefix. Verify `node_modules` counts either side — a prior incident emptied the main
+checkout's (962 → 0) because a junction pointed into it.
+
+**STOP-A13g — "Not an ancestor of main" is NOT "not merged".** Four worktree branches read as
+unmerged by SHA; all four were verified content-identical to `main` (rebased/cherry-picked). One
+showed a 406-line diff that was **main being ahead**, not stranded work. Compare content and
+behaviour per commit before deleting or re-merging a branch.
+
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
 
 - **STOP-SCROLLBAR-LOCK (D340)** — locking body scroll (`position:fixed`/`overflow:hidden`)
