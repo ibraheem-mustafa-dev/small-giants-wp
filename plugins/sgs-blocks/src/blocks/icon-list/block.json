@@ -88,22 +88,29 @@
 					"prefix": "icon",
 					"_note": "Per-item icon span (render.php:457, `.sgs-icon-list__icon`). Only `css:color` resolves (default convention `icon`+`Colour`=`iconColour`, render.php:221-223) — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps."
 				},
-				"item-text": {
-					"label": "Item text",
+				"item": {
+					"label": "Item row",
 					"order": 3,
 					"clusters": [ "text" ],
 					"prefix": "item",
+					"_note": "The per-item `<li class=\"sgs-icon-list__item\">` row (render.php:337 `$item_row_sel`, fed to `sgs_typography_css_rule( $attributes, 'item', $item_row_sel )` at render.php:348-350 — the shared TypographyControls emitter, R-22-13). Owns itemFontSize/FontSizeUnit/FontWeight/FontStyle/LineHeight/LineHeightUnit, all resolved via the default `item`+suffix convention. This is a DISTINCT DOM node from item-text's `<span class=\"sgs-icon-list__text\">` (render.php:337 `$text_sel`) — added 2026-08-15 because these six attrs were showing as orphans: item-text's attrMap explicitly redirects css:font-size/line-height to native typography (which paints the span), so the default convention never got a chance to claim the item-row's own itemFontSize/itemLineHeight family for anyone. Same split rationale as the `heading` element below (2026-07-23)."
+				},
+				"item-text": {
+					"label": "Item text",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "",
 					"attrMap": {
 						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
 						"css:text-align": "native:typography.textAlign"
 					},
-					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item text — honest gaps."
+					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. `prefix` set to the explicit opt-out `\"\"` (2026-08-15, was unset/implicit `item`): every member this element resolves already has an explicit attrMap entry above, and the implicit `item` prefix was ALSO matching the item-ROW's own itemFontWeight/itemFontStyle by accident via the default convention — silently misattributing a control that actually paints `.sgs-icon-list__item` (the row) to `item-text` (the span), contradicting this note's own long-standing claim that font-weight/font-style are honest gaps here. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item TEXT specifically — honest gaps, now genuinely honest."
 				},
 				"heading": {
 					"label": "Heading",
-					"order": 4,
+					"order": 5,
 					"clusters": [ "text" ],
 					"prefix": "heading",
 					"_note": "Optional list heading (render.php, `.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element (2026-07-23) so heading* typography routes to element=heading, DISTINCT from item* text — before this they both fell to NULL element and collided on font-size."
@@ -265,7 +272,7 @@
 		"headingFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"headingFontWeight": {
 			"type": "string",
 			"default": ""
@@ -288,7 +295,7 @@
 		"itemFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"itemFontWeight": {
 			"type": "string",
 			"default": ""

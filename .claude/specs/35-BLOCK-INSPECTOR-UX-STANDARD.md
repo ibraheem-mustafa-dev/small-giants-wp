@@ -45,6 +45,15 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
   ⛔ **A3 previously read "Behaviour/content → Settings; appearance → Styles".** That rule splits an
   element's appearance from the content it modifies; 8 blocks were sorted on it on 2026-08-08 and
   rejected. Full rule: `.claude/plans/spec-35-control-type-contract.md` §"THE PLACEMENT RULE".
+  ⭐ **COLOUR SETTLED 2026-08-15 (D621 + D622) — it is no longer an open exception to A3/A4.** The
+  Colour panel renders in the **Styles** tab (Styles = root CSS + visuals; the framework uses NO
+  native colour supports, only their look). **Placement of an individual colour follows A4 and the
+  D533/D537 resolver like every other property family** — element-scoped colour sits in its element's
+  panel, unclaimed colour falls to its property-family panel. ⛔ There is no bespoke colour-placement
+  rule; D609's amendment clause proposing one grouped Colour panel is superseded. Prior art agrees for
+  composites (Kadence `infobox`, Spectra `testimonial` both bundle an element's colour + typography +
+  spacing); core's property-keyed slots exist as an **extensibility contract** (Gutenberg #67814), a
+  requirement SGS's own blocks do not have.
 - **A4. Element-first grouping** for composite blocks (panels by block PART, not property type) —
   **derived from `supports.sgs.elements`, never hand-sorted.** One element = one panel titled by its
   `label`, holding that element's content (`contentAttrs`) + style clusters + its states **inline

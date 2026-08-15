@@ -1,0 +1,32 @@
+{
+  "_doc": "Accepted debt for check-element-manifest-conformance.js --check. These numbers may only ever go DOWN. A rise fails the build. Raising one requires a written reason in _accepted below and Bean's sign-off (a new baseline entry is stop-the-line, per Spec 35 / the plan's verification bar).",
+  "_promoted": "2026-08-15 — the checker ran WARN-ONLY from its creation. It was promoted to a real gate the same day the D533/D537 placement resolver's last 7 contested attributes were cleared (alignItems, grid-vs-wrapper, on container/cta-section/form/form-field-tiles/hero/pricing-table/tabs). An advisory placement rule is exactly why D537 and D609 drifted into contradicting each other on the record.",
+  "_not_gated": "total_gap (3363 live) is deliberately NOT gated. A GAP means an element's declared cluster names a CSS property the element has no attribute for — e.g. a container's `fill` cluster naming css:object-fit. That is COVERAGE, not a defect. Gating it would fail every build forever while measuring the wrong thing.",
+
+  "orphan_style_defect": 7,
+  "total_state_without_base": 1,
+
+  "_accepted": {
+    "orphan_style_defect": {
+      "count": 7,
+      "reason": "Pre-existing placement defects, present before this gate existed. Not introduced by the promotion. Each needs its own per-block read — they are real, but they are debt to burn down, not a reason to leave the gate off. 2026-08-15: sgs/before-after's 3 (label + divider x2) genuinely fixed — dividerColour/dividerWidth were misattributed to the `divider` element by prefix-string accident and actually paint on a new `divider-line` element; labelBackgroundColour needed `fill` added to the `label` element's clusters. sgs/hero's contentBackgroundGradientFrom (1 of the 2) genuinely fixed via an explicit attrMap entry; contentBackgroundGradientTo remains (no sibling mechanism for a second gradient colour stop). sgs/icon-list's 4 (item-text) also cleared live during this session (SET B's concurrent work on a disjoint block list) and are removed from the instance list below since they are already gone, not because this fix pass touched sgs/icon-list.",
+      "instances": [
+        "sgs/audio — spectrum",
+        "sgs/form — focus-ring (x3)",
+        "sgs/hero — content (x1)",
+        "sgs/product-card — tag",
+        "sgs/testimonial — rating"
+      ]
+    },
+    "total_state_without_base": {
+      "count": 1,
+      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed.",
+      "instances": [ "sgs/post-grid — css:transform" ]
+    }
+  },
+
+  "_gated_at_zero": [
+    "orphan_unclassified — an attribute no mechanism can place at all",
+    "orphan_role_map_stale — the role map is out of date vs the DB"
+  ]
+}

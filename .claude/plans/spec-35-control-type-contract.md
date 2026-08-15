@@ -612,12 +612,30 @@ Regenerate before building any gate on them.
    `PanelColorGradientSettings`; `<TextControl type="color">` (`star-rating/edit.js:155-168`);
    raw `GradientPicker` inside `GradientOverlayControl.js:191`, reaching `container`, `hero`,
    `trust-bar`, `cta-section` indirectly.
-4. **Tab** — `group="color"` → Styles, mirroring native `supports.color`. Measured: 37/41 in
-   Settings, 3 Styles, 1 explicit settings.
- *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
-lands in the pinned `Settings` panel (D537). A control that has a real property family resolves to
-its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in
-its element's panel (TIER 1) regardless of this field.)*
+4. **Tab — SETTLED 2026-08-15 (D621 + D622). Do not re-derive; both halves are now ruled.**
+
+   **(a) WHICH TAB — Styles (D621).** The Colour panel renders in the **Styles** tab, first, above
+   Background. ⛔ D618's earlier "Settings" placement is superseded: it reasoned that Styles is
+   reserved for genuine native supports, but the framework **never uses native colour supports** — it
+   replicates the native control's look and sets `supports.color` sub-flags `false`. The real rule is
+   that **Styles holds root CSS and visuals**, which is why the Background panel (media uploads
+   included) lives there. A colour is a visual.
+
+   **(b) WHICH PANEL — the D533/D537 resolver, exactly like every other property family (D622).**
+   An element-scoped colour goes in **its element's panel**; a colour no element claims falls to its
+   **property-family panel**. ⛔ There is no bespoke colour-placement rule, and one must not be
+   invented — colour was the last family still placed by hand, and any separate rule would build a
+   second placement system beside the working one. `placement-reach.py` resolves all 2,262 declared
+   attributes with zero human judgement; `check-element-manifest-conformance.js --check` gates it in
+   `prebuild`.
+
+   ⭐ **Leaf blocks group by construction, not by exception.** `sgs/button`'s `colourText`,
+   `colourBackground` and `colourBorder` all sit on the same element (`wrapper`), so they render side
+   by side in one panel — the compare-and-contrast case Bean asked about — while `iconColour` sits
+   with the `icon` element, which is genuinely a different thing.
+
+ *(Placement and SHAPE stay independent axes — see field 9a. Moving a colour must never change what
+ the control looks like.)*
 5. **Scope** — eligibility `surfaces.colour` (64); detection target `role='color'` (50 blocks,
    261 rows). The 14-block gap is a DB-completeness issue, not a control gap.
 6. **Conformance** — 49/50 conform. `sgs/star-rating` violates.

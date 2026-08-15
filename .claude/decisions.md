@@ -1,5 +1,69 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D622 — Colour placement follows the EXISTING D533/D537 resolver; conformance gate promoted [ROUTINE]
+
+**2026-08-15.** Two councils (4 seats on colour placement, 4 branches on ruleset determinism/work/UX/
+prior-art) converged: **do not invent a colour-placement rule. Colour joins the resolver that already
+places every other property family.** An element-scoped colour goes in its element's panel; a colour
+no element claims falls to its property-family panel.
+
+**Why, in one line each:**
+- **It already exists and is deterministic.** `scripts/placement-reach.py` places all **2,262**
+  declared attributes with zero human judgement — 1,376 (60.8%) element panel, 886 (39.2%) tier-2
+  property-family. Verified live this session.
+- **Colour was the ONLY family still placed by hand.** Any of the candidate rules (grouped-only,
+  element-only, a threshold hybrid) would have built a second placement system beside a working one.
+- **The market agrees for composites.** Kadence's `infobox` "Title Settings" and Spectra's
+  `testimonial` "Name"/"Content"/"Company" panels each bundle an element's colour + typography +
+  spacing. ⭐ Core groups by property for a different reason entirely — Gutenberg #67814 shows the
+  `group="color"`/`"typography"` slots are an **extensibility contract** so third parties can inject
+  into core's panels. SGS's own blocks have no such requirement.
+- **Leaf blocks group naturally.** `sgs/button`'s text/background/border colours all sit on one
+  element (`wrapper`), so they render side by side in one panel — Bean's explicit requirement,
+  satisfied by construction, not by an exception.
+
+**Shipped in this decision:**
+1. **The last 7 contested attributes cleared.** All 7 were the same clash — `alignItems` claimable by
+   both `grid` and `wrapper` on container/cta-section/form/form-field-tiles/hero/pricing-table/tabs.
+   `grid` owns it (`class-sgs-container-wrapper.php:872,885` emits `align-items` into the grid
+   declaration set beside `justify-items`/`align-content`/`flex-wrap`, all already grid-claimed).
+   Added `"css:align-items": "alignItems"` to each grid attrMap. **Contested: 7 → 0**, verified.
+2. **`check-element-manifest-conformance.js` promoted WARN-ONLY → real gate** (`--check`), wired into
+   `prebuild` after `inspector-scan`, plus `npm run check:element-manifest`. Proven able to fail
+   (baseline lowered by one → exit 1; restored → exit 0).
+
+⛔ **The gate does NOT gate on `total_gap` (3,363 live), and must not be changed to.** A "GAP" means
+an element's cluster names a CSS property the element has no attribute for — e.g. a container's
+`fill` cluster naming `css:object-fit`. That is COVERAGE, not defects. An earlier analysis proposed
+"just stop hardcoding `process.exitCode = 0`" — done literally, that would have red-lit every build
+on 3,363 non-defects. It gates on the four real signals: `orphan_unclassified` and
+`orphan_role_map_stale` at **zero**, `orphan_style_defect` (15) and `total_state_without_base` (1)
+against a baseline that may only go DOWN (`scripts/element-manifest-baseline.json`).
+
+**Why the promotion matters:** the placement rule being advisory is precisely how D537 and D609 drifted
+into contradicting each other on the record — D609's own body and its amendment box state opposite
+rules, and nothing caught it.
+
+## D621 — Colour panel belongs in the STYLES tab; D618's placement reasoning superseded [ROUTINE]
+
+**2026-08-15, Bean-ruled.** D618 put `SgsColourPanel` in **Settings**, reasoning the panel "uses zero
+native machinery" and that Styles is "reserved for genuine native supports". Both halves are wrong:
+(1) the framework never uses native colour supports — it replicates the native control's look as a
+starting point and sets `supports.color` sub-flags `false` (D618 did that itself), so by that test no
+SGS control would ever qualify for Styles; (2) the real rule is that **Styles holds root CSS and
+visuals** — Bean: *"which is why the background panel which has media uploads belongs in styles."*
+
+**Ruling: the Colour panel renders in the Styles tab, first, above Background.** The 9 already-migrated
+blocks (`icon` pilot + wave 1) move with it. D618's substance stands — SGS owns the panel, own
+`PanelBody`, no native `ToolsPanel`, no `+` menu; only the tab changes.
+
+⛔ A concurrent shared-wrapper session was briefed "Styles" while D618 said "Settings" — both sessions
+build to Styles from here.
+
+✅ **CLOSED same day by D622** — the placement question this entry left open (grouped panel vs the
+element's own panel) is settled: colour follows the existing D533/D537 resolver. This entry's own
+ruling (Styles tab) stands unchanged.
+
 ## D620 — decisions.md sweep + compress (921KB → 427KB); redundancy-archiving ruled unsafe; auto-sweep Stop hook built [ROUTINE]
 
 **2026-08-14.** decisions.md was 4x its documented fallback cap with no sweep since 2026-08-08. Two-phase cleanup: (1) citation-based sweep — 75 entries with zero citations in any live doc moved verbatim to `memory/decisions-archive.md`, scripted at `scripts/sweep-decisions.py` (re-runnable, expands `D<N1>-D<N2>` range citations, excludes uncommitted/just-added entries); (2) compression — remaining 195 entries rewritten from 4-9KB full narratives to 3-8 line rulings, keeping every fact/commit/D-cross-ref, cutting only investigation narrative. Net: 921KB → 427KB, two entries removed later as further zero-citation candidates surfaced.
@@ -77,7 +141,17 @@ Proven live (Playwright, sandybrown, page 2422): mounting into `group="color"` r
 
 > ⛔ **AMENDED 2026-08-13, same day.** First-written ruling was incomplete; the gap produced a build Bean rejected on sight. Two corrections:
 >
-> **1. Colours group into ONE panel that REPLACES native's, at the top of Styles** — the original ruling captured only the row shape, omitting this. Built as literally written, rows scattered inline inside each element's panel; Bean: "those icon colour controls in the icon panel are ugly... the colour setup is supposed to replace the native setup at the top of the styles panel."
+> **1.** ~~Colours group into ONE panel that REPLACES native's, at the top of Styles.~~
+> ⛔ **SUPERSEDED 2026-08-15 by D622 — READ D622, NOT THIS CLAUSE.** This clause is the source of the
+> contradiction that cost two sessions: it says one grouped panel, while **this same entry's own body
+> below** says *"an element's colours belong in that element's panel… grouping follows what the client
+> is editing, not property type"*, and D537/A4 say the same. Two opposite rules, one entry, same day,
+> with nothing enforcing either. **D622 resolves it:** colour follows the D533/D537 placement resolver
+> like every other property family — element-scoped colour goes in its element's panel, colour no
+> element claims falls to its property-family panel. What survives from this clause is the diagnosis
+> that produced it: rows scattered *inline*, unstyled, inside an element panel look wrong (Bean: *"those
+> icon colour controls in the icon panel are ugly"*) — that is a ROW-SHAPE defect (clause 9a), not a
+> placement one, and it is fixed by the shared row component, not by relocating the control.
 >
 > **2. The state-count affordance is NOT a number — core overlaps the swatches.** Core source (WP 7.0.4, `28c0dedc4eaf…`, `global-styles/color-panel.js:163-176`): `LabeledColorIndicators` uses `<ZStack isLayered={false} offset={-8}>`, one `ColorIndicator` per value overlapping, one label — no count badge. Sibling `colors-gradients/dropdown.js:65-77` is the single-value form. Later closed by D617: use core's overlap.
 >
@@ -959,6 +1033,8 @@ D294 (KIND-based: content-KIND may go block-private, section/layout-KIND keep wr
 
 ## D537 — Inspector placement is TWO tiers: element, then property-family [ROUTINE]
 
+✅ **VINDICATED + NOW ENFORCED (D622, 2026-08-15).** This is THE placement mechanism, confirmed live: `placement-reach.py` resolves all 2,262 declared attributes (1,376 element / 886 property-family) with zero human judgement, and the last 7 contested (`alignItems`, grid-vs-wrapper) were cleared. **Colour now follows it too** — it was the only property family still placed by hand. `check-element-manifest-conformance.js` promoted WARN-ONLY → prebuild gate the same day; this rule being advisory is exactly how D609 came to contradict itself.
+
 **2026-08-09, Bean:** Tier 1 = per element, Tier 2 = per property-family panels. Controls that style nothing (`variant`, `templateMode`, `autoplay`, `showDots`, `required`) get one Settings panel, pinned first.
 
 Supersedes the idea a new "block-level panel" needed designing — of `sgs/hero`'s 76 unplaced controls, only 4 are genuinely block-scope; the rest were data gaps. Tier 2 needed no invention: the six property families (text/fill/layout/position/motion/animation) already exist in `scripts/consistency/cluster-member-sets.json`; `placement-reach.py` just never read it. Teaching it to honour `appliesToLayers` moved placement 46.1%→58.6% with no block edited.
@@ -1000,6 +1076,8 @@ Hook was wrong both ways: over-broad (blocked any `str_replace`-containing comma
 ⚠ Qualified same day: a slot-bearing composite DOES store markup (its children) — `sgs/container`'s `save()` emits `<InnerBlocks.Content />`, so a hand-written wrapper div made probe containers invalid in the editor while still rendering fine on frontend. "Dynamic blocks can't be corrupted" holds for leaf dynamic blocks, not slot-bearing ones.
 
 ## D533 — Inspector placement is ELEMENT-SCOPED; the retired rule was the defect [ROUTINE]
+
+✅ **VINDICATED (D622, 2026-08-15).** Element-scoped placement is confirmed as canonical and is now gate-enforced. Independently corroborated by prior art: Kadence `infobox` and Spectra `testimonial` both bundle an element's colour + typography + spacing in one element panel. Core groups by property for a different reason — Gutenberg #67814 shows its `group="color"`/`"typography"` slots are an **extensibility contract** for third-party injection, not a UX preference, and SGS's own blocks have no such requirement.
 
 **2026-08-08.** Spec 35's placement rule replaced with: one panel per element, holding that element's content/styling/hover together, titled/ordered by its `supports.sgs.elements` declaration. No behaviour-vs-appearance question anywhere.
 

@@ -39,13 +39,34 @@
 				"label": {
 					"label": "Labels",
 					"order": 2,
-					"clusters": [ "text" ],
-					"prefix": "label"
+					"clusters": [ "text", "fill" ],
+					"prefix": "label",
+					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour)."
 				},
 				"divider": {
 					"label": "Divider",
 					"order": 3,
 					"clusters": [ "fill" ]
+				},
+				"divider-line": {
+					"label": "Divider line",
+					"order": 4,
+					"clusters": [ "fill", "layout" ],
+					"attrMap": {
+						"css:background-color": "dividerColour",
+						"css:width": "dividerWidth"
+					},
+					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now."
+				},
+				"handle": {
+					"label": "Handle",
+					"order": 5,
+					"clusters": [ "fill" ],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "handleColour"
+					},
+					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now."
 				}
 			}
 		},

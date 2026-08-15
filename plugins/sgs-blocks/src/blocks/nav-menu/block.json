@@ -110,9 +110,18 @@
 					},
 					"_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding."
 				},
+				"indicator": {
+					"label": "Sliding indicator",
+					"order": 5,
+					"clusters": [ "fill" ],
+					"attrMap": {
+						"css:background-color": "indicatorColour"
+					},
+					"_note": "The `.sgs-nav-menu__indicator` sliding pill (render.php:1582-1583), view.js-animated behind the active/hovered item — only rendered when `indicatorStyle='pill'`. Added 2026-08-15, no manifest element previously covered it. `indicatorColour` mapped explicitly (attrMap) rather than via the default `{prefix}Suffix` convention: the fill cluster's css:background-color member only lists `BackgroundColour`/`Bg`/`Background` suffixes, none of which matches `indicatorColour`'s bare `Colour` form. `clusters: [\"fill\"]` is declared (not `[]`) SPECIFICALLY so the forward-resolution pass actually visits css:background-color and consults this attrMap — an attrMap on an element with `clusters: []` is never consulted (nothing ever iterates it), which was caught live: the first version of this fix (clusters: []) left indicatorColour unclaimed and it surfaced as a NEW style-defect orphan instead of resolving. The other fill-cluster members (opacity/background-image/etc.) become honest GAPs — ungated, and correct, since this element has no such controls."
+				},
 				"featured": {
 					"label": "Featured item",
-					"order": 5,
+					"order": 6,
 					"clusters": [
 						"text",
 						"fill",
@@ -133,7 +142,7 @@
 				},
 				"burger": {
 					"label": "Burger toggle",
-					"order": 6,
+					"order": 7,
 					"clusters": [
 						"text",
 						"fill",

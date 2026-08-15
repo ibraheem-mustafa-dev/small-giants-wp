@@ -86,6 +86,12 @@
 					"order": 4,
 					"clusters": [],
 					"_note": "showDots toggles visibility only (render.php:343-363) — no colour/size attrs exist per-dot."
+				},
+				"track": {
+					"label": "Slide track",
+					"order": 5,
+					"clusters": [],
+					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` (render.php:304,480) — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS (render.php:304). Added 2026-08-15, no manifest element previously covered it. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				}
 			},
 			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots, side-image) is declared above."
