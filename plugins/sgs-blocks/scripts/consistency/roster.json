@@ -78,7 +78,7 @@
         "colour": true,
         "link": false,
         "media": true,
-        "animation": false
+        "animation": true
       }
     },
     {

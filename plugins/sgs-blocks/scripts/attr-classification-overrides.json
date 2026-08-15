@@ -1583,6 +1583,7 @@
       "attr": "overlayGradientAngle",
       "fields": {
         "css_property": null,
+        "css_layer": "OUTER",
         "_reason": "css_property NULLed 2026-08-12. The derived layer (extract-signatures.py) reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier. That is a compound value split across N attrs, which the one-attr-per-slot routing model cannot express: db-consistency Check #1/#8 flag it as an ambiguous slot and the column-first resolver raises AmbiguousLayerAttrError at CLONE TIME. Every other block declaring the same gradient triple (container, cta-section, site-header, site-footer, trust-bar) already carries css_property=NULL here and clones fine — hero was the lone outlier, so this aligns it with the established norm rather than inventing a rule. Surfaced by the 2026-08-12 reseed re-deriving css_property (not caused by that session's edits; hero's gradients shipped at D579-D582). ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three, so routing a draft's background-image to any single one of them would be wrong in a different way."
       }
     },
@@ -1591,6 +1592,7 @@
       "attr": "overlayGradientFrom",
       "fields": {
         "css_property": null,
+        "css_layer": "OUTER",
         "_reason": "css_property NULLed 2026-08-12. The derived layer (extract-signatures.py) reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier. That is a compound value split across N attrs, which the one-attr-per-slot routing model cannot express: db-consistency Check #1/#8 flag it as an ambiguous slot and the column-first resolver raises AmbiguousLayerAttrError at CLONE TIME. Every other block declaring the same gradient triple (container, cta-section, site-header, site-footer, trust-bar) already carries css_property=NULL here and clones fine — hero was the lone outlier, so this aligns it with the established norm rather than inventing a rule. Surfaced by the 2026-08-12 reseed re-deriving css_property (not caused by that session's edits; hero's gradients shipped at D579-D582). ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three, so routing a draft's background-image to any single one of them would be wrong in a different way."
       }
     },
@@ -1599,6 +1601,7 @@
       "attr": "overlayGradientTo",
       "fields": {
         "css_property": null,
+        "css_layer": "OUTER",
         "_reason": "css_property NULLed 2026-08-12. The derived layer (extract-signatures.py) reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier. That is a compound value split across N attrs, which the one-attr-per-slot routing model cannot express: db-consistency Check #1/#8 flag it as an ambiguous slot and the column-first resolver raises AmbiguousLayerAttrError at CLONE TIME. Every other block declaring the same gradient triple (container, cta-section, site-header, site-footer, trust-bar) already carries css_property=NULL here and clones fine — hero was the lone outlier, so this aligns it with the established norm rather than inventing a rule. Surfaced by the 2026-08-12 reseed re-deriving css_property (not caused by that session's edits; hero's gradients shipped at D579-D582). ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three, so routing a draft's background-image to any single one of them would be wrong in a different way."
       }
     },
@@ -1634,6 +1637,7 @@
       "attr": "mediaOverlayGradientAngle",
       "fields": {
         "css_property": null,
+        "css_layer": "GRID_AREA",
         "_reason": "css_property NULLed 2026-08-13 (D597 follow-up). Same auto-classifier bug as overlayGradientAngle/From/To (2026-08-12 override, this file) and mediaBackgroundGradientAngle/From/To (also this file) — extract-signatures.py reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier, which the one-attr-per-slot routing model cannot express. mediaOverlayGradient* shipped in 89857e39 (2026-08-13), AFTER the 2026-08-12 override pass, so it never received the equivalent entry and reproduced the already-fixed bug. Surfaced by db-consistency Check #1/#8 on the 2026-08-13 reseed, not caused by that session's mediaParallax/mediaKenBurns work. ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three."
       }
     },
@@ -1642,6 +1646,7 @@
       "attr": "mediaOverlayGradientFrom",
       "fields": {
         "css_property": null,
+        "css_layer": "GRID_AREA",
         "_reason": "css_property NULLed 2026-08-13 (D597 follow-up). Same auto-classifier bug as overlayGradientAngle/From/To (2026-08-12 override, this file) and mediaBackgroundGradientAngle/From/To (also this file) — extract-signatures.py reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier, which the one-attr-per-slot routing model cannot express. mediaOverlayGradient* shipped in 89857e39 (2026-08-13), AFTER the 2026-08-12 override pass, so it never received the equivalent entry and reproduced the already-fixed bug. Surfaced by db-consistency Check #1/#8 on the 2026-08-13 reseed, not caused by that session's mediaParallax/mediaKenBurns work. ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three."
       }
     },
@@ -1650,6 +1655,7 @@
       "attr": "mediaOverlayGradientTo",
       "fields": {
         "css_property": null,
+        "css_layer": "GRID_AREA",
         "_reason": "css_property NULLed 2026-08-13 (D597 follow-up). Same auto-classifier bug as overlayGradientAngle/From/To (2026-08-12 override, this file) and mediaBackgroundGradientAngle/From/To (also this file) — extract-signatures.py reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier, which the one-attr-per-slot routing model cannot express. mediaOverlayGradient* shipped in 89857e39 (2026-08-13), AFTER the 2026-08-12 override pass, so it never received the equivalent entry and reproduced the already-fixed bug. Surfaced by db-consistency Check #1/#8 on the 2026-08-13 reseed, not caused by that session's mediaParallax/mediaKenBurns work. ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three."
       }
     },
@@ -1666,6 +1672,7 @@
       "attr": "contentBackgroundGradientFrom",
       "fields": {
         "css_property": null,
+        "css_layer": "GRID_AREA",
         "_reason": "css_property NULLed 2026-08-12. The derived layer (extract-signatures.py) reads hero/render.php, sees these three attrs composing ONE linear-gradient(), and gives ALL THREE css_property='background-image' on the same element/state/tier. That is a compound value split across N attrs, which the one-attr-per-slot routing model cannot express: db-consistency Check #1/#8 flag it as an ambiguous slot and the column-first resolver raises AmbiguousLayerAttrError at CLONE TIME. Every other block declaring the same gradient triple (container, cta-section, site-header, site-footer, trust-bar) already carries css_property=NULL here and clones fine — hero was the lone outlier, so this aligns it with the established norm rather than inventing a rule. Surfaced by the 2026-08-12 reseed re-deriving css_property (not caused by that session's edits; hero's gradients shipped at D579-D582). ⛔ Do NOT give ONE of the three the property back to 'break the tie' — a gradient needs all three, so routing a draft's background-image to any single one of them would be wrong in a different way."
       }
     },
