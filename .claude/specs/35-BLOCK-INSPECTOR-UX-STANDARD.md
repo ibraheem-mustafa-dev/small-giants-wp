@@ -338,6 +338,35 @@ deliberate, framework-wide exception in `decisions.md` D401 ("flagged, NOT fixed
 anti-pattern still stands for any OTHER bespoke per-block custom-CSS field — this exemption is not
 a licence to add a second, block-specific one.
 
+### F.1 — A composite's `selectors.typography` targets its own ROOT, never a child's dead BEM class (added 2026-08-15, D624/D625)
+
+When a composite's text moved from a scalar attribute into an InnerBlocks child (FR-22-6), its old
+`.sgs-<block>__<element>` class and CSS go with it — but the block's `block.json`
+`selectors.typography` can be left pointing at that now-unrendered class. Every native typography
+control then produces a rule that lands on nothing: the client picks a font size, it saves, nothing
+moves. Found live on `sgs/cta-section`, `sgs/notice-banner`, `sgs/info-box` (all FR-22-6 survivors) —
+see `decisions.md` D625.
+
+**The fix shape, settled and verified live (not a per-block judgement call):**
+- Point `selectors.typography` at the block **ROOT**, not into the child. This is what core does —
+  `core/group`, `core/cover`, `core/columns` all declare typography supports with no child selector,
+  relying on plain CSS inheritance to reach InnerBlocks children.
+- **Why a root declaration is safe and won't fight the child's own styling:** a CSS **declaration
+  always beats an inherited value regardless of specificity**. The container's rule sets an
+  UNSET child's default; a child with its own explicit value keeps it. Reaching into the child with
+  a descendant selector instead turns this into a specificity fight — the documented cause of core's
+  own "impossible to override nested block CSS" complaints (gutenberg#36135, #12563).
+- **Measured limit — this does not reach every property.** `font-size` does NOT reach a heading
+  child when theme.json declares `styles.elements.h2.typography.fontSize` — a declaration beats
+  inheritance, and theme.json's is the declaration in that case. Inheritance only carries what
+  theme.json leaves undeclared on the element. Do not "fix" this by out-declaring theme.json from
+  the container; that reopens the same specificity fight this rule exists to avoid.
+- **Check the selector actually maps to an emitter before trusting it.** A correct selector is not
+  proof the property emits — `sgs/info-box` had a correct-after-fix selector pointing at a block that
+  emitted typography via a wholesale `style.typography` passthrough to `wp_style_engine_get_styles()`
+  which silently drops `textAlign` (not a style-engine key). Verify the specific property actually
+  reaches the DOM, not just that the selector is well-formed. See `mistakes.md` (2026-08-15 entries).
+
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
 **⚠ Part G AMENDED by D402 (T0.4/T0.5 design gates, Bean-approved 2026-07-28) — the blanket

@@ -1,5 +1,78 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D625 — Composite `selectors.typography` targets the block ROOT, never a dead child BEM class [ROUTINE]
+
+**2026-08-15.** Three FR-22-6 survivors found broken the same way: `sgs/cta-section`,
+`sgs/notice-banner`, `sgs/info-box` all declared `block.json` `selectors.typography` pointing at
+BEM classes (`.sgs-cta-section__headline`, `.sgs-notice-banner__text`, `.sgs-info-box__heading`)
+whose CSS was deleted when FR-22-6 moved that text into an InnerBlocks child. Every native
+typography control on those blocks was a silent no-op — a client set one, it saved, nothing moved.
+Confirmed on the canary before each fix (commits `cd49757f`, `18372409`).
+
+**Ruling:** point `selectors.typography` at the block ROOT, matching what core does (`core/group`,
+`core/cover`, `core/columns` declare typography supports with no child selector, relying on plain
+CSS inheritance). A root declaration overrides an unset child default but never fights the child's
+own explicit value, because a CSS declaration always beats an inherited value regardless of
+specificity — reaching into the child instead makes it a specificity fight (the documented cause of
+core's own "impossible to override nested block CSS" complaints, gutenberg#36135/#12563). Verified
+live: container `text-align:right` → unset InnerBlocks child inherits right (was: centre on both,
+before the fix).
+
+**Measured limit, not worked around:** `font-size` cannot reach a heading child when theme.json
+declares `styles.elements.h2.typography.fontSize` — that declaration beats inheritance. Deliberately
+not patched around; doing so would put the container back to out-declaring its children, the exact
+fight this rule avoids.
+
+**Second defect found while verifying `sgs/notice-banner`:** its render.php read only the top-level
+`textAlign` attribute while the native control writes `style.typography.textAlign` — the
+`has-text-align-*` class was never emitted regardless of the selector fix. Now reads the native key
+first, top-level as fallback (the cloning converter writes the top-level one). Commit `18372409`.
+
+**`sgs/info-box` correction (commit `bdc56bd8`):** an interim report claimed info-box had "no
+typography emitter" on the strength of `grep -c text-align render.php` = 0 — wrong instrument. The
+block emits typography via a wholesale `style.typography` → `wp_style_engine_get_styles()`
+passthrough, which never contains the literal string `text-align`; it was already emitting six of
+seven declared supports correctly. The real gap was one property: `textAlign` is not a style-engine
+key, so the engine silently drops it. Fixed by adding one hand-emitted `text-align` to the ROOT,
+passthrough left intact (a first attempt that hand-enumerated all six passthrough properties was
+reverted — correct today, but silently stops emitting any support added later).
+
+Full spec guidance: `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part F.1.
+
+## D624 — Wrapper-capability census: DECLARED/RENDERED/CONSUMED, 11 orphaned capabilities closed [ROUTINE]
+
+**2026-08-15.** Built `scripts/surveys/survey-wrapper-capability.js` +
+`scripts/surveys/lib/{php-kind-consumption,control-detection,wrapper-capability-selftest}.js` to
+measure whether a wrapper capability a block DECLARES is actually RENDERED by the wrapper and
+actually CONSUMED by a real inspector control — the three collapsed into one number is exactly
+where 11 client-payable, client-unsettable attributes hid. Report:
+`.claude/reports/wrapper-capability-census-2026-08-14.md`.
+
+Two things the census had to get right or it silently under/over-counts:
+- **`kind` is two different channels.** The editor prop on `<ContainerWrapperControls>` is never
+  `'section'`; the PHP render argument IS `'section'` for seven blocks. RENDERED must resolve
+  against the editor channel, CONSUMED against the PHP channel — a census built on one input alone
+  is wrong for all seven.
+- **Control detection matches what a control DOES, never a component name**, and must resolve all
+  four shapes this codebase actually uses (literal keys, computed keys, an indirection map living in
+  a shared component's default parameter, native `supports`). A naive per-block name-scoped scan
+  reported 36 live colour controls as missing.
+
+39 self-test assertions (positive + negative control per rule), harness proven able to fail
+(`--self-test-demonstrate-failure`), and a real break injected into the wrapper PHP was caught and
+the revert confirmed against git.
+
+**Shipped fixes (commit `1882c28e`):** `bgSvgMinHeight` had no control anywhere in `src/` across its
+six declaring blocks — added once to the shared `BackgroundPanel` (`UnitControl`, real units), all
+six gain it from one edit. `minHeight` and `contentBandPadding`: `site-header`/`site-footer` had
+neither while their siblings did. All three use `ResponsiveOverride` against the object-typed attrs,
+never the flat-sibling `ResponsiveBoxControl`/`ResponsiveControl` (those coerce an object attr to its
+default and silently drop whatever the client had set).
+
+**Orphaned wrapper capabilities: 11 → 0** for the blocks this census covered. **No cached count
+carried forward** — re-run the census (`node scripts/surveys/survey-wrapper-capability.js`) for a
+current number; this project's docs have drifted on cached counts before.
+
 ## D623 — Visual-diff gate: scoped bypass + intent-capture report type, replacing the `--no-verify` escape [ROUTINE]
 
 **2026-08-15.** The visual-diff commit gate's own blocked-message used to sanction

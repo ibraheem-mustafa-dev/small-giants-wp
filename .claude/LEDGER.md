@@ -45,7 +45,27 @@ explicit instruction with the gate still red. Worth reading the dashboard before
 
 **Full narrative:** `memory/session-2026-08-15.md` (auto-snapshotted at close).
 
-## Shipped this session
+## Shipped this session (wrapper-capability census + typography-selector fix, parallel track)
+
+**4 commits on `main`: `1882c28e`, `cd49757f`, `18372409`, `bdc56bd8`. Ran concurrently with the
+colour-placement close below — different files, no overlap.**
+
+- **Wrapper-capability census** (`survey-wrapper-capability.js` + `scripts/surveys/lib/*`) measures
+  DECLARED/RENDERED/CONSUMED separately, 39 self-tests, harness proven able to fail. Closed 11
+  orphaned capabilities (declared + painted + no control): `bgSvgMinHeight` (6 blocks, one shared
+  `BackgroundPanel` fix), `minHeight`+`contentBandPadding` (site-header/site-footer). D624.
+- **Dead-selector defect class closed:** `cta-section`/`notice-banner`/`info-box` all had
+  `selectors.typography` pointing at BEM classes FR-22-6 stopped rendering — every native typography
+  control was a silent no-op. Fixed by pointing at the block ROOT (matches core's own pattern;
+  inheritance carries an unset child, a declaration never beats the child's own value). Settled rule
+  + measured font-size limit (theme.json h2 declaration wins) in `specs/35...md` Part F.1, D625.
+  `notice-banner` had a second defect (wrong attribute key read); `info-box` needed one hand-emitted
+  `text-align` alongside its existing passthrough (an interim "no emitter" claim was wrong — see
+  `mistakes.md` 2026-08-15).
+- ⛔ **Not this track's to close:** `image-sequence`/`testimonial` `imageControls` gaps and the
+  shared-wrapper decomposition initiative below are unaffected by this work.
+
+## Shipped this session (colour-placement close)
 
 **PR #27 merged to `main` (`5d43844c`) — 4 commits.**
 
