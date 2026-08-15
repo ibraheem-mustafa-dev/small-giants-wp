@@ -135,6 +135,12 @@ recorded justification anywhere in the repo.
 name matches comments — `sgs/button` was wrongly called a consumer this very session (its only hit
 is prose at `render.php:930`); the in-file comment says 16 live mounts while a naive grep says 30.
 
+**Step 3 (grouping council) + step 4 (Bean's lock-in) are now DONE, same day.** 6 extensions locked
+(background/width/layout/gridItems/shapeDividers/typography — typography is new), tab placement
+resolved, 2 real cross-extension preconditions found. Full record: `decisions.md` D626, status
+table: `go-track-1b-playful-hamster.md` §1.4. Step 6 (background pilot) now also owns colour's own
+deferred Track B (same file, same 6-7 blocks) — merge, don't run as a separate session.
+
 ### ⭐ NEXT SESSION — orchestration plan
 
 **You are the SGS framework engineer.** The colour-placement architecture is settled and
@@ -310,3 +316,8 @@ Tasks 1 and 2 are independent. Task 3 needs a ruling, not effort.
   parking.md (Bean: not approved for parking, will be built properly when that track is reached).
 - **Colour-panel Track B** (shared `ContainerWrapperControls.js` wrapper — container, cta-section,
   hero, trust-bar, site-header, site-footer) — Bean-ruled: separate session, after Track A settles.
+  ⚠ **2026-08-15: merge this into the wrapper-decomposition initiative's step 6, not a standalone
+  session** — same file, same blocks. See D626.
+- **Typography framework-wide rollout** — queued as the next initiative after colour's Track A+B
+  close, same two-track shape (D626). Track A likely smaller than colour's (TypographyControls
+  already exists, R-22-13) — needs its own scope audit before estimating.

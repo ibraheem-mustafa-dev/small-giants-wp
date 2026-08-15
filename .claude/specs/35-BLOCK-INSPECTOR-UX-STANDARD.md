@@ -367,6 +367,15 @@ see `decisions.md` D625.
   which silently drops `textAlign` (not a style-engine key). Verify the specific property actually
   reaches the DOM, not just that the selector is well-formed. See `mistakes.md` (2026-08-15 entries).
 
+**This mechanism generalises into a `typography` wrapper capability (D626, 2026-08-15).** The
+shared-wrapper decomposition (`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4) locked
+`typography` as a 6th opt-in extension alongside background/width/layout/gridItems/shapeDividers —
+a root-level default for InnerBlocks children reusing this exact inheritance mechanism, Styles tab.
+Only colour and typography qualify for this pattern framework-wide: it depends on native CSS
+inheritance, which background/border/shadow/padding don't have. A separate, framework-wide
+typography placement/completeness audit (parallel to the live colour-panel rollout) is queued as
+the next initiative after colour's own two tracks close — not this spec's open item to build yet.
+
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
 **⚠ Part G AMENDED by D402 (T0.4/T0.5 design gates, Bean-approved 2026-07-28) — the blanket

@@ -1,5 +1,92 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D626 — Wrapper-capability grouping + tab placement locked: 6 extensions, shapeDividers decoupled, typography added [ROUTINE]
+
+**2026-08-15.** Step 3 of the shared-wrapper decomposition's 7-step order (`go-track-1b-playful-hamster.md`
+§1.4) — deciding how `ContainerWrapperControls.js`'s capabilities group into opt-in extensions and where
+each renders. Run as a 4-lens council (mechanism-fidelity, two-channel-kind, tab-placement, client-usability)
+against the 2026-08-15 wrapper-capability census (D624), then refined directly with Bean.
+
+**Locked grouping — 6 extensions, all opt-in via the existing `enabledExtensions` mechanism (D579),
+none new:**
+
+| Extension | Tab | Notes |
+|---|---|---|
+| `background` | Styles | unchanged from the 6 existing panels |
+| `width` | Styles | unchanged |
+| `layout` | Styles, **whole panel, not split** | the `stack`/`grid` mode toggle stays inside the same panel as its dependent gap/columns/justify/align controls, not pulled into Settings — see rationale below |
+| `gridItems` | Styles | absorbs `GridAreaPanel` as a sub-capability, gated on the block's existing `supports.sgs.gridAreas` declaration rather than a 7th extension name; requires `layout` enabled (validation gate needed, not yet built) |
+| `shapeDividers` | Styles, **own top-level panel** | decoupled from `background` — no precondition between them, a divider can sit on any section regardless of background state; control shape is being redesigned (see below), so this is bigger than a rename |
+| `typography` (new) | Styles | root-level default for InnerBlocks children, reusing D625's inheritance mechanism exactly — a declaration on the root sets an unset child's default, never overrides a child's own explicit value |
+
+**Layout panel NOT split, against the spec's own literal Tier-2 test.** A4's "styles nothing → Settings"
+rule was written for standalone toggles (`variant`, `templateMode`) with no dependent controls elsewhere.
+`layout`'s mode toggle isn't standalone — it reveals the rest of the same panel. Splitting it would force
+a client to flip a switch in one tab and hunt a different tab to see what it revealed, recreating the exact
+"client hunts two places for one decision" failure A5 exists to prevent. No real precedent (WP core's own
+`core/group` layout switcher, Chrome DevTools' grid inspector, Figma's auto-layout panel) ever separates a
+mode picker from its own dependent controls. Considered and rejected: moving `layout` to Settings for
+"relatively empty" composites like `sgs/container` to balance tab density — rejected because it would be a
+per-block placement judgement call, the exact thing the D533/D537 resolver was built to eliminate for
+colour (Wave 2 brief: *"placement of individual rows now follows the resolver automatically — do not make
+a per-block placement decision"*). A sparse Settings tab is not a defect (core ships blocks with near-empty
+Settings tabs routinely, e.g. `core/spacer`).
+
+**shapeDividers redesigned, not just relocated.** New control shape (Bean's spec, modelled on other
+page-builder themes): independent top/bottom toggles, a colour per edge, and a scale control that
+defaults to linked X/Y (uniform) with an unlink option for independent axes — architecturally the same
+linked/unlinked pattern `BoxControl`'s 4-side link already uses, applied to 2 axes. This is a small new
+component, not a relabel of the existing single `Height` scalar per edge. No dependency on `background`.
+
+**Two real cross-extension preconditions found, neither expressible by the current mechanism today**
+(`enabledExtensions` is a flat allowlist with no coupling concept — confirmed by reading `hide-extensions.js`):
+`shapeDividers` no longer requires `background` (reversed from the council's first pass — the "always
+paired" finding was an artefact of only 4 blocks using it, not a real dependency); `gridItems` requires
+`layout` (a client should never see grid-item styling on a block with no grid). Needs a build-time or
+`/sgs-update`-seed validation gate rejecting the wrong combination — not yet built.
+
+**A hard sequencing dependency for steps 4-6, not optional:** the PHP paint call in every one of the 7
+direct-panel blocks' `render.php` hardcodes the wrapper's kind argument as a literal `'section'` string,
+independent of any prop (`SGS_Container_Wrapper::render($attributes, $block, $content, 'section', $opts)`).
+Migrating the editor side to `enabledExtensions` alone does nothing to this literal — it would look fixed
+while the declared-vs-painted disagreement the census found (D624) survives underneath. **The wrapper's
+PHP attribute-reading scope must become a function of `enabledExtensions` in the same commit as any
+block's editor migration, never a follow-up.**
+
+**One fact question flagged, not resolved by council fiat — needs a source re-check before step 4/5/6
+lock in each of the 7 direct-panel blocks' migration list.** The council's mechanism-fidelity lens assumed
+(via the composite-mirror rule, D152/D294) that all 7 should uniformly enable all 6 extensions. A second
+lens grepped each block's actual `edit.js` and found real variance today: `container`/`cta-section`/
+`trust-bar` mount all panels; `hero` mounts width+background+shapeDividers only (no layout, no gridItems);
+`site-footer`/`site-header` mount width+background only; `physics-canvas` mounts width only. This is a
+fact to verify against source per block, not a design call.
+
+**Typography's "framework-wide" half is a separate, larger initiative — deliberately not folded into
+this step's scope.** Bean confirmed the ask is two-layered: (a) a root-default cascade for wrapper-owning
+composites (in scope here, D625's mechanism generalised), and (b) a framework-wide typography placement
+audit parallel to the colour rollout currently running (Track A: ~49 leaf blocks via `SgsColourPanel` +
+the D533/D537 resolver, in progress; Track B: the same shared wrapper's own colour controls, deferred
+"separate session, after Track A settles" per the live LEDGER). **Typography is queued as the next
+initiative after colour's Track A+B close**, same two-track shape — Track A likely smaller than colour's
+was, since `TypographyControls` already exists (R-22-13) and typography wasn't named as a resolver holdout
+the way colour was; needs its own completeness/compliance audit before assuming parity with colour's
+effort. **Colour's own Track B (container/cta-section/hero/trust-bar/site-header/site-footer's colour
+controls in the shared wrapper) targets the exact same 6-7 blocks and file this initiative already owns —
+merge it into this initiative's step 6 (background pilot), don't run it as a separate colliding session.**
+
+**Families question, answered and closed — not reopened per-property going forward.** Only colour and
+typography qualify for D625's root-default/child-priority mechanism, because it depends on native CSS
+inheritance (an unset child free-inherits the parent's declared value). `background`/`border`/`shadow`/
+`padding`/`margin` are NOT inherited CSS properties — the same mechanism can't reach them for free.
+`GridItemDefaultsPanel`'s `--sgs-gi-*` custom-property defaults are a second, already-shipped pattern that
+gives non-inherited properties a similar "root sets default, child can vary" behaviour, but scoped only to
+grid-item children via custom properties, not natural inheritance — named as the mechanism to reach for if
+a real future need surfaces (e.g. a universal shadow extension, under live investigation as a separate
+question), not proposed to build now.
+
+Full spec guidance: `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part F.1 (typography) and the wrapper
+decomposition initiative: `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4.
+
 ## D625 — Composite `selectors.typography` targets the block ROOT, never a dead child BEM class [ROUTINE]
 
 **2026-08-15.** Three FR-22-6 survivors found broken the same way: `sgs/cta-section`,
