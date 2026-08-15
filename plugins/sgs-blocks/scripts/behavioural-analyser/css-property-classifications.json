@@ -559,6 +559,14 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -585,6 +593,15 @@
     {
       "slug": "sgs/card-grid",
       "attr": "shadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "shadowHoverColour",
       "fields": {
         "css_property": "box-shadow",
         "css_element": "item",
@@ -1606,6 +1623,7 @@
       "attr": "splitImageMobileObjectPosition",
       "fields": {
         "css_property": "object-position",
+        "css_layer": "GRID_AREA",
         "css_element": "split-media"
       }
     },
@@ -2711,7 +2729,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "desktop",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -3503,6 +3521,14 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "nameColour",
       "fields": {
         "css_property": "color",
@@ -3585,6 +3611,15 @@
     {
       "slug": "sgs/testimonial",
       "attr": "shadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "shadowHoverColour",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
@@ -3904,6 +3939,7 @@
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "badge-label"
       }
     },
@@ -3984,7 +4020,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

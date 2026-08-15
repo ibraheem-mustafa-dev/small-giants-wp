@@ -675,6 +675,46 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
 }
 
 /**
+ * Compose a shadow SHAPE (offset-x/offset-y/blur/spread + optional `inset`,
+ * no embedded colour — `ShadowControl`'s stored value under the shadow
+ * colour-architecture redesign, D621/D622) with a separate colour attribute
+ * into the final CSS `box-shadow` value.
+ *
+ * `$shape` may also be a bare theme shadow preset SLUG (self-contained —
+ * colour already baked in by `theme.json` `settings.shadow.presets`), in
+ * which case `$colour` is ignored and `sgs_shadow_value()` resolves the slug
+ * to `var(--wp--preset--shadow--{slug})` exactly as before this split. Only
+ * a RAW shape (starts with a digit or `inset`) gets the colour appended.
+ *
+ * @param string|null $shape  Raw shape string "X Y BLUR SPREAD" (optionally
+ *                            "inset " prefixed) or a bare preset slug.
+ * @param string|null $colour Colour value (hex/hex8/rgba/theme slug) — ignored
+ *                            when $shape resolves to a preset slug.
+ * @return string CSS box-shadow value, or '' when $shape is empty.
+ */
+function sgs_shadow_value_composed( ?string $shape, ?string $colour ): string {
+	if ( ! $shape ) {
+		return '';
+	}
+
+	$shape = trim( $shape );
+
+	$is_raw_shape = (bool) preg_match( '/^(inset\s+)?-?[\d.]+px/i', $shape ) || 0 === strpos( $shape, 'inset' );
+
+	if ( ! $is_raw_shape ) {
+		// Bare preset slug — self-contained, no colour to compose in.
+		return sgs_shadow_value( $shape );
+	}
+
+	$resolved_colour = sgs_colour_value( $colour ? $colour : '' );
+	if ( '' === $resolved_colour ) {
+		$resolved_colour = 'rgba(0,0,0,0.1)';
+	}
+
+	return sgs_shadow_value( $shape . ' ' . $resolved_colour );
+}
+
+/**
  * Validate a CSS gradient value for safe emission into a scoped rule / custom
  * property.
  *

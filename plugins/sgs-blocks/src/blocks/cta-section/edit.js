@@ -13,8 +13,8 @@ import {
 	BoxControl,
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
-import { resolveShadowPreview } from '../../utils/tokens';
-import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { resolveShadowPreviewComposed } from '../../utils/tokens';
+import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
 // ContentBandPanel sub-panels still write to LEGACY FLAT attrs
@@ -115,11 +115,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
 	}
-	// Editor-canvas parity for the wrapper-level shadow — same gap class as
-	// hero/trust-bar (the hand-built preview never read `shadow`; frontend
-	// renders it via SGS_Container_Wrapper). Shared resolver handles preset
-	// slugs AND raw ShadowControl CSS.
-	const shadowPreview = resolveShadowPreview( attributes.shadow );
+	// Editor-canvas parity for cta-section's OWN scoped shadow (rendered
+	// independent of the shared wrapper — see render.php's C3 guard). Shape
+	// (`shadow`) + colour (`shadowColour`) are separate attrs since D621/D622;
+	// the composed resolver mirrors sgs_shadow_value_composed() in PHP.
+	const shadowPreview = resolveShadowPreviewComposed( attributes.shadow, attributes.shadowColour );
 	if ( shadowPreview ) {
 		wrapperStyle.boxShadow = shadowPreview;
 	}
@@ -221,6 +221,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Button>
 				</PanelBody>
 			</InspectorControls>
+
+			{ /* D621/D622 — shadow colour split out of the legacy `shadow` shape
+				attribute into its own SgsColourPanel row, mounted BEFORE the
+				group="styles" block below so it renders first in the Styles tab. */ }
+			<SgsColourPanel
+				rows={ [
+					attributes.shadow && {
+						key: 'shadow',
+						label: __( 'Shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.shadowColour,
+								onChange: ( val ) => setAttributes( { shadowColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 
 			{ /* Styles tab — appearance: section width/spacing, content band look, grid/flex
 				geometry, background, shadow and shape dividers. WS-4: mirrored sgs/container
@@ -368,16 +389,18 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
-					CSS string built by ShadowControl); the native `shadow` support is
-					skip-serialised (no-inline contract §A) and unused by render.php,
-					this control is the ONE live shadow mechanism (rendered scoped, not
-					inline, via sgs_shadow_value() — Spec 35 T2.2). */ }
+				{ /* Shadow — SHAPE-only string token attr (sm/md/lg/glow preset slug OR
+					a raw box-shadow shape string, no colour — colour lives in the
+					SgsColourPanel row above per D621/D622); the dead native `shadow`
+					support duplicate was removed outright. Rendered scoped, not inline,
+					via sgs_shadow_value_composed() — Spec 35 T2.2. */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						value={ attributes.shadow || '' }
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						colour={ attributes.shadowColour }
+						onColourChange={ ( val ) => setAttributes( { shadowColour: val } ) }
 					/>
 				</PanelBody>
 

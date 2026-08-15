@@ -62,26 +62,28 @@ $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 // overlayStyle removed — no editor control, no consumer anywhere in the
 // repo (D338 full-repo grep, 2026-08-06); abandoned attribute, deleted from
 // block.json too.
-$title_colour       = $attributes['titleColour'] ?? '';
-$subtitle_colour    = $attributes['subtitleColour'] ?? '';
-$hover_bg           = $attributes['backgroundColourHover'] ?? '';
-$hover_text         = $attributes['textColourHover'] ?? '';
-$hover_border       = $attributes['borderColourHover'] ?? '';
-$transition_dur     = $attributes['transitionDuration'] ?? '300';
-$transition_ease    = $attributes['transitionEasing'] ?? 'ease-in-out';
-$hover_scale        = $attributes['scaleHover'] ?? '';
-$hover_shadow       = $attributes['shadowHover'] ?? '';
-$card_background    = $attributes['cardBackground'] ?? '';
-$card_border_colour = $attributes['cardBorderColour'] ?? '';
-$card_border_width  = $attributes['cardBorderWidth'] ?? array();
-$card_radius        = $attributes['cardRadius'] ?? '';
-$card_shadow        = $attributes['cardShadow'] ?? '';
-$hover_image_zoom   = ! empty( $attributes['imageZoomHover'] );
-$hover_grayscale    = ! empty( $attributes['grayscaleHover'] );
-$stagger_delay      = $attributes['staggerDelay'] ?? 0;
-$query_post_type    = sanitize_key( $attributes['queryPostType'] ?? 'post' );
-$query_per_page     = absint( $attributes['queryPostsPerPage'] ?? 6 );
-$query_category     = absint( $attributes['queryCategory'] ?? 0 );
+$title_colour        = $attributes['titleColour'] ?? '';
+$subtitle_colour     = $attributes['subtitleColour'] ?? '';
+$hover_bg            = $attributes['backgroundColourHover'] ?? '';
+$hover_text          = $attributes['textColourHover'] ?? '';
+$hover_border        = $attributes['borderColourHover'] ?? '';
+$transition_dur      = $attributes['transitionDuration'] ?? '300';
+$transition_ease     = $attributes['transitionEasing'] ?? 'ease-in-out';
+$hover_scale         = $attributes['scaleHover'] ?? '';
+$hover_shadow        = $attributes['shadowHover'] ?? '';
+$hover_shadow_colour = $attributes['shadowHoverColour'] ?? '';
+$card_background     = $attributes['cardBackground'] ?? '';
+$card_border_colour  = $attributes['cardBorderColour'] ?? '';
+$card_border_width   = $attributes['cardBorderWidth'] ?? array();
+$card_radius         = $attributes['cardRadius'] ?? '';
+$card_shadow         = $attributes['cardShadow'] ?? '';
+$card_shadow_colour  = $attributes['cardShadowColour'] ?? '';
+$hover_image_zoom    = ! empty( $attributes['imageZoomHover'] );
+$hover_grayscale     = ! empty( $attributes['grayscaleHover'] );
+$stagger_delay       = $attributes['staggerDelay'] ?? 0;
+$query_post_type     = sanitize_key( $attributes['queryPostType'] ?? 'post' );
+$query_per_page      = absint( $attributes['queryPostsPerPage'] ?? 6 );
+$query_category      = absint( $attributes['queryCategory'] ?? 0 );
 
 // ── Instance uid — a CLASS (matches the container/hero/quote convention) so
 // this grid's WP-native supports + title/subtitle colours can be scoped to
@@ -227,7 +229,7 @@ if ( '' !== $card_radius ) {
 	$card_state_vars[] = '--sgs-card-radius:' . $sgs_css_length( $card_radius ) . ';';
 }
 if ( '' !== $card_shadow ) {
-	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value( $card_shadow ) . ';';
+	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour ) . ';';
 }
 if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
@@ -427,7 +429,7 @@ if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
 		$wc_style_parts[] = '--sgs-hover-scale: ' . esc_attr( $hover_scale );
 	}
 	if ( $hover_shadow ) {
-		$wc_style_parts[] = '--sgs-hover-shadow: var(--wp--preset--shadow--' . sanitize_key( $hover_shadow ) . ')';
+		$wc_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
 	}
 	if ( $stagger_delay ) {
 		$wc_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
@@ -631,7 +633,7 @@ if ( $hover_scale ) {
 	$grid_style_parts[] = '--sgs-hover-scale: ' . esc_attr( $hover_scale );
 }
 if ( $hover_shadow ) {
-	$grid_style_parts[] = '--sgs-hover-shadow: var(--wp--preset--shadow--' . sanitize_key( $hover_shadow ) . ')';
+	$grid_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
 }
 if ( $stagger_delay ) {
 	$grid_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';

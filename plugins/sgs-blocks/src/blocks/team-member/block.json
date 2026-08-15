@@ -195,9 +195,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"shadowHoverColour": {
+			"type": "string"
+		},
 		"cardShadow": {
 			"type": "string",
 			"default": ""
+		},
+		"cardShadowColour": {
+			"type": "string"
 		},
 		"imageZoomHover": {
 			"type": "boolean",

@@ -53,7 +53,11 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 		'cardBorderColour'  => '',
 		'cardBorderWidth'   => array(),
 		'cardRadius'        => '8px',
+		// Bare preset slug — self-contained (colour baked in by theme.json), so
+		// cardShadowColour stays empty; sgs_shadow_value_composed() ignores it
+		// for a preset slug (D621/D622 colour-panel split).
 		'cardShadow'        => 'raised',
+		'cardShadowColour'  => '',
 	);
 
 	// "Boxed" — background "surface" (theme.json line 48) + border colour
@@ -62,8 +66,10 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 	// set `box-shadow: none`). cardShadow doesn't accept the literal keyword
 	// "none" (an empty string instead falls back to the block's own
 	// `--wp--preset--shadow--raised` default in style.css:40) — a zero-length
-	// raw shadow value is the real equivalent of "no shadow" and is what
-	// ShadowControl's own builder would produce for x=y=blur=spread=0.
+	// raw SHAPE value is the real equivalent of "no shadow" and is what
+	// ShadowControl's own builder would produce for x=y=blur=spread=0. No
+	// colour token embedded any more (D621/D622) — colour is moot at zero
+	// offset/blur/spread regardless.
 	$boxed_card_style = array(
 		'cardBackground'    => 'surface',
 		'cardBorderColour'  => 'border-subtle',
@@ -74,7 +80,8 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'left'   => '1px',
 		),
 		'cardRadius'        => '8px',
-		'cardShadow'        => '0px 0px 0px 0px transparent',
+		'cardShadow'        => '0px 0px 0px 0px',
+		'cardShadowColour'  => '',
 	);
 
 	// "Borderless" — transparent background (a recognised raw CSS colour
@@ -92,7 +99,8 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 			'left'   => '0px',
 		),
 		'cardRadius'        => '0px',
-		'cardShadow'        => '0px 0px 0px 0px transparent',
+		'cardShadow'        => '0px 0px 0px 0px',
+		'cardShadowColour'  => '',
 	);
 
 	$sgs_variations = array(

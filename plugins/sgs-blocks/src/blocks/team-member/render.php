@@ -99,22 +99,24 @@ $sgs_css_safe_value = static function ( $value ) {
 // ---------------------------------------------------------------------------
 // 3. Scalar content / layout attributes.
 // ---------------------------------------------------------------------------
-$name              = $attributes['name'] ?? '';
-$sgs_role          = $attributes['role'] ?? '';
-$bio               = $attributes['bio'] ?? '';
-$name_colour       = $attributes['nameColour'] ?? '';
-$role_colour       = $attributes['roleColour'] ?? 'text-muted';
-$card_style        = $attributes['cardStyle'] ?? 'elevated';
-$photo_shape       = $attributes['photoShape'] ?? 'circle';
-$hover_scale       = $attributes['scaleHover'] ?? '';
-$hover_shadow      = $attributes['shadowHover'] ?? '';
-$card_shadow       = $attributes['cardShadow'] ?? '';
-$hover_img_zoom    = (bool) ( $attributes['imageZoomHover'] ?? false );
-$hover_grayscale   = (bool) ( $attributes['grayscaleHover'] ?? false );
-$hover_overlay     = (bool) ( $attributes['overlayHover'] ?? false );
-$display_mode      = $attributes['displayMode'] ?? 'full';
-$is_compact        = 'compact' === $display_mode;
-$social_links      = is_array( $attributes['socialLinks'] ?? null ) ? $attributes['socialLinks'] : array();
+$name                = $attributes['name'] ?? '';
+$sgs_role            = $attributes['role'] ?? '';
+$bio                 = $attributes['bio'] ?? '';
+$name_colour         = $attributes['nameColour'] ?? '';
+$role_colour         = $attributes['roleColour'] ?? 'text-muted';
+$card_style          = $attributes['cardStyle'] ?? 'elevated';
+$photo_shape         = $attributes['photoShape'] ?? 'circle';
+$hover_scale         = $attributes['scaleHover'] ?? '';
+$hover_shadow        = $attributes['shadowHover'] ?? '';
+$hover_shadow_colour = $attributes['shadowHoverColour'] ?? '';
+$card_shadow         = $attributes['cardShadow'] ?? '';
+$card_shadow_colour  = $attributes['cardShadowColour'] ?? '';
+$hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? false );
+$hover_grayscale     = (bool) ( $attributes['grayscaleHover'] ?? false );
+$hover_overlay       = (bool) ( $attributes['overlayHover'] ?? false );
+$display_mode        = $attributes['displayMode'] ?? 'full';
+$is_compact          = 'compact' === $display_mode;
+$social_links        = is_array( $attributes['socialLinks'] ?? null ) ? $attributes['socialLinks'] : array();
 
 // ---------------------------------------------------------------------------
 // 4. Root-level box/visual attributes (own visual styling — scoped, not
@@ -229,9 +231,13 @@ if ( $hover_scale && in_array( $hover_scale, $allowed_scales, true ) ) {
 	$sgs_classes[]        = 'sgs-has-hover-scale';
 }
 
-$allowed_shadows = array( 'subtle', 'raised', 'floating', 'glow' );
-if ( $hover_shadow && in_array( $hover_shadow, $allowed_shadows, true ) ) {
-	$sgs_wrapper_styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+// sgs_shadow_value_composed() composes the SHAPE-only attr (D621/D622
+// colour-panel split) with the separate colour attr — accepts a preset slug
+// (self-contained) OR a raw ShadowControl shape, not just the fixed
+// subtle/raised/floating/glow allowlist this used to be restricted to.
+$safe_hover_shadow = sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
+if ( '' !== $safe_hover_shadow ) {
+	$sgs_wrapper_styles[] = '--sgs-hover-shadow:' . $safe_hover_shadow;
 	$sgs_classes[]        = 'sgs-has-hover';
 }
 
@@ -244,7 +250,7 @@ if ( $hover_shadow && in_array( $hover_shadow, $allowed_shadows, true ) ) {
 // --sgs-card-shadow (render.php:209) but scoped to this block's own root
 // rather than a nested repeater item, since team-member's card IS the root.
 if ( '' !== $card_shadow ) {
-	$sgs_wrapper_styles[] = '--sgs-card-shadow:' . sgs_shadow_value( $card_shadow );
+	$sgs_wrapper_styles[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour );
 }
 
 // ---------------------------------------------------------------------------

@@ -2,21 +2,31 @@
  * ShadowControl — shared real shadow builder (Spec 35 Part I action item 3).
  *
  * Replaces the old None/Small/Medium 3-option select pattern with genuine
- * X/Y offset, blur, spread, colour+alpha, and inset controls, PLUS a small
- * preset menu that SEEDS the builder from the theme's `theme.json`
+ * X/Y offset, blur, spread, and inset controls, PLUS a small preset menu
+ * that SEEDS the builder from the theme's `theme.json`
  * `settings.shadow.presets` (Subtle/Raised/Floating/Brand glow) — presets are a
  * starting point, not a ceiling.
  *
- * The stored attribute is a single CSS `box-shadow` VALUE STRING (matches
- * every other SGS colour/shadow attribute — see `DesignTokenPicker`), e.g.
- * `"0 4px 12px #0000001A"` or `"inset 0 0 20px #F87A1F4D"`. This is exactly
- * the shape `sgs_shadow_value()` (`includes/helpers-tokens.php`) already
- * accepts as a "raw" shadow (it starts with a digit/`inset`) — it passes the
- * colour token through `sgs_normalise_css_functional_colours()`, so an
- * `rgba()` colour picked here still survives WordPress's
- * `safecss_filter_attr()` strip of functional notation (D302). A bare theme
- * shadow SLUG (e.g. `"subtle"`) is also accepted unchanged — picking a preset
- * without editing it keeps the value linked to the theme token.
+ * ── Colour architecture (D621/D622, 2026-08-15) ─────────────────────────
+ * Colour is now EXTERNALLY managed by the caller — this control stores
+ * SHAPE ONLY (offset-x, offset-y, blur, spread, inset), never a colour. The
+ * caller owns the sibling `{name}Colour` attribute (rendered as a row in the
+ * block's `SgsColourPanel`, states-aware for a base+hover pair) and passes
+ * its current value + setter in via the `colour`/`onColourChange` props,
+ * which this control renders as one more field in the same builder — same
+ * position as the old internal `DesignTokenPicker`, just externally driven.
+ * PHP composes shape + colour back into a final `box-shadow` value at render
+ * time via `sgs_shadow_value_composed()` (`includes/helpers-tokens.php`).
+ *
+ * The stored SHAPE attribute is a CSS shadow-shape STRING (matches every
+ * other SGS token-shaped attribute), e.g. `"0px 4px 12px 0px"` or
+ * `"inset 0px 0px 20px 0px"` — no colour token. This is exactly the shape
+ * `sgs_shadow_value_composed()` expects as a "raw" shape (it starts with a
+ * digit/`inset`). A bare theme shadow SLUG (e.g. `"subtle"`) is also
+ * accepted unchanged — picking a preset without editing it keeps the value
+ * linked to the theme token; the colour field is then irrelevant (presets
+ * carry their own colour) but stays visible rather than being conditionally
+ * hidden, so switching back to a custom shape doesn't lose the last colour.
  *
  * WCAG 2.1 AA: every field is a labelled native control (`UnitControl`,
  * `ToggleControl`, `DesignTokenPicker`) with WP's own focus styles; the
@@ -36,14 +46,14 @@ import DesignTokenPicker from './DesignTokenPicker';
 import { UnitControl } from './primitives';
 
 /**
- * Parse a raw CSS box-shadow string into its builder parts. Best-effort —
- * only handles a single shadow layer (the builder's own output shape).
- * Returns null when the string doesn't parse as a longhand shadow (e.g. a
- * theme slug like "subtle", or an empty string) — the builder then falls back to
- * its defaults rather than fighting the stored value.
+ * Parse a raw CSS shadow-SHAPE string (no colour) into its builder parts.
+ * Best-effort — only handles a single shadow layer (the builder's own
+ * output shape). Returns null when the string doesn't parse as a longhand
+ * shape (e.g. a theme slug like "subtle", or an empty string) — the builder
+ * then falls back to its defaults rather than fighting the stored value.
  *
- * @param {string} value Raw box-shadow CSS string.
- * @return {?Object} { inset, x, y, blur, spread, colour } or null.
+ * @param {string} value Raw box-shadow SHAPE string (x y blur spread, no colour).
+ * @return {?Object} { inset, x, y, blur, spread } or null.
  */
 function parseShadow( value ) {
 	if ( ! value ) {
@@ -52,7 +62,7 @@ function parseShadow( value ) {
 	const match = String( value )
 		.trim()
 		.match(
-			/^(inset\s+)?(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\s+([\d.]+)px\s+(.+)$/i
+			/^(inset\s+)?(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\s+([\d.]+)px$/i
 		);
 	if ( ! match ) {
 		return null;
@@ -63,38 +73,39 @@ function parseShadow( value ) {
 		y: Number( match[ 3 ] ),
 		blur: Number( match[ 4 ] ),
 		spread: Number( match[ 5 ] ),
-		colour: match[ 6 ].trim(),
 	};
 }
 
 /**
- * Build a raw CSS box-shadow string from the builder parts.
+ * Build a raw CSS shadow-SHAPE string (no colour) from the builder parts.
  *
  * @param {Object} parts Builder parts.
- * @return {string} CSS box-shadow value.
+ * @return {string} CSS box-shadow SHAPE value (x y blur spread, no colour).
  */
-function buildShadow( { inset, x, y, blur, spread, colour } ) {
+function buildShadow( { inset, x, y, blur, spread } ) {
 	return [
 		inset ? 'inset' : '',
 		`${ x || 0 }px`,
 		`${ y || 0 }px`,
 		`${ blur || 0 }px`,
 		`${ spread || 0 }px`,
-		colour || 'rgba(0,0,0,0.1)',
 	]
 		.filter( Boolean )
 		.join( ' ' );
 }
 
-const DEFAULT_PARTS = { inset: false, x: 0, y: 4, blur: 12, spread: 0, colour: 'rgba(0,0,0,0.1)' };
+const DEFAULT_PARTS = { inset: false, x: 0, y: 4, blur: 12, spread: 0 };
+const DEFAULT_COLOUR = 'rgba(0,0,0,0.1)';
 
 /**
  * @param {Object}   props
- * @param {string}   props.label    Field label.
- * @param {string}   [props.value]  Stored raw box-shadow CSS string (or theme slug).
- * @param {Function} props.onChange Receives the next raw box-shadow CSS string.
+ * @param {string}   props.label           Field label.
+ * @param {string}   [props.value]         Stored raw box-shadow SHAPE string (or theme slug).
+ * @param {Function} props.onChange        Receives the next raw box-shadow SHAPE string.
+ * @param {string}   [props.colour]        Current colour value — externally owned (SgsColourPanel row).
+ * @param {Function} props.onColourChange  Setter for the externally-owned colour attribute.
  */
-export default function ShadowControl( { label, value, onChange } ) {
+export default function ShadowControl( { label, value, onChange, colour, onColourChange } ) {
 	// `useSettings( 'shadow.presets' )` can resolve to EITHER a flat array
 	// (already-merged) OR WordPress's origin-keyed object
 	// `{ default: [...], theme: [...], custom: [...] }` (raw feature shape,
@@ -186,8 +197,8 @@ export default function ShadowControl( { label, value, onChange } ) {
 					</div>
 					<DesignTokenPicker
 						label={ __( 'Shadow colour', 'sgs-blocks' ) }
-						value={ parts.colour }
-						onChange={ ( v ) => updatePart( 'colour', v || DEFAULT_PARTS.colour ) }
+						value={ colour }
+						onChange={ ( v ) => onColourChange( v || DEFAULT_COLOUR ) }
 						enableAlpha
 					/>
 					<ToggleControl

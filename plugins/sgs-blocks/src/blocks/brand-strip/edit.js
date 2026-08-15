@@ -250,6 +250,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileBorderWidth,
 		tileBorderColour,
 		tileShadow,
+		tileShadowColour,
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
@@ -369,6 +370,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val } ),
+							},
+						],
+					},
+					tileShadow && {
+						key: 'tileShadow',
+						label: __( 'Tile shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileShadowColour,
+								onChange: ( val ) => setAttributes( { tileShadowColour: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},
@@ -612,6 +626,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ tileShadow }
 							onChange={ ( val ) =>
 								setAttributes( { tileShadow: val } )
+							}
+							colour={ tileShadowColour }
+							onColourChange={ ( val ) =>
+								setAttributes( { tileShadowColour: val } )
 							}
 						/>
 					</ToolsPanelItem>

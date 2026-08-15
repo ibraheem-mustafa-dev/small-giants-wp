@@ -82,15 +82,16 @@ $sgs_css_length = static function ( $value ) {
 // ---------------------------------------------------------------------------
 // 2. Extract LAYOUT/STYLING scalar attributes with defaults.
 // ---------------------------------------------------------------------------
-$sgs_card_style     = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
-$sgs_hover_effect   = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
-$sgs_icon_position  = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
-$sgs_hover_bg       = isset( $attributes['backgroundColourHover'] ) ? $attributes['backgroundColourHover'] : '';
-$sgs_hover_text     = isset( $attributes['textColourHover'] ) ? $attributes['textColourHover'] : '';
-$sgs_hover_border   = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
-$sgs_hover_scale    = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
-$sgs_hover_shadow   = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
-$sgs_hover_gray     = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
+$sgs_card_style          = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
+$sgs_hover_effect        = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
+$sgs_icon_position       = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
+$sgs_hover_bg            = isset( $attributes['backgroundColourHover'] ) ? $attributes['backgroundColourHover'] : '';
+$sgs_hover_text          = isset( $attributes['textColourHover'] ) ? $attributes['textColourHover'] : '';
+$sgs_hover_border        = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
+$sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
+$sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
+$sgs_hover_shadow_colour = isset( $attributes['shadowHoverColour'] ) ? $attributes['shadowHoverColour'] : '';
+$sgs_hover_gray          = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
 
 // Width — SGS custom scalars (kept-scalar single-value families, contract §C).
 // Base only — this block never declared maxWidthTablet/widthTablet.
@@ -137,11 +138,11 @@ $margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attribu
 // sgs/container's no-inline residual (proven D292) + sgs/process-steps.
 // ---------------------------------------------------------------------------
 
-$style_group      = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-$style_color_args = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
-$style_border_args = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
+$style_group           = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
+$style_color_args      = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
+$style_border_args     = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
 $style_typography_args = ! empty( $style_group['typography'] ) && is_array( $style_group['typography'] ) ? $style_group['typography'] : array();
-$style_shadow      = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
+$style_shadow          = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
 
 // Link colour (Elements API — supports.color.link:true stores it here, NOT
 // under style.color). Resolved via a second scoped style-engine call below
@@ -184,8 +185,7 @@ if ( $sgs_hover_border ) {
 	$sgs_hover_decls[] = 'border-color:' . sgs_colour_value( $sgs_hover_border );
 }
 
-$sgs_allowed_scales  = array( '1.02', '1.05', '1.1' );
-$sgs_allowed_shadows = array( 'subtle', 'raised', 'floating', 'glow' );
+$sgs_allowed_scales = array( '1.02', '1.05', '1.1' );
 
 // ---------------------------------------------------------------------------
 // 6. uid + root selector. uid is a CLASS (contract §B3 — this block declares
@@ -212,8 +212,9 @@ if ( $sgs_hover_scale && in_array( $sgs_hover_scale, $sgs_allowed_scales, true )
 	$sgs_wrapper_styles[] = '--sgs-hover-scale:' . esc_attr( $sgs_hover_scale );
 	$sgs_classes[]        = 'sgs-has-hover-scale';
 }
-if ( $sgs_hover_shadow && in_array( $sgs_hover_shadow, $sgs_allowed_shadows, true ) ) {
-	$sgs_wrapper_styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $sgs_hover_shadow ) . ')';
+$sgs_safe_hover_shadow = sgs_shadow_value_composed( $sgs_hover_shadow, $sgs_hover_shadow_colour );
+if ( '' !== $sgs_safe_hover_shadow ) {
+	$sgs_wrapper_styles[] = '--sgs-hover-shadow:' . $sgs_safe_hover_shadow;
 	$sgs_classes[]        = 'sgs-has-hover';
 }
 if ( $sgs_hover_gray ) {
@@ -314,8 +315,8 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	// Link colour (Elements API) — scoped to descendant links, reuses the
 	// engine's own 'color' compiler (resolves preset var refs identically).
 	if ( '' !== $style_link_colour ) {
-		$link_sel     = $root_sel . ' a:where(:not(.wp-element-button))';
-		$link_styles  = wp_style_engine_get_styles(
+		$link_sel    = $root_sel . ' a:where(:not(.wp-element-button))';
+		$link_styles = wp_style_engine_get_styles(
 			array( 'color' => array( 'text' => $style_link_colour ) ),
 			array( 'selector' => $link_sel )
 		);

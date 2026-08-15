@@ -297,6 +297,9 @@
 			"type": "string",
 			"default": ""
 		},
+		"tileShadowColour": {
+			"type": "string"
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""

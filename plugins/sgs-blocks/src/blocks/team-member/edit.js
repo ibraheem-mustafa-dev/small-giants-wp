@@ -41,7 +41,7 @@ import {
 } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed } from '../../utils';
 import { UnitControl } from '../../components/primitives';
 
 const CARD_STYLES = [
@@ -157,15 +157,16 @@ function boxShorthand( box, keys ) {
 // Editor preview style builder — desktop styles only; responsive tiers +
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
-	const { style, textColor, backgroundColor, maxWidth, cardShadow } = attributes;
+	const { style, textColor, backgroundColor, maxWidth, cardShadow, cardShadowColour } = attributes;
 	const wrapperStyle = {};
 
 	// Resting-state card shadow (FR-35-5 Task 4c) — render.php emits this as a
 	// custom-property VALUE (`--sgs-card-shadow`) on the root scoped rule,
 	// consumed by style.css's static shadow rule; never a real `box-shadow`
-	// declaration here (mirrors render.php step 6/12).
+	// declaration here (mirrors render.php step 6/12). Shape (`cardShadow`) +
+	// colour (`cardShadowColour`) are separate attrs since D621/D622.
 	if ( cardShadow ) {
-		wrapperStyle[ '--sgs-card-shadow' ] = resolveShadowPreview( cardShadow );
+		wrapperStyle[ '--sgs-card-shadow' ] = resolveShadowPreviewComposed( cardShadow, cardShadowColour );
 	}
 
 	const textPreview = style?.color?.text || ( textColor ? colourVar( textColor ) : '' );
@@ -232,6 +233,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		photoShape,
 		overlayHover,
 		cardShadow,
+		cardShadowColour,
+		shadowHover,
+		shadowHoverColour,
 		displayMode,
 		socialLinks,
 		paddingTablet,
@@ -329,6 +333,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					cardShadow && {
+						key: 'card-shadow',
+						label: __( 'Card shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardShadowColour,
+								onChange: ( val ) => setAttributes( { cardShadowColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: shadowHoverColour,
+								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			<InspectorControls>
@@ -378,6 +402,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						value={ cardShadow }
 						onChange={ ( val ) => setAttributes( { cardShadow: val } ) }
+						colour={ cardShadowColour }
+						onColourChange={ ( val ) => setAttributes( { cardShadowColour: val } ) }
+					/>
+					{ /* shadowHover — declared + read by render.php but restricted to a
+					   fixed subtle/raised/floating/glow preset ALLOWLIST with no editor
+					   control at all (same bug class as card-grid's pre-fix shadowHover).
+					   Fixed straight onto the target shape (D621/D622). */ }
+					<ShadowControl
+						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+						value={ shadowHover }
+						onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
+						colour={ shadowHoverColour }
+						onColourChange={ ( val ) => setAttributes( { shadowHoverColour: val } ) }
 					/>
 				</PanelBody>
 

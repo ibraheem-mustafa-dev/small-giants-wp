@@ -205,6 +205,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		transitionEasing,
 		scaleHover,
 		shadowHover,
+		shadowHoverColour,
 	} = attributes;
 
 	// Effective variant = this card's own explicit choice, else the parent
@@ -494,6 +495,20 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								},
 							],
 						},
+					shadowHover && {
+						key: 'shadowHover',
+						label: __( 'Hover shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: shadowHoverColour,
+								onChange: ( val ) =>
+									setAttributes( { shadowHoverColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			{ /* ── Settings tab (behaviour, content, structural choices) ── */ }
@@ -1138,6 +1153,10 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								value={ shadowHover }
 								onChange={ ( val ) =>
 									setAttributes( { shadowHover: val } )
+								}
+								colour={ shadowHoverColour }
+								onColourChange={ ( val ) =>
+									setAttributes( { shadowHoverColour: val } )
 								}
 							/>
 						</ToolsPanelItem>

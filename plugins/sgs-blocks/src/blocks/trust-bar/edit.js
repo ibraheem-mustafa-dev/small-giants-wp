@@ -10,9 +10,9 @@ import {
 	Notice,
 	BoxControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveResponsiveTier } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // "Responsive spacing" panels write to LEGACY FLAT attrs (contentBandPaddingTop,
@@ -284,9 +284,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconCircleBorderRadius,
 		iconCircleShadow,
+		iconCircleShadowColour,
 		badgeImageBorderRadius,
 		badgeImageSize,
 		badgeImageShadow,
+		badgeImageShadowColour,
 		badgeImageObjectFit,
 		textColour,
 		columns,
@@ -313,7 +315,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const circleRadiusValue = ( iconCircleBorderRadius && iconCircleBorderRadius !== '50%' )
 		? iconCircleBorderRadius
 		: undefined;
-	const circleShadowValue = resolveShadowPreview( iconCircleShadow );
+	const circleShadowValue = resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour );
 
 	// Grid preview (icon-circle only — text-only/image-badge always render
 	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,
@@ -368,6 +370,42 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D621/D622 — shadow colour split out of the legacy shape-only
+				iconCircleShadow/badgeImageShadow attrs into SgsColourPanel rows,
+				mounted first so they render at the top of the Styles tab. Scoped
+				to shadow only — the block's other colour controls (iconColour,
+				textColour, badge background) are pre-existing scattered
+				DesignTokenPicker rows, left untouched (out of scope here). */ }
+			<SgsColourPanel
+				rows={ [
+					badgeStyle === 'icon-circle' && iconCircleShadow && {
+						key: 'icon-circle-shadow',
+						label: __( 'Icon circle shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconCircleShadowColour,
+								onChange: ( val ) => setAttributes( { iconCircleShadowColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					badgeStyle === 'image-badge' && badgeImageShadow && {
+						key: 'badge-image-shadow',
+						label: __( 'Badge image shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: badgeImageShadowColour,
+								onChange: ( val ) => setAttributes( { badgeImageShadowColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 
 				{ /* ── Variant (behaviour: which badge mode renders) ─────────── */ }
@@ -686,6 +724,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
 							value={ iconCircleShadow }
 							onChange={ ( val ) => setAttributes( { iconCircleShadow: val } ) }
+							colour={ iconCircleShadowColour }
+							onColourChange={ ( val ) => setAttributes( { iconCircleShadowColour: val } ) }
 						/>
 						<DesignTokenPicker
 							label={ __( 'Icon colour', 'sgs-blocks' ) }
@@ -745,6 +785,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }
 							value={ badgeImageShadow }
 							onChange={ ( val ) => setAttributes( { badgeImageShadow: val } ) }
+							colour={ badgeImageShadowColour }
+							onColourChange={ ( val ) => setAttributes( { badgeImageShadowColour: val } ) }
 						/>
 					</PanelBody>
 				) }
@@ -904,7 +946,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												height: `${ badgeImageSize }px`,
 												objectFit: badgeImageObjectFit === 'cover' ? 'cover' : 'contain',
 												borderRadius: badgeImageBorderRadius || undefined,
-												boxShadow: resolveShadowPreview( badgeImageShadow ),
+												boxShadow: resolveShadowPreviewComposed( badgeImageShadow, badgeImageShadowColour ),
 											} }
 										/>
 									) }

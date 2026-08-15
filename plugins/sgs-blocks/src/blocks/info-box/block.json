@@ -191,6 +191,9 @@
 			"type": "string",
 			"default": ""
 		},
+		"shadowHoverColour": {
+			"type": "string"
+		},
 		"grayscaleHover": {
 			"type": "boolean",
 			"default": false

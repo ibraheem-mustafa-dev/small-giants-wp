@@ -368,6 +368,9 @@
 			"type": "string",
 			"default": ""
 		},
+		"shadowHoverColour": {
+			"type": "string"
+		},
 		"staggerDelay": {
 			"type": "number",
 			"default": 0
