@@ -105,6 +105,14 @@ but the prediction was simply not met — recorded honestly rather than quietly 
   `feat/universal-shadow-extension` mid-handoff. Its uncommitted work (7+ block `edit.js`/
   `render.php`, `ShadowControl.js`, `tokens.js`) is in the working tree — **not mine, not
   touched, do not commit it.** My work is all on `main`.
+- 📌 **ONE doc edit of mine is left UNCOMMITTED on purpose:
+  `plugins/sgs-blocks/CLAUDE.md`** (two Block Build Status rows — the trust-bar `badge-label`
+  and hero `split-media` manifest fixes from `0c287cf6`). Any commit touching a
+  `plugins/sgs-blocks/` path is pulled under the **git-level** F5 gate, which is red from the
+  shadow-extension DB state above. That gate honours no scoped token — only `--no-verify`, which
+  would switch off gitleaks, block-uniformity, cheat-gate and the visual-diff gate to land a
+  markdown table row. Not a trade worth making. **Commit it as-is once F6 is green** (the content
+  is finished and correct; the `.claude/` half already landed in `49e10671`).
 
 ## Open — ready to pick up
 
