@@ -117,7 +117,7 @@
 	},
 	"selectors": {
 		"root": ".wp-block-sgs-info-box",
-		"typography": ".sgs-info-box__heading"
+		"typography": ".wp-block-sgs-info-box"
 	},
 	"attributes": {
 		"mediaType": {

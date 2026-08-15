@@ -98,7 +98,7 @@
 	},
 	"selectors": {
 		"root": ".sgs-notice-banner",
-		"typography": ".sgs-notice-banner__text"
+		"typography": ".sgs-notice-banner"
 	},
 	"attributes": {
 		"icon": {
