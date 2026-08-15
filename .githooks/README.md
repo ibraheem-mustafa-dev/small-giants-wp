@@ -25,6 +25,43 @@ break with "Error loading block: Invalid parameter(s): attributes". Fix:
 build` in the plugin), re-stage, commit. (Uses `node.exe` so it runs even when
 the bare `node` shim is broken under nvm4w on Windows git-bash.)
 
+### Three visual-diff report types *(intent capture added 2026-08-15)*
+
+A passing report needs `verdict: PASS`, a matching `source_sha:`, and ONE of:
+
+| Field | Fits | Evidence |
+|---|---|---|
+| `first_paint_capture_passed: true` | Default — a change that could plausibly move rendered output elsewhere too | Before/after diff via `make-visual-diff-reports.py` + the tier-fixture capture pipeline |
+| `editor_capture_passed: true` | edit.js/editor.css-only changes (auto-detected, `check-editor-canvas-css.py`) | Editor-canvas capture |
+| `intent_capture_passed: true` | A change where "before" isn't meaningful — dead-code removal, a one-off value fix, a new isolated capability — and the real question is just "does the current state match what I intended?" | **One live capture, no before-state.** Always available; it's an author judgement call, not something a file-scope heuristic decides for you. |
+
+**Report shape for `intent_capture_passed`** (convention — the gate doesn't parse
+the body, same as the other two types):
+
+1. **Assertion(s)** — state what should be true about the current rendered output,
+   BEFORE measuring it.
+2. **Live result** — the actual measured value(s) against the live canary, one per
+   assertion.
+3. **Why before/after doesn't apply** — one sentence.
+4. The three frontmatter fields above (`source_sha` from `visual-report-sha.py`,
+   same as any other report type).
+
+Worked example: `reports/visual-diff/info-box-2026-08-15.md` — a dead CSS selector
+removal, where "before" was a non-rendering state and a diff against it couldn't
+prove anything a live check couldn't.
+
+### Scoped visual-diff bypass *(added 2026-08-15)*
+
+`SGS_VISUAL_GATE_SKIP=<block>[,<block>...]` + a mandatory
+`SGS_VISUAL_GATE_REASON="..."` skips ONLY the visual-diff gate, ONLY for the named
+block(s) — gitleaks, block-uniformity, the F5 gates, the wp-* pre-merge gate and
+Gate A all still run. `SKIP` without `REASON` fails closed (the block stays
+blocked). Every use is logged to `reports/visual-diff/manual-skips.log`, tracked
+in git for a permanent audit trail. Use this instead of `git commit --no-verify`
+when a change is genuinely visual but a capture genuinely isn't possible right
+now (no canary page for the block, sandbox down) — `--no-verify` turns off six
+unrelated working gates to skip one; this turns off only the one.
+
 ## `sgs-gates.sh` — the SGS commit gates *(added 2026-08-11, D564)*
 
 Everything the visual-diff gate does (plus its five auto-skip branches), the M1

@@ -33,6 +33,7 @@ NUL
 
 # WordPress
 *.log
+!reports/visual-diff/manual-skips.log
 wp-content/uploads/
 
 # Firecrawl scraping artefacts

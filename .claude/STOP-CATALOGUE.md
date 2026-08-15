@@ -186,6 +186,11 @@ points here. Neither ever silently drops a STOP.
   never reach for `--no-verify`** — here that would also have discarded gitleaks, the wp-* pre-merge
   gate, cheat-gate, F5 and F6, all of which were passing. A gate turned off to skip one check
   turns off the six it was not aimed at.
+  ⛑ **CORRECTED 2026-08-15.** If the block genuinely can't get a real capture right now, the
+  answer is no longer "argue past it" OR `--no-verify` — it's the scoped bypass:
+  `SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON="..." git commit ...` (skips ONLY the
+  visual-diff check for that block; gitleaks/cheat-gate/F5/F6/Gate A/wp-* pre-merge all still
+  run, and the skip is logged to `reports/visual-diff/manual-skips.log`). See `.githooks/README.md`.
 
 - **STOP-A-A-DOCUMENTED-RISK-CAN-BE-WRONG-ABOUT-ITS-OWN-DOM** — NEW 2026-07-30 (D424). Before
   testing a risk a comment describes, **verify the structural premise the risk rests on**.
@@ -990,6 +995,16 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
   visual-diff gate blocks any touch of a block's render.php/block.json/edit.js without a passing
   visual-diff report; its OWN message sanctions `--no-verify` for non-visual (logic/attr/meta)
   changes — use that, never fabricate a PASS report.
+  ⛑ **CORRECTED 2026-08-15 — the gate's message no longer sanctions `--no-verify` at all** (that
+  line discarded gitleaks/cheat-gate/F5/F6/Gate A/wp-* pre-merge along with the one check it was
+  aimed at). Two real answers now: (1) if the change is genuinely non-visual, check whether it
+  matches one of the five deterministic auto-skip detectors (`check-blockjson-metadata-only.py`,
+  `check-markup-neutral.py`, `check-editor-only.py`, `check-interaction-only-css.py`,
+  `check-token-rename-neutral.py`) — if it does, it's already exempt with no action needed; (2) if
+  it's a real visual change but a before/after capture isn't possible right now, write a report
+  with `intent_capture_passed: true` (single live capture vs a stated assertion — see
+  `.githooks/README.md`) or use `SGS_VISUAL_GATE_SKIP`/`SGS_VISUAL_GATE_REASON` (scoped, logged
+  bypass — same doc). Never fabricate a PASS report either way.
 - **STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT** — NEW 2026-07-22 (Track-1). A subagent
   (or you) declaring a leftover "irreducible / can't be lowered further" is a hypothesis — re-derive
   it from the tool/DB before banking it; the residue usually has a real cause.

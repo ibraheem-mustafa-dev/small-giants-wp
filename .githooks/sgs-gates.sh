@@ -223,10 +223,56 @@ if [ -n "$STAGED_BLOCK_SRC" ]; then
         if python "$REPO_ROOT/plugins/sgs-blocks/scripts/check-editor-canvas-css.py" "$block_name" >/dev/null 2>&1; then
             EDITOR_CANVAS_ONLY=1
         fi
+        # MANUAL SKIP (last resort, added 2026-08-15): none of the six deterministic
+        # auto-skip branches above are pattern-detectors for every case — sometimes
+        # a change IS visual and a real capture just isn't possible right now (no
+        # canary page for the block, sandbox down). The only escape used to be
+        # `git commit --no-verify`, which discards gitleaks, block-uniformity, the
+        # F5 gates, the wp-* pre-merge gate and Gate A too — turning off six working
+        # gates to skip a seventh, exactly the bad trade the markup-neutral branch
+        # above was already built to remove for its own case.
+        #
+        # SGS_VISUAL_GATE_SKIP="block-name[,block-name...]" + a mandatory
+        # SGS_VISUAL_GATE_REASON scope the bypass to ONLY this gate, ONLY the named
+        # block(s) — every other gate in the chain still runs. SKIP without REASON
+        # fails closed (falls through to the normal MISSING path) rather than
+        # allowing a silent bypass. Every use is appended to
+        # reports/visual-diff/manual-skips.log, which is tracked in git like the
+        # rest of this directory, so the bypass leaves a permanent, reviewable
+        # trail instead of vanishing when the shell closes.
+        MANUAL_SKIP=0
+        for _skip_name in $(printf '%s' "${SGS_VISUAL_GATE_SKIP:-}" | tr ',' ' '); do
+            [ "$_skip_name" = "$block_name" ] && MANUAL_SKIP=1
+        done
+        if [ "$MANUAL_SKIP" = "1" ]; then
+            if [ -z "${SGS_VISUAL_GATE_REASON:-}" ]; then
+                echo "   ✗ $block_name: SGS_VISUAL_GATE_SKIP set but SGS_VISUAL_GATE_REASON is empty — refusing silent bypass"
+            else
+                echo "   ⚠ $block_name: MANUAL SKIP — $SGS_VISUAL_GATE_REASON"
+                mkdir -p "$REPO_ROOT/reports/visual-diff"
+                printf '%s | %s | MANUAL SKIP | %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$block_name" "$SGS_VISUAL_GATE_REASON" >> "$REPO_ROOT/reports/visual-diff/manual-skips.log"
+                continue
+            fi
+        fi
         REPORT="$REPO_ROOT/reports/visual-diff/${block_name}-${TODAY}.md"
         CAPTURE_FIELD="first_paint_capture_passed: true"
         if [ "$EDITOR_CANVAS_ONLY" = "1" ] && [ -f "$REPORT" ] && grep -q "editor_capture_passed: true" "$REPORT"; then
             CAPTURE_FIELD="editor_capture_passed: true"
+        fi
+        # INTENT CAPTURE (added 2026-08-15): a third, always-available evidence
+        # type alongside first-paint diff and editor-canvas capture — a single
+        # LIVE capture of the current state checked against an explicitly stated
+        # assertion, no before-state needed. Unlike editor_capture_passed above,
+        # this is NOT gated behind a file-scope detector: whether a before/after
+        # diff is the right evidence for a given change is an author judgement
+        # call (same trust level the batch tool already extends to a human
+        # --known-dead/--removed-attr reason), not something a heuristic can
+        # decide. See .githooks/README.md for the required report shape and
+        # reports/visual-diff/info-box-2026-08-15.md for a worked example (a dead
+        # CSS selector removal, where "before" was a non-rendering state and a
+        # diff against it couldn't answer anything a live check couldn't).
+        if [ -f "$REPORT" ] && grep -q "intent_capture_passed: true" "$REPORT"; then
+            CAPTURE_FIELD="intent_capture_passed: true"
         fi
         if [ -f "$REPORT" ] && grep -q "verdict: PASS" "$REPORT" && grep -q "$CAPTURE_FIELD" "$REPORT"; then
             # CHANGE-KEYED, not date-keyed (added 2026-08-07). A PASS report used
@@ -259,9 +305,13 @@ if [ -n "$STAGED_BLOCK_SRC" ]; then
         echo "❌ COMMIT BLOCKED by SGS visual diff gate"
         echo "   No passing visual diff report for:$MISSING"
         echo "   Create: reports/visual-diff/<block>-${TODAY}.md"
-        echo "   Required fields: 'verdict: PASS' AND 'first_paint_capture_passed: true'"
-        echo "   (or, for edit.js/editor.css-only changes: 'editor_capture_passed: true' —"
-        echo "    see check-editor-canvas-css.py)"
+        echo "   Required fields: 'verdict: PASS' AND one of —"
+        echo "     'first_paint_capture_passed: true'  (before/after diff, the default)"
+        echo "     'editor_capture_passed: true'        (edit.js/editor.css-only — see"
+        echo "                                            check-editor-canvas-css.py)"
+        echo "     'intent_capture_passed: true'        (single live capture vs a stated"
+        echo "                                            assertion — no before-state needed;"
+        echo "                                            see .githooks/README.md)"
         echo "   Genuinely non-visual changes are auto-detected and skipped:"
         echo "     - block.json supports.sgs only  -> check-blockjson-metadata-only.py"
         echo "     - markup-neutral PHP            -> check-markup-neutral.py <block>"
@@ -270,6 +320,9 @@ if [ -n "$STAGED_BLOCK_SRC" ]; then
         echo "   Run that checker to see WHY this block did not qualify."
         echo "   --no-verify is NOT the answer: it also discards gitleaks, the wp-* pre-merge"
         echo "   gate, cheat-gate, F5 and F6, which are unrelated and were passing."
+        echo "   Genuinely can't capture right now? Use the scoped bypass instead — it skips"
+        echo "   ONLY this gate, ONLY the named block, and logs the reason:"
+        echo "     SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON=\"...\" git commit ..."
         echo ""
         SGS_EXIT=1
     fi

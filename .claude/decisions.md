@@ -1,5 +1,31 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D623 — Visual-diff gate: scoped bypass + intent-capture report type, replacing the `--no-verify` escape [ROUTINE]
+
+**2026-08-15.** The visual-diff commit gate's own blocked-message used to sanction
+`git commit --no-verify` as the documented escape when none of its five auto-skip detectors
+applied. That's a bad trade — `--no-verify` is a native git flag with no scope, so it discards
+gitleaks, block-uniformity, the F5 gates, the wp-* pre-merge gate, and Gate A along with the one
+check it was aimed at. Two additions in `.githooks/sgs-gates.sh` remove the need for it:
+
+1. **`SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON="..."`** — a scoped, reasoned bypass of
+   ONLY the visual-diff check for the named block(s); every other gate in the chain still runs.
+   `SKIP` without `REASON` fails closed. Every use is appended to
+   `reports/visual-diff/manual-skips.log` (tracked in git) for a permanent audit trail.
+2. **`intent_capture_passed: true`** — a third accepted report type alongside
+   `first_paint_capture_passed`/`editor_capture_passed`. For changes where "before" isn't
+   meaningful (dead-code removal, a one-off corrective fix, an isolated new capability), the
+   report states an explicit assertion and checks ONE live capture against it — no fixture page,
+   no two-pass rebuild via `make-visual-diff-reports.py`. Always available (author judgement, not
+   a file-scope heuristic), unlike `editor_capture_passed`.
+
+Both are additive — no change to `make-visual-diff-reports.py`, `visual-report-sha.py`, or the
+five existing auto-skip detectors. Verified end-to-end against the real hook (not a simulation):
+valid skip/valid intent report accepted, missing reason / stale sha / no report all still block.
+Corrected two now-stale STOP-CATALOGUE entries that cited the old `--no-verify` sanction
+(STOP-A-A-NEW-ATTRIBUTE.../STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC) rather than deleting them,
+per D101. Full design: `.githooks/README.md`.
+
 ## D622 — Colour placement follows the EXISTING D533/D537 resolver; conformance gate promoted [ROUTINE]
 
 **2026-08-15.** Two councils (4 seats on colour placement, 4 branches on ruleset determinism/work/UX/

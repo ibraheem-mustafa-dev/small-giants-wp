@@ -1,0 +1,3 @@
+# Audit log for SGS_VISUAL_GATE_SKIP bypasses of the visual-diff commit gate.
+# Format: timestamp | block-name | MANUAL SKIP | reason
+# Appended automatically by .githooks/sgs-gates.sh — do not hand-edit entries.
