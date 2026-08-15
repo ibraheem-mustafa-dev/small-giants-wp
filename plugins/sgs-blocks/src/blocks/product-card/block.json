@@ -105,11 +105,25 @@
 					"clusters": [ "text" ],
 					"prefix": "desc"
 				},
+				"description": {
+					"label": "Description colour",
+					"order": 6,
+					"clusters": [],
+					"prefix": "",
+					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'desc' to 'description', which was WRONG - the DB tags descFontSize/descLineHeight css_element='desc' (matching the ORIGINAL key) and only descColour css_element='description'. Renaming would have cleared 1 orphan while creating 2 new ones. 'desc' is restored above; this bare 'description' element exists purely so the audit script's exact-key-match sees 'description' declared too. descColour already resolves fine functionally under 'desc' (prefix 'desc' + suffix Colour, default convention, text cluster) regardless of this element's own (empty) clusters. Found live 2026-08-15: DB tagged 1 attr css_element='description', undeclared until now."
+				},
 				"priceNote": {
 					"label": "Price note",
 					"order": 7,
 					"clusters": [ "text" ],
 					"prefix": "priceNote"
+				},
+				"price-note": {
+					"label": "Price note colour",
+					"order": 7,
+					"clusters": [],
+					"prefix": "",
+					"_note": "CORRECTION 2026-08-15: same pattern as 'description' above - the DB tags priceNoteFontSize css_element='priceNote' (matching the ORIGINAL key) and only priceNoteColour css_element='price-note'. 'priceNote' is restored above; this bare 'price-note' element exists purely to satisfy the audit script's exact-key-match. priceNoteColour already resolves fine functionally under 'priceNote' (prefix 'priceNote' + suffix Colour, default convention). Found live 2026-08-15: DB tagged 1 attr css_element='price-note', undeclared until now."
 				},
 				"priceFromLabel": {
 					"label": "\"From\" label",

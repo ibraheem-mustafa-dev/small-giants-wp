@@ -108,11 +108,11 @@
 					},
 					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto."
 				},
-				"card-image": {
+				"image": {
 					"label": "Post image",
 					"order": 3,
 					"clusters": [],
-					"_note": "aspectRatio/imageSize/showImage/imageZoomHover govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it."
+					"_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling for imageZoomHover (transform) - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage/imageZoomHover govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it."
 				},
 				"title": {
 					"label": "Post title",
@@ -162,6 +162,17 @@
 					],
 					"prefix": "readMore",
 					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style."
+				},
+				"inner": {
+					"label": "Scroll track",
+					"layer": "GRID",
+					"order": 9,
+					"clusters": [],
+					"prefix": "",
+					"attrMap": {
+						"css:grid-template-columns": "columns"
+					},
+					"_note": "The scroll/grid track (.sgs-post-grid__inner, render.php line 331) - the element that actually scrolls in carousel mode and carries the real grid-template-columns (render.php line 509-536), distinct from the 'grid' (root) element above. columns is claimed via explicit attrMap rather than declaring 'layout' in clusters: a first draft used clusters:[\"layout\"] with layer:\"GRID\", which reached the SAME bare (no-prefix) arrangement members the 'grid' element also reaches (both bare-prefix, both layer OUTER/GRID) and produced 3 CONTESTED findings - including 'order', which on this block is the WP_Query sort-order attribute (asc/desc), nothing to do with CSS order, a coincidental bare-name collision this element's clusters declaration would otherwise have manufactured. clusters:[] + explicit attrMap avoids all of it while still claiming columns cleanly. Found live 2026-08-15: DB tagged 1 attr css_element='inner', undeclared until now."
 				}
 			},
 			"fx": {
@@ -236,7 +247,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "30px"}
@@ -407,15 +418,15 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""

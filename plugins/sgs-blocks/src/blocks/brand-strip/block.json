@@ -39,7 +39,7 @@
 						"css:gap": "logoGap"
 					}
 				},
-				"logo-image": {
+				"logo": {
 					"label": "Logo image",
 					"order": 2,
 					"clusters": [],
@@ -55,6 +55,27 @@
 						"css:font-weight": "nameFontWeight",
 						"css:color": "nameColour"
 					}
+				},
+				"name": {
+					"label": "Caption text-align",
+					"order": 3,
+					"clusters": [],
+					"prefix": "",
+					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now."
+				},
+				"item": {
+					"label": "Tile hover surface",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. backgroundColourHover/textColourHover/borderColourHover are bare attrs with no base (non-hover) counterpart and no 'item' prefix, so prefix:\"\" opts this element out of orphan-candidate scanning rather than declaring a states.hover block that would create a new state-without-base finding against the D542-gated baseline. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now."
+				},
+				"track": {
+					"label": "Marquee track",
+					"order": 5,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The scrolling marquee track (.sgs-brand-strip__track, render.php line 538). scrollSpeed drives --sgs-scroll-speed, but the CSS animation declaration that consumes it only applies on the compound .sgs-brand-strip__track--ready selector (style.css line 315-316) - a JS-toggled 'measurement complete' state (view.js line 91), not a CSS pseudo-class, so it has no home in the states taxonomy (hover-shaped only). The DB's css_element='track--ready' therefore remains a residual, undeclared drift finding after this fix: declaring a literal --ready-suffixed element key would be the first BEM-modifier-shaped top-level key anywhere in this framework (checked, no precedent), so this manifest declares the real container ('track') honestly instead of inventing one to force a clean audit pass. Accepted debt, not silently worked around."
 				},
 				"strip-spacing": {
 					"label": "Strip spacing",

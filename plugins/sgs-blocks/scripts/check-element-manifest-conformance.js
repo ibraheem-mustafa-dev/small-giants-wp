@@ -81,6 +81,7 @@ const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
 const CLUSTER_SETS_PATH = path.join( __dirname, 'consistency', 'cluster-member-sets.json' );
 const ATTR_ROLE_MAP_PATH = path.join( __dirname, 'consistency', 'attr-role-map.json' );
+const BASELINE_PATH = path.join( __dirname, 'element-manifest-baseline.json' );
 
 // ---------------------------------------------------------------------------
 // ORPHAN TRIAGE (Bean, 2026-07-21) — split the single ORPHAN total into
@@ -738,7 +739,78 @@ function main() {
 		printHuman( meta, findings );
 	}
 
-	process.exitCode = 0; // WARN-ONLY — promotion to a hard gate is a later rollout step
+	// -----------------------------------------------------------------------
+	// GATE MODE (--check) — promoted from WARN-ONLY 2026-08-15.
+	//
+	// ⛔ WHAT THIS DELIBERATELY DOES **NOT** GATE ON: `total_gap` (3363 live).
+	// A "GAP" here means an element's declared cluster names a CSS property that
+	// the element has no attribute for — e.g. a container's `fill` cluster names
+	// `css:object-fit`, which a container has no business exposing. That is a
+	// COVERAGE measure, not a defect count. Gating on it would fail every build
+	// forever and would be measuring the wrong thing entirely. An earlier
+	// analysis proposed "just stop hardcoding process.exitCode to 0" — doing that
+	// literally would have red-lit the build on 3363 non-defects.
+	//
+	// WHAT IT DOES GATE ON — the four metrics that are genuine defects:
+	//   orphan_unclassified   an attribute nothing can place at all (live: 0)
+	//   orphan_role_map_stale the role map is out of date vs the DB   (live: 0)
+	//   orphan_style_defect   a real placement defect                 (live: 15)
+	//   total_state_without_base  a hover/state attr with no resting twin (live: 1)
+	//
+	// The first two gate at ZERO today. The last two carry a baseline of their
+	// current values, because this project's own doctrine is never to gate on the
+	// introducing run — the baseline may only ever go DOWN. Lower it as the debt
+	// clears; a rise fails the build.
+	if ( process.argv.includes( '--check' ) ) {
+		const baseline = loadJson( BASELINE_PATH, null ) || {
+			orphan_style_defect: 0,
+			total_state_without_base: 0,
+		};
+		const breaches = [];
+		if ( meta.orphan_unclassified > 0 ) {
+			breaches.push(
+				`orphan_unclassified=${ meta.orphan_unclassified } (must be 0 — an attribute nothing can place)`
+			);
+		}
+		if ( meta.orphan_role_map_stale > 0 ) {
+			breaches.push(
+				`orphan_role_map_stale=${ meta.orphan_role_map_stale } (must be 0 — regenerate with ` +
+					'python plugins/sgs-blocks/scripts/generate-attr-role-map.py)'
+			);
+		}
+		if ( meta.orphan_style_defect > baseline.orphan_style_defect ) {
+			breaches.push(
+				`orphan_style_defect=${ meta.orphan_style_defect } exceeds baseline ` +
+					`${ baseline.orphan_style_defect }`
+			);
+		}
+		if ( meta.total_state_without_base > baseline.total_state_without_base ) {
+			breaches.push(
+				`total_state_without_base=${ meta.total_state_without_base } exceeds baseline ` +
+					`${ baseline.total_state_without_base }`
+			);
+		}
+		if ( breaches.length ) {
+			process.stderr.write(
+				'\n[check-element-manifest-conformance] GATE FAILED:\n  - ' +
+					breaches.join( '\n  - ' ) +
+					'\n\nFix the regression, or — if the new finding is genuinely accepted — lower/raise the\n' +
+					`baseline in ${ BASELINE_PATH } WITH a written reason. Never raise it silently.\n`
+			);
+			process.exitCode = 1;
+			return;
+		}
+		process.stdout.write(
+			'[check-element-manifest-conformance] GATE PASS ' +
+				`(style-defect ${ meta.orphan_style_defect }/${ baseline.orphan_style_defect }, ` +
+				`state-without-base ${ meta.total_state_without_base }/${ baseline.total_state_without_base }, ` +
+				'unclassified 0, role-map-stale 0)\n'
+		);
+		process.exitCode = 0;
+		return;
+	}
+
+	process.exitCode = 0; // survey mode stays advisory by design
 }
 
 main();

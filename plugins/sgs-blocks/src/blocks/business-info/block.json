@@ -243,6 +243,13 @@
 						"css:color": "iconColour"
 					},
 					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member."
+				},
+				"link": {
+					"label": "Link",
+					"order": 5,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types (render.php:118,138,319). Added 2026-08-15 — this attribute had no manifest home at all, causing an undeclared-element orphan. `linkHoverColour` is the block's only link-colour attribute (confirmed via DB query — no resting `linkColour` exists): declaring it under `states.hover` was tried first but rejected — FR-35-5's STATE_WITHOUT_BASE check runs independent of `clusters`, so a hover-only colour with no resting counterpart always trips it, and this project's baseline may only ever go DOWN, never up for a genuinely-accepted new instance (unlike sgs/post-grid's pre-existing, already-baselined case). `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery."
 				}
 			}
 		}

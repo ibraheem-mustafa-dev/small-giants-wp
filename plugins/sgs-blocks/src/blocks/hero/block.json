@@ -135,6 +135,7 @@
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
+						"css:align-items": "alignItems",
 						"css:justify-items": "justifyItems",
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
@@ -166,7 +167,10 @@
 						"layout"
 					],
 					"prefix": "content",
-					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding)."
+					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding). css:background-image is explicitly attrMapped to contentBackgroundGradientFrom because the default {prefix}{suffix} convention has no 'BackgroundGradientFrom' candidate (only 'BackgroundImage'/'Overlay*' suffixes exist for this member) — found live 2026-08-15 during element-manifest-drift triage. contentBackgroundGradientTo remains an accepted orphan (one attrMap entry claims one attr per member; there is no sibling mechanism for a second colour stop) — see scripts/element-manifest-baseline.json.",
+					"attrMap": {
+						"css:background-image": "contentBackgroundGradientFrom"
+					}
 				},
 				"media": {
 					"label": "Media column",
@@ -239,6 +243,45 @@
 					"order": 9,
 					"clusters": [],
 					"_note": "CTAs render via InnerBlocks (sgs/multi-button > sgs/button children, FR-22-6) — no scalar cta* content/style attrs remain on this block, so nothing to cluster-map here."
+				},
+				"overlay": {
+					"label": "Overlay",
+					"layer": "OUTER",
+					"order": 10,
+					"clusters": [],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "backgroundOverlayColour",
+						"css:background-image": "overlayGradientFrom"
+					},
+					"_note": "The decorative dimming overlay layered over the section background (`.sgs-hero__overlay`, a sibling <span> — render.php ~line 992-1000). Distinct from the wrapper's own background and from the split-media's own media-overlay below. overlayGradientAngle/overlayGradientTo feed the same linear-gradient() shorthand as overlayGradientFrom — no separate cluster member exists for a second colour stop, so they stay honest gaps. `clusters: []` (revised 2026-08-15, first draft declared 'fill' and that recreated 15 CONTESTED findings against `wrapper`, which ALSO reaches the same bare fill-cluster members with no prefix — clusters=[] plus the explicit attrMap above still claims the two mapped attrs cleanly via placement-reach's TIER-1/authoritative path, with zero collision risk from the unmapped fill members). `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 4 attrs css_element='overlay', undeclared until now."
+				},
+				"media-overlay": {
+					"label": "Media overlay",
+					"layer": "GRID_AREA",
+					"order": 11,
+					"clusters": [],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "mediaOverlayColour",
+						"css:background-image": "mediaOverlayGradientFrom"
+					},
+					"_note": "A second decorative overlay layered on top of the split-media column only (`.sgs-hero__media-overlay`, render.php ~line 1170) — separate from the section-level `overlay` element above; mirrors its shape 1:1 but scoped to the foreground media instead of the section background. mediaOverlayGradientAngle/mediaOverlayGradientTo feed the same gradient shorthand as mediaOverlayGradientFrom, same honest-gap reasoning as `overlay`. `clusters: []`, same CONTESTED-avoidance rationale as `overlay` above. `prefix: \"\"` opt-out, same rationale. Found live 2026-08-15: DB tagged 4 attrs css_element='media-overlay', undeclared until now."
+				},
+				"split-image": {
+					"label": "Split image",
+					"layer": "GRID_AREA",
+					"order": 12,
+					"clusters": [],
+					"prefix": "",
+					"attrMap": {
+						"css:width": "imageWidth",
+						"css:height": "imageHeight",
+						"css:border-radius": "imageBorderRadius",
+						"css:padding": "imagePadding",
+						"css:object-position": "imageObjectPositionTablet"
+					},
+					"_note": "The rendered split-media image node itself (`.sgs-hero__split-image`, nested inside the `media` grid-area's wrapper div — render.php ~line 1129-625). imageWidth/imageHeight/imageBorderRadius/imagePadding (and their Tablet/Mobile siblings) all target this node directly, not the `.sgs-hero__media` wrapper div. Ground-truth check (render.php lines 560-625) also shows imageObjectFit/imageObjectPosition(desktop)/imageBorderColour/imageBorderStyle/imageBorderWidth painting on this SAME node, yet the DB currently tags those css_element='media' — that is a separate, pre-existing DB-side inconsistency (both actually paint on split-image per render.php) left untouched here: fixing it needs a DB write, which this manifest-only fix cannot do, and 'media' is already a declared element so it produces no orphan finding. `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 11 attrs css_element='split-image', undeclared until now."
 				}
 			}
 		}

@@ -110,6 +110,24 @@
 						"css:background-color": "captionBgColour"
 					},
 					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour)."
+				},
+				"item": {
+					"label": "Grid item",
+					"layer": "GRID_AREA",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"attrMap": {
+						"css:aspect-ratio": "aspectRatio"
+					},
+					"_note": "The per-image grid cell (.sgs-gallery__item, render.php ~line 455/506) - distinct from the image element (the <img> itself) and img-wrap below. aspectRatio is claimed via explicit attrMap rather than declaring 'layout' in clusters: a first draft used clusters:[\"layout\"], which reached the SAME bare (no-prefix) cluster members as the 'grid' element (also bare-prefix) and produced a CONTESTED finding on aspectRatio itself, plus risked colliding on other bare layout members this block happens to declare. clusters:[] + explicit attrMap avoids the collision entirely while still claiming aspectRatio cleanly (placement-reach's attrMap/member-owner path is independent of the clusters list). shadowHover is a HOVER-ONLY box-shadow with no resting-state twin (no base 'shadow' attribute exists on this block) - deliberately left unclustered rather than declared as a states.hover entry, which would create a NEW state-without-base finding (the framework's baseline currently accepts exactly one such case, sgs/post-grid, and gates against any rise). prefix:\"\" additionally opts this element out of orphan-candidate scanning so shadowHover is reported honestly as an accepted gap. Found live 2026-08-15: DB tagged 2 attrs css_element='item', undeclared until now."
+				},
+				"img-wrap": {
+					"label": "Image wrapper",
+					"order": 5,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The wrapper around the rendered <img> inside each grid item (.sgs-gallery__img-wrap, render.php ~line 467/508) - carries the hover-reveal overlay. overlayColourHover is HOVER-ONLY (no resting overlayColour attribute exists on this block) so it is deliberately left unclustered rather than declared via states.hover, which would manufacture a new state-without-base finding against the D542-gated baseline (currently exactly 1, sgs/post-grid). prefix:\"\" opts this element out of orphan-candidate scanning so the attribute is reported honestly as a gap, not force-claimed. Found live 2026-08-15: DB tagged 1 attr css_element='img-wrap', undeclared until now."
 				}
 			}
 		}
@@ -140,7 +158,7 @@
 		"columns": {
 			"type": "object",
 			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
-		},
+		},
 		"gap": {
 			"type": "object",
 			"default": {"desktop": "16px"},
@@ -257,11 +275,11 @@
 		"gridTemplateColumns": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridTemplateRows": {
 			"type": "object",
 			"default": {}
-		},
+		},
 		"gridAutoRows": {
 			"type": "string",
 			"default": ""

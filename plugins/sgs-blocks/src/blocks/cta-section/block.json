@@ -107,6 +107,7 @@
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
+						"css:align-items": "alignItems",
 						"css:justify-items": "justifyItems",
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
@@ -147,6 +148,15 @@
 					"order": 9,
 					"clusters": [],
 					"_note": "Background image/video (backgroundImage*/backgroundMedia/bgVideo*), background SVG (bgSvg*), overlay gradient/colour (overlayGradient*/backgroundOverlay*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters."
+				},
+				"overlay": {
+					"label": "Background image overlay",
+					"order": 10,
+					"clusters": [],
+					"attrMap": {
+						"css:opacity": "backgroundImageOpacity"
+					},
+					"_note": "The `<span class=\"sgs-cta-section__overlay\">` scrim rendered over the background image (render.php:338-339, `--sgs-cta-overlay-opacity`). Added 2026-08-15 — no manifest element previously covered it. `css:opacity`'s `BackgroundImageOpacity` suffix (fill cluster, widened D561 2026-08-11 naming this exact attribute as the target) already anticipated this attribute but no element existed to carry it; mapped explicitly rather than via the default `{prefix}Suffix` convention since this element has no natural prefix of its own (`background` belongs to the wrapper's own background-image controls, not this scrim)."
 				}
 			}
 		},

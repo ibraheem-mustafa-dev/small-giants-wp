@@ -871,6 +871,76 @@ def _top_level_vars(value: str) -> set[str]:
 
 
 _BEM_ELEMENT_RE = re.compile(r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)", re.IGNORECASE)
+_BEM_CURRENT_MODIFIER_RE = re.compile(
+    r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)--current\b", re.IGNORECASE
+)
+_BEM_ANY_MODIFIER_RE = re.compile(
+    r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)--([a-z0-9-]+)", re.IGNORECASE
+)
+
+
+def _bem_modifier_siblings(css_src: str, block_short_slug: str) -> "dict[str, set[str]]":
+    """For THIS block's own BEM elements, return element -> the set of every
+    `--modifier` suffix (lowercased) seen anywhere in the stylesheet for that
+    element, e.g. breadcrumbs -> {'item': {'current'}}, buybox ->
+    {'price': {'current', 'regular', 'pct-off'}}. Feeds `_bem_current_state`'s
+    state-vs-variant disambiguation (2026-08-15, Class 4 fix-of-the-fix) — see
+    that function's docstring for why the sibling set is the signal.
+    """
+    out: "dict[str, set[str]]" = defaultdict(set)
+    for m in _BEM_ANY_MODIFIER_RE.finditer(css_src):
+        if m.group(1).lower() != block_short_slug.lower():
+            continue
+        out[m.group(2).lower()].add(m.group(3).lower())
+    return out
+
+
+def _bem_current_state(
+    selector: str,
+    block_short_slug: str,
+    sibling_modifiers: "dict[str, set[str]]",
+) -> "str | None":
+    """A BEM `--current` modifier expresses the manifest 'selected' state — the
+    same word nav-menu already uses for current-page (`itemColourHover` etc.
+    resolve to `css_state='selected'`) — ONLY when `current` is the SOLE modifier
+    this stylesheet ever pairs with that element. Added 2026-08-15 as the fix for
+    the regression the same day's Class 4 fix (bare `--modifier` stripped from
+    the captured element) caused: `sgs/breadcrumbs.linkColour` and
+    `.currentColour` both derived `css_element='item'` with no state, an
+    identical-on-every-axis collision the column-first resolver can't route.
+
+    PROVEN this element's `current` really is a state, not a label: breadcrumbs'
+    `render.php:342` emits `aria-current="page"` on the exact markup
+    `.sgs-breadcrumbs__item--current` renders; `sgs/card-grid`/`sgs/post-grid`
+    literally group `.page-btn--current` with `.page-btn[aria-current="page"]`
+    in the SAME selector; `sgs/post-grid`'s `view.js:208` toggles the class from
+    an `isActive` boolean. All three: `item`/`page-btn` carries NO modifier other
+    than `current` anywhere in that block's stylesheet.
+
+    PROVEN the opposite for two other live blocks — `current` there is a VALUE
+    VARIANT, not a state, and must NOT collect 'selected': `sgs/buybox`'s
+    `.buybox__price--current` sits alongside `.buybox__price--regular` and
+    `.buybox__price--pct-off` (the live selling price vs the struck-through
+    original — a display choice, never an interaction/selection state), and
+    `sgs/product-card` has the identical `.price--current` / `.price--regular`
+    pair. Tagging either as `css_state='selected'` would fabricate a selection
+    concept on a plain price display.
+
+    So the rule is the SIBLING-MODIFIER SET for that element across the whole
+    stylesheet, not the word "current" alone: a lone `current` -> state
+    'selected'; `current` plus any other modifier on the same element -> left
+    unmapped (falls through exactly as before this fix — base element only, no
+    state — the correct behaviour for a variant). Universal (R-31-9): every
+    block with this shape is classified by the same rule, no per-block carve-out.
+    """
+    for m in _BEM_CURRENT_MODIFIER_RE.finditer(selector):
+        if m.group(1).lower() != block_short_slug.lower():
+            continue
+        element = m.group(2).lower()
+        siblings = sibling_modifiers.get(element, set())
+        if siblings <= {"current"}:
+            return "selected"
+    return None
 
 
 def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "str | None":
@@ -893,6 +963,24 @@ def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "
     ambiguous, so returns None rather than guessing which part the shared property
     belongs to; checked live and this shape does not occur for the collisions this
     task targets).
+
+    A BEM MODIFIER is never an ELEMENT (2026-08-15, Class 4 fix) — `__el--modifier`
+    names a variant of `el`, not a new element, and this codebase's own convention
+    always separates them with a double hyphen (`.sgs-breadcrumbs__item--current`,
+    `.sgs-card-grid--overlay-slide`, `.sgs-product-card__cta--primary`), never
+    reusing `--` inside a bare element/modifier name (those use a SINGLE hyphen:
+    `card-tile`, `card-title`, `image-badge`). So the captured element run is cut
+    at its first `--`, which fixes the exact live regression this fix surfaced:
+    `_BEM_ELEMENT_RE`'s greedy `[a-z0-9-]+` swallowed `cta--primary` whole for
+    `sgs/product-card`'s `ctaFontSize`/`ctaBorderStyle`/etc (fed by the Class 2
+    Shape D fix's new selector-arg evidence, `.sgs-product-card__cta--primary`) —
+    proven live before this line existed: it returned `element='cta--primary'`,
+    which would have OUTRANKED the clean prefix-convention element `cta` for every
+    attr not covered by an explicit attrMap entry. Confirmed no `block_attributes`
+    consumer (`converter/db/db_lookup.py`) ever expects a compound `el--modifier`
+    value — every declared manifest element key in every block.json is a bare
+    name — so the base element is the correct value to store, not a raw truncation
+    the audit detector would then need to strip again downstream.
     """
     first_part = selector.split(",")[0]
     matches = [
@@ -901,7 +989,8 @@ def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "
     ]
     if not matches:
         return None
-    return matches[-1].group(2)
+    element = matches[-1].group(2)
+    return element.split("--", 1)[0]
 
 
 def _custom_props_consumed(
@@ -986,8 +1075,11 @@ def _custom_props_consumed(
     shorthand_slot: dict[tuple[str, str], str] = {}
     state_of: dict[tuple[str, str], str] = {}
     element_of: dict[tuple[str, str], "set[str]"] = defaultdict(set)
+    sibling_modifiers = _bem_modifier_siblings(css_src, block_short_slug) if block_short_slug else {}
     for selector, body in _iter_rule_blocks(css_src):
         state = _derive_state_from_selector(selector)
+        if state is None and block_short_slug:
+            state = _bem_current_state(selector, block_short_slug, sibling_modifiers)
         element = _derive_bem_element_from_selector(selector, block_short_slug) if block_short_slug else None
         for m in _DECL_RE.finditer(body):
             prop = m.group("prop").strip().lower()
@@ -1302,30 +1394,123 @@ _HELPER_SUFFIX_PROPS: dict[str, dict[str, str]] = {
 }
 
 _HELPER_CALL_RE = {
-    helper: re.compile(
-        re.escape(helper) + r"\(\s*\$\w+\s*,\s*'([^']*)'\s*,", re.DOTALL
-    )
+    helper: re.compile(re.escape(helper) + r"\s*\(")
     for helper in _HELPER_SUFFIX_PROPS
 }
 
 
+def _split_balanced_call_args(php_src: str, call_open_paren_end: int) -> "list[str] | None":
+    """From the position just AFTER a call's opening `(`, walk to the matching
+    closing `)` and return the top-level argument fragments as raw text — a comma
+    inside a quoted string (PHP allows a CSS selector GROUP like
+    `'.a, .b'` as one string literal) or inside a nested `(...)` is NOT a split
+    point. Returns None if the call is unterminated within the source (malformed
+    input, never guessed at).
+
+    Both known helpers (`sgs_typography_css_rule`, `sgs_button_element_style_css`)
+    take exactly 3 positional args — `($attrs, $prefix, $selector)` — so this
+    generic PHP-argument splitter (not a helper-specific regex) is reusable for
+    any future helper with the same call shape.
+    """
+    depth = 1
+    i = call_open_paren_end
+    n = len(php_src)
+    args: list[str] = []
+    current: list[str] = []
+    quote: "str | None" = None
+    while i < n and depth > 0:
+        ch = php_src[i]
+        if quote:
+            current.append(ch)
+            if ch == "\\" and i + 1 < n:
+                current.append(php_src[i + 1])
+                i += 2
+                continue
+            if ch == quote:
+                quote = None
+            i += 1
+            continue
+        if ch in ("'", '"'):
+            quote = ch
+            current.append(ch)
+            i += 1
+            continue
+        if ch == "(":
+            depth += 1
+            current.append(ch)
+            i += 1
+            continue
+        if ch == ")":
+            depth -= 1
+            if depth == 0:
+                args.append("".join(current))
+                return args
+            current.append(ch)
+            i += 1
+            continue
+        if ch == "," and depth == 1:
+            args.append("".join(current))
+            current = []
+            i += 1
+            continue
+        current.append(ch)
+        i += 1
+    return None  # unterminated call — malformed input, not a silent guess
+
+
 def _attrs_from_helper_calls(
-    php_src: str, attr_names: "set[str]"
-) -> dict[str, set[str]]:
+    php_src: str, attr_names: "set[str]", block_short_slug: str = ""
+) -> "tuple[dict[str, set[str]], dict[str, set[str]]]":
     """Shape D: find every call site of a known shared style-emitter helper with a
     LITERAL string prefix, and map each `{prefix}{Suffix}` attribute the helper reads
     to the real CSS property it emits. Only literal prefixes are resolved (the codebase
     exclusively uses literal prefixes at every call site checked — a variable prefix
-    would be a documented, reported gap, not a silent guess)."""
-    out: dict[str, set[str]] = defaultdict(set)
+    would be a documented, reported gap, not a silent guess).
+
+    Also returns `elements`: attr -> SET of BEM element names found in the call's
+    THIRD argument (the selector the helper scopes its `<style>` rule to), reusing
+    `_derive_bem_element_from_selector` on that argument's raw text — a literal
+    concatenation like `'.' . $uid . ' .sgs-card-grid__title'` still contains the
+    real `sgs-card-grid__title` substring the regex matches, dots and quotes
+    notwithstanding (2026-08-15, Class 2 fix — closes the exact gap that made
+    sgs/card-grid titleFontSize/subtitleFontSize resolve to the manifest's own
+    element KEY `card-title`/`card-subtitle` instead of the real BEM element
+    `title`/`subtitle`: this Shape D path fed `_attrs_from_helper_calls` REAL
+    css_property evidence but never fed ANY css_element evidence at all, so
+    precedence fell all the way through BEM-observation to the weak prefix-
+    convention guess — the CSS/PHP-string paths [`_custom_props_consumed`,
+    `_attr_to_raw_props_php`] never had this gap, which is why
+    sgs/breadcrumbs.linkColour already correctly resolves to 'item' via direct
+    PHP-string concatenation. A selector arg that is a bare `$variable` (most
+    other call sites — counter/icon-list/nav-menu/option-picker/trust-bar/
+    whatsapp-cta) contains no `sgs-{slug}__{el}` substring and correctly yields
+    no element evidence — an honest gap, not a guess).
+    """
+    props: dict[str, set[str]] = defaultdict(set)
+    elements: dict[str, set[str]] = defaultdict(set)
     for helper, suffix_map in _HELPER_SUFFIX_PROPS.items():
         for m in _HELPER_CALL_RE[helper].finditer(php_src):
-            prefix = m.group(1)
+            call_args = _split_balanced_call_args(php_src, m.end())
+            if not call_args or len(call_args) < 3:
+                continue
+            prefix_arg = call_args[1].strip()
+            prefix_m = re.match(r"^'([^']*)'$", prefix_arg)
+            if not prefix_m:
+                continue  # non-literal prefix — documented gap, never guessed
+            prefix = prefix_m.group(1)
+            selector_arg = call_args[2]
+            bem_element = (
+                _derive_bem_element_from_selector(selector_arg, block_short_slug)
+                if block_short_slug
+                else None
+            )
             for suffix, prop in suffix_map.items():
                 attr = prefix + suffix if prefix else (suffix[0].lower() + suffix[1:])
                 if attr in attr_names:
-                    out[attr].add(prop)
-    return out
+                    props[attr].add(prop)
+                    if bem_element:
+                        elements[attr].add(bem_element)
+    return props, elements
 
 
 def _attr_to_raw_props_php(
@@ -2039,8 +2224,8 @@ def extract_css_property_and_layer() -> dict:
         var_attr = _build_php_var_attr_map(php_src)
 
         raw, php_attr_state, php_attr_element = _attr_to_raw_props_php(php_src, known_css_props, var_attr, short_slug)
-        helper = _attrs_from_helper_calls(php_src, block_attr_names)
-        for attr, props in helper.items():
+        helper_props, helper_elements = _attrs_from_helper_calls(php_src, block_attr_names, short_slug)
+        for attr, props in helper_props.items():
             raw[attr] = raw.get(attr, set()) | props
 
         for attr, tokens in raw.items():
@@ -2069,6 +2254,10 @@ def extract_css_property_and_layer() -> dict:
             # PHP-embedded selector state (WORKSTREAM 2, 2026-07-21) — merge in
             # alongside the CSS-file-derived states above; same "unanimous or
             # unassigned" rule applies to the combined set.
+            # Shape D (helper-call selector arg) BEM element evidence — same
+            # "unanimous or unassigned" merge as every other evidence source here
+            # (2026-08-15, Class 2 fix; see `_attrs_from_helper_calls` docstring).
+            attr_bem_elements |= helper_elements.get(attr, set())
             php_state = php_attr_state.get(attr)
             if php_state:
                 attr_states.add(php_state)
@@ -2871,12 +3060,235 @@ def _self_test_multi_element_var_is_not_collapsed() -> bool:
     return True
 
 
+def _self_test_helper_call_selector_yields_bem_element() -> bool:
+    """`--self-test` fixture proving `_attrs_from_helper_calls` (Shape D) now
+    extracts BEM-element evidence from its selector argument (2026-08-15, Class 2
+    fix). Before the fix, this function returned ONLY `css_property` evidence, so
+    an attr reached exclusively through a shared style-emitter helper call (e.g.
+    `sgs_typography_css_rule($attributes, 'title', '.uid .sgs-card-grid__title')`)
+    fell all the way through the element-precedence chain to the weak prefix-
+    convention guess, which echoes the MANIFEST's own element key
+    (`card-title`) rather than the real BEM element (`title`) — proven live:
+    `sgs/card-grid.titleFontSize` carried `css_element='card-title'` in the DB
+    while `sgs/card-grid.titleColour` (resolved via a DIFFERENT, already-working
+    PHP-string-concat path) correctly carried `css_element='title'` for the
+    exact same manifest element.
+
+    POSITIVE CONTROL: a literal, concatenated selector arg containing the real
+    class must yield the element.
+    NEGATIVE CONTROL: a bare-`$variable` selector arg (the majority call shape —
+    counter/icon-list/nav-menu/option-picker/trust-bar/whatsapp-cta) must yield
+    NO element evidence (an honest gap, never a guessed one) — and a selector
+    referencing a DIFFERENT block's own BEM class must also yield nothing.
+    """
+    ok = True
+    fixture_php = (
+        "<?php\n"
+        "$out = sgs_typography_css_rule( $attributes, 'title', "
+        "'.' . $uid . ' .sgs-selftest__title' );\n"
+        "$out .= sgs_typography_css_rule( $attributes, 'label', $label_sel );\n"
+        "$out .= sgs_typography_css_rule( $attributes, 'pill', "
+        "'.' . $uid . ' .sgs-option-picker__pill' );\n"
+    )
+    attr_names = {"titleFontSize", "labelFontSize", "pillFontSize"}
+    props, elements = _attrs_from_helper_calls(fixture_php, attr_names, "selftest")
+
+    if props.get("titleFontSize") != {"font-size"}:
+        print(
+            f"[self-test] FAIL: helper-call props['titleFontSize'] = "
+            f"{props.get('titleFontSize')!r}, expected {{'font-size'}}",
+            file=sys.stderr,
+        )
+        ok = False
+    if elements.get("titleFontSize") != {"title"}:
+        print(
+            f"[self-test] FAIL: helper-call elements['titleFontSize'] = "
+            f"{elements.get('titleFontSize')!r}, expected {{'title'}} (POSITIVE "
+            "control — a literal selector arg must yield real BEM element evidence)",
+            file=sys.stderr,
+        )
+        ok = False
+    if elements.get("labelFontSize"):
+        print(
+            f"[self-test] FAIL: helper-call elements['labelFontSize'] = "
+            f"{elements.get('labelFontSize')!r}, expected no evidence (NEGATIVE "
+            "control — a bare $variable selector arg has no BEM substring to find)",
+            file=sys.stderr,
+        )
+        ok = False
+    if elements.get("pillFontSize"):
+        print(
+            f"[self-test] FAIL: helper-call elements['pillFontSize'] = "
+            f"{elements.get('pillFontSize')!r}, expected no evidence (NEGATIVE "
+            "control — the selector names a DIFFERENT block's own BEM class, "
+            "option-picker's, not this block's)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: Shape D helper-call selector args now feed BEM "
+            "element evidence for a literal selector, and correctly feed none "
+            "for a variable ref or a foreign block's class."
+        )
+    return ok
+
+
+def _self_test_bem_modifier_is_not_an_element() -> bool:
+    """`--self-test` fixture proving `_derive_bem_element_from_selector` strips a
+    trailing `--modifier` from the captured element (2026-08-15, Class 4 fix).
+
+    Before the fix, `_BEM_ELEMENT_RE`'s greedy `[a-z0-9-]+` swallowed the whole
+    `el--modifier` run as one "element" — proven live for
+    `sgs/brand-strip.scrollSpeed` (`css_element='track--ready'`) and
+    `sgs/product-card.tagTextColour` (`css_element='tag--trial'`), and would have
+    ALSO newly broken `sgs/product-card`'s prefix-convention `cta*` attrs
+    (ctaFontSize/ctaBorderStyle/ctaBorderWidth/ctaBorderRadius/ctaFontWeight) the
+    moment the Class 2 fix above started feeding
+    `.sgs-product-card__cta--primary` as selector-arg evidence, since those attrs
+    have no attrMap to protect them and would have taken the compound value
+    outright.
+
+    POSITIVE CONTROL: `__el--modifier` selectors resolve to the base `el`.
+    NEGATIVE CONTROL: an element/modifier-free selector, and one whose element
+    name itself legitimately contains a SINGLE hyphen (`card-tile`), are
+    unaffected — only a genuine `--` (BEM's own modifier separator) is a cut
+    point, never a bare `-`.
+    """
+    ok = True
+    cases = [
+        (".sgs-brand-strip__track--ready", "brand-strip", "track"),
+        (".sgs-product-card__tag--trial", "product-card", "tag"),
+        (".sgs-product-card__cta--primary", "product-card", "cta"),
+        (".sgs-card-grid__card-tile", "card-grid", "card-tile"),  # negative control
+        (".sgs-card-grid__title", "card-grid", "title"),  # negative control
+    ]
+    for selector, slug, expected in cases:
+        actual = _derive_bem_element_from_selector(selector, slug)
+        if actual != expected:
+            print(
+                f"[self-test] FAIL: _derive_bem_element_from_selector({selector!r}, "
+                f"{slug!r}) = {actual!r}, expected {expected!r}",
+                file=sys.stderr,
+            )
+            ok = False
+    if ok:
+        print(
+            "[self-test] PASS: a BEM `--modifier` suffix is stripped from the "
+            "captured element; a genuine single-hyphen element name is untouched."
+        )
+    return ok
+
+
+def _self_test_bem_current_modifier_is_state_aware() -> bool:
+    """`--self-test` fixture proving the fix-of-the-fix (2026-08-15): a bare
+    `--current` BEM modifier populates `css_state='selected'` when it's the
+    element's ONLY modifier (breadcrumbs shape), but is left unmapped when the
+    element ALSO carries a sibling modifier (buybox/product-card shape) — so
+    `current` there stays a variant, never a fabricated selection state.
+
+    Reproduces the exact live regression: without this fix,
+    `sgs/breadcrumbs.linkColour` and `.currentColour` both collapse to
+    `(element='item', state=None, property='color')` — an identical, ambiguous
+    key the column-first resolver raises `AmbiguousLayerAttrError` on at clone
+    time (proven live via `db-consistency/run.py --check`, 2026-08-15).
+
+    POSITIVE CONTROL: breadcrumbs' `--sgs-breadcrumbs-current-colour` (fed only
+    by `.sgs-breadcrumbs__item--current`, `item` has no other modifier) resolves
+    to `state='selected'`, `element='item'` — now DISTINCT from `linkColour`'s
+    `(item, color, state=None)`, so no collision.
+    NEGATIVE CONTROL: a synthetic block reproducing buybox/product-card's own
+    shape (a `price` element carrying `--current` PLUS sibling `--regular`/
+    `--pct-off` modifiers — buybox and product-card's actual selectors are
+    `.buybox__price--current`/`.price--current`, unprefixed, so this exact
+    real-world regex never even reaches them; the synthetic fixture uses the
+    full `sgs-{slug}__el--modifier` convention so the sibling-disambiguation
+    branch is genuinely exercised rather than short-circuited by prefix
+    mismatch) resolves to `state=None` — `current` stays a variant, never
+    upgraded to a fabricated 'selected' state.
+    """
+    ok = True
+
+    breadcrumbs_css = (
+        ".sgs-breadcrumbs__item a { color: var(--sgs-breadcrumbs-link-colour); }\n"
+        ".sgs-breadcrumbs__item--current { color: var(--sgs-breadcrumbs-current-colour); }\n"
+    )
+    _out, _grad, _slot, state_of, element_of = _custom_props_consumed(
+        breadcrumbs_css, block_short_slug="breadcrumbs"
+    )
+    link_key = ("--sgs-breadcrumbs-link-colour", "color")
+    current_key = ("--sgs-breadcrumbs-current-colour", "color")
+    if state_of.get(current_key) != "selected":
+        print(
+            "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — "
+            f"currentColour state_of = {state_of.get(current_key)!r}, expected 'selected'",
+            file=sys.stderr,
+        )
+        ok = False
+    if element_of.get(current_key) != {"item"} or element_of.get(link_key) != {"item"}:
+        print(
+            "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — expected both "
+            f"linkColour and currentColour to resolve element='item', got "
+            f"link={element_of.get(link_key)!r} current={element_of.get(current_key)!r}",
+            file=sys.stderr,
+        )
+        ok = False
+    if current_key in state_of and link_key in state_of and state_of[current_key] == state_of.get(link_key):
+        print(
+            "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — linkColour and "
+            "currentColour must NOT collide (same element+state+property)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    variant_css = (
+        ".sgs-widget__price--current { color: var(--sgs-widget-price-colour); }\n"
+        ".sgs-widget__price--regular { opacity: 0.7; }\n"
+        ".sgs-widget__price--pct-off { font-weight: 700; }\n"
+    )
+    _out2, _grad2, _slot2, state_of2, element_of2 = _custom_props_consumed(
+        variant_css, block_short_slug="widget"
+    )
+    price_key = ("--sgs-widget-price-colour", "color")
+    if state_of2.get(price_key) is not None:
+        print(
+            "[self-test] FAIL: NEGATIVE CONTROL — price--current has a "
+            f"sibling --regular/--pct-off modifier, so state_of must be None, "
+            f"got {state_of2.get(price_key)!r}",
+            file=sys.stderr,
+        )
+        ok = False
+    if element_of2.get(price_key) != {"price"}:
+        print(
+            "[self-test] FAIL: NEGATIVE CONTROL — expected element='price', "
+            f"got {element_of2.get(price_key)!r}",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: a lone `--current` BEM modifier resolves to "
+            "css_state='selected' (breadcrumbs, no collision with linkColour); "
+            "a `--current` sharing its element with sibling modifiers "
+            "(price--current/--regular/--pct-off) stays unmapped, not "
+            "a fabricated 'selected' state."
+        )
+    return ok
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     if "--self-test" in sys.argv:
-        ok = _self_test_multi_element_var_is_not_collapsed()
-        sys.exit(0 if ok else 1)
+        results = [
+            _self_test_multi_element_var_is_not_collapsed(),
+            _self_test_helper_call_selector_yields_bem_element(),
+            _self_test_bem_modifier_is_not_an_element(),
+            _self_test_bem_current_modifier_is_state_aware(),
+        ]
+        sys.exit(0 if all(results) else 1)
 
     if not DB_PATH.exists():
         print(f"ERROR: Database not found at {DB_PATH}", file=sys.stderr)
