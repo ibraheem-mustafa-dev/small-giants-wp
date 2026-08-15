@@ -22,14 +22,23 @@
  * the SAME native "Color" ToolsPanel — exactly the confusion D609's
  * amendment was written to remove, just relocated rather than fixed.
  *
- * This component is now a fully SGS-OWNED panel: default (unscoped)
- * `InspectorControls` group, wrapped in its own `PanelBody` titled "Colour",
- * pinned FIRST in the block's inspector so it renders at the top — per
- * Bean's standing rule (2026-08-14): "all of the blocks should have the
- * colour section at the top with all of their colours in that panel", aside
- * from special exceptions. Consumers must render `<SgsColourPanel>` before
- * any other `<InspectorControls>` block in their `edit()` return, since
- * WordPress concatenates same-group Fills in mount order.
+ * This component is now a fully SGS-OWNED panel, wrapped in its own
+ * `PanelBody` titled "Colour", pinned FIRST in the block's inspector so it
+ * renders at the top — per Bean's standing rule (2026-08-14): "all of the
+ * blocks should have the colour section at the top with all of their
+ * colours in that panel", aside from special exceptions. Consumers must
+ * render `<SgsColourPanel>` before any other same-group `<InspectorControls>`
+ * block in their `edit()` return, since WordPress concatenates same-group
+ * Fills in mount order.
+ *
+ * ⚠ TAB: `group="styles"` (D621, 2026-08-15) — Bean corrected D618's
+ * original placement (default/Settings group): "the background panel which
+ * has media uploads belongs in styles" — Styles holds root CSS and visuals,
+ * and this framework never uses native colour supports (only their look),
+ * so D618's "reserve Styles for genuine native supports" premise was wrong.
+ * D621 was ruled but never actually implemented in code until now — verify
+ * this file's `InspectorControls` group prop directly before trusting any
+ * doc's claim that the tab move already shipped.
  *
  * `supports.color` STAYS declared (the `scripts/audit-block-uniformity.py`
  * `supports_color_missing` gate is a pipeline/DB-contract signal requiring
@@ -68,7 +77,7 @@ export default function SgsColourPanel( { rows } ) {
 	}
 
 	return (
-		<InspectorControls>
+		<InspectorControls group="styles">
 			<PanelBody
 				title={ __( 'Colour', 'sgs-blocks' ) }
 				initialOpen
