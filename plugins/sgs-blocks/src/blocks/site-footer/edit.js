@@ -7,7 +7,7 @@ import {
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { PanelBody, Notice } from '@wordpress/components';
+import { PanelBody, Notice, SelectControl, BoxControl } from '@wordpress/components';
 // No-inline migration (2026-08-05, D-pending): sgs/site-footer no longer uses
 // <ContainerWrapperControls>'s ResponsiveSpacingPanel — its flat
 // paddingTopTablet/…/marginLeftMobile attrs are LEGACY and became dead
@@ -19,8 +19,9 @@ import { PanelBody, Notice } from '@wordpress/components';
 import {
 	WidthPanel,
 	BackgroundPanel,
+	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox } from '../../components';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
@@ -293,6 +294,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveOverride
+						value={ attributes.minHeight }
+						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								label={ __( 'Min height', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								options={ MIN_HEIGHT_OPTIONS }
+								onChange={ ( val ) => setOwnValue( val || undefined ) }
+								help={ tier === 'desktop'
+									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
+									: undefined }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Responsive spacing (padding + margin) — box-object interface
@@ -347,6 +367,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 						} }
 					/>
+				</PanelBody>
+
+				{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
+				     {desktop,tablet,mobile}, each tier itself a {top,right,bottom,left}
+				     box (Spec 35 box-shaped pass, 2026-08-11). It therefore uses
+				     ResponsiveOverride, which reads and writes the object, NOT the
+				     flat-sibling ResponsiveBoxControl. Mirrors container's own
+				     implementation. */ }
+				<PanelBody title={ __( 'Band padding', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveOverride
+						value={ attributes.contentBandPadding }
+						onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<BoxControl
+								label={ __( 'Band padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								splitOnAxis={ false }
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Background/overlay panel — same shared component + default

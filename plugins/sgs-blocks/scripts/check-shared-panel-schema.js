@@ -1205,15 +1205,31 @@ function main() {
 	process.exit( 0 );
 }
 
-if ( process.argv.includes( '--self-test' ) ) {
-	runSelfTest();
-} else {
-	main();
+// Run the CLI only when invoked directly. Without this guard both branches
+// below execute on `require()` and then call process.exit(), so the
+// module.exports beneath is unreachable to any importer — findMounts() in
+// particular, which the wrapper-capability census consumes as the ONE
+// comment-safe mount detector rather than re-deriving mounts with a grep
+// (a grep for this component has produced a wrong consumer list three times;
+// most recently 8 false consumers, every one a comment).
+if ( require.main === module ) {
+	if ( process.argv.includes( '--self-test' ) ) {
+		runSelfTest();
+	} else {
+		main();
+	}
 }
 
 module.exports = {
 	buildPanelAttrShapeTable,
 	buildKindPanelsTable,
+	// Exported so JS/JSX consumers use THIS blanker rather than reaching for a
+	// PHP one. Measured 2026-08-14: running the PHP blanker over
+	// container/edit.js destroyed 58% of its non-whitespace content (14,129 →
+	// 5,960 chars) — JSX closing tags, regex literals and apostrophes desync a
+	// PHP string-skipper — and every attribute probed against that output came
+	// back as "no control found".
+	blankComments,
 	findMounts,
 	runDetection,
 	findingKey,

@@ -781,6 +781,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 		bgSvgAnimationSpeed = 'medium',
 		bgSvgOpacity = 100,
 		bgSvgTextShadow = false,
+		bgSvgMinHeight = '',
 	} = attributes;
 
 	const hasBgImage = !! backgroundImage?.url;
@@ -1105,6 +1106,18 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 											checked={ bgSvgTextShadow }
 											onChange={ ( val ) => setAttributes( { bgSvgTextShadow: val } ) }
 											__nextHasNoMarginBottom
+										/>
+										<UnitControl
+											label={ __( 'Minimum height', 'sgs-blocks' ) }
+											value={ bgSvgMinHeight }
+											units={ LENGTH_UNITS }
+											onChange={ ( val ) => setAttributes( { bgSvgMinHeight: val ?? '' } ) }
+											help={ __(
+												'Minimum height applied to the SVG background layer, e.g. 400px or 50vh. Leave blank for no minimum.',
+												'sgs-blocks'
+											) }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
 										/>
 									</>
 								) }
