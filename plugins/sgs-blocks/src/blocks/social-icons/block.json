@@ -71,14 +71,27 @@
 					"order": 2,
 					"clusters": [ "text" ],
 					"prefix": "icon",
+					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img), render.php:451. Carries no colour attrMap: `iconColour`/`iconColourHover` do NOT paint this span, they paint the surrounding link box (see the new `item` element below — 2026-08-15 fix, this element's `states.hover.attrMap` used to wrongly claim `iconColourHover` here, contradicting the real selector it renders under, `.sgs-social-icons__item:hover`). iconSize is a scalar glyph-size control with no cluster member (mirrors sgs/icon-list's iconSize) — an honest orphan, not a gap. No font-size/weight/line-height surface — an icon glyph has no typography."
+				},
+				"item": {
+					"label": "Icon Link",
+					"order": 3,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "iconColour",
+						"css:background-color": "iconColour",
+						"css:border-color": "iconColour"
+					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconColourHover"
+								"css:color": "iconColourHover",
+								"css:background-color": "iconColourHover",
+								"css:border-color": "iconColourHover"
 							}
 						}
 					},
-					"_note": "Per-item <a class=\"sgs-social-icons__item\"> (render.php, items loop). Only css:color resolves (default convention icon+Colour=iconColour, render.php --sgs-social-colour custom property; colourMode='brand' overrides it per-item via nth-child, FR-36-21). iconSize is a scalar glyph-size control with no cluster member (mirrors sgs/icon-list's iconSize) — an honest orphan, not a gap. No font-size/weight/line-height surface — an icon glyph has no typography."
+					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box (render.php:462) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup, never in the manifest, an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`). `iconColour`/`iconColourHover` are genuine 3-property shorthands here because the resting/hover colour var (`--sgs-social-colour`/`--sgs-social-hover`) is consumed by up to THREE different declarations depending on `iconStyle` (plain: color only, style.css:20/34; filled: background, :45/52; outlined: border-color + color, :57-65) — never simultaneously, but any one operator choice of `iconStyle` picks which property paints, so all three are declared."
 				}
 			}
 		}

@@ -2387,8 +2387,36 @@ def _apply_attr_classification_overrides(
     # to the block's own root width) would keep its STALE value across a reseed. Reset
     # the whole column FIRST so the reseed is AUTHORITATIVE — every row's css_layer is
     # then exactly what the JSON declares this run, and nothing stale survives.
-    if not dry_run and "css_layer" in existing_cols:
-        c.execute("UPDATE block_attributes SET css_layer = NULL")
+    #
+    # css_element and css_tier get the SAME treatment (2026-08-15, D6xx — audit-css-
+    # element-drift.py findings). Structurally identical bug: both columns are ALSO
+    # written only by this function's `combined` dict (layer 1 JSON + box_family +
+    # fx-namespace + hand-authored overrides — see check_css_property_reseed.py's
+    # docstring, which already documents the intended architecture as "the DERIVED
+    # column set" covering css_property/css_layer/css_element/css_state/css_tier, all
+    # owned exclusively by these two reseed-durable channels), so a row whose element/
+    # tier legitimately stops being claimed this run keeps its STALE prior value
+    # forever under the additive-per-field UPDATE below. Proven via a live read-only
+    # diagnostic against the current DB (no reseed executed — see
+    # `.claude/reports/...` / this session's diagnostic script): 5 css_element rows
+    # (sgs/card-grid.transitionDuration/transitionEasing, sgs/google-reviews.
+    # starColour, sgs/post-grid.shadowHover/imageZoomHover) and 1 css_tier row
+    # (sgs/nav-menu.gap) are non-NULL in the DB today but absent from `combined` this
+    # run — i.e. already stale, uncovered by the narrower object_tier_fossils cleanup
+    # below (that cleanup requires attr_type='object'; nav-menu.gap is 'string').
+    #
+    # css_property and css_state got the SAME live diagnostic and came back with ZERO
+    # stale rows today — ownership is equally clean (verified: the one migration that
+    # writes css_property directly, `migrations/2026-08-13-role-remediation-part2-
+    # overrides.py`, writes BOTH the live DB AND attr-classification-overrides.json,
+    # so it stays reseed-durable), but with no PROVEN current drift to fix, they are
+    # deliberately left un-reset here (prove-the-cause-before-fix) — re-run the
+    # diagnostic after future reseeds if a stale css_property/css_state is ever
+    # reported.
+    if not dry_run:
+        for _reset_col in ("css_layer", "css_element", "css_tier"):
+            if _reset_col in existing_cols:
+                c.execute(f"UPDATE block_attributes SET {_reset_col} = NULL")
     for (slug, attr), fields in combined.items():
         if not fields:
             continue
