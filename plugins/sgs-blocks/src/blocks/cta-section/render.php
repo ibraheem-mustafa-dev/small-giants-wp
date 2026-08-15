@@ -266,17 +266,88 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
 		$typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
 	}
+
+	/*
+	 * ⛔ SELECTOR CORRECTED 2026-08-15. This emitted to
+	 * `$root_sel . ' .sgs-cta-section__headline'` — a class NOTHING renders. The
+	 * FR-22-6 migration moved the headline into an InnerBlocks `sgs/heading`
+	 * child (live DOM: `.sgs-cta-section__content > h2.wp-block-sgs-heading`)
+	 * and the selector was never updated, so ALL EIGHT native typography
+	 * controls on this block were silent no-ops: a client set one, it saved,
+	 * nothing moved.
+	 *
+	 * Emitting to the block ROOT instead is what core does — core/group,
+	 * core/cover and core/columns all declare typography supports with NO
+	 * selector pointing at a child, and rely on plain CSS inheritance to reach
+	 * their InnerBlocks children.
+	 *
+	 * This also gives the exact semantic Bean specified: a DECLARATION always
+	 * beats an INHERITED value regardless of specificity, so an unset child
+	 * inherits this container default, while any child that sets its own
+	 * typography wins automatically. Container overrides the default, never the
+	 * child's own choice — the "LAYERED DEFAULT + OVERRIDE" the verification bar
+	 * calls legitimate, as opposed to a TRUE DUPLICATE.
+	 *
+	 * ⚠ MEASURED LIMIT — font-size does NOT reach a heading child, and cannot.
+	 * Verified live on the canary 2026-08-15: with the container at 44px, an
+	 * unset `sgs/heading` child still computed 33.09px, not the container's
+	 * 38.76px. The block is innocent — `sgs/heading` declares `fontSize
+	 * default={}` and emits no base font-size (D338). The winner is
+	 * theme.json's `styles.elements.h2.typography.fontSize`, which is a
+	 * DECLARATION on the h2 element, and a declaration always beats an
+	 * inherited value.
+	 *
+	 * So inheritance carries only the properties theme.json does NOT declare on
+	 * the element — text-align among them. For font-size on a heading child the
+	 * container would need a descendant-scoped rule or a CSS custom property
+	 * the child consumes, which is exactly what the Mama's Munches draft does
+	 * (`.sgs-featured-product .sgs-section-heading__intro{font-size:16px}`).
+	 * Not built here: no defect currently demands it, and adding it would put
+	 * the container back to out-declaring its children.
+	 */
 	if ( ! empty( $typography_args ) ) {
 		$typography_scoped = wp_style_engine_get_styles(
 			array( 'typography' => $typography_args ),
-			array( 'selector' => $root_sel . ' .sgs-cta-section__headline' )
+			array( 'selector' => $root_sel )
 		);
 		if ( ! empty( $typography_scoped['css'] ) ) {
 			$responsive_css .= $typography_scoped['css'];
 		}
 	}
-	if ( isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
-		$responsive_css .= $root_sel . ' .sgs-cta-section__headline{text-align:' . $attributes['textAlign'] . '}';
+
+	/*
+	 * Text alignment reaches this block by TWO routes, and until 2026-08-15 only
+	 * one of them painted.
+	 *
+	 * 1. NATIVE CONTROL — block.json declares `supports.typography.textAlign`,
+	 *    so WordPress renders the "Align text" toolbar button. Verified live on
+	 *    the canary: clicking it writes `style.typography.textAlign`. Because the
+	 *    same supports block sets `__experimentalSkipSerialization`, WP does NOT
+	 *    emit the CSS itself — this file has to. The scoped typography emitter
+	 *    above enumerates fontSize/lineHeight/letterSpacing/textTransform/
+	 *    fontWeight/fontStyle and never included textAlign, so a client could
+	 *    align the headline, watch it save, and see nothing move. Silent no-op.
+	 *    `sgs/card-grid` (render.php:196) and `sgs/testimonial-slider` already
+	 *    read this key correctly.
+	 *
+	 * 2. CLONING CONVERTER — the DB carries a real routing row for this block
+	 *    (`block_attributes`: textAlign → css_property `text-align`, css_element
+	 *    `headline`), so the converter writes the TOP-LEVEL `textAlign` attribute
+	 *    on cloned content. That read is therefore load-bearing and must stay:
+	 *    swapping the key over to the native one — the obvious "match the
+	 *    sibling" fix — would silently break every cloned CTA.
+	 *
+	 * The client's own editor action wins over a cloned default, so the native
+	 * key is checked first and the converter key is the fallback.
+	 */
+	$cta_text_align = '';
+	if ( isset( $attributes['style']['typography']['textAlign'] ) ) {
+		$cta_text_align = $attributes['style']['typography']['textAlign'];
+	} elseif ( isset( $attributes['textAlign'] ) ) {
+		$cta_text_align = $attributes['textAlign'];
+	}
+	if ( in_array( $cta_text_align, array( 'left', 'center', 'right' ), true ) ) {
+		$responsive_css .= $root_sel . '{text-align:' . esc_attr( $cta_text_align ) . '}';
 	}
 }
 

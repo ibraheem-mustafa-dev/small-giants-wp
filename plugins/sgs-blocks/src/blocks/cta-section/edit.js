@@ -30,6 +30,7 @@ import {
 	BackgroundPanel,
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
+	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 
 // FR-22-6: the content column is now InnerBlocks — heading + body text + buttons.
@@ -234,6 +235,34 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+					{ /*
+					   Min-height: declared + painted by the shared wrapper (this block
+					   renders kind='section'), but it had NO control until 2026-08-15 —
+					   a client could not set it while sgs/container, sgs/hero,
+					   sgs/physics-canvas and sgs/trust-bar all could.
+					   `minHeight` is OBJECT-typed ({desktop,tablet,mobile}), so this uses
+					   ResponsiveOverride — NOT the flat-sibling ResponsiveControl. A flat
+					   value written to an object attr is silently coerced to the default
+					   and the client's setting vanishes. Mirrors site-footer/edit.js:298.
+					*/ }
+					<ResponsiveOverride
+						value={ attributes.minHeight }
+						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								label={ __( 'Min height', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								options={ MIN_HEIGHT_OPTIONS }
+								onChange={ ( val ) => setOwnValue( val || undefined ) }
+								help={ tier === 'desktop'
+									? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
+									: undefined }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Responsive spacing (padding + margin) — box-object interface contract

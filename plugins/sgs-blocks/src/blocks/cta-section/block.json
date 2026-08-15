@@ -209,14 +209,7 @@
 			"margin": ".wp-block-sgs-cta-section"
 		},
 		"typography": {
-			"root": ".sgs-cta-section__headline",
-			"fontSize": ".sgs-cta-section__headline",
-			"fontFamily": ".sgs-cta-section__headline",
-			"fontWeight": ".sgs-cta-section__headline",
-			"lineHeight": ".sgs-cta-section__headline",
-			"letterSpacing": ".sgs-cta-section__headline",
-			"textTransform": ".sgs-cta-section__headline",
-			"textDecoration": ".sgs-cta-section__headline"
+			"root": ".wp-block-sgs-cta-section"
 		}
 	},
 	"attributes": {
