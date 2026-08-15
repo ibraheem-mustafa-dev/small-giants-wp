@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField } from '../../components';
+import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsColourPanel } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
 import { colourVar, spacingVar, resolveResponsiveTier } from '../../utils';
@@ -221,6 +221,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardBorderWidth,
 		cardRadius,
 		cardShadow,
+		backgroundColourHover,
+		borderColourHover,
+		textColourHover,
 		source,
 		queryPostType,
 		queryPostsPerPage,
@@ -317,6 +320,102 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — ONE grouped, SGS-OWNED colour panel, mounted FIRST so
+			   it sits at the top of the inspector (Styles tab). Replaces the
+			   scattered DesignTokenPicker rows that used to sit in "Text
+			   Styling" (titleColour/subtitleColour) and "Card Styling"
+			   (cardBackground/cardBorderColour) below. cardBackground pairs
+			   with backgroundColourHover and cardBorderColour pairs with
+			   borderColourHover — both target `.sgs-card-grid__item`
+			   (render.php item element, confirmed via block.json's element
+			   manifest + render.php:74-78/211-234/266-272/411-419). Text
+			   colour on the card item is HOVER-ONLY — render.php has no
+			   resting textColour attribute for the item, only
+			   textColourHover (render.php:68,414) — so that row carries a
+			   single Hover state, no Normal state. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'subtitle',
+						label: __( 'Subtitle colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: subtitleColour,
+								onChange: ( val ) => setAttributes( { subtitleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'card-background',
+						label: __( 'Card background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardBackground,
+								onChange: ( val ) => setAttributes( { cardBackground: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'card-border',
+						label: __( 'Card border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardBorderColour,
+								onChange: ( val ) => setAttributes( { cardBorderColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'card-text',
+						label: __( 'Card text colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Content Source', 'sgs-blocks' ) }>
@@ -556,13 +655,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Text Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						value={ titleColour }
-						onChange={ ( val ) =>
-							setAttributes( { titleColour: val } )
-						}
-					/>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -570,13 +662,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						showWeight={ false }
 						showStyle={ false }
 						showLineHeight={ false }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Subtitle colour', 'sgs-blocks' ) }
-						value={ subtitleColour }
-						onChange={ ( val ) =>
-							setAttributes( { subtitleColour: val } )
-						}
 					/>
 					<TypographyControls
 						attributes={ attributes }
@@ -614,20 +699,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Background colour', 'sgs-blocks' ) }
-						value={ cardBackground }
-						onChange={ ( val ) =>
-							setAttributes( { cardBackground: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						value={ cardBorderColour }
-						onChange={ ( val ) =>
-							setAttributes( { cardBorderColour: val } )
-						}
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }

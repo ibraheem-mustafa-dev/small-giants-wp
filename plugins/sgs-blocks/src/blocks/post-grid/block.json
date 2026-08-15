@@ -27,9 +27,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {

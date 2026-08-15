@@ -87,9 +87,9 @@
 		"html": false,
 		"interactivity": true,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {

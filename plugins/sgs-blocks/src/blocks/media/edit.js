@@ -22,6 +22,7 @@ import {
 	ResponsiveOverride,
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
+	SgsColourPanel,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -162,7 +163,30 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Inspector controls.
 	// -------------------------------------------------------------------------
 	const inspectorControls = (
-		<InspectorControls>
+		<>
+			{ /* GROUND-TRUTH: block.json attributes.captionColour (no default,
+			   type string) + render.php:118 ($caption_colour, styled onto the
+			   caption element) — confirmed 2026-08-15 against the live source
+			   before wiring this row. Single-state colour (no hover pair
+			   exists for the caption), `linked: true` per D619. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'caption',
+						label: __( 'Caption colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.captionColour,
+								onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
+			<InspectorControls>
 			{ /* Media type toggle */ }
 			<PanelBody
 				title={ __( 'Media Type', 'sgs-blocks' ) }
@@ -1472,7 +1496,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToolsPanel>
 				</PanelBody>
 			) }
-		</InspectorControls>
+			</InspectorControls>
+		</>
 	);
 
 	// -------------------------------------------------------------------------

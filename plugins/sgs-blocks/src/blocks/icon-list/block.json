@@ -22,9 +22,9 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"gradients": true,
+			"gradients": false,
 			"text": true,
-			"link": true,
+			"link": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -272,7 +272,7 @@
 		"headingFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"headingFontWeight": {
 			"type": "string",
 			"default": ""
@@ -295,7 +295,7 @@
 		"itemFontSizeUnit": {
 			"type": "string",
 			"default": "px"
-		},
+		},
 		"itemFontWeight": {
 			"type": "string",
 			"default": ""

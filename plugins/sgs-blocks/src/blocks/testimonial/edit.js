@@ -25,10 +25,10 @@ import {
 	BaseControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	ResponsiveBoxControl,
 	ResponsiveControl,
 	ShadowControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -301,6 +301,201 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	return (
 		<>
+			{ /* D618/D619 — ONE grouped, SGS-OWNED colour panel, mounted FIRST
+			   so it sits at the top of the inspector Styles tab. Replaces the
+			   scattered DesignTokenPicker rows that used to sit in "Rating
+			   appearance" (ratingColour), "Typography" (quoteColour/
+			   summaryColour/nameColour/roleColour/orgColour) and "Hover
+			   states" (backgroundColourHover/textColourHover/
+			   borderColourHover) below.
+			   Background + text are WP-NATIVE colours (block.json
+			   `supports.color.background/text`, read from
+			   `style.color.background`/`style.color.text` by render.php's
+			   `wp_style_engine_get_styles()` call, root_sel = `.sgs-
+			   testimonial`) — now that the native sub-flags are turned off
+			   (block.json), this panel's Normal state is the ONLY way to set
+			   them, paired with the existing backgroundColourHover/
+			   textColourHover custom attrs (render.php:419-424, scoped
+			   `:hover{}` rule). Border colour's Normal state stays on WP's
+			   native Border ToolsPanel (`__experimentalBorder.color` was
+			   NOT turned off — width/style/radius have no SGS-custom
+			   equivalent on this block, so removing color alone would just
+			   split one native control family across two UIs); this panel
+			   only carries borderColourHover, which has no native
+			   equivalent (WP has no hover-state border colour). quote/
+			   summary/name/role/org colours are single-state (no hover
+			   attribute exists for any of them in block.json) — confirmed
+			   via block.json's attributes list + render.php:135-251. Rating
+			   colour is gated exactly like the pre-existing "Rating
+			   appearance" panel it replaces (variant + showRating); Summary
+			   colour is gated by `showSummary`, the same condition that
+			   already scoped it inside the old Typography panel. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.background,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...style,
+											color: {
+												...style?.color,
+												background: val ?? '',
+											},
+										},
+									} ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										backgroundColourHover: val ?? '',
+									} ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.text,
+								onChange: ( val ) =>
+									setAttributes( {
+										style: {
+											...style,
+											color: {
+												...style?.color,
+												text: val ?? '',
+											},
+										},
+									} ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) =>
+									setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'quote',
+						label: __( 'Quote colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: quoteColour,
+								onChange: ( val ) =>
+									setAttributes( { quoteColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					showSummary && {
+						key: 'summary',
+						label: __( 'Summary colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: summaryColour,
+								onChange: ( val ) =>
+									setAttributes( { summaryColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'name',
+						label: __( 'Name colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nameColour,
+								onChange: ( val ) =>
+									setAttributes( { nameColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'role',
+						label: __( 'Role colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: roleColour,
+								onChange: ( val ) =>
+									setAttributes( { roleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'org',
+						label: __( 'Organisation colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: orgColour,
+								onChange: ( val ) =>
+									setAttributes( { orgColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					( effectiveVariant === 'rating-led' ||
+						effectiveVariant === 'classic-card' ) &&
+						showRating && {
+							key: 'rating',
+							label: __( 'Rating colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: ratingColour,
+									onChange: ( val ) =>
+										setAttributes( { ratingColour: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+				] }
+			/>
 			{ /* ── Settings tab (behaviour, content, structural choices) ── */ }
 			<InspectorControls>
 				{ /* ── Variant picker (visual thumbnail grid) ── */ }
@@ -634,15 +829,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						initialOpen={ false }
 					>
 						{ showRating && (
-							<DesignTokenPicker
-								label={ __( 'Rating colour', 'sgs-blocks' ) }
-								value={ ratingColour }
-								onChange={ ( val ) =>
-									setAttributes( { ratingColour: val } )
-								}
-							/>
-						) }
-						{ showRating && (
 							<RangeControl
 								label={ __( 'Star size (px)', 'sgs-blocks' ) }
 								value={ ratingSize }
@@ -670,16 +856,11 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						resetAll={ () =>
 							setAttributes( {
 								quoteFontSize: '',
-								quoteColour: '',
 								quoteFontStyle: '',
 								quoteLineHeight: '',
 								quoteMarginBottom: '',
 								summaryFontSize: '',
-								summaryColour: '',
-								nameColour: '',
 								nameFontWeight: '700',
-								roleColour: '',
-								orgColour: '',
 							} )
 						}
 					>
@@ -703,20 +884,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Quote colour', 'sgs-blocks' ) }
-							hasValue={ () => !! quoteColour }
-							onDeselect={ () => setAttributes( { quoteColour: '' } ) }
-							isShownByDefault
-						>
-							<DesignTokenPicker
-								label={ __( 'Quote colour', 'sgs-blocks' ) }
-								value={ quoteColour }
-								onChange={ ( val ) =>
-									setAttributes( { quoteColour: val } )
-								}
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -804,36 +971,8 @@ export default function Edit( { attributes, setAttributes, context } ) {
 										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
-								<ToolsPanelItem
-									label={ __( 'Summary colour', 'sgs-blocks' ) }
-									hasValue={ () => !! summaryColour }
-									onDeselect={ () =>
-										setAttributes( { summaryColour: '' } )
-									}
-								>
-									<DesignTokenPicker
-										label={ __( 'Summary colour', 'sgs-blocks' ) }
-										value={ summaryColour }
-										onChange={ ( val ) =>
-											setAttributes( { summaryColour: val } )
-										}
-									/>
-								</ToolsPanelItem>
 							</>
 						) }
-						<ToolsPanelItem
-							label={ __( 'Name colour', 'sgs-blocks' ) }
-							hasValue={ () => !! nameColour }
-							onDeselect={ () => setAttributes( { nameColour: '' } ) }
-						>
-							<DesignTokenPicker
-								label={ __( 'Name colour', 'sgs-blocks' ) }
-								value={ nameColour }
-								onChange={ ( val ) =>
-									setAttributes( { nameColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Name font weight', 'sgs-blocks' ) }
 							hasValue={ () => nameFontWeight !== '700' }
@@ -858,32 +997,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Role colour', 'sgs-blocks' ) }
-							hasValue={ () => !! roleColour }
-							onDeselect={ () => setAttributes( { roleColour: '' } ) }
-						>
-							<DesignTokenPicker
-								label={ __( 'Role colour', 'sgs-blocks' ) }
-								value={ roleColour }
-								onChange={ ( val ) =>
-									setAttributes( { roleColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Organisation colour', 'sgs-blocks' ) }
-							hasValue={ () => !! orgColour }
-							onDeselect={ () => setAttributes( { orgColour: '' } ) }
-						>
-							<DesignTokenPicker
-								label={ __( 'Organisation colour', 'sgs-blocks' ) }
-								value={ orgColour }
-								onChange={ ( val ) =>
-									setAttributes( { orgColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
 
@@ -898,9 +1011,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						resetAll={ () =>
 							setAttributes( {
 								effectHover: 'none',
-								backgroundColourHover: '',
-								textColourHover: '',
-								borderColourHover: '',
 								transitionDuration: '300',
 								transitionEasing: 'ease-in-out',
 								scaleHover: '',
@@ -930,51 +1040,6 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Hover background', 'sgs-blocks' ) }
-							hasValue={ () => !! backgroundColourHover }
-							onDeselect={ () =>
-								setAttributes( { backgroundColourHover: '' } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Hover background', 'sgs-blocks' ) }
-								value={ backgroundColourHover }
-								onChange={ ( val ) =>
-									setAttributes( { backgroundColourHover: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Hover text', 'sgs-blocks' ) }
-							hasValue={ () => !! textColourHover }
-							onDeselect={ () =>
-								setAttributes( { textColourHover: '' } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Hover text', 'sgs-blocks' ) }
-								value={ textColourHover }
-								onChange={ ( val ) =>
-									setAttributes( { textColourHover: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Hover border', 'sgs-blocks' ) }
-							hasValue={ () => !! borderColourHover }
-							onDeselect={ () =>
-								setAttributes( { borderColourHover: '' } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Hover border', 'sgs-blocks' ) }
-								value={ borderColourHover }
-								onChange={ ( val ) =>
-									setAttributes( { borderColourHover: val } )
-								}
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

@@ -21,10 +21,10 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
+			"background": false,
+			"text": false,
 			"link": true,
-			"gradients": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {

@@ -10,7 +10,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel } from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -238,27 +238,41 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
+			   Replaces the inline DesignTokenPicker rows that used to live in
+			   the "Colour" panel below. Neither attr has a hover pair, so both
+			   render as single-state rows. Links to the theme palette (D619). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
-				<PanelBody
-					title={ __( 'Colour', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ textColour }
-						onChange={ ( val ) =>
-							setAttributes( { textColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Background colour', 'sgs-blocks' ) }
-						value={ backgroundColour }
-						onChange={ ( val ) =>
-							setAttributes( { backgroundColour: val } )
-						}
-					/>
-				</PanelBody>
-
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }

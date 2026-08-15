@@ -38,7 +38,7 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import { useRef } from '@wordpress/element';
-import DesignTokenPicker from '../../components/DesignTokenPicker';
+import SgsColourPanel from '../../components/SgsColourPanel';
 import MediaGalleryPicker from '../../components/MediaGalleryPicker';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import { colourVar, resolveResponsiveTier } from '../../utils';
@@ -316,6 +316,59 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so
+			   it sits at the top of the inspector. Replaces the inline
+			   `DesignTokenPicker` rows that used to sit in the "Colours"
+			   panel below (now removed — it held only these 3 rows).
+			   `supports.color` sub-flags are now false so WordPress
+			   generates no native colour UI to overlap with this panel.
+			   `overlayColourHover` has no resting-state `overlayColour`
+			   twin on this block (confirmed in block.json/render.php — it
+			   is a hover-only capability), so its row carries a single
+			   'hover'-keyed state rather than a normal/hover pair. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'caption-text',
+						label: __( 'Caption text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: captionColour,
+								onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'caption-background',
+						label: __( 'Caption background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: captionBgColour,
+								onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'overlay',
+						label: __( 'Hover overlay colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: overlayColourHover,
+								onChange: ( val ) => setAttributes( { overlayColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			{ /* ============================================================
 			     Inspector panels
 			     ============================================================ */ }
@@ -516,32 +569,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* Panel 4: Colours */ }
-				<PanelBody
-					title={ __( 'Colours', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Caption text colour', 'sgs-blocks' ) }
-						value={ captionColour }
-						onChange={ set( 'captionColour' ) }
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Caption background colour',
-							'sgs-blocks'
-						) }
-						value={ captionBgColour }
-						onChange={ set( 'captionBgColour' ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover overlay colour', 'sgs-blocks' ) }
-						value={ overlayColourHover }
-						onChange={ set( 'overlayColourHover' ) }
-					/>
-				</PanelBody>
-
-				{ /* Panel 5: Hover Effects */ }
+				{ /* Panel 4: Hover Effects */ }
 				<PanelBody
 					title={ __( 'Hover Effects', 'sgs-blocks' ) }
 					initialOpen={ false }

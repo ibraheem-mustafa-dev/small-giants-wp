@@ -9,11 +9,11 @@ import {
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
-	DesignTokenPicker,
 	TypographyControls,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
+	SgsColourPanel,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -911,8 +911,248 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Heading tag derived from headingLevel attr.
 	const headingTag = `h${ headingLevel || 3 }`;
 
+	// D618/D619 — ONE grouped, SGS-owned colour panel, rendered FIRST (mirrors
+	// button/edit.js + option-picker/edit.js). Rows group by CSS property, not
+	// by attribute name — every state (including the 3 CTA hover states that
+	// previously had NO inspector control at all, only preset-seeding) carries
+	// linked: true. Title/description/price/price-note text colours only apply
+	// in typed built-in mode (bound mode draws these from the live product and
+	// shows a Notice instead — mirrors the isBuiltIn/isBound gating already on
+	// the Card style / Price style panels below). Tag background/text only
+	// style the TRIAL tag (render.php's scoped rule targets
+	// .sgs-product-card__tag--trial only; the featured badge has no colour
+	// attrs of its own) — mirrors the isTrial gate already on those controls.
+	// CTA background/text/border and the picker-family rows apply in BOTH
+	// modes: render.php forwards pickerLabelColour/pickerPill*Colour into
+	// EVERY render_block('sgs/option-picker') call site (typed pack pills at
+	// render.php:1479 AND the bound configurator at render.php:1057), so
+	// there is no isBound/isBuiltIn split for the picker rows — confirmed by
+	// reading render.php directly, not assumed from the DB role='color' list.
+	// Picker pill rows mirror option-picker/edit.js's own SgsColourPanel
+	// grouping (background/text/border, each Normal+Selected) since this
+	// block's pill controls forward 1:1 onto that same block.
+	const colourRows = [];
+	if ( isBuiltIn ) {
+		colourRows.push( {
+			key: 'title',
+			label: __( 'Title colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: titleColour,
+					onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+		colourRows.push( {
+			key: 'description',
+			label: __( 'Description colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: descColour,
+					onChange: ( val ) => setAttributes( { descColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+		colourRows.push( {
+			key: 'price',
+			label: __( 'Price colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: priceColour,
+					onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+		colourRows.push( {
+			key: 'priceNote',
+			label: __( 'Price note colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: priceNoteColour,
+					onChange: ( val ) => setAttributes( { priceNoteColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+	}
+	if ( isTrial ) {
+		colourRows.push( {
+			key: 'tagBackground',
+			label: __( 'Tag background colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributes.tagBackgroundColour,
+					onChange: ( val ) => setAttributes( { tagBackgroundColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+		colourRows.push( {
+			key: 'tagText',
+			label: __( 'Tag text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributes.tagTextColour,
+					onChange: ( val ) => setAttributes( { tagTextColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+	}
+	colourRows.push(
+		{
+			key: 'ctaBackground',
+			label: __( 'CTA background colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: ctaColourBackground,
+					onChange: ( val ) => setAttributes( { ctaColourBackground: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: ctaColourBackgroundHover,
+					onChange: ( val ) => setAttributes( { ctaColourBackgroundHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'ctaText',
+			label: __( 'CTA text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: ctaColourText,
+					onChange: ( val ) => setAttributes( { ctaColourText: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: ctaColourTextHover,
+					onChange: ( val ) => setAttributes( { ctaColourTextHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'ctaBorder',
+			label: __( 'CTA border colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: ctaColourBorder,
+					onChange: ( val ) => setAttributes( { ctaColourBorder: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: ctaColourBorderHover,
+					onChange: ( val ) => setAttributes( { ctaColourBorderHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'pickerLabel',
+			label: __( 'Picker label colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: pickerLabelColour,
+					onChange: ( val ) => setAttributes( { pickerLabelColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'pickerPillBackground',
+			label: __( 'Picker pill background', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: pickerPillBgColour,
+					onChange: ( val ) => setAttributes( { pickerPillBgColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'selected',
+					label: __( 'Selected', 'sgs-blocks' ),
+					value: pickerPillSelectedBgColour,
+					onChange: ( val ) => setAttributes( { pickerPillSelectedBgColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'pickerPillText',
+			label: __( 'Picker pill text', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: pickerPillTextColour,
+					onChange: ( val ) => setAttributes( { pickerPillTextColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'selected',
+					label: __( 'Selected', 'sgs-blocks' ),
+					value: pickerPillSelectedTextColour,
+					onChange: ( val ) => setAttributes( { pickerPillSelectedTextColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'pickerPillBorder',
+			label: __( 'Picker pill border', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: pickerPillBorderColour,
+					onChange: ( val ) => setAttributes( { pickerPillBorderColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'selected',
+					label: __( 'Selected', 'sgs-blocks' ),
+					value: pickerPillSelectedBorderColour,
+					onChange: ( val ) => setAttributes( { pickerPillSelectedBorderColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		}
+	);
+
 	return (
 		<>
+			<SgsColourPanel rows={ colourRows } />
 			<InspectorControls>
 				<ProductSourcePanel
 					attributes={ attributes }
@@ -1285,26 +1525,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes={ setAttributes }
 							prefix="title"
 						/>
-						<DesignTokenPicker
-							label={ __( 'Title colour', 'sgs-blocks' ) }
-							value={ titleColour }
-							onChange={ ( v ) =>
-								setAttributes( { titleColour: v } )
-							}
-						/>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="desc"
 							showWeight={ false }
 							showStyle={ false }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Description colour', 'sgs-blocks' ) }
-							value={ descColour }
-							onChange={ ( v ) =>
-								setAttributes( { descColour: v } )
-							}
 						/>
 						{ ( isTrial || isFeatured ) && (
 							<TypographyControls
@@ -1329,20 +1555,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										setAttributes( { tagFullWidth: v } )
 									}
 									__nextHasNoMarginBottom
-								/>
-								<DesignTokenPicker
-									label={ __( 'Tag background colour', 'sgs-blocks' ) }
-									value={ attributes.tagBackgroundColour || '' }
-									onChange={ ( v ) =>
-										setAttributes( { tagBackgroundColour: v } )
-									}
-								/>
-								<DesignTokenPicker
-									label={ __( 'Tag text colour', 'sgs-blocks' ) }
-									value={ attributes.tagTextColour || '' }
-									onChange={ ( v ) =>
-										setAttributes( { tagTextColour: v } )
-									}
 								/>
 								{ /* UnitControl, not a raw-px RangeControl (contract
 								     §4.3). Stored as a CSS-length STRING; a legacy
@@ -1389,13 +1601,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							showStyle={ false }
 							showLineHeight={ false }
 						/>
-						<DesignTokenPicker
-							label={ __( 'Price colour', 'sgs-blocks' ) }
-							value={ priceColour }
-							onChange={ ( v ) =>
-								setAttributes( { priceColour: v } )
-							}
-						/>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1403,13 +1608,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							showWeight={ false }
 							showStyle={ false }
 							showLineHeight={ false }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Price note colour', 'sgs-blocks' ) }
-							value={ priceNoteColour }
-							onChange={ ( v ) =>
-								setAttributes( { priceNoteColour: v } )
-							}
 						/>
 						<TypographyControls
 							attributes={ attributes }
@@ -1751,51 +1949,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Background colour', 'sgs-blocks' ) }
-								hasValue={ () => !! ctaColourBackground }
-								onDeselect={ () =>
-									setAttributes( { ctaColourBackground: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Background colour', 'sgs-blocks' ) }
-									value={ ctaColourBackground }
-									onChange={ ( v ) =>
-										setAttributes( { ctaColourBackground: v } )
-									}
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Text colour', 'sgs-blocks' ) }
-								hasValue={ () => !! ctaColourText }
-								onDeselect={ () =>
-									setAttributes( { ctaColourText: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Text colour', 'sgs-blocks' ) }
-									value={ ctaColourText }
-									onChange={ ( v ) =>
-										setAttributes( { ctaColourText: v } )
-									}
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Border colour', 'sgs-blocks' ) }
-								hasValue={ () => !! ctaColourBorder }
-								onDeselect={ () =>
-									setAttributes( { ctaColourBorder: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Border colour', 'sgs-blocks' ) }
-									value={ ctaColourBorder }
-									onChange={ ( v ) =>
-										setAttributes( { ctaColourBorder: v } )
-									}
-								/>
-							</ToolsPanelItem>
 						</ToolsPanel>
 					</PanelBody>
 
@@ -1895,27 +2048,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
-								label={ __( 'Picker label colour', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerLabelColour }
-								onDeselect={ () =>
-									setAttributes( { pickerLabelColour: '' } )
-								}
-								isShownByDefault
-							>
-								<DesignTokenPicker
-									label={ __(
-										'Picker label colour',
-										'sgs-blocks'
-									) }
-									value={ pickerLabelColour }
-									onChange={ ( v ) =>
-										setAttributes( {
-											pickerLabelColour: v,
-										} )
-									}
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
 								label={ __( 'Picker colour preset', 'sgs-blocks' ) }
 								hasValue={ () => pickerColourPreset !== 'solid' }
 								onDeselect={ () =>
@@ -1955,45 +2087,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem
-								label={ __( 'Resting pill background', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillBgColour }
-								onDeselect={ () =>
-									setAttributes( { pickerPillBgColour: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Resting pill background', 'sgs-blocks' ) }
-									value={ pickerPillBgColour }
-									onChange={ ( v ) => setAttributes( { pickerPillBgColour: v } ) }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Resting pill text', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillTextColour }
-								onDeselect={ () =>
-									setAttributes( { pickerPillTextColour: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Resting pill text', 'sgs-blocks' ) }
-									value={ pickerPillTextColour }
-									onChange={ ( v ) => setAttributes( { pickerPillTextColour: v } ) }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Resting pill border', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillBorderColour }
-								onDeselect={ () =>
-									setAttributes( { pickerPillBorderColour: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Resting pill border', 'sgs-blocks' ) }
-									value={ pickerPillBorderColour }
-									onChange={ ( v ) => setAttributes( { pickerPillBorderColour: v } ) }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
 								label={ __( 'Pill border radius', 'sgs-blocks' ) }
 								hasValue={ () => !! pickerPillBorderRadius }
 								onDeselect={ () =>
@@ -2008,46 +2101,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Selected pill background', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillSelectedBgColour }
-								onDeselect={ () =>
-									setAttributes( { pickerPillSelectedBgColour: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Selected pill background', 'sgs-blocks' ) }
-									value={ pickerPillSelectedBgColour }
-									onChange={ ( v ) => setAttributes( { pickerPillSelectedBgColour: v } ) }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Selected pill text', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillSelectedTextColour }
-								onDeselect={ () =>
-									setAttributes( { pickerPillSelectedTextColour: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Selected pill text', 'sgs-blocks' ) }
-									value={ pickerPillSelectedTextColour }
-									onChange={ ( v ) => setAttributes( { pickerPillSelectedTextColour: v } ) }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Selected pill border', 'sgs-blocks' ) }
-								hasValue={ () => !! pickerPillSelectedBorderColour }
-								onDeselect={ () =>
-									setAttributes( { pickerPillSelectedBorderColour: '' } )
-								}
-							>
-								<DesignTokenPicker
-									label={ __( 'Selected pill border', 'sgs-blocks' ) }
-									help={ __( 'Independent of the fill (R2). Leave empty to match the fill.', 'sgs-blocks' ) }
-									value={ pickerPillSelectedBorderColour }
-									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderColour: v } ) }
 								/>
 							</ToolsPanelItem>
 							<ToolsPanelItem

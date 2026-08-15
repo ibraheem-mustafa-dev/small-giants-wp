@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker } from '../../components';
+import { IconPicker } from '../../components';
 
 /**
  * SGS Cart — Icon + Badge inspector controls. Split out of edit.js to keep
@@ -9,9 +9,6 @@ import { DesignTokenPicker, IconPicker } from '../../components';
  * @param {Object}   root0                 Props.
  * @param {string}   root0.iconName        Current icon name.
  * @param {number}   root0.iconSize        Current icon size (px).
- * @param {string}   root0.iconColour      Icon colour token.
- * @param {string}   root0.badgeColour     Badge background colour token.
- * @param {string}   root0.badgeTextColour Badge text colour token.
  * @param {boolean}  root0.showZero        Whether the badge shows on a zero count.
  * @param {boolean}  root0.hideWhenEmpty   Whether the whole trigger hides until non-empty.
  * @param {Function} root0.setAttributes   The block's attribute setter.
@@ -19,9 +16,6 @@ import { DesignTokenPicker, IconPicker } from '../../components';
 export default function TriggerSettingsControls( {
 	iconName,
 	iconSize,
-	iconColour,
-	badgeColour,
-	badgeTextColour,
 	showZero,
 	hideWhenEmpty,
 	setAttributes,
@@ -46,31 +40,12 @@ export default function TriggerSettingsControls( {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-				<DesignTokenPicker
-					label={ __( 'Icon colour', 'sgs-blocks' ) }
-					value={ iconColour }
-					onChange={ ( val ) => setAttributes( { iconColour: val } ) }
-				/>
 			</PanelBody>
 
 			<PanelBody
 				title={ __( 'Badge', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<DesignTokenPicker
-					label={ __( 'Badge background', 'sgs-blocks' ) }
-					value={ badgeColour }
-					onChange={ ( val ) =>
-						setAttributes( { badgeColour: val } )
-					}
-				/>
-				<DesignTokenPicker
-					label={ __( 'Badge text colour', 'sgs-blocks' ) }
-					value={ badgeTextColour }
-					onChange={ ( val ) =>
-						setAttributes( { badgeTextColour: val } )
-					}
-				/>
 				<ToggleControl
 					label={ __(
 						'Show badge when cart is empty',

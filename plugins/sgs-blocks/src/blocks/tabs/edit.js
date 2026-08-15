@@ -15,9 +15,8 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { DesignTokenPicker } from '../../components';
+import { SgsColourPanel } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const TEMPLATE = [
 	[ 'sgs/tab', { label: __( 'Tab 1', 'sgs-blocks' ) } ],
@@ -137,6 +136,130 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* D618/D619/D621 — ONE grouped, SGS-OWNED colour panel (own
+			   PanelBody, group="styles"), rendered FIRST so it sits at the top
+			   of the Styles tab. Replaces the scattered "Colours" ToolsPanel
+			   that used to sit in the Settings tab below. This is a BLOCK-LEVEL
+			   repeater (uniform styling for every sgs/tab child, not per-item —
+			   confirmed against render.php: tabTextColour etc. resolve to
+			   `--sgs-tab-*` custom properties on the outer wrapper, read by
+			   style.css for every `.sgs-tabs__tab`/`.sgs-tabs__panel`; there is
+			   no per-tab colour attribute anywhere in this block or in sgs/tab's
+			   own block.json). Grouped normal/hover/active per CSS property per
+			   element (not per individual DB attr):
+			     - Tab background: normal=tabBgColour, hover=tabHoverBgColour,
+			       active=tabActiveBgColour (a genuine 3-state row — style.css
+			       lines 71/100/132 all target background-color on the same
+			       tab element).
+			     - Tab text colour: normal=tabTextColour, active=tabActiveText
+			       Colour (no hover text-colour attribute exists — style.css has
+			       no color rule inside `.sgs-tabs__tab:hover`).
+			     - Tab indicator/border colour: normal=tabIndicatorColour,
+			       active=tabActiveIndicatorColour (no hover indicator attribute
+			       exists either).
+			   Panel background/border have only ONE colour attribute each
+			   (panelBgColour/panelBorderColour) — `state=selected` per the DB
+			   census, labelled "Active" here because CSS only ever paints the
+			   currently-visible panel (`.sgs-tabs__panel[hidden]` hides the
+			   rest); there is no separate resting-panel colour to pair it
+			   with, so these are single-state rows (still `linked: true`). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'tab-bg',
+						label: __( 'Tab background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tabBgColour,
+								onChange: ( val ) => setAttributes( { tabBgColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: tabHoverBgColour,
+								onChange: ( val ) => setAttributes( { tabHoverBgColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'active',
+								label: __( 'Active', 'sgs-blocks' ),
+								value: tabActiveBgColour,
+								onChange: ( val ) => setAttributes( { tabActiveBgColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'tab-text',
+						label: __( 'Tab text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tabTextColour,
+								onChange: ( val ) => setAttributes( { tabTextColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'active',
+								label: __( 'Active', 'sgs-blocks' ),
+								value: tabActiveTextColour,
+								onChange: ( val ) => setAttributes( { tabActiveTextColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'tab-indicator',
+						label: __( 'Tab indicator colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tabIndicatorColour,
+								onChange: ( val ) => setAttributes( { tabIndicatorColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'active',
+								label: __( 'Active', 'sgs-blocks' ),
+								value: tabActiveIndicatorColour,
+								onChange: ( val ) => setAttributes( { tabActiveIndicatorColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'panel-bg',
+						label: __( 'Panel background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'active',
+								label: __( 'Active', 'sgs-blocks' ),
+								value: panelBgColour,
+								onChange: ( val ) => setAttributes( { panelBgColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'panel-border',
+						label: __( 'Panel border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'active',
+								label: __( 'Active', 'sgs-blocks' ),
+								value: panelBorderColour,
+								onChange: ( val ) => setAttributes( { panelBorderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* WS-4: mirrored sgs/container wrapper controls (layout kind). */ }
 				<ContainerWrapperControls
@@ -197,186 +320,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Colours', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToolsPanel
-						className="sgs-nested-tools-panel"
-						label={ __( 'Colours', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								tabTextColour: 'text-muted',
-								tabBgColour: undefined,
-								tabActiveTextColour: 'primary',
-								tabActiveBgColour: undefined,
-								tabIndicatorColour: undefined,
-								tabActiveIndicatorColour: 'primary',
-								tabHoverBgColour: undefined,
-								panelBgColour: undefined,
-								panelBorderColour: 'border-subtle',
-							} )
-						}
-					>
-						<ToolsPanelItem
-							label={ __( 'Tab text colour', 'sgs-blocks' ) }
-							hasValue={ () => tabTextColour !== 'text-muted' }
-							onDeselect={ () =>
-								setAttributes( { tabTextColour: 'text-muted' } )
-							}
-							isShownByDefault
-						>
-							<DesignTokenPicker
-								label={ __( 'Tab text colour', 'sgs-blocks' ) }
-								value={ tabTextColour }
-								onChange={ ( val ) =>
-									setAttributes( { tabTextColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Tab background (resting)', 'sgs-blocks' ) }
-							hasValue={ () => !! tabBgColour }
-							onDeselect={ () =>
-								setAttributes( { tabBgColour: undefined } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Tab background (resting)', 'sgs-blocks' ) }
-								value={ tabBgColour }
-								onChange={ ( val ) =>
-									setAttributes( { tabBgColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Active tab text colour', 'sgs-blocks' ) }
-							hasValue={ () => tabActiveTextColour !== 'primary' }
-							onDeselect={ () =>
-								setAttributes( { tabActiveTextColour: 'primary' } )
-							}
-							isShownByDefault
-						>
-							<DesignTokenPicker
-								label={ __(
-									'Active tab text colour',
-									'sgs-blocks'
-								) }
-								value={ tabActiveTextColour }
-								onChange={ ( val ) =>
-									setAttributes( { tabActiveTextColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Active tab background', 'sgs-blocks' ) }
-							hasValue={ () => !! tabActiveBgColour }
-							onDeselect={ () =>
-								setAttributes( { tabActiveBgColour: undefined } )
-							}
-							isShownByDefault
-						>
-							<DesignTokenPicker
-								label={ __(
-									'Active tab background',
-									'sgs-blocks'
-								) }
-								value={ tabActiveBgColour }
-								onChange={ ( val ) =>
-									setAttributes( { tabActiveBgColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Tab indicator colour (resting)', 'sgs-blocks' ) }
-							hasValue={ () => !! tabIndicatorColour }
-							onDeselect={ () =>
-								setAttributes( { tabIndicatorColour: undefined } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __(
-									'Tab indicator colour (resting)',
-									'sgs-blocks'
-								) }
-								value={ tabIndicatorColour }
-								onChange={ ( val ) =>
-									setAttributes( { tabIndicatorColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Active tab indicator colour', 'sgs-blocks' ) }
-							hasValue={ () =>
-								tabActiveIndicatorColour !== 'primary'
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									tabActiveIndicatorColour: 'primary',
-								} )
-							}
-						>
-							<DesignTokenPicker
-								label={ __(
-									'Active tab indicator colour',
-									'sgs-blocks'
-								) }
-								value={ tabActiveIndicatorColour }
-								onChange={ ( val ) =>
-									setAttributes( {
-										tabActiveIndicatorColour: val,
-									} )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Tab hover background', 'sgs-blocks' ) }
-							hasValue={ () => !! tabHoverBgColour }
-							onDeselect={ () =>
-								setAttributes( { tabHoverBgColour: undefined } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Tab hover background', 'sgs-blocks' ) }
-								value={ tabHoverBgColour }
-								onChange={ ( val ) =>
-									setAttributes( { tabHoverBgColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Panel background', 'sgs-blocks' ) }
-							hasValue={ () => !! panelBgColour }
-							onDeselect={ () =>
-								setAttributes( { panelBgColour: undefined } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Panel background', 'sgs-blocks' ) }
-								value={ panelBgColour }
-								onChange={ ( val ) =>
-									setAttributes( { panelBgColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Panel border colour', 'sgs-blocks' ) }
-							hasValue={ () => panelBorderColour !== 'border-subtle' }
-							onDeselect={ () =>
-								setAttributes( { panelBorderColour: 'border-subtle' } )
-							}
-						>
-							<DesignTokenPicker
-								label={ __( 'Panel border colour', 'sgs-blocks' ) }
-								value={ panelBorderColour }
-								onChange={ ( val ) =>
-									setAttributes( { panelBorderColour: val } )
-								}
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
 				</PanelBody>
 
 				<PanelBody

@@ -31,6 +31,7 @@ import {
 	ResponsiveOverride,
 	ResponsiveBoxControl,
 	TypographyControls,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -263,6 +264,49 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
+			   sits at the top of the inspector (Styles tab). Replaces the
+			   "Colour" DesignTokenPicker in the "Line" ToolsPanel and the
+			   "Icon colour"/"Text colour" DesignTokenPicker in the "Content"
+			   panel below (both single-state — neither has a hover pair).
+			   gradientColourStart/gradientColourEnd are DELIBERATELY left out
+			   — render.php (line 148) builds a genuine 2-stop CSS
+			   `linear-gradient()` fed into `border-image`, not a plain colour;
+			   SgsColourPanel/DesignTokenPicker's `states` shape is one colour
+			   per state, so it cannot represent a gradient. Gradient controls
+			   stay as their existing inline DesignTokenPicker pair in the
+			   "Gradient line" ToolsPanelItem, unchanged — gradient migration
+			   is explicitly out of scope (a separate future piece of work). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'colour',
+						label: __( 'Line colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: colour,
+								onChange: ( val ) => setAttributes( { colour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'contentColour',
+						label: __( 'Content colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: contentColour,
+								onChange: ( val ) => setAttributes( { contentColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* ---- Line ---- */ }
 				<ToolsPanel
@@ -358,20 +402,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveOverride>
 					</ToolsPanelItem>
 
-					<ToolsPanelItem
-						label={ __( 'Colour', 'sgs-blocks' ) }
-						hasValue={ () => !! colour }
-						onDeselect={ () => setAttributes( { colour: '' } ) }
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Colour', 'sgs-blocks' ) }
-							value={ colour }
-							onChange={ ( val ) =>
-								setAttributes( { colour: val ?? '' } )
-							}
-						/>
-					</ToolsPanelItem>
+					{ /* Line colour moved to the top-level SgsColourPanel
+					   (D618/D621) — "Line colour" row. */ }
 
 					<ToolsPanelItem
 						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
@@ -552,15 +584,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							<DesignTokenPicker
-								label={ __( 'Icon colour', 'sgs-blocks' ) }
-								value={ contentColour }
-								onChange={ ( val ) =>
-									setAttributes( {
-										contentColour: val ?? '',
-									} )
-								}
-							/>
+							{ /* Icon colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Content colour" row. */ }
 						</>
 					) }
 
@@ -576,15 +601,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							<DesignTokenPicker
-								label={ __( 'Text colour', 'sgs-blocks' ) }
-								value={ contentColour }
-								onChange={ ( val ) =>
-									setAttributes( {
-										contentColour: val ?? '',
-									} )
-								}
-							/>
+							{ /* Text colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Content colour" row. */ }
 							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }

@@ -45,11 +45,11 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	ResponsiveControl,
 	ResponsiveOverride,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -352,6 +352,87 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
+			   sits at the top of the inspector (Styles tab). Replaces 5
+			   scattered DesignTokenPicker rows below (Attribution's "Text
+			   colour", Wrapper's "Background colour", Border's "Border
+			   colour", Hover's "Text colour on hover" and "Background on
+			   hover").
+			   - "Background" pairs backgroundColour (normal) with
+			     backgroundColourHover — both target the SAME root fill
+			     (render.php: background-color on the root selector, and
+			     root:hover/:focus-within for the hover rule).
+			   - "Text colour (hover)" is genuinely HOVER-ONLY — textColourHover
+			     has no matching base attr (body text colour is owned by the
+			     child sgs/text blocks, per HC2 "parent owns layout, child owns
+			     typography"; render.php only ever sets `color` inside the
+			     `:hover,:focus-within` rule, never as a base declaration), so
+			     this row has a single state whose key is 'hover', not 'normal'.
+			   - "Attribution colour" and "Border colour" are single-state
+			     (no hover pair exists for either in render.php). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'textColourHover',
+						label: __( 'Text colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'attributionColour',
+						label: __( 'Attribution colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributionColour,
+								onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'borderColour',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* ---- Style ---- */ }
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>
@@ -418,20 +499,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Text colour', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionColour }
-								onDeselect={ () =>
-									setAttributes( { attributionColour: '' } )
-								}
-								isShownByDefault
-							>
-								<DesignTokenPicker
-									label={ __( 'Text colour', 'sgs-blocks' ) }
-									value={ attributionColour }
-									onChange={ ( val ) => setAttributes( { attributionColour: val ?? '' } ) }
-								/>
-							</ToolsPanelItem>
+							{ /* Attribution text colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Attribution colour" row. */ }
 							<ToolsPanelItem
 								label={ __( 'Font style', 'sgs-blocks' ) }
 								hasValue={ () => !! attributionFontStyle }
@@ -666,20 +735,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								} )
 							}
 						>
-							<ToolsPanelItem
-								label={ __( 'Background colour', 'sgs-blocks' ) }
-								hasValue={ () => !! backgroundColour }
-								onDeselect={ () =>
-									setAttributes( { backgroundColour: '' } )
-								}
-								isShownByDefault
-							>
-								<DesignTokenPicker
-									label={ __( 'Background colour', 'sgs-blocks' ) }
-									value={ backgroundColour }
-									onChange={ ( val ) => setAttributes( { backgroundColour: val ?? '' } ) }
-								/>
-							</ToolsPanelItem>
+							{ /* Background colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Background colour" row (paired with its
+							   hover state). */ }
 
 							<ToolsPanelItem
 								label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
@@ -817,13 +875,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						{ borderStyle !== 'none' && (
-							<DesignTokenPicker
-								label={ __( 'Border colour', 'sgs-blocks' ) }
-								value={ borderColour }
-								onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-							/>
-						) }
+						{ /* Border colour moved to the top-level SgsColourPanel
+						   (D618/D621) — "Border colour" row. */ }
 						<ResponsiveBoxControl
 							label={ __( 'Border width', 'sgs-blocks' ) }
 							values={ { base: borderWidth ?? {} } }
@@ -852,16 +905,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<DesignTokenPicker
-						label={ __( 'Text colour on hover', 'sgs-blocks' ) }
-						value={ textColourHover }
-						onChange={ ( val ) => setAttributes( { textColourHover: val ?? '' } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Background on hover', 'sgs-blocks' ) }
-						value={ backgroundColourHover }
-						onChange={ ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ) }
-					/>
+					{ /* Text colour on hover + Background on hover moved to the
+					   top-level SgsColourPanel (D618/D621) — "Text colour
+					   (hover)" and "Background colour" (hover state) rows. */ }
 					<TextControl
 						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
 						value={ boxShadowHover }

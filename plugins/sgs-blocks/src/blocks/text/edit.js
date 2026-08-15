@@ -24,11 +24,11 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 import { UnitControl } from '../../components/primitives';
@@ -338,6 +338,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth,
 		borderStyle,
 		borderColour,
+		backgroundColour,
+		backgroundColourHover,
+		textColourHover,
 	} = attributes;
 
 	// Drop-cap ::first-letter preview — gate the class only when dropCap is on
@@ -355,21 +358,82 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* Colour panel FIRST (D618/D619, sgs/button pattern). Text
+			   colour and background colour each pair their resting value
+			   with a Hover state (textColourHover/backgroundColourHover).
+			   Border colour and the first-letter drop-cap colour stay
+			   single-state — neither has a hover counterpart. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'textColour',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'backgroundColour',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'borderColour',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'firstLetterColour',
+						label: __( 'First-letter colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: firstLetterColour,
+								onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
-				{ /* ---- Colour ---- */ }
-				<PanelBody
-					title={ __( 'Colour', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ textColour }
-						onChange={ ( val ) =>
-							setAttributes( { textColour: val ?? '' } )
-						}
-					/>
-				</PanelBody>
-
 				{ /* ---- Typography ---- */ }
 				<PanelBody
 					title={ __( 'Typography', 'sgs-blocks' ) }
@@ -568,11 +632,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						showResponsive={ false }
 						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
 					/>
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						value={ borderColour }
-						onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-					/>
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						values={ { base: style?.border?.radius ?? {} } }
@@ -598,15 +657,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ dropCap && (
 						<>
-							<DesignTokenPicker
-								label={ __( 'First-letter colour', 'sgs-blocks' ) }
-								value={ firstLetterColour }
-								onChange={ ( val ) =>
-									setAttributes( {
-										firstLetterColour: val ?? '',
-									} )
-								}
-							/>
 							{ /* First-letter size — UnitControl (number + unit in one input) */ }
 							<UnitControl
 								label={ __( 'First-letter size', 'sgs-blocks' ) }

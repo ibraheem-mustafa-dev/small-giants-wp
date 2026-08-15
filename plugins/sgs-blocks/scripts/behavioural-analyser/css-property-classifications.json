@@ -562,7 +562,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "GRID"
       }
     },
@@ -1004,7 +1004,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "desktop",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2711,7 +2711,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -3984,7 +3984,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

@@ -34,11 +34,10 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
-	DesignTokenPicker,
 	TypographyControls,
-	StateToggleControl,
 	ResponsiveBoxControl,
 	ResponsiveControl,
+	SgsColourPanel,
 } from '../../components';
 import { BoxControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 
@@ -459,8 +458,246 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const blockProps = useBlockProps();
 
+	// D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
+	// FIRST so it sits at the top of the Styles tab). Replaces every scattered
+	// DesignTokenPicker/StateToggleControl colour control that used to live in
+	// the Nav container / Items / Underline / Featured / Burger / Effects /
+	// Dropdown panels below. Every state below carries `linked: true` (D619).
+	//
+	// itemColourHover/itemBgHover/itemRadiusHover: GROUND-TRUTH checked against
+	// render.php (2026-08-15 rebuild) — `$hover_targets` (line ~953) is now
+	// `:hover,:focus-visible` ONLY. The current-page indicator was deliberately
+	// SEPARATED from hover (Bean, 2026-07-31 — see render.php's "CURRENT-PAGE
+	// IS NO LONGER IN THIS LIST" comment) and now gets its own font-weight/
+	// border-left treatment with no colour attribute of its own. The
+	// block.json element manifest's `item.states.selected` entry (which still
+	// shows the same attrMap as `hover`) is STALE documentation left over from
+	// before that fix — do not wire a "Selected" state from it.
+	//
+	// submenuBg/submenuColour: `css=None` in the DB, but render.php confirms a
+	// real property each — submenuBg feeds `--sgs-nm-submenu-bg` into
+	// `.sgs-nav-menu__submenu`'s `background` (~line 1347); submenuColour feeds
+	// `--sgs-nm-submenu-colour` into `.sgs-nav-menu__sublink`'s `color`
+	// (~line 1383). Neither has a hover sibling attribute, so each is a
+	// single-state row.
+	//
+	// navBg/submenuBg: checked against nav-drawer/render.php (own `drawerBg`
+	// attribute, styles the `<dialog>` root) and site-header (inserts
+	// sgs/nav-menu as a plain child, no shared background attribute) — neither
+	// competes with this block's own navBg/submenuBg. The drawer holds its OWN
+	// sgs/nav-menu instance (own uid), so setting navBg/submenuBg there styles
+	// only that copy. Single source of truth confirmed; wired directly.
+	const colourRows = [
+		{
+			key: 'nav-bg',
+			label: __( 'Nav background', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: navBg,
+					onChange: ( val ) => setAttributes( { navBg: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: navBgHover,
+					onChange: ( val ) => setAttributes( { navBgHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'nav-text',
+			label: __( 'Nav text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: navColour,
+					onChange: ( val ) => setAttributes( { navColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'item-text',
+			label: __( 'Item text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: itemColour,
+					onChange: ( val ) => setAttributes( { itemColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: itemColourHover,
+					onChange: ( val ) => setAttributes( { itemColourHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'item-bg',
+			label: __( 'Item background', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: itemBg,
+					onChange: ( val ) => setAttributes( { itemBg: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: itemBgHover,
+					onChange: ( val ) => setAttributes( { itemBgHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		'underline' === hoverStyle && {
+			key: 'underline',
+			label: __( 'Underline colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: underlineColour,
+					onChange: ( val ) => setAttributes( { underlineColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: underlineColourHover,
+					onChange: ( val ) => setAttributes( { underlineColourHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'featured-text',
+			label: __( 'Featured text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: featuredColour,
+					onChange: ( val ) => setAttributes( { featuredColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: featuredColourHover,
+					onChange: ( val ) => setAttributes( { featuredColourHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'featured-bg',
+			label: __( 'Featured background', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: featuredBg,
+					onChange: ( val ) => setAttributes( { featuredBg: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: featuredBgHover,
+					onChange: ( val ) => setAttributes( { featuredBgHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'burger-icon',
+			label: __( 'Burger icon colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: burgerColour,
+					onChange: ( val ) => setAttributes( { burgerColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'burger-bg',
+			label: __( 'Burger background', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: burgerBg,
+					onChange: ( val ) => setAttributes( { burgerBg: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: burgerHoverColour,
+					onChange: ( val ) => setAttributes( { burgerHoverColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		'pill' === indicatorStyle && {
+			key: 'indicator',
+			label: __( 'Indicator colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: indicatorColour,
+					onChange: ( val ) => setAttributes( { indicatorColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'submenu-bg',
+			label: __( 'Dropdown background', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: submenuBg,
+					onChange: ( val ) => setAttributes( { submenuBg: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'submenu-text',
+			label: __( 'Dropdown link colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: submenuColour,
+					onChange: ( val ) => setAttributes( { submenuColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+	];
+
 	return (
 		<>
+			<SgsColourPanel rows={ colourRows } />
 			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
 				{ showDrawerNotice && (
@@ -936,44 +1173,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 					resetAll={ () =>
 						setAttributes( {
-							submenuBg: '',
-							submenuColour: '',
 							submenuMinWidth: '',
 							submenuRadius: '',
 							submenuPadding: {},
 						} )
 					}
 				>
-					<ToolsPanelItem
-						hasValue={ () => !! submenuBg }
-						label={ __( 'Background', 'sgs-blocks' ) }
-						onDeselect={ () => setAttributes( { submenuBg: '' } ) }
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Background', 'sgs-blocks' ) }
-							value={ submenuBg }
-							onChange={ ( val ) =>
-								setAttributes( { submenuBg: val || '' } )
-							}
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						hasValue={ () => !! submenuColour }
-						label={ __( 'Link colour', 'sgs-blocks' ) }
-						onDeselect={ () =>
-							setAttributes( { submenuColour: '' } )
-						}
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Link colour', 'sgs-blocks' ) }
-							value={ submenuColour }
-							onChange={ ( val ) =>
-								setAttributes( { submenuColour: val || '' } )
-							}
-						/>
-					</ToolsPanelItem>
+					{ /* Background + Link colour moved to the top-level
+					   SgsColourPanel (D618/D609) — always shown there (a
+					   dropdown is optional per menu item, but the controls
+					   themselves are not gated on one existing, matching this
+					   ToolsPanel's own prior behaviour). */ }
 					<ToolsPanelItem
 						hasValue={ () => !! submenuMinWidth }
 						label={ __( 'Minimum width', 'sgs-blocks' ) }
@@ -1049,70 +1259,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</ToolsPanel>
 
 				{ /*
-				   Nav CONTAINER appearance. Added 2026-07-28 (Bean-directed):
-				   the block had per-ITEM colours but nothing for the bar
-				   itself, so a client could never give the nav its own
-				   surface. Everything here is unset by default — an
-				   untouched nav renders exactly as before.
-
-				   This panel is ALSO the drawer's styling surface: the
-				   drawer holds its own sgs/nav-menu instance, so selecting
-				   the nav inside the drawer and setting a background here
-				   styles the drawer only.
+				   Nav CONTAINER appearance — colours moved to the top-level
+				   SgsColourPanel (D618/D609, 2026-08-15). This panel used to
+				   hold ONLY navBg/navBgHover/navColour, so nothing is left
+				   here; it is intentionally removed rather than left as an
+				   empty shell. The drawer styling note still applies: the
+				   drawer holds its own sgs/nav-menu instance, so setting the
+				   colour panel's Nav background/text on the nav INSIDE the
+				   drawer styles the drawer only.
 				*/ }
-				<PanelBody
-					title={ __( 'Nav container', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<p className="components-base-control__help">
-						{ __(
-							'The bar itself — its background and text colour. Leave anything blank to inherit from the header or menu panel around it. The menu inside your menu panel is a separate copy: select it there to style the panel on its own. For a border or a pill look around the whole header, style the Site Header block instead.',
-							'sgs-blocks'
-						) }
-					</p>
-
-					<StateToggleControl>
-						{ ( state ) =>
-							state === 'hover' ? (
-								<>
-									<DesignTokenPicker
-										label={ __( 'Background', 'sgs-blocks' ) }
-										value={ navBgHover }
-										onChange={ ( value ) =>
-											setAttributes( { navBgHover: value || '' } )
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									</>
-							) : (
-								<>
-									<DesignTokenPicker
-										label={ __( 'Background', 'sgs-blocks' ) }
-										value={ navBg }
-										onChange={ ( value ) =>
-											setAttributes( { navBg: value || '' } )
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									<DesignTokenPicker
-										label={ __( 'Text colour', 'sgs-blocks' ) }
-										value={ navColour }
-										onChange={ ( value ) =>
-											setAttributes( { navColour: value || '' } )
-										}
-										linked
-										clearable
-									/>
-								</>
-							)
-						}
-					</StateToggleControl>
-
-				</PanelBody>
 
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
 					<SelectControl
@@ -1145,110 +1300,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 
-					<StateToggleControl
-						label={ __( 'State', 'sgs-blocks' ) }
-						swatches={ [
-							{
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: itemColour,
-							},
-							{
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: itemColourHover,
-							},
-						] }
-					>
-						{ ( state ) => {
-							const isNormal = 'normal' === state;
-							return (
-								<>
-									<DesignTokenPicker
-										label={ __(
-											'Text colour',
-											'sgs-blocks'
-										) }
-										value={
-											isNormal
-												? itemColour
-												: itemColourHover
-										}
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? { itemColour: val }
-													: { itemColourHover: val }
-											)
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									<DesignTokenPicker
-										label={ __(
-											'Background',
-											'sgs-blocks'
-										) }
-										value={ isNormal ? itemBg : itemBgHover }
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? { itemBg: val }
-													: { itemBgHover: val }
-											)
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									<UnitControl
-										label={ __(
-											'Corner radius',
-											'sgs-blocks'
-										) }
-										value={ `${
-											isNormal
-												? itemRadius
-												: itemRadiusHover ??
-												  itemRadius
-										}px` }
-										units={ [
-											{
-												value: 'px',
-												label: 'px',
-												default: 8,
-											},
-										] }
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? {
-															itemRadius:
-																parseFloat(
-																	val
-																) || 0,
-													  }
-													: {
-															itemRadiusHover:
-																parseFloat(
-																	val
-																) || 0,
-													  }
-											)
-										}
-										help={
-											isNormal
-												? undefined
-												: __(
-														'Leave matching Normal for a pill that keeps its shape on hover.',
-														'sgs-blocks'
-												  )
-										}
-										__next40pxDefaultSize
-									/>
-								</>
-							);
-						} }
-					</StateToggleControl>
+					{ /* Colours (text/background, Normal + Hover) moved to the
+					   top-level SgsColourPanel (D618/D609). Radius is not a
+					   colour, so it stays here as a plain Normal/Hover pair. */ }
+					<UnitControl
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ `${ itemRadius }px` }
+						units={ [ { value: 'px', label: 'px', default: 8 } ] }
+						onChange={ ( val ) =>
+							setAttributes( { itemRadius: parseFloat( val ) || 0 } )
+						}
+						__next40pxDefaultSize
+					/>
+					<UnitControl
+						label={ __( 'Corner radius on hover', 'sgs-blocks' ) }
+						value={ `${ itemRadiusHover ?? itemRadius }px` }
+						units={ [ { value: 'px', label: 'px', default: 8 } ] }
+						onChange={ ( val ) =>
+							setAttributes( { itemRadiusHover: parseFloat( val ) || 0 } )
+						}
+						help={ __(
+							'Leave matching Normal for a pill that keeps its shape on hover.',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
 
 					<TypographyControls
 						prefix="item"
@@ -1284,22 +1360,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToggleGroupControl>
 
-					{ 'pill' === indicatorStyle && (
-						<DesignTokenPicker
-							label={ __( 'Indicator colour', 'sgs-blocks' ) }
-							value={ indicatorColour }
-							onChange={ ( val ) =>
-								setAttributes( { indicatorColour: val } )
-							}
-							linked
-							enableAlpha
-							clearable
-							help={ __(
-								'Leave empty to use the theme accent colour.',
-								'sgs-blocks'
-							) }
-						/>
-					) }
+					{ /* Indicator colour moved to the top-level SgsColourPanel
+					   (D618/D609) — shown there only when the indicator is
+					   On, mirroring this panel's own visibility gate. */ }
 
 					<ToggleControl
 						label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
@@ -1320,55 +1383,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						title={ __( 'Underline', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<StateToggleControl
-							label={ __( 'State', 'sgs-blocks' ) }
-							swatches={ [
-								{
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: underlineColour,
-								},
-								{
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: underlineColourHover,
-								},
-							] }
-						>
-							{ ( state ) =>
-								'normal' === state ? (
-									<DesignTokenPicker
-										label={ __(
-											'Bar colour',
-											'sgs-blocks'
-										) }
-										value={ underlineColour }
-										onChange={ ( val ) =>
-											setAttributes( {
-												underlineColour: val,
-											} )
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-								) : (
-									<DesignTokenPicker
-										label={ __(
-											'Bar colour on hover',
-											'sgs-blocks'
-										) }
-										value={ underlineColourHover }
-										onChange={ ( val ) =>
-											setAttributes( {
-												underlineColourHover: val,
-											} )
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-								)
-							}
-						</StateToggleControl>
+						{ /* Bar colour (Normal + Hover) moved to the top-level
+						   SgsColourPanel (D618/D609) — only shown there when
+						   Hover style is 'underline', mirroring this panel's
+						   own visibility gate. */ }
 						<UnitControl
 							label={ __( 'Thickness', 'sgs-blocks' ) }
 							value={ `${ underlineThickness }px` }
@@ -1406,147 +1424,56 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				) }
 
 				<PanelBody title={ __( 'Featured', 'sgs-blocks' ) } initialOpen={ false }>
-					<StateToggleControl
-						label={ __( 'State', 'sgs-blocks' ) }
-						swatches={ [
-							{
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: featuredColour,
-							},
-							{
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: featuredColourHover,
-							},
+					{ /* Text/background colour (Normal + Hover) moved to the
+					   top-level SgsColourPanel (D618/D609). Radius and font
+					   weight are not colours, so they stay here as plain
+					   Normal/Hover pairs. */ }
+					<UnitControl
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ `${ featuredRadius }px` }
+						units={ [ { value: 'px', label: 'px', default: 8 } ] }
+						onChange={ ( val ) =>
+							setAttributes( { featuredRadius: parseFloat( val ) || 0 } )
+						}
+						__next40pxDefaultSize
+					/>
+					<UnitControl
+						label={ __( 'Corner radius on hover', 'sgs-blocks' ) }
+						value={ `${ featuredRadiusHover ?? featuredRadius }px` }
+						units={ [ { value: 'px', label: 'px', default: 8 } ] }
+						onChange={ ( val ) =>
+							setAttributes( { featuredRadiusHover: parseFloat( val ) || 0 } )
+						}
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Font weight', 'sgs-blocks' ) }
+						value={ String( featuredFontWeight ) }
+						options={ [
+							{ label: 'Regular', value: '400' },
+							{ label: 'Medium', value: '500' },
+							{ label: 'Semi-bold', value: '600' },
+							{ label: 'Bold', value: '700' },
 						] }
-					>
-						{ ( state ) => {
-							const isNormal = 'normal' === state;
-							return (
-								<>
-									<DesignTokenPicker
-										label={ __(
-											'Text colour',
-											'sgs-blocks'
-										) }
-										value={
-											isNormal
-												? featuredColour
-												: featuredColourHover
-										}
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? { featuredColour: val }
-													: {
-															featuredColourHover:
-																val,
-													  }
-											)
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									<DesignTokenPicker
-										label={ __(
-											'Background',
-											'sgs-blocks'
-										) }
-										value={
-											isNormal
-												? featuredBg
-												: featuredBgHover
-										}
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? { featuredBg: val }
-													: { featuredBgHover: val }
-											)
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									<UnitControl
-										label={ __(
-											'Corner radius',
-											'sgs-blocks'
-										) }
-										value={ `${
-											isNormal
-												? featuredRadius
-												: featuredRadiusHover ??
-												  featuredRadius
-										}px` }
-										units={ [
-											{
-												value: 'px',
-												label: 'px',
-												default: 8,
-											},
-										] }
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? {
-															featuredRadius:
-																parseFloat(
-																	val
-																) || 0,
-													  }
-													: {
-															featuredRadiusHover:
-																parseFloat(
-																	val
-																) || 0,
-													  }
-											)
-										}
-										__next40pxDefaultSize
-									/>
-									<SelectControl
-										label={ __(
-											'Font weight',
-											'sgs-blocks'
-										) }
-										value={ String(
-											isNormal
-												? featuredFontWeight
-												: featuredFontWeightHover ??
-														featuredFontWeight
-										) }
-										options={ [
-											{ label: 'Regular', value: '400' },
-											{ label: 'Medium', value: '500' },
-											{ label: 'Semi-bold', value: '600' },
-											{ label: 'Bold', value: '700' },
-										] }
-										onChange={ ( val ) =>
-											setAttributes(
-												isNormal
-													? {
-															featuredFontWeight:
-																parseInt(
-																	val,
-																	10
-																),
-													  }
-													: {
-															featuredFontWeightHover:
-																parseInt(
-																	val,
-																	10
-																),
-													  }
-											)
-										}
-										__next40pxDefaultSize
-									/>
-								</>
-							);
-						} }
-					</StateToggleControl>
+						onChange={ ( val ) =>
+							setAttributes( { featuredFontWeight: parseInt( val, 10 ) } )
+						}
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Font weight on hover', 'sgs-blocks' ) }
+						value={ String( featuredFontWeightHover ?? featuredFontWeight ) }
+						options={ [
+							{ label: 'Regular', value: '400' },
+							{ label: 'Medium', value: '500' },
+							{ label: 'Semi-bold', value: '600' },
+							{ label: 'Bold', value: '700' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { featuredFontWeightHover: parseInt( val, 10 ) } )
+						}
+						__next40pxDefaultSize
+					/>
 					<p className="sgs-nav-menu__inspector-note">
 						{ __(
 							'Applies to the items ticked under Settings → Featured items. Set a background to render them as a filled pill; leave it empty for a coloured label. The text colour is checked for contrast against the background and falls back to a readable one if it would be hard to read.',
@@ -1556,56 +1483,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Burger', 'sgs-blocks' ) } initialOpen={ false }>
-					<StateToggleControl
-						label={ __( 'State', 'sgs-blocks' ) }
-						swatches={ [
-							{ label: __( 'Normal', 'sgs-blocks' ), value: burgerColour },
-							{ label: __( 'Hover', 'sgs-blocks' ), value: burgerHoverColour },
-						] }
-					>
-						{ ( state ) =>
-							'normal' === state ? (
-								<>
-									<DesignTokenPicker
-										label={ __( 'Icon colour', 'sgs-blocks' ) }
-										value={ burgerColour }
-										onChange={ ( val ) =>
-											setAttributes( { burgerColour: val } )
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-									<DesignTokenPicker
-										label={ __( 'Background', 'sgs-blocks' ) }
-										value={ burgerBg }
-										onChange={ ( val ) =>
-											setAttributes( { burgerBg: val } )
-										}
-										linked
-										enableAlpha
-										clearable
-									/>
-								</>
-							) : (
-								<DesignTokenPicker
-									label={ __(
-										'Hover background',
-										'sgs-blocks'
-									) }
-									value={ burgerHoverColour }
-									onChange={ ( val ) =>
-										setAttributes( {
-											burgerHoverColour: val,
-										} )
-									}
-									linked
-									enableAlpha
-									clearable
-								/>
-							)
-						}
-					</StateToggleControl>
+					{ /* Icon colour + background (Normal + Hover) moved to
+					   the top-level SgsColourPanel (D618/D609). */ }
 					<UnitControl
 						label={ __( 'Button size', 'sgs-blocks' ) }
 						value={ burgerSize }

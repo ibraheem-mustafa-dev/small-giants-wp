@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { IconPreview, ResponsiveBoxControl } from '../../components';
+import { IconPreview, ResponsiveBoxControl, SgsColourPanel } from '../../components';
 import { colourVar } from '../../utils';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
@@ -68,6 +68,75 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'icon',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'badgeBackground',
+						label: __( 'Badge background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: badgeColour,
+								onChange: ( val ) => setAttributes( { badgeColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'badgeText',
+						label: __( 'Badge text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: badgeTextColour,
+								onChange: ( val ) => setAttributes( { badgeTextColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					hasPanel && {
+						key: 'panelBackground',
+						label: __( 'Panel background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: panelBg,
+								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					hasPanel && {
+						key: 'panelText',
+						label: __( 'Panel text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: panelTextColour,
+								onChange: ( val ) => setAttributes( { panelTextColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelSettingsControls
 					displayMode={ displayMode }
@@ -77,8 +146,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					emptyCartCtaLabel={ emptyCartCtaLabel }
 					viewCartLabel={ viewCartLabel }
 					checkoutLabel={ checkoutLabel }
-					panelBg={ panelBg }
-					panelTextColour={ panelTextColour }
 					autoOpenOnAdd={ autoOpenOnAdd }
 					hideOnCartCheckoutPages={ hideOnCartCheckoutPages }
 					setAttributes={ setAttributes }
@@ -87,9 +154,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				<TriggerSettingsControls
 					iconName={ iconName }
 					iconSize={ iconSize }
-					iconColour={ iconColour }
-					badgeColour={ badgeColour }
-					badgeTextColour={ badgeTextColour }
 					showZero={ showZero }
 					hideWhenEmpty={ hideWhenEmpty }
 					setAttributes={ setAttributes }

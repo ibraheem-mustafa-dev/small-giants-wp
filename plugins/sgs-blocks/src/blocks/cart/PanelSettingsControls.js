@@ -5,7 +5,6 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
 
 /**
  * SGS Cart — FR-36-19 Phase 2 inspector controls: display mode + the
@@ -20,8 +19,6 @@ import { DesignTokenPicker } from '../../components';
  * @param {string}   root0.emptyCartCtaLabel       Empty-cart CTA button text.
  * @param {string}   root0.viewCartLabel           "View cart" button text.
  * @param {string}   root0.checkoutLabel           "Checkout" button text.
- * @param {string}   root0.panelBg                 Panel background colour token.
- * @param {string}   root0.panelTextColour         Panel text colour token.
  * @param {boolean}  root0.autoOpenOnAdd           Whether the panel auto-opens on add.
  * @param {boolean}  root0.hideOnCartCheckoutPages Whether the panel is suppressed on cart/checkout.
  * @param {Function} root0.setAttributes           The block's attribute setter.
@@ -34,8 +31,6 @@ export default function PanelSettingsControls( {
 	emptyCartCtaLabel,
 	viewCartLabel,
 	checkoutLabel,
-	panelBg,
-	panelTextColour,
 	autoOpenOnAdd,
 	hideOnCartCheckoutPages,
 	setAttributes,
@@ -121,20 +116,6 @@ export default function PanelSettingsControls( {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Panel background', 'sgs-blocks' ) }
-						value={ panelBg }
-						onChange={ ( val ) =>
-							setAttributes( { panelBg: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Panel text colour', 'sgs-blocks' ) }
-						value={ panelTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { panelTextColour: val } )
-						}
 					/>
 					<ToggleControl
 						label={ __(

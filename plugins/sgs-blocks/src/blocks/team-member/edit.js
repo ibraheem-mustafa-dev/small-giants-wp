@@ -39,7 +39,7 @@ import {
 	ToggleControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview } from '../../utils';
 import { UnitControl } from '../../components/primitives';
@@ -299,6 +299,38 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* Colour panel FIRST (D618/D619, sgs/button pattern). Both
+			   nameColour and roleColour are plain single-state colours. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'nameColour',
+						label: __( 'Name colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nameColour,
+								onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'roleColour',
+						label: __( 'Role colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: roleColour,
+								onChange: ( val ) => setAttributes( { roleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
 					<SelectControl
@@ -372,19 +404,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveControl>
-				</PanelBody>
-
-				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Name colour', 'sgs-blocks' ) }
-						value={ nameColour }
-						onChange={ ( val ) => setAttributes( { nameColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Role colour', 'sgs-blocks' ) }
-						value={ roleColour }
-						onChange={ ( val ) => setAttributes( { roleColour: val } ) }
-					/>
 				</PanelBody>
 
 				{ /* Box-object interface contract §B/§E: padding/margin base routes

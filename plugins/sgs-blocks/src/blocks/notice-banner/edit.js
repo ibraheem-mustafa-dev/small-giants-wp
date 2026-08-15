@@ -13,8 +13,8 @@ import {
 import {
 	IconPicker,
 	IconPreview,
-	DesignTokenPicker,
 	ResponsiveBoxControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -173,6 +173,28 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
+			   sits at the top of the inspector (Styles tab). Replaces the
+			   inline "Icon colour" DesignTokenPicker that used to sit inside
+			   the "Icon" ToolsPanelItem below. Single-state — iconColour has
+			   no hover counterpart. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'iconColour',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
 				     dropped SGS_Container_Wrapper (D294) in favour of block-private
@@ -387,12 +409,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										__nextHasNoMarginBottom
 									/>
 								) }
-								<DesignTokenPicker
-									label={ __( 'Icon colour', 'sgs-blocks' ) }
-									value={ iconColour || '' }
-									onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
-									clearable={ true }
-								/>
+								{ /* Icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
 							</ToolsPanelItem>
 						) }
 					</ToolsPanel>

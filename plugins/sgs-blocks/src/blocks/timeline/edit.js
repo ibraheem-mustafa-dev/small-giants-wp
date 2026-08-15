@@ -15,10 +15,10 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	IconPicker,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 
@@ -315,6 +315,84 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						/* Wrapper text/background colour — previously WP-native
+						   `supports.color` (text/background), now disabled
+						   (block.json) so this SGS panel is the only surface.
+						   Still stored at `style.color.text`/`style.color.background`
+						   (render.php:78-80, 245-253 reads + applies these to the
+						   root `.sgs-timeline` element via the style engine) — not
+						   a new attr, just moved off the native auto-generated UI. */
+						key: 'wrapperText',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.text,
+								onChange: ( val ) =>
+									setAttributes( { style: { ...style, color: { ...style?.color, text: val ?? undefined } } } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: style?.color?.background,
+								onChange: ( val ) =>
+									setAttributes( { style: { ...style, color: { ...style?.color, background: val ?? undefined } } } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'connector',
+						label: __( 'Connector colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorColour,
+								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'date',
+						label: __( 'Date colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dateColour,
+								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{/* ── Entries ── */}
 				<PanelBody title={ __( 'Timeline entries', 'sgs-blocks' ) }>
@@ -364,11 +442,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { connectorStyle: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Connector colour', 'sgs-blocks' ) }
-						value={ connectorColour }
-						onChange={ ( val ) => setAttributes( { connectorColour: val } ) }
 					/>
 				</PanelBody>
 
@@ -423,19 +496,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 					{ borderStyle !== 'none' && (
-						<>
-							<DesignTokenPicker
-								label={ __( 'Border colour', 'sgs-blocks' ) }
-								value={ borderColour }
-								onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-							/>
-							<ResponsiveBoxControl
-								label={ __( 'Border width', 'sgs-blocks' ) }
-								values={ { base: borderWidth ?? {} } }
-								showResponsive={ false }
-								onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
-							/>
-						</>
+						<ResponsiveBoxControl
+							label={ __( 'Border width', 'sgs-blocks' ) }
+							values={ { base: borderWidth ?? {} } }
+							showResponsive={ false }
+							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+						/>
 					) }
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
@@ -451,15 +517,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
 						} }
-					/>
-				</PanelBody>
-
-				{/* ── Colours ── */}
-				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Date colour', 'sgs-blocks' ) }
-						value={ dateColour }
-						onChange={ ( val ) => setAttributes( { dateColour: val } ) }
 					/>
 				</PanelBody>
 

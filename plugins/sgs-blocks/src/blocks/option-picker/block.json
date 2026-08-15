@@ -25,9 +25,9 @@
 		"anchor": true,
 		"className": true,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {

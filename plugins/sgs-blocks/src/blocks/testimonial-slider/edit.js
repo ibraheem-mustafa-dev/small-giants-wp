@@ -24,7 +24,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { SgsColourPanel } from '../../components';
 import { colourVar } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -134,8 +134,63 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	);
 
+	// D619/D609 — the wrapper's own colours are HOVER-ONLY in this block's
+	// attribute set (block.json declares backgroundColourHover/
+	// textColourHover/borderColourHover with no normal-state counterpart —
+	// verified against block.json attributes + the `slider` element's
+	// `states.hover.attrMap`, which is the ONLY states entry present). Quote
+	// text/author/rating/avatar colours belong to the child sgs/testimonial
+	// block's own manifest (block.json `_ownership_note`) and are out of
+	// scope here. Each row therefore carries a single 'hover' state — still
+	// `linked: true` per D619 — rather than a normal/hover pair.
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) =>
+									setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) =>
+									setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
@@ -471,6 +526,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Hover States', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /* Colours moved to the top-level SgsColourPanel (D609/D619)
+					   — this panel now holds only the non-colour hover
+					   behaviour (the transition shape). */ }
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
 						value={ effectHover }
@@ -480,27 +538,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						value={ backgroundColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { backgroundColourHover: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						value={ textColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { textColourHover: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						value={ borderColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { borderColourHover: val } )
-						}
 					/>
 				</PanelBody>
 			</InspectorControls>

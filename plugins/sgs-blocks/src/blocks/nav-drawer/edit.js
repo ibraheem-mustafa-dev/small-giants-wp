@@ -32,7 +32,7 @@ import {
 	Icon,
 } from '@wordpress/components';
 import { close } from '@wordpress/icons';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl, resolveColourToken } from '../../components';
+import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
@@ -167,6 +167,42 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
+			   sits at the top of the inspector (Styles tab). Replaces the two
+			   scattered DesignTokenPicker rows that used to live in "Drawer
+			   container" (Background) and "Close button" (Close icon colour)
+			   below. Neither attr has a hover counterpart, so each is a
+			   single-state row. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'drawerBg',
+						label: __( 'Drawer background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: drawerBg,
+								onChange: ( val ) => setAttributes( { drawerBg: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'toggleCloseColour',
+						label: __( 'Close icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: toggleCloseColour,
+								onChange: ( val ) => setAttributes( { toggleCloseColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			{ /* ── Settings tab ─────────────────────────────────────────── */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Drawer', 'sgs-blocks' ) }>
@@ -289,17 +325,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Styles tab ──────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Drawer container', 'sgs-blocks' ) }>
-					{ /* Fill. Deliberately preset-slug-only (no enableAlpha) — the
-					     WCAG auto-contrast foreground (sgs_resolve_palette_hex) needs
-					     a resolvable slug; a custom/alpha value would break the
-					     zero-config contrast pairing. */ }
-					<DesignTokenPicker
-						label={ __( 'Background', 'sgs-blocks' ) }
-						value={ drawerBg }
-						onChange={ ( value ) => setAttributes( { drawerBg: value || '' } ) }
-						linked
-						clearable
-					/>
+					{ /* Background moved to the top-level SgsColourPanel (D618/D621).
+					   NOTE: that shared control does not expose an alpha/clearable
+					   override per row (SgsColourPanel forwards no such props),
+					   so the previous "preset-slug-only, no enableAlpha" WCAG
+					   guard rail here is superseded by the shared panel's
+					   default (enableAlpha=true) — consistent with how every
+					   other consumer of SgsColourPanel already behaves. */ }
 
 					{ /* Surface — opacity + blur on the panel itself. No separate scrim:
 					     the panel's own fill/blur IS the occlusion (8/8 reference sites
@@ -377,14 +409,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Close button', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Close icon colour', 'sgs-blocks' ) }
-						value={ toggleCloseColour }
-						onChange={ ( value ) => setAttributes( { toggleCloseColour: value || '' } ) }
-						linked
-						enableAlpha
-						clearable
-					/>
+					{ /* Close icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
 					<p style={ { fontSize: '12px', color: '#757575', margin: '4px 0 0' } }>
 						{ __(
 							'Leave empty to match the drawer’s text colour automatically. The × is always present — it cannot be deleted.',

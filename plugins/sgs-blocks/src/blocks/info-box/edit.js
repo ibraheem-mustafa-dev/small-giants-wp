@@ -11,7 +11,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 import { UnitControl } from '../../components/primitives';
 
 /**
@@ -247,6 +247,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
+		backgroundColourHover,
+		textColourHover,
+		borderColourHover,
 	} = attributes;
 
 	// -------------------------------------------------------------------------
@@ -355,6 +358,58 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
+			   This block's NORMAL-state background/text/border colours are
+			   WP-native `style.color.*`/`__experimentalBorder.color` (own native
+			   UI, left untouched — genuinely consumed by render.php, no SGS
+			   custom attr exists to replace them). Only the HOVER states are
+			   custom SGS attrs with no native equivalent, so they render here as
+			   single-state rows (no "Normal" tab — there is no sibling base
+			   attr for these three). Every state links to the theme palette
+			   (D619). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* ===== Media type (convenience swap — first child only) ===== */ }
 				<PanelBody title={ __( 'Media', 'sgs-blocks' ) } initialOpen={ true }>

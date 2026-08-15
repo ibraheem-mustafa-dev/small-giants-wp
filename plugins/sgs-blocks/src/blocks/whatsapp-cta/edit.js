@@ -12,10 +12,10 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	TypographyControls,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 
@@ -94,6 +94,36 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'label',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: labelColour,
+								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'WhatsApp Settings', 'sgs-blocks' ) }>
 					<TextControl
@@ -160,28 +190,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ labelColour }
-						onChange={ ( val ) =>
-							setAttributes( { labelColour: val } )
-						}
-					/>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="label"
 						showLineHeight={ false }
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Background colour',
-							'sgs-blocks'
-						) }
-						value={ backgroundColour }
-						onChange={ ( val ) =>
-							setAttributes( { backgroundColour: val } )
-						}
 					/>
 				</PanelBody>
 

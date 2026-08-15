@@ -30,7 +30,7 @@ import {
 import {
 	PanelBody,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, resolveColourToken } from '../../components';
+import { ResponsiveBoxControl, resolveColourToken, SgsColourPanel } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
@@ -135,6 +135,43 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* GROUND-TRUTH: block.json attributes.asideBg / asideBorderColour
+			   (both plain string colour attrs, no default) + render.php:82-122
+			   (asideBg -> background-color; asideBorderColour -> border-color,
+			   falling back to --sgs-mm-panel-border when unset) — confirmed
+			   2026-08-15. Both single-state (no hover pair exists for either),
+			   `linked: true` per D619 (both previously used `linked` on their
+			   DesignTokenPicker already). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: asideBg,
+								onChange: ( val ) => setAttributes( { asideBg: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: asideBorderColour,
+								onChange: ( val ) => setAttributes( { asideBorderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Aside', 'sgs-blocks' ) }>
 					<ToggleGroupControl
@@ -164,17 +201,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'CTA', 'sgs-blocks' ) }
 						/>
 					</ToggleGroupControl>
-
-					<DesignTokenPicker
-						label={ __( 'Background', 'sgs-blocks' ) }
-						value={ asideBg }
-						onChange={ ( value ) =>
-							setAttributes( { asideBg: value || '' } )
-						}
-						linked
-						enableAlpha
-						clearable
-					/>
 
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
@@ -212,16 +238,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'em', label: 'em', default: 0.5 },
 						] }
 						__next40pxDefaultSize
-					/>
-
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						value={ asideBorderColour }
-						onChange={ ( value ) =>
-							setAttributes( { asideBorderColour: value || '' } )
-						}
-						linked
-						clearable
 					/>
 
 					<ResponsiveBoxControl

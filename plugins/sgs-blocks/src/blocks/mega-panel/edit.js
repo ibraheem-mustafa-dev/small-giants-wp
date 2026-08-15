@@ -49,6 +49,7 @@ import {
 	DesignTokenPicker,
 	ResponsiveControl,
 	ResponsiveBoxControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
@@ -230,25 +231,63 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* GROUND-TRUTH: block.json attributes.panelBg / borderColour /
+			   accent (plain string colour attrs) + render.php:80-205 (accent
+			   resolves once to $accent_value / --sgs-mm-accent and is reused
+			   verbatim across every consuming rule, including some :hover
+			   selectors on CHILD elements — there is no separate accentHover
+			   attribute in block.json, so accent stays ONE normal-state row,
+			   not a hover pair) + style.css (panelBg -> background-color,
+			   borderColour -> border-color) — confirmed 2026-08-15 against the
+			   live source before wiring these rows. All single-state,
+			   `linked: true` per D619 (all three previously used `linked` on
+			   their DesignTokenPicker already). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: panelBg,
+								onChange: ( val ) => setAttributes( { panelBg: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'accent',
+						label: __( 'Accent', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: accent,
+								onChange: ( val ) => setAttributes( { accent: val ?? 'accent' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Panel', 'sgs-blocks' ) }>
 					{ /* Fill */ }
-					<DesignTokenPicker
-						label={ __( 'Background', 'sgs-blocks' ) }
-						value={ panelBg }
-						onChange={ ( value ) => setAttributes( { panelBg: value || '' } ) }
-						linked
-						enableAlpha
-						clearable
-					/>
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						value={ borderColour }
-						onChange={ ( value ) => setAttributes( { borderColour: value || '' } ) }
-						linked
-						enableAlpha
-						clearable
-					/>
 					<ToggleControl
 						label={ __( 'Background blur', 'sgs-blocks' ) }
 						help={ __(
@@ -367,13 +406,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="auto" label={ __( 'Auto', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
-
-					<DesignTokenPicker
-						label={ __( 'Accent', 'sgs-blocks' ) }
-						value={ accent }
-						onChange={ ( value ) => setAttributes( { accent: value || 'accent' } ) }
-						linked
-					/>
 				</PanelBody>
 
 				{ 'brands' === resolvedVariant && (

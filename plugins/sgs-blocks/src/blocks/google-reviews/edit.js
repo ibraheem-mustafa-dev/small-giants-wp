@@ -18,7 +18,7 @@ import {
 	TextControl,
 	Notice,
 } from '@wordpress/components';
-import { ResponsiveOverride } from '../../components';
+import { ResponsiveOverride, SgsColourPanel } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -54,6 +54,35 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so
+			   it sits at the top of the inspector. Replaces the "Star
+			   Colour" `SelectControl` that used to sit in the "Appearance"
+			   panel below. That control offered only 3 fixed slugs
+			   (accent/primary/success); render.php resolves `starColour`
+			   through `sgs_colour_value()` — the same slug-or-hex resolver
+			   every other SgsColourPanel row uses — so it is a genuine free
+			   colour setting, not a true enum, and now gets the full
+			   palette picker like every other colour on this block.
+			   `supports.color` sub-flags are now false so WordPress
+			   generates no native colour UI to overlap with this panel. No
+			   hover pair exists for this attribute. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'star',
+						label: __( 'Star colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: starColour,
+								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Variant', 'sgs-blocks' ) }>
@@ -245,18 +274,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
 						] }
 						onChange={ ( value ) => setAttributes( { cardStyle: value } ) }
-						__next40pxDefaultSize
-					/>
-
-					<SelectControl
-						label={ __( 'Star Colour', 'sgs-blocks' ) }
-						value={ starColour }
-						options={ [
-							{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
-							{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
-							{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
-						] }
-						onChange={ ( value ) => setAttributes( { starColour: value } ) }
 						__next40pxDefaultSize
 					/>
 				</PanelBody>

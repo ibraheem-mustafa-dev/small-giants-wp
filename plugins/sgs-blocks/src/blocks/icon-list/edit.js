@@ -10,12 +10,12 @@ import {
   Notice,
 } from "@wordpress/components";
 import {
-  DesignTokenPicker,
   IconPicker,
   IconPreview,
   ResponsiveBoxControl,
   ResponsiveBorderRadiusControl,
   TypographyControls,
+  SgsColourPanel,
 } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -327,8 +327,61 @@ export default function Edit({ attributes, setAttributes }) {
     canvasPreview = <ListTag {...blockProps}>{listItemNodes}</ListTag>;
   }
 
+  const showIconColourRow = ["icon", "emoji"].includes(resolvedMarkerType);
+  const showBorderColourRow = borderStyle !== "none";
+
   return (
     <>
+      {/* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
+         Replaces the scattered inline DesignTokenPicker rows that used to
+         live in "Text Styling" and "Border" below. Icon colour only applies
+         when the marker renders an icon/emoji glyph; border colour only
+         applies when a border style is selected — both rows are OMITTED
+         (not disabled) when they don't apply, per D609 9c. Every state
+         links to the theme palette (D619). */}
+      <SgsColourPanel
+        rows={[
+          showIconColourRow && {
+            key: "icon",
+            label: __("Icon colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: iconColour,
+                onChange: (val) => setAttributes({ iconColour: val ?? "" }),
+                linked: true,
+              },
+            ],
+          },
+          {
+            key: "text",
+            label: __("Text colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: textColour,
+                onChange: (val) => setAttributes({ textColour: val ?? "" }),
+                linked: true,
+              },
+            ],
+          },
+          showBorderColourRow && {
+            key: "border",
+            label: __("Border colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: borderColour,
+                onChange: (val) => setAttributes({ borderColour: val ?? "" }),
+                linked: true,
+              },
+            ],
+          },
+        ]}
+      />
       <InspectorControls>
         {/* FR-36-26c Dispatch B — typed items vs a bound WordPress menu. */}
         <PanelBody title={__("Source", "sgs-blocks")} initialOpen={true}>
@@ -511,18 +564,6 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Text Styling", "sgs-blocks")} initialOpen={false}>
-          {["icon", "emoji"].includes(markerType || "icon") && (
-            <DesignTokenPicker
-              label={__("Icon colour", "sgs-blocks")}
-              value={iconColour}
-              onChange={(val) => setAttributes({ iconColour: val })}
-            />
-          )}
-          <DesignTokenPicker
-            label={__("Text colour", "sgs-blocks")}
-            value={textColour}
-            onChange={(val) => setAttributes({ textColour: val })}
-          />
           <TypographyControls
             attributes={attributes}
             setAttributes={setAttributes}
@@ -581,19 +622,12 @@ export default function Edit({ attributes, setAttributes }) {
           	__next40pxDefaultSize
           />
           {borderStyle !== "none" && (
-            <>
-              <DesignTokenPicker
-                label={__("Border colour", "sgs-blocks")}
-                value={borderColour}
-                onChange={(val) => setAttributes({ borderColour: val ?? "" })}
-              />
-              <ResponsiveBoxControl
-                label={__("Border width", "sgs-blocks")}
-                values={{ base: borderWidth ?? {} }}
-                showResponsive={false}
-                onChange={(tier, next) => setAttributes({ borderWidth: next })}
-              />
-            </>
+            <ResponsiveBoxControl
+              label={__("Border width", "sgs-blocks")}
+              values={{ base: borderWidth ?? {} }}
+              showResponsive={false}
+              onChange={(tier, next) => setAttributes({ borderWidth: next })}
+            />
           )}
           <ResponsiveBorderRadiusControl
             label={__("Border radius", "sgs-blocks")}

@@ -11,10 +11,10 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	TypographyControls,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 import { UnitControl } from '../../components/primitives';
@@ -238,8 +238,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		level,
 		subTag,
 		textColour,
+		textColourHover,
 		textAlign,
 		backgroundColour,
+		backgroundColourHover,
 		fontStyle,
 		textDecoration,
 		inheritStyle,
@@ -281,6 +283,70 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
+			   Replaces the scattered inline DesignTokenPicker rows that used to
+			   live in the "Colour" and "Border" panels below. Every state links
+			   to the theme palette (D619) so a picked swatch stores the theme
+			   slug, not a raw hex. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						// No hover pair declared for borderColour (block.json has no
+						// borderColourHover attr) — single-state row.
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* ── Role panel ── */ }
 				<PanelBody title={ __( 'Role', 'sgs-blocks' ) }>
@@ -312,20 +378,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-				</PanelBody>
-
-				{ /* ── Colour panel ── */ }
-				<PanelBody title={ __( 'Colour', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ textColour }
-						onChange={ ( val ) => setAttributes( { textColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Background colour', 'sgs-blocks' ) }
-						value={ backgroundColour }
-						onChange={ ( val ) => setAttributes( { backgroundColour: val ?? '' } ) }
-					/>
 				</PanelBody>
 
 				{ /* ── Typography panel ── */ }
@@ -406,11 +458,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						value={ borderColour }
-						onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }

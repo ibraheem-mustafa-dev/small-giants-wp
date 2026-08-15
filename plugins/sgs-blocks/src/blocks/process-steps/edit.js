@@ -17,7 +17,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -193,6 +193,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		color: colourVar( descriptionColour ) || undefined,
 	};
 
+	// Wrapper normal text/background colour is native WP `style.color.{text,background}`
+	// (block.json attrMap: "css:color":"native:color.text", "css:background-color":
+	// "native:color.background" — GROUND-TRUTH: render.php reads
+	// $attributes['style']['color'] wholesale into wp_style_engine_get_styles(),
+	// scoped to the root selector, so this is a real working control, not dead
+	// plumbing). Its HOVER counterpart is the custom textColourHover/
+	// backgroundColourHover scalar attrs. Read/write directly (native supports
+	// sub-flags below are set false so WP's own colour panel no longer renders).
+	const wrapperColourText = style?.color?.text;
+	const wrapperColourBackground = style?.color?.background;
+	const setWrapperColour = ( key, val ) =>
+		setAttributes( {
+			style: {
+				...style,
+				color: { ...style?.color, [ key ]: val || undefined },
+			},
+		} );
+
 	const updateStep = ( index, updated ) => {
 		const newSteps = [ ...steps ];
 		newSteps[ index ] = updated;
@@ -221,6 +239,137 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618/D619 — ONE grouped, SGS-owned colour panel, mounted FIRST.
+			   Replaces the scattered "Text Styling" + "Hover States" colour
+			   DesignTokenPickers below. GROUND-TRUTH (render.php + block.json
+			   attrMap, this session): number/title/description are single-state
+			   (no hover pair declared anywhere); background/text pair the
+			   wrapper's native style.color.{text,background} (normal) with the
+			   custom *Hover scalar attrs; border pairs borderColour (normal)
+			   with borderColourHover. All colours are BLOCK-LEVEL (uniform
+			   across every repeated step) — verified: numberColour/
+			   numberBackground/titleColour/descriptionColour are flat block
+			   attributes read once and applied via numStyle/titleStyle/
+			   descStyle to every step in the steps.map() below, not per-item
+			   fields on the `step` object (StepEditor's own fields are number/
+			   title/description/icon only — no colour field). Every state sets
+			   linked: true per D619. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'number',
+						label: __( 'Number colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: numberColour,
+								onChange: ( val ) => setAttributes( { numberColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'numberBackground',
+						label: __( 'Number background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: numberBackground,
+								onChange: ( val ) => setAttributes( { numberBackground: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'description',
+						label: __( 'Description colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: descriptionColour,
+								onChange: ( val ) => setAttributes( { descriptionColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'wrapperText',
+						label: __( 'Wrapper text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: wrapperColourText,
+								onChange: ( val ) => setWrapperColour( 'text', val ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Wrapper background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: wrapperColourBackground,
+								onChange: ( val ) => setWrapperColour( 'background', val ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border',
+						label: __( 'Border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: borderColour,
+								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Steps', 'sgs-blocks' ) }>
 					{ steps.map( ( step, index ) => (
@@ -266,46 +415,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Text Styling', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Number colour', 'sgs-blocks' ) }
-						value={ numberColour }
-						onChange={ ( val ) =>
-							setAttributes( { numberColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Number background colour',
-							'sgs-blocks'
-						) }
-						value={ numberBackground }
-						onChange={ ( val ) =>
-							setAttributes( { numberBackground: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						value={ titleColour }
-						onChange={ ( val ) =>
-							setAttributes( { titleColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Description colour',
-							'sgs-blocks'
-						) }
-						value={ descriptionColour }
-						onChange={ ( val ) =>
-							setAttributes( { descriptionColour: val } )
-						}
-					/>
-				</PanelBody>
-
-				<PanelBody
 					title={ __( 'Hover States', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
@@ -318,27 +427,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						value={ backgroundColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { backgroundColourHover: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						value={ textColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { textColourHover: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						value={ borderColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { borderColourHover: val } )
-						}
 					/>
 					<TextControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
@@ -383,11 +471,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Border colour', 'sgs-blocks' ) }
-						value={ borderColour }
-						onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
 					/>
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }

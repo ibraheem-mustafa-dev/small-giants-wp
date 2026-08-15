@@ -12,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, resolveColourToken } from '../../components';
+import { resolveColourToken, SgsColourPanel } from '../../components';
 
 const TRIGGER_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -104,6 +104,78 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* GROUND-TRUTH: block.json attributes.triggerColour /
+			   triggerBackground / modalBackground / overlayColour (4 plain
+			   string colour attrs, no shared prefix pairing — triggerColour
+			   and triggerBackground live on the SAME `.sgs-modal__trigger`
+			   element but different CSS properties, so they are 2 separate
+			   rows, not one row with 2 states) + render.php (trigger colours
+			   -> render.php:37-43/73-75 scoped `.sgs-modal__trigger` rule;
+			   modalBackground -> the dialog's background-color;
+			   overlayColour -> the `--sgs-modal-backdrop-colour` custom
+			   property) — confirmed 2026-08-15 against the live source and
+			   this edit.js's own pre-existing comments before wiring these
+			   rows. All 4 are single-state (no hover pair exists for any of
+			   them), `linked: true` per D619. None of the old
+			   DesignTokenPickers below passed `linked`, so this migration
+			   also fixes a pre-existing gap (a converter-written slug would
+			   previously have shown as "unset"). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'triggerText',
+						label: __( 'Button text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: triggerColour,
+								onChange: ( val ) => setAttributes( { triggerColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'triggerBackground',
+						label: __( 'Button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: triggerBackground,
+								onChange: ( val ) => setAttributes( { triggerBackground: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'modalBackground',
+						label: __( 'Modal background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: modalBackground,
+								onChange: ( val ) => setAttributes( { modalBackground: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'overlay',
+						label: __( 'Overlay colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: overlayColour,
+								onChange: ( val ) => setAttributes( { overlayColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Trigger Button', 'sgs-blocks' ) }>
 					<TextControl
@@ -124,25 +196,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Button text colour', 'sgs-blocks' ) }
-						value={ triggerColour }
-						onChange={ ( val ) =>
-							setAttributes( { triggerColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Button background colour',
-							'sgs-blocks'
-						) }
-						value={ triggerBackground }
-						onChange={ ( val ) =>
-							setAttributes( {
-								triggerBackground: val,
-							} )
-						}
 					/>
 				</PanelBody>
 
@@ -172,29 +225,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<DesignTokenPicker
-						label={ __(
-							'Modal background colour',
-							'sgs-blocks'
-						) }
-						value={ modalBackground }
-						onChange={ ( val ) =>
-							setAttributes( { modalBackground: val } )
-						}
-					/>
 				</PanelBody>
 
 				<PanelBody
 					title={ __( 'Overlay', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Overlay colour', 'sgs-blocks' ) }
-						value={ overlayColour }
-						onChange={ ( val ) =>
-							setAttributes( { overlayColour: val } )
-						}
-					/>
 					<RangeControl
 						label={ __( 'Overlay opacity', 'sgs-blocks' ) }
 						value={ overlayOpacity }

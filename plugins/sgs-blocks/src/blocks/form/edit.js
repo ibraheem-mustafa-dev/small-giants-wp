@@ -14,7 +14,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { DesignTokenPicker, ResponsiveBoxControl, LinkPopoverField, resolveColourToken } from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
@@ -93,6 +93,72 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so it
+			   sits at the top of the inspector. Replaces the inline
+			   `DesignTokenPicker` rows that used to sit in the "Submit
+			   Button" / "Progress Bar" / "Focus State" panels below.
+			   `supports.color` sub-flags are now false so WordPress
+			   generates no native colour UI to overlap with this panel.
+			   submitColour/submitBackground are TWO separate rows (different
+			   CSS properties on the SAME element — text vs background — not
+			   two states of one property). No hover pair exists for any of
+			   these four attributes on this block. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'submit-text',
+						label: __( 'Submit button text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: submitColour,
+								onChange: ( val ) => setAttributes( { submitColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'submit-background',
+						label: __( 'Submit button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: submitBackground,
+								onChange: ( val ) => setAttributes( { submitBackground: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'progress-bar',
+						label: __( 'Progress bar colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: progressBarColour,
+								onChange: ( val ) => setAttributes( { progressBarColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'focus-ring',
+						label: __( 'Focus ring colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: formFocusRingColour,
+								onChange: ( val ) => setAttributes( { formFocusRingColour: val || 'primary' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Form Settings', 'sgs-blocks' ) }>
 					<TextControl
@@ -207,46 +273,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<DesignTokenPicker
-						label={ __( 'Text Colour', 'sgs-blocks' ) }
-						value={ submitColour }
-						onChange={ ( value ) =>
-							setAttributes( { submitColour: value } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Background Colour', 'sgs-blocks' ) }
-						value={ submitBackground }
-						onChange={ ( value ) =>
-							setAttributes( { submitBackground: value } )
-						}
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Progress Bar', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Progress Colour', 'sgs-blocks' ) }
-						value={ progressBarColour }
-						onChange={ ( value ) =>
-							setAttributes( { progressBarColour: value } )
-						}
-					/>
 				</PanelBody>
 
 				<PanelBody
 					title={ __( 'Focus State', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Focus ring colour', 'sgs-blocks' ) }
-						value={ formFocusRingColour }
-						onChange={ ( value ) =>
-							setAttributes( { formFocusRingColour: value || 'primary' } )
-						}
-					/>
 					<RangeControl
 						label={ __( 'Focus ring width (px)', 'sgs-blocks' ) }
 						help={ __( 'Outline width in pixels when an input is keyboard-focused.', 'sgs-blocks' ) }

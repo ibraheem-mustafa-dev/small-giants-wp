@@ -15,7 +15,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker, LinkPopoverField, resolveColourToken } from '../../components';
+import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken } from '../../components';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -210,6 +210,110 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D619 — ONE grouped, SGS-OWNED colour panel (own PanelBody, default
+			   InspectorControls group), rendered FIRST. All 7 colour attrs on this
+			   block are BLOCK-LEVEL (uniform across every plan/tier, confirmed via
+			   render.php's "BLOCK-LEVEL — emitted once as a scoped rule" comments)
+			   and single-state — no hover attribute exists for any of them
+			   (ctaStyle's `:hover` rules in style.css are static CSS-preset
+			   selectors keyed on the class, not an attribute-driven colour state).
+			   Replaces the DesignTokenPicker rows previously scattered across the
+			   Colours/CTA Button/Popular Badge panels below. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'price',
+						label: __( 'Price colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: priceColour,
+								onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'feature',
+						label: __( 'Feature colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: featureColour,
+								onChange: ( val ) => setAttributes( { featureColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'cta-text',
+						label: __( 'CTA text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ctaColour,
+								onChange: ( val ) => setAttributes( { ctaColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'cta-background',
+						label: __( 'CTA background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ctaBackground,
+								onChange: ( val ) => setAttributes( { ctaBackground: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'badge-text',
+						label: __( 'Popular badge text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: popularBadgeColour,
+								onChange: ( val ) => setAttributes( { popularBadgeColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'badge-background',
+						label: __( 'Popular badge background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: popularBadgeBackground,
+								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<RangeControl
@@ -278,33 +382,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Colours', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						value={ titleColour }
-						onChange={ ( val ) =>
-							setAttributes( { titleColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Price colour', 'sgs-blocks' ) }
-						value={ priceColour }
-						onChange={ ( val ) =>
-							setAttributes( { priceColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Feature colour', 'sgs-blocks' ) }
-						value={ featureColour }
-						onChange={ ( val ) =>
-							setAttributes( { featureColour: val } )
-						}
-					/>
-				</PanelBody>
-
-				<PanelBody
 					title={ __( 'CTA Button', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
@@ -317,23 +394,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'CTA text colour', 'sgs-blocks' ) }
-						value={ ctaColour }
-						onChange={ ( val ) =>
-							setAttributes( { ctaColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'CTA background colour',
-							'sgs-blocks'
-						) }
-						value={ ctaBackground }
-						onChange={ ( val ) =>
-							setAttributes( { ctaBackground: val } )
-						}
 					/>
 				</PanelBody>
 
@@ -356,27 +416,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<DesignTokenPicker
-						label={ __( 'Badge text colour', 'sgs-blocks' ) }
-						value={ popularBadgeColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								popularBadgeColour: val,
-							} )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Badge background colour',
-							'sgs-blocks'
-						) }
-						value={ popularBadgeBackground }
-						onChange={ ( val ) =>
-							setAttributes( {
-								popularBadgeBackground: val,
-							} )
-						}
 					/>
 				</PanelBody>
 			</InspectorControls>

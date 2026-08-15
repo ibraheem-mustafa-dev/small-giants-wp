@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -125,6 +125,42 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* Colour panel FIRST — sgs/button pattern (D618/D619). Both rows
+			   are single-state: starColour/emptyColour paint the SVG star
+			   <path fill="..."> in render.php (not a CSS colour/background-
+			   color property), but they're still plain token-or-hex colour
+			   values resolved via sgs_colour_value(), so they belong here
+			   like any other single colour. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'starColour',
+						label: __( 'Star colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: starColour,
+								onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'emptyColour',
+						label: __( 'Empty colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: emptyColour,
+								onChange: ( val ) => setAttributes( { emptyColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
 					<RangeControl
@@ -152,22 +188,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { starSize: val } ) }
 						min={ 12 }
 						max={ 64 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Star colour', 'sgs-blocks' ) }
-						value={ starColour }
-						onChange={ ( val ) => setAttributes( { starColour: val } ) }
-						type="color"
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Empty colour', 'sgs-blocks' ) }
-						value={ emptyColour }
-						onChange={ ( val ) => setAttributes( { emptyColour: val } ) }
-						type="color"
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

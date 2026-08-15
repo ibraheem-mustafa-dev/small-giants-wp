@@ -11,12 +11,12 @@ import {
   ToggleControl,
 } from "@wordpress/components";
 import {
-  DesignTokenPicker,
   IconPicker,
   IconPreview,
   TypographyControls,
   ResponsiveBoxControl,
   ResponsiveBorderRadiusControl,
+  SgsColourPanel,
 } from "../../components";
 import { colourVar } from "../../utils";
 
@@ -88,6 +88,42 @@ export default function Edit({ attributes, setAttributes }) {
 
   return (
     <>
+      { /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so it
+         sits at the top of the inspector. Replaces the inline
+         `DesignTokenPicker` rows that used to sit in the "Text Styling"
+         panel below. `supports.color` sub-flags are now false so
+         WordPress generates no native colour UI to overlap with this
+         panel. No hover pair exists for either attribute on this block. */ }
+      <SgsColourPanel
+        rows={ [
+          {
+            key: "number",
+            label: __("Number colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: numberColour,
+                onChange: (val) => setAttributes({ numberColour: val ?? "" }),
+                linked: true,
+              },
+            ],
+          },
+          {
+            key: "label",
+            label: __("Label colour", "sgs-blocks"),
+            states: [
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: labelColour,
+                onChange: (val) => setAttributes({ labelColour: val ?? "" }),
+                linked: true,
+              },
+            ],
+          },
+        ] }
+      />
       <InspectorControls>
         <PanelBody title={__("Counter Settings", "sgs-blocks")}>
           <TextControl
@@ -146,16 +182,6 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Text Styling", "sgs-blocks")} initialOpen={false}>
-          <DesignTokenPicker
-            label={__("Number colour", "sgs-blocks")}
-            value={numberColour}
-            onChange={(val) => setAttributes({ numberColour: val })}
-          />
-          <DesignTokenPicker
-            label={__("Label colour", "sgs-blocks")}
-            value={labelColour}
-            onChange={(val) => setAttributes({ labelColour: val })}
-          />
           <TypographyControls
             attributes={attributes}
             setAttributes={setAttributes}

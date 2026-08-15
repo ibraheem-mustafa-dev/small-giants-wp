@@ -18,7 +18,7 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import DesignTokenPicker from '../../components/DesignTokenPicker';
+import SgsColourPanel from '../../components/SgsColourPanel';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import { colourVar, resolveResponsiveTier } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -404,6 +404,164 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D619/D621 — ONE grouped, SGS-OWNED colour panel, mounted FIRST so
+			   it sits at the top of the Styles tab. Replaces the old scattered
+			   "Colours" ToolsPanel (Panel 6) + the colour rows that used to live
+			   in "Hover Effects" (Panel 7).
+			   Row shape verified against render.php + class-post-grid-rest.php
+			   card_vars_decls() + style.css (2026-08-15):
+			   - cardBgColour/backgroundColourHover pair into ONE row (normal +
+			     hover) — both drive the card's --sgs-card-bg / --sgs-hover-bg,
+			     background-color only.
+			   - titleColour/excerptColour/metaColour/readMoreColour/
+			     categoryBadgeColour/categoryBadgeBgColour are each single-state
+			     (normal only) — there is no per-element hover counterpart for
+			     any of them.
+			   - textColourHover is its OWN hover-only row: ONE attribute drives
+			     `color` on FOUR different elements at once on :hover (title
+			     link, excerpt, meta, read-more) — it does not pair 1:1 with any
+			     single normal-state colour attribute, so it cannot be folded
+			     into any of the four rows above without losing that it's a
+			     single shared override.
+			   - borderColourHover is its OWN hover-only row: drives
+			     `border-color` (card/overlay/flat variants) + `border-top-color`
+			     (minimal variant) on hover — one colour VALUE fanning out to
+			     several declarations, same as textColourHover, but it has no
+			     resting/normal border-colour attribute to pair with (this block
+			     has no static border-colour attr — hover-only, matching the
+			     block.json note on the "card" element). Verified: NEITHER
+			     hover attr also touches `background-color`/`box-shadow` as the
+			     DB census suggested — box-shadow is driven separately by the
+			     unrelated `shadowHover` attribute (kept in the non-colour Hover
+			     Effects panel below). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'card-bg',
+						label: __( 'Card background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardBgColour,
+								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'excerpt',
+						label: __( 'Excerpt colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: excerptColour,
+								onChange: ( val ) => setAttributes( { excerptColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'meta',
+						label: __( 'Meta colour (date / author)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: metaColour,
+								onChange: ( val ) => setAttributes( { metaColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'category-badge-text',
+						label: __( 'Category badge text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: categoryBadgeColour,
+								onChange: ( val ) => setAttributes( { categoryBadgeColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'category-badge-bg',
+						label: __( 'Category badge background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: categoryBadgeBgColour,
+								onChange: ( val ) => setAttributes( { categoryBadgeBgColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'read-more',
+						label: __( 'Read more colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: readMoreColour,
+								onChange: ( val ) => setAttributes( { readMoreColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text-hover',
+						label: __( 'Text hover colour (title / excerpt / meta / read more)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'border-hover',
+						label: __( 'Border hover colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: borderColourHover,
+								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			{ /* ============================================================
 			     Inspector panels
 			     ============================================================ */ }
@@ -727,124 +885,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{ /* Panel 6: Colours */ }
-				<ToolsPanel
-					label={ __( 'Colours', 'sgs-blocks' ) }
-					resetAll={ () =>
-						setAttributes( {
-							cardBgColour: 'surface',
-							titleColour: 'primary',
-							excerptColour: 'text',
-							metaColour: 'text-muted',
-							categoryBadgeColour: 'text-inverse',
-							categoryBadgeBgColour: 'primary',
-							readMoreColour: 'primary',
-						} )
-					}
-				>
-					<ToolsPanelItem
-						label={ __( 'Card background', 'sgs-blocks' ) }
-						hasValue={ () => cardBgColour !== 'surface' }
-						onDeselect={ () =>
-							setAttributes( { cardBgColour: 'surface' } )
-						}
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Card background', 'sgs-blocks' ) }
-							value={ cardBgColour }
-							onChange={ set( 'cardBgColour' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						hasValue={ () => titleColour !== 'primary' }
-						onDeselect={ () =>
-							setAttributes( { titleColour: 'primary' } )
-						}
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Title colour', 'sgs-blocks' ) }
-							value={ titleColour }
-							onChange={ set( 'titleColour' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Excerpt colour', 'sgs-blocks' ) }
-						hasValue={ () => excerptColour !== 'text' }
-						onDeselect={ () =>
-							setAttributes( { excerptColour: 'text' } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Excerpt colour', 'sgs-blocks' ) }
-							value={ excerptColour }
-							onChange={ set( 'excerptColour' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Meta colour (date / author)', 'sgs-blocks' ) }
-						hasValue={ () => metaColour !== 'text-muted' }
-						onDeselect={ () =>
-							setAttributes( { metaColour: 'text-muted' } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Meta colour (date / author)', 'sgs-blocks' ) }
-							value={ metaColour }
-							onChange={ set( 'metaColour' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Category badge text colour', 'sgs-blocks' ) }
-						hasValue={ () => categoryBadgeColour !== 'text-inverse' }
-						onDeselect={ () =>
-							setAttributes( { categoryBadgeColour: 'text-inverse' } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Category badge text colour', 'sgs-blocks' ) }
-							value={ categoryBadgeColour }
-							onChange={ set( 'categoryBadgeColour' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Category badge background', 'sgs-blocks' ) }
-						hasValue={ () => categoryBadgeBgColour !== 'primary' }
-						onDeselect={ () =>
-							setAttributes( { categoryBadgeBgColour: 'primary' } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Category badge background', 'sgs-blocks' ) }
-							value={ categoryBadgeBgColour }
-							onChange={ set( 'categoryBadgeBgColour' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Read more colour', 'sgs-blocks' ) }
-						hasValue={ () => readMoreColour !== 'primary' }
-						onDeselect={ () =>
-							setAttributes( { readMoreColour: 'primary' } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Read more colour', 'sgs-blocks' ) }
-							value={ readMoreColour }
-							onChange={ set( 'readMoreColour' ) }
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
-
-				{ /* Panel 7: Hover Effects */ }
+				{ /* Panel 6: Hover Effects — colours moved to the top-level
+				   SgsColourPanel (D619/D621). This ToolsPanel now holds only
+				   the non-colour hover behaviours. */ }
 				<ToolsPanel
 					label={ __( 'Hover Effects', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							backgroundColourHover: undefined,
-							textColourHover: undefined,
-							borderColourHover: undefined,
 							scaleHover: '',
 							shadowHover: '',
 							imageZoomHover: true,
@@ -853,46 +900,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						} )
 					}
 				>
-					<ToolsPanelItem
-						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						hasValue={ () => !! backgroundColourHover }
-						onDeselect={ () =>
-							setAttributes( { backgroundColourHover: undefined } )
-						}
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Hover background colour', 'sgs-blocks' ) }
-							value={ backgroundColourHover }
-							onChange={ set( 'backgroundColourHover' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						hasValue={ () => !! textColourHover }
-						onDeselect={ () =>
-							setAttributes( { textColourHover: undefined } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Hover text colour', 'sgs-blocks' ) }
-							value={ textColourHover }
-							onChange={ set( 'textColourHover' ) }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						hasValue={ () => !! borderColourHover }
-						onDeselect={ () =>
-							setAttributes( { borderColourHover: undefined } )
-						}
-					>
-						<DesignTokenPicker
-							label={ __( 'Hover border colour', 'sgs-blocks' ) }
-							value={ borderColourHover }
-							onChange={ set( 'borderColourHover' ) }
-						/>
-					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Hover scale', 'sgs-blocks' ) }
 						hasValue={ () => !! scaleHover && scaleHover !== '' }

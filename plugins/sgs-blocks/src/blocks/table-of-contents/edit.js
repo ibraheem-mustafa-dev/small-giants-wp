@@ -10,9 +10,9 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import {
-	DesignTokenPicker,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsColourPanel,
 } from '../../components';
 import { colourVar } from '../../utils';
 
@@ -183,6 +183,49 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* Colour panel FIRST (D618/D619, sgs/button pattern). "Link
+			   colour" pairs linkColour (normal) with activeLinkColour — the
+			   scroll-spy CURRENT-item colour, a SELECTED state per FR-35-5,
+			   not a hover — labelled "Active" per block.json's own
+			   `states.selected` naming. "Title colour" stays a separate
+			   single-state row. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'linkColour',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: linkColour,
+								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'selected',
+								label: __( 'Active', 'sgs-blocks' ),
+								value: activeLinkColour,
+								onChange: ( val ) => setAttributes( { activeLinkColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'titleColour',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Table of Contents', 'sgs-blocks' ) }
@@ -306,36 +349,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { scrollSpy: val } )
 						}
 						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Text Styling', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						value={ titleColour }
-						onChange={ ( val ) =>
-							setAttributes( { titleColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Link colour', 'sgs-blocks' ) }
-						value={ linkColour }
-						onChange={ ( val ) =>
-							setAttributes( { linkColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Active link colour',
-							'sgs-blocks'
-						) }
-						value={ activeLinkColour }
-						onChange={ ( val ) =>
-							setAttributes( { activeLinkColour: val } )
-						}
 					/>
 				</PanelBody>
 
