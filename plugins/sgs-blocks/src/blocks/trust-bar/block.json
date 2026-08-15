@@ -118,7 +118,15 @@
 					"order": 3,
 					"clusters": [ "text" ],
 					"prefix": "label",
-					"_note": "Covers both variants — .sgs-trust-bar__label (icon-circle) and .sgs-trust-bar__badge-label (text-only/image-badge), same labelColour/labelFontSize/labelFontWeight/labelFontStyle attrs (render.php:393)."
+					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node."
+				},
+				"badge-label": {
+					"label": "Badge label colour (text-only / image-badge variants)",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "",
+					"attrMap": { "css:color": "labelColour" },
+					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names."
 				},
 				"title": {
 					"label": "Title",
@@ -342,6 +350,9 @@
 			"type": "string",
 			"default": "subtle"
 		},
+		"iconCircleShadowColour": {
+			"type": "string"
+		},
 		"badgeImageBorderRadius": {
 			"type": "string",
 			"default": ""
@@ -353,6 +364,9 @@
 		"badgeImageShadow": {
 			"type": "string",
 			"default": ""
+		},
+		"badgeImageShadowColour": {
+			"type": "string"
 		},
 		"badgeImageObjectFit": {
 			"type": "string",
