@@ -59,13 +59,13 @@ import {
 	BaseControl,
 	Button,
 	ColorIndicator,
-	ColorPalette,
 	Dropdown,
 	Flex,
 	FlexItem,
 	TabPanel,
 } from '@wordpress/components';
 import { HStack, Item, ItemGroup, ZStack } from './primitives';
+import { ColorPalette } from './colour-picker';
 
 /**
  * Resolve a stored colour VALUE to a displayable CSS colour.

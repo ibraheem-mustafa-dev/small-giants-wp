@@ -1,0 +1,31 @@
+/**
+ * Forked/adapted from WordPress core (`@wordpress/components`
+ * `dropdown/styles.ts`), commit 28c0dedc4eaf001a24237a1fbba4b0887698b000
+ * (WP 7.0.4). Reproduces the same computed `space()` values (`space(n)` ===
+ * `calc(4px * n)`) as plain classes — see `../color-picker/style.scss` for
+ * the full reasoning on why the emotion `styled()` mechanism isn't used.
+ */
+
+.sgs-colour-picker__dropdown-content-wrapper {
+	// Negative margin to reset (offset) the default padding on .components-popover__content
+	margin-left: calc( 4px * -2 );
+	margin-right: calc( 4px * -2 );
+
+	&:first-of-type {
+		margin-top: calc( 4px * -2 );
+	}
+
+	&:last-of-type {
+		margin-bottom: calc( 4px * -2 );
+	}
+}
+
+.sgs-colour-picker__dropdown-content-wrapper--padding-small {
+	padding: calc( 4px * 2 );
+}
+
+.sgs-colour-picker__dropdown-content-wrapper--padding-medium {
+	padding: calc( 4px * 4 );
+}
+
+// paddingSize="none" intentionally has no padding rule.

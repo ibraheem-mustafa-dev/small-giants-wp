@@ -66,6 +66,11 @@ export {
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 	__experimentalZStack as ZStack,
+	__experimentalHeading as Heading,
+	__experimentalInputControl as InputControl,
+	__experimentalInputControlPrefixWrapper as InputControlPrefixWrapper,
+	__experimentalText as Text,
+	__experimentalTruncate as Truncate,
 } from '@wordpress/components';
 
 // ⚠ block-editor, NOT components. The only one.

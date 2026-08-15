@@ -33,4 +33,17 @@ import './parallax';
 import './image-controls';
 import './fx';
 import './responsive-visibility';
+
+// The two colour-picker fork stylesheets that carry genuinely NEW SGS
+// classnames (not core's own `.components-*` names, which `wp-components`
+// already ships globally) — a `styled()`/emotion→plain-class conversion
+// this fork needed since the project has no @emotion/styled dependency.
+// Imported here, not from the component files themselves, because this is
+// the ONE entry already loaded once in the editor (see file docblock);
+// importing from a component shared across 36 block edit.js files let
+// webpack's per-entry CSS extraction attribute the compiled CSS to an
+// arbitrary block's FRONTEND style.css bundle instead (caught live by the
+// Spec-31 F5 anti-cheat gate on sgs/accordion).
+import '../../components/colour-picker/color-picker/editor.scss';
+import '../../components/colour-picker/dropdown/editor.scss';
 import './conditional-visibility';

@@ -302,6 +302,25 @@ final class SGS_Blocks {
 				SGS_BLOCKS_VERSION
 			);
 		}
+
+		// The colour-picker fork's own editor-only stylesheet (webpack-built
+		// from src/blocks/extensions/index.js's `editor.scss` imports — see
+		// that file's own comment). Deliberate SEPARATE handle from
+		// `sgs-extensions-editor` above: that handle is a load-bearing guard
+		// target for `device-visibility.php`'s `wp_style_is()` check, so it
+		// must keep enqueueing exactly the hand-maintained extensions.css
+		// file it always has, not be repurposed to also carry this.
+		$colour_picker_css = SGS_BLOCKS_PATH . 'build/extensions/index.css';
+		if ( file_exists( $colour_picker_css ) ) {
+			$asset_file = SGS_BLOCKS_PATH . 'build/extensions/index.asset.php';
+			$version    = file_exists( $asset_file ) ? require $asset_file : [ 'version' => SGS_BLOCKS_VERSION ];
+			wp_enqueue_style(
+				'sgs-colour-picker-editor',
+				SGS_BLOCKS_URL . 'build/extensions/index.css',
+				[],
+				$version['version'] ?? SGS_BLOCKS_VERSION
+			);
+		}
 	}
 
 	/**

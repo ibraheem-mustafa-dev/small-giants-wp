@@ -1,0 +1,117 @@
+/**
+ * Forked/adapted from WordPress core (`@wordpress/components`
+ * `color-picker/styles.ts`), commit 28c0dedc4eaf001a24237a1fbba4b0887698b000
+ * (WP 7.0.4).
+ *
+ * Core's original file is `@emotion/styled` template literals wrapping
+ * `NumberControl`/`SelectControl`/`RangeControl`/`Flex`/`HStack`, none of
+ * which is a viable build target here (this project has no
+ * `@emotion/styled` dependency and does not want one). This file reproduces
+ * the SAME computed values as plain classes, applied by the plain elements
+ * in `./component.js` and `./input-with-slider.js`:
+ *
+ *  - `space(n)` (core's grid-unit helper) === `calc(4px * n)`, so every
+ *    `space()` call below is inlined to its literal `calc()`.
+ *  - `CONFIG.radiusFull` = 9999px, `CONFIG.borderWidthFocus` = 1.5px,
+ *    `CONFIG.transitionDurationFast` = 160ms, `CONFIG.surfaceColor` = #fff —
+ *    verified against this commit's `utils/config-values.js`.
+ *  - core's `boxSizingReset` (`utils/box-sizing.ts`) is inlined directly.
+ */
+
+.sgs-colour-picker__colorful-wrapper {
+	box-sizing: border-box;
+
+	* ,
+	*::before,
+	*::after {
+		box-sizing: inherit;
+	}
+
+	width: 216px;
+
+	.react-colorful {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 216px;
+		height: auto;
+	}
+
+	.react-colorful__saturation {
+		width: 100%;
+		border-radius: 0;
+		height: 216px;
+		margin-bottom: calc( 4px * 4 );
+		border-bottom: none;
+	}
+
+	.react-colorful__hue,
+	.react-colorful__alpha {
+		width: 184px;
+		height: 16px;
+		border-radius: 9999px;
+		margin-bottom: calc( 4px * 2 );
+	}
+
+	.react-colorful__pointer {
+		height: 16px;
+		width: 16px;
+		border: none;
+		box-shadow: 0 0 2px 0 rgba( 0, 0, 0, 0.25 );
+
+		// Shown instead of box-shadow to Windows high contrast mode.
+		outline: 2px solid transparent;
+
+		@media not ( prefers-reduced-motion ) {
+			transition: transform 160ms ease-in-out;
+		}
+	}
+
+	.react-colorful__interactive:focus .react-colorful__pointer {
+		box-shadow: 0 0 0 1.5px #fff;
+		border: 1.5px solid black;
+		transform: translate( -50%, -50% ) scale( 1.5 );
+	}
+
+	.react-colorful__pointer-fill {
+		box-shadow: inset 0 0 0 1.5px #fff;
+	}
+
+	// Make the Hue circle picker not go out of the bar.
+	.react-colorful__interactive {
+		width: calc( 100% - calc( 4px * 2 ) );
+		margin-left: calc( 4px * 1 );
+	}
+}
+
+.sgs-colour-picker__auxiliary-wrapper {
+	padding-top: calc( 4px * 2 );
+	padding-right: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+}
+
+.sgs-colour-picker__auxiliary-header {
+	padding-left: calc( 4px * 4 );
+	padding-right: calc( 4px * 4 );
+}
+
+.sgs-colour-picker__color-input-wrapper {
+	padding-top: calc( 4px * 4 );
+	padding-left: calc( 4px * 4 );
+	padding-right: calc( 4px * 3 );
+	padding-bottom: calc( 4px * 5 );
+}
+
+.sgs-colour-picker__format-select {
+	margin-left: calc( 4px * -2 );
+}
+
+.sgs-colour-picker__number-control {
+	width: calc( 4px * 24 );
+}
+
+.sgs-colour-picker__range-control {
+	flex: 1;
+	margin-right: calc( 4px * 2 );
+}
