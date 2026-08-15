@@ -871,6 +871,76 @@ def _top_level_vars(value: str) -> set[str]:
 
 
 _BEM_ELEMENT_RE = re.compile(r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)", re.IGNORECASE)
+_BEM_CURRENT_MODIFIER_RE = re.compile(
+    r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)--current\b", re.IGNORECASE
+)
+_BEM_ANY_MODIFIER_RE = re.compile(
+    r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)--([a-z0-9-]+)", re.IGNORECASE
+)
+
+
+def _bem_modifier_siblings(css_src: str, block_short_slug: str) -> "dict[str, set[str]]":
+    """For THIS block's own BEM elements, return element -> the set of every
+    `--modifier` suffix (lowercased) seen anywhere in the stylesheet for that
+    element, e.g. breadcrumbs -> {'item': {'current'}}, buybox ->
+    {'price': {'current', 'regular', 'pct-off'}}. Feeds `_bem_current_state`'s
+    state-vs-variant disambiguation (2026-08-15, Class 4 fix-of-the-fix) — see
+    that function's docstring for why the sibling set is the signal.
+    """
+    out: "dict[str, set[str]]" = defaultdict(set)
+    for m in _BEM_ANY_MODIFIER_RE.finditer(css_src):
+        if m.group(1).lower() != block_short_slug.lower():
+            continue
+        out[m.group(2).lower()].add(m.group(3).lower())
+    return out
+
+
+def _bem_current_state(
+    selector: str,
+    block_short_slug: str,
+    sibling_modifiers: "dict[str, set[str]]",
+) -> "str | None":
+    """A BEM `--current` modifier expresses the manifest 'selected' state — the
+    same word nav-menu already uses for current-page (`itemColourHover` etc.
+    resolve to `css_state='selected'`) — ONLY when `current` is the SOLE modifier
+    this stylesheet ever pairs with that element. Added 2026-08-15 as the fix for
+    the regression the same day's Class 4 fix (bare `--modifier` stripped from
+    the captured element) caused: `sgs/breadcrumbs.linkColour` and
+    `.currentColour` both derived `css_element='item'` with no state, an
+    identical-on-every-axis collision the column-first resolver can't route.
+
+    PROVEN this element's `current` really is a state, not a label: breadcrumbs'
+    `render.php:342` emits `aria-current="page"` on the exact markup
+    `.sgs-breadcrumbs__item--current` renders; `sgs/card-grid`/`sgs/post-grid`
+    literally group `.page-btn--current` with `.page-btn[aria-current="page"]`
+    in the SAME selector; `sgs/post-grid`'s `view.js:208` toggles the class from
+    an `isActive` boolean. All three: `item`/`page-btn` carries NO modifier other
+    than `current` anywhere in that block's stylesheet.
+
+    PROVEN the opposite for two other live blocks — `current` there is a VALUE
+    VARIANT, not a state, and must NOT collect 'selected': `sgs/buybox`'s
+    `.buybox__price--current` sits alongside `.buybox__price--regular` and
+    `.buybox__price--pct-off` (the live selling price vs the struck-through
+    original — a display choice, never an interaction/selection state), and
+    `sgs/product-card` has the identical `.price--current` / `.price--regular`
+    pair. Tagging either as `css_state='selected'` would fabricate a selection
+    concept on a plain price display.
+
+    So the rule is the SIBLING-MODIFIER SET for that element across the whole
+    stylesheet, not the word "current" alone: a lone `current` -> state
+    'selected'; `current` plus any other modifier on the same element -> left
+    unmapped (falls through exactly as before this fix — base element only, no
+    state — the correct behaviour for a variant). Universal (R-31-9): every
+    block with this shape is classified by the same rule, no per-block carve-out.
+    """
+    for m in _BEM_CURRENT_MODIFIER_RE.finditer(selector):
+        if m.group(1).lower() != block_short_slug.lower():
+            continue
+        element = m.group(2).lower()
+        siblings = sibling_modifiers.get(element, set())
+        if siblings <= {"current"}:
+            return "selected"
+    return None
 
 
 def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "str | None":
@@ -1005,8 +1075,11 @@ def _custom_props_consumed(
     shorthand_slot: dict[tuple[str, str], str] = {}
     state_of: dict[tuple[str, str], str] = {}
     element_of: dict[tuple[str, str], "set[str]"] = defaultdict(set)
+    sibling_modifiers = _bem_modifier_siblings(css_src, block_short_slug) if block_short_slug else {}
     for selector, body in _iter_rule_blocks(css_src):
         state = _derive_state_from_selector(selector)
+        if state is None and block_short_slug:
+            state = _bem_current_state(selector, block_short_slug, sibling_modifiers)
         element = _derive_bem_element_from_selector(selector, block_short_slug) if block_short_slug else None
         for m in _DECL_RE.finditer(body):
             prop = m.group("prop").strip().lower()
@@ -3108,6 +3181,103 @@ def _self_test_bem_modifier_is_not_an_element() -> bool:
     return ok
 
 
+def _self_test_bem_current_modifier_is_state_aware() -> bool:
+    """`--self-test` fixture proving the fix-of-the-fix (2026-08-15): a bare
+    `--current` BEM modifier populates `css_state='selected'` when it's the
+    element's ONLY modifier (breadcrumbs shape), but is left unmapped when the
+    element ALSO carries a sibling modifier (buybox/product-card shape) — so
+    `current` there stays a variant, never a fabricated selection state.
+
+    Reproduces the exact live regression: without this fix,
+    `sgs/breadcrumbs.linkColour` and `.currentColour` both collapse to
+    `(element='item', state=None, property='color')` — an identical, ambiguous
+    key the column-first resolver raises `AmbiguousLayerAttrError` on at clone
+    time (proven live via `db-consistency/run.py --check`, 2026-08-15).
+
+    POSITIVE CONTROL: breadcrumbs' `--sgs-breadcrumbs-current-colour` (fed only
+    by `.sgs-breadcrumbs__item--current`, `item` has no other modifier) resolves
+    to `state='selected'`, `element='item'` — now DISTINCT from `linkColour`'s
+    `(item, color, state=None)`, so no collision.
+    NEGATIVE CONTROL: a synthetic block reproducing buybox/product-card's own
+    shape (a `price` element carrying `--current` PLUS sibling `--regular`/
+    `--pct-off` modifiers — buybox and product-card's actual selectors are
+    `.buybox__price--current`/`.price--current`, unprefixed, so this exact
+    real-world regex never even reaches them; the synthetic fixture uses the
+    full `sgs-{slug}__el--modifier` convention so the sibling-disambiguation
+    branch is genuinely exercised rather than short-circuited by prefix
+    mismatch) resolves to `state=None` — `current` stays a variant, never
+    upgraded to a fabricated 'selected' state.
+    """
+    ok = True
+
+    breadcrumbs_css = (
+        ".sgs-breadcrumbs__item a { color: var(--sgs-breadcrumbs-link-colour); }\n"
+        ".sgs-breadcrumbs__item--current { color: var(--sgs-breadcrumbs-current-colour); }\n"
+    )
+    _out, _grad, _slot, state_of, element_of = _custom_props_consumed(
+        breadcrumbs_css, block_short_slug="breadcrumbs"
+    )
+    link_key = ("--sgs-breadcrumbs-link-colour", "color")
+    current_key = ("--sgs-breadcrumbs-current-colour", "color")
+    if state_of.get(current_key) != "selected":
+        print(
+            "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — "
+            f"currentColour state_of = {state_of.get(current_key)!r}, expected 'selected'",
+            file=sys.stderr,
+        )
+        ok = False
+    if element_of.get(current_key) != {"item"} or element_of.get(link_key) != {"item"}:
+        print(
+            "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — expected both "
+            f"linkColour and currentColour to resolve element='item', got "
+            f"link={element_of.get(link_key)!r} current={element_of.get(current_key)!r}",
+            file=sys.stderr,
+        )
+        ok = False
+    if current_key in state_of and link_key in state_of and state_of[current_key] == state_of.get(link_key):
+        print(
+            "[self-test] FAIL: breadcrumbs POSITIVE CONTROL — linkColour and "
+            "currentColour must NOT collide (same element+state+property)",
+            file=sys.stderr,
+        )
+        ok = False
+
+    variant_css = (
+        ".sgs-widget__price--current { color: var(--sgs-widget-price-colour); }\n"
+        ".sgs-widget__price--regular { opacity: 0.7; }\n"
+        ".sgs-widget__price--pct-off { font-weight: 700; }\n"
+    )
+    _out2, _grad2, _slot2, state_of2, element_of2 = _custom_props_consumed(
+        variant_css, block_short_slug="widget"
+    )
+    price_key = ("--sgs-widget-price-colour", "color")
+    if state_of2.get(price_key) is not None:
+        print(
+            "[self-test] FAIL: NEGATIVE CONTROL — price--current has a "
+            f"sibling --regular/--pct-off modifier, so state_of must be None, "
+            f"got {state_of2.get(price_key)!r}",
+            file=sys.stderr,
+        )
+        ok = False
+    if element_of2.get(price_key) != {"price"}:
+        print(
+            "[self-test] FAIL: NEGATIVE CONTROL — expected element='price', "
+            f"got {element_of2.get(price_key)!r}",
+            file=sys.stderr,
+        )
+        ok = False
+
+    if ok:
+        print(
+            "[self-test] PASS: a lone `--current` BEM modifier resolves to "
+            "css_state='selected' (breadcrumbs, no collision with linkColour); "
+            "a `--current` sharing its element with sibling modifiers "
+            "(price--current/--regular/--pct-off) stays unmapped, not "
+            "a fabricated 'selected' state."
+        )
+    return ok
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -3116,6 +3286,7 @@ if __name__ == "__main__":
             _self_test_multi_element_var_is_not_collapsed(),
             _self_test_helper_call_selector_yields_bem_element(),
             _self_test_bem_modifier_is_not_an_element(),
+            _self_test_bem_current_modifier_is_state_aware(),
         ]
         sys.exit(0 if all(results) else 1)
 

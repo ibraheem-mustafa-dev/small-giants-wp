@@ -210,7 +210,7 @@
       "attr": "nameFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "caption"
+        "css_element": "name"
       }
     },
     {
@@ -226,7 +226,7 @@
       "attr": "nameLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "caption"
+        "css_element": "name"
       }
     },
     {
@@ -234,7 +234,7 @@
       "attr": "nameLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "caption"
+        "css_element": "name"
       }
     },
     {
@@ -250,7 +250,7 @@
       "attr": "nameTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "caption"
+        "css_element": "name"
       }
     },
     {
@@ -258,7 +258,7 @@
       "attr": "nameTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "caption"
+        "css_element": "name"
       }
     },
     {
@@ -266,7 +266,7 @@
       "attr": "scrollSpeed",
       "fields": {
         "css_property": "animation",
-        "css_element": "track--ready"
+        "css_element": "track"
       }
     },
     {
@@ -325,7 +325,8 @@
       "attr": "currentColour",
       "fields": {
         "css_property": "color",
-        "css_element": "item--current"
+        "css_element": "item",
+        "css_state": "selected"
       }
     },
     {
@@ -612,7 +613,7 @@
       "attr": "subtitleFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "card-subtitle"
+        "css_element": "subtitle"
       }
     },
     {
@@ -637,7 +638,7 @@
       "attr": "titleFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "card-title"
+        "css_element": "title"
       }
     },
     {
@@ -849,14 +850,6 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
-      "attr": "textAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "headline"
       }
     },
     {
@@ -1613,7 +1606,7 @@
       "attr": "splitImageMobileObjectPosition",
       "fields": {
         "css_property": "object-position",
-        "css_element": "split-media--mobile"
+        "css_element": "split-media"
       }
     },
     {
@@ -2691,7 +2684,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color,box-shadow",
-        "css_layer": "OUTER",
+        "css_element": "card",
         "css_state": "hover"
       }
     },
@@ -2718,7 +2711,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "desktop",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -2746,7 +2739,7 @@
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow,transform",
-        "css_layer": "OUTER",
+        "css_element": "card",
         "css_state": "hover"
       }
     },
@@ -3046,7 +3039,8 @@
       "slug": "sgs/product-card",
       "attr": "ctaWidthType",
       "fields": {
-        "css_property": "width"
+        "css_property": "width",
+        "css_element": "cta"
       }
     },
     {
@@ -3062,7 +3056,7 @@
       "attr": "descFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "desc"
+        "css_element": "description"
       }
     },
     {
@@ -3070,7 +3064,7 @@
       "attr": "descLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "desc"
+        "css_element": "description"
       }
     },
     {
@@ -3134,7 +3128,7 @@
       "attr": "priceNoteFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "priceNote"
+        "css_element": "price-note"
       }
     },
     {
@@ -3150,7 +3144,7 @@
       "attr": "tagTextColour",
       "fields": {
         "css_property": "color",
-        "css_element": "tag--trial"
+        "css_element": "tag"
       }
     },
     {
@@ -3379,6 +3373,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "background-color,border-color,color",
+        "role": "styling",
         "css_element": "item"
       }
     },
@@ -3386,9 +3381,9 @@
       "slug": "sgs/social-icons",
       "attr": "iconColourHover",
       "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "icon",
+        "css_property": "background-color,border-color,color",
+        "role": "styling",
+        "css_element": "item",
         "css_state": "hover"
       }
     },
@@ -3989,7 +3984,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "mobile",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

@@ -1388,8 +1388,10 @@
       "attr": "imageZoomHover",
       "fields": {
         "css_property": "transform",
-        "css_state": "hover"
-      }
+        "css_state": "hover",
+        "css_element": "image"
+      },
+      "_why": "css_element PINNED 2026-08-15. The css_element reset added to sgs-update-v2.py the same day cleared this value because the derivation cannot re-derive it for THIS block: post-grid's hover-zoom rule targets `.sgs-post-grid__img` (style.css:488) while 13 other rules in the same file use `.sgs-post-grid__image`, and the manifest declares `image` — one block, two class names for one element. Without this pin `lift_per_element_state` stops routing the attr and post-grid's image hover-zoom is SILENTLY DROPPED on every clone, the exact defect converter/tests/test_per_element_state_lift.py exists to prevent (this attr is one of the five named in its docstring). Siblings card-grid/gallery/team-member are unaffected — their selectors end in `__image`, matching their manifests. DO NOT remove this pin to tidy up: fix post-grid's own `__img` vs `__image` split first, re-verify that test, THEN remove."
     },
     {
       "slug": "sgs/quote",
@@ -2692,6 +2694,14 @@
       "fields": {
         "role": "content"
       }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": null
+      },
+      "_why": "STRAY css_property cleared 2026-08-15. The attribute is NOT the emitter — the block's own docblock (render.php:14,21) states 'textAlign (native typography support — targets the headline child)' and 'textAlign is handled by the single native textAlign support'. block.json confirms supports.typography.textAlign=true, and the headline element's attrMap routes css:text-align to `native:typography.textAlign`, NOT to this attr. The bare `textAlign` string attribute is a vestigial declaration; its css_property='text-align' was a rogue seed the derived classifier never claims, so db-consistency flagged it as 'would vanish on the next reseed'. Pinning it to null makes the DB state match the truth durably instead of oscillating each reseed."
     }
   ]
 }
