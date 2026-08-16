@@ -56,6 +56,46 @@ Styles tab on all 7 wrapper blocks. Scratch probe page (id 2466) force-deleted a
 **Agent identity:** you are picking up a clean framework with no open blockers. Two independent
 next items exist — they don't collide, so either can go first.
 
+### ⚠ Task 1 UPDATE — Phase 0 (groundwork) is DONE. Read D643 before starting the builders.
+
+**A later session on 2026-08-16 executed the groundwork this task needs, and it was much bigger than
+"start the builders".** Two commits on `main`: `c99be9c1` + `8c3bfbae`. Build green, both pushed.
+
+**Done:** 9 pre-D636 leftovers found and 8 fixed — including **the cloning converter, which could not
+clone a gradient overlay at all** (it wrote the deleted 4-attribute shape; stale DB rows were masking
+it). Radial/conic gradients are now cloneable and multi-stop gradients survive intact, both as
+side-effects of the fix. `sgs_css_gradient_value()` widened for CSS Color 4 slash syntax. DB reseeded
+(102 new attrs, 43 orphans pruned). `check-wrapper-capability-preconditions.js` **actually wired** —
+it was documented as wired in three places and ran nowhere.
+
+**⛔ Three things that change how the builders must work — do NOT start without reading these:**
+1. **`SgsColourPanel.js` needs NO changes.** It forwards `states` opaquely. The shared surface is ONE
+   file, `DesignTokenPicker.js`, and `<DesignTokenPicker` is mounted in **9** block files, not 30.
+2. **Classifying `css_property` alone is actively harmful.** Doing it produced 51 F6
+   `undeclared-subelement` violations — an attr with no `css_element` misroutes on a clone. The
+   element must be declared in each block's `supports.sgs.elements.<el>.attrMap`. Research for all 54
+   attrs (with per-attr evidence) is ready at
+   `.claude/reports/2026-08-16-D643-colour-attr-classification.md`; applying it is a per-block design
+   change, still OPEN.
+3. **Icon/SVG has no manifest slot.** Spec 35's vocabulary has ONE gradient-capable member,
+   `css:background-image`. Background/text/border can all honestly claim it (all three really do paint
+   with `background-image`). Icons are stroke-based and there is `css:fill` but **no `css:stroke`** —
+   Builder 4 needs a new member or an explicit opt-out. Decide before dispatching it.
+
+**Two corrections to this task's own brief, measured:** shape-divider colours emit **`color`** (the
+SVG resolves it via `fill="currentColor"`), not `fill` — so a divider gradient needs a real
+`<linearGradient>` replacing that hop. And `sgs/star-rating`'s colours plus `sgs/audio.spectrumColour`
+are **not CSS at all** (SVG presentation attribute; JS canvas paint) — audio is excluded outright.
+
+**Still OPEN before/with the builders:** the `accent` split (Bean ruled SPLIT — each CSS property gets
+its own control defaulting to the global `accent` preset; scope is 6 attrs, or 8 including
+`social-icons`, still unruled); applying the classification research per-block; **and a NEW
+client-facing defect — `sgs/cta-section` shows overlay colour + gradient controls that save fine and
+paint nothing** (it passes `no_overlay => true`; `check-dead-controls.js` structurally cannot see
+this). Full detail: `decisions.md` **D643**.
+
+**Nothing from this groundwork is deployed or live-verified.** Per D641, green ≠ working.
+
 ### Task 1 — Gradient rollout Stage 2 (D636)
 
 **What:** extend gradient support (already live for solid-colour backgrounds) to text, border, and

@@ -1,5 +1,140 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D643 — Gradient rollout Phase 0: 9 pre-D636 leftovers cleared, incl. a cloning pipeline that could not clone a gradient at all [INCIDENT]
+
+**2026-08-16.** Groundwork before the D636 universal gradient rollout. The intent was a short
+bug-clearance pass; it surfaced nine defects, one of them a live production break, and every one
+was invisible to the ~50-gate build because **WordPress silently discards an attribute a block does
+not declare** — the D338 class, again.
+
+**Root pattern, stated once because it explains all nine.** The D636 storage collapse (`837f7c97`,
+the previous day) changed every gradient from 4 attributes (`overlayGradient` boolean +
+`…Angle`/`…From`/`…To`) to ONE CSS string. It updated block.json, render.php and the editor for six
+blocks. It did NOT update: the component barrel, hero's editor + element manifest, `sgs/separator`,
+`sgs/physics-canvas`, two `resetAll` handlers, or **the cloning converter**. Nothing failed, because
+writing to a non-existent attribute is a silent no-op.
+
+**The serious one — the cloning pipeline could not clone a gradient overlay.**
+`converter/services/pseudo_overlay.py` still decomposed a draft gradient into the 4-attribute shape.
+Every one of those attrs had been deleted, so a `::before` gradient overlay cloned as an overlay with
+no gradient, no error, and no gap row. **Stale rows in `sgs-framework.db` masked it** — the
+converter's DB-gated existence check found `overlayGradientFrom`/`To` because Stage 9 had never
+pruned them. Pruning them is what surfaced it. Fixed by carrying the draft's gradient through
+VERBATIM as one string, which also removed two limits nobody had recorded as limits: **radial and
+conic gradients are now cloneable** (the 4-scalar shape could only express an angle plus two stops,
+so they had been silently gapped), and **multi-stop gradients keep every stop** instead of being
+flattened to first-and-last. Six helpers existing only to decompose a gradient were deleted.
+
+⚠ **A regression in my own fix, caught before commit.** Passing gradients through verbatim quietly
+dropped the guarantee that the converter never writes something that renders nothing — the old
+decomposition rejected a one-stop gradient as a side effect. `linear-gradient(90deg,#000)` would
+have cloned into an invisible overlay: a silent half-write, which Spec 31 forbids as firmly as a
+wrong value. Restored as an explicit `_linear_gradient_renders_something()` gate, scoped to LINEAR
+only (radial/conic have a grammar this parser was never written for; inventing one would be
+guessing, and they were gapped entirely before, so admitting them is strictly more capability).
+
+**The other eight.** (1) `components/index.js` re-exported two deleted functions — a webpack
+WARNING, not an error, which is why a green build never caught it. (2) `hero/edit.js` imported and
+called one of them, gated on a deleted attr, so the branch was unreachable. (3) `hero/block.json`'s
+element manifest pointed at three deleted attrs. (4) `sgs/separator` carried the LAST uncollapsed
+4-scalar family in the tree. (5) `hero` + (6) `site-header` reset a now-STRING attr to boolean
+`false`. (7) `sgs/physics-canvas` declared `overlayGradient` as BOOLEAN while the shared wrapper
+reads it as a gradient string — its Background panel could never have saved one. (8) `sgs/cta-section`'s
+overlay gradient was claimed by nothing in the element manifest, surfaced only once the reseed
+classified it for the first time.
+
+**(9) — found last, still OPEN, needs a design call.** `sgs/cta-section` passes `'no_overlay' => true`
+to the shared wrapper (`render.php:474`), so the wrapper's overlay branch never runs and never reads
+`backgroundOverlayColour` or `overlayGradient`. Both are nonetheless **client-facing**: the block
+mounts `<BackgroundPanel>` (`edit.js:255`), so the overlay colour and gradient controls appear in the
+inspector, save correctly, and paint nothing. `check-dead-controls.js` cannot see this — the attrs
+ARE consumed in the shared wrapper, just never for THIS block, and the gate has no notion of a
+per-block opt-out. **This is a genuine gap in the dead-control gate, not just a block bug.** Fix is a
+design call (drop the attrs + control, or stop passing `no_overlay`), so it is recorded, not guessed.
+
+**`sgs/separator` — a deliberate departure from the approved plan, flagged not smuggled.** The plan
+said replace `border-image` with `background-image`. The storage collapse was done as specced, but
+`border-image` was KEPT: D636's ban exists because it cannot respect `border-radius`, and a separator
+is a 1D rule with none — and it is the ONLY mechanism that keeps a dashed/dotted gradient line
+working, since `lineStyle` feeds `border-bottom-style` and a background-image cannot express a dashed
+rule. Switching would have silently dropped a capability to satisfy a rule whose rationale does not
+apply here.
+
+**`sgs_css_gradient_value()` widened** (`helpers-tokens.php:745`) to admit `/` and `_`. CSS Color 4
+slash syntax (`rgb(0 0 0 / 50%)`) failed the match, so the whole gradient returned `''` and the solid
+colour painted instead — no error, no log. Not live yet (the serialiser only emits comma form), but
+it becomes a defect the moment anyone pastes a gradient. The reject-list still blocks the real attack
+surface, so the allow-class widening does not weaken it.
+
+**A gate that was documented as enforcing and enforced nothing.**
+`check-wrapper-capability-preconditions.js` (built the previous day at D639) was described as wired
+into `prebuild` by Spec 35 §F.2.1, `dev-setup.md` AND `plugins/sgs-blocks/CLAUDE.md`. It had **zero**
+`package.json` references and no `check:` alias, and was absent from `run-consistency-gates.py`. That
+is the D338 "built but not wired for three weeks" failure — and D639's own paragraph cites D338 by
+name while repeating it, the same day, in the doc claiming the lesson. Now genuinely wired (verified
+passing standalone first), and all three docs corrected to RECORD the gap rather than be quietly made
+true. **Standing rule, now twice-earned: never trust a doc's claim that a gate runs — grep
+`package.json`.**
+
+**DB reseed (the rollout's real precondition).** `/sgs-update` stages 1 + 9: 102 new attributes, 43
+orphans pruned, hero's 8 phantom rows confirmed gone, schema drift still clean (verified explicitly —
+a co-active session shared the DB).
+
+⛔ **THE CLASSIFICATION STEP AS THE PLAN SPECIFIED IT IS WRONG — DO NOT REPEAT IT.** The plan said:
+classify the 54 NULL-`css_property` colour attrs by hand and "write the result back to
+`attr-classification-overrides.json`". Doing exactly that took the count 54 → 2 and then **failed the
+build with 51 new F6 violations**, all `cssprop:undeclared-subelement`. The gate's own fix text says
+it outright: *"Declare the element in the block's `supports.sgs.elements.<el>.attrMap` (add
+`\"css:color\": \"<attr>\"`), **NOT an attr-classification override**"*. A `css_property` with no
+resolved `css_element`/`derived_selector` falls to the ROOT routing domain, so the converter **would
+misroute it on a clone** — a worse failure than leaving it unclassified, because it looks classified.
+**Backed out in full**; the DB is back to 54 NULL and the build is green. The research itself was
+sound and is preserved at `.claude/reports/2026-08-16-D643-colour-attr-classification.md` (all 54
+rows, with per-attr evidence). The real task is per-block ELEMENT declaration in each manifest, which
+is a design change per block, not a data edit — properly scoped as a follow-up rather than half-done.
+**This is the second time this session a "just write it to the overrides file" instruction turned out
+to be the wrong mechanism** (the first: `check-wrapper-capability-preconditions.js` documented as
+wired and wired nowhere).
+
+⚠ **Three automated probes failed at this and the failure mode is worth recording.** I wrote a
+grep-based property-deriver three times; it resolved 0, then 8, then 13 of 54. There is no single
+emission idiom — an attribute reaches CSS via a direct declaration, OR a PHP variable, OR a
+`--sgs-*` custom property defined in a lookup table in an unrelated file, OR a shared helper, OR not
+via CSS at all. **The first run returning "no evidence" for 52 of 54 was a false absence and should
+have stopped me; I iterated twice more instead.** Worse than incomplete: on
+`sgs/product-card.tagBackgroundColour` the probe confidently returned `color`, which is WRONG — a
+co-located-rule artefact, because a DIFFERENT attribute (`tagTextColour`) contributes a `color:`
+declaration to the same concatenated CSS string. A name-based guess would have been right where my
+"evidence-based" probe was wrong. The 41 remaining were resolved by three parallel agents reading
+the actual render code.
+
+**Two classifications that would have broken a builder if guessed:**
+- **Shape dividers (12 attrs) emit `color`, NOT `fill` and NOT `background-color`.**
+  `sgs_shape_divider_decls()` writes `color:<value>`; the SVG `<path fill="currentColor">` resolves
+  it. So a divider GRADIENT cannot ride on `color` at all — it needs a real SVG `<linearGradient>` +
+  `fill="url(#id)"` replacing the `currentColor` hop. Builder 5's mechanism is confirmed correct, but
+  for a reason the plan did not state.
+- **`sgs/star-rating`'s `starColour`/`emptyColour` are NOT CSS** — the literal value is written into
+  the SVG `fill=` presentation attribute, with no `currentColor` indirection (unlike
+  `sgs/testimonial.ratingColour`, which IS `color`). **`sgs/audio.spectrumColour` is not CSS either**
+  — nothing in any stylesheet consumes its custom property; the sole reader is `view.js`, painting a
+  CANVAS. Excluded from the rollout: a CSS gradient cannot paint a canvas.
+
+**A structural finding for Phase 2, measured not assumed.** Spec 35's element-manifest vocabulary has
+56 CSS members and exactly ONE gradient-capable slot: `css:background-image`. Background, text and
+border gradients can all honestly claim it (all three genuinely paint with `background-image` —
+text via `background-clip:text`, border via a masked pseudo-element). **Icon/SVG cannot**: SGS icons
+are stroke-based and the vocabulary has `css:fill` but no `css:stroke`. Builder 4 needs either a new
+member or an explicit opt-out. `separator.lineGradient` consumed the single slot of headroom in
+`element-manifest-baseline.json`; the baseline was NOT raised (that requires Bean's sign-off).
+
+**Verification.** Full build green through all ~50 gates. Converter suite 666 passed; the 27
+pseudo-overlay tests rewritten to the one-string contract. Visual-diff gate: scoped bypass on
+hero/physics-canvas/separator, Bean-approved after reviewing evidence that all three are
+byte-identical for every existing instance (grep-verified zero uses of the old attrs in `theme/` or
+`sites/`; the gradient branch is unreachable both before and after). **Nothing deployed — no live
+verification yet, which per D641 means none of this is proven working, only proven building.**
+
 ## D642 — Dead grid_area converter code deleted; the lying docstring it left behind fixed [ROUTINE]
 
 **2026-08-16.** Follow-up to D639's Correction 3, which found but deliberately did not fix:
