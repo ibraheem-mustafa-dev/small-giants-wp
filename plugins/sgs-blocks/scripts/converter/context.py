@@ -90,9 +90,9 @@ class Ctx:
     base_layer: str | None       # cached by layer_detect (§2.1)
     conn: sqlite3.Connection
     # `area_name` (Spec 31 §3.A L4 — D207 grid-per-area dissolve) REMOVED 2026-08-16
-    # (D639): no production Ctx-builder ever set it, only test fixtures did, so the
-    # `grid_area` resolver and layer_detect's GRID_AREA branch it fed were both dead
-    # code and have been deleted. The real grid-per-area routing is
+    # (D642; found-but-not-fixed at D639): no production Ctx-builder ever set it, only
+    # test fixtures did, so the `grid_area` resolver and layer_detect's GRID_AREA
+    # branch it fed were both dead code and have been deleted. The real grid-per-area routing is
     # `fold_helpers.route_area_css_to_block_attrs`, called from `assembly` step 3d,
     # keyed on the draft's BEM element token — it never depended on this field.
     # FR-31-2.8.4 destination-parametric dispatch: where this element's routed

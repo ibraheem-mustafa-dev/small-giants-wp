@@ -449,8 +449,8 @@ def build_block_markup(
     # actually render, regardless of which resolver produced it (the proven
     # gap: a resolver with role=None or an ungated colour branch — e.g.
     # grid.py's GRID-item props, fold_helpers.route_area_css_to_block_attrs's
-    # per-area attrs (D639: the former resolvers/grid_area.py was dead code,
-    # deleted — this is the real live per-area path), pseudo_
+    # per-area attrs (D642: the former resolvers/grid_area.py was dead code
+    # [found at D639, deleted at D642] — this is the real live per-area path), pseudo_
     # overlay.py's solid/gradient colours — can write a draft-local
     # `var(--x)` straight through with no token resolution at all). Findings
     # are RECORDED, never acted on: no attr is dropped, no value rewritten,

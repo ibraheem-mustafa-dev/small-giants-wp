@@ -1,6 +1,6 @@
-"""test_css_resolvers.py — the 5 built CSS resolvers (the 2026-06-29 unification).
+"""test_css_resolvers.py — the built CSS resolvers (the 2026-06-29 unification).
 
-content_band / grid / grid_area / typography (+ the extended outer_box, tested in
+content_band / grid / typography (+ the extended outer_box, tested in
 test_outer_box.py) transfer real CSS against the multi-Write seam (Write |
 list[Write] | GAP). These are the genuine metamorphic relations that replace the
 former xfail stubs (design §4 #3 / §10 A14): source-order invariance, name-free
@@ -174,7 +174,7 @@ def test_typography_metamorphic_size_scale(conn):
     assert va * 2 == vb
 
 
-# grid_area (GRID_AREA layer) tests REMOVED 2026-08-16 (D639) along with
+# grid_area (GRID_AREA layer) tests REMOVED 2026-08-16 (D642; found at D639) along with
 # resolvers/grid_area.py itself — its trigger (ctx.area_name) was never set by
 # any production Ctx-builder, only by this file's own fixtures. The real
 # grid-per-area routing is fold_helpers.route_area_css_to_block_attrs, tested

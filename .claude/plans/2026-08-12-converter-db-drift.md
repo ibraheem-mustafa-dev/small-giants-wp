@@ -146,6 +146,14 @@ section's own itemisation summed to 11, and it omitted `test_grid_area_tier_suff
 failures, not 5. With G2 and G3 as singletons the split is **12 / 1 / 1 = 14**, which now accounts for
 every failure; the original 10/1/1 accounted for only 12.
 
+⚠ **Stale as of 2026-08-16 (D642) — historical record, not corrected in place.** This section
+describes the state on 2026-08-12; it is left as written because it is an incident analysis, not a
+living count. `test_grid_area_tier_suffix` (cited above at `test_css_resolvers.py:202-211`) and the
+`resolvers/grid_area.py` resolver it drove were both dead code, deleted at D642 — the test's subject
+no longer exists, its line reference is stale, and the file's own `xfail` total dropped 12→11 the same
+day *by design*. Do not "fix" this section's numbers to match; read `spec-39-seed-requirements.md` G9
+for the current, re-derived figure.
+
 ⭐ Also council-corrected: the three `order` failures are on **`sgs/media`**, whose `order` attr IS
 declared as `"type":"object"` (`src/blocks/media/block.json:361-364`) — same object drift as the rest
 of G1. D590's original claim that they concerned a deleted `sgs/hero.order` was wrong and has been
@@ -163,9 +171,11 @@ object attr holding `{desktop,tablet,mobile}`. Those suffixed names are declared
 sees `"positionY":"20"` where it expects a bare `20`.
 
 **The seam.** `services/tier_suffix.py::tier_suffix()` returns a *name* (`maxWidth` + `Mobile`), so
-it structurally cannot express "write into a tier object". 16 call sites across 7 files
-(`grid.py` ×7, `content_band.py` ×2, `grid_area.py` ×2, `outer_box.py` ×2, `typography.py`,
-`services/border_side.py`, `services/state_value_lift.py`) all follow the identical shape:
+it structurally cannot express "write into a tier object". 16 call sites across 7 files, as counted on
+2026-08-12 (`grid.py` ×7, `content_band.py` ×2, `grid_area.py` ×2, `outer_box.py` ×2, `typography.py`,
+`services/border_side.py`, `services/state_value_lift.py`) — ⚠ **stale as of 2026-08-16 (D642):
+`grid_area.py` was deleted as dead code, so this is now 13 call sites across 5 files; see
+`spec-39-seed-requirements.md`'s re-derived G2 figure, not this line** — all followed the identical shape:
 
 ```python
 attr = tier_state_suffix(base_attr, decl, ctx.conn)

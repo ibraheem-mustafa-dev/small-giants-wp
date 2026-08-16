@@ -48,9 +48,13 @@ def test_area_resolver_routes_per_area_padding_to_object_for_hero():
     """Post-D295 (no-inline box-object rollout) hero migrated its per-area padding
     flat→OBJECT (``contentPadding``, box_family-seeded), so the FLAT per-area
     resolver returns None for a padding side — the box-object path
-    (``grid_area._area_box_write``) routes the side into the ``contentPadding``
-    object instead (folded by the orchestrator accumulator). A NON-box per-area
-    attr (background, tested below) still resolves flat."""
+    (``fold_helpers.route_area_css_to_block_attrs``, assembly step 3d — the ONLY
+    live grid-per-area path; the former per-declaration ``grid_area.py`` resolver
+    was dead code, deleted D642) routes the side into the ``contentPadding``
+    object instead (folded by the orchestrator accumulator; see
+    ``test_route_area_css_folds_per_area_padding_to_object_for_hero`` below for the
+    live-path assertion). A NON-box per-area attr (background, tested below) still
+    resolves flat."""
     assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-top") is None
     assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-left") is None
     # the per-area padding OBJECT family IS declared (box_family seeded, D295).

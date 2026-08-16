@@ -239,9 +239,10 @@ files.
   Especially §2.3 (layer decomposition), §2.4 (the recursive fold / pass-through
   definition), §2.5 (grid items), §3.A (CSS branch), §13.2 (walker contract + the three
   permitted exceptions, R-31-3).
-- The cascade scripts IN FULL (~2,760 lines):
+- The cascade scripts IN FULL (~2,760 lines at the time this list was written; `resolvers/grid_area.py`
+  deleted 2026-08-16, D642 — it was dead code, struck below rather than silently dropped):
   `services/layer_detect.py` · `resolvers/outer_box.py` · `resolvers/content_band.py` ·
-  `resolvers/grid.py` · `resolvers/grid_area.py` · `services/fold_helpers.py` ·
+  `resolvers/grid.py` · ~~`resolvers/grid_area.py`~~ (deleted, D642) · `services/fold_helpers.py` ·
   `services/css_pass.py` · `dispatch_table.py` · `services/section_passes.py` ·
   `services/arrangement.py` · `services/attr_resolve.py`
 - `.claude/STOP-CATALOGUE.md`

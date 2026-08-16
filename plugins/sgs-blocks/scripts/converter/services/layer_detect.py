@@ -4,7 +4,7 @@ Returns OUTER | CONTENT | GRID from the node's CSS signature + its structural
 position (MF-3), NEVER its class name. Computed once on the BASE (non-@media)
 declaration set and cached on Ctx.base_layer (tier-invariance §2.1).
 
-GRID_AREA removed 2026-08-16 (D639): a `ctx.area_name`-driven branch existed here
+GRID_AREA removed 2026-08-16 (D642; found at D639): a `ctx.area_name`-driven branch existed here
 for the Spec 31 §3.A L4 grid-per-area dissolve, but no production Ctx-builder ever
 set `area_name` — only test fixtures did. The REAL grid-per-area routing is
 `services.fold_helpers.route_area_css_to_block_attrs`, called directly from

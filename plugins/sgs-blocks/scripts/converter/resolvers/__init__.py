@@ -4,7 +4,7 @@ The orchestrator dispatches by DATA: dispatch_table names an id, REGISTRY maps i
 a `resolve(decl, ctx) -> Write | GAP` callable. No `if slug ==` branching anywhere.
 
 Resolver status (corrected D249, then EXECUTION Step 12 / 2026-07-04; grid_area removed
-D639 2026-08-16):
+D642 2026-08-16, found-but-not-fixed at D639):
   - REAL (CSS-side):  outer_box, content_band, grid, typography — each transfers real
     properties to DB-resolved attrs and emits an HONEST GAP only when a block declares no
     destination attr / a property is unowned.
@@ -14,7 +14,7 @@ D639 2026-08-16):
     reachability proof). The REAL content-side lifts `lift_scalar_content` /
     `lift_styling_content` (a DIFFERENT dispatch entirely — services.extraction / walk.py's
     B1/B2 mechanism) are UNTOUCHED and remain fully wired.
-  - REMOVED (2026-08-16, D639):  grid_area.resolve and its REGISTRY entry — its trigger
+  - REMOVED (2026-08-16, D642):  grid_area.resolve and its REGISTRY entry — its trigger
     (`ctx.area_name` set, dispatched via layer_detect's GRID_AREA branch) was never
     produced by any production Ctx-builder; only test fixtures ever set it. The REAL
     grid-per-area routing is `services.fold_helpers.route_area_css_to_block_attrs`,

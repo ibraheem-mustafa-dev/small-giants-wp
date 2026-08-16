@@ -7,7 +7,7 @@ behaviour-IDENTICAL (Spec 31 §12.4, D246):
   - ``_resolve_co_declared_var``        (convert.py:384)  -> ``_resolve_co_declared_var`` (private)
   - ``_expand_box_shorthand``           (convert.py:2354) -> ``_expand_box_shorthand`` (private)
   - ``_lift_content_band_max_width``    (convert.py:5821) -> ``lift_content_band_max_width``
-  - ``_grid_item_areas``               (convert.py:2308) -> DELETED 2026-08-16 (D639; zero callers — the resolver it fed, `resolvers/grid_area.py`, was itself dead code and removed the same session)
+  - ``_grid_item_areas``               (convert.py:2308) -> DELETED 2026-08-16 (D642; found at D639 — zero callers — the resolver it fed, `resolvers/grid_area.py`, was itself dead code and removed the same commit)
   - ``_route_area_css_to_block_attrs`` (convert.py:2405) -> ``route_area_css_to_block_attrs``
   - ``_route_interior_css_to_parent_slot`` (convert.py:2597) -> ``route_interior_css_to_parent_slot``
 
@@ -198,11 +198,16 @@ def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
 # ---------------------------------------------------------------------------
 
 
-# grid_item_areas (convert.py:2308) DELETED 2026-08-16 (D639) — zero callers.
-# It fed `resolvers/grid_area.py`'s `ctx.area_name`, which no production
-# Ctx-builder ever set; both were dead code and removed the same session. The
-# real grid-per-area routing is `route_area_css_to_block_attrs` below, keyed on
-# the draft's BEM element token via `services.assembly` step 3d, not on this.
+# grid_item_areas (convert.py:2308) DELETED 2026-08-16 (D642; found at D639) —
+# zero callers. It fed `resolvers/grid_area.py`'s `ctx.area_name`, which no
+# production Ctx-builder ever set; both were dead code and removed the same
+# commit. The real grid-per-area routing is `route_area_css_to_block_attrs`
+# below, keyed on the draft's BEM element token via `services.assembly` step
+# 3d, not on this. NOTE: the deleted resolver also carried the only
+# production call site of `db_lookup.unit_companion_attr()` — the live path
+# below does NOT do unit-companion handling. Not deleted (it is DB-driven and
+# unit-tested); recorded as a genuine Spec 39 input in
+# `.claude/plans/spec-39-seed-requirements.md`, not debt.
 
 # ---------------------------------------------------------------------------
 # lift_content_band_max_width (convert.py:5821 — ported verbatim, renamed)
@@ -249,7 +254,7 @@ def route_area_css_to_block_attrs(
     emitter unmigrated. Refuted by the call graph, not by opinion — grep the callers
     before believing any "unwired" claim, including this one.
 
-    Corrected 2026-08-16 (D639): the paragraph that used to sit here claimed the
+    Corrected 2026-08-16 (D642; found at D639): the paragraph that used to sit here claimed the
     per-declaration ``resolvers/grid_area.py`` resolver was "the OTHER grid-per-area
     path; both are live". That was false — ``grid_area.py``'s trigger
     (``ctx.area_name`` set) was never produced by any production Ctx-builder, only

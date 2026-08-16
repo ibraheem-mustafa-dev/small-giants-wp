@@ -40,7 +40,7 @@ still an honest documented-deferred stub) — only its CALL SITE inside `resolve
 was removed, since that call site is what made the branch reachable in tests only
 via a synthetic out-of-domain `layer` string, never in production.
 
-`grid_area`/`GRID_AREA` REMOVED (2026-08-16, D639): the resolver, its dispatch
+`grid_area`/`GRID_AREA` REMOVED (2026-08-16, D642; found-but-not-fixed at D639): the resolver, its dispatch
 entry, and `layer_detect`'s branch that could route to it. The trigger
 (`ctx.area_name` set) was never produced by any production Ctx-builder — only test
 fixtures set it. The real grid-per-area routing is
@@ -60,7 +60,7 @@ from converter.db.db_lookup import _TYPOGRAPHY_CSS_SCOPE
 # Resolver ids the table can return (each maps to resolvers/<id>.py).
 # EXECUTION Step 12 (2026-07-04): "scalar_media"/"scalar_content" REMOVED — proven
 # unreachable from resolver_id's one production call site (see module docstring).
-# "grid_area" REMOVED 2026-08-16 (D639) — see module docstring.
+# "grid_area" REMOVED 2026-08-16 (D642) — see module docstring.
 RESOLVER_IDS = frozenset({
     "typography", "excluded",
     "outer_box", "content_band", "grid",

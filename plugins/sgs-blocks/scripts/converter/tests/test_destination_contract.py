@@ -183,8 +183,8 @@ def test_mf4_single_candidate_still_resolves(monkeypatch):
 
 def test_mf3_root_node_never_content_layer():
     band_signature = {"max-width": "1200px", "margin": "0 auto"}
-    non_root = SimpleNamespace(is_root=False, area_name=None)
-    root = SimpleNamespace(is_root=True, area_name=None)
+    non_root = SimpleNamespace(is_root=False)
+    root = SimpleNamespace(is_root=True)
     assert layer_detect(non_root, band_signature) == "CONTENT"  # non-root: band
     assert layer_detect(root, band_signature) == "OUTER"        # root: OUTER, never CONTENT
 

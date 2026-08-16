@@ -36,7 +36,7 @@ things; the precise statement is that it lacks an *object* emitter.) Every site 
 | `scripts/converter/services/fold_helpers.py` | `:262` — `bp_decls['Tablet'] -> attr + 'Tablet'`; also `:291`, `:326`, `:352`. ⚠ **LIVE — see the refutation below; its own docstring used to claim otherwise** |
 | `scripts/converter/services/extraction.py` | `:652` — `target_attr = f"{base_attr}Mobile" if is_mobile else base_attr` |
 | `scripts/converter/resolvers/grid.py` | `:19` — "unsuffixed, Tablet → `*Tablet`, Mobile → `*Mobile`" |
-| `scripts/converter/resolvers/grid_area.py` | `:16` |
+| ~~`scripts/converter/resolvers/grid_area.py`~~ | ~~`:16`~~ — **DELETED 2026-08-16 (D642).** Dead code (`ctx.area_name` never set by any production Ctx-builder); its own `attr + 'Tablet'` string-building was proven byte-identical-output-neutral to remove, so it drops out of this inventory entirely. R1's real live grid-per-area work surface is `fold_helpers.route_area_css_to_block_attrs`. |
 | `scripts/converter/resolvers/styling_content.py` | `:9-10`, `:84` |
 | `scripts/converter/resolvers/typography.py` | `:101` — "Tier-suffixed primary destination" |
 | `scripts/converter/resolvers/outer_box.py` | `:386`, and `maxWidth`/`maxWidthTablet`/`maxWidthMobile` handling |
@@ -196,15 +196,17 @@ through a single shared function. Verified by reading the file and counting call
   `tier_suffix()`. This is the ONE place the flat `{attr}{Tier}` string is built.
 - **`scripts/converter/services/tier_suffix.py:65`** — `tier_state_suffix()` (which then appends an
   interaction-state suffix) calls `tier_suffix()` internally, so it also funnels through the same line.
-- Grepped every call site of `tier_suffix(` / `tier_state_suffix(` under `scripts/converter/` (excluding
-  the definitions and test files): **15 call sites across 6 resolver/service files** —
+- **Re-derived 2026-08-16 (D642 follow-up) after `resolvers/grid_area.py`'s deletion** —
+  `grep -rn "tier_suffix(\|tier_state_suffix(" --include=*.py . | grep -v "/tests/" | grep -v "def tier_suffix\|def tier_state_suffix" | grep -v "services/tier_suffix.py"`
+  now returns **13 call sites across 5 resolver/service files** (was 15 across 6 — `grid_area.py`'s 2
+  call sites are gone with the file, no other change) —
   `resolvers/grid.py` (7: lines 140, 156, 174, 203, 237, 270, 295), `resolvers/content_band.py` (2:
-  lines 106, 188), `resolvers/grid_area.py` (2: lines 89, 151), `resolvers/outer_box.py` (2: lines 215,
-  285), `services/border_side.py` (1: line 76), `resolvers/typography.py` (1: line 105, calls
-  `tier_suffix()` directly rather than `tier_state_suffix()`).
+  lines 106, 188), `resolvers/outer_box.py` (2: lines 215, 285), `services/border_side.py` (1: line 76),
+  `resolvers/typography.py` (1: line 105, calls `tier_suffix()` directly rather than
+  `tier_state_suffix()`).
 
 **Why this matters for Spec 39, without deciding anything:** an object-shape rework that changes what
-`tier_suffix()` (or its call inside `tier_state_suffix()`) returns touches all 15 call sites at once —
+`tier_suffix()` (or its call inside `tier_state_suffix()`) returns touches all 13 call sites at once —
 this is the leverage point R1's scattered per-resolver table doesn't surface. Whether the fix belongs
 at that one function or has to unwind at each call site is a Spec 39 design question, not answered here.
 
@@ -299,11 +301,16 @@ For a migrated property the suffixed name (`gapMobile`) is undeclared, so `valid
 resolver returns a GAP — **no `Write` is ever produced**. Any design that normalises *collected writes*
 therefore has nothing to normalise. R1 must act at or before the attr-resolution/validate seam.
 
-⚠ **And the 15 call sites are not uniform: 6 of them never call `validate()` at all** — they gate
-solely on `box_family_for()` (the box/border forks in `grid.py`, `content_band.py`, `grid_area.py`,
-`services/border_side.py`). So "make `tier_suffix()` return the base name so `validate()` passes" does
-not even apply to those six — and they are precisely the path that produces the shape-3 regression in
-G5. G2's count of 15 is right; its implied uniformity is not.
+⚠ **And the 13 call sites are not uniform: 5 of them never call `validate()` at all** (was 6 of 15 —
+`grid_area.py`'s 1 non-validate site is gone with the file; the other 5 are unchanged, re-verified by
+reading each call site's function body, not by subtracting on paper) — they gate solely on
+`box_family_for()`: `resolvers/grid.py` lines 203, 237, 270 (the padding/border-radius/longhand-radius
+box forks — `outer_box.py`'s two `tier_suffix` sites at 215/285 also gate on `box_family_for()` but
+still call `validate()` afterwards, so they don't belong in this count), `resolvers/content_band.py`
+line 106 (the band-mirror path), `services/border_side.py` line 76. So "make `tier_suffix()` return the
+base name so `validate()` passes" does not even apply to those five — and they are precisely the path
+that produces the shape-3 regression in G5. G2's re-derived count of 13 is right; its implied
+uniformity is not.
 
 *(Also: G2 lists `services/state_value_lift.py` among the callers. It only MENTIONS `tier_state_suffix`
 in a docstring — it resolves via `db_lookup.attr_for_state_property` instead. 15 real call sites stands,
@@ -361,17 +368,22 @@ dynamic-key dispatch loops, intermediate-variable assignment). i.e. **PHP-consum
 
 Net effect: 260 properties re-classified across 83 blocks, **0 additions** — the fix only narrows.
 
-### G9 — ⭐ R6's missing POSITIVE CONTROL now EXISTS: 12 `xfail(strict=True)` tests
+### G9 — ⭐ R6's missing POSITIVE CONTROL now EXISTS: 11 `xfail(strict=True)` tests
 
 R6 correctly warns that *"when the gate stops firing, R1 is done"* is vacuously satisfiable. As of
 2026-08-12 there is a concrete, non-vacuous acceptance signal that does not depend on any clone run
 happening:
 
-**12 converter tests are marked `@pytest.mark.xfail(strict=True)` citing D554.** They assert the
-pre-migration flat shape for properties that are now tier objects. Because `strict=True`, they **FAIL
-THE BUILD the moment the converter starts emitting tier objects** — they cannot silently pass.
+**11 converter tests are marked `@pytest.mark.xfail(strict=True)` citing D554** (was 12 —
+`test_grid_area_tier_suffix` in `test_css_resolvers.py` was retired 2026-08-16, D642, *together with
+its subject*: it drove the dead `resolvers/grid_area.py` resolver directly, so once that resolver was
+proven dead and deleted, the test had nothing left to assert and could never have been flipped per
+this section's own completion ritual below. The count fell by design, not by the "clean-up" this
+section's ⛔ forbids). They assert the pre-migration flat shape for properties that are now tier
+objects. Because `strict=True`, they **FAIL THE BUILD the moment the converter starts emitting tier
+objects** — they cannot silently pass.
 
-- **They are R1's work-list, enumerated and executable**: `test_css_resolvers.py` (6),
+- **They are R1's work-list, enumerated and executable**: `test_css_resolvers.py` (5),
   `test_outer_box_step12_properties.py` (3), `test_css_pass_partition.py` (1), `test_l4_area_wiring.py`
   (1), `test_state_value_lift.py` (1).
 - **The R1 completion ritual:** flip each from `xfail` to a normal test asserting the OBJECT shape, in
