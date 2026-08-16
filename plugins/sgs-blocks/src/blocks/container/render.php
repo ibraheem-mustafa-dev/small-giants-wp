@@ -115,7 +115,7 @@ $sgs_container_output = SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	$sgs_container_wrapper_opts
 );
 
