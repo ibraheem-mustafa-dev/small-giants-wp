@@ -59,17 +59,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		 * (D626 "hard sequencing dependency" / D633 calibration; built as
 		 * part of the wrapper-decomposition step 6 background pilot).
 		 *
-		 * NOT wired into any render.php by this commit — every one of the 7
-		 * direct-panel blocks (`container`/`cta-section`/`trust-bar`/`hero`/
-		 * `site-header`/`site-footer`/`physics-canvas`) still passes the
-		 * literal `'section'` string directly to render(), unchanged. This
-		 * method exists so a LATER commit (Phase B of
-		 * `~/.claude/plans/go-read-the-track-encapsulated-hare.md`) can
-		 * replace that literal with
+		 * WIRED into all 7 direct-panel blocks' render.php as of Phase B/D
+		 * of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`
+		 * (2026-08-16) — `container`/`cta-section`/`trust-bar`/`hero`/
+		 * `site-header`/`site-footer`/`physics-canvas` each now call
 		 * `SGS_Container_Wrapper::resolve_kind( $block, 'section' )` in the
-		 * SAME commit it adds `enabledExtensions` to that block's block.json
-		 * (D626's "same-commit rule" — never split the editor half and the
-		 * PHP half of one block's migration).
+		 * same commit that added `enabledExtensions` to that block's
+		 * block.json (D626's "same-commit rule" — never split the editor
+		 * half and the PHP half of one block's migration). No block still
+		 * passes the literal `'section'` string directly to render(); the
+		 * narrowing bug found mid-build (see below) was fixed at the
+		 * source in this same method, not worked around per-block.
 		 *
 		 * ⚠ Background/overlay attrs (`backgroundImage`/`bgVideo`/
 		 * `backgroundOverlayColour`/etc.) are OUT OF SCOPE for this
