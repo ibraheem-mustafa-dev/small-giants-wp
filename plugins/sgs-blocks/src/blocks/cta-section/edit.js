@@ -64,7 +64,7 @@ const LAYOUT_OPTIONS = [
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		ribbon,
 		layout, // legacy (pre-WS-4) — now the container grid/flex attr; read for old-post fallback only
@@ -252,7 +252,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls group="styles">
 				{ /* Background (image/video/svg tabs + ken-burns/parallax) — root-level
 					appearance, kept first in the Styles tab (mirrors sgs/container). */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
 					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
