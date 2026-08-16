@@ -162,16 +162,32 @@ NOT "done" until that scoping produces a build-ready spec, matching how D626 clo
 ### Dependency graph
 
 ```
-Task 1: /sgs-update (sequential, ~5 min)
-  ↓
-Task 1: 4 parallel builder agents (isolated worktrees, sonnet)
-  ↓ /qc gate (mandatory)
-Task 1: merge to main
+Task 1a: deploy + capture the 3 splits   (inline, opus, ~20 min)  <-- DO THIS FIRST
+   |     resolve the deploy-vs-commit ordering with Bean first
+   |     BLOCKS 1b: do not add 5 more unverified mechanisms on top of 3 unverified splits
+   v
+Task 1b: decide the Icon/SVG manifest slot  (inline, opus — no css:stroke member exists)
+   |     BLOCKS builder 4 only; builders 1/2/3/5 can start without it
+   v
+Task 1b: 5 builder agents in isolated worktrees (sonnet via /delegate)
+         Sonnet's parallel cap is 4 -> run 4, then the 5th
+         background | text | border | shape-divider   ... then icon/SVG
+   |     /qc-inline per builder before it reports done
+   v
+   |  /qc multi-rater across the merged diff (mandatory — blub.db 255)
+   v
+Task 1b: merge to main -> deploy -> live-verify all 5 mechanisms by eye (R-31-13)
 
-Task 2: /brainstorming or design council (inline, opus) — runs independently of Task 1
-  ↓
+Task 2: /brainstorming or design council (inline, opus) — independent of Task 1
+   v
 Task 2: scoped plan — build dispatch is a FUTURE session's task, not this one's
 ```
+
+⚠ **Graph corrected 2026-08-16 (D643).** The previous version opened with `/sgs-update` (done this
+session), showed FOUR builders (it is five — shape-divider was added by Bean's ruling), and had no
+verification step at all. Two prerequisites now sit ahead of the builders because both were
+discovered mid-session, not planned: the owed visual verification, and the icon manifest-slot
+decision.
 
 ### Carried, low priority
 
@@ -179,6 +195,13 @@ Task 2: scoped plan — build dispatch is a FUTURE session's task, not this one'
   then decide with Bean whether it joins the hard `prebuild` gate.
 - **`decisions.md` D639's "residual, not closed" line for GridAreaPanel** is stale (overtaken same day
   by `fb9625dd`) — a one-line note next time that entry is touched, not urgent.
+- **`element-manifest-baseline.json` has NO headroom left.** `separator.lineGradient` (D643) took the
+  last of the 12 accepted style-defect orphans — the gate now sits at exactly 12/12, so the very next
+  unclaimable attribute fails the build. The baseline was deliberately NOT raised: that file states
+  raising it is stop-the-line and needs Bean's sign-off. Decide whether `lineGradient` is formally
+  accepted debt (raise to 13 with a written reason) or whether a Spec 35 gradient member should exist
+  for borders — the same question Builder 4 faces for `css:stroke`. Not urgent, but the next person to
+  add a colour attribute will hit it with no warning.
 
 ## Methodology guardrails (do not skip)
 
