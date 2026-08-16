@@ -43,14 +43,23 @@ on and off cleanly, instead of always showing them whether the block needed them
 
 5. Merged to `main` and pushed. Step 6 of 7 is closed.
 
-**One honest gap, carried forward, not hidden:** the DESIGN for step 7 (a separate,
-not-yet-built piece of work) only got checked by one of the two reviewers who were asked
-to look at it — the second one got stuck and never came back with an answer. That's not a
-problem with what shipped today; it's a note that the plan for the NEXT step needs a
-second look before building starts.
+**Addendum, later the same session — the step-7 review gap above is now CLOSED, and step 7 has
+no remaining design blocker.** The missing second reviewer was re-run successfully, plus an
+independent fact-check pass that re-derived every claim in the design from source rather than
+trusting either the doc or the first review. Two real corrections came out of that (a wrong
+database-column comparison, a gate that would have false-negatived against today's code shape)
+— both fixed in the spec. One design (the shape-divider scale control) came back needing an
+actual decision, not just a rubber stamp: Bean picked the control shape and, in the same pass,
+corrected a piece of my own reasoning that had been wrong (I'd argued the two axes were
+"unrelated" — they're not; scaling a shape proportionally by default, with per-axis override
+as the exception, is the standard convention, same as any image-resize tool). **All three step-7
+designs are now fully locked — gridItems/layout gate, gridAreas flag completion, and the
+scale control (render behaviour + control shape + storage, all decided).** See `decisions.md`
+D637 and its two later addenda for the full record.
 
 **Full narrative:** `memory/session-2026-08-16-step6-close.md` (this session, once
-snapshotted). This session's D-entry: `decisions.md` D638.
+snapshotted). This session's D-entries: `decisions.md` D638 (step 6 close-out) + D637's two
+addenda (step 7 design, fully locked).
 
 ## Shipped this session (2026-08-16)
 
@@ -79,24 +88,29 @@ harmless CRLF-only diff on `roster.json` reverted, not committed, both checks). 
 
 ## Open — ready to pick up
 
-### Step 7 (remaining wrapper capabilities — shape dividers last)
+### ⭐ Step 7 (remaining wrapper capabilities — shape dividers last) — NO DESIGN BLOCKER, ready to build
 
-**Blocked on:** the step 7 design (D637 — gridItems/layout precondition gate,
-`supports.sgs.gridAreas` flag completion, `ScaleAxisControl` component) getting its
-missing second review lens before build starts. D637's own council dispatch got 1 of 2
-lenses back; the second hung ~28 minutes with zero output. Re-run that lens (or get
-Bean's direct sign-off) before starting step 7's build — this is the disclosed residual
-from D637, re-surfaced here so it isn't lost between sessions.
+**No longer blocked.** All three step-7 designs are fully locked (D637 + its two later
+addenda, same D-ceiling, no new number consumed): the `gridItems requires layout`
+precondition gate, the `supports.sgs.gridAreas` flag completion, and the shape-divider
+`ScaleAxisControl` (render behaviour, control shape, and storage all decided directly by
+Bean). This is the most ready-to-build item in the repo right now — read `decisions.md`
+D637 + addenda and `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 before starting, then
+build. Same orchestration lesson as step 6 applies: shared-file work (the gate script,
+the DB column, the new component) stays single-owner; per-block wiring parallelises
+across isolated worktrees, one per agent.
 
-**Design gate for Bean (separate, smaller question, also outstanding):** `sgs/container`'s
+**Separate, smaller design gate for Bean, still outstanding (unrelated to step 7's own
+scope, worth doing alongside it since it touches the same panels):** `sgs/container`'s
 Background panel renders in its **Settings** tab; `sgs/hero`'s renders in **Styles**. This
 is a real placement inconsistency (D626's own table says Background belongs in Styles for
-all blocks) discovered during this session's live verification, not fixed here (out of
-step 6's scope — step 6 was gating visibility, not moving tabs). Worth a decision before
-step 7 touches these panels again.
+all blocks) discovered during step 6's live verification, not fixed there (step 6 was
+gating visibility, not moving tabs) and not addressed by the step-7 design pass either
+(it's an F.2-adjacent question, not one of the three F.2 designs).
 
-**Estimated time:** ~1 session once the design gate is answered, same as previously
-estimated for this step.
+**Estimated time:** ~1 session for #1/#2 (the two gates/flags — genuinely mechanical once
+started); the `ScaleAxisControl` build is its own smaller slice, same session or a
+follow-up, since it needs a real new component, not just wiring.
 
 ## Methodology guardrails (do not skip)
 
@@ -145,7 +159,7 @@ estimated for this step.
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | Wrapper decomposition — full 7-step history | `~/.claude/plans/go-read-the-track-encapsulated-hare.md` + `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
 | This session's full detail (bug found, live verification, review findings) | `decisions.md` D638 |
-| Step 7 design (locked, pending its missing review lens) | `decisions.md` D637 + `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 |
+| Step 7 design — ALL THREE fully locked, no blocker | `decisions.md` D637 + its two later addenda + `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
