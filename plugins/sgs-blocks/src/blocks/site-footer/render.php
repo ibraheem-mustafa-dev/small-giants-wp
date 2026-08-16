@@ -141,6 +141,26 @@ if ( '' !== $css ) {
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
+// ⛔ DELIBERATELY NOT migrated to SGS_Container_Wrapper::resolve_kind() —
+// verified unsafe for this block (wrapper-decomposition step 6, D626/D633
+// Phase B, 2026-08-16). This block's enabledExtensions (['background'] only,
+// no 'shapeDividers'/'gridItems'/'layout') doesn't satisfy any of
+// resolve_kind()'s 'section'-preserving branches, so it would resolve to
+// 'content'. Traced in class-sgs-container-wrapper.php: `$is_section` gates
+// the BASE (desktop) min-height entirely, not just responsive tiers, at
+// L853 (`if ( $is_section && $min_height && ! $has_responsive_min_height )`),
+// plus contentBandPadding tablet/mobile at L576-577 — both are LIVE,
+// client-facing controls on this block (the "Min height" SelectControl in
+// its "Footer width" panel; the "Band padding" ResponsiveOverride panel).
+// Narrowing to 'content' kind would silently drop any value an operator sets
+// in either control. Bigger blast radius than Phase A's resolve_kind()
+// docblock claims (it names only shapeDividers/grid-item custom-properties
+// as reached). Flagged, not fixed here — extending resolve_kind() or
+// decoupling min-height/band-padding from $kind is a shared-wrapper change
+// (Rule 7 design-gate territory), out of this block's own scope. Background
+// painting itself is unaffected either way (D6, 2026-08-11: reads
+// universally off declared attrs, independent of $kind), so keeping the
+// literal below costs this block nothing.
 echo SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
