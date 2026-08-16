@@ -1,5 +1,89 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D638 — Colour-gap council: buybox/mega-group cleared, multi-button group-defaults scoped, search blocks sequenced BEFORE the gradient rollout [ROUTINE]
+
+**2026-08-16.** 6-seat design council (buybox/mega-group code re-investigation · S-tier search/filter
+prior-art · search/filter SGS build-fit · multi-button group-default prior-art · multi-button SGS
+inheritance-mechanism fit · devil's-advocate feasibility). Run because Bean questioned three
+things in the prior colour audit and proposed a multi-button feature.
+
+**1. Prior audit corrections (code-verified, the audit's PROSE was wrong twice).**
+- `sgs/buybox` — "no colour" is the right call, but the audit's REASONING ("children own their
+  paint") was false. Buybox has its own child elements with their own colour tokens
+  (`--sgs-buybox-cta-bg` etc., `buybox/style.css:87`); its root `.sgs-buybox` is a bare 2-col grid
+  (`style.css:10-14`, zero paint) with `supports.color.background/text:false`
+  (`block.json:20-31`). Real residual gap, small: no way to give the whole configurator a card
+  look. Not urgent.
+- `sgs/mega-group` — correct AND stronger than the audit stated. Declares NO colour/border/spacing
+  supports at all (`block.json:14-18`), render.php is 10 lines emitting one bare div; the parent
+  `mega-panel` is the SOLE author of that surface (`mega-panel/style.css`, `.sgs-mega-group` rules)
+  — this is not parent-overrides-child-by-specificity, the child never declares anything. Also
+  `inserter:false` + `parent:["sgs/mega-panel"]`, so standalone styling can't arise. NO GAP.
+- `sgs/multi-button` — the audit's "DELIBERATE-NO-COLOUR" line was STALE, contradicted by the same
+  session's own migration. It now has real wired `backgroundColour`/`textColour`
+  (`block.json` + `render.php:158-186`, scoped style-engine CSS). Bean's "this 100% should have
+  colours" was right; part had already landed unnoticed.
+
+**2. Multi-button group-defaults — Bean's proposal VALIDATED, devil's advocate overruled on
+evidence.** That seat recommended skipping live-fallback defaults entirely in favour of the
+existing bulk-apply. Prior art is unanimous the other way: Kadence Blocks (`advancedbtn`, live
+fallback to a `kb-btn-global-{inheritStyles}` class), GenerateBlocks Global Styles, Figma
+instances, and WordPress's own Block Context API (whose docs use a parent-provides-colour example
+almost identical to this ask) ALL use **live fallback** — child stays unset and reads the parent's
+CURRENT value. Copy-at-insert is rejected everywhere because a later change to the group default
+silently stops affecting existing children.
+
+**3. Two features were conflated in the ask, now separated.**
+- **(c) style variations — ALREADY BUILT.** `multi-button/edit.js:96-112` `applyPresetToAllButtons`
+  + "Apply to all buttons" (`:185-207`) writes preset values into each child's own attributes.
+  This is a one-time bulk-fill, architecturally DIFFERENT from a live fallback. Extend it; do not
+  rebuild it, and do not treat (b) as an extension of it.
+- **(b) live group defaults — new work**, mechanism below.
+
+**4. Mechanism ruling: CSS custom-property fallback chain, NOT Context API, NOT editor-time copy.**
+`background-color` is NOT an inherited CSS property, so the container→typography cascade Bean cited
+(which is plain CSS inheritance of INHERITABLE properties, per plugin CLAUDE.md's HC2 addendum —
+not bespoke SGS machinery) cannot deliver a default background. But CSS CUSTOM PROPERTIES are
+inherited, and `sgs/button` is already built as a custom-property consumer — it never hardcodes
+its background, it emits `--sgs-btn-bg` only when set and reads `var(--sgs-btn-bg, …)`
+(`button/render.php:329-353`). So: multi-button emits `--sgs-mb-btn-<prop>-default` on its own
+wrapper (it already composes scoped CSS there, `render.php:111-118`), and button's CSS gains one
+fallback tier. Per-property cost is ~1 attr + 1 control + 1 line each side.
+
+**5. Bean's scope rulings.**
+- **~6-8 core visual properties**, not all ~35 of `sgs/button`'s style attrs. The mechanism is
+  cheap per property but cost scales linearly, and 35 new controls on multi-button is its own UX
+  problem.
+- **Implicit inherit (empty = inherit), no visual indicator.** ⚠ The devil's-advocate seat flagged
+  this specifically as a non-coder trap: once a child has its own explicit value, changing the
+  group default does nothing visible with no explanation, and NO precedent for a cross-block
+  "inherited vs overridden" indicator exists in this plugin (`ResponsiveOverride`'s greyed
+  placeholder only works WITHIN one block's own tiers). Kadence solves it by making inheritance an
+  explicit per-button selector. **Bean chose implicit anyway, with that tradeoff stated — recorded
+  as KNOWINGLY ACCEPTED, not overlooked.** Revisit only if it causes real client confusion.
+
+**6. Search blocks — the "hardcoded colour" claim was imprecise.** Most colours in
+`product-search`/`filter-search` already read theme tokens (`var(--wp--preset--color--*, #hex)`),
+so a palette change DOES recolour them; what's missing is a PER-BLOCK override. Genuinely
+hardcoded: exactly 2 bare greys (`product-search/index.css:22`, `filter-search/style.css:40`).
+Design proposal: `filter-search` needs NO new mode (correctly architected as a nested
+type-to-narrow input) — visual polish + those 2 lines only. `product-search` KEEPS its existing
+accessible combobox (`render.php:283-288`, `view.js:135-154` — real `role="combobox"` +
+`aria-activedescendant` + live region, already live-as-you-type, NOT submit-and-redirect) and
+gains a ⌘K overlay display mode + richer result cards (image/title/price, bolded match, skeleton
+loading). ⛔ **Restyle around the existing ARIA skeleton; do not rebuild the DOM** — command-palette
+redesigns routinely break `aria-controls`/`aria-activedescendant` wiring, and the reference impl
+(`cmdk`) deliberately does NOT provide focus-trap or live-region, so those stay SGS's to own.
+Richer cards need new REST fields (`price_html` via `wc_get_price_html()`, `on_sale`, `in_stock`)
+— `class-product-search-rest.php:430-436` currently returns `{id,title,permalink,thumbnail}` only,
+and `view.js:328-340` already has a dead `result.price` branch waiting for it. Motion is Tier V
+(vanilla) — no GSAP needed.
+
+**7. SEQUENCING RULING (Bean, and the reasoning holds): these land BEFORE the universal gradient
+rollout.** Any colour attribute added now falls into the background-family bucket and receives
+gradient automatically in the universal pass. Added after, each needs its own separate gradient
+retrofit. Cheaper in that order, and the dependency is real, not cosmetic.
+
 ## D637 — Step 7 gate design locked: gridItems/layout precondition, gridAreas flag completion, ScaleAxisControl [ROUTINE]
 
 **2026-08-16.** Phase C of `go-read-the-track-encapsulated-hare.md` — designing (not building) the
