@@ -3058,6 +3058,31 @@
 			"notes": "Added 2026-08-09 (D537 §4 vocabulary gate). A genuine CSS property the registry lacked. Distinct from css:color (glyphs) and css:background-color (the box): `fill` paints SVG geometry, which is what a shape divider IS."
 		},
 		{
+			"setting_key": "css:stroke",
+			"category": "css-property",
+			"label": "Stroke (SVG line paint)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (enableAlpha + clearable, as every other colour control)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 35 Part B (Colour completeness) + Part H",
+			"current_state": "0 instances at declaration time — added ahead of the D643 gradient rollout's icon/SVG builder",
+			"divergence": "painted on SVG line geometry (icon glyphs), so css:color / css:fill do not apply — an icon glyph paints via stroke, not fill",
+			"divergence_severity": "low",
+			"notes": "Added 2026-08-16 (D644, gradient rollout Task 1b decision). Mirrors css:fill's shape exactly — the same 'a CSS property the registry lacked' gap, one property earlier. Distinct from css:fill: fill paints closed SVG geometry (a shape divider's path), stroke paints line geometry (an icon's outline). SGS icons (Lucide) are stroke-based, so a gradient-capable icon control needs this member to exist before it can declare \"css:stroke\": \"<attr>\" in an element's attrMap."
+		},
+		{
 			"setting_key": "css:transform",
 			"category": "css-property",
 			"label": "Transform (flip / mirror / rotate)",

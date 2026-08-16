@@ -1,5 +1,32 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D644 — Icon/SVG gradient: added `css:stroke` to the element-manifest vocabulary [ROUTINE]
+
+**2026-08-16.** Gradient rollout Task 1b's Builder 4 (icon/SVG) was blocked on a genuine gap: Spec
+35's element-manifest vocabulary had exactly one gradient-capable member, `css:background-image`,
+which background/text/border can all honestly claim (all three paint via `background-image`) but
+icons cannot — SGS icons (Lucide) are stroke-based, and the vocabulary had `css:fill` (closed SVG
+geometry, e.g. a shape divider's path) but no member for stroked line geometry.
+
+**Decision: add `css:stroke` as a new member**, mirroring `css:fill`'s existing shape exactly (same
+`DesignTokenPicker` optimal control, same `divergence_severity: low`) — added to
+`plugins/sgs-blocks/scripts/consistency/setting-registry.json` (the design registry / documentation
+layer, 61→62 css-property rows). The alternative (a bespoke non-manifest opt-out path for icon
+gradients) was rejected — it would make icons a permanent special case rather than a one-member gap
+fill, and the manifest already has the identical precedent in `css:fill`.
+
+**Scoped deliberately: registry only, not `cluster-member-sets.json` yet.** Adding a member to a
+cluster's `members` array (the file `check-element-manifest-conformance.js`'s prebuild gate actually
+reads) creates GAP findings for every element in that cluster lacking a matching attribute — advisory
+only, per this project's own rule that `check-element-manifest-conformance.js` "does NOT gate
+`total_gap`... coverage, not defects" (D643), so this is low-risk, but the exact `suffixes` array
+needs real attribute names that don't exist yet. Wiring `css:stroke` into the "fill" cluster (mirroring
+`css:fill`'s `appliesToLayers: ["OUTER"]` shape) is Builder 4's own task, once it has chosen its real
+attribute names.
+
+**Verification.** `setting-registry.json` re-validated as parseable JSON after the edit;
+`git diff --stat` confirmed a 25-line targeted insertion, not a reformat of the 93-row file.
+
 ## D643 — Gradient rollout Phase 0: 9 pre-D636 leftovers cleared, incl. a cloning pipeline that could not clone a gradient at all [INCIDENT]
 
 **2026-08-16.** Groundwork before the D636 universal gradient rollout. The intent was a short
