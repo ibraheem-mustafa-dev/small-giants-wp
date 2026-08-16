@@ -7,6 +7,12 @@
  * `blocks/container/components/ContainerWrapperControls.js`), and reused as
  * of Phase 4 Item 5 (D561 inspector-standardisation plan) for hero's
  * per-element `mediaBackground`/`contentBackground` colour+gradient controls.
+ * Also mounted (D636/D643 gradient rollout, Builder 5) for the two shape-
+ * divider colour rows inside `ShapeDividersPanel` — the confirmed live
+ * precedent this file's own two-sibling-attribute shape provided for that
+ * rollout: `shapeDivider{Top,Bottom}Colour` (flat, unchanged) +
+ * `shapeDivider{Top,Bottom}ColourGradient` (gradient), via a custom
+ * `attrNames` map rather than the default overlay names.
  *
  * UX shape (Background panel redesign D1, 2026-08-11): a compact swatch
  * BUTTON that opens a Dropdown popover, matching WP's own native

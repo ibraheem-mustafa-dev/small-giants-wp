@@ -1222,21 +1222,25 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
  * running as a separate session; built 2026-08-16).
  *
  * The shared wrapper owns colour-bearing attrs OUTSIDE `BackgroundPanel`
- * itself: `shapeDividerTopColour`/`shapeDividerBottomColour` (currently a
- * `DesignTokenPicker` inline inside `ShapeDividersPanel`, unchanged by this
+ * itself: `shapeDividerTopColour`/`shapeDividerBottomColour` (as of the
+ * gradient rollout, Builder 5 D636/D643/coordinator-correction, a
+ * `GradientOverlayControl` inline inside `ShapeDividersPanel` — two sibling
+ * attrs per position, `shapeDivider{Top,Bottom}Colour` (flat) +
+ * `shapeDivider{Top,Bottom}ColourGradient` (gradient), unchanged by this
  * component) and `gridItemBackground`/`gridItemTextColour` (currently a
  * `DesignTokenPicker` inline inside `GridItemDefaultsPanel`, likewise
  * unchanged). This component gives Phase B a ready-made `SgsColourPanel`
  * (D609/D634 shape — swatch-left row, states in a popover) surfacing THE
- * SAME attributes via the SAME onChange contract, so a future commit can
- * mount it instead of (not alongside) the inline pickers without inventing a
- * new attribute or a new colour-row shape.
+ * SAME flat-colour attributes via the SAME onChange contract — it does NOT
+ * yet know about the gradient sibling, so a future commit wiring this in
+ * must extend it (or keep `GradientOverlayControl`) rather than silently
+ * dropping gradient support.
  *
  * ⛔ NOT mounted anywhere by this commit — Phase A builds the mechanism only.
- * No block's `edit.js` renders `<WrapperColourPanel>` yet, so the existing
- * inline `DesignTokenPicker` rows inside `ShapeDividersPanel`/
- * `GridItemDefaultsPanel` remain the ONLY live colour controls for those two
- * attribute pairs until a later commit wires this in (and, in the same
+ * No block's `edit.js` renders `<WrapperColourPanel>` yet, so
+ * `GradientOverlayControl` (shape dividers) / the inline `DesignTokenPicker`
+ * (`GridItemDefaultsPanel`) remain the ONLY live colour controls for those
+ * two attribute pairs until a later commit wires this in (and, in the same
  * commit, removes the now-duplicate inline pickers — mounting both at once
  * would be two controls writing one attribute, D609's "never optional, one
  * place" rule).
@@ -1349,11 +1353,14 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 			/>
 			{ attributes.shapeDividerTop && (
 				<>
-					<DesignTokenPicker
-						label={ __( 'Colour', 'sgs-blocks' ) }
-						value={ attributes.shapeDividerTopColour }
-						onChange={ ( val ) => setAttributes( { shapeDividerTopColour: val } ) }
-						gradientCapable
+					<GradientOverlayControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							solid: 'shapeDividerTopColour',
+							gradient: 'shapeDividerTopColourGradient',
+						} }
+						solidLabel={ __( 'Colour', 'sgs-blocks' ) }
 					/>
 					<ScaleAxisControl
 						label={ __( 'Size', 'sgs-blocks' ) }
@@ -1395,11 +1402,14 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 			/>
 			{ attributes.shapeDividerBottom && (
 				<>
-					<DesignTokenPicker
-						label={ __( 'Colour', 'sgs-blocks' ) }
-						value={ attributes.shapeDividerBottomColour }
-						onChange={ ( val ) => setAttributes( { shapeDividerBottomColour: val } ) }
-						gradientCapable
+					<GradientOverlayControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							solid: 'shapeDividerBottomColour',
+							gradient: 'shapeDividerBottomColourGradient',
+						} }
+						solidLabel={ __( 'Colour', 'sgs-blocks' ) }
 					/>
 					<ScaleAxisControl
 						label={ __( 'Size', 'sgs-blocks' ) }

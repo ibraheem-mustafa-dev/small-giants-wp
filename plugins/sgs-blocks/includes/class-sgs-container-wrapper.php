@@ -1337,15 +1337,21 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// to 100 = the shape's natural, undistorted size.
 					$shape_top_scale = $attributes['shapeDividerTopScale'] ?? null;
 
-					// GRADIENT (D636/D643, Builder 5): the stored value is ONE string
-					// holding EITHER a flat colour OR a complete CSS gradient — a
-					// non-empty valid gradient wins, exactly like every other colour
-					// row in the rollout. sgs_css_gradient_value() is the single
-					// place that decides whether the raw value is a safe gradient;
-					// a gradient degrades to the flat-colour path if it fails to
-					// parse into any usable SVG stops (never a silent no-paint).
+					// GRADIENT (D636/D643, Builder 5 — corrected to the two-sibling-
+					// attribute storage shape after the coordinator's D643-note
+					// mis-transcription was caught against the live overlay
+					// precedent, `backgroundOverlayColour`/`overlayGradient`):
+					// `shapeDividerTopColour` stays a flat colour, unchanged;
+					// `shapeDividerTopColourGradient` is a SIBLING attribute that
+					// wins when it holds a valid, non-empty gradient — same
+					// resolution order as the overlay pair (~L1285 above).
+					// sgs_css_gradient_value() is the single place that decides
+					// whether the raw value is a safe gradient; a gradient that
+					// fails to parse into any usable SVG stops degrades to the
+					// flat-colour path rather than painting nothing.
 					$shape_top_colour_raw    = $attributes['shapeDividerTopColour'] ?? 'surface';
-					$shape_top_gradient      = sgs_css_gradient_value( $shape_top_colour_raw );
+					$shape_top_gradient_raw  = $attributes['shapeDividerTopColourGradient'] ?? '';
+					$shape_top_gradient      = sgs_css_gradient_value( $shape_top_gradient_raw );
 					$shape_top_gradient_id   = $shape_top_gradient ? sgs_shape_divider_gradient_id() : '';
 					$shape_top_gradient_defs = $shape_top_gradient
 						? sgs_render_shape_divider_gradient_defs( $shape_top_gradient, $shape_top_gradient_id )
@@ -1371,7 +1377,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$shape_bottom_scale = $attributes['shapeDividerBottomScale'] ?? null;
 
 					$shape_bottom_colour_raw    = $attributes['shapeDividerBottomColour'] ?? 'surface';
-					$shape_bottom_gradient      = sgs_css_gradient_value( $shape_bottom_colour_raw );
+					$shape_bottom_gradient_raw  = $attributes['shapeDividerBottomColourGradient'] ?? '';
+					$shape_bottom_gradient      = sgs_css_gradient_value( $shape_bottom_gradient_raw );
 					$shape_bottom_gradient_id   = $shape_bottom_gradient ? sgs_shape_divider_gradient_id() : '';
 					$shape_bottom_gradient_defs = $shape_bottom_gradient
 						? sgs_render_shape_divider_gradient_defs( $shape_bottom_gradient, $shape_bottom_gradient_id )
