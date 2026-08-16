@@ -202,11 +202,16 @@ function checkPreconditions( manifests ) {
  *    5 `content`, ZERO `section`, and no consumer passed a `gridAreas` prop),
  *    AND it wrote the flat per-side storage D580 retired on 2026-08-11. The
  *    capability is delivered by each block's own object-shaped controls.
- *  - CONVERTER — `resolvers/grid_area.py` derives area names from the DRAFT's
- *    own `grid-template-areas` CSS (`fold_helpers.grid_item_areas()`) and
- *    matches them via `db.attr_for_area_property(block, area, prop)`, keyed on
- *    the block declaring `<area>+<Suffix>` attrs. `assembly.py:250` says it
- *    outright: "no gridAreas lookup is needed".
+ *  - CONVERTER — the LIVE route is `assembly.py` step 3d: it walks the section
+ *    root's children and derives each area name from the DRAFT's own BEM ELEMENT
+ *    TOKEN (`parse_sgs_bem( cls ).element` — `sgs-hero__content` -> `content`),
+ *    then routes via `route_area_css_to_block_attrs` ->
+ *    `db.attr_for_area_property( block, area, prop )`, gated on the block
+ *    declaring `<area>+<Suffix>` attrs. `assembly.py:250` says it outright:
+ *    "no gridAreas lookup is needed".
+ *    ⚠ Mechanism corrected by the closing /qc-council — this first credited
+ *    `resolvers/grid_area.py` + `grid_item_areas()`, which are BOTH DEAD in
+ *    production (zero callers; `ctx.area_name` set only in tests).
  *
  * The declaration was redundant BY CONSTRUCTION — "hero has areas content and
  * media" is fully derivable from hero declaring `contentPadding`/`mediaPadding`.

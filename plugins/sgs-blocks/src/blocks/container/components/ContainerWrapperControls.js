@@ -1644,13 +1644,25 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 //     these attributes — "Content padding" (hero/edit.js) and "Media padding".
 //
 // `supports.sgs.gridAreas` went with it: it had no consumer and needs none. The
-// converter routes per-area CSS through `resolvers/grid_area.py`, which derives
-// area names from the DRAFT's own `grid-template-areas` CSS (`grid_item_areas()`)
-// and matches them via `db.attr_for_area_property(block, area, prop)` — keyed on
-// the block declaring `<area>+<Suffix>` attrs, not on any flag. `assembly.py:250`
-// states it directly: "no gridAreas lookup is needed". The declaration was
-// redundant by construction — "hero has areas content and media" is already fully
-// derivable from hero declaring `contentPadding` and `mediaPadding`.
+// LIVE per-area route is `assembly.py` step 3d, which walks the section root's
+// children and derives each area name from the DRAFT's own BEM ELEMENT TOKEN
+// (`db_lookup.parse_sgs_bem( cls ).element` — `sgs-hero__content` -> area
+// `content`), then routes that node's box CSS via `route_area_css_to_block_attrs`
+// -> `db.attr_for_area_property( block, area, prop )`. The destination gate is the
+// block declaring `<area>+<Suffix>` attrs; no flag is consulted at any hop.
+// `assembly.py:250` states it directly: "no gridAreas lookup is needed". The
+// declaration was redundant by construction — "hero has areas content and media"
+// is already fully derivable from hero declaring `contentPadding`/`mediaPadding`.
+//
+// ⚠ MECHANISM CORRECTED 2026-08-16 by the closing /qc-council. This tombstone
+// first credited `resolvers/grid_area.py` + `fold_helpers.grid_item_areas()`
+// (reading `grid-template-areas` CSS). BOTH ARE DEAD IN PRODUCTION:
+// `grid_item_areas()` has ZERO callers, and `grid_area.py`'s layer is gated on
+// `ctx.area_name`, which no production `Ctx(...)` ever sets (only three test
+// files do). The conclusion was right and is stronger under the real mechanism —
+// but the citation was repeated from a docstring instead of re-derived, which is
+// the SAME error D637 made and this session twice caught. See D639's council
+// close-out; the dead-code cleanup is tracked separately, not done here.
 //
 // ⛔ `check-wrapper-capability-preconditions.js` rule 2 now FAILS the build on any
 // `supports.sgs.gridAreas` declaration, so this cannot quietly come back.

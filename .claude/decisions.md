@@ -206,6 +206,55 @@ rules (positive control, the empty-array hole, and a negative control proving it
 blocks that never declared it). Sibling `check-shared-panel-schema` self-test + check green.
 Zero live `gridAreas`/`GridAreaPanel` references remain outside tombstone comments.
 
+**/qc-council on the close-out (Bean-requested, 2 raters + my own empirical pass). Decision UPHELD;
+THREE follow-on corrections found, all applied. Two of them were errors in this very entry.**
+
+**EMPIRICAL VALIDATION (the Stage-5 gate, and the one piece neither rater did).** The converter
+golden-fixture harness (`scripts/tests/test_converter_conformance.py`, Gate A — NOT in `prebuild`)
+was run on this branch AND on untouched `origin/main`. Both: **37 failed, 13 passed**, and the
+failing SETS are byte-identical (`diff` empty). So the deletion changed converter output for
+exactly zero fixtures. ⚠ The 37 failures are PRE-EXISTING on `main` and include `sgs-hero` — a
+separate standing problem, not this branch's, and worth someone's attention. Baselining first is
+what stopped 37 red tests being misread as this change's damage.
+
+⛔ **CORRECTION 1 — the mechanism this entry cited was WRONG, and I made D637's exact mistake.**
+This entry (and the tombstone, the gate docstring, Spec 35 and `plugins/sgs-blocks/CLAUDE.md`) said
+the converter "derives area names from the DRAFT's own `grid-template-areas` CSS via
+`fold_helpers.grid_item_areas()`". Verified independently at source: **`grid_item_areas()` has ZERO
+callers** — the only hit repo-wide is its own `def`. And `resolvers/grid_area.py`'s GRID_AREA layer
+is gated on `ctx.area_name`, which **no production `Ctx(...)` ever sets** (only three test files
+do). Both are DEAD IN PRODUCTION. The LIVE route is `assembly.py` **step 3d**: it walks the section
+root's children and takes each area name from the draft's **BEM ELEMENT TOKEN**
+(`db_lookup.parse_sgs_bem( cls ).element` → `sgs-hero__content` gives area `content`), then routes
+via `route_area_css_to_block_attrs` → `db.attr_for_area_property( block, area, prop )`.
+**The CONCLUSION is unchanged and in fact stronger** — the live path reads the draft's markup, so
+the flag is even further from being needed. But the citation was repeated from a docstring instead
+of re-derived from source, which is precisely the failure this session had already caught twice.
+Corrected in all five surfaces.
+
+⛔ **CORRECTION 2 (rater B, BLOCKING) — a live-doc lie in the spec every session must read in
+full.** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md:187` still stated "areas declared in
+`supports.sgs.gridAreas`". `fb9625dd` had touched Spec 35, `decisions.md` and the plugin CLAUDE.md
+but never Spec 31. Rewritten with the VERIFIED mechanism (BEM element token), not with rater B's
+own version — **rater B repeated the same `grid_item_areas()` claim rater A had just disproved**,
+which is the argument for more than one lens: each caught what the other missed, and neither
+should have been applied unchecked.
+
+**CORRECTION 3 (noted, not fixed here) — `resolvers/grid_area.py`, the GRID_AREA branch in
+`layer_detect.py`, and `fold_helpers.grid_item_areas()` are DEAD CODE**, while
+`fold_helpers.route_area_css_to_block_attrs`'s own docstring asserts "THIS FUNCTION IS WIRED AND
+LIVE" and that `grid_area.py` is "the OTHER grid-per-area path; both are live" — provably false.
+A test (`tests/test_l4_area_wiring.py`) exercises the resolver with a hand-built `Ctx`, so it is
+testing dead code while reading green. **Deliberately NOT fixed in this commit:** it is converter
+surface, outside step 7's scope, and deleting a resolver needs its own design gate. Raised with
+Bean rather than parked unilaterally.
+
+**What the council did NOT overturn:** the deletion itself. Client capability is not merely
+preserved but a superset — hero's live controls offer solid **and gradient** background plus a full
+4-side box control at all three tiers, where the deleted panel offered solid-only and the flat
+scalar shape D580 retired. The DB revert was verified clean against the live shared database (no
+`grid_areas` column, no `schema.sql` reference).
+
 ⚠ **D-NUMBER COLLISION, flagged for whoever merges:** `main` and `feat/gradient-palette-stops` BOTH
 minted a **D638** for different decisions — step 6 close-out on `main`, the colour-gap council on
 the branch. One must be renumbered at merge.

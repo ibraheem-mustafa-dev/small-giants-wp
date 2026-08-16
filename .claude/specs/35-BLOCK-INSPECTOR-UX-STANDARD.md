@@ -405,10 +405,12 @@ the next initiative after colour's own two tracks close — not this spec's open
 >
 > ⛔ **PREMISE 3 FALSIFIED (found last, decided everything) — "the converter … one comment-only
 > reference explicitly noting the step is a no-op for this reason".** `assembly.py:250` says the
-> OPPOSITE: *"no gridAreas lookup is needed"*. `resolvers/grid_area.py` routes per-area CSS via
-> `db.attr_for_area_property(block, area, prop)`, and gets its AREA NAMES from
-> `fold_helpers.grid_item_areas()` — which reads the **DRAFT's own** `grid-template-areas` CSS, not
-> any block flag. The converter was built not to need it. **So the flag had no consumer and needed
+> OPPOSITE: *"no gridAreas lookup is needed"*. the LIVE route is `assembly.py` step 3d, which derives each area
+> name from the **DRAFT's own BEM element token** (`parse_sgs_bem(cls).element` —
+> `sgs-hero__content` → `content`) and routes via `db.attr_for_area_property(block, area, prop)`,
+> gated on the block declaring `<area>+<Suffix>` attrs — not on any block flag. (⚠ mechanism
+> corrected by /qc-council: `resolvers/grid_area.py` and `fold_helpers.grid_item_areas()` are BOTH
+> dead in production — zero callers, and `ctx.area_name` is set only in test files.) The converter was built not to need it. **So the flag had no consumer and needed
 > none, and was redundant by construction:** "hero has areas content and media" is fully derivable
 > from hero declaring `contentPadding`/`mediaPadding`. `supports.sgs.gridAreas` is **RETIRED**;
 > `check-wrapper-capability-preconditions.js` rule 2 now FAILS the build on any declaration of it
