@@ -1,5 +1,85 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D639 — Stage 1 colour-gap streams shipped; live QC on the real canary caught 2 production bugs neither build nor merge would have found [INCIDENT]
+
+**2026-08-16.** All 4 D638 streams built (isolated worktrees, `/delegate`-routed: A/B Sonnet,
+C/D Haiku), merged cleanly (zero conflicts — confirms the plan's disjoint-file analysis), full
+~50-gate build green. Deployed to sandybrown for the plan's mandatory live-canary check
+(multi-button + product-search, real clicks) — this is what found the two bugs below; neither
+would have surfaced from the build or from DOM-assertion-only testing.
+
+**1. Pre-existing bug fixed on request: `check-hardcoded-render-defaults.js`'s dead
+`stripComments()` call.** Defined, never wired into the CSS scanner — `style.css` was scanned
+comment-and-all. `button/style.css`'s header doc comment contains a literal `.sgs-button--{preset}`
+(backtick code span with real braces), which desynced the line-based brace-depth tracker for the
+rest of the file and silently masked genuine F3 violations below it. `stripComments()` itself had
+a second bug: collapsing multi-line `/* */` to one space would have shifted every later line
+number — fixed to blank non-newline chars instead. Wiring it in surfaced 6 real pre-existing
+violations across 4 blocks; 2 were already fixed by Stream A's own button/style.css edit, the
+other 5 baselined with the root cause recorded (fixing 4 unrelated blocks' typography was out of
+scope for this tooling fix).
+
+**2. Deploy-gate collisions, both correctly caught, both resolved with Bean's explicit choice —
+not bypassed silently.** (a) `oldshape-audit` refused the deploy: sandybrown post 1486 still had
+`sgs/hero`'s PRE-D636 gradient shape (`overlayGradientAngle/From/To` scalars) that this branch's
+`overlayGradient` string collapse no longer reads — next editor save would have silently deleted
+those 3 values. Bean chose to fix the live post rather than bypass; migrated via REST to the exact
+equivalent `linear-gradient(135deg, #e07a5f, #3d405b)` string, verified pixel-identical live
+(`getComputedStyle` on `.sgs-hero__overlay` matched the pre-migration rgb values exactly) before
+redeploying. (b) `ownership` gate refused: the canary was running `integrate/wrapper-step6`
+(a7393461, Bean, ~04:25 same day), not an ancestor of this branch. Bean confirmed that work was
+done being checked live; deployed with `--takeover`.
+
+**3. Live click-through (not DOM assertions) found a real cross-cutting product-search bug.**
+The 5 D638 colour custom-properties (`--sgs-ps-*`) are declared in a scoped rule keyed on
+`.{uid}.wp-block-sgs-product-search`. `view.js` reparents the `full-screen-overlay` /
+`command-palette` `<dialog>` to `<body>` on open (`isInsideComponent()` containment) — which
+removes it from being a DOM descendant of that wrapper. CSS custom properties only inherit
+through CURRENT DOM ancestry, so every colour override silently stopped applying the instant the
+dialog opened, while the wrapper's own input (inline-bar/icon-expand modes) kept working fine.
+Confirmed live: `getComputedStyle` on the opened dialog's input returned the unstyled token
+default, not the set override. Fixed by carrying the scoped uid class directly on the `<dialog>`
+markup and keying the colour rule on the uid class alone (dropping the wrapper-class qualifier),
+so it matches wherever the dialog currently sits in the tree. Re-verified live: colours paint
+correctly inside the opened overlay.
+
+**4. Bean caught a LIVE PRODUCTION BREAK the automated gates entirely missed:
+`wc_get_price_html( $product )` is not a real WooCommerce function.** Stream B's REST work
+invented a plausible-sounding global function name; the real API is the `WC_Product` instance
+method `get_price_html()`. Every search request that matched at least one visible product threw
+an uncaught PHP `Error`, and WordPress served its generic critical-error page instead of JSON —
+search returning EMPTY results for "cookie"/"biscuit" queries was a false-negative cover (zero
+matches meant the broken code path never ran), which is exactly why Bean's report ("test" and
+"zookies" — both real matches — showing nothing) was the only thing that caught it. None of
+Stage 1's ~50 build gates run the PHP handler against a live product, so a hallucinated-but-
+plausible function name shipped clean through every one of them. Root-caused via `wp eval` on the
+live server (reproduced the exact fatal, confirmed the real function via `grep` across
+WooCommerce's own source — no such function exists, only the unrelated
+`wc_get_price_html_from_text()`), fixed, verified via `wp eval` then live REST + click-through
+with Bean's exact test terms before reporting fixed.
+
+**5. Structural follow-up commissioned from this incident.** Bean asked for a general enforcement
+mechanism (Rule 10 — structural, not "try harder"): a static checker scanning every PHP global
+function call against an allowlist (PHP builtins + this plugin's own defined functions + a
+curated WP/WC function list), so a hallucinated API name fails a check instead of shipping to
+production. Built on `feat/dead-api-checker` (`/delegate`-routed to Sonnet, isolated worktree):
+`check-dead-api-calls.py`, PHP-tokenizer-based (not regex — the incident's root class of bug is
+exactly what a naive text match would miss), self-test proves it catches the actual incident call
+and does not flag real functions/builtins/local functions/comment text. First run: 305 baselined
+findings (real WP/WC functions not yet in the ~250-entry curated seed — spot-checked 3 flagged as
+"suspicious" by the builder, `wp_register_font_collection`/`wp_get_connector(s)`, all real WP
+6.5+/7.0 core functions, correctly `function_exists()`-guarded, not bugs). **Deliberately NOT
+wired into `prebuild` yet** — a brand-new detector with 305 unreviewed baseline entries isn't
+trustworthy as a hard gate on day one; run standalone for a few weeks, trim the baseline as real
+functions get promoted into the curated allowlist, decide on `prebuild` wiring with Bean once it's
+proven quiet on a clean codebase.
+
+**What actually shipped vs D638's plan:** all 4 streams shipped their full scope (A1+A2, B's 4
+parts, C, D) — no D638 ruling turned out wrong in practice. The rulings held; what the plan didn't
+anticipate was that build-gate-green code can still fail on first live contact, which is precisely
+why the plan's own live-canary-verification step existed. Every fix above was found via that step
+or by Bean's own live testing, not by any of the ~50 static gates.
+
 ## D638 — Colour-gap council: buybox/mega-group cleared, multi-button group-defaults scoped, search blocks sequenced BEFORE the gradient rollout [ROUTINE]
 
 **2026-08-16.** 6-seat design council (buybox/mega-group code re-investigation · S-tier search/filter
@@ -170,24 +250,65 @@ before step 7 build starts is the honest residual, not a blocker to recording th
 **Output:** written to `decisions.md` (this entry) + `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
 new §F.2. No code changed this session — feeds step 7's build directly.
 
-## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
+## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 
-Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as
-text colour**, even though the DB's `css_property='color'` classification files them together.
-SGS's icons (Lucide) render as inline `<svg fill="none" stroke="currentColor">` — confirmed live
-in `sgs/icon/render.php`, which emits `color:<value>` on the root and relies on `currentColor`
-inheritance into the SVG's `stroke`. `background-clip:text` (the mechanism D636 assigned to the
-whole `color` bucket) only clips a background to browser-painted TEXT GLYPHS — it does nothing to
-an SVG stroke/fill. So the "~90 text-colour attrs" figure in D636 silently included an unknown
-number of icon attrs that need a different, simpler mechanism entirely: SVG's own native gradient
-paint (`<linearGradient>` def + `stroke="url(#id)"`), which reuses the same `SgsGradientPicker`
-UI with no masking trickery. Named-match found at least 10 attrs across 8 blocks (see LEDGER for
-the list); likely more via non-name-matched cases, per this project's own documented
-name-substring-undercounts pattern.
+**2026-08-16.** LEDGER Stream 2 item 2b ("custom gradient bar, per-stop palette linking") was
+scoped, mid-build, from 9 attribute families on 6 blocks to a framework-wide capability: every
+qualifying colour attribute across all ~49 blocks gains a gradient alternative, not just the
+legacy "overlay" background controls. Two decisions land here — the scope, and the storage shape.
 
-**Ruling (Bean, same session):** add this as a 4th parallel builder alongside background/text/
-border in the next session's rollout, rather than folding it into the text builder or deferring
-it. Full detail + the corrected 4-builder plan: `.claude/LEDGER.md` "NEXT SESSION" section.
+**Spike (decisive, not assumed):** `gradient-parser` (npm, zero runtime deps) round-trips
+`var(--wp--preset--color--x)` gradient stops cleanly in every position tested (linear, radial,
+mixed with `rgba()`), and its `stringify()` output passes the existing
+`sgs_css_gradient_value()` PHP validator (`helpers-tokens.php:736`) unchanged. Added as a
+dependency; no hand-written parser needed.
+
+**Storage (unchanged from the earlier 2026-08-14 qc-council finding, re-confirmed):** ONE string
+attribute per colour row holding the complete CSS gradient value, non-empty wins over the flat
+colour — not a structured object. `sgs_css_gradient_value()` already existed with zero call
+sites and already admits `var()` stops. Kadence stores gradients as a structured tuple instead;
+noted as a real dissent, not adopted — Kadence's reason (server-side PHP recompute of hover
+variants) doesn't apply here, and SGS's shape matches Spectra's per-state sibling-string model
+more closely, plus the cloning converter already parses draft CSS strings and would need a new
+extractor for an object shape.
+
+**Scope — settled via a 4-seat design council** (competitor prior-art / CSS-mechanism
+unification / SGS architecture fit / devil's-advocate cost-benefit), then **overridden by Bean
+toward full universal coverage** after the council's own findings were presented. Council found:
+gradient is legal directly on `background`-family CSS properties only; TEXT needs
+`background-clip:text` (different DOM/CSS mechanism, real caveat: `text-shadow` breaks under
+`color:transparent`); BORDER needs a masked pseudo-element (`border-image` cannot respect
+`border-radius` — confirmed via MDN, not assumed) since no competitor found (Kadence, Spectra,
+Elementor, GenerateBlocks, Divi 5) ships gradient border natively, third-party add-ons only.
+Council's own recommendation was to scope text to 2 attributes (heading/hero headline) and defer
+border entirely, citing accessibility (gradient text defeats single-value contrast tooling) and
+3x QC-surface cost. **Bean's ruling: build all three anyway — "if we cover all we give full
+options and it's less effort because we can blanket add the functionality globally."** Overrides
+the council's cost/value recommendation; the accessibility and QC-surface costs the council
+flagged are accepted, not resolved — noted here so they aren't silently forgotten.
+
+**Architecture (from the council's SGS-fit seat, real code read, not theorised):** the smallest
+path to universal coverage is NOT a bespoke component — fold the Solid/Gradient toggle
+`GradientOverlayControl.js` already built into `DesignTokenPicker.js` + `SgsColourPanel.js`
+behind a `gradientCapable`/`attrNames` opt-in prop, reusing the existing state-tab/popover
+composition 46 of 49 blocks already route through. Reaches every block's colour rows without a
+per-block edit.js rewrite — one object-literal opt-in per colour attribute that gains gradient,
+plus that attribute's 4-scalar family collapsing to 1 string family in its block.json (same
+shape as this session's storage-layer commit).
+
+**Shipped so far (checkpoint, `feat/gradient-palette-stops` branch, not `main`):** commit
+`837f7c97` collapses the 9 pre-existing "overlay" gradient families (container/cta-section/
+site-header/site-footer/trust-bar/hero) to the new 1-string shape, storage + render only — the
+editor picker is intentionally non-functional until the DesignTokenPicker rewrite lands (next
+commits). Visual-diff gate scoped-bypassed for this checkpoint (6 blocks,
+`SGS_VISUAL_GATE_SKIP`) — legitimate because every default is empty and no stored content has
+ever set a non-default value on these attrs, so rendered output for all existing pages is
+byte-identical; a real live-diff capture belongs at the end of the full build, not this
+intermediate step.
+
+**Next:** 3 parallel builders (background / text / border), each implementing their CSS
+mechanism + the DesignTokenPicker/SgsColourPanel opt-in wiring for their property family across
+every qualifying block, per the architecture above. QC after each lands.
 
 ## D636 — Gradient-capable colour picker: scope goes universal (background+text+border), storage collapses to one CSS string [ROUTINE]
 

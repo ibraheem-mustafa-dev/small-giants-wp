@@ -9,73 +9,60 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-16, later same day. Task 3's foundation is built and committed — the gradient bar +
-the 13-block prerequisite migration. NOT the full rollout across all 65 colour-capable blocks.
-Own branch, not `main`, not deployed.**
+**2026-08-16, evening. Stage 1 (D638) DONE — the colour gaps are closed. Deployed to sandybrown
+and live-verified, not just built. Gradient rollout (Stage 2) is still next, not started.**
 
-1. Storage collapsed for the 9 legacy gradient attrs (`837f7c97`) — 4 scalars → 1 CSS string,
-   which is what makes palette-linked stops possible at all.
-2. You pushed back on scoping to 4 blocks — right call. 83 blocks total; my first DB query
-   undercounted colour capability twice (48 reported vs 52 real, plus 13 more on WordPress's
-   native panel entirely invisible to that query).
-3. Built the bar (`2723ee2b`) — forked from the same pinned WP commit the colour-picker fork
-   uses, one change: each stop's editor offers the theme palette.
-4. Migrated 13 blocks off native WP colour supports first — they couldn't reach the gradient
-   mechanism otherwise. One real content-reset found (live DB check, not assumed) — isolated to
-   disposable QA fixtures, not client content.
-5. You caught a 4th CSS mechanism two councils missed: icon colour (SVG `stroke="currentColor"`)
-   needs SVG-native gradients, not `background-clip:text` — would have shipped a toggle that
-   visibly does nothing. D636 addendum.
-6. **Second council (D638)** on the colour gaps you queried: `buybox` cleared (small residual),
-   `mega-group` cleared outright, `multi-button` group-defaults validated by unanimous prior art,
-   search-block redesign scoped. **Ruled to land BEFORE the gradient rollout** — see Stage 1.
-7. Full build passes clean (`npm run build` exit 0), committed and pushed, PR #29 open.
+1. All 4 streams (multi-button container parity + group defaults, product-search colour + ⌘K
+   overlay + richer results, filter-search colour, buybox card surface) built in parallel —
+   isolated worktrees, `/delegate`-picked models, merged with zero conflicts.
+2. Deployed to the canary for the plan's mandatory live check — and that's what actually mattered:
+   **live testing found 2 real production bugs the ~50-gate build never would have.** One was a
+   product-search colour bug I found myself via click-through (custom properties not reaching a
+   `<dialog>` after it gets moved to `<body>` on open). The other you caught personally — search
+   suggestions returned nothing for real product names ("test", "zookies") because a subagent
+   invented a WooCommerce function (`wc_get_price_html()`) that doesn't exist. Both fixed and
+   re-verified live before I told you they were fixed.
+3. Also hit and resolved, correctly, not bypassed: the deploy gate caught a pre-existing content-
+   shape mismatch on the canary's hero page (old gradient scalars vs this branch's new collapsed
+   string) — you chose to fix the live post; and a second deploy caught that the canary was
+   running a DIFFERENT branch's work (yours, `integrate/wrapper-step6`) — you confirmed it was
+   safe to overwrite.
+4. Fixed the `check-hardcoded-render-defaults.js` bug you asked me to fix (dead `stripComments()`
+   call) — found + fixed cleanly, surfaced 6 real pre-existing debt items in the process.
+5. You asked for a structural defence against hallucinated API calls — built on its own branch
+   (`feat/dead-api-checker`), self-tested against the exact incident, deliberately not wired into
+   the hard build gate yet (305 baseline entries need a human pass first).
+6. Full build green, all fixes committed + deployed + live-verified. `decisions.md` D639 has the
+   full incident record.
 
 ## Shipped this session
 
 | Commit | What |
 |---|---|
-| `837f7c97` | 9 legacy gradient families collapsed to 1-string storage |
-| `2723ee2b` | **The gradient bar** — `SgsGradientPicker` fork (`src/components/gradient-picker/`), palette-linked stops via a `token` field, `gradient-parser` dependency added (spiked first). `GradientOverlayControl.js` rewired to mount it. **13 blocks migrated** off native WP colour supports (prerequisite, D636). Re-anchored one inspector-scan baseline entry. |
-| `f0d0bfd6`, `5b0e075a` | Docs: D636 council record + universal-scope decision + the icon-mechanism correction |
+| `260bc914` merge, `b80ccd67` merge, `ca53e67c` merge, `24b84ab1` merge | Streams A/B/C/D merged — multi-button container parity + group defaults, product-search colour+⌘K+rich results, filter-search colour, buybox card surface |
+| `0fe71682` | Fixed the dead `stripComments()` call in `check-hardcoded-render-defaults.js` (Bean-requested); baselined 5 pre-existing F3 debt items it unmasked |
+| `f04f9fa0` | Fixed product-search colour vars not reaching the reparented `<dialog>` — found via live click-through |
+| `c4136e9f` | **CRITICAL** — `wc_get_price_html()` doesn't exist; replaced with the real `$product->get_price_html()`. Search was fatal-erroring on every real match, live in production, until Bean caught it |
+| `feat/dead-api-checker` branch (not merged) | New static checker for hallucinated PHP function calls — self-tested, 305-entry baseline, standalone for now |
 
-**Numbers:** blocks with a working gradient mechanism 6 (was storage-only/broken editor, now
-both work); blocks that can reach SGS's colour system at all 52 → **65** (arithmetic from the
-code change — the DB hasn't been reseeded via `/sgs-update` yet, so `role='color'` still queries
-60/no rows for the 13 migrated blocks; run the reseed before trusting a live DB count here);
-universal rollout 0/65 — next session; `npm run build` exit 0.
+**Numbers:** 4/4 D638 streams shipped full scope. 3 live production bugs found + fixed this
+session (1 pre-existing content-shape drift, 2 introduced by this session's own streams). `npm run
+build` exit 0. Deployed to sandybrown, canary confirmed live and correct.
 
 ## Blockers
 
-**None on what's committed.** Gates green, nothing hand-waved past a real gate — the visual-diff
-gate correctly caught the 13-block migration's real content-reset risk; bypassed only after a
-live DB query proved the actual blast radius (one block, disposable QA fixtures). **Not usable
-by a client yet** — foundation, not the rollout. Do not deploy this branch: only 6 of 65 blocks
-have gradient capability.
+**None.** Everything committed is deployed and live-verified on sandybrown. Stage 1 is genuinely
+done — not just built-and-green, but clicked-through by both me and Bean.
 
 ## Open — ready to pick up
 
-### ⭐ NEXT SESSION — STAGE 1 FIRST: close the colour gaps (D638), THEN the gradient rollout
+### ⭐ NEXT SESSION — Stage 2: the gradient rollout (D636)
 
-**Why this order (Bean-ruled, reasoning verified):** any colour attribute added now lands in the
-background-family bucket and receives gradient AUTOMATICALLY in the universal pass below. Added
-after, each needs its own separate gradient retrofit. Do Stage 1, then Stage 2 — the dependency is
-real, not cosmetic. Full council record + all rulings: `decisions.md` **D638**.
+Now unblocked — Stage 1's colour attrs are live, so any NEW colour attribute from here lands in
+the background-family bucket and gets gradient support automatically in the universal pass below.
 
-**Stage 1 — 4 parallel streams, disjoint files, one worktree each.
-⛔ FULL PLAN: `.claude/plans/2026-08-16-colour-gaps-parallel-plan.md` — read it AND D638 before
-building. It carries per-stream scope, the settled mechanisms, QC gates, doc checkpoints, and
-several "do NOT" traps that cost real time if missed.**
-
-| Stream | What | Size |
-|---|---|---|
-| **A** | `sgs/multi-button` — **A1: its OWN container-style controls** (background colour, **border**, **padding**, background media — full `sgs/container` parity, currently has only bg+text) **+ A2: child-button group defaults** (~6-8 core props, CSS custom-property fallback chain) | biggest |
-| **B** | `sgs/product-search` — ⌘K overlay mode + rich result cards + new REST fields + per-block colour attrs | big |
-| **C** | `sgs/filter-search` — no new mode; 1 hardcoded grey + colour attrs + polish | small |
-| **D** | `sgs/buybox` — optional card surface. **`mega-group` needs NOTHING (D638 §1)** | smallest |
-
-**Stage 2 — the gradient rollout, 4 parallel builders, one per CSS mechanism** (genuinely
-different, not one code path — full detail + the icon correction in **D636 + its addendum**):
+**Run `/sgs-update` FIRST** — Stage 1's new attrs aren't in the DB yet, and Stage 2's builders
+scope their per-block attribute lists from it.
 
 | Builder | Mechanism | Scale |
 |---|---|---|
@@ -85,56 +72,72 @@ different, not one code path — full detail + the icon correction in **D636 + i
 | Icon/SVG | inline `<linearGradient>` + `stroke="url(#id)"`; simplest of the four | ~10+, re-derive |
 
 **Orchestration:** isolated worktree each — builders 1-3 all touch the same two shared files.
-**/qc gate mandatory before merge.** **Run `/sgs-update` first** — Stage 1's new attrs plus this
-session's 13-block migration aren't in the DB, and builders scope from it.
+**/qc gate mandatory before merge.** Full detail + the icon correction: `decisions.md` D636 + addendum.
 
-**Estimated time:** Stage 1 ~1 session; Stage 2 several hours across 4 builders + reseed + canary.
+**Estimated time:** several hours across 4 builders + reseed + canary.
 
 ### Carried, low priority
 
-- **Stream 1 — wrapper decomposition (steps 6-7).** A CONCURRENT session is actively editing
-  `ContainerWrapperControls.js` right now — check `git status` before touching it. Needs a design
-  gate first (D633 panel-mount table). Detail: `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4.
+- **`feat/dead-api-checker`** — run `npm run check:dead-api-calls` standalone for a couple of
+  weeks, trim its 305-entry baseline as real WP/WC functions get promoted into the curated
+  allowlist, then decide with Bean whether/where it joins `prebuild`. Branch not merged yet.
+- **Stream 1 — wrapper decomposition (steps 6-7).** A CONCURRENT session may still be editing
+  `ContainerWrapperControls.js` — check `git status` before touching it. Needs a design gate first
+  (D633 panel-mount table). Detail: `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4.
+- **4 worktrees from this session** (`stream-a`..`stream-d` under `../sgs-wp-worktrees/`) can be
+  removed once their branches are confirmed merged — `git worktree remove` each, then
+  `git branch -d feat/colour-gaps-stream-{a,b,c,d}`. Unlink the `node_modules` junction first in
+  each (recorded lesson: `worktree remove --force` can empty a junctioned target).
 
 ## Methodology guardrails (do not skip)
 
+- **A green ~50-gate build is not proof the code works — only that it's internally consistent.**
+  This session shipped 2 bugs clean through every static gate; both only surfaced when the actual
+  PHP/JS ran against real data on a real page. Live canary verification is not optional theatre —
+  it is where the real bugs were.
+- **A subagent's claimed API/function name is a claim to verify, not a fact to relay.**
+  `wc_get_price_html()` was invented, sounded completely plausible, and was accepted without
+  checking against real WooCommerce source. `grep` the actual library before trusting a named
+  function exists.
+- **Empty results can hide a crash.** Search "cookie"/"biscuit" returned `{"results":[]}` (200)
+  while "test"/"mama"/"zookies" 500'd — the empty-result queries never reached the broken code
+  path, so they looked fine. Test with inputs that actually MATCH something, not just any input.
+- **A shared checkout with concurrent sessions needs the ownership gate, not assumptions.**
+  Twice this session the deploy target had state this branch didn't know about (a stale content
+  shape, a different branch's live deploy) — both correctly caught, both resolved by asking Bean,
+  neither bypassed silently.
 - **A ruling + "shipped" line in a status doc is NOT evidence the code changed.** Read the code.
 - **Shared checkout, branch can change under you.** Re-run `git branch --show-current` +
   `git status` before every commit.
-- **A confident unverified technical claim is a claim to check, not recite.** "CSS forbids
-  gradient text/borders" was correctly challenged this session — true at the literal-property
-  level, false as a blanket "impossible".
-- **A DB classification you haven't re-verified live is a claim, not ground truth.** `role='color'`
-  undercounted colour-capable blocks by 17+ this session — verified by reading block.json directly.
-- **An AUDIT'S REASONING can be wrong even when its verdict is right** (D638): the buybox
-  "no colour" call was correct, its stated reason was not. Re-verify reasoning, not just verdicts.
-- **The visual-diff gate catches real risk — investigate before bypassing**, never assume "fine."
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
 
 ## State Snapshot
 
 - **Branch:** `feat/gradient-palette-stops` — NOT `main`. Verify before anything.
-- **D-ceiling:** **D638** (D637 came from a CONCURRENT session mid-write — always re-derive:
+- **D-ceiling:** **D639** (always re-derive:
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`).
-- **`main` HEAD:** `a6e95e08` (unchanged). All gradient work on the branch + PR #29, not merged.
-- **Build:** green as of `2723ee2b`. `npm run build` exit 0, full ~50-gate run.
-- **Canary:** NOT deployed. Do not deploy this branch — only 6/65 blocks have gradient capability.
-- **Pre-existing dirty files, not this session's:** `package-lock.json` (also carries this
-  session's legit `gradient-parser` add — check diff), `reports/phase4-*.txt`,
-  `reports/visual-diff/manual-skips.log`, untracked `.claude/reports/*`.
-  `ContainerWrapperControls.js` — a DIFFERENT concurrent session's live WIP.
+- **`main` HEAD:** unchanged. All Stage 1 + gradient-bar work on the branch + PR #29, not merged
+  to `main`.
+- **Build:** green as of `c4136e9f`. `npm run build` exit 0, full ~50-gate run.
+- **Canary:** DEPLOYED and live-verified as of commit `c4136e9f` (via `--takeover`, superseding
+  `integrate/wrapper-step6` with Bean's confirmation). Sandybrown post 1486's hero gradient was
+  migrated to the new storage shape as part of this session — verify that migration survives if
+  anyone else touches post 1486.
+- **Pre-existing dirty files, not this session's:** `reports/phase4-*.txt`,
+  `reports/visual-diff/manual-skips.log`, untracked `.claude/reports/*`. Left untouched throughout.
 
 ## Pointers
 
 | For | Read |
 |---|---|
 | Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
-| **Stage 1 council — ALL rulings, evidence, traps** | **`decisions.md` D638** |
+| **This session's incident record — ALL 4 bugs found + fixed, live evidence** | **`decisions.md` D639** |
+| Stage 1 council — all rulings, evidence, traps | `decisions.md` D638 |
+| Stage 1 execution plan (what each stream built) | `.claude/plans/2026-08-16-colour-gaps-parallel-plan.md` |
 | Gradient scope + architecture (council, storage, icon correction) | `decisions.md` D636 + addendum |
-| This session's gradient plan (spike, QC record, file scope) | `~/.claude/plans/task-3-custom-silly-book.md` |
-| Wrapper decomposition · colour Track A/B | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 / §1.2d |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Control-type contract (colour §1, gradient field 8) | `.claude/plans/spec-35-control-type-contract.md` |
+| New dead-API checker (not yet wired to prebuild) | `feat/dead-api-checker` branch, `plugins/sgs-blocks/scripts/check-dead-api-calls.py` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
