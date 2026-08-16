@@ -133,8 +133,9 @@ $text_decoration     = isset( $attributes['textDecoration'] ) ? sanitize_text_fi
 // objects — base from WP-native style.spacing.* (skip-serialised, read in step
 // 2b), tiers from the paddingTablet/paddingMobile/marginTablet/marginMobile
 // object attrs. The flat per-side + {family}Unit attrs are removed.
-$background_colour = $attributes['backgroundColour'] ?? '';
-$border_colour     = $attributes['borderColour'] ?? '';
+$background_colour          = $attributes['backgroundColour'] ?? '';
+$background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
+$border_colour               = $attributes['borderColour'] ?? '';
 $box_shadow        = $attributes['boxShadow'] ?? '';
 $box_shadow_hover  = $attributes['boxShadowHover'] ?? '';
 
@@ -145,8 +146,9 @@ $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
 
 $hover_scale      = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
-$hover_colour     = $attributes['textColourHover'] ?? '';
-$hover_background = $attributes['backgroundColourHover'] ?? '';
+$hover_colour              = $attributes['textColourHover'] ?? '';
+$hover_background          = $attributes['backgroundColourHover'] ?? '';
+$hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
@@ -326,8 +328,9 @@ if ( '' !== $text_wrap && in_array( $text_wrap, $allowed_text_wrap, true ) ) {
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	if ( $background_colour ) {
-		$wrapper_decls[] = 'background-color:' . sgs_colour_value( $background_colour );
+	$background_decl = sgs_background_paint_decl( $background_colour, $background_colour_gradient );
+	if ( $background_decl ) {
+		$wrapper_decls[] = $background_decl;
 	}
 	// $border_style is allowlist-validated above (stronger than the keyword regex).
 	if ( $border_style && 'none' !== $border_style ) {
@@ -379,8 +382,9 @@ $hover_rules = array();
 if ( $hover_colour ) {
 	$hover_rules[] = 'color:' . sgs_colour_value( $hover_colour );
 }
-if ( $hover_background ) {
-	$hover_rules[] = 'background-color:' . sgs_colour_value( $hover_background );
+$hover_background_decl = sgs_background_paint_decl( $hover_background, $hover_background_gradient );
+if ( $hover_background_decl ) {
+	$hover_rules[] = $hover_background_decl;
 }
 if ( $box_shadow_hover ) {
 	$hover_rules[] = 'box-shadow:' . sgs_shadow_value( $box_shadow_hover );

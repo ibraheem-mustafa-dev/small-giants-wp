@@ -169,6 +169,7 @@
 
 .sgs-card-grid__item:hover {
 	background-color: var(--sgs-hover-bg, transparent);
+	background-image: var(--sgs-hover-bg-image, none);
 }
 
 .sgs-card-grid__item:hover {

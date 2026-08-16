@@ -103,6 +103,7 @@
 					"clusters": [],
 					"attrMap": {
 						"css:background-color": "cardBackground",
+						"css:background-image": "cardBackgroundGradient",
 						"css:border-color": "cardBorderColour",
 						"css:border-width": "cardBorderWidth",
 						"css:border-radius": "cardRadius",
@@ -112,6 +113,7 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:box-shadow": "shadowHover"
 							}
@@ -247,6 +249,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"cardBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"cardBorderColour": {
 			"type": "string",
 			"default": ""
@@ -268,6 +274,10 @@
 		},
 		"backgroundColourHover": {
 			"type": "string"
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"textColourHover": {
 			"type": "string"

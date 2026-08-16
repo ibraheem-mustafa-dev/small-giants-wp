@@ -125,8 +125,9 @@ if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
 // SCOPED into the block-private <style> below — nothing inline.
 // ---------------------------------------------------------------------------
 
-$inherit_style = ! empty( $attributes['inheritStyle'] );
-$bg_colour     = $attributes['backgroundColour'] ?? '';
+$inherit_style      = ! empty( $attributes['inheritStyle'] );
+$bg_colour          = $attributes['backgroundColour'] ?? '';
+$bg_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 
 // Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base
 // only (no tiers). No WP-native border-width support; colour/style stay
@@ -150,6 +151,7 @@ $box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
 $hover_scale             = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour            = $attributes['textColourHover'] ?? '';
 $hover_bg                = $attributes['backgroundColourHover'] ?? '';
+$hover_bg_gradient       = $attributes['backgroundColourHoverGradient'] ?? '';
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
@@ -346,8 +348,9 @@ $hover_rules = array();
 if ( $hover_colour ) {
 	$hover_rules[] = 'color:' . sgs_colour_value( $hover_colour );
 }
-if ( $hover_bg ) {
-	$hover_rules[] = 'background-color:' . sgs_colour_value( $hover_bg );
+$hover_bg_decl = sgs_background_paint_decl( $hover_bg, $hover_bg_gradient );
+if ( $hover_bg_decl ) {
+	$hover_rules[] = $hover_bg_decl;
 }
 if ( $box_shadow_hover ) {
 	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
@@ -370,8 +373,9 @@ if ( $hover_rules || $has_scale ) {
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	if ( $bg_colour ) {
-		$wrapper_decls[] = 'background-color:' . sgs_colour_value( $bg_colour );
+	$bg_decl = sgs_background_paint_decl( $bg_colour, $bg_colour_gradient );
+	if ( $bg_decl ) {
+		$wrapper_decls[] = $bg_decl;
 	}
 	if ( 'none' !== $border_style ) {
 		if ( $has_border_width ) {

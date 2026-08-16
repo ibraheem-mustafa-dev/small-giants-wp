@@ -765,6 +765,70 @@ function sgs_css_gradient_value( ?string $value ): string {
 }
 
 /**
+ * Resolve a colour attribute + its sibling gradient attribute to the correct
+ * `background-*` CSS declaration — Builder 1 of the D636 universal gradient
+ * rollout (background-image mechanism).
+ *
+ * A non-empty, valid gradient ALWAYS wins over the flat colour — the same
+ * resolution rule `GradientOverlayControl.js` already uses for the whole-block
+ * overlay (D636), so the two mechanisms agree. `$gradient` is validated
+ * through `sgs_css_gradient_value()`; `$colour` through `sgs_colour_value()`.
+ *
+ * Universal — any block emitting `background-color:<value>` from a flat
+ * colour attribute should route through this helper once that attribute gains
+ * a `{name}Gradient` sibling, rather than hand-rolling the win/flat check.
+ *
+ * @param string|null $colour   Flat colour attribute value (slug or CSS colour).
+ * @param string|null $gradient Sibling gradient attribute value (CSS gradient string).
+ * @return array{property:string,value:string} The winning CSS property + value,
+ *                                              or `['property'=>'','value'=>'']` when both are empty.
+ */
+function sgs_background_paint_value( ?string $colour, ?string $gradient ): array {
+	$gradient_value = sgs_css_gradient_value( $gradient );
+
+	if ( '' !== $gradient_value ) {
+		return array(
+			'property' => 'background-image',
+			'value'    => $gradient_value,
+		);
+	}
+
+	$colour_value = sgs_colour_value( $colour );
+
+	if ( '' === $colour_value ) {
+		return array(
+			'property' => '',
+			'value'    => '',
+		);
+	}
+
+	return array(
+		'property' => 'background-color',
+		'value'    => $colour_value,
+	);
+}
+
+/**
+ * Convenience wrapper around sgs_background_paint_value() that returns the
+ * full CSS declaration string (`property:value`, no trailing semicolon) ready
+ * to splice into a scoped rule, or an empty string when both inputs are empty.
+ *
+ * @param string|null $colour   Flat colour attribute value.
+ * @param string|null $gradient Sibling gradient attribute value.
+ * @return string CSS declaration (e.g. `background-color:#fff` or
+ *                `background-image:linear-gradient(...)`), or `''`.
+ */
+function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string {
+	$paint = sgs_background_paint_value( $colour, $gradient );
+
+	if ( '' === $paint['property'] ) {
+		return '';
+	}
+
+	return $paint['property'] . ':' . $paint['value'];
+}
+
+/**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
  * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",

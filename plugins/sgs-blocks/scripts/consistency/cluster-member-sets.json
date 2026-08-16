@@ -249,6 +249,15 @@
 					]
 				},
 				{
+					"key": "css:stroke",
+					"label": "Stroke (SVG line paint)",
+					"suffixes": [],
+					"appliesToLayers": [
+						"OUTER"
+					],
+					"_note": "STOPGAP registration only (Builder 1, D636 gradient rollout) — added purely to satisfy check-cluster-coverage.py's coverage requirement after D644 added the css:stroke row to setting-registry.json without a matching cluster member. Empty suffixes deliberately: real icon/SVG attribute names belong to Builder 4 (icon/SVG gradient mechanism), who should populate this array once those attrs exist, not invent them here. If Builder 4's branch adds the same entry, resolve the merge by keeping ONE and merging suffixes."
+				},
+				{
 					"key": "input:media-source",
 					"label": "Background video source",
 					"suffixes": [

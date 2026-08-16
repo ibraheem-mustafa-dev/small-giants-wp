@@ -258,7 +258,9 @@ $tier_object_synthetic_attrs = array_merge(
 $colour_text         = isset( $attributes['colourText'] ) ? $attributes['colourText'] : '';
 $colour_text_hover   = isset( $attributes['colourTextHover'] ) ? $attributes['colourTextHover'] : '';
 $colour_bg           = isset( $attributes['colourBackground'] ) ? $attributes['colourBackground'] : '';
+$colour_bg_gradient  = isset( $attributes['colourBackgroundGradient'] ) ? $attributes['colourBackgroundGradient'] : '';
 $colour_bg_hover     = isset( $attributes['colourBackgroundHover'] ) ? $attributes['colourBackgroundHover'] : '';
+$colour_bg_hover_gradient = isset( $attributes['colourBackgroundHoverGradient'] ) ? $attributes['colourBackgroundHoverGradient'] : '';
 $colour_border       = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
 $colour_border_hover = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
 
@@ -339,6 +341,10 @@ if ( $colour_text ) {
 if ( $colour_bg ) {
 	$inline_styles[] = '--sgs-btn-bg:' . sgs_colour_value( $colour_bg );
 }
+$colour_bg_gradient_value = sgs_css_gradient_value( $colour_bg_gradient );
+if ( '' !== $colour_bg_gradient_value ) {
+	$inline_styles[] = '--sgs-btn-bg-image:' . $colour_bg_gradient_value;
+}
 if ( $colour_border ) {
 	$inline_styles[] = '--sgs-btn-border:' . sgs_colour_value( $colour_border );
 }
@@ -347,6 +353,10 @@ if ( $colour_text_hover ) {
 }
 if ( $colour_bg_hover ) {
 	$inline_styles[] = '--sgs-btn-bg-hover:' . sgs_colour_value( $colour_bg_hover );
+}
+$colour_bg_hover_gradient_value = sgs_css_gradient_value( $colour_bg_hover_gradient );
+if ( '' !== $colour_bg_hover_gradient_value ) {
+	$inline_styles[] = '--sgs-btn-bg-hover-image:' . $colour_bg_hover_gradient_value;
 }
 if ( $colour_border_hover ) {
 	$inline_styles[] = '--sgs-btn-border-hover:' . sgs_colour_value( $colour_border_hover );

@@ -61,6 +61,7 @@
 						"css:text-align": "textAlign",
 						"css:font-family": "fontFamily",
 						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:border-width": "borderWidth",
@@ -78,6 +79,7 @@
 							"attrMap": {
 								"css:color": "textColourHover",
 								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
 								"css:box-shadow": "boxShadowHover"
 							}
 						}
@@ -227,6 +229,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -266,6 +272,10 @@
 			"default": ""
 		},
 		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

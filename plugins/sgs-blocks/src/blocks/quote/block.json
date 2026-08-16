@@ -27,6 +27,7 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
@@ -40,6 +41,7 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
 								"css:box-shadow": "boxShadowHover"
 							}
 						}
@@ -185,6 +187,10 @@
 			"default": "px"
 		},
 		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
 			"type": "string",
 			"default": ""
 		},
