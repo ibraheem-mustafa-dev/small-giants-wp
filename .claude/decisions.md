@@ -1,5 +1,72 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D645 — Gradient rollout (D636) complete: all 5 mechanisms merged, deployed, live-verified [ROUTINE]
+
+**2026-08-17.** Closes the universal gradient rollout Bean ruled at D636. Five builders (background,
+text, border, shape-divider, icon/SVG) ran in parallel worktrees; this entry records the merge and
+verification, not the individual mechanisms (each already has its own commit trail).
+
+**Storage shape, settled and consistent across all 5:** a sibling `{attr}Gradient` string attribute
+alongside the existing flat-colour attribute — never a shared slot, never a mode-toggle on one
+attribute. Matches the pre-existing `sgs/container.backgroundOverlayColour`/`overlayGradient`
+precedent. Gradient wins when set and valid via `sgs_css_gradient_value()`.
+
+**Two genuine cross-builder architecture collisions found and fixed during merge, not before —
+this is the real lesson of this session, not a footnote:**
+
+1. **`css:background-image` claimed by two builders for two different purposes.** Background
+   gradients (box fill) and text gradients (`background-clip:text`) both genuinely paint through the
+   literal CSS property `background-image` on the same elements (`heading`, `text`) — but the
+   element-manifest only allows one attribute per CSS-property key per element/state. The raw git
+   merge silently dropped one side's `attrMap` entry with no error. Fixed by adding a new manifest
+   member, `css:color-gradient`, sibling to `css:color` the way `css:background-image` is sibling to
+   `css:background-color`. Same pattern repeated for border: added `css:border-color-gradient`
+   (border-color can never legally hold a CSS gradient value at all — the real mechanism is a masked
+   `::before`).
+2. **Two builders independently built the identical UI mechanism.** Background and border builders
+   each built their own per-state Solid/Gradient toggle into the shared `DesignTokenPicker.js`
+   component during the same parallel dispatch wave — same logic, different variable names
+   (`localGradientModes` vs `gradientModeOverride`). The merge kept both as dead-adjacent code with
+   duplicate `useState`/`ToggleGroupControl` imports, which broke the webpack build outright
+   (`Identifier 'useState' has already been declared`). Consolidated to one implementation.
+
+**Both were caught by actually running the build and the element-manifest gate after each merge, not
+by trusting a clean `git merge` exit code.** A silent JSON key overwrite and a duplicate-declaration
+parse error are both the kind of failure that reads as "the merge succeeded" right up until the build
+is run.
+
+**Also caught mid-session: my own tooling error.** Wrote a Python JSON re-serialisation with
+`indent='\t'` that reformatted `heading/block.json`'s entire file (2-space → tabs) for a 2-line content
+change — a 649-line spurious diff. Caught before it reached `main`, fixed in its own commit, corrected
+to preserve each file's own existing indent convention going forward.
+
+**Border builder restart.** The first border attempt (`worktree-agent-a9c2e85587c89e149`) ran for
+several hours with no check-in — far outside the 22–43 min range every other builder took for
+equivalent scope — and was cancelled. Its real partial progress (2 blocks: social-icons, mega-panel)
+was committed as an explicit `[UNVERIFIED]` checkpoint before cancellation so it wasn't lost, then a
+restart agent finished the remaining scope with an explicit instruction to stop and report rather than
+run silently past ~20 minutes on any single blocker. ~17 blocks of border-colour gradient candidates
+remain unbuilt (framework-wide, not the 4 blocks this session covered) — tracked as residual scope,
+not started.
+
+**Deployed and live-verified, all 5 mechanisms, same session (`6aaafbdf` → sandybrown):** a throwaway
+page (id 2477, REST-created, force-deleted after) set a real gradient on one instance of each
+mechanism. All confirmed via computed style / DOM inspection, not screenshot comparison:
+- Background: `backgroundColourGradient` → computed `background-image` = the exact gradient string.
+- Text: `textColourGradient` → `background-image` set, `background-clip:text`, `color:transparent`.
+- Shape divider: real `<linearGradient>` def, path `fill="url(#...)"` resolving correctly.
+- Border: masked `::before`, computed `background-image` on the pseudo-element = the gradient.
+- Icon/SVG: real `<linearGradient>` def injected, SVG's own computed `stroke` = `url(#...)`.
+  ⚠ **First measurement attempt on this one was WRONG** — queried `getComputedStyle()` on the
+  wrapping `<span class="sgs-icon__svg">` instead of the `<svg>` element itself, got `stroke:none`
+  (correct for a span, meaningless as a test), and would have reported a false regression. Caught by
+  extending the measurement (checked the actual DOM parent chain, then re-queried the right element)
+  before concluding anything — the same "extend the measurement set before trusting a negative
+  result" discipline this project's other incidents this session already demonstrated.
+
+**Not done:** the remaining ~17 blocks of border-colour candidates (framework-wide sweep); typography
+framework-wide initiative (Task 2, separate from this rollout, per D626's sequencing) remains unscoped.
+
 ## D644 — Icon/SVG gradient: added `css:stroke` to the element-manifest vocabulary [ROUTINE]
 
 **2026-08-16.** Gradient rollout Task 1b's Builder 4 (icon/SVG) was blocked on a genuine gap: Spec
@@ -544,9 +611,10 @@ Structural check across all 7 wrapper blocks: tags balanced, zero nested Inspect
 Background resolving to Styles on every one. Only build mutation was a CRLF-only `roster.json`
 diff, reverted.
 
-**Residual, explicitly not closed:** hero/`GridAreaPanel` — whether to delete the stale panel as
-superseded or rebuild it onto the object storage. Bean parked it to the end of this session rather
-than forcing it into step 7. No live canary verification yet (nothing deployed).
+**Residual, explicitly not closed (stale — CLOSED same session, see this entry's own CLOSE-OUT
+below + `fb9625dd`):** hero/`GridAreaPanel` — whether to delete the stale panel as superseded or
+rebuild it onto the object storage. Bean parked it to the end of this session rather than forcing
+it into step 7. No live canary verification yet (nothing deployed).
 
 **Review pass (adversarial, mechanism-fidelity lens) — 5 real defects, all fixed.** Logged in
 full because one of them was mine and the whole gate stack missed it.
