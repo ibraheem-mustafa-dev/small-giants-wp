@@ -252,7 +252,10 @@ function attrToCssProps( attrName ) {
  */
 function stripComments( src ) {
 	return src
-		.replace( /\/\*[\s\S]*?\*\//g, ' ' ) // /* ... */
+		// /* ... */ — blank out non-newline chars so line numbers survive a
+		// multi-line comment (the line-based scanner below relies on 1:1
+		// line-number correspondence with the original file).
+		.replace( /\/\*[\s\S]*?\*\//g, ( m ) => m.replace( /[^\n]/g, ' ' ) )
 		.replace( /(^|[^:])\/\/[^\n]*/g, '$1 ' ) // // ... (not http://)
 		.replace( /^\s*#[^\n]*/gm, ' ' ); // # PHP comment
 }
@@ -1666,7 +1669,7 @@ function checkBlock( blockDir ) {
 	const styleCssPath = path.join( blockDir, 'style.css' );
 	if ( fs.existsSync( styleCssPath ) ) {
 		const cssFindings = scanCssDeclarations(
-			readIfExists( styleCssPath ),
+			stripComments( readIfExists( styleCssPath ) ),
 			effectiveTargetProps,
 			attrs,
 			cssToAttrs,
