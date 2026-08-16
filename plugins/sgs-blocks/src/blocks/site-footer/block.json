@@ -356,9 +356,9 @@
 			"type": "boolean",
 			"default": false
 		},
-		"shapeDividerBottomHeight": {
-			"type": "number",
-			"default": 80
+		"shapeDividerBottomScale": {
+			"type": "object",
+			"default": { "x": 100, "y": 100 }
 		},
 		"shapeDividerBottomInvert": {
 			"type": "boolean",
@@ -376,9 +376,9 @@
 			"type": "boolean",
 			"default": false
 		},
-		"shapeDividerTopHeight": {
-			"type": "number",
-			"default": 80
+		"shapeDividerTopScale": {
+			"type": "object",
+			"default": { "x": 100, "y": 100 }
 		},
 		"shapeDividerTopInvert": {
 			"type": "boolean",

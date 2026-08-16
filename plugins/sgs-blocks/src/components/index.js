@@ -26,6 +26,7 @@ export {
 	LinkPopoverContent,
 	TARGET_ENUM_OPTIONS,
 } from './LinkPopoverControl';
+export { default as ScaleAxisControl } from './ScaleAxisControl';
 export { default as ShadowControl } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';
 export { default as StateToggleControl } from './StateToggleControl';

@@ -62,9 +62,27 @@ import {
 	ResponsiveBorderRadiusControl,
 	normaliseResponsiveBox,
 	SgsColourPanel,
+	ScaleAxisControl,
 } from '../../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
+
+// ---------------------------------------------------------------------------
+// Shape-divider scale (Spec 35 §F.2.3, D637).
+//
+// Replaces the old per-edge `shapeDivider{Top,Bottom}Height` px RangeControl
+// with a linked X/Y PERCENTAGE pair. 100% on both axes is the shape's natural,
+// undistorted size — Y translated to px from the SVG's own viewBox height at
+// render, X being one tile spanning the block's full width (which is exactly
+// what the divider does today, so the default renders identically).
+//
+// The range is deliberately wide on X: below 100% the shape tiles to fill the
+// width, above 100% the excess is clipped at the block's edge, so both ends of
+// the slider are meaningful rather than degenerate.
+// ---------------------------------------------------------------------------
+const SHAPE_DIVIDER_SCALE_MIN = 10;
+const SHAPE_DIVIDER_SCALE_MAX = 400;
+const SHAPE_DIVIDER_SCALE_NEUTRAL = 100;
 
 // ---------------------------------------------------------------------------
 // gridItemBorder — shorthand <-> parts (P-SPEC35-BORDER-RESIDUALS item 1).
@@ -1336,14 +1354,15 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						value={ attributes.shapeDividerTopColour }
 						onChange={ ( val ) => setAttributes( { shapeDividerTopColour: val } ) }
 					/>
-					<RangeControl
-						label={ __( 'Height (px)', 'sgs-blocks' ) }
-						value={ attributes.shapeDividerTopHeight }
-						onChange={ ( val ) => setAttributes( { shapeDividerTopHeight: val } ) }
-						min={ 20 }
-						max={ 300 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					<ScaleAxisControl
+						label={ __( 'Size', 'sgs-blocks' ) }
+						value={ attributes.shapeDividerTopScale }
+						onChange={ ( val ) => setAttributes( { shapeDividerTopScale: val } ) }
+						min={ SHAPE_DIVIDER_SCALE_MIN }
+						max={ SHAPE_DIVIDER_SCALE_MAX }
+						step={ 1 }
+						unit="%"
+						defaultValue={ SHAPE_DIVIDER_SCALE_NEUTRAL }
 					/>
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
@@ -1380,14 +1399,15 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 						value={ attributes.shapeDividerBottomColour }
 						onChange={ ( val ) => setAttributes( { shapeDividerBottomColour: val } ) }
 					/>
-					<RangeControl
-						label={ __( 'Height (px)', 'sgs-blocks' ) }
-						value={ attributes.shapeDividerBottomHeight }
-						onChange={ ( val ) => setAttributes( { shapeDividerBottomHeight: val } ) }
-						min={ 20 }
-						max={ 300 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					<ScaleAxisControl
+						label={ __( 'Size', 'sgs-blocks' ) }
+						value={ attributes.shapeDividerBottomScale }
+						onChange={ ( val ) => setAttributes( { shapeDividerBottomScale: val } ) }
+						min={ SHAPE_DIVIDER_SCALE_MIN }
+						max={ SHAPE_DIVIDER_SCALE_MAX }
+						step={ 1 }
+						unit="%"
+						defaultValue={ SHAPE_DIVIDER_SCALE_NEUTRAL }
 					/>
 					<ToggleControl
 						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
