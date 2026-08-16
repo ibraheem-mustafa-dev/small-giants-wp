@@ -197,7 +197,7 @@ const TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const blockProps = useBlockProps( { className: 'sgs-site-footer' } );
 	const refEl = useRef( null );
 
@@ -401,7 +401,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     overlayGradientFrom and overlayGradientTo attrs
 				     (block.json:190,330-342) but had no control mounted —
 				     inspector-scan rule 21-render-without-control. */ }
-				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 			</InspectorControls>
 
 			<div ref={ refEl } { ...innerBlocksProps } />

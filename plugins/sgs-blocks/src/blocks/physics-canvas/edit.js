@@ -18,7 +18,7 @@ import {
 // WidthPanel already handles maxWidth/contentWidth + their Tablet/Mobile tiers,
 // MIN_HEIGHT_OPTIONS is the shared preset list for the min-height SelectControl
 // (mirrors trust-bar's "Section (outer)" panel exactly).
-import { WidthPanel, MIN_HEIGHT_OPTIONS } from '../container/components/ContainerWrapperControls';
+import { WidthPanel, MIN_HEIGHT_OPTIONS, BackgroundPanel } from '../container/components/ContainerWrapperControls';
 
 // Semantic HTML tag (mirrors sgs/container's edit.js exactly — must match the
 // block.json `tagName` enum here and render.php's sanitize_key() default).
@@ -50,7 +50,7 @@ const ALLOWED_BLOCKS = [
 	'sgs/decorative-image',
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const { physicsGravity, physicsBounce, physicsEdgeResistance } = attributes;
 
 	const blockProps = useBlockProps();
@@ -231,7 +231,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						2026-08-12, attribute retired framework-wide — a background
 						fills its CONTAINER's max-width and is never clipped to the
 						inner content layer (Bean-ruled). Use BackgroundPanel on the
-						block itself. Do NOT re-add a band-scoped background. */ }
+						block itself (mounted below, after Padding & margin — mirrors
+						sgs/hero's ordering) — added 2026-08-16, wrapper decomposition
+						step 6 (D626/D633): physics-canvas is the one wrapper block that
+						had no background capability at all. Do NOT re-add a
+						band-scoped background. */ }
 					{ /* contentBandPadding is a TIER OBJECT — ONE attr holding
 						{desktop,tablet,mobile}, each tier itself a
 						{top,right,bottom,left} box (Spec 35 box-shaped pass,
@@ -262,9 +266,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
+				{ /* Background (image/video/overlay/SVG/animation) — same shared
+				     component + attrs as sgs/container, sgs/hero, sgs/site-footer
+				     (ContainerWrapperControls.js's BackgroundPanel). Gated on
+				     `name` via `supports.sgs.enabledExtensions: ['background']`
+				     (block.json) — new capability for this block, added 2026-08-16
+				     (wrapper decomposition step 6, D626/D633): physics-canvas
+				     previously mounted WidthPanel only. Sits BEHIND the throwable
+				     children in paint order (SGS_Container_Wrapper renders the
+				     background layer on the outer wrapper, the arena/__inner band
+				     on top) so it cannot intercept pointer events on the physics
+				     bodies — verified against class-sgs-container-wrapper.php's
+				     wrapper markup order before wiring this in. */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
 				     box-shadow CSS string built by ShadowControl), resolved by
-				     sgs_shadow_value(). ───────────────────────────────────────── */ }
+				     sgs_shadow_value(). ──────────────────────────────────────── */ }
+
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }

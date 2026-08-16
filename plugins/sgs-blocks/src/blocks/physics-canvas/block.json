@@ -43,6 +43,9 @@
 		},
 		"sgs": {
 			"containerKind": "section",
+			"enabledExtensions": [
+				"background"
+			],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -112,6 +115,129 @@
 		"marginTablet": { "type": "object", "default": {} },
 		"marginMobile": { "type": "object", "default": {} },
 		"shadow": { "type": "string" },
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"backgroundImage": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundOverlayColour": {
+			"type": "string"
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"bgAnimationDuration": {
+			"type": "number",
+			"default": 20
+		},
+		"bgKenBurns": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgParallax": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgSvgAnimation": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"pulse",
+				"float",
+				"wave"
+			]
+		},
+		"bgSvgAnimationSpeed": {
+			"type": "string",
+			"default": "medium",
+			"enum": [
+				"slow",
+				"medium",
+				"fast"
+			]
+		},
+		"bgSvgContent": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgMinHeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bgSvgOpacity": {
+			"type": "number",
+			"default": 100
+		},
+		"bgSvgPosition": {
+			"type": "string",
+			"default": "background",
+			"enum": [
+				"background",
+				"foreground"
+			]
+		},
+		"bgSvgTextShadow": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoTablet": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"overlayGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"overlayGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"overlayGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientTo": {
+			"type": "string",
+			"default": ""
+		},
 		"physicsGravity": {
 			"type": "number",
 			"default": 1400,

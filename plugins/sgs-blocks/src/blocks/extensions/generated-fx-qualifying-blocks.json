@@ -113,6 +113,7 @@
 	],
 	"sgs/physics-canvas": [
 		"cursor-field",
+		"draw",
 		"horizontal-panel",
 		"morph",
 		"motion-path",
