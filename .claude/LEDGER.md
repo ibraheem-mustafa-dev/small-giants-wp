@@ -151,6 +151,14 @@ scope their per-block attribute lists from it.
   Twice this session the deploy target had state this branch didn't know about (a stale content
   shape, a different branch's live deploy) — both correctly caught, both resolved by asking Bean,
   neither bypassed silently.
+- **Live QC test content written to a SHARED canary page is cross-branch blast radius — revert
+  EVERY edit immediately, not just some.** Writing branch-specific attrs (e.g. `focusRingColour`
+  on `sgs/product-search`) into a live post for click-through verification blocks ANY other
+  branch/session's deploy the moment that post's schema references an attr their `block.json`
+  doesn't declare (`oldshape-audit` correctly refuses). Reverted the test content on post 1486
+  right after verifying it; missed the equivalent on post 1651 (`sgs/product-search`'s
+  `command-palette` test instance) until a parallel session hit the blocker. Treat every live
+  test-content write as required-to-revert-before-moving-on, not optional cleanup.
 - **A ruling + "shipped" line in a status doc is NOT evidence the code changed.** Read the code.
 - **Shared checkout, branch can change under you.** Re-run `git branch --show-current` +
   `git status` before every commit.
