@@ -108,8 +108,16 @@ const CAPABILITY_PRECONDITIONS = {
  * `gridAreas` reader (the /sgs-update Stage-1 `block_composition.grid_areas`
  * write, or a per-block `<GridAreaPanel>` mount). Flipping it earlier makes
  * the build red for a declaration that has no wiring route yet.
+ *
+ * FLIPPED TRUE 2026-08-16: the /sgs-update Stage-1 writer
+ * (`_populate_grid_areas`) landed in the same commit as this line, so every
+ * current `gridAreas` declaration now has a real reader and the guard has
+ * nothing legitimate to flag. It is checked against the WRITER'S PRESENCE IN
+ * THIS TREE, not against the database's current contents — the DB is one file
+ * shared by every worktree, so its state describes whoever ran /sgs-update
+ * last, not this branch's code.
  */
-const GRID_AREAS_READERS_LIVE = false;
+const GRID_AREAS_READERS_LIVE = true;
 
 /**
  * Read + parse one block.json, tolerating unreadable/invalid files rather than
@@ -275,14 +283,25 @@ function hasDbWriter() {
 /**
  * RULE 2 — a non-empty gridAreas declaration must have at least one reader.
  *
- * @param {Array}  manifests   Output of collectManifests().
- * @param {string} blocksDir   Blocks root (overridable for --self-test).
+ * `dbWriter` is INJECTABLE, not read inside. --self-test builds synthetic
+ * fixtures, and if this function reached for the real `sgs-update-v2.py` it
+ * would clear every fixture the moment that writer landed — the self-test would
+ * silently stop testing rule 2 while still reporting green. It caught exactly
+ * that on 2026-08-16, which is the argument for a self-test that can fail.
+ *
+ * @param {Array}   manifests   Output of collectManifests().
+ * @param {string}  blocksDir   Blocks root (overridable for --self-test).
  * @param {boolean} readersLive Scoping gate — see GRID_AREAS_READERS_LIVE.
+ * @param {boolean} dbWriter    Whether a Stage-1 DB writer exists.
  * @return {Array<Object>} Findings.
  */
-function checkGridAreasOrphans( manifests, blocksDir = BLOCKS_DIR, readersLive = GRID_AREAS_READERS_LIVE ) {
+function checkGridAreasOrphans(
+	manifests,
+	blocksDir = BLOCKS_DIR,
+	readersLive = GRID_AREAS_READERS_LIVE,
+	dbWriter = hasDbWriter()
+) {
 	const findings = [];
-	const dbWriter = hasDbWriter();
 	for ( const { slug, dir, manifest } of manifests ) {
 		const sgs = sgsSupports( manifest );
 		const areas = sgs.gridAreas;
@@ -423,10 +442,10 @@ function runSelfTest() {
 			editJs: 'export default function Edit() { return null; }',
 		},
 	}, ( manifests, root ) => {
-		const advisory = checkGridAreasOrphans( manifests, root, false );
+		const advisory = checkGridAreasOrphans( manifests, root, false, false );
 		assert( 'RULE 2 catches a gridAreas declaration with no reader', advisory.length === 1 && advisory[ 0 ].rule === 'gridareas-orphan' );
 		assert( 'RULE 2 is ADVISORY while the scoping gate is closed', advisory.length === 1 && advisory[ 0 ].severity === 'ADVISORY' );
-		const blocking = checkGridAreasOrphans( manifests, root, true );
+		const blocking = checkGridAreasOrphans( manifests, root, true, false );
 		assert( 'RULE 2 becomes BLOCKING once the scoping gate opens', blocking.length === 1 && blocking[ 0 ].severity === 'BLOCKING' );
 	} );
 
@@ -440,7 +459,7 @@ function runSelfTest() {
 				'export default function Edit() { return <GridAreaPanel areaName="content" />; }\n',
 		},
 	}, ( manifests, root ) => {
-		assert( 'RULE 2 silent when a live per-block mount exists', checkGridAreasOrphans( manifests, root, true ).length === 0 );
+		assert( 'RULE 2 silent when a live per-block mount exists', checkGridAreasOrphans( manifests, root, true, false ).length === 0 );
 	} );
 
 	// RULE 2 — the comment blind-spot this repo has been bitten by three times.
@@ -454,14 +473,25 @@ function runSelfTest() {
 				'export default function Edit() { return null; }\n',
 		},
 	}, ( manifests, root ) => {
-		assert( 'RULE 2 does NOT count a <GridAreaPanel> mention inside a comment', checkGridAreasOrphans( manifests, root, true ).length === 1 );
+		assert( 'RULE 2 does NOT count a <GridAreaPanel> mention inside a comment', checkGridAreasOrphans( manifests, root, true, false ).length === 1 );
+	} );
+
+	// RULE 2 — the DB writer ALONE clears the orphan (no editor mount needed).
+	// This is the route that actually closes sgs/hero today.
+	withFixture( 'r2-dbwriter', {
+		orphan: {
+			blockJson: { name: 'sgs/orphan', supports: { sgs: { gridAreas: [ 'content' ] } } },
+			editJs: 'export default function Edit() { return null; }',
+		},
+	}, ( manifests, root ) => {
+		assert( 'RULE 2 cleared by the DB writer alone, with no editor mount', checkGridAreasOrphans( manifests, root, true, true ).length === 0 );
 	} );
 
 	// RULE 2 — an empty array is not a declaration.
 	withFixture( 'r2-empty', {
 		empty: { blockJson: { name: 'sgs/empty', supports: { sgs: { gridAreas: [] } } } },
 	}, ( manifests, root ) => {
-		assert( 'RULE 2 ignores an EMPTY gridAreas array', checkGridAreasOrphans( manifests, root, true ).length === 0 );
+		assert( 'RULE 2 ignores an EMPTY gridAreas array', checkGridAreasOrphans( manifests, root, true, false ).length === 0 );
 	} );
 
 	process.stdout.write(
