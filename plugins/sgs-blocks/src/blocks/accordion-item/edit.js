@@ -10,6 +10,7 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { colourVar } from '../../utils';
+import { SgsColourPanel } from '../../components';
 
 const CHEVRON_SVG = (
 	<svg
@@ -31,7 +32,7 @@ const CHEVRON_SVG = (
 );
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
-	const { title, isOpen } = attributes;
+	const { title, isOpen, backgroundColour, textColour } = attributes;
 
 	// Position of this item among its accordion siblings — mirrors sgs/tab's
 	// index derivation, needed to compare against the parent's `defaultOpen`
@@ -115,6 +116,38 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* WS-4: mirrored sgs/container wrapper controls (content kind). */ }
 				<ContainerWrapperControls

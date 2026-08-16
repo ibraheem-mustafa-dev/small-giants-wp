@@ -9,6 +9,46 @@
       "value": "min(900px, calc(100vw - 2rem))",
       "attr": "panelWidth, panelMaxWidth",
       "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/brand-strip",
+      "file": "src\\blocks\\brand-strip\\style.css",
+      "property": "line-height",
+      "value": "1.3",
+      "attr": "nameLineHeight",
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (button/style.css's header comment contained literal {}, desyncing the parser's brace-depth tracking for the whole file). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+    },
+    {
+      "block": "sgs/button",
+      "file": "src\\blocks\\button\\style.css",
+      "property": "line-height",
+      "value": "1.2",
+      "attr": "lineHeight",
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+    },
+    {
+      "block": "sgs/mega-panel",
+      "file": "src\\blocks\\mega-panel\\style.css",
+      "property": "padding",
+      "value": "17px",
+      "attr": "panelPadding",
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+    },
+    {
+      "block": "sgs/mega-panel",
+      "file": "src\\blocks\\mega-panel\\style.css",
+      "property": "border-radius",
+      "value": "15px",
+      "attr": "borderRadius",
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+    },
+    {
+      "block": "sgs/product-card",
+      "file": "src\\blocks\\product-card\\style.css",
+      "property": "border-radius",
+      "value": "16px",
+      "attr": "pickerPillBorderRadius, pickerPillSelectedBorderRadius, tagBorderRadius",
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
     }
   ]
 }

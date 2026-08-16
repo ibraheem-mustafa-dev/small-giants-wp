@@ -642,14 +642,25 @@ Regenerate before building any gate on them.
 7. **Detection** — extend `inspector-scan/core/components.js` with a `writesColour` flag derived
    from each component's own source, exactly as `wrapsImage` already works for rule 18. This
    resolves indirect/shared-component cases transitively and catches lookalikes by semantic.
-8. **Open** — do gradient stops fall under this contract or their own? Settings vs native
-   `group="color"`? ⚠ Partially informed by a Bean ruling since this was written
-   (`background-panel-redesign.md` D3, 2026-08-11): native `GradientPicker` was deliberately KEPT
-   as-is for the 4 wrapper blocks — no per-stop theme-palette selection exists in Gutenberg core to
-   build against, and Bean ruled a bespoke stop editor "not worth the time" once shown the real
-   cost. So today, gradient stops do NOT route through this contract's canonical
-   `DesignTokenPicker` anywhere in the codebase — native only. The Settings-vs-Styles tab-placement
-   half of this question is still genuinely open.
+8. **RESOLVED 2026-08-16 (D636), supersedes the 2026-08-11 ruling below.** The "not worth the
+   time" ruling on a bespoke per-stop palette editor was re-opened once SGS composed its own
+   colour popover (`DesignTokenPicker` = `Dropdown` + native `ColorPalette`, not WP's sealed
+   `GradientPicker`), which made a palette-capable stop editor cheap rather than expensive. Native
+   `GradientPicker` is REPLACED, not kept — `SgsGradientPicker`
+   (`plugins/sgs-blocks/src/components/gradient-picker/`), forked from the same pinned Gutenberg
+   SHA the colour-picker fork uses, mounts the SGS `ColorPalette` above the raw picker in each
+   stop's popover. A stop picked from the palette stores `var(--wp--preset--color--<slug>)`. Tab
+   placement: Styles (D621, same as every other colour). Storage: ONE string attribute per
+   gradient holding the complete CSS value (D636), not this contract's per-scalar
+   `DesignTokenPicker` shape — gradient stays its OWN control type, this field's original question
+   answered "no" on the routing half, "yes, palette-linked" on the capability half. Shipped so far
+   on the 6 legacy overlay blocks; the universal rollout across all colour-capable blocks is
+   tracked in `LEDGER.md`/`parking.md` `P-GRADIENT-UNIVERSAL-ROLLOUT`, not yet done.
+   ⛔ Prior text, kept for the historical record only — do not act on it: *"native `GradientPicker`
+   was deliberately KEPT as-is for the 4 wrapper blocks — no per-stop theme-palette selection
+   exists in Gutenberg core to build against, and Bean ruled a bespoke stop editor 'not worth the
+   time' once shown the real cost. So today, gradient stops do NOT route through this contract's
+   canonical `DesignTokenPicker` anywhere in the codebase — native only."*
 
 9. ⭐ **THE STATE + SHAPE RULE — Bean-ruled 2026-08-13. This is the load-bearing addition to this
    section and it binds every colour in the framework, wherever it lives.**

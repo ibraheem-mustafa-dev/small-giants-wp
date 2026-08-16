@@ -9,6 +9,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	ShadowControl,
+	SgsColourPanel,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
@@ -51,7 +52,7 @@ const ALLOWED_BLOCKS = [
 ];
 
 export default function Edit( { attributes, setAttributes, name } ) {
-	const { physicsGravity, physicsBounce, physicsEdgeResistance } = attributes;
+	const { physicsGravity, physicsBounce, physicsEdgeResistance, backgroundColour } = attributes;
 
 	const blockProps = useBlockProps();
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -62,6 +63,30 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	return (
 		<>
+			{ /* D635-pattern migration: native Background colour panel replaced by the
+			    flat backgroundColour attr surfaced via the shared SgsColourPanel. No
+			    Text colour row — every allowed child is decorative/non-textual and
+			    sgs/icon always sets its own explicit colour, so inherited `color` never
+			    painted anything visible on this block (see block.json's element note).
+			    No hover state exists on this attr, so a single 'normal' state. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Physics', 'sgs-blocks' ) }

@@ -84,6 +84,26 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"inputBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"focusRingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"listboxBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"resultHoverBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"matchHighlightColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

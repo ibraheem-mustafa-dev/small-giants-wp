@@ -8,7 +8,11 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride } from '../../components';
+import {
+	ResponsiveBoxControl,
+	ResponsiveOverride,
+	SgsColourPanel,
+} from '../../components';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -39,6 +43,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
+		inputBorderColour,
+		focusRingColour,
+		listboxBackgroundColour,
+		resultHoverBackgroundColour,
+		matchHighlightColour,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -49,9 +58,97 @@ export default function Edit( { attributes, setAttributes } ) {
 		placeholder || __( 'Search products…', 'sgs-blocks' );
 	const isIcon = displayMode === 'icon-expand' || displayMode === 'icon';
 	const isOverlay = displayMode === 'full-screen-overlay';
+	const isPalette = displayMode === 'command-palette';
 
 	return (
 		<>
+			{ /* Colour gap close (D638 §6) — 5 client-controllable colour rows,
+			    each a single 'normal' state (no hover concept on any of these
+			    surfaces), matching the multi-button/D635 single-state pattern.
+			    Falls back to the existing theme-token defaults in style.css
+			    when unset (var(--sgs-ps-*, token) — see render.php). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'input-border',
+						label: __( 'Input border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: inputBorderColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										inputBorderColour: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
+						key: 'focus-ring',
+						label: __( 'Focus ring colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: focusRingColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										focusRingColour: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
+						key: 'listbox-background',
+						label: __( 'Listbox background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: listboxBackgroundColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										listboxBackgroundColour: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
+						key: 'result-hover-background',
+						label: __(
+							'Result hover background colour',
+							'sgs-blocks'
+						),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: resultHoverBackgroundColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										resultHoverBackgroundColour: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
+						key: 'match-highlight',
+						label: __( 'Match highlight colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: matchHighlightColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										matchHighlightColour: val ?? '',
+									} ),
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Search settings', 'sgs-blocks' ) }>
 					<SelectControl
@@ -76,12 +173,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								),
 								value: 'full-screen-overlay',
 							},
+							{
+								label: __(
+									'Command palette (⌘K / Ctrl+K)',
+									'sgs-blocks'
+								),
+								value: 'command-palette',
+							},
 						] }
 						onChange={ ( value ) =>
 							setAttributes( { displayMode: value } )
 						}
 						help={ __(
-							'Inline bar: always-visible search field. Icon (expand): a small dropdown panel. Icon (full-screen overlay): opens a dimmed full-screen search dialog.',
+							'Inline bar: always-visible search field. Icon (expand): a small dropdown panel. Icon (full-screen overlay): opens a dimmed full-screen search dialog. Command palette: a centred modal opened by clicking the icon or pressing ⌘K / Ctrl+K.',
 							'sgs-blocks'
 						) }
 						__next40pxDefaultSize
@@ -254,8 +358,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ isIcon || isOverlay ? (
-					/* Icon / overlay editor preview — compact trigger button, matches the collapsed state. */
+				{ isIcon || isOverlay || isPalette ? (
+					/* Icon / overlay / command-palette editor preview — compact trigger button, matches the collapsed state. */
 					<>
 						<button
 							type="button"
@@ -284,7 +388,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							</svg>
 						</button>
 						<p className="sgs-product-search__editor-hint">
-							{ isOverlay
+							{ isPalette
+								? __(
+										'Command palette — opens a centred search modal on click or ⌘K / Ctrl+K.',
+										'sgs-blocks'
+								  )
+								: isOverlay
 								? __(
 										'Full-screen overlay — opens a dimmed modal search dialog on click.',
 										'sgs-blocks'

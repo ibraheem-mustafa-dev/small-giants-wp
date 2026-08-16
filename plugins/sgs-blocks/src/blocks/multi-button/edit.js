@@ -7,11 +7,19 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { ResponsiveOverride, SpacingControl } from '../../components';
+import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
+import {
+	ResponsiveOverride,
+	SpacingControl,
+	SgsColourPanel,
+	ResponsiveBoxControl,
+	DesignTokenPicker,
+	SGS_FONT_WEIGHT_OPTIONS,
+} from '../../components';
 import {
 	PanelBody,
 	SelectControl,
+	TextControl,
 	Button,
 } from '@wordpress/components';
 import { BUTTON_PRESETS } from '../button/presets';
@@ -82,6 +90,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		justifyContent,
 		flexWrap,
 		alignItems,
+		backgroundColour,
+		textColour,
+		childBtnBackground,
+		childBtnTextColour,
+		childBtnBorderColour,
+		childBtnBorderRadius,
+		childBtnFontSize,
+		childBtnFontWeight,
 	} = attributes;
 
 	// Only the DESKTOP tier is read here (the editorStyle preview below). The
@@ -129,6 +145,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* D635-pattern migration: native Text/Background colour panel replaced by
+			    flat backgroundColour/textColour attrs surfaced via the shared SgsColourPanel
+			    (matches testimonial-slider/process-steps/quote/heading/card-grid/text).
+			    No hover-colour attrs exist on this block, so each row has a single
+			    'normal' state only. Gradients stay on the native panel (unchanged). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				{ /* H6 fix (2026-07-05, STOP-43): kind='content' only (width/contentWidth +
 				    padding/spacing). The block owns its own responsive flex layout
@@ -142,6 +195,54 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
+
+				{ /* ── Padding (A1, D638 — sgs/container parity) ──
+				    kind="content" only mounts WidthPanel (see the aggregator's
+				    KIND_PANELS.content registry) — base padding/margin are meant
+				    to come from WP-native supports.spacing, but tablet/mobile
+				    overrides have no panel of their own at that kind, same gap
+				    cta-section/hero solve locally. Base writes the WP-native
+				    style.spacing.padding object (spacing.padding support is now
+				    true, still skip-serialised — render.php emits it via the
+				    style engine, no auto-inline); tablet/mobile write the
+				    paddingTablet/paddingMobile object attrs the shared wrapper
+				    already reads at every kind (all-kinds "Responsive padding"
+				    block in class-sgs-container-wrapper.php). Mirrors hero's
+				    "Padding & margin" panel exactly (hero/edit.js ~1415-1444). */ }
+				<PanelBody title={ __( 'Padding', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.padding ?? {},
+							tablet: attributes.paddingTablet ?? {},
+							mobile: attributes.paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Background (A1, D638) — image/video/SVG + overlay colour/
+				    gradient, full parity with sgs/container's own panel. Renders
+				    through the shared SGS_Container_Wrapper — background/overlay
+				    emission is universal regardless of `kind` (D6), so this needs
+				    no render.php change beyond declaring the attrs. Border colour/
+				    width/style/radius is native `__experimentalBorder` support
+				    (already declared) — WordPress renders its own native Border
+				    panel in the block's Styles tab with no custom code needed. */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* ── Bulk style preset ── */ }
 				<PanelBody
@@ -294,6 +395,67 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+				</PanelBody>
+
+				{ /* ── Button group defaults (A2, D638 §4/§5) ──
+				    Live CSS custom-property fallback, NOT the Block Context
+				    API and NOT editor-time copy-on-insert (both rejected —
+				    see decisions.md D638 §4). A child sgs/button with no
+				    explicit value of its own picks up whatever is set here,
+				    LIVE — change a default and every unset child follows it
+				    immediately; a child with its own explicit value keeps it.
+				    Inherit is IMPLICIT (empty = inherit), no visual indicator
+				    — Bean's explicit, knowingly-accepted call (D638 §5); do
+				    not add an indicator here.
+				    Scope is deliberately the ~6 core properties Bean ruled,
+				    not sgs/button's full ~35 style attrs — see the parking
+				    lot note in the Stage 1 plan before adding more. */ }
+				<PanelBody title={ __( 'Button group defaults', 'sgs-blocks' ) } initialOpen={ false }>
+					<p className="components-base-control__help" style={ { marginTop: 0 } }>
+						{ __(
+							'Sets a default for every button in this group that does not already have its own value set. A button with its own colour, radius, size or weight keeps that value.',
+							'sgs-blocks'
+						) }
+					</p>
+					<DesignTokenPicker
+						label={ __( 'Button background colour', 'sgs-blocks' ) }
+						value={ childBtnBackground }
+						onChange={ ( val ) => setAttributes( { childBtnBackground: val ?? '' } ) }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Button text colour', 'sgs-blocks' ) }
+						value={ childBtnTextColour }
+						onChange={ ( val ) => setAttributes( { childBtnTextColour: val ?? '' } ) }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Button border colour', 'sgs-blocks' ) }
+						value={ childBtnBorderColour }
+						onChange={ ( val ) => setAttributes( { childBtnBorderColour: val ?? '' } ) }
+					/>
+					<TextControl
+						label={ __( 'Button border radius', 'sgs-blocks' ) }
+						help={ __( 'A CSS length, e.g. 8px or 999px for a pill shape. Leave blank to use the framework default.', 'sgs-blocks' ) }
+						value={ childBtnBorderRadius }
+						onChange={ ( val ) => setAttributes( { childBtnBorderRadius: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Button font size', 'sgs-blocks' ) }
+						help={ __( 'A CSS length, e.g. 16px. Leave blank to use the framework default.', 'sgs-blocks' ) }
+						value={ childBtnFontSize }
+						onChange={ ( val ) => setAttributes( { childBtnFontSize: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Button font weight', 'sgs-blocks' ) }
+						value={ childBtnFontWeight || '' }
+						options={ SGS_FONT_WEIGHT_OPTIONS }
+						onChange={ ( val ) => setAttributes( { childBtnFontWeight: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 			</InspectorControls>
 

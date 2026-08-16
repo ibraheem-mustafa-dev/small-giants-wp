@@ -134,10 +134,11 @@ $overlay_colour      = '' !== $overlay_colour_raw ? $overlay_colour_raw : 'text'
 // GradientOverlayControl UI could write a gradient and it would silently
 // never render — the overlay's own CSS rule (below) only ever emitted a
 // flat background-color. Same read pattern SGS_Container_Wrapper uses.
-$overlay_gradient       = ! empty( $attributes['overlayGradient'] );
-$overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
-$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
-$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
+// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
+// attribute holding the complete CSS gradient value, validated through
+// sgs_css_gradient_value() at the point of emission below — replaces the
+// old 4-attr bool/angle/from/to shape.
+$overlay_gradient_value = sgs_css_gradient_value( $attributes['overlayGradient'] ?? '' );
 // The split column's sources are TYPED, one family per media kind:
 // splitImage* (image), splitVideo* (video), splitSvg* (inline SVG), each with a
 // per-tier splitMediaType* saying which kind that tier uses.
@@ -646,20 +647,12 @@ if ( null !== $media_pad_mob ) {
 // Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
 // overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
 // (includes/class-sgs-container-wrapper.php ~1159-1176).
-$media_bg_resolved         = $attributes['mediaBackground'] ?? '';
-$media_bg_gradient         = ! empty( $attributes['mediaBackgroundGradient'] );
-$media_bg_gradient_angle   = isset( $attributes['mediaBackgroundGradientAngle'] ) ? absint( $attributes['mediaBackgroundGradientAngle'] ) : 180;
-$media_bg_gradient_from    = $attributes['mediaBackgroundGradientFrom'] ?? '';
-$media_bg_gradient_to      = $attributes['mediaBackgroundGradientTo'] ?? '';
-if ( $media_bg_gradient && $media_bg_gradient_from ) {
-	$media_grad_from = sgs_colour_value( $media_bg_gradient_from );
-	$media_grad_to   = $media_bg_gradient_to ? sgs_colour_value( $media_bg_gradient_to ) : 'transparent';
-	$responsive_css  .= '.' . $uid . ' .sgs-hero__media{' . sprintf(
-		'background-image:linear-gradient(%ddeg,%s,%s)',
-		$media_bg_gradient_angle,
-		$media_grad_from,
-		$media_grad_to
-	) . '}';
+$media_bg_resolved      = $attributes['mediaBackground'] ?? '';
+// Task 3: mediaBackgroundGradient is now ONE attribute holding the complete
+// CSS gradient value, validated through sgs_css_gradient_value().
+$media_bg_gradient_value = sgs_css_gradient_value( $attributes['mediaBackgroundGradient'] ?? '' );
+if ( $media_bg_gradient_value ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-image:' . $media_bg_gradient_value . '}';
 } elseif ( $media_bg_resolved ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-color:' . sgs_colour_value( $media_bg_resolved ) . '}';
 }
@@ -670,12 +663,11 @@ if ( $media_bg_gradient && $media_bg_gradient_from ) {
 // present). Mirrors the section overlay's own gradient/flat-colour build
 // (~line 969 below) 1:1, scoped to `.sgs-hero__media-overlay` instead of
 // `.sgs-hero__overlay`.
-$media_overlay_colour_raw  = $attributes['mediaOverlayColour'] ?? '';
-$media_overlay_gradient    = ! empty( $attributes['mediaOverlayGradient'] );
-$media_overlay_grad_angle  = isset( $attributes['mediaOverlayGradientAngle'] ) ? absint( $attributes['mediaOverlayGradientAngle'] ) : 180;
-$media_overlay_grad_from   = $attributes['mediaOverlayGradientFrom'] ?? '';
-$media_overlay_grad_to     = $attributes['mediaOverlayGradientTo'] ?? '';
-$media_overlay_has_colour  = '' !== $media_overlay_colour_raw || ( $media_overlay_gradient && '' !== $media_overlay_grad_from );
+$media_overlay_colour_raw = $attributes['mediaOverlayColour'] ?? '';
+// Task 3: mediaOverlayGradient is now ONE attribute holding the complete CSS
+// gradient value, validated through sgs_css_gradient_value().
+$media_overlay_gradient_value = sgs_css_gradient_value( $attributes['mediaOverlayGradient'] ?? '' );
+$media_overlay_has_colour     = '' !== $media_overlay_colour_raw || $media_overlay_gradient_value;
 
 // Media motion — mediaParallax/mediaKenBurns/mediaAnimationDuration (2026-08-13).
 // A SEPARATE control family from the section's own bgParallax/bgKenBurns
@@ -708,10 +700,9 @@ $content_background = isset( $attributes['contentBackground'] ) ? (string) $attr
 // Gradient support added (Phase 4 Item 5, D561 plan) — mirrors the whole-block
 // overlay's linear-gradient(%ddeg,%s,%s) shape 1:1
 // (includes/class-sgs-container-wrapper.php ~1159-1176).
-$content_bg_gradient       = ! empty( $attributes['contentBackgroundGradient'] );
-$content_bg_gradient_angle = isset( $attributes['contentBackgroundGradientAngle'] ) ? absint( $attributes['contentBackgroundGradientAngle'] ) : 180;
-$content_bg_gradient_from  = $attributes['contentBackgroundGradientFrom'] ?? '';
-$content_bg_gradient_to    = $attributes['contentBackgroundGradientTo'] ?? '';
+// Task 3: contentBackgroundGradient is now ONE attribute holding the
+// complete CSS gradient value, validated through sgs_css_gradient_value().
+$content_bg_gradient_value = sgs_css_gradient_value( $attributes['contentBackgroundGradient'] ?? '' );
 $v_align_map         = array(
 	'top'    => 'flex-start',
 	'center' => 'center',
@@ -719,15 +710,8 @@ $v_align_map         = array(
 );
 $content_justify = $v_align_map[ $vertical_alignment ] ?? 'center';
 $content_decls    = array( 'display:flex', 'flex-direction:column', 'justify-content:' . $content_justify );
-if ( $content_bg_gradient && $content_bg_gradient_from ) {
-	$content_grad_from = sgs_colour_value( $content_bg_gradient_from );
-	$content_grad_to   = $content_bg_gradient_to ? sgs_colour_value( $content_bg_gradient_to ) : 'transparent';
-	$content_decls[]   = sprintf(
-		'background-image:linear-gradient(%ddeg,%s,%s)',
-		$content_bg_gradient_angle,
-		$content_grad_from,
-		$content_grad_to
-	);
+if ( $content_bg_gradient_value ) {
+	$content_decls[] = 'background-image:' . $content_bg_gradient_value;
 } elseif ( $content_background ) {
 	$content_decls[] = 'background-color:' . sgs_colour_value( $content_background );
 }
@@ -883,7 +867,7 @@ if ( '' !== $hero_preset_text_slug ) {
 // the framework's default primary-dark→primary gradient shows through a
 // translucent overlay colour. measurement-vs-eye recurrence (2026-05-05 hero
 // -gradient incident); Bean-reported 2026-07-10.
-if ( ( '' !== $overlay_colour_raw || ( $overlay_gradient && '' !== $overlay_gradient_from ) ) && ! in_array( 'has-background', $classes, true ) ) {
+if ( ( '' !== $overlay_colour_raw || $overlay_gradient_value ) && ! in_array( 'has-background', $classes, true ) ) {
 	$classes[] = 'has-background';
 }
 
@@ -988,14 +972,12 @@ if ( $has_standard_bg_image ) {
 // (the old gate required an image/video/SVG background to exist first);
 // (b) `overlayGradient`/`overlayGradientFrom/To/Angle` were never read into
 // this file at all, so the CSS rule could only ever emit a flat colour.
-$overlay_html        = '';
-$has_overlay_colour  = $overlay_colour_raw || ( $overlay_gradient && $overlay_gradient_from );
+$overlay_html       = '';
+$has_overlay_colour = $overlay_colour_raw || $overlay_gradient_value;
 if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $has_overlay_colour ) {
 	$overlay_html = '<span class="sgs-hero__overlay" aria-hidden="true"></span>';
-	if ( $overlay_gradient && $overlay_gradient_from ) {
-		$grad_from       = sgs_colour_value( $overlay_gradient_from );
-		$grad_to         = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
-		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-image:linear-gradient(' . $overlay_gradient_angle . 'deg,' . $grad_from . ',' . $grad_to . ')}';
+	if ( $overlay_gradient_value ) {
+		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-image:' . $overlay_gradient_value . '}';
 	} else {
 		$responsive_css .= '.' . $uid . ' .sgs-hero__overlay{background-color:' . sgs_colour_value( $overlay_colour ) . '}';
 	}
@@ -1168,15 +1150,8 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		$media_overlay_html = '';
 		if ( $media_overlay_has_colour ) {
 			$media_overlay_html = '<span class="sgs-hero__media-overlay" aria-hidden="true"></span>';
-			if ( $media_overlay_gradient && '' !== $media_overlay_grad_from ) {
-				$media_overlay_grad_from_val = sgs_colour_value( $media_overlay_grad_from );
-				$media_overlay_grad_to_val   = '' !== $media_overlay_grad_to ? sgs_colour_value( $media_overlay_grad_to ) : 'transparent';
-				$responsive_css              .= '.' . $uid . ' .sgs-hero__media-overlay{' . sprintf(
-					'background-image:linear-gradient(%ddeg,%s,%s)',
-					$media_overlay_grad_angle,
-					$media_overlay_grad_from_val,
-					$media_overlay_grad_to_val
-				) . '}';
+			if ( $media_overlay_gradient_value ) {
+				$responsive_css .= '.' . $uid . ' .sgs-hero__media-overlay{background-image:' . $media_overlay_gradient_value . '}';
 			} else {
 				$responsive_css .= '.' . $uid . ' .sgs-hero__media-overlay{background-color:' . sgs_colour_value( $media_overlay_colour_raw ) . '}';
 			}

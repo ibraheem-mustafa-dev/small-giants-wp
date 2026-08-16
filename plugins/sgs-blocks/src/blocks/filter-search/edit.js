@@ -10,7 +10,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
 
 // Guard the experimental NumberControl import — it may not exist on older WP
 // versions. Falls back to a plain text input (type=number) via TextControl.
@@ -18,7 +18,7 @@ import { ResponsiveBoxControl } from '../../components';
 const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile } = attributes;
+	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, focusRingColour, textColour } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-filter-search sgs-filter-search--editor-preview',
@@ -26,6 +26,49 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'inputBorder',
+						label: __( 'Input border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: inputBorderColour,
+								onChange: ( val ) => setAttributes( { inputBorderColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'focusRing',
+						label: __( 'Focus ring colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: focusRingColour,
+								onChange: ( val ) => setAttributes( { focusRingColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Filter Search Settings', 'sgs-blocks' ) }>
 

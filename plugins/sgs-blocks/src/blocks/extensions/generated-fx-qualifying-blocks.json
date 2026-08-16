@@ -111,6 +111,13 @@
 		"scrub",
 		"split-reveal"
 	],
+	"sgs/multi-button": [
+		"cursor-field",
+		"draw",
+		"morph",
+		"motion-path",
+		"scrub"
+	],
 	"sgs/physics-canvas": [
 		"cursor-field",
 		"draw",

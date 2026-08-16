@@ -4,9 +4,10 @@ import { TextControl, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { SgsColourPanel } from '../../components';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label } = attributes;
+	const { label, backgroundColour, textColour } = attributes;
 
 	// Determine which tab index this block occupies in the parent.
 	const tabIndex = useSelect(
@@ -95,6 +96,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			{ /* Width / spacing (WS-4 container mirror) */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Tab Settings', 'sgs-blocks' ) } initialOpen={ true }>

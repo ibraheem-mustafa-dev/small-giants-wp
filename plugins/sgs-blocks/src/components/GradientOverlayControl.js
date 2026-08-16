@@ -8,11 +8,6 @@
  * of Phase 4 Item 5 (D561 inspector-standardisation plan) for hero's
  * per-element `mediaBackground`/`contentBackground` colour+gradient controls.
  *
- * Spec 35 T3.2 (setting-registry.json ~:964-991): the overlay setting needs a
- * real GradientPicker (custom builder + per-stop alpha + clearable) with a
- * solid-colour fallback, not the old bare boolean toggle + two flat
- * DesignTokenPicker fields.
- *
  * UX shape (Background panel redesign D1, 2026-08-11): a compact swatch
  * BUTTON that opens a Dropdown popover, matching WP's own native
  * colour/gradient control shape, rather than every sub-control rendered
@@ -26,166 +21,42 @@
  * this is the same visual pattern without pulling in machinery this control
  * has no data source for.
  *
- * ⚠ Bean-ruled 2026-08-11: keep WP's NATIVE `GradientPicker` for the actual
- * gradient editing (this popover just relocates it, doesn't replace it).
- * Verified against Gutenberg source that WP's per-stop colour editor
- * (`custom-gradient-picker/gradient-bar/control-points.tsx`) renders a bare
- * `ColorPicker`, never `ColorPalette` — so a gradient stop cannot be set to
- * a theme/global palette colour. That is a known, accepted trade-off, not a
- * bug: building a bespoke palette-aware stop editor was assessed and
- * explicitly decided against as not worth the time.
+ * ⛑ Task 3 rebuild (D636, 2026-08-16) — SUPERSEDES the 2026-08-11 ruling
+ * this docblock used to record. That ruling kept WP's NATIVE `GradientPicker`
+ * because its per-stop colour editor renders a bare `ColorPicker`, never
+ * `ColorPalette`, so a stop could not be linked to a theme/global palette
+ * colour — assessed then as "not worth the time". A 4-seat design council
+ * (2026-08-16) re-opened that trade-off: SGS now composes its own gradient
+ * bar (`../gradient-picker`, forked from the same pinned Gutenberg SHA the
+ * colour-picker fork uses) whose stop editor mounts the SGS `ColorPalette`
+ * above the raw picker — see `gradient-picker/gradient-bar/control-points.js`.
+ * Picking a swatch stores that stop as `var(--wp--preset--color--<slug>)`.
  *
- * CRITICAL CONSTRAINT — the stored attrs do NOT change per call site. Each
- * consumer's own render.php (`includes/class-sgs-container-wrapper.php` for
- * the whole-block overlay, `blocks/hero/render.php` for media/content
- * background) renders exactly the four attrs named by `attrNames` (gradient
- * bool / angle deg / from / to) for the gradient path, and the `solid` attr
- * for the flat-colour path, as
- * `linear-gradient(${angle}deg,${from},${to || 'transparent'})`.
- * That is a LINEAR, TWO-STOP gradient — angle + start colour + end colour.
- * WP's native GradientPicker can express far more (radial gradients, N
- * stops), so this control MAPS the picker's free-form CSS gradient string
- * down onto those four attrs: the first colour stop becomes "from", the
- * last becomes "to", the angle is read off a linear gradient (a radial
- * gradient has no angle to store, so it falls back to the previous/default
- * angle). Anything the two-stop-linear shape can't express is explained in
- * the control's help text — never reshaped into new attributes, never
- * pushed into the wrapper.
+ * STORAGE — collapsed from 4 scalars to 1 string (D636): `attrNames.gradient`
+ * now holds the COMPLETE CSS gradient value (any stop count, linear or
+ * radial), validated at render time through `sgs_css_gradient_value()`
+ * (`includes/helpers-tokens.php`). A non-empty gradient string wins over the
+ * flat `solid` colour, exactly as WP core and Kadence/Spectra/Otter resolve
+ * it — no boolean discriminator. The old `angle`/`from`/`to` keys and the
+ * `parseLinearGradient`/`buildGradientCss` bridge functions that existed only
+ * to translate a free-form CSS string down onto that lossy 2-stop shape are
+ * gone — the stored value IS the CSS string now, nothing to translate.
  *
- * `attrNames` — an optional `{ gradient, angle, from, to, solid }` map of
- * attribute names to read/write. Defaults to the original whole-block
- * overlay names (`overlayGradient`/`overlayGradientAngle`/
- * `overlayGradientFrom`/`overlayGradientTo`/`backgroundOverlayColour`) so
- * every existing call site is unaffected by this parameterisation.
+ * `attrNames` — an optional `{ gradient, solid }` map of attribute names to
+ * read/write. Defaults to the original whole-block overlay names
+ * (`overlayGradient`/`backgroundOverlayColour`) so every existing call site
+ * is unaffected by this parameterisation.
  */
 import { __ } from '@wordpress/i18n';
-import {
-	Button,
-	Card,
-	CardBody,
-	ColorIndicator,
-	Dropdown,
-	GradientPicker,
-} from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import { Button, Card, CardBody, ColorIndicator, Dropdown } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
+import SgsGradientPicker from './gradient-picker';
 import {
 	HStack,
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from './primitives';
-
-/**
- * Split a CSS gradient's argument list on top-level commas only (i.e. not the
- * commas inside a `rgb()`/`rgba()`/`hsl()` colour function).
- *
- * @param {string} str Gradient function contents (without the wrapping
- *                     `linear-gradient(` / `)`).
- * @return {string[]} Each comma-separated segment (angle/shape + colour stops).
- */
-function splitGradientStops( str ) {
-	const parts = [];
-	let depth = 0;
-	let current = '';
-	for ( let i = 0; i < str.length; i++ ) {
-		const char = str[ i ];
-		if ( char === '(' ) {
-			depth++;
-		} else if ( char === ')' ) {
-			depth--;
-		}
-		if ( char === ',' && depth === 0 ) {
-			parts.push( current );
-			current = '';
-		} else {
-			current += char;
-		}
-	}
-	if ( current.trim() !== '' ) {
-		parts.push( current );
-	}
-	return parts;
-}
-
-/**
- * Strip a trailing stop-position token (`0%`, `50%`, `12px`…) off a colour
- * stop segment, leaving just the colour.
- *
- * @param {string} stop A single colour-stop segment, e.g. "rgb(0,0,0) 50%".
- * @return {string} The colour only.
- */
-function extractColour( stop ) {
-	return stop
-		.trim()
-		.replace( /\s+[\d.]+(%|px|em|rem)$/i, '' )
-		.trim();
-}
-
-/**
- * Parse a CSS gradient string down to the linear/two-stop shape our attrs
- * can express. Anything richer (radial, 3+ stops) collapses to its first
- * and last colour; angle is only readable off a linear gradient.
- *
- * @param {string} css           The gradient CSS from GradientPicker's onChange.
- * @param {number} fallbackAngle Angle to keep when the new gradient has none
- *                               (e.g. the operator switched to radial).
- * @return {{angle: number, from: string, to: string}} The attrs to store.
- */
-export function parseLinearGradient( css, fallbackAngle = 180 ) {
-	if ( ! css || typeof css !== 'string' ) {
-		return { angle: fallbackAngle, from: '', to: '' };
-	}
-
-	const angleMatch = css.match( /^linear-gradient\(\s*([\d.]+)deg/i );
-	const angle = angleMatch
-		? Math.round( parseFloat( angleMatch[ 1 ] ) )
-		: fallbackAngle;
-
-	const inner = css.replace( /^[a-z-]+\(/i, '' ).replace( /\)\s*$/, '' );
-	const segments = splitGradientStops( inner );
-
-	// Drop a leading angle ("135deg") or radial shape/position token
-	// ("circle", "circle at center", "to top left") — everything else is a
-	// colour stop.
-	const colourStops = segments.filter( ( segment ) => {
-		const trimmed = segment.trim();
-		return (
-			trimmed !== '' &&
-			! /^[\d.]+deg$/i.test( trimmed ) &&
-			! /^(circle|ellipse)\b/i.test( trimmed ) &&
-			! /^to\s/i.test( trimmed )
-		);
-	} );
-
-	const first = colourStops[ 0 ] ? extractColour( colourStops[ 0 ] ) : '';
-	const last =
-		colourStops.length > 1
-			? extractColour( colourStops[ colourStops.length - 1 ] )
-			: first;
-
-	return { angle, from: first, to: last };
-}
-
-/**
- * Build the CSS gradient string GradientPicker should display for the
- * currently-stored attrs.
- *
- * @param {number} angle Degrees.
- * @param {string} from  Start colour.
- * @param {string} to    End colour (empty = transparent, matches the
- *                       wrapper's own fallback).
- * @return {string|undefined} A `linear-gradient(...)` CSS value, or
- *                             `undefined` when nothing is set yet (so
- *                             GradientPicker shows its empty "add a
- *                             gradient" state rather than a broken value).
- */
-export function buildGradientCss( angle, from, to ) {
-	if ( ! from && ! to ) {
-		return undefined;
-	}
-	const start = from || 'transparent';
-	const end = to || 'transparent';
-	return `linear-gradient(${ angle }deg, ${ start } 0%, ${ end } 100%)`;
-}
 
 // Default attribute-name map — today's whole-block "overlay" shape. Passing a
 // different map lets other elements (e.g. hero's mediaBackground/
@@ -195,9 +66,6 @@ export function buildGradientCss( angle, from, to ) {
 // unchanged because it relies on this default.
 const DEFAULT_ATTR_NAMES = {
 	gradient: 'overlayGradient',
-	angle: 'overlayGradientAngle',
-	from: 'overlayGradientFrom',
-	to: 'overlayGradientTo',
 	solid: 'backgroundOverlayColour',
 };
 
@@ -208,18 +76,17 @@ export default function GradientOverlayControl( {
 	solidLabel = __( 'Overlay colour', 'sgs-blocks' ),
 } ) {
 	const {
-		[ attrNames.gradient ]: gradientEnabled = false,
-		[ attrNames.angle ]: gradientAngle = 180,
-		[ attrNames.from ]: gradientFrom = '',
-		[ attrNames.to ]: gradientTo = '',
+		[ attrNames.gradient ]: gradientValue = '',
 		[ attrNames.solid ]: solidColour,
 	} = attributes;
 
-	const gradientValue = buildGradientCss(
-		gradientAngle,
-		gradientFrom,
-		gradientTo
-	);
+	// Mode is DERIVED from the stored value, not a separate boolean attr —
+	// matches the storage-layer resolution model (non-empty gradient wins).
+	// A local toggle-in-progress (operator clicked "Gradient" but hasn't
+	// picked a stop yet) is UI-only state, not written until they interact.
+	const [ localGradientMode, setLocalGradientMode ] = useState( null );
+	const gradientEnabled =
+		localGradientMode !== null ? localGradientMode : !! gradientValue;
 
 	// What the swatch preview + Dropdown toggle shows — whichever of the two
 	// mutually-exclusive paths (solid / gradient) is active.
@@ -251,9 +118,7 @@ export default function GradientOverlayControl( {
 								label={ __( 'Overlay type', 'sgs-blocks' ) }
 								value={ gradientEnabled ? 'gradient' : 'solid' }
 								onChange={ ( val ) =>
-									setAttributes( {
-										[ attrNames.gradient ]: val === 'gradient',
-									} )
+									setLocalGradientMode( val === 'gradient' )
 								}
 								isBlock
 								__nextHasNoMarginBottom
@@ -270,45 +135,31 @@ export default function GradientOverlayControl( {
 							</ToggleGroupControl>
 
 							{ gradientEnabled ? (
-								<>
-									<GradientPicker
-										value={ gradientValue }
-										onChange={ ( newGradient ) => {
-											if ( ! newGradient ) {
-												setAttributes( {
-													[ attrNames.from ]: '',
-													[ attrNames.to ]: '',
-												} );
-												return;
-											}
-											const parsed = parseLinearGradient(
-												newGradient,
-												gradientAngle
-											);
-											setAttributes( {
-												[ attrNames.angle ]: parsed.angle,
-												[ attrNames.from ]: parsed.from,
-												[ attrNames.to ]: parsed.to,
-											} );
-										} }
-										clearable
-										disableCustomGradients={ false }
-										__nextHasNoMargin
-									/>
-									<p className="components-base-control__help">
-										{ __(
-											'Only a linear, two-stop gradient is saved (angle + start/end colour). A radial gradient or extra stops are collapsed to their first and last colour. Gradient stop colours use the native WordPress picker, so global/theme palette colours are not selectable per stop.',
-											'sgs-blocks'
-										) }
-									</p>
-								</>
+								<SgsGradientPicker
+									value={ gradientValue }
+									onChange={ ( newGradient ) => {
+										setLocalGradientMode( true );
+										setAttributes( {
+											[ attrNames.gradient ]: newGradient ?? '',
+										} );
+									} }
+									enableAlpha
+									__experimentalIsRenderedInSidebar
+								/>
 							) : (
 								<DesignTokenPicker
 									label={ solidLabel }
 									value={ solidColour }
-									onChange={ ( val ) =>
-										setAttributes( { [ attrNames.solid ]: val } )
-									}
+									onChange={ ( val ) => {
+										setLocalGradientMode( false );
+										setAttributes( {
+											[ attrNames.solid ]: val,
+											// Switching back to solid clears any
+											// gradient so the two paths never
+											// disagree about which is "current".
+											[ attrNames.gradient ]: '',
+										} );
+									} }
 								/>
 							) }
 						</div>

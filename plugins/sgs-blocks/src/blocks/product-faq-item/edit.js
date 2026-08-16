@@ -7,6 +7,8 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
+import { SgsColourPanel } from '../../components';
+import { colourVar } from '../../utils';
 
 const CHEVRON_SVG = (
 	<svg
@@ -41,14 +43,22 @@ function boxShorthand( box, keys ) {
 // them in the editor canvas either — reproduce a desktop-only preview here
 // (matches sgs/quote + sgs/brand-strip's editor preview pattern).
 function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+	const { style, backgroundColour, textColour } = attributes;
 	const wrapperStyle = {};
 
-	if ( style?.color?.text ) {
-		wrapperStyle.color = style.color.text;
+	// D635-pattern migration: background/text preview now reads the flat
+	// backgroundColour/textColour attrs (SgsColourPanel) instead of
+	// style.color.background/.text (supports.color.background/.text are now
+	// false). Mirrors sgs/quote's buildWrapperStyle.
+	if ( textColour ) {
+		wrapperStyle.color = /^#|^rgb|^hsl/.test( textColour )
+			? textColour
+			: colourVar( textColour );
 	}
-	if ( style?.color?.background ) {
-		wrapperStyle.backgroundColor = style.color.background;
+	if ( backgroundColour ) {
+		wrapperStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour )
+			? backgroundColour
+			: colourVar( backgroundColour );
 	}
 	if ( style?.color?.gradient ) {
 		wrapperStyle.backgroundImage = style.color.gradient;
@@ -72,7 +82,7 @@ function buildWrapperStyle( attributes ) {
 }
 
 export default function Edit( { attributes, setAttributes, context } ) {
-	const { question, isOpen } = attributes;
+	const { question, isOpen, backgroundColour, textColour } = attributes;
 	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
 	// useState( true ) with a comment justifying it as "always editable" —
 	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
@@ -121,6 +131,43 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	return (
 		<>
+			{ /* D635-pattern migration: native Text/Background colour panel replaced
+			    by flat backgroundColour/textColour attrs surfaced via the shared
+			    SgsColourPanel (matches testimonial-slider/process-steps/quote/
+			    heading/card-grid/text). No hover-colour attrs exist on this block,
+			    so each row has a single 'normal' state only. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) =>
+									setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) =>
+									setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'FAQ Item Settings', 'sgs-blocks' ) }>
 					<ToggleControl
