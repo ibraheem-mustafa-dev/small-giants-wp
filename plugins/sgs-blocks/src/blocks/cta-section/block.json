@@ -187,9 +187,6 @@
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"shadow": {
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
@@ -389,6 +386,9 @@
 			"default": 20
 		},
 		"shadow": {
+			"type": "string"
+		},
+		"shadowColour": {
 			"type": "string"
 		},
 		"maxWidth": {

@@ -22,6 +22,14 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "dividerColour",
       "fields": {
         "css_property": "background-color",
@@ -389,6 +397,41 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "colourBackground",
       "fields": {
         "css_property": "background-color",
@@ -559,6 +602,14 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -585,6 +636,15 @@
     {
       "slug": "sgs/card-grid",
       "attr": "shadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "shadowHoverColour",
       "fields": {
         "css_property": "box-shadow",
         "css_element": "item",
@@ -1004,7 +1064,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "desktop",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -1606,6 +1666,7 @@
       "attr": "splitImageMobileObjectPosition",
       "fields": {
         "css_property": "object-position",
+        "css_layer": "GRID_AREA",
         "css_element": "split-media"
       }
     },
@@ -2738,7 +2799,16 @@
       "slug": "sgs/post-grid",
       "attr": "shadowHover",
       "fields": {
-        "css_property": "box-shadow,transform",
+        "css_property": "box-shadow",
+        "css_element": "card",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow",
         "css_element": "card",
         "css_state": "hover"
       }
@@ -3503,6 +3573,14 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "nameColour",
       "fields": {
         "css_property": "color",
@@ -3585,6 +3663,15 @@
     {
       "slug": "sgs/testimonial",
       "attr": "shadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "shadowHoverColour",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
@@ -3904,6 +3991,7 @@
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "badge-label"
       }
     },
@@ -3984,7 +4072,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "mobile",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -4178,15 +4266,6 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },

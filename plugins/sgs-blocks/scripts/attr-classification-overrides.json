@@ -2726,6 +2726,157 @@
         "role": "technical"
       },
       "_why": "2026-08-15 element-manifest style-defect audit. Found while checking the blast radius of removing the sibling 'Max' suffix row (property_suffixes had a parallel 'Min' row, same role='layout', same 'Added by Spec 15 P3 §3.8 gap remediation' seed, also now REMOVED -- see property-suffixes.json '__why_min_max_removed'). This is the suffix's ONLY real occurrence. Verified against render.php:19 ($min = $attributes['min'] ?? '') and :25-26 (if (!empty($min)) { $extra_attrs[] = 'min=\"' . esc_attr($min) . '\"'; }) -- renders as the native HTML <input type=number min=\"\"> validation attribute, never CSS. role='technical' for the same reason as its sibling 'max' attr on this block."
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "derived_selector": ".sgs-cta-section__shadow"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconCircleShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "icon-badge"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "badgeImageShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "badge-img"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "item",
+        "derived_selector": ".sgs-card-grid__card"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "item",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "cardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "derived_selector": ".sgs-team-member__card",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "tileShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "tile"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_state": "hover",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — same class as the other 8 shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation). Overridden to box-shadow-color for consistency, even though this one did not raise an F6 error unclassified (css_property=None, css_element=None) — giving it the same explicit classification as its siblings rather than leaving it the only one of the nine still unclassified."
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "frame",
+        "css_layer": "OUTER",
+        "derived_selector": ".wp-block-sgs-before-after"
+      },
+      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the 9 companion overrides above (see sgs/card-grid.cardShadowColour for the full explanation) — sgs/before-after's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render.php line ~195. Element is 'frame' (block.json's own isWrapper:true element for this content-KIND block), scoped to the block's root class since the frame IS the block wrapper — no separate BEM sub-element exists for it. css_layer:OUTER added after the F6 reseed-survival check reported the DB's derived value as ('box-shadow-color','OUTER') — matches the sgs/team-member.cardShadowColour sibling override above, which also carries css_layer:OUTER."
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "card",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 shadow colour-architecture migration — sgs/post-grid's shadowHover moved off its preset-only SelectControl onto ShadowControl (Spec 35 Part F banned-anti-pattern fix), following the SAME D621/D622 pattern as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation of why the static extractor mis-derives this attr without the override). css_element='card' matches this block's own block.json element key for the post card (elements.card, prefix 'card') — the shape sibling shadowHover is now declared in that element's states.hover.attrMap as 'css:box-shadow', so this colour override mirrors its css_element/css_state so cloning scopes both to the same element."
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "media",
+        "css_layer": "OUTER",
+        "derived_selector": ".sgs-media__img, .sgs-media__video"
+      },
+      "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the sgs/before-after override above (see sgs/card-grid.cardShadowColour for the full original explanation) — sgs/media's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render time. Element is 'media' (block.json's own isWrapper:true element, attrMap already declares 'css:box-shadow':'boxShadow' on it), derived_selector matches the block's own selectors.filter.duotone/dimensions.aspectRatio entries (.sgs-media__img, .sgs-media__video) since that's where the shadow visually paints. css_layer:OUTER carried forward from the sgs/before-after sibling entry's F6 reseed-survival fix (same DB-derived shape for this property)."
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling boxShadowColour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). Same class as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, already classified css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot. css_layer:OUTER declared explicitly because leaving it unset produced a reseed-survival mismatch (DB derives 'OUTER' from the shape sibling; a bare-None override is wiped every reseed per STOP-24)."
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — same class as sgs/button.boxShadowColour above; hover-state companion of boxShadowHover (now declared in block.json's button element states.hover.attrMap as 'css:box-shadow')."
     }
   ]
 }

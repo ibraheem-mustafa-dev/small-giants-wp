@@ -90,6 +90,7 @@ $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
 // ignores (initial box-shadow: none) — graceful degrade, no crash, no
 // deprecation needed (D270 no-deprecations policy).
 $tile_shadow         = $attributes['tileShadow'] ?? '';
+$tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
 $hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
@@ -328,7 +329,7 @@ if ( $tile_border_width > 0 || '' !== $tile_border_colour ) {
 // inline (Spec 32). Applies at rest; `.sgs-brand-strip--hover-lift` already
 // overrides box-shadow on hover via its own rule in style.css, unaffected. ---
 if ( '' !== $tile_shadow ) {
-	$safe_tile_shadow_value = sgs_shadow_value( $tile_shadow );
+	$safe_tile_shadow_value = sgs_shadow_value_composed( $tile_shadow, $tile_shadow_colour );
 	if ( '' !== $safe_tile_shadow_value ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{box-shadow:{$safe_tile_shadow_value};}";
 	}

@@ -54,11 +54,13 @@ $icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
 $icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
+$icon_circle_shadow_colour = isset( $attributes['iconCircleShadowColour'] ) ? (string) $attributes['iconCircleShadowColour'] : '';
 
 // --- image-badge attributes (mirrors icon-circle's own control set) -----------
 $badge_image_border_radius = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';
 $badge_image_size          = isset( $attributes['badgeImageSize'] ) ? absint( $attributes['badgeImageSize'] ) : 60;
 $badge_image_shadow        = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
+$badge_image_shadow_colour = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
 $badge_image_object_fit    = sanitize_html_class( $attributes['badgeImageObjectFit'] ?? 'contain' );
 // $columns and $gap_slug are no longer needed locally:
 // - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
@@ -114,10 +116,11 @@ if ( 'icon-circle' === $badge_style ) {
 		$styles[]    = '--sgs-trust-badge-circle-radius: ' . esc_attr( trim( $safe_radius ) );
 	}
 	// Shadow: only emit when non-empty (empty string = resets to CSS default).
-	// sgs_shadow_value() accepts either a preset slug (sm/md/lg/glow) — wrapped
-	// in var(--wp--preset--shadow--{slug}) — or a raw CSS box-shadow string
-	// built by ShadowControl, which passes through (sanitised) unchanged.
-	$safe_icon_circle_shadow = sgs_shadow_value( $icon_circle_shadow );
+	// sgs_shadow_value_composed() composes the SHAPE-only attr (D621/D622
+	// colour-panel split) with the separate colour attr — a preset slug
+	// (sm/md/lg/glow) is self-contained and the colour is ignored; a raw
+	// shape string gets the colour appended.
+	$safe_icon_circle_shadow = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour );
 	if ( '' !== $safe_icon_circle_shadow ) {
 		$styles[] = '--sgs-trust-badge-circle-shadow: ' . $safe_icon_circle_shadow;
 	}
@@ -294,11 +297,10 @@ if ( 'image-badge' === $badge_style ) {
 		$img_decls[]     = 'border-radius:' . esc_attr( trim( $safe_img_radius ) );
 	}
 
-	// sgs_shadow_value() accepts either a preset slug (sm/md/lg/glow) — wrapped
-	// in var(--wp--preset--shadow--{slug}) — or a raw CSS box-shadow string
-	// built by ShadowControl, which passes through (sanitised) unchanged; an
-	// empty/invalid stored value resolves to '' so no declaration is emitted.
-	$safe_badge_image_shadow = sgs_shadow_value( $badge_image_shadow );
+	// sgs_shadow_value_composed() composes the SHAPE-only attr (D621/D622
+	// colour-panel split) with the separate colour attr; an empty/invalid
+	// stored shape resolves to '' so no declaration is emitted.
+	$safe_badge_image_shadow = sgs_shadow_value_composed( $badge_image_shadow, $badge_image_shadow_colour );
 	if ( '' !== $safe_badge_image_shadow ) {
 		$img_decls[] = 'box-shadow:' . $safe_badge_image_shadow;
 	}

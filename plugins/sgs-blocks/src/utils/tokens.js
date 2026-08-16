@@ -69,3 +69,26 @@ export function resolveShadowPreview( value ) {
 	const isRaw = /^var\(|^inset|^rgb|^0 |^\d/.test( value );
 	return isRaw ? value : `var(--wp--preset--shadow--${ value })`;
 }
+
+/**
+ * Resolve a shadow SHAPE (from `ShadowControl`, colour split out per
+ * D621/D622) + a separate colour attribute to a CSS `box-shadow` value for
+ * editor canvas preview. Mirrors the PHP compose helper
+ * `sgs_shadow_value_composed()` (`includes/helpers-tokens.php`): a raw shape
+ * (starts with a digit or `inset`) gets the colour appended; a bare theme
+ * preset slug is self-contained and the colour is ignored.
+ *
+ * @param {string} shape  Stored shadow SHAPE attribute value (or a preset slug).
+ * @param {string} colour Stored colour attribute value.
+ * @return {string|undefined} CSS box-shadow value, or undefined when empty.
+ */
+export function resolveShadowPreviewComposed( shape, colour ) {
+	if ( ! shape ) {
+		return undefined;
+	}
+	const isRawShape = /^inset|^-?\d/.test( shape );
+	if ( ! isRawShape ) {
+		return `var(--wp--preset--shadow--${ shape })`;
+	}
+	return `${ shape } ${ colour || 'rgba(0,0,0,0.1)' }`;
+}

@@ -104,19 +104,17 @@ $gradient_preset          = in_array( $attributes['gradientPreset'] ?? '', $allo
 	? sanitize_key( $attributes['gradientPreset'] ?? '' )
 	: '';
 
-// Legacy string `shadow` attr — either a theme shadow preset slug (sm/md/lg/glow)
-// or a raw box-shadow CSS string built by the shared ShadowControl (Spec 35
-// T2.2). Duplicates the native `shadow` support, which is skip-serialised and
-// unused here. This attr is the one that actually drives the visible shadow
-// (via the shared wrapper's extra_styles, which inlines); the native support
-// was a phantom no-op until this migration. No-inline contract (§A): route
-// the resolved box-shadow into cta-section's OWN scoped <style> instead of
-// the wrapper's extra_styles. $cta_helper_attrs nulls `shadow` below (C3
-// double-emit guard) so the wrapper never re-emits it. sgs_shadow_value()
-// (helpers-tokens.php) resolves either shape and returns a ready-to-use
-// box-shadow VALUE (preset slugs are wrapped in var(--wp--preset--shadow--*),
-// raw strings pass through normalised) — no local keyword sanitiser needed.
-$shadow_value = sgs_shadow_value( $attributes['shadow'] ?? '' );
+// `shadow` attr — either a theme shadow preset slug (sm/md/lg/glow) or a
+// raw box-shadow SHAPE string (x/y/blur/spread, no colour) built by the
+// shared ShadowControl (Spec 35 T2.2); colour is a SEPARATE sibling attr
+// (`shadowColour`, D621/D622 colour-panel split) composed back in by
+// sgs_shadow_value_composed(). The dead native `shadow` support duplicate
+// was removed outright (it competed with this attr for the same selector —
+// see git history). No-inline contract (§A): route the resolved box-shadow
+// into cta-section's OWN scoped <style> instead of the wrapper's
+// extra_styles. $cta_helper_attrs nulls `shadow` below (C3 double-emit
+// guard) so the wrapper never re-emits it.
+$shadow_value = sgs_shadow_value_composed( $attributes['shadow'] ?? '', $attributes['shadowColour'] ?? '' );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/hero/quote convention).
@@ -229,10 +227,6 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 	if ( ! empty( $border_args ) ) {
 		$cta_style_engine_args['border'] = $border_args;
-	}
-
-	if ( isset( $attributes['style']['shadow'] ) && '' !== $attributes['style']['shadow'] ) {
-		$cta_style_engine_args['shadow'] = $attributes['style']['shadow'];
 	}
 
 	if ( ! empty( $cta_style_engine_args ) ) {

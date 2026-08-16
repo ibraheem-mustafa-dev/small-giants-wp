@@ -75,27 +75,36 @@ const CARD_STYLE_PRESETS = {
 		cardBorderWidth: {},
 		cardRadius: '',
 		cardShadow: '',
+		cardShadowColour: '',
 	},
 	elevated: {
 		cardBackground: 'surface',
 		cardBorderColour: '',
 		cardBorderWidth: {},
 		cardRadius: '8px',
+		// Bare preset slug — self-contained (colour baked in by theme.json), so
+		// cardShadowColour stays empty; sgs_shadow_value_composed() ignores it
+		// for a preset slug.
 		cardShadow: 'raised',
+		cardShadowColour: '',
 	},
 	boxed: {
 		cardBackground: 'surface',
 		cardBorderColour: 'border-subtle',
 		cardBorderWidth: { top: '1px', right: '1px', bottom: '1px', left: '1px' },
 		cardRadius: '8px',
-		cardShadow: '0px 0px 0px 0px transparent',
+		// Zero-size shape (D621/D622 colour split) — explicitly resets any
+		// inherited shadow to none; colour is moot at zero offset/blur/spread.
+		cardShadow: '0px 0px 0px 0px',
+		cardShadowColour: '',
 	},
 	borderless: {
 		cardBackground: 'transparent',
 		cardBorderColour: '',
 		cardBorderWidth: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
 		cardRadius: '0px',
-		cardShadow: '0px 0px 0px 0px transparent',
+		cardShadow: '0px 0px 0px 0px',
+		cardShadowColour: '',
 	},
 };
 
@@ -221,9 +230,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardBorderWidth,
 		cardRadius,
 		cardShadow,
+		cardShadowColour,
 		backgroundColourHover,
 		borderColourHover,
 		textColourHover,
+		shadowHover,
+		shadowHoverColour,
 		source,
 		queryPostType,
 		queryPostsPerPage,
@@ -410,6 +422,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'card-shadow',
+						label: __( 'Card shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardShadowColour,
+								onChange: ( val ) => setAttributes( { cardShadowColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: shadowHoverColour,
+								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -737,6 +769,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ cardShadow }
 						onChange={ ( val ) =>
 							setAttributes( { cardShadow: val } )
+						}
+						colour={ cardShadowColour }
+						onColourChange={ ( val ) =>
+							setAttributes( { cardShadowColour: val } )
+						}
+					/>
+					{ /* shadowHover — declared + read by render.php (--sgs-hover-shadow)
+						but had NO editor control at all until this fix (Stage 0 orphan
+						attr, D621/D622). Landed straight on the target shape (shape +
+						colour), matching cardShadow above. */ }
+					<ShadowControl
+						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+						value={ shadowHover }
+						onChange={ ( val ) =>
+							setAttributes( { shadowHover: val } )
+						}
+						colour={ shadowHoverColour }
+						onColourChange={ ( val ) =>
+							setAttributes( { shadowHoverColour: val } )
 						}
 					/>
 				</PanelBody>

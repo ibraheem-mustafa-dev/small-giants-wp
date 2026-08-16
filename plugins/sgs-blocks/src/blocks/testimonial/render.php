@@ -156,6 +156,7 @@ $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 $hover_scale              = $attributes['scaleHover'] ?? '';
 $hover_shadow            = $attributes['shadowHover'] ?? '';
+$hover_shadow_colour     = $attributes['shadowHoverColour'] ?? '';
 $stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
 
 // ── Width (WS-4 container-mirror, content kind: kept-scalar, no tiers) ─────
@@ -441,15 +442,13 @@ if ( $hover_scale ) {
 	$wrapper_vars[] = '--sgs-hover-scale:' . esc_attr( (string) $hover_scale );
 }
 if ( $hover_shadow ) {
-	// FR-35-3 ShadowControl swap (2026-07-28) — shadowHover now stores either a
-	// raw box-shadow CSS string (the builder) or a bare theme shadow slug (the
-	// preset buttons), the same shape as sgs/team-member's cardShadow. The old
-	// keyword-only translation (`preg_replace` down to a slug, always wrapped
-	// in `var(--wp--preset--shadow--slug)`) is dead now that raw values are
-	// possible — sgs_shadow_value() (includes/helpers-tokens.php) already
-	// handles both shapes (raw passthrough with breakout/functional-colour
-	// sanitisation, or slug->preset-var wrap).
-	$wrapper_vars[] = '--sgs-hover-shadow:' . sgs_shadow_value( (string) $hover_shadow );
+	// FR-35-3 ShadowControl swap (2026-07-28) — shadowHover stores either a
+	// raw box-shadow SHAPE string (the builder, no colour since D621/D622) or
+	// a bare theme shadow slug (the preset buttons), the same shape as
+	// sgs/team-member's cardShadow. sgs_shadow_value_composed() composes the
+	// shape with the separate shadowHoverColour attr (ignored for a preset
+	// slug — self-contained).
+	$wrapper_vars[] = '--sgs-hover-shadow:' . sgs_shadow_value_composed( (string) $hover_shadow, (string) $hover_shadow_colour );
 }
 if ( $stagger_delay ) {
 	$wrapper_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';

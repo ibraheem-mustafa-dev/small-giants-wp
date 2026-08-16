@@ -3,25 +3,28 @@
   "_promoted": "2026-08-15 — the checker ran WARN-ONLY from its creation. It was promoted to a real gate the same day the D533/D537 placement resolver's last 7 contested attributes were cleared (alignItems, grid-vs-wrapper, on container/cta-section/form/form-field-tiles/hero/pricing-table/tabs). An advisory placement rule is exactly why D537 and D609 drifted into contradicting each other on the record.",
   "_not_gated": "total_gap (3363 live) is deliberately NOT gated. A GAP means an element's declared cluster names a CSS property the element has no attribute for — e.g. a container's `fill` cluster naming css:object-fit. That is COVERAGE, not a defect. Gating it would fail every build forever while measuring the wrong thing.",
 
-  "orphan_style_defect": 7,
-  "total_state_without_base": 1,
+  "orphan_style_defect": 10,
+  "total_state_without_base": 2,
 
   "_accepted": {
     "orphan_style_defect": {
-      "count": 7,
-      "reason": "Pre-existing placement defects, present before this gate existed. Not introduced by the promotion. Each needs its own per-block read — they are real, but they are debt to burn down, not a reason to leave the gate off. 2026-08-15: sgs/before-after's 3 (label + divider x2) genuinely fixed — dividerColour/dividerWidth were misattributed to the `divider` element by prefix-string accident and actually paint on a new `divider-line` element; labelBackgroundColour needed `fill` added to the `label` element's clusters. sgs/hero's contentBackgroundGradientFrom (1 of the 2) genuinely fixed via an explicit attrMap entry; contentBackgroundGradientTo remains (no sibling mechanism for a second gradient colour stop). sgs/icon-list's 4 (item-text) also cleared live during this session (SET B's concurrent work on a disjoint block list) and are removed from the instance list below since they are already gone, not because this fix pass touched sgs/icon-list.",
+      "count": 10,
+      "reason": "Pre-existing placement defects, present before this gate existed. Not introduced by the promotion. Each needs its own per-block read — they are real, but they are debt to burn down, not a reason to leave the gate off. 2026-08-15: sgs/before-after's 3 (label + divider x2) genuinely fixed — dividerColour/dividerWidth were misattributed to the `divider` element by prefix-string accident and actually paint on a new `divider-line` element; labelBackgroundColour needed `fill` added to the `label` element's clusters. sgs/hero's contentBackgroundGradientFrom (1 of the 2) genuinely fixed via an explicit attrMap entry; contentBackgroundGradientTo remains (no sibling mechanism for a second gradient colour stop). sgs/icon-list's 4 (item-text) also cleared live during this session (SET B's concurrent work on a disjoint block list) and are removed from the instance list below since they are already gone, not because this fix pass touched sgs/icon-list. sgs/testimonial — rating cleared too (resolved elsewhere, unrelated to this session). 2026-08-15 (shadow colour-architecture redesign, D621/D622): sgs/trust-bar's iconCircleShadowColour + badgeImageShadowColour, sgs/team-member's cardShadowColour, and sgs/brand-strip's tileShadowColour are all NEW companion attrs from the same migration — the manifest's `css:box-shadow` cluster member models box-shadow as ONE property (colour included), so it has no vocabulary yet for a colour split OUT of that property into its own attribute (this checker was written before the shadow-colour-split architecture existed). Each shape attr (iconCircleShadow/badgeImageShadow/cardShadow/tileShadow) is still correctly claimed via its own explicit attrMap entry; only the new sibling colour attr has nowhere to register. sgs/card-grid's cardShadowColour/shadowHoverColour and sgs/testimonial's shadowHoverColour are the SAME new companion-attr class but escape this scan entirely (their owning elements declare no explicit `prefix`, or the attr name doesn't start with one), so they never even reach here — not fixed, just invisible to this particular gate; noted for completeness, not counted. Genuinely accepted debt, not a fix regression — extending the manifest vocabulary with a `css:box-shadow-colour` member is future work, tracked separately from this task's shadow-colour-architecture scope.",
       "instances": [
         "sgs/audio — spectrum",
         "sgs/form — focus-ring (x3)",
         "sgs/hero — content (x1)",
         "sgs/product-card — tag",
-        "sgs/testimonial — rating"
+        "sgs/trust-bar — iconCircleShadowColour",
+        "sgs/trust-bar — badgeImageShadowColour",
+        "sgs/team-member — cardShadowColour",
+        "sgs/brand-strip — tileShadowColour"
       ]
     },
     "total_state_without_base": {
-      "count": 1,
-      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed.",
-      "instances": [ "sgs/post-grid — css:transform" ]
+      "count": 2,
+      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed. Second STATE_WITHOUT_BASE on sgs/post-grid, same shape as the existing accepted scaleHover entry — hover-only shadow with no resting-state equivalent is an intentional design choice on this block, not a gap.",
+      "instances": [ "sgs/post-grid — css:transform", "sgs/post-grid — css:box-shadow" ]
     }
   },
 

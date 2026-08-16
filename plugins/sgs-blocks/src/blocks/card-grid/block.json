@@ -263,6 +263,9 @@
 			"type": "string",
 			"default": ""
 		},
+		"cardShadowColour": {
+			"type": "string"
+		},
 		"backgroundColourHover": {
 			"type": "string"
 		},
@@ -288,6 +291,9 @@
 		"shadowHover": {
 			"type": "string",
 			"default": ""
+		},
+		"shadowHoverColour": {
+			"type": "string"
 		},
 		"imageZoomHover": {
 			"type": "boolean",

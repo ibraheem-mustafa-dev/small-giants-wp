@@ -96,15 +96,12 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$sgs_css_safe_value = static function ( $value ) {
-	return preg_replace( '/[;{}<>\\\\]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 3. Frame (root) attributes.
 // ---------------------------------------------------------------------------
 
-$box_shadow = $attributes['boxShadow'] ?? '';
+$box_shadow        = $attributes['boxShadow'] ?? '';
+$box_shadow_colour = $attributes['boxShadowColour'] ?? '';
 
 // `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
 // holding {desktop,tablet,mobile}, read through the shared normaliser.
@@ -192,7 +189,7 @@ if ( 'none' !== $border_style ) {
 	}
 }
 if ( $box_shadow ) {
-	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value( $sgs_css_safe_value( $box_shadow ) );
+	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
 if ( $max_width ) {
 	$mw_safe = $sgs_css_length( $max_width );

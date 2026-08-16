@@ -354,6 +354,9 @@
 			"type": "string",
 			"default": ""
 		},
+		"boxShadowColour": {
+			"type": "string"
+		},
 		"opacity": {
 			"type": "number",
 			"default": 1

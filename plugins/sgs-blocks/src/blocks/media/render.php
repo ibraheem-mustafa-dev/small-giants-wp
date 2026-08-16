@@ -94,8 +94,9 @@ $native_border             = ( isset( $attributes['style']['border'] ) && is_arr
 $border_radius_tablet_obj  = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj  = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
-$box_shadow = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
-$opacity    = isset( $attributes['opacity'] ) ? floatval( $attributes['opacity'] ) : 1.0;
+$box_shadow        = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
+$box_shadow_colour = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
+$opacity           = isset( $attributes['opacity'] ) ? floatval( $attributes['opacity'] ) : 1.0;
 $opacity    = max( 0.0, min( 1.0, $opacity ) );
 
 $allowed_alignments = array( 'left', 'center', 'right' );
@@ -297,9 +298,11 @@ if ( 1.0 !== $opacity ) {
 	$media_base_decls[] = 'opacity:' . esc_attr( $opacity );
 }
 
-// box-shadow — delegate to sgs_shadow_value() so raw CSS values pass through correctly.
+// box-shadow — SHAPE-only string (D621/D622 colour-architecture redesign);
+// colour lives in the sibling boxShadowColour attr and is composed back in
+// at render time via sgs_shadow_value_composed().
 if ( '' !== $box_shadow ) {
-	$shadow_css = sgs_shadow_value( $box_shadow );
+	$shadow_css = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 	if ( '' !== $shadow_css ) {
 		$media_base_decls[] = 'box-shadow:' . $shadow_css;
 	}

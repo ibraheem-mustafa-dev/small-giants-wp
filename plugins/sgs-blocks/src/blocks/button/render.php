@@ -293,17 +293,14 @@ $border_width_bot    = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
 $border_width_lft    = $sgs_css_length( $border_width_obj['left'] ?? '' );
 $has_border_width     = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
-// Box shadow.
-$box_shadow_default = array(
-	'colour'  => '',
-	'hOffset' => 0,
-	'vOffset' => 0,
-	'blur'    => 0,
-	'spread'  => 0,
-	'inset'   => false,
-);
-$box_shadow         = isset( $attributes['boxShadow'] ) && is_array( $attributes['boxShadow'] ) ? array_merge( $box_shadow_default, $attributes['boxShadow'] ) : $box_shadow_default;
-$box_shadow_hover   = isset( $attributes['boxShadowHover'] ) && is_array( $attributes['boxShadowHover'] ) ? array_merge( $box_shadow_default, $attributes['boxShadowHover'] ) : $box_shadow_default;
+// Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
+// redesign); colour lives in the sibling boxShadowColour/boxShadowHoverColour
+// attrs and is composed back in at render time via
+// sgs_shadow_value_composed() (includes/helpers-tokens.php).
+$box_shadow              = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
+$box_shadow_colour       = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
+$box_shadow_hover        = isset( $attributes['boxShadowHover'] ) ? (string) $attributes['boxShadowHover'] : '';
+$box_shadow_hover_colour = isset( $attributes['boxShadowHoverColour'] ) ? (string) $attributes['boxShadowHoverColour'] : '';
 
 // Effects.
 $hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
@@ -384,14 +381,8 @@ if ( $text_transform ) {
 if ( $text_decoration ) {
 	$base_decls[] = 'text-decoration:' . $text_decoration;
 }
-if ( $box_shadow['colour'] ) {
-	$bs_inset      = $box_shadow['inset'] ? 'inset ' : '';
-	$bs_h          = (int) $box_shadow['hOffset'];
-	$bs_v          = (int) $box_shadow['vOffset'];
-	$bs_blur       = absint( $box_shadow['blur'] );
-	$bs_spread     = (int) $box_shadow['spread'];
-	$bs_colour_val = sgs_colour_value( $box_shadow['colour'] );
-	$base_decls[]  = "box-shadow:{$bs_inset}{$bs_h}px {$bs_v}px {$bs_blur}px {$bs_spread}px {$bs_colour_val}";
+if ( '' !== $box_shadow ) {
+	$base_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
 }
 
 // ---------------------------------------------------------------------------
@@ -426,14 +417,8 @@ if ( 'underline' === $text_decoration_hover ) {
 }
 
 // Hover box shadow.
-if ( $box_shadow_hover['colour'] ) {
-	$bsh_inset      = $box_shadow_hover['inset'] ? 'inset ' : '';
-	$bsh_h          = (int) $box_shadow_hover['hOffset'];
-	$bsh_v          = (int) $box_shadow_hover['vOffset'];
-	$bsh_blur       = absint( $box_shadow_hover['blur'] );
-	$bsh_spread     = (int) $box_shadow_hover['spread'];
-	$bsh_colour_val = sgs_colour_value( $box_shadow_hover['colour'] );
-	$hover_rules[]  = "box-shadow:{$bsh_inset}{$bsh_h}px {$bsh_v}px {$bsh_blur}px {$bsh_spread}px {$bsh_colour_val}";
+if ( '' !== $box_shadow_hover ) {
+	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
 }
 
 if ( $hover_rules ) {

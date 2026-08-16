@@ -23,6 +23,7 @@ import {
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
 	SgsColourPanel,
+	ShadowControl,
 } from '../../components';
 import BooleanResponsiveControl from './BooleanResponsiveControl';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -168,7 +169,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			   type string) + render.php:118 ($caption_colour, styled onto the
 			   caption element) — confirmed 2026-08-15 against the live source
 			   before wiring this row. Single-state colour (no hover pair
-			   exists for the caption), `linked: true` per D619. */ }
+			   exists for the caption), `linked: true` per D619.
+			   boxShadowColour row (D621/D622) added 2026-08-16 — colour lives
+			   here, shape stays with ShadowControl in the Media Styling
+			   ToolsPanel below, per the shared colour-architecture. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -181,6 +185,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: attributes.captionColour,
 								onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
 								linked: true,
+							},
+						],
+					},
+					{
+						key: 'boxShadow',
+						label: __( 'Shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.boxShadowColour,
+								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
 							},
 						],
 					},
@@ -389,6 +405,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							alignment: 'left',
 							opacity: 1,
 							boxShadow: '',
+							boxShadowColour: '',
 						} );
 					} }
 				>
@@ -685,20 +702,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToolsPanelItem
 						label={ __( 'Box shadow', 'sgs-blocks' ) }
 						hasValue={ () => !! attributes.boxShadow }
-						onDeselect={ () => setAttributes( { boxShadow: '' } ) }
+						onDeselect={ () =>
+							setAttributes( { boxShadow: '', boxShadowColour: '' } )
+						}
 					>
-						<TextControl
-							label={ __( 'Box shadow (CSS)', 'sgs-blocks' ) }
-							help={ __(
-								'A raw CSS box-shadow value, e.g. "0 6px 24px rgba(0,0,0,0.15)". Leave empty for none.',
-								'sgs-blocks'
-							) }
-							value={ attributes.boxShadow || '' }
+						<ShadowControl
+							label={ __( 'Box shadow', 'sgs-blocks' ) }
+							value={ attributes.boxShadow }
 							onChange={ ( value ) =>
 								setAttributes( { boxShadow: value } )
 							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							colour={ attributes.boxShadowColour }
+							onColourChange={ ( value ) =>
+								setAttributes( { boxShadowColour: value } )
+							}
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

@@ -11,7 +11,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, ShadowControl } from '../../components';
 import { UnitControl } from '../../components/primitives';
 
 /**
@@ -250,6 +250,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
+		shadowHover,
+		shadowHoverColour,
 	} = attributes;
 
 	// -------------------------------------------------------------------------
@@ -408,6 +410,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					shadowHover && {
+						key: 'shadowHover',
+						label: __( 'Shadow colour (hover)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: shadowHoverColour,
+								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			<InspectorControls>
@@ -500,6 +515,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					{ /* shadowHover — declared + read by render.php (preset-slug ONLY,
+						no colour, no editor control at all) until this fix (Stage 0
+						orphan attr, D621/D622). Landed straight on the target shape
+						(shape + colour), not the old fixed subtle/raised/floating/glow
+						allowlist. */ }
+					<ShadowControl
+						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+						value={ shadowHover }
+						onChange={ ( val ) => setAttributes( { shadowHover: val } ) }
+						colour={ shadowHoverColour }
+						onColourChange={ ( val ) => setAttributes( { shadowHoverColour: val } ) }
 					/>
 				</PanelBody>
 
