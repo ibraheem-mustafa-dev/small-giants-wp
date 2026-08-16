@@ -1,9 +1,21 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-08-15 (3 entries added from a shared-worktree commit/subagent/visual-gate session; 5 oldest by date archived to keep at target — 32 → 27 → 30 active.)
+**Last updated:** 2026-08-16 (1 entry added from a parallel-agent-dispatch collision; 1 oldest by date archived to keep at target — 30 → 31 → 30 active.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-08-16] Parallel agent dispatch needs one isolated clone/worktree per agent, never a shared directory
+- **Pattern key:** `parallel-agent-dispatch-needs-one-directory-each`
+- **Evidence:** 3 shadow-migration subagents were dispatched in parallel into the SAME isolated clone,
+  expecting the clone itself to provide isolation. It isolated them from other sessions, not from EACH
+  OTHER — concurrent `npm run build` runs and concurrent edits to a shared JSON file
+  (`attr-classification-overrides.json`) silently clobbered each other's work, including one agent's
+  ~26-line addition vanishing entirely. A second, separate instance hit the identical pattern when a
+  doc-update agent collided with a different concurrent session over `.claude/LEDGER.md`.
+- **Rule:** Before dispatching N agents in parallel for file-editing/build work in the same repo,
+  provision N separate clones/worktrees first — one working directory shared among concurrently-running
+  agents is zero isolation, regardless of how isolated that directory is from anyone else.
+
 ### [2026-08-15] A pathspec-scoped commit re-stages the working-tree version, overriding a deliberate partial stage
 - **Pattern key:** `pathspec-scoped-commit-overrides-partial-staging`
 - **Evidence:** `git commit -m "..." -- <paths>` re-stages the CURRENT WORKING-TREE version of those exact
@@ -209,7 +221,3 @@
 - **Evidence:** Bean asked whether the QC council's control-ORDER point had been captured. I searched the contract for `order|ordering|sequence|cluster`, piped it through `Select-Object -First 20`, saw only `BorderRadius`/`border` hits, and reported that ordering "existed nowhere". It did exist — Cross-cutting A carried it at ~line 980 ("Panel order — three competitors converged on ordering being deliberate"), well past the 20-hit cutoff. I then wrote a NEW obligation on top of research that was already there. Only re-running the same search unbounded found it.
 - **Rule:** A capped search can only ever prove PRESENCE, never absence. Before writing "X does not exist", re-run the search with no `head`/`-First`/`Select-Object` limit, or count total matches first. Distinct from `a-greps-blind-spot-is-the-shape-of-the-grep` — there the PATTERN was wrong; here the pattern was right and the OUTPUT was cut.
 
-### [2026-08-08] Python's default text mode would have turned a 22-entry sweep into a 7,679-line diff
-- **Pattern key:** `preserve-line-endings-or-a-rewrite-becomes-a-whole-file-diff`
-- **Evidence:** Sweeping `decisions.md` to its archive, my script read with `read_text()` and would have written back with `write_text()`. On this CRLF checkout that silently converts EVERY line ending to LF — a 7,679-line diff masquerading as a 218-line archive move, on a shared worktree where another track is committing. Caught only because the script's byte count (1,121,611) disagreed with the gate's on-disk count (1,129,290) by exactly the line count, 7,679. Fixed with `newline=""` on both read and write; the real diff came out 218 out / 224 in.
-- **Rule:** Any script that rewrites a repo file must open with `newline=""` on read AND write. And when two byte counts of the "same" file disagree by exactly the line count, that is a line-ending conversion, not a measurement error — sibling of `a-checksum-across-a-git-boundary-is-not-a-measurement`.

@@ -6,6 +6,13 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-08-16 — archive sweep (31 → 30 active), oldest 1 by date, moved verbatim, to make room for 1 new entry at cap
+
+### [2026-08-08] Python's default text mode would have turned a 22-entry sweep into a 7,679-line diff
+- **Pattern key:** `preserve-line-endings-or-a-rewrite-becomes-a-whole-file-diff`
+- **Evidence:** Sweeping `decisions.md` to its archive, my script read with `read_text()` and would have written back with `write_text()`. On this CRLF checkout that silently converts EVERY line ending to LF — a 7,679-line diff masquerading as a 218-line archive move, on a shared worktree where another track is committing. Caught only because the script's byte count (1,121,611) disagreed with the gate's on-disk count (1,129,290) by exactly the line count, 7,679. Fixed with `newline=""` on both read and write; the real diff came out 218 out / 224 in.
+- **Rule:** Any script that rewrites a repo file must open with `newline=""` on read AND write. And when two byte counts of the "same" file disagree by exactly the line count, that is a line-ending conversion, not a measurement error — sibling of `a-checksum-across-a-git-boundary-is-not-a-measurement`.
+
 ## 2026-08-15 — archive sweep (32 → 27 active), oldest 5 by date, moved verbatim, to make room for 3 new entries at cap
 
 ### [2026-07-17] Validate a grading tool against a gold-standard before trusting its score as a gate (low score can be a scorer bug)

@@ -1,5 +1,68 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D632 — Universal shadow extension shipped: colour split from `ShadowControl` across 11 blocks [ROUTINE]
+
+**2026-08-16.** PR #28 merged to `main` (`5973606c`, 5 commits `7f289f3b`..`c5acba10`). A
+same-session survey found 6 different, inconsistent shadow-control shapes across the framework
+(full builder / hand-rolled object attr / raw CSS `TextControl` / preset-only `SelectControl` /
+native-only / fully orphaned) plus 2 live bugs, and confirmed a universal shape was viable except
+for one attribute-shape mismatch. Shipped:
+
+- **Mechanism**: `ShadowControl` (`src/components/ShadowControl.js`) now stores SHAPE only
+  (x/y/blur/spread/inset); colour is split into a flat sibling `{name}Colour` attribute so it
+  appears as a normal row in the per-block `SgsColourPanel`, matching every other colour on the
+  block (D621/D622's placement model) instead of being buried inside the shadow builder. Compose
+  at render/preview via `sgs_shadow_value_composed()` (PHP, `helpers-tokens.php`) /
+  `resolveShadowPreviewComposed()` (JS, `tokens.js`).
+- **Migrated onto the target shape**: `cta-section`, `trust-bar` (`iconCircleShadow`/
+  `badgeImageShadow` only — its own root shadow renders inside the shared container wrapper,
+  deliberately out of scope), `card-grid`, `team-member`, `brand-strip`, `testimonial`,
+  `info-box`, `post-grid` (off a banned preset-only picker), `before-after` + `media` (off a raw
+  CSS `TextControl`), `button` (off a hand-rolled object attribute — the one real attribute-shape
+  migration, per this project's no-deprecation-shim policy: straight schema cutover, no
+  back-compat layer).
+- **Bugs fixed alongside** (pre-existing, found by the survey, not scope creep): `cta-section` had
+  a dead-duplicate native `supports.shadow` picker silently overriding the real `ShadowControl`
+  value at render time (removed); `card-grid.shadowHover`, `info-box.shadowHover`,
+  `team-member.shadowHover` were each declared + read but had no editor control anywhere
+  (wired up); `sgs/button.boxShadowHover` had no `css_element` DB classification (fixed via its
+  `block.json` attrMap, not routed around).
+- **`element-manifest-baseline.json`**: `total_state_without_base` 1 → 2, Bean-signed-off — a
+  second instance of the same already-accepted shape (`sgs/post-grid`'s hover-only `scaleHover`
+  exception): a hover-only shadow with no resting-state twin is an intentional design choice on
+  that block, not a gap.
+
+**Explicitly NOT migrated — a real residual, not silently dropped:** `sgs/quote`'s `boxShadow`/
+`boxShadowHover` are still on the raw CSS `TextControl`. It was in original scope but had to be
+dropped mid-build when a genuinely different concurrent session had live uncommitted edits inside
+`quote/block.json`/`edit.js` on the shared checkout — colliding with it risked corrupting that
+session's work. Next pickup: same target shape as every other migrated block, using `card-grid`
+as the reference implementation.
+
+**Process note, load-bearing for future parallel dispatch:** three migration agents were briefly
+pointed at the SAME shared clone directory expecting isolated parallel execution — they aren't
+isolated from each other within one working tree, and concurrent `npm run build` runs + edits to
+the shared `scripts/attr-classification-overrides.json` silently clobbered each other's work
+(caught by the agents themselves, self-reported, recovered via full serialization in the same
+clone rather than discarded). The correct pattern for genuinely parallel agent dispatch on this
+repo is one isolated clone/worktree PER agent, never N agents sharing one working directory.
+
+**Also verified, not just diagnosed:** the `f5-commit-gate.py` PreToolUse hook resolves its repo
+root via `Path(__file__).resolve().parents[2]` — when the invoking Claude Code session's root is
+a different checkout than the one a subagent's Bash tool `cd`'d into, the hook checks
+db-consistency against the WRONG repo. Independently reproduced (not taken on the agent's word):
+running the identical script directly in the original checkout surfaced 16 "rogue seed" findings
+that only existed there because the shared `sgs-framework.db` had received this branch's writes
+while that checkout's own `css-property-classifications.json` never regenerated — a genuine
+shared-DB-vs-per-checkout-JSON split-brain, not a defect in the migration. One `[gates-ok:...]`
+bypass used for this diagnosed cause; no other gate was routed around.
+
+**Live-verified mid-build** on the sandybrown canary (before the remaining 4 blocks landed):
+`card-grid`'s `SgsColourPanel` row for `cardShadowColour` renders correctly with real Normal/Hover
+state tabs and the full swatch palette; a real click sets the real attribute
+(`cardShadowColour: "primary"`), not just a control that opens. **Full re-verification across the
+other 10 blocks is still pending the next canary deploy** — this merge has not yet been redeployed.
+
 ## D631 — Shared-worktree staging trap: `commit -m -- <pathspec>` re-stages the working tree, not the index [INCIDENT]
 
 **2026-08-15.** `git commit -m "..." -- <pathspec>` re-stages the CURRENT WORKING TREE version of the
