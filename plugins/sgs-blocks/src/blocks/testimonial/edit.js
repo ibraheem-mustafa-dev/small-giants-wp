@@ -187,6 +187,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		quoteFontSize,
 		quoteMarginBottom,
 		quoteColour,
+		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,
 		summaryFontSize,
@@ -264,9 +265,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	} );
 
 	// Per-element inline style — raw colour value (hex or token), best-effort font size.
-	// D636 Task 1b — quoteColour may also be a complete CSS gradient string.
+	// D636 Task 1b — the sibling quoteColourGradient attribute wins when set.
 	const quoteInlineStyle = {
-		...resolveTextColourPreviewStyle( quoteColour ),
+		...resolveTextColourPreviewStyle( quoteColour, quoteColourGradient ),
 		fontSize: quoteFontSize ? fontSizeVar( quoteFontSize ) : undefined,
 		fontStyle: quoteFontStyle || undefined,
 		lineHeight: quoteLineHeight || undefined,
@@ -422,6 +423,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								onChange: ( val ) =>
 									setAttributes( { quoteColour: val ?? '' } ),
 								linked: true,
+								gradientValue: quoteColourGradient,
+								gradientOnChange: ( val ) =>
+									setAttributes( { quoteColourGradient: val ?? '' } ),
 							},
 						],
 					},

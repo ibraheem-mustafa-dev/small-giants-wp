@@ -43,19 +43,22 @@ $sgs_pt_css_length = static function ( $value ) {
 // only ever exposes/uses the desktop tier (no per-device columns UI exists).
 // Read via the normaliser, never the raw attribute (absint() on an
 // unresolved array throws "Array to int conversion").
-$columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns        = absint( $columns_obj['desktop'] ?? 3 );
-$plans          = (array) ( $attributes['plans'] ?? array() );
-$style          = sanitize_key( $attributes['style'] ?? 'card' );
-$title_colour   = $attributes['titleColour'] ?? '';
-$price_colour   = $attributes['priceColour'] ?? '';
-$feature_colour = $attributes['featureColour'] ?? '';
-$cta_style      = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
-$cta_colour     = $attributes['ctaColour'] ?? '';
-$cta_background = $attributes['ctaBackground'] ?? '';
-$badge_text     = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
-$badge_colour   = $attributes['popularBadgeColour'] ?? 'white';
-$badge_bg       = $attributes['popularBadgeBackground'] ?? 'accent';
+$columns_obj  = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns      = absint( $columns_obj['desktop'] ?? 3 );
+$plans        = (array) ( $attributes['plans'] ?? array() );
+$style        = sanitize_key( $attributes['style'] ?? 'card' );
+$title_colour = $attributes['titleColour'] ?? '';
+$price_colour = $attributes['priceColour'] ?? '';
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+$price_colour_gradient = $attributes['priceColourGradient'] ?? '';
+$feature_colour        = $attributes['featureColour'] ?? '';
+$cta_style             = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
+$cta_colour            = $attributes['ctaColour'] ?? '';
+$cta_background        = $attributes['ctaBackground'] ?? '';
+$badge_text            = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
+$badge_colour          = $attributes['popularBadgeColour'] ?? 'white';
+$badge_bg              = $attributes['popularBadgeBackground'] ?? 'accent';
 
 // ── billingToggle — backward-compat: legacy boolean true → 'monthly-yearly', false → 'none' ──
 $raw_billing_toggle = $attributes['billingToggle'] ?? 'monthly-yearly';
@@ -493,17 +496,18 @@ if ( $badge_colour || $badge_bg ) {
 	}
 	$responsive_css .= $root_sel . ' .sgs-pricing-table__badge{' . implode( ';', $pt_badge_decls ) . '}';
 }
-if ( $price_colour ) {
-	// D636 Task 1b — flat colour/slug OR a complete CSS gradient string. The
-	// block-local $colour_val() closure only ever emits a preset-slug var(),
-	// so a gradient routes through sgs_text_colour_decl() instead (it also
-	// resolves a plain slug the same way $colour_val() does).
+// D636 Task 1b — sibling gradient attribute wins when set+valid. The
+// block-local $colour_val() closure only ever emits a preset-slug var(), so
+// this routes through sgs_text_colour_decl() instead (it also resolves a
+// plain slug the same way $colour_val() does).
+$price_colour_effective = sgs_resolve_text_colour_or_gradient( $price_colour, $price_colour_gradient );
+if ( '' !== $price_colour_effective ) {
 	$price_sel         = $root_sel . ' .sgs-pricing-table__price';
-	$price_colour_decl = sgs_text_colour_decl( $price_colour );
+	$price_colour_decl = sgs_text_colour_decl( $price_colour_effective );
 	if ( '' !== $price_colour_decl ) {
 		$responsive_css .= $price_sel . '{' . $price_colour_decl . '}';
 	}
-	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $price_sel, $price_colour );
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $price_sel, $price_colour_effective );
 }
 if ( $feature_colour ) {
 	$responsive_css .= $root_sel . ' .sgs-pricing-table__feature{color:' . $colour_val( $feature_colour ) . '}';

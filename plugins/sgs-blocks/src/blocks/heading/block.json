@@ -64,6 +64,7 @@
             "css:text-transform": "textTransform",
             "css:text-decoration": "textDecoration",
             "css:color": "textColour",
+            "css:background-image": "textColourGradient",
             "css:text-align": "textAlign",
             "css:font-family": "fontFamily",
             "css:background-color": "backgroundColour",
@@ -82,6 +83,7 @@
             "hover": {
               "attrMap": {
                 "css:color": "textColourHover",
+                "css:background-image": "textColourHoverGradient",
                 "css:background-color": "backgroundColourHover",
                 "css:box-shadow": "boxShadowHover"
               }
@@ -170,6 +172,10 @@
       "type": "string",
       "default": ""
     },
+    "textColourGradient": {
+      "type": "string",
+      "default": ""
+    },
     "fontStyle": {
       "type": "string",
       "enum": [
@@ -242,6 +248,10 @@
       "type": "number"
     },
     "textColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "textColourHoverGradient": {
       "type": "string",
       "default": ""
     },

@@ -128,6 +128,7 @@ function buildEditorStyle( attributes ) {
 	const {
 		style,
 		textColour,
+		textColourGradient,
 		fontSize,
 		fontSizeUnit,
 		fontWeight,
@@ -161,17 +162,16 @@ function buildEditorStyle( attributes ) {
 	const lineHeightVal = resolveDesktop( lineHeight );
 	const letterSpacingVal = resolveDesktop( letterSpacing );
 
-	if ( textColour ) {
-		// colourVar wraps slugs in var(--wp--preset--color--X);
-		// raw hex passes through as-is from ColorPalette. A gradient string
-		// (D636 Task 1b) switches to the background-clip:text preview shape.
-		Object.assign(
-			previewStyle,
-			resolveTextColourPreviewStyle( textColour, ( v ) =>
-				/^#|^rgb|^hsl/.test( v ) ? v : colourVar( v )
-			)
-		);
-	}
+	// colourVar wraps slugs in var(--wp--preset--color--X); raw hex passes
+	// through as-is from ColorPalette. The sibling gradient attribute
+	// (D636 Task 1b, corrected 2026-08-16) switches to the
+	// background-clip:text preview shape when set.
+	Object.assign(
+		previewStyle,
+		resolveTextColourPreviewStyle( textColour, textColourGradient, ( v ) =>
+			/^#|^rgb|^hsl/.test( v ) ? v : colourVar( v )
+		)
+	);
 	if ( fontSizeVal ) {
 		// A string fontSize is a theme preset slug — resolve to the preset
 		// custom property (mirrors sgs_font_size_value() server-side).
@@ -250,6 +250,7 @@ function buildDropCapStyle( attributes ) {
 	const {
 		dropCap,
 		firstLetterColour,
+		firstLetterColourGradient,
 		firstLetterFontSize,
 		firstLetterFontSizeUnit,
 		firstLetterFontWeight,
@@ -273,13 +274,14 @@ function buildDropCapStyle( attributes ) {
 	// The drop-cap ::first-letter pseudo-element cannot receive an inline React
 	// style, so this custom property is consumed by a `color:var(...)`
 	// declaration in a companion stylesheet — a gradient string is not a valid
-	// `color` value there. D636 Task 1b: the FRONTEND render (render.php +
-	// sgs_text_colour_decl()) renders a gradient drop-cap correctly via
-	// background-clip:text; the editor CANVAS simply shows no colour override
-	// for a gradient value (falls back to inherited colour) rather than risk
-	// an invalid CSS custom-property consumer — a solid colour still previews
-	// exactly as before.
-	if ( firstLetterColour && ! /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( firstLetterColour ) ) {
+	// `color` value there. D636 Task 1b (sibling-attribute shape, corrected
+	// 2026-08-16): the FRONTEND render (render.php + sgs_text_colour_decl())
+	// renders a gradient drop-cap correctly via background-clip:text when the
+	// sibling firstLetterColourGradient wins; the editor CANVAS simply shows
+	// no colour override when the gradient sibling is set (falls back to
+	// inherited colour) rather than risk an invalid CSS custom-property
+	// consumer — a solid colour still previews exactly as before.
+	if ( firstLetterColour && ! firstLetterColourGradient ) {
 		dropCapStyle[ '--sgs-ed-first-letter-colour' ] = /^#|^rgb|^hsl/.test( firstLetterColour )
 			? firstLetterColour
 			: colourVar( firstLetterColour );
@@ -345,6 +347,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginMobile,
 		dropCap,
 		firstLetterColour,
+		firstLetterColourGradient,
 		firstLetterFontSize,
 		firstLetterFontSizeUnit,
 		firstLetterFontWeight,
@@ -353,7 +356,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColour,
 		backgroundColour,
 		backgroundColourHover,
+		textColourGradient,
 		textColourHover,
+		textColourHoverGradient,
 	} = attributes;
 
 	// Drop-cap ::first-letter preview — gate the class only when dropCap is on
@@ -389,6 +394,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -396,6 +403,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourHoverGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -443,6 +452,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: firstLetterColour,
 								onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
 								linked: true,
+								gradientValue: firstLetterColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
 							},
 						],
 					},

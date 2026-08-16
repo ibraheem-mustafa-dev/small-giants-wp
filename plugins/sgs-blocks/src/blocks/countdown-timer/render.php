@@ -69,9 +69,12 @@ $show_hours      = $attributes['showHours'] ?? true;
 $show_minutes    = $attributes['showMinutes'] ?? true;
 $show_seconds    = $attributes['showSeconds'] ?? true;
 $number_colour   = $attributes['numberColour'] ?? 'primary';
-$label_colour    = $attributes['labelColour'] ?? 'text-muted';
-$card_style_raw  = $attributes['cardStyle'] ?? 'elevated';
-$digit_style_raw = $attributes['digitStyle'] ?? 'simple';
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+$number_colour_gradient = $attributes['numberColourGradient'] ?? '';
+$label_colour           = $attributes['labelColour'] ?? 'text-muted';
+$card_style_raw         = $attributes['cardStyle'] ?? 'elevated';
+$digit_style_raw        = $attributes['digitStyle'] ?? 'simple';
 
 $allowed_card_styles  = array( 'flat', 'bordered', 'elevated', 'filled' );
 $card_style           = in_array( $card_style_raw, $allowed_card_styles, true ) ? $card_style_raw : 'elevated';
@@ -225,19 +228,24 @@ if ( '' !== $text_align ) {
 // values are sanitised via sgs_colour_value() exactly as before, just routed
 // into the same scoped <style> tag instead of get_block_wrapper_attributes().
 //
-// D636 Task 1b — a gradient value cannot ride a `color: var(--x)` custom
-// property (the consuming declaration in style.css is a plain `color:`), so
-// a gradient numberColour skips the custom-property write (the static rule's
-// own `inherit` fallback applies) and instead gets a direct scoped rule on
-// `.sgs-countdown__number` below, using the background-clip:text mechanism.
-$number_colour_for_var = sgs_text_colour_gradient_fallback_rule( $root_sel, $number_colour ) ? '' : $number_colour;
-$scoped_css[]          = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour_for_var ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// a gradient value cannot ride a `color: var(--x)` custom property (the
+// consuming declaration in style.css is a plain `color:`), so when the
+// sibling numberColourGradient wins, the custom-property write is skipped
+// (the static rule's own `inherit` fallback applies) and a direct scoped
+// rule on `.sgs-countdown__number` below carries the background-clip:text
+// mechanism instead. numberColour itself is UNCHANGED — never a gradient.
+$number_colour_gradient_valid = sgs_css_gradient_value( $number_colour_gradient );
+$number_colour_for_var        = ( '' !== $number_colour_gradient_valid ) ? '' : $number_colour;
+$scoped_css[]                 = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour_for_var ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
 
-$number_gradient_sel = "{$root_sel} .sgs-countdown__number";
-$number_colour_decl  = sgs_text_colour_decl( $number_colour );
-if ( '' !== $number_colour_decl && preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\(/i', trim( (string) $number_colour ) ) ) {
-	$scoped_css[] = "{$number_gradient_sel}{{$number_colour_decl};}";
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_gradient_sel, $number_colour );
+if ( '' !== $number_colour_gradient_valid ) {
+	$number_gradient_sel = "{$root_sel} .sgs-countdown__number";
+	$number_colour_decl  = sgs_text_colour_decl( $number_colour_gradient_valid );
+	if ( '' !== $number_colour_decl ) {
+		$scoped_css[] = "{$number_gradient_sel}{{$number_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_gradient_sel, $number_colour_gradient_valid );
 }
 
 // --- Responsive tiers — padding/margin/border-radius, each routed through the

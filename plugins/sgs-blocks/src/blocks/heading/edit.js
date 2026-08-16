@@ -136,6 +136,7 @@ function buildPreviewFontSize( fontSize, fontSizeUnit ) {
 function buildTextStyle( attributes ) {
 	const {
 		textColour,
+		textColourGradient,
 		fontFamily,
 		fontSize,
 		fontSizeUnit,
@@ -150,7 +151,7 @@ function buildTextStyle( attributes ) {
 	} = attributes;
 
 	const style = {
-		...resolveTextColourPreviewStyle( textColour, colourVar ),
+		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
 		// A string fontSize is a theme preset slug — resolve to the preset
 		// custom property (mirrors sgs_font_size_value() server-side).
 		fontSize: buildPreviewFontSize( fontSize, fontSizeUnit ),
@@ -238,7 +239,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		level,
 		subTag,
 		textColour,
+		textColourGradient,
 		textColourHover,
+		textColourHoverGradient,
 		textAlign,
 		backgroundColour,
 		backgroundColourHover,
@@ -301,6 +304,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -308,6 +313,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourHoverGradient,
+								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

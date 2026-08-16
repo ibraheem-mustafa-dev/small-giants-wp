@@ -47,6 +47,7 @@ export default function Edit({ attributes, setAttributes }) {
     duration,
     separator,
     numberColour,
+    numberColourGradient,
     labelColour,
     icon,
     accentStroke,
@@ -78,7 +79,7 @@ export default function Edit({ attributes, setAttributes }) {
 
   const blockProps = useBlockProps({ className, style: wrapperPreviewStyle });
 
-  const numberStyle = resolveTextColourPreviewStyle(numberColour, colourVar);
+  const numberStyle = resolveTextColourPreviewStyle(numberColour, numberColourGradient, colourVar);
 
   const labelStyle = {
     color: colourVar(labelColour) || undefined,
@@ -105,6 +106,8 @@ export default function Edit({ attributes, setAttributes }) {
                 value: numberColour,
                 onChange: (val) => setAttributes({ numberColour: val ?? "" }),
                 linked: true,
+                gradientValue: numberColourGradient,
+                gradientOnChange: (val) => setAttributes({ numberColourGradient: val ?? "" }),
               },
             ],
           },

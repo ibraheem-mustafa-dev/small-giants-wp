@@ -8,12 +8,21 @@
  * capability to one colour row does not visually diverge from every other
  * row in the same `SgsColourPanel`. The one addition: each state's popover
  * content carries a Solid/Gradient `ToggleGroupControl` (mirrors
- * `GradientOverlayControl`'s UX), but — unlike `GradientOverlayControl` —
- * writes ONE attribute per state, never a `{solid, gradient}` pair. Mode is
- * DERIVED from the stored value (does it parse as a `*-gradient(` function?),
- * matching the storage-collapse rule the whole rollout uses (D636): a single
- * CSS-value string, flat colour or gradient, resolved by shape not by a
- * boolean discriminator.
+ * `GradientOverlayControl`'s UX).
+ *
+ * STORAGE — SIBLING ATTRIBUTES, not one shared slot (corrected 2026-08-16;
+ * the original build of this file toggled the MODE of a single attribute,
+ * which was wrong — see the coordinator's correction). Mirrors
+ * `sgs/container`'s existing, shipped `backgroundOverlayColour` /
+ * `overlayGradient` precedent exactly: each state carries a `value`/
+ * `onChange` pair (the flat colour, UNCHANGED shape from `DesignTokenPicker`)
+ * PLUS a `gradientValue`/`gradientOnChange` pair (the sibling `{attr}Gradient`
+ * attribute). The gradient sibling wins when non-empty — resolved server-side
+ * by `sgs_resolve_text_colour_or_gradient()` (`includes/helpers-tokens.php`).
+ * Switching the toggle to Solid clears the gradient sibling (mirrors
+ * `GradientOverlayControl`'s "the two paths never disagree about which is
+ * current" rule); switching to Gradient never touches the flat sibling — it
+ * simply stops being read until the operator switches back.
  *
  * `DesignTokenPicker` itself needs no changes for this (LEDGER Task 1b
  * correction 1) — this is a sibling control, not an edit to that file.
@@ -40,7 +49,7 @@ import { resolveColourToken } from './DesignTokenPicker';
 /**
  * A stored value is treated as a gradient when it parses as one of the three
  * CSS gradient functions (optionally `repeating-`). Mirrors the PHP-side
- * detection in `sgs_text_colour_decls()` (`includes/helpers-tokens.php`) —
+ * detection in `sgs_css_gradient_value()` (`includes/helpers-tokens.php`) —
  * keep both in sync; the PHP copy is the one that actually gates emission,
  * this one only decides which editor control renders.
  *
@@ -57,12 +66,14 @@ export function isGradientValue( value ) {
  * One state's Solid/Gradient content — a toggle plus whichever picker is
  * active. Local-only "just switched mode, haven't picked a value yet" state
  * is per-STATE (keyed by the state's own key), matching
- * `GradientOverlayControl`'s local-mode pattern.
+ * `GradientOverlayControl`'s local-mode pattern. Mode is DERIVED from
+ * whether the sibling gradient value is currently set (mirrors the
+ * server-side "gradient wins when non-empty" resolution).
  */
 function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 	const [ localMode, setLocalMode ] = useState( null );
 	const gradientEnabled =
-		localMode !== null ? localMode : isGradientValue( state.value );
+		localMode !== null ? localMode : !! state.gradientValue;
 
 	const displayValue = state.linked
 		? resolveColourToken( state.value, colours )
@@ -84,10 +95,10 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 
 			{ gradientEnabled ? (
 				<SgsGradientPicker
-					value={ isGradientValue( state.value ) ? state.value : '' }
+					value={ state.gradientValue || '' }
 					onChange={ ( newGradient ) => {
 						setLocalMode( true );
-						state.onChange( newGradient ?? '' );
+						state.gradientOnChange( newGradient ?? '' );
 					} }
 					enableAlpha={ enableAlpha }
 					__experimentalIsRenderedInSidebar
@@ -95,9 +106,13 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 			) : (
 				<ColorPalette
 					colors={ colours }
-					value={ isGradientValue( state.value ) ? undefined : displayValue }
+					value={ displayValue }
 					onChange={ ( picked ) => {
 						setLocalMode( false );
+						// Switching to Solid clears the gradient sibling so the
+						// two paths never disagree about which is current —
+						// mirrors GradientOverlayControl exactly.
+						state.gradientOnChange( '' );
 						if ( ! state.linked ) {
 							state.onChange( picked ?? '' );
 							return;
@@ -122,19 +137,26 @@ function StateContent( { state, colours, enableAlpha, clearable, ariaLabel } ) {
 }
 
 /**
- * @param {Object}  props
- * @param {string}  props.label       Row label (e.g. "Heading colour").
- * @param {Array}   [props.states]    `[{ key, label, value, onChange, linked? }]` — same shape as `DesignTokenPicker`'s `states`.
- * @param {string}  [props.value]     Single-state convenience form (no tabs) — used with `onChange` instead of `states`.
- * @param {Function} [props.onChange] Paired with `value` for the single-state form.
- * @param {boolean} [props.clearable=true]
- * @param {boolean} [props.enableAlpha=true]
+ * @param {Object}   props
+ * @param {string}   props.label              Row label (e.g. "Heading colour").
+ * @param {Array}    [props.states]           `[{ key, label, value, onChange, gradientValue, gradientOnChange, linked? }]`.
+ *                                             `value`/`onChange`/`linked` are the SAME shape `DesignTokenPicker` uses
+ *                                             for the flat colour — unchanged. `gradientValue`/`gradientOnChange`
+ *                                             are the sibling `{attr}Gradient` attribute's pair.
+ * @param {string}   [props.value]            Single-state convenience form (no tabs) — flat colour, paired with `onChange`.
+ * @param {Function} [props.onChange]         Paired with `value` for the single-state form.
+ * @param {string}   [props.gradientValue]    Single-state convenience form — the sibling gradient value.
+ * @param {Function} [props.gradientOnChange] Paired with `gradientValue` for the single-state form.
+ * @param {boolean}  [props.clearable=true]
+ * @param {boolean}  [props.enableAlpha=true]
  */
 export default function GradientCapableColourControl( {
 	label,
 	states,
 	value,
 	onChange,
+	gradientValue,
+	gradientOnChange,
 	clearable = true,
 	enableAlpha = true,
 } ) {
@@ -148,14 +170,14 @@ export default function GradientCapableColourControl( {
 	const resolvedStates =
 		states && states.length > 0
 			? states
-			: [ { key: 'normal', label, value, onChange } ];
+			: [ { key: 'normal', label, value, onChange, gradientValue, gradientOnChange } ];
 
 	const hasStates = resolvedStates.length > 1;
 	const descId = `${ id }-desc`;
 
 	const swatchDisplay = ( s ) =>
-		isGradientValue( s.value )
-			? s.value
+		s.gradientValue
+			? s.gradientValue
 			: s.linked
 			? resolveColourToken( s.value, colours )
 			: s.value;
@@ -275,4 +297,3 @@ export default function GradientCapableColourControl( {
 		</ItemGroup>
 	);
 }
-

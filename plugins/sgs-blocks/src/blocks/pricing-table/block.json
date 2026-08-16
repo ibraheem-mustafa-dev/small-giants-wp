@@ -97,11 +97,12 @@
 				"price": {
 					"label": "Price",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"attrMap": {
-						"css:color": "priceColour"
+						"css:color": "priceColour",
+						"css:background-image": "priceColourGradient"
 					},
-					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap."
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap. priceColourGradient (D636 Task 1b) is the text-colour gradient sibling to priceColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
 				},
 				"feature": {
 					"label": "Feature list item",
@@ -393,6 +394,10 @@
 		"priceColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"priceColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"featureColour": {
 			"type": "string",

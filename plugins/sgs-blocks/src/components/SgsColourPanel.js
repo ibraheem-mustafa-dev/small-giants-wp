@@ -68,8 +68,16 @@
  *                             `DesignTokenPicker` — same swatch/popover/tabs
  *                             shape, with a Solid/Gradient toggle per state,
  *                             for a colour whose CSS mechanism is text-colour
- *                             (`background-clip: text`). Every existing row
- *                             (no `gradientCapable`) is unaffected.
+ *                             (`background-clip: text`). Its states carry two
+ *                             ADDITIONAL fields on top of the normal
+ *                             `value`/`onChange`/`linked` shape —
+ *                             `gradientValue`/`gradientOnChange`, the
+ *                             SIBLING `{attr}Gradient` attribute's pair
+ *                             (mirrors `sgs/container`'s shipped
+ *                             `backgroundOverlayColour`/`overlayGradient`
+ *                             precedent — two attributes, not one shared
+ *                             slot). Every existing row (no `gradientCapable`)
+ *                             is unaffected.
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';

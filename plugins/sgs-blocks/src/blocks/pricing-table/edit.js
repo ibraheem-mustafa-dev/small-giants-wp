@@ -100,6 +100,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		style,
 		titleColour,
 		priceColour,
+		priceColourGradient,
 		featureColour,
 		ctaStyle,
 		ctaColour,
@@ -245,6 +246,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: priceColour,
 								onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
 								linked: true,
+								gradientValue: priceColourGradient,
+								gradientOnChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -527,6 +530,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											) }
 											style={ resolveTextColourPreviewStyle(
 												priceColour,
+												priceColourGradient,
 												colourVar
 											) }
 										/>
@@ -549,6 +553,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													) }
 													style={ resolveTextColourPreviewStyle(
 														priceColour,
+														priceColourGradient,
 														colourVar
 													) }
 												/>

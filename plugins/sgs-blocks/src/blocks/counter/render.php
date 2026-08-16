@@ -52,7 +52,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // object-attr side/corner value or free-text keyword can never break out of
 // its declaration.
 // ---------------------------------------------------------------------------
-$sgs_css_length = static function ( $value ) {
+$sgs_css_length  = static function ( $value ) {
 	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
 };
 $sgs_css_keyword = static function ( $value ) {
@@ -66,9 +66,12 @@ $label         = isset( $attributes['label'] ) ? (string) $attributes['label'] :
 $duration      = isset( $attributes['duration'] ) ? absint( $attributes['duration'] ) : 2000;
 $separator     = ! empty( $attributes['separator'] );
 $number_colour = $attributes['numberColour'] ?? '';
-$label_colour  = $attributes['labelColour'] ?? '';
-$icon          = $attributes['icon'] ?? '';
-$accent_stroke = ! empty( $attributes['accentStroke'] );
+// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
+// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+$number_colour_gradient = $attributes['numberColourGradient'] ?? '';
+$label_colour           = $attributes['labelColour'] ?? '';
+$icon                   = $attributes['icon'] ?? '';
+$accent_stroke          = ! empty( $attributes['accentStroke'] );
 
 // Content-hash uid (Pattern A) — stable across fragment-cached renders (same
 // attrs -> same id on every request), matching sgs/heading + sgs/button, so
@@ -110,13 +113,14 @@ $scoped_css = array();
 // ---------------------------------------------------------------------------
 // Number / label custom colour (SGS scalar attrs) — scoped, NOT inline.
 // ---------------------------------------------------------------------------
-if ( $number_colour ) {
-	// D636 Task 1b — flat colour OR a complete CSS gradient string.
-	$number_colour_decl = sgs_text_colour_decl( $number_colour );
+// D636 Task 1b — sibling gradient attribute wins when set+valid.
+$number_colour_effective = sgs_resolve_text_colour_or_gradient( $number_colour, $number_colour_gradient );
+if ( '' !== $number_colour_effective ) {
+	$number_colour_decl = sgs_text_colour_decl( $number_colour_effective );
 	if ( '' !== $number_colour_decl ) {
 		$scoped_css[] = "{$number_sel}{{$number_colour_decl};}";
 	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel, $number_colour );
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel, $number_colour_effective );
 }
 if ( $label_colour ) {
 	$scoped_css[] = "{$label_sel}{color:" . sgs_colour_value( $label_colour ) . ';}';

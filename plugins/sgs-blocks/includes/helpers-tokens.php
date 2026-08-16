@@ -282,9 +282,9 @@ function sgs_functional_colour_to_hex( string $value ): string {
 
 	// rgb()/rgba() — comma OR space separated; alpha after a comma or slash.
 	if ( preg_match( '/^rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?)\s*(?:[,\/]\s*([\d.]+%?)\s*)?\)$/i', $v, $m ) ) {
-		$r = sgs_css_channel_to_255( $m[1] );
-		$g = sgs_css_channel_to_255( $m[2] );
-		$b = sgs_css_channel_to_255( $m[3] );
+		$r   = sgs_css_channel_to_255( $m[1] );
+		$g   = sgs_css_channel_to_255( $m[2] );
+		$b   = sgs_css_channel_to_255( $m[3] );
 		$hex = sprintf( '#%02X%02X%02X', $r, $g, $b );
 		if ( isset( $m[4] ) && '' !== $m[4] ) {
 			$a = sgs_css_alpha_to_255( $m[4] );
@@ -307,9 +307,9 @@ function sgs_functional_colour_to_hex( string $value ): string {
 
 	// oklch(L C H) — L 0-1 or %, C 0-~0.4 or % (of 0.4), H deg.
 	if ( preg_match( '/^oklch\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+)(?:deg)?\s*(?:[,\/]\s*([\d.]+%?)\s*)?\)$/i', $v, $m ) ) {
-		$l   = sgs_css_num_or_pct( $m[1], 1.0 );
-		$c   = sgs_css_num_or_pct( $m[2], 0.4 );
-		$h   = deg2rad( (float) $m[3] );
+		$l = sgs_css_num_or_pct( $m[1], 1.0 );
+		$c = sgs_css_num_or_pct( $m[2], 0.4 );
+		$h = deg2rad( (float) $m[3] );
 		return sgs_rgb_to_hex( sgs_oklab_to_rgb( $l, $c * cos( $h ), $c * sin( $h ) ), $m[4] ?? '' );
 	}
 
@@ -323,9 +323,9 @@ function sgs_functional_colour_to_hex( string $value ): string {
 
 	// lch(L C H) — L 0-100 or %, C 0-~150 or % (of 150), H deg.
 	if ( preg_match( '/^lch\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+)(?:deg)?\s*(?:[,\/]\s*([\d.]+%?)\s*)?\)$/i', $v, $m ) ) {
-		$l   = sgs_css_num_or_pct( $m[1], 100.0 );
-		$c   = sgs_css_num_or_pct( $m[2], 150.0 );
-		$h   = deg2rad( (float) $m[3] );
+		$l = sgs_css_num_or_pct( $m[1], 100.0 );
+		$c = sgs_css_num_or_pct( $m[2], 150.0 );
+		$h = deg2rad( (float) $m[3] );
 		return sgs_rgb_to_hex( sgs_lab_to_rgb( $l, $c * cos( $h ), $c * sin( $h ) ), $m[4] ?? '' );
 	}
 
@@ -849,6 +849,33 @@ function sgs_text_colour_gradient_fallback_rule( string $selector, ?string $valu
 	}
 
 	return '@supports not ((background-clip:text) or (-webkit-background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour ) . ';}}';
+}
+
+/**
+ * Resolve which of a text-colour attribute's two SIBLING values should be
+ * used — the flat colour attribute, or its `{attr}Gradient` sibling.
+ *
+ * D636 storage correction (coordinator, 2026-08-16): the rollout does NOT
+ * share one attribute slot between a flat colour and a gradient. It mirrors
+ * `sgs/container`'s existing, shipped `backgroundOverlayColour` /
+ * `overlayGradient` precedent (`class-sgs-container-wrapper.php` ~397-403) —
+ * two sibling attributes, gradient wins when set and valid, the flat
+ * attribute is left completely untouched. `sgs_text_colour_decl()` and
+ * `sgs_text_colour_gradient_fallback_rule()` need NO change for this: they
+ * already detect "is this a gradient function or a flat colour" from
+ * whatever single value they're handed — this resolver just decides which
+ * of the two sibling attributes that single value should be.
+ *
+ * @param string|null $flat_value     The flat-colour attribute's value (unchanged, never a gradient).
+ * @param string|null $gradient_value The sibling `{attr}Gradient` attribute's value.
+ * @return string The value to pass into `sgs_text_colour_decl()` /
+ *                 `sgs_text_colour_gradient_fallback_rule()` — the gradient
+ *                 string when valid and non-empty, otherwise the flat value
+ *                 verbatim (untouched, even if empty).
+ */
+function sgs_resolve_text_colour_or_gradient( ?string $flat_value, ?string $gradient_value ): string {
+	$gradient = sgs_css_gradient_value( (string) $gradient_value );
+	return '' !== $gradient ? $gradient : (string) $flat_value;
 }
 
 /**
