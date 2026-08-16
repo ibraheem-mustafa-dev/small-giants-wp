@@ -407,8 +407,9 @@ $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
 
-// --- Base margin (WP-native style.spacing.margin, skip-serialised) emitted
-// scoped via the stable core style engine. ---
+// --- Base margin, colour, and border (WP-native style.spacing.margin/
+// style.color.*/style.border.*, skip-serialised) emitted scoped via the
+// stable core style engine (mirrors sgs/info-box pattern). ---
 $base_margin_obj = array();
 if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
 	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
@@ -417,13 +418,34 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 		}
 	}
 }
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
-	$base_margin_scoped = wp_style_engine_get_styles(
-		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $base_margin_scoped['css'] ) ) {
-		$scoped_css[] = $base_margin_scoped['css'];
+
+$style_group       = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
+$style_color_args  = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
+$style_border_args = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
+	}
+
+	if ( ! empty( $style_color_args ) ) {
+		$base_style_engine_args['color'] = $style_color_args;
+	}
+
+	if ( ! empty( $style_border_args ) ) {
+		$base_style_engine_args['border'] = $style_border_args;
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
 	}
 }
 

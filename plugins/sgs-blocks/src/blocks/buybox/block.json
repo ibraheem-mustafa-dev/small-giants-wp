@@ -22,8 +22,17 @@
 		"align": false,
 		"interactivity": true,
 		"color": {
-			"background": false,
-			"text": false
+			"background": true,
+			"text": true,
+			"gradients": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
