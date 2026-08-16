@@ -144,6 +144,68 @@ or inline comments. Real but latent — the only current match is the genuine
 `c.execute("UPDATE block_composition SET grid_areas = ? …")`, verified. Recorded rather than
 silently hardened, so the next reader knows it is a known edge and not an oversight.
 
+**CLOSE-OUT (same session, after Bean asked for the hero residual to be finished): `gridAreas`
+and `GridAreaPanel` are BOTH DELETED, and the DB column added earlier in this very entry is
+REVERTED. A THIRD D637 premise was falsified — and this one was mine.**
+
+**The third falsified premise.** This entry states above that the converter has "one comment-only
+reference, `converter/services/assembly.py:250`, explicitly noting the step is a no-op for this
+reason [no readers]". That MISREADS the comment. It actually says the opposite: *"`db.attr_for_area_property`
+is the natural DB gate … so **no gridAreas lookup is needed** and the step is a no-op for every
+block that declares no per-area attrs"*. The step is live and working — its own text describes it
+as the fix for "the hero content-padding gap". The converter does not want the flag; it was built
+not to need it.
+
+**Traced end to end, both candidate consumers derive what they need elsewhere:**
+- **Converter.** `resolvers/grid_area.py` routes per-area box CSS via
+  `db.attr_for_area_property(block, area, css_property)`. The AREA NAMES come from
+  `fold_helpers.grid_item_areas()`, which reads the **DRAFT's own** `grid-template-areas` CSS
+  across breakpoints — nothing to do with the block's flag. Matching is keyed on the block
+  declaring `<area>+<Suffix>` attrs.
+- **Editor.** `GridAreaPanel` was DOUBLY unreachable. AST census of all 17
+  `<ContainerWrapperControls>` mounts: **12 `layout`, 5 `content`, ZERO `section`, none omitted** —
+  and `section` is the only branch that renders it (reached solely as the unknown-kind fallback).
+  It also required a `gridAreas` prop no consumer ever passed. On top of that it wrote the flat
+  per-side storage D580 retired. The capability is delivered by `sgs/hero`'s own object-shaped
+  controls ("Content padding", "Media padding").
+
+**So the flag was redundant BY CONSTRUCTION.** "hero has areas `content` and `media`" is fully
+derivable from hero declaring `contentPadding`/`mediaPadding`. A declaration that restates what the
+attributes already say is a second source of truth that can only drift out of agreement with the
+first.
+
+⛔ **Which means `block_composition.grid_areas` — added earlier in this same entry — was a WRITER
+WITH NO CONSUMER. I moved the orphan up a level instead of closing it, and said so rather than
+leaving it.** Reverted in full: migration deleted, `_populate_grid_areas` and its Stage 1 call
+removed from `sgs-update-v2.py`. Net benefit of the reversal: the deferred-migration problem
+disappears with it — no shared-DB coordination, no schema.sql pairing, no three-commands-together
+dance for the next session.
+
+**Deleted, Bean-ruled (menu + recommendation, option 1 of 3):** `GridAreaPanel` + its unreachable
+KIND_PANELS mapping + the dead `gridAreas` prop threading through the aggregator (a "referenced but
+never used" shape — Part N's N-1); `supports.sgs.gridAreas` from `sgs/hero`; the DB column, writer
+and migration. A tombstone carrying the full reasoning replaces the panel in place.
+
+**The gate was REPURPOSED rather than deleted.** `check-wrapper-capability-preconditions.js` rule 2
+was "a `gridAreas` declaration must have ≥1 live reader"; building that reader is what proved none
+was needed, so it is now a RETIREMENT guard — **any** `supports.sgs.gridAreas` declaration is
+BLOCKING. One deliberate change of behaviour: the old rule ignored an EMPTY array (nothing to
+orphan); the new one flags it too, because `gridAreas: []` would otherwise be the obvious way to
+keep the key and silence the gate. Proven by negative control on the REAL tree, not a fixture:
+re-injecting the flag into `hero/block.json` returns exit **1** with the finding, and restoring it
+returns exit 0 with a matching md5.
+
+**A guard that EXCLUDES a panel is a guard that does not cover it.** `check-shared-panel-schema.js`
+deliberately skipped `GridAreaPanel` because its attr names were template-literal-derived from a
+runtime prop rather than static keys — and that exclusion is precisely why nothing noticed the
+panel had gone stale for three months. Recorded on the constant itself: prefer teaching the
+extractor over buying a blind spot.
+
+**Verification:** `npm run build` exit 0 after the deletion. Gate self-test 8/8 on the reshaped
+rules (positive control, the empty-array hole, and a negative control proving it does not flag
+blocks that never declared it). Sibling `check-shared-panel-schema` self-test + check green.
+Zero live `gridAreas`/`GridAreaPanel` references remain outside tombstone comments.
+
 ⚠ **D-NUMBER COLLISION, flagged for whoever merges:** `main` and `feat/gradient-palette-stops` BOTH
 minted a **D638** for different decisions — step 6 close-out on `main`, the colour-gap council on
 the branch. One must be renumbered at merge.

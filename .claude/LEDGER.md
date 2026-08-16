@@ -30,15 +30,16 @@ doc, and neither had been caught by the two review passes that signed the design
 2. **You settled the up/down question.** The design said the divider both "anchors its top edge"
    and "never grows back into the section" — those are opposite results. You ruled: keep what it
    does today. That meant no repositioning work at all.
-3. **The hero grid-areas panel would have shipped a broken control.** It saves padding using a
-   storage shape that was migrated away on 11 August. Mounting it as designed would have given a
-   client a padding control that silently throws the value away every time they use it — the exact
-   defect the spec already records as a standard-level rule. You asked me to check the git history
-   for intent, which settled it: the panel was superseded, not missing. Hero already has working
-   controls for all of it. Parked to the end of the session on your call.
-4. **The database half still shipped** — that is what actually closes the two-month-old orphan.
-   The migration is deliberately NOT run, because the database is one shared file and four
-   colour-gaps worktrees are building against it right now.
+3. **The hero grid-areas setting is now CLOSED — deleted, not wired.** Tracing it end to end
+   showed the flag has no user and needs none. The editor side is already delivered by hero's own
+   controls; the cloning side reads the *draft's* CSS to find the named regions, not the block's
+   flag — the converter's own code says "no gridAreas lookup is needed". So the flag only restated
+   what hero's `contentPadding`/`mediaPadding` settings already say. Deleted: the panel, the flag,
+   and the leftover plumbing.
+4. **I reverted my own database work from earlier today.** The column I added to close the orphan
+   turned out to be a write nothing reads — I'd moved the problem up a level rather than closing
+   it. Gone, along with the deferred migration. **That removes the shared-database coordination
+   problem entirely** — no held migration, no three-commands-together dance for next session.
 5. **Background panel inconsistency fixed** — it was appearing in Settings on four blocks and
    Styles on two. Now Styles everywhere, as you chose.
 
@@ -59,6 +60,8 @@ container with its contents removed. There is now one that does. All five are fi
 | `647e17c6` | `block_composition.grid_areas` migration (**not run**) + `/sgs-update` Stage 1 writer + gate flipped fail-closed |
 | `77454b98` | Docs — D639, Spec 35 §F.2 build-status box, this LEDGER |
 | `3ff2f0b9` | Review fixes — empty-container gate (new), flip origin, pattern-id collision, stale names |
+| `4cec3b6c`, `8bc46467` | Empty-container gate wired into `prebuild`; both new gates registered in every doc that catalogues enforcement |
+| (this close-out) | `gridAreas` + `GridAreaPanel` DELETED; DB column/writer/migration REVERTED; gate rule 2 repurposed as a retirement guard |
 
 **Verification actually performed:** full `npm run build` exit 0, twice · 20/20 + 7/7 shape-divider
 render assertions incl. the byte-identical-default negative control (still holds after the review
@@ -75,27 +78,17 @@ That is the honest gap, not a claim of completeness.
 
 ## Open — ready to pick up
 
-### ⭐ FIRST: hero / `GridAreaPanel` (parked here by Bean, this session's own residual)
+### ⭐ DEPLOY + VERIFY, then merge to `main`
 
-`GridAreaPanel` is stale and superseded. Decide one of:
-- **Delete it** as superseded — hero already ships working object-shaped controls for every
-  attribute it would write (`hero/edit.js:965`, `:1336`). Smallest, and matches D626's own table.
-- **Rebuild it** onto the box-object storage, then decide separately whether hero should also gain
-  `layout`+`gridItems` (D633/D637 both deferred that as out of scope) — without which it renders
-  nothing anyway.
+Everything in step 7 is now built and the hero residual is CLOSED. Nothing is deferred and there
+is **no database migration to coordinate** — that was reverted. Remaining:
 
-Full evidence: `decisions.md` **D639**. ⛔ Do NOT mount it as Spec 35 §F.2.2 originally described.
-
-### THEN: merge `feat/wrapper-step7`, and the deferred migration
-
-⛔ **Three commands must run TOGETHER, in order, and only once no other worktree is mid-build:**
-```
-python scripts/migrations/2026-08-16-block-composition-grid-areas.py
-python scripts/dbschema/check_schema_drift.py --regenerate
-python scripts/sgs-update-v2.py --stage 1
-```
-Running the migration without regenerating `schema.sql` (or vice versa) turns builds red in both
-directions. The docstring in the migration carries this too.
+1. Deploy the branch to the sandybrown canary (`build-deploy.py --target sandybrown`).
+2. Verify in a real editor, both default/unset AND value-set (the standing rule — a regression can
+   be invisible in the unset state): the shape-divider **Size** control on a wrapper block (both
+   axes, above and below 100%), and the **Background** panel now sitting in the Styles tab on all
+   seven wrapper blocks.
+3. Merge to `main` once clean.
 
 ⚠ **D-NUMBER COLLISION to resolve at merge:** `main` and `feat/gradient-palette-stops` both minted
 a **D638** — step 6 close-out vs the colour-gap council. One needs renumbering.

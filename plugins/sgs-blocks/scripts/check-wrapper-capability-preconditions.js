@@ -16,14 +16,14 @@
  *     already declared; it is not a guarantee the combination can't be
  *     declared in the first place. This rule is that guarantee, at build time.
  *
- *   RULE 2 — gridAreas ORPHAN GUARD (§F.2.2).
- *     A block declaring a non-empty `supports.sgs.gridAreas` must have at
- *     least one LIVE READER of that declaration. `sgs/hero` has declared
- *     `gridAreas: ["content","media"]` since 2026-06-11 (`65a3536a`) with
- *     ZERO readers anywhere — not the editor, not /sgs-update, not the
- *     converter — and nothing noticed for two months. Spec 35 Part N's N-2
- *     rule ("a built mechanism is not a reached one") says that class of
- *     silent orphan must fail the build, not sit undetected.
+ *   RULE 2 — gridAreas RETIREMENT GUARD (§F.2.2, as closed by D639).
+ *     `supports.sgs.gridAreas` is RETIRED. Declaring it on any block fails the
+ *     build. It started as an orphan guard ("must have a live reader") — and
+ *     building that reader is what proved the flag never needed one. Full
+ *     reasoning sits on `checkRetiredGridAreas()` below; the short version is
+ *     that the editor capability comes from each block's own per-area attrs and
+ *     the converter derives area names from the DRAFT's CSS, so the flag was
+ *     redundant by construction and could only ever drift.
  *
  * ── WHY A BUILD-TIME SCRIPT AND NOT A /sgs-update DB-SEED CHECK ─────────────
  * `enabledExtensions` is a flat block.json array with no DB table home and no
@@ -51,19 +51,6 @@
  * lint run — exactly the scope creep step 6 Phase B forbids for per-block
  * migration commits. The fix is a human decision: either add `layout`
  * deliberately, or remove `gridItems`.
- *
- * ── RULE 2's SCOPING GATE (do not remove) ───────────────────────────────────
- * Rule 2 can only be satisfied once a block's OWN `edit.js` imports its
- * `./block.json` and mounts `<GridAreaPanel>` per declared area. Under the
- * CURRENT aggregator architecture, `<GridAreaPanel>` is reached generically
- * through `KIND_PANELS.section` and never per-block, so a per-block-scoped
- * reader search would false-negative against today's tree. Rule 2 therefore
- * accepts EITHER reader — a live per-block editor mount OR the /sgs-update
- * Stage-1 DB write (`block_composition.grid_areas`) — and is ADVISORY until
- * at least one of the two exists. `--check` promotes it to fail-closed only
- * once `GRID_AREAS_READERS_LIVE` below is flipped to `true`, which is the
- * commit that lands the reader. Enabling it blind ships a gate that is red on
- * day one for a declaration nobody has had the chance to wire yet.
  *
  * ── NO HARDCODED BLOCK LIST (blub.db 260 / R-31-1) ──────────────────────────
  * Every block is discovered by walking `src/blocks/&#42;/block.json`. The only
@@ -97,27 +84,6 @@ const BLOCKS_DIR = path.resolve( __dirname, '..', 'src', 'blocks' );
 const CAPABILITY_PRECONDITIONS = {
 	gridItems: [ 'layout' ],
 };
-
-/**
- * RULE 2's scoping gate. See the header block above.
- *
- * `false` → rule 2 reports as ADVISORY and never fails `--check`.
- * `true`  → rule 2 is fail-closed.
- *
- * Flip this to `true` in the SAME commit that lands the first live
- * `gridAreas` reader (the /sgs-update Stage-1 `block_composition.grid_areas`
- * write, or a per-block `<GridAreaPanel>` mount). Flipping it earlier makes
- * the build red for a declaration that has no wiring route yet.
- *
- * FLIPPED TRUE 2026-08-16: the /sgs-update Stage-1 writer
- * (`_populate_grid_areas`) landed in the same commit as this line, so every
- * current `gridAreas` declaration now has a real reader and the guard has
- * nothing legitimate to flag. It is checked against the WRITER'S PRESENCE IN
- * THIS TREE, not against the database's current contents — the DB is one file
- * shared by every worktree, so its state describes whoever ran /sgs-update
- * last, not this branch's code.
- */
-const GRID_AREAS_READERS_LIVE = true;
 
 /**
  * Read + parse one block.json, tolerating unreadable/invalid files rather than
@@ -224,108 +190,51 @@ function checkPreconditions( manifests ) {
 }
 
 /**
- * Does this block have a LIVE per-block `<GridAreaPanel>` reader?
+ * RULE 2 — `supports.sgs.gridAreas` is RETIRED. Declaring it fails the build.
  *
- * Deliberately narrow: the block's OWN edit.js must both import its
- * `./block.json` and render `<GridAreaPanel`. Comments are blanked first —
- * this repo has been bitten repeatedly by a grep matching a comment rather
- * than a live usage (`feedback_a_grep_for_a_class_name_is_not_a_usage_census`).
+ * This rule started life (D637) as an orphan guard: "a non-empty `gridAreas`
+ * must have at least one live reader". Building that reader is what proved the
+ * flag never needed one, so the rule became a retirement guard instead (D639).
  *
- * @param {string} dir       Block directory name.
- * @param {string} blocksDir Blocks root.
- * @return {boolean} True when a live per-block mount exists.
- */
-function hasEditorReader( dir, blocksDir ) {
-	const editFile = path.join( blocksDir, dir, 'edit.js' );
-	if ( ! fs.existsSync( editFile ) ) {
-		return false;
-	}
-	let src;
-	try {
-		src = fs.readFileSync( editFile, 'utf8' );
-	} catch ( e ) {
-		return false;
-	}
-	// Blank block comments and line comments so a mention inside either can
-	// never be counted as a live mount.
-	const live = src
-		.replace( /\/\*[\s\S]*?\*\//g, '' )
-		.replace( /(^|[^:])\/\/[^\n]*/g, '$1' );
-	return /<GridAreaPanel[\s/>]/.test( live ) && /from\s+['"]\.\/block\.json['"]/.test( live );
-}
-
-/**
- * Does /sgs-update have a LIVE Stage-1 writer for `block_composition.grid_areas`?
+ * WHY THE FLAG WENT (do not reinstate it without reading this):
+ *  - EDITOR — its only consumer, `GridAreaPanel`, was doubly unreachable (an
+ *    AST census of all 17 `<ContainerWrapperControls>` mounts: 12 `layout`,
+ *    5 `content`, ZERO `section`, and no consumer passed a `gridAreas` prop),
+ *    AND it wrote the flat per-side storage D580 retired on 2026-08-11. The
+ *    capability is delivered by each block's own object-shaped controls.
+ *  - CONVERTER — `resolvers/grid_area.py` derives area names from the DRAFT's
+ *    own `grid-template-areas` CSS (`fold_helpers.grid_item_areas()`) and
+ *    matches them via `db.attr_for_area_property(block, area, prop)`, keyed on
+ *    the block declaring `<area>+<Suffix>` attrs. `assembly.py:250` says it
+ *    outright: "no gridAreas lookup is needed".
  *
- * Checked by reading the script rather than the DB: the DB is a single shared
- * file every concurrent worktree points at, so its current state describes
- * whoever ran /sgs-update last, not this tree's code.
+ * The declaration was redundant BY CONSTRUCTION — "hero has areas content and
+ * media" is fully derivable from hero declaring `contentPadding`/`mediaPadding`.
+ * A flag that restates data already in the attributes is a second source of
+ * truth that can only ever drift out of agreement with the first.
  *
- * @return {boolean} True when the Stage-1 writer exists in this tree.
- */
-function hasDbWriter() {
-	const updater = path.resolve( __dirname, 'sgs-update-v2.py' );
-	if ( ! fs.existsSync( updater ) ) {
-		return false;
-	}
-	let src;
-	try {
-		src = fs.readFileSync( updater, 'utf8' );
-	} catch ( e ) {
-		return false;
-	}
-	// Strip Python comments so a "# TODO: grid_areas" line can never read as a
-	// live writer.
-	const live = src.replace( /(^|\n)\s*#[^\n]*/g, '$1' );
-	return /grid_areas/.test( live ) && /UPDATE\s+block_composition|INSERT[^;]*block_composition/i.test( live );
-}
-
-/**
- * RULE 2 — a non-empty gridAreas declaration must have at least one reader.
- *
- * `dbWriter` is INJECTABLE, not read inside. --self-test builds synthetic
- * fixtures, and if this function reached for the real `sgs-update-v2.py` it
- * would clear every fixture the moment that writer landed — the self-test would
- * silently stop testing rule 2 while still reporting green. It caught exactly
- * that on 2026-08-16, which is the argument for a self-test that can fail.
- *
- * @param {Array}   manifests   Output of collectManifests().
- * @param {string}  blocksDir   Blocks root (overridable for --self-test).
- * @param {boolean} readersLive Scoping gate — see GRID_AREAS_READERS_LIVE.
- * @param {boolean} dbWriter    Whether a Stage-1 DB writer exists.
+ * @param {Array} manifests Output of collectManifests().
  * @return {Array<Object>} Findings.
  */
-function checkGridAreasOrphans(
-	manifests,
-	blocksDir = BLOCKS_DIR,
-	readersLive = GRID_AREAS_READERS_LIVE,
-	dbWriter = hasDbWriter()
-) {
+function checkRetiredGridAreas( manifests ) {
 	const findings = [];
 	for ( const { slug, dir, manifest } of manifests ) {
-		const sgs = sgsSupports( manifest );
-		const areas = sgs.gridAreas;
-		if ( ! Array.isArray( areas ) || areas.length === 0 ) {
-			continue;
-		}
-		const editorReader = hasEditorReader( dir, blocksDir );
-		if ( editorReader || dbWriter ) {
+		const areas = sgsSupports( manifest ).gridAreas;
+		if ( areas === undefined ) {
 			continue;
 		}
 		findings.push( {
-			rule: 'gridareas-orphan',
-			// ADVISORY until a reader route exists at all — see the header's
-			// "RULE 2's SCOPING GATE" block. Never silently downgraded: the
-			// severity is reported either way.
-			severity: readersLive ? 'BLOCKING' : 'ADVISORY',
+			rule: 'gridareas-retired',
+			severity: 'BLOCKING',
 			slug,
 			dir,
 			areas,
 			message:
-				`${ slug } declares supports.sgs.gridAreas [${ areas.join( ', ' ) }] with NO live ` +
-				`reader — no per-block <GridAreaPanel> mount in ${ dir }/edit.js and no ` +
-				`block_composition.grid_areas writer in sgs-update-v2.py. A declaration nothing ` +
-				`reads is inert data that looks like a feature (Spec 35 Part N, N-2).`,
+				`${ slug } declares supports.sgs.gridAreas, which was RETIRED 2026-08-16 (D639). ` +
+				`It has no consumer and needs none: the editor capability comes from the block's ` +
+				`own per-area attrs, and the converter derives area names from the draft's CSS ` +
+				`via resolvers/grid_area.py. Remove the declaration — the per-area attrs ` +
+				`(<area>Padding/<area>Background) ARE the definition of the regions.`,
 		} );
 	}
 	return findings;
@@ -342,8 +251,7 @@ function printSurvey( findings, manifests ) {
 	const out = [];
 	out.push( '[check-wrapper-capability-preconditions --survey]\n' );
 	out.push( `Blocks scanned: ${ manifests.length }` );
-	out.push( `Rule 2 scoping gate: GRID_AREAS_READERS_LIVE = ${ GRID_AREAS_READERS_LIVE }` );
-	out.push( `sgs-update-v2.py grid_areas writer present: ${ hasDbWriter() }\n` );
+	out.push( 'Rule 2: supports.sgs.gridAreas is RETIRED (D639) — any declaration is BLOCKING.\n' );
 
 	out.push( '-- Declared wrapper capabilities --' );
 	for ( const { slug, dir, manifest } of manifests ) {
@@ -353,9 +261,7 @@ function printSurvey( findings, manifests ) {
 		if ( declared.length === 0 && areas.length === 0 ) {
 			continue;
 		}
-		const areaNote = areas.length
-			? `  gridAreas=[${ areas.join( ',' ) }] reader=${ hasEditorReader( dir, BLOCKS_DIR ) ? 'editor' : ( hasDbWriter() ? 'db' : 'NONE' ) }`
-			: '';
+		const areaNote = areas.length ? `  ⛔ RETIRED gridAreas=[${ areas.join( ',' ) }]` : '';
 		out.push( `  ${ slug.padEnd( 28 ) } [${ declared.join( ', ' ) }]${ areaNote }` );
 	}
 
@@ -435,63 +341,35 @@ function runSelfTest() {
 		assert( 'RULE 1 tolerates a block with no supports.sgs at all', manifests.length === 3 );
 	} );
 
-	// RULE 2 — POSITIVE CONTROL: a gridAreas declaration with no reader at all.
-	withFixture( 'r2-orphan', {
-		orphan: {
-			blockJson: { name: 'sgs/orphan', supports: { sgs: { gridAreas: [ 'content', 'media' ] } } },
-			editJs: 'export default function Edit() { return null; }',
+	// RULE 2 — POSITIVE CONTROL: any gridAreas declaration is now a failure.
+	withFixture( 'r2-declared', {
+		declared: {
+			blockJson: { name: 'sgs/declared', supports: { sgs: { gridAreas: [ 'content', 'media' ] } } },
 		},
-	}, ( manifests, root ) => {
-		const advisory = checkGridAreasOrphans( manifests, root, false, false );
-		assert( 'RULE 2 catches a gridAreas declaration with no reader', advisory.length === 1 && advisory[ 0 ].rule === 'gridareas-orphan' );
-		assert( 'RULE 2 is ADVISORY while the scoping gate is closed', advisory.length === 1 && advisory[ 0 ].severity === 'ADVISORY' );
-		const blocking = checkGridAreasOrphans( manifests, root, true, false );
-		assert( 'RULE 2 becomes BLOCKING once the scoping gate opens', blocking.length === 1 && blocking[ 0 ].severity === 'BLOCKING' );
+	}, ( manifests ) => {
+		const f = checkRetiredGridAreas( manifests );
+		assert( 'RULE 2 catches a retired gridAreas declaration', f.length === 1 && f[ 0 ].rule === 'gridareas-retired' );
+		assert( 'RULE 2 finding is BLOCKING', f.length === 1 && f[ 0 ].severity === 'BLOCKING' );
 	} );
 
-	// RULE 2 — NEGATIVE CONTROL: a live per-block editor mount clears it.
-	withFixture( 'r2-wired', {
-		wired: {
-			blockJson: { name: 'sgs/wired', supports: { sgs: { gridAreas: [ 'content' ] } } },
-			editJs:
-				"import metadata from './block.json';\n" +
-				"import { GridAreaPanel } from '../container/components/ContainerWrapperControls';\n" +
-				'export default function Edit() { return <GridAreaPanel areaName="content" />; }\n',
-		},
-	}, ( manifests, root ) => {
-		assert( 'RULE 2 silent when a live per-block mount exists', checkGridAreasOrphans( manifests, root, true, false ).length === 0 );
-	} );
-
-	// RULE 2 — the comment blind-spot this repo has been bitten by three times.
-	withFixture( 'r2-comment', {
-		commented: {
-			blockJson: { name: 'sgs/commented', supports: { sgs: { gridAreas: [ 'content' ] } } },
-			editJs:
-				"import metadata from './block.json';\n" +
-				'/* One day this will mount <GridAreaPanel /> per area. */\n' +
-				'// <GridAreaPanel areaName="content" />\n' +
-				'export default function Edit() { return null; }\n',
-		},
-	}, ( manifests, root ) => {
-		assert( 'RULE 2 does NOT count a <GridAreaPanel> mention inside a comment', checkGridAreasOrphans( manifests, root, true, false ).length === 1 );
-	} );
-
-	// RULE 2 — the DB writer ALONE clears the orphan (no editor mount needed).
-	// This is the route that actually closes sgs/hero today.
-	withFixture( 'r2-dbwriter', {
-		orphan: {
-			blockJson: { name: 'sgs/orphan', supports: { sgs: { gridAreas: [ 'content' ] } } },
-			editJs: 'export default function Edit() { return null; }',
-		},
-	}, ( manifests, root ) => {
-		assert( 'RULE 2 cleared by the DB writer alone, with no editor mount', checkGridAreasOrphans( manifests, root, true, true ).length === 0 );
-	} );
-
-	// RULE 2 — an empty array is not a declaration.
+	// RULE 2 — an EMPTY array is still a declaration, and must still fail.
+	// The pre-D639 rule deliberately ignored `[]` (nothing to orphan). Under a
+	// retirement rule that exemption becomes a hole: `gridAreas: []` is the
+	// obvious way to "keep the key but silence the gate", which is exactly the
+	// resurrection this guard exists to stop.
 	withFixture( 'r2-empty', {
 		empty: { blockJson: { name: 'sgs/empty', supports: { sgs: { gridAreas: [] } } } },
-	}, ( manifests, root ) => {
-		assert( 'RULE 2 ignores an EMPTY gridAreas array', checkGridAreasOrphans( manifests, root, true, false ).length === 0 );
+	}, ( manifests ) => {
+		assert( 'RULE 2 also catches an EMPTY gridAreas array (no silencing hole)', checkRetiredGridAreas( manifests ).length === 1 );
+	} );
+
+	// RULE 2 — NEGATIVE CONTROL: a block that never declared it stays silent.
+	// Without this, a rule that flagged EVERY block would still show green above.
+	withFixture( 'r2-clean', {
+		clean: { blockJson: { name: 'sgs/clean', supports: { sgs: { enabledExtensions: [ 'width' ] } } } },
+		bare: { blockJson: { name: 'sgs/bare2' } },
+	}, ( manifests ) => {
+		assert( 'RULE 2 silent on blocks that never declared gridAreas', checkRetiredGridAreas( manifests ).length === 0 );
 	} );
 
 	process.stdout.write(
@@ -514,7 +392,7 @@ function main() {
 	const manifests = collectManifests();
 	const findings = [
 		...checkPreconditions( manifests ),
-		...checkGridAreasOrphans( manifests ),
+		...checkRetiredGridAreas( manifests ),
 	];
 
 	if ( asJson ) {
@@ -541,7 +419,5 @@ module.exports = {
 	CAPABILITY_PRECONDITIONS,
 	collectManifests,
 	checkPreconditions,
-	checkGridAreasOrphans,
-	hasEditorReader,
-	hasDbWriter,
+	checkRetiredGridAreas,
 };

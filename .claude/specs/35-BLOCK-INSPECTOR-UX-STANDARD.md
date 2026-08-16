@@ -394,8 +394,7 @@ the next initiative after colour's own two tracks close — not this spec's open
 > | Piece | Status | Note |
 > |---|---|---|
 > | **F.2.1** precondition gate | ✅ **BUILT** as specced | `scripts/check-wrapper-capability-preconditions.js`, fail-closed, no baseline, `--self-test` 11/11. ⚠ **THREE** blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`) — F.2.1's text names two. |
-> | **F.2.2** DB layer | ✅ **BUILT** (migration deliberately NOT RUN) | `block_composition.grid_areas` + `/sgs-update` Stage 1 `_populate_grid_areas`. The migration and `schema.sql` are held together until the concurrent colour worktrees merge — see D639 for why running either alone turns builds red. |
-> | **F.2.2** editor layer | ⛔ **NOT BUILT — re-scoped** | See premise 2 below. |
+> | **F.2.2** whole subsection | ⛔ **RETIRED — `supports.sgs.gridAreas` DELETED, not built** | Neither reader was needed. See premise 2 AND premise 3 below. The DB column/writer/migration were built then **reverted in the same session** once premise 3 surfaced. |
 > | **F.2.3** scale control | ✅ **BUILT** | `src/components/ScaleAxisControl.js` + storage replace across 6 blocks + SVG-`<pattern>` X tiling. |
 >
 > ⛔ **PREMISE 1 FALSIFIED — "same repeat mechanism the shape already uses".** F.2.3's render text
@@ -403,6 +402,17 @@ the next initiative after colour's own two tracks close — not this spec's open
 > in a `preserveAspectRatio="none"` SVG stretched edge-to-edge. Tiling is NEW. Built as an SVG
 > `<pattern>` (Bean-picked over a CSS mask) which keeps the markup, `currentColor` and flip/invert,
 > and is **not entered at all at x=100**, so the default renders byte-identically to before.
+>
+> ⛔ **PREMISE 3 FALSIFIED (found last, decided everything) — "the converter … one comment-only
+> reference explicitly noting the step is a no-op for this reason".** `assembly.py:250` says the
+> OPPOSITE: *"no gridAreas lookup is needed"*. `resolvers/grid_area.py` routes per-area CSS via
+> `db.attr_for_area_property(block, area, prop)`, and gets its AREA NAMES from
+> `fold_helpers.grid_item_areas()` — which reads the **DRAFT's own** `grid-template-areas` CSS, not
+> any block flag. The converter was built not to need it. **So the flag had no consumer and needed
+> none, and was redundant by construction:** "hero has areas content and media" is fully derivable
+> from hero declaring `contentPadding`/`mediaPadding`. `supports.sgs.gridAreas` is **RETIRED**;
+> `check-wrapper-capability-preconditions.js` rule 2 now FAILS the build on any declaration of it
+> (including an empty array, which would otherwise silence the gate).
 >
 > ⛔ **PREMISE 2 FALSIFIED — "`GridAreaPanel`'s own gate is already correct and needs no change,
 > it's simply never called".** It writes the FLAT per-side schema (`contentPaddingTop`/`…Tablet`/
@@ -760,7 +770,7 @@ commit that built them.** Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md
 | Gate | Enforces | Why it had to exist |
 |---|---|---|
 | `scripts/check-empty-inspector-containers.js` | **Part F** — an inspector container rendered with NO children is a dead control. An empty `<ToolsPanelItem>` still shows in the "+" menu and in `resetAll`, then displays nothing when opened; an empty `<PanelBody>` opens onto blank space. | The ~50-gate stack had **zero** coverage for this class, and one shipped through it to prove the point. `check-dead-controls.js` checks the INVERSE (an attribute whose control nothing renders) — a container whose children were deleted still has valid wiring, so it reads clean. ⛔ AST walk, never a regex: two regexes answered the same question with **0** and **471**. |
-| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (a non-empty `supports.sgs.gridAreas` must have ≥1 live reader — Part N's N-2). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. And `sgs/hero` carried a `gridAreas` declaration for two months with no reader anywhere, which is exactly the "built ≠ reached" shape N-2 names. No baseline (zero violations existed) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
+| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` is RETIRED — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 began as an orphan guard ("must have ≥1 live reader", Part N's N-2) and became a retirement guard when building that reader proved none was ever needed — the converter derives area names from the draft's CSS. No baseline (zero violations existed) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
 
 ## PART L — Per-block inspector definition-of-done (checklist)
 

@@ -31,9 +31,12 @@
  *  1. Statically parse ContainerWrapperControls.js: for every exported panel
  *     function (WidthPanel, LayoutPanel, BackgroundPanel,
  *     ShapeDividersPanel, GridItemDefaultsPanel — ContentBandPanel was DELETED
- *     2026-08-12, every control in it was dead; GridAreaPanel is
- *     DELIBERATELY excluded, its attr names are template-literal-derived from
- *     a runtime `areaName` prop, not static keys), extract every attribute
+ *     2026-08-12, every control in it was dead; GridAreaPanel was DELETED
+ *     2026-08-16 (D639) — unreachable, and it wrote a storage shape D580 had
+ *     retired. It used to be excluded here because its attr names were
+ *     template-literal-derived from a runtime `areaName` prop rather than
+ *     static keys — which is also WHY this guard never caught that it had gone
+ *     stale, worth remembering before excluding another panel), extract every attribute
  *     key it writes via setAttributes({...}) and classify the write as
  *     OBJECT (bound through <ResponsiveOverride>/<BoxControl>/
  *     <ResponsiveBorderRadiusControl>, or a direct `{ ... }` object literal —
@@ -93,8 +96,12 @@ const SHARED_CONTROLS_JS = path.join(
 // Structural constants (small, named, justified — not a data dictionary)
 // ---------------------------------------------------------------------------
 
-// The panel functions this guard understands. GridAreaPanel is deliberately
-// excluded — see file docblock. If ContainerWrapperControls.js gains a new
+// The panel functions this guard understands. GridAreaPanel was deleted
+// 2026-08-16 (D639) and is no longer excluded — there is nothing to exclude.
+// ⚠ Its exclusion is why this guard could not see that the panel had gone
+// stale: an excluded panel is an UNGUARDED panel. Excluding a new one because
+// its keys are dynamic buys a blind spot, so prefer teaching the extractor.
+// If ContainerWrapperControls.js gains a new
 // exported panel, add its name here in the SAME commit (this list is asserted
 // against `export function` names in --self-test, so an omission is caught).
 const PANEL_NAMES = [

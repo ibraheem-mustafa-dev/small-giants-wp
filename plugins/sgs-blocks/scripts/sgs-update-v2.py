@@ -2753,115 +2753,6 @@ def _populate_allowed_blocks(
     }
 
 
-def _populate_grid_areas(blocks_dir: Path, c: sqlite3.Cursor, dry_run: bool = False) -> dict:
-    """Stage 1 sub-step: block.json `supports.sgs.gridAreas` -> block_composition.grid_areas.
-
-    Spec 35 §F.2.2 / D637. `supports.sgs.gridAreas` names a block's FIXED set of
-    semantically-named sub-regions (today only `sgs/hero`'s split variant:
-    `content` + `media`). It had been declared since 2026-06-11 with ZERO readers
-    anywhere — this is the DB reader that ends that orphan.
-
-    DECLARATIVE, no hardcoded per-block dict (R-31-1 / blub.db 260): the value is
-    read from each block's own block.json, exactly the route `boxFamilies` already
-    uses, so block.json stays the single source of truth and the data travels with
-    the block.
-
-    Write-on-drift and idempotent, mirroring `_populate_allowed_blocks` above:
-    the column is a JSON-array TEXT column (the `accepts_allowed_blocks` shape,
-    NOT the `container_kind` scalar-enum shape), and a block with no declaration
-    is CLEARED rather than left stale — a removed declaration must not linger in
-    the DB as a phantom capability.
-
-    Tolerates the column not existing yet: the migration that adds it
-    (`migrations/2026-08-16-block-composition-grid-areas.py`) is deliberately
-    deferred while other worktrees share this database, so /sgs-update must not
-    hard-fail in the gap window.
-    """
-    scanned = 0
-    populated = 0
-    updated = 0
-    cleared = 0
-
-    cols = {row[1] for row in c.execute("PRAGMA table_info(block_composition)").fetchall()}
-    if "grid_areas" not in cols:
-        # Column not migrated yet — report, never silently pretend it ran.
-        return {
-            "grid_areas_scanned": 0,
-            "grid_areas_populated": 0,
-            "grid_areas_updated": 0,
-            "grid_areas_cleared": 0,
-            "grid_areas_column_missing": True,
-        }
-
-    for block_dir in sorted(blocks_dir.iterdir()):
-        bj = block_dir / "block.json"
-        if not bj.is_file():
-            continue
-        try:
-            data = json.loads(bj.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
-        scanned += 1
-        slug = data.get("name") or f"sgs/{block_dir.name}"
-
-        supports = data.get("supports")
-        sgs = supports.get("sgs", {}) if isinstance(supports, dict) else {}
-        areas = sgs.get("gridAreas") if isinstance(sgs, dict) else None
-
-        if isinstance(areas, list) and areas:
-            # FAIL-LOUD (Rule 4): area names must be plain strings — a nested
-            # object here would serialise to something no reader can use.
-            if not all(isinstance(a, str) for a in areas):
-                print(
-                    f"Stage 1 (gridAreas): WARN {slug} declares a non-string entry in "
-                    f"supports.sgs.gridAreas — skipped, not seeded"
-                )
-                continue
-            new_value = json.dumps(areas, ensure_ascii=False)
-        else:
-            new_value = None
-
-        existing_row = c.execute(
-            "SELECT grid_areas FROM block_composition WHERE block_slug = ?",
-            (slug,),
-        ).fetchone()
-        if existing_row is None:
-            # No block_composition row — cannot write (FK requires a blocks row).
-            continue
-        stored_value = existing_row[0]
-
-        if stored_value == new_value:
-            if new_value is not None:
-                populated += 1
-            continue
-
-        if dry_run:
-            if new_value is None:
-                cleared += 1
-            else:
-                populated += 1
-                updated += 1
-            continue
-
-        c.execute(
-            "UPDATE block_composition SET grid_areas = ? WHERE block_slug = ?",
-            (new_value, slug),
-        )
-        if new_value is None:
-            cleared += 1
-        else:
-            populated += 1
-            updated += 1
-
-    return {
-        "grid_areas_scanned": scanned,
-        "grid_areas_populated": populated,
-        "grid_areas_updated": updated,
-        "grid_areas_cleared": cleared,
-        "grid_areas_column_missing": False,
-    }
-
-
 def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
     """Walk src/blocks/*/block.json → INSERT-or-UPDATE blocks + block_attributes.
 
@@ -2906,23 +2797,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     ab_populated = ab_counts["allowed_blocks_populated"]
     ab_updated = ab_counts["allowed_blocks_updated"]
     ab_dynamic_skipped = ab_counts["allowed_blocks_dynamic_skipped"]
-
-    # --- Stage 1 sub-step A2: populate block_composition.grid_areas ---
-    # Spec 35 §F.2.2 / D637 — the DB reader for supports.sgs.gridAreas.
-    ga_counts = _populate_grid_areas(blocks_dir, c, dry_run)
-    if ga_counts["grid_areas_column_missing"]:
-        print(
-            "Stage 1 (gridAreas): SKIPPED — block_composition.grid_areas does not exist. "
-            "Run migrations/2026-08-16-block-composition-grid-areas.py first "
-            "(deferred while other worktrees share this DB)."
-        )
-    else:
-        print(
-            f"Stage 1 (gridAreas): scanned {ga_counts['grid_areas_scanned']}, "
-            f"populated {ga_counts['grid_areas_populated']}, "
-            f"updated {ga_counts['grid_areas_updated']}, "
-            f"cleared {ga_counts['grid_areas_cleared']}"
-        )
 
     if not dry_run:
         conn.commit()
