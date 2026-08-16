@@ -207,6 +207,69 @@ before step 7 build starts is the honest residual, not a blocker to recording th
 **Output:** written to `decisions.md` (this entry) + `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
 new §F.2. No code changed this session — feeds step 7's build directly.
 
+**Addendum (2026-08-16, later same session) — the missing second lens ran, plus an independent
+adversarial fact-check. Design #3 downgraded to NEEDS REVISION; three small corrections folded in.**
+
+Two fresh review lenses ran against this entry + Spec 35 §F.2: (a) the universality/client-UX lens
+that hung the first time, re-dispatched; (b) an independent adversarial confirmation pass that
+re-derived every factual claim from source rather than trusting either this entry or lens (a).
+
+**Design #1 (gridItems/layout gate) — CONFIRMED sound**, both lenses. One precision correction: the
+entry cited `check-shared-panel-schema.js`/`check-box-family-guard.py` as "the same family" without
+noting they differ in a load-bearing way — `check-shared-panel-schema.js` has no baseline mechanism
+(every finding is a real bug, always); `check-box-family-guard.py` is baseline-gated (hash-locked,
+`--update-baseline`) because it was retrofitted onto pre-existing violations. The new gate correctly
+follows the no-baseline shape (zero current `gridItems`-without-`layout` violations exist, confirmed
+live), but the entry should say *why* it picked that sub-shape, not just cite both as precedent.
+
+**Design #2 (gridAreas completion) — CONFIRMED sound, both lenses, with two corrections:**
+- The line reference was imprecise — `sgs/hero/block.json`'s `gridAreas` array starts at line 51,
+  not lines 46-49 (the earlier grep miscounted by a few lines; the claim itself — real, correctly-shaped
+  data, zero readers — was right).
+- **The DB-column analogy is off by one precedent.** `grid_areas` needs to store a JSON *array*
+  (`["content","media"]`); the entry likened it to `container_kind`, which is a scalar `TEXT CHECK`
+  enum column — the wrong shape to compare against. The accurate sibling, confirmed in the same
+  table, is `accepts_allowed_blocks` (`seed-composition-roles.py:334-336`) — an unconstrained JSON-text
+  array column with no DB-level `CHECK`. Still buildable, still low-risk, just weaker integrity
+  guarantee than "sibling to `container_kind`" implied. Fix the citation before build, not a redesign.
+- **New gap, found by the confirmation lens, not in the original design:** the regression guard
+  described in Design #2 ("any block declaring `gridAreas` must have ≥1 live reader") is only
+  checkable against the **post-migration** direct-import architecture (each block's own `edit.js`
+  importing its own `./block.json`). Under the CURRENT aggregator architecture, `<GridAreaPanel>` is
+  reached generically through `KIND_PANELS.section`, never per-block — so a naive
+  "grep `<GridAreaPanel>` in `<slug>/edit.js`" guard would false-negative against today's tree (hero
+  doesn't import it and never will under the current shape). Spec 35 §F.2.2 needs an explicit note
+  that the regression guard's `--check` mode targets the shape AFTER this design's editor-layer
+  change lands, and needs scoping/disabling for the gap window before that, or it ships broken on
+  day one.
+
+**Design #3 (`ScaleAxisControl`) — DOWNGRADED to NEEDS REVISION. Not locked. Do not build as
+currently specced without a decision from Bean.** The universality/client-UX lens's core finding:
+the link/unlink X/Y percentage shape was decided unilaterally, with **no competitor research**
+(confirmed: this codebase's own D636 ran a 4-seat competitor council — Kadence/Spectra/Elementor —
+before deciding an analogous gradient-control shape; Design #3 did not do the equivalent for shape
+dividers), and the **X-axis's actual render behaviour is unspecified** (does scaling X stretch the
+SVG horizontally, tile it, or clip it past 100%? — undefined, and you cannot judge a control's
+client-simplicity without knowing what it visually does). Recommended alternative to weigh, not a
+final answer: two independently-labelled sliders ("Divider height" / "Divider width") instead of a
+BoxControl-style link/unlink toggle — "linking" is a natural concept for 4 equal sides, less natural
+for a 2D shape stretch with only 2 axes. The Option A/B *storage* fork (replace vs add-alongside) is
+NOT in question — both lenses agreed Option A (clean replace) is right, given the no-deprecations
+policy. What's unresolved is the *control shape* on top of that storage decision.
+
+**Migration due-diligence gap (both lenses independently flagged the same thing):** the entry's
+"no live client content to preserve" claim rests entirely on the D293/D270 policy and was never
+checked against the actual canary — unlike its own sibling entry D635, which explicitly grepped
+canary post content for the old attribute before claiming a clean replace was safe. Before Design #3
+builds (in whatever final shape), run the same one-line check D635 ran: confirm no sandybrown page
+has a non-default `shapeDividerTopHeight`/`shapeDividerBottomHeight` set, and record the result here
+or in the step-7 build's own commit.
+
+**Net effect on step 7's build order:** Designs #1 and #2 are locked and buildable as specced (with
+the three corrections above folded in). Design #3 needs a follow-up design gate — Bean picks a
+control shape (or confirms the link/unlink one after seeing the concern) — before its build starts.
+This is not a blocker to starting step 7 on #1/#2's build track in parallel.
+
 ## D636 addendum (2026-08-16, later same session) — a 4th CSS mechanism, missed by the council
 
 Bean caught a real gap the 4-seat council never surfaced: **icon colour is not the same case as

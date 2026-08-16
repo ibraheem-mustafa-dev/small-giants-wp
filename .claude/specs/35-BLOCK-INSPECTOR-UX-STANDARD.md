@@ -385,7 +385,7 @@ inheritance, which background/border/shadow/padding don't have. A separate, fram
 typography placement/completeness audit (parallel to the live colour-panel rollout) is queued as
 the next initiative after colour's own two tracks close — not this spec's open item to build yet.
 
-### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` (added 2026-08-16, D637)
+### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion (LOCKED), `ScaleAxisControl` (NEEDS REVISION) (added 2026-08-16, D637)
 
 Design-only spec addition feeding the shared-wrapper decomposition's step 7 (`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4; the D626 grouping locked six opt-in wrapper extensions —
 `background`/`width`/`layout`/`gridItems`/`shapeDividers`/`typography`). D626 named two cross-extension
@@ -425,11 +425,15 @@ explicitly noting the step is a no-op for this reason). Fix is two readers, mirr
 already-live `boxFamilies`/`variantAttr` pattern declared on the same block.json `supports.sgs`
 object:
 
-1. **DB layer** — add `block_composition.grid_areas` as a new JSON column, sibling to the existing
-   `container_kind` column (flat per-block data, same weight class as `container_kind`; not a new
-   table — `variant_slots` earned its own table because it stores genuinely relational per-variant
-   discriminating slots, this is a flat per-block array). Populated declaratively by `/sgs-update`
-   Stage 1, same route `boxFamilies` already uses — no hardcoded per-block dict.
+1. **DB layer** — add `block_composition.grid_areas` as a new JSON column, on the same table as
+   `container_kind` but NOT the same shape — `container_kind` is a scalar `TEXT CHECK` enum, while
+   `grid_areas` stores a JSON array (`["content","media"]`) with no DB-level `CHECK` constraint on
+   its shape. **The accurate sibling is `accepts_allowed_blocks`** (`seed-composition-roles.py:334-336`,
+   already a JSON-array TEXT column on this same table, no enum guard) — corrected 2026-08-16 after
+   an independent review lens caught the weaker analogy. Not a new table — `variant_slots` earned its
+   own table because it stores genuinely relational per-variant discriminating slots, this is a flat
+   per-block array. Populated declaratively by `/sgs-update` Stage 1, same route `boxFamilies` already
+   uses — no hardcoded per-block dict.
 2. **Editor layer** — a direct-panel block's `edit.js` imports its own `./block.json` (the pattern
    every block's `index.js` already uses for `registerBlockType`) and, when its
    `enabledExtensions` includes `gridItems`, maps `metadata.supports.sgs.gridAreas ?? []` to one
@@ -452,8 +456,26 @@ this subsection specifies only how the wiring behaves once/if that happens.
 `supports.sgs.gridAreas` must have at least one live reader (a Stage-1 DB write or a live
 `<GridAreaPanel>` mount) — so a future orphaned declaration (exactly this bug) fails the build
 instead of sitting undetected, per Part N's N-1/N-2 rule ("a built mechanism is not a reached one").
+⛔ **This guard's `--check` mode only makes sense against the POST-migration architecture** (each
+direct-panel block importing its own `./block.json` and mounting `<GridAreaPanel>` per-entry, per the
+Editor layer step above) — found by an independent review lens, 2026-08-16. Under the CURRENT
+aggregator architecture, `<GridAreaPanel>` is reached generically through `KIND_PANELS.section`, not
+per-block, so a naive per-block-scoped grep would false-negative against today's tree (`hero` doesn't
+import `GridAreaPanel` and never will under the current shape). Ship this guard scoped to run only
+after F.2.2's editor-layer change lands — enabling it earlier will either false-negative or need to
+be disabled for the gap window; do not enable it blind.
 
-**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control.** New component
+**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control. ⚠ NEEDS REVISION (2026-08-16) — the
+control SHAPE below is NOT locked. Do not build F.2.3 as specced without a follow-up decision from
+Bean.** The storage fork (replace, not add-alongside — see below) IS decided and stable. What's open:
+an independent review lens found this control shape was picked with no competitor research (contrast
+D636, which ran a 4-seat Kadence/Spectra/Elementor council before an analogous gradient-control
+decision) and the X-axis's render behaviour is undefined (stretch? tile? clip past 100%?) — you
+cannot judge a control's client-simplicity without knowing what it visually does. A candidate
+alternative worth weighing against the link/unlink shape below: two independently-labelled sliders
+("Divider height" / "Divider width") with no link toggle at all — "linking" reads naturally for 4
+equal box sides, less naturally for a 2-axis shape stretch. Full record: `decisions.md` D637 addendum.
+New component
 `plugins/sgs-blocks/src/components/ScaleAxisControl.js` — the 2-axis analogue of WP core
 `BoxControl`'s 4-side link pattern (D626: "architecturally the same linked/unlinked pattern
 BoxControl's 4-side link already uses, applied to 2 axes"). Interface:
@@ -498,13 +520,18 @@ effect on the same block — a worse client-facing shape than one clean linked p
 tiers proposed — shape dividers carry no existing per-breakpoint variant and D626 does not ask for
 one; a deliberate scope boundary for this design, not an oversight.
 
-**Review status.** Reviewed by one of two dispatched council lenses (mechanism-fidelity + DB-first
-compliance — returned PASS on all three subsections, with the `assembly.py:250` correction above
-folded in); the second lens (universality + client-UX + component-shape) was dispatched but did not
-return within a reasonable wait and is logged as a genuine gap, not silently dropped — see
-`decisions.md` D637 for the full record. The Option A/B fork in F.2.3 and the block-qualification
-call in F.2.2 are the two judgement points that lens was meant to pressure-test and have not yet had
-a second independent pass.
+**Review status (updated 2026-08-16).** Both council lenses have now run. Mechanism-fidelity +
+DB-first compliance returned PASS on all three subsections (the `assembly.py:250` correction folded
+in above). The universality/client-UX lens — hung on its first dispatch, re-run successfully — found
+**F.2.1 and F.2.2 sound** (two citation corrections folded in above: the precedent-shape note in
+F.2.1, the `accepts_allowed_blocks`/regression-guard-scoping corrections in F.2.2) and **F.2.3 NEEDS
+REVISION** (see the warning at the top of F.2.3 — the link/unlink control shape is not locked; the
+Option A/B *storage* fork it was checking IS confirmed correct by both lenses). An independent
+adversarial confirmation pass re-derived every factual claim in F.2.2 from source (not from this doc
+or either lens) and confirmed all of them, catching one further correction (the DB-column analogy)
+along the way. Full record: `decisions.md` D637 + its 2026-08-16 addendum. **Net: F.2.1/F.2.2 are
+locked and buildable as specced; F.2.3 needs a follow-up design gate with Bean before its build
+starts.**
 
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
