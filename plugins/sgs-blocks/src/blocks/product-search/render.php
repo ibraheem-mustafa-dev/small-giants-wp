@@ -152,7 +152,11 @@ $sgs_scoped_css = array();
 // when at least one of the 5 rows has a client-set value. style.css consumes
 // each via var(--sgs-ps-*, existing-token-default). ---
 if ( $sgs_ps_colour_decls ) {
-	$sgs_scoped_css[] = "{$sgs_style_sel}{" . implode( ';', $sgs_ps_colour_decls ) . ';}';
+	// Keyed on the uid class ALONE (not $sgs_style_sel's wrapper-qualified
+	// form) so the rule also matches the <dialog> once view.js reparents it
+	// out of the wrapper — see the dialog markup below for why it carries
+	// this same class.
+	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_colour_decls ) . ';}';
 }
 
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised
@@ -467,13 +471,22 @@ if ( $sgs_ps_is_dialog_mode ) {
 	// GET submit works with zero JS — mirrors icon-expand's native <details>
 	// no-JS story. view.js closes it on load, then the shared store re-opens
 	// it as a true showModal() on trigger click.
+	// The colour custom properties (--sgs-ps-*) are declared in a scoped rule
+	// keyed on $sgs_style_uid (see below). view.js REPARENTS this <dialog> to
+	// <body> on open (isInsideComponent() containment), which removes it from
+	// being a DOM descendant of the block wrapper the properties are declared
+	// on — custom properties only inherit through current DOM ancestry, so a
+	// reparented dialog would silently lose every colour override. Carrying
+	// the uid class directly on the dialog keeps it addressable by the same
+	// selector regardless of where in the tree it currently sits.
 	$overlay_dialog_html = sprintf(
-		'<dialog id="%1$s" class="sgs-product-search__dialog%5$s" data-sgs-nav-drawer open aria-label="%2$s">%3$s<div class="sgs-product-search__dialog-body">%4$s</div></dialog>',
+		'<dialog id="%1$s" class="sgs-product-search__dialog %6$s%5$s" data-sgs-nav-drawer open aria-label="%2$s">%3$s<div class="sgs-product-search__dialog-body">%4$s</div></dialog>',
 		esc_attr( $dialog_id ),
 		esc_attr__( 'Search', 'sgs-blocks' ),
 		$close_html,
 		$form_html,
-		esc_attr( $dialog_modifier_class )
+		esc_attr( $dialog_modifier_class ),
+		esc_attr( $sgs_style_uid )
 	);
 }
 
