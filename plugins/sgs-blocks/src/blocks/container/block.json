@@ -47,6 +47,13 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"enabledExtensions": [
+				"width",
+				"layout",
+				"background",
+				"shapeDividers",
+				"gridItems"
+			],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

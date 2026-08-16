@@ -20,6 +20,13 @@
 			"imageControls": false,
 			"is_section_root": true,
 			"containerKind": "section",
+			"enabledExtensions": [
+				"width",
+				"layout",
+				"background",
+				"shapeDividers",
+				"gridItems"
+			],
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [

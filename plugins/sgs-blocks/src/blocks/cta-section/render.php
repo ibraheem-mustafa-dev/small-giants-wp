@@ -466,7 +466,7 @@ echo SGS_Container_Wrapper::render(
 	$cta_helper_attrs,
 	$block,
 	$cta_inner_html,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
 		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section',
 		'extra_classes' => $classes,
