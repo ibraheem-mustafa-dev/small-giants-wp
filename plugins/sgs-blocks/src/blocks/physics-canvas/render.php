@@ -110,34 +110,29 @@ if ( ! empty( $sgs_ps_supports_classes ) ) {
 	$sgs_ps_wrapper_opts['extra_classes'] = $sgs_ps_supports_classes;
 }
 
-// ⛔ DELIBERATELY NOT migrated to SGS_Container_Wrapper::resolve_kind() —
-// verified unsafe for this block (wrapper-decomposition step 6, D626/D633
-// Phase B, 2026-08-16). resolve_kind() narrows this block's kind from
-// 'section' to 'content' because its declared enabledExtensions (['background']
-// only, no 'shapeDividers'/'gridItems'/'layout') doesn't satisfy any of
-// resolve_kind()'s 'section'-preserving branches. Traced the consequence in
-// class-sgs-container-wrapper.php: `$is_section = 'section' === $kind` gates
-// the BASE (desktop) min-height entirely — not just responsive tiers — at
-// L853 (`if ( $is_section && $min_height && ! $has_responsive_min_height )`),
-// plus contentBandPadding tablet/mobile at L576-577. This block's minHeight
-// (480px desktop / 320px mobile, block.json default) IS the throw arena's
+// Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
+// step 6, Phase B, second pass) after 2113eeb6 fixed the helper. An earlier
+// version of resolve_kind() narrowed this block's kind from 'section' to
+// 'content' (its enabledExtensions is ['background'] only — no
+// 'shapeDividers'/'gridItems'/'layout'), which would have been a genuine
+// interaction-risk regression: class-sgs-container-wrapper.php's
+// $is_section gate (L853) controls the BASE desktop min-height entirely, and
+// this block's minHeight (480px desktop/320px mobile) IS the throw arena's
 // rendered box height that view.js reads as Draggable's bounds and the
-// Physics2D floor/wall geometry (see this file's own docblock + block.json's
-// content-band note) — narrowing to 'content' kind would silently drop the
-// arena's min-height at render, collapsing the throw arena. This is a bigger
-// blast radius than Phase A's own resolve_kind() docblock claims (it names
-// only shapeDividers/grid-item custom-properties as reached; min-height and
-// band-padding are reached too, undocumented there). Flagged, not fixed here
-// — extending resolve_kind() or decoupling min-height/band-padding from
-// $kind is a shared-wrapper change (Rule 7 design-gate territory), out of
-// this block's own scope. Background painting itself is unaffected either
-// way (D6, 2026-08-11: reads universally off declared attrs, independent of
-// $kind), so keeping the literal below costs this block nothing.
+// Physics2D floor/wall geometry — narrowing would have silently collapsed
+// the arena. Caught before shipping, reported, and fixed at the source —
+// resolve_kind() no longer narrows away from $fallback at all; it is a
+// pass-through today (real per-capability narrowing is step 7 scope).
+// Re-verified directly against the merged fix before wiring this in: every
+// code path in resolve_kind() returns $fallback unconditionally, so this
+// call is behaviourally identical to the literal 'section' it replaces —
+// minHeight/vertical-align-centring/band-padding all keep rendering exactly
+// as before.
 $sgs_ps_output = SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	$sgs_ps_wrapper_opts
 );
 
