@@ -575,10 +575,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							bgSvgOpacity: 100,
 							bgSvgMinHeight: '',
 							bgSvgTextShadow: false,
-							overlayGradient: false,
-							overlayGradientAngle: 180,
-							overlayGradientFrom: '',
-							overlayGradientTo: '',
+							// String since the D636 collapse (837f7c97) — this reset
+							// wrote a boolean into a string attr plus three attrs
+							// that no longer exist (WP discards both silently). D643.
+							overlayGradient: '',
 						} );
 					} }
 				>

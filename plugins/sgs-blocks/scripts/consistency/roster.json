@@ -285,7 +285,7 @@
       "has_render_php": true,
       "surfaces": {
         "styling": true,
-        "colour": false,
+        "colour": true,
         "link": false,
         "media": false,
         "animation": false
@@ -767,8 +767,8 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
-        "animation": false
+        "media": true,
+        "animation": true
       }
     },
     {
@@ -842,8 +842,8 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
-        "animation": false
+        "media": true,
+        "animation": true
       }
     },
     {
@@ -945,7 +945,7 @@
       "has_render_php": true,
       "surfaces": {
         "styling": true,
-        "colour": false,
+        "colour": true,
         "link": false,
         "media": false,
         "animation": false

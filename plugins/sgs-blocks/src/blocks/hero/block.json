@@ -168,9 +168,9 @@
 						"layout"
 					],
 					"prefix": "content",
-					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding). css:background-image is explicitly attrMapped to contentBackgroundGradientFrom because the default {prefix}{suffix} convention has no 'BackgroundGradientFrom' candidate (only 'BackgroundImage'/'Overlay*' suffixes exist for this member) — found live 2026-08-15 during element-manifest-drift triage. contentBackgroundGradientTo remains an accepted orphan (one attrMap entry claims one attr per member; there is no sibling mechanism for a second colour stop) — see scripts/element-manifest-baseline.json.",
+					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding). css:background-image is explicitly attrMapped to contentBackgroundGradient because the default {prefix}{suffix} convention has no 'BackgroundGradient' candidate (only 'BackgroundImage'/'Overlay*' suffixes exist for this member) — found live 2026-08-15 during element-manifest-drift triage. REPOINTED 2026-08-16 (D643): this mapped `contentBackgroundGradientFrom`, an attribute deleted by the D636 storage collapse (837f7c97) — the manifest had been claiming a non-existent attr. The accepted-orphan note about a `...To` sibling is gone with it: one string attr now holds the whole gradient, so there is no second colour stop to strand.",
 					"attrMap": {
-						"css:background-image": "contentBackgroundGradientFrom"
+						"css:background-image": "contentBackgroundGradient"
 					}
 				},
 				"media": {
@@ -252,9 +252,9 @@
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "backgroundOverlayColour",
-						"css:background-image": "overlayGradientFrom"
+						"css:background-image": "overlayGradient"
 					},
-					"_note": "The decorative dimming overlay layered over the section background (`.sgs-hero__overlay`, a sibling <span> — render.php ~line 992-1000). Distinct from the wrapper's own background and from the split-media's own media-overlay below. overlayGradientAngle/overlayGradientTo feed the same linear-gradient() shorthand as overlayGradientFrom — no separate cluster member exists for a second colour stop, so they stay honest gaps. `clusters: []` (revised 2026-08-15, first draft declared 'fill' and that recreated 15 CONTESTED findings against `wrapper`, which ALSO reaches the same bare fill-cluster members with no prefix — clusters=[] plus the explicit attrMap above still claims the two mapped attrs cleanly via placement-reach's TIER-1/authoritative path, with zero collision risk from the unmapped fill members). `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 4 attrs css_element='overlay', undeclared until now."
+					"_note": "The decorative dimming overlay layered over the section background (`.sgs-hero__overlay`, a sibling <span> — render.php ~line 992-1000). Distinct from the wrapper's own background and from the split-media's own media-overlay below. REPOINTED 2026-08-16 (D643): this mapped `overlayGradientFrom`, deleted by the D636 storage collapse (837f7c97); `overlayGradient` now holds the complete CSS gradient string, so the old note about Angle/To being honest gaps no longer applies — there are no sibling scalars left to strand. `clusters: []` (revised 2026-08-15, first draft declared 'fill' and that recreated 15 CONTESTED findings against `wrapper`, which ALSO reaches the same bare fill-cluster members with no prefix — clusters=[] plus the explicit attrMap above still claims the two mapped attrs cleanly via placement-reach's TIER-1/authoritative path, with zero collision risk from the unmapped fill members). `prefix: \"\"` opts this element out of orphan-candidate scanning. Found live 2026-08-15: DB tagged 4 attrs css_element='overlay', undeclared until now."
 				},
 				"media-overlay": {
 					"label": "Media overlay",
@@ -264,9 +264,9 @@
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "mediaOverlayColour",
-						"css:background-image": "mediaOverlayGradientFrom"
+						"css:background-image": "mediaOverlayGradient"
 					},
-					"_note": "A second decorative overlay layered on top of the split-media column only (`.sgs-hero__media-overlay`, render.php ~line 1170) — separate from the section-level `overlay` element above; mirrors its shape 1:1 but scoped to the foreground media instead of the section background. mediaOverlayGradientAngle/mediaOverlayGradientTo feed the same gradient shorthand as mediaOverlayGradientFrom, same honest-gap reasoning as `overlay`. `clusters: []`, same CONTESTED-avoidance rationale as `overlay` above. `prefix: \"\"` opt-out, same rationale. Found live 2026-08-15: DB tagged 4 attrs css_element='media-overlay', undeclared until now."
+					"_note": "A second decorative overlay layered on top of the split-media column only (`.sgs-hero__media-overlay`, render.php ~line 1170) — separate from the section-level `overlay` element above; mirrors its shape 1:1 but scoped to the foreground media instead of the section background. REPOINTED 2026-08-16 (D643): this mapped `mediaOverlayGradientFrom`, deleted by the D636 storage collapse (837f7c97); same one-string shape and same removal of the stranded-sibling note as `overlay` above. `clusters: []`, same CONTESTED-avoidance rationale as `overlay` above. `prefix: \"\"` opt-out, same rationale. Found live 2026-08-15: DB tagged 4 attrs css_element='media-overlay', undeclared until now."
 				},
 				"split-image": {
 					"label": "Split image",

@@ -25,7 +25,6 @@ import {
 	ResponsiveBorderRadiusControl,
 	ShadowControl,
 	GradientOverlayControl,
-	buildGradientCss,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
@@ -201,9 +200,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		backgroundImage,
 		backgroundOverlayColour,
 		overlayGradient,
-		overlayGradientAngle = 180,
-		overlayGradientFrom,
-		overlayGradientTo,
 		splitImage,
 		splitImageTablet,
 		splitImageMobile,
@@ -683,9 +679,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								setAttributes={ setAttributes }
 								attrNames={ {
 									gradient: 'mediaOverlayGradient',
-									angle: 'mediaOverlayGradientAngle',
-									from: 'mediaOverlayGradientFrom',
-									to: 'mediaOverlayGradientTo',
 									solid: 'mediaOverlayColour',
 								} }
 								solidLabel={ __( 'Media overlay colour', 'sgs-blocks' ) }
@@ -937,10 +930,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							onDeselect={ () =>
 								setAttributes( {
 									contentBackground: '',
-									contentBackgroundGradient: false,
-									contentBackgroundGradientAngle: 180,
-									contentBackgroundGradientFrom: '',
-									contentBackgroundGradientTo: '',
+									// String since the D636 collapse — resetting it to
+									// boolean `false` wrote a non-string into a string
+									// attr on every "reset all" (D643).
+									contentBackgroundGradient: '',
 									contentPadding: { desktop: {} },
 								} )
 							}
@@ -952,9 +945,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								setAttributes={ setAttributes }
 								attrNames={ {
 									gradient: 'contentBackgroundGradient',
-									angle: 'contentBackgroundGradientAngle',
-									from: 'contentBackgroundGradientFrom',
-									to: 'contentBackgroundGradientTo',
 									solid: 'contentBackground',
 								} }
 								solidLabel={ __( 'Content background colour', 'sgs-blocks' ) }
@@ -1324,9 +1314,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								setAttributes={ setAttributes }
 								attrNames={ {
 									gradient: 'mediaBackgroundGradient',
-									angle: 'mediaBackgroundGradientAngle',
-									from: 'mediaBackgroundGradientFrom',
-									to: 'mediaBackgroundGradientTo',
 									solid: 'mediaBackground',
 								} }
 								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
@@ -1493,8 +1480,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					// span already exists for another reason (media present); it
 					// must never itself trigger the span.
 					const resolvedColourRaw = backgroundOverlayColour || '';
-					const hasOverlayColour =
-						!! resolvedColourRaw || ( overlayGradient && !! overlayGradientFrom );
+					// `overlayGradient` IS the complete CSS gradient string since the
+					// D636 storage collapse (837f7c97) — no angle/from/to scalars to
+					// rebuild from. This previously gated on `overlayGradientFrom`, an
+					// attribute that commit deleted, so the gradient branch could never
+					// be reached and the (also-deleted) builder it called was dead.
+					// Fixed 2026-08-16 (D643).
+					const hasOverlayColour = !! resolvedColourRaw || !! overlayGradient;
 					const showsOverlay =
 						( ! isSplit && !! backgroundImage?.url ) ||
 						hasOverlayColour;
@@ -1505,14 +1497,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						<span
 							className="sgs-hero__overlay"
 							style={
-								overlayGradient && overlayGradientFrom
-									? {
-											backgroundImage: buildGradientCss(
-												overlayGradientAngle,
-												overlayGradientFrom,
-												overlayGradientTo
-											),
-									  }
+								overlayGradient
+									? { backgroundImage: overlayGradient }
 									: { backgroundColor: resolvedColourRaw || colourVar( 'text' ) }
 							}
 							aria-hidden="true"

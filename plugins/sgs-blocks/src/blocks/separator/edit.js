@@ -21,17 +21,16 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
-	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
 import {
-	DesignTokenPicker,
 	IconPicker,
 	IconPreview,
 	ResponsiveOverride,
 	ResponsiveBoxControl,
 	TypographyControls,
 	SgsColourPanel,
+	SgsGradientPicker,
 } from '../../components';
 import { colourVar } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
@@ -157,10 +156,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		gradientEnabled,
-		gradientColourStart,
-		gradientColourEnd,
-		gradientAngle,
+		lineGradient,
 		contentMode,
 		contentIconSize,
 		contentColour,
@@ -185,14 +181,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		lineDecls.borderBottomStyle = lineStyle;
 		lineDecls.borderBottomWidth =
 			composeUnit( thicknessDesktop, thicknessUnit ) || undefined;
-		if ( gradientEnabled && gradientColourStart && gradientColourEnd ) {
-			const start = /^#|^rgb|^hsl|^var\(/.test( gradientColourStart )
-				? gradientColourStart
-				: colourVar( gradientColourStart );
-			const end = /^#|^rgb|^hsl|^var\(/.test( gradientColourEnd )
-				? gradientColourEnd
-				: colourVar( gradientColourEnd );
-			lineDecls.borderImage = `linear-gradient(${ gradientAngle }deg, ${ start }, ${ end }) 1`;
+		if ( lineGradient ) {
+			// One complete CSS gradient string since D643 — the stops already
+			// carry their own var(--wp--preset--color--x) form, so there is no
+			// per-stop token resolution left to do in the preview.
+			lineDecls.borderImage = `${ lineGradient } 1`;
 			lineDecls.borderBottomColor = 'transparent';
 		} else if ( colour ) {
 			lineDecls.borderBottomColor = /^#|^rgb|^hsl|^var\(/.test( colour )
@@ -269,14 +262,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			   "Colour" DesignTokenPicker in the "Line" ToolsPanel and the
 			   "Icon colour"/"Text colour" DesignTokenPicker in the "Content"
 			   panel below (both single-state — neither has a hover pair).
-			   gradientColourStart/gradientColourEnd are DELIBERATELY left out
-			   — render.php (line 148) builds a genuine 2-stop CSS
-			   `linear-gradient()` fed into `border-image`, not a plain colour;
-			   SgsColourPanel/DesignTokenPicker's `states` shape is one colour
-			   per state, so it cannot represent a gradient. Gradient controls
-			   stay as their existing inline DesignTokenPicker pair in the
-			   "Gradient line" ToolsPanelItem, unchanged — gradient migration
-			   is explicitly out of scope (a separate future piece of work). */ }
+			   The line gradient stays OUT of this panel: DesignTokenPicker's
+			   `states` shape is one flat colour per state and cannot represent
+			   a gradient, so `lineGradient` lives in its own "Gradient line"
+			   ToolsPanelItem below, on the canonical SgsGradientPicker.
+			   Updated 2026-08-16 (D643) — the previous note described the
+			   since-deleted gradientColourStart/End scalars and called the
+			   migration "out of scope"; it is this session's work and is done.
+			   When the shared Solid/Gradient opt-in lands on DesignTokenPicker
+			   (D636 rollout), the `colour` row absorbs it and the standalone
+			   item folds in. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -321,10 +316,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							thicknessUnit: 'px',
 							colour: '',
 							opacity: 100,
-							gradientEnabled: false,
-							gradientColourStart: '',
-							gradientColourEnd: '',
-							gradientAngle: 90,
+							lineGradient: '',
 						} )
 					}
 				>
@@ -426,69 +418,26 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Gradient line', 'sgs-blocks' ) }
-						hasValue={ () =>
-							gradientEnabled !== false ||
-							!! gradientColourStart ||
-							!! gradientColourEnd ||
-							gradientAngle !== 90
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								gradientEnabled: false,
-								gradientColourStart: '',
-								gradientColourEnd: '',
-								gradientAngle: 90,
-							} )
-						}
+						hasValue={ () => !! lineGradient }
+						onDeselect={ () => setAttributes( { lineGradient: '' } ) }
 					>
-						<ToggleControl
-							label={ __( 'Gradient line', 'sgs-blocks' ) }
-							checked={ gradientEnabled }
+						{ /* D643 — the 4-scalar toggle + 2 colour pickers + angle
+						   slider are replaced by the canonical SgsGradientPicker,
+						   which stores ONE complete CSS gradient string (D636
+						   storage contract; Spec 35 control-type contract field 8
+						   makes SgsGradientPicker the canonical gradient control
+						   and bans the native GradientPicker). A non-empty value
+						   IS the "on" state — the old `gradientEnabled` boolean
+						   was a second source of truth that could disagree with
+						   the colours it gated. */ }
+						<SgsGradientPicker
+							value={ lineGradient }
 							onChange={ ( val ) =>
-								setAttributes( { gradientEnabled: val } )
+								setAttributes( { lineGradient: val ?? '' } )
 							}
-							__nextHasNoMarginBottom
+							enableAlpha
+							__experimentalIsRenderedInSidebar
 						/>
-						{ gradientEnabled && (
-							<>
-								<DesignTokenPicker
-									label={ __(
-										'Gradient start colour',
-										'sgs-blocks'
-									) }
-									value={ gradientColourStart }
-									onChange={ ( val ) =>
-										setAttributes( {
-											gradientColourStart: val ?? '',
-										} )
-									}
-								/>
-								<DesignTokenPicker
-									label={ __(
-										'Gradient end colour',
-										'sgs-blocks'
-									) }
-									value={ gradientColourEnd }
-									onChange={ ( val ) =>
-										setAttributes( {
-											gradientColourEnd: val ?? '',
-										} )
-									}
-								/>
-								<RangeControl
-									label={ __( 'Gradient angle', 'sgs-blocks' ) }
-									value={ gradientAngle }
-									onChange={ ( val ) =>
-										setAttributes( { gradientAngle: val } )
-									}
-									min={ 0 }
-									max={ 360 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</>
-						) }
 					</ToolsPanelItem>
 				</ToolsPanel>
 

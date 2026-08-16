@@ -407,10 +407,12 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				     attrNames used by sgs/container, sgs/cta-section and sgs/hero
 				     (ContainerWrapperControls.js's BackgroundPanel, which wraps
 				     GradientOverlayControl). site-footer declares the identical
-				     backgroundOverlayColour, overlayGradient, overlayGradientAngle,
-				     overlayGradientFrom and overlayGradientTo attrs
-				     (block.json:190,330-342) but had no control mounted —
-				     inspector-scan rule 21-render-without-control. */ }
+				     backgroundOverlayColour and overlayGradient attrs but had no
+				     control mounted — inspector-scan rule 21-render-without-control.
+				     Comment corrected 2026-08-16 (D643): it still listed the
+				     overlayGradientAngle/From/To scalars, which the D636 storage
+				     collapse (837f7c97) deleted, and cited line numbers that had
+				     already moved. */ }
 			</InspectorControls>
 
 			<div ref={ refEl } { ...innerBlocksProps } />

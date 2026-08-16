@@ -15,11 +15,16 @@ export {
 } from './DesignTokenPicker';
 export { default as SgsColourPanel } from './SgsColourPanel';
 export { default as MediaGalleryPicker } from './MediaGalleryPicker';
-export {
-	default as GradientOverlayControl,
-	parseLinearGradient,
-	buildGradientCss,
-} from './GradientOverlayControl';
+// `parseLinearGradient` / `buildGradientCss` were deleted by 837f7c97 (D636 storage
+// collapse) but stayed listed here, so the barrel advertised two bindings that resolve
+// to `undefined` at runtime — a webpack WARNING, not an error, which is why a green
+// build never caught it. Removed 2026-08-16 (D643).
+export { default as GradientOverlayControl } from './GradientOverlayControl';
+// Exported 2026-08-16 (D643). Previously reachable only via a deep import from
+// GradientOverlayControl; the universal gradient rollout needs it as a first-class
+// control (Spec 35 control-type contract field 8 — SgsGradientPicker REPLACES the
+// native GradientPicker, it is not an internal detail of the overlay control).
+export { default as SgsGradientPicker } from './gradient-picker';
 export { default as SgsLinkControl } from './SgsLinkControl';
 export {
 	default as LinkPopoverField,

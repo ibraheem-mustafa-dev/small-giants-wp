@@ -80,11 +80,14 @@ $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'center';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'center';
 
-$gradient_enabled = ! empty( $attributes['gradientEnabled'] );
-$gradient_start   = $attributes['gradientColourStart'] ?? '';
-$gradient_end     = $attributes['gradientColourEnd'] ?? '';
-$gradient_angle   = isset( $attributes['gradientAngle'] ) ? ( (int) $attributes['gradientAngle'] % 360 ) : 90;
-$has_gradient     = $gradient_enabled && '' !== $gradient_start && '' !== $gradient_end;
+// Collapsed 2026-08-16 (D643) from the 4-scalar gradientEnabled/ColourStart/
+// ColourEnd/Angle family to ONE complete CSS gradient string, matching the D636
+// storage contract. This was the LAST pre-D636 gradient family in the tree —
+// commit 837f7c97 collapsed nine of them across six blocks and missed this one.
+// A non-empty validated gradient wins over the flat `colour`; no boolean
+// discriminator (an empty string is the "off" state).
+$line_gradient = sgs_css_gradient_value( $attributes['lineGradient'] ?? '' );
+$has_gradient  = '' !== $line_gradient;
 
 $allowed_content_modes = array( 'none', 'icon', 'text' );
 $content_mode_raw      = $attributes['contentMode'] ?? 'none';
@@ -143,9 +146,14 @@ if ( 'none' === $line_style ) {
 } else {
 	$line_decls[] = 'border-bottom-style:' . $line_style;
 	if ( $has_gradient ) {
-		$safe_start   = sgs_colour_value( $gradient_start );
-		$safe_end     = sgs_colour_value( $gradient_end );
-		$line_decls[] = 'border-image:linear-gradient(' . $gradient_angle . 'deg,' . $safe_start . ',' . $safe_end . ') 1';
+		// `border-image` is DELIBERATE here and is NOT the D636-banned usage.
+		// That ban exists because border-image cannot respect `border-radius`
+		// — a separator is a 1D rule with no radius, so the rationale does not
+		// apply. It is also the ONLY mechanism that keeps a dashed/dotted
+		// gradient line working: `lineStyle` feeds `border-bottom-style`, and
+		// a background-image cannot express a dashed rule. Switching to
+		// background-image here would silently drop that capability.
+		$line_decls[] = 'border-image:' . $line_gradient . ' 1';
 		$line_decls[] = 'border-bottom-color:transparent';
 	} elseif ( '' !== $colour ) {
 		$line_decls[] = 'border-bottom-color:' . sgs_colour_value( $colour );

@@ -976,6 +976,30 @@
       }
     },
     {
+      "slug": "sgs/filter-search",
+      "attr": "focusRingColour",
+      "fields": {
+        "css_property": "outline-color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "attr": "inputBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "input"
+      }
+    },
+    {
       "slug": "sgs/form",
       "attr": "formFocusRingColour",
       "fields": {
@@ -1064,7 +1088,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "desktop",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -1309,25 +1333,11 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "contentBackgroundGradientAngle",
-      "fields": {
-        "css_property": "background-image"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "contentBackgroundGradientFrom",
+      "attr": "contentBackgroundGradient",
       "fields": {
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
         "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "contentBackgroundGradientTo",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -1533,25 +1543,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaBackgroundGradientAngle",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaBackgroundGradientFrom",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaBackgroundGradientTo",
+      "attr": "mediaBackgroundGradient",
       "fields": {
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
@@ -1570,25 +1562,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaOverlayGradientAngle",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaOverlayGradientFrom",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaOverlayGradientTo",
+      "attr": "mediaOverlayGradient",
       "fields": {
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
@@ -1636,25 +1610,7 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "overlayGradientAngle",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "overlayGradientFrom",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "overlayGradientTo",
+      "attr": "overlayGradient",
       "fields": {
         "css_property": "background-image",
         "css_layer": "OUTER",
@@ -2772,7 +2728,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet",
+        "css_tier": "desktop",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -4267,10 +4223,28 @@
     },
     {
       "slug": "sgs/accordion-item",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -4462,6 +4436,24 @@
         "css_property": "anim:easing",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "body"
       }
     },
     {
@@ -4907,6 +4899,16 @@
     },
     {
       "slug": "sgs/feature-grid",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -4982,6 +4984,16 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -5114,6 +5126,16 @@
     },
     {
       "slug": "sgs/form-field-tiles",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -5199,6 +5221,26 @@
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
     },
@@ -5216,6 +5258,16 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
@@ -5824,9 +5876,38 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundImage",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -5872,6 +5953,16 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },
@@ -6144,6 +6235,15 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
@@ -6175,11 +6275,56 @@
       }
     },
     {
+      "slug": "sgs/process-steps",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/product-faq",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -6396,6 +6541,16 @@
     },
     {
       "slug": "sgs/site-footer-row",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -6498,6 +6653,16 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -6666,6 +6831,16 @@
     },
     {
       "slug": "sgs/site-header-row",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -6773,11 +6948,39 @@
       }
     },
     {
+      "slug": "sgs/site-header-row",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/tab",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -6982,6 +7185,16 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -7057,6 +7270,16 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -7335,6 +7558,16 @@
     },
     {
       "slug": "sgs/trustpilot-reviews",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -7437,6 +7670,36 @@
       "attr": "sgsAnimationEasing",
       "fields": {
         "css_property": "anim:easing",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundImageMobile",
+      "fields": {
+        "css_property": "background-image",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundImageTablet",
+      "fields": {
+        "css_property": "background-image",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

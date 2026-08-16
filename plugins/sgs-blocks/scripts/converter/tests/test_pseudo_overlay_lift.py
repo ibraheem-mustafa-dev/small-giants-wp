@@ -118,24 +118,55 @@ def test_collector_isolates_pseudo_from_base():
 # ---------------------------------------------------------------------------
 
 
-def test_parse_linear_gradient_two_stops():
-    out = parse_overlay_background(
-        "linear-gradient(135deg, rgba(90, 40, 160, 0.55) 0%, rgba(20, 100, 200, 0.35) 100%)"
+def test_parse_gradient_maps_to_one_verbatim_string():
+    """D643 — ONE `overlayGradient` string holding the complete CSS value.
+
+    The pre-D636 shape (`overlayGradient` boolean + `overlayGradientAngle`/
+    `From`/`To`) is GONE from every block.json, so emitting it wrote four attrs
+    WordPress silently discards. The whole point of asserting the value
+    VERBATIM is that no information is left behind: the mid-stops and the stop
+    POSITIONS below both survive, where the old first-and-last decomposition
+    threw them away.
+    """
+    src = (
+        "linear-gradient(135deg, rgba(90, 40, 160, 0.55) 0%, "
+        "rgba(20, 100, 200, 0.35) 100%)"
     )
-    assert out["overlayGradient"] is True
-    assert out["overlayGradientAngle"] == 135
-    assert out["overlayGradientFrom"] == "rgba(90, 40, 160, 0.55)"
-    assert out["overlayGradientTo"] == "rgba(20, 100, 200, 0.35)"
+    assert parse_overlay_background(src) == {"overlayGradient": src}
+    for dead in (
+        "overlayGradientAngle",
+        "overlayGradientFrom",
+        "overlayGradientTo",
+    ):
+        assert dead not in parse_overlay_background(src)
 
 
-def test_parse_linear_gradient_no_angle_defaults_omitted():
-    """No explicit angle → the mapped dict OMITS overlayGradientAngle (the
-    attr keeps its own DB default of 180, per block.json — never fabricated)."""
-    out = parse_overlay_background("linear-gradient(#000, #fff)")
-    assert out["overlayGradient"] is True
-    assert "overlayGradientAngle" not in out
-    assert out["overlayGradientFrom"] == "#000"
-    assert out["overlayGradientTo"] == "#fff"
+def test_parse_gradient_preserves_mid_stops_the_old_shape_discarded():
+    """A 3-stop gradient kept only its first and last colour under the old
+    decomposition. Holding the string keeps every stop — a real fidelity gain,
+    asserted so a future "simplification" back to from/to fails loudly."""
+    src = "linear-gradient(90deg, #000 0%, #f00 50%, #fff 100%)"
+    assert parse_overlay_background(src) == {"overlayGradient": src}
+
+
+def test_parse_gradient_no_angle_is_carried_verbatim():
+    """No explicit angle → nothing is fabricated; the string is what the draft
+    wrote, and CSS's own `to bottom` default applies at render time."""
+    assert parse_overlay_background("linear-gradient(#000, #fff)") == {
+        "overlayGradient": "linear-gradient(#000, #fff)"
+    }
+
+
+def test_parse_radial_and_conic_are_now_cloneable():
+    """D643 capability gain. The 4-scalar shape could only express an angle
+    plus two stops, so radial/conic drafts fell to the honest-gap path and
+    could not be cloned at all. One string has no such limit."""
+    for src in (
+        "radial-gradient(circle, #000, #fff)",
+        "conic-gradient(from 45deg, #000, #fff)",
+        "repeating-linear-gradient(45deg, #000 0%, #fff 10%)",
+    ):
+        assert parse_overlay_background(src) == {"overlayGradient": src}
 
 
 def test_parse_solid_colour():
@@ -163,11 +194,17 @@ def test_parse_solid_rgba_keeps_alpha_in_the_colour_not_a_separate_attr():
 
 def test_parse_unmappable_returns_none():
     assert parse_overlay_background("url(bg.png)") is None
-    assert parse_overlay_background("radial-gradient(circle, #000, #fff)") is None
     assert parse_overlay_background("none") is None
     assert parse_overlay_background("") is None
-    # A single-stop "gradient" (malformed) is not mappable.
+    # A single-stop "gradient" paints NOTHING. D643 clones the gradient string
+    # verbatim instead of decomposing it, and the decomposition is what used to
+    # reject this — so `_linear_gradient_renders_something()` now carries that
+    # guarantee explicitly. Without it a malformed draft gradient would clone
+    # into an invisible overlay: a silent half-write, not a faithful transfer.
     assert parse_overlay_background("linear-gradient(#000)") is None
+    # NOTE: `radial-gradient(circle, #000, #fff)` used to be asserted here as
+    # unmappable. It is now CLONEABLE (see the radial/conic test above) — the
+    # limitation was the storage shape, never the mechanism.
 
 
 # ---------------------------------------------------------------------------
@@ -187,10 +224,9 @@ def test_resolve_lifts_onto_container_overlay_family():
             }
         }
         attrs = resolve_pseudo_overlay("sgs/container", pseudo_decls, ".sgs-info-box")
-        assert attrs["overlayGradient"] is True
-        assert attrs["overlayGradientAngle"] == 135
-        assert attrs["overlayGradientFrom"] == "#5a28a0"
-        assert attrs["overlayGradientTo"] == "#1464c8"
+        assert attrs["overlayGradient"] == (
+            "linear-gradient(135deg, #5a28a0 0%, #1464c8 100%)"
+        )
 
         # The NON-mappable pseudo props (content, z-index) still got an honest
         # gap row on sgs/container — mapping `background` doesn't excuse the rest.
@@ -292,10 +328,10 @@ def test_build_css_attrs_lifts_gradient_overlay_for_container():
     try:
         section = _info_box_section()
         merged = _build_css_attrs(_container_recognition(), section, _INFO_BOX_RULES, is_root=True)
-        assert merged.get("overlayGradient") is True
-        assert merged.get("overlayGradientAngle") == 135
-        assert merged.get("overlayGradientFrom") == "rgba(90, 40, 160, 0.55)"
-        assert merged.get("overlayGradientTo") == "rgba(20, 100, 200, 0.35)"
+        assert merged.get("overlayGradient") == (
+            "linear-gradient(135deg, rgba(90, 40, 160, 0.55) 0%, "
+            "rgba(20, 100, 200, 0.35) 100%)"
+        )
         # No inline style carrying the overlay — attrs only (R-22-6).
         assert "style" not in merged or "gradient" not in str(merged.get("style", ""))
     finally:
@@ -340,35 +376,23 @@ def test_build_css_attrs_gaps_pseudo_for_info_box():
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    "value",
     [
-        # keyword directions map to the equivalent angle, colours preserved
-        ("linear-gradient(to right, #5a28a0, #1464c8)",
-         {"overlayGradient": True, "overlayGradientFrom": "#5a28a0",
-          "overlayGradientTo": "#1464c8", "overlayGradientAngle": 90}),
-        ("linear-gradient(to bottom right, #000, #fff)",
-         {"overlayGradient": True, "overlayGradientFrom": "#000",
-          "overlayGradientTo": "#fff", "overlayGradientAngle": 135}),
-        # negative numeric angle is accepted
-        ("linear-gradient(-45deg, #000, #fff)",
-         {"overlayGradient": True, "overlayGradientFrom": "#000",
-          "overlayGradientTo": "#fff", "overlayGradientAngle": -45}),
-        # rgba/hsl functional colour stops survive the colour-like gate
-        ("linear-gradient(135deg, rgba(0,0,0,.5) 0%, rgba(255,255,255,.2) 100%)",
-         {"overlayGradient": True, "overlayGradientFrom": "rgba(0,0,0,.5)",
-          "overlayGradientTo": "rgba(255,255,255,.2)", "overlayGradientAngle": 135}),
-        # multi-position stop (#000 25% 50%) strips ALL positions
-        ("linear-gradient(45deg, #000 25% 50%, #fff)",
-         {"overlayGradient": True, "overlayGradientFrom": "#000",
-          "overlayGradientTo": "#fff", "overlayGradientAngle": 45}),
-        # no explicit direction → angle unset (CSS default 180 == DB default)
-        ("linear-gradient(#000, #fff)",
-         {"overlayGradient": True, "overlayGradientFrom": "#000",
-          "overlayGradientTo": "#fff"}),
+        # Every one of these is carried through VERBATIM (D643). The old
+        # expectations here were angle/from/to decompositions — keyword
+        # directions converted to degrees, stop positions stripped, mid-stops
+        # discarded. None of that happens now, and none of it needs to: the
+        # renderer receives the draft's own CSS unchanged.
+        "linear-gradient(to right, #5a28a0, #1464c8)",
+        "linear-gradient(to bottom right, #000, #fff)",
+        "linear-gradient(-45deg, #000, #fff)",
+        "linear-gradient(135deg, rgba(0,0,0,.5) 0%, rgba(255,255,255,.2) 100%)",
+        "linear-gradient(45deg, #000 25% 50%, #fff)",
+        "linear-gradient(#000, #fff)",
     ],
 )
-def test_parse_gradient_edge_cases_map_safely(value, expected):
-    assert parse_overlay_background(value) == expected
+def test_parse_gradient_edge_cases_map_verbatim(value):
+    assert parse_overlay_background(value) == {"overlayGradient": value}
 
 
 @pytest.mark.parametrize(
@@ -378,7 +402,6 @@ def test_parse_gradient_edge_cases_map_safely(value, expected):
         "linear-gradient(.. deg, #000, #fff)",  # double-dot angle — must NOT crash
         "linear-gradient(to right, 50%, #fff)",  # first "stop" not a colour
         "linear-gradient(90deg, #000)",          # single stop
-        "radial-gradient(#000, #fff)",           # unsupported gradient function
         "url(bg.png)",                            # image
         "none",
         "",

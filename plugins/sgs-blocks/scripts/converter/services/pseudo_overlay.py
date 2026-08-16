@@ -58,10 +58,16 @@ from converter.services.styling_helpers import collect_css_decls_for_element
 # ``db_lookup.block_attrs()`` is the DB-gated existence check the composite-
 # mirror rule (Spec 31 §13.6) and R-31-9 both require.
 # ---------------------------------------------------------------------------
-_OVERLAY_GRADIENT_FLAG = "overlayGradient"
-_OVERLAY_GRADIENT_ANGLE = "overlayGradientAngle"
-_OVERLAY_GRADIENT_FROM = "overlayGradientFrom"
-_OVERLAY_GRADIENT_TO = "overlayGradientTo"
+# ONE string attribute holding the complete CSS gradient value (D636 storage
+# contract). The old 4-attr shape (`overlayGradient` boolean flag +
+# `overlayGradientAngle`/`From`/`To` scalars) was deleted from every block.json
+# by 837f7c97 but this converter kept emitting it — WP silently DISCARDS an
+# attribute a block does not declare, so from that commit until D643 the cloning
+# pipeline could not clone a gradient overlay at all: it wrote four attrs that
+# no longer existed and produced a clone with no gradient and no error. The
+# stale rows in sgs-framework.db masked it; pruning them (D643) is what
+# surfaced it.
+_OVERLAY_GRADIENT = "overlayGradient"
 _OVERLAY_SOLID_COLOUR = "backgroundOverlayColour"
 _OVERLAY_SOLID_OPACITY = "backgroundOverlayOpacity"
 
@@ -153,14 +159,28 @@ def collect_pseudo_decls_for_element(
 # Step 2/3 — background value parsing (solid colour vs. linear-gradient)
 # ---------------------------------------------------------------------------
 
+# The RENDERER's own gradient grammar, mirrored (D643). Kept byte-compatible
+# with `sgs_css_gradient_value()` in includes/helpers-tokens.php:736-757 — the
+# single PHP chokepoint every gradient passes through before emission. If the
+# converter emitted a value that regex rejects, the renderer would return ''
+# and the gradient would vanish with no error, which is precisely the silent
+# drop this session is fixing. Keep the two in step: a change to one is a bug
+# in the other.
+_RENDERABLE_GRADIENT_RE = re.compile(
+    r"^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$",
+    re.IGNORECASE,
+)
+# Defence in depth, mirroring the PHP helper's second guard.
+_GRADIENT_UNSAFE_RE = re.compile(r"[;{}]|url\s*\(|<|>|@|expression", re.IGNORECASE)
+
 _LINEAR_GRADIENT_RE = re.compile(
     r"^linear-gradient\(\s*(?P<body>.+)\)\s*$",
     re.IGNORECASE | re.DOTALL,
 )
 # A numeric angle: optional leading sign, at least one DIGIT (a lone "." must
-# NOT match — float(".") crashes), optional decimals, then "deg".
+# NOT match â€” float(".") crashes), optional decimals, then "deg".
 _ANGLE_DEG_RE = re.compile(r"^-?(?=[\d.]*\d)[\d.]+\s*deg$", re.IGNORECASE)
-# CSS keyword directions → the equivalent gradient angle in degrees. When the
+# CSS keyword directions â†’ the equivalent gradient angle in degrees. When the
 # first comma-part of a gradient is one of these, it is the DIRECTION (not a
 # colour stop) and must be consumed as the angle, never written as a colour.
 _ANGLE_KEYWORD_DEG = {
@@ -170,9 +190,9 @@ _ANGLE_KEYWORD_DEG = {
     "to bottom left": 225, "to left bottom": 225,
     "to top left": 315, "to left top": 315,
 }
-# A crude "is this token actually a colour" gate — hex / functional colour /
+# A crude "is this token actually a colour" gate â€” hex / functional colour /
 # CSS custom-property / a single alphabetic named colour. A directional phrase
-# ("to right"), a bare percentage, or empty fails it → the gradient falls to
+# ("to right"), a bare percentage, or empty fails it â†’ the gradient falls to
 # the honest-gap path rather than writing a non-colour as overlayGradientFrom.
 _COLOUR_LIKE_RE = re.compile(
     r"^(#[0-9a-f]{3,8}|(?:rgb|rgba|hsl|hsla|var)\(.*\)|[a-z]+)$", re.IGNORECASE
@@ -207,7 +227,7 @@ def _split_top_level_commas(text: str) -> list[str]:
 
 def _strip_stop_position(stop: str) -> str:
     """Strip a trailing length/percentage stop-position from a gradient colour
-    stop (e.g. ``'rgba(0,0,0,.5) 0%'`` → ``'rgba(0,0,0,.5)'``). The colour
+    stop (e.g. ``'rgba(0,0,0,.5) 0%'`` â†’ ``'rgba(0,0,0,.5)'``). The colour
     function itself may contain commas/spaces, so only a trailing bare
     percentage/length token (no unmatched parens) is stripped.
     """
@@ -219,16 +239,62 @@ def _strip_stop_position(stop: str) -> str:
     return stop.strip()
 
 
+
+
+def _linear_gradient_renders_something(value: str) -> bool:
+    """Structural validity gate for a LINEAR gradient we are about to clone
+    verbatim (D643).
+
+    The D636 collapse means we no longer DECOMPOSE a gradient — we hold the
+    whole CSS string. That removed the decomposition, but it must NOT remove
+    the guarantee the decomposition happened to provide: a gradient that
+    cannot paint (one colour stop, a bare percentage where a colour belongs)
+    used to fail the parse and fall to the honest-gap path. Passing it through
+    verbatim would clone an overlay that renders NOTHING — a silent
+    half-write, which Spec 31 forbids just as firmly as a wrong value.
+
+    Scope is deliberately LINEAR-only. `radial-`/`conic-` have a different
+    grammar (`circle at center`, angular stops) that this parser was never
+    written for, and inventing one here would be guessing. They were gapped
+    entirely before D643, so admitting them on the renderer-grammar gate alone
+    is strictly more capability than before, never less — and a malformed one
+    is no worse off than it was when it could not be cloned at all.
+    """
+    m = _LINEAR_GRADIENT_RE.match(value.strip())
+    if not m:
+        return True  # not a linear gradient — out of this gate's scope
+    parts = _split_top_level_commas(m.group("body"))
+    if not parts:
+        return False
+    first = parts[0].strip()
+    if _ANGLE_DEG_RE.match(first) or " ".join(first.lower().split()) in _ANGLE_KEYWORD_DEG:
+        parts = parts[1:]
+    if len(parts) < 2:
+        return False  # a one-stop "gradient" paints nothing
+    colours = [_strip_stop_position(s) for s in parts]
+    return bool(
+        _COLOUR_LIKE_RE.match(colours[0]) and _COLOUR_LIKE_RE.match(colours[-1])
+    )
+
+
 def parse_overlay_background(value: str) -> dict[str, Any] | None:
     """Map a ``background``/``background-image`` value onto the overlay attr
     family. Returns a dict of attr_name→value, or None if the value cannot be
     mapped (unsupported function e.g. ``url(...)``, ``none``, empty).
 
-    - ``linear-gradient(ANGLEdeg, stop1, ..., stopN)`` → overlayGradient=True,
-      overlayGradientAngle=<angle, default 180 matching the DB default when
-      the angle is omitted>, overlayGradientFrom=<first stop colour>,
-      overlayGradientTo=<last stop colour> (≥2 stops required; a single-stop
-      "gradient" is not mappable — falls to the honest-gap path).
+    - Any CSS gradient the renderer's own validator accepts —
+      ``(repeating-)?(linear|radial|conic)-gradient(...)`` → overlayGradient=<the
+      complete gradient string, verbatim>. ONE attribute (D636/D643). The value
+      is checked against the same shape ``sgs_css_gradient_value()``
+      (includes/helpers-tokens.php) enforces, so the converter never emits a
+      string the renderer will silently reject — that would reproduce, in a new
+      place, exactly the drop this collapse fixed.
+
+      Radial and conic gradients are now CLONEABLE. The old 4-scalar shape could
+      only express ``linear-gradient`` (it decomposed to an angle plus two stop
+      colours), so radial/conic drafts fell to the honest-gap path. Holding the
+      whole string removes that limit, and multi-stop gradients now survive with
+      every stop intact instead of being flattened to first-and-last.
     - A solid colour (hex/rgb/rgba/hsl/hsla/named — anything NOT containing
       "gradient" or "url(") → backgroundOverlayColour=<value>. If the colour
       is ``rgba(r,g,b,a)`` the alpha channel is ALSO mapped to
@@ -240,45 +306,28 @@ def parse_overlay_background(value: str) -> dict[str, Any] | None:
     if not v or v.lower() == "none":
         return None
 
-    grad_match = _LINEAR_GRADIENT_RE.match(v)
-    if grad_match:
-        parts = _split_top_level_commas(grad_match.group("body"))
-        if not parts:
-            return None
-        # The first comma-part MAY be the direction (a numeric `Ndeg` angle OR a
-        # `to <side>` keyword). Consume it as the angle; it is NEVER a colour stop.
-        angle_deg: int | float | None = None
-        first = parts[0].strip()
-        first_key = " ".join(first.lower().split())
-        if _ANGLE_DEG_RE.match(first):
-            num = first[:-3].strip()  # drop the trailing "deg"
-            angle_deg = float(num) if "." in num else int(num)
-            parts = parts[1:]
-        elif first_key in _ANGLE_KEYWORD_DEG:
-            angle_deg = _ANGLE_KEYWORD_DEG[first_key]
-            parts = parts[1:]
-        # else: no explicit direction — the CSS default is `to bottom` (180deg),
-        # which also matches the DB default, so leave the angle unset.
-        if len(parts) < 2:
-            return None
-        colours = [_strip_stop_position(s) for s in parts]
-        # A "from"/"to" that is not colour-like (e.g. a stray direction keyword
-        # the parser failed to consume, or a bare position) means we misread the
-        # gradient — fall to the honest-gap path, never write a non-colour value.
-        if not _COLOUR_LIKE_RE.match(colours[0]) or not _COLOUR_LIKE_RE.match(colours[-1]):
-            return None
-        result: dict[str, Any] = {
-            _OVERLAY_GRADIENT_FLAG: True,
-            _OVERLAY_GRADIENT_FROM: colours[0],
-            _OVERLAY_GRADIENT_TO: colours[-1],
-        }
-        if angle_deg is not None:
-            result[_OVERLAY_GRADIENT_ANGLE] = angle_deg
-        return result
+    # Any gradient function the RENDERER accepts is cloneable as one string.
+    # Gate on the renderer's own grammar, not on our parser's: emitting a value
+    # sgs_css_gradient_value() rejects would drop it silently at render time.
+    if (
+        _RENDERABLE_GRADIENT_RE.match(v)
+        and not _GRADIENT_UNSAFE_RE.search(v)
+        and _linear_gradient_renders_something(v)
+    ):
+        return {_OVERLAY_GRADIENT: v}
+
+    # The angle/from/to DECOMPOSITION that used to live here is DELETED (D643).
+    # It existed only to fill the 4-scalar attr family, and every one of those
+    # attrs was removed from block.json by 837f7c97 — so this branch had been
+    # writing four attributes WordPress silently discards. Holding the whole
+    # string needs no decomposition at all, which is why the replacement above
+    # is three lines rather than thirty.
 
     if "gradient" in v.lower() or "url(" in v.lower():
-        # A gradient FUNCTION we don't recognise (radial/conic) or an image —
-        # not mappable to the solid/linear-gradient overlay family.
+        # Either an image (`url(...)`), or a gradient that did NOT satisfy the
+        # renderer's grammar above (malformed, or carrying a character
+        # sgs_css_gradient_value() rejects). Not mappable — honest gap, never a
+        # value the renderer would drop on the floor.
         return None
 
     # Treat as a solid colour.
@@ -313,15 +362,19 @@ def _block_declares_meaningful_subset(
     overlay_attrs: dict[str, Any], declared: Any
 ) -> bool:
     """True only when the block declares a subset of `overlay_attrs` that
-    actually RENDERS something. A gradient needs BOTH colour ends
-    (``overlayGradientFrom`` AND ``overlayGradientTo``); a solid needs
-    ``backgroundOverlayColour``. A block that declares only the
-    ``overlayGradient`` flag (or only the angle) without the colours would
-    render an invisible/empty overlay — so that is NOT a real destination and
-    the declaration must fall to the honest-gap path (Spec 31 §3.A step 8:
-    no usable destination → gap, never a silent half-write)."""
-    if _OVERLAY_GRADIENT_FLAG in overlay_attrs:
-        return _OVERLAY_GRADIENT_FROM in declared and _OVERLAY_GRADIENT_TO in declared
+    actually RENDERS something. A gradient needs ``overlayGradient``; a solid
+    needs ``backgroundOverlayColour``. Anything else falls to the honest-gap
+    path (Spec 31 §3.A: no usable destination → gap, never a silent
+    half-write).
+
+    D643: the gradient arm used to require BOTH ``overlayGradientFrom`` AND
+    ``overlayGradientTo`` to be declared — a half-written gradient renders an
+    invisible overlay, so the guard was right for the 4-scalar shape. With ONE
+    string there is no half-write to guard against: the value is either present
+    and complete, or absent. The guard is now simply "is the destination
+    declared", which is the same question every other attr asks."""
+    if _OVERLAY_GRADIENT in overlay_attrs:
+        return _OVERLAY_GRADIENT in declared
     if _OVERLAY_SOLID_COLOUR in overlay_attrs:
         return _OVERLAY_SOLID_COLOUR in declared
     return False
@@ -342,7 +395,7 @@ def resolve_pseudo_overlay(
         return {}
 
     declared = db_lookup.block_attrs(block_slug)
-    has_overlay_family = _OVERLAY_GRADIENT_FLAG in declared or _OVERLAY_SOLID_COLOUR in declared
+    has_overlay_family = _OVERLAY_GRADIENT in declared or _OVERLAY_SOLID_COLOUR in declared
 
     mapped_attrs: dict[str, Any] = {}
 

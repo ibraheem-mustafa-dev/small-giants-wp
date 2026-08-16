@@ -741,8 +741,16 @@ function sgs_css_gradient_value( ?string $value ): string {
 	}
 
 	// Must be exactly one gradient function, fully bounded end-to-end, built
-	// only from a safe character set (letters, digits, whitespace, . , % ( ) # -).
-	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#\-]+\)$/i', $value ) ) {
+	// only from a safe character set (letters, digits, whitespace, . , % ( ) # / _ -).
+	//
+	// `/` and `_` added 2026-08-16 (D643). Without `/`, CSS Color 4 slash syntax
+	// (`rgb(0 0 0 / 50%)`, `hsl(210 50% 40% / .8)`) failed the match and the whole
+	// gradient was silently dropped to '' — no error, no log, the solid colour just
+	// painted instead. `_` admits custom-property names that carry an underscore.
+	// Neither weakens the guard: `url(`, `;`, `{`, `}`, `<`, `>`, `@` and `expression`
+	// are still rejected outright below, and CSS has no `//` or `/*` comment form
+	// reachable from this character set (`*` is not in it).
+	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#\/_\-]+\)$/i', $value ) ) {
 		return '';
 	}
 
