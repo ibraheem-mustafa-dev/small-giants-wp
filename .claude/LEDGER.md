@@ -9,25 +9,34 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-16, evening. Everything shipped today is now closed — nothing open, nothing mid-flight.**
+**2026-08-16, late. The gradient rollout's groundwork (Phase 0) is DONE. The builders have not
+started — and the ground turned out to be far worse than anyone thought.**
 
-**Earlier today** — Track 1 (D640/D641) colour-gap closure (4 streams, deployed, live-verified, 2 real
-bugs found + fixed) and Track 2 (D638/D639) wrapper-decomposition steps 6-7 (built + merged) both
-landed on `main`. Full detail lives permanently in `decisions.md`, not duplicated here.
+**What we set out to do:** start Stage 2, the universal gradient rollout (D636) — give every colour
+control in the framework a gradient option. **What we actually found:** yesterday's storage change
+(which collapsed each gradient from 4 attributes down to 1) had left NINE places still speaking the
+old language. None of them failed a build, because WordPress silently throws away any attribute a
+block does not declare. They just quietly did nothing.
 
-**Then** a separate converter session (D642) deleted dead code (`resolvers/grid_area.py`) it found
-while fixing a lying docstring — verified dead 4 independent ways.
+**The serious one: the cloning pipeline could not clone a gradient at all.** It was writing four
+attributes that no longer exist, producing clones with no gradient, no error and no warning. Stale
+rows in the database were hiding it — clearing them is what exposed it. Fixed, and two capabilities
+fell out for free: radial and conic gradients can now be cloned (they never could), and multi-stop
+gradients keep every colour instead of being flattened to two.
 
-**This session closed the two loose ends those left behind.** (1) Step 7 was built and merged but
-never deployed or looked at in a real editor — this session's own brief wrongly claimed it had been;
-the LEDGER and `decisions.md` both said otherwise and were right. Deployed it, live-verified both
-things that mattered (shape-divider Size control on both axes, Background panel's move into the
-Styles tab on all 7 wrapper blocks) with real computed CSS. **The 7-step wrapper-decomposition
-initiative is now fully closed.** (2) D642's deletion left 10 stale references — 2 in the governing
-Spec 31, 11 mis-cited tombstones, one still-lying test docstring, an orphaned helper, stale figures in
-3 planning docs. All repaired, `/qc`-checked, committed (`98bb5ce0`). (3) `hero`/`GridAreaPanel`, the
-one open question D639 left over, was already resolved by a same-day follow-up commit — confirmed,
-nothing left to decide.
+**A build check that claimed to be running wasn't.** A gate written yesterday was documented in three
+separate places as enforcing every build. It was wired nowhere. Now genuinely wired, with all three
+docs corrected to record the gap rather than quietly become true.
+
+**Your `accent` ruling was executed — and it shrank.** You ruled that attributes secretly driving
+several CSS properties at once should be split. Four agents in parallel checked each against the real
+code instead of trusting the database, and **4 of the 6 "defects" were not defects at all** — the
+database column was simply wrong. Three blocks were genuinely broken and were split (12 new controls
+replacing 4); two were left alone.
+
+**What is NOT done:** nothing was deployed, so nothing is proven working — only proven building. The
+three splits are committed behind a deliberately-provisional gate bypass recording visual verification
+as OWED, not claimed. That verification is the first job next session.
 
 ## Shipped today
 
@@ -56,82 +65,76 @@ Styles tab on all 7 wrapper blocks. Scratch probe page (id 2466) force-deleted a
 **Agent identity:** you are picking up a clean framework with no open blockers. Two independent
 next items exist — they don't collide, so either can go first.
 
-### ⚠ Task 1 UPDATE — Phase 0 (groundwork) is DONE. Read D643 before starting the builders.
+### Task 1 — Gradient rollout Stage 2 (D636): builders, but verification FIRST
 
-**A later session on 2026-08-16 executed the groundwork this task needs, and it was much bigger than
-"start the builders".** Two commits on `main`: `c99be9c1` + `8c3bfbae`. Build green, both pushed.
+**Phase 0 groundwork is DONE.** Read **`decisions.md` D643 in full before touching anything** — it
+records nine defects, two instructions that turned out to be WRONG, and four corrections that change
+how the builders must work.
 
-**Done:** 9 pre-D636 leftovers found and 8 fixed — including **the cloning converter, which could not
-clone a gradient overlay at all** (it wrote the deleted 4-attribute shape; stale DB rows were masking
-it). Radial/conic gradients are now cloneable and multi-stop gradients survive intact, both as
-side-effects of the fix. `sgs_css_gradient_value()` widened for CSS Color 4 slash syntax. DB reseeded
-(102 new attrs, 43 orphans pruned). `check-wrapper-capability-preconditions.js` **actually wired** —
-it was documented as wired in three places and ran nowhere.
+**What:** finish the rollout — background / text / border / icon / shape-divider.
+**Why:** every colour control gains a gradient option; Bean ruled full universal coverage (D636).
+**Estimated time:** ~1 session per builder in parallel, after the verification task below.
 
-**⛔ Three things that change how the builders must work — do NOT start without reading these:**
+#### Task 1a — Live-verify the three splits (DO THIS FIRST, ~20 min)
+
+**What:** `sgs/social-icons`, `sgs/business-info` and `sgs/mega-panel` were split into 12 new
+attributes replacing 4, committed behind a PROVISIONAL `SGS_VISUAL_GATE_SKIP`.
+**Why:** these genuinely change the emitted CSS (custom properties renamed and split, every consuming
+selector repointed). Defaults were inherited so the rendered result SHOULD be identical — but that is
+reasoning, not measurement, and D641 is the standing proof that reasoning is not enough.
+**Orchestration:** inline (main thread). Deploy via `build-deploy.py --target sandybrown`, then
+`capture-tier-fixture.py` + `make-visual-diff-reports.py` for the three blocks.
+⚠ **Known ordering problem, unsolved:** genuine before/after capture needs a DEPLOY between staging
+and committing, and the deploy's dirty-tree gate forbids exactly that. Resolve the sequencing with
+Bean explicitly — do NOT reach for `--allow-dirty`.
+**Acceptance:** three real reports at `reports/visual-diff/<block>-<date>.md` carrying measured
+values, and the provisional-bypass note removed from D643 and this LEDGER.
+
+#### Task 1b — The five builders
+
+| Builder | Mechanism | Scale |
+|---|---|---|
+| Background | `background-image: <gradient>` | ~78 attrs |
+| Text | `background-clip:text` + `color:transparent` | ~85 attrs |
+| Border | masked `::before` + `mask` (**never `border-image`**) | ~33 attrs |
+| Icon/SVG | inline `<linearGradient>` + `stroke="url(#id)"` | ~16 attrs |
+| Shape divider | SVG `<linearGradient>` on the divider path | 12 attrs |
+
+**Orchestration:** delegated, one isolated worktree each (`/delegate` routes to Sonnet; its parallel
+cap is 4, so run 4 then 1). `/qc-inline` per builder before it reports done; `/qc` multi-rater across
+the merged diff.
+
+⛔ **Four corrections that will cost a builder real time if skipped:**
 1. **`SgsColourPanel.js` needs NO changes.** It forwards `states` opaquely. The shared surface is ONE
-   file, `DesignTokenPicker.js`, and `<DesignTokenPicker` is mounted in **9** block files, not 30.
-2. **Classifying `css_property` alone is actively harmful.** Doing it produced 51 F6
-   `undeclared-subelement` violations — an attr with no `css_element` misroutes on a clone. The
-   element must be declared in each block's `supports.sgs.elements.<el>.attrMap`. Research for all 54
-   attrs (with per-attr evidence) is ready at
+   file — `DesignTokenPicker.js` — mounted directly in **8** block files (not the 30 an early count
+   claimed, which counted comments and re-export lines). Re-measure before relying on it:
+   `grep -rl '<DesignTokenPicker' plugins/sgs-blocks/src/blocks/ | wc -l`. It was 9 earlier this
+   session and this session's own `sgs/separator` change made it 8 — a live count, not a constant.
+   `<SgsColourPanel` mounts in 61 files.
+2. **Never write `css_property` without `css_element`.** Doing so produced 51 F6
+   `undeclared-subelement` violations: the attribute falls to the root routing domain and
+   **misroutes on a clone**. The element must be declared in that block's
+   `supports.sgs.elements.<el>.attrMap`. Research for all 54 unclassified attrs is ready at
    `.claude/reports/2026-08-16-D643-colour-attr-classification.md`; applying it is a per-block design
-   change, still OPEN.
+   change and is still OPEN.
 3. **Icon/SVG has no manifest slot.** Spec 35's vocabulary has ONE gradient-capable member,
-   `css:background-image`. Background/text/border can all honestly claim it (all three really do paint
-   with `background-image`). Icons are stroke-based and there is `css:fill` but **no `css:stroke`** —
-   Builder 4 needs a new member or an explicit opt-out. Decide before dispatching it.
+   `css:background-image`. Background, text and border can all honestly claim it (all three really do
+   paint with `background-image`). Icons are stroke-based and there is `css:fill` but **no
+   `css:stroke`** — decide on a new member or an explicit opt-out BEFORE dispatching Builder 4.
+4. **Shape-divider colours emit `color`, not `fill`** — the SVG resolves it via `fill="currentColor"`.
+   A divider gradient must replace that `currentColor` hop with a real `<linearGradient>`.
 
-**Two corrections to this task's own brief, measured:** shape-divider colours emit **`color`** (the
-SVG resolves it via `fill="currentColor"`), not `fill` — so a divider gradient needs a real
-`<linearGradient>` replacing that hop. And `sgs/star-rating`'s colours plus `sgs/audio.spectrumColour`
-are **not CSS at all** (SVG presentation attribute; JS canvas paint) — audio is excluded outright.
+**Excluded deliberately:** `sgs/audio.spectrumColour` (JS canvas paint — a CSS gradient cannot paint a
+canvas) and `sgs/star-rating.starColour`/`emptyColour` (written straight into the SVG `fill=`
+presentation attribute, no CSS involved).
 
-**Still OPEN before/with the builders:** the `accent` split (Bean ruled SPLIT — each CSS property gets
-its own control defaulting to the global `accent` preset; scope is 6 attrs, or 8 including
-`social-icons`, still unruled); applying the classification research per-block; **and a NEW
-client-facing defect — `sgs/cta-section` shows overlay colour + gradient controls that save fine and
-paint nothing** (it passes `no_overlay => true`; `check-dead-controls.js` structurally cannot see
-this). Full detail: `decisions.md` **D643**.
+**Still OPEN:** `sgs/cta-section` shows overlay colour and gradient controls that save correctly and
+paint nothing — it passes `no_overlay => true`, and `check-dead-controls.js` structurally cannot see
+this (the attrs ARE consumed in the shared wrapper, just never for that block). Needs a design call:
+drop the attrs and control, or stop passing `no_overlay`.
 
-**Nothing from this groundwork is deployed or live-verified.** Per D641, green ≠ working.
-
-### Task 1 — Gradient rollout Stage 2 (D636)
-
-**What:** extend gradient support (already live for solid-colour backgrounds) to text, border, and
-icon/SVG colour-capable attrs across the framework.
-**Why:** colour attrs are already live from earlier tracks, so any NEW colour attribute already
-lands in the background-family bucket and gets gradient support automatically — this closes the
-remaining 3 surfaces (text/border/icon) that don't yet.
-**Estimated time:** ~1 session per builder, run in parallel (smallest plausible figure).
-
-**Orchestration:**
-- Execution: delegated, 4 parallel builder agents in isolated worktrees (builders 1-3 touch the
-  same two shared files — `DesignTokenPicker.js`/`SgsColourPanel.js` — so worktree isolation is
-  load-bearing, not optional)
-- Model: sonnet via `/delegate` for each builder (mechanical/well-scoped, not architectural)
-- Dispatch pattern: `/dispatching-parallel-agents`, 4 independent branches
-- Pre-step (sequential, before any builder starts): `/sgs-update` — new colour attrs from recent
-  tracks (Track 1 D640/641, wrapper decomposition) are NOT in the DB yet
-- Brief per builder:
-  - Background: `background-image: <gradient>`; fold Solid/Gradient into
-    `DesignTokenPicker.js`/`SgsColourPanel.js` behind `gradientCapable` (~78 attrs)
-  - Text (real text only): `background-clip: text` + `color: transparent`; `text-shadow` breaks
-    under it — flag per block (~80 attrs)
-  - Border: masked `::before` + `mask`; **NOT `border-image`** (breaks `border-radius`) (~32 attrs)
-  - Icon/SVG: inline `<linearGradient>` + `stroke="url(#id)"`; simplest of the four (~10+, re-derive
-    the count — the ~10 figure is stale)
-- Context the builders need that won't be in cold context: full D636 decision + addendum
-  (`decisions.md`), the icon-mechanism correction recorded there (background-clip:text does NOT
-  work for icon SVGs — a 4th, SVG-native mechanism is required, already reflected in the brief above)
-- Depends on: `/sgs-update` pre-step only
-- Parallel with: Task 2 (typography) — genuinely independent, don't sequence them
-- `/qc` gate after: yes, mandatory before merge (D636's own requirement)
-
-**Acceptance:** all 4 gradient surfaces (background/text/border/icon) have a working
-`gradientCapable` control, live-verified on the canary with a real gradient rendering correctly for
-at least one block per surface. Full scope = D636 + addendum's named surface list — do not close
-this as "done" with only background+text shipped; border and icon are equally in scope.
+**Acceptance:** all five mechanisms have a working gradient control, live-verified on the canary with
+a real gradient rendering correctly — Bean's eye, not a green build (R-31-13).
 
 ### Task 2 — Typography framework-wide initiative
 
@@ -201,16 +204,19 @@ Task 2: scoped plan — build dispatch is a FUTURE session's task, not this one'
 
 ## State Snapshot
 
-- **Branch:** `main`. Today's commits include Track 1/Track 2 merges + this session's `98bb5ce0`
-  (grid_area doc repair) + this LEDGER update. Step 7's deploy was a fast-forward of already-merged
-  code (`ea4514fc`), no new commit for the deploy itself.
-- **D-ceiling:** **D642** — verify with
+- **Branch:** `main`, in sync with origin. This session: `c99be9c1` (8 pre-D636 leftovers),
+  `8c3bfbae` (gate wiring + 3 doc corrections), `679ae4d9` (D643 docs + research report), plus three
+  split commits and their merges.
+- **D-ceiling:** **D643** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling before).
-- **Build:** green. `npm run build` exit 0. Full converter suite 665 passed / 1 skipped / 11 xfailed,
-  unchanged before/after this session's doc-only edits (re-verified via stash/pop in this environment).
-- **Canary:** sandybrown carries both Track 1's deploy (`c4136e9f` + fixes) and this session's step-7
-  deploy (`ea4514fc`), both live-verified. All scratch/test content reverted or force-deleted.
+  (anchor on the heading; an unanchored grep once reported a hex colour as the ceiling).
+- **Build:** green through all ~50 gates. Converter suite 666 passed.
+- **DB:** reseeded (stages 1 + 9). Schema drift CLEAN, re-verified after every write because a
+  co-active session shared the file. Backups at `sgs-framework.db.pre-D643*.bak`.
+- **Canary:** UNCHANGED by this session — nothing was deployed. It still carries the earlier Track 1
+  and step-7 deploys.
+- **Worktrees:** none. Four were created and removed cleanly; `node_modules` intact at 972 packages
+  (no junctions were created, which is why removal was safe).
 - **Pre-existing dirty files, not this session's:** `reports/phase4-*.txt`,
   `.claude/hooks/doc-size-baseline.json`, `.claude/memory/decisions-archive.md`,
   untracked `.claude/reports/*`, `.claude/Border Example HTML.html`.

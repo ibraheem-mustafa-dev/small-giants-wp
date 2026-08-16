@@ -747,6 +747,10 @@
       "size": {
         "reason": "Equivalent to `iconSize`.",
         "wave": "over-report"
+      },
+      "iconColor": {
+        "reason": "Genuine SGS equivalent under a different name, and SPLIT into three controls by D643 (2026-08-16). Core's single `iconColor` maps to `iconGlyphColour` (the SVG glyph, painted via `color` + `stroke=\"currentColor\"`); the split also added `iconBackground` and `iconBorderColour`, which core has no equivalent for at all - so SGS now exceeds core here rather than lagging it. The split was required because one attribute driving background + border + glyph cannot take a gradient: a gradient valid as a background is meaningless as a glyph colour. Hover variants exist for all three. This finding appeared the moment the rename landed, which is the audit matching core attr names literally - the capability never went missing.",
+        "wave": "over-report"
       }
     }
   },

@@ -54,7 +54,11 @@
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
@@ -69,14 +73,20 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "icon",
 					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img), render.php:451. Carries no colour attrMap: the `item` element's background/border/glyph attrs (below) do NOT paint this span, they paint the surrounding link box."
 				},
 				"item": {
 					"label": "Icon Link",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"attrMap": {
 						"css:color": "iconGlyphColour",
 						"css:background-color": "iconBackground",
@@ -91,7 +101,7 @@
 							}
 						}
 					},
-					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box (render.php:462) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup, never in the manifest, an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`). D643: `iconColour`/`iconColourHover` were split (2026-08-16) into one attribute PER real CSS property. Pre-split, the resting/hover colour var (`--sgs-social-colour`/`--sgs-social-hover`) was consumed by up to THREE different declarations depending on `iconStyle` (plain: color only, style.css:20/34; filled: background, :45/52; outlined: border-color AND color SIMULTANEOUSLY — the base rule's `color` isn't overridden by the outlined selector, so both apply at once, :20+:57-65) — a single gradient-capable value cannot serve background/border/currentColor at once, so each property now has its own attribute (`iconBackground`/`iconBorderColour`/`iconGlyphColour`, each with a matching `*Hover` pair), each defaulting to the ORIGINAL shared default (text-muted resting / primary hover)."
+					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box (render.php:462) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup, never in the manifest, an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`). D643: `iconColour`/`iconColourHover` were split (2026-08-16) into one attribute PER real CSS property. Pre-split, the resting/hover colour var (`--sgs-social-colour`/`--sgs-social-hover`) was consumed by up to THREE different declarations depending on `iconStyle` (plain: color only, style.css:20/34; filled: background, :45/52; outlined: border-color AND color SIMULTANEOUSLY — the base rule's `color` isn't overridden by the outlined selector, so both apply at once, :20+:57-65) — a single gradient-capable value cannot serve background/border/currentColor at once, so each property now has its own attribute (`iconBackground`/`iconBorderColour`/`iconGlyphColour`, each with a matching `*Hover` pair), each defaulting to the ORIGINAL shared default (text-muted resting / primary hover). clusters widened to text+fill+layout 2026-08-16 (D643): the D643 split gave this element attrMap entries for css:background-color and css:border-color, but with clusters=['text'] neither is a resolvable member, so the entries never reached claimedAttrs and iconBackground/iconBorderColour surfaced as STYLE-DEFECT orphans. background-color lives in the fill cluster and border-color in the layout cluster - declaring both is what makes the existing attrMap entries actually bind. Verified by running the gate, not by reasoning."
 				}
 			}
 		}
@@ -135,7 +145,10 @@
 		},
 		"source": {
 			"type": "string",
-			"enum": [ "manual", "site-info" ],
+			"enum": [
+				"manual",
+				"site-info"
+			],
 			"default": "manual"
 		},
 		"iconSize": {
@@ -168,7 +181,10 @@
 		},
 		"colourMode": {
 			"type": "string",
-			"enum": [ "theme", "brand" ],
+			"enum": [
+				"theme",
+				"brand"
+			],
 			"default": "theme"
 		},
 		"iconStyle": {

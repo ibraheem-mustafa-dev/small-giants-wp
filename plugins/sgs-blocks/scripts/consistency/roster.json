@@ -107,7 +107,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": false,
+        "media": true,
         "animation": false
       }
     },
@@ -737,7 +737,7 @@
         "styling": false,
         "colour": true,
         "link": false,
-        "media": false,
+        "media": true,
         "animation": false
       }
     },

@@ -372,9 +372,16 @@
     },
     {
       "slug": "sgs/business-info",
-      "attr": "linkHoverColour",
+      "attr": "linkHoverBackgroundImage",
       "fields": {
-        "css_property": "background-image,color",
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "linkHoverTextColour",
+      "fields": {
+        "css_property": "color",
         "css_element": "link",
         "css_state": "hover"
       }
@@ -2078,10 +2085,31 @@
     },
     {
       "slug": "sgs/mega-panel",
-      "attr": "accent",
+      "attr": "accentBackground",
       "fields": {
-        "css_property": "background-color,background-image,border-color,color",
+        "css_property": "background-color"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "accentBackgroundImage",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "accentBorderColour",
+      "fields": {
+        "css_property": "border-color",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "accentTextColour",
+      "fields": {
+        "css_property": "color"
       }
     },
     {
@@ -3417,19 +3445,57 @@
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconColour",
+      "attr": "iconBackground",
       "fields": {
-        "css_property": "background-color,border-color,color",
-        "role": "styling",
+        "css_property": "background-color",
+        "role": "color",
         "css_element": "item"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconColourHover",
+      "attr": "iconBackgroundHover",
       "fields": {
-        "css_property": "background-color,border-color,color",
-        "role": "styling",
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "iconBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "iconBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "iconGlyphColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "iconGlyphColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_element": "item",
         "css_state": "hover"
       }

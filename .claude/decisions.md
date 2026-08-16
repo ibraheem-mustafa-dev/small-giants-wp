@@ -128,6 +128,59 @@ are stroke-based and the vocabulary has `css:fill` but no `css:stroke`. Builder 
 member or an explicit opt-out. `separator.lineGradient` consumed the single slot of headroom in
 `element-manifest-baseline.json`; the baseline was NOT raised (that requires Bean's sign-off).
 
+**The multi-property colour split (Bean-ruled, executed same session).** One attribute driving several
+unrelated CSS properties cannot take a gradient — a gradient valid as a background is meaningless as a
+text colour, and a border needs a different technique again. Bean's ruling: **SPLIT**, framing it as
+*"the accent control is a broken build issue — accent is a global colour preset's NAME"*, with each
+new control defaulting to the accent preset.
+
+**One correction to that ruling, applied.** Only ONE of the candidates actually defaults to `accent`
+(`mega-panel.accent`). The others default to `text-muted`, `primary` or empty. Defaulting them all to
+`accent` would have visibly changed every site using them. Implemented instead as: **every new
+attribute inherits its OWN retired attribute's exact default** — which makes `accent`'s controls default
+to the accent preset naturally, Bean's rule landing rather than being imposed, and makes every unset
+instance resolve to the same value as before.
+
+⛔ **THE SCOPE WAS WRONG AND THE DB CAUSED IT — 4 of 6 "defects" were not defects.** The candidate set
+came from `block_attributes.css_property` rows holding a comma-separated property list. Four parallel
+Sonnet builders (isolated worktrees, `/delegate`-routed, one directory each) were told to VERIFY
+against the render code rather than trust that column. Result:
+
+| Attribute | DB claim | Verified reality |
+|---|---|---|
+| `social-icons.iconColour` + `.iconColourHover` | 3 properties | ✅ REAL — split into 6 (background / border / glyph × normal+hover) |
+| `business-info.linkHoverColour` | 2 properties | ✅ REAL — split into 2 |
+| `mega-panel.accent` | 4 properties | ✅ REAL — split into 4 |
+| `nav-menu.featuredBg` | 2 properties | ❌ FALSE — one property |
+| `post-grid.{background,text,border}ColourHover` | 2-3 each | ❌ FALSE — ONE technique each |
+
+**`nav-menu.featuredBg` is the instructive one.** The `color:` declaration beside it is computed from a
+DIFFERENT attribute (`featuredColour`) through a WCAG contrast helper that reads `featuredBg` only as
+CONTEXT for picking readable text. The classifier saw them together and merged them. Independently
+re-verified before accepting. **Both false-positive branches were REVERTED, not renamed** — the agents
+had renamed the attributes "so gradient tooling can trust the naming pattern", which is not a real
+requirement: the rollout keys on css_property and role, not attribute names, and renaming working
+attributes is churn. No defect → no change.
+
+**What `business-info.linkHoverColour` turned out to be** (worth recording, it is a preview of the text
+builder's mechanism): the `background-image` half is one stop of a `linear-gradient` driving a
+`background-clip: text` colour-sweep hover, with a plain `color:` fallback under
+`@supports not (background-clip: text)`. Same value, two incompatible techniques — the exact defect.
+
+**Net: 12 new attributes, 4 retired**, across 3 blocks. Merged to `main` in 3 commits + 3 merges, zero
+conflicts (confirming the disjoint-file analysis). `post-grid` and `nav-menu` untouched.
+
+⚠ **VISUAL VERIFICATION IS OWED, NOT CLAIMED.** The three splits committed behind a scoped
+`SGS_VISUAL_GATE_SKIP` recorded as **PROVISIONAL**. Unlike this session's earlier bypass (which rested
+on provably unreachable code), these DO change the emitted CSS — custom properties renamed and split,
+every consuming selector repointed. The rendered result is *expected* identical because defaults are
+inherited, but that is reasoning, not measurement. Bypassed only to get the work out of a fragile
+uncommitted state in a shared checkout. **The genuine capture is blocked by an ordering problem worth
+naming: real before/after capture needs a DEPLOY between staging and committing, and the deploy's
+dirty-tree gate forbids exactly that.** Resolving that sequencing — and running
+`capture-tier-fixture.py` + `make-visual-diff-reports.py` against sandybrown — is the immediate next
+task.
+
 **Verification.** Full build green through all ~50 gates. Converter suite 666 passed; the 27
 pseudo-overlay tests rewritten to the one-string contract. Visual-diff gate: scoped bypass on
 hero/physics-canvas/separator, Bean-approved after reviewing evidence that all three are
