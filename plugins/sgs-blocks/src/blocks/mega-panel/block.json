@@ -41,7 +41,8 @@
 						"css:padding": "panelPadding",
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
-						"css:gap": "groupGap"
+						"css:gap": "groupGap",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (CF-12 pins groupGap onto this SAME element rather than a separate content element). Block-private (containerMirror:false, D294 deviation — this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/bgBlur are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies, per CF-4 (warn-only advisory, not global GAP-0). Column COUNT is no longer a separate attribute (dropped, QC-fix 2026-07-24) — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list — HC2) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly (CF-10)."
 				},
@@ -137,6 +138,10 @@
 			"default": false
 		},
 		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
 			"type": "string",
 			"default": ""
 		},

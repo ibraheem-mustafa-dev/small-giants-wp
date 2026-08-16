@@ -410,6 +410,15 @@
 					"nativeSupportsPath": "__experimentalBorder.color"
 				},
 				{
+					"key": "css:border-color-gradient",
+					"label": "Border colour (gradient)",
+					"suffixes": [
+						"BorderColourGradient",
+						"BorderColorGradient"
+					],
+					"note": "Added 2026-08-16, gradient-rollout merge (border builder). Sibling to css:border-color the way css:background-image is sibling to css:background-color. Real CSS mechanism is a masked ::before pseudo-element painting `background:<gradient>` clipped to a ring shape (see sgs_border_gradient_css() in helpers-tokens.php) — border-color itself can never legally hold a gradient in CSS. Deliberately its own member, not css:background-image, because an element can independently have a box-background gradient AND a border gradient at once."
+				},
+				{
 					"key": "css:border-radius",
 					"label": "Border radius",
 					"suffixes": [

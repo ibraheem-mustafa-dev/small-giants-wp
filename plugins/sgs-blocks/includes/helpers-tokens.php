@@ -943,6 +943,55 @@ function sgs_resolve_text_colour_or_gradient( ?string $flat_value, ?string $grad
 }
 
 /**
+ * Universal masked-`::before` gradient-border emitter (D636 border builder,
+ * 2026-08-16). `border-color` cannot legally hold a CSS gradient — the only
+ * way to paint a gradient into a border-shaped ring that still respects
+ * `border-radius` is a `background`, clipped to a ring via `mask` on a
+ * `::before` pseudo-element. `border-image` is NEVER used for this (D636's
+ * own ban): it cannot respect `border-radius`, which this framework's blocks
+ * rely on pervasively (the one documented exception is `sgs/separator`,
+ * D643 — a 1D rule with no radius, kept on `border-image` deliberately).
+ *
+ * Deliberately a NO-OP (returns '') when `$normal_paint` is empty — a block
+ * with no gradient set renders byte-identical CSS to before this helper
+ * existed. `$normal_paint`/`$hover_paint` are the caller's ALREADY-RESOLVED
+ * winning paint (gradient-if-set-else-flat-colour, via
+ * `sgs_css_gradient_value()`/`sgs_colour_value()`), never raw attribute
+ * values — this helper only emits the mask CSS, it does not resolve colours.
+ *
+ * @param string      $selector     CSS selector for the bordered element (already scoped, e.g. "{$root_sel} .sgs-x__item").
+ * @param string      $normal_paint Resolved CSS paint for the resting state. Empty short-circuits to ''.
+ * @param string|null $hover_paint  Resolved CSS paint for `:hover`/`:focus-within`. Omitted/empty/identical to $normal_paint = no separate hover rule emitted.
+ * @param string      $width        Border thickness, e.g. '1px' / '2px'. Should match the real border-width the mask replaces.
+ * @return string Scoped CSS (one to two rules), or '' when there is nothing to paint.
+ */
+function sgs_border_gradient_css( string $selector, string $normal_paint, ?string $hover_paint = null, string $width = '2px' ): string {
+	if ( '' === $normal_paint ) {
+		return '';
+	}
+
+	$width = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $width ) : $width;
+	if ( '' === $width ) {
+		$width = '2px';
+	}
+
+	$css  = "{$selector}{border-color:transparent;position:relative;background-clip:padding-box;}";
+	$css .= "{$selector}::before{content:\"\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}";
+
+	if ( null !== $hover_paint && '' !== $hover_paint && $hover_paint !== $normal_paint ) {
+		// Both declarations, not just the pseudo-element's background: a
+		// pre-existing `:hover{border-color:…}` rule elsewhere in the same
+		// stylesheet (a more specific selector than the plain base rule
+		// above) would otherwise still win the cascade on hover and repaint
+		// the real border solid, fighting the mask ring for the same pixels.
+		$css .= "{$selector}:hover,{$selector}:focus-within{border-color:transparent;}";
+		$css .= "{$selector}:hover::before,{$selector}:focus-within::before{background:{$hover_paint};}";
+	}
+
+	return $css;
+}
+
+/**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
  * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",

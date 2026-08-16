@@ -54,8 +54,8 @@
  */
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
-import { __, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	BaseControl,
 	Button,
@@ -204,17 +204,20 @@ function SgsColourStateControl( {
 	const descId = `${ id }-desc`;
 	const hasStates = states.length > 1;
 
-	// Per-state "operator just clicked Solid/Gradient but hasn't picked a stop
-	// yet" override — UI-only, not written to attributes until interacted with,
-	// same as GradientOverlayControl's single `localGradientMode`. Keyed by
-	// state.key because a state control can carry MULTIPLE gradient-capable
-	// states (e.g. normal + hover) that must toggle independently.
-	const [ localGradientModes, setLocalGradientModes ] = useState( {} );
-
+	// D636 border-gradient rollout — ADDITIVE opt-in. A state entry may carry
+	// `gradientValue`/`onGradientChange` (the sibling `{attr}Gradient` string
+	// attribute a block's render.php resolves via a gradient-wins-over-flat
+	// helper, e.g. `sgs_border_gradient_css()`). Presence of the ONCHANGE
+	// FUNCTION (not the value) marks a state gradient-capable — mirrors
+	// `GradientOverlayControl.js`'s existing Solid/Gradient UX exactly, just
+	// per-state so a row with Normal + Hover toggles each independently. When
+	// absent, a state renders exactly as before this patch — zero behaviour
+	// change for the 43 existing non-gradient call sites.
+	const [ gradientModeOverride, setGradientModeOverride ] = useState( {} );
 	const isGradientCapable = ( s ) => typeof s.onGradientChange === 'function';
 	const isGradientMode = ( s ) =>
 		isGradientCapable( s ) &&
-		( localGradientModes[ s.key ] ?? !! s.gradientValue );
+		( gradientModeOverride[ s.key ] ?? !! s.gradientValue );
 
 	const resolved = states.map( ( s ) => ( {
 		...s,
@@ -235,35 +238,48 @@ function SgsColourStateControl( {
 			  )
 			: label;
 
-	const renderPalette = ( s ) => {
+	// Plain flat-colour palette — used directly for non-gradient-capable
+	// states, and as the "Solid" branch inside renderStateContent() below
+	// for gradient-capable states. Deliberately carries NO gradient logic
+	// of its own: two independently-built branches (background-gradient,
+	// border-gradient) each duplicated the toggle here during parallel
+	// dispatch, which the merge reconciled down to one implementation
+	// (renderStateContent, the actual call site) — this function stays the
+	// simple pre-rollout palette it always was.
+	const renderPalette = ( s ) => (
+		<ColorPalette
+			key={ s.key }
+			colors={ colours }
+			value={ s.display }
+			onChange={ makeChangeHandler( {
+				linked: s.linked,
+				colours,
+				onChange: s.onChange,
+			} ) }
+			clearable={ clearable }
+			disableCustomColors={ false }
+			enableAlpha={ enableAlpha }
+			// Verified honoured, NOT assumed: @wordpress/components
+			// color-palette/index.tsx destructures `aria-label` at line 190
+			// and applies it to the swatch grid's own accessible name. This is
+			// the actual fix for field 2's defect — `BaseControl`'s `id` prop
+			// only produces a working `<label htmlFor>` when some CHILD
+			// element carries that same id on a focusable node
+			// (`base-control/index.tsx:44-57`), and `ColorPalette` has no
+			// single focusable element to receive one; it is a grid of
+			// swatch buttons. `id`/`aria-labelledby` are still set on the
+			// trigger `Button` below (which IS one focusable element) so the
+			// row itself is correctly named too.
+			aria-label={ paletteAriaLabel( s ) }
+		/>
+	);
+
+	// Gradient-capable states get a Solid/Gradient toggle above the palette —
+	// same UX as `GradientOverlayControl.js`'s whole-block overlay, reused
+	// per-state here. Non-capable states render exactly as before.
+	const renderStateContent = ( s ) => {
 		if ( ! isGradientCapable( s ) ) {
-			return (
-				<ColorPalette
-					key={ s.key }
-					colors={ colours }
-					value={ s.display }
-					onChange={ makeChangeHandler( {
-						linked: s.linked,
-						colours,
-						onChange: s.onChange,
-					} ) }
-					clearable={ clearable }
-					disableCustomColors={ false }
-					enableAlpha={ enableAlpha }
-					// Verified honoured, NOT assumed: @wordpress/components
-					// color-palette/index.tsx destructures `aria-label` at line 190
-					// and applies it to the swatch grid's own accessible name. This is
-					// the actual fix for field 2's defect — `BaseControl`'s `id` prop
-					// only produces a working `<label htmlFor>` when some CHILD
-					// element carries that same id on a focusable node
-					// (`base-control/index.tsx:44-57`), and `ColorPalette` has no
-					// single focusable element to receive one; it is a grid of
-					// swatch buttons. `id`/`aria-labelledby` are still set on the
-					// trigger `Button` below (which IS one focusable element) so the
-					// row itself is correctly named too.
-					aria-label={ paletteAriaLabel( s ) }
-				/>
-			);
+			return renderPalette( s );
 		}
 
 		const gradientMode = isGradientMode( s );
@@ -273,12 +289,19 @@ function SgsColourStateControl( {
 				<ToggleGroupControl
 					label={ __( 'Type', 'sgs-blocks' ) }
 					value={ gradientMode ? 'gradient' : 'solid' }
-					onChange={ ( val ) =>
-						setLocalGradientModes( ( prev ) => ( {
+					onChange={ ( val ) => {
+						setGradientModeOverride( ( prev ) => ( {
 							...prev,
 							[ s.key ]: val === 'gradient',
-						} ) )
-					}
+						} ) );
+						// Switching back to solid clears the stored gradient so
+						// the two paths never disagree about which is "current"
+						// once the local override is gone — mirrors
+						// GradientOverlayControl.js's identical rule.
+						if ( 'solid' === val ) {
+							s.onGradientChange( '' );
+						}
+					} }
 					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
@@ -292,44 +315,21 @@ function SgsColourStateControl( {
 						label={ __( 'Gradient', 'sgs-blocks' ) }
 					/>
 				</ToggleGroupControl>
-
 				{ gradientMode ? (
 					<SgsGradientPicker
 						value={ s.gradientValue }
 						onChange={ ( newGradient ) => {
-							setLocalGradientModes( ( prev ) => ( {
+							setGradientModeOverride( ( prev ) => ( {
 								...prev,
 								[ s.key ]: true,
 							} ) );
 							s.onGradientChange( newGradient ?? '' );
 						} }
-						enableAlpha
+						enableAlpha={ enableAlpha }
 						__experimentalIsRenderedInSidebar
 					/>
 				) : (
-					<ColorPalette
-						colors={ colours }
-						value={ s.display }
-						onChange={ ( picked ) => {
-							setLocalGradientModes( ( prev ) => ( {
-								...prev,
-								[ s.key ]: false,
-							} ) );
-							// Switching back to solid clears any gradient so the
-							// two paths never disagree about which is "current"
-							// — mirrors GradientOverlayControl's identical rule.
-							s.onGradientChange( '' );
-							makeChangeHandler( {
-								linked: s.linked,
-								colours,
-								onChange: s.onChange,
-							} )( picked );
-						} }
-						clearable={ clearable }
-						disableCustomColors={ false }
-						enableAlpha={ enableAlpha }
-						aria-label={ paletteAriaLabel( s ) }
-					/>
+					renderPalette( s )
 				) }
 			</div>
 		);
@@ -406,7 +406,7 @@ function SgsColourStateControl( {
 							>
 								{ ( tab ) => (
 									<div className="sgs-colour-control__content">
-										{ renderPalette(
+										{ renderStateContent(
 											resolved.find(
 												( s ) => s.key === tab.name
 											) ?? resolved[ 0 ]
@@ -416,7 +416,7 @@ function SgsColourStateControl( {
 							</TabPanel>
 						) : (
 							<div className="sgs-colour-control__content">
-								{ renderPalette( resolved[ 0 ] ) }
+								{ renderStateContent( resolved[ 0 ] ) }
 							</div>
 						)
 					}

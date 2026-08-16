@@ -1113,6 +1113,31 @@
 			"notes": "9 attr names; mix of DesignTokenPicker + SelectControl. Should be one slot inside a unified border builder alongside border-width/border-style/border-radius, not a standalone picker per block. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): member of the compound Border builder (native BorderBoxControl) - the colour slot sits alongside width + style + radius in one panel, not a standalone per-block picker. Solid only."
 		},
 		{
+			"setting_key": "css:border-color-gradient",
+			"category": "css-property",
+			"label": "Border colour (gradient)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (enableAlpha + clearable, gradient tab)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 35 Part B (Colour completeness) + Part H",
+			"current_state": "sgs/social-icons + sgs/mega-panel, D636 border-gradient builder, 2026-08-16",
+			"divergence": "border-color cannot legally hold a CSS gradient value; the real mechanism is a masked ::before pseudo-element (background:<gradient> clipped to a ring via mask), never border-image (cannot respect border-radius, D636's own ban)",
+			"divergence_severity": "medium",
+			"notes": "Added 2026-08-16 (gradient-rollout merge). Sibling to css:border-color the same way css:background-image is sibling to css:background-color."
+		},
+		{
 			"setting_key": "css:border-radius",
 			"category": "css-property",
 			"label": "Border radius",

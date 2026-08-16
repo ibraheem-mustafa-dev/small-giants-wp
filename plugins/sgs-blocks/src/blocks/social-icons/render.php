@@ -55,6 +55,8 @@ $icon_background        = $attributes['iconBackground'] ?? 'text-muted';
 $icon_background_hover  = $attributes['iconBackgroundHover'] ?? 'primary';
 $icon_border_colour       = $attributes['iconBorderColour'] ?? 'text-muted';
 $icon_border_colour_hover = $attributes['iconBorderColourHover'] ?? 'primary';
+$icon_border_gradient       = sgs_css_gradient_value( $attributes['iconBorderColourGradient'] ?? '' );
+$icon_border_gradient_hover = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
 $icon_glyph_colour       = $attributes['iconGlyphColour'] ?? 'text-muted';
 $icon_glyph_colour_hover = $attributes['iconGlyphColourHover'] ?? 'primary';
 $colour_mode_raw     = $attributes['colourMode'] ?? 'theme';
@@ -282,6 +284,16 @@ $root_decls   = array(
 	'--sgs-social-glyph-hover:' . sgs_colour_value( $icon_glyph_colour_hover ),
 );
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+
+// --- Border gradient (D636 border builder) — masked ::before, outlined style only. ---
+if ( '' !== $icon_border_gradient ) {
+	$scoped_css[] = sgs_border_gradient_css(
+		"{$root_sel}.sgs-social-icons--outlined .sgs-social-icons__item",
+		$icon_border_gradient,
+		'' !== $icon_border_gradient_hover ? $icon_border_gradient_hover : sgs_colour_value( $icon_border_colour_hover ),
+		'1px'
+	);
+}
 
 // --- Per-icon-item size (was inline `style="width:...px;height:...px"`). ---
 // WCAG 2.5.8 target size: the clickable box (`.sgs-social-icons__item`) is
