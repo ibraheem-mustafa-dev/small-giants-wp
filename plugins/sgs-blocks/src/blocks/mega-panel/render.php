@@ -77,7 +77,16 @@ $colour_scheme   = isset( $attributes['colourScheme'] ) && in_array( $attributes
 $headings_on = ! isset( $attributes['headings'] ) || (bool) $attributes['headings'];
 $bg_blur     = ! empty( $attributes['bgBlur'] );
 
-$accent_slug       = isset( $attributes['accent'] ) ? sanitize_html_class( (string) $attributes['accent'] ) : 'accent';
+// Split from the old single `accent` attribute (D643, Bean-ruled): one colour
+// attribute cannot secretly paint 4 unrelated CSS properties (background-colour,
+// border-colour, text-colour, background-image) — each needs its own control
+// before the universal gradient rollout can land. Each new attribute keeps the
+// SAME default ("accent") the retired attribute had, so existing rendering is
+// unchanged unless an operator now picks a different colour per role.
+$accent_bg_slug     = isset( $attributes['accentBackground'] ) ? sanitize_html_class( (string) $attributes['accentBackground'] ) : 'accent';
+$accent_border_slug = isset( $attributes['accentBorderColour'] ) ? sanitize_html_class( (string) $attributes['accentBorderColour'] ) : 'accent';
+$accent_text_slug   = isset( $attributes['accentTextColour'] ) ? sanitize_html_class( (string) $attributes['accentTextColour'] ) : 'accent';
+$accent_image_slug  = isset( $attributes['accentBackgroundImage'] ) ? sanitize_html_class( (string) $attributes['accentBackgroundImage'] ) : 'accent';
 $panel_bg_raw      = isset( $attributes['panelBg'] ) ? (string) $attributes['panelBg'] : '';
 $border_colour_raw = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
 $border_radius     = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['borderRadius'] ?? '20px' ) : '20px';
@@ -131,7 +140,10 @@ $css = '';
 // value set, not a placeholder.
 // ---------------------------------------------------------------------------
 
-$accent_value = sgs_colour_value( $accent_slug );
+$accent_bg_value     = sgs_colour_value( $accent_bg_slug );
+$accent_border_value = sgs_colour_value( $accent_border_slug );
+$accent_text_value   = sgs_colour_value( $accent_text_slug );
+$accent_image_value  = sgs_colour_value( $accent_image_slug );
 
 // panelBg: attr value (token slug or raw colour) resolves via sgs_colour_value
 // (CF-2); empty falls back to a token-based translucent surface default.
@@ -151,10 +163,15 @@ $panel_border_value = '' !== $border_colour_raw
 	? sgs_colour_value( $border_colour_raw )
 	: 'color-mix(in srgb, var(--wp--preset--color--text, #1A202C) 22%, transparent)';
 
-// The "soft" role (§4) is always DERIVED from the resolved accent — never an
-// independent attribute — so the marker chip background stays in lockstep
-// with whichever accent the operator picks.
-$soft_value = 'color-mix(in srgb, ' . $accent_value . ' 10%, transparent)';
+// The "soft" role (§4) is always DERIVED from the resolved accent-background
+// colour (never an independent attribute) — so the marker chip background
+// stays in lockstep with whichever accentBackground the operator picks.
+// "soft-image" is the SAME derivation but sourced from accentBackgroundImage,
+// feeding only the aside spotlight glow's background-image (kept separate from
+// $soft_value so the two properties are genuinely independently overridable —
+// D643 split).
+$soft_value       = 'color-mix(in srgb, ' . $accent_bg_value . ' 10%, transparent)';
+$soft_image_value = 'color-mix(in srgb, ' . $accent_image_value . ' 10%, transparent)';
 
 // Text/muted are theme tokens (§4); WCAG-preferred override only when
 // panelBg resolves to a real hex (D339 pattern, mirrors sgs/nav-drawer) —
@@ -176,8 +193,12 @@ if ( '' !== $panel_bg_raw ) {
 $css .= $root_sel . '{'
 	. '--sgs-mm-text:' . $text_value . ';'
 	. '--sgs-mm-muted:var(--wp--preset--color--text-muted, #606D80);'
-	. '--sgs-mm-accent:' . $accent_value . ';'
+	. '--sgs-mm-accent-text:' . $accent_text_value . ';'
+	. '--sgs-mm-accent-border:' . $accent_border_value . ';'
+	. '--sgs-mm-accent-bg:' . $accent_bg_value . ';'
+	. '--sgs-mm-accent-image:' . $accent_image_value . ';'
 	. '--sgs-mm-soft:' . $soft_value . ';'
+	. '--sgs-mm-soft-image:' . $soft_image_value . ';'
 	. '--sgs-mm-panel-bg:' . $panel_bg_value . ';'
 	. '--sgs-mm-card:rgba(255,255,255,.6);'
 	. '--sgs-mm-panel-border:' . $panel_border_value . ';'
@@ -185,9 +206,11 @@ $css .= $root_sel . '{'
 	. 'background-color:var(--sgs-mm-panel-bg);'
 	. '}';
 
-// Dark scheme cascade (§4). `accent` is deliberately NOT redeclared in the
-// dark props — §4 says the picked accent is "reuse verbatim" in both
-// schemes, so it stays whatever the base rule above already set.
+// Dark scheme cascade (§4). None of the 4 split accent attributes are
+// redeclared in the dark props — §4 says the picked accent colours are "reuse
+// verbatim" in both schemes, so they stay whatever the base rule above
+// already set. Only their DERIVED tokens (soft / soft-image, both tinted
+// against the dark card surface) get dark-specific values.
 //
 // CF-7 (binding — this OVERRIDES §4's own illustrative CSS block, which
 // showed a bare `@media (prefers-color-scheme: dark)` fallback for "no site
@@ -202,7 +225,8 @@ $css .= $root_sel . '{'
 // itself validates this ("CF-7 ... no prefers-color-scheme-only dark").
 $dark_props = '--sgs-mm-text:#f3f2ee;'
 	. '--sgs-mm-muted:#9a9992;'
-	. '--sgs-mm-soft:color-mix(in srgb, var(--sgs-mm-accent) 16%, transparent);'
+	. '--sgs-mm-soft:color-mix(in srgb, var(--sgs-mm-accent-bg) 16%, transparent);'
+	. '--sgs-mm-soft-image:color-mix(in srgb, var(--sgs-mm-accent-image) 16%, transparent);'
 	. '--sgs-mm-panel-bg:rgba(20,20,25,.82);'
 	. '--sgs-mm-card:rgba(255,255,255,.04);'
 	. '--sgs-mm-panel-border:rgba(255,255,255,.11);'
@@ -300,13 +324,13 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
 $css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
-$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
 
 // -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
 $css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
-$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
 
 // -- card hover-lift (§6 last row). Scoped to THIS style's `.sgs-mega-group`
 // tile only — `sgs/card-grid` (used by media-cards/brands) already owns a
@@ -320,7 +344,7 @@ $css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;bac
 // instant colour swap, not part of the animated property set). ------------
 $css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
 $css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
-$css .= $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:translateY(-3px);border-color:var(--sgs-mm-accent);}';
+$css .= $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:translateY(-3px);border-color:var(--sgs-mm-accent-border);}';
 $css .= $style_crd . $rel_group . ':hover::after,' . $style_crd . $rel_group . ':focus-within::after{opacity:1;}';
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
@@ -331,7 +355,7 @@ $css .= '@media (prefers-reduced-motion: reduce){'
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
 $css .= $style_min . $rel_item . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
-$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent-text);}';
 
 // -- group heading visibility (headings toggle + the cards/minimal invariant:
 // both styles hide the group heading unconditionally per §3; columns respects
@@ -416,7 +440,7 @@ if ( 'line' === $sep_style_val ) {
 	$sep_width_val  = '1px' === $sep_width_val && ! isset( $aside_separator['width'] ) ? '2px' : $sep_width_val;
 	$sep_colour_val = '' !== $sep_colour_raw
 		? sgs_colour_value( $sep_colour_raw )
-		: 'color-mix(in srgb, var(--sgs-mm-accent) 45%, transparent)';
+		: 'color-mix(in srgb, var(--sgs-mm-accent-border) 45%, transparent)';
 	$css           .= $aside_sel . '{border-left:' . $sep_width_val . ' solid ' . $sep_colour_val . ';padding-left:24px;}';
 }
 
