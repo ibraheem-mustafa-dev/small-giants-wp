@@ -17,7 +17,7 @@
 	 * the clickable hit area never can. */
 	min-width: 44px;
 	min-height: 44px;
-	color: var(--sgs-social-colour, currentColor);
+	color: var(--sgs-social-glyph, currentColor);
 	text-decoration: none;
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
 }
@@ -31,7 +31,7 @@
 }
 
 .sgs-social-icons__item:hover {
-	color: var(--sgs-social-hover, currentColor);
+	color: var(--sgs-social-glyph-hover, currentColor);
 	transform: scale(1.1);
 }
 
@@ -43,26 +43,26 @@
 
 /* Filled style */
 .sgs-social-icons--filled .sgs-social-icons__item {
-	background: var(--sgs-social-colour);
+	background: var(--sgs-social-bg);
 	color: var(--wp--preset--color--text-inverse, #fff);
 	border-radius: 50%;
 	padding: 8px;
 }
 
 .sgs-social-icons--filled .sgs-social-icons__item:hover {
-	background: var(--sgs-social-hover);
+	background: var(--sgs-social-bg-hover);
 }
 
 /* Outlined style */
 .sgs-social-icons--outlined .sgs-social-icons__item {
-	border: 1px solid var(--sgs-social-colour);
+	border: 1px solid var(--sgs-social-border);
 	border-radius: 50%;
 	padding: 8px;
 }
 
 .sgs-social-icons--outlined .sgs-social-icons__item:hover {
-	border-color: var(--sgs-social-hover);
-	color: var(--sgs-social-hover);
+	border-color: var(--sgs-social-border-hover);
+	color: var(--sgs-social-glyph-hover);
 }
 
 /* Pill style */
@@ -73,7 +73,7 @@
 }
 
 .sgs-social-icons--pill .sgs-social-icons__item:hover {
-	background: var(--sgs-social-hover);
+	background: var(--sgs-social-bg-hover);
 	color: var(--wp--preset--color--text-inverse, #fff);
 }
 

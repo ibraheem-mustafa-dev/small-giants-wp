@@ -126,8 +126,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		source,
 		icons,
 		iconSize,
-		iconColour,
-		iconColourHover,
+		iconBackground,
+		iconBackgroundHover,
+		iconBorderColour,
+		iconBorderColourHover,
+		iconGlyphColour,
+		iconGlyphColourHover,
 		colourMode,
 		iconStyle,
 		gap,
@@ -161,24 +165,37 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( gap ) {
 		previewStyle.gap = spacingVar( gap );
 	}
-	// 'theme' mode drives every item's resting colour via this custom property
-	// (style.css .sgs-social-icons__item{color:var(--sgs-social-colour)});
-	// 'brand' mode overrides per item instead (applied on each item below).
-	if ( 'theme' === colourMode && iconColour ) {
-		// iconColour's DesignTokenPicker has no `linked` prop, so it always
-		// stores a raw CSS value, never a slug -- resolveColourToken() (not
+	// 'theme' mode drives every item's resting background/border/glyph colour
+	// via these 3 custom properties (style.css .sgs-social-icons__item{color:
+	// var(--sgs-social-glyph)} etc — D643 split, was one shared
+	// --sgs-social-colour var); 'brand' mode overrides per item instead
+	// (applied on each item below).
+	if ( 'theme' === colourMode ) {
+		// The DesignTokenPickers here have no `linked` prop, so they always
+		// store a raw CSS value, never a slug -- resolveColourToken() (not
 		// colourVar(), which is slug-only) is the correct resolver.
-		previewStyle[ '--sgs-social-colour' ] = resolveColourToken( iconColour, palette );
+		if ( iconBackground ) {
+			previewStyle[ '--sgs-social-bg' ] = resolveColourToken( iconBackground, palette );
+		}
+		if ( iconBorderColour ) {
+			previewStyle[ '--sgs-social-border' ] = resolveColourToken( iconBorderColour, palette );
+		}
+		if ( iconGlyphColour ) {
+			previewStyle[ '--sgs-social-glyph' ] = resolveColourToken( iconGlyphColour, palette );
+		}
 	}
-	// Fix 3: hover colour was destructured + written by its DesignTokenPicker
-	// but never reached the canvas — render.php emits `--sgs-social-hover`
-	// UNCONDITIONALLY (independent of colourMode, matching style.css's
-	// `.sgs-social-icons__item:hover{color:var(--sgs-social-hover)}` rule).
-	// Setting the same custom property here means a real mouse hover on the
-	// editor canvas (a live DOM, not a static screenshot) now shows the same
-	// colour the frontend does.
-	if ( iconColourHover ) {
-		previewStyle[ '--sgs-social-hover' ] = resolveColourToken( iconColourHover, palette );
+	// Fix 3: hover colours are written UNCONDITIONALLY (independent of
+	// colourMode, matching render.php + style.css's `:hover` rules) so a real
+	// mouse hover on the editor canvas (a live DOM, not a static screenshot)
+	// shows the same colour the frontend does.
+	if ( iconBackgroundHover ) {
+		previewStyle[ '--sgs-social-bg-hover' ] = resolveColourToken( iconBackgroundHover, palette );
+	}
+	if ( iconBorderColourHover ) {
+		previewStyle[ '--sgs-social-border-hover' ] = resolveColourToken( iconBorderColourHover, palette );
+	}
+	if ( iconGlyphColourHover ) {
+		previewStyle[ '--sgs-social-glyph-hover' ] = resolveColourToken( iconGlyphColourHover, palette );
 	}
 
 	// Fix 1/2: mirrors render.php's $item_size — the clickable hit area is
@@ -228,47 +245,116 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* D619 — ONE grouped, SGS-OWNED colour panel (own PanelBody,
 			   Styles tab), rendered FIRST so it sits at the top of the inspector.
-			   `iconColour`/`iconColourHover` are the icon-specific colour attrs;
-			   the native `color` support sub-flags are now false so WordPress
-			   generates no competing native colour UI. The colour mode
-			   (theme vs brand) gates whether the resting colour is user-
-			   controllable: 'theme' mode shows the colour row (one colour for
-			   all icons), 'brand' mode omits it (per-platform override, no
-			   user control). The hover colour is always editable (independent
-			   of mode). */ }
+			   D643 (2026-08-16): `iconColour`/`iconColourHover` split into 3
+			   attribute pairs — one per real CSS property this block paints
+			   (background-color / border-color / color) — so each can later
+			   carry its own gradient option without one value having to serve
+			   3 different CSS techniques at once. The native `color` support
+			   sub-flags are false so WordPress generates no competing native
+			   colour UI. The colour mode (theme vs brand) gates whether the
+			   resting rows are user-controllable: 'theme' mode shows all 3
+			   resting+hover rows, 'brand' mode omits the resting half
+			   (per-platform override, no user control) but keeps hover
+			   editable (independent of mode). */ }
 			<SgsColourPanel
 				rows={ [
 					...( 'theme' === colourMode ? [
 						{
-							key: 'icon',
-							label: __( 'Icon colour', 'sgs-blocks' ),
+							key: 'icon-bg',
+							label: __( 'Icon background', 'sgs-blocks' ),
 							states: [
 								{
 									key: 'normal',
 									label: __( 'Normal', 'sgs-blocks' ),
-									value: iconColour,
-									onChange: ( val ) => setAttributes( { iconColour: val ?? '' } ),
+									value: iconBackground,
+									onChange: ( val ) => setAttributes( { iconBackground: val ?? '' } ),
 									linked: true,
 								},
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconColourHover,
-									onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+									value: iconBackgroundHover,
+									onChange: ( val ) => setAttributes( { iconBackgroundHover: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+						{
+							key: 'icon-border',
+							label: __( 'Icon border colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: iconBorderColour,
+									onChange: ( val ) => setAttributes( { iconBorderColour: val ?? '' } ),
+									linked: true,
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: iconBorderColourHover,
+									onChange: ( val ) => setAttributes( { iconBorderColourHover: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+						{
+							key: 'icon-glyph',
+							label: __( 'Icon colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: iconGlyphColour,
+									onChange: ( val ) => setAttributes( { iconGlyphColour: val ?? '' } ),
+									linked: true,
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: iconGlyphColourHover,
+									onChange: ( val ) => setAttributes( { iconGlyphColourHover: val ?? '' } ),
 									linked: true,
 								},
 							],
 						},
 					] : [
 						{
-							key: 'icon-hover',
-							label: __( 'Hover colour', 'sgs-blocks' ),
+							key: 'icon-bg-hover',
+							label: __( 'Background hover', 'sgs-blocks' ),
 							states: [
 								{
 									key: 'hover',
 									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconColourHover,
-									onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+									value: iconBackgroundHover,
+									onChange: ( val ) => setAttributes( { iconBackgroundHover: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+						{
+							key: 'icon-border-hover',
+							label: __( 'Border colour hover', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: iconBorderColourHover,
+									onChange: ( val ) => setAttributes( { iconBorderColourHover: val ?? '' } ),
+									linked: true,
+								},
+							],
+						},
+						{
+							key: 'icon-glyph-hover',
+							label: __( 'Icon colour hover', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: iconGlyphColourHover,
+									onChange: ( val ) => setAttributes( { iconGlyphColourHover: val ?? '' } ),
 									linked: true,
 								},
 							],

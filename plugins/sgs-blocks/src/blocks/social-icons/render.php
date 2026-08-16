@@ -41,8 +41,22 @@ use SGS\Blocks\Sgs_Site_Info;
 $source_raw          = $attributes['source'] ?? 'manual';
 $source              = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
 $icon_size           = (int) ( $attributes['iconSize'] ?? 24 );
-$icon_colour         = $attributes['iconColour'] ?? 'text-muted';
-$hover_colour_token  = $attributes['iconColourHover'] ?? 'primary';
+// D643: `iconColour`/`iconColourHover` split into one attribute PER real CSS
+// property (background-color / border-color / color) — the block's own
+// block.json used to document these as a "genuine 3-property shorthand"
+// because the resting/hover token fed up to 3 different declarations
+// depending on `iconStyle` (plain: color; filled: background; outlined:
+// border-color + color — simultaneously, both from the same value). A single
+// gradient-capable value can't serve all three (a gradient is not a valid
+// border-color or currentColor value), so each property now has its own
+// attribute + default, each preserving the ORIGINAL shared default exactly
+// (text-muted resting / primary hover) so existing rendering is unchanged.
+$icon_background        = $attributes['iconBackground'] ?? 'text-muted';
+$icon_background_hover  = $attributes['iconBackgroundHover'] ?? 'primary';
+$icon_border_colour       = $attributes['iconBorderColour'] ?? 'text-muted';
+$icon_border_colour_hover = $attributes['iconBorderColourHover'] ?? 'primary';
+$icon_glyph_colour       = $attributes['iconGlyphColour'] ?? 'text-muted';
+$icon_glyph_colour_hover = $attributes['iconGlyphColourHover'] ?? 'primary';
 $colour_mode_raw     = $attributes['colourMode'] ?? 'theme';
 $colour_mode         = in_array( $colour_mode_raw, array( 'theme', 'brand' ), true ) ? $colour_mode_raw : 'theme';
 $style_type_raw      = $attributes['iconStyle'] ?? 'plain';
@@ -260,8 +274,12 @@ $gap_slug     = '' !== $gap_slug_raw ? $gap_slug_raw : preg_replace( '/[^0-9]/',
 $gap_slug     = '' !== $gap_slug ? $gap_slug : '20';
 $root_decls   = array(
 	'gap:var(--wp--preset--spacing--' . $gap_slug . ')',
-	'--sgs-social-colour:' . sgs_colour_value( $icon_colour ),
-	'--sgs-social-hover:' . sgs_colour_value( $hover_colour_token ),
+	'--sgs-social-bg:' . sgs_colour_value( $icon_background ),
+	'--sgs-social-bg-hover:' . sgs_colour_value( $icon_background_hover ),
+	'--sgs-social-border:' . sgs_colour_value( $icon_border_colour ),
+	'--sgs-social-border-hover:' . sgs_colour_value( $icon_border_colour_hover ),
+	'--sgs-social-glyph:' . sgs_colour_value( $icon_glyph_colour ),
+	'--sgs-social-glyph-hover:' . sgs_colour_value( $icon_glyph_colour_hover ),
 );
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 
@@ -454,8 +472,14 @@ foreach ( $icons as $icon_item ) {
 	// ONLY the resting colour per item (nth-child, no inline style, contract
 	// §A); hover colour stays the single theme-token control in both modes.
 	if ( 'brand' === $colour_mode ) {
+		// Overrides all THREE resting custom properties for this item (not just
+		// glyph colour) — pre-split, one shared var fed whichever property the
+		// active iconStyle used, so a per-item brand hex already reached
+		// background/border/glyph simultaneously depending on style; this keeps
+		// that same reach now the resting set is 3 separate attributes.
 		$brand_hex    = $platform_brand_colours[ $platform ] ?? $platform_brand_colours['custom'];
-		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-colour:" . sgs_colour_value( $brand_hex ) . ';}';
+		$brand_value  = sgs_colour_value( $brand_hex );
+		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}";
 	}
 
 	$items_html .= sprintf(

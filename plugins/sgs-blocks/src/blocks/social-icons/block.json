@@ -71,27 +71,27 @@
 					"order": 2,
 					"clusters": [ "text" ],
 					"prefix": "icon",
-					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img), render.php:451. Carries no colour attrMap: `iconColour`/`iconColourHover` do NOT paint this span, they paint the surrounding link box (see the new `item` element below — 2026-08-15 fix, this element's `states.hover.attrMap` used to wrongly claim `iconColourHover` here, contradicting the real selector it renders under, `.sgs-social-icons__item:hover`). iconSize is a scalar glyph-size control with no cluster member (mirrors sgs/icon-list's iconSize) — an honest orphan, not a gap. No font-size/weight/line-height surface — an icon glyph has no typography."
+					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img), render.php:451. Carries no colour attrMap: the `item` element's background/border/glyph attrs (below) do NOT paint this span, they paint the surrounding link box."
 				},
 				"item": {
 					"label": "Icon Link",
 					"order": 3,
 					"clusters": [ "text" ],
 					"attrMap": {
-						"css:color": "iconColour",
-						"css:background-color": "iconColour",
-						"css:border-color": "iconColour"
+						"css:color": "iconGlyphColour",
+						"css:background-color": "iconBackground",
+						"css:border-color": "iconBorderColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconColourHover",
-								"css:background-color": "iconColourHover",
-								"css:border-color": "iconColourHover"
+								"css:color": "iconGlyphColourHover",
+								"css:background-color": "iconBackgroundHover",
+								"css:border-color": "iconBorderColourHover"
 							}
 						}
 					},
-					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box (render.php:462) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup, never in the manifest, an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`). `iconColour`/`iconColourHover` are genuine 3-property shorthands here because the resting/hover colour var (`--sgs-social-colour`/`--sgs-social-hover`) is consumed by up to THREE different declarations depending on `iconStyle` (plain: color only, style.css:20/34; filled: background, :45/52; outlined: border-color + color, :57-65) — never simultaneously, but any one operator choice of `iconStyle` picks which property paints, so all three are declared."
+					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box (render.php:462) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup, never in the manifest, an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`). D643: `iconColour`/`iconColourHover` were split (2026-08-16) into one attribute PER real CSS property. Pre-split, the resting/hover colour var (`--sgs-social-colour`/`--sgs-social-hover`) was consumed by up to THREE different declarations depending on `iconStyle` (plain: color only, style.css:20/34; filled: background, :45/52; outlined: border-color AND color SIMULTANEOUSLY — the base rule's `color` isn't overridden by the outlined selector, so both apply at once, :20+:57-65) — a single gradient-capable value cannot serve background/border/currentColor at once, so each property now has its own attribute (`iconBackground`/`iconBorderColour`/`iconGlyphColour`, each with a matching `*Hover` pair), each defaulting to the ORIGINAL shared default (text-muted resting / primary hover)."
 				}
 			}
 		}
@@ -142,11 +142,27 @@
 			"type": "number",
 			"default": 24
 		},
-		"iconColour": {
+		"iconBackground": {
 			"type": "string",
 			"default": "text-muted"
 		},
-		"iconColourHover": {
+		"iconBackgroundHover": {
+			"type": "string",
+			"default": "primary"
+		},
+		"iconBorderColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"iconBorderColourHover": {
+			"type": "string",
+			"default": "primary"
+		},
+		"iconGlyphColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"iconGlyphColourHover": {
 			"type": "string",
 			"default": "primary"
 		},
