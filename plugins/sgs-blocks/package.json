@@ -26,6 +26,7 @@
     "check:inline-styling": "node scripts/audit-inline-styling.js --check",
     "check:no-inline": "python scripts/no-inline/check-no-inline.py --live-default",
     "check:box-family": "python scripts/check-box-family-guard.py --check",
+    "check:dead-api-calls": "python scripts/check-dead-api-calls.py --check",
     "check:stranded-guards": "python scripts/no-inline/check-stranded-guards.py",
     "check:jsonld-flags": "python scripts/check-jsonld-flags.py --check",
     "check:cheats": "python scripts/cheat-gate/run.py --report",
