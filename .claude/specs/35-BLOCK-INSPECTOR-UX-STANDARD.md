@@ -385,6 +385,127 @@ inheritance, which background/border/shadow/padding don't have. A separate, fram
 typography placement/completeness audit (parallel to the live colour-panel rollout) is queued as
 the next initiative after colour's own two tracks close — not this spec's open item to build yet.
 
+### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` (added 2026-08-16, D637)
+
+Design-only spec addition feeding the shared-wrapper decomposition's step 7 (`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4; the D626 grouping locked six opt-in wrapper extensions —
+`background`/`width`/`layout`/`gridItems`/`shapeDividers`/`typography`). D626 named two cross-extension
+preconditions and one control redesign as "needs a real design, not a note" and left them unbuilt;
+this subsection is that design, council-reviewed (D637 — see decisions.md for the full review record).
+
+**F.2.1 — `gridItems requires layout` precondition.** A block declaring `gridItems` in
+`supports.sgs.enabledExtensions` without also declaring `layout` would let a client style
+non-existent grid items — `GridItemDefaultsPanel`'s own `if (layout !== 'grid') return null` is a
+render-time bail, not a build-time guarantee the wrong combination can't be declared in the first
+place. Gate: a **build-time static script**, not a `/sgs-update` DB-seed check — `enabledExtensions`
+is a flat block.json array with no DB table home and no consumer that would justify creating one
+(unlike `boxFamilies`/`variantAttr`, which genuinely feed the cloning converter and are legitimate
+R-31-1 DB-first cases). New script `plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js`,
+same family as `check-shared-panel-schema.js` / `check-box-family-guard.py`
+(`--survey`/`--check`/`--json`/`--self-test`, wired into `prebuild`), holding a small declared table:
+
+```js
+const CAPABILITY_PRECONDITIONS = {
+  gridItems: [ 'layout' ],
+};
+```
+
+For every block.json, read `supports.sgs.enabledExtensions`; for each key present that also appears
+in `CAPABILITY_PRECONDITIONS`, assert every listed precondition is also present, exit 1 on any miss
+under `--check`. No `--fix` mode — a codemod silently injecting `layout` into a block's declared
+extensions is exactly the kind of scope creep step 6 Phase B forbids for per-block migration commits.
+
+**F.2.2 — `supports.sgs.gridAreas` flag: completing an existing declaration, not inventing one.**
+Verified live (correcting D633, which reported "0 hits"): `sgs/hero/block.json` already declares
+`supports.sgs.gridAreas: ["content","media"]` (present since the 2026-06-11 per-area-grid-layer
+commit) — real, correctly-shaped data. The gap is that it has **zero readers anywhere**: not
+`GridAreaPanel` (D633's zero-live-mounts finding re-confirmed — no `edit.js` in the plugin renders
+it, and its only wiring point, the aggregator's `kind='section'` branch, has zero callers), not
+`/sgs-update`, not the converter (one comment-only reference, `converter/services/assembly.py:250`,
+explicitly noting the step is a no-op for this reason). Fix is two readers, mirroring the
+already-live `boxFamilies`/`variantAttr` pattern declared on the same block.json `supports.sgs`
+object:
+
+1. **DB layer** — add `block_composition.grid_areas` as a new JSON column, sibling to the existing
+   `container_kind` column (flat per-block data, same weight class as `container_kind`; not a new
+   table — `variant_slots` earned its own table because it stores genuinely relational per-variant
+   discriminating slots, this is a flat per-block array). Populated declaratively by `/sgs-update`
+   Stage 1, same route `boxFamilies` already uses — no hardcoded per-block dict.
+2. **Editor layer** — a direct-panel block's `edit.js` imports its own `./block.json` (the pattern
+   every block's `index.js` already uses for `registerBlockType`) and, when its
+   `enabledExtensions` includes `gridItems`, maps `metadata.supports.sgs.gridAreas ?? []` to one
+   `<GridAreaPanel>` per entry — identical to the aggregator's existing `section`-kind branch.
+   `GridAreaPanel`'s own gate (`Array.isArray(props.gridAreas) && props.gridAreas.map(...)`) is
+   already correct; it has simply never been called by any direct-panel block.
+
+**Which blocks should declare the flag:** only blocks with a FIXED set of semantically-named
+sub-regions each needing independent per-region padding/background — today, only `sgs/hero`'s split
+variant (`content` + `media`). `container`/`cta-section`/`trust-bar`'s grid children are repeatable,
+unnamed InnerBlocks items with no fixed roles and do **not** qualify; do not pre-declare the flag on
+them. Note this is not literal CSS `grid-template-areas` — no block's `style.css` uses that property
+anywhere in the plugin; despite the name, this flag configures named-region box styling, not a CSS
+Grid template feature. **Out of scope here:** whether `hero` should also gain `layout`+`gridItems`
+in its own `enabledExtensions` (a composite-mirror expansion question D633 explicitly deferred) —
+this subsection specifies only how the wiring behaves once/if that happens.
+
+**Regression guard (extends F.2.1's script):** a second rule in the same
+`check-wrapper-capability-preconditions.js` — any block declaring a non-empty
+`supports.sgs.gridAreas` must have at least one live reader (a Stage-1 DB write or a live
+`<GridAreaPanel>` mount) — so a future orphaned declaration (exactly this bug) fails the build
+instead of sitting undetected, per Part N's N-1/N-2 rule ("a built mechanism is not a reached one").
+
+**F.2.3 — `shapeDividers` linked/unlinked X/Y scale control.** New component
+`plugins/sgs-blocks/src/components/ScaleAxisControl.js` — the 2-axis analogue of WP core
+`BoxControl`'s 4-side link pattern (D626: "architecturally the same linked/unlinked pattern
+BoxControl's 4-side link already uses, applied to 2 axes"). Interface:
+
+```
+Props:
+  label            string
+  value            { x: number, y: number }   // shared unit — see fork below
+  onChange( next: { x, y } )
+  min / max / step  (RangeControl passthrough)
+  unit             string (display suffix, e.g. '%')
+
+Internal state:
+  isLinked = useState(() => value.x === value.y)
+    // Mirrors core BoxControl's own isValuesMixed-on-mount check — computed
+    // from the incoming value, NOT a persisted attribute.
+
+Render:
+  - a link/unlink icon button (@wordpress/icons `link` / `linkOff` — the same
+    pair core BoxControl itself renders internally; no new icon dependency)
+  - linked:   ONE control labelled `label`; onChange writes { x: v, y: v }
+  - unlinked: TWO controls, "Horizontal (X)" / "Vertical (Y)"; onChange
+    writes only the changed axis
+  - re-linking while x !== y: sync y ← x (X is visually primary — same
+    "collapse to one value" behaviour core BoxControl exhibits on re-link)
+```
+
+Storage: an object attr `{x,y}`, matching this plugin's established box-family object contract
+(`gridItemPadding`, `mediaPadding`, and every other paired/multi-axis attr in this codebase are
+object-shaped, never independent scalar pairs) — not a new storage convention.
+
+**Fork, decided: replace, not add-alongside.** `ShapeDividersPanel` today has a per-edge px `Height`
+`RangeControl` (20–300) and no horizontal-scale control at all. Two candidate shapes were considered:
+**(A, decided)** replace `shapeDivider{Top,Bottom}Height` outright with
+`shapeDivider{Top,Bottom}Scale:{x,y}` (%, default `{x:100,y:100}`, where `y:100` is the SVG's natural
+height, translated to px via its own viewBox at render); **(B, rejected)** add a new
+`shapeDivider{Top,Bottom}ScaleX` attribute alongside the unchanged px `Height` attribute. Reasoning
+for A: this project's "no version bumps, no deprecations pre-production" policy (D293/D270) exists
+precisely to license a clean attribute replace over an add-alongside when there is no live client
+content to preserve; B would also leave two controls (px Height, % ScaleY) with overlapping visual
+effect on the same block — a worse client-facing shape than one clean linked pair. No responsive
+tiers proposed — shape dividers carry no existing per-breakpoint variant and D626 does not ask for
+one; a deliberate scope boundary for this design, not an oversight.
+
+**Review status.** Reviewed by one of two dispatched council lenses (mechanism-fidelity + DB-first
+compliance — returned PASS on all three subsections, with the `assembly.py:250` correction above
+folded in); the second lens (universality + client-UX + component-shape) was dispatched but did not
+return within a reasonable wait and is logged as a genuine gap, not silently dropped — see
+`decisions.md` D637 for the full record. The Option A/B fork in F.2.3 and the block-qualification
+call in F.2.2 are the two judgement points that lens was meant to pressure-test and have not yet had
+a second independent pass.
+
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
 **⚠ Part G AMENDED by D402 (T0.4/T0.5 design gates, Bean-approved 2026-07-28) — the blanket
