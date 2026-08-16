@@ -754,6 +754,14 @@ memory: (a) fold Part L into `block-migration-DONE-checklist.md`; (b) a lint/gat
 colour control without `enableAlpha`, a URL field not using LinkControl, a preset-only "shadow",
 an animation without a reduced-motion gate; (c) `/doc-audit` cites this spec per block.
 
+**Gates enforcing THIS spec (added 2026-08-16, D639) — both wired into `prebuild` in the same
+commit that built them.** Full per-gate rationale: `plugins/sgs-blocks/CLAUDE.md` §prebuild gates.
+
+| Gate | Enforces | Why it had to exist |
+|---|---|---|
+| `scripts/check-empty-inspector-containers.js` | **Part F** — an inspector container rendered with NO children is a dead control. An empty `<ToolsPanelItem>` still shows in the "+" menu and in `resetAll`, then displays nothing when opened; an empty `<PanelBody>` opens onto blank space. | The ~50-gate stack had **zero** coverage for this class, and one shipped through it to prove the point. `check-dead-controls.js` checks the INVERSE (an attribute whose control nothing renders) — a container whose children were deleted still has valid wiring, so it reads clean. ⛔ AST walk, never a regex: two regexes answered the same question with **0** and **471**. |
+| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (a non-empty `supports.sgs.gridAreas` must have ≥1 live reader — Part N's N-2). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. And `sgs/hero` carried a `gridAreas` declaration for two months with no reader anywhere, which is exactly the "built ≠ reached" shape N-2 names. No baseline (zero violations existed) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
+
 ## PART L — Per-block inspector definition-of-done (checklist)
 
 [ ] Settings/Styles/Advanced split via `group` · [ ] element-first panels · [ ] control-dense panels

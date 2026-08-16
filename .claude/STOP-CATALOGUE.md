@@ -855,6 +855,28 @@ behaviour per commit before deleting or re-merging a branch.
   BLOCKED" yet the commit was created (19:09, `4e049ba9`). `SGS_EXIT=1` + `exit $SGS_EXIT`
   should have blocked. UNEXPLAINED — investigate before trusting it as the only net; write
   reports BEFORE committing, don't rely on the gate to remind you.
+- **STOP-EMPTY-INSPECTOR-CONTAINER (D639, 2026-08-16)** — an inspector container rendered
+  with NO children is a client-visible dead control: an empty `<ToolsPanelItem>` still
+  appears in its ToolsPanel's "+" menu and in `resetAll`, then shows nothing when opened.
+  **The ~50-gate `prebuild` stack had zero coverage for this** — `check-dead-controls.js`
+  checks the INVERSE (an attribute whose control nothing renders), and a container whose
+  children were deleted still has valid wiring, so it reads clean. One shipped through a
+  full green build to prove it (moving `<BackgroundPanel>` out of `sgs/site-header` deleted
+  the mount and left the wrapper). Gate: `scripts/check-empty-inspector-containers.js`,
+  wired into `prebuild`. **Whenever you MOVE a control between panels/tabs, check what its
+  wrapper was — deleting a mount is not the same as deleting the control.**
+- **STOP-PARSE-DONT-REGEX-JSX (D639, 2026-08-16)** — "does this JSX element have children?"
+  cannot be answered by a regex, and getting it wrong is not a near-miss. Two attempts on
+  the SAME question: `<(Tag)[^>]*?>\s*</\1>` returned **0** (the char class cannot cross the
+  `=>` in an arrow-function prop, and every real container has one) and `>\s*\n\s*</(Tag)>`
+  returned **471** (it matches the closing `>` of the last self-closing CHILD). A false
+  absence and a false flood from one question; the truth was **1**. JSX children are a tree —
+  use `@babel/parser`. Extends `feedback_a_greps_blind_spot_is_the_shape_of_the_grep`.
+- **STOP-VERIFY-THE-FIX-NOT-JUST-THE-SYMPTOM (D639, 2026-08-16)** — the first removal of the
+  empty container above cut a line short and left an **unterminated JSX comment** — a worse
+  break than the bug — and the detector still reported clean, because a parse failure is not
+  a finding. After any surgical text edit: re-parse the file, and assert the removed slice
+  was self-contained BEFORE writing, not after.
 - **STOP-GATE-COMMENT-STRIPPER (D339d)** — `check-dead-controls.js` strips comments
   naively: a PHP STRING containing a block-comment opener swallows the rest of the file and
   every attr below reads as dead (false positives) — and the same swallow would hide REAL
