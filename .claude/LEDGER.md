@@ -51,22 +51,84 @@ Styles tab on all 7 wrapper blocks. Scratch probe page (id 2466) force-deleted a
 
 **None.**
 
-## Open — ready to pick up
+## Open — ready to pick up (orchestration plan for next session)
 
-**Stage 2 — the gradient rollout (D636).** Unblocked — colour attrs are live, any NEW colour attribute
-gets gradient support automatically. **Run `/sgs-update` FIRST** — new attrs aren't in the DB yet.
+**Agent identity:** you are picking up a clean framework with no open blockers. Two independent
+next items exist — they don't collide, so either can go first.
 
-| Builder | Mechanism | Scale |
-|---|---|---|
-| Background | `background-image: <gradient>`; fold Solid/Gradient into `DesignTokenPicker.js`/`SgsColourPanel.js` behind `gradientCapable` | ~78 attrs |
-| Text (real text only) | `background-clip: text` + `color: transparent`; `text-shadow` breaks under it — flag per block | ~80 attrs |
-| Border | masked `::before` + `mask`; **NOT `border-image`** (breaks `border-radius`) | ~32 attrs |
-| Icon/SVG | inline `<linearGradient>` + `stroke="url(#id)"`; simplest of the four | ~10+, re-derive |
+### Task 1 — Gradient rollout Stage 2 (D636)
 
-Isolated worktree each — builders 1-3 touch the same two shared files. `/qc` mandatory before merge.
-Full detail: `decisions.md` D636 + addendum.
+**What:** extend gradient support (already live for solid-colour backgrounds) to text, border, and
+icon/SVG colour-capable attrs across the framework.
+**Why:** colour attrs are already live from earlier tracks, so any NEW colour attribute already
+lands in the background-family bucket and gets gradient support automatically — this closes the
+remaining 3 surfaces (text/border/icon) that don't yet.
+**Estimated time:** ~1 session per builder, run in parallel (smallest plausible figure).
 
-**Typography** — next framework-wide initiative after colour's Track A+B, per D626. Not yet scoped.
+**Orchestration:**
+- Execution: delegated, 4 parallel builder agents in isolated worktrees (builders 1-3 touch the
+  same two shared files — `DesignTokenPicker.js`/`SgsColourPanel.js` — so worktree isolation is
+  load-bearing, not optional)
+- Model: sonnet via `/delegate` for each builder (mechanical/well-scoped, not architectural)
+- Dispatch pattern: `/dispatching-parallel-agents`, 4 independent branches
+- Pre-step (sequential, before any builder starts): `/sgs-update` — new colour attrs from recent
+  tracks (Track 1 D640/641, wrapper decomposition) are NOT in the DB yet
+- Brief per builder:
+  - Background: `background-image: <gradient>`; fold Solid/Gradient into
+    `DesignTokenPicker.js`/`SgsColourPanel.js` behind `gradientCapable` (~78 attrs)
+  - Text (real text only): `background-clip: text` + `color: transparent`; `text-shadow` breaks
+    under it — flag per block (~80 attrs)
+  - Border: masked `::before` + `mask`; **NOT `border-image`** (breaks `border-radius`) (~32 attrs)
+  - Icon/SVG: inline `<linearGradient>` + `stroke="url(#id)"`; simplest of the four (~10+, re-derive
+    the count — the ~10 figure is stale)
+- Context the builders need that won't be in cold context: full D636 decision + addendum
+  (`decisions.md`), the icon-mechanism correction recorded there (background-clip:text does NOT
+  work for icon SVGs — a 4th, SVG-native mechanism is required, already reflected in the brief above)
+- Depends on: `/sgs-update` pre-step only
+- Parallel with: Task 2 (typography) — genuinely independent, don't sequence them
+- `/qc` gate after: yes, mandatory before merge (D636's own requirement)
+
+**Acceptance:** all 4 gradient surfaces (background/text/border/icon) have a working
+`gradientCapable` control, live-verified on the canary with a real gradient rendering correctly for
+at least one block per surface. Full scope = D636 + addendum's named surface list — do not close
+this as "done" with only background+text shipped; border and icon are equally in scope.
+
+### Task 2 — Typography framework-wide initiative
+
+**What:** not yet scoped — the next framework-wide control-migration initiative after colour's
+Track A+B, per D626's sequencing.
+**Why:** colour was sequenced first because it was the more urgent client-facing gap; typography is
+next in that same queue.
+**Estimated time:** unknown until scoped — do not estimate before the council pass below.
+
+**Orchestration:**
+- Execution: inline (main thread) for the scoping/council pass; delegate the actual build once
+  scoped, same pattern as colour's Track A/B split
+- Model: opus (main thread) for scoping — this is a design decision, not mechanical work
+- Dispatch pattern: none yet — first step is `/brainstorming` or a design council (same shape as
+  D626's colour council), not a build dispatch
+- Brief: read D626 in full for the colour precedent (grouping rule, tab placement, the shared-wrapper
+  merge-not-separate-session rule) before scoping typography — the same structural questions apply
+- Depends on: nothing (colour Track A+B already closed)
+- Parallel with: Task 1 (gradient rollout) — independent
+- `/qc` gate after: n/a until scoped
+
+**Acceptance:** a scoped plan exists (blocks affected, mechanism, council-reviewed) — this task is
+NOT "done" until that scoping produces a build-ready spec, matching how D626 closed for colour.
+
+### Dependency graph
+
+```
+Task 1: /sgs-update (sequential, ~5 min)
+  ↓
+Task 1: 4 parallel builder agents (isolated worktrees, sonnet)
+  ↓ /qc gate (mandatory)
+Task 1: merge to main
+
+Task 2: /brainstorming or design council (inline, opus) — runs independently of Task 1
+  ↓
+Task 2: scoped plan — build dispatch is a FUTURE session's task, not this one's
+```
 
 ### Carried, low priority
 
