@@ -1,5 +1,126 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D638 — Wrapper decomposition step 6 (background pilot) CLOSED: build + live verification + multi-rater review [ROUTINE]
+
+**2026-08-16.** Phase D (verification/close-out) of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`,
+run in the isolated worktree `C:\Users\Bean\Projects\swp-wrapper-integrate` (branch
+`integrate/wrapper-step6`) after Phase A (shared mechanism, merged to `main` ahead of this
+session per plan §1.4 sequencing — `f1b467f5`/`2113eeb6`), Phase B (3 parallel per-block
+worktrees, sequentially merged), and Phase C (D637, step 7 gate design) all landed.
+
+**What shipped (verified against source, not summary):** `background` is a real opt-in
+extension via the existing `enabledExtensions` mechanism (D579/PR#25 shape, no new
+mechanism) on all 7 direct-panel blocks — `container`, `cta-section`, `trust-bar`, `hero`,
+`site-header`, `site-footer`, and **`physics-canvas`** (genuinely new capability; it had
+none before). Every block's `render.php` calls
+`SGS_Container_Wrapper::resolve_kind($block, 'section')` instead of a hardcoded `'section'`
+literal — confirmed via grep across all 7 files, zero remaining unconditional literals.
+
+**The real bug found and fixed mid-build (worth recording precisely, per this project's
+own reason `decisions.md` exists):** an earlier version of `resolve_kind()` narrowed a
+block's `$kind` from `'section'` to `'content'` whenever the block's declared
+`enabledExtensions` didn't include `'shapeDividers'`/`'gridItems'` — on the false
+assumption that `$kind` tracks which optional panels a block has. That's wrong: all 7
+direct-panel blocks are structurally `'section'`-kind regardless of which optional panels
+they enable, and `$is_section` in `SGS_Container_Wrapper::render()` also gates min-height
+and content-band padding — capabilities that have nothing to do with shapeDividers/
+gridItems. Narrowing `site-header`/`site-footer` (width+background only) to `'content'`
+would have silently killed their min-height and band padding; for `physics-canvas`
+specifically the consequence is more severe than cosmetic — its `minHeight` IS the throw
+arena's rendered box height that `view.js` reads as the Draggable bounds and Physics2D
+floor/wall geometry, so the same narrowing would have collapsed the interactive arena's
+collision geometry. Found independently by two build agents (Phase B agents 2 and 3, both
+building against the same shared file before either had merged), fixed at the source
+(`resolve_kind()` now returns `$fallback` unconditionally — a safe no-op passthrough, not
+a per-block workaround) rather than worked around per-block. Commit `2113eeb6`.
+
+**Live verification (sandybrown canary, Playwright, both editor and frontend, both
+default/unset and value-set states):**
+- `sgs/container` — Background panel renders in the block's **Settings** tab (not Styles
+  — a real, minor discrepancy against D626's own placement table, noted below, not fixed
+  here as it's a pre-existing placement question outside step 6's scope of gating
+  visibility). Set a background image via the real media library picker (not a stub);
+  frontend confirms it paints via a `::before` pseudo-element
+  (`background-image:url(...)`, `position:absolute`, `z-index:-1`) per the block's Spec 32
+  no-inline-style contract — zero inline `style` attribute on the rendered `<section>`.
+  Default/unset state independently confirmed clean (no `has-bg-image` class, `none`) on
+  5 other live container instances on the same page (header-icons row, 2× footer link
+  columns, footer brand) with no cross-instance leakage.
+- `sgs/hero` — Background panel renders in the **Styles** tab under a "Container / Entire
+  Block" group (matches D626's table). Set + confirmed painting the same way.
+- `sgs/physics-canvas` — (a) Background panel now appears in Settings where it did not
+  exist before (confirmed via a before/after heading-list read of the inspector); (b) set
+  an image, frontend confirms it paints via the same `::before` mechanism; (c) confirmed
+  via computed style — not simulated drag — that the background layer cannot intercept
+  pointer events on any throwable content: `::before` is `position:absolute`,
+  `z-index:-1`, `pointer-events:none`, while the content layer (`.sgs-container__inner`)
+  is `position:relative`, `z-index:1`. This is architectural proof the layering is safe
+  regardless of what's inside; a live drag-and-drop simulation was not additionally run
+  (scope call, not a gap — the z-index/pointer-events proof is the load-bearing fact a
+  drag test would also be reducible to). Console showed one pre-existing, unrelated error
+  (`@sgs/gsap-draggable` module-resolution failure) traced to `render.php`'s existing
+  `trim($content) !== ''` gate on the motion-registry enqueue — this instance had no
+  decorative children, so the gate correctly skipped registering the import-map entry
+  while `view.js`'s own `viewScriptModule` still unconditionally imports it; not a
+  regression from this diff (verified: this code path is untouched by any step 6 commit).
+- `sgs/site-footer` (the resolve_kind bug-fix regression guard) — built a positive
+  control: a fresh site-footer instance with `minHeight:{desktop:'400px'}` and
+  `contentBandPadding:{desktop:{top/right/bottom/left:'80px'}}` set explicitly via
+  `wp.data`. Frontend confirms `min-height:400px` and inner `padding:80px` land exactly as
+  set — proving the fix holds (the pre-fix narrowing would have silently dropped both). A
+  second, real theme footer instance on the same page correctly shows the unset default
+  (`0px`), confirming no cross-instance leakage. Site-header shares the identical PHP
+  mechanism (`class-sgs-container-wrapper.php`'s `resolve_kind()`/`$is_section` gate) so
+  this same proof covers it; a separate header-specific instance was not additionally
+  built.
+- Scratch verification page (id 2453) created, exercised, then deleted (force-delete via
+  REST) — nothing left on the canary from this verification pass.
+
+**Multi-rater review (Bean's standing instruction, §2.2) — two parallel lenses dispatched
+against `git diff origin/main...HEAD`, both returned:**
+1. **Mechanism-fidelity + regression-safety lens** — verified `resolve_kind()`'s full
+   function body genuinely returns `$fallback` unconditionally on every path (no residual
+   narrowing), and confirmed the same-commit rule was followed per block. **One real
+   finding, doc-only:** `class-sgs-container-wrapper.php`'s `resolve_kind()` docblock
+   still said (from when Phase A wrote it) "NOT wired into any render.php by this
+   commit... every one of the 7 blocks still passes the literal `'section'` string,
+   unchanged" — true when written, false once Phase B landed. Zero runtime risk
+   (`resolve_kind()` is inert either way), but a real doc-accuracy bug. Fixed in this same
+   close-out, commit `dd750633`.
+2. **DB-first + composite-mirror + universality lens** — PASS on all three checks: no new
+   hardcoded lookup dicts introduced (the mechanism is `enabledExtensions` — an existing,
+   sanctioned block.json array, not a new dict-shaped mechanism); the `background`
+   attribute set (`backgroundImage`/`backgroundImageTablet`/`Mobile`,
+   `backgroundOverlayColour`, position/repeat/size/attachment, `bgKenBurns`/`bgParallax`,
+   `overlayGradient*`, `bgSvg*`×7, `bgVideo*`) is byte-identical in shape across all 7
+   blocks — no block invented a divergent name for the same concept; physics-canvas's
+   `resolve_kind()` migration is already complete in this diff, no stale non-migration
+   found (this check's premise was already resolved by the time the lens ran).
+
+**Residual, disclosed not buried (per Bean's standing instruction on honest gaps):**
+Phase C's own review (D637) got only 1 of 2 dispatched lenses back — the second hung
+~28 minutes with zero output and was treated as a hung dispatch, not a pass. That gap is
+on the STEP 7 GATE DESIGN (gridItems/layout precondition, gridAreas flag, ScaleAxisControl
+shape) — a design surface this session (Phase D) did not touch or re-review. It remains
+open against step 7's build, not against anything shipped in step 6. Also disclosed, not
+fixed here (out of step 6's scope): `sgs/container`'s Background panel sits in Settings
+while `sgs/hero`'s sits in Styles — a real placement inconsistency against D626's own
+table, worth a design-gate question before step 7, not a step-6 defect.
+
+**Build/tree:** `npm run build` exit 0 both before and after the docblock fix (motion
+bundle budget gate PASSED, no baseline drift). `git status` clean of any unintended
+mutation both times — one harmless CRLF-only diff on
+`scripts/consistency/roster.json` (0-line content diff, git line-ending normalisation
+artefact) was reverted via `git checkout --` rather than committed, twice.
+
+**Merge:** fast-forwarded `integrate/wrapper-step6` onto `main` (23 commits, no divergent
+`main`-side commits since this branch forked — verified via `git fetch origin main` +
+`git log --oneline origin/main..HEAD`/`HEAD..origin/main` before merging) and pushed.
+
+**Wrapper decomposition: step 6 of 7 CLOSED.** Step 7 (remaining capabilities, shape
+dividers last) is next, gated on the step 7 design (D637) getting its missing second
+review lens before build starts.
+
 ## D637 — Step 7 gate design locked: gridItems/layout precondition, gridAreas flag completion, ScaleAxisControl [ROUTINE]
 
 **2026-08-16.** Phase C of `go-read-the-track-encapsulated-hare.md` — designing (not building) the

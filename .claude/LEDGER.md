@@ -9,186 +9,144 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**2026-08-16. The 12 files that were stuck uncommitted on 2026-08-15 are landed, and the shared-DB
-gate that was blocking every commit is green again.** One commit on `main` (`8b944ff5`), pushed.
+**2026-08-16. Wrapper decomposition step 6 of 7 is done and merged to `main`.** This is
+the "background pilot" step — teaching 7 blocks (container, cta-section, trust-bar, hero,
+site-header, site-footer, and physics-canvas) to switch their background-image controls
+on and off cleanly, instead of always showing them whether the block needed them or not.
 
 **What happened, in order.**
 
-1. Checked whether last session's blocker (a concurrent session's shadow-colour work seeding the
-   shared DB with attributes `main` didn't know about) had cleared. It had — that work merged as
-   PR #28 the same evening. The F6/db-consistency gate passes clean.
+1. Three build agents (working in parallel, each in their own isolated copy of the code)
+   wired the 7 blocks up. Physics-canvas is the interesting one — it never had a
+   background option before, and now it does.
 
-2. **Wrapper decomposition step 5 (live calibration) — done.** The design council's assumption that
-   all 7 wrapper-owning blocks (container/cta-section/hero/trust-bar/site-header/site-footer/
-   physics-canvas) should get all 6 planned extensions turned out to be wrong: real panel mounts
-   range from 1 (physics-canvas — width only) to 5 (container/cta-section/trust-bar — everything).
-   Also found two smaller things worth knowing: one whole panel (`GridAreaPanel`) has zero live
-   mounts anywhere in the framework today, and the other (`GridItemDefaultsPanel`) mounts with no
-   safety check at all — both are things step 6 needs to build, not things already working that
-   step 6 can just wire up.
+2. **A real bug was found and fixed before it reached the live site.** Two of the three
+   build agents independently spotted the same thing: an early version of the shared
+   "which kind of block is this" helper would have silently broken things it shouldn't
+   have touched — specifically, site-header and site-footer's minimum height and inner
+   spacing, and (worse) physics-canvas's entire "throw and catch" arena, because that
+   block's height IS the physical boundary the thrown objects bounce off. Fixed at the
+   root before anything shipped.
 
-3. **The one block D632's shadow-colour migration deliberately skipped — `sgs/quote` — is done.**
-   It was skipped last time because another session had live edits on the same file; that session
-   is long since merged, so the collision risk was gone. Migrated it onto the same shape as the
-   other 10 blocks, live-verified on the test site: the shadow's colour and its hover colour both
-   paint correctly and change independently of each other.
+3. **I then live-tested all of this myself today** on the test site (not just trusted the
+   build agents' own checks) — set real background images on container, hero, and
+   physics-canvas through the actual editor, confirmed they show up correctly on the
+   published page, and confirmed the background image doesn't get in the way of anything
+   interactive sitting on top of it. Also built a direct test proving the bug-fix holds:
+   set an explicit height and padding on a fresh footer, confirmed both values land
+   exactly as set on the live page.
 
-4. Along the way, three small mechanical problems surfaced and got fixed: the database didn't know
-   about quote's two new attributes until it was told (a normal, expected step); one classification
-   rule needed a matching entry so the new colour attribute didn't fight with its own shadow shape
-   for the same slot; and a live test I ran to verify the colour swap used an invalid test value
-   that hid whether it actually worked — caught, fixed, and re-verified properly before trusting the
-   result.
+4. **Two independent reviewers looked over the whole set of changes before I merged
+   anything.** One found a small paperwork issue — a code comment that hadn't been
+   updated to reflect that all 7 blocks were now wired up (not a functional bug, just
+   stale wording) — fixed immediately. The other reviewer found nothing wrong.
 
-**What's next — two separate, independent pieces of work, not one.** See "Open — ready to pick up"
-below for the full menu; short version: (a) the wrapper-decomposition programme's next step needs
-your sign-off on which blocks get which capabilities before any more code gets written, and
-(b) the colour programme has two small, unrelated leftover tasks (a design question on 2 blocks,
-and the gradient-bar build) that don't depend on the wrapper work at all.
+5. Merged to `main` and pushed. Step 6 of 7 is closed.
 
-5. **Stream 2 item 2a — the `native:color` manifest-base problem — is done, in a separate concurrent
-   session.** `testimonial-slider` and `process-steps` no longer show the duplicate native colour
-   panel; both now match the flat-attr pattern already proven on `quote`/`heading`/`card-grid`/`text`.
-   Deployed and live-verified via REST. Stream 2 now has only item 2b (gradient bar) left.
+**One honest gap, carried forward, not hidden:** the DESIGN for step 7 (a separate,
+not-yet-built piece of work) only got checked by one of the two reviewers who were asked
+to look at it — the second one got stuck and never came back with an answer. That's not a
+problem with what shipped today; it's a note that the plan for the NEXT step needs a
+second look before building starts.
 
-**Full narrative:** `memory/session-2026-08-15*.md` (2026-08-15 session, auto-snapshotted).
+**Full narrative:** `memory/session-2026-08-16-step6-close.md` (this session, once
+snapshotted). This session's D-entry: `decisions.md` D638.
 
 ## Shipped this session (2026-08-16)
 
 | Commit | What |
 |---|---|
-| `8b944ff5` | **D633 + D634.** Wrapper step 5 (live calibration — falsified the "enable all 6" assumption, report + decision recorded) and `sgs/quote`'s shadow-colour migration (the one block D632 deferred), both live-verified |
-| `38426a71` | **D635.** `testimonial-slider`/`process-steps` native-colour duplicate panel closed (Stream 2 item 2a) — flat `backgroundColour`/`textColour` attrs, manifest gate unchanged (state-without-base still 2/2), deployed + live-verified |
+| `f1b467f5`/`2113eeb6` (Phase A, landed on `main` ahead of this close-out) | Shared `resolve_kind()` mechanism + the narrowing-bug fix |
+| 20 commits on `integrate/wrapper-step6` (Phase B, 3 parallel worktrees merged) | `background` extension wired on all 7 direct-panel blocks; physics-canvas gains the capability net-new |
+| `dd750633` | Fixed a stale `resolve_kind()` docblock caught by the close-out review (doc-only, no runtime effect) |
+| Merge → `main` (fast-forward, this close-out) | Step 6 of 7 CLOSED. See `decisions.md` D638 for full detail (live-verification results, both reviewers' findings, the disclosed step-7 review gap). |
 
 ### Numbers
 
 | Metric | Start of session | End |
 |---|---|---|
-| Shadow-migrated blocks (D632 family) | 10 of 11 | **11 of 11 — complete** |
-| Wrapper decomposition steps done | 4 of 7 | **5 of 7** |
-| Element-manifest style defects (accepted debt) | 10 | 12 (2 new, same accepted class, written reason in the baseline file) |
-| Blocks with duplicate native colour panel | 2 (`testimonial-slider`, `process-steps`) | **0 — Stream 2 item 2a closed** |
-| D-ceiling | D632 | **D635** |
+| Wrapper decomposition steps done | 5 of 7 | **6 of 7** |
+| Blocks with a real, gated `background` extension | 0 of 7 (all-or-nothing before) | **7 of 7** |
+| Blocks calling `resolve_kind()` instead of a hardcoded `'section'` literal | 0 of 7 | **7 of 7** |
+| D-ceiling | D637 | **D638** |
 
 ## Blockers
 
-**None.** F6/db-consistency gate passes on its own merit (1 baselined, 0 new). `npm run build` exits
-0. Tree is clean of this session's work (a few pre-existing unrelated dirty files from before this
-session — `package-lock.json`, `reports/phase4-*.txt` — were left untouched; not this session's to
-touch).
+**None** for what shipped. `npm run build` exit 0 (checked twice — before and after the
+doc fix). Motion-bundle-budget gate PASSED, no baseline drift. `git status` clean (one
+harmless CRLF-only diff on `roster.json` reverted, not committed, both checks). Cheat-gate
+18 baselined / 0 new. F5/F6 gates green.
 
 ## Open — ready to pick up
 
-### ⭐ NEXT SESSION — two independent streams, pick one or both
+### Step 7 (remaining wrapper capabilities — shape dividers last)
 
-These do NOT depend on each other. Present both to Bean as a menu rather than assuming which one
-comes first.
+**Blocked on:** the step 7 design (D637 — gridItems/layout precondition gate,
+`supports.sgs.gridAreas` flag completion, `ScaleAxisControl` component) getting its
+missing second review lens before build starts. D637's own council dispatch got 1 of 2
+lenses back; the second hung ~28 minutes with zero output. Re-run that lens (or get
+Bean's direct sign-off) before starting step 7's build — this is the disclosed residual
+from D637, re-surfaced here so it isn't lost between sessions.
 
----
+**Design gate for Bean (separate, smaller question, also outstanding):** `sgs/container`'s
+Background panel renders in its **Settings** tab; `sgs/hero`'s renders in **Styles**. This
+is a real placement inconsistency (D626's own table says Background belongs in Styles for
+all blocks) discovered during this session's live verification, not fixed here (out of
+step 6's scope — step 6 was gating visibility, not moving tabs). Worth a decision before
+step 7 touches these panels again.
 
-### Stream 1 — Wrapper decomposition (steps 6-7 of 7)
-
-**What:** Step 6 — build the `background` pilot extension. Scope, per D626 + this session's step-5
-findings:
-1. A **design gate for Bean** first: given the real per-block panel-mount table (D633,
-   `.claude/reports/2026-08-16-wrapper-step5-calibration.md`), should `hero`/`site-header`/
-   `site-footer`/`physics-canvas` be EXPANDED toward full composite-mirror compliance (every wrapper
-   block gets every capability), or kept at their current narrower, deliberate set? This is a real
-   choice, not a default.
-2. **The PHP wrapper refactor is a hard dependency in the same commit**, not a follow-up — the
-   `kind` argument every block's `render.php` currently hardcodes as the literal string `'section'`
-   must become a function of `enabledExtensions`, or the editor-side migration will look done while
-   the PHP paint side silently disagrees underneath (D626's "hard sequencing dependency").
-3. **Two new precondition gates need building, not wiring** — `GridAreaPanel` has zero live mounts
-   today (D633), and `GridItemDefaultsPanel` currently mounts with no check that the block even has
-   grid layout enabled. Neither existed as a working mechanism to hook into.
-4. **Colour Track B merges into this step** — the shared-wrapper colours
-   (`backgroundOverlayColour`, `shapeDividerTopColour`/`BottomColour`, `gridItemBackground`,
-   `gridItemTextColour`) reach `container`/`cta-section`/`hero`/`trust-bar`/`site-header`/
-   `site-footer` via the SAME file this step already owns — do not run it as a separate session
-   (that was last session's Task 1; it's retired as its own task, see Stream 2 below for why).
-
-**Why:** Every big migration this initiative promised has shipped except this one. It's also the
-last blocker on colour reaching 100% of the framework (Track A is done; Track B only ships as part
-of this).
-
-**Orchestration:** design gate FIRST (menu + ranking to Bean per Rule 9), then delegated build.
-Re-run `/delegate` after the gate — shape isn't known yet. Read D626 + D633 +
-`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 in full before starting.
-
-**Estimated time:** ~1 session once the design gate is answered.
-
-**Step 7** (remaining capabilities, shape dividers last — needs a new linked/unlinked X/Y scale
-control, not a pure relocation) is blocked on step 6 landing; not actionable yet.
-
----
-
-### Stream 2 — Colour programme leftovers (independent of Stream 1)
-
-Track A is complete (~43 blocks). Track B is **not a standalone task any more** — it's Stream 1's
-step 6 (see above); don't schedule it twice. One item remains:
-
-**2a — CLOSED (D635, 2026-08-16).** `testimonial-slider`/`process-steps` moved to the flat-attr
-colour pattern; native panel gone on both, deployed + live-verified. See D635.
-
-**2b — Custom gradient bar (per-stop palette linking).** Kadence + Spectra both ship this; catch-up,
-not differentiation. The prerequisite already landed — core's own gradient bar imports the exact
-`ColorPicker` module already forked into `src/components/colour-picker/` (D627), so the shared
-dependency is SGS-owned. Core's own bar offers no palette swatches for stops, so the per-stop
-linking itself is genuinely new work.
-**Orchestration:** delegated after a design gate. **/qc gate after: yes.**
-**Estimated time:** own session.
-
----
+**Estimated time:** ~1 session once the design gate is answered, same as previously
+estimated for this step.
 
 ## Methodology guardrails (do not skip)
 
 - **A ruling in `decisions.md` + a "shipped" line in a status doc is NOT evidence the code
-  changed.** D621 was ruled, summarised as shipped, and had never been written until 2026-08-15.
-  Read the code.
-- **This checkout is SHARED and the branch can change under you mid-session.** Re-run
-  `git branch --show-current` + `git status` immediately before every commit.
-- **A DB reseed picks up ambient, unrelated drift corrections** in shared derived-classifier files
-  (`css-property-classifications.json`, `attr-role-map.json`) — expected, not a bug to chase; note
-  it in the commit rather than hand-reverting (can't selectively regenerate one block's rows).
-- **Verify on the real editor / real canary, not the DOM alone** — a swatch that opens is not a
-  swatch that applies; a computed style that "matches" isn't proof until you've checked the value
-  actually reached the right attribute (this session's shadow-colour probe used an invalid test
-  value on the first pass and silently proved nothing — caught before it was trusted).
+  changed.** Read the code. (Still true, re-confirmed this session — nothing new to add.)
+- **This checkout is a dedicated isolated worktree for this task, not the shared
+  checkout** — `C:\Users\Bean\Projects\swp-wrapper-integrate`, branch
+  `integrate/wrapper-step6`, now merged to `main` and safe to reuse or discard. The
+  SHARED-checkout warnings in earlier LEDGER versions applied to a different working
+  directory; re-verify which checkout you're in before assuming either warning applies.
+- **Live verification beats static/agent-reported verification** — Phase B's own build
+  agents flagged the physics-canvas pointer-events question as unverified; this session's
+  live Playwright pass closed it with real computed-style evidence, not a re-read of the
+  same static reasoning.
+- **Two-lens review found one real finding out of two dispatched lenses; disclose lens
+  outcomes honestly rather than rounding "1 finding + 1 clean pass" up to "fully
+  reviewed, nothing found."**
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
+  (Followed this session — see D638.)
 
 ## State Snapshot
 
-- **Branch:** `main`. Verify with `git branch --show-current` before anything — shared checkout.
-- **D-ceiling:** **D635** — verify with
+- **Branch:** `main`. Verify with `git branch --show-current` before anything.
+- **D-ceiling:** **D638** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-  (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling before).
-- **`main` HEAD:** `38426a71`, pushed to `origin/main`.
-- **A second, concurrent session is/was active on this checkout during this session** — dirty
-  uncommitted files on `container`/`hero`/`cta-section`/`site-header`/`site-footer`/`trust-bar`/
-  `class-sgs-container-wrapper.php`, not this session's to touch or describe further. D635's deploy
-  worked around this via `git stash` on those exact paths (push → build+deploy → pop), never staging
-  or committing any of it. Re-check `git status` before assuming the checkout is clean.
-- **Build:** green. `npm run build` exit 0. F6/db-consistency 1 baselined / 0 new. Element-manifest
-  GATE PASS (style-defect 12/12 baselined, state-without-base 2/2, unclassified 0). Cheat-gate 18
-  baselined / 0 new.
-- **Canary:** sandybrown. All shadow-migrated blocks (11 of 11) were deployed this session; only
-  `card-grid` (D632) and `sgs/quote` (this session) have been individually live-verified — the other
-  9 D632 blocks still have "full re-verification pending the next canary deploy" open against them
-  (D632's own note, unchanged).
-- **Playwright MCP:** worked fine this session.
+  (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling
+  before).
+- **`main` HEAD:** fast-forward merge of `integrate/wrapper-step6` (23 commits including
+  `dd750633`), pushed to `origin/main` this session — exact merge commit hash is the
+  fast-forwarded `integrate/wrapper-step6` tip itself (no merge-commit object created; a
+  true fast-forward moves the `main` ref, it does not create a new commit).
+- **Build:** green. `npm run build` exit 0. Motion-bundle-budget gate PASSED. Cheat-gate
+  18 baselined / 0 new. F5 coverage-conservation 0 UNACCOUNTED. F6 1 baselined / 0 new.
+- **Canary:** sandybrown. This session's live verification (container/hero/physics-canvas
+  background painting, physics-canvas pointer-events layering, site-footer minHeight/
+  band-padding regression guard) used a scratch test page (id 2453), created and then
+  force-deleted via REST at the end of the session — nothing left behind on the canary.
+  Not a full redeploy of every block; only the 7 wrapper-decomposition blocks touched by
+  this step were exercised.
+- **Playwright MCP:** worked fine this session (editor + frontend, both login flows).
 
 ## Pointers
 
 | For | Read |
 |---|---|
-| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101 — 224 entries) |
-| Wrapper decomposition — full 7-step history, step 5 findings | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
-| Colour programme — Track A/B split, wave detail | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2d |
-| Wrapper step 5 calibration (raw data) | `.claude/reports/2026-08-16-wrapper-step5-calibration.md` |
-| D632-D635 (this + last session) + D609/D617-D622/D626 (colour + wrapper architecture) | `decisions.md` |
+| Structural defences (STOP catalogue + pre-flight ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
+| Wrapper decomposition — full 7-step history | `~/.claude/plans/go-read-the-track-encapsulated-hare.md` + `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
+| This session's full detail (bug found, live verification, review findings) | `decisions.md` D638 |
+| Step 7 design (locked, pending its missing review lens) | `decisions.md` D637 + `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` §F.2 |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
-| Control-type contract (colour §1, link §2) | `.claude/plans/spec-35-control-type-contract.md` |
 | Open deferred work | `parking.md` |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
 
@@ -199,3 +157,4 @@ linking itself is genuinely new work.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.
 - **A mega-menu item inside the drawer still degrades to a plain link** (FR-36-5).
+- **Colour Stream 2 item 2b** (custom gradient bar, per-stop palette linking) — unrelated to wrapper decomposition, still open per earlier sessions' notes.
