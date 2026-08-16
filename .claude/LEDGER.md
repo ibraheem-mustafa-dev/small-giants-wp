@@ -46,6 +46,11 @@ your sign-off on which blocks get which capabilities before any more code gets w
 (b) the colour programme has two small, unrelated leftover tasks (a design question on 2 blocks,
 and the gradient-bar build) that don't depend on the wrapper work at all.
 
+5. **Stream 2 item 2a — the `native:color` manifest-base problem — is done, in a separate concurrent
+   session.** `testimonial-slider` and `process-steps` no longer show the duplicate native colour
+   panel; both now match the flat-attr pattern already proven on `quote`/`heading`/`card-grid`/`text`.
+   Deployed and live-verified via REST. Stream 2 now has only item 2b (gradient bar) left.
+
 **Full narrative:** `memory/session-2026-08-15*.md` (2026-08-15 session, auto-snapshotted).
 
 ## Shipped this session (2026-08-16)
@@ -53,6 +58,7 @@ and the gradient-bar build) that don't depend on the wrapper work at all.
 | Commit | What |
 |---|---|
 | `8b944ff5` | **D633 + D634.** Wrapper step 5 (live calibration — falsified the "enable all 6" assumption, report + decision recorded) and `sgs/quote`'s shadow-colour migration (the one block D632 deferred), both live-verified |
+| `38426a71` | **D635.** `testimonial-slider`/`process-steps` native-colour duplicate panel closed (Stream 2 item 2a) — flat `backgroundColour`/`textColour` attrs, manifest gate unchanged (state-without-base still 2/2), deployed + live-verified |
 
 ### Numbers
 
@@ -61,7 +67,8 @@ and the gradient-bar build) that don't depend on the wrapper work at all.
 | Shadow-migrated blocks (D632 family) | 10 of 11 | **11 of 11 — complete** |
 | Wrapper decomposition steps done | 4 of 7 | **5 of 7** |
 | Element-manifest style defects (accepted debt) | 10 | 12 (2 new, same accepted class, written reason in the baseline file) |
-| D-ceiling | D632 | **D634** |
+| Blocks with duplicate native colour panel | 2 (`testimonial-slider`, `process-steps`) | **0 — Stream 2 item 2a closed** |
+| D-ceiling | D632 | **D635** |
 
 ## Blockers
 
@@ -119,16 +126,10 @@ control, not a pure relocation) is blocked on step 6 landing; not actionable yet
 ### Stream 2 — Colour programme leftovers (independent of Stream 1)
 
 Track A is complete (~43 blocks). Track B is **not a standalone task any more** — it's Stream 1's
-step 6 (see above); don't schedule it twice. Two genuinely separate, smaller items remain:
+step 6 (see above); don't schedule it twice. One item remains:
 
-**2a — The `native:color` manifest-base problem.** `testimonial-slider` and `process-steps` still
-show WP's native Text/Background controls alongside the SGS Colour panel — both declare a
-`states.hover` whose BASE resolves via `attrMap: "native:color.text"`/`"native:color.background"`,
-so switching the native flag off breaks the element-manifest gate (state-without-base 1 → 5) even
-though `render.php` paints correctly either way. This is a real design question about how the
-manifest expresses "the base state lives in native supports", not a flag to flip.
-**Orchestration:** design gate (Bean picks), then inline. **/qc gate after: yes.**
-**Estimated time:** design call, then small.
+**2a — CLOSED (D635, 2026-08-16).** `testimonial-slider`/`process-steps` moved to the flat-attr
+colour pattern; native panel gone on both, deployed + live-verified. See D635.
 
 **2b — Custom gradient bar (per-stop palette linking).** Kadence + Spectra both ship this; catch-up,
 not differentiation. The prerequisite already landed — core's own gradient bar imports the exact
@@ -159,10 +160,15 @@ linking itself is genuinely new work.
 ## State Snapshot
 
 - **Branch:** `main`. Verify with `git branch --show-current` before anything — shared checkout.
-- **D-ceiling:** **D634** — verify with
+- **D-ceiling:** **D635** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
   (anchor on the heading; an unanchored grep has reported a hex colour as the ceiling before).
-- **`main` HEAD:** `8b944ff5`, pushed to `origin/main`.
+- **`main` HEAD:** `38426a71`, pushed to `origin/main`.
+- **A second, concurrent session is/was active on this checkout during this session** — dirty
+  uncommitted files on `container`/`hero`/`cta-section`/`site-header`/`site-footer`/`trust-bar`/
+  `class-sgs-container-wrapper.php`, not this session's to touch or describe further. D635's deploy
+  worked around this via `git stash` on those exact paths (push → build+deploy → pop), never staging
+  or committing any of it. Re-check `git status` before assuming the checkout is clean.
 - **Build:** green. `npm run build` exit 0. F6/db-consistency 1 baselined / 0 new. Element-manifest
   GATE PASS (style-defect 12/12 baselined, state-without-base 2/2, unclassified 0). Cheat-gate 18
   baselined / 0 new.
@@ -180,7 +186,7 @@ linking itself is genuinely new work.
 | Wrapper decomposition — full 7-step history, step 5 findings | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.4 |
 | Colour programme — Track A/B split, wave detail | `~/.claude/plans/go-track-1b-playful-hamster.md` §1.2d |
 | Wrapper step 5 calibration (raw data) | `.claude/reports/2026-08-16-wrapper-step5-calibration.md` |
-| D632-D634 (this + last session) + D609/D617-D622/D626 (colour + wrapper architecture) | `decisions.md` |
+| D632-D635 (this + last session) + D609/D617-D622/D626 (colour + wrapper architecture) | `decisions.md` |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Control-type contract (colour §1, link §2) | `.claude/plans/spec-35-control-type-contract.md` |
 | Open deferred work | `parking.md` |
@@ -189,8 +195,6 @@ linking itself is genuinely new work.
 ## Open — carried, not this session's to close
 
 - **`testimonial`/`image-sequence`'s `imageControls`** — real crop scenario, per-item design call each.
-- **2 blocks still keep native `supports.color` alongside the SGS panel** — `testimonial-slider` and
-  `process-steps`, both blocked by the `native:color` manifest-base problem (Stream 2, item 2a above).
 - **physics-canvas `ALLOWED_BLOCKS`** — approved in principle; needs its own design gate.
 - **Track 2's canary (post 2164)** lost a text node 2026-08-07 (`templateLock:'all'`).
 - **`templateMode` inert** on both row blocks and physics-canvas.
