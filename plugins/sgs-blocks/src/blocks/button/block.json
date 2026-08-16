@@ -85,7 +85,8 @@
 							"attrMap": {
 								"css:color": "colourTextHover",
 								"css:background-color": "colourBackgroundHover",
-								"css:border-color": "colourBorderHover"
+								"css:border-color": "colourBorderHover",
+								"css:box-shadow": "boxShadowHover"
 							}
 						}
 					}
@@ -296,26 +297,20 @@
 			"default": {}
 		},
 		"boxShadow": {
-			"type": "object",
-			"default": {
-				"colour": "",
-				"hOffset": 0,
-				"vOffset": 0,
-				"blur": 0,
-				"spread": 0,
-				"inset": false
-			}
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": ""
 		},
 		"boxShadowHover": {
-			"type": "object",
-			"default": {
-				"colour": "",
-				"hOffset": 0,
-				"vOffset": 0,
-				"blur": 0,
-				"spread": 0,
-				"inset": false
-			}
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowHoverColour": {
+			"type": "string",
+			"default": ""
 		},
 		"scaleHover": {
 			"type": "number",

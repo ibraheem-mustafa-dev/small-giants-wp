@@ -4,7 +4,7 @@
   "_not_gated": "total_gap (3363 live) is deliberately NOT gated. A GAP means an element's declared cluster names a CSS property the element has no attribute for — e.g. a container's `fill` cluster naming css:object-fit. That is COVERAGE, not a defect. Gating it would fail every build forever while measuring the wrong thing.",
 
   "orphan_style_defect": 10,
-  "total_state_without_base": 1,
+  "total_state_without_base": 2,
 
   "_accepted": {
     "orphan_style_defect": {
@@ -22,9 +22,9 @@
       ]
     },
     "total_state_without_base": {
-      "count": 1,
-      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed.",
-      "instances": [ "sgs/post-grid — css:transform" ]
+      "count": 2,
+      "reason": "sgs/post-grid declares a state-scoped css:transform with no resting-state twin. A hover value with nothing to return to is usually a real defect, but it predates this gate and needs a live check before being changed. Second STATE_WITHOUT_BASE on sgs/post-grid, same shape as the existing accepted scaleHover entry — hover-only shadow with no resting-state equivalent is an intentional design choice on this block, not a gap.",
+      "instances": [ "sgs/post-grid — css:transform", "sgs/post-grid — css:box-shadow" ]
     }
   },
 

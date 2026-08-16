@@ -27,12 +27,13 @@ import {
 	ResponsiveOverride,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
-	DesignTokenPicker,
 	SgsColourPanel,
+	ShadowControl,
 	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
+import { resolveShadowPreviewComposed } from '../../utils/tokens';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -86,17 +87,6 @@ const EASING_OPTIONS = [
 	{ label: 'ease-in-out', value: 'ease-in-out' },
 	{ label: 'linear', value: 'linear' },
 ];
-
-// Matches block.json boxShadow/boxShadowHover default object (D328 — resets
-// must restore the DECLARED default, not undefined).
-const DEFAULT_BOX_SHADOW = {
-	colour: '',
-	hOffset: 0,
-	vOffset: 0,
-	blur: 0,
-	spread: 0,
-	inset: false,
-};
 
 // UnitControl unit sets.
 const CUSTOM_WIDTH_UNITS = [
@@ -212,7 +202,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		transitionDuration,
 		transitionEasing,
 		boxShadow,
+		boxShadowColour,
 		boxShadowHover,
+		boxShadowHoverColour,
 	} = attributes;
 
 	const hasIcon = !! icon;
@@ -308,15 +300,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		previewStyle.letterSpacing = `${ letterSpacing.desktop }${ lsUnit }`;
 	}
 	// Box shadow — mirrors render.php step 3's base-state shadow declaration
-	// (`box-shadow:{inset}{h}px {v}px {blur}px {spread}px {colour}`). Only the
-	// NORMAL state previews (hover can't be shown on a static canvas element).
-	// Colour is a design-token slug or custom hex (D288), so it must resolve via
-	// the live palette exactly like the other colour previews above — otherwise
-	// a token slug renders as invalid CSS and the shadow silently disappears.
-	if ( boxShadow?.colour ) {
-		const bsColour = resolveColourToken( boxShadow.colour, palette );
-		const bsInset = boxShadow.inset ? 'inset ' : '';
-		previewStyle.boxShadow = `${ bsInset }${ boxShadow.hOffset || 0 }px ${ boxShadow.vOffset || 0 }px ${ boxShadow.blur || 0 }px ${ boxShadow.spread || 0 }px ${ bsColour }`;
+	// (composed via sgs_shadow_value_composed()). Only the NORMAL state
+	// previews (hover can't be shown on a static canvas element). Colour is a
+	// design-token slug or custom hex (D288), so it must resolve via the live
+	// palette exactly like the other colour previews above — otherwise a
+	// token slug renders as invalid CSS and the shadow silently disappears.
+	const boxShadowPreview = resolveShadowPreviewComposed( boxShadow, resolveColourToken( boxShadowColour, palette ) );
+	if ( boxShadowPreview ) {
+		previewStyle.boxShadow = boxShadowPreview;
 	}
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
@@ -452,6 +443,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: iconColourHover,
 								onChange: ( val ) => setAttributes( { iconColourHover: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'shadow',
+						label: __( 'Shadow colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: boxShadowColour,
+								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: boxShadowHoverColour,
+								onChange: ( val ) => setAttributes( { boxShadowHoverColour: val ?? '' } ),
 							},
 						],
 					},
@@ -951,60 +960,25 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* Box shadow — always editable (preset-as-seed) */ }
+				{ /* Box shadow — always editable (preset-as-seed). Shape only —
+				   colour is externally managed via the top-level SgsColourPanel
+				   'shadow' row (D621/D622 colour-architecture redesign),
+				   matching every other migrated block (e.g. card-grid). */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToolsPanel
-						className="sgs-nested-tools-panel"
+					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								boxShadow: DEFAULT_BOX_SHADOW,
-								boxShadowHover: DEFAULT_BOX_SHADOW,
-							} )
-						}
-					>
-						<ToolsPanelItem
-							label={ __( 'Shadow — normal state', 'sgs-blocks' ) }
-							hasValue={ () =>
-								!! boxShadow.colour ||
-								boxShadow.hOffset !== 0 ||
-								boxShadow.vOffset !== 0 ||
-								boxShadow.blur !== 0 ||
-								boxShadow.spread !== 0 ||
-								!! boxShadow.inset
-							}
-							onDeselect={ () => setAttributes( { boxShadow: DEFAULT_BOX_SHADOW } ) }
-							isShownByDefault
-						>
-							<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Normal state', 'sgs-blocks' ) }</p>
-							<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val ?? '' } } ) } />
-							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadow.vOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadow.blur } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadow.spread } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadow.inset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, inset: val } } ) } __nextHasNoMarginBottom />
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Shadow — hover state', 'sgs-blocks' ) }
-							hasValue={ () =>
-								!! boxShadowHover.colour ||
-								boxShadowHover.hOffset !== 0 ||
-								boxShadowHover.vOffset !== 0 ||
-								boxShadowHover.blur !== 0 ||
-								boxShadowHover.spread !== 0 ||
-								!! boxShadowHover.inset
-							}
-							onDeselect={ () => setAttributes( { boxShadowHover: DEFAULT_BOX_SHADOW } ) }
-						>
-							<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Hover state', 'sgs-blocks' ) }</p>
-							<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadowHover.colour } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, colour: val ?? '' } } ) } />
-							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.hOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.vOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadowHover.blur } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadowHover.spread } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom __next40pxDefaultSize />
-							<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadowHover.inset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, inset: val } } ) } __nextHasNoMarginBottom />
-						</ToolsPanelItem>
-					</ToolsPanel>
+						value={ boxShadow }
+						onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
+						colour={ boxShadowColour }
+						onColourChange={ ( val ) => setAttributes( { boxShadowColour: val } ) }
+					/>
+					<ShadowControl
+						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
+						value={ boxShadowHover }
+						onChange={ ( val ) => setAttributes( { boxShadowHover: val } ) }
+						colour={ boxShadowHoverColour }
+						onColourChange={ ( val ) => setAttributes( { boxShadowHoverColour: val } ) }
+					/>
 				</PanelBody>
 
 			</InspectorControls>

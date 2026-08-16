@@ -22,6 +22,14 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "dividerColour",
       "fields": {
         "css_property": "background-color",
@@ -385,6 +393,41 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1021,7 +1064,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "column-count,grid-auto-columns,grid-template-columns",
-        "css_tier": "desktop",
+        "css_tier": "tablet",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -2729,7 +2772,7 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "desktop",
+        "css_tier": "mobile",
         "css_layer": "GRID",
         "css_element": "inner"
       }
@@ -2756,7 +2799,16 @@
       "slug": "sgs/post-grid",
       "attr": "shadowHover",
       "fields": {
-        "css_property": "box-shadow,transform",
+        "css_property": "box-shadow",
+        "css_element": "card",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "shadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow",
         "css_element": "card",
         "css_state": "hover"
       }
@@ -4214,15 +4266,6 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
         "css_element": "wrapper"
       }
     },

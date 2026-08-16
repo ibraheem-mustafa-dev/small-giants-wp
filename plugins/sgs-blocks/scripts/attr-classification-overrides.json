@@ -2856,6 +2856,27 @@
         "derived_selector": ".sgs-media__img, .sgs-media__video"
       },
       "_why": "2026-08-16 same shadow colour-architecture redesign (D621/D622) as the sgs/before-after override above (see sgs/card-grid.cardShadowColour for the full original explanation) — sgs/media's boxShadow was migrated from a raw-CSS TextControl onto the shared ShadowControl (shape) + SgsColourPanel (boxShadowColour) pair, composed via sgs_shadow_value_composed() at render time. Element is 'media' (block.json's own isWrapper:true element, attrMap already declares 'css:box-shadow':'boxShadow' on it), derived_selector matches the block's own selectors.filter.duotone/dimensions.aspectRatio entries (.sgs-media__img, .sgs-media__video) since that's where the shadow visually paints. css_layer:OUTER carried forward from the sgs/before-after sibling entry's F6 reseed-survival fix (same DB-derived shape for this property)."
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
+      },
+      "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling boxShadowColour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). Same class as the other shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation): css_property overridden to box-shadow-color so the colour attr no longer contends with its shape sibling (boxShadow, already classified css_element='wrapper'/css_layer='OUTER' via the pre-existing css-property-classifications.json entry) for the box-shadow slot. css_layer:OUTER declared explicitly because leaving it unset produced a reseed-survival mismatch (DB derives 'OUTER' from the shape sibling; a bare-None override is wiped every reseed per STOP-24)."
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHoverColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      },
+      "_why": "2026-08-16 button shadow colour-architecture migration (mirrors D621/D622) — same class as sgs/button.boxShadowColour above; hover-state companion of boxShadowHover (now declared in block.json's button element states.hover.attrMap as 'css:box-shadow')."
     }
   ]
 }
