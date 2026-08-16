@@ -385,7 +385,42 @@ inheritance, which background/border/shadow/padding don't have. A separate, fram
 typography placement/completeness audit (parallel to the live colour-panel rollout) is queued as
 the next initiative after colour's own two tracks close — not this spec's open item to build yet.
 
-### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` — ALL THREE FULLY LOCKED (added 2026-08-16, D637)
+### F.2 — Shared-wrapper capability preconditions: `gridItems requires layout`, `gridAreas` flag completion, `ScaleAxisControl` — ✅ **BUILT 2026-08-16 (D639)**, designed 2026-08-16 (D637)
+
+> ⛔ **BUILD STATUS, and two premises this subsection asserted that turned out FALSE (D639).**
+> Read this box before building anything from the text below — the design text is left intact as
+> the record, but two of its factual claims did not survive contact with the code.
+>
+> | Piece | Status | Note |
+> |---|---|---|
+> | **F.2.1** precondition gate | ✅ **BUILT** as specced | `scripts/check-wrapper-capability-preconditions.js`, fail-closed, no baseline, `--self-test` 11/11. ⚠ **THREE** blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`) — F.2.1's text names two. |
+> | **F.2.2** DB layer | ✅ **BUILT** (migration deliberately NOT RUN) | `block_composition.grid_areas` + `/sgs-update` Stage 1 `_populate_grid_areas`. The migration and `schema.sql` are held together until the concurrent colour worktrees merge — see D639 for why running either alone turns builds red. |
+> | **F.2.2** editor layer | ⛔ **NOT BUILT — re-scoped** | See premise 2 below. |
+> | **F.2.3** scale control | ✅ **BUILT** | `src/components/ScaleAxisControl.js` + storage replace across 6 blocks + SVG-`<pattern>` X tiling. |
+>
+> ⛔ **PREMISE 1 FALSIFIED — "same repeat mechanism the shape already uses".** F.2.3's render text
+> below says X-tiling reuses an existing repeat. There is none: the divider is a single `<path>`
+> in a `preserveAspectRatio="none"` SVG stretched edge-to-edge. Tiling is NEW. Built as an SVG
+> `<pattern>` (Bean-picked over a CSS mask) which keeps the markup, `currentColor` and flip/invert,
+> and is **not entered at all at x=100**, so the default renders byte-identically to before.
+>
+> ⛔ **PREMISE 2 FALSIFIED — "`GridAreaPanel`'s own gate is already correct and needs no change,
+> it's simply never called".** It writes the FLAT per-side schema (`contentPaddingTop`/`…Tablet`/
+> `…Mobile`) — 13 of 14 attrs per area — which **stopped existing on 2026-08-11** when D580
+> migrated that storage to box OBJECTS. It was never swept precisely because it has zero mounts.
+> Mounting it as specced would ship a padding control that **silently deletes the value on every
+> use**, which is the standard-level defect Part M already records. It is also SUPERSEDED: hero
+> re-grew its own object-shaped controls (`hero/edit.js:965` "Content padding", `:1336` "Media
+> padding") — and per D626's mount table `gridItems` "absorbs `GridAreaPanel`", while `hero` does
+> not declare `gridItems`, so it would render nothing today even if wired. **Do not mount it
+> without first rebuilding it onto the object storage, or deleting it as superseded** — that
+> decision is open (D639 residual).
+>
+> **Y semantics, ruled by Bean 2026-08-16 (D639):** the addendum below says both "anchors its top
+> edge" and "extends outward only", which describe opposite results. The ruling is **grows INTO
+> the section** — today's behaviour, what `top:-1px`/`bottom:-1px` already produce, and the
+> industry convention. Nothing repositions. Consequence: a new divider is 120px (100% of natural
+> viewBox height) where the old attribute default was 80px.
 
 Design-only spec addition feeding the shared-wrapper decomposition's step 7 (`~/.claude/plans/go-track-1b-playful-hamster.md` §1.4; the D626 grouping locked six opt-in wrapper extensions —
 `background`/`width`/`layout`/`gridItems`/`shapeDividers`/`typography`). D626 named two cross-extension

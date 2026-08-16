@@ -1,5 +1,114 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D639 — Step 7 BUILT (F.2.1 gate + F.2.3 scale control + F.2.2 DB reader); two "locked" design premises falsified against the code [ROUTINE]
+
+**2026-08-16.** Step 7 of the shared-wrapper decomposition — building the three designs D637
+locked. Two built as specced. The third could not, because the design rested on statements that
+are not true of the current tree; both were caught by reading the code rather than trusting the
+entry, and the affected half was re-scoped with Bean rather than forced through.
+
+**F.2.1 — precondition gate: BUILT as specced.** New
+`plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js`. Rule 1 (`gridItems`
+requires `layout`) ships fail-closed with NO baseline, following `check-shared-panel-schema.js`
+rather than the baseline-gated `check-box-family-guard.py` — there are zero current violations,
+so a baseline would only be a hole for the next one to hide in. `--self-test` proves each rule
+can fail AND stays quiet on the clean case, including the comment blind-spot that has produced a
+wrong consumer list in this repo three times. **Spec correction, measured not assumed:** THREE
+blocks declare `gridItems`+`layout` (`container`, `cta-section`, `trust-bar`), not the two D637
+names.
+
+**F.2.3 — `ScaleAxisControl` + the storage replace: BUILT, with one premise corrected.**
+`shapeDivider{Top,Bottom}Height` (scalar px, default 80) replaced outright by
+`shapeDivider{Top,Bottom}Scale` (`{x,y}` object, %, default `{x:100,y:100}`) across all 6
+declaring blocks — D637's decided Option A, licensed by the no-deprecations-pre-production policy
+and Bean's direct confirmation that there is nothing on the canary to preserve.
+
+⛔ **FALSIFIED PREMISE 1 — "below 100% the shape tiles/repeats, same repeat mechanism the shape
+already uses today".** There is NO repeat mechanism today: the divider is a single `<path>` in a
+`preserveAspectRatio="none"` SVG stretched edge-to-edge (`includes/shape-dividers.php`,
+`container/style.css`). Tiling is NEW, not reuse. Bean picked the mechanism from a menu: an SVG
+`<pattern>` over a CSS mask, because it keeps the existing markup, keeps colour flowing through
+`currentColor`, keeps flip/invert working, and — decisively — **at x=100 the pattern route is not
+taken at all and the markup is byte-identical to before**, so the default cannot regress. That
+no-regression property is proven by an explicit negative control, not asserted.
+
+**Y ambiguity resolved by Bean, not by inference.** D637's second addendum said the top divider
+"anchors its top edge" AND "extends outward only — never grows back into the section". Those
+describe opposite results. Bean ruled: keep today's behaviour (grows INTO the section — the
+industry convention, and what `top:-1px`/`bottom:-1px` already produce), so nothing repositions.
+**Known consequence, flagged not smuggled:** a newly-inserted divider is now 120px (100% of the
+shape's natural viewBox height) where the old attribute default was 80px.
+
+**Gate correction found by RUNNING a gate, not reading it:** `check-shared-panel-schema.js`
+classified the new object-shaped write as SCALAR and reported `TYPE_MISMATCH` on 6 *correct*
+declarations — it flagged the right code as wrong. `ScaleAxisControl` added to
+`OBJECT_FAMILY_TAGS`.
+
+**F.2.2 — DB reader BUILT; editor half RE-SCOPED, not built.**
+
+⛔ **FALSIFIED PREMISE 2 — "`GridAreaPanel`'s own gate is already correct and needs no change,
+it's simply never called".** `GridAreaPanel` (written 2026-06-11, `65a3536a`) writes the FLAT
+per-side schema `contentPaddingTop`/`...Tablet`/`...Mobile` — 13 of 14 attributes per area. Those
+attributes stopped existing on 2026-08-11 when D580 migrated the storage to box OBJECTS
+(`contentPadding`, `mediaPadding`/`Tablet`/`Mobile`). The panel was never swept because it has
+zero mounts. Mounting it as specced would have shipped a client-facing padding control that
+**silently deletes the value on every use** — the exact standard-level defect Spec 35 Part M
+records ("19 of 21 blocks shipped an inspector that deleted the setting").
+
+**Git history settles the intent (Bean's own instruction to check it).** `65a3536a` DELETED
+hero's own per-side content-padding controls in favour of the shared panel ("duplicate controls
+removed"). The panel was then never mounted anywhere. Hero has since re-grown its own controls in
+the correct object shape — live today at `hero/edit.js:965` ("Content padding") and `:1336`
+("Media padding"), plus `contentBackground`/`mediaBackground`. **So `GridAreaPanel` is not a
+missing feature; it is superseded, and stale.** D626's own mount table settles the gating question
+the same way: `gridItems` "absorbs `GridAreaPanel` as a sub-capability" — and `hero` does not
+declare `gridItems`, so the panel would render nothing today even if wired.
+
+**What DID ship for F.2.2:** `block_composition.grid_areas` — a plain JSON-array TEXT column
+following `accepts_allowed_blocks` on the same table, NOT `container_kind` (a scalar `TEXT CHECK`
+enum; a closed value set can be enumerated, a per-block list of area names cannot) — plus the
+`/sgs-update` Stage 1 declarative writer `_populate_grid_areas`, populated from block.json on
+every run with no per-block dict (R-31-1). That closes hero's two-month orphan through the reader
+that is actually reachable, and `GRID_AREAS_READERS_LIVE` was flipped true in the same commit,
+making rule 2 fail-closed at 0 findings.
+
+⛔ **THE MIGRATION IS DELIBERATELY NOT RUN (Bean-ruled).** `sgs-framework.db` is ONE file shared by
+every worktree; four colour-gaps worktrees were live against it, and `check_schema_drift.py
+--check` runs in every `prebuild` comparing the live DB to the tree's own `schema.sql`. Applying
+it now turns those four builds red. It rides along with the reseed the colour thread already
+needs. **`schema.sql` is likewise deliberately unchanged** — changing it before the migration runs
+breaks THIS branch's build in the mirror-image way. The migration docstring carries the three
+commands that must run together, in order.
+
+**A self-test that caught its own flaw.** Once the real Stage 1 writer existed, four of the new
+gate's rule-2 fixtures went green by reading the REAL tree instead of their fixture — a self-test
+silently no longer testing anything, while still reporting PASS. `dbWriter` is now injected and a
+new assertion covers the DB-writer-alone route. This is the argument for `--self-test` assertions
+that can actually fail.
+
+**Also shipped (Bean-ruled the same session, separate concern):** the shared `BackgroundPanel` was
+reaching clients in two different tabs depending on the block — Settings on `container`,
+`site-header`, `site-footer`, `physics-canvas`; Styles on `cta-section`, `hero`. Standardised on
+Styles (appearance sits with colour, per D621/D622 and Spec 35 A3). The first attempt nested
+`InspectorControls` inside `InspectorControls`, which is invalid; caught by a structural check
+before commit, not after.
+
+**Verification.** Full `npm run build` exit 0 through all ~50 prebuild gates. 20/20 shape-divider
+render assertions (incl. the byte-identical default, tile geometry at 50%/200%, flip/invert under
+tiling, unique pattern ids, clamping of garbage stored values). 11/11 Stage-1 writer assertions
+against a THROWAWAY database — the shared one verified untouched afterwards. 11/11 gate self-test.
+Structural check across all 7 wrapper blocks: tags balanced, zero nested InspectorControls,
+Background resolving to Styles on every one. Only build mutation was a CRLF-only `roster.json`
+diff, reverted.
+
+**Residual, explicitly not closed:** hero/`GridAreaPanel` — whether to delete the stale panel as
+superseded or rebuild it onto the object storage. Bean parked it to the end of this session rather
+than forcing it into step 7. No live canary verification yet (nothing deployed).
+
+⚠ **D-NUMBER COLLISION, flagged for whoever merges:** `main` and `feat/gradient-palette-stops` BOTH
+minted a **D638** for different decisions — step 6 close-out on `main`, the colour-gap council on
+the branch. One must be renumbered at merge.
+
 ## D638 — Wrapper decomposition step 6 (background pilot) CLOSED: build + live verification + multi-rater review [ROUTINE]
 
 **2026-08-16.** Phase D (verification/close-out) of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`,
