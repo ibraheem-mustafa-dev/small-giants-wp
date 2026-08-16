@@ -54,6 +54,100 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 	final class SGS_Container_Wrapper {
 
 		/**
+		 * Resolve the `$kind` argument for render() from a block's DECLARED
+		 * `supports.sgs.enabledExtensions`, instead of a hardcoded literal
+		 * (D626 "hard sequencing dependency" / D633 calibration; built as
+		 * part of the wrapper-decomposition step 6 background pilot).
+		 *
+		 * NOT wired into any render.php by this commit — every one of the 7
+		 * direct-panel blocks (`container`/`cta-section`/`trust-bar`/`hero`/
+		 * `site-header`/`site-footer`/`physics-canvas`) still passes the
+		 * literal `'section'` string directly to render(), unchanged. This
+		 * method exists so a LATER commit (Phase B of
+		 * `~/.claude/plans/go-read-the-track-encapsulated-hare.md`) can
+		 * replace that literal with
+		 * `SGS_Container_Wrapper::resolve_kind( $block, 'section' )` in the
+		 * SAME commit it adds `enabledExtensions` to that block's block.json
+		 * (D626's "same-commit rule" — never split the editor half and the
+		 * PHP half of one block's migration).
+		 *
+		 * ⚠ Background/overlay attrs (`backgroundImage`/`bgVideo`/
+		 * `backgroundOverlayColour`/etc.) are OUT OF SCOPE for this
+		 * resolver — D6 (2026-08-11, logged inline at ~L262 of this file)
+		 * already made that whole family read UNIVERSALLY, gated only by
+		 * whether a block's own block.json DECLARES the attr, not by
+		 * `$kind`. Verified empirically before writing this method: every
+		 * `$bg_*`/`$overlay_*` read in this file (L271-303, L1180-1209) is
+		 * unconditional — there is no `$is_section`/`$is_layout` guard on
+		 * any of it. So gating background PAINT on `enabledExtensions`
+		 * needs no PHP change at all; it is already correct by
+		 * construction (a block only gets a live background once it
+		 * declares the attrs, which for `physics-canvas` happens in Phase
+		 * B alongside `enabledExtensions:['background']`).
+		 *
+		 * What THIS resolver actually reaches: the capabilities still tied
+		 * to the `'section'`/`'layout'`/`'content'` literal today — shape
+		 * dividers (`$is_section`-gated, ~L1223) and part of the grid-item
+		 * custom-property emission (`$is_section || $is_layout`-gated,
+		 * ~L1732). Both are OUT OF SCOPE to migrate in Phase A per this
+		 * initiative's own step ordering (`shapeDividers`/`gridItems` are
+		 * separate extensions, step 7 — D626), so this method's mapping is
+		 * deliberately conservative: it only NARROWS kind away from
+		 * `$fallback` once a block has explicitly opted into fewer
+		 * capabilities via `enabledExtensions`; a block with no declaration
+		 * at all gets `$fallback` back UNCHANGED.
+		 *
+		 * @param \WP_Block|null $block    Block instance passed to render.php.
+		 * @param string         $fallback What today's render.php literal
+		 *                                 currently passes (usually
+		 *                                 `'section'`) — returned verbatim
+		 *                                 when the block declares no
+		 *                                 `enabledExtensions` at all, so an
+		 *                                 un-migrated block's behaviour is
+		 *                                 byte-identical to before this
+		 *                                 method existed.
+		 * @return string 'section'|'layout'|'content'.
+		 */
+		public static function resolve_kind( $block, string $fallback = 'section' ): string {
+			$allowed = array( 'section', 'layout', 'content' );
+			if ( ! in_array( $fallback, $allowed, true ) ) {
+				$fallback = 'section';
+			}
+
+			$supports = null;
+			if ( $block instanceof \WP_Block && isset( $block->block_type->supports ) && is_array( $block->block_type->supports ) ) {
+				$supports = $block->block_type->supports;
+			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
+				// Fallback lookup — mirrors the established pattern in
+				// includes/image-controls.php for reading a block's DECLARED
+				// supports from its registered block type.
+				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
+				if ( null !== $registered && is_array( $registered->supports ?? null ) ) {
+					$supports = $registered->supports;
+				}
+			}
+
+			if ( null === $supports ) {
+				return $fallback;
+			}
+
+			$enabled = $supports['sgs']['enabledExtensions'] ?? null;
+			if ( ! is_array( $enabled ) ) {
+				// Block hasn't migrated to the enabledExtensions mechanism at
+				// all — preserve today's literal exactly (no narrowing).
+				return $fallback;
+			}
+
+			if ( in_array( 'shapeDividers', $enabled, true ) || in_array( 'gridItems', $enabled, true ) ) {
+				return 'section';
+			}
+			if ( in_array( 'layout', $enabled, true ) ) {
+				return 'layout';
+			}
+			return 'content';
+		}
+
+		/**
 		 * Render the outer wrapper for a container-style block.
 		 *
 		 * Returns a single pre-joined string:
