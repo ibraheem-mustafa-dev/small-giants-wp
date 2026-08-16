@@ -141,31 +141,23 @@ if ( '' !== $css ) {
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
-// ⛔ DELIBERATELY NOT migrated to SGS_Container_Wrapper::resolve_kind() —
-// verified unsafe for this block (wrapper-decomposition step 6, D626/D633
-// Phase B, 2026-08-16). This block's enabledExtensions (['background'] only,
-// no 'shapeDividers'/'gridItems'/'layout') doesn't satisfy any of
-// resolve_kind()'s 'section'-preserving branches, so it would resolve to
-// 'content'. Traced in class-sgs-container-wrapper.php: `$is_section` gates
-// the BASE (desktop) min-height entirely, not just responsive tiers, at
-// L853 (`if ( $is_section && $min_height && ! $has_responsive_min_height )`),
-// plus contentBandPadding tablet/mobile at L576-577 — both are LIVE,
-// client-facing controls on this block (the "Min height" SelectControl in
-// its "Footer width" panel; the "Band padding" ResponsiveOverride panel).
-// Narrowing to 'content' kind would silently drop any value an operator sets
-// in either control. Bigger blast radius than Phase A's resolve_kind()
-// docblock claims (it names only shapeDividers/grid-item custom-properties
-// as reached). Flagged, not fixed here — extending resolve_kind() or
-// decoupling min-height/band-padding from $kind is a shared-wrapper change
-// (Rule 7 design-gate territory), out of this block's own scope. Background
-// painting itself is unaffected either way (D6, 2026-08-11: reads
-// universally off declared attrs, independent of $kind), so keeping the
-// literal below costs this block nothing.
+// Migrated to SGS_Container_Wrapper::resolve_kind() 2026-08-16 (D626/D633
+// step 6, Phase B, second pass) after 2113eeb6 fixed the helper: an earlier
+// version of resolve_kind() narrowed unmigrated-looking blocks (enabledExtensions
+// without shapeDividers/gridItems/layout) to kind='content', which would have
+// silently dropped this block's live minHeight + contentBandPadding
+// tablet/mobile controls ($is_section-gated in render() below). Caught before
+// shipping (see this file's git history), reported, and fixed at the source —
+// resolve_kind() no longer narrows away from $fallback at all; it is a
+// pass-through today (real per-capability narrowing is step 7 scope). Verified
+// directly against the merged fix before wiring this in: every code path in
+// resolve_kind() returns $fallback unconditionally, so this call is
+// behaviourally identical to the literal 'section' it replaces.
 echo SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$content,
-	'section',
+	SGS_Container_Wrapper::resolve_kind( $block, 'section' ),
 	array(
 		'tag'           => isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'footer',
 		'extra_classes' => $classes,
